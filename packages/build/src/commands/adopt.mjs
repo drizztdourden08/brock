@@ -56,7 +56,8 @@ onlyBuiltDependencies:
   - electron
   - esbuild
 `,
-  '.npmrc': `auto-install-peers=true
+  '.npmrc': `@drizztdourden08:registry=https://npm.pkg.github.com
+auto-install-peers=true
 dedupe-peer-dependents=true
 public-hoist-pattern[]=*eslint*
 public-hoist-pattern[]=*stylelint*

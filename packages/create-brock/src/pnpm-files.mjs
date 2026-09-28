@@ -5,7 +5,8 @@ import { mergeCatalog } from '@drizztdourden08/brock-build';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
 
-const NPMRC = `auto-install-peers=true
+const NPMRC = `@drizztdourden08:registry=https://npm.pkg.github.com
+auto-install-peers=true
 dedupe-peer-dependents=true
 public-hoist-pattern[]=*eslint*
 public-hoist-pattern[]=*stylelint*

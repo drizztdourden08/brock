@@ -9,6 +9,18 @@ pnpm create @drizztdourden08/brock my-app
 pnpm dlx create-brock my-app [options]
 ```
 
+## First time on a machine
+
+The packages live on GitHub Packages, which needs a sign-in even for public packages.
+Point the scope there and give npm a token with `read:packages`, once:
+
+```
+npm config set @drizztdourden08:registry https://npm.pkg.github.com
+npm config set //npm.pkg.github.com/:_authToken <token>
+```
+
+The scaffolded app's `.npmrc` carries the scope line, so installs inside it need only the token.
+
 ## Options
 
 ```

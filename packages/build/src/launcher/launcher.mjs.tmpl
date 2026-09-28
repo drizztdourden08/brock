@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { delimiter, dirname, join } from 'node:path';
+import { chmodSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { delimiter, dirname, isAbsolute, join, relative } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 
 const NAME = '__NAME__';
@@ -43,7 +43,14 @@ const fromNpmRoot = () => {
 
 const findBrock = () => (OVERRIDE ? existing(brockIn(rootDir(OVERRIDE))) : (fromPath() ?? fromNpmRoot()));
 
+const insideCheckout = (dir) => {
+  const rel = relative(CHECKOUT, dir);
+  return !rel.startsWith('..') && !isAbsolute(rel);
+};
+const isWorktree = () => statSync(join(CHECKOUT, '.git'), { throwIfNoEntry: false })?.isFile() ?? false;
+
 const runBrock = (file, args) => {
+  if (!insideCheckout(process.cwd())) process.chdir(CHECKOUT);
   const result = file.endsWith('.mjs')
     ? spawnSync(process.execPath, [file, ...args], { stdio: 'inherit' })
     : exec(file, args, 'inherit');
@@ -92,7 +99,7 @@ const writeShim = (file, content) => {
 };
 
 const link = () => {
-  if (process.env.CI) return 0;
+  if (process.env.CI || isWorktree()) return 0;
   try {
     const dir = binDir(globalPrefix());
     if (!dir) throw new Error('npm prefix -g printed nothing');

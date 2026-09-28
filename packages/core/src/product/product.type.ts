@@ -45,6 +45,7 @@ interface ProductConfig {
   author: ProductAuthor;
   repo?: ProductRepo;
   updateChannel?: string;
+  accent?: string;
   artifactPrefix: string;
   envPrefix: string;
   window: WindowConfig;

@@ -7,7 +7,9 @@ import { namePackOutputs } from '../packaging/name-pack-outputs.mjs';
 import {
   BUILDER_CONFIG_FILE, BUILDER_TARGETS, NOTES_DIR, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
 } from '../packaging/packaging.constants.mjs';
+import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { runVpk } from '../packaging/run-vpk.mjs';
+import { shipInstaller } from '../packaging/ship-installer.mjs';
 import { vpkPackArgs } from '../packaging/vpk-args.mjs';
 import { runBin } from '../run.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
@@ -38,13 +40,14 @@ const runBuilder = (rootDir, platform) =>
  */
 const packVelopack = async ({ rootDir, platform, product, version }, { full, channel }) => {
   const splash = platform === 'win32' ? writeInstallerSplash(rootDir, product) : null;
-  const extras = { splash, notes: releaseNotesFor(rootDir, version), channel, full };
+  const extras = { splash, accent: product.accent, notes: releaseNotesFor(rootDir, version), channel, full };
   const packDir = join(RELEASE_DIR, UNPACKED_DIRS[platform]);
   const code = await runVpk(rootDir, vpkPackArgs({ product, version, platform, packDir, outputDir: VELOPACK_OUT, extras }));
   if (code !== 0) return code;
-  const naming = { id: product.id, prefix: product.artifactPrefix ?? `${product.id}-`, platform, channel, full };
+  const naming = { id: product.id, prefix: artifactPrefixOf(product), platform, channel, full };
   const named = namePackOutputs(join(rootDir, VELOPACK_OUT), naming);
-  console.log(`brock package: packed ${version}${channel ? ` (${channel})` : ''} into ${VELOPACK_OUT}: ${named.join(', ')} and the update package`);
+  console.log(`brock package: packed ${version}${channel ? ` (${channel})` : ''} into ${VELOPACK_OUT}: the update package${named.length ? `, ${named.join(', ')}` : ''}`);
+  if (platform === 'win32') await shipInstaller(rootDir, product, { outDir: VELOPACK_OUT, version });
   return 0;
 };
 

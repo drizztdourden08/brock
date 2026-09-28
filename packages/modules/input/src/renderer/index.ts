@@ -7,7 +7,7 @@ import { inputTesterScreen } from './InputTesterScreen';
 const inputRenderer: RendererModule = {
   id: 'input',
   screens: [inputTesterScreen],
-  menu: [{ key: INPUT_TESTER_SCREEN_ID, label: 'Controllers', screen: INPUT_TESTER_SCREEN_ID }],
+  menu: [{ key: INPUT_TESTER_SCREEN_ID, label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: INPUT_TESTER_SCREEN_ID }],
 };
 
 export default inputRenderer;

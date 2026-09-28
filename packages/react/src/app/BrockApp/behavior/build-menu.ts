@@ -1,6 +1,12 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
-import { BUILT_IN_ENTRIES } from '../BrockApp.constants';
+import { tidySeparators } from '../../../menu/tidy-separators';
+import {
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES,
+} from '../BrockApp.constants';
+import type { MenuBuildInput } from '../BrockApp.type';
+import { filterDevEntries } from './filter-dev-entries';
+import { groupSections } from './group-sections';
 
 const screensNamed = (entries: readonly MenuEntry[]): Set<string> => {
   const ids = new Set<string>();
@@ -15,18 +21,29 @@ const screensNamed = (entries: readonly MenuEntry[]): Set<string> => {
   return ids;
 };
 
-const buildMenu = (appMenu: readonly MenuEntry[], moduleMenu: readonly MenuEntry[], onQuit: () => void): MenuEntry[] => {
-  const given = [...appMenu, ...(moduleMenu.length > 0 && appMenu.length > 0 ? ['separator' as const] : []), ...moduleMenu];
-  const named = screensNamed(given);
-  const builtIn = BUILT_IN_ENTRIES.filter((entry) => !named.has(entry.screen ?? ''));
-  const quit: MenuItem = { key: 'quit', label: 'Quit', onClick: onQuit };
-  return [
-    ...given,
-    ...(given.length > 0 && builtIn.length > 0 ? ['separator' as const] : []),
-    ...builtIn,
+const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
+  entries.filter((entry) => entry === 'separator' || entry.section === undefined);
+
+const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
+  const { appMenu, moduleMenu, homeScreen, hasCredits, developerTools, onQuit, onDevConsole } = input;
+  const devConsole: MenuItem = { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole };
+  const app = filterDevEntries(appMenu, developerTools);
+  const modules = filterDevEntries([...moduleMenu, devConsole], developerTools);
+  const named = screensNamed([...app, ...modules]);
+  const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
+  const top = TOP_ENTRIES.filter(unnamed);
+  const tail = [...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed);
+  return tidySeparators([
+    { ...HOME_ENTRY, screen: homeScreen },
+    ...top,
+    ...unsectioned(app),
     'separator',
-    quit,
-  ];
+    ...groupSections([...app, ...modules]),
+    'separator',
+    ...unsectioned(modules),
+    ...tail,
+    { ...QUIT_ENTRY, onClick: onQuit },
+  ]);
 };
 
 export { buildMenu };

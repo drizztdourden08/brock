@@ -4,6 +4,7 @@ export type { CreateSettingsStoreOptions, SettingsEffect, SettingsState, Setting
 export { SettingsStoreContext } from './settings-context';
 export { useSettings } from './useSettings';
 export { useSettingsStore } from './useSettingsStore';
+export { useSettingValue } from './useSettingValue';
 export { createSessionStore } from './create-session-store';
 export { resetAllSessionStores } from './reset-all-session-stores';
 export type { SessionStore } from './session-store.type';

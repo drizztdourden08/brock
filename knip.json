@@ -62,18 +62,24 @@
       ]
     },
     "packages/electron": {
+      "entry": [
+        "tests/**/*.test.ts"
+      ],
       "project": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "tests/**/*.ts"
       ]
     },
     "packages/react": {
       "entry": [
         "stories/**/*.stories.tsx",
-        "stories/_samples/*.tsx"
+        "stories/_samples/*.tsx",
+        "tests/**/*.test.ts"
       ],
       "project": [
         "src/**/*.{ts,tsx}",
-        "stories/**/*.{ts,tsx}"
+        "stories/**/*.{ts,tsx}",
+        "tests/**/*.ts"
       ],
       "ignoreDependencies": [
         "react-dom"

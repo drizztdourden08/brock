@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { BrowserWindow } from 'electron';
-import type { ProductConfig, PrivilegedScheme, ProductIcons } from '@drizztdourden08/brock-core/product';
+import type { ProductConfig, PrivilegedScheme } from '@drizztdourden08/brock-core/product';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { FileStore, DataDomainDef } from '@drizztdourden08/brock-core/platform';
 import type { ProfileStore, ProfileStoreHooks } from '@drizztdourden08/brock-core/storage';
@@ -76,7 +76,6 @@ interface BootstrapOptions {
   onWillQuit?: (ctx: MainContext) => void;
   paths?: BootstrapPaths;
   security?: SecurityOptions;
-  instanceIcons?: ProductIcons;
 }
 
 export type {

@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { TEMPLATE_IDENTITY } from './identity.mjs';
 
-const IDENTITY_FILES = ['brock.config.ts', 'brock.workspace.mjs', 'package.json', 'src/index.html', 'src/splash.html', 'README.md'];
+const IDENTITY_FILES = ['brock.config.ts', 'brock.workspace.mjs', 'package.json', 'README.md'];
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const replaceAll = (text, from, to) => (from ? text.replace(new RegExp(escapeRe(from), 'g'), to) : text);

@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { instanceName } from '../../../../host/instance-name';
 import { useCapability } from '../../../../platform/useCapability';
-import { usePlatform } from '../../../../platform/usePlatform';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { BootProgressBar } from '../../../../shell/BootProgressBar/BootProgressBar';
@@ -11,19 +10,18 @@ import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { ScreenRail } from '../../../../shell/ScreenRail/ScreenRail';
 import { TitleBar } from '../../../../shell/TitleBar/TitleBar';
 import { useBrock } from '../../../useBrock';
-import { buildMenu } from '../../behavior/build-menu';
-import { stripScreenEntries } from '../../behavior/strip-screen-entries';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
+import { useShellMenu } from '../../behavior/useShellMenu';
 import { useShellReady } from '../../behavior/useShellReady';
 import { useStartup } from '../../behavior/useStartup';
+import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, log, moduleMenu, instanceLogoSrc, layout = 'menu', screenGroups } = props;
-  const { product, home, menu, logoSrc } = useBrock();
-  const { window: win } = usePlatform();
+  const { settingsStore, log, moduleMenu, layout = 'menu', screenGroups } = props;
+  const { product, home, logoSrc, instanceLogoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
@@ -34,10 +32,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useKeyboardShortcuts();
   useIpcLogBridge(log);
 
-  const fullMenu = useMemo(() => {
-    const built = buildMenu(menu, moduleMenu, () => win.close());
-    return railed ? stripScreenEntries(built) : built;
-  }, [menu, moduleMenu, win, railed]);
+  const fullMenu = useShellMenu(moduleMenu, railed);
+  const titleBarHidden = useTitleBarHidden();
 
   const screens = useMemo(() => registry.list(), [registry]);
 
@@ -50,6 +46,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           instanceName={instanceName()}
           logoSrc={logoSrc}
           instanceLogoSrc={instanceLogoSrc}
+          hidden={titleBarHidden}
         />
       )}
       <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>

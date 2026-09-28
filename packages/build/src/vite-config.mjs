@@ -5,6 +5,9 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
+import { loadBrockConfig } from './load-config.mjs';
+import { ownsSplashPage } from './splash/owns-splash-page.mjs';
+import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
 
 const SOURCE_SCOPE = '@drizztdourden08/';
@@ -93,6 +96,7 @@ const appTools = async (rootDir) => {
  */
 const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const { mergeConfig, workspaceRootOf, react } = await appTools(rootDir);
+  const { product } = await loadBrockConfig(rootDir);
   const src = resolve(rootDir, 'src');
   const alias = { '@app': src };
   const sources = sourceDependencies(rootDir);
@@ -121,7 +125,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     renderer: {
       root: src,
       publicDir: resolve(rootDir, 'public'),
-      plugins: [react()],
+      plugins: [react(), splashPlugin({ rootDir, product })],
       resolve: { alias, dedupe: ['react', 'react-dom'] },
       server: { fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {
@@ -129,7 +133,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
         rollupOptions: {
           input: {
             index: resolve(src, 'index.html'),
-            splash: resolve(src, 'splash.html'),
+            ...(ownsSplashPage(rootDir) ? { splash: resolve(src, 'splash.html') } : {}),
           },
         },
       },

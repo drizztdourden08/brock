@@ -9,7 +9,6 @@ interface AppShellProps<S extends object> {
   settingsStore: SettingsStore<S>;
   log: AppLogBus;
   moduleMenu: readonly MenuEntry[];
-  instanceLogoSrc?: string;
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
 }

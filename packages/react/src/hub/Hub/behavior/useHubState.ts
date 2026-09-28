@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useMemo } from 'react';
-import { usePlatform } from '../../../platform/usePlatform';
+import { useDeveloperTools } from '../../../app/useDeveloperTools';
 import type { ScreenRenderContext } from '../../../screens/screen.type';
 import type { HubDef, HubRenderContext, HubTarget } from '../../hub.type';
 import type { HubState } from '../Hub.type';
@@ -9,8 +9,8 @@ import { visibleHubPages } from './visible-hub-pages';
 
 const useHubState = (def: HubDef, ctx: ScreenRenderContext): HubState => {
   const { params, profile, open, close } = ctx;
-  const { info } = usePlatform();
-  const { groups, pages } = useMemo(() => visibleHubPages(def, info.isDev), [def, info.isDev]);
+  const developerTools = useDeveloperTools();
+  const { groups, pages } = useMemo(() => visibleHubPages(def, developerTools), [def, developerTools]);
   const { page, tab } = useMemo(() => resolveHubPage(pages, def.home, params), [pages, def.home, params]);
 
   const openTarget = useCallback((target: HubTarget) => {

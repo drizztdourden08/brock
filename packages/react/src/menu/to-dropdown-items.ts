@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuEntry as DsMenuEntry, MenuItem as DsMenuItem } from '@drizztdourden08/tessera/composites';
+import { menuIcon } from './menu-icon';
 import type { MenuEntry, MenuItem } from './menu.type';
 import type { MenuResolver } from './to-dropdown-items.type';
 
@@ -15,7 +16,7 @@ const toDropdownItem = (item: MenuItem, resolve: MenuResolver): DsMenuItem => {
   return {
     key,
     label,
-    icon,
+    icon: menuIcon(icon),
     description,
     disabled,
     checked,

@@ -2,10 +2,11 @@
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
+import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
-import { usePlatform } from '../../platform/usePlatform';
 import { useScreenRegistry } from '../useScreenRegistry';
+import { isScreenAllowed } from '../is-screen-allowed';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
 import { useMountedScreens } from './behavior/useMountedScreens';
@@ -16,14 +17,12 @@ const ScreenHost = (props: ScreenHostProps) => {
   const registry = useScreenRegistry();
   const { active: activeId, params, open, close } = useNavigation();
   const profile = useProfilesStore((s) => s.active);
-  const { info } = usePlatform();
+  const developerTools = useDeveloperTools();
 
   const ctx = useMemo<ScreenRenderContext>(() => ({ params, profile, open, close }), [params, profile, open, close]);
 
   const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>
-    screen !== undefined
-    && (!screen.devOnly || info.isDev)
-    && (screen.requiresProfile === false || profile !== null);
+    screen !== undefined && isScreenAllowed(screen, developerTools, profile !== null);
 
   const homeScreen = registry.get(home);
   const active = registry.get(activeId ?? '');
@@ -37,6 +36,8 @@ const ScreenHost = (props: ScreenHostProps) => {
         key={screen.id}
         title={screen.title}
         subtitle={screen.subtitle?.(ctx)}
+        extra={screen.extra?.(ctx)}
+        floating={screen.floating?.(ctx)}
         hidden={hidden}
         onClose={close}
       >

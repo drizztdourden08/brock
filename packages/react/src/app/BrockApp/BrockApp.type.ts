@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry } from '../../menu/menu.type';
 import type { RendererModule } from '../../modules/renderer-module.type';
@@ -27,9 +28,19 @@ interface BrockAppProps<S extends object> {
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
   profileHooks?: ProfileStoreHooks;
-  logoSrc?: string;
-  instanceLogoSrc?: string;
+  homeScreen?: string;
+  credits?: ReactNode;
   legalText?: string;
 }
 
-export type { BrockAppLayout, BrockAppProps, BrockAppSettings };
+interface MenuBuildInput {
+  appMenu: readonly MenuEntry[];
+  moduleMenu: readonly MenuEntry[];
+  homeScreen: string;
+  hasCredits: boolean;
+  developerTools: boolean;
+  onQuit: () => void;
+  onDevConsole: () => void;
+}
+
+export type { BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput };

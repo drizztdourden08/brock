@@ -24,6 +24,8 @@ interface ScreenDef {
   shortcut?: string;
   requiresProfile?: boolean;
   subtitle?: (ctx: ScreenRenderContext) => ReactNode;
+  extra?: (ctx: ScreenRenderContext) => ReactNode;
+  floating?: (ctx: ScreenRenderContext) => ReactNode;
 }
 
 export type { ScreenDef, ScreenLayerKind, ScreenRenderContext };

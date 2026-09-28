@@ -22,7 +22,6 @@ createRoot(root).render(
       modules={rendererModules}
       home="home"
       menu={MENU}
-      logoSrc="./logos/icon-256.png"
     />
   </StrictMode>,
 );

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useMemo } from 'react';
 import { useNavigation } from '../../../navigation/useNavigation';
-import { usePlatform } from '../../../platform/usePlatform';
+import { useDeveloperTools } from '../../../app/useDeveloperTools';
 import type { ScreenDef } from '../../../screens/screen.type';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { NO_GROUPS } from '../ScreenRail.constants';
@@ -39,12 +39,12 @@ const useRailEntries = (
 ): UseRailEntriesResult => {
   const { active, open, close } = useNavigation();
   const profile = useProfilesStore((s) => s.active);
-  const { info } = usePlatform();
+  const developerTools = useDeveloperTools();
 
   const groups = useMemo(() => {
-    const listed = screens.filter((screen) => !screen.devOnly || info.isDev);
+    const listed = screens.filter((screen) => !screen.devOnly || developerTools);
     return groupRail(listed, labels, active ?? home, profile !== null);
-  }, [screens, labels, active, home, profile, info.isDev]);
+  }, [screens, labels, active, home, profile, developerTools]);
 
   const select = useCallback((id: string) => {
     if (id === home) close();

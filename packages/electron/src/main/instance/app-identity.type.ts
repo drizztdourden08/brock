@@ -1,7 +1,7 @@
 /* @layer electron-main @kind types */
-interface InstanceIdentity {
+interface AppIdentity {
   appId: string;
   iconPath?: string;
 }
 
-export type { InstanceIdentity };
+export type { AppIdentity };

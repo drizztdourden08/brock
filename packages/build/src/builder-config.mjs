@@ -2,6 +2,8 @@
 import { join } from 'node:path';
 import { loadBrockConfig } from './load-config.mjs';
 import { modulePackaging } from './modules/module-packaging.mjs';
+import { createAfterPack } from './packaging/after-pack.mjs';
+import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
@@ -44,6 +46,8 @@ const createBuilderConfig = (product, { rootDir }) => {
     directories: { output: join(rootDir, 'release'), ...(product.icons?.brand ? { buildResources: 'build' } : {}) },
     electronLanguages: ['en-US'],
     files: APP_FILES,
+    asarUnpack: [VELOPACK_ASAR_UNPACK],
+    afterPack: createAfterPack(rootDir, icons.win),
     fileAssociations: toBuilderAssociations(product.fileAssociations),
     ...(product.repo ? { publish: [{ provider: 'github', owner: product.repo.owner, repo: product.repo.name }] } : {}),
     win: {
@@ -62,6 +66,7 @@ const createBuilderConfig = (product, { rootDir }) => {
       target: ['AppImage', 'deb'],
       ...(icons.linux ? { icon: icons.linux } : {}),
       artifactName: artifact('linux'),
+      executableName: product.id,
       ...(product.author?.email ? { maintainer: product.author.email } : {}),
     },
   };

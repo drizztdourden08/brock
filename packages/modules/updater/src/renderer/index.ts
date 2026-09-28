@@ -3,11 +3,13 @@ import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { UpdaterProvider } from './UpdaterProvider';
 import { UPDATER_MENU } from './updater-menu.constants';
+import { VersionTag } from './VersionTag';
 
 const updaterRenderer: RendererModule = {
   id: 'updater',
   Provider: UpdaterProvider,
   menu: UPDATER_MENU,
+  titleBar: [VersionTag],
 };
 
 export default updaterRenderer;
@@ -16,6 +18,7 @@ export { updaterApi } from './updater-api';
 export { useUpdaterStore } from './useUpdaterStore';
 export type { UpdateStatus, UpdaterData, UpdaterActions, UpdaterStoreState } from './updater-store.type';
 export { UpdateDialog } from './UpdateDialog';
+export { VersionTag } from './VersionTag';
 export { UpdaterProvider } from './UpdaterProvider';
 export type { UpdaterProviderProps } from './UpdaterProvider';
 export type { UpdaterApi, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs } from '../updater.type';

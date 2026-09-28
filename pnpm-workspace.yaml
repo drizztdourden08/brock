@@ -33,6 +33,8 @@ catalog:
   vite: ^7.3.3
   vitest: ^4.1.7
   zustand: ^5.0.13
+  pngjs: ^7.0.0
+  rcedit: ^5.0.2
 
 onlyBuiltDependencies:
   - electron

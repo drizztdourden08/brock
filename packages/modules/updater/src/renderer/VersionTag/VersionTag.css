@@ -1,0 +1,38 @@
+/* @layer renderer-shell @kind style */
+
+.version-tag {
+  display: inline-flex;
+  gap: var(--space-2xs);
+  align-items: center;
+  padding: 0 var(--space-xs);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-sm);
+  color: var(--c-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  transition: color var(--transition-normal), border-color var(--transition-normal);
+  -webkit-app-region: no-drag;
+}
+
+.version-tag:hover {
+  border-color: var(--c-border-strong);
+  color: var(--c-text);
+}
+
+.version-tag--update {
+  border-color: var(--c-success);
+  background: var(--c-success-soft);
+  color: var(--c-success-bright);
+}
+
+.version-tag--update:hover {
+  border-color: var(--c-success-bright);
+  color: var(--c-success-bright);
+}
+
+.version-tag__badge {
+  width: var(--size-6);
+  height: var(--size-6);
+  border-radius: var(--radius-round);
+  background: var(--c-success);
+}

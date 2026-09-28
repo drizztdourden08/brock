@@ -10,6 +10,7 @@ import { usePinWindow } from './behavior/usePinWindow';
 import { useTitleBar } from './behavior/useTitleBar';
 import { PinButton } from './sub-components/PinButton';
 import { TitleBarBrand } from './sub-components/TitleBarBrand';
+import { TitleBarSlots } from './sub-components/TitleBarSlots';
 import { WindowControls } from './sub-components/WindowControls';
 import { NO_MENU } from './TitleBar.constants';
 import type { TitleBarProps } from './TitleBar.type';
@@ -17,7 +18,7 @@ import './TitleBar.css';
 
 const TitleBar = (props: TitleBarProps) => {
   const {
-    productName, menu = NO_MENU, instanceName = null, logoSrc, instanceLogoSrc, extra,
+    productName, menu = NO_MENU, instanceName = null, logoSrc, instanceLogoSrc, extra, slots,
     hidden = false, showPin = true, className = '',
   } = props;
   const barRef = useRef<HTMLElement>(null);
@@ -48,7 +49,9 @@ const TitleBar = (props: TitleBarProps) => {
         instanceName={instanceName}
         logoSrc={logoSrc}
         instanceLogoSrc={instanceLogoSrc}
-      />
+      >
+        <TitleBarSlots slots={slots} />
+      </TitleBarBrand>
 
       <WindowControls isMaximized={isMaximized} isFullscreen={isFullscreen} />
     </Box>

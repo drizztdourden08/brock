@@ -34,9 +34,6 @@
       ],
       "project": [
         "**/*.mjs"
-      ],
-      "ignoreDependencies": [
-        "electron-builder"
       ]
     },
     "packages/cli": {

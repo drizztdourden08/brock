@@ -15,6 +15,8 @@ The module drives a Node-API addon, `sdl3_input.node`, with SDL3 and libusb besi
 
 When no addon loads, main logs one warning, every call returns an empty or false result, and the renderer shows that controllers are off. The app keeps running.
 
+An automation launch never starts SDL3, so a test run cannot take a controller from a session already running on the same machine.
+
 ## What it stores
 
 | Path under `Data/` | Holds |

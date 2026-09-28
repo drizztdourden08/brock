@@ -18,6 +18,10 @@ const createInputMain = (ctx: MainContext): InputMain => {
 
   const start = async (): Promise<void> => {
     if (started) return;
+    if (ctx.flags.isHeadlessLaunch()) {
+      ctx.log('input: automation launch, SDL3 stays off so no controller is taken from the running session');
+      return;
+    }
     started = true;
     const { mappings, source, status } = runtime();
     if (!status().available) return;

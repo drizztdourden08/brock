@@ -256,6 +256,34 @@ importers:
         specifier: ^8.0.0
         version: 8.70.1(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3)
 
+  packages/modules/display:
+    dependencies:
+      '@drizztdourden08/brock-core':
+        specifier: workspace:*
+        version: link:../../core
+      '@drizztdourden08/brock-electron':
+        specifier: workspace:*
+        version: link:../../electron
+      '@drizztdourden08/brock-react':
+        specifier: workspace:*
+        version: link:../../react
+      '@drizztdourden08/tessera':
+        specifier: '*'
+        version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      koffi:
+        specifier: ^2.9.0
+        version: 2.16.3
+    devDependencies:
+      electron:
+        specifier: 'catalog:'
+        version: 42.11.8
+      react:
+        specifier: 'catalog:'
+        version: 19.3.0
+      zustand:
+        specifier: 'catalog:'
+        version: 5.0.15(@types/react@19.3.0)(react@19.3.0)
+
   packages/modules/secrets:
     dependencies:
       '@drizztdourden08/brock-core':
@@ -2801,6 +2829,9 @@ packages:
     peerDependencies:
       '@types/node': '>=18'
       typescript: '>=5.0.4 <7'
+
+  koffi@2.16.3:
+    resolution: {integrity: sha512-E9y1AsgYGlaxMhcZzHr8y96QF2U5XzA12GGVAfbWqIubTwPNMXQarfBzePNXHe0xtIEtNd6ifAv3GAKYGUeBAQ==}
 
   lazy-val@1.0.5:
     resolution: {integrity: sha512-0/BnGCCfyUMkBpeDgWihanIAF9JmZhHBgUhEqzvf+adhNGLoP6TaiI5oF8oyb3I45P+PcnrqihSf01M0l0G5+Q==}
@@ -6654,6 +6685,8 @@ snapshots:
       unbash: 2.2.0
       yaml: 2.9.1
       zod: 4.6.5
+
+  koffi@2.16.3: {}
 
   lazy-val@1.0.5: {}
 

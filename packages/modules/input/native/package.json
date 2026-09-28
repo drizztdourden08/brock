@@ -1,0 +1,8 @@
+{
+  "name": "sdl3-input",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Pinned versions for the SDL3 controller addon. The ensure-addon scripts read sdl3 and libusb from here. version is the addon build version and names the prebuilt asset on the sdl3-addon-v<version> release of the brock repo, so it moves when the C++ changes.",
+  "sdl3": "3.4.14",
+  "libusb": "1.0.30"
+}

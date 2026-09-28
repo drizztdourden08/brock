@@ -11,4 +11,12 @@ Optional modules live here, one package each. Each carries a `package.json#brock
 | `display` | Refresh rate, a synced rate in fullscreen, window mode and monitor switching. |
 | `port-kit` | What a PC port of a game compiled to WebAssembly needs, with no game in it: core lifecycle, saves and SRAM, video, audio, live settings, ROM source, asset pipeline runner, ensure-wasm. |
 
-`input` loads a native SDL3 addon at runtime. The addon is found on disk and never bundled, so a blank app carries no SDL3 at all.
+`input` carries the source of a native SDL3 addon in `input/native`. Its postinstall downloads the prebuild for the platform from the brock releases, and `brock dev` and `brock build` fetch it too when the install skipped that step. The builder config ships it through `extraResources` in an app that lists `input`, so a blank app carries no SDL3 at all.
+
+A module manifest can declare these packaging fields, all paths relative to the module package:
+
+| Field | Effect |
+|---|---|
+| `prepare` | A Node script `brock dev` and `brock build` run first. A failure is reported and the command goes on. |
+| `extraResources` | `{ from, to }` entries added to the electron-builder `extraResources`. `${platform}` and `${arch}` expand. |
+| `packExclude` | Globs inside the package kept out of `app.asar`. |

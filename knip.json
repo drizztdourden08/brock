@@ -84,6 +84,15 @@
         "src/**/*.{ts,tsx}"
       ]
     },
+    "packages/modules/input": {
+      "project": [
+        "src/**/*.{ts,tsx}"
+      ],
+      "ignoreDependencies": [
+        "cmake-js",
+        "node-addon-api"
+      ]
+    },
     "packages/modules/port-kit": {
       "entry": [
         "tests/**/*.test.ts"

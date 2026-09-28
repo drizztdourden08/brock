@@ -11,6 +11,11 @@ interface ModuleMigration {
   summary: string;
 }
 
+interface ModuleExtraResource {
+  from: string;
+  to: string;
+}
+
 interface BrockModuleManifest {
   id: string;
   description: string;
@@ -22,6 +27,9 @@ interface BrockModuleManifest {
   peers?: string[];
   ci?: ModuleCiStep[];
   migrations?: ModuleMigration[];
+  prepare?: string;
+  extraResources?: ModuleExtraResource[];
+  packExclude?: string[];
 }
 
 interface ResolvedModule {
@@ -30,4 +38,4 @@ interface ResolvedModule {
   manifest: BrockModuleManifest;
 }
 
-export type { BrockModuleManifest, ModuleCiStep, ModuleMigration, ResolvedModule };
+export type { BrockModuleManifest, ModuleCiStep, ModuleExtraResource, ModuleMigration, ResolvedModule };

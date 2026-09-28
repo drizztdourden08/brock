@@ -3,6 +3,8 @@ import type { Sdl3Input } from './sdl3.type';
 
 const ADDON_DIR = 'sdl3';
 const ADDON_FILE = 'sdl3_input.node';
+const INPUT_PACKAGE = '@drizztdourden08/brock-input';
+const PREBUILDS_DIR = 'native/prebuilds';
 
 const UNAVAILABLE_ADDON: Sdl3Input = {
   start: () => undefined,
@@ -23,4 +25,4 @@ const UNAVAILABLE_ADDON: Sdl3Input = {
   mappingForGuid: () => null,
 };
 
-export { ADDON_DIR, ADDON_FILE, UNAVAILABLE_ADDON };
+export { ADDON_DIR, ADDON_FILE, INPUT_PACKAGE, PREBUILDS_DIR, UNAVAILABLE_ADDON };

@@ -1,0 +1,60 @@
+{
+  "name": "@drizztdourden08/brock-input",
+  "version": "0.1.0",
+  "description": "Brock input module: SDL3 controllers with hotplug and live state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and the InputTester screen.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/input"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./gamecontrollerdb.txt": "./resources/gamecontrollerdb.txt",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "resources",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "brock": {
+    "id": "input",
+    "description": "SDL3 controllers, the mapping database, calibration, rumble and the InputTester screen.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "dataDirs": [
+      "input"
+    ]
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": "*",
+    "electron": ">=38",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

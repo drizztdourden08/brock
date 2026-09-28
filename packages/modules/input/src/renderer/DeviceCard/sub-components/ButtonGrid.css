@@ -1,0 +1,32 @@
+/* @layer renderer-shell @kind style */
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--size-96), 1fr));
+  gap: var(--space-xs);
+}
+
+.button-grid__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-sunken);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.button-grid__cell--pressed {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+.button-grid__label {
+  overflow: hidden;
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

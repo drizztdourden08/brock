@@ -1,0 +1,8 @@
+/* @layer renderer-shell @kind style */
+
+.input-tester {
+  width: 100%;
+  max-width: var(--size-768);
+  margin: 0 auto;
+  padding: var(--space-lg);
+}

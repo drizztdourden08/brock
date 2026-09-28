@@ -1,0 +1,32 @@
+/* @layer renderer-shell @kind style */
+
+.stick-view__plot {
+  width: var(--size-96);
+  height: var(--size-96);
+}
+
+.stick-view__ring {
+  fill: var(--c-sunken);
+  stroke: var(--c-border);
+  stroke-width: var(--border-width-thin);
+}
+
+.stick-view__axis {
+  stroke: var(--c-hairline);
+  stroke-width: var(--border-width-thin);
+}
+
+.stick-view__dot {
+  fill: var(--c-primary);
+}
+
+.stick-view__label {
+  color: var(--c-text-muted);
+  font-size: var(--text-sm);
+}
+
+.stick-view__value {
+  color: var(--c-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind style */
+
+.device-card__name {
+  color: var(--c-text);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semi);
+}
+
+.device-card__mapping {
+  overflow-wrap: anywhere;
+  color: var(--c-text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

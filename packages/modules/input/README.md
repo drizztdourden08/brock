@@ -1,0 +1,74 @@
+<!-- @layer docs @kind doc -->
+# brock-input
+
+Game controllers through SDL3: device list with hotplug, live button and axis state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and an InputTester screen. It is generic input. Button meaning belongs to the app.
+
+## The SDL3 addon
+
+The module drives a Node-API addon, `sdl3_input.node`, with SDL3 and libusb beside it. The addon is not an npm package and does not ship in this package. Main looks for it in this order:
+
+| Where | When |
+|---|---|
+| `getInput(ctx).configure({ addonPath })` | the app sets it in `onReady` |
+| `<resourcesPath>/sdl3/<platform>-<arch>/sdl3_input.node` | a packaged app, shipped through `extraResources` |
+| `<appPath>/sdl3/<platform>-<arch>/sdl3_input.node` | development |
+
+When no addon loads, main logs one warning, every call returns an empty or false result, and the renderer shows that controllers are off. The app keeps running.
+
+## What it stores
+
+| Path under `Data/` | Holds |
+|---|---|
+| `input/gamecontrollerdb.txt` | Mapping lines the user added. It loads after the bundled database, so a line here wins for its GUID. |
+| `input/stick-calibration.json` | `{ [deviceKey]: { left, right, updatedAt } }` |
+| `input/trigger-calibration.json` | `{ ["<deviceKey>:<axisIndex>"]: { base, max, deadzone } }` |
+
+The bundled database is `resources/gamecontrollerdb.txt`, taken from SDL_GameControllerDB. Main reads it from `configure({ mappingDbPath })`, then `<resourcesPath>/gamecontrollerdb.txt`, then this package.
+
+## Device keys
+
+A device is keyed by `vid:pid` in lowercase hex, `057e:2009` style. A second device with the same `vid:pid` gets `#2`, the next `#3`. A freed number is reused by the next device to connect, and no other key moves.
+
+## Install
+
+```sh
+brock add input
+```
+
+The preload adds `window.api.input`:
+
+```ts
+window.api.input.status()                      // { available, sdlVersion }
+window.api.input.list()                        // DeviceEntry[], ready and unavailable
+window.api.input.rescan()
+window.api.input.rumble(deviceKey, low, high, durationMs)
+window.api.input.vibratePattern(deviceKey, [{ durationMs, intensity }], gapMs)
+window.api.input.onState((deviceKey, buttons, axes) => ...)
+window.api.input.onDevices((entries) => ...)
+window.api.input.mapping.add(line)
+window.api.input.calibration.writeStick(deviceKey, calibration)
+window.api.input.capture.startJoystick(joystickId)
+```
+
+`buttons` and `axes` follow SDL's gamepad order. `SDL_BUTTON_NAMES`, `SDL_AXIS_NAMES` and `SDL_AXIS` name each index. Sticks read from -1 to 1 and triggers from 0 to 1.
+
+## Main side
+
+```ts
+import { getInput } from '@drizztdourden08/brock-input/main';
+
+bootstrapApp(product, {
+  modules: mainModules,
+  onReady: (ctx) => {
+    getInput(ctx).configure({ addonPath: join(app.getAppPath(), 'native', 'sdl3_input.node') });
+  },
+});
+```
+
+SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gives the controller source, the haptic player and the mapping database to other main code.
+
+## Renderer side
+
+The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed, draws both sticks and both triggers, runs a stick or trigger calibration, plays rumble patterns, and takes a new mapping line.
+
+The stores are exported for an app screen of its own: `useControllerDevicesStore`, `useControllerState(deviceKey)` and `useCalibrationStore`. `applyStickCalibration` and `applyTriggerCalibration` turn a raw reading into a calibrated one.

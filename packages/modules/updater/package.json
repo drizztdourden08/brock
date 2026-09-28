@@ -1,0 +1,60 @@
+{
+  "name": "@drizztdourden08/brock-updater",
+  "version": "0.1.0",
+  "description": "Brock updater module: Velopack startup hooks, check, download and apply from the product's GitHub releases, a version picker and the UpdateDialog.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/updater"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "brock": {
+    "id": "updater",
+    "description": "Velopack updater: startup hooks, check, download and apply, a version picker and the UpdateDialog.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "dataDirs": [
+      "updater"
+    ]
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*",
+    "velopack": "catalog:"
+  },
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "electron": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": "*",
+    "electron": ">=38",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

@@ -38,6 +38,7 @@ interface MainContext {
 
 interface MainModule {
   id: string;
+  onBoot?: (product: ProductConfig) => void;
   register: (ctx: MainContext) => void | Promise<void>;
   onWindow?: (win: BrowserWindow, ctx: MainContext) => void;
   onWillQuit?: (ctx: MainContext) => void;

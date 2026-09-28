@@ -27,6 +27,7 @@ catalog:
   stylelint-config-standard: ^40.0.0
   typescript: ^6.0.3
   typescript-eslint: ^8.60.1
+  velopack: ^1.2.158
   vite: ^7.3.3
   vitest: ^4.1.7
   zustand: ^5.0.13

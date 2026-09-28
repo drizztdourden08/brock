@@ -1,0 +1,115 @@
+/* @layer renderer-shell @kind style */
+
+.update-dialog.dialog {
+  max-width: var(--size-640);
+}
+
+.update-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.update-dialog__version {
+  margin: 0;
+  color: var(--c-text);
+  font-size: var(--text-base);
+  text-align: center;
+}
+
+.update-dialog__status {
+  margin: 0;
+  color: var(--c-text-muted);
+  font-size: var(--text-sm);
+}
+
+.update-dialog__prefs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.update-dialog__picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.update-dialog__picker-label {
+  color: var(--c-text-dim);
+  font-size: var(--text-sm);
+}
+
+.update-dialog__warning {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width-thin) solid var(--c-warning);
+  border-radius: var(--radius-md);
+  background: var(--c-warning-soft);
+  color: var(--c-text-dim);
+  font-size: var(--text-sm);
+}
+
+.update-dialog__notes {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.update-dialog__notes-title {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--border-width-thin) solid var(--c-border);
+  color: var(--c-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semi);
+}
+
+.update-dialog__notes-body {
+  max-height: var(--size-320);
+  background: var(--c-sunken);
+}
+
+.update-dialog__notes-text {
+  margin: 0;
+  padding: var(--space-md);
+  color: var(--c-text-dim);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  white-space: pre-wrap;
+}
+
+.update-dialog__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.update-dialog__progress-text {
+  color: var(--c-text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
+.update-dialog__ready {
+  margin: 0;
+  color: var(--c-success);
+  font-size: var(--text-sm);
+}
+
+.update-dialog__error {
+  margin: 0;
+  color: var(--c-danger);
+  font-size: var(--text-sm);
+}
+
+.update-dialog__footnote {
+  margin: 0;
+  padding-top: var(--space-sm);
+  border-top: var(--border-width-thin) solid var(--c-border);
+  color: var(--c-text-muted);
+  font-size: var(--text-xs);
+}

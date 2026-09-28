@@ -58,6 +58,7 @@ const onReady = async ({ ctx, options, dataDirs, openWindow }: ReadyInput): Prom
 
 const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): void => {
   const modules = options.modules ?? [];
+  for (const module of modules) module.onBoot?.(product);
   const portableData = applyPortableMode();
   const userDataOverride = applyUserDataArg();
   app.setName(product.id);

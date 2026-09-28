@@ -8,7 +8,7 @@ const MARKER = "const PACKAGE = '@drizztdourden08/brock';";
 
 /**
  * @param {string} rootDir the app folder sync runs in
- * @returns {{ path: string, content: string }[]} each Brock launcher in the repo's bin folder, rendered from the current template
+ * @returns {{ path: string, content: string }[]} launchers in the repo bin
  */
 const renderLaunchers = (rootDir) => {
   const binDir = join(findWorkspaceRoot(rootDir) ?? rootDir, 'bin');

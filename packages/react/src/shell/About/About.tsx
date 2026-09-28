@@ -1,17 +1,14 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useState } from 'react';
 import { Box, Button, Image, Text } from '@drizztdourden08/tessera/primitives';
+import { writeClipboard } from '../../host/write-clipboard';
 import { COPIED_MS } from './About.constants';
 import type { AboutProps } from './About.type';
 import './About.css';
 
-const writeClipboard = async (text: string): Promise<boolean> => {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
+const copyLabel = (copied: boolean, copyText: string | null): string => {
+  if (copied) return 'Copied';
+  return copyText === null ? 'Collecting...' : 'Copy debug info';
 };
 
 const About = (props: AboutProps) => {
@@ -43,9 +40,9 @@ const About = (props: AboutProps) => {
         ))}
       </Box>
 
-      {copyText && (
-        <Button variant="secondary" className="about__copy" onClick={handleCopy}>
-          {copied ? 'Copied' : 'Copy details'}
+      {copyText !== undefined && (
+        <Button variant="secondary" className="about__copy" onClick={handleCopy} disabled={copyText === null}>
+          {copyLabel(copied, copyText)}
         </Button>
       )}
 

@@ -1,0 +1,16 @@
+/* @layer renderer-shell @kind style */
+
+.logs-widget {
+  height: 100%;
+  min-height: 0;
+}
+
+.logs-widget .log-panel__tag--warn,
+.logs-widget .log-panel__msg--warn {
+  color: var(--c-warning);
+}
+
+.logs-widget .log-panel__tag--error,
+.logs-widget .log-panel__msg--error {
+  color: var(--c-danger);
+}

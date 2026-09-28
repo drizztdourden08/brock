@@ -1,30 +1,23 @@
 /* @layer renderer-shell @kind hook */
-import { useEffect, useMemo, useState } from 'react';
-import { hostApi } from '../../../host/host-api';
-import { usePlatform } from '../../../platform/usePlatform';
-import { FALLBACK_VERSION } from '../About.constants';
+import { useMemo } from 'react';
+import { useDebugText } from '../../../diagnostics/useDebugText';
 import type { AboutInfo, AboutRow } from '../About.type';
+import { NO_EXTRA_ROWS } from '../About.constants';
 
-const useAboutInfo = (productName: string, extraRows: readonly AboutRow[] = []): AboutInfo => {
-  const { info } = usePlatform();
-  const [version, setVersion] = useState(FALLBACK_VERSION);
+const useAboutInfo = (extraRows: readonly AboutRow[] = NO_EXTRA_ROWS): AboutInfo => {
+  const { text, version, labels } = useDebugText();
 
-  useEffect(() => {
-    let live = true;
-    hostApi()?.getAppVersion().then((v) => { if (live && v) setVersion(v); }).catch(() => {});
-    return () => { live = false; };
-  }, []);
-
-  return useMemo(() => {
-    const rows: AboutRow[] = [
+  return useMemo(() => ({
+    version,
+    rows: [
       { label: 'Version', value: version },
-      { label: 'Host', value: info.host },
-      { label: 'Platform', value: info.os },
+      { label: 'Runtime', value: labels.runtime },
+      { label: 'Engine', value: labels.engine },
+      { label: 'Platform', value: labels.platform },
       ...extraRows,
-    ];
-    const copyText = [`${productName} ${version}`, ...rows.map((r) => `${r.label}: ${r.value}`)].join('\n');
-    return { version, rows, copyText };
-  }, [version, info.host, info.os, productName, extraRows]);
+    ],
+    copyText: text,
+  }), [version, labels, extraRows, text]);
 };
 
 export { useAboutInfo };

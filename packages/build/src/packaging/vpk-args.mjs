@@ -32,16 +32,17 @@ const packIconOf = (product, platform) => {
  * @property {string} platform
  * @property {string} packDir
  * @property {string} outputDir
- * @property {{ splash?: string | null, notes?: string | null, channel?: string | null, full?: boolean }} [extras]
+ * @property {{ splash?: string | null, accent?: string | null, notes?: string | null, channel?: string | null, full?: boolean }} [extras]
  */
 
 /**
- * @param {{ splash?: string | null, full?: boolean }} extras
+ * @param {{ splash?: string | null, accent?: string | null, full?: boolean }} extras
  * @returns {string[]}
  */
-const windowsArgs = ({ splash, full }) => [
+const windowsArgs = ({ splash, accent, full }) => [
   ...(splash ? ['--splashImage', splash] : []),
-  ...(full ? [] : ['--noPortable']),
+  ...(accent ? ['--splashProgressColor', accent] : []),
+  ...(full ? [] : ['--noInst']),
 ];
 
 /**
@@ -64,4 +65,4 @@ const vpkPackArgs = ({ product, version, platform, packDir, outputDir, extras = 
   ...optional('--channel', extras.channel),
 ];
 
-export { vpkPackArgs };
+export { vpkPackArgs, mainExeOf, packIconOf };

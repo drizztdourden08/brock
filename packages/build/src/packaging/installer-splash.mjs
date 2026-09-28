@@ -71,4 +71,4 @@ const writeInstallerSplash = (rootDir, product) => {
   return SPLASH_FILE;
 };
 
-export { writeInstallerSplash };
+export { writeInstallerSplash, splashIconOf };

@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       full:
-        description: 'Also build the Windows portable zip.'
+        description: 'Rebuild the Windows installer payload and directory zip that the small installer fetches. The first release must be full.'
         type: boolean
         default: false
       prerelease:
@@ -185,14 +185,15 @@ jobs:
         run: |
           TAG="${{ needs.prepare.outputs.tag }}"
           BASE="https://github.com/${{ github.repository }}/releases/download/${TAG}"
+          LATEST="https://github.com/${{ github.repository }}/releases/latest/download"
           link() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($BASE/$(basename "$f"))"; fi; done; }
+          stub() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($LATEST/$(basename "$f"))"; fi; done; }
           {
             cat "release-notes/${TAG}.md"
             echo ""
             echo "## Downloads"
             echo ""
-            link "artifacts/release-win/*-setup.exe" "Windows installer (.exe), updates itself"
-            link "artifacts/release-win/*-portable.zip" "Windows portable (.zip)"
+            stub "artifacts/release-win/*-windows-setup.exe" "Windows installer (.exe), a small download that installs and updates itself"
             link "artifacts/release-mac/*.dmg" "macOS disk image (.dmg)"
             link "artifacts/release-linux/*.AppImage" "Linux AppImage, updates itself"
           } > release-body.md

@@ -1,0 +1,8 @@
+/* @layer renderer-shell @kind style */
+.display-tab {
+  padding-block: var(--space-md);
+}
+
+.display-tab__warning {
+  color: var(--c-warning);
+}

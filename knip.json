@@ -81,7 +81,7 @@
     },
     "packages/modules/*": {
       "project": [
-        "src/**/*.ts"
+        "src/**/*.{ts,tsx}"
       ]
     },
     "templates/app": {

@@ -54,10 +54,12 @@ const wirePackageJson = (rootDir, name) => {
 const installLauncher = (rootDir, name, force) => {
   const file = `bin/${name}.mjs`;
   const target = join(rootDir, file);
-  const written = force || !existsSync(target);
+  const source = launcherSource(name);
+  const current = existsSync(target) ? readFileSync(target, 'utf8').replace(/\r\n/g, '\n') : null;
+  const written = force || current !== source;
   if (written) {
     mkdirSync(join(rootDir, 'bin'), { recursive: true });
-    writeFileSync(target, launcherSource(name), 'utf8');
+    writeFileSync(target, source, 'utf8');
   }
   return { file, written, fields: wirePackageJson(rootDir, name) };
 };

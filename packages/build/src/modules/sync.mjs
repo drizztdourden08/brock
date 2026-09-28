@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
@@ -83,6 +84,7 @@ const syncApp = (rootDir, config, opts = {}) => {
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
     ...renderManagedFiles({ inWorkspace: findWorkspaceRoot(rootDir) !== null }),
+    ...renderLaunchers(rootDir),
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);
   return {

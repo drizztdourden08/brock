@@ -69,7 +69,7 @@ const findModule = (id, read, candidates) => {
     if (found.pkg.brock.id !== id) continue;
     return {
       packageName: name,
-      resolved: { packageName: name, version: found.pkg.version ?? '0.0.0', manifest: found.pkg.brock, exports: found.pkg.exports ?? null },
+      resolved: { packageName: name, version: found.pkg.version ?? '0.0.0', manifest: found.pkg.brock, exports: found.pkg.exports ?? null, dir: found.dir },
     };
   }
   return { resolved: null, packageName: builtIn };
@@ -78,7 +78,7 @@ const findModule = (id, read, candidates) => {
 /**
  * @param {string} rootDir
  * @param {string[]} ids
- * @returns {{ modules: (ResolvedModule & { exports: unknown }
+ * @returns {{ modules: (ResolvedModule & { exports: unknown, dir: string })[], missing: { id: string, packageName: string | null }[] }}
  */
 const resolveModules = (rootDir, ids) => {
   const read = packageReader(rootDir);

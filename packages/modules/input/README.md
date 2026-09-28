@@ -5,13 +5,32 @@ Game controllers through SDL3: device list with hotplug, live button and axis st
 
 ## The SDL3 addon
 
-The module drives a Node-API addon, `sdl3_input.node`, with SDL3 and libusb beside it. The addon is not an npm package and does not ship in this package. Main looks for it in this order:
+The module drives a Node-API addon, `sdl3_input.node`, with SDL3 and libusb beside it. The C++ source lives in `native/`. The pinned SDL3 and libusb versions, and the addon build version, are in `native/package.json`. An app does no binary work of its own.
+
+| Step | What happens |
+|---|---|
+| install | The package postinstall downloads the prebuild for this platform into `native/prebuilds/<platform>-<arch>/`. It is skipped when `CI` is set or a local build is there. It never fails the install. |
+| `brock dev`, `brock build` | Brock runs the same step first (the manifest `prepare`). This covers a pnpm install that blocked the postinstall. When no prebuild exists and CMake, a C/C++ toolchain and `cmake-js` are present, it builds from source. |
+| packaging | The builder config copies `native/prebuilds/<platform>-<arch>/` to `<resourcesPath>/sdl3/<platform>-<arch>/` and `resources/gamecontrollerdb.txt` to `<resourcesPath>/`. `native/` stays out of `app.asar`. |
+
+A prebuild is `sdl3-input-<version>-<key>-<platform>-<arch>.tar.gz` on the `sdl3-addon-v<version>` release of the brock repo, with a `.sha256` beside it. `<key>` hashes the addon, SDL3 and libusb versions, so a moved pin finds no asset and falls back to a source build. `.github/workflows/sdl3-addon.yml` builds the prebuilds for win32-x64, linux-x64 and darwin-arm64 and uploads them. It runs by hand and on a change under `native/` on `main`. Raise `version` in `native/package.json` when the C++ changes.
+
+To build from source in the brock checkout:
+
+```sh
+pnpm --filter @drizztdourden08/brock-input addon:build
+```
+
+SDL3 is built from source with libusb on, because the official SDL3 package has no libusb. On Linux and macOS, libusb and pkg-config must be installed first. The addon loads libusb by its full path before SDL starts, so SDL finds the copy beside the addon.
+
+Main looks for the addon in this order:
 
 | Where | When |
 |---|---|
+| `<resourcesPath>/sdl3/<platform>-<arch>/sdl3_input.node` | a packaged app |
 | `getInput(ctx).configure({ addonPath })` | the app sets it in `onReady` |
-| `<resourcesPath>/sdl3/<platform>-<arch>/sdl3_input.node` | a packaged app, shipped through `extraResources` |
-| `<appPath>/sdl3/<platform>-<arch>/sdl3_input.node` | development |
+| `<brock-input>/native/prebuilds/<platform>-<arch>/sdl3_input.node` | development, the package resolved from the app root |
+| `<appPath>/sdl3/<platform>-<arch>/sdl3_input.node` | development, a copy the app keeps itself |
 
 When no addon loads, main logs one warning, every call returns an empty or false result, and the renderer shows that controllers are off. The app keeps running.
 
@@ -55,6 +74,8 @@ window.api.input.capture.startJoystick(joystickId)
 `buttons` and `axes` follow SDL's gamepad order. `SDL_BUTTON_NAMES`, `SDL_AXIS_NAMES` and `SDL_AXIS` name each index. Sticks read from -1 to 1 and triggers from 0 to 1.
 
 ## Main side
+
+The module needs no main code from the app. `configure` points at an addon or a mapping database of the app's own:
 
 ```ts
 import { getInput } from '@drizztdourden08/brock-input/main';

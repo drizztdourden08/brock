@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind config */
 import { join } from 'node:path';
 import { loadBrockConfig } from './load-config.mjs';
+import { modulePackaging } from './modules/module-packaging.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
@@ -71,7 +72,13 @@ const createBuilderConfig = (product, { rootDir }) => {
  */
 const loadBuilderConfig = async (rootDir) => {
   const cfg = await loadBrockConfig(rootDir);
-  return createBuilderConfig(cfg.product, { rootDir });
+  const config = createBuilderConfig(cfg.product, { rootDir });
+  const { extraResources, exclude } = modulePackaging(rootDir, cfg.modules);
+  return {
+    ...config,
+    files: [...APP_FILES, ...exclude],
+    ...(extraResources.length ? { extraResources } : {}),
+  };
 };
 
 export { createBuilderConfig, loadBuilderConfig, APP_FILES };

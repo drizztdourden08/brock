@@ -19,6 +19,5 @@ storylite-static/
 
 # local state
 .user-data/
-.worktrees/
 templates/app/build/
 packages/create-brock/template/

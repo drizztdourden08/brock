@@ -21,7 +21,7 @@ import { useStartup } from '../../behavior/useStartup';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, log, moduleMenu, instanceLogoSrc, layout = 'menu', screenGroups } = props;
+  const { settingsStore, log, moduleMenu, titleBarSlots, instanceLogoSrc, layout = 'menu', screenGroups } = props;
   const { product, home, menu, logoSrc } = useBrock();
   const { window: win } = usePlatform();
   const windowChrome = useCapability('windowChrome');
@@ -50,6 +50,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           instanceName={instanceName()}
           logoSrc={logoSrc}
           instanceLogoSrc={instanceLogoSrc}
+          slots={titleBarSlots}
         />
       )}
       <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>

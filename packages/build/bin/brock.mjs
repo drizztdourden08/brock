@@ -7,6 +7,7 @@ import { runBuild } from '../src/commands/build.mjs';
 import { runCheck } from '../src/commands/check.mjs';
 import { runDev } from '../src/commands/dev.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
+import { runPackage } from '../src/commands/package.mjs';
 import { runStart } from '../src/commands/start.mjs';
 import { runProse } from '../src/commands/prose.mjs';
 import { runStructure } from '../src/commands/structure.mjs';
@@ -23,6 +24,12 @@ Usage:
                              install a module package (or link it from a Brock checkout), record its id, sync
   brock dev [args]           electron-vite dev; unknown options and anything after -- reach it
   brock build [args]         electron-vite build; copies the brand icon set first when icons.brand is set
+  brock package [--full] [--channel <name>]
+                             build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
+                             the update package, a delta when the previous release was downloaded there,
+                             and on Windows the installer (Setup.exe with the app icon and a splash from the brand
+                             icon); --full adds the portable zip. macOS stops after electron-builder (dmg, zip).
+                             Needs vpk: dotnet tool install -g vpk --version <the app's velopack version>
   brock icons [--force]      copy the Tessera brand set (icons.brand) into build/icons, build/splash and public/logos
                              (skips a file newer than its source; --force copies all)
   brock start [args]         run dist/electron/main.js with Electron; unknown options reach the app
@@ -46,7 +53,9 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock pr push | open | status [name]
                              push and open ask: work leaves the machine
   brock mobile push          web build, cap sync, gradle, adb install and start
-  brock release              gh release from release-notes/v<version>.md (asks)
+  brock release [version] [--latest | --prerelease] [--full]
+                             run .github/workflows/release.yml for v<version>, notes from
+                             release-notes/v<version>.md (asks)
   A plugin verb (definePlugin) is reached the same way: brock <verb> [...]
   In a repo, run all of this through the repo's own command (bin/<name>.mjs, written by adopt).
 
@@ -62,6 +71,7 @@ const COMMANDS = {
   add: (ctx) => runAdd(ctx),
   dev: (ctx) => runDev(ctx),
   build: (ctx) => runBuild(ctx),
+  package: (ctx) => runPackage(ctx),
   icons: (ctx) => runIcons(ctx),
   start: (ctx) => runStart(ctx),
   adopt: (ctx) => runAdopt(ctx),
@@ -83,7 +93,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, check: values.check, scope: values.scope, local: values.local, force: values.force, passthrough });
+  return run({ rootDir, input, check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, passthrough });
 };
 
 main().then(

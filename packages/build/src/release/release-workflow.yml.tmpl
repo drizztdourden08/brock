@@ -1,0 +1,210 @@
+name: Release
+run-name: Release ${{ inputs.version }}
+
+# Written by Brock (create-brock or brock adopt). Run it from the Actions tab or with `brock release <version>`.
+# release-notes/v<version>.md must be on the default branch first: it is the release body.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 0.9.0 or v0.9.0. The tag must not exist yet.'
+        required: true
+        type: string
+      full:
+        description: 'Also build the Windows portable zip.'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Publish as a pre-release. It never becomes the latest download.'
+        type: boolean
+        default: false
+      set_latest:
+        description: 'Publish at once as the latest release. Off leaves a draft.'
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: read
+
+env:
+  APP_DIR: __APP_DIR__
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check the notes and the tag
+        id: resolve
+        shell: bash
+        run: |
+          RAW="${{ inputs.version }}"
+          TAG="v${RAW#v}"
+          test -f "release-notes/$TAG.md" || { echo "::error::release-notes/$TAG.md is missing. Commit the notes first."; exit 1; }
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Commit the version and tag it
+        shell: bash
+        run: |
+          TAG="${{ steps.resolve.outputs.tag }}"
+          node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${TAG#v}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$APP_DIR/package.json"
+          if ! git diff --cached --quiet; then
+            git commit -m "release: $TAG"
+            git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          fi
+          git tag "$TAG"
+          git push origin "$TAG"
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up .NET for vpk
+        if: matrix.platform != 'mac'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # vpk and the velopack package the app loads must be the same version.
+      - name: Install vpk
+        if: matrix.platform != 'mac'
+        shell: bash
+        run: |
+          VPK=$(cd "$APP_DIR" && node -p "require('velopack/package.json').version" 2>/dev/null || true)
+          if [ -n "$VPK" ]; then dotnet tool install -g vpk --version "$VPK"; else dotnet tool install -g vpk; fi
+
+      # The previous release lets vpk build a delta and list every version in the feed.
+      - name: Fetch the previous release
+        if: matrix.platform != 'mac'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+            --outputDir "$APP_DIR/release/velopack" --token "$GH_TOKEN" || echo "no previous release to delta against"
+
+      - name: Package
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          FULL=""
+          if [ "${{ inputs.full }}" = "true" ]; then FULL="--full"; fi
+          pnpm --dir "$APP_DIR" exec brock package $FULL
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+          if [ "${{ matrix.platform }}" = "mac" ]; then
+            cp "$APP_DIR"/release/*.dmg "$APP_DIR"/release/*.zip upload/
+          else
+            cp "$APP_DIR"/release/velopack/* upload/
+          fi
+          ls -l upload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform }}
+          path: upload/*
+
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Write the release body
+        shell: bash
+        run: |
+          TAG="${{ needs.prepare.outputs.tag }}"
+          BASE="https://github.com/${{ github.repository }}/releases/download/${TAG}"
+          link() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($BASE/$(basename "$f"))"; fi; done; }
+          {
+            cat "release-notes/${TAG}.md"
+            echo ""
+            echo "## Downloads"
+            echo ""
+            link "artifacts/release-win/*-setup.exe" "Windows installer (.exe), updates itself"
+            link "artifacts/release-win/*-portable.zip" "Windows portable (.zip)"
+            link "artifacts/release-mac/*.dmg" "macOS disk image (.dmg)"
+            link "artifacts/release-linux/*.AppImage" "Linux AppImage, updates itself"
+          } > release-body.md
+          cat release-body.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          draft: ${{ inputs.set_latest != true && inputs.prerelease != true }}
+          prerelease: ${{ inputs.prerelease == true }}
+          make_latest: ${{ inputs.set_latest == true }}
+          body_path: release-body.md
+          files: artifacts/release-*/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -20,6 +20,8 @@ brock check                sync --check, for CI
 brock add <id | spec>      install a module package, record its id, sync
 brock dev [-- args]        electron-vite dev
 brock build [-- args]      electron-vite build; copies the brand icon set first when icons.brand is set
+brock package [--full] [--channel <name>]
+                           build, electron-builder --dir, then vpk pack into release/velopack
 brock icons [--force]      copy the Tessera brand set into build/icons, build/splash and public/logos
 brock start [-- args]      run dist/electron/main.js with Electron; args reach the app
 brock adopt [--scope @x] [--local <brockRepo>] [--force]
@@ -77,7 +79,9 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `modules/generate.mjs`: a module contributes to a side (main, preload, renderer) only when its manifest names a subpath for it. The arrays are empty when the app has no modules, so the app code that imports them never changes. `identifierOf` turns `port-kit` into `portKit` plus the side suffix.
 - `modules/sync.mjs` leaves the manifest's `generatedAt` out of the drift comparison, so a check passes on a tree synced at another time. A managed file is regenerated verbatim: an app that needs a different shape changes the factory call's arguments through a Brock release, not the file.
 - `commands/add.mjs` edits `brock.config.ts` textually and touches only the `modules: [...]` array literal; a one-entry-per-line array keeps the indentation of its first entry and the trailing comma. A built-in id is looked up in the registry; anything else is an npm spec and the id then comes from the installed package manifest.
-- `brock build` writes `dist/electron`, `dist/preload` and `dist/renderer`; packaging is a separate electron-builder run over `electron-builder.config.cjs`.
+- `brock build` writes `dist/electron`, `dist/preload` and `dist/renderer`; `brock package` is the release step on top of it.
+- `packaging/`: `commands/package.mjs` runs the build, electron-builder with `--config electron-builder.config.cjs` for the current OS, the installer splash and `vpk pack`. `vpk-args.mjs` builds the pack arguments from the product (pure, so it is the part to test), `installer-splash.mjs` draws the brand icon on the window background with pngjs, `run-vpk.mjs` finds `vpk` in `~/.dotnet/tools` before `PATH`, `name-pack-outputs.mjs` gives the downloads their release names and fails when vpk's own naming moved, and `after-pack.mjs` is the electron-builder hook that prunes the foreign Velopack bindings and unused Electron DLLs and stamps the exe icon with rcedit.
+- `release/`: `release-workflow.yml.tmpl` is the one source of the app release workflow; `releaseWorkflow(appDir)` fills in the app folder. `create-brock` writes it for a standalone app and `brock adopt` for a repo with `apps/<app>`, both only when the file is absent.
 
 `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test: the
 window opens off screen and unfocused, and the app writes under `<dir>`.

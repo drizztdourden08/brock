@@ -28,6 +28,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     description: input.description,
     author: input.author,
     repo: input.repo,
+    updateChannel: input.updateChannel,
     artifactPrefix: input.artifactPrefix ?? `${input.id}-`,
     envPrefix: input.envPrefix ?? toEnvPrefix(input.id),
     window: resolveWindow(input),

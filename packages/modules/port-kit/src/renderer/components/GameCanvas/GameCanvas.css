@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind style */
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--c-bg);
+  object-fit: contain;
+  outline: none;
+}
+
+.game-canvas--pixelated {
+  image-rendering: pixelated;
+}

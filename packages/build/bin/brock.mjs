@@ -26,9 +26,11 @@ Usage:
   brock build [args]         electron-vite build; copies the brand icon set first when icons.brand is set
   brock package [--full] [--channel <name>]
                              build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
-                             the update package, a delta when the previous release was downloaded there,
-                             and on Windows the installer (Setup.exe with the app icon and a splash from the brand
-                             icon); --full adds the portable zip. macOS stops after electron-builder (dmg, zip).
+                             the update package and a delta when the previous release was downloaded there.
+                             On Windows it also builds the small installer (<prefix>windows-setup.exe, needs the
+                             Visual Studio C++ tools) and install.json; --full adds the payload it fetches
+                             (<prefix>windows-payload.exe, with the app icon, a splash and product.accent) and
+                             <prefix>windows-directory.zip. macOS stops after electron-builder (dmg, zip).
                              Needs vpk: dotnet tool install -g vpk --version <the app's velopack version>
   brock icons [--force]      copy the Tessera brand set (icons.brand) into build/icons, build/splash and public/logos
                              (skips a file newer than its source; --force copies all)

@@ -3,6 +3,7 @@ import type { ProductIcons, WindowConfig } from './product.type';
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const REVERSE_DNS = /^[a-z0-9]+(\.[a-z0-9-]+)+$/i;
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 const BLACK = '#000000';
 
@@ -19,4 +20,4 @@ const BRAND_ICONS: ProductIcons = {
   png512: 'build/icons/png/icon-512.png',
 };
 
-export { SLUG, REVERSE_DNS, DEFAULT_WINDOW, BRAND_ICONS };
+export { SLUG, REVERSE_DNS, HEX_COLOR, DEFAULT_WINDOW, BRAND_ICONS };

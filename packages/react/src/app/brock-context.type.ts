@@ -11,7 +11,9 @@ interface BrockContextValue {
   tabs: TabDef<object>[];
   settingsControls: SettingsControlsValue;
   menu: MenuEntry[];
+  homeScreen: string;
   logoSrc: string;
+  instanceLogoSrc: string;
 }
 
 export type { BrockContextValue, SettingsControlsValue };

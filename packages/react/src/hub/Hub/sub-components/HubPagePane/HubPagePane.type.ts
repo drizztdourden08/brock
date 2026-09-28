@@ -5,7 +5,6 @@ interface HubPagePaneProps {
   page: HubPage;
   tab: HubTab | null;
   context: HubRenderContext;
-  onSelectTab: (id: string) => void;
 }
 
 export type { HubPagePaneProps };

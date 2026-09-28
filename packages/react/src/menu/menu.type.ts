@@ -1,16 +1,26 @@
 /* @layer renderer-shell @kind types */
+import type { ReactNode } from 'react';
+
 interface MenuItem {
   key: string;
   label: string;
-  icon?: string;
+  icon?: ReactNode;
   description?: string;
   disabled?: boolean;
   checked?: boolean;
   screen?: string;
   onClick?: () => void;
   children?: MenuEntry[];
+  section?: string;
+  devOnly?: boolean;
 }
 
 type MenuEntry = MenuItem | 'separator';
 
-export type { MenuEntry, MenuItem };
+interface MenuSection {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+export type { MenuEntry, MenuItem, MenuSection };

@@ -32,7 +32,7 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 1. Portable mode (a `data` folder beside `Update.exe`), then `--user-data=<dir>`, which outranks it.
 2. `app.setName(product.id)`, so dev and production share one userData folder.
 3. Crash forensics: local crash reporter, process and quit hooks, memory heartbeat, all into `Data/debug/main-console.log`.
-4. Instance identity from `--instance=<slug>` (AppUserModelId on Windows, dock icon on macOS).
+4. App identity: the AppUserModelId (`product.appId`, or `<appId>.instance.<slug>` for `--instance=<slug>`) on Windows, the instance dock icon on macOS.
 5. Privileged schemes: `product.schemes` plus every module's `schemes`.
 6. On ready: `initPaths`, data folders (`product.dataDirs` plus module `dataDirs`), session-log rotation, base handlers, module `register`, app `handlers`, `onReady`, `createWindow`, module `onWindow`, app `onWindow`.
 7. Quit hooks: module `onWillQuit`, app `onWillQuit`, quit on last window closed except on macOS.
@@ -58,7 +58,6 @@ An automation launch (`flags.isHeadlessLaunch()`) opens off every monitor, `focu
 | `onReady`, `onWindow`, `onWillQuit` | App hooks around the window |
 | `paths` | `{ preload, renderer, splash }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.js`, `../renderer/index.html`, `../renderer/splash.html` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
-| `instanceIcons` | Icon set a named instance's window uses instead of `product.icons` |
 
 ## MainContext
 
@@ -76,6 +75,8 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 ## Window details
 
+- The window and taskbar icon come from the shipped renderer `logos/` folder, the one the brand pipeline fills: `icon.ico` then `icon-256.png` on Windows, `icon-256.png` elsewhere. A named instance looks for `icon-bot.ico` and `icon-bot-256.png` first. In dev the source `public/logos/` wins over a stale build. A missing icon is a warning in the main log, never a failed launch.
+- Every Windows launch sets the AppUserModelId to `product.appId` before the first window, so the taskbar groups the app under its own id and icon. A named instance uses `<appId>.instance.<name>`, a taskbar group of its own.
 - The automation off-screen origin is 400 px right of the rightmost display, derived from the real display layout so the OS cannot clamp it back. `focusable: false` sets `WS_EX_NOACTIVATE` on Windows (and implies `skipTaskbar`), so `SetForegroundWindow` cannot succeed; CDP input needs no OS focus. `paintWhenInitiallyHidden` keeps an off-screen run rendering for screenshots and `backgroundThrottling: false` keeps frames at full speed. A headless launch applies the saved size only, since the saved position would drag the window back onto a display.
 - A normal launch calls `show()`, not `showInactive()`: the splash is a child window and a child of a never-activated window sinks behind whatever the user had open; activating costs nothing visually at opacity 0. `center: false` because the automation window is placed off every monitor and a normal window is positioned by the saved state while invisible. A named instance holds its own title by cancelling `page-title-updated`.
 - Keep in background: many things raise a window later (a CDP click calls `Page.bringToFront()` first, DevTools activates its owner, the OS raises windows for its own reasons), so gaining focus at all is treated as the fault and undone, for the whole life of the window, debounced 50 ms so one helper process is spawned, not five. `blur()` runs only while the window holds focus, because an unconditional blur drops the foreground to the desktop. The first painted frame can bounce the window back up the z-order on Windows. On Windows `showInactive()` still lands on top, so `SetWindowPos(HWND_BOTTOM)` is called on the native handle through a hidden PowerShell child (`-EncodedCommand`, UTF-16LE base64, sidesteps quote escaping; `SWP_FLAGS` 0x13 is `SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE`).

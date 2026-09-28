@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
-import type { ProductConfig, ProductIcons, ProductInput, WindowConfig } from './product.type';
-import { BRAND_ICONS, DEFAULT_WINDOW, HEX_COLOR, REVERSE_DNS, SLUG } from './define-product.constants';
+import type { ProductConfig, ProductIcons, ProductInput, ProductLogos, WindowConfig } from './product.type';
+import { BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, REVERSE_DNS, SLUG } from './define-product.constants';
 
 const toEnvPrefix = (id: string): string => id.replace(/[^a-z0-9]+/gi, '_').toUpperCase();
 
@@ -20,6 +20,11 @@ const resolveWindow = (input: ProductInput): WindowConfig => ({
 const resolveIcons = (icons: ProductIcons = {}): ProductIcons =>
   icons.brand ? { ...BRAND_ICONS, ...icons } : icons;
 
+const resolveLogos = (logos: Partial<ProductLogos> = {}): ProductLogos => {
+  const app = logos.app ?? DEFAULT_LOGOS.app;
+  return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance) };
+};
+
 const defineProduct = (input: ProductInput): ProductConfig => {
   assertProductInput(input);
   return {
@@ -38,6 +43,8 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     schemes: input.schemes ?? [],
     fileAssociations: input.fileAssociations ?? [],
     icons: resolveIcons(input.icons),
+    logos: resolveLogos(input.logos),
+    homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
     modules: input.modules ?? [],
   };
 };

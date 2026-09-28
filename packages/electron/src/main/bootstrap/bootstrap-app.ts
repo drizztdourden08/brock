@@ -10,7 +10,7 @@ import { installCrashForensics } from '../crash-forensics/install';
 import { noteSync } from '../crash-forensics/note-sync';
 import { stackOf } from '../crash-forensics/stack-of';
 import { parseInstanceConfig } from '../instance/instance-config';
-import { applyInstanceIdentity } from '../instance/instance-identity';
+import { applyAppIdentity } from '../instance/app-identity';
 import { registerPrivilegedSchemes } from '../protocol/privileged-schemes';
 import { initPaths } from '../paths/init-paths';
 import { ensureDataDirectories } from '../paths/ensure-data-directories';
@@ -69,13 +69,13 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
     ...(options.automationFlags ?? []),
   ]);
   const instance = parseInstanceConfig();
-  const icon = resolveWindowIcon(product.icons, instance.name, options.instanceIcons);
-  applyInstanceIdentity(instance.name, { appId: product.appId, iconPath: icon });
+  const paths = resolvePaths(options.paths);
+  const icon = resolveWindowIcon(paths.renderer, instance.name);
+  applyAppIdentity(instance.name, { appId: product.appId, iconPath: icon });
   registerPrivilegedSchemes([...product.schemes, ...modules.flatMap((m) => m.schemes ?? [])]);
   app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 
   const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks });
-  const paths = resolvePaths(options.paths);
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];
   const openWindow = (): Electron.BrowserWindow => createWindow({
     product, flags, instance, paths, icon,

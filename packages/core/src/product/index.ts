@@ -2,6 +2,6 @@
 export { defineProduct } from './define-product';
 export { DEFAULT_WINDOW } from './define-product.constants';
 export type {
-  ProductAuthor, ProductRepo, WindowConfig, PrivilegedScheme, FileAssociation,
-  ProductIcons, ProductConfig, ProductInput,
+  ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
+  ProductIcons, ProductLogos, ProductConfig, ProductInput,
 } from './product.type';

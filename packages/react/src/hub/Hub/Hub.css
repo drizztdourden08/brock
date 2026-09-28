@@ -1,29 +1,11 @@
 /* @layer renderer-shell @kind style */
 
 .hub-screen {
-  position: absolute;
-  inset: 0;
-  z-index: var(--z-modal);
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-xl);
-  background: var(--c-bg);
-  color: var(--c-text);
-}
-
-.hub-screen__switch {
-  position: absolute;
-  top: var(--space-sm);
-  left: 50%;
-  z-index: var(--z-floating);
-  transform: translateX(-50%);
-}
-
-.hub-screen__body {
   display: flex;
   flex: 1;
   gap: var(--space-xl);
   min-height: 0;
+  overflow: hidden;
 }
 
 .hub-screen__content {
@@ -33,35 +15,6 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border: var(--border-width-thin) solid var(--c-border);
-  border-radius: var(--radius-xl);
-  background: var(--c-panel);
-}
-
-.hub-screen__pane {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.hub-screen__header {
-  flex-shrink: 0;
-  padding: var(--space-md) var(--space-xl);
-  border-bottom: var(--border-width-thin) solid var(--c-border);
-}
-
-.hub-screen__title {
-  display: inline-flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-.hub-screen__page-icon {
-  display: inline-grid;
-  place-items: center;
-  color: var(--c-primary);
-  font-size: var(--text-xl);
 }
 
 .hub-screen__page {
@@ -70,7 +23,6 @@
   flex-direction: column;
   gap: var(--space-xl);
   min-height: 0;
-  padding: var(--space-xl);
   overflow-y: auto;
 }
 

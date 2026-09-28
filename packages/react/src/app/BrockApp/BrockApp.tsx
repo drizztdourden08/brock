@@ -14,14 +14,14 @@ import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
 import { ModuleProviders } from './sub-components/ModuleProviders';
-import { DEFAULT_LOGO, NO_MENU, NO_MODULES } from './BrockApp.constants';
+import { NO_MENU, NO_MODULES } from './BrockApp.constants';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, screens, modules = NO_MODULES, home, menu = NO_MENU, layout = 'menu', screenGroups,
-    profileHooks, logoSrc = DEFAULT_LOGO, instanceLogoSrc, legalText,
+    profileHooks, homeScreen = product.homeScreen, credits, legalText,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -36,11 +36,11 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const registry = useMemo(() => {
     const all = createScreenRegistry([...screens, ...merged.screens]);
-    for (const screen of createBuiltInScreens({ legalText })) {
+    for (const screen of createBuiltInScreens({ legalText, credits })) {
       if (!all.has(screen.id)) all.register(screen);
     }
     return all;
-  }, [screens, merged.screens, legalText]);
+  }, [screens, merged.screens, legalText, credits]);
 
   const settingsControls = useMemo<SettingsControlsValue>(
     () => ({
@@ -53,8 +53,11 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   );
 
   const context = useMemo<BrockContextValue>(
-    () => ({ product, home, tabs, settingsControls, menu, logoSrc }),
-    [product, home, tabs, settingsControls, menu, logoSrc],
+    () => ({
+      product, home, tabs, settingsControls, menu, homeScreen,
+      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance,
+    }),
+    [product, home, tabs, settingsControls, menu, homeScreen],
   );
 
   return (
@@ -68,7 +71,8 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                 log={log}
                 moduleMenu={merged.menu}
                 titleBarSlots={titleBarSlots}
-                instanceLogoSrc={instanceLogoSrc}
+                searchActions={merged.searchActions}
+                widgets={merged.widgets}
                 layout={layout}
                 screenGroups={screenGroups}
               />

@@ -1,5 +1,5 @@
 /* @layer core @kind constants */
-import type { ProductIcons, WindowConfig } from './product.type';
+import type { ProductIcons, ProductLogos, WindowConfig } from './product.type';
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const REVERSE_DNS = /^[a-z0-9]+(\.[a-z0-9-]+)+$/i;
@@ -20,4 +20,11 @@ const BRAND_ICONS: ProductIcons = {
   png512: 'build/icons/png/icon-512.png',
 };
 
-export { SLUG, REVERSE_DNS, HEX_COLOR, DEFAULT_WINDOW, BRAND_ICONS };
+const DEFAULT_LOGOS: ProductLogos = {
+  app: './logos/icon-256.png',
+  instance: './logos/icon-bot.svg',
+};
+
+const DEFAULT_HOME_SCREEN = 'settings';
+
+export { SLUG, REVERSE_DNS, HEX_COLOR, DEFAULT_WINDOW, BRAND_ICONS, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN };

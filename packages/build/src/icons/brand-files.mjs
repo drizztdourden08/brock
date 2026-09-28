@@ -17,6 +17,7 @@ const BRAND_FILES = [
   { from: 'splash/splash-2732.png', to: 'build/splash/splash-2732.png' },
   { from: 'splash/splash.svg', to: 'build/splash/splash.svg' },
   { from: 'icon/icon.svg', to: 'public/logos/icon.svg' },
+  { from: 'icon/icon.ico', to: 'public/logos/icon.ico' },
   { from: 'icon/png/icon-256.png', to: 'public/logos/icon-256.png' },
 ];
 

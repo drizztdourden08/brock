@@ -9,12 +9,18 @@ interface ProductRepo {
   name: string;
 }
 
+interface SplashConfig {
+  width: number;
+  height: number;
+  accent?: string;
+}
+
 interface WindowConfig {
   title?: string;
   defaultSize: { width: number; height: number };
   minSize: { width: number; height: number };
   backgroundColor: string;
-  splash: { width: number; height: number };
+  splash: SplashConfig;
 }
 
 interface PrivilegedScheme {
@@ -37,6 +43,11 @@ interface ProductIcons {
   png512?: string;
 }
 
+interface ProductLogos {
+  app: string;
+  instance: string;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -53,15 +64,18 @@ interface ProductConfig {
   schemes: PrivilegedScheme[];
   fileAssociations: FileAssociation[];
   icons: ProductIcons;
+  logos: ProductLogos;
+  homeScreen: string;
   modules: string[];
 }
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
-  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window'>> & {
+  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos'>> & {
     window?: Partial<WindowConfig>;
+    logos?: Partial<ProductLogos>;
   };
 
 export type {
-  ProductAuthor, ProductRepo, WindowConfig, PrivilegedScheme, FileAssociation,
-  ProductIcons, ProductConfig, ProductInput,
+  ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
+  ProductIcons, ProductLogos, ProductConfig, ProductInput,
 };

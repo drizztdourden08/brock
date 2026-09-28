@@ -21,11 +21,11 @@ const home = defineScreen({ id: 'home', title: 'Home', layer: 'own', render: () 
   screens={[home]}
   modules={rendererModules}
   home="home"
-  menu={[{ key: 'home', label: 'Home', screen: 'home' }]}
+  menu={[{ key: 'rooms', label: 'Rooms', icon: 'users', screen: 'rooms' }]}
 />
 ```
 
-`BrockApp` composes, outermost first: `PlatformProvider` (host factories plus module ports), the app context, the screen registry, the settings store, the module Providers, then the shell: `TitleBar` where the host has window chrome, `ScreenHost` (the home screen with the open screen over it), `ConfirmDialog` and `BootProgressBar`. Built-in screens `profiles`, `settings` and `about` are registered unless the app supplies one with the same id.
+`BrockApp` composes, outermost first: `PlatformProvider` (host factories plus module ports), the app context, the screen registry, the settings store, the module Providers, then the shell: `TitleBar` where the host has window chrome, `ScreenHost` (the home screen with the open screen over it), `ConfirmDialog` and `BootProgressBar`. Built-in screens `profiles`, `settings` and `about` are registered unless the app supplies one with the same id, plus `credits` when the `credits` prop is given.
 
 Startup picks the profile: the pinned instance profile (an unknown name fails loudly), else the only profile, else the last one used, else the `profiles` screen. `useShellReady` signals main once startup settled and two frames painted.
 
@@ -33,14 +33,16 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 
 | Area | Exports |
 |---|---|
-| App | `BrockApp`, `useBrock`, `useProduct`, `useConfirmDialog`, `buildMenu` |
+| App | `BrockApp`, `useBrock`, `useProduct`, `useDeveloperTools`, `useConfirmDialog`, `buildMenu` |
+| Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer`, `matchesShortcut` |
 | Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React) |
-| Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useBootProgressStore`, `bootProgress`, `useWidgetPrefStore` |
+| Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useBootProgressStore`, `bootProgress`, `useWidgetPrefStore` |
 | Platform | `PlatformProvider`, `usePlatform`, `useCapability`, `getPlatform`, `setPlatformPorts`, `installApiShim`, `createElectronFactory`, `createWebFactory` |
 | Settings | `SettingsHub`, `SettingsLayout`, `SettingsPage`, `SettingsPageContext`, `createTabRegistry`, `resolveSections`, `matchTabs` |
 | Shell | `TitleBar`, `WindowControls`, `InstanceBadge`, `BootProgressBar`, `About`, `useAboutInfo`, `ConfirmDialog`, `ProfileCard`, `CreateProfileForm`, `ProfilesScreen`, `WorkspaceSwitch` |
 | Modules | `RendererModule`, `mergeModules` |
+| Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toDropdownItems` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_SLOTS` |
@@ -51,7 +53,7 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 
 ## Layout: menu or rail
 
-`layout` picks where the screens are listed. The default, `menu`, keeps them in the title-bar dropdown. `rail` draws a `ScreenRail` down the left edge of the screen host: every registered screen, grouped by `ScreenDef.group` (ungrouped screens first, then groups in first-seen order), with its `icon` and `title`. The title bar then keeps only the window controls, the instance badge and the menu entries that are not screens. `screenGroups` gives a label per group id; a group without one shows its id. A `devOnly` screen is listed only in development and a `requiresProfile` screen is disabled until a profile is active. Picking the home screen closes the open one.
+`layout` picks where the screens are listed. The default, `menu`, keeps them in the title-bar dropdown. `rail` draws a `ScreenRail` down the left edge of the screen host: every registered screen, grouped by `ScreenDef.group` (ungrouped screens first, then groups in first-seen order), with its `icon` and `title`. The title bar then keeps only the window controls, the instance badge and the menu entries that are not screens. `screenGroups` gives a label per group id; a group without one shows its id. A `devOnly` screen is listed only with developer tools on and a `requiresProfile` screen is disabled until a profile is active. Picking the home screen closes the open one.
 
 ```tsx
 <BrockApp
@@ -69,11 +71,23 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 ```ts
 defineScreen({
   id, title, icon?, render(ctx), layer?: 'fullscreen' | 'own', keepMounted?, devOnly?,
-  group?, shortcut?: 'Mod+Comma', requiresProfile?, subtitle?(ctx),
+  group?, shortcut?: 'Mod+Comma', requiresProfile?, subtitle?(ctx), extra?(ctx), floating?(ctx),
 });
 ```
 
-`ctx` carries `params`, `profile`, `open` and `close`. A fullscreen screen draws inside `ScreenLayer`; an own screen draws its own frame. Escape dismisses the dialog first, then closes the open screen; every screen with a shortcut toggles on it.
+`ctx` carries `params`, `profile`, `open` and `close`. A fullscreen screen draws inside `ScreenLayer`, the reference frame: a card at 90% of the window over a scrim, one header with the title, `subtitle`, `extra` controls and the close button, and `floating` overhanging the top edge. It enters over 0.2 s, with no entrance while the app boots. An own screen draws its own frame. Every screen with a shortcut toggles on it.
+
+## Hubs
+
+`defineHub` returns a fullscreen screen, so a hub sits in the same card as every other screen: the hub title with the profile name as subtitle, the active page's tabs in the header, the section nav and the page inside. With two hubs or more, a hub switch overhangs the top edge of the card and moves between them.
+
+## Escape and home
+
+Escape closes the topmost thing: an open escape layer, then the confirm dialog, then the open screen. With nothing open it opens the home screen, the Home menu entry's target. `product.homeScreen` names it (`settings` by default) and the `homeScreen` prop overrides it. A surface that must close first, a palette for example, registers itself with `useEscapeLayer({ isOpen, close })` or `escapeLayers.add`; the last one registered that reports open is closed first.
+
+## Menu
+
+The built-in order is Home, Profiles, Settings (left out when it is home), the app entries, the sections, then the module entries, Credits, About and Quit. Every built-in entry has an icon; `icon` takes a Tessera icon name or any node. An entry with `section` goes into that submenu: `widgets` and `advanced` come first, any other id becomes a section named after it. `devOnly` entries show only with developer tools, which are on in development or when the `developerToolsEnabled` setting is true; the built-in Dev Console in Advanced is one of them. Widgets holds the `useWidgetMenuEntries()` toggles and Advanced always holds Report a bug. The search palette and the bug report dialog are registered escape layers. Credits shows when a `credits` screen exists, which the `credits` prop registers.
 
 ## Settings
 
@@ -82,10 +96,10 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 ## App shell
 
 - `BrockApp` is the composition root: it resolves the modules once, creates the log bus, the settings store and the screen registry, installs the api shim on hosts without a bridge, then wraps the shell in the platform, settings and module providers. Module Providers nest with the first module outermost. The title bar is drawn only where the host reports the `windowChrome` capability.
-- Props: `home` is the screen id drawn as the base layer once a profile is active; `menu` holds the app's title-bar entries, module menus are appended after them, then the built-in entries (a built-in entry is skipped when the app's menu already names that screen); `settings.effects` run on every patch and receive the patch and both states; `profileHooks` carry the app-specific profile fields and patchable keys; `logoSrc` is drawn in the title bar and the about screen, `instanceLogoSrc` replaces it for a named instance, `legalText` is the licence and attribution copy.
+- Props: `home` is the screen id drawn as the base layer once a profile is active; `homeScreen` overrides `product.homeScreen`; `menu` holds the app's title-bar entries, placed as described under Menu (a built-in entry is skipped when the app or a module already names that screen); `credits` is the content of the Credits screen; `settings.effects` run on every patch and receive the patch and both states; `profileHooks` carry the app-specific profile fields and patchable keys; `legalText` is the licence and attribution copy. The title bar and the about screen show `product.logos.app`, and a named instance shows `product.logos.instance`.
 - Startup order: the pinned instance profile (matched by id, then by name; an unknown name logs an error and opens the profiles screen instead of running on the wrong data), else the only profile, else the last one used, else the profiles screen. `settled` turns true in a `finally` block so every exit path, a failed boot included, still ends with a visible window.
 - The shell-ready signal waits for startup to settle and then for two animation frames: the first commits the settled layout, the second proves it painted. The `booting` class is removed from the document root in the first frame so entrance animations resume only once the shell is done. The frame request is deliberately not cancelled on effect cleanup: a strict-mode double invoke would cancel the only scheduled signal.
-- Keyboard: Escape dismisses the confirm dialog first and only then closes the open screen; Alt+Enter toggles fullscreen; a screen's shortcut toggles it, a `requiresProfile` screen waits for a profile, a `devOnly` screen only responds in development; while an input, textarea or contenteditable is focused, screen shortcuts fire only with Ctrl or Meta held. A shortcut string is tokens joined by `+` (`Mod` matches Ctrl or the platform's command key; aliases `Comma`, `Period`, `Space`, `Esc`, `Return`).
+- Keyboard: Escape follows the order under Escape and home; Alt+Enter toggles fullscreen; a screen's shortcut toggles it, a `requiresProfile` screen waits for a profile, a `devOnly` screen only responds with developer tools on; while an input, textarea or contenteditable is focused, screen shortcuts fire only with Ctrl or Meta held. A shortcut string is tokens joined by `+` (`Mod` matches Ctrl or the platform's command key; aliases `Comma`, `Period`, `Space`, `Esc`, `Return`).
 - When the active profile changes, every session store resets and the settings store loads that profile's config; with no profile the settings return to the defaults. Log entries main sends over IPC are forwarded into the renderer's log bus; an unknown channel lands on `ipc` and an unknown level reads as `info`.
 
 ## Host, log and profiles
@@ -119,7 +133,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 ## Shell views and stores
 
-- `TitleBar`: an empty `menu` hides the menu button; `instanceName` null means a normal launch; `hidden` hides the bar and reveals it while the pointer is in the 40 px strip along the top edge or over the bar itself; `extra` holds controls after the menu button (mute, save, a status tag). The outside-click handler also ignores clicks inside `.dropdown-menu` because the dropdown is portaled outside the trigger's subtree. Menu and pin icons use a 16-unit viewBox; minimize, restore, maximize and close use a 12-unit one. The instance badge shows the name verbatim because the name is the identifier.
+- `TitleBar`: an empty `menu` hides the menu button; the shell hides the bar when the `windowMode` setting is `borderless` or `fullscreen`, read by key, so no module import is needed; `instanceName` null means a normal launch; `hidden` hides the bar and reveals it while the pointer is in the 40 px strip along the top edge or over the bar itself; `extra` holds controls after the menu button (mute, save, a status tag). The outside-click handler also ignores clicks inside `.dropdown-menu` because the dropdown is portaled outside the trigger's subtree. Menu and pin icons use a 16-unit viewBox; minimize, restore, maximize and close use a 12-unit one. The instance badge shows the name verbatim because the name is the identifier.
 - `About`: the version comes from the bridge's `getAppVersion` and falls back to `0.0.0` without a bridge; `copyText` is what the copy button puts on the clipboard and omitting it hides the button.
 - `BootProgressBar`: the label flips from light to dark over the fill through a clipped duplicate element; the 1000 ms minimum on-screen time is cosmetic and never gates readiness. `ratio` is 0..1 for a determinate bar and null for an indeterminate sweep; phase `ready` completes the bar and lets it fade; `bootProgress` is the imperative surface for the code doing the work.
 - `ProfilesScreen` doubles as the setup screen when no profile exists (the form is forced open); picking a profile makes it active and closes the screen; `createOptions()` is merged into the create request. In `CreateProfileForm`, Enter in the name field submits, `canSubmit: false` blocks submit while an extra field is incomplete, and `extraFields` render between the name and the actions. `WorkspaceSwitch.label` is the accessible name for the whole switch.

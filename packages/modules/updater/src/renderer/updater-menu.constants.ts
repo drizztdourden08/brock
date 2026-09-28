@@ -6,6 +6,7 @@ const UPDATER_MENU: MenuEntry[] = [
   {
     key: 'updater:check',
     label: 'Check for updates',
+    icon: 'refresh-cw',
     onClick: () => useUpdaterStore.getState().checkAndOpen(),
   },
 ];

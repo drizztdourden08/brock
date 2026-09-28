@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 
 /**
- * @param {import('./decode-png.mjs').RgbaImage} image
+ * @param {import('./read-png.mjs').RgbaImage} image
  * @param {number} x0 @param {number} y0 @param {number} factor
  * @returns {number[]}
  */
@@ -18,9 +18,9 @@ const averageBlock = ({ width, pixels }, x0, y0, factor) => {
 };
 
 /**
- * @param {import('./decode-png.mjs').RgbaImage} image
+ * @param {import('./read-png.mjs').RgbaImage} image
  * @param {number} factor  Divides the width and height
- * @returns {import('./decode-png.mjs').RgbaImage}
+ * @returns {import('./read-png.mjs').RgbaImage}
  */
 const downscale = (image, factor) => {
   const width = image.width / factor;

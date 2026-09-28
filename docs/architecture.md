@@ -11,9 +11,9 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-core` | everywhere | product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, log bus, module manifest type, automation flags, registry |
 | `@drizztdourden08/brock-electron` | main, preload | `/main`: `bootstrapApp`, paths, portable mode, window, splash, window state, IPC handlers, diagnostics, crash forensics, session log. `/preload`: `createPreloadBridge` |
 | `@drizztdourden08/brock-react` | renderer | `BrockApp`, platform provider and hosts, stores kit, screen registry, shell views, settings engine |
-| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories, ensure-electron, the `brock` CLI (sync, check, add, dev, build, start) |
+| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories, ensure-electron, the `brock` CLI (sync, check, add, dev, build, package, start), the release workflow template |
 | `@drizztdourden08/create-brock` | tooling | the scaffolder: `pnpm create @drizztdourden08/brock` |
-| `@drizztdourden08/brock-updater` | module | Velopack updater, UpdateDialog |
+| `@drizztdourden08/brock-updater` | module | Velopack updater, the title bar version tag, UpdateDialog |
 | `@drizztdourden08/brock-secrets` | module | safeStorage secret store, device-code sign-in |
 | `@drizztdourden08/brock-input` | module | SDL3 controllers, mapping DB, calibration, haptics, InputTester |
 | `@drizztdourden08/brock-display` | module | refresh rate, synced rate, display mode switch |
@@ -41,7 +41,7 @@ Each subpath exports one object:
 
 - `main`: a `MainModule` (brock-electron): `{ id, onBoot?(product), register(ctx), onWindow?(win, ctx), onWillQuit?(ctx) }`. `onBoot` runs before anything else in `bootstrapApp`, which is where the updater runs the Velopack hooks.
 - `preload`: a `PreloadNamespace` (brock-electron): `{ id, build(tools) }` returning the nested `window.api.<id>` object.
-- `renderer`: a `RendererModule` (brock-react): `{ id, screens?, settingsTabs?, menu?, Provider?, ports? }`.
+- `renderer`: a `RendererModule` (brock-react): `{ id, screens?, settingsTabs?, menu?, Provider?, titleBar?, ports? }`.
 
 `brock.config.ts` lists module ids. `brock sync` reads each manifest and regenerates `.brock/modules.main.ts`, `.brock/modules.preload.ts` and `.brock/modules.renderer.ts`, which import the module objects and export them as arrays. The app's own `electron/main.ts`, `electron/preload.ts` and `src/main.tsx` import those arrays. `brock add <id | package>` installs the package (the built-in registry maps `updater`, `secrets`, `input`, `display`, `port-kit` to their package names; anything else is an npm spec), appends the id to `brock.config.ts` and runs sync. App code is never edited by the tool.
 
@@ -151,8 +151,19 @@ The bridge adds `isDev`, `os`, `getFilePath`, `startup` (`fresh`, `automation`, 
 - `useSettings<S>()`: `{ settings, patch, hydrated }` from `createSettingsStore<S>({ defaults, load, save })`, one per profile, debounced save to `config.json`.
 - Startup: pinned instance profile (fail loudly if missing) -> single profile -> last profile -> the `profiles` screen. `useShellReady` signals main once startup settled and two frames painted.
 - Logos come from `product.logos`: `app` (default `./logos/icon-256.png`) in the title bar, the about screen and both splashes, `instance` (default `./logos/icon-bot.svg`) for a named instance. The title bar hides in `borderless` and `fullscreen` window modes, read from the `windowMode` setting.
-- Shell views (each with a Storylite story): `TitleBar` (product name, menu slot, instance badge, window controls), `BootProgressBar`, `About`, `SettingsHub<S>` + `SettingsLayout<S>` + `SettingsPage`, `ConfirmDialog`, `ScreenLayer`.
-- `RendererModule { id; screens?; settingsTabs?; menu?; Provider?; ports?: Partial<Record<HostShell, Partial<PortCreators>>> }`. A module menu entry with `section` joins that submenu; one without sits before Credits. Ports are merged into the host factory with `withPorts`.
+- Shell views (each with a Storylite story): `TitleBar` (product name, menu slot, instance badge, module slots beside the title, window controls), `BootProgressBar`, `About`, `SettingsHub<S>` + `SettingsLayout<S>` + `SettingsPage`, `ConfirmDialog`, `ScreenLayer`.
+- `RendererModule { id; screens?; settingsTabs?; menu?; Provider?; titleBar?: TitleBarSlot[]; searchActions?: SearchAction[]; widgets?: WidgetDef[]; ports?: Partial<Record<HostShell, Partial<PortCreators>>> }`. A module menu entry with `section` joins that submenu; one without sits before Credits. Ports are merged into the host factory with `withPorts`.
+- `titleBar` is how a module puts something in the title bar, since brock-react cannot import a module. A `TitleBarSlot` is a `ComponentType` with no props: it reads its own store and renders a small control, or `null`. `BrockApp` merges the slots of every module in load order and `TitleBar` renders them after the title and the instance badge, keyed by `displayName`. The updater contributes its version tag this way.
+
+Every app gets the standard features below. `StandardOverlays` mounts them in one place inside `AppShell`: `<StandardOverlays menu={fullMenu} actions={merged.searchActions} widgets={merged.widgets} />`.
+
+- Search palette: Ctrl+K (Cmd+K on macOS) or the `SearchButton` title bar slot opens it; Escape or the scrim closes it. It searches the built menu, the registered screens, the settings tabs, every settings field and the registered actions. A boolean field gets an inline toggle, and Ctrl+Enter flips it from the keyboard. Picking a field opens `settings` with `{ tab, anchor }` and scrolls to the row. An app or module adds actions with `RendererModule.searchActions`, `registerSearchActions(actions)` (returns the unregister call) or `useSearchActions(actions)`. `palette.open()`, `palette.close()` and `usePaletteOpen()` drive it from outside.
+- Bug report: `bugReport.open()` or the `BugReportButton` title bar slot opens a dialog for a title and a description. It attaches the debug text (app version, runtime, platform, recent log lines, and the host facts from `diagnostics:getSystem`) and opens a prefilled GitHub issue on `product.repo` in the browser. No token is involved. Without a repo the report goes to the clipboard.
+- About: Version, Runtime, Engine and Platform rows, and Copy debug info with the same debug text (`useDebugText`).
+- Toasts: `toast(message, { variant?, duration? })` works from anywhere and returns an id for `dismissToast(id)`. `ToastHost` renders the Tessera `ToastContainer`.
+- Widgets: `defineWidget({ id, label, render, ... })` describes a floating or docked panel over the Tessera `WidgetManager`. Widgets come from `RendererModule.widgets`, the `widgets` prop of `StandardOverlays` or `registerWidgets(defs)`. The layout and each widget's `useWidgetPref` values are kept per profile in `ui-views.json` through the `uiViews` IPC, under `profile:<id>`. `useWidgetMenuEntries()` returns checkable items for a Widgets menu, and `widgets.open(id)`, `widgets.close(id)` and `widgets.toggle(id)` work outside React. The built-in `logs` widget is a filterable, searchable view of the log bus.
+- The menu files the `useWidgetMenuEntries()` items under Widgets and adds Report a bug to Advanced. The palette and the bug report dialog are escape layers, so Escape closes them before anything else.
+- `STANDARD_TITLE_BAR_SLOTS` (`SearchButton`, `BugReportButton`) come before the module slots.
 
 Tessera is imported as `@drizztdourden08/tessera/*`; `tokens.css` first, then the app's `theme.css`.
 
@@ -160,10 +171,25 @@ Tessera is imported as `@drizztdourden08/tessera/*`; `tokens.css` first, then th
 
 ```ts
 defineBrockViteConfig(rootDir, overrides?)   // electron-vite: main electron/main.ts, preload electron/preload.ts, renderer src/ with index.html, the splash plugin (splash.html and the boot splash from the product config), React plugin, dedupe react, externalizeDeps excluding @drizztdourden08/*
-createBuilderConfig(product, { rootDir })    // electron-builder: appId, productName, icons, artifact names, file associations
+createBuilderConfig(product, { rootDir })    // electron-builder: appId, productName, icons, artifact names, file associations, asarUnpack for Velopack, the afterPack hook
 ```
 
-`brock` CLI: `sync [--check]`, `add <id | spec>`, `dev` (electron-vite dev), `build` (electron-vite build), `icons [--force]` (copies the Tessera brand set into `build/` and `public/logos/` and draws the bot variant; `dev` and `build` run it first), `start [-- args]` (runs `dist/electron/main.js` with Electron; automation args pass through, so `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test).
+`brock` CLI: `sync [--check]`, `add <id | spec>`, `dev` (electron-vite dev), `build` (electron-vite build), `icons [--force]` (copies the Tessera brand set into `build/` and `public/logos/` and draws the bot variant; `dev` and `build` run it first), `start [-- args]` (runs `dist/electron/main.js` with Electron; automation args pass through, so `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test), `package [--full] [--channel <name>]`.
+
+## Packaging and releases
+
+Apps ship the way Relic of the Past does: Velopack installs and updates them, GitHub Releases hosts the feed.
+
+`brock package` is its own command because it is a release step, not part of the build loop: it needs electron-builder and the `vpk` .NET tool, and it takes minutes. It runs:
+
+1. `brock build`.
+2. electron-builder with `--dir` on Windows and Linux (the app tree only) and `--mac` on macOS (dmg and zip). The `afterPack` hook removes the Velopack bindings for other platforms, drops `dxcompiler.dll` and `dxil.dll` on Windows, and stamps the app icon on the exe with rcedit, since `signAndEditExecutable` is off.
+3. On Windows, `build/installer-splash.png`: the brand icon centred on `product.window.backgroundColor` at the splash size.
+4. `vpk pack` into `release/velopack`, with the pack id, title, author and icon from the product, `release-notes/v<version>.md` as the notes when it exists (app root, then repo root), and `product.updateChannel` or `--channel` as the channel. `product.accent` becomes the installer progress colour. A routine release is the update package and the delta only; `--full` adds the Velopack setup as `<prefix>windows-payload.exe` and the portable build as `<prefix>windows-directory.zip`. Linux gets `<prefix>linux.AppImage`.
+5. On Windows, with `product.repo` set, the small installer: `installer-stub/` (C++ and Win32, about 600 KB) compiled with the Visual Studio C++ tools after `product.h` is written from the product (name, pack id, main exe, accent, the `install.json` address), saved as `<prefix>windows-setup.exe`. It is built on every release, so `releases/latest/download/<prefix>windows-setup.exe` always resolves.
+6. `install.json`, the recipe the stub reads from `releases/latest/download/install.json`: the stub generation, the version, and the URL and SHA-256 of the stub, the payload (run with `--silent`) and the directory zip. An entry this release does not carry is taken from the previous manifest, so a routine release still points at the last full one; the first release has to be `--full`.
+
+`.github/workflows/release.yml` is written once by `create-brock` (a standalone app) or `brock adopt` (a repo with `apps/<app>`), and is the app's own file after that. It runs on `workflow_dispatch` with `version`, `full`, `prerelease` and `set_latest`: it checks the notes and the tag, lints, commits the version bump and tags it, runs `brock package` on Windows, Linux and macOS after `vpk download` fetched the previous release for the delta, and creates the GitHub release with the notes file as the body plus a Downloads list whose Windows link is the stub on the latest release. `brock release [version]` dispatches it.
 
 ## Acceptance for a blank app
 

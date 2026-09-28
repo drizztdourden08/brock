@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind constants */
-const COPIED_MS = 1500;
-const FALLBACK_VERSION = '0.0.0';
+import type { AboutRow } from './About.type';
 
-export { COPIED_MS, FALLBACK_VERSION };
+const COPIED_MS = 1500;
+const NO_EXTRA_ROWS: readonly AboutRow[] = [];
+
+export { COPIED_MS, NO_EXTRA_ROWS };

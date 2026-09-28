@@ -45,6 +45,11 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toDropdownItems` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
+| Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_SLOTS` |
+| Search | `SearchPalette`, `SearchButton`, `palette`, `usePaletteOpen`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `buildCatalog` |
+| Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
+| Toasts | `toast`, `dismissToast`, `ToastHost`, `useToastStore` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `LogsWidget` |
 
 ## Layout: menu or rail
 
@@ -82,7 +87,7 @@ Escape closes the topmost thing: an open escape layer, then the confirm dialog, 
 
 ## Menu
 
-The built-in order is Home, Profiles, Settings (left out when it is home), the app entries, the sections, then the module entries, Credits, About and Quit. Every built-in entry has an icon; `icon` takes a Tessera icon name or any node. An entry with `section` goes into that submenu: `widgets` and `advanced` come first, any other id becomes a section named after it. `devOnly` entries show only with developer tools, which are on in development or when the `developerToolsEnabled` setting is true; the built-in Dev Console in Advanced is one of them. Credits shows when a `credits` screen exists, which the `credits` prop registers.
+The built-in order is Home, Profiles, Settings (left out when it is home), the app entries, the sections, then the module entries, Credits, About and Quit. Every built-in entry has an icon; `icon` takes a Tessera icon name or any node. An entry with `section` goes into that submenu: `widgets` and `advanced` come first, any other id becomes a section named after it. `devOnly` entries show only with developer tools, which are on in development or when the `developerToolsEnabled` setting is true; the built-in Dev Console in Advanced is one of them. Widgets holds the `useWidgetMenuEntries()` toggles and Advanced always holds Report a bug. The search palette and the bug report dialog are registered escape layers. Credits shows when a `credits` screen exists, which the `credits` prop registers.
 
 ## Settings
 

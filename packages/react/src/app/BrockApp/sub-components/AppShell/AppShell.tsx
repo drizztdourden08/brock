@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { instanceName } from '../../../../host/instance-name';
+import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
 import { useCapability } from '../../../../platform/useCapability';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
@@ -15,12 +16,13 @@ import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useShellReady } from '../../behavior/useShellReady';
+import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
 import { useStartup } from '../../behavior/useStartup';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, log, moduleMenu, layout = 'menu', screenGroups } = props;
+  const { settingsStore, log, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
   const { product, home, logoSrc, instanceLogoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
@@ -30,6 +32,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useShellReady(settled);
   useProfileHydration(settingsStore);
   useKeyboardShortcuts();
+  useStandardEscapeLayers();
   useIpcLogBridge(log);
 
   const fullMenu = useShellMenu(moduleMenu, railed);
@@ -46,6 +49,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           instanceName={instanceName()}
           logoSrc={logoSrc}
           instanceLogoSrc={instanceLogoSrc}
+          slots={titleBarSlots}
           hidden={titleBarHidden}
         />
       )}
@@ -57,6 +61,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
       </Box>
       <ConfirmDialog />
       <BootProgressBar />
+      <StandardOverlays menu={fullMenu} actions={searchActions} widgets={widgets} />
     </Box>
   );
 };

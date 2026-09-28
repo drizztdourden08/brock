@@ -8,13 +8,19 @@ import { SPLASH_DEFAULTS } from './splash.constants.mjs';
 
 /**
  * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
+ * @returns {string}
+ */
+const splashAccent = (product) => product.window?.splash?.accent ?? product.accent ?? SPLASH_DEFAULTS.accent;
+
+/**
+ * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
  * @returns {SplashLook}
  */
 const splashLook = (product) => ({
   title: escapeHtml(product.window?.title ?? product.name),
   logo: escapeHtml(product.logos?.app ?? SPLASH_DEFAULTS.logo),
   background: escapeHtml(product.window?.backgroundColor ?? SPLASH_DEFAULTS.background),
-  accent: escapeHtml(product.window?.splash?.accent ?? SPLASH_DEFAULTS.accent),
+  accent: escapeHtml(splashAccent(product)),
 });
 
 export { splashLook };

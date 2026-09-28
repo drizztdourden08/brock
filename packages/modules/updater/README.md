@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # brock-updater
 
-Self-update through Velopack. The module runs the Velopack startup hooks, checks the product's GitHub releases, lists every installable version, downloads the chosen one with progress, and hands the swap to Velopack. The renderer side adds a "Check for updates" menu entry and the UpdateDialog.
+Self-update through Velopack. The module runs the Velopack startup hooks, checks the product's GitHub releases, lists every installable version, downloads the chosen one with progress, and hands the swap to Velopack. The renderer side adds a version tag to the title bar, a "Check for updates" menu entry and the UpdateDialog.
 
 ## Where updates come from
 
@@ -12,7 +12,7 @@ The feed is the product's `repo` in `brock.config.ts`. Without a `repo` the modu
 | `product.repo` | `github.com/<owner>/<name>` releases, tagged `v<version>` |
 | `<ENV_PREFIX>_UPDATE_API_ORIGIN` | Reads the release list from another origin, a fixture server. A dev run then checks and lists like a packaged build. |
 | `--update-source=<dir>` | Velopack reads packed releases from a local folder in place of GitHub. |
-| channel | `win`, `osx` or `linux` by platform. The picker reads `releases.<channel>.json` from the newest release that has one. |
+| channel | `win`, `osx` or `linux` by platform, or `product.updateChannel` when set. The picker reads `releases.<channel>.json` from the newest release that has one. |
 
 A build that Velopack did not install (a dev run, a portable copy) cannot apply an update. A packaged build still checks, and its dialog sends the user to the release page.
 
@@ -64,7 +64,7 @@ const updater = createUpdaterMain({
 });
 ```
 
-`hooks` also takes `beforeUpdate`, `firstRun` and `restarted`. `channel` sets Velopack's `ExplicitChannel`.
+`hooks` also takes `beforeUpdate`, `firstRun` and `restarted`. `channel` sets Velopack's `ExplicitChannel` and wins over `product.updateChannel`.
 
 ## Versions and deltas
 
@@ -72,7 +72,16 @@ Every row in the picker carries a plan: the base release and the ordered deltas 
 
 ## Renderer side
 
-The module's `Provider` connects the store and mounts the UpdateDialog. The dialog opens by itself when the startup check finds a newer version, and from the menu entry. `useUpdaterStore` holds the state for an app that wants its own badge or button:
+The module's `Provider` connects the store and mounts the UpdateDialog.
+
+The updater never interrupts. The startup check is silent, and the dialog opens only when the user asks for it:
+
+| Where | What it does |
+|---|---|
+| Title bar version tag | `v<version>` beside the title, contributed through `RendererModule.titleBar`. A found update tints it and adds a dot. A click opens the dialog on the found update, or runs a check and opens the dialog when there is none. The dialog shows the release notes of the chosen version. |
+| Menu entry | "Check for updates" runs a check and opens the dialog. |
+
+`VersionTag` is exported too, for an app that draws its own title bar. `useUpdaterStore` holds the state for an app that wants its own badge or button:
 
 ```tsx
 const status = useUpdaterStore((s) => s.status);            // idle, checking, available, downloading, ready, error
@@ -80,3 +89,7 @@ const checkAndOpen = useUpdaterStore((s) => s.checkAndOpen);
 ```
 
 Release notes show as plain text.
+
+## Shipping updates
+
+`brock package` builds what this module reads: electron-builder makes the app tree, and `vpk pack` turns it into the update package, a delta against the previous release, the `releases.<channel>.json` feed and, on Windows, the small installer with its `install.json` (plus the full setup on a `--full` release). The release workflow that `create-brock` and `brock adopt` write runs it on each platform and uploads the result to the GitHub release, with `release-notes/v<version>.md` as the body. The notes also travel inside the package, which is how the dialog shows them. `docs/architecture.md` has the full sequence.

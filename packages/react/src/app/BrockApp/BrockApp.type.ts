@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
-import type { MenuEntry } from '../../menu/menu.type';
+import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { RendererModule } from '../../modules/renderer-module.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
@@ -36,11 +36,13 @@ interface BrockAppProps<S extends object> {
 interface MenuBuildInput {
   appMenu: readonly MenuEntry[];
   moduleMenu: readonly MenuEntry[];
+  widgets: readonly MenuItem[];
   homeScreen: string;
   hasCredits: boolean;
   developerTools: boolean;
   onQuit: () => void;
   onDevConsole: () => void;
+  onReportBug: () => void;
 }
 
 export type { BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput };

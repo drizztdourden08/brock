@@ -13,7 +13,8 @@ import { resolveFeed } from './resolve-feed';
 import { runCheck } from './run-check';
 import { updaterCapabilities } from './updater-capabilities';
 
-const createUpdater = async (ctx: MainContext, { channel }: UpdaterOptions): Promise<UpdaterMain> => {
+const createUpdater = async (ctx: MainContext, options: UpdaterOptions): Promise<UpdaterMain> => {
+  const channel = options.channel ?? ctx.product.updateChannel;
   const feed = resolveFeed(ctx, channel);
   const prefsStore = createPrefsStore(ctx.files);
   const managerFor = createManagerCache(feed, channel);

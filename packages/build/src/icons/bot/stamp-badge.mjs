@@ -33,8 +33,8 @@ const blendOver = (pixels, at, [r, g, b, coverage]) => {
 };
 
 /**
- * @param {import('./decode-png.mjs').RgbaImage} image  Square
- * @returns {import('./decode-png.mjs').RgbaImage}  A copy with the bot badge in the corner
+ * @param {import('./read-png.mjs').RgbaImage} image  Square
+ * @returns {import('./read-png.mjs').RgbaImage}  A copy with the bot badge in the corner
  */
 const stampBadge = ({ width, height, pixels }) => {
   const out = new Uint8Array(pixels);

@@ -1,0 +1,96 @@
+name: sdl3-addon
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/modules/input/native/**'
+
+concurrency: sdl3-addon
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platformArch: win32-x64
+            libusb: libusb-1.0.dll
+          - os: ubuntu-latest
+            platformArch: linux-x64
+            libusb: libusb-1.0.so.0
+          - os: macos-latest
+            platformArch: darwin-arm64
+            libusb: libusb-1.0.0.dylib
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install libusb and pkg-config (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev pkg-config
+
+      - name: Install libusb and pkg-config (macOS)
+        if: runner.os == 'macOS'
+        run: brew install libusb pkg-config
+
+      - run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the addon from source
+        run: pnpm --filter @drizztdourden08/brock-input addon:build
+
+      - name: Check the addon and libusb shipped
+        shell: bash
+        run: |
+          DIR="packages/modules/input/native/prebuilds/${{ matrix.platformArch }}"
+          test -f "$DIR/sdl3_input.node" || { echo "::error::sdl3_input.node missing from $DIR"; ls -la "$DIR"; exit 1; }
+          test -f "$DIR/${{ matrix.libusb }}" || { echo "::error::${{ matrix.libusb }} missing from $DIR, so SDL was built without libusb"; ls -la "$DIR"; exit 1; }
+
+      - name: Package the prebuild
+        shell: bash
+        run: |
+          PKG=./packages/modules/input/native/package.json
+          VERSION=$(node -p "require('$PKG').version")
+          KEY=$(node -p "const p=require('$PKG');require('crypto').createHash('sha256').update([p.version,p.sdl3,p.libusb].join('|')).digest('hex').slice(0,8)")
+          NAME="sdl3-input-${VERSION}-${KEY}-${{ matrix.platformArch }}.tar.gz"
+          mkdir -p out
+          tar czf "out/${NAME}" -C "packages/modules/input/native/prebuilds/${{ matrix.platformArch }}" .
+          node -e "const f=process.argv[1];console.log(require('crypto').createHash('sha256').update(require('fs').readFileSync(f)).digest('hex')+'  '+require('path').basename(f))" "out/${NAME}" > "out/${NAME}.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdl3-addon-${{ matrix.platformArch }}
+          path: out/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Upload to the sdl3-addon release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./packages/modules/input/native/package.json').version")
+          TAG="sdl3-addon-v${VERSION}"
+          gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --title "SDL3 addon ${VERSION}" --notes "Prebuilt SDL3 controller addon for @drizztdourden08/brock-input." --latest=false --target "$GITHUB_SHA"
+          gh release upload "$TAG" out/* --clobber

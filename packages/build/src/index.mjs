@@ -12,3 +12,4 @@ export { MANAGED_FILES } from './managed/templates.mjs';
 export { findWorkspaceRoot, mergeCatalog } from './workspace.mjs';
 export { installLauncher } from './launcher/install-launcher.mjs';
 export { launcherName } from './launcher/launcher-name.mjs';
+export { releaseWorkflow, RELEASE_WORKFLOW_FILE } from './release/release-workflow.mjs';

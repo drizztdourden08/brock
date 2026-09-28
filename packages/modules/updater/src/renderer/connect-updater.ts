@@ -9,7 +9,7 @@ const loadInitial = async (api: UpdaterApi, set: SetUpdater): Promise<void> => {
     api.capabilities(), api.getPrefs(), api.getVersion(), api.getAvailable(),
   ]);
   set({ capabilities, prefs, currentVersion });
-  if (info) set({ status: 'available', info, dialogOpen: true });
+  if (info) set({ status: 'available', info });
 };
 
 const connectUpdater = (api: UpdaterApi | null, set: SetUpdater): (() => void) => {

@@ -2,7 +2,8 @@
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
 import {
-  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES,
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
+  WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import type { MenuBuildInput } from '../BrockApp.type';
 import { filterDevEntries } from './filter-dev-entries';
@@ -25,10 +26,14 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
   entries.filter((entry) => entry === 'separator' || entry.section === undefined);
 
 const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
-  const { appMenu, moduleMenu, homeScreen, hasCredits, developerTools, onQuit, onDevConsole } = input;
-  const devConsole: MenuItem = { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole };
+  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, onQuit, onDevConsole, onReportBug } = input;
+  const standard: MenuItem[] = [
+    ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
+    { ...REPORT_BUG_ENTRY, onClick: onReportBug },
+    { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },
+  ];
   const app = filterDevEntries(appMenu, developerTools);
-  const modules = filterDevEntries([...moduleMenu, devConsole], developerTools);
+  const modules = filterDevEntries([...moduleMenu, ...standard], developerTools);
   const named = screensNamed([...app, ...modules]);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
   const top = TOP_ENTRIES.filter(unnamed);

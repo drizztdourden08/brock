@@ -15,6 +15,11 @@
   "engines": {
     "node": ">=24"
   },
+  "scripts": {
+    "postinstall": "node bin/ensure-addon.mjs --postinstall",
+    "addon:build": "node bin/ensure-addon.mjs --force",
+    "addon:prepare": "node bin/ensure-addon.mjs"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./main": "./src/main/index.ts",
@@ -24,6 +29,11 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "bin",
+    "ensure-addon",
+    "native/src",
+    "native/CMakeLists.txt",
+    "native/package.json",
     "src",
     "resources",
     "README.md"
@@ -39,6 +49,20 @@
     "renderer": "./src/renderer/index.ts",
     "dataDirs": [
       "input"
+    ],
+    "prepare": "./bin/ensure-addon.mjs",
+    "extraResources": [
+      {
+        "from": "./native/prebuilds/${platform}-${arch}",
+        "to": "sdl3/${platform}-${arch}"
+      },
+      {
+        "from": "./resources/gamecontrollerdb.txt",
+        "to": "gamecontrollerdb.txt"
+      }
+    ],
+    "packExclude": [
+      "native/**"
     ]
   },
   "dependencies": {
@@ -47,7 +71,9 @@
     "@drizztdourden08/brock-react": "workspace:*"
   },
   "devDependencies": {
+    "cmake-js": "catalog:",
     "electron": "catalog:",
+    "node-addon-api": "catalog:",
     "react": "catalog:",
     "zustand": "catalog:"
   },

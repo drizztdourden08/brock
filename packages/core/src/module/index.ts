@@ -1,2 +1,2 @@
 /* @layer core @kind barrel */
-export type { BrockModuleManifest, ModuleCiStep, ModuleMigration, ResolvedModule } from './module.type';
+export type { BrockModuleManifest, ModuleCiStep, ModuleExtraResource, ModuleMigration, ResolvedModule } from './module.type';

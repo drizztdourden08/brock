@@ -5,6 +5,7 @@ import { basename, join, relative } from 'node:path';
 import { appendModuleId, findWorkspaceRoot, installLauncher, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES } from '@drizztdourden08/brock-build';
 import { applyDependencies } from './local-links.mjs';
 import { writePnpmFiles } from './pnpm-files.mjs';
+import { writeReleaseWorkflow } from './release-files.mjs';
 import { applyIdentity } from './substitute.mjs';
 import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
 
@@ -104,6 +105,8 @@ const scaffold = async (plan) => {
   }
   const pnpmFiles = writePnpmFiles(targetDir, templateDir, workspaceRoot);
   if (pnpmFiles.length) console.log(`create-brock: wrote ${pnpmFiles.join(', ')}`);
+  const workflow = writeReleaseWorkflow(targetDir, workspaceRoot);
+  if (workflow) console.log(`create-brock: wrote ${workflow}`);
   recordModules(targetDir, modules);
 
   const config = { product: { id: identity.id, name: identity.name, appId: identity.appId, author: { name: identity.authorName } }, targets: ['desktop'], modules };

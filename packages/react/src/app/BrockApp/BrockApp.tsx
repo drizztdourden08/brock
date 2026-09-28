@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
 import { mergeModules } from '../../modules/merge-modules';
+import { STANDARD_TITLE_BAR_SLOTS } from '../../overlays/standard-title-bar-slots.constants';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { createBuiltInScreens } from '../../screens/built-in/built-in-screens';
 import { createScreenRegistry } from '../../screens/create-screen-registry';
@@ -25,6 +26,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const log = useHostBoot(merged.logChannels, profileHooks);
+  const titleBarSlots = useMemo(() => [...STANDARD_TITLE_BAR_SLOTS, ...merged.titleBar], [merged.titleBar]);
   const settingsStore = useProfileSettingsStore(settings);
 
   const tabs = useMemo(
@@ -68,6 +70,9 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                 settingsStore={settingsStore}
                 log={log}
                 moduleMenu={merged.menu}
+                titleBarSlots={titleBarSlots}
+                searchActions={merged.searchActions}
+                widgets={merged.widgets}
                 layout={layout}
                 screenGroups={screenGroups}
               />

@@ -7,6 +7,8 @@ const OPTIONS = {
   local: { type: 'string' },
   force: { type: 'boolean', default: false },
   check: { type: 'boolean', default: false },
+  full: { type: 'boolean', default: false },
+  channel: { type: 'string' },
   help: { type: 'boolean', short: 'h', default: false },
   version: { type: 'boolean', short: 'v', default: false },
 };

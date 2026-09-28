@@ -1,7 +1,9 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
+import { releaseAppDir } from '../release/release-app-dir.mjs';
+import { RELEASE_WORKFLOW_FILE, releaseWorkflow } from '../release/release-workflow.mjs';
 import { installLauncher } from '../launcher/install-launcher.mjs';
 import { launcherName } from '../launcher/launcher-name.mjs';
 import { knipJson } from './knip-config.mjs';
@@ -65,6 +67,7 @@ public-hoist-pattern[]=*markdownlint*
 public-hoist-pattern[]=typescript
 `,
   'brock.scope': `${scope}\n`,
+  [RELEASE_WORKFLOW_FILE]: releaseWorkflow(releaseAppDir(rootDir)),
 });
 
 const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc']);
@@ -90,6 +93,7 @@ const writeConfigFiles = (rootDir, scope, force) => {
   for (const [name, content] of Object.entries(FILES(scope, rootDir))) {
     const target = join(rootDir, name);
     if (existsSync(target) && (!force || NEVER_OVERWRITE.has(name))) { kept.push(name); continue; }
+    mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, content, 'utf8');
     written.push(name);
   }

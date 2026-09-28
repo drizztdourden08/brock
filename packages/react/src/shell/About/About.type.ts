@@ -10,13 +10,13 @@ interface AboutProps {
   logoSrc?: string;
   rows: readonly AboutRow[];
   legalText?: string;
-  copyText?: string;
+  copyText?: string | null;
 }
 
 interface AboutInfo {
   version: string;
   rows: AboutRow[];
-  copyText: string;
+  copyText: string | null;
 }
 
 export type { AboutInfo, AboutProps, AboutRow };

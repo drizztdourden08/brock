@@ -37,7 +37,7 @@ A module is an npm package with a manifest at `package.json#brock` (`BrockModule
 
 Each subpath exports one object:
 
-- `main`: a `MainModule` (brock-electron): `{ id, register(ctx), onWindow?(win, ctx), onWillQuit?(ctx) }`.
+- `main`: a `MainModule` (brock-electron): `{ id, onBoot?(product), register(ctx), onWindow?(win, ctx), onWillQuit?(ctx) }`. `onBoot` runs before anything else in `bootstrapApp`, which is where the updater runs the Velopack hooks.
 - `preload`: a `PreloadNamespace` (brock-electron): `{ id, build(tools) }` returning the nested `window.api.<id>` object.
 - `renderer`: a `RendererModule` (brock-react): `{ id, screens?, settingsTabs?, menu?, Provider?, ports? }`.
 

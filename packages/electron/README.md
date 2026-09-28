@@ -28,6 +28,7 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 
 `bootstrapApp` runs, in this order:
 
+0. Module `onBoot(product)`, before anything else. The updater module runs the Velopack hooks here, and they may exit or restart the process.
 1. Portable mode (a `data` folder beside `Update.exe`), then `--user-data=<dir>`, which outranks it.
 2. `app.setName(product.id)`, so dev and production share one userData folder.
 3. Crash forensics: local crash reporter, process and quit hooks, memory heartbeat, all into `Data/debug/main-console.log`.
@@ -48,7 +49,7 @@ An automation launch (`flags.isHeadlessLaunch()`) opens off every monitor, `focu
 
 | Option | Purpose |
 |---|---|
-| `modules` | `MainModule[]`: `{ id, register(ctx), onWindow?, onWillQuit?, automationFlags?, dataDirs?, schemes? }` |
+| `modules` | `MainModule[]`: `{ id, onBoot?, register(ctx), onWindow?, onWillQuit?, automationFlags?, dataDirs?, schemes? }` |
 | `handlers` | `HandlerGroup[]` appended to the base set: `{ id, register(ctx), devOnly? }` |
 | `automationFlags` | App flags the launch guard counts, added to the base and module flags |
 | `dataDomains` | Rows of `storage:getSummary` |

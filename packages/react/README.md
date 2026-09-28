@@ -43,6 +43,11 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 | Modules | `RendererModule`, `mergeModules` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
+| Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_SLOTS` |
+| Search | `SearchPalette`, `SearchButton`, `palette`, `usePaletteOpen`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `buildCatalog` |
+| Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
+| Toasts | `toast`, `dismissToast`, `ToastHost`, `useToastStore` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `LogsWidget` |
 
 ## Layout: menu or rail
 

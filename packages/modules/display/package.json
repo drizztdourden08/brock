@@ -34,7 +34,10 @@
     "description": "Refresh rate detection, a synced rate for fullscreen, and window mode and monitor switching.",
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",
-    "renderer": "./src/renderer/index.ts"
+    "renderer": "./src/renderer/index.ts",
+    "peers": [
+      "koffi"
+    ]
   },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",

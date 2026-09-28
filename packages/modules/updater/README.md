@@ -28,7 +28,7 @@ A build that Velopack did not install (a dev run, a portable copy) cannot apply 
 brock add updater
 ```
 
-`velopack` loads from `node_modules` at runtime, so the app declares it too: `"velopack": "catalog:"` in its `package.json`. `brock build` lists it when it is missing.
+`velopack` loads from `node_modules` at runtime, so the app declares it too. The manifest lists it under `peers`, and `brock add updater` adds it to the app.
 
 `brock sync` then imports the module on all three sides. The preload adds `window.api.updater`:
 

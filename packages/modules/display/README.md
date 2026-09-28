@@ -64,7 +64,7 @@ Switching needs a native driver:
 | macOS | CoreGraphics through `koffi` |
 | Linux | the `xrandr` command, X11 only |
 
-`koffi` is an optional peer. Add it to the app's dependencies to switch rates on Windows and macOS. Without it the status reports why, and the controls stay off. The macOS and Linux drivers have not run on hardware yet.
+`koffi` is a peer that `brock add display` adds to the app. It switches rates on Windows and macOS. Without it the status reports why, and the controls stay off. The macOS and Linux drivers have not run on hardware yet.
 
 ## Window mode
 

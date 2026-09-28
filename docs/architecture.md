@@ -32,8 +32,10 @@ Every package but `lint-config`, `build` and `create-brock` ships TypeScript sou
 A module is an npm package with a manifest at `package.json#brock` (`BrockModuleManifest` in core):
 
 ```json
-{ "brock": { "id": "updater", "description": "...", "main": "./src/main/index.ts", "preload": "./src/preload/index.ts", "renderer": "./src/renderer/index.ts", "automationFlags": [], "dataDirs": [] } }
+{ "brock": { "id": "updater", "description": "...", "main": "./src/main/index.ts", "preload": "./src/preload/index.ts", "renderer": "./src/renderer/index.ts", "automationFlags": [], "dataDirs": [], "peers": ["velopack"] } }
 ```
+
+`peers` names packages the app must declare itself, usually a native addon that loads from the app's `node_modules` at runtime. `brock add` installs each one the app lacks, at the module's own version range.
 
 Each subpath exports one object:
 

@@ -37,6 +37,9 @@
     "renderer": "./src/renderer/index.ts",
     "dataDirs": [
       "updater"
+    ],
+    "peers": [
+      "velopack"
     ]
   },
   "dependencies": {

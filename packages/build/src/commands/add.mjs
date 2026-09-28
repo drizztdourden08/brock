@@ -2,6 +2,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
+import { installPeers } from '../modules/install-peers.mjs';
 import { packageNameOf, parseAddInput } from '../modules/registry.mjs';
 import { resolveModules } from '../modules/resolve.mjs';
 import { runPnpm } from '../run.mjs';
@@ -69,6 +70,8 @@ const runAdd = async ({ rootDir, input, local }) => {
   const id = knownId ?? idOfInstalled(rootDir, packageNameOf(spec));
   const { missing } = resolveModules(rootDir, [id]);
   if (missing.length) throw new Error(`Installed ${spec}, but no package with brock.id "${id}" resolves from ${rootDir}`);
+  const peersCode = await installPeers(rootDir, packageNameOf(spec));
+  if (peersCode !== 0) return peersCode;
 
   const configPath = join(rootDir, CONFIG_FILE);
   const source = readFileSync(configPath, 'utf8');

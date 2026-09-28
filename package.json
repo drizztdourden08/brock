@@ -21,7 +21,7 @@
     "test": "vitest run --passWithNoTests",
     "app:dev": "pnpm --filter ./templates/app dev",
     "app:build": "pnpm --filter ./templates/app build",
-    "storylite": "storylite dev --port 3994",
+    "storylite": "storylite dev --port 9500",
     "prose": "brock prose",
     "deadcode": "knip",
     "duplicates": "jscpd .",

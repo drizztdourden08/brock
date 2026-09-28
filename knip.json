@@ -84,6 +84,15 @@
         "src/**/*.{ts,tsx}"
       ]
     },
+    "packages/modules/port-kit": {
+      "entry": [
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "tests/**/*.ts"
+      ]
+    },
     "templates/app": {
       "entry": [
         "electron/main.ts",

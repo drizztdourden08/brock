@@ -28,6 +28,7 @@ export default brockEslint({
     'packages/create-brock/**',
     'packages/thread/**',
     'packages/plugins/**',
+    'packages/modules/port-kit/bin/**',
     'packages/core/src/log/log-bus.ts',
     'packages/electron/src/main/bootstrap/boot-timing.ts',
     'packages/electron/src/main/bootstrap/create-main-context.ts',

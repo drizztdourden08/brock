@@ -1,0 +1,65 @@
+{
+  "name": "@drizztdourden08/brock-port-kit",
+  "version": "0.1.0",
+  "description": "Brock port kit module: the WebAssembly game core lifecycle, save slots and SRAM, the frame presenter, the audio adapter, live settings, the ROM source, an asset pipeline runner and ensure-wasm. The game supplies a typed port definition.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/port-kit"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "port-kit-ensure-wasm": "./bin/ensure-wasm.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./ensure-wasm": {
+      "types": "./ensure-wasm/index.d.mts",
+      "default": "./ensure-wasm/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "ensure-wasm",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "brock": {
+    "id": "port-kit",
+    "description": "Run a game compiled to WebAssembly: core lifecycle, saves, SRAM, video, audio, live settings, ROM source and asset pipeline.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "dataDirs": [
+      "roms",
+      "assets"
+    ]
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
+  },
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "electron": "catalog:",
+    "react": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": "*",
+    "electron": ">=38",
+    "react": "^19.0.0"
+  }
+}

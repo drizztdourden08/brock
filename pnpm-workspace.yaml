@@ -5,6 +5,7 @@ packages:
   - 'templates/*'
 
 catalog:
+  '@drizztdourden08/tessera': ^0.1.0
   '@changesets/cli': ^2.29.7
   '@storylite/storylite': ^1.6.0
   jscpd: ^4.0.5
@@ -29,9 +30,6 @@ catalog:
   vite: ^7.3.3
   vitest: ^4.1.7
   zustand: ^5.0.13
-
-overrides:
-  '@drizztdourden08/tessera': link:../tessera
 
 onlyBuiltDependencies:
   - electron

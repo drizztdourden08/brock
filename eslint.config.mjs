@@ -35,5 +35,5 @@ export default brockEslint({
     'packages/electron/src/preload/**',
   ],
   defaultExportGlobs: ['packages/lint-config/markdown-rules.mjs'],
-  ignores: ['templates/app/dist/**', 'templates/app/out/**', '**/.brock/**'],
+  ignores: ['templates/app/dist/**', 'templates/app/out/**', '**/.brock/**', 'packages/create-brock/template/**'],
 });

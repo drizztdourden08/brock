@@ -1,0 +1,36 @@
+/* @layer renderer-shell @kind style */
+
+.brock-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+html.notch-safe .brock-app {
+  padding: var(--sai-top, 0) var(--sai-right, 0) var(--sai-bottom, 0) var(--sai-left, 0);
+}
+
+.brock-app__content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.brock-app__content--rail {
+  display: flex;
+}
+
+.brock-app__stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.brock-app__screens {
+  position: absolute;
+  inset: 0;
+}

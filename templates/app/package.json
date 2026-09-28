@@ -1,0 +1,56 @@
+{
+  "name": "brock-template-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A blank Brock app.",
+  "type": "module",
+  "main": "dist/electron/main.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "brock dev",
+    "build": "brock build",
+    "start": "brock start",
+    "start:headless": "brock start -- --no-focus --muted",
+    "sync": "brock sync",
+    "typecheck": "tsc --noEmit",
+    "lint": "pnpm typecheck && eslint . && stylelint \"src/**/*.css\" && brock prose && knip && jscpd .",
+    "lint:md": "markdownlint-cli2",
+    "structure": "brock structure --check",
+    "deadcode": "knip",
+    "duplicates": "jscpd ."
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*",
+    "@drizztdourden08/tessera": "*",
+    "@electron-toolkit/utils": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@drizztdourden08/brock-build": "workspace:*",
+    "@drizztdourden08/brock-lint-config": "workspace:*",
+    "@drizztdourden08/brock-thread": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "electron": "catalog:",
+    "electron-builder": "catalog:",
+    "electron-vite": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "jscpd": "catalog:",
+    "knip": "catalog:",
+    "markdownlint-cli2": "catalog:",
+    "stylelint": "catalog:",
+    "stylelint-config-standard": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "@drizztdourden08/create-brock",
+  "version": "0.1.0",
+  "description": "Scaffold a Brock app: pnpm create @drizztdourden08/brock my-app",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/create-brock"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "create-brock": "./bin/create-brock.mjs"
+  },
+  "scripts": {
+    "prepack": "node src/pack-template.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "template",
+    "README.md"
+  ],
+  "dependencies": {
+    "@drizztdourden08/brock-build": "workspace:*"
+  }
+}

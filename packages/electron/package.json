@@ -1,0 +1,38 @@
+{
+  "name": "@drizztdourden08/brock-electron",
+  "version": "0.1.0",
+  "description": "Brock Electron layer: main-process bootstrap, window and splash, IPC handlers, diagnostics; the preload bridge builder.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/electron"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@electron-toolkit/utils": "catalog:"
+  },
+  "devDependencies": {
+    "electron": "catalog:"
+  },
+  "peerDependencies": {
+    "electron": ">=38"
+  }
+}

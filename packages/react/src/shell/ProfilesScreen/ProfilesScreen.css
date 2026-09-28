@@ -1,0 +1,20 @@
+/* @layer renderer-shell @kind style */
+
+.profiles-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: var(--size-640);
+  margin: 0 auto;
+}
+
+.profiles-screen__form {
+  padding: var(--space-lg);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-inset);
+}
+
+.profiles-screen__list {
+  min-height: 0;
+}

@@ -1,0 +1,23 @@
+/* @layer tooling-scripts @kind logic */
+import { ensureElectron } from '../ensure-electron.mjs';
+import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
+import { loadBrockConfig } from '../load-config.mjs';
+import { runBin } from '../run.mjs';
+
+/**
+ * @param {'dev' | 'build'} mode
+ * @param {{ rootDir: string, passthrough?: string[]}} ctx
+ * @returns {Promise<number>} exit code
+ */
+const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
+  const electron = ensureElectron(rootDir);
+  if (!electron.ok) {
+    console.error(`brock ${mode}: ${electron.message}`);
+    return 1;
+  }
+  const copied = copyBrandIcons(rootDir, await loadBrockConfig(rootDir));
+  if (copied?.written.length) console.log(`brock ${mode}: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
+  return runBin(rootDir, 'electron-vite', [mode, ...passthrough]);
+};
+
+export { runElectronVite };

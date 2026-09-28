@@ -1,0 +1,15 @@
+/* @layer core @kind barrel */
+export { createPlatform } from './platform';
+export { resolvePlatform } from './resolve-platform';
+export { withPorts } from './with-ports';
+export { detectHost } from './detect';
+export { osFromProcess } from './os-from-process';
+export type { Platform, HostShell, OsKind, FormFactor, InputModel, PlatformInfo } from './platform.type';
+export type { FactoryMap } from './resolve-platform.type';
+export type { PlatformFactory, PortCreators } from './factory.type';
+export type { FileStore } from './ports/file-store.type';
+export type { FileStat, DataLocation, DataDomainDef, DomainUsage, StorageSummary, StoragePort } from './ports/storage.type';
+export type { WindowControlsPort, Unsub } from './ports/window-controls.type';
+export type { PickedFile, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
+export type { DevicePort, BackEdge } from './ports/device.type';
+export type { Capabilities, PlatformPorts } from '../augment';

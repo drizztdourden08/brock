@@ -1,0 +1,22 @@
+<!-- @layer docs @kind doc -->
+# @drizztdourden08/brock-thread
+
+The thread lifecycle every Brock repo runs: one git worktree per piece of work, launched in isolation, committed through the repo hooks and published through two verbs that ask.
+
+```
+<repo> worktree create <name> [--from <ref>]
+<repo> worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]]
+<repo> worktree refresh <name> [--reset] [--rebase [ref]]
+<repo> worktree commit [name] --message "<text>"
+<repo> worktree finish [name] | remove <name>
+<repo> pr push | open | status [name]
+```
+
+`<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
+
+A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. A plugin adds verbs, targets and steps through `definePlugin`.
+
+## First time on a machine
+
+1. `pnpm install` in the repo. Its postinstall (`node bin/<repo>.mjs --link`) writes the `<repo>` and `<repo>.cmd` shims into the npm global bin folder. Skipped when `CI` is set; it never fails the install.
+2. Run `<repo>` once in a terminal. When the global `brock` is missing it asks to install `@drizztdourden08/brock` from GitHub Packages. Without a terminal it prints the install command and exits 1.

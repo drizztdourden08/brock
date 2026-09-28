@@ -1,0 +1,64 @@
+{
+  "name": "@drizztdourden08/brock-build",
+  "version": "0.1.0",
+  "description": "Brock build tooling: Vite and electron-builder config factories, ensure-electron, and the brock CLI (sync, check, add, dev, build, start, adopt, structure).",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "brock": "./bin/brock.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./config": {
+      "types": "./src/config.d.mts",
+      "default": "./src/config.mjs"
+    },
+    "./load-config": {
+      "types": "./src/load-config.d.mts",
+      "default": "./src/load-config.mjs"
+    },
+    "./vite": {
+      "types": "./src/vite-config.d.mts",
+      "default": "./src/vite-config.mjs"
+    },
+    "./builder": "./src/builder-config.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-lint-config": "workspace:*",
+    "@drizztdourden08/brock-thread": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "catalog:",
+    "electron-builder": "catalog:",
+    "electron-vite": "catalog:"
+  },
+  "peerDependencies": {
+    "@vitejs/plugin-react": ">=5",
+    "electron": ">=38",
+    "electron-builder": ">=26",
+    "electron-vite": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "electron-builder": {
+      "optional": true
+    }
+  }
+}

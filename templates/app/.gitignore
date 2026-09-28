@@ -1,0 +1,11 @@
+node_modules/
+dist/
+release/
+out/
+*.tsbuildinfo
+.vite/
+.user-data/
+build/icons/
+build/splash/
+public/logos/icon.svg
+public/logos/icon-256.png

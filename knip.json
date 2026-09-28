@@ -1,0 +1,108 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreDependencies": [
+    "@drizztdourden08/tessera",
+    "@electron-toolkit/utils",
+    "@types/react-dom",
+    "react",
+    "react-dom",
+    "zustand",
+    "rimraf"
+  ],
+  "workspaces": {
+    ".": {
+      "entry": [
+        ".markdownlint-cli2.mjs",
+        "*.config.{mjs,ts}"
+      ],
+      "project": [
+        "*.{mjs,ts}"
+      ]
+    },
+    "packages/lint-config": {
+      "entry": [
+        "*.mjs",
+        "rules/*.mjs"
+      ],
+      "project": [
+        "**/*.mjs"
+      ]
+    },
+    "packages/build": {
+      "entry": [
+        "src/*.mjs"
+      ],
+      "project": [
+        "**/*.mjs"
+      ],
+      "ignoreDependencies": [
+        "electron-builder"
+      ]
+    },
+    "packages/cli": {
+      "project": [
+        "**/*.mjs"
+      ],
+      "ignoreDependencies": [
+        "@drizztdourden08/brock-thread"
+      ]
+    },
+    "packages/create-brock": {
+      "project": [
+        "**/*.mjs"
+      ]
+    },
+    "packages/core": {
+      "entry": [
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+      ]
+    },
+    "packages/electron": {
+      "project": [
+        "src/**/*.ts"
+      ]
+    },
+    "packages/react": {
+      "entry": [
+        "stories/**/*.stories.tsx",
+        "stories/_samples/*.tsx"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "stories/**/*.{ts,tsx}"
+      ],
+      "ignoreDependencies": [
+        "react-dom"
+      ]
+    },
+    "packages/modules/*": {
+      "project": [
+        "src/**/*.ts"
+      ]
+    },
+    "templates/app": {
+      "entry": [
+        "electron/main.ts",
+        "electron/preload.ts",
+        "src/main.tsx",
+        ".brock/*.ts",
+        "*.config.{cjs,ts,mjs}",
+        ".markdownlint-cli2.mjs",
+        "brock.config.ts",
+        "brock.workspace.mjs"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "electron/**/*.ts",
+        ".brock/*.ts"
+      ],
+      "ignoreDependencies": [
+        "@electron-toolkit/utils"
+      ]
+    }
+  }
+}

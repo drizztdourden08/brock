@@ -1,0 +1,90 @@
+/* @layer tooling-scripts @kind logic */
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve } from 'node:path';
+import { automationFlags } from './automation-flags.mjs';
+import { ensureElectronBinary } from './electron-binary.mjs';
+
+const DIST_ENTRY = join('dist', 'electron', 'main.js');
+const DIST_OUTPUTS = [DIST_ENTRY, join('dist', 'preload', 'preload.mjs'), join('dist', 'renderer', 'index.html')];
+
+const requireFrom = (dir) => createRequire(join(dir, 'package.json'));
+
+const electronViteBin = (appDir) => {
+  const manifest = requireFrom(appDir).resolve('electron-vite/package.json');
+  const { bin } = JSON.parse(readFileSync(manifest, 'utf8'));
+  return join(dirname(manifest), typeof bin === 'string' ? bin : bin['electron-vite']);
+};
+
+/**
+ * @callback StatesHook
+ * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
+ * @param {string} state
+ * @returns {string[] | string | null} app flags, a refusal message, or null
+ */
+
+const stateFlags = (states, worktree, state) => {
+  if (state === 'none') return [];
+  if (!states) return [`--state=${state}`];
+  const result = states(worktree, state);
+  return Array.isArray(result) ? result : [];
+};
+
+const checkStateWith = (states) => (worktree, state) => {
+  if (state === 'none' || !states) return null;
+  const result = states(worktree, state);
+  if (Array.isArray(result)) return null;
+  return typeof result === 'string' ? result : `"${state}" is not a state "${worktree.name}" knows.`;
+};
+
+const appArgs = ({ worktree, state, visible, sound, passthrough }, userDataDir, states) => [
+  `--user-data=${userDataDir}`,
+  ...automationFlags({ visible, sound }),
+  `--instance=${worktree.name}`,
+  ...stateFlags(states, worktree, state),
+  ...passthrough,
+];
+
+const startDev = (appDir, args, log) => {
+  ensureElectronBinary(appDir, log);
+  log(`${appDir}> electron-vite dev --watch -- ${args.join(' ')}`);
+  return spawn(process.execPath, [electronViteBin(appDir), 'dev', '--watch', '--', ...args], { cwd: appDir, stdio: 'inherit' });
+};
+
+const startProd = (appDir, args, log) => {
+  const electron = ensureElectronBinary(appDir, log);
+  const env = { ...process.env };
+  delete env.ELECTRON_RUN_AS_NODE;
+  log(`${appDir}> electron ${DIST_ENTRY} ${args.join(' ')}`);
+  return spawn(electron, [DIST_ENTRY, ...args], { cwd: appDir, stdio: 'inherit', env });
+};
+
+const notReadyWith = (dirs, userData) => (worktree, prod) => {
+  if (!existsSync(dirs.userData(worktree))) {
+    return `"${worktree.name}" has no ${userData} folder. Run: ${worktree.workspace.name} worktree create ${worktree.name}`;
+  }
+  const missing = prod ? DIST_OUTPUTS.find((output) => !existsSync(join(dirs.app(worktree), output))) : null;
+  if (missing) return `"${worktree.name}" has no complete production build (${missing} is missing). Build it first, or launch without --prod.`;
+  return null;
+};
+
+/**
+ * @param {{ app?: string, userData?: string, states?: StatesHook | null }} [options]
+ * @returns {import('../workspace/workspace.type.mjs').LaunchTarget}
+ */
+const electronTarget = ({ app = '.', userData = '.user-data', states = null } = {}) => {
+  const dirs = {
+    app: (worktree) => resolve(worktree.path, app),
+    userData: (worktree) => resolve(worktree.path, userData),
+  };
+  const launch = (request) => {
+    const { worktree, prod } = request;
+    const args = appArgs(request, dirs.userData(worktree), states);
+    const appDir = dirs.app(worktree);
+    return Promise.resolve(prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
+  };
+  return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData), checkState: checkStateWith(states) };
+};
+
+export { electronTarget };

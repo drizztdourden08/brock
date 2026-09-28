@@ -1,0 +1,29 @@
+{
+  "name": "@drizztdourden08/brock-thread",
+  "version": "0.1.0",
+  "description": "The thread lifecycle every Brock repo runs: worktrees, isolated launches, publish verbs, plugins.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/thread"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./cli": "./src/cli/run-thread.mjs"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@drizztdourden08/brock-lint-config": "workspace:*"
+  }
+}

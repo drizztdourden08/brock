@@ -1,0 +1,60 @@
+{
+  "name": "brock",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Brock: the base-app foundation for Electron + React apps built on Tessera. Packages, optional modules and the create-brock builder.",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "drizztdourden_",
+    "email": "drizztdourden08@users.noreply.github.com"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@10.17.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "pnpm typecheck && eslint . && stylelint \"packages/**/*.css\" \"templates/**/*.css\" && brock prose && knip && jscpd .",
+    "lint:md": "markdownlint-cli2",
+    "structure": "brock structure --check",
+    "test": "vitest run --passWithNoTests",
+    "app:dev": "pnpm --filter ./templates/app dev",
+    "app:build": "pnpm --filter ./templates/app build",
+    "storylite": "storylite dev --port 3994",
+    "prose": "brock prose",
+    "deadcode": "knip",
+    "duplicates": "jscpd .",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "catalog:",
+    "@drizztdourden08/brock-build": "workspace:*",
+    "@drizztdourden08/brock-lint-config": "workspace:*",
+    "@drizztdourden08/tessera": "link:../tessera",
+    "@electron-toolkit/utils": "catalog:",
+    "@storylite/storylite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "electron": "catalog:",
+    "electron-builder": "catalog:",
+    "electron-vite": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "jscpd": "catalog:",
+    "knip": "catalog:",
+    "markdownlint-cli2": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rimraf": "^6.1.3",
+    "stylelint": "catalog:",
+    "stylelint-config-standard": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "zustand": "catalog:"
+  }
+}

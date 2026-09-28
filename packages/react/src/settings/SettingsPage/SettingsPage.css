@@ -1,0 +1,110 @@
+/* @layer renderer-shell @kind style */
+
+.settings-page {
+  --settings-page-head-h: var(--size-64);
+  --settings-page-head-h-compact: var(--size-40);
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-xl);
+  background: var(--c-panel);
+}
+
+.settings-page__head {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-md);
+  align-items: center;
+  min-height: var(--settings-page-head-h);
+  padding: var(--space-md) var(--space-xl);
+  overflow: hidden;
+  border-bottom: var(--border-width-thin) solid var(--c-border);
+  isolation: isolate;
+  transition: min-height var(--transition-fast), padding var(--transition-fast);
+}
+
+.settings-page__backdrop {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.settings-page__head::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, var(--c-layer) 18%, color-mix(in srgb, var(--c-layer) 60%, transparent) 55%, color-mix(in srgb, var(--c-layer) 30%, transparent));
+}
+
+.settings-page__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  color: var(--c-primary-bright);
+  font-size: var(--text-2xl);
+  filter: drop-shadow(0 0 var(--blur-glow) var(--c-primary));
+  transition: font-size var(--transition-fast);
+}
+
+.settings-page__title {
+  margin: 0;
+  color: var(--c-text);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+  transition: font-size var(--transition-fast);
+}
+
+.settings-page__tabs {
+  margin-left: var(--space-sm);
+  padding-left: var(--space-lg);
+  border-left: var(--border-width-thin) solid var(--c-border-strong);
+}
+
+.settings-page__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-left: auto;
+}
+
+.settings-page--compact .settings-page__head {
+  min-height: var(--settings-page-head-h-compact);
+  padding-block: var(--space-xs);
+}
+
+.settings-page--compact .settings-page__icon {
+  font-size: var(--text-xl);
+}
+
+.settings-page--compact .settings-page__title {
+  font-size: var(--text-lg);
+}
+
+.settings-page__body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-xl);
+  overflow-y: auto;
+}
+
+.settings-page__body--fixed {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page__head,
+  .settings-page__icon,
+  .settings-page__title {
+    transition: none;
+  }
+}

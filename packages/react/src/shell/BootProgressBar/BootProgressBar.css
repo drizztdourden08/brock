@@ -1,0 +1,70 @@
+/* @layer renderer-shell @kind style */
+
+.boot-bar {
+  position: fixed;
+  z-index: var(--z-toast);
+  inset: auto 0 0;
+  height: calc(var(--text-base) + var(--space-md));
+  overflow: hidden;
+  border-top: var(--border-width-thin) solid var(--c-border);
+  background: var(--c-surface);
+  opacity: 1;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.boot-bar--done {
+  opacity: 0;
+}
+
+.boot-bar__label {
+  position: absolute;
+  display: flex;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text);
+  font-size: var(--text-base);
+  white-space: nowrap;
+}
+
+.boot-bar__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  overflow: hidden;
+  background: var(--c-primary);
+  transition: width var(--transition-normal);
+}
+
+.boot-bar--error .boot-bar__fill {
+  background: var(--c-danger);
+}
+
+.boot-bar__label--over {
+  width: 100vw;
+  color: var(--c-on-primary);
+}
+
+.boot-bar--indeterminate .boot-bar__fill {
+  width: 35%;
+  animation: boot-bar-sweep 1.1s ease-in-out infinite;
+  transition: none;
+}
+
+.boot-bar--indeterminate .boot-bar__label--over {
+  display: none;
+}
+
+@keyframes boot-bar-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(285.7%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-bar--indeterminate .boot-bar__fill {
+    width: 100%;
+    animation: none;
+    opacity: var(--opacity-faint);
+  }
+}

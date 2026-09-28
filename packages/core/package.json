@@ -1,0 +1,40 @@
+{
+  "name": "@drizztdourden08/brock-core",
+  "version": "0.1.0",
+  "description": "Brock core: product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, the log bus, module manifests. Isomorphic, no Electron and no React.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./augment": "./src/augment.ts",
+    "./product": "./src/product/index.ts",
+    "./ipc": "./src/ipc/index.ts",
+    "./platform": "./src/platform/index.ts",
+    "./storage": "./src/storage/index.ts",
+    "./settings": "./src/settings/index.ts",
+    "./log": "./src/log/index.ts",
+    "./module": "./src/module/index.ts",
+    "./automation": "./src/automation/index.ts",
+    "./registry": "./src/registry/index.ts",
+    "./format": "./src/format/index.ts",
+    "./result": "./src/result/index.ts",
+    "./types": "./src/types/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false
+}

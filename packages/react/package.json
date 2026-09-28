@@ -1,0 +1,44 @@
+{
+  "name": "@drizztdourden08/brock-react",
+  "version": "0.1.0",
+  "description": "Brock renderer layer: BrockApp shell, platform provider and hosts, stores kit, screen registry, settings engine, shell views.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/react"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@storylite/storylite": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind barrel */
 export type {
-  LockOverlayProps, RenderControl, Section, SettingItem, SettingLockCause, SettingsControlProps,
+  LockOverlayProps, RenderControl, Section, SettingChoice, SettingControl, SettingItem, SettingLockCause, SettingsControlProps,
   SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 } from './settings.type';
 export { createTabRegistry } from './tab-registry';

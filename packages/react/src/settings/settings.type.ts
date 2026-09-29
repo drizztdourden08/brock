@@ -1,12 +1,22 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 
+interface SettingChoice {
+  value: string;
+  label: string;
+}
+
+type SettingControl =
+  | { kind: 'choice'; options: SettingChoice[] }
+  | { kind: 'range'; min: number; max: number; step?: number; format?: (value: number) => string };
+
 interface SettingItem {
   key: string;
   label: string;
   description: string;
   keywords?: string;
   link?: string;
+  control?: SettingControl;
 }
 
 interface SubSection {
@@ -64,6 +74,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingItem, SettingLockCause, SettingsControlProps,
+  LockOverlayProps, RenderControl, Section, SettingChoice, SettingControl, SettingItem, SettingLockCause, SettingsControlProps,
   SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

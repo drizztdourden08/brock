@@ -78,7 +78,12 @@ interface AboutSnapshot {
   appVersion: string;
 }
 
+interface SettingRowsSnapshot {
+  total: number;
+  empty: string[];
+}
+
 export type {
   AboutSnapshot, BootSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
-  ReviewOutcome, ReviewStep, StepTour,
+  ReviewOutcome, ReviewStep, SettingRowsSnapshot, StepTour,
 };

@@ -2,7 +2,9 @@
 import { nav } from '../../navigation/nav';
 import type { ScreenDef } from '../../screens/screen.type';
 import { frameChecks } from '../checks/frame-checks';
+import { settingRowChecks } from '../checks/setting-row-checks';
 import { find } from '../dom/find';
+import { settingRows } from '../dom/setting-rows';
 import { isClosed } from '../dom/is-closed';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
@@ -18,6 +20,7 @@ const reviewScreen = async (tour: StepTour, screen: ScreenDef): Promise<void> =>
   tour.check(`${id}-route`, shown !== null, `"${id}" opened through ${via}`, `"${id}" did not open through ${via}`);
   if (shown === null) return;
   if (screen.layer !== 'own') tour.report(frameChecks(id, title, readFrame()));
+  tour.report(settingRowChecks(id, settingRows()));
   await tour.capture(`screen-${id}`);
   await escapeCloses(tour, id, isClosed);
 };

@@ -5,5 +5,6 @@ export { instanceName } from './instance-name';
 export { instanceProfile } from './instance-profile';
 export { isAutomationLaunch } from './is-automation-launch';
 export { isInstanceLaunch } from './is-instance-launch';
+export { isReviewLaunch } from './is-review-launch';
 export { openExternal } from './open-external';
 export { writeClipboard } from './write-clipboard';

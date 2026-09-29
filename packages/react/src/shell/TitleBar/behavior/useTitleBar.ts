@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
+import { escapeLayers } from '../../../escape/escape-layers';
 import { usePlatform } from '../../../platform/usePlatform';
 
 const useTitleBar = (menuRef: RefObject<HTMLElement | null>) => {
@@ -18,6 +19,11 @@ const useTitleBar = (menuRef: RefObject<HTMLElement | null>) => {
     void win.isFullscreen().then(setIsFullscreen);
     return win.onFullscreenChange(setIsFullscreen);
   }, [win]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    return escapeLayers.add({ isOpen: () => true, close: () => setMenuOpen(false) });
+  }, [menuOpen]);
 
   useEffect(() => {
     if (!menuOpen) return;

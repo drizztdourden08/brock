@@ -45,6 +45,10 @@ An automation launch (`flags.isHeadlessLaunch()`) opens off every monitor, `focu
 
 `--screenshot=<name>` captures the window to `Data/screenshots/<name>.png` once the shell is ready (or after 20 s) and quits.
 
+## Automated review
+
+`--review[=<name>]` runs the renderer's review tour once the shell is ready: `brock start -- --review --no-focus --muted --user-data=<dir>` after a build, or `<app> launch main none --review`. Main registers `review:capture` (a PNG per step), `review:check` and `review:finish`, records renderer console errors, failed loads (`did-fail-load`, `webRequest` status 400 and up, request errors) and main log warnings and errors, and adds the global checks. The report lands in `Data/review/<name>/report.json` and `report.md` beside the screenshots; the process prints the JSON path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1.
+
 ## Options
 
 | Option | Purpose |

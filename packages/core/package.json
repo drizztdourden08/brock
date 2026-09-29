@@ -29,6 +29,7 @@
     "./registry": "./src/registry/index.ts",
     "./format": "./src/format/index.ts",
     "./result": "./src/result/index.ts",
+    "./review": "./src/review/index.ts",
     "./types": "./src/types/index.ts",
     "./package.json": "./package.json"
   },

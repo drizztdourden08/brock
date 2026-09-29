@@ -7,6 +7,7 @@ interface ReadyInput {
   options: BootstrapOptions;
   dataDirs: string[];
   openWindow: () => BrowserWindow;
+  windowIcon?: string;
 }
 
 export type { ReadyInput };

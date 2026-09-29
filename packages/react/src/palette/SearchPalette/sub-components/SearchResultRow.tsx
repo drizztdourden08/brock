@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Box, Text, Toggle } from '@drizztdourden08/tessera/primitives';
+import { menuIcon } from '../../../menu/menu-icon';
 import type { SearchResultRowProps } from './SearchResultRow.type';
 
 const rowClass = (active: boolean, disabled: boolean): string =>
@@ -18,7 +19,7 @@ const SearchResultRow = (props: SearchResultRowProps) => {
       onMouseEnter={onHover}
       onClick={() => onSelect(entry)}
     >
-      {icon !== undefined && <Text as="span" className="search-row__icon">{icon}</Text>}
+      {icon !== undefined && <Text as="span" className="search-row__icon">{menuIcon(icon)}</Text>}
       <Box className="search-row__text">
         <Text className="search-row__label">{label}</Text>
         {description && <Text className="search-row__description">{description}</Text>}

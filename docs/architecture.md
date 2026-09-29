@@ -191,6 +191,14 @@ Apps ship the way Relic of the Past does: Velopack installs and updates them, Gi
 
 `.github/workflows/release.yml` is written once by `create-brock` (a standalone app) or `brock adopt` (a repo with `apps/<app>`), and is the app's own file after that. It runs on `workflow_dispatch` with `version`, `full`, `prerelease` and `set_latest`: it checks the notes and the tag, lints, commits the version bump and tags it, runs `brock package` on Windows, Linux and macOS after `vpk download` fetched the previous release for the delta, and creates the GitHub release with the notes file as the body plus a Downloads list whose Windows link is the stub on the latest release. `brock release [version]` dispatches it.
 
+## Automated review
+
+Every Brock app carries a built-in review: `--review` (or `--review=<name>`, default `review`) is a headless automation flag like `--screenshot`. Run it with `<app> launch main none --review`, or `brock start -- --review --no-focus --muted --user-data=<dir>` after a build.
+
+Once the shell is ready the renderer drives the real UI with DOM clicks and key presses and asks main for a PNG after each step. The tour covers the title bar (title, logo, search and bug report buttons, module slots), the first-run profile form, the menu (Home, Profiles, Settings unless it is home, About, Quit, icons, the Advanced section, Escape), every registered screen in its FullScreenLayer frame, Escape opening the home screen, the Ctrl+K palette, the bug report dialog, the About logo and version, and the logs widget. Main adds the global checks: the tour finished, the app version is not the Electron version, no renderer console errors, no failed loads, no main log errors, and a resolved window icon.
+
+Main writes `Data/review/<name>/report.json` and `report.md` with the steps and their screenshots (`NN-<step>.png`), every check with pass or fail and a reason, and the console errors, failed loads and main log warnings seen during the run. It prints the `report.json` path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1. The tour code is its own chunk, loaded only on a review launch.
+
 ## Acceptance for a blank app
 
 1. `pnpm create @drizztdourden08/brock my-app --local X:\brock --yes` writes the skeleton with `link:` dependency specs into the checkout, a `pnpm-workspace.yaml` holding the catalog of the versions the template uses, and `.npmrc`.

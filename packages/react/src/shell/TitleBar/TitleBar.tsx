@@ -40,6 +40,7 @@ const TitleBar = (props: TitleBarProps) => {
           </IconButton>
         )}
         {showPin && <PinButton pinned={pinned} onToggle={togglePin} />}
+        <TitleBarSlots slots={slots} />
         {extra}
         {menuOpen && <DropdownMenu items={items} anchorRef={menuRef} />}
       </Box>
@@ -49,9 +50,7 @@ const TitleBar = (props: TitleBarProps) => {
         instanceName={instanceName}
         logoSrc={logoSrc}
         instanceLogoSrc={instanceLogoSrc}
-      >
-        <TitleBarSlots slots={slots} />
-      </TitleBarBrand>
+      />
 
       <WindowControls isMaximized={isMaximized} isFullscreen={isFullscreen} />
     </Box>

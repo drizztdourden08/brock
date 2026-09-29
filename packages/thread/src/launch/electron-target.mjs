@@ -41,7 +41,7 @@ const checkStateWith = (states) => (worktree, state) => {
 const appArgs = ({ worktree, state, visible, sound, passthrough }, userDataDir, states) => [
   `--user-data=${userDataDir}`,
   ...automationFlags({ visible, sound }),
-  `--instance=${worktree.name}`,
+  ...(worktree.path === worktree.main ? [] : [`--instance=${worktree.name}`]),
   ...stateFlags(states, worktree, state),
   ...passthrough,
 ];

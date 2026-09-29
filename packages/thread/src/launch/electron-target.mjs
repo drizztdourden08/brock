@@ -2,7 +2,7 @@
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, normalize, resolve } from 'node:path';
 import { automationFlags } from './automation-flags.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
 
@@ -52,12 +52,22 @@ const startDev = (appDir, args, log) => {
   return spawn(process.execPath, [electronViteBin(appDir), 'dev', '--watch', '--', ...args], { cwd: appDir, stdio: 'inherit' });
 };
 
+const mainEntryOf = (appDir) => {
+  try {
+    const { main } = JSON.parse(readFileSync(join(appDir, 'package.json'), 'utf8'));
+    return typeof main === 'string' ? normalize(main) : null;
+  } catch {
+    return null;
+  }
+};
+
 const startProd = (appDir, args, log) => {
   const electron = ensureElectronBinary(appDir, log);
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  log(`${appDir}> electron ${DIST_ENTRY} ${args.join(' ')}`);
-  return spawn(electron, [DIST_ENTRY, ...args], { cwd: appDir, stdio: 'inherit', env });
+  const entry = mainEntryOf(appDir) === DIST_ENTRY ? '.' : DIST_ENTRY;
+  log(`${appDir}> electron ${entry} ${args.join(' ')}`);
+  return spawn(electron, [entry, ...args], { cwd: appDir, stdio: 'inherit', env });
 };
 
 const notReadyWith = (dirs, userData) => (worktree, prod) => {

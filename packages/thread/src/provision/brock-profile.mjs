@@ -1,11 +1,18 @@
 /* @layer tooling-scripts @kind logic */
 import { mkdirSync } from 'node:fs';
+import { excludeLocally } from '../worktree/exclude-worktrees.mjs';
 import { profilePaths } from './profile-paths.mjs';
+
+const STORE_EXCLUDE = '/.brock/profile-config.json';
+
+const isMainCheckout = (worktree) => worktree.path === worktree.main;
 
 const seedProfile = (paths, worktree) => {
   if (paths.profile.exists()) return;
   const now = Date.now();
-  paths.profile.write({ id: worktree.name, name: `agent/${worktree.name}`, created: now, lastPlayed: now, automation: true });
+  const main = isMainCheckout(worktree);
+  const name = main ? 'Default' : `agent/${worktree.name}`;
+  paths.profile.write({ id: worktree.name, name, created: now, lastPlayed: now, automation: !main });
   worktree.log('profile.json created.');
 };
 
@@ -34,6 +41,7 @@ const afterLaunch = (worktree) => {
   const paths = profilePaths(worktree);
   const config = paths.config.read();
   if (!config) return;
+  excludeLocally(worktree.main, STORE_EXCLUDE);
   paths.store.write(config);
   worktree.log('Profile settings kept for the next worktree.');
 };

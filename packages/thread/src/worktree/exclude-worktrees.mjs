@@ -5,13 +5,12 @@ import { git } from '../git.mjs';
 
 /**
  * @param {string} main the main checkout
- * @param {string} worktreesDir relative to the main checkout
+ * @param {string} entry an exclude pattern
  * @returns {boolean} true when the entry was added
  */
-const excludeWorktrees = (main, worktreesDir) => {
+const excludeLocally = (main, entry) => {
   const gitDir = resolve(main, git(['rev-parse', '--git-common-dir'], main));
   const file = join(gitDir, 'info', 'exclude');
-  const entry = `/${worktreesDir.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')}/`;
   const current = existsSync(file) ? readFileSync(file, 'utf8') : '';
   if (current.split(/\r?\n/).includes(entry)) return false;
   mkdirSync(join(gitDir, 'info'), { recursive: true });
@@ -19,4 +18,12 @@ const excludeWorktrees = (main, worktreesDir) => {
   return true;
 };
 
-export { excludeWorktrees };
+/**
+ * @param {string} main the main checkout
+ * @param {string} worktreesDir relative to the main checkout
+ * @returns {boolean} true when the entry was added
+ */
+const excludeWorktrees = (main, worktreesDir) =>
+  excludeLocally(main, `/${worktreesDir.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')}/`);
+
+export { excludeLocally, excludeWorktrees };

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Flex, IconButton, Pressable, Text } from '@drizztdourden08/tessera/primitives';
+import { Flex, Icon, IconButton, Pressable, Text } from '@drizztdourden08/tessera/primitives';
 import { formatRelativeTime } from '@drizztdourden08/brock-core';
 import type { ProfileCardProps } from './ProfileCard.type';
 import './ProfileCard.css';
@@ -25,7 +25,7 @@ const ProfileCard = (props: ProfileCardProps) => {
             label={`Delete ${profile.name}`}
             onClick={(e) => { e.stopPropagation(); onDelete(profile); }}
           >
-            x
+            <Icon name="trash-2" size={14} />
           </IconButton>
         )}
       </Flex>

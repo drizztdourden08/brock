@@ -28,12 +28,6 @@
   font-weight: var(--weight-semi);
 }
 
-.about__version {
-  color: var(--c-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-}
-
 .about__body {
   display: flex;
   flex-direction: column;

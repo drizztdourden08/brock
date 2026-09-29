@@ -9,9 +9,9 @@ import type { AboutScreenOptions } from './AboutScreen.type';
 const AboutScreenBody = (props: AboutScreenOptions) => {
   const { legalText } = props;
   const { product, logoSrc } = useBrock();
-  const { version, rows, copyText } = useAboutInfo();
+  const { rows, copyText } = useAboutInfo();
   return (
-    <About productName={product.name} version={version} logoSrc={logoSrc} rows={rows} legalText={legalText} copyText={copyText} />
+    <About productName={product.name} logoSrc={logoSrc} rows={rows} legalText={legalText} copyText={copyText} />
   );
 };
 

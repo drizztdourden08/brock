@@ -6,7 +6,6 @@ interface AboutRow {
 
 interface AboutProps {
   productName: string;
-  version: string;
   logoSrc?: string;
   rows: readonly AboutRow[];
   legalText?: string;

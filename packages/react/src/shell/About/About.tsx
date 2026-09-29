@@ -12,7 +12,7 @@ const copyLabel = (copied: boolean, copyText: string | null): string => {
 };
 
 const About = (props: AboutProps) => {
-  const { productName, version, logoSrc, rows, legalText, copyText } = props;
+  const { productName, logoSrc, rows, legalText, copyText } = props;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -28,7 +28,6 @@ const About = (props: AboutProps) => {
       <Box className="about__header">
         {logoSrc && <Image className="about__logo" src={logoSrc} alt="" />}
         <Text as="h2" className="about__title">{productName}</Text>
-        <Text className="about__version">{version}</Text>
       </Box>
 
       <Box className="about__body">

@@ -38,8 +38,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
   return (
     <Box className="profiles-screen">
       <SectionHeader
-        title="Profiles"
-        subtitle={profiles.length === 0 ? 'Create a profile to get started.' : 'Pick a profile, or create another.'}
+        title={profiles.length === 0 ? 'Create a profile to get started' : 'Pick a profile, or create another'}
         action={!showForm && <Button variant="primary" size="sm" onClick={() => setCreating(true)}>New profile</Button>}
       />
       {showForm && (

@@ -32,7 +32,7 @@ const LogsWidget = () => {
       search={search}
       onSearchChange={setSearch}
       copyText={copyText}
-      countLabel="entries"
+      countLabel={rows.length === 1 ? 'entry' : 'entries'}
       emptyLabel="No log entries yet."
     />
   );

@@ -30,8 +30,7 @@ const ARG_TYPES: StoryLiteArgTypes<AboutArgs> = {
 const draw = (args: AboutArgs) => (
   <About
     productName={args.productName}
-    version={args.version}
-    rows={ROWS}
+    rows={[{ label: 'Version', value: args.version }, ...ROWS]}
     legalText={args.withLegal ? LEGAL : undefined}
     copyText={args.withCopy ? `${args.productName} ${args.version}` : undefined}
   />

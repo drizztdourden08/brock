@@ -14,6 +14,7 @@ import { useBrock } from '../../../useBrock';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
+import { useReviewTour } from '../../behavior/useReviewTour';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useShellReady } from '../../behavior/useShellReady';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
@@ -37,6 +38,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const fullMenu = useShellMenu(moduleMenu, railed);
   const titleBarHidden = useTitleBarHidden();
+  useReviewTour(settled, fullMenu, titleBarSlots);
 
   const screens = useMemo(() => registry.list(), [registry]);
 

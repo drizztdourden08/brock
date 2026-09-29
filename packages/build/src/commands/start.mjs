@@ -1,10 +1,19 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, normalize } from 'node:path';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { resolveElectronBinary, runInherit } from '../run.mjs';
 
 const MAIN_ENTRY = join('dist', 'electron', 'main.js');
+
+const mainOf = (rootDir) => {
+  try {
+    const { main } = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8'));
+    return typeof main === 'string' ? normalize(main) : null;
+  } catch {
+    return null;
+  }
+};
 
 /**
  * @param {{ rootDir: string, passthrough?: string[]}} ctx
@@ -23,7 +32,8 @@ const runStart = async ({ rootDir, passthrough = [] }) => {
   }
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  return runInherit(resolveElectronBinary(rootDir), [entry, ...passthrough], { cwd: rootDir, env });
+  const target = mainOf(rootDir) === MAIN_ENTRY ? rootDir : entry;
+  return runInherit(resolveElectronBinary(rootDir), [target, ...passthrough], { cwd: rootDir, env });
 };
 
 export { runStart };

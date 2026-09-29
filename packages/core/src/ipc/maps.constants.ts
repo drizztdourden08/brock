@@ -46,6 +46,7 @@ const BASE_INVOKE_MAP = {
   saveUiViews: 'uiViews:save',
 
   takeScreenshot: 'test:screenshot',
+  reviewCapture: 'review:capture',
 } as const satisfies Record<string, keyof InvokeContract>;
 
 const BASE_SEND_MAP = {
@@ -58,6 +59,8 @@ const BASE_SEND_MAP = {
   setAspectRatioLock: 'window:setAspectRatioLock',
   shellReady: 'window:shellReady',
   appendSessionLog: 'debug:appendSessionLog',
+  reviewCheck: 'review:check',
+  reviewFinish: 'review:finish',
 } as const satisfies Record<string, keyof SendContract>;
 
 const BASE_EVENT_MAP = {

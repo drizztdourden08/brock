@@ -25,10 +25,11 @@ import { resolvePaths } from './resolve-paths';
 import { baseHandlers } from './base-handlers';
 import { registerHandlerGroups } from './register-handlers';
 import { armScreenshotFlag } from './screenshot-flag';
+import { armReviewFlag } from './review-flag';
 import { installAppLifecycle } from './app-lifecycle';
 import { logBoot } from './boot-timing';
 
-const onReady = async ({ ctx, options, dataDirs, openWindow }: ReadyInput): Promise<void> => {
+const onReady = async ({ ctx, options, dataDirs, openWindow, windowIcon }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
   if (ctx.isDev) await session.defaultSession.clearCache();
 
@@ -51,6 +52,7 @@ const onReady = async ({ ctx, options, dataDirs, openWindow }: ReadyInput): Prom
   });
   ipcMain.once('window:shellReady', () => logBoot('shell-ready (reveal)'));
   armScreenshotFlag(ctx);
+  armReviewFlag(ctx, windowIcon);
 
   for (const module of modules) module.onWindow?.(win, ctx);
   options.onWindow?.(win, ctx);
@@ -88,7 +90,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 
   void app.whenReady()
-    .then(() => onReady({ ctx, options, dataDirs, openWindow }))
+    .then(() => onReady({ ctx, options, dataDirs, openWindow, windowIcon: icon }))
     .catch((err: unknown) => {
       noteSync('error', `boot failed: ${stackOf(err)}`);
       app.exit(1);

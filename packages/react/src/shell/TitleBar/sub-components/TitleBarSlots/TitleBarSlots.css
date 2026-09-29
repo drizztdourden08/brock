@@ -1,0 +1,5 @@
+/* @layer renderer-shell @kind style */
+
+.titlebar__slot {
+  display: contents;
+}

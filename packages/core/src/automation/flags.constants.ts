@@ -6,6 +6,7 @@ const BASE_AUTOMATION_FLAGS = [
   '--window-size',
   '--no-focus',
   '--screenshot',
+  '--review',
 ] as const;
 
 const IDENTITY_FLAGS = ['--instance', '--profile'];

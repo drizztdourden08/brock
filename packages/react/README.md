@@ -150,6 +150,10 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 `stories/*.stories.tsx` follow the Tessera story shape and import the package from `../src`. The gallery config is not wired in this repo yet; the files are ready for it.
 
+## Automated review
+
+On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, the bug report dialog, About and the logs widget. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
+
 ## Checks
 
 ```

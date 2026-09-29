@@ -24,7 +24,8 @@ brock package [--full] [--channel <name>]
                            build, electron-builder --dir, vpk pack into release/velopack,
                            then on Windows the small installer and install.json
 brock icons [--force]      copy the Tessera brand set into build/icons, build/splash and public/logos, and draw the bot variant
-brock start [-- args]      run dist/electron/main.js with Electron; args reach the app
+brock start [-- args]      run the built app with Electron (the app folder when package.json main is
+                           dist/electron/main.js, so its name and version apply); args reach the app
 brock adopt [--scope @x] [--local <brockRepo>] [--force]
                            give any repo the lint configs, pnpm files and the lint-config dependency,
                            plus its own command: bin/<repo>.mjs, linked by the postinstall
@@ -86,7 +87,8 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `release/`: `release-workflow.yml.tmpl` is the one source of the app release workflow; `releaseWorkflow(appDir)` fills in the app folder. `create-brock` writes it for a standalone app and `brock adopt` for a repo with `apps/<app>`, both only when the file is absent.
 
 `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test: the
-window opens off screen and unfocused, and the app writes under `<dir>`.
+window opens off screen and unfocused, and the app writes under `<dir>`. Add `--review` for the
+automated review, which writes `<dir>/Data/review/review/report.md` and exits 1 on a failed check.
 
 ## What sync writes
 

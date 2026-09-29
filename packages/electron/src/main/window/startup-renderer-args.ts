@@ -1,4 +1,5 @@
 /* @layer electron-main @kind logic */
+import { REVIEW_FLAG } from '@drizztdourden08/brock-core/review';
 import type { RendererArgsInput, StartupMarkerInput } from './startup-config.type';
 
 const startupMarkers = ({ config, flags, instance, isDev, argv }: StartupMarkerInput): string[] => {
@@ -10,6 +11,7 @@ const startupMarkers = ({ config, flags, instance, isDev, argv }: StartupMarkerI
   if (instance.name) markers.push(`--startup-instance=${instance.name}`);
   if (instance.profile) markers.push(`--startup-profile=${instance.profile}`);
   if (flags.isAutomationLaunch(argv)) markers.push('--startup-automation');
+  if (flags.hasFlag(REVIEW_FLAG, argv)) markers.push('--startup-review');
   return markers;
 };
 

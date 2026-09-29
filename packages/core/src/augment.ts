@@ -8,6 +8,7 @@ import type { WindowControlsPort } from './platform/ports/window-controls.type';
 import type { FileStore } from './platform/ports/file-store.type';
 import type { FilePickerPort } from './platform/ports/file-picker.type';
 import type { DevicePort } from './platform/ports/device.type';
+import type { ReviewCheck } from './review/review.type';
 
 interface BaseProfile {
   id: string;
@@ -68,6 +69,7 @@ interface InvokeContract {
   'uiViews:save': (data: Record<string, unknown>) => Promise<void>;
 
   'test:screenshot': (name: string) => Promise<string>;
+  'review:capture': (step: string) => Promise<string>;
 }
 
 interface SendContract {
@@ -80,6 +82,8 @@ interface SendContract {
   'window:setAspectRatioLock': (ratio: number, extraHeight: number) => void;
   'window:shellReady': () => void;
   'debug:appendSessionLog': (lines: string[]) => void;
+  'review:check': (check: ReviewCheck) => void;
+  'review:finish': () => void;
 }
 
 interface EventContract {

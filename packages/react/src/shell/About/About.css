@@ -43,6 +43,7 @@
 
 .about__row {
   display: flex;
+  gap: var(--space-md);
   align-items: center;
   justify-content: space-between;
   padding: var(--space-xs) var(--space-sm);

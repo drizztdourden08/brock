@@ -4,9 +4,11 @@ import { existsSync, statSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 
 const NAME_RULE = /^[a-z0-9][a-z0-9-]{0,38}$/;
+const MAIN_CHECKOUT = 'main';
 
 const assertName = (name) => {
   if (!name || !NAME_RULE.test(name)) throw new Error(`"${name ?? ''}" is not a valid worktree name: lowercase letters, digits and dashes, at most 39 characters.`);
+  if (name === MAIN_CHECKOUT) throw new Error(`"${MAIN_CHECKOUT}" names the main checkout, not a worktree. Pick another name.`);
   return name;
 };
 
@@ -44,4 +46,4 @@ const worktreePathFor = (name, workspace, cwd = process.cwd()) => {
   return registered ?? join(main, workspace.worktreesDir, name);
 };
 
-export { assertName, isWorktreeCheckout, mainCheckout, registeredWorktrees, worktreePathFor };
+export { assertName, isWorktreeCheckout, mainCheckout, registeredWorktrees, worktreePathFor, MAIN_CHECKOUT };

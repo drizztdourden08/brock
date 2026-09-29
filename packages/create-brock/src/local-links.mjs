@@ -62,7 +62,7 @@ const addModuleDependencies = (dependencies, modules, version) => {
 };
 
 const linkedNames = (pkg) =>
-  Object.entries(pkg.dependencies ?? {}).filter(([, spec]) => spec.startsWith('link:')).map(([name]) => name);
+  Object.entries({ ...pkg.dependencies, ...pkg.devDependencies }).filter(([, spec]) => spec.startsWith('link:')).map(([name]) => name);
 
 const ignoreLinkedInKnip = (targetDir, names) => {
   const file = join(targetDir, 'knip.json');

@@ -1,10 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { flag } from '../cli/thread-args.mjs';
-import { assertName } from '../worktree/paths.mjs';
-import { createWorktreeContext } from '../worktree/worktree-context.mjs';
+import { launchContext } from './launch-context.mjs';
 
 const OWN_OPTIONS = new Set(['target', 'visible', 'sound', 'prod']);
-const USAGE = 'launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]';
+const USAGE = 'launch <name|main> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]';
 
 const passthroughOf = (options, extra) => [
   ...Object.entries(options)
@@ -57,10 +56,9 @@ const waitForClose = (child, onClose) =>
 const run = async (positional, options, ctx) => {
   const [name, state, ...extra] = positional;
   if (!name || !state) throw new Error(`Usage: ${ctx.workspace.name} ${USAGE}`);
-  assertName(name);
   const target = pickTarget(ctx, options.target);
   const prod = flag(options, 'prod');
-  const worktree = createWorktreeContext(name, ctx);
+  const worktree = await launchContext(name, ctx);
   const refusal = target.notReady?.(worktree, prod) ?? target.checkState?.(worktree, state) ?? null;
   if (refusal) throw new Error(refusal);
   await runBuildSteps(ctx, worktree, prod || target.kind !== 'electron');

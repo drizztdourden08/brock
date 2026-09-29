@@ -3,6 +3,7 @@ import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { basename, join, relative } from 'node:path';
 import { appendModuleId, findWorkspaceRoot, installLauncher, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES } from '@drizztdourden08/brock-build';
+import { initRepository } from './git-init.mjs';
 import { applyDependencies } from './local-links.mjs';
 import { writePnpmFiles } from './pnpm-files.mjs';
 import { writeReleaseWorkflow } from './release-files.mjs';
@@ -59,9 +60,14 @@ const printNextSteps = (plan, sync, command) => {
   const lines = [`\nCreated ${plan.identity.name} in ${dir}\n`, 'Next:'];
   if (dir !== '.') lines.push(`  cd ${dir}`);
   if (!plan.install) lines.push(command ? `  pnpm install          (links the ${command} command)` : '  pnpm install');
-  if (command) lines.push(`${`  ${command} --version`.padEnd(23)} (the repo command; the first run offers to install Brock on this machine)`);
   if (sync.missing.length) lines.push(`  pnpm brock sync        (module packages to resolve: ${sync.missing.map((m) => m.id).join(', ')})`);
-  lines.push('  pnpm lint', '  pnpm dev', '', 'Headless smoke test after a build:', '  pnpm build && pnpm start:headless -- --user-data=.user-data', '');
+  const run = command ?? 'pnpm brock';
+  lines.push(
+    `  ${run} launch main none --visible     (the app, hot reload)`,
+    `  ${run} launch main none --review      (headless review: screenshots and a report)`,
+    '  pnpm lint',
+    '',
+  );
   console.log(lines.join('\n'));
 };
 
@@ -118,6 +124,8 @@ const scaffold = async (plan) => {
     const code = installThenResync(plan, workspaceRoot, config);
     if (code !== 0) return code;
   }
+  const repository = initRepository(targetDir, identity);
+  if (repository) console.log(`create-brock: ${repository}`);
   printNextSteps(plan, sync, command);
   return 0;
 };

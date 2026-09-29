@@ -14,6 +14,8 @@ interface ReviewSession {
   addCheck: (check: ReviewCheck) => void;
   addConsoleError: (message: string) => void;
   addFailedLoad: (message: string) => void;
+  markLoaded: (url: string) => void;
+  addRequestError: (url: string, message: string) => void;
   addMainLine: (line: ReviewLogLine) => void;
 }
 

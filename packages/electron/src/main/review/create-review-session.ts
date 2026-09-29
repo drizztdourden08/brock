@@ -20,9 +20,14 @@ const createReviewSession = ({ name, app, windowIcon }: ReviewSessionInput): Rev
     failedLoads: [],
     mainLog: [],
   };
+  const loaded = new Set<string>();
+  const requestErrors = new Map<string, string>();
+  const unresolved = (): string[] => [...requestErrors].filter(([url]) => !loaded.has(url)).map(([, message]) => message);
   return {
     dir: getUserDataPath('review', name),
-    run: () => run,
+    run: () => ({ ...run, failedLoads: [...run.failedLoads, ...unresolved()] }),
+    markLoaded: (url) => { loaded.add(url); },
+    addRequestError: (url, message) => { if (!requestErrors.has(url)) requestErrors.set(url, message); },
     nextStep: (step) => {
       const index = run.steps.length + 1;
       const record = { index, name: step, file: reviewStepFile(index, step) };

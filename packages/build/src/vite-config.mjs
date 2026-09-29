@@ -11,6 +11,7 @@ import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
 
 const SOURCE_SCOPE = '@drizztdourden08/';
+const SHARED_SINGLETONS = ['react', 'react-dom', 'zustand', '@drizztdourden08/tessera'];
 const SOURCE_SPECS = ['workspace:', 'link:'];
 
 const readScope = (dir) => {
@@ -105,7 +106,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const rollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external)] };
   const base = {
     main: {
-      resolve: { alias, dedupe: ['react', 'react-dom'] },
+      resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/electron'),
@@ -114,7 +115,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       },
     },
     preload: {
-      resolve: { alias, dedupe: ['react', 'react-dom'] },
+      resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/preload'),
@@ -126,7 +127,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       root: src,
       publicDir: resolve(rootDir, 'public'),
       plugins: [react(), splashPlugin({ rootDir, product })],
-      resolve: { alias, dedupe: ['react', 'react-dom'] },
+      resolve: { alias, dedupe: SHARED_SINGLETONS },
       server: { fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {
         outDir: resolve(rootDir, 'dist/renderer'),

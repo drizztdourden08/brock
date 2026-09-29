@@ -14,9 +14,10 @@ const watchReviewWindow = (win: BrowserWindow, session: ReviewSession): void => 
   const { webRequest } = webContents.session;
   webRequest.onCompleted((details) => {
     if (details.statusCode >= FAILED_STATUS) session.addFailedLoad(`${details.url}: HTTP ${details.statusCode}`);
+    else session.markLoaded(details.url);
   });
   webRequest.onErrorOccurred((details) => {
-    session.addFailedLoad(`${details.url}: ${details.error}`);
+    session.addRequestError(details.url, `${details.url}: ${details.error}`);
   });
 };
 

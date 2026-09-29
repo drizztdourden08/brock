@@ -3,6 +3,8 @@ import { aboutStep } from './steps/about-step';
 import { bootStep } from './steps/boot-step';
 import { bugReportStep } from './steps/bug-report-step';
 import { escapeHomeStep } from './steps/escape-home-step';
+import { fontsStep } from './steps/fonts-step';
+import { stylesStep } from './steps/styles-step';
 import { menuStep } from './steps/menu-step';
 import { paletteStep } from './steps/palette-step';
 import { profileStep } from './steps/profile-step';
@@ -11,7 +13,7 @@ import { widgetsStep } from './steps/widgets-step';
 import type { ReviewStep } from './review.type';
 
 const REVIEW_STEPS: readonly ReviewStep[] = [
-  bootStep, profileStep, menuStep, screensStep, escapeHomeStep, paletteStep, bugReportStep, aboutStep, widgetsStep,
+  bootStep, profileStep, menuStep, screensStep, escapeHomeStep, paletteStep, bugReportStep, aboutStep, widgetsStep, fontsStep, stylesStep,
 ];
 
 export { REVIEW_STEPS };

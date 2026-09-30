@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { MODULE_PACKAGES } from '@drizztdourden08/brock-build';
+import { linkSpec, MODULE_PACKAGES } from '@drizztdourden08/brock-build';
 import { modulePeers } from './module-peers.mjs';
 
 const SCOPE = '@drizztdourden08/';
@@ -16,16 +16,14 @@ const LOCAL_PACKAGES = {
   'brock-plugin-snes': 'packages/plugins/snes',
 };
 
-const toLinkSpec = (dir) => `link:${resolve(dir).replace(/\\/g, '/')}`;
-
 /**
  * @param {{ local: string, tessera?: string | null}} paths
  * @returns {string | null} null keeps the registry spec
  */
 const tesseraSpec = ({ local, tessera }) => {
-  if (tessera) return toLinkSpec(tessera);
+  if (tessera) return linkSpec(tessera);
   const sibling = resolve(local, '../tessera');
-  return existsSync(join(sibling, 'package.json')) ? toLinkSpec(sibling) : null;
+  return existsSync(join(sibling, 'package.json')) ? linkSpec(sibling) : null;
 };
 
 /**
@@ -36,8 +34,8 @@ const localSpecFor = (packageName, { local, tessera }) => {
   if (!packageName.startsWith(SCOPE)) return null;
   const short = packageName.slice(SCOPE.length);
   if (short === 'tessera') return tesseraSpec({ local, tessera });
-  if (LOCAL_PACKAGES[short]) return toLinkSpec(join(local, LOCAL_PACKAGES[short]));
-  if (short.startsWith('brock-')) return toLinkSpec(join(local, 'packages/modules', short.slice('brock-'.length)));
+  if (LOCAL_PACKAGES[short]) return linkSpec(join(local, LOCAL_PACKAGES[short]));
+  if (short.startsWith('brock-')) return linkSpec(join(local, 'packages/modules', short.slice('brock-'.length)));
   return null;
 };
 

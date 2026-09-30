@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
-import { Box, Button, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, CodeBlock } from '@drizztdourden08/tessera/primitives';
 import type { DiagnosticsPreviewProps } from './DiagnosticsPreview.type';
 
 const DiagnosticsPreview = (props: DiagnosticsPreviewProps) => {
@@ -12,7 +12,7 @@ const DiagnosticsPreview = (props: DiagnosticsPreviewProps) => {
       <Button variant="tertiary" size="sm" onClick={() => setShown(!shown)}>
         {shown ? 'Hide diagnostics' : 'Show diagnostics'}
       </Button>
-      {shown && <Text as="pre" className="bug-report__diagnostics-text">{text ?? 'Collecting...'}</Text>}
+      {shown && <CodeBlock className="bug-report__diagnostics-text" code={text ?? 'Collecting...'} language="text" wrap capped />}
     </Box>
   );
 };

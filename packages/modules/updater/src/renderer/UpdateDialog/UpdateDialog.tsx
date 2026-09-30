@@ -1,12 +1,11 @@
 /* @layer renderer-shell @kind component */
-import { Box, Text } from '@drizztdourden08/tessera/primitives';
-import { DialogShell } from '@drizztdourden08/tessera/composites';
+import { BugReportButton } from '@drizztdourden08/brock-react';
+import { Box, Callout } from '@drizztdourden08/tessera/primitives';
+import { DialogShell, ReleaseNotesPanel } from '@drizztdourden08/tessera/composites';
 import { dialogTitle } from './behavior/dialog-title';
 import { useUpdateDialog } from './behavior/useUpdateDialog';
 import { DialogActions } from './sub-components/DialogActions';
 import { DownloadStatus } from './sub-components/DownloadStatus';
-import { ReleaseNotes } from './sub-components/ReleaseNotes';
-import { UpdateFootnote } from './sub-components/UpdateFootnote';
 import { UpdateSummary } from './sub-components/UpdateSummary';
 import { VersionPicker } from './sub-components/VersionPicker';
 import './UpdateDialog.css';
@@ -54,13 +53,17 @@ const UpdateDialog = () => {
           />
         )}
         {showPrereleaseNote && (
-          <Text as="p" className="update-dialog__warning" role="note">
+          <Callout>
             This is a pre-release. It ships before the usual testing, so expect rough edges and bugs the stable builds do not have.
-          </Text>
+          </Callout>
         )}
-        {notes.length > 0 && <ReleaseNotes notes={notes} />}
+        {notes.length > 0 && <ReleaseNotesPanel>{notes}</ReleaseNotesPanel>}
         <DownloadStatus status={status} percent={store.percent} error={store.error} canInstall={capabilities.canInstall} info={info} />
-        {showFootnote && <UpdateFootnote onReportBug={closeDialog} />}
+        {showFootnote && (
+          <Callout variant="footnote" action={<BugReportButton onBeforeOpen={closeDialog} />}>
+            Any earlier version can be picked above if something stops working. Please report it either way, so it gets fixed.
+          </Callout>
+        )}
       </Box>
     </DialogShell>
   );

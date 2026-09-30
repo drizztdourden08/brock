@@ -1,37 +1,15 @@
 /* @layer renderer-shell @kind types */
-import type { ReactNode } from 'react';
-import type { ScreenDef } from '../../screens/screen.type';
+import type { SectionNavConfig } from '@drizztdourden08/tessera/composites';
 
 interface ScreenRailGroup {
   id: string;
   label: string;
 }
 
-interface ScreenRailProps {
-  screens: readonly ScreenDef[];
-  home: string;
-  groups?: readonly ScreenRailGroup[];
-  collapsed?: boolean;
-  className?: string;
-}
-
-interface RailEntry {
-  id: string;
-  title: string;
-  icon?: ReactNode;
-  active: boolean;
-  disabled: boolean;
-}
-
-interface RailGroup {
-  id: string | null;
-  label: string;
-  entries: RailEntry[];
-}
-
 interface UseRailEntriesResult {
-  groups: RailGroup[];
+  config: SectionNavConfig;
+  activeId: string;
   select: (id: string) => void;
 }
 
-export type { RailEntry, RailGroup, ScreenRailGroup, ScreenRailProps, UseRailEntriesResult };
+export type { ScreenRailGroup, UseRailEntriesResult };

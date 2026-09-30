@@ -38,20 +38,12 @@ interface VersionPickerProps {
   disabled: boolean;
 }
 
-interface ReleaseNotesProps {
-  notes: string;
-}
-
 interface DownloadStatusProps {
   status: UpdateStatus;
   percent: number;
   error: string | null;
   canInstall: boolean;
   info: UpdateInfo | null;
-}
-
-interface UpdateFootnoteProps {
-  onReportBug: () => void;
 }
 
 interface DialogActionsProps {
@@ -82,6 +74,6 @@ interface UpdateDialogModel {
 }
 
 export type {
-  UpdateAction, UpdateDialogModel, VersionChoiceInput, VersionChoice, UpdateSummaryProps, VersionPickerProps, ReleaseNotesProps,
-  DownloadStatusProps, UpdateFootnoteProps, DialogActionsProps,
+  UpdateAction, UpdateDialogModel, VersionChoiceInput, VersionChoice, UpdateSummaryProps, VersionPickerProps,
+  DownloadStatusProps, DialogActionsProps,
 };

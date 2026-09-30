@@ -1,14 +1,14 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo, useState } from 'react';
-import { Box } from '@drizztdourden08/tessera/primitives';
-import { SectionNav } from '@drizztdourden08/tessera/composites';
+import { NavLayout } from '@drizztdourden08/tessera/composites';
 import { usePlatform } from '../../platform/usePlatform';
+import { SettingsPageContext } from '../SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../SettingsLayout/SettingsLayout.type';
 import { useHubNav } from './behavior/useHubNav';
 import { useHubSearch } from './behavior/useHubSearch';
-import { HubContent } from './sub-components/HubContent';
+import { HubSearchResults } from './sub-components/HubSearchResults';
+import { HubTabContent } from './sub-components/HubTabContent';
 import type { SettingsHubProps } from './SettingsHub.type';
-import './SettingsHub.css';
 
 const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
   const {
@@ -20,7 +20,7 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
 
   const [internalTab, setInternalTab] = useState(home?.id ?? '');
   const activeId = controlledTab ?? internalTab;
-  const { query, setQuery, setFocused, searching, clear } = useHubSearch();
+  const { query, setQuery, clear } = useHubSearch();
 
   const openTab = useCallback((id: string) => {
     clear();
@@ -33,27 +33,20 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
     () => (active ? { variant: 'page', icon: active.navIcon, title: active.label, backdrop, query: '' } : null),
     [active, backdrop],
   );
+  const search = useMemo(() => ({ value: query, onChange: setQuery, placeholder: searchPlaceholder }), [query, setQuery, searchPlaceholder]);
 
   return (
-    <Box className={`settings-hub${className ? ` ${className}` : ''}`}>
-      <SectionNav
-        config={navConfig}
-        activeId={searching ? '' : activeId}
-        onSelect={openTab}
-        search={{ value: query, onChange: setQuery, placeholder: searchPlaceholder, onFocusChange: setFocused }}
-      />
-      <Box className="settings-hub__content">
-        <HubContent
-          searching={searching}
-          query={query}
-          tabs={visibleTabs}
-          active={active}
-          pageContext={pageContext}
-          onOpenTab={openTab}
-          {...control}
-        />
-      </Box>
-    </Box>
+    <NavLayout
+      className={className}
+      nav={{ config: navConfig, activeId, onSelect: openTab, search }}
+      results={<HubSearchResults tabs={visibleTabs} query={query} onOpenTab={openTab} {...control} />}
+    >
+      {active && pageContext && (
+        <SettingsPageContext.Provider value={pageContext}>
+          <HubTabContent tab={active} {...control} />
+        </SettingsPageContext.Provider>
+      )}
+    </NavLayout>
   );
 };
 

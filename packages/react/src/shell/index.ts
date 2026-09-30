@@ -1,9 +1,8 @@
 /* @layer renderer-shell @kind barrel */
-export * from './TitleBar';
-export * from './ScreenRail';
-export * from './About';
+export type { ScreenRailGroup, UseRailEntriesResult } from './ScreenRail/ScreenRail.type';
+export { useRailEntries } from './ScreenRail/behavior/useRailEntries';
+export type { AboutInfo, AboutRow } from './About/About.type';
+export { useAboutInfo } from './About/behavior/useAboutInfo';
 export * from './ConfirmDialog';
-export * from './ProfileCard';
-export * from './CreateProfileForm';
 export * from './ProfilesScreen';
 export * from './WorkspaceSwitch';

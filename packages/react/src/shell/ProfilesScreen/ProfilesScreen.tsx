@@ -1,22 +1,27 @@
 /* @layer renderer-shell @kind component */
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import { Box, Button, SectionHeader, Stack } from '@drizztdourden08/tessera/primitives';
+import { formatRelativeTime } from '@drizztdourden08/brock-core';
+import { InlineCreateForm, ProfilePicker } from '@drizztdourden08/tessera/composites';
 import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
 import { getAppLog } from '../../log/get-app-log';
-import { ProfileCard } from '../ProfileCard/ProfileCard';
-import { CreateProfileForm } from '../CreateProfileForm/CreateProfileForm';
 import type { ProfilesScreenProps } from './ProfilesScreen.type';
-import './ProfilesScreen.css';
 
 const ProfilesScreen = (props: ProfilesScreenProps) => {
   const { subtitleOf, extraFields, canSubmit = true, createOptions } = props;
-  const { profiles, active, loaded, select, create, remove } = useProfiles();
+  const { profiles, active, loaded, select, create, removeConfirmed } = useProfiles();
   const { close } = useNavigation();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const showForm = creating || (loaded && profiles.length === 0);
+
+  const items = useMemo(() => profiles.map((profile) => ({
+    id: profile.id,
+    name: profile.name,
+    meta: subtitleOf?.(profile),
+    aside: formatRelativeTime(profile.lastPlayed),
+  })), [profiles, subtitleOf]);
 
   const handleSelect = useCallback(async (profile: Profile) => {
     await select(profile);
@@ -35,36 +40,29 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
     }
   }, [create, createOptions, handleSelect]);
 
+  const byId = (id: string): Profile | undefined => profiles.find((profile) => profile.id === id);
+
+  const form = showForm ? (
+    <InlineCreateForm
+      placeholder="Profile name"
+      onCreate={(name) => void handleCreate(name)}
+      onCancel={profiles.length > 0 ? () => { setCreating(false); setError(null); } : undefined}
+      extraFields={extraFields}
+      canSubmit={canSubmit}
+      error={error}
+    />
+  ) : undefined;
+
   return (
-    <Box className="profiles-screen">
-      <SectionHeader
-        title={profiles.length === 0 ? 'Create a profile to get started' : 'Pick a profile, or create another'}
-        action={!showForm && <Button variant="primary" size="sm" onClick={() => setCreating(true)}>New profile</Button>}
-      />
-      {showForm && (
-        <Box className="profiles-screen__form">
-          <CreateProfileForm
-            onCreate={handleCreate}
-            onCancel={profiles.length > 0 ? () => { setCreating(false); setError(null); } : undefined}
-            extraFields={extraFields}
-            canSubmit={canSubmit}
-            error={error}
-          />
-        </Box>
-      )}
-      <Stack gap="sm" className="profiles-screen__list">
-        {profiles.map((profile) => (
-          <ProfileCard
-            key={profile.id}
-            profile={profile}
-            subtitle={subtitleOf?.(profile)}
-            selected={active?.id === profile.id}
-            onSelect={handleSelect}
-            onDelete={remove}
-          />
-        ))}
-      </Stack>
-    </Box>
+    <ProfilePicker
+      title={profiles.length === 0 ? 'Create a profile to get started' : 'Pick a profile, or create another'}
+      profiles={items}
+      selectedId={active?.id ?? null}
+      onSelect={(id) => { const profile = byId(id); if (profile) void handleSelect(profile); }}
+      onDelete={(id) => { const profile = byId(id); if (profile) removeConfirmed(profile); }}
+      create={form}
+      onNew={() => setCreating(true)}
+    />
   );
 };
 

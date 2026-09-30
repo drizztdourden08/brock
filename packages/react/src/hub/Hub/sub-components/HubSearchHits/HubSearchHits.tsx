@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { Box, Button, EmptyState, Text } from '@drizztdourden08/tessera/primitives';
+import { SearchResults } from '@drizztdourden08/tessera/composites';
+import type { SearchResultsHit } from '@drizztdourden08/tessera/composites';
 import type { HubSearchHitsProps } from './HubSearchHits.type';
 
 const HubSearchHits = (props: HubSearchHitsProps) => {
@@ -8,24 +9,12 @@ const HubSearchHits = (props: HubSearchHitsProps) => {
   const needle = query.trim();
   const hits = useMemo(() => (needle === '' ? [] : index(needle)), [index, needle]);
 
-  if (needle === '') return <EmptyState className="hub-screen__empty" message="Type to search this hub." />;
-  if (hits.length === 0) return <EmptyState className="hub-screen__empty" message={`Nothing matches "${needle}".`} />;
+  const openHit = (picked: SearchResultsHit) => {
+    const hit = hits.find((candidate) => candidate.id === picked.id);
+    if (hit) onOpen(hit);
+  };
 
-  return (
-    <Box className="hub-hits">
-      <Text className="hub-hits__count">
-        {hits.length} {hits.length === 1 ? 'result' : 'results'} for &quot;{needle}&quot;
-      </Text>
-      <Box className="hub-hits__list">
-        {hits.map((hit) => (
-          <Button key={hit.id} className="hub-hits__item" variant="ghost" onClick={() => onOpen(hit)}>
-            {hit.label}
-            {hit.detail && <Text as="span" className="hub-hits__detail">{hit.detail}</Text>}
-          </Button>
-        ))}
-      </Box>
-    </Box>
-  );
+  return <SearchResults query={query} count={hits.length} hits={hits} onOpenHit={openHit} idleMessage="Type to search this hub." />;
 };
 
 export { HubSearchHits };

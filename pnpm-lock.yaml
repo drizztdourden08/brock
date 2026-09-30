@@ -294,13 +294,13 @@ importers:
       '@drizztdourden08/brock-react':
         specifier: workspace:*
         version: link:../../react
-      '@drizztdourden08/tessera':
-        specifier: '*'
-        version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       koffi:
         specifier: ^2.9.0
         version: 2.16.3
     devDependencies:
+      '@drizztdourden08/tessera':
+        specifier: 'catalog:'
+        version: 0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       electron:
         specifier: 'catalog:'
         version: 42.11.8
@@ -322,10 +322,10 @@ importers:
       '@drizztdourden08/brock-react':
         specifier: workspace:*
         version: link:../../react
-      '@drizztdourden08/tessera':
-        specifier: '*'
-        version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
+      '@drizztdourden08/tessera':
+        specifier: 'catalog:'
+        version: 0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       cmake-js:
         specifier: 'catalog:'
         version: 8.0.0
@@ -425,10 +425,10 @@ importers:
       '@drizztdourden08/brock-core':
         specifier: workspace:*
         version: link:../core
-      '@drizztdourden08/tessera':
-        specifier: '*'
-        version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
+      '@drizztdourden08/tessera':
+        specifier: 'catalog:'
+        version: 0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@storylite/storylite':
         specifier: 'catalog:'
         version: 1.6.0(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
@@ -745,13 +745,6 @@ packages:
     engines: {node: '>=20.19.0'}
     peerDependencies:
       postcss-selector-parser: ^7.1.1
-
-  '@drizztdourden08/tessera@0.1.0':
-    resolution: {integrity: sha512-1g4OGIRrVhplAFYTlazMP+um4UXxHS5JjCwY+gyQs5z0NAzUURRJ3wvjXQarCytikesOuSGeffOm5TQ3HePJIw==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/tessera/0.1.0/350dad4e4f8319d239aed77524207f800308ebc2}
-    engines: {node: '>=24'}
-    peerDependencies:
-      react: ^19.0.0
-      react-dom: ^19.0.0
 
   '@drizztdourden08/tessera@0.2.0':
     resolution: {integrity: sha512-ipV8SYKdhTD+y4xm6krnvQ4JEkG4K2YF0o50J/Hmk2y1TL0skURkkXhgdEk+erhPc/00VVh7zcnqSs25pZbmAQ==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/tessera/0.2.0/986ecc6de6ed5a7efff16422f8a5c5bf12e1dec6}
@@ -4682,16 +4675,6 @@ snapshots:
   '@csstools/selector-specificity@6.0.0(postcss-selector-parser@7.1.6)':
     dependencies:
       postcss-selector-parser: 7.1.6
-
-  '@drizztdourden08/tessera@0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@iconify-icons/lucide': 1.2.136
-      '@iconify/react': 6.0.2(react@19.3.0)
-      '@iconify/types': 2.0.0
-      prism-react-renderer: 2.4.1(react@19.3.0)
-      react: 19.3.0
-      react-color: 2.19.3(react@19.3.0)
-      react-dom: 19.3.0(react@19.3.0)
 
   '@drizztdourden08/tessera@0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:

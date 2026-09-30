@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { BugReportDialog } from '../../bug-report/BugReportDialog/BugReportDialog';
-import { SearchPalette } from '../../palette/SearchPalette/SearchPalette';
+import { PaletteHost } from '../../palette/PaletteHost/PaletteHost';
 import { ToastHost } from '../../toast/ToastHost/ToastHost';
 import { WidgetHost } from '../../widgets/WidgetHost/WidgetHost';
 import type { StandardOverlaysProps } from './StandardOverlays.type';
@@ -10,7 +10,7 @@ const StandardOverlays = (props: StandardOverlaysProps) => {
   return (
     <>
       <WidgetHost widgets={widgets} />
-      <SearchPalette menu={menu} actions={actions} />
+      <PaletteHost menu={menu} actions={actions} />
       <BugReportDialog />
       <ToastHost />
     </>

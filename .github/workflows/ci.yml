@@ -56,7 +56,13 @@ jobs:
           echo "Scaffolding with create-brock $previous"
           mkdir -p "$RUNNER_TEMP/prev"
           cd "$RUNNER_TEMP/prev"
-          npm exec --yes --package="@drizztdourden08/create-brock@$previous" -- create-brock app --yes --install
+          pnpm dlx "@drizztdourden08/create-brock@$previous" app --yes --install
+          cd app
+          if [ ! -d .git ]; then
+            git init -q -b main
+            git add -A
+            git commit -q -m "Scaffold with create-brock $previous"
+          fi
       - name: Upgrade it to this checkout
         working-directory: ${{ runner.temp }}/prev/app
         run: node "$GITHUB_WORKSPACE/packages/build/bin/brock.mjs" upgrade --local "$GITHUB_WORKSPACE"

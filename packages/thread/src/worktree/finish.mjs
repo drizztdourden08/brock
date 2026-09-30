@@ -1,23 +1,12 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { gitLoud, tryGit } from '../git.mjs';
 import { resolveWorktreeName } from './current.mjs';
 import { assertReleasable } from './release-checks.mjs';
 import { clearUserData } from './clear-user-data.mjs';
+import { removeTree } from './remove-tree.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
-
-const removeTree = (path, main, log) => {
-  try {
-    gitLoud(['worktree', 'remove', path], main);
-  } catch {
-    log('git could not delete it in one pass. Retrying the directory directly.');
-    rmSync(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
-    tryGit(['worktree', 'prune'], main);
-  }
-  return !existsSync(path);
-};
 
 const reportSurvivor = ({ gone, inside, worktree, alias }) => {
   const { name, path, main, log } = worktree;

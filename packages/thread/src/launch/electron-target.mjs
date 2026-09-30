@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { dirname, join, normalize, resolve } from 'node:path';
 import { automationFlags } from './automation-flags.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
+import { ensureAppIcons } from './ensure-app-icons.mjs';
 
 const DIST_ENTRY = join('dist', 'electron', 'main.js');
 const DIST_OUTPUTS = [DIST_ENTRY, join('dist', 'preload', 'preload.mjs'), join('dist', 'renderer', 'index.html')];
@@ -92,6 +93,7 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
     const { worktree, prod } = request;
     const args = appArgs(request, dirs.userData(worktree), states);
     const appDir = dirs.app(worktree);
+    ensureAppIcons(appDir, worktree.log);
     return Promise.resolve(prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
   };
   return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData), checkState: checkStateWith(states) };

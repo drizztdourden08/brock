@@ -7,6 +7,7 @@ import { findLinks } from './find-links.mjs';
 import { registeredWorktrees } from './paths.mjs';
 import { assertReleasable } from './release-checks.mjs';
 import { clearUserData } from './clear-user-data.mjs';
+import { removeTree } from './remove-tree.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 
@@ -29,8 +30,8 @@ const removeRegistered = async (worktree, ctx) => {
   const { branch, landed } = assertReleasable(worktree, ctx, 'remove');
   if (await clearUserData(worktree, ctx)) log('.user-data deleted.');
   log(`Removing worktree at ${path}.`);
-  gitLoud(['worktree', 'remove', path], main);
-  log(`"${name}" removed.`);
+  if (removeTree(path, main, log)) log(`"${name}" removed.`);
+  else log(`"${name}" is unregistered but its directory survived; something still holds ${path} open. Run the same remove again once it is closed.`);
   settleBranch({ name, branch, landed, ctx });
 };
 

@@ -9,6 +9,7 @@ build step.
 |---|---|
 | `/config` | `defineBrockConfig(cfg)` for `brock.config.ts`; `loadBrockConfig(rootDir)` imports that file under Node's type stripping |
 | `/vite` | `defineBrockViteConfig(rootDir, overrides?)`: the electron-vite config (main and preload from `electron/`, renderer from `src/` with `index.html` and `splash.html`, React plugin, react deduped, `@drizztdourden08/*` bundled instead of externalized) |
+| `/vite-web` | `defineBrockWebConfig(rootDir, overrides?)`: the renderer alone for the web and Android targets (relative base, `dist/web`, the web app manifest) |
 | `/builder` | `createBuilderConfig(product, { rootDir })` and `loadBuilderConfig(rootDir)` for electron-builder |
 | `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs? })` for app e2e tests, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
 | `.` | Everything above plus `syncApp`, `resolveModules`, `ensureElectron` and the built-in module registry |
@@ -33,6 +34,12 @@ brock adopt [--scope @x] [--local <brockRepo>] [--force]
                            plus its own command: bin/<repo>.mjs, linked by the postinstall
 brock structure [--check] [--scope @x]
                            verify the folder standard: package names, barrels, folder names, depth
+brock platform list | add <id | bundle>... | remove <id | bundle>...
+                           the targets in brock.config.ts; add runs the platform steps and the doctor,
+                           add and remove rewrite targets and both workflows
+brock doctor [id | bundle...]
+                           check this machine for what the targets need; prints install commands only
+brock web build | dev      the renderer alone into dist/web, from vite.web.config.ts
 ```
 
 In a repo you do not type `brock`: you type the repo's own command (`archipelia`,
@@ -86,7 +93,8 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `commands/add.mjs` edits `brock.config.ts` textually and touches only the `modules: [...]` array literal; a one-entry-per-line array keeps the indentation of its first entry and the trailing comma. A built-in id is looked up in the registry; anything else is an npm spec and the id then comes from the installed package manifest.
 - `brock build` writes `dist/electron`, `dist/preload` and `dist/renderer`; `brock package` is the release step on top of it.
 - `packaging/`: `commands/package.mjs` runs the build, electron-builder with `--config electron-builder.config.cjs` for the current OS, the installer splash and `vpk pack`. `vpk-args.mjs` builds the pack arguments from the product (pure, so it is the part to test), `installer-splash.mjs` draws the brand icon on the window background with pngjs, `run-vpk.mjs` finds `vpk` in `~/.dotnet/tools` before `PATH`, `name-pack-outputs.mjs` gives the downloads their release names and fails when vpk's own naming moved, `build-installer-stub.mjs` writes `product.h` (`stub-product-header.mjs`), the resource script and the icons into `release/installer-stub` and compiles `installer-stub/` with `cl.exe` through `vcvars64.bat`, `write-install-manifest.mjs` is the port of rotp's `make-install-manifest.mjs`, `ship-installer.mjs` runs both after a Windows pack, and `after-pack.mjs` is the electron-builder hook that prunes the foreign Velopack bindings and unused Electron DLLs and stamps the exe icon with rcedit.
-- `release/`: `release-workflow.yml.tmpl` is the one source of the app release workflow; `releaseWorkflow(appDir)` fills in the app folder. `create-brock` writes it for a standalone app and `brock adopt` for a repo with `apps/<app>`, both only when the file is absent.
+- `release/`: the workflow Builder. `composeWorkflows({ targets, appDir, prefix, systemSteps })` expands the targets, asks each chosen platform for its CI job and its release job, and fills `ci-workflow.yml.tmpl` (the `quality` and `review` jobs every app gets, then the platform CI jobs) and `release-workflow.yml.tmpl` (the `prepare` job, the platform build jobs, then `release` with `needs` and the Downloads list built from each job's downloads). `setup-steps.yml.tmpl` is the checkout, pnpm, Node and install every job starts with; a module's manifest `ci` steps go in before the install on the runners whose `os` matches. `brock sync` writes both files for a standalone app; `brock adopt` writes `release.yml` once for a repo with `apps/<app>`.
+- `platforms/`: one Strategy per platform, `<id>/<id>.platform.mjs`, each built with `definePlatform({ id, label, doctor, scaffold, ciJob, releaseJob, secrets, secretsHint, managed })`, one step per file. See Platforms below.
 
 `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test: the
 window opens off screen and unfocused, and the app writes under `<dir>`. Add `--review` for the
@@ -127,12 +135,43 @@ eslint.config.mjs             brockEslint({ ... })
 stylelint.config.mjs          brockStylelint({ ... })
 .markdownlint-cli2.mjs        brockMarkdownlint()
 tsconfig.json                 extends the lint-config react base
+.github/workflows/ci.yml      composed from the targets (standalone app only)
+.github/workflows/release.yml composed from the targets (standalone app only)
+vite.web.config.ts            defineBrockWebConfig(import.meta.dirname), for web or android
+capacitor.config.json         appId, appName, webDir dist/web, android.path mobile/android, for android
+build/linux/deb-postinst.sh   module udev rules and build/linux/after-install.sh, for linux
 ```
 
 Each module import is the package's exports key that points at the manifest file, or
 the file path inside the package when no key does. The imported binding is the
 subpath's default export. `--check` compares every file but the manifest's timestamp
 and exits 1 on any difference.
+
+## Platforms
+
+Each platform is a Strategy in `src/platforms/<id>/`. The CLI and the workflow Builder only
+walk the chosen strategies; neither names a platform.
+
+| Platform | doctor | scaffold | CI job | release job | secrets |
+|---|---|---|---|---|---|
+| windows | .NET 8 SDK, vpk, MSVC C++ tools (on Windows) | brand icons | none | `build-windows`: `brock package` on windows-latest, vpk, the small installer | none |
+| macos | Xcode command line tools (on macOS) | brand icons | none | `build-macos`: dmg and zip, ad hoc signed | none |
+| linux | .NET 8 SDK and vpk (on Linux), module libraries | brand icons; `build/linux/deb-postinst.sh` through sync | none | `build-linux`: deb and the vpk AppImage | none |
+| android | JDK 21, `ANDROID_HOME`, `platform-tools`, `platforms;android-36`, `build-tools;36.0.0` | Capacitor packages, ignore lines, `cap add android`, `@capacitor/assets`, Gradle signing, `versionCode` | none | `build-android`: JDK 21, setup-android, `brock mobile build --release` | `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` |
+| web | nothing beyond Node and pnpm | `build:web` and `dev:web` scripts | `web`: `brock web build` | `build-web`: `dist/web` zipped | none |
+| ios | reserved: choosing it says it is not supported yet | | | | |
+
+- `doctor` checks run on the machine and only report: each result is `ok`, `missing` with the install command for this OS, or `skip` when the check belongs to another OS. `brock doctor` exits 1 when anything is missing. A module adds its own through its manifest `doctor` entries (`name`, `os`, `probe`, `install`); the input module checks `pkg-config --exists libusb-1.0` on Linux and macOS.
+- `scaffold` steps are `files` steps (edit the tree, may ask for an install) or `tools` steps (need `node_modules`). Each returns `done`, `skipped`, `pending` or `failed` and skips what is already there, so `platform add` can run again. A step two platforms share runs once.
+- Android lives in `mobile/android` with `capacitor.config.json` at the app root, so `cap` runs from the app's own `package.json` and finds its plugins there. The Gradle patches read `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD`, `BROCK_KEY_ALIAS` (and `BROCK_KEY_PASSWORD`, which falls back to the store password) from the environment or Gradle properties; without them a release stays unsigned. `versionCode` is `major * 10000 + minor * 100 + patch` of `package.json`. `<app> mobile keystore` (brock-thread) makes the keystore with `keytool` once you agree and prints the `gh secret set` lines; it never runs them.
+- Linux: a module's manifest `udevRules` file and the app's own `build/linux/after-install.sh` become `build/linux/deb-postinst.sh`, which `brock sync` keeps and electron-builder runs as the deb `afterInstall`. The input module ships the controller rules (Nintendo, Sony, Microsoft, 8BitDo, `TAG+="uaccess"`).
+- Web: `vite.web.config.ts` builds `src/index.html` with a relative base into `dist/web`, which Capacitor also wraps, and writes `manifest.webmanifest` from the product with the brand icons. There is no deploy job; the release carries the zip.
+
+`brock platform add <id | bundle>...` writes the targets, runs the `files` steps, `pnpm
+install` when a step asks, `brock sync`, the `tools` steps, then the doctor and the secrets
+checklist for what it added. `remove` writes the targets, deletes the managed files only
+the removed platforms rendered and runs `brock sync`; scaffolded folders such as
+`mobile/` stay. `list` shows every platform, which are chosen and through which bundle.
 
 ## Module ids
 
@@ -151,6 +190,11 @@ export default defineBrockConfig({
   modules: [],
 });
 ```
+
+`targets` takes platform ids (`windows`, `macos`, `linux`, `android`, `web`; `ios` is
+reserved) and bundles: `desktop` is Windows, macOS and Linux, `mobile` is Android today and
+iOS once it is supported, with no config change. `web: { manifest: false }` drops the web app
+manifest from the web build.
 
 Erasable TypeScript only: Node imports this file directly, so no enums, no parameter
 properties, no extensionless relative imports.

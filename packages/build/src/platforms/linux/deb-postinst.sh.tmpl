@@ -1,0 +1,8 @@
+#!/bin/sh
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the .deb post-install hook, run as root by dpkg -i.
+# Module udev rules come first, then the app's own build/linux/after-install.sh.
+set -e
+__UDEV__
+__HOOK__
+exit 0

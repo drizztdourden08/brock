@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-build",
   "version": "0.1.0",
-  "description": "Brock build tooling: Vite and electron-builder config factories, ensure-electron, and the brock CLI (sync, check, add, dev, build, start, adopt, structure).",
+  "description": "Brock build tooling: Vite and electron-builder config factories, ensure-electron, the platform strategies and workflow builder, and the brock CLI (sync, check, add, dev, build, start, adopt, structure, platform, doctor, web).",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {
@@ -31,6 +31,10 @@
     "./vite": {
       "types": "./src/vite-config.d.mts",
       "default": "./src/vite-config.mjs"
+    },
+    "./vite-web": {
+      "types": "./src/vite-web-config.d.mts",
+      "default": "./src/vite-web-config.mjs"
     },
     "./builder": "./src/builder-config.mjs",
     "./testing": {

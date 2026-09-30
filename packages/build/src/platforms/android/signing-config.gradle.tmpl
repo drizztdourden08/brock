@@ -1,0 +1,10 @@
+    signingConfigs {
+        release {
+            if (releaseKeystore) {
+                storeFile file(releaseKeystore)
+                storePassword System.getenv('BROCK_KEYSTORE_PASSWORD') ?: findProperty('BROCK_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('BROCK_KEY_ALIAS') ?: findProperty('BROCK_KEY_ALIAS')
+                keyPassword System.getenv('BROCK_KEY_PASSWORD') ?: (System.getenv('BROCK_KEYSTORE_PASSWORD') ?: findProperty('BROCK_KEYSTORE_PASSWORD'))
+            }
+        }
+    }

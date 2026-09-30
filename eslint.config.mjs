@@ -3,12 +3,6 @@ import { brockEslint } from '@drizztdourden08/brock-lint-config';
 
 export default brockEslint({
   rawColorOffGlobs: ['packages/electron/**', 'templates/app/electron/**'],
-  inlineStyle: [
-    {
-      files: ['packages/react/src/shell/BootProgressBar/BootProgressBar.tsx'],
-      why: 'the fill width is the live boot ratio; a class cannot carry a continuous value',
-    },
-  ],
   doubleCast: [
     {
       files: ['packages/core/src/platform/detect.ts'],

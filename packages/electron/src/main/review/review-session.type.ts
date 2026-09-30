@@ -1,4 +1,5 @@
 /* @layer electron-main @kind types */
+import type { BootTimeline } from '@drizztdourden08/brock-core/boot';
 import type { ReviewApp, ReviewCheck, ReviewLogLine, ReviewRun, ReviewStepRecord } from '@drizztdourden08/brock-core/review';
 
 interface ReviewSessionInput {
@@ -17,6 +18,7 @@ interface ReviewSession {
   markLoaded: (url: string) => void;
   addRequestError: (url: string, message: string) => void;
   addMainLine: (line: ReviewLogLine) => void;
+  setBoot: (timeline: BootTimeline) => void;
 }
 
 export type { ReviewSession, ReviewSessionInput };

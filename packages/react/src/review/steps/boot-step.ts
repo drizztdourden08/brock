@@ -2,7 +2,7 @@
 import { bootChecks } from '../checks/boot-checks';
 import { find } from '../dom/find';
 import { imageLoaded } from '../dom/image-loaded';
-import { CONDITIONAL_SLOT_CLASS, SELECTORS } from '../review.constants';
+import { BOOT_OVERLAYS, CONDITIONAL_SLOT_CLASS, SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
 
 const isShown = (element: HTMLElement | null): boolean =>
@@ -23,6 +23,8 @@ const bootStep: ReviewStep = {
       slotsRendered: slots.map((slot) => slot.childElementCount > 0 || slot.classList.contains(CONDITIONAL_SLOT_CLASS)),
       expectedSlots: slotCount,
     }));
+    const overlays = BOOT_OVERLAYS.filter((selector) => document.querySelector(selector) !== null);
+    tour.check('no-boot-overlay', overlays.length === 0, 'the app window holds no loading overlay; the splash window did the loading', `the app window still holds a loading overlay: ${overlays.join(', ')}`);
     await tour.capture('boot');
   },
 };

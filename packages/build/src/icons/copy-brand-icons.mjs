@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { BRAND_FILES } from './brand-files.mjs';
+import { BRAND_FILES, markFile } from './brand-files.mjs';
 import { copyFiles } from './copy-files.mjs';
 import { locateBrand } from './locate-brand.mjs';
 import { writeBotVariant } from './bot/write-bot-variant.mjs';
@@ -21,7 +21,7 @@ const copyBrandIcons = (rootDir, config, { force = false } = {}) => {
   const brand = config.product?.icons?.brand;
   if (!brand) return null;
   const brandDir = locateBrand(rootDir, brand);
-  const base = copyFiles(brandDir, rootDir, BRAND_FILES, force);
+  const base = copyFiles(brandDir, rootDir, [...BRAND_FILES, markFile(brand)], force);
   const bot = writeBotVariant(brandDir, rootDir, force);
   return { brandDir, written: [...base.written, ...bot.written], current: [...base.current, ...bot.current] };
 };

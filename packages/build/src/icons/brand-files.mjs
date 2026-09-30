@@ -21,4 +21,10 @@ const BRAND_FILES = [
   { from: 'icon/png/icon-256.png', to: 'public/logos/icon-256.png' },
 ];
 
-export { TESSERA_PACKAGE, BRAND_FILES };
+/**
+ * @param {string} brand
+ * @returns {BrandFile}  The mark without its tile, beside the brand folder
+ */
+const markFile = (brand) => ({ from: `../${brand}.svg`, to: 'public/logos/mark.svg' });
+
+export { TESSERA_PACKAGE, BRAND_FILES, markFile };

@@ -10,9 +10,10 @@ The Electron layer of a Brock app: `/main` boots the main process and registers 
 import { bootstrapApp } from '@drizztdourden08/brock-electron/main';
 import { product } from '../src/product';
 import { mainModules } from '../.brock/modules.main';
+import { mainBootTasks } from '../.brock/boot.main';
 import { handlers } from './handlers';
 
-bootstrapApp(product, { modules: mainModules, handlers });
+bootstrapApp(product, { modules: mainModules, bootTasks: mainBootTasks, handlers });
 ```
 
 ```ts
@@ -34,33 +35,34 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 3. Crash forensics: local crash reporter, process and quit hooks, memory heartbeat, all into `Data/debug/main-console.log`.
 4. App identity: the AppUserModelId (`product.appId`, or `<appId>.instance.<slug>` for `--instance=<slug>`) on Windows, the instance dock icon on macOS.
 5. Privileged schemes: `product.schemes` plus every module's `schemes`.
-6. On ready: `initPaths`, data folders (`product.dataDirs` plus module `dataDirs`), session-log rotation, base handlers, module `register`, app `handlers`, `onReady`, `createWindow`, module `onWindow`, app `onWindow`.
+6. On ready: `initPaths`, data folders (`product.dataDirs` plus module `dataDirs`), session-log rotation, the splash window, then the main boot tasks: `modules` (base handlers, module `register`, app `handlers`, `onReady`), `window-state` (the hidden app window, module `onWindow`, app `onWindow`), then module and app main tasks.
 7. Quit hooks: module `onWillQuit`, app `onWillQuit`, quit on last window closed except on macOS.
 
-Base handlers: window, aspectRatio, app, dialog, file, storage, profiles (with `config:*`), sessions, uiViews, diagnostics, sessionLog, screenshot. A `HandlerGroup` with `devOnly: true` is never registered when `app.isPackaged`.
+Base handlers: boot, window, aspectRatio, app, dialog, file, storage, profiles (with `config:*`), sessions, uiViews, diagnostics, sessionLog, screenshot. A `HandlerGroup` with `devOnly: true` is never registered when `app.isPackaged`.
 
 ## Window rules
 
-An automation launch (`flags.isHeadlessLaunch()`) opens off every monitor, `focusable: false`, shown inactive and kept in the background. A normal launch opens at opacity 0 at its saved geometry with the splash as a child window and is revealed on `window:shellReady` or after 8 s. `--muted` and `--sound` reach the renderer as `--startup-muted` and `--startup-sound`; nothing touches the webContents audio.
+The app window is created with `show: false` at its saved geometry and is shown only at the reveal. An automation launch (`flags.isHeadlessLaunch()`) places the splash and the app window off every monitor, `focusable: false`, shown inactive and kept in the background. `--muted` and `--sound` reach the renderer as `--startup-muted` and `--startup-sound`; nothing touches the webContents audio.
 
-`--screenshot=<name>` captures the window to `Data/screenshots/<name>.png` once the shell is ready (or after 20 s) and quits.
+`--screenshot=<name>` captures the window to `Data/screenshots/<name>.png` once it is revealed (or after 20 s) and quits. `--screenshot-splash=<name>` captures the splash at the first renderer progress, holds the reveal until the file is written, writes `<name>-failed.png` if the boot stops, and quits unless `--review` or `--screenshot` also runs.
 
 ## Automated review
 
-`--review[=<name>]` runs the renderer's review tour once the shell is ready: `brock start -- --review --no-focus --muted --user-data=<dir>` after a build, or `<app> launch main none --review`. Main registers `review:capture` (a PNG per step), `review:check` and `review:finish`, records renderer console errors, failed loads (`did-fail-load`, `webRequest` status 400 and up, request errors) and main log warnings and errors, and adds the global checks. The report lands in `Data/review/<name>/report.json` and `report.md` beside the screenshots; the process prints the JSON path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1.
+`--review[=<name>]` runs the renderer's review tour once the renderer boot finished; `review:capture` waits for the reveal: `brock start -- --review --no-focus --muted --user-data=<dir>` after a build, or `<app> launch main none --review`. Main registers `review:capture` (a PNG per step), `review:check` and `review:finish`, records renderer console errors, failed loads (`did-fail-load`, `webRequest` status 400 and up, request errors) and main log warnings and errors, and adds the global checks, among them `splash-closed` and `hidden-until-boot` from the boot timeline. A boot failure ends the review at once. The report lands in `Data/review/<name>/report.json` and `report.md` beside the screenshots; the process prints the JSON path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1.
 
 ## Options
 
 | Option | Purpose |
 |---|---|
-| `modules` | `MainModule[]`: `{ id, onBoot?, register(ctx), onWindow?, onWillQuit?, automationFlags?, dataDirs?, schemes? }` |
+| `modules` | `MainModule[]`: `{ id, onBoot?, register(ctx), onWindow?, onWillQuit?, automationFlags?, dataDirs?, schemes?, bootTasks? }` |
 | `handlers` | `HandlerGroup[]` appended to the base set: `{ id, register(ctx), devOnly? }` |
+| `bootTasks` | `MainBootTask[]` from `.brock/boot.main.ts`; each runs after `modules` |
 | `automationFlags` | App flags the launch guard counts, added to the base and module flags |
 | `dataDomains` | Rows of `storage:getSummary` |
 | `profileHooks` | Passed to the core `createProfileStore` |
 | `rendererFlags` | `(argv) => string[]`: extra `--startup-*` arguments; any `--startup-*` already in argv is forwarded as is |
 | `onReady`, `onWindow`, `onWillQuit` | App hooks around the window |
-| `paths` | `{ preload, renderer, splash }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.js`, `../renderer/index.html`, `../renderer/splash.html` |
+| `paths` | `{ preload, renderer, splash, splashPreload }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.mjs`, `../renderer/index.html`, `../renderer/splash.html`, `../preload/splash-preload.mjs` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
 
 ## MainContext
@@ -73,16 +75,18 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 - In dev the default session cache is cleared on ready so static asset changes show on the next load. `disable-features=CalculateNativeWinOcclusion` keeps requestAnimationFrame alive while the window is occluded, which a headless launch always is.
 - Relative `paths` entries resolve against the folder holding the built main script; `app.getAppPath()` is the script folder when Electron was started on the script and the app root when started on a folder or a packaged archive, and both shapes are handled. The preload is `preload.mjs` for an ES module package and `preload.js` otherwise; the first one present wins.
 - A `devOnly` handler group is never registered in a packaged build; a repeated group id is skipped with a warning because `ipcMain.handle` throws on a channel registered twice. `--boot-timing` prints one line per boot milestone.
-- The main window is hidden with opacity 0, not `show: false`, because Chromium does not schedule requestAnimationFrame for a hidden page. A transparent window is still hit-testable, so mouse events are ignored until the reveal. The reveal is idempotent because shell ready, an 8 s watchdog and a render-process-gone event can all trigger it. `setOpacity` is a no-op without a compositing window manager, so nothing depends on the fade running.
-- The splash is its own frameless window, a child of the main window (a child floats above its parent only, so a boot while the user is in another app never covers their work), centred on the display the main window is on, with no preload and no bundle, driven through one global (`window.__splashStatus`). `setSplashStatus` is best effort.
-- `--screenshot=<name>` captures once the renderer reports shell ready, then quits; a 20 s watchdog fires the same capture when the signal never comes so an automated boot always ends.
+- The app window is created with `show: false` and `paintWhenInitiallyHidden`, so the renderer runs and paints its first frame while nothing is on screen. A saved maximized or fullscreen state is applied as a plain size while hidden and as `maximize()` or `setFullScreen` at the reveal, so the page never lays out again after it appears. Window state is tracked and saved from the reveal on.
+- The splash is a top-level window: `frame: false`, `roundedCorners: false`, `hasShadow: false`, `thickFrame: false`, not resizable or movable, centred on the display the app will open on. Its preload (`/splash-preload`) exposes `window.brockSplash` with `onProgress`, `onFailure`, `retry`, `quit` and `openLogs`; main sends `splash:progress` and `splash:failure` and replays the last state when the page finishes loading. Closing the splash before the reveal quits the app.
+- The reveal waits for the main tasks, the renderer's `boot:ready` (sent after its `first-frame` task) and any hold such as the splash capture. It sets the app window to opacity 0, shows it, fades it to 1 while the splash fades to 0 over 220 ms, then destroys the splash. `setOpacity` is a no-op without a compositing window manager, so nothing depends on the fade running.
+- Main joins the two progress streams: its own weighted tasks plus the renderer's, with a reserve of 4 weight units for the renderer until its first report. The bar never moves back. A failure (`boot:failed`, a main task, `render-process-gone`, a failed main frame load, or 8 s without a renderer message) shows the error screen. Retry reloads the app window after a renderer failure and relaunches the app after a main one.
+- `--screenshot=<name>` captures at the reveal, then quits; a 20 s watchdog fires the same capture when the reveal never comes so an automated boot always ends. A boot failure exits 1.
 
 ## Window details
 
 - The window and taskbar icon come from the shipped renderer `logos/` folder, the one the brand pipeline fills: `icon.ico` then `icon-256.png` on Windows, `icon-256.png` elsewhere. A named instance looks for `icon-bot.ico` and `icon-bot-256.png` first. In dev the source `public/logos/` wins over a stale build. A missing icon is a warning in the main log, never a failed launch.
 - Every Windows launch sets the AppUserModelId to `product.appId` before the first window, so the taskbar groups the app under its own id and icon. A named instance uses `<appId>.instance.<name>`, a taskbar group of its own.
 - The automation off-screen origin is 400 px right of the rightmost display, derived from the real display layout so the OS cannot clamp it back. `focusable: false` sets `WS_EX_NOACTIVATE` on Windows (and implies `skipTaskbar`), so `SetForegroundWindow` cannot succeed; CDP input needs no OS focus. `paintWhenInitiallyHidden` keeps an off-screen run rendering for screenshots and `backgroundThrottling: false` keeps frames at full speed. A headless launch applies the saved size only, since the saved position would drag the window back onto a display.
-- A normal launch calls `show()`, not `showInactive()`: the splash is a child window and a child of a never-activated window sinks behind whatever the user had open; activating costs nothing visually at opacity 0. `center: false` because the automation window is placed off every monitor and a normal window is positioned by the saved state while invisible. A named instance holds its own title by cancelling `page-title-updated`.
+- A normal launch shows the app window with `show()` and focuses it after the fade. `center: false` because the automation window is placed off every monitor and a normal window is positioned by the saved state while invisible. A named instance holds its own title by cancelling `page-title-updated`.
 - Keep in background: many things raise a window later (a CDP click calls `Page.bringToFront()` first, DevTools activates its owner, the OS raises windows for its own reasons), so gaining focus at all is treated as the fault and undone, for the whole life of the window, debounced 50 ms so one helper process is spawned, not five. `blur()` runs only while the window holds focus, because an unconditional blur drops the foreground to the desktop. The first painted frame can bounce the window back up the z-order on Windows. On Windows `showInactive()` still lands on top, so `SetWindowPos(HWND_BOTTOM)` is called on the native handle through a hidden PowerShell child (`-EncodedCommand`, UTF-16LE base64, sidesteps quote escaping; `SWP_FLAGS` 0x13 is `SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE`).
 - Saved geometry lives in `Data/config/window-state.json` as content bounds: with `titleBarStyle: 'hidden'` the constructor's window bounds and the content bounds disagree on Windows, so state is applied after construction while the window is invisible. Normal bounds are tracked through move and resize because `getNormalBounds()` includes the invisible frame on Windows. A saved position is used only while it still lands on a visible display (50 px tolerance). Geometry is persisted on close except on an automation launch.
 - Aspect lock: the renderer asks for a ratio plus the height of its own chrome above the locked area; the window snaps to fit (shrinking, never growing) and the ratio is enforced on every resize through `will-resize`, because Electron's `setAspectRatio` does not honour the title-bar offset. A corner drag fits within the proposed bounds; an edge drag keeps the dragged dimension.

@@ -12,11 +12,18 @@ const assertPorts = (ports: ProductPorts | undefined): void => {
   if (!Number.isInteger(base) || base < PORT_BASE_MIN || base > PORT_BASE_MAX) throw new Error(`product.ports.base ${base} must be a whole number from ${PORT_BASE_MIN} to ${PORT_BASE_MAX}`);
 };
 
+const assertLook = (look: ProductInput['look']): void => {
+  const stops = look?.gradient.filter((stop): stop is string => stop !== undefined) ?? [];
+  const bad = stops.find((stop) => !HEX_COLOR.test(stop));
+  if (bad !== undefined) throw new Error(`product.look.gradient stop "${bad}" must be a colour like "#e8a33d"`);
+};
+
 const assertProductInput = (input: ProductInput): void => {
   if (!SLUG.test(input.id)) throw new Error(`product.id "${input.id}" must be a slug like "my-app"`);
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
   if (!input.name.trim()) throw new Error('product.name is required');
   if (input.accent !== undefined && !HEX_COLOR.test(input.accent)) throw new Error(`product.accent "${input.accent}" must be a colour like "#e8a33d"`);
+  assertLook(input.look);
   assertPorts(input.ports);
 };
 
@@ -31,7 +38,7 @@ const resolveIcons = (icons: ProductIcons = {}): ProductIcons =>
 
 const resolveLogos = (logos: Partial<ProductLogos> = {}): ProductLogos => {
   const app = logos.app ?? DEFAULT_LOGOS.app;
-  return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance) };
+  return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance), mark: logos.mark ?? DEFAULT_LOGOS.mark };
 };
 
 const defineProduct = (input: ProductInput): ProductConfig => {
@@ -45,6 +52,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     repo: input.repo,
     updateChannel: input.updateChannel,
     accent: input.accent,
+    look: input.look,
     artifactPrefix: input.artifactPrefix ?? `${input.id}-`,
     envPrefix: input.envPrefix ?? toEnvPrefix(input.id),
     window: resolveWindow(input),

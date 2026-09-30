@@ -1,7 +1,9 @@
 /* @layer electron-main @kind logic */
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 import type { MainContext } from '../types/main-context.type';
 import { captureWindow } from '../handlers/capture-window';
+import { bootEvents } from '../boot/boot-events';
+import { whenRevealed } from '../boot/when-revealed';
 import { SCREENSHOT_WATCHDOG_MS } from './screenshot-flag.constants';
 
 const armScreenshotFlag = (ctx: MainContext): void => {
@@ -22,7 +24,11 @@ const armScreenshotFlag = (ctx: MainContext): void => {
     app.quit();
   };
 
-  ipcMain.once('window:shellReady', () => { void shoot(); });
+  void whenRevealed().then(shoot);
+  bootEvents.once('failed', () => {
+    done = true;
+    app.exit(1);
+  });
   setTimeout(() => { void shoot(); }, SCREENSHOT_WATCHDOG_MS).unref();
 };
 

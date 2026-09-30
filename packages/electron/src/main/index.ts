@@ -33,8 +33,9 @@ export { parseInstanceConfig } from './instance/instance-config';
 export { isInstanceLaunch } from './instance/is-instance-launch';
 
 export { getMainWindow } from './window/get-main-window';
-export { setSplashStatus } from './boot/set-splash-status';
-export { revealMainWindow } from './boot/reveal-main-window';
+export { defineBootTask } from './boot/define-boot-task';
+export { whenRevealed } from './boot/when-revealed';
+export type { MainBootContext, MainBootTask, MainBootTaskDef } from './boot/boot-state.type';
 export { DEFAULT_PERMISSIONS, DEFAULT_EXTERNAL_PROTOCOLS } from './window/security.constants';
 export { captureWindow } from './handlers/capture-window';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';

@@ -10,6 +10,8 @@ export * from './types';
 export * from './format';
 export * from './result';
 export * from './review';
+export * from './boot';
+export * from './look';
 export { createRegistry } from './registry/registry';
 export type { Registry } from './registry/registry.type';
 export { createAutomationFlags } from './automation/flags';

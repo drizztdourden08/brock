@@ -6,6 +6,7 @@ import type { ModulePorts } from '../platform/platform.type';
 import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
+import type { RendererBootTask } from '../boot/renderer-boot.type';
 
 type TitleBarSlot = ComponentType & { conditional?: boolean };
 
@@ -20,6 +21,7 @@ interface RendererModule {
   widgets?: WidgetDef[];
   ports?: ModulePorts;
   logChannels?: string[];
+  bootTasks?: RendererBootTask[];
 }
 
 interface MergedModules {
@@ -33,6 +35,7 @@ interface MergedModules {
   widgets: WidgetDef[];
   ports: ModulePorts;
   logChannels: string[];
+  bootTasks: RendererBootTask[];
 }
 
 export type { MergedModules, RendererModule, TitleBarSlot };

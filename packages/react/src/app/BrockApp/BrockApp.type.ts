@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { RendererModule, TitleBarSlot } from '../../modules/renderer-module.type';
+import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
@@ -26,6 +27,7 @@ interface BrockAppProps<S extends object> {
   screens?: ScreenDef[];
   screenTree?: ScreenTree;
   modules?: RendererModule[];
+  bootTasks?: RendererBootTask[];
   home?: string;
   menu?: MenuEntry[];
   layout?: BrockAppLayout;
@@ -69,7 +71,7 @@ interface AppScreens {
 }
 
 interface ReviewTourInput {
-  settled: boolean;
+  ready: boolean;
   menu: readonly MenuEntry[];
   slots?: readonly TitleBarSlot[];
   moduleIds: readonly string[];

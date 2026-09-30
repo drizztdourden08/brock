@@ -5,7 +5,7 @@ import { basename, join, relative } from 'node:path';
 const COMPONENT_OPTIONAL = ['{Name}.css', '{Name}.type.ts', '{Name}.constants.ts', 'behavior', 'sub-components'];
 const BEHAVIOR_FILE = /^(?:use[A-Z]\w*|[a-z][a-z0-9-]*)(?:\.type|\.constants)?\.ts$/;
 const SUB_COMPONENT_FILE = /^[A-Z]\w*(?:\.tsx|\.type\.ts|\.constants\.ts|\.css)$/;
-const MODULE_FILE = /^(?:[a-z][a-z0-9-]*(?:\.type|\.constants)?\.ts|use[A-Z]\w*\.ts|[A-Z]\w*(?:\.tsx|\.type\.ts|\.constants\.ts|\.css)|index\.ts|augment\.ts|main\.tsx|[a-z][a-z0-9-]*\.(?:html|css))$/;
+const MODULE_FILE = /^(?:[a-z][a-z0-9-]*(?:\.type|\.constants|\.task)?\.ts|use[A-Z]\w*\.ts|[A-Z]\w*(?:\.tsx|\.type\.ts|\.constants\.ts|\.css)|index\.ts|augment\.ts|main\.tsx|[a-z][a-z0-9-]*\.(?:html|css))$/;
 const SKIP = new Set(['node_modules', 'dist', 'out', 'release', 'coverage', '.brock', 'stories', 'tests']);
 
 const entriesOf = (dir) => readdirSync(dir).filter((name) => !SKIP.has(name));
@@ -37,7 +37,7 @@ const checkComponentFolder = (dir, label) => {
 };
 
 const checkModuleFolder = (dir, label) =>
-  entriesOf(dir).filter((name) => !isDir(join(dir, name)) && !MODULE_FILE.test(name)).map((name) => `${label}/${name}: a module file is kebab-case.ts, <subject>.type.ts, <subject>.constants.ts or index.ts`);
+  entriesOf(dir).filter((name) => !isDir(join(dir, name)) && !MODULE_FILE.test(name)).map((name) => `${label}/${name}: a module file is kebab-case.ts, <subject>.type.ts, <subject>.constants.ts, <id>.task.ts or index.ts`);
 
 const walk = (rootDir, dir, findings, skip) => {
   if (skip.has(dir)) return;

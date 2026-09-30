@@ -7,6 +7,7 @@ interface ResolvedPaths {
   preload: string;
   renderer: string;
   splash: string;
+  splashPreload: string;
 }
 
 interface WindowSetup {

@@ -10,6 +10,7 @@ import type { FileStore } from './platform/ports/file-store.type';
 import type { FilePickerPort } from './platform/ports/file-picker.type';
 import type { DevicePort } from './platform/ports/device.type';
 import type { ReviewCheck } from './review/review.type';
+import type { BootFailure, BootProgress } from './boot/boot-task.type';
 
 interface BaseProfile {
   id: string;
@@ -82,7 +83,9 @@ interface SendContract {
   'window:toggleFullscreen': () => void;
   'window:setFullscreen': (value: boolean) => void;
   'window:setAspectRatioLock': (ratio: number, extraHeight: number) => void;
-  'window:shellReady': () => void;
+  'boot:progress': (progress: BootProgress) => void;
+  'boot:failed': (failure: BootFailure) => void;
+  'boot:ready': () => void;
   'debug:appendSessionLog': (lines: string[]) => void;
   'review:check': (check: ReviewCheck) => void;
   'review:finish': () => void;

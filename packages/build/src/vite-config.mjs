@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind config */
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { appTools } from './app-tools.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
@@ -10,7 +11,7 @@ import { ownsSplashPage } from './splash/owns-splash-page.mjs';
 import { screensPlugin } from './screens/screens-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
-import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
+import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS, SPLASH_PRELOAD } from './vite.constants.mjs';
 
 const readScope = (dir) => {
   const file = join(dir, 'brock.scope');
@@ -79,6 +80,18 @@ const externalDependenciesOf = (rootDir, sources) => {
 };
 
 /**
+ * @param {string} rootDir
+ * @returns {Record<string, string>}  The splash preload entry, if any
+ */
+const splashPreloadEntry = (rootDir) => {
+  try {
+    return { 'splash-preload': createRequire(join(rootDir, 'package.json')).resolve(SPLASH_PRELOAD) };
+  } catch {
+    return {};
+  }
+};
+
+/**
  * @param {string} rootDir The app root (the folder holding brock.config.ts)
  * @param {import('electron-vite').UserConfig} [overrides] Merged over the base config
  * @returns {Promise<import('electron-vite').UserConfig>}
@@ -108,7 +121,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/preload'),
         rollupOptions,
-        lib: { entry: { preload: resolve(rootDir, 'electron/preload.ts') } },
+        lib: { entry: { preload: resolve(rootDir, 'electron/preload.ts'), ...splashPreloadEntry(rootDir) } },
       },
     },
     renderer: {

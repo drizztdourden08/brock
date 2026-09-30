@@ -26,3 +26,4 @@ export * from './bug-report';
 export * from './palette';
 export * from './widgets';
 export * from './overlays';
+export * from './boot';

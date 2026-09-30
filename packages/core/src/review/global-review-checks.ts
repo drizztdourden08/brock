@@ -1,4 +1,5 @@
 /* @layer core @kind logic */
+import { bootReviewChecks } from './boot-review-checks';
 import { GLOBAL_STEP, ICON_WARNING } from './review.constants';
 import type { ReviewCheck, ReviewEnding, ReviewRun } from './review.type';
 
@@ -37,6 +38,7 @@ const globalReviewChecks = (run: ReviewRun, ending: ReviewEnding): ReviewCheck[]
   noneOf('failed-loads', run.failedLoads, 'failed load'),
   noneOf('main-log-errors', run.mainLog.filter((line) => line.level === 'error').map((line) => line.message), 'main log error'),
   iconCheck(run),
+  ...(run.boot ? bootReviewChecks(run.boot) : []),
 ];
 
 export { globalReviewChecks };

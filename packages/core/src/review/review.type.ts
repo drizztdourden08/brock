@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { BootTimeline } from '../boot/boot-task.type';
+
 type ReviewLogLevel = 'warn' | 'error';
 
 interface ReviewCheck {
@@ -35,6 +37,7 @@ interface ReviewRun {
   failedLoads: string[];
   mainLog: ReviewLogLine[];
   windowIcon: string | null;
+  boot?: BootTimeline;
 }
 
 interface ReviewEnding {

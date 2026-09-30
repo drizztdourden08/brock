@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { readScreensConfig } from './read-screens-config.mjs';
 import { scanScreens } from './scan-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from './screen-conventions.constants.mjs';
+import { searchFindings } from './search/search-findings.mjs';
 
 const CONFIG_PATH = `${SCREENS_DIR}/${SCREENS_CONFIG}`;
 
@@ -29,7 +30,8 @@ const configFindings = (config, folders) => {
  */
 const checkScreens = async (rootDir) => {
   if (!existsSync(join(rootDir, CONFIG_PATH))) return [];
-  const { findings, buckets } = scanScreens(rootDir);
+  const { files, findings: layout, buckets } = scanScreens(rootDir);
+  const findings = [...layout, ...searchFindings(rootDir, files)];
   try {
     return [...findings, ...configFindings(await readScreensConfig(rootDir), buckets)];
   } catch (error) {

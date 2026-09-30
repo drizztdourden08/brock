@@ -4,6 +4,7 @@
     "electron/main.ts",
     "electron/preload.ts",
     "src/main.tsx",
+    "src/screens/**/*.custom.tsx",
     ".brock/*.ts",
     "*.config.{cjs,ts,mjs}",
     ".markdownlint-cli2.mjs",

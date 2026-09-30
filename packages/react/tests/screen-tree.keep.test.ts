@@ -35,7 +35,8 @@ const ENTRIES: ScreenEntry[] = [
   { kind: 'page', bucket: 'data', id: 'sources', component: View },
   { kind: 'page', bucket: 'lab', id: 'bench', component: View },
   { kind: 'card', id: 'credits', component: View, meta: { requiresProfile: false } },
-  { kind: 'custom', id: 'playfield', component: View },
+  { kind: 'custom', bucket: 'game', id: 'controls', component: View, meta: { order: 3 } },
+  { kind: 'layer', id: 'playfield', component: View },
 ];
 
 const MODULE_TAB: TabDef<object> = { id: 'display-module', label: 'Monitor', navIcon: null, group: 'Hardware', sections: () => [] };
@@ -60,7 +61,7 @@ describe('buildScreenTree', () => {
   it('puts the hero home, then the default group, then the config groups, with pages ordered by meta', () => {
     const game = hubOf(tree.hubs, 'game');
     expect(game.home.id).toBe('home');
-    expect(pageIds(game)).toEqual([['game', 'about-run', 'saves', 'tracker'], ['video', 'display'], ['audio', 'mixer']]);
+    expect(pageIds(game)).toEqual([['game', 'about-run', 'saves', 'controls', 'tracker'], ['video', 'display'], ['audio', 'mixer']]);
     expect(game.groups[0]?.pages[0]?.label).toBe('Run');
   });
 
@@ -69,13 +70,19 @@ describe('buildScreenTree', () => {
     expect(tracker?.tabs?.map((tab) => tab.id)).toEqual(['items', 'map']);
   });
 
+  it('turns a custom page into a hub page with the standard frame and search on', () => {
+    const game = hubOf(tree.hubs, 'game');
+    expect(game.groups[0]?.pages.find((page) => page.id === 'controls')?.label).toBe('Controls');
+    expect(game.search?.placeholder).toBe('Search Game');
+  });
+
   it('uses the first page as home when a bucket has no hero', () => {
     const data = hubOf(tree.hubs, 'data');
     expect(data.home.id).toBe('library');
     expect(pageIds(data)).toEqual([['data', 'sources']]);
   });
 
-  it('makes card and custom screens, and settings files into tabs', () => {
+  it('makes card and layer screens, and settings files into tabs', () => {
     expect(tree.screens.map((screen) => [screen.id, screen.layer, screen.requiresProfile])).toEqual([['credits', 'fullscreen', false], ['playfield', 'own', true]]);
     expect(tree.tabs.map((tab) => tab.id)).toEqual(['game/mixer', 'game/display']);
     expect(tree.shortcuts).toEqual([{ shortcut: 'Mod+D', target: 'game/display' }]);

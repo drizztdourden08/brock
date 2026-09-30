@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { MenuEntry } from '../menu/menu.type';
-import type { SearchAction } from '../palette/palette.type';
+import type { SearchAction } from '../search/search.type';
 import type { ModulePorts } from '../platform/platform.type';
 import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';

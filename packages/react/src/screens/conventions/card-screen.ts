@@ -11,7 +11,7 @@ const cardScreen = (entry: CardEntry): ScreenDef => defineScreen({
   id: entry.id,
   title: entryLabel(entry),
   icon: iconNode(entry.meta?.icon ?? KIND_ICONS[entry.kind]),
-  layer: entry.kind === 'custom' ? 'own' : 'fullscreen',
+  layer: entry.kind === 'layer' ? 'own' : 'fullscreen',
   devOnly: entry.meta?.devOnly ?? false,
   requiresProfile: entry.meta?.requiresProfile ?? true,
   shortcut: entry.meta?.shortcut,

@@ -42,7 +42,7 @@ import { screenTree } from '../.brock/screens';
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_SLOTS` |
-| Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `buildCatalog` |
+| Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost`, `useToastStore` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `LogsWidget` |
@@ -82,11 +82,23 @@ defineScreen({
 An app lists its buckets in `src/screens/screens.config.ts` with `defineScreens({ buckets, home, settings? })` and drops one file per screen under `src/screens`. `brock sync` and the dev server write `.brock/screens.ts`, which calls `buildScreenTree(config, entries)`; `BrockApp` takes the result as `screenTree`.
 
 - A bucket folder is one hub. `<id>.hero.tsx` is its home and gets `HeroProps`: the page props plus `slots` (`Backdrop`, `Art`, `Facts`, `Actions`). `<id>.page.tsx` is a page and gets `PageProps` (`params`, `profile`, `open`, `close`, `bucket`, `page`, `tab`). A folder of `<tab>.tab.tsx` files is one page with header tabs. `<id>.settings.ts` default-exports sections and becomes a settings page. A subfolder without tabs is a nav group.
-- At the root, `<id>.card.tsx` is a card screen and `<id>.custom.tsx` draws its own layer; both get `CardProps`.
-- `meta: ScreenMeta` sets `title`, `icon`, `order`, `shortcut`, `devOnly` and `requiresProfile`.
+- `<page>.custom.tsx` in a bucket is a custom page: the hub frame, nav entry, header, Escape and search stay standard and the content is free. It gets `PageProps` and must export `searchEntries: SearchEntrySeed[]`, a literal list the build reads.
+- At the root, `<id>.card.tsx` is a card screen and `<id>.layer.tsx` draws its own full-bleed layer; both get `CardProps`.
+- `meta: ScreenMeta` sets `title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile` and `keywords`.
 - `resolveScreenTree(tree, builtInTabs)` runs inside `BrockApp`: it adds the built-in and module settings tabs to the settings bucket, turns each hub into a screen with `defineHub`, derives the menu with `deriveMenu` and points the `settings` route at the settings bucket, so no separate Settings screen is registered.
 - The menu reads `BucketDef.menu`: `entry` for one entry, `submenu` for one child per page, `hidden` for none. The home bucket is already the Home entry. `MenuItem` takes `{ bucket, page, tab }` as a target, and `open('game/tracker/map')` opens that bucket, page and tab.
 - The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in.
+
+## Search
+
+The palette and every hub search read one index of `SearchEntry { id, kind, label, keywords, breadcrumb, target: { route, anchor? }, icon }`.
+
+- `.brock/search.ts` calls `buildSearchIndex(config, seeds)` with seeds the build read from the screen files: buckets, pages, tabs, cards, settings sections and rows, and each custom page's `searchEntries`. It imports no screen file, so page code stays lazy. `screens.ts` hands the result to `buildScreenTree` and it reaches `BrockApp` as `screenTree.search`.
+- `useSearchIndex(enabled, menu, actions)` merges it with the live sources: module screens and settings tabs, the widget registry, the menu, the registered actions and the `useSearchEntries` entries. Entries with the same id or the same target appear once, the build index first.
+- `useSearchEntries(entries, route?)` adds `SearchEntrySeed` entries while the caller is mounted, pointing at the page open when it mounted (or `route`). Pass a stable list.
+- `rankEntries(entries, query)` folds case and accents and needs every word to match the label, a keyword, the description or the breadcrumb. `entriesInBucket(entries, id)` keeps what one hub shows.
+- `openSearchTarget(target)` opens the route through `nav.open` and scrolls to the element whose `data-setting-key`, `data-section` or `data-search-anchor` equals `anchor`, flashing it with `search-hit`.
+- A generated hub has search on: NavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
 
 ## Escape and home
 
@@ -162,7 +174,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 ## Automated review
 
-On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, the bug report dialog, About and the logs widget. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
+On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, search from both the palette and a hub, the bug report dialog, About and the logs widget. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
 
 ## Checks
 

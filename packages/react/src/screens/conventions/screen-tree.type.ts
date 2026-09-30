@@ -3,6 +3,7 @@ import type { ComponentType } from 'react';
 import type { HubDef, HubTab } from '../../hub/hub.type';
 import type { MenuEntry } from '../../menu/menu.type';
 import type { RouteAlias, RouteShortcut } from '../../navigation/navigation.type';
+import type { SearchEntry } from '../../search/search.type';
 import type { Section, TabDef } from '../../settings/settings.type';
 import type { ScreenDef } from '../screen.type';
 import type { CardProps, HeroProps, PageProps } from '../kinds/screen-kinds.type';
@@ -28,6 +29,13 @@ interface PageEntry extends EntryBase {
   component: ComponentType<PageProps>;
 }
 
+interface FreePageEntry extends EntryBase {
+  kind: 'custom';
+  bucket: string;
+  group?: string;
+  component: ComponentType<PageProps>;
+}
+
 interface TabEntry extends EntryBase {
   kind: 'tab';
   bucket: string;
@@ -44,11 +52,11 @@ interface SettingsEntry extends EntryBase {
 }
 
 interface CardEntry extends EntryBase {
-  kind: 'card' | 'custom';
+  kind: 'card' | 'layer';
   component: ComponentType<CardProps>;
 }
 
-type BucketEntry = HeroEntry | PageEntry | TabEntry | SettingsEntry;
+type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | SettingsEntry;
 
 type ScreenEntry = BucketEntry | CardEntry;
 
@@ -58,6 +66,7 @@ interface ScreenTree {
   screens: ScreenDef[];
   tabs: TabDef<object>[];
   shortcuts: RouteShortcut[];
+  search: readonly SearchEntry[];
 }
 
 interface ResolvedScreenTree {
@@ -69,6 +78,7 @@ interface ResolvedScreenTree {
   menu: MenuEntry[];
   shortcuts: RouteShortcut[];
   settingsAlias: RouteAlias;
+  search: readonly SearchEntry[];
 }
 
 interface OrderedTab extends HubTab {
@@ -82,6 +92,6 @@ interface PlacedPage {
 }
 
 export type {
-  BucketEntry, CardEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
+  BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
   TabEntry,
 };

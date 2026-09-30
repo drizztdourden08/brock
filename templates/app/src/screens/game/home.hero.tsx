@@ -3,7 +3,7 @@ import { useAppVersion, useProduct } from '@drizztdourden08/brock-react';
 import type { HeroProps, ScreenMeta } from '@drizztdourden08/brock-react';
 import { Button, StatRow, Text } from '@drizztdourden08/tessera/primitives';
 
-const meta: ScreenMeta = { title: 'Home', icon: 'house' };
+const meta: ScreenMeta = { title: 'Home', icon: 'house', keywords: ['start', 'overview', 'profile'] };
 
 const HomeHero = (props: HeroProps) => {
   const { slots, profile, open } = props;

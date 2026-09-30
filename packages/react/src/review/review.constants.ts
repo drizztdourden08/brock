@@ -16,6 +16,9 @@ const UPDATER_MODULE_ID = 'updater';
 const UPDATE_MENU_LABEL = 'Check for updates';
 const CONDITIONAL_SLOT_CLASS = 'titlebar__slot--conditional';
 const BOOT_OVERLAYS = ['#boot-splash', '.boot-bar', 'html.booting', '[data-boot-overlay]'] as const;
+const SEARCH_TOP = 5;
+const SEARCH_SETTINGS_PAGES = 4;
+const SEARCH_HIT_CLASS = 'search-hit';
 
 const BUILT_IN_ENTRIES: readonly Pick<MenuItem, 'key' | 'label' | 'screen'>[] = [HOME_ENTRY, ...TOP_ENTRIES, ABOUT_ENTRY, QUIT_ENTRY];
 
@@ -53,6 +56,9 @@ const SELECTORS = {
   paletteRow: '.command-palette--open .command-palette-row',
   paletteRowIcon: '.command-palette-row__icon',
   paletteRowLabel: '.command-palette-row__label',
+  paletteInput: '.command-palette--open .command-palette__input',
+  hubSearchInput: '.fullscreen-layer:not(.fullscreen-layer--hidden) .section-nav__search-input',
+  hubSearchHit: '.fullscreen-layer:not(.fullscreen-layer--hidden) .search-results__hit',
   dialogClose: '.dialog .window-header__close',
   hubNavItem: '.fullscreen-layer:not(.fullscreen-layer--hidden) .section-nav__item',
   hubPage: '.fullscreen-layer:not(.fullscreen-layer--hidden) .nav-layout__pane',
@@ -68,5 +74,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
+  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME,
+  SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

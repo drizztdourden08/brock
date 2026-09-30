@@ -8,9 +8,9 @@ import { entryOrder } from './entry-order';
 import { iconNode } from './icon-node';
 import { KIND_ICONS } from './screens.constants';
 import type { BucketDef } from './screens-config.type';
-import type { PageEntry, PlacedPage, SettingsEntry } from './screen-tree.type';
+import type { FreePageEntry, PageEntry, PlacedPage, SettingsEntry } from './screen-tree.type';
 
-const contentPage = (bucket: BucketDef, entry: PageEntry | SettingsEntry): PlacedPage => ({
+const contentPage = (bucket: BucketDef, entry: PageEntry | FreePageEntry | SettingsEntry): PlacedPage => ({
   group: entry.group ?? null,
   order: entryOrder(entry),
   page: {
@@ -18,7 +18,7 @@ const contentPage = (bucket: BucketDef, entry: PageEntry | SettingsEntry): Place
     label: entryLabel(entry),
     icon: iconNode(entry.meta?.icon ?? KIND_ICONS[entry.kind]),
     devOnly: entry.meta?.devOnly,
-    render: entry.kind === 'page'
+    render: entry.kind !== 'settings'
       ? renderPage(entry.component, bucket)
       : () => createElement(SettingsTabPage, { tabId: joinRoute(entry.bucket, entry.id) }),
   },

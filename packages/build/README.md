@@ -174,7 +174,8 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   relative to the package folder.
 - A migration file exports `migration`: `{ id, summary, files, apply }`. `files` is a
   RegExp over root-relative paths. `apply({ path, source })` returns
-  `{ source, todos }`; a changed `source` is written back, and each
+  `{ source, todos, rename? }`; a changed `source` is written back, a `rename` path moves
+  the file there (or becomes a to-do when that path exists), and each
   `{ line, message }` in `todos` becomes a numbered to-do.
 - Owned files are everything but the files sync writes, the launcher and the
   generated folders (`node_modules`, `dist`, `out`, `release`, `.brock`, `.user-data`,
@@ -186,7 +187,7 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   props, with type arguments and nested braces, and `removeSpans` deletes them and the
   lines they leave empty.
 
-The 0.1.1 folder holds four, each with a test in `tests/`:
+The 0.1.1 folder holds these, each with a test in `tests/`:
 
 - `brock-app-logo-src` removes a `logoSrc` or `instanceLogoSrc` prop that `BrockApp`
   no longer takes when it holds the default path. Any other value becomes a to-do that
@@ -198,6 +199,14 @@ The 0.1.1 folder holds four, each with a test in `tests/`:
 - `gitignore-generated-files` adds the bot logos, the installer splash and the
   profile store and the port slot file that newer Brock writes to `.gitignore`, so an
   upgrade never commits them.
+- `removed-shell-exports` turns each import of a shell export Tessera replaced into a
+  to-do naming the composite to use.
+- `custom-layer-rename` (breaking) renames each root `src/screens/<id>.custom.tsx` to
+  `<id>.layer.tsx`, since `.custom.tsx` now names a custom page inside a bucket. The
+  report lists each `old -> new` path.
+- `knip-custom-pages` adds `src/screens/**/*.custom.tsx` to the knip entries after
+  `src/main.tsx`, since the build reads a custom page's `searchEntries` instead of
+  importing it.
 
 ## Platforms
 

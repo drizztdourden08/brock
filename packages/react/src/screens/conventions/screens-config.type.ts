@@ -34,6 +34,7 @@ interface ScreenMeta {
   shortcut?: string;
   devOnly?: boolean;
   requiresProfile?: boolean;
+  keywords?: string[];
 }
 
 export type { BucketDef, BucketGroupDef, MenuPlacement, ScreenMeta, ScreensConfig, SettingsPlacement };

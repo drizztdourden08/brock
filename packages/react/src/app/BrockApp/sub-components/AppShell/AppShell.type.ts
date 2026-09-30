@@ -2,7 +2,7 @@
 import type { AppLogBus } from '../../../../log/app-log.type';
 import type { MenuEntry } from '../../../../menu/menu.type';
 import type { TitleBarSlot } from '../../../../modules/renderer-module.type';
-import type { SearchAction } from '../../../../palette/palette.type';
+import type { SearchAction } from '../../../../search/search.type';
 import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsStore } from '../../../../stores/settings-store.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';

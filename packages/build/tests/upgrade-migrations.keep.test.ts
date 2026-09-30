@@ -119,7 +119,7 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1', '0.1.1']);
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1', '0.1.1', '0.1.1']);
   });
 
   it('orders module migrations with the build ones by version', () => {
@@ -139,5 +139,21 @@ describe('findJsxProps and removeSpans', () => {
     const props = findJsxProps(CUSTOM, 'BrockApp', ['logoSrc']);
     expect(props[0]?.literal).toBeNull();
     expect(removeSpans(CUSTOM, props)).toContain('<BrockApp product={product} instanceLogoSrc="./brand/bot.svg" />');
+  });
+});
+
+describe('removed-shell-exports', () => {
+  it('turns each removed brock-react import into a to-do and leaves the file alone', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'brock-migrate-'));
+    dirs.push(root);
+    mkdirSync(join(root, 'src'), { recursive: true });
+    const source = "import { BrockApp, TitleBar, About as AboutView } from '@drizztdourden08/brock-react';\nexport { TitleBar, AboutView, BrockApp };\n";
+    writeFileSync(join(root, 'package.json'), '{"name":"x"}');
+    writeFileSync(join(root, 'src', 'shell.tsx'), source);
+    const only = upgradeFrom('0.1.0').filter((m) => m.file.endsWith('removed-shell-exports.mjs'));
+    const run = await runMigrations(root, only);
+    expect(readFileSync(join(root, 'src', 'shell.tsx'), 'utf8')).toBe(source);
+    expect(run.todos.map((todo) => todo.message.split(' ')[0])).toEqual(['TitleBar', 'About']);
+    expect(run.todos[0]?.message).toContain('WindowTitleBar');
   });
 });

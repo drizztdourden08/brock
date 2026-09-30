@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { userDataStep } from '../provision/user-data.mjs';
+import { ensurePortSlot } from '../ports/ensure-port-slot.mjs';
 import { assertName, MAIN_CHECKOUT } from '../worktree/paths.mjs';
 import { createWorktreeContext } from '../worktree/worktree-context.mjs';
 
@@ -17,7 +18,11 @@ const provisionMain = async (worktree, ctx) => {
  * @returns {Promise<import('../workspace/workspace.type.mjs').WorktreeContext>}
  */
 const launchContext = async (name, ctx) => {
-  if (name !== MAIN_CHECKOUT) return createWorktreeContext(assertName(name), ctx);
+  if (name !== MAIN_CHECKOUT) {
+    const worktree = createWorktreeContext(assertName(name), ctx);
+    if (existsSync(worktree.path)) ensurePortSlot(worktree);
+    return worktree;
+  }
   const worktree = {
     name,
     path: ctx.rootDir,

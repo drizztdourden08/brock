@@ -1,14 +1,23 @@
 /* @layer core @kind logic */
-import type { ProductConfig, ProductIcons, ProductInput, ProductLogos, WindowConfig } from './product.type';
-import { BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, REVERSE_DNS, SLUG } from './define-product.constants';
+import type { ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, WindowConfig } from './product.type';
+import {
+  BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG,
+} from './define-product.constants';
 
 const toEnvPrefix = (id: string): string => id.replace(/[^a-z0-9]+/gi, '_').toUpperCase();
+
+const assertPorts = (ports: ProductPorts | undefined): void => {
+  if (!ports) return;
+  const { base } = ports;
+  if (!Number.isInteger(base) || base < PORT_BASE_MIN || base > PORT_BASE_MAX) throw new Error(`product.ports.base ${base} must be a whole number from ${PORT_BASE_MIN} to ${PORT_BASE_MAX}`);
+};
 
 const assertProductInput = (input: ProductInput): void => {
   if (!SLUG.test(input.id)) throw new Error(`product.id "${input.id}" must be a slug like "my-app"`);
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
   if (!input.name.trim()) throw new Error('product.name is required');
   if (input.accent !== undefined && !HEX_COLOR.test(input.accent)) throw new Error(`product.accent "${input.accent}" must be a colour like "#e8a33d"`);
+  assertPorts(input.ports);
 };
 
 const resolveWindow = (input: ProductInput): WindowConfig => ({
@@ -46,6 +55,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     logos: resolveLogos(input.logos),
     homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
     modules: input.modules ?? [],
+    ports: input.ports,
   };
 };
 

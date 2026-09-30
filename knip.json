@@ -35,6 +35,9 @@
       ],
       "project": [
         "**/*.mjs"
+      ],
+      "ignoreDependencies": [
+        "playwright-core"
       ]
     },
     "packages/cli": {

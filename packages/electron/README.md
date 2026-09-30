@@ -112,6 +112,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 - A cancelled dialog is an ordinary outcome: `pickFile` returns null and `saveFile` reports `saved: false` with no error.
 - `profiles:create` writes the record only; which profile opens next time is a separate `profiles:setLast` call, so a renderer can skip it on an automation launch.
+- `network:lanAddresses` returns `lanAddresses()`: every non-internal network interface address, IPv4 before IPv6. Main code imports `lanAddresses` directly.
 - Screenshots go to `Data/screenshots/<name>.png`; the name must pass `assertSafeName`. `captureWindow` serves both the `test:screenshot` channel and the `--screenshot` launch flag.
 - Play sessions live at `Data/profiles/<id>/sessions.json`, newest first, capped at 100 entries.
 - The storage summary is the immediate entry count plus the recursive byte size per domain; unreadable entries are skipped; the rows come from `BootstrapOptions.dataDomains`.

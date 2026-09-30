@@ -2,6 +2,8 @@
 export { defineBrockConfig, CONFIG_FILE } from './config.mjs';
 export { loadBrockConfig } from './load-config.mjs';
 export { defineBrockViteConfig, sourceDependencies } from './vite-config.mjs';
+export { devServerPort } from './dev-server-port.mjs';
+export { derivePortBase, portFor, portSlotOf, PORT_OFFSETS } from '@drizztdourden08/brock-thread/ports';
 export { createBuilderConfig, loadBuilderConfig } from './builder-config.mjs';
 export { ensureElectron } from './ensure-electron.mjs';
 export { syncApp, BROCK_VERSION } from './modules/sync.mjs';

@@ -52,6 +52,7 @@ const app = (): string => {
   writeFileSync(join(root, 'node_modules', 'dep', 'view.tsx'), MAIN);
   writeFileSync(join(root, 'src', 'settings.constants.ts'), SETTINGS);
   writeFileSync(join(root, 'src', 'menu.constants.ts'), MENU);
+  writeFileSync(join(root, '.gitignore'), 'node_modules/\npublic/logos/icon.ico\n');
   return root;
 };
 
@@ -95,6 +96,17 @@ describe('the 0.1.1 migration', () => {
     expect(run.todos.map(({ file, line }) => `${file}:${line}`)).toEqual(['src/settings.constants.ts:2']);
   });
 
+  it('adds the generated logos and the profile store to .gitignore once', async () => {
+    const root = app();
+    const only = upgradeFrom('0.1.0').filter((m) => m.file.endsWith('gitignore-generated-files.mjs'));
+    await runMigrations(root, only);
+    const again = await runMigrations(root, only);
+    const lines = readFileSync(join(root, '.gitignore'), 'utf8').split('\n');
+    expect(again.applied[0]?.touched).toEqual([]);
+    expect(lines.filter((line) => line === 'public/logos/icon.ico')).toHaveLength(1);
+    expect(lines).toContain('.brock/profile-config.json');
+  });
+
   it('drops the plain About menu entry and flags one that replaces it', async () => {
     const root = app();
     const run = await runMigrations(root, upgradeFrom('0.1.0').filter((m) => m.file.endsWith('menu-built-in-about.mjs')));
@@ -107,7 +119,7 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1']);
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1', '0.1.1']);
   });
 
   it('orders module migrations with the build ones by version', () => {

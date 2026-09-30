@@ -156,7 +156,7 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   props, with type arguments and nested braces, and `removeSpans` deletes them and the
   lines they leave empty.
 
-The 0.1.1 folder holds three, each with a test in `tests/`:
+The 0.1.1 folder holds four, each with a test in `tests/`:
 
 - `brock-app-logo-src` removes a `logoSrc` or `instanceLogoSrc` prop that `BrockApp`
   no longer takes when it holds the default path. Any other value becomes a to-do that
@@ -165,6 +165,8 @@ The 0.1.1 folder holds three, each with a test in `tests/`:
   control a non-boolean row now needs, when the item sits on one line.
 - `menu-built-in-about` drops an app menu entry that only repeats the built-in About
   entry, and flags one that replaces it without an icon.
+- `gitignore-generated-files` adds the bot logos, the installer splash and the
+  profile store that newer Brock writes to `.gitignore`, so an upgrade never commits them.
 
 ## Platforms
 

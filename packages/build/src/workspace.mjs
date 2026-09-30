@@ -4,16 +4,19 @@ import { dirname, join } from 'node:path';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
+const isCheckoutRoot = (dir) => existsSync(join(dir, '.git'));
+
 /**
  * @param {string} dir
- * @returns {string | null}
+ * @returns {string | null} the enclosing workspace, never past a git checkout
  */
 const findWorkspaceRoot = (dir) => {
+  if (isCheckoutRoot(dir)) return null;
   let current = dirname(dir);
   for (;;) {
     if (existsSync(join(current, WORKSPACE_FILE))) return current;
     const parent = dirname(current);
-    if (parent === current) return null;
+    if (parent === current || isCheckoutRoot(current)) return null;
     current = parent;
   }
 };

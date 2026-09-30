@@ -40,3 +40,6 @@ catalog:
 onlyBuiltDependencies:
   - electron
   - esbuild
+
+overrides:
+  '@drizztdourden08/tessera': 'link:X:/tessera'

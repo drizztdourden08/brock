@@ -23,6 +23,7 @@ const BRAND_ICONS: ProductIcons = {
 const DEFAULT_LOGOS: ProductLogos = {
   app: './logos/icon-256.png',
   instance: './logos/icon-bot.svg',
+  mark: './logos/mark.svg',
 };
 
 const DEFAULT_HOME_SCREEN = 'settings';

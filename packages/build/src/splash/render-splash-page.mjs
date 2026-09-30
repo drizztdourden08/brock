@@ -1,35 +1,46 @@
 /* @layer tooling-scripts @kind logic */
+import { escapeHtml } from './escape-html.mjs';
+import { SPLASH_CSP } from './splash.constants.mjs';
+import { SPLASH_SCRIPT } from './splash-script.mjs';
 
 /**
- * @param {import('./splash-look.mjs').SplashLook} look
- * @returns {string}  The splash window page, with no bundle
+ * @typedef {object} SplashPageInput
+ * @property {string} name  The app name
+ * @property {string} mark  The mark without its tile, relative to the page
+ * @property {string} styles  Every rule, in cascade order
  */
-const renderSplashPage = ({ title, logo, background, accent }) => `<!DOCTYPE html>
+
+/**
+ * @param {SplashPageInput} input
+ * @returns {string}  The splash window page: static HTML with no bundle
+ */
+const renderSplashPage = ({ name, mark, styles }) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'" />
-    <title>${title}</title>
+    <meta http-equiv="Content-Security-Policy" content="${SPLASH_CSP}" />
+    <title>${escapeHtml(name)}</title>
     <style>
-      html, body { margin: 0; height: 100%; overflow: hidden; background: ${background}; user-select: none; cursor: default; }
-      body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
-      .splash__logo { width: 192px; height: 192px; }
-      .splash__spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.12); border-top-color: ${accent}; animation: splash-rotate 0.7s linear infinite; }
-      .splash__status { position: fixed; left: 0; right: 0; bottom: 14px; margin: 0; padding: 0 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: 12px; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.55); }
-      .splash__version { position: fixed; right: 10px; bottom: 8px; font-size: 11px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.28); }
-      @keyframes splash-rotate { to { transform: rotate(360deg); } }
-      @media (prefers-reduced-motion: reduce) { .splash__spinner { animation-duration: 2.4s; } }
+${styles}
     </style>
   </head>
-  <body>
-    <img class="splash__logo" src="${logo}" alt="" />
-    <div class="splash__spinner"></div>
-    <p class="splash__status" id="splash-status">Starting...</p>
+  <body class="splash">
+    <main class="splash__stage">
+      <img class="splash__mark" src="${escapeHtml(mark)}" alt="" />
+      <h1 class="splash__name">${escapeHtml(name)}</h1>
+      <p class="splash__status" id="splash-status" aria-live="polite">Starting</p>
+      <section class="splash__failure" id="splash-failure" hidden>
+        <p class="splash__message" id="splash-message"></p>
+        <div class="splash__actions">
+          <button class="splash__button splash__button--primary" id="splash-retry" type="button">Retry</button>
+          <button class="splash__button" id="splash-logs" type="button">Open logs</button>
+          <button class="splash__button" id="splash-quit" type="button">Quit</button>
+        </div>
+      </section>
+    </main>
     <span class="splash__version" id="splash-version"></span>
-    <script>
-      window.__splashStatus = (message) => { document.getElementById('splash-status').textContent = message; };
-      document.getElementById('splash-version').textContent = new URLSearchParams(window.location.search).get('v') ?? '';
-    </script>
+    <div class="splash__bar" id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"><div class="splash__fill"></div></div>
+    <script>${SPLASH_SCRIPT}</script>
   </body>
 </html>
 `;

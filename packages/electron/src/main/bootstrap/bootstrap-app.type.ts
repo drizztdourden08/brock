@@ -1,13 +1,12 @@
 /* @layer electron-main @kind types */
-import type { BrowserWindow } from 'electron';
 import type { BootstrapOptions, MainContext } from '../types/main-context.type';
+import type { WindowSetup } from '../window/window-setup.type';
 
 interface ReadyInput {
   ctx: MainContext;
   options: BootstrapOptions;
   dataDirs: string[];
-  openWindow: () => BrowserWindow;
-  windowIcon?: string;
+  setup: WindowSetup;
 }
 
 export type { ReadyInput };

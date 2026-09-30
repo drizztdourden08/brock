@@ -1,37 +1,50 @@
 /* @layer electron-main @kind logic */
-import { BrowserWindow, screen } from 'electron';
-import type { SplashOptions } from './splash-window.type';
+import { app, BrowserWindow } from 'electron';
 import { loadRendererPage } from '../window/load-renderer';
-import { splashRef } from './splash-ref';
+import { keepWindowInBackground } from '../window/keep-in-background';
+import { bootState } from './boot-state';
+import { installSplashActions } from './install-splash-actions';
+import { replaySplash } from './replay-splash';
+import { splashBounds } from './splash-bounds';
+import type { SplashSetup } from './splash-setup.type';
 
-const splashOrigin = (parent: BrowserWindow, size: SplashOptions['size']): { x: number; y: number } => {
-  const { workArea } = screen.getDisplayMatching(parent.getBounds());
-  return {
-    x: Math.round(workArea.x + (workArea.width - size.width) / 2),
-    y: Math.round(workArea.y + (workArea.height - size.height) / 2),
-  };
-};
-
-const openSplash = (parent: BrowserWindow, { version, size, backgroundColor, pagePath }: SplashOptions): void => {
+const openSplash = ({ plan, size, title, version, backgroundColor, icon, pagePath, preloadPath }: SplashSetup): BrowserWindow => {
   const splash = new BrowserWindow({
-    parent,
-    ...splashOrigin(parent, size),
-    width: size.width,
-    height: size.height,
+    ...splashBounds(plan, size),
+    title,
+    icon,
     frame: false,
+    roundedCorners: false,
+    hasShadow: false,
+    thickFrame: false,
     resizable: false,
     movable: false,
     minimizable: false,
     maximizable: false,
-    skipTaskbar: true,
+    fullscreenable: false,
+    focusable: !plan.headless,
+    skipTaskbar: plan.headless,
     show: false,
     backgroundColor,
-    webPreferences: { nodeIntegration: false, contextIsolation: true },
+    webPreferences: { preload: preloadPath, sandbox: false, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false },
   });
-  splashRef.current = splash;
+  bootState.splash = splash;
+  bootState.headless = plan.headless;
+  installSplashActions();
+  if (plan.headless) keepWindowInBackground(splash);
 
+  splash.webContents.on('did-finish-load', replaySplash);
+  splash.once('ready-to-show', () => {
+    if (plan.headless) splash.showInactive();
+    else splash.show();
+  });
+  splash.once('closed', () => {
+    if (bootState.splash === splash) bootState.splash = null;
+    bootState.timeline.splashClosedAt ??= Date.now();
+    if (!bootState.revealed && !bootState.revealing) app.quit();
+  });
   loadRendererPage(splash, pagePath, { v: version });
-  splash.once('ready-to-show', () => splashRef.current?.show());
+  return splash;
 };
 
 export { openSplash };

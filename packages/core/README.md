@@ -15,6 +15,8 @@ Isomorphic foundation: no Electron, no React. Everything here runs in main, prel
 | `/module` | The `package.json#brock` manifest type. |
 | `/automation` | `createAutomationFlags`: the launch guard main and preload share. |
 | `/registry` | `createRegistry`, the keyed registry behind screens, tabs and handlers. |
+| `/boot` | `defineBootTask`, `runBootTasks` and the boot task types shared by main and the renderer. |
+| `/look` | `resolveLook(product, sources)`: the splash and installer gradient from `product.look`, the Tessera brand gradient or the palette seeds. |
 
 ## Adding a channel
 
@@ -32,7 +34,7 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 - `InvokeContract` is renderer to main with a response (`ipcRenderer.invoke` / `ipcMain.handle`). `SendContract` is renderer to main, fire and forget. `EventContract` is main to renderer; each value is the listener signature.
 - The open interfaces live in `/augment` and nowhere else because TypeScript merges an augmentation only with declarations in the module it names, never through a re-export.
 - `composeMaps` merges left to right; a later method name wins, so an app can rename a base method. The preload builds the flat `window.api` methods from these maps, so no channel literal is written per method.
-- Base channels: `test:screenshot` writes a PNG of the window to `Data/screenshots` and returns its path; `window:shellReady` means the shell has settled and painted; `debug:appendSessionLog` carries batched renderer log lines for `Data/debug/session.log`.
+- Base channels: `test:screenshot` writes a PNG of the window to `Data/screenshots` and returns its path; `boot:progress`, `boot:failed` and `boot:ready` carry the renderer boot to main; `debug:appendSessionLog` carries batched renderer log lines for `Data/debug/session.log`.
 - `StartupInfo` is read by the preload from the forwarded `--startup-*` flags: `fresh` means ignore the saved layout and persist nothing, `automation` means read-only for the shared configuration, `flags` holds every forwarded flag for app-defined ones.
 
 ## Automation flags
@@ -53,6 +55,7 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 ## Product
 
 - `id` is the slug for the userData folder, `app.setName` and the Velopack pack id. `appId` is reverse-DNS and becomes the Windows AppUserModelId and the electron-builder appId. `artifactPrefix` defaults to `<id>-`. `envPrefix` gives variables like `MYAPP_UPDATE_API_ORIGIN`. `repo` is the GitHub repository the updater reads. `dataDirs` are created under `Data/` at boot. Nothing outside `ProductConfig` carries an identity string.
+- `look` is `{ gradient: [from, to, via?], angle? }` with hex stops; `logos.mark` (default `./logos/mark.svg`) is the mark without its tile that the splash shows. `defineProduct` rejects a stop that is not a hex colour.
 - `window.backgroundColor` is a raw hex value on purpose: the window paints it before any stylesheet loads. `defineProduct` throws on a malformed id, appId or empty name.
 - `FileAssociation.ext` has no dot, `progId` is the registry ProgId (for example `MyApp.Document`); `PrivilegedScheme.stream` serves media with byte ranges; `ProductIcons.ico` is the Windows window and installer icon, `png256`/`png512` serve Linux, macOS and the splash. `ProductIcons.brand` names a Tessera brand (`archipelia`, `rotp`, `brock`, `tessera`) instead: `brock icons` copies its files under `build/icons/` and `defineProduct` fills the three path fields with those copies (`build/icons/icon.ico`, `build/icons/png/icon-256.png`, `build/icons/png/icon-512.png`); a path field given alongside `brand` still wins.
 

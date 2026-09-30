@@ -1,17 +1,25 @@
 /* @layer tooling-scripts @kind logic */
-import { basename } from 'node:path';
-import { injectBootSplash } from './inject-boot-splash.mjs';
+import { appLook } from '../look/app-look.mjs';
 import { ownsSplashPage } from './owns-splash-page.mjs';
 import { renderSplashPage } from './render-splash-page.mjs';
-import { INDEX_PAGE, SPLASH_PAGE } from './splash.constants.mjs';
-import { splashLook } from './splash-look.mjs';
+import { SPLASH_PAGE } from './splash.constants.mjs';
+import { splashStyles } from './splash-styles.mjs';
+
+/**
+ * @param {string} rootDir
+ * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
+ * @returns {Promise<string>}
+ */
+const splashPageOf = async (rootDir, product) => {
+  const { config, look } = await appLook(rootDir, product);
+  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, styles: splashStyles(rootDir, look) });
+};
 
 /**
  * @param {{ rootDir: string, product: import('@drizztdourden08/brock-core/product').ProductInput }} opts
  * @returns {import('vite').Plugin}
  */
 const splashPlugin = ({ rootDir, product }) => {
-  const look = splashLook(product);
   const generated = !ownsSplashPage(rootDir);
   return {
     name: 'brock-splash',
@@ -19,17 +27,15 @@ const splashPlugin = ({ rootDir, product }) => {
       if (!generated) return;
       server.middlewares.use((req, res, next) => {
         if (req.url?.split('?')[0] !== `/${SPLASH_PAGE}`) return next();
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.end(renderSplashPage(look));
+        splashPageOf(rootDir, product).then((page) => {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.end(page);
+        }, next);
         return undefined;
       });
     },
-    transformIndexHtml: {
-      order: 'pre',
-      handler: (html, ctx) => (basename(ctx.filename) === INDEX_PAGE ? injectBootSplash(html, look) : html),
-    },
-    generateBundle() {
-      if (generated) this.emitFile({ type: 'asset', fileName: SPLASH_PAGE, source: renderSplashPage(look) });
+    async generateBundle() {
+      if (generated) this.emitFile({ type: 'asset', fileName: SPLASH_PAGE, source: await splashPageOf(rootDir, product) });
     },
   };
 };

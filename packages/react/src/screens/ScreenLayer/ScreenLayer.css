@@ -1,5 +1,0 @@
-/* @layer renderer-shell @kind style */
-
-html.booting .fullscreen-layer {
-  animation: none;
-}

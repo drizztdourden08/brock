@@ -5,6 +5,7 @@ import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { FileStore, DataDomainDef } from '@drizztdourden08/brock-core/platform';
 import type { ProfileStore, ProfileStoreHooks } from '@drizztdourden08/brock-core/storage';
 import type { EventContract } from '@drizztdourden08/brock-core/augment';
+import type { BootTask } from '@drizztdourden08/brock-core/boot';
 import type { HandleFn, OnFn } from '../ipc/handle.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
@@ -45,6 +46,7 @@ interface MainModule {
   automationFlags?: string[];
   dataDirs?: string[];
   schemes?: PrivilegedScheme[];
+  bootTasks?: BootTask<MainContext>[];
 }
 
 interface HandlerGroup {
@@ -57,6 +59,7 @@ interface BootstrapPaths {
   preload?: string;
   renderer?: string;
   splash?: string;
+  splashPreload?: string;
 }
 
 interface SecurityOptions {
@@ -67,6 +70,7 @@ interface SecurityOptions {
 interface BootstrapOptions {
   modules?: MainModule[];
   handlers?: HandlerGroup[];
+  bootTasks?: BootTask<MainContext>[];
   automationFlags?: string[];
   dataDomains?: DataDomainDef[];
   profileHooks?: ProfileStoreHooks;

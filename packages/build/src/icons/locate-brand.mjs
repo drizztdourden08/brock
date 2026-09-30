@@ -1,17 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { TESSERA_PACKAGE } from './brand-files.mjs';
-
-const tesseraDir = (rootDir) => {
-  const appRequire = createRequire(join(rootDir, 'package.json'));
-  try {
-    return dirname(appRequire.resolve(`${TESSERA_PACKAGE}/package.json`));
-  } catch {
-    throw new Error(`icons.brand is set but ${TESSERA_PACKAGE} is not installed in ${rootDir}. Add it to dependencies and run pnpm install.`);
-  }
-};
+import { tesseraDir } from './tessera-dir.mjs';
 
 /**
  * @param {string} rootDir The app root

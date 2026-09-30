@@ -24,6 +24,7 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   widgets: modules.flatMap((m) => m.widgets ?? []),
   ports: mergePorts(modules.flatMap((m) => (m.ports ? [m.ports] : []))),
   logChannels: [...new Set(modules.flatMap((m) => m.logChannels ?? []))],
+  bootTasks: modules.flatMap((m) => m.bootTasks ?? []),
 });
 
 export { mergeModules };

@@ -1,12 +1,9 @@
 /* @layer electron-main @kind logic */
 import type { HandlerGroup } from '../types/main-context.type';
-import { revealMainWindow } from '../boot/reveal-main-window';
 
 const windowHandlers: HandlerGroup = {
   id: 'window',
   register: ({ handle, on, window }) => {
-    on('window:shellReady', () => revealMainWindow());
-
     on('window:minimize', () => window()?.minimize());
     on('window:maximize', () => {
       const win = window();

@@ -15,24 +15,23 @@ import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_MENU, NO_MODULES } from './BrockApp.constants';
+import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
-    product, settings, screens, modules = NO_MODULES, home, menu = NO_MENU, layout = 'menu', screenGroups,
+    product, settings, screens, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, home, menu = NO_MENU, layout = 'menu', screenGroups,
     profileHooks, homeScreen = product.homeScreen, credits, legalText,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const log = useHostBoot(merged.logChannels, profileHooks);
   const titleBarSlots = useMemo(() => [...STANDARD_TITLE_BAR_SLOTS, ...merged.titleBar], [merged.titleBar]);
+  const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const settingsStore = useProfileSettingsStore(settings);
 
-  const tabs = useMemo(
-    () => [...settings.tabs, ...merged.settingsTabs] as TabDef<object>[],
-    [settings.tabs, merged.settingsTabs],
-  );
+  const tabs = useMemo(() => [...settings.tabs, ...merged.settingsTabs] as TabDef<object>[], [settings.tabs, merged.settingsTabs]);
 
   const registry = useMemo(() => {
     const all = createScreenRegistry([...screens, ...merged.screens]);
@@ -68,6 +67,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
             <ModuleProviders providers={merged.providers}>
               <AppShell
                 settingsStore={settingsStore}
+                bootTasks={allBootTasks}
                 log={log}
                 moduleIds={merged.ids}
                 moduleMenu={merged.menu}

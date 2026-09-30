@@ -1,8 +1,18 @@
 /* @layer tooling-scripts @kind constants */
-const SPLASH_DEFAULTS = { background: '#000000', accent: '#3b6fe0', logo: './logos/icon-256.png' };
 const SPLASH_PAGE = 'splash.html';
-const INDEX_PAGE = 'index.html';
-const EMPTY_ROOT = /<div id="root">\s*<\/div>/;
+const SPLASH_STYLESHEET = 'splash-page.css';
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const TOKEN_LAYERS = '@layer ds.base, ds.palette, ds.semantic;';
+const TOKEN_FILES = [
+  'scale.css', 'palette.css', 'ramps.css', 'canonical.css', 'space.css', 'size.css', 'radius.css', 'border.css', 'typography.css',
+  'motion.css', 'opacity.css',
+];
+const TOKENS_DIR = 'src/tokens';
+const FONTS_DIR = 'fonts';
+const SPLASH_FONTS = [
+  { css: 'inter/inter.css', file: 'InterVariable-subset.woff2' },
+  { css: 'chakra-petch/chakra-petch.css', file: 'chakra-petch-latin-600-normal.woff2' },
+];
+const SPLASH_CSP = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; font-src data:";
 
-export { SPLASH_DEFAULTS, SPLASH_PAGE, INDEX_PAGE, EMPTY_ROOT, HTML_ESCAPES };
+export { FONTS_DIR, HTML_ESCAPES, SPLASH_CSP, SPLASH_FONTS, SPLASH_PAGE, SPLASH_STYLESHEET, TOKEN_FILES, TOKEN_LAYERS, TOKENS_DIR };

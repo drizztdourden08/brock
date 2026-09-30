@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { ProductLook } from '../look/look.type';
+
 interface ProductAuthor {
   name: string;
   email?: string;
@@ -46,6 +48,7 @@ interface ProductIcons {
 interface ProductLogos {
   app: string;
   instance: string;
+  mark: string;
 }
 
 interface ProductConfig {
@@ -57,6 +60,7 @@ interface ProductConfig {
   repo?: ProductRepo;
   updateChannel?: string;
   accent?: string;
+  look?: ProductLook;
   artifactPrefix: string;
   envPrefix: string;
   window: WindowConfig;

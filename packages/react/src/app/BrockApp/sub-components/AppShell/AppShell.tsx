@@ -6,32 +6,31 @@ import { StandardOverlays } from '../../../../overlays/StandardOverlays/Standard
 import { useCapability } from '../../../../platform/useCapability';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
-import { BootProgressBar } from '../../../../shell/BootProgressBar/BootProgressBar';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { ScreenRail } from '../../../../shell/ScreenRail/ScreenRail';
 import { TitleBar } from '../../../../shell/TitleBar/TitleBar';
 import { useBrock } from '../../../useBrock';
+import { useBootStore } from '../../../../boot/useBootStore';
+import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
 import { useShellMenu } from '../../behavior/useShellMenu';
-import { useShellReady } from '../../behavior/useShellReady';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
-import { useStartup } from '../../behavior/useStartup';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
   const { product, home, logoSrc, instanceLogoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
 
-  const { settled } = useStartup();
-  useShellReady(settled);
+  useRendererBoot(settingsStore, bootTasks);
+  const ready = useBootStore((s) => s.phase === 'ready');
   useProfileHydration(settingsStore);
   useKeyboardShortcuts();
   useStandardEscapeLayers();
@@ -39,7 +38,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const fullMenu = useShellMenu(moduleMenu, railed);
   const titleBarHidden = useTitleBarHidden();
-  useReviewTour({ settled, menu: fullMenu, slots: titleBarSlots, moduleIds });
+  useReviewTour({ ready, menu: fullMenu, slots: titleBarSlots, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
 
@@ -63,7 +62,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           : <ScreenHost home={home} className="brock-app__screens" />}
       </Box>
       <ConfirmDialog />
-      <BootProgressBar />
       <StandardOverlays menu={fullMenu} actions={searchActions} widgets={widgets} />
     </Box>
   );

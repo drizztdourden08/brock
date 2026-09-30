@@ -66,12 +66,6 @@
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
-html.booting .screen-rail,
-html.booting .screen-rail__item,
-html.booting .screen-rail__icon {
-  transition: none;
-}
-
 .screen-rail__item:hover:not(:disabled) {
   background: var(--c-hover);
 }

@@ -9,6 +9,9 @@ const assertProductInput = (input: ProductInput): void => {
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
   if (!input.name.trim()) throw new Error('product.name is required');
   if (input.accent !== undefined && !HEX_COLOR.test(input.accent)) throw new Error(`product.accent "${input.accent}" must be a colour like "#e8a33d"`);
+  const stops = input.look?.gradient.filter((stop): stop is string => stop !== undefined) ?? [];
+  const bad = stops.find((stop) => !HEX_COLOR.test(stop));
+  if (bad !== undefined) throw new Error(`product.look.gradient stop "${bad}" must be a colour like "#e8a33d"`);
 };
 
 const resolveWindow = (input: ProductInput): WindowConfig => ({
@@ -22,7 +25,7 @@ const resolveIcons = (icons: ProductIcons = {}): ProductIcons =>
 
 const resolveLogos = (logos: Partial<ProductLogos> = {}): ProductLogos => {
   const app = logos.app ?? DEFAULT_LOGOS.app;
-  return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance) };
+  return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance), mark: logos.mark ?? DEFAULT_LOGOS.mark };
 };
 
 const defineProduct = (input: ProductInput): ProductConfig => {
@@ -36,6 +39,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     repo: input.repo,
     updateChannel: input.updateChannel,
     accent: input.accent,
+    look: input.look,
     artifactPrefix: input.artifactPrefix ?? `${input.id}-`,
     envPrefix: input.envPrefix ?? toEnvPrefix(input.id),
     window: resolveWindow(input),

@@ -40,6 +40,7 @@ const createReviewSession = ({ name, app, windowIcon }: ReviewSessionInput): Rev
     addMainLine: (line) => {
       if (!run.mainLog.some((seen) => sameLine(seen, line))) run.mainLog.push(line);
     },
+    setBoot: (timeline) => { run.boot = timeline; },
   };
 };
 

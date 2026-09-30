@@ -30,6 +30,8 @@
     "./format": "./src/format/index.ts",
     "./result": "./src/result/index.ts",
     "./review": "./src/review/index.ts",
+    "./boot": "./src/boot/index.ts",
+    "./look": "./src/look/index.ts",
     "./types": "./src/types/index.ts",
     "./package.json": "./package.json"
   },

@@ -8,18 +8,18 @@ import { NO_SLOTS } from '../../../shell/TitleBar/TitleBar.constants';
 import type { ReviewTourInput } from '../BrockApp.type';
 
 const useReviewTour = (input: ReviewTourInput): void => {
-  const { settled, menu, slots = NO_SLOTS, moduleIds } = input;
+  const { ready, menu, slots = NO_SLOTS, moduleIds } = input;
   const { product, home, homeScreen } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
   const started = useRef(false);
 
   useEffect(() => {
-    if (!settled || started.current || !isReviewLaunch()) return;
+    if (!ready || started.current || !isReviewLaunch()) return;
     started.current = true;
     const env = { product, home, homeScreen, screens: registry.list(), menu, slotCount: slots.length, moduleIds, developerTools };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
-  }, [settled, product, home, homeScreen, registry, menu, slots, moduleIds, developerTools]);
+  }, [ready, product, home, homeScreen, registry, menu, slots, moduleIds, developerTools]);
 };
 
 export { useReviewTour };

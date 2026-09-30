@@ -14,8 +14,5 @@ export { useProfiles } from './useProfiles';
 export { useDialogStore } from './useDialogStore';
 export { dialogs } from './dialogs';
 export type { ConfirmDialogConfig, DialogState } from './dialog.type';
-export { useBootProgressStore } from './useBootProgressStore';
-export { bootProgress } from './boot-progress';
-export type { BootPhase, BootProgressState } from './boot-progress.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';

@@ -5,6 +5,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrockApp } from '@drizztdourden08/brock-react';
 import { rendererModules } from '../.brock/modules.renderer';
+import { rendererBootTasks } from '../.brock/boot.renderer';
 import { SCREENS, SETTINGS } from './main.constants';
 import { MENU } from './menu.constants';
 import { product } from './product';
@@ -20,6 +21,7 @@ createRoot(root).render(
       settings={SETTINGS}
       screens={SCREENS}
       modules={rendererModules}
+      bootTasks={rendererBootTasks}
       home="home"
       menu={MENU}
     />

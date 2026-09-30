@@ -25,9 +25,9 @@ const home = defineScreen({ id: 'home', title: 'Home', layer: 'own', render: () 
 />
 ```
 
-`BrockApp` composes, outermost first: `PlatformProvider` (host factories plus module ports), the app context, the screen registry, the settings store, the module Providers, then the shell: `TitleBar` where the host has window chrome, `ScreenHost` (the home screen with the open screen over it), `ConfirmDialog` and `BootProgressBar`. Built-in screens `profiles`, `settings` and `about` are registered unless the app supplies one with the same id, plus `credits` when the `credits` prop is given.
+`BrockApp` composes, outermost first: `PlatformProvider` (host factories plus module ports), the app context, the screen registry, the settings store, the module Providers, then the shell: `TitleBar` where the host has window chrome, `ScreenHost` (the home screen with the open screen over it) and `ConfirmDialog`. Nothing inside the app window shows loading: the splash window does. Built-in screens `profiles`, `settings` and `about` are registered unless the app supplies one with the same id, plus `credits` when the `credits` prop is given.
 
-Startup picks the profile: the pinned instance profile (an unknown name fails loudly), else the only profile, else the last one used, else the `profiles` screen. `useShellReady` signals main once startup settled and two frames painted.
+`AppShell` runs the renderer boot tasks once: `profiles` (the pinned instance profile, an unknown name fails loudly, else the only profile, else the last one used, else the `profiles` screen), `settings` (waits until the active profile's settings are hydrated), `fonts` (the `--font-sans` and `--font-title` stacks loaded), `images` (the app logo decoded, and the instance logo on an instance launch), module `bootTasks`, the `bootTasks` prop (`.brock/boot.renderer.ts`), then `first-frame`, which sets the boot phase to `painting` and resolves two frames after the shell commits. Progress goes to main on `boot:progress` with a heartbeat every second, then `boot:ready` or `boot:failed`. `defineBootTask` types a renderer task; `useBootStore` exposes the phase.
 
 ## Public API
 
@@ -37,10 +37,10 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 | Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer`, `matchesShortcut` |
 | Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React) |
-| Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useBootProgressStore`, `bootProgress`, `useWidgetPrefStore` |
+| Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useWidgetPrefStore` |
 | Platform | `PlatformProvider`, `usePlatform`, `useCapability`, `getPlatform`, `setPlatformPorts`, `installApiShim`, `createElectronFactory`, `createWebFactory` |
 | Settings | `SettingsHub`, `SettingsLayout`, `SettingsPage`, `SettingsPageContext`, `createTabRegistry`, `resolveSections`, `matchTabs` |
-| Shell | `TitleBar`, `WindowControls`, `InstanceBadge`, `BootProgressBar`, `About`, `useAboutInfo`, `ConfirmDialog`, `ProfileCard`, `CreateProfileForm`, `ProfilesScreen`, `WorkspaceSwitch` |
+| Shell | `TitleBar`, `WindowControls`, `InstanceBadge`, `About`, `useAboutInfo`, `ConfirmDialog`, `ProfileCard`, `CreateProfileForm`, `ProfilesScreen`, `WorkspaceSwitch` |
 | Modules | `RendererModule`, `mergeModules` |
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toDropdownItems` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
@@ -135,7 +135,6 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 - `TitleBar`: an empty `menu` hides the menu button; the shell hides the bar when the `windowMode` setting is `borderless` or `fullscreen`, read by key, so no module import is needed; `instanceName` null means a normal launch; `hidden` hides the bar and reveals it while the pointer is in the 40 px strip along the top edge or over the bar itself; `extra` holds controls after the menu button (mute, save, a status tag). The outside-click handler also ignores clicks inside `.dropdown-menu` because the dropdown is portaled outside the trigger's subtree. Menu and pin icons use a 16-unit viewBox; minimize, restore, maximize and close use a 12-unit one. The instance badge shows the name verbatim because the name is the identifier.
 - `About`: the version comes from the bridge's `getAppVersion` and falls back to `0.0.0` without a bridge; `copyText` is what the copy button puts on the clipboard and omitting it hides the button.
-- `BootProgressBar`: the label flips from light to dark over the fill through a clipped duplicate element; the 1000 ms minimum on-screen time is cosmetic and never gates readiness. `ratio` is 0..1 for a determinate bar and null for an indeterminate sweep; phase `ready` completes the bar and lets it fade; `bootProgress` is the imperative surface for the code doing the work.
 - `ProfilesScreen` doubles as the setup screen when no profile exists (the form is forced open); picking a profile makes it active and closes the screen; `createOptions()` is merged into the create request. In `CreateProfileForm`, Enter in the name field submits, `canSubmit: false` blocks submit while an extra field is incomplete, and `extraFields` render between the name and the actions. `WorkspaceSwitch.label` is the accessible name for the whole switch.
 - Profiles store: selecting a profile records it as the default for the next launch (skipped on an automated launch) and bumps its last-played time; `loaded` is true once the first refresh finished. `useProfiles().remove` asks first through the confirm dialog, and when the active profile is deleted the profiles screen opens so the app is never left without one.
 - The shell shows one confirm dialog at a time; `dialogs` is the imperative surface for code outside React; `confirmDelete` is a red destructive confirm that closes itself before running `onConfirm`; `dismiss` runs the config's `onCancel`.

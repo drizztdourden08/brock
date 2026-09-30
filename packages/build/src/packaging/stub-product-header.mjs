@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { DEFAULT_ACCENT, HEX_COLOR, STUB_VERSION } from './packaging.constants.mjs';
+import { COLOUR_MACROS, LOOK_MACROS } from '../installer/installer.constants.mjs';
+import { STUB_VERSION } from './packaging.constants.mjs';
 import { mainExeOf } from './vpk-args.mjs';
 
 /**
@@ -8,28 +9,54 @@ import { mainExeOf } from './vpk-args.mjs';
 const wide = (text) => `L"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 
 /**
- * @param {string | undefined} accent
+ * @param {string} hex  #rrggbb
  */
-const argbOf = (accent) => `0xFF${(accent && HEX_COLOR.test(accent) ? accent : DEFAULT_ACCENT).slice(1).toUpperCase()}`;
+const argbOf = (hex) => `0xFF${hex.slice(1).toUpperCase()}`;
 
 /**
- * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
- * @param {string} manifestUrl
+ * @param {boolean} on
+ */
+const flagOf = (on) => (on ? '1' : '0');
+
+/**
+ * @param {Record<string, string>} names  macro suffix to colour key
+ * @param {string} prefix
+ * @param {import('../installer/stub-colours.mjs').StubColours} colours
+ */
+const colourMacros = (names, prefix, colours) =>
+  Object.fromEntries(Object.entries(names).map(([name, key]) => [`${prefix}${name}`, argbOf(colours[key])]));
+
+/**
+ * @typedef {object} StubHeaderInput
+ * @property {import('@drizztdourden08/brock-core/product').ProductConfig} config
+ * @property {import('../installer/stub-colours.mjs').StubColours} colours
+ * @property {string} manifestUrl
+ */
+
+/**
+ * @param {StubHeaderInput} input
  * @returns {string} the product.h the stub sources include
  */
-const stubProductHeader = (product, manifestUrl) => {
+const stubProductHeader = ({ config, colours, manifestUrl }) => {
+  const { installer } = config;
   const macros = {
     BROCK_STUB_VERSION: String(STUB_VERSION),
-    BROCK_ACCENT: argbOf(product.accent),
-    BROCK_PRODUCT: wide(product.name),
-    BROCK_PACK_ID: wide(product.id),
-    BROCK_BRAND: wide(product.name.toUpperCase()),
-    BROCK_MAIN_EXE: wide(mainExeOf(product, 'win32')),
-    BROCK_WINDOW_CLASS: wide(`${product.id}-installer`),
-    BROCK_USER_AGENT: wide(`${product.id}-installer/${STUB_VERSION}.0`),
-    BROCK_TEMP_PREFIX: wide(`${product.id}-installer`),
-    BROCK_BLURB: wide(product.description ?? `Installs ${product.name} and keeps it up to date.`),
+    BROCK_PRODUCT: wide(config.name),
+    BROCK_PACK_ID: wide(config.id),
+    BROCK_BRAND: wide(config.name.toUpperCase()),
+    BROCK_MAIN_EXE: wide(mainExeOf(config, 'win32')),
+    BROCK_WINDOW_CLASS: wide(`${config.id}-installer`),
+    BROCK_USER_AGENT: wide(`${config.id}-installer/${STUB_VERSION}.0`),
+    BROCK_TEMP_PREFIX: wide(`${config.id}-installer`),
+    BROCK_BLURB: wide(config.description ?? `Installs ${config.name} and keeps it up to date.`),
     BROCK_MANIFEST_URL: wide(manifestUrl),
+    ...colourMacros(COLOUR_MACROS, 'BROCK_C_', colours),
+    ...colourMacros(LOOK_MACROS, 'BROCK_LOOK_', colours),
+    BROCK_LOOK_ANGLE: `${Number(colours.angle).toFixed(1)}f`,
+    BROCK_INSTALL_FOLDER: wide(installer.folderName),
+    BROCK_INSTALL_MACHINE: flagOf(installer.scope === 'machine'),
+    BROCK_LAUNCH_AFTER: flagOf(installer.launchAfterInstall),
+    BROCK_HAS_LICENCE: flagOf(Boolean(installer.licence)),
   };
   const lines = Object.entries(macros).map(([name, value]) => `#define ${name} ${value}`);
   return ['#pragma once', '', ...lines, ''].join('\n');

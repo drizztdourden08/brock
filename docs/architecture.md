@@ -272,10 +272,26 @@ Apps ship the way Relic of the Past does: Velopack installs and updates them, Gi
 
 1. `brock build`.
 2. electron-builder with `--dir` on Windows, `--dir` and `deb` on Linux, and `--mac` on macOS (dmg and zip). The `afterPack` hook removes the Velopack bindings for other platforms, drops `dxcompiler.dll` and `dxil.dll` on Windows, and stamps the app icon on the exe with rcedit, since `signAndEditExecutable` is off.
-3. On Windows, `build/installer-splash.png`: the brand icon centred on `product.window.backgroundColor` at the splash size.
-4. `vpk pack` into `release/velopack`, with the pack id, title, author and icon from the product, `release-notes/v<version>.md` as the notes when it exists (app root, then repo root), and `product.updateChannel` or `--channel` as the channel. `product.accent` becomes the installer progress colour. A routine release is the update package and the delta only; `--full` adds the Velopack setup as `<prefix>windows-payload.exe` and the portable build as `<prefix>windows-directory.zip`. Linux gets `<prefix>linux.AppImage`.
-5. On Windows, with `product.repo` set, the small installer: `installer-stub/` (C++ and Win32, about 600 KB) compiled with the Visual Studio C++ tools after `product.h` is written from the product (name, pack id, main exe, accent, the `install.json` address), saved as `<prefix>windows-setup.exe`. It is built on every release, so `releases/latest/download/<prefix>windows-setup.exe` always resolves.
+3. On Windows, `build/installer-splash.png`, the image Velopack's Setup shows while it installs. It is drawn from the look like the boot splash: the gradient, a soft glow, the mark and the app name. Velopack draws its progress bar over the bottom edge in the accent.
+4. `vpk pack` into `release/velopack`, with the pack id, title, author and icon from the product, `release-notes/v<version>.md` as the notes when it exists (app root, then repo root), and `product.updateChannel` or `--channel` as the channel. On Windows it also passes the Setup splash, the accent as the progress colour, `--shortcuts` from `product.installer.shortcuts` and `--instLicense` from `product.installer.licence`. A routine release is the update package and the delta only; `--full` adds the Velopack setup as `<prefix>windows-payload.exe` and the portable build as `<prefix>windows-directory.zip`. Linux gets `<prefix>linux.AppImage`.
+5. On Windows, with `product.repo` set, the small installer: `installer-stub/` (C++ and Win32, about 600 KB) compiled with the Visual Studio C++ tools after `product.h` is written from the config, saved as `<prefix>windows-setup.exe`. It is built on every release, so `releases/latest/download/<prefix>windows-setup.exe` always resolves.
 6. `install.json`, the recipe the stub reads from `releases/latest/download/install.json`: the stub generation, the version, and the URL and SHA-256 of the stub, the payload (run with `--silent`) and the directory zip. An entry this release does not carry is taken from the previous manifest, so a routine release still points at the last full one; the first release has to be `--full`.
+
+### The installer template
+
+rotp's installer is two programs: the small downloader window and Velopack's Setup. Brock builds both for every app from config alone, so a new app ships the full installer with no files of its own.
+
+The downloader reads everything from `product.h`, which `brock package` writes on each run:
+
+- Colours: `BROCK_C_BG`, `_SURFACE`, `_HAIRLINE`, `_TEXT`, `_DIM`, `_FAINT`, `_ACCENT`, `_ON_ACCENT`, `_TRACK`, `_STAMP` and `_HEADER_INK`. They come from Tessera's resolved dark theme (`theme.dark` in the Tessera package `tokens.json`) and the accent from `resolveLook`. The ink on the accent is Tessera's `onPrimary` when the accent is Tessera's primary, else the most readable of `onPrimary` and `text`. The header ink is the look's `ink`, the text colour that reads on the gradient. Without `tokens.json` the stub keeps its built-in warm dark colours and `brock package` says so once.
+- The look: `BROCK_LOOK_FROM`, `_VIA`, `_TO` and `_ANGLE`, the same gradient the splash uses. A GDI+ `LinearGradientBrush` paints it across the top of the window, and a veil fades it into the background by the first line of text, so no label sits on the gradient.
+- The mark, without its tile: Tessera's `brand/<brand>/mark/mark-256.png` when the app keeps the default `product.logos.mark`, else `public/logos/mark.svg` (or the mark the app names) or the Tessera brand SVG, rasterised to 256 px with resvg. It is embedded as a resource. The exe and the shortcuts keep the tiled icon.
+- `product.installer`: `scope` (`user` by default, `machine` makes the main button install for everyone with elevation), `shortcuts` (`desktop` and `startMenu`, both on), `launchAfterInstall` (on; off shows a done screen with Start and Close), `licence` (a `.md` or `.txt` file; the stub shows a licence screen before any install and the text goes to vpk) and `folderName` (the product name; the folder a chosen install goes into).
+- The name, the description as the welcome line, the pack id and the main exe, as before.
+
+Layout numbers stay in the C++ sources. An app that wants more than config can put `build/installer/header.png` (replaces the rendered mark) or `build/installer/splash.png` (replaces the Setup splash). `brock structure` rejects any other file in that folder.
+
+`brock package --render-installer` builds the stub and writes its screens to `release/installer-preview/` without installing anything: `checking`, `welcome`, `licence` (with a licence), `location`, `location-portable`, `progress`, `done`, `error` and `handoff`, at twice the size. It also writes `mark.png` and `setup-splash.png`. The stub's own `--render-png=<file> --screen=<name> [--scale=<n>]` mode does the drawing, ported from rotp. Without the Visual Studio C++ tools it still writes the two images and exits 1.
 
 ### Platforms
 

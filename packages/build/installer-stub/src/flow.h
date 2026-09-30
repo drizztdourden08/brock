@@ -17,6 +17,7 @@ enum : UINT {
   kProgress,
   kFinished,
   kFailed,
+  kInstalled,
 };
 
 enum : WPARAM {

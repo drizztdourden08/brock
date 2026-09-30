@@ -9,6 +9,7 @@ const OPTIONS = {
   check: { type: 'boolean', default: false },
   full: { type: 'boolean', default: false },
   channel: { type: 'string' },
+  'render-installer': { type: 'boolean', default: false },
   from: { type: 'string' },
   to: { type: 'string' },
   report: { type: 'string' },

@@ -22,6 +22,9 @@ struct Shell {
   // gets tested before it is the latest release.
   std::wstring manifestUrl;
   bool tracking = false;
+  bool licenceAccepted = false;
+  // Where Back on the licence returns to: the screen whose button asked for it.
+  ui::Screen licenceBack = ui::Screen::Welcome;
 };
 
 extern Shell g;
@@ -35,6 +38,8 @@ void Repaint(HWND window);
 
 void OnClick(HWND window, ui::Btn id);
 void OnManifestReady(HWND window);
+// The install finished and the config keeps the app closed: say so and wait.
+void OnInstalled(HWND window);
 void OnFailed(HWND window, WPARAM reason);
 
 }  // namespace app

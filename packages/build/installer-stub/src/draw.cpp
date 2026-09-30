@@ -14,6 +14,7 @@ namespace {
 
 Image* g_logo = nullptr;
 FontFamily* g_family = nullptr;
+std::wstring g_licence;
 
 void RoundPath(GraphicsPath& path, const RectF& r, float rad) {
   float d = rad * 2.0f;
@@ -40,16 +41,38 @@ std::unique_ptr<StringFormat> MakeFormat(StringAlignment align, bool wrap) {
   return fmt;
 }
 
-bool LoadLogo() {
-  HRSRC res = FindResourceW(nullptr, MAKEINTRESOURCEW(101), RT_RCDATA);
-  if (res == nullptr) return false;
-  DWORD size = SizeofResource(nullptr, res);
+// Raw bytes of an embedded resource; the pointer lives as long as the module.
+const BYTE* Resource(int id, DWORD* size) {
+  HRSRC res = FindResourceW(nullptr, MAKEINTRESOURCEW(id), RT_RCDATA);
+  if (res == nullptr) return nullptr;
+  *size = SizeofResource(nullptr, res);
   HGLOBAL handle = LoadResource(nullptr, res);
-  if (handle == nullptr || size == 0) return false;
+  if (handle == nullptr || *size == 0) return nullptr;
+  return static_cast<const BYTE*>(LockResource(handle));
+}
+
+// The licence is embedded as UTF-8 text, the way it sits in the app's repo.
+void LoadLicence() {
+  if (!theme::kHasLicence) return;
+  DWORD size = 0;
+  const BYTE* bytes = Resource(102, &size);
+  if (bytes == nullptr) return;
+  const char* text = reinterpret_cast<const char*>(bytes);
+  int length = MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(size), nullptr, 0);
+  if (length <= 0) return;
+  g_licence.resize(static_cast<size_t>(length));
+  MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(size), &g_licence[0], length);
+  if (!g_licence.empty() && g_licence[0] == 0xFEFF) g_licence.erase(0, 1);
+}
+
+bool LoadLogo() {
+  DWORD size = 0;
+  const BYTE* bytes = Resource(101, &size);
+  if (bytes == nullptr) return false;
   HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, size);
   if (mem == nullptr) return false;
   void* dst = GlobalLock(mem);
-  memcpy(dst, LockResource(handle), size);
+  memcpy(dst, bytes, size);
   GlobalUnlock(mem);
   IStream* stream = nullptr;
   if (FAILED(CreateStreamOnHGlobal(mem, TRUE, &stream))) {
@@ -66,7 +89,10 @@ bool LoadLogo() {
 void Init() {
   g_family = new FontFamily(theme::kFontFamily);
   LoadLogo();
+  LoadLicence();
 }
+
+const std::wstring& LicenceText() { return g_licence; }
 
 void Free() {
   delete g_logo;
@@ -86,6 +112,32 @@ Color Mix(DWORD a, DWORD b, float t) {
     return static_cast<BYTE>(x + (y - x) * t + 0.5f);
   };
   return Color(ch(24), ch(16), ch(8), ch(0));
+}
+
+void Backdrop(Graphics& g, float fade) {
+  const RectF frame(0.0f, 0.0f, static_cast<float>(theme::kWidth),
+                    static_cast<float>(theme::kHeight));
+  GraphicsPath clip;
+  RoundPath(clip, frame, 12.0f);
+  g.SetClip(&clip);
+  SolidBrush ground{Rgb(theme::kGround)};
+  g.FillRectangle(&ground, frame);
+  // CSS angles start at the top and GDI+ angles at the right; both turn clockwise.
+  LinearGradientBrush look(frame, Rgb(theme::kLookFrom), Rgb(theme::kLookTo),
+                           theme::kLookAngle - 90.0f, TRUE);
+  Color stops[3] = {Rgb(theme::kLookFrom), Rgb(theme::kLookVia), Rgb(theme::kLookTo)};
+  REAL positions[3] = {0.0f, 0.5f, 1.0f};
+  look.SetInterpolationColors(stops, positions, 3);
+  const RectF header(0.0f, 0.0f, frame.Width, fade);
+  g.FillRectangle(&look, header);
+  // The veil runs from mostly clear to the solid ground, so the gradient fades
+  // out instead of ending on an edge.
+  const BYTE clear = static_cast<BYTE>((1.0f - theme::kHeaderStrength) * 255.0f + 0.5f);
+  const Color top((clear << 24) | (theme::kGround & 0x00FFFFFF));
+  LinearGradientBrush veil(PointF(0.0f, -1.0f), PointF(0.0f, fade + 1.0f), top,
+                           Rgb(theme::kGround));
+  g.FillRectangle(&veil, header);
+  g.ResetClip();
 }
 
 void FillRound(Graphics& g, const RectF& r, float rad, const Color& c) {
@@ -213,7 +265,7 @@ void CloseButton(Graphics& g, std::vector<ui::Hit>* hits, const ui::State& state
   if (hot) FillRound(g, box, 8.0f, Rgb(theme::kSurface));
 
   const float inset = 10.0f;
-  Pen pen{Rgb(hot ? theme::kText : theme::kFaint), 1.6f};
+  Pen pen{Rgb(hot ? theme::kText : theme::kHeaderInk), 1.6f};
   g.DrawLine(&pen, box.X + inset, box.Y + inset, box.GetRight() - inset, box.GetBottom() - inset);
   g.DrawLine(&pen, box.GetRight() - inset, box.Y + inset, box.X + inset, box.GetBottom() - inset);
 

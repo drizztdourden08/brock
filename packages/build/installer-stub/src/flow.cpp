@@ -7,6 +7,7 @@
 #include "install.h"
 #include "net.h"
 #include "state.h"
+#include "theme.h"
 
 namespace flow {
 namespace {
@@ -42,6 +43,17 @@ bool Acquire(HWND window, const manifest::Artifact& artifact, const wchar_t* suf
   return true;
 }
 
+// product.installer.launchAfterInstall decides the ending: start the app and
+// close, or stay open on the done screen with the choice left to the user.
+void Finish(HWND window, const std::wstring& root) {
+  if (!theme::kLaunchAfter) {
+    PostMessageW(window, kInstalled, 0, 0);
+    return;
+  }
+  install::LaunchInstalled(root);
+  PostMessageW(window, kFinished, 0, 0);
+}
+
 void CheckWorker(HWND window) {
   if (!manifest::Fetch(&g_doc, app::g.manifestUrl)) {
     PostMessageW(window, kFailed, kFailNetwork, 0);
@@ -66,13 +78,14 @@ void InstallWorker(HWND window, ui::Mode mode, std::wstring path) {
     if (!Acquire(window, g_doc.portable, L".zip", &archive)) return;
     bool unpacked = install::Unpack(archive, path);
     DeleteFileW(archive.c_str());
-    if (unpacked) {
-      // The marker travels inside the zip; this is the folder that makes the copy
-      // keep its profiles and saves beside itself.
-      CreateDirectoryW((path + L"\\data").c_str(), nullptr);
-      install::LaunchInstalled(path);
+    if (!unpacked) {
+      PostMessageW(window, kFailed, kFailUnpack, 0);
+      return;
     }
-    PostMessageW(window, unpacked ? kFinished : kFailed, unpacked ? 0 : kFailUnpack, 0);
+    // The marker travels inside the zip; this is the folder that makes the copy
+    // keep its profiles and saves beside itself.
+    CreateDirectoryW((path + L"\\data").c_str(), nullptr);
+    Finish(window, path);
     return;
   }
 
@@ -88,8 +101,7 @@ void InstallWorker(HWND window, ui::Mode mode, std::wstring path) {
     PostMessageW(window, kFailed, kFailLaunch, 0);
     return;
   }
-  install::LaunchInstalled(install::InstalledRoot(mode, path));
-  PostMessageW(window, kFinished, 0, 0);
+  Finish(window, install::InstalledRoot(mode, path));
 }
 
 }  // namespace

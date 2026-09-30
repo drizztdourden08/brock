@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { join } from 'node:path';
+import { NO_SHORTCUTS, SHORTCUT_LOCATIONS } from '../installer/installer.constants.mjs';
 
 const UNSAFE_FILE_CHARS = /[/\\?%*:|"<>\p{Cc}]/gu;
 
@@ -32,24 +33,43 @@ const packIconOf = (product, platform) => {
  * @property {string} platform
  * @property {string} packDir
  * @property {string} outputDir
- * @property {{ splash?: string | null, accent?: string | null, notes?: string | null, channel?: string | null, full?: boolean }} [extras]
+ * @property {VpkExtras} [extras]
  */
 
 /**
- * @param {{ splash?: string | null, accent?: string | null, full?: boolean }} extras
- * @returns {string[]}
+ * @typedef {object} VpkExtras
+ * @property {string | null} [splash] @property {string | null} [accent]
+ * @property {string | null} [notes] @property {string | null} [channel]
+ * @property {boolean} [full]
+ * @property {import('@drizztdourden08/brock-core/product').InstallerConfig} [installer]
  */
-const windowsArgs = ({ splash, accent, full }) => [
-  ...(splash ? ['--splashImage', splash] : []),
-  ...(accent ? ['--splashProgressColor', accent] : []),
-  ...(full ? [] : ['--noInst']),
-];
 
 /**
  * @param {string} flag
  * @param {string | null | undefined} value
  */
 const optional = (flag, value) => (value ? [flag, value] : []);
+
+/**
+ * @param {import('@drizztdourden08/brock-core/product').InstallerShortcuts} shortcuts
+ * @returns {string}  vpk's --shortcuts list
+ */
+const shortcutsOf = (shortcuts) => {
+  const places = Object.entries(SHORTCUT_LOCATIONS).filter(([key]) => shortcuts[key]).map(([, place]) => place);
+  return places.length ? places.join(',') : NO_SHORTCUTS;
+};
+
+/**
+ * @param {VpkExtras} extras
+ * @returns {string[]}
+ */
+const windowsArgs = ({ splash, accent, full, installer }) => [
+  ...optional('--splashImage', splash),
+  ...optional('--splashProgressColor', accent),
+  ...optional('--shortcuts', installer && shortcutsOf(installer.shortcuts)),
+  ...optional('--instLicense', installer?.licence),
+  ...(full ? [] : ['--noInst']),
+];
 
 /**
  * @param {VpkPackInput} input

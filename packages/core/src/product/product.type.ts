@@ -51,6 +51,23 @@ interface ProductLogos {
   mark: string;
 }
 
+type InstallScope = 'user' | 'machine';
+
+interface InstallerShortcuts {
+  desktop: boolean;
+  startMenu: boolean;
+}
+
+interface InstallerConfig {
+  scope: InstallScope;
+  shortcuts: InstallerShortcuts;
+  launchAfterInstall: boolean;
+  licence?: string;
+  folderName: string;
+}
+
+type InstallerInput = Partial<Omit<InstallerConfig, 'shortcuts'>> & { shortcuts?: Partial<InstallerShortcuts> };
+
 interface ProductPorts {
   base: number;
   strict?: boolean;
@@ -77,15 +94,18 @@ interface ProductConfig {
   homeScreen: string;
   modules: string[];
   ports?: ProductPorts;
+  installer: InstallerConfig;
 }
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
-  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos'>> & {
+  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer'>> & {
     window?: Partial<WindowConfig>;
     logos?: Partial<ProductLogos>;
+    installer?: InstallerInput;
   };
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
   ProductIcons, ProductLogos, ProductPorts, ProductConfig, ProductInput,
+  InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

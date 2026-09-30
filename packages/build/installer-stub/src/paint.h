@@ -8,7 +8,7 @@
 
 namespace ui {
 
-enum class Screen { Checking, Handoff, Welcome, Location, Progress };
+enum class Screen { Checking, Handoff, Welcome, Location, Licence, Progress, Done };
 
 enum class Mode { PerUser, Global, Portable };
 
@@ -23,6 +23,9 @@ enum class Btn {
   Back,
   Confirm,
   Close,
+  Accept,
+  ReadLicence,
+  Launch,
 };
 
 // Painting is the only place that knows where a control ends up, so it hands

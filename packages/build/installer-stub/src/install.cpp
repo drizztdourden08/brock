@@ -5,6 +5,7 @@
 #include <shlwapi.h>
 #include <stdlib.h>
 
+#include "draw.h"
 #include "theme.h"
 
 namespace install {
@@ -89,12 +90,12 @@ bool RunToCompletion(const std::wstring& commandLine) {
 std::wstring DefaultPath(ui::Mode mode) {
   switch (mode) {
     case ui::Mode::Global:
-      return KnownFolder(CSIDL_PROGRAM_FILES) + L"\\" + theme::kProduct;
+      return KnownFolder(CSIDL_PROGRAM_FILES) + L"\\" + theme::kInstallFolder;
     case ui::Mode::Portable:
-      return KnownFolder(CSIDL_PROFILE) + L"\\" + theme::kProduct;
+      return KnownFolder(CSIDL_PROFILE) + L"\\" + theme::kInstallFolder;
     case ui::Mode::PerUser:
     default:
-      return KnownFolder(CSIDL_LOCAL_APPDATA) + L"\\Programs\\" + theme::kProduct;
+      return KnownFolder(CSIDL_LOCAL_APPDATA) + L"\\Programs\\" + theme::kInstallFolder;
   }
 }
 
@@ -166,6 +167,23 @@ void LaunchInstalled(const std::wstring& directory) {
 }
 
 bool Handoff(const std::wstring& exe) { return Launch(exe, L"--handoff", L"open"); }
+
+void OpenLicence() {
+  const std::wstring& text = ui::draw::LicenceText();
+  if (text.empty()) return;
+  std::wstring file = TempFile(L"-licence.txt");
+  HANDLE handle = CreateFileW(file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (handle == INVALID_HANDLE_VALUE) return;
+  // A byte order mark first, so every viewer reads the text as UTF-16.
+  const wchar_t bom = 0xFEFF;
+  DWORD written = 0;
+  WriteFile(handle, &bom, sizeof(bom), &written, nullptr);
+  WriteFile(handle, text.data(), static_cast<DWORD>(text.size() * sizeof(wchar_t)), &written,
+            nullptr);
+  CloseHandle(handle);
+  Launch(file, std::wstring(), L"open");
+}
 
 bool Unpack(const std::wstring& archive, const std::wstring& directory) {
   if (SHCreateDirectoryExW(nullptr, directory.c_str(), nullptr) != ERROR_SUCCESS &&

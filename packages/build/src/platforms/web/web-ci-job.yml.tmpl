@@ -1,0 +1,7 @@
+  web:
+    runs-on: ubuntu-latest
+    steps:
+__SETUP__
+
+      - name: Build the web app
+        run: pnpm --dir "$APP_DIR" exec brock web build

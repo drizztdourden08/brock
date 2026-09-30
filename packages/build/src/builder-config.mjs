@@ -1,9 +1,11 @@
 /* @layer tooling-scripts @kind config */
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadBrockConfig } from './load-config.mjs';
 import { modulePackaging } from './modules/module-packaging.mjs';
 import { createAfterPack } from './packaging/after-pack.mjs';
 import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
+import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
@@ -29,6 +31,12 @@ const toBuilderAssociations = (list = []) =>
     ...(fa.mimeType ? { mimeType: fa.mimeType } : {}),
     ...(fa.icon ? { icon: fa.icon } : {}),
   }));
+
+/**
+ * @param {string} rootDir
+ * @returns {{ deb?: { afterInstall: string } }} the post-install hook brock sync wrote, if any
+ */
+const debOptions = (rootDir) => (existsSync(join(rootDir, DEB_POSTINST_FILE)) ? { deb: { afterInstall: DEB_POSTINST_FILE } } : {});
 
 /**
  * @param {ProductInput} product
@@ -69,6 +77,7 @@ const createBuilderConfig = (product, { rootDir }) => {
       executableName: product.id,
       ...(product.author?.email ? { maintainer: product.author.email } : {}),
     },
+    ...debOptions(rootDir),
   };
 };
 

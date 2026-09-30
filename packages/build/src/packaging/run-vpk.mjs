@@ -1,14 +1,7 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
 import { runInherit } from '../run.mjs';
 import { VPK_INSTALL_HINT } from './packaging.constants.mjs';
-
-const vpkCommand = () => {
-  const local = join(homedir(), '.dotnet', 'tools', process.platform === 'win32' ? 'vpk.exe' : 'vpk');
-  return existsSync(local) ? local : 'vpk';
-};
+import { vpkCommand } from './vpk-command.mjs';
 
 /**
  * @param {string} rootDir

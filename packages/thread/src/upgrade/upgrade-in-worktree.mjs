@@ -13,14 +13,14 @@ import { gateSteps } from './gate-steps.mjs';
 import { renderReport } from './render-report.mjs';
 import { runIn } from './run-in.mjs';
 import { runSteps } from './run-steps.mjs';
-import { MIGRATIONS_FILE, PIN_FIELD, REPORT_FILE, WORKTREE_PREFIX } from './upgrade.constants.mjs';
+import { MIGRATIONS_FILE, REPORT_FILE, WORKTREE_PREFIX } from './upgrade.constants.mjs';
 
 const worktreeNameFor = (version) => `${WORKTREE_PREFIX}${version.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-const installStep = (path, fields) => ({
+const installStep = (path) => ({
   name: 'pnpm install',
-  skipped: 'no dependency changed',
-  run: () => (fields.some((field) => field !== PIN_FIELD) ? runIn.pnpm(path, ['install']) : null),
+  skipped: 'package.json matches the base branch',
+  run: () => (git(['status', '--porcelain', '--', 'package.json'], path) ? runIn.pnpm(path, ['install', '--no-frozen-lockfile']) : null),
 });
 
 const printChangelog = (changelog, plan, log) => {
@@ -35,8 +35,8 @@ const printChangelog = (changelog, plan, log) => {
   }
 };
 
-const runGate = (worktree, plan, { fields, review, log }) => {
-  const install = runSteps([installStep(worktree.path, fields)], log);
+const runGate = (worktree, plan, { review, log }) => {
+  const install = runSteps([installStep(worktree.path)], log);
   const changelog = changelogBetween(worktree.path, { from: plan.current, to: plan.target, online: plan.mode === 'registry' });
   printChangelog(changelog, plan, log);
   if (install.failed) return { results: install.results, failed: install.failed, changelog };
@@ -70,7 +70,7 @@ const upgradeInWorktree = async (plan, { review }, ctx) => {
   rmSync(join(worktree.path, MIGRATIONS_FILE), { force: true });
   const fields = bumpApp(worktree.path, plan);
   ctx.log(fields.length > 0 ? `package.json: ${fields.join(', ')}` : 'package.json already names this version.');
-  const { results, failed, changelog } = runGate(worktree, plan, { fields, review, log: ctx.log });
+  const { results, failed, changelog } = runGate(worktree, plan, { review, log: ctx.log });
   const migrations = jsonFile(join(worktree.path, MIGRATIONS_FILE)).read();
   const report = renderReport({ app: ctx.workspace.name, plan, worktree }, { fields, steps: results, failed }, { migrations, changelog });
   writeFileSync(join(worktree.path, REPORT_FILE), report, 'utf8');

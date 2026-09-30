@@ -143,9 +143,15 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   props, with type arguments and nested braces, and `removeSpans` deletes them and the
   lines they leave empty.
 
-The first one, `migrations/0.1.1/brock-app-logo-src.mjs`, removes a `logoSrc` or
-`instanceLogoSrc` prop that `BrockApp` no longer takes when it holds the default path.
-Any other value becomes a to-do that names the `product.logos` field to set.
+The 0.1.1 folder holds three, each with a test in `tests/`:
+
+- `brock-app-logo-src` removes a `logoSrc` or `instanceLogoSrc` prop that `BrockApp`
+  no longer takes when it holds the default path. Any other value becomes a to-do that
+  names the `product.logos` field to set.
+- `base-setting-controls` gives the `windowMode` and `masterVolume` setting rows the
+  control a non-boolean row now needs, when the item sits on one line.
+- `menu-built-in-about` drops an app menu entry that only repeats the built-in About
+  entry, and flags one that replaces it without an icon.
 
 ## Module ids
 

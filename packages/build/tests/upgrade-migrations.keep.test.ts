@@ -24,6 +24,22 @@ const CUSTOM = [
   '',
 ].join('\n');
 
+const SETTINGS = [
+  "      { key: 'windowMode', label: 'Window mode', description: 'Windowed, borderless or fullscreen.' },",
+  "      { key: 'masterVolume', label: 'Master volume',",
+  "        description: 'Overall output level.' },",
+  '',
+].join('\n');
+
+const MENU = [
+  'const MENU: MenuEntry[] = [',
+  "  { key: 'settings', label: 'Settings', screen: 'settings' },",
+  "  { key: 'about', label: 'About', screen: 'about' },",
+  "  { key: 'info', label: 'Info', screen: 'about' },",
+  '];',
+  '',
+].join('\n');
+
 const dirs: string[] = [];
 
 const app = (): string => {
@@ -34,10 +50,14 @@ const app = (): string => {
   writeFileSync(join(root, 'src', 'main.tsx'), MAIN);
   writeFileSync(join(root, 'src', 'custom.tsx'), CUSTOM);
   writeFileSync(join(root, 'node_modules', 'dep', 'view.tsx'), MAIN);
+  writeFileSync(join(root, 'src', 'settings.constants.ts'), SETTINGS);
+  writeFileSync(join(root, 'src', 'menu.constants.ts'), MENU);
   return root;
 };
 
 const upgradeFrom = (from: string, to: string | null = null) => selectMigrations(collectMigrations([]), { from, to });
+
+const logoOnly = () => upgradeFrom('0.1.0').filter((m) => m.file.endsWith('brock-app-logo-src.mjs'));
 
 afterEach(() => {
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
@@ -46,7 +66,7 @@ afterEach(() => {
 describe('the 0.1.1 migration', () => {
   it('drops a default logoSrc and leaves numbered to-dos for the rest', async () => {
     const root = app();
-    const run = await runMigrations(root, upgradeFrom('0.1.0', '0.1.1'));
+    const run = await runMigrations(root, logoOnly());
     expect(run.applied.map((m) => m.id)).toEqual(['brock-app-logo-src']);
     expect(run.applied[0]?.touched).toEqual(['src/main.tsx']);
     expect(readFileSync(join(root, 'src', 'main.tsx'), 'utf8')).toBe(MAIN.replace('    logoSrc="./logos/icon-256.png"\n', ''));
@@ -63,8 +83,23 @@ describe('the 0.1.1 migration', () => {
     const root = app();
     await runMigrations(root, upgradeFrom('0.1.0'));
     const again = await runMigrations(root, upgradeFrom('0.1.0'));
-    expect(again.applied[0]?.touched).toEqual([]);
-    expect(again.todos).toHaveLength(2);
+    expect(again.applied.flatMap((m) => m.touched)).toEqual([]);
+    expect(again.todos).toHaveLength(4);
+  });
+
+  it('gives windowMode and masterVolume a control, or a to-do when the item spans lines', async () => {
+    const root = app();
+    const run = await runMigrations(root, upgradeFrom('0.1.0').filter((m) => m.file.endsWith('base-setting-controls.mjs')));
+    const settings = readFileSync(join(root, 'src', 'settings.constants.ts'), 'utf8');
+    expect(settings).toContain("'Windowed, borderless or fullscreen.', control: { kind: 'choice', options: [{ value: 'windowed'");
+    expect(run.todos.map(({ file, line }) => `${file}:${line}`)).toEqual(['src/settings.constants.ts:2']);
+  });
+
+  it('drops the plain About menu entry and flags one that replaces it', async () => {
+    const root = app();
+    const run = await runMigrations(root, upgradeFrom('0.1.0').filter((m) => m.file.endsWith('menu-built-in-about.mjs')));
+    expect(readFileSync(join(root, 'src', 'menu.constants.ts'), 'utf8')).toBe(MENU.replace("  { key: 'about', label: 'About', screen: 'about' },\n", ''));
+    expect(run.todos.map(({ file, line }) => `${file}:${line}`)).toEqual(['src/menu.constants.ts:4']);
   });
 });
 
@@ -72,13 +107,13 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1']);
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1']);
   });
 
   it('orders module migrations with the build ones by version', () => {
     const module = { packageName: '@x/brock-demo', dir: '/demo', manifest: { migrations: [{ version: '0.1.0', entry: './m.mjs', summary: 'Demo.' }] } };
     const picked = selectMigrations(collectMigrations([module]), { from: '0.0.1', to: null });
-    expect(picked.map((m) => `${m.version} ${m.source}`)).toEqual(['0.1.0 @x/brock-demo', '0.1.1 @drizztdourden08/brock-build']);
+    expect(picked.map((m) => `${m.version} ${m.source}`).slice(0, 2)).toEqual(['0.1.0 @x/brock-demo', '0.1.1 @drizztdourden08/brock-build']);
   });
 });
 

@@ -9,10 +9,12 @@ interface ConfirmDialogConfig {
   onCancel?: () => void;
 }
 
+type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel'>;
+
 interface DialogState {
   dialog: ConfirmDialogConfig | null;
   show: (config: ConfirmDialogConfig) => void;
   dismiss: () => void;
 }
 
-export type { ConfirmDialogConfig, DialogState };
+export type { ConfirmDialogConfig, ConfirmActionOptions, DialogState };

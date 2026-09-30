@@ -53,6 +53,7 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 ## Product
 
 - `id` is the slug for the userData folder, `app.setName` and the Velopack pack id. `appId` is reverse-DNS and becomes the Windows AppUserModelId and the electron-builder appId. `artifactPrefix` defaults to `<id>-`. `envPrefix` gives variables like `MYAPP_UPDATE_API_ORIGIN`. `repo` is the GitHub repository the updater reads. `dataDirs` are created under `Data/` at boot. Nothing outside `ProductConfig` carries an identity string.
+- `ports` is `{ base, strict? }`, the app's block of local ports (see brock-thread `/ports`). `defineProduct` throws when `base` is not a whole number from 1024 to 65335.
 - `window.backgroundColor` is a raw hex value on purpose: the window paints it before any stylesheet loads. `defineProduct` throws on a malformed id, appId or empty name.
 - `FileAssociation.ext` has no dot, `progId` is the registry ProgId (for example `MyApp.Document`); `PrivilegedScheme.stream` serves media with byte ranges; `ProductIcons.ico` is the Windows window and installer icon, `png256`/`png512` serve Linux, macOS and the splash. `ProductIcons.brand` names a Tessera brand (`archipelia`, `rotp`, `brock`, `tessera`) instead: `brock icons` copies its files under `build/icons/` and `defineProduct` fills the three path fields with those copies (`build/icons/icon.ico`, `build/icons/png/icon-256.png`, `build/icons/png/icon-512.png`); a path field given alongside `brand` still wins.
 
@@ -72,6 +73,8 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 ## Log bus, registry, module manifest, diagnostics
 
 - Channels are the app's own vocabulary; `app` and `error` always exist. Every entry is mirrored to the console by default so a main-process file logger captures the channels. The ring holds 1000 entries by default; `reset` drops entries but keeps listeners; a throwing listener never breaks the bus.
+- `redactSecrets(line)` masks bearer and basic credentials, `key=value` and JSON pairs whose key names a token, secret, password, key, cookie or authorization, `user:pass@` in a URL, and known token shapes. It replaces with `REDACTED` (`***`) and leaves other text as it was.
+- `LanAddress` is `{ interfaceName, address, family, cidr }`, the answer of `network:lanAddresses`.
 - `createRegistry` preserves registration order, throws on a duplicate id and notifies subscribers after every `register`.
 - Manifest: `id` is the short id used in `brock.config.ts`; `automationFlags` are counted by the launch guard; `dataDirs` are folders under `Data/` needed at boot; `peers` are packages a consuming app must also install; `ModuleCiStep.os` limits a step to one runner OS; `ModuleMigration.version` is the module version that introduced the change and `entry` the subpath exporting the codemod.
 - `SystemDiagnostics` is free of anything identifying (host name, user name, file path) because it is meant for a public bug report. Display bounds are logical (DIP); `nativeSize` is the logical size times the scale factor; `gpu.features` maps each feature to a status such as `enabled` or `disabled_software`.

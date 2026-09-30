@@ -25,7 +25,8 @@
     "bin",
     "src",
     "template",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@drizztdourden08/brock-build": "workspace:*"

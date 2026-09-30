@@ -25,3 +25,6 @@ brock --version            this package's version, and the project's brock-build
 A project always runs the Brock version it pinned. When the project's `brock-build` major
 differs from the one this package carries, `brock` prints one line with the matching
 install command (`npm install -g @drizztdourden08/brock@<major>`) and carries on.
+
+`upgrade` is the one exception to the pinned version. When the project's `brock-build`
+is too old to have the verb, `brock upgrade` runs the one this package carries.

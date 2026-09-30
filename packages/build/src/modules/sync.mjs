@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
+import { pinApp } from '../upgrade/pin-app.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -87,9 +88,10 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderLaunchers(rootDir),
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);
+  const pinned = pinApp(rootDir, OWN_PACKAGE.version, check).length > 0 ? ['package.json'] : [];
   return {
-    written,
-    drifted,
+    written: check ? written : [...written, ...pinned],
+    drifted: [...drifted, ...pinned],
     missing,
     modules: modules.map((m) => ({ id: m.manifest.id, package: m.packageName, version: m.version })),
   };

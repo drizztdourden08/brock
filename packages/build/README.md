@@ -31,6 +31,8 @@ brock adopt [--scope @x] [--local <brockRepo>] [--force]
                            plus its own command: bin/<repo>.mjs, linked by the postinstall
 brock structure [--check] [--scope @x]
                            verify the folder standard: package names, barrels, folder names, depth
+brock migrate --from <version> [--to <version>] [--report <file>]
+                           run the Brock migrations after --from, up to --to, over the files the app owns
 ```
 
 In a repo you do not type `brock`: you type the repo's own command (`archipelia`,
@@ -103,12 +105,47 @@ eslint.config.mjs             brockEslint({ ... })
 stylelint.config.mjs          brockStylelint({ ... })
 .markdownlint-cli2.mjs        brockMarkdownlint()
 tsconfig.json                 extends the lint-config react base
+package.json                  brock.version, and every Brock dependency on it
 ```
+
+`brock.version` in `package.json` is the one Brock version an app runs. Sync adds it
+from the installed `brock-build` when it is missing. It then sets every
+`@drizztdourden08/brock*` and `create-brock` dependency with a registry spec to
+`^<version>`. A `link:` or `workspace:` spec stays as it is, and a workspace member
+whose Brock packages are all `workspace:` gets no pin. `brock adopt` and
+`create-brock` write the pin the same way. Tessera is not a Brock package and keeps its
+own spec.
 
 Each module import is the package's exports key that points at the manifest file, or
 the file path inside the package when no key does. The imported binding is the
 subpath's default export. `--check` compares every file but the manifest's timestamp
 and exits 1 on any difference.
+
+## Migrations
+
+A breaking change ships a migration: an idempotent codemod over the files the app
+owns. `brock migrate` collects them, orders them by version and runs each one.
+
+- brock-build keeps its own in `migrations/<version>/<id>.mjs`. A module lists its
+  own in its manifest: `brock.migrations: [{ version, entry, summary }]`, with `entry`
+  relative to the package folder.
+- A migration file exports `migration`: `{ id, summary, files, apply }`. `files` is a
+  RegExp over root-relative paths. `apply({ path, source })` returns
+  `{ source, todos }`; a changed `source` is written back, and each
+  `{ line, message }` in `todos` becomes a numbered to-do.
+- Owned files are everything but the files sync writes, the launcher and the
+  generated folders (`node_modules`, `dist`, `out`, `release`, `.brock`, `.user-data`,
+  `.worktrees`).
+- A change the codemod cannot make safely is a to-do, never a guess. The runner
+  records every file each migration touched; `--report` writes that and the to-dos as
+  JSON for the upgrade verb.
+- `src/upgrade/codemods/` holds the helpers: `findJsxProps` reads a JSX element's
+  props, with type arguments and nested braces, and `removeSpans` deletes them and the
+  lines they leave empty.
+
+The first one, `migrations/0.1.1/brock-app-logo-src.mjs`, removes a `logoSrc` or
+`instanceLogoSrc` prop that `BrockApp` no longer takes when it holds the default path.
+Any other value becomes a to-do that names the `product.logos` field to set.
 
 ## Module ids
 

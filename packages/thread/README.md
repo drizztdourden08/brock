@@ -11,6 +11,7 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> worktree commit [name] --message "<text>"
 <repo> worktree finish [name] | remove <name>
 <repo> pr push | open | status [name]
+<repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]
 ```
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
@@ -23,3 +24,22 @@ A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`
 
 1. `pnpm install` in the repo. Its postinstall (`node bin/<repo>.mjs --link`) writes the `<repo>` and `<repo>.cmd` shims into the npm global bin folder. Skipped when `CI` is set; it never fails the install.
 2. Run `<repo>` once in a terminal. When the global `brock` is missing it asks to install `@drizztdourden08/brock` from GitHub Packages. Without a terminal it prints the install command and exits 1.
+
+## Upgrading Brock
+
+An app pins Brock once, in `package.json#brock.version`, and every Brock dependency follows that pin. `<repo> upgrade` moves the pin and proves the result before anything reaches the main checkout.
+
+1. The target is the version given, else the newest `@drizztdourden08/brock-build` on the scope registry (`npm view`).
+2. It creates the worktree `brock-<version>` (dots become dashes) through `worktree create`, so the main checkout stays untouched.
+3. It bumps `brock.version`, moves every Brock dependency to it and runs `pnpm install` when a dependency changed.
+4. It prints the changelog between the two versions, read from the installed packages' `CHANGELOG.md`, else from the GitHub release notes.
+5. It runs the target's `brock sync`, then `brock migrate` from the old version to the new one.
+6. The gate: `pnpm lint`, `typecheck`, `structure` and `test` (a missing script is skipped), `brock icons`, then `launch brock-<version> none --review` headless. `--no-review` skips the last two.
+7. It writes `upgrade-report.md` in the worktree: the package.json fields changed, each step, each migration with the files it touched, the numbered to-dos and the changelog. The file stays out of git and serves as the PR body.
+8. Green: it commits through `worktree commit` and prints the `pr open` command. It never opens the PR, since publishing asks. Red: it keeps the worktree, names the failed step and exits 1. Running it again resumes the same worktree.
+
+`<repo> upgrade --check` compares only. It exits 0 when the app is current, 1 when it is behind and 2 when the registry cannot be reached, printing both versions. That exit code is the hook for a scheduled workflow that opens the upgrade PR each week; the workflow is not generated yet.
+
+A linked Brock (`link:` specs from `create-brock --local`) follows its checkout. The target is the checkout's version and the upgrade runs sync, the migrations and the gate; migrations run with no upper bound, so the unreleased ones apply too. `--local <brockRepo>` switches a registry app to links into that checkout, which is how Brock's CI upgrades an app made at the previous release.
+
+An app whose installed brock-build predates this verb gets it from the global `brock`, which runs its own brock-build for `upgrade` when the project's has none.

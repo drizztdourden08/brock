@@ -21,7 +21,8 @@
   },
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@drizztdourden08/brock-lint-config": "workspace:*"

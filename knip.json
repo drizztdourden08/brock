@@ -30,10 +30,13 @@
     },
     "packages/build": {
       "entry": [
-        "src/*.mjs"
+        "src/*.mjs",
+        "migrations/*/*.mjs",
+        "tests/**/*.test.ts"
       ],
       "project": [
-        "**/*.mjs"
+        "**/*.mjs",
+        "tests/**/*.ts"
       ]
     },
     "packages/cli": {

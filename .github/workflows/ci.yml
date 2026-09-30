@@ -29,3 +29,41 @@ jobs:
       - run: pnpm structure
       - run: pnpm test
       - run: pnpm app:build
+
+  upgrade:
+    runs-on: windows-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+      - run: pnpm install --frozen-lockfile
+      - run: |
+          git config --global user.name "brock-ci"
+          git config --global user.email "brock-ci@users.noreply.github.com"
+      - name: Scaffold an app with the last published create-brock
+        run: |
+          previous="$(npm view @drizztdourden08/create-brock version)"
+          echo "Scaffolding with create-brock $previous"
+          mkdir -p "$RUNNER_TEMP/prev"
+          cd "$RUNNER_TEMP/prev"
+          npm exec --yes --package="@drizztdourden08/create-brock@$previous" -- create-brock app --yes --install
+      - name: Upgrade it to this checkout
+        working-directory: ${{ runner.temp }}/prev/app
+        run: node "$GITHUB_WORKSPACE/packages/build/bin/brock.mjs" upgrade --local "$GITHUB_WORKSPACE"
+      - name: Keep the upgrade report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upgrade-report
+          path: ${{ runner.temp }}/prev/app/.worktrees/*/upgrade-report.md
+          if-no-files-found: ignore

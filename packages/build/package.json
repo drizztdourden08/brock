@@ -39,7 +39,9 @@
     "bin",
     "src",
     "installer-stub",
-    "README.md"
+    "migrations",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { followBrockPin } from '@drizztdourden08/brock-thread';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
 import { releaseAppDir } from '../release/release-app-dir.mjs';
 import { RELEASE_WORKFLOW_FILE, releaseWorkflow } from '../release/release-workflow.mjs';
@@ -175,7 +176,8 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   const scope = scopeOf(pkg, explicitScope);
   const files = writeConfigFiles(rootDir, scope, force);
   addTooling(pkg, { rootDir, local, force });
-  writeFileSync(pkgFile, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
+  const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
+  writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
   printSummary(scope, files, addLauncher(rootDir, scope, { force, files }));
   return 0;
 };

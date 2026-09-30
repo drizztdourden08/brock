@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { findProjectBuild } from '../src/find-project-build.mjs';
 import { mismatchNote } from '../src/mismatch-note.mjs';
 import { ownPackage } from '../src/own-package.mjs';
+import { runnerFor } from '../src/runner-for.mjs';
 import { versionReport } from '../src/version-report.mjs';
 
 const OWN_VERSION = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')).version;
@@ -27,7 +28,7 @@ const main = () => {
   const globalBuild = ownPackage(import.meta.resolve('@drizztdourden08/brock-build/package.json'));
   const note = mismatchNote(project, globalBuild.version);
   if (note) process.stderr.write(note);
-  return runFile(project?.bin ?? join(globalBuild.dir, 'bin', 'brock.mjs'), process.argv.slice(2));
+  return runFile(runnerFor(command, project, join(globalBuild.dir, 'bin', 'brock.mjs')), process.argv.slice(2));
 };
 
 process.exit(main());

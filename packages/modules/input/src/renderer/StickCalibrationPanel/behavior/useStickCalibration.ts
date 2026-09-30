@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react';
 import type { StickPoint } from '../../../calibration.type';
 import { DEFAULT_INNER_DEADZONE, DEFAULT_OUTER_DEADZONE } from '../../../calibration/calibration.constants';
-import type { CalibrationAction } from '../../CalibrationFrame';
+import type { CalibrationPanelAction } from '@drizztdourden08/tessera/composites';
 import { useCalibrationStore } from '../../useCalibrationStore';
 import { useControllerState } from '../../useControllerState';
 import { MIN_STICK_SPAN } from '../StickCalibrationPanel.constants';
@@ -36,17 +36,17 @@ const useStickCalibration = (props: StickCalibrationPanelProps) => {
     onClose();
   }, [slot.side, existing, center, range, innerDeadzone, outerDeadzone, saveStick, deviceKey, onClose]);
 
-  const actions: Record<StickStep, CalibrationAction> = {
-    center: { label: 'Record center', disabled: false, run: recordCenter },
-    range: { label: 'Next', disabled: spanX < MIN_STICK_SPAN || spanY < MIN_STICK_SPAN, run: () => setStep('review') },
-    review: { label: 'Save', disabled: false, run: () => { void save(); } },
+  const actions: Record<StickStep, CalibrationPanelAction> = {
+    center: { label: 'Record center', disabled: false, onClick: recordCenter },
+    range: { label: 'Next', disabled: spanX < MIN_STICK_SPAN || spanY < MIN_STICK_SPAN, onClick: () => setStep('review') },
+    review: { label: 'Save', disabled: false, onClick: () => { void save(); } },
   };
 
   const readout = step === 'range'
     ? `span x ${spanX.toFixed(2)}  y ${spanY.toFixed(2)}`
     : `x ${x.toFixed(2)}  y ${y.toFixed(2)}`;
 
-  return { step, action: actions[step], readout, innerDeadzone, setInner, outerDeadzone, setOuter };
+  return { step, action: actions[step], readout, x, y, center, range, innerDeadzone, setInner, outerDeadzone, setOuter };
 };
 
 export { useStickCalibration };

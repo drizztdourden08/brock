@@ -11,6 +11,7 @@ import type { FilePickerPort } from './platform/ports/file-picker.type';
 import type { DevicePort } from './platform/ports/device.type';
 import type { ReviewCheck } from './review/review.type';
 import type { BootFailure, BootProgress } from './boot/boot-task.type';
+import type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './ipc/widget-contract.type';
 
 interface BaseProfile {
   id: string;
@@ -26,7 +27,7 @@ type Profile = BaseProfile & ProfileExtension;
 type CreateProfileOptions = { name: string; initialConfig?: Record<string, unknown> } & ProfileCreateExtension;
 type ProfilePatch = { name?: string } & ProfilePatchExtension;
 
-interface InvokeContract {
+interface InvokeContract extends WidgetInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
@@ -75,7 +76,7 @@ interface InvokeContract {
   'review:capture': (step: string) => Promise<string>;
 }
 
-interface SendContract {
+interface SendContract extends WidgetSendContract {
   'window:minimize': () => void;
   'window:maximize': () => void;
   'window:close': () => void;
@@ -91,7 +92,7 @@ interface SendContract {
   'review:finish': () => void;
 }
 
-interface EventContract {
+interface EventContract extends WidgetEventContract {
   'window:maximized': (maximized: boolean) => void;
   'window:fullscreen': (fullscreen: boolean) => void;
   'log:entry': (entry: LogEntryWire) => void;

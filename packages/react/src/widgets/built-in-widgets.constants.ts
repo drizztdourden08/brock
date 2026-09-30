@@ -13,6 +13,7 @@ const BUILT_IN_WIDGETS: readonly WidgetDef[] = [
     defaultSide: 'bottom',
     defaultDockedSize: 240,
     defaultFloatingSize: { width: 640, height: 360 },
+    popOut: true,
   }),
 ];
 

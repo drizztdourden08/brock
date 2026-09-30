@@ -22,8 +22,3 @@
 .bug-report__diagnostics-text {
   align-self: stretch;
 }
-
-.bug-report__note {
-  color: var(--c-text-muted);
-  font-size: var(--text-sm);
-}

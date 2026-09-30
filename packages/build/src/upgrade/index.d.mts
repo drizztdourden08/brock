@@ -25,6 +25,12 @@ interface ModuleWithMigrations {
   manifest: { migrations?: { version: string; entry: string; summary: string }[] };
 }
 
+interface PatternRule {
+  pattern: RegExp;
+  message: string;
+  near?: RegExp;
+}
+
 interface JsxProp {
   name: string;
   start: number;
@@ -39,6 +45,7 @@ declare const runMigrations: (rootDir: string, migrations: MigrationEntry[]) => 
 declare const pinApp: (rootDir: string, version: string, check: boolean) => string[];
 declare const findJsxProps: (source: string, element: string, names: string[]) => JsxProp[];
 declare const removeSpans: (source: string, spans: { start: number; end: number }[]) => string;
+declare const patternTodos: (source: string, rules: PatternRule[]) => { line: number; message: string }[];
 
-export { collectMigrations, findJsxProps, pinApp, removeSpans, runMigrations, selectMigrations };
-export type { JsxProp, MigrationEntry, MigrationRun, MigrationTodo, ModuleWithMigrations };
+export { collectMigrations, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
+export type { JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations };

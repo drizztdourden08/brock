@@ -19,6 +19,18 @@ const BOOT_OVERLAYS = ['#boot-splash', '.boot-bar', 'html.booting', '[data-boot-
 const SEARCH_TOP = 5;
 const SEARCH_SETTINGS_PAGES = 4;
 const SEARCH_HIT_CLASS = 'search-hit';
+const POP_OUT_WAIT_MS = 8000;
+const REVIEW_PREF_KEY = 'reviewProbe';
+
+const HERO_SLOT_SELECTORS = {
+  eyebrow: '.hero__eyebrow',
+  art: '.hero__art',
+  actions: '.hero__actions',
+  tools: '.hero__tools',
+  facts: '.hero__facts',
+  aside: '.hero__aside',
+  panel: '.hero__panel',
+} as const;
 
 const BUILT_IN_ENTRIES: readonly Pick<MenuItem, 'key' | 'label' | 'screen'>[] = [HOME_ENTRY, ...TOP_ENTRIES, ABOUT_ENTRY, QUIT_ENTRY];
 
@@ -52,6 +64,10 @@ const SELECTORS = {
   aboutLabel: '.stat-row__label',
   aboutValue: '.stat-row__value',
   logsWidget: '.logs-widget',
+  dockPane: '.dock-layout__pane',
+  mainGrip: '.dock-grip',
+  hero: '.fullscreen-layer:not(.fullscreen-layer--hidden) .hero',
+  heroTitle: '.hero__title',
   paletteScrim: '.command-palette-scrim',
   paletteRow: '.command-palette--open .command-palette-row',
   paletteRowIcon: '.command-palette-row__icon',
@@ -74,6 +90,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME,
-  SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
+  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME,
+  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

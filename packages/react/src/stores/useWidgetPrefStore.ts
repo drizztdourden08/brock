@@ -8,6 +8,7 @@ const useWidgetPrefStore = createSessionStore<WidgetPrefState>((set) => ({
     byWidget: { ...state.byWidget, [widgetId]: { ...(state.byWidget[widgetId] ?? {}), [key]: value } },
   })),
   hydrate: (prefs) => set({ byWidget: prefs }),
+  replaceWidget: (widgetId, prefs) => set((state) => ({ byWidget: { ...state.byWidget, [widgetId]: prefs } })),
 }));
 
 export { useWidgetPrefStore };

@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
+import type { HeroArt, HeroFactRow, HeroProps as HeroCompositeProps } from '@drizztdourden08/tessera/composites';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import type { BucketDef } from '../conventions/screens-config.type';
 
@@ -21,35 +22,52 @@ interface PageProps extends CardProps {
 
 interface HeroSlotProps {
   children?: ReactNode;
-  className?: string;
-}
-
-interface HeroArtProps {
-  src: string;
-  alt: string;
-  className?: string;
 }
 
 interface HeroActionsProps {
   children: ReactNode;
-  className?: string;
+}
+
+type HeroArtProps = HeroArt;
+
+interface HeroFactsProps {
+  rows: readonly HeroFactRow[];
 }
 
 interface HeroSlots {
+  Title: ComponentType<HeroSlotProps>;
+  Eyebrow: ComponentType<HeroSlotProps>;
   Backdrop: ComponentType<HeroSlotProps>;
   Art: ComponentType<HeroArtProps>;
-  Facts: ComponentType<HeroSlotProps>;
   Actions: ComponentType<HeroActionsProps>;
+  Tools: ComponentType<HeroSlotProps>;
+  Facts: ComponentType<HeroFactsProps>;
+  Aside: ComponentType<HeroSlotProps>;
+  Panel: ComponentType<HeroSlotProps>;
 }
+
+type HeroSlotValues = Partial<Pick<HeroCompositeProps, 'title' | 'eyebrow' | 'backdrop' | 'art' | 'actions' | 'tools' | 'facts' | 'aside' | 'panel'>>;
+
+type HeroSlotName = keyof HeroSlotValues;
+
+type PutHeroSlot = (name: HeroSlotName, value: HeroSlotValues[HeroSlotName]) => void;
 
 interface HeroProps extends PageProps {
   slots: HeroSlots;
 }
 
-interface HeroFrame<P extends HeroSlotProps = HeroSlotProps> {
-  Root: ComponentType<P>;
-  rootProps: Omit<P, 'children'>;
+interface HeroFrame {
+  Composite: ComponentType<HeroCompositeProps>;
   slots: HeroSlots;
+  label?: string;
 }
 
-export type { CardProps, HeroActionsProps, HeroArtProps, HeroFrame, HeroProps, HeroSlotProps, HeroSlots, Open, PageProps };
+interface HeroRootProps {
+  frame: HeroFrame;
+  children?: ReactNode;
+}
+
+export type {
+  CardProps, HeroActionsProps, HeroArtProps, HeroFactsProps, HeroFrame, HeroProps, HeroRootProps, HeroSlotName, HeroSlotProps, HeroSlotValues,
+  HeroSlots, Open, PageProps, PutHeroSlot,
+};

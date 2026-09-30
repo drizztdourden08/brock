@@ -12,6 +12,8 @@ import { useAppScreens } from './behavior/useAppScreens';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
+import { WidgetWindow } from '../../widgets/WidgetWindow';
+import { widgetWindowId } from '../../widgets/widget-window-id';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
@@ -22,6 +24,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
+  const poppedId = useMemo(widgetWindowId, []);
   const log = useHostBoot(merged.logChannels, profileHooks);
   const titleBarSlots = useMemo(() => [...STANDARD_TITLE_BAR_SLOTS, ...merged.titleBar], [merged.titleBar]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
@@ -58,18 +61,20 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
         <ScreenRegistryContext.Provider value={registry}>
           <SettingsStoreContext.Provider value={settingsStore}>
             <ModuleProviders providers={merged.providers}>
-              <AppShell
-                settingsStore={settingsStore}
-                bootTasks={allBootTasks}
-                log={log}
-                moduleIds={merged.ids}
-                moduleMenu={merged.menu}
-                titleBarSlots={titleBarSlots}
-                searchActions={merged.searchActions}
-                widgets={merged.widgets}
-                layout={layout}
-                screenGroups={screenGroups}
-              />
+              {poppedId !== null ? <WidgetWindow id={poppedId} widgets={merged.widgets} /> : (
+                <AppShell
+                  settingsStore={settingsStore}
+                  bootTasks={allBootTasks}
+                  log={log}
+                  moduleIds={merged.ids}
+                  moduleMenu={merged.menu}
+                  titleBarSlots={titleBarSlots}
+                  searchActions={merged.searchActions}
+                  widgets={merged.widgets}
+                  layout={layout}
+                  screenGroups={screenGroups}
+                />
+              )}
             </ModuleProviders>
           </SettingsStoreContext.Provider>
         </ScreenRegistryContext.Provider>

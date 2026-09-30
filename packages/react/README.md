@@ -45,7 +45,7 @@ import { screenTree } from '../.brock/screens';
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost`, `useToastStore` |
-| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `LogsWidget` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget` |
 
 ## Layout: menu or rail
 
@@ -81,13 +81,13 @@ defineScreen({
 
 An app lists its buckets in `src/screens/screens.config.ts` with `defineScreens({ buckets, home, settings? })` and drops one file per screen under `src/screens`. `brock sync` and the dev server write `.brock/screens.ts`, which calls `buildScreenTree(config, entries)`; `BrockApp` takes the result as `screenTree`.
 
-- A bucket folder is one hub. `<id>.hero.tsx` is its home and gets `HeroProps`: the page props plus `slots` (`Backdrop`, `Art`, `Facts`, `Actions`). `<id>.page.tsx` is a page and gets `PageProps` (`params`, `profile`, `open`, `close`, `bucket`, `page`, `tab`). A folder of `<tab>.tab.tsx` files is one page with header tabs. `<id>.settings.ts` default-exports sections and becomes a settings page. A subfolder without tabs is a nav group.
+- A bucket folder is one hub. `<id>.hero.tsx` is its home and gets `HeroProps`: the page props plus `slots` (`Title`, `Eyebrow`, `Backdrop`, `Art`, `Actions`, `Tools`, `Facts`, `Aside`, `Panel`), one per slot of the Tessera `Hero` composite; `Facts` takes `rows` of `{ label, value, mono? }` facts and `Art` takes `src`, `alt` and `pixelated`. `<id>.page.tsx` is a page and gets `PageProps` (`params`, `profile`, `open`, `close`, `bucket`, `page`, `tab`). A folder of `<tab>.tab.tsx` files is one page with header tabs. `<id>.settings.ts` default-exports sections and becomes a settings page. A subfolder without tabs is a nav group.
 - `<page>.custom.tsx` in a bucket is a custom page: the hub frame, nav entry, header, Escape and search stay standard and the content is free. It gets `PageProps` and must export `searchEntries: SearchEntrySeed[]`, a literal list the build reads.
 - At the root, `<id>.card.tsx` is a card screen and `<id>.layer.tsx` draws its own full-bleed layer; both get `CardProps`.
 - `meta: ScreenMeta` sets `title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile` and `keywords`.
 - `resolveScreenTree(tree, builtInTabs)` runs inside `BrockApp`: it adds the built-in and module settings tabs to the settings bucket, turns each hub into a screen with `defineHub`, derives the menu with `deriveMenu` and points the `settings` route at the settings bucket, so no separate Settings screen is registered.
 - The menu reads `BucketDef.menu`: `entry` for one entry, `submenu` for one child per page, `hidden` for none. The home bucket is already the Home entry. `MenuItem` takes `{ bucket, page, tab }` as a target, and `open('game/tracker/map')` opens that bucket, page and tab.
-- The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in.
+- The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in. The page renders the slots it fills and the frame draws one `Hero` with them.
 
 ## Search
 
@@ -174,7 +174,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 ## Automated review
 
-On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, search from both the palette and a hub, the bug report dialog, About and the logs widget. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
+On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, search from both the palette and a hub, the bug report dialog, About, the logs widget docking, a pop-out widget opening in its own window, and the hero homes. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
 
 ## Checks
 

@@ -1,30 +1,37 @@
 /* @layer renderer-app @kind component */
+import { useMemo } from 'react';
 import { useAppVersion, useProduct } from '@drizztdourden08/brock-react';
 import type { HeroProps, ScreenMeta } from '@drizztdourden08/brock-react';
-import { Button, StatRow, Text } from '@drizztdourden08/tessera/primitives';
+import { Button, Text } from '@drizztdourden08/tessera/primitives';
 
 const meta: ScreenMeta = { title: 'Home', icon: 'house', keywords: ['start', 'overview', 'profile'] };
 
 const HomeHero = (props: HeroProps) => {
   const { slots, profile, open } = props;
-  const { Backdrop, Art, Facts, Actions } = slots;
+  const { Eyebrow, Title, Art, Tools, Actions, Facts, Aside } = slots;
   const product = useProduct();
   const version = useAppVersion();
+  const facts = useMemo(() => [[
+    { label: 'Profile', value: profile?.name ?? 'None' },
+    { label: 'Version', value: version, mono: true },
+  ]], [profile, version]);
+
   return (
     <>
-      <Backdrop>
-        <Text as="h1" variant="title">{product.name}</Text>
-        <Text variant="body">A blank Brock app. Every file in src/screens is a screen.</Text>
-      </Backdrop>
-      <Art src={product.logos.app} alt="" />
-      <Facts>
-        <StatRow label="Profile" value={profile?.name ?? 'None'} />
-        <StatRow label="Version" value={version} />
-      </Facts>
+      <Eyebrow>Home</Eyebrow>
+      <Title>{product.name}</Title>
+      <Art src={product.logos.mark} alt="" />
+      <Tools>
+        <Button size="sm" variant="secondary" onClick={() => open('profiles')}>Profiles</Button>
+      </Tools>
       <Actions>
         <Button variant="primary" onClick={() => open('settings')}>Settings</Button>
         <Button variant="secondary" onClick={() => open('about')}>About</Button>
       </Actions>
+      <Facts rows={facts} />
+      <Aside>
+        <Text variant="body">A blank Brock app. Every file in src/screens is a screen.</Text>
+      </Aside>
     </>
   );
 };

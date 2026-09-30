@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Box, Button, Checkbox, Field, Text, TextInput, Textarea } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, Checkbox, Field, Small, TextInput, Textarea } from '@drizztdourden08/tessera/primitives';
 import { DialogShell } from '@drizztdourden08/tessera/composites';
 import { useBugReportForm } from './behavior/useBugReportForm';
 import { DiagnosticsPreview } from './sub-components/DiagnosticsPreview';
@@ -30,7 +30,7 @@ const BugReportDialog = () => {
         <Checkbox checked={form.attach} onChange={form.setAttach} label="Attach diagnostics (system info, versions, recent log)" />
         {form.attach && <DiagnosticsPreview text={form.diagnostics} />}
         {!form.hasRepo && (
-          <Text className="bug-report__note">This app has no issue tracker, so the report is copied for you to send.</Text>
+          <Small tone="muted">This app has no issue tracker, so the report is copied for you to send.</Small>
         )}
       </Box>
     </DialogShell>

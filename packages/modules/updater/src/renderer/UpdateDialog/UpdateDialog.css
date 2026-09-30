@@ -12,27 +12,13 @@
 }
 
 .update-dialog__version {
-  margin: 0;
-  color: var(--c-text);
-  font-size: var(--text-base);
   text-align: center;
-}
-
-.update-dialog__status {
-  margin: 0;
-  color: var(--c-text-muted);
-  font-size: var(--text-sm);
 }
 
 .update-dialog__picker {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-}
-
-.update-dialog__picker-label {
-  color: var(--c-text-dim);
-  font-size: var(--text-sm);
 }
 
 .update-dialog__prefs {
@@ -42,34 +28,12 @@
   gap: var(--space-md);
 }
 
-
-
-
-
-
-
-
 .update-dialog__progress {
   display: flex;
   flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .update-dialog__progress-text {
-  display: block;
-  margin-top: var(--space-xs);
-  color: var(--c-text-muted);
-  font-size: var(--text-xs);
-  text-align: center;
-}
-
-.update-dialog__ready {
-  margin: 0;
-  color: var(--c-secondary);
-  font-size: var(--text-sm);
-}
-
-.update-dialog__error {
-  margin: 0;
-  color: var(--c-danger);
-  font-size: var(--text-sm);
+  align-self: center;
 }

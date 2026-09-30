@@ -1,5 +1,6 @@
 /* @layer electron-main @kind logic */
 import type { HandlerGroup } from '../types/main-context.type';
+import { widgetWindowControl } from '../widgets/widget-window-control';
 
 const windowHandlers: HandlerGroup = {
   id: 'window',
@@ -26,7 +27,9 @@ const windowHandlers: HandlerGroup = {
     handle('window:setAlwaysOnTop', (_event, value) => {
       const win = window();
       win?.setAlwaysOnTop(value);
-      return win?.isAlwaysOnTop() ?? false;
+      const onTop = win?.isAlwaysOnTop() ?? false;
+      widgetWindowControl.mirrorMainPin(onTop);
+      return onTop;
     });
   },
 };

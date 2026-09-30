@@ -1,0 +1,20 @@
+/* @layer renderer-shell @kind style */
+
+.widget-window {
+  position: fixed;
+  inset: 0;
+  display: flex;
+}
+
+.widget-window > .widget {
+  flex: 1;
+  min-width: 0;
+}
+
+.widget-window [data-drag-widget] {
+  -webkit-app-region: drag;
+}
+
+.widget-window [data-drag-widget] button {
+  -webkit-app-region: no-drag;
+}

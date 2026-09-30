@@ -5,32 +5,8 @@ import { useDeveloperTools } from '../../../app/useDeveloperTools';
 import type { ScreenDef } from '../../../screens/screen.type';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { NO_GROUPS } from '../ScreenRail.constants';
-import type { RailGroup, ScreenRailGroup, UseRailEntriesResult } from '../ScreenRail.type';
-
-const groupRail = (
-  screens: readonly ScreenDef[],
-  labels: readonly ScreenRailGroup[],
-  activeId: string,
-  hasProfile: boolean,
-): RailGroup[] => {
-  const ungrouped: RailGroup = { id: null, label: '', entries: [] };
-  const grouped: RailGroup[] = [];
-  for (const screen of screens) {
-    const entry = {
-      id: screen.id,
-      title: screen.title,
-      icon: screen.icon,
-      active: screen.id === activeId,
-      disabled: screen.requiresProfile !== false && !hasProfile,
-    };
-    if (screen.group === undefined) { ungrouped.entries.push(entry); continue; }
-    const found = grouped.find((g) => g.id === screen.group);
-    if (found) { found.entries.push(entry); continue; }
-    const label = labels.find((g) => g.id === screen.group)?.label ?? screen.group;
-    grouped.push({ id: screen.group, label, entries: [entry] });
-  }
-  return ungrouped.entries.length > 0 ? [ungrouped, ...grouped] : grouped;
-};
+import type { ScreenRailGroup, UseRailEntriesResult } from '../ScreenRail.type';
+import { groupRail } from './group-rail';
 
 const useRailEntries = (
   screens: readonly ScreenDef[],
@@ -41,17 +17,17 @@ const useRailEntries = (
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
 
-  const groups = useMemo(() => {
+  const config = useMemo(() => {
     const listed = screens.filter((screen) => !screen.devOnly || developerTools);
-    return groupRail(listed, labels, active ?? home, profile !== null);
-  }, [screens, labels, active, home, profile, developerTools]);
+    return { groups: groupRail(listed, labels, profile !== null) };
+  }, [screens, labels, profile, developerTools]);
 
   const select = useCallback((id: string) => {
     if (id === home) close();
     else open(id);
   }, [home, open, close]);
 
-  return { groups, select };
+  return { config, activeId: active ?? home, select };
 };
 
 export { useRailEntries };

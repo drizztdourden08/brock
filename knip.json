@@ -84,9 +84,6 @@
         "src/**/*.{ts,tsx}",
         "stories/**/*.{ts,tsx}",
         "tests/**/*.ts"
-      ],
-      "ignoreDependencies": [
-        "react-dom"
       ]
     },
     "packages/modules/*": {

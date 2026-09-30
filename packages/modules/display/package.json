@@ -46,6 +46,7 @@
     "@drizztdourden08/brock-react": "workspace:*"
   },
   "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
     "electron": "catalog:",
     "react": "catalog:",
     "zustand": "catalog:"

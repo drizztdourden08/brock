@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { SettingItem, SettingLockCause } from '../settings.type';
+import type { SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
 
 interface ItemGroup {
   id: string | null;
@@ -14,12 +14,16 @@ interface ResolvedSection {
   groups: ItemGroup[];
 }
 
-interface ItemRun {
-  lock: SettingLockCause | null;
-  items: SettingItem[];
-}
-
 type SettingsRecord = Record<string, unknown>;
+
+interface GroupListInput<S extends object> {
+  sections: readonly ResolvedSection[];
+  settings: S;
+  defaults?: S;
+  onChange: SettingsPatch<S>;
+  lockOf: (key: string) => SettingLockCause | null;
+  renderRow: (item: SettingItem) => ReactNode;
+}
 
 interface SettingsPageContextValue {
   variant: 'page' | 'results';
@@ -29,4 +33,4 @@ interface SettingsPageContextValue {
   query: string;
 }
 
-export type { ItemGroup, ItemRun, ResolvedSection, SettingsPageContextValue, SettingsRecord };
+export type { GroupListInput, ItemGroup, ResolvedSection, SettingsPageContextValue, SettingsRecord };

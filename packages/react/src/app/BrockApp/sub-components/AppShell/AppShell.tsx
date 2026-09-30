@@ -7,8 +7,6 @@ import { useCapability } from '../../../../platform/useCapability';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
-import { ScreenRail } from '../../../../shell/ScreenRail/ScreenRail';
-import { TitleBar } from '../../../../shell/TitleBar/TitleBar';
 import { useBrock } from '../../../useBrock';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
@@ -21,6 +19,8 @@ import { useShellMenu } from '../../behavior/useShellMenu';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
+import { AppRail } from '../AppRail';
+import { AppTitleBar } from '../AppTitleBar';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -48,8 +48,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   return (
     <Box className="brock-app">
       {windowChrome && (
-        <TitleBar
-          productName={product.window.title ?? product.name}
+        <AppTitleBar
+          title={product.window.title ?? product.name}
           menu={fullMenu}
           instanceName={instanceName()}
           logoSrc={logoSrc}
@@ -59,7 +59,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         />
       )}
       <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
-        {railed && <ScreenRail screens={screens} home={home} groups={screenGroups} />}
+        {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
         {railed
           ? <Box className="brock-app__stage"><ScreenHost home={home} className="brock-app__screens" /></Box>
           : <ScreenHost home={home} className="brock-app__screens" />}

@@ -21,6 +21,7 @@ interface UseProfilesResult {
   select: (profile: Profile) => Promise<void>;
   create: (opts: CreateProfileOptions) => Promise<Profile>;
   remove: (profile: Profile) => void;
+  removeConfirmed: (profile: Profile) => void;
   refresh: () => Promise<Profile[]>;
 }
 

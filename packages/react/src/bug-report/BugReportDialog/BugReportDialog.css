@@ -21,17 +21,6 @@
 
 .bug-report__diagnostics-text {
   align-self: stretch;
-  max-height: var(--size-192);
-  margin: 0;
-  padding: var(--space-sm);
-  overflow: auto;
-  border-radius: var(--radius-sm);
-  background: var(--c-sunken);
-  color: var(--c-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  white-space: pre-wrap;
-  user-select: text;
 }
 
 .bug-report__note {

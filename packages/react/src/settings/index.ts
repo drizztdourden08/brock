@@ -6,5 +6,4 @@ export type {
 export { createTabRegistry } from './tab-registry';
 export type { TabRegistry } from './tab-registry.type';
 export * from './SettingsLayout';
-export * from './SettingsPage';
 export * from './SettingsHub';

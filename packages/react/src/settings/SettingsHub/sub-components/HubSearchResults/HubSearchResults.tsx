@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { Box, Button, EmptyState, Text } from '@drizztdourden08/tessera/primitives';
+import { SearchResults } from '@drizztdourden08/tessera/composites';
 import type { TabDef } from '../../../settings.type';
 import { SettingsPageContext } from '../../../SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../../../SettingsLayout/SettingsLayout.type';
@@ -13,44 +13,35 @@ const resultsContext = <S extends object>(tab: TabDef<S>, query: string): Settin
 
 const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => {
   const { tabs, query, onOpenTab, ...control } = props;
-  const normalized = query.trim().toLowerCase();
+  const shown = query.trim();
+  const normalized = shown.toLowerCase();
   const matches = useMemo(() => matchTabs(tabs, control.settings, normalized), [tabs, control.settings, normalized]);
 
-  if (normalized === '') {
-    return <EmptyState className="hub-search__empty" message="Type to search every setting." />;
-  }
-  if (matches.total === 0 && matches.byName.length === 0) {
-    return <EmptyState className="hub-search__empty" message={`No setting matches "${query.trim()}".`} />;
-  }
+  const groups = matches.withRows.map(({ tab, count }) => ({
+    id: tab.id,
+    label: tab.label,
+    icon: tab.navIcon,
+    count,
+    children: (
+      <SettingsPageContext.Provider value={resultsContext(tab, normalized)}>
+        <HubTabContent tab={tab} {...control} />
+      </SettingsPageContext.Provider>
+    ),
+  }));
 
   return (
-    <Box className="hub-search">
-      <Box className="hub-search__summary">
-        <Text className="hub-search__count">
-          {matches.total} {matches.total === 1 ? 'setting' : 'settings'} match &quot;{query.trim()}&quot;
-        </Text>
-        {matches.byName.length > 0 && (
-          <Box className="hub-search__jumps">
-            {matches.byName.map((tab) => (
-              <Button key={tab.id} size="sm" variant="secondary" icon={tab.navIcon} onClick={() => onOpenTab(tab.id)}>
-                {tab.label}
-              </Button>
-            ))}
-          </Box>
-        )}
-      </Box>
-      {matches.withRows.map(({ tab, count }) => (
-        <Box key={tab.id} className="hub-search__tab" data-tab={tab.id}>
-          <Button className="hub-search__tab-heading" variant="ghost" icon={tab.navIcon} onClick={() => onOpenTab(tab.id)}>
-            {tab.label}
-            <Text className="hub-search__tab-count">{count}</Text>
-          </Button>
-          <SettingsPageContext.Provider value={resultsContext(tab, normalized)}>
-            <HubTabContent tab={tab} {...control} />
-          </SettingsPageContext.Provider>
-        </Box>
-      ))}
-    </Box>
+    <SearchResults
+      framed
+      query={query}
+      count={matches.total}
+      summary={`${matches.total} ${matches.total === 1 ? 'setting' : 'settings'} match "${shown}"`}
+      jumps={matches.byName.map((tab) => ({ id: tab.id, label: tab.label, icon: tab.navIcon }))}
+      onJump={onOpenTab}
+      groups={groups}
+      onOpenGroup={onOpenTab}
+      idleMessage="Type to search every setting."
+      emptyMessage={`No setting matches "${shown}".`}
+    />
   );
 };
 

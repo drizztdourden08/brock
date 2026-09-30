@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
+import { AboutPanel } from '@drizztdourden08/tessera/composites';
 import { useBrock } from '../../../app/useBrock';
-import { About } from '../../../shell/About/About';
+import { writeClipboard } from '../../../host/write-clipboard';
 import { useAboutInfo } from '../../../shell/About/behavior/useAboutInfo';
 import { defineScreen } from '../../define-screen';
 import type { ScreenDef } from '../../screen.type';
@@ -11,7 +12,7 @@ const AboutScreenBody = (props: AboutScreenOptions) => {
   const { product, logoSrc } = useBrock();
   const { rows, copyText } = useAboutInfo();
   return (
-    <About productName={product.name} logoSrc={logoSrc} rows={rows} legalText={legalText} copyText={copyText} />
+    <AboutPanel title={product.name} logo={logoSrc} rows={rows} legal={legalText} copyText={copyText} onCopy={writeClipboard} />
   );
 };
 

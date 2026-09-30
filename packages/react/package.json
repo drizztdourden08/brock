@@ -31,6 +31,7 @@
     "@drizztdourden08/brock-core": "workspace:*"
   },
   "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
     "@storylite/storylite": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

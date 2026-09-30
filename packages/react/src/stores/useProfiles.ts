@@ -17,18 +17,20 @@ const useProfiles = (): UseProfilesResult => {
   const refresh = useProfilesStore((s) => s.refresh);
   const removeNow = useProfilesStore((s) => s.remove);
 
+  const removeConfirmed = useCallback((profile: Profile) => {
+    const wasActive = useProfilesStore.getState().active?.id === profile.id;
+    void removeNow(profile.id).then(() => { if (wasActive) nav.open(PROFILES_SCREEN); });
+  }, [removeNow]);
+
   const remove = useCallback((profile: Profile) => {
     dialogs.confirmDelete(
       'Delete profile',
       `Delete "${profile.name}" and everything saved in it? This cannot be undone.`,
-      () => {
-        const wasActive = useProfilesStore.getState().active?.id === profile.id;
-        void removeNow(profile.id).then(() => { if (wasActive) nav.open(PROFILES_SCREEN); });
-      },
+      () => removeConfirmed(profile),
     );
-  }, [removeNow]);
+  }, [removeConfirmed]);
 
-  return { profiles, active, lastProfileId, loaded, select, create, remove, refresh };
+  return { profiles, active, lastProfileId, loaded, select, create, remove, removeConfirmed, refresh };
 };
 
 export { useProfiles };

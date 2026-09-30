@@ -107,6 +107,7 @@
     "@drizztdourden08/brock-react": "workspace:*"
   },
   "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
     "cmake-js": "catalog:",
     "electron": "catalog:",
     "node-addon-api": "catalog:",

@@ -12,7 +12,7 @@ import { bootState } from '../boot/boot-state';
 import { whenRevealed } from '../boot/when-revealed';
 import { createReviewSession } from '../review/create-review-session';
 import { finishReview } from '../review/finish-review';
-import { REVIEW_WATCHDOG_MS } from '../review/review.constants';
+import { REVIEW_IDLE_MS } from '../review/review.constants';
 import { watchReviewWindow } from '../review/watch-review-window';
 
 const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void => {
@@ -28,15 +28,24 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
   bootEvents.once('window', (win) => watchReviewWindow(win, session));
 
   let done = false;
+  let idle: ReturnType<typeof setTimeout> | null = null;
   const finish = (finished: boolean): void => {
     if (done) return;
     done = true;
+    if (idle) clearTimeout(idle);
     untap();
     session.setBoot({ ...bootState.timeline });
     void finishReview(session, finished);
   };
 
+  const stillWorking = (): void => {
+    if (idle) clearTimeout(idle);
+    idle = setTimeout(() => finish(false), REVIEW_IDLE_MS);
+    idle.unref();
+  };
+
   ctx.handle('review:capture', async (_event, step) => {
+    stillWorking();
     await Promise.all([cleared, whenRevealed()]);
     const { timeline } = bootState;
     timeline.splashOpenAtCapture ??= bootState.splash !== null && !bootState.splash.isDestroyed();
@@ -46,10 +55,13 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     await writeCapture(target, session.dir, record.file);
     return record.file;
   });
-  ctx.on('review:check', (_event, check) => session.addCheck(check));
+  ctx.on('review:check', (_event, check) => {
+    stillWorking();
+    session.addCheck(check);
+  });
   ctx.on('review:finish', () => finish(true));
   bootEvents.once('failed', () => finish(false));
-  setTimeout(() => finish(false), REVIEW_WATCHDOG_MS).unref();
+  stillWorking();
   ctx.log(`review "${name}" armed; the report goes to ${session.dir}`);
 };
 

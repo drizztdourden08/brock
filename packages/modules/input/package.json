@@ -36,7 +36,8 @@
     "native/package.json",
     "src",
     "resources",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
     "**/*.css"

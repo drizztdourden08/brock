@@ -5,3 +5,5 @@ export { electronTarget } from './launch/electron-target.mjs';
 export { serveTarget } from './launch/serve-target.mjs';
 export { brockProfile } from './provision/brock-profile.mjs';
 export { runThread } from './cli/run-thread.mjs';
+export { followBrockPin } from './upgrade/follow-brock-pin.mjs';
+export { compareVersions } from './upgrade/compare-versions.mjs';

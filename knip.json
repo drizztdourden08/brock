@@ -31,10 +31,13 @@
     "packages/build": {
       "entry": [
         "src/*.mjs",
+        "migrations/*/*.mjs",
+        "tests/**/*.test.ts",
         "tests/**/*.test.mjs"
       ],
       "project": [
-        "**/*.mjs"
+        "**/*.mjs",
+        "tests/**/*.ts"
       ],
       "ignoreDependencies": [
         "playwright-core"

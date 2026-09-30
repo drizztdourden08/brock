@@ -8,6 +8,7 @@ import { runCheck } from '../src/commands/check.mjs';
 import { runDev } from '../src/commands/dev.mjs';
 import { runDoctorCommand } from '../src/commands/doctor.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
+import { runMigrate } from '../src/commands/migrate.mjs';
 import { runPackage } from '../src/commands/package.mjs';
 import { runPlatform } from '../src/commands/platform.mjs';
 import { runStart } from '../src/commands/start.mjs';
@@ -44,6 +45,9 @@ Usage:
                              plus its own command: bin/<name>.mjs, linked by the postinstall
   brock structure [--check] [--scope @x]
                              verify the folder standard: package names, barrels, folder names, depth
+  brock migrate --from <version> [--to <version>] [--report <file>]
+                             run the Brock migrations after --from, up to --to (open when left off), over the
+                             files the app owns; --report writes the touched files and numbered to-dos as JSON
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock platform list | add <id | bundle>... | remove <id | bundle>...
@@ -72,6 +76,10 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock release [version] [--latest | --prerelease] [--full]
                              run .github/workflows/release.yml for v<version>, notes from
                              release-notes/v<version>.md (asks)
+  brock upgrade [version] [--check] [--no-review] [--local <brockRepo>]
+                             move the app to a Brock release in the worktree brock-<version>, prove it with
+                             the gate and the review, commit when green; --check exits 0 current, 1 behind,
+                             2 registry unreachable
   A plugin verb (definePlugin) is reached the same way: brock <verb> [...]
   In a repo, run all of this through the repo's own command (bin/<name>.mjs, written by adopt).
 
@@ -93,6 +101,7 @@ const COMMANDS = {
   adopt: (ctx) => runAdopt(ctx),
   structure: (ctx) => runStructure(ctx),
   prose: (ctx) => runProse(ctx),
+  migrate: (ctx) => runMigrate(ctx),
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
   web: (ctx) => runWeb(ctx),
@@ -112,7 +121,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, from: values.from, to: values.to, report: values.report, passthrough });
 };
 
 main().then(

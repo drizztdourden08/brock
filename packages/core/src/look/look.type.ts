@@ -13,9 +13,15 @@ interface PaletteSeeds {
   black: string;
 }
 
+interface LookInks {
+  light: string;
+  dark: string;
+}
+
 interface LookSources {
   brand?: ProductLook | null;
   seeds: PaletteSeeds;
+  inks?: LookInks;
 }
 
 type LookSource = 'product' | 'brand' | 'palette';
@@ -28,7 +34,11 @@ interface ResolvedLook {
   to: string;
   angle: number;
   accent: string;
+  ink: string;
+  shade: string;
   source: LookSource;
 }
 
-export type { LookGradient, LookProduct, LookSource, LookSources, PaletteSeeds, ProductLook, ResolvedLook };
+type LookStops = Pick<ResolvedLook, 'from' | 'via' | 'to' | 'angle'>;
+
+export type { LookGradient, LookInks, LookProduct, LookSource, LookSources, LookStops, PaletteSeeds, ProductLook, ResolvedLook };

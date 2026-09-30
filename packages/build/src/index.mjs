@@ -13,6 +13,7 @@ export { BUILT_IN_MODULES, MODULE_PACKAGES, packageForModule, parseAddInput } fr
 export { installPeers } from './modules/install-peers.mjs';
 export { MANAGED_FILES } from './managed/templates.mjs';
 export { findWorkspaceRoot, mergeCatalog } from './workspace.mjs';
+export { keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 export { installLauncher } from './launcher/install-launcher.mjs';
 export { launcherName } from './launcher/launcher-name.mjs';
 export { releaseWorkflow } from './release/release-workflow.mjs';

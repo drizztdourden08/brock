@@ -19,7 +19,7 @@ Options:
   --platforms a,b        platform ids and bundles for targets: windows, macos, linux, android, web,
                          desktop (windows, macos, linux), mobile (android; iOS once it lands).
                          Default desktop. Without it and without --yes, asked on the terminal
-  --local <path>         Brock checkout; dependencies become file: links into it
+  --local <path>         Brock checkout; dependencies become link: specs into it
   --tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
   --yes                  accept the defaults, ask nothing
   --install              run pnpm install after scaffolding

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { tesseraDir } from '../icons/tessera-dir.mjs';
 import { APP_THEME_CSS, SEED_NAMES, TESSERA_PALETTE_CSS } from './look.constants.mjs';
 import { readBrandLook } from './read-brand-look.mjs';
+import { readLookInks } from './read-look-inks.mjs';
 import { readPaletteSeed } from './read-palette-seeds.mjs';
 
 /**
@@ -22,9 +23,11 @@ const seedOf = (rootDir, tesseraRoot, name) => {
  */
 const loadLookSources = (rootDir, product) => {
   const tesseraRoot = tesseraDir(rootDir);
+  const inks = readLookInks(tesseraRoot);
   return {
     brand: readBrandLook(tesseraRoot, product.icons?.brand),
     seeds: { primary: seedOf(rootDir, tesseraRoot, SEED_NAMES.primary), black: seedOf(rootDir, tesseraRoot, SEED_NAMES.black) },
+    ...(inks ? { inks } : {}),
   };
 };
 

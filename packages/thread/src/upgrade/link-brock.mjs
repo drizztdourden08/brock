@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { linkSpec } from '../links/link-spec.mjs';
 import { jsonFile } from '../provision/json-file.mjs';
 import { BROCK_PACKAGE, CHECKOUT_PACKAGE_DIRS, DEPENDENCY_BLOCKS } from './upgrade.constants.mjs';
 
@@ -15,7 +16,7 @@ const checkoutPackages = (checkout) =>
     CHECKOUT_PACKAGE_DIRS.map((base) => join(checkout, base))
       .filter((dir) => existsSync(dir))
       .flatMap(packagesUnder)
-      .map(({ name, dir }) => [name, `link:${dir.replace(/\\/g, '/')}`]),
+      .map(({ name, dir }) => [name, linkSpec(dir)]),
   );
 
 /**

@@ -2,17 +2,14 @@
 import type { HubGroup } from '../../hub/hub.type';
 import { byOrder } from './by-order';
 import type { BucketDef } from './screens-config.type';
+import { groupLabel } from './group-label';
 import type { PlacedPage } from './screen-tree.type';
-import { titleCase } from './title-case';
 
 const groupIds = (bucket: BucketDef, placed: readonly PlacedPage[]): (string | null)[] => {
   const declared = (bucket.groups ?? []).map((group) => group.id);
   const found = placed.map((entry) => entry.group).filter((id): id is string => id !== null && !declared.includes(id)).sort();
   return [...new Set<string | null>([null, ...declared, ...found])];
 };
-
-const groupLabel = (bucket: BucketDef, id: string | null): string =>
-  id === null ? bucket.title : bucket.groups?.find((group) => group.id === id)?.label ?? titleCase(id);
 
 const pagesIn = (placed: readonly PlacedPage[], id: string | null) =>
   placed

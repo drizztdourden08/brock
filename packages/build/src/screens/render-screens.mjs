@@ -2,7 +2,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanScreens } from './scan-screens.mjs';
-import { GENERATED_HEADER, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DIR, SCREENS_OUTPUT } from './screen-conventions.constants.mjs';
+import { GENERATED_HEADER, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DIR, SCREENS_OUTPUT, SEARCH_OUTPUT } from './screen-conventions.constants.mjs';
+import { renderSearch } from './search/render-search.mjs';
 
 /** @param {string} word */
 const capital = (word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
@@ -42,9 +43,10 @@ const renderScreens = (files) => {
     GENERATED_HEADER,
     `import { buildScreenTree } from '${REACT_PACKAGE}';`,
     `import config from '../${SCREENS_DIR}/${SCREENS_CONFIG.replace(/\.ts$/, '')}';`,
+    "import { searchIndex } from './search';",
     ...files.map(importLine),
     '',
-    `const screenTree = buildScreenTree(config, ${list});`,
+    `const screenTree = buildScreenTree(config, ${list}, searchIndex);`,
     '',
     'export { screenTree };',
     '',
@@ -53,9 +55,12 @@ const renderScreens = (files) => {
 
 /**
  * @param {string} rootDir
- * @returns {{ path: string, content: string }[]} none when the app has no screens.config.ts
+ * @returns {{ path: string, content: string }[]} screens.ts and search.ts, or none
  */
-const renderScreensFiles = (rootDir) =>
-  existsSync(join(rootDir, SCREENS_DIR, SCREENS_CONFIG)) ? [{ path: SCREENS_OUTPUT, content: renderScreens(scanScreens(rootDir).files) }] : [];
+const renderScreensFiles = (rootDir) => {
+  if (!existsSync(join(rootDir, SCREENS_DIR, SCREENS_CONFIG))) return [];
+  const { files } = scanScreens(rootDir);
+  return [{ path: SCREENS_OUTPUT, content: renderScreens(files) }, { path: SEARCH_OUTPUT, content: renderSearch(rootDir, files) }];
+};
 
 export { renderScreens, renderScreensFiles };

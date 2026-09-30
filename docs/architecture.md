@@ -178,7 +178,7 @@ An app not yet on the convention still passes `screens`, `home` (the base layer 
 
 Every app gets the standard features below. `StandardOverlays` mounts them in one place inside `AppShell`: `<StandardOverlays menu={fullMenu} actions={merged.searchActions} widgets={merged.widgets} />`.
 
-- Search palette: Ctrl+K (Cmd+K on macOS) or the `SearchButton` title bar slot opens it; Escape or the scrim closes it. It searches the built menu, the registered screens, the settings tabs, every settings field and the registered actions. A boolean field gets an inline toggle, and Ctrl+Enter flips it from the keyboard. Picking a field opens `settings` with `{ tab, anchor }` and scrolls to the row. An app or module adds actions with `RendererModule.searchActions`, `registerSearchActions(actions)` (returns the unregister call) or `useSearchActions(actions)`. `palette.open()`, `palette.close()` and `usePaletteOpen()` drive it from outside.
+- Search palette: Ctrl+K (Cmd+K on macOS) or the `SearchButton` title bar slot opens it; Escape or the scrim closes it. Inside an open hub, Ctrl+K focuses the hub search instead. It searches the one index described under Search. A boolean field gets an inline toggle, and Ctrl+Enter flips it from the keyboard. Picking a result opens its bucket, page and tab, then scrolls to the row and flashes it. An app or module adds actions with `RendererModule.searchActions`, `registerSearchActions(actions)` (returns the unregister call) or `useSearchActions(actions)`. `palette.open()`, `palette.close()` and `usePaletteOpen()` drive it from outside.
 - Bug report: `bugReport.open()` or the `BugReportButton` title bar slot opens a dialog for a title and a description. It attaches the debug text (app version, runtime, platform, recent log lines, and the host facts from `diagnostics:getSystem`) and opens a prefilled GitHub issue on `product.repo` in the browser. No token is involved. Without a repo the report goes to the clipboard.
 - About: Version, Runtime, Engine and Platform rows, and Copy debug info with the same debug text (`useDebugText`).
 - Toasts: `toast(message, { variant?, duration? })` works from anywhere and returns an id for `dismissToast(id)`. `ToastHost` renders the Tessera `ToastContainer`.
@@ -211,8 +211,9 @@ src/screens/
     tracker/                  a page with header tabs
       items.tab.tsx
       map.tab.tsx
+    controls.custom.tsx       a custom page: standard frame, free content
   credits.card.tsx            a card screen, outside the buckets
-  playfield.custom.tsx        a screen that draws its own layer
+  playfield.layer.tsx         a full-bleed screen that draws its own layer
 ```
 
 | Suffix | What Brock draws | The file default-exports |
@@ -221,10 +222,11 @@ src/screens/
 | `.page.tsx` | a hub page in the section nav | a component taking `PageProps` |
 | `<page>/<tab>.tab.tsx` | one header tab of that page | a component taking `PageProps` |
 | `.settings.ts` | a settings page with search and reset | `Section[]`, or `(settings) => Section[]` |
+| `.custom.tsx` | a hub page whose content is built by hand | a component taking `PageProps`, and `searchEntries` |
 | `.card.tsx` | a card screen with header and close | a component taking `CardProps` |
-| `.custom.tsx` | nothing: the screen draws its own layer | a component taking `CardProps` |
+| `.layer.tsx` | nothing: the screen draws its own layer | a component taking `CardProps` |
 
-A file may also export `meta: ScreenMeta` (`title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile`). Without a title the label comes from the file name. Pages sort by `order`, then by label.
+A file may also export `meta: ScreenMeta` (`title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile`, `keywords`). Without a title the label comes from the file name. Pages sort by `order`, then by label.
 
 ```ts
 interface BucketDef { id; title; icon: IconName; menu: 'entry' | 'submenu' | 'hidden'; groups?: { id; label }[]; shortcut? }
@@ -234,14 +236,38 @@ interface PageProps extends CardProps { bucket: BucketDef; page: string; tab: st
 interface HeroProps extends PageProps { slots: { Backdrop; Art; Facts; Actions } }
 ```
 
-- `brock sync` scans `src/screens` and writes `.brock/screens.ts`. It imports each file's default export and its `meta`, and calls `buildScreenTree(config, entries)`. The renderer Vite plugin writes it again when the build starts and whenever a file under `src/screens` is added, renamed, changed or deleted, so `brock dev` reloads with the new registry. `brock check` fails when the file drifts.
-- `buildScreenTree` makes one hub per bucket, in config order. The hero is the hub home; a bucket without one opens on its first page. Pages in the bucket folder form the bucket's own group, named after the bucket; group folders follow in the order of `groups`, then any other group by name. Card and custom files become screens; settings files become settings tabs.
+- `brock sync` scans `src/screens` and writes `.brock/screens.ts` and `.brock/search.ts`. The first imports each file's default export and its `meta`, and calls `buildScreenTree(config, entries, searchIndex)`. The renderer Vite plugin writes both again when the build starts and whenever a file under `src/screens` is added, renamed, changed or deleted, so `brock dev` reloads with the new registry. `brock check` fails when either file drifts.
+- `buildScreenTree` makes one hub per bucket, in config order. The hero is the hub home; a bucket without one opens on its first page. Pages in the bucket folder form the bucket's own group, named after the bucket; group folders follow in the order of `groups`, then any other group by name. Custom pages sit in the nav like any page. Card and layer files become screens; settings files become settings tabs. A generated hub has its search on.
 - The bucket switch lists the buckets in config order and shows once there are two. The menu comes from the config: `entry` adds the bucket, `submenu` adds the bucket with one child per page, `hidden` adds nothing. The home bucket is the Home entry, and card screens get an entry of their own, except the ones Brock already lists (credits, about, profiles, settings). The derived entries go first among the app entries.
 - Escape and Home open `config.home`. When the app has no base screen, the home bucket opens once at startup when a profile is already active.
 - Settings live in a bucket: `settings.bucket`, or the home bucket. The app's `.settings.ts` pages stay where their files are, and the built-in tabs (`settings.tabs` and module tabs) join that bucket as one group per tab group. There is no separate Settings screen then: the Settings menu entry, the palette and Mod+Comma open the first settings page of that bucket, or the page a tab names.
 - `open('<bucket>/<page>/<tab>')` opens a hub page directly, and a menu item can name `{ bucket, page, tab }` instead of `screen`.
 - The hero frame has one wiring point, `packages/react/src/screens/kinds/hero-frame.constants.ts`. It maps the root and the four slots to Tessera parts; the Tessera Hero composite replaces them there.
-- `brock structure` rejects a file with an unknown suffix, a bucket folder the config does not declare, a declared bucket with no folder, two heroes in a bucket, two pages with the same id in a bucket, a tab outside a page folder, a card or custom screen inside a bucket, and folders deeper than `<bucket>/<group>/<page>`. `screens.config.ts` may import only `defineScreens` and types, since the check loads it under Node.
+- `brock structure` rejects a file with an unknown suffix, a bucket folder the config does not declare, a declared bucket with no folder, two heroes in a bucket, two pages with the same id in a bucket, a tab outside a page folder, a card or layer inside a bucket, a custom page at the root, a custom page without a `searchEntries` export or with one the build cannot read, and folders deeper than `<bucket>/<group>/<page>`. It also prints the number of custom pages per bucket, so the exceptions stay visible. `screens.config.ts` may import only `defineScreens` and types, since the check loads it under Node.
+
+### Custom pages and layers
+
+A custom page is `<page>.custom.tsx` inside a bucket. It keeps everything standard around it: the hub frame, the nav entry, the header with title and tabs, Escape and search. Only the content is free. It must export `searchEntries: SearchEntrySeed[]`, a literal list of `{ label, keywords?, anchor?, description? }`, so it never hides from search; an empty list is allowed. An element on the page carries `data-search-anchor="<anchor>"` for the jump.
+
+A full-bleed layer at the root (a game view, a debug canvas) is `<id>.layer.tsx`. It used to be `<id>.custom.tsx`: the `custom-layer-rename` migration renames it, and `custom` now always means a page with the standard frame.
+
+## Search
+
+The global palette and each hub's search read one index. Every entry has one shape: `{ id, kind, label, keywords, breadcrumb, target: { route, anchor? }, icon }`, with `breadcrumb` the labels of bucket, group, page and tab. A hub searches the same index filtered to its bucket.
+
+| What is found | Where it comes from | When |
+|---|---|---|
+| Buckets, pages, tabs, cards | the screen files and their `meta` (title, icon, keywords) | build: `.brock/search.ts` |
+| Settings sections and rows | `.settings.ts` sections (title, label, description, keywords) | build |
+| Custom page contents | the page's `searchEntries` | build |
+| Module screens and settings tabs | the module registries | runtime, when the module loads |
+| Widgets, menu entries, actions | the widget registry, the derived menu, `registerSearchActions` | runtime |
+| Data a page shows | `useSearchEntries(entries)` | live, while the page or provider is mounted |
+
+- The build never loads a page to read it. `.brock/search.ts` imports only `screens.config.ts` and `buildSearchIndex`: `brock sync` and the Vite plugin read `meta`, the sections and `searchEntries` from the source text as literals, so page code stays lazy and runs nowhere at build time. A value that is not a literal (a call, a reference to an import) is skipped; settings rows the build cannot read are still indexed at runtime from the settings tab. Keywords are folded once at build time: lower case, no accents, split into words.
+- `useSearchEntries(entries, route?)` adds entries while the calling component is mounted and removes them on unmount. They point at the page that was open when it mounted, or at `route`. A page's entries exist while that page is shown; a module Provider mounted for the whole session passes its `route`. Pass a stable list (`useMemo`).
+- Picking a result calls `nav.open(route)`, the same deep link as `open('game/tracker/map')`, then scrolls to the element whose `data-setting-key`, `data-section` or `data-search-anchor` matches `anchor` and flashes it with `search-hit`.
+- A hub search shows its matches in NavLayout's results slot through Tessera's SearchResults, grouped by page; a hit jumps to its page and row, a page heading opens the page. A hub given `search.index` keeps its own index.
 
 ## Build
 
@@ -309,7 +335,7 @@ Both workflows are managed files: `brock sync` composes them from the chosen pla
 
 Every Brock app carries a built-in review: `--review` (or `--review=<name>`, default `review`) is a headless automation flag like `--screenshot`. Run it with `<app> launch main none --review`, or `brock start -- --review --no-focus --muted --user-data=<dir>` after a build.
 
-Once the app window is revealed the renderer drives the real UI with DOM clicks and key presses and asks main for a PNG after each step. The tour covers the title bar (title, logo, search and bug report buttons, module slots), the first-run profile form, the menu (Home, Profiles, Settings unless it is home, About, Quit, icons, the Advanced section, Escape), every registered screen in its FullScreenLayer frame, each generated bucket and card (reached from the menu or the bucket switch, the hub listing every page, each page opening from its nav entry), Escape opening the home screen, the Ctrl+K palette, the bug report dialog, the About logo and version, and the logs widget. The boot step checks that the app window holds no loading overlay. Main adds the global checks: the tour finished, the splash window closed before the first capture, the app window stayed hidden until the last boot task, the app version is not the Electron version, no renderer console errors, no failed loads, no main log errors, and a resolved window icon.
+Once the app window is revealed the renderer drives the real UI with DOM clicks and key presses and asks main for a PNG after each step. The tour covers the title bar (title, logo, search and bug report buttons, module slots), the first-run profile form, the menu (Home, Profiles, Settings unless it is home, About, Quit, icons, the Advanced section, Escape), every registered screen in its FullScreenLayer frame, each generated bucket and card (reached from the menu or the bucket switch, the hub listing every page, each page opening from its nav entry), Escape opening the home screen, the Ctrl+K palette, search (a sample from each source typed into the palette must be in the top five results and open its target, a settings row must flash, and the same inside a hub, where Ctrl+K must focus the hub search), the bug report dialog, the About logo and version, and the logs widget. The boot step checks that the app window holds no loading overlay. Main adds the global checks: the tour finished, the splash window closed before the first capture, the app window stayed hidden until the last boot task, the app version is not the Electron version, no renderer console errors, no failed loads, no main log errors, and a resolved window icon.
 
 Main writes `Data/review/<name>/report.json` and `report.md` with the steps and their screenshots (`NN-<step>.png`), every check with pass or fail and a reason, and the console errors, failed loads and main log warnings seen during the run. It prints the `report.json` path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1. The tour code is its own chunk, loaded only on a review launch.
 

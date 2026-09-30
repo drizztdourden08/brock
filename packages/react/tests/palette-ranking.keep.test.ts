@@ -1,13 +1,13 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
-import { buildCatalog } from '../src/palette/catalog/build-catalog';
-import type { CatalogInput, SearchEntry } from '../src/palette/palette.type';
-import { rankEntries } from '../src/palette/rank-entries';
+import { buildCatalog } from '../src/search/catalog/build-catalog';
+import type { CatalogInput, SearchEntry } from '../src/search/search.type';
+import { rankEntries } from '../src/search/rank-entries';
 import type { ScreenDef } from '../src/screens/screen.type';
 import type { TabDef } from '../src/settings/settings.type';
 
 const entry = (id: string, label: string, extra: Partial<SearchEntry> = {}): SearchEntry => ({
-  id, kind: 'action', label, breadcrumb: [], run: () => undefined, ...extra,
+  id, kind: 'action', label, keywords: [], breadcrumb: [], run: () => undefined, ...extra,
 });
 
 const screen = (id: string, extra: Partial<ScreenDef> = {}): ScreenDef => ({ id, title: id, render: () => null, ...extra });
@@ -24,6 +24,10 @@ const TABS: TabDef<object>[] = [{
 }];
 
 const input = (extra: Partial<CatalogInput> = {}): CatalogInput => ({
+  index: [],
+  live: [],
+  widgets: [],
+  settingsPlace: { bucket: null, title: 'Settings' },
   menu: [],
   screens: [],
   home: 'home',
@@ -92,7 +96,7 @@ describe('buildCatalog', () => {
       menu: [{ key: 'widgets', label: 'Widgets', children: [{ key: 'widget-logs', label: 'Logs', onClick: () => undefined }] }],
       actions: [{ id: 'sync', label: 'Sync now', group: 'Cloud', run: () => undefined }],
     }));
-    expect(catalog.find((e) => e.id === 'menu:widget-logs')?.breadcrumb).toEqual(['Widgets']);
+    expect(catalog.find((e) => e.id === 'widget:logs')?.breadcrumb).toEqual(['Widgets']);
     expect(catalog.find((e) => e.id === 'action:sync')?.breadcrumb).toEqual(['Cloud']);
   });
 });

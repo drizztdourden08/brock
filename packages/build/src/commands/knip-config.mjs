@@ -5,7 +5,7 @@ import { THREAD } from './workspace-config.mjs';
 const SCHEMA = 'https://unpkg.com/knip@5/schema.json';
 
 const APP_WORKSPACE = {
-  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', '.markdownlint-cli2.mjs', 'brock.config.ts', 'brock.workspace.mjs'],
+  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/screens/**/*.custom.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', '.markdownlint-cli2.mjs', 'brock.config.ts', 'brock.workspace.mjs'],
   project: ['src/**/*.{ts,tsx}', 'electron/**/*.ts', '.brock/*.ts'],
   ignoreDependencies: ['@electron-toolkit/utils', 'zustand'],
 };

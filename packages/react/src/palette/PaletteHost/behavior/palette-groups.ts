@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { CommandPaletteGroup } from '@drizztdourden08/tessera/composites';
 import { IDLE_SCREEN_LIMIT } from '../../palette.constants';
-import type { SearchEntry } from '../../palette.type';
-import { rankEntries } from '../../rank-entries';
+import type { SearchEntry } from '../../../search/search.type';
+import { rankEntries } from '../../../search/rank-entries';
 import type { PaletteItem } from '../PaletteHost.type';
 import { toPaletteItem } from './to-palette-item';
 

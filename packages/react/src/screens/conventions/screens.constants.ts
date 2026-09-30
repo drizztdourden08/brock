@@ -8,7 +8,8 @@ const KIND_ICONS: Record<ScreenEntry['kind'], IconName> = {
   tab: 'layout-list',
   settings: 'settings',
   card: 'file',
-  custom: 'layers',
+  custom: 'puzzle',
+  layer: 'layers',
 };
 
 const HOME_LABEL = 'Home';

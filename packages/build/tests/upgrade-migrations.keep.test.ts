@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -119,7 +119,7 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(['0.1.1', '0.1.1', '0.1.1', '0.1.1', '0.1.1']);
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(Array.from({ length: 7 }, () => '0.1.1'));
   });
 
   it('orders module migrations with the build ones by version', () => {
@@ -139,6 +139,50 @@ describe('findJsxProps and removeSpans', () => {
     const props = findJsxProps(CUSTOM, 'BrockApp', ['logoSrc']);
     expect(props[0]?.literal).toBeNull();
     expect(removeSpans(CUSTOM, props)).toContain('<BrockApp product={product} instanceLogoSrc="./brand/bot.svg" />');
+  });
+});
+
+describe('custom-layer-rename', () => {
+  const only = () => upgradeFrom('0.1.0').filter((m) => m.file.endsWith('custom-layer-rename.mjs'));
+
+  it('renames a root .custom.tsx to .layer.tsx, reports it, and leaves bucket custom pages alone', async () => {
+    const root = app();
+    mkdirSync(join(root, 'src', 'screens', 'game'), { recursive: true });
+    writeFileSync(join(root, 'src', 'screens', 'playfield.custom.tsx'), CUSTOM);
+    writeFileSync(join(root, 'src', 'screens', 'game', 'controls.custom.tsx'), CUSTOM);
+    const run = await runMigrations(root, only());
+    expect(run.applied[0]?.touched).toEqual(['src/screens/playfield.custom.tsx -> src/screens/playfield.layer.tsx']);
+    expect(existsSync(join(root, 'src', 'screens', 'playfield.custom.tsx'))).toBe(false);
+    expect(readFileSync(join(root, 'src', 'screens', 'playfield.layer.tsx'), 'utf8')).toBe(CUSTOM);
+    expect(existsSync(join(root, 'src', 'screens', 'game', 'controls.custom.tsx'))).toBe(true);
+    const again = await runMigrations(root, only());
+    expect(again.applied[0]?.touched).toEqual([]);
+  });
+
+  it('leaves a to-do when the layer file already exists', async () => {
+    const root = app();
+    mkdirSync(join(root, 'src', 'screens'), { recursive: true });
+    writeFileSync(join(root, 'src', 'screens', 'arena.custom.tsx'), CUSTOM);
+    writeFileSync(join(root, 'src', 'screens', 'arena.layer.tsx'), MAIN);
+    const run = await runMigrations(root, only());
+    expect(run.applied[0]?.touched).toEqual([]);
+    expect(run.todos.map(({ file, message }) => `${file}: ${message}`)).toEqual([
+      'src/screens/arena.custom.tsx: rename it to src/screens/arena.layer.tsx, which already exists; merge the two files by hand',
+    ]);
+  });
+});
+
+describe('knip-custom-pages', () => {
+  it('adds the custom page glob after src/main.tsx once', async () => {
+    const root = app();
+    const knip = '{\n  "entry": [\n    "electron/main.ts",\n    "src/main.tsx"\n  ],\n  "project": ["src/**/*.{ts,tsx}"]\n}\n';
+    writeFileSync(join(root, 'knip.json'), knip);
+    const only = upgradeFrom('0.1.0').filter((m) => m.file.endsWith('knip-custom-pages.mjs'));
+    await runMigrations(root, only);
+    const again = await runMigrations(root, only);
+    const written = readFileSync(join(root, 'knip.json'), 'utf8');
+    expect(again.applied[0]?.touched).toEqual([]);
+    expect((JSON.parse(written) as { entry: string[] }).entry).toEqual(['electron/main.ts', 'src/main.tsx', 'src/screens/**/*.custom.tsx']);
   });
 });
 

@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { checkScreens } from '../src/screens/check-screens.mjs';
 import { renderScreens } from '../src/screens/render-screens.mjs';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
+import { customPageCounts } from '../src/screens/search/custom-page-counts.mjs';
+import { renderSearch } from '../src/screens/search/render-search.mjs';
 
 const CONFIG = `import { defineScreens } from '@drizztdourden08/brock-react';
 
@@ -20,6 +22,28 @@ export default defineScreens({
 
 const PAGE = 'const Page = () => null;\n\nexport default Page;\n';
 const WITH_META = "const meta = { title: 'X' };\nconst Page = () => null;\n\nexport default Page;\nexport { meta };\n";
+const CUSTOM = [
+  "import type { ScreenMeta, SearchEntrySeed } from '@drizztdourden08/brock-react';",
+  "const meta: ScreenMeta = { title: 'Controls', icon: 'keyboard', keywords: ['Bindings', 'Keys'] };",
+  'const searchEntries: SearchEntrySeed[] = [',
+  "  { label: 'Jump', keywords: ['Space', 'button A'], anchor: 'jump' }, // the main action",
+  "  { label: `Pause`, anchor: 'pause', description: 'Stops the run.' },",
+  '];',
+  'const ControlsPage = () => <div>{searchEntries.length}</div>;',
+  'export default ControlsPage;',
+  'export { meta, searchEntries };',
+  '',
+].join('\n');
+const SETTINGS = [
+  "const modes = [{ value: 'a', label: 'A' }];",
+  'const asPercent = (value: number): string => `${value}%`;',
+  'const sections: Section[] = [',
+  "  { id: 'window', title: 'Window', items: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', keywords: 'Borderless', control: { kind: 'choice', options: modes } }] },",
+  "  { id: 'audio', title: 'Audio', subsections: [{ id: 'mix', title: 'Mix', items: [{ key: 'volume', label: 'Volume', description: 'Level.', control: { kind: 'range', format: asPercent } }] }] },",
+  '];',
+  'export default sections;',
+  '',
+].join('\n');
 
 const roots = [];
 
@@ -41,7 +65,9 @@ const VALID = {
   'src/screens/game/tracker/map.tab.tsx': PAGE,
   'src/screens/data/library.page.tsx': PAGE,
   'src/screens/credits.card.tsx': WITH_META,
-  'src/screens/playfield.custom.tsx': PAGE,
+  'src/screens/playfield.layer.tsx': PAGE,
+  'src/screens/game/controls.custom.tsx': CUSTOM,
+  'src/screens/game/general.settings.ts': SETTINGS,
 };
 
 afterEach(() => {
@@ -55,11 +81,30 @@ describe('scanScreens', () => {
     expect(buckets).toEqual(['data', 'game']);
     const summary = files.map((file) => [file.kind, file.bucket ?? '', file.group ?? '', file.page ?? '', file.id].join(':'));
     expect(summary.sort()).toEqual([
-      'card::::credits', 'custom::::playfield', 'hero:game:::home', 'page:data:::library', 'page:game:::saves',
-      'settings:game:video::display', 'tab:game::tracker:items', 'tab:game::tracker:map',
+      'card::::credits', 'custom:game:::controls', 'hero:game:::home', 'layer::::playfield', 'page:data:::library', 'page:game:::saves',
+      'settings:game:::general', 'settings:game:video::display', 'tab:game::tracker:items', 'tab:game::tracker:map',
     ]);
     expect(files.find((file) => file.id === 'home')?.hasMeta).toBe(true);
     expect(files.find((file) => file.id === 'saves')?.hasMeta).toBe(false);
+    expect(files.find((file) => file.id === 'controls')?.hasSearchEntries).toBe(true);
+  });
+
+  it('names a root custom file as a layer and a custom page without searchEntries', async () => {
+    const root = appWith({ ...VALID, 'src/screens/arena.custom.tsx': PAGE, 'src/screens/game/map.custom.tsx': PAGE });
+    const findings = await checkScreens(root);
+    expect(findings.some((f) => f.startsWith('src/screens/arena.custom.tsx: a custom page sits in a bucket folder') && f.includes('.layer.tsx'))).toBe(true);
+    expect(findings.some((f) => f.startsWith('src/screens/game/map.custom.tsx: a custom page exports searchEntries'))).toBe(true);
+  });
+
+  it('rejects searchEntries the build cannot read without loading the page', async () => {
+    const computed = 'const searchEntries = ACTIONS.map((a) => ({ label: a.label }));\nconst Page = () => null;\nexport default Page;\nexport { searchEntries };\n';
+    const findings = await checkScreens(appWith({ ...VALID, 'src/screens/game/map.custom.tsx': computed }));
+    expect(findings).toEqual(['src/screens/game/map.custom.tsx: searchEntries must be a literal list of { label, keywords?, anchor?, description? }, since the build reads it from the source without loading the page']);
+  });
+
+  it('counts custom pages per bucket', () => {
+    const { files, buckets } = scanScreens(appWith(VALID));
+    expect(customPageCounts(files, buckets)).toBe('data 0, game 1');
   });
 
   it('rejects an unknown suffix, two homes, a tab outside a page folder and a misplaced card', () => {
@@ -103,6 +148,42 @@ describe('renderScreens', () => {
     expect(out).toContain("import GameTrackerItemsTab from '../src/screens/game/tracker/items.tab';");
     expect(out).toContain("{ kind: 'tab', bucket: 'game', page: 'tracker', id: 'items', component: GameTrackerItemsTab },");
     expect(out).toContain("{ kind: 'settings', bucket: 'game', group: 'video', id: 'display', sections: GameVideoDisplaySettings },");
+    expect(out).toContain("import { searchIndex } from './search';");
+    expect(out).toContain('], searchIndex);');
+    expect(out).toContain("{ kind: 'custom', bucket: 'game', id: 'controls', component: GameControlsCustom, meta: gameControlsCustomMeta },");
     expect(out).toContain('export { screenTree };');
+  });
+});
+
+describe('renderSearch', () => {
+  const root = appWith(VALID);
+  const out = renderSearch(root, scanScreens(root).files);
+  const seed = (id) => JSON.parse(out.split('\n').find((line) => line.includes(`"id":"${id}"`))?.trim().replace(/,$/, '') ?? 'null');
+
+  it('imports only the config and buildSearchIndex, never a screen file', () => {
+    expect(out).toContain("import { buildSearchIndex } from '@drizztdourden08/brock-react';");
+    expect(out).toContain("import config from '../src/screens/screens.config';");
+    expect(out.match(/^import /gm)).toHaveLength(2);
+    expect(out).toContain('export { searchIndex };');
+  });
+
+  it('normalises keywords and reads custom page entries', () => {
+    expect(seed('controls')).toEqual({
+      kind: 'custom', id: 'controls', bucket: 'game', title: 'Controls', icon: 'keyboard', keywords: ['bindings', 'keys'],
+      entries: [
+        { label: 'Jump', keywords: ['space', 'button', 'a'], anchor: 'jump' },
+        { label: 'Pause', keywords: [], anchor: 'pause', description: 'Stops the run.' },
+      ],
+    });
+  });
+
+  it('reads settings rows past references and functions, and subsections', () => {
+    expect(seed('general')).toEqual({
+      kind: 'settings', id: 'general', bucket: 'game',
+      sections: [
+        { id: 'window', title: 'Window', rows: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', keywords: ['borderless'] }] },
+        { id: 'mix', title: 'Audio', sub: 'Mix', rows: [{ key: 'volume', label: 'Volume', description: 'Level.', keywords: [] }] },
+      ],
+    });
   });
 });

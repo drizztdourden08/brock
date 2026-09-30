@@ -1,11 +1,11 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR } from './screen-conventions.constants.mjs';
+import { KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
 import { layoutFindings } from './layout-findings.mjs';
 
 /**
- * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, hasMeta: boolean }} ScreenFile
+ * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
  * @typedef {{ level: 'root' | 'bucket' | 'group' | 'page', bucket?: string, group?: string, page?: string }} Place
  * @typedef {{ rootDir: string, files: ScreenFile[], findings: string[], buckets: string[] }} ScanState
  */
@@ -37,8 +37,9 @@ const addFile = (state, rel, name, place) => {
     state.findings.push(`${rel}: ${problem}`);
     return;
   }
-  const hasMeta = META_EXPORT.test(readFileSync(join(state.rootDir, rel), 'utf8'));
-  state.files.push({ ...found, bucket: place.bucket, group: place.group, page: place.page, path: rel, hasMeta });
+  const source = readFileSync(join(state.rootDir, rel), 'utf8');
+  const exports = { hasMeta: META_EXPORT.test(source), hasSearchEntries: SEARCH_ENTRIES_EXPORT.test(source) };
+  state.files.push({ ...found, bucket: place.bucket, group: place.group, page: place.page, path: rel, ...exports });
 };
 
 /** @param {ScanState} state @param {string} rel @param {string} name @param {Place} place */

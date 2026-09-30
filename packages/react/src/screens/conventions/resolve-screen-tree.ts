@@ -24,6 +24,7 @@ const resolveScreenTree = (tree: ScreenTree, builtInTabs: readonly TabDef<object
     menu: deriveMenu(config, hubs, tree.screens),
     shortcuts: [{ shortcut: SETTINGS_SHORTCUT, target: SETTINGS_ALIAS }, ...tree.shortcuts],
     settingsAlias: settingsAlias(owner, tabs),
+    search: tree.search,
   };
 };
 

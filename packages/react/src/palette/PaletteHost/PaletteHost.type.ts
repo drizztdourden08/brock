@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { CommandPaletteGroup, CommandPaletteItem } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../../menu/menu.type';
-import type { SearchAction } from '../palette.type';
+import type { SearchAction } from '../../search/search.type';
 
 interface PaletteHostProps {
   menu: readonly MenuEntry[];

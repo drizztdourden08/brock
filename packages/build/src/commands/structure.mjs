@@ -5,7 +5,9 @@ import { scopeOf } from './adopt.mjs';
 import { checkShapes } from './structure-shape.mjs';
 import { checkInstallerFolder } from '../installer/check-installer-folder.mjs';
 import { checkScreens } from '../screens/check-screens.mjs';
+import { scanScreens } from '../screens/scan-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from '../screens/screen-conventions.constants.mjs';
+import { customPageCounts } from '../screens/search/custom-page-counts.mjs';
 
 const GENERIC_FOLDERS = new Set(['lib', 'utils', 'helpers', 'misc', 'common']);
 const DEFAULT_GLOBS = ['apps/*', 'packages/*', 'tooling/*'];
@@ -59,7 +61,15 @@ const screensOwned = (dir) => {
   return existsSync(join(screens, SCREENS_CONFIG)) ? [screens] : [];
 };
 
-const checkSrc = async (rootDir, dir, findings) => {
+const customPageNote = (rootDir, dir) => {
+  if (!existsSync(join(dir, SCREENS_DIR, SCREENS_CONFIG))) return [];
+  const { files, buckets } = scanScreens(dir);
+  return [`${relative(rootDir, dir).replace(/\\/g, '/') || '.'}: custom pages per bucket: ${customPageCounts(files, buckets) || 'no buckets'}`];
+};
+
+const checkSrc = async (rootDir, dir, out) => {
+  const { findings, notes } = out;
+  notes.push(...customPageNote(rootDir, dir));
   const src = join(dir, 'src');
   if (!existsSync(src)) return;
   walk(src, (full, name, depth) => {
@@ -94,14 +104,15 @@ const packageProblems = (dir, label, pkg, scope) => {
   return problems;
 };
 
-const checkPackage = async (rootDir, dir, scope, findings) => {
+const checkPackage = async (rootDir, dir, scope, out) => {
+  const { findings } = out;
   const label = relative(rootDir, dir).replace(/\\/g, '/') || '.';
   const pkgFile = join(dir, 'package.json');
   if (!existsSync(pkgFile)) { findings.push(`${label}: no package.json; every workspace folder is a package`); return; }
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
   if (isAppDir(dir, label)) findings.push(...checkInstallerFolder(rootDir, dir));
   else findings.push(...packageProblems(dir, label, pkg, scope));
-  await checkSrc(rootDir, dir, findings);
+  await checkSrc(rootDir, dir, out);
 };
 
 const scopeFromFile = (rootDir) => {
@@ -124,22 +135,24 @@ const rootKind = (rootDir, dirs) => {
 /**
  * @param {string} rootDir
  * @param {string} scope
- * @returns {Promise<{ findings: string[], counted: number }>}
+ * @returns {Promise<{ findings: string[], notes: string[], counted: number }>}
  */
 const collectFindings = async (rootDir, scope) => {
   const findings = [];
+  const notes = [];
+  const out = { findings, notes };
   const { globs, declared } = workspaceGlobs(rootDir);
   const bases = new Set(globs.map(globBase).filter((b) => b.includes('/')));
   const dirs = globs.flatMap((g) => expandGlob(rootDir, g, bases));
   const kind = rootKind(rootDir, dirs);
   if (kind === 'app') {
     findings.push(...checkInstallerFolder(rootDir, rootDir));
-    await checkSrc(rootDir, rootDir, findings);
+    await checkSrc(rootDir, rootDir, out);
   }
-  else if (kind === 'package') await checkPackage(rootDir, rootDir, scope, findings);
+  else if (kind === 'package') await checkPackage(rootDir, rootDir, scope, out);
   else if (!dirs.length && !declared) findings.push('no workspace folders found (apps/*, packages/*, tooling/* or pnpm-workspace.yaml)');
-  for (const dir of dirs) await checkPackage(rootDir, dir, scope, findings);
-  return { findings, counted: dirs.length + (kind ? 1 : 0) };
+  for (const dir of dirs) await checkPackage(rootDir, dir, scope, out);
+  return { findings, notes, counted: dirs.length + (kind ? 1 : 0) };
 };
 
 /**
@@ -148,7 +161,8 @@ const collectFindings = async (rootDir, scope) => {
  */
 const runStructure = async ({ rootDir, scope: explicitScope }) => {
   const scope = resolveScope(rootDir, explicitScope);
-  const { findings, counted } = await collectFindings(rootDir, scope);
+  const { findings, notes, counted } = await collectFindings(rootDir, scope);
+  for (const note of notes) console.log(`brock structure: ${note}`);
   if (!findings.length) {
     console.log(`brock structure: ${counted} package(s) under ${scope}, no findings.`);
     return 0;

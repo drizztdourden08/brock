@@ -2,6 +2,7 @@
 import type { ProductConfig, ReviewCheck } from '@drizztdourden08/brock-core';
 import type { MenuEntry } from '../menu/menu.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
+import type { SearchTarget } from '../search/search.type';
 import type { ScreenDef } from '../screens/screen.type';
 
 type ReviewOutcome = Omit<ReviewCheck, 'step'>;
@@ -93,6 +94,18 @@ interface UpdaterTitleBarSnapshot {
   badgeShown: boolean;
 }
 
+interface SearchSample {
+  source: string;
+  label: string;
+  target?: SearchTarget;
+  widget?: string;
+}
+
+interface SearchPick {
+  shown: string[];
+  picked: boolean;
+}
+
 interface SettingRowsSnapshot {
   total: number;
   empty: string[];
@@ -100,5 +113,5 @@ interface SettingRowsSnapshot {
 
 export type {
   AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
-  ReviewOutcome, ReviewStep, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
+  ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
 };

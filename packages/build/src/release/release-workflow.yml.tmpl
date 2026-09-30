@@ -1,7 +1,8 @@
 name: Release
 run-name: Release ${{ inputs.version }}
 
-# Written by Brock (create-brock or brock adopt). Run it from the Actions tab or with `brock release <version>`.
+# Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
+# Run it from the Actions tab or with `<app> release <version>`.
 # release-notes/v<version>.md must be on the default branch first: it is the release body.
 on:
   workflow_dispatch:
@@ -58,6 +59,8 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -88,88 +91,9 @@ jobs:
           git tag "$TAG"
           git push origin "$TAG"
 
-  build:
-    needs: prepare
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            platform: win
-          - os: ubuntu-latest
-            platform: linux
-          - os: macos-latest
-            platform: mac
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.prepare.outputs.tag }}
-
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-          registry-url: https://npm.pkg.github.com
-          scope: '@drizztdourden08'
-
-      - name: Install
-        run: pnpm install --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up .NET for vpk
-        if: matrix.platform != 'mac'
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      # vpk and the velopack package the app loads must be the same version.
-      - name: Install vpk
-        if: matrix.platform != 'mac'
-        shell: bash
-        run: |
-          VPK=$(cd "$APP_DIR" && node -p "require('velopack/package.json').version" 2>/dev/null || true)
-          if [ -n "$VPK" ]; then dotnet tool install -g vpk --version "$VPK"; else dotnet tool install -g vpk; fi
-
-      # The previous release lets vpk build a delta and list every version in the feed.
-      - name: Fetch the previous release
-        if: matrix.platform != 'mac'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
-            --outputDir "$APP_DIR/release/velopack" --token "$GH_TOKEN" || echo "no previous release to delta against"
-
-      - name: Package
-        shell: bash
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: |
-          FULL=""
-          if [ "${{ inputs.full }}" = "true" ]; then FULL="--full"; fi
-          pnpm --dir "$APP_DIR" exec brock package $FULL
-
-      - name: Collect the release files
-        shell: bash
-        run: |
-          mkdir -p upload
-          if [ "${{ matrix.platform }}" = "mac" ]; then
-            cp "$APP_DIR"/release/*.dmg "$APP_DIR"/release/*.zip upload/
-          else
-            cp "$APP_DIR"/release/velopack/* upload/
-          fi
-          ls -l upload
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-${{ matrix.platform }}
-          path: upload/*
-
+__JOBS__
   release:
-    needs: [prepare, build]
+    needs: __NEEDS__
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -193,9 +117,7 @@ jobs:
             echo ""
             echo "## Downloads"
             echo ""
-            stub "artifacts/release-win/*-windows-setup.exe" "Windows installer (.exe), a small download that installs and updates itself"
-            link "artifacts/release-mac/*.dmg" "macOS disk image (.dmg)"
-            link "artifacts/release-linux/*.AppImage" "Linux AppImage, updates itself"
+__DOWNLOADS__
           } > release-body.md
           cat release-body.md
 

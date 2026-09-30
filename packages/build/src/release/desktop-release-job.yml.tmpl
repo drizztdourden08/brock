@@ -1,0 +1,26 @@
+  __JOB__:
+    needs: prepare
+    runs-on: __RUNS_ON__
+    steps:
+__SETUP__
+__VPK__
+      - name: Package
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          FULL=""
+          if [ "${{ inputs.full }}" = "true" ]; then FULL="--full"; fi
+          pnpm --dir "$APP_DIR" exec brock package $FULL
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+__COLLECT__
+          ls -l upload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-__PLATFORM__
+          path: upload/*

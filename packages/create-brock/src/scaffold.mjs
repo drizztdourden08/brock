@@ -5,10 +5,11 @@ import { basename, join, relative } from 'node:path';
 import {
   appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES,
 } from '@drizztdourden08/brock-build';
+import { finishPlatforms } from './finish-platforms.mjs';
 import { initRepository } from './git-init.mjs';
 import { applyDependencies } from './local-links.mjs';
 import { writePnpmFiles } from './pnpm-files.mjs';
-import { writeReleaseWorkflow } from './release-files.mjs';
+import { preparePlatforms } from './prepare-platforms.mjs';
 import { applyIdentity } from './substitute.mjs';
 import { templateModules } from './template-modules.mjs';
 import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
@@ -18,6 +19,7 @@ import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
  * @property {string} targetDir
  * @property {import('./identity.mjs').Identity} identity
  * @property {string[]} modules
+ * @property {string[]} targets platform ids and bundles
  * @property {string | null} local
  * @property {string | null} tessera
  * @property {boolean} install
@@ -56,16 +58,20 @@ const writeLauncher = (targetDir, id, workspaceRoot) => {
 };
 
 /**
- * @param {ScaffoldPlan} plan @param {{ missing: { id: string }[] }} sync @param {string | null} command
+ * @param {ScaffoldPlan} plan
+ * @param {{ missing: { id: string }[], later: string[] }} state unresolved modules, platform steps left
+ * @param {string | null} command
  */
-const printNextSteps = (plan, sync, command) => {
+const printNextSteps = (plan, { missing, later }, command) => {
   const dir = relative(process.cwd(), plan.targetDir) || '.';
-  const lines = [`\nCreated ${plan.identity.name} in ${dir}\n`, 'Next:'];
+  const lines = [`\nCreated ${plan.identity.name} in ${dir} for ${plan.targets.join(', ')}\n`, 'Next:'];
   if (dir !== '.') lines.push(`  cd ${dir}`);
   if (!plan.install) lines.push(command ? `  pnpm install          (links the ${command} command)` : '  pnpm install');
-  if (sync.missing.length) lines.push(`  pnpm brock sync        (module packages to resolve: ${sync.missing.map((m) => m.id).join(', ')})`);
+  if (missing.length) lines.push(`  pnpm brock sync        (module packages to resolve: ${missing.map((m) => m.id).join(', ')})`);
   const run = command ?? 'pnpm brock';
   lines.push(
+    ...later.map((line) => `  ${run} ${line}`),
+    `  ${run} platform list                  (platform add and remove rewrite both workflows)`,
     `  ${run} launch main none --visible     (the app, hot reload)`,
     `  ${run} launch main none --review      (headless review: screenshots and a report)`,
     '  pnpm lint',
@@ -103,7 +109,7 @@ const installThenResync = async (targetDir, workspaceRoot, config, pending) => {
   if (code !== 0) return { code, sync: null };
   const peersCode = await installPendingPeers(targetDir, pending);
   if (peersCode !== 0) return { code: peersCode, sync: null };
-  return { code: 0, sync: config.modules.length ? syncApp(targetDir, config, { onMissing: 'skip' }) : null };
+  return { code: 0, sync: syncApp(targetDir, config, { onMissing: 'skip' }) };
 };
 
 /**
@@ -130,20 +136,20 @@ const scaffold = async (plan) => {
   }
   const pnpmFiles = writePnpmFiles(targetDir, templateDir, workspaceRoot);
   if (pnpmFiles.length) console.log(`create-brock: wrote ${pnpmFiles.join(', ')}`);
-  const workflow = writeReleaseWorkflow(targetDir, workspaceRoot);
-  if (workflow) console.log(`create-brock: wrote ${workflow}`);
   recordModules(targetDir, modules);
 
-  const config = { product: { id: identity.id, name: identity.name, appId: identity.appId, author: { name: identity.authorName } }, targets: ['desktop'], modules };
+  const config = { product: { id: identity.id, name: identity.name, appId: identity.appId, author: { name: identity.authorName } }, targets: plan.targets, modules };
+  await preparePlatforms(targetDir, config);
   const sync = syncApp(targetDir, config, { onMissing: 'skip' });
-  console.log(`create-brock: wrote ${sync.written.length} managed file(s)`);
+  console.log(`create-brock: wrote ${sync.written.length} managed file(s)${workspaceRoot ? '' : ', the CI and release workflows among them'}`);
   const command = writeLauncher(targetDir, identity.id, workspaceRoot);
 
   const installed = install ? await installThenResync(targetDir, workspaceRoot, config, pending) : { code: 0, sync: null };
   if (installed.code !== 0) return installed.code;
+  const later = await finishPlatforms(targetDir, config, install);
   const repository = initRepository(targetDir, identity);
   if (repository) console.log(`create-brock: ${repository}`);
-  printNextSteps(plan, installed.sync ?? sync, command);
+  printNextSteps(plan, { missing: (installed.sync ?? sync).missing, later }, command);
   return 0;
 };
 

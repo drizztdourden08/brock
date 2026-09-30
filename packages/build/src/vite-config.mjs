@@ -7,6 +7,7 @@ import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { loadBrockConfig } from './load-config.mjs';
 import { ownsSplashPage } from './splash/owns-splash-page.mjs';
+import { screensPlugin } from './screens/screens-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
 
@@ -126,7 +127,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     renderer: {
       root: src,
       publicDir: resolve(rootDir, 'public'),
-      plugins: [react(), splashPlugin({ rootDir, product })],
+      plugins: [react(), splashPlugin({ rootDir, product }), screensPlugin({ rootDir })],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       server: { fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {

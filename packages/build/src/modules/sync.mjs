@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
+import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -83,6 +84,7 @@ const syncApp = (rootDir, config, opts = {}) => {
   if (onMissing === 'throw') assertResolved(missing);
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
+    ...renderScreensFiles(rootDir),
     ...renderManagedFiles({ inWorkspace: findWorkspaceRoot(rootDir) !== null }),
     ...renderLaunchers(rootDir),
   ];

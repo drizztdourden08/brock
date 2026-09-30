@@ -30,7 +30,8 @@
     },
     "packages/build": {
       "entry": [
-        "src/*.mjs"
+        "src/*.mjs",
+        "tests/**/*.test.mjs"
       ],
       "project": [
         "**/*.mjs"

@@ -6,13 +6,16 @@ import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
 import { runCheck } from '../src/commands/check.mjs';
 import { runDev } from '../src/commands/dev.mjs';
+import { runDoctorCommand } from '../src/commands/doctor.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
 import { runMigrate } from '../src/commands/migrate.mjs';
 import { runPackage } from '../src/commands/package.mjs';
+import { runPlatform } from '../src/commands/platform.mjs';
 import { runStart } from '../src/commands/start.mjs';
 import { runProse } from '../src/commands/prose.mjs';
 import { runStructure } from '../src/commands/structure.mjs';
 import { runSync } from '../src/commands/sync.mjs';
+import { runWeb } from '../src/commands/web.mjs';
 import { OWN_PACKAGE } from '../src/modules/sync.mjs';
 import { runThread, threadVerbNames } from '@drizztdourden08/brock-thread/cli';
 
@@ -47,6 +50,14 @@ Usage:
                              files the app owns; --report writes the touched files and numbered to-dos as JSON
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
+  brock platform list | add <id | bundle>... | remove <id | bundle>...
+                             the platforms in brock.config.ts targets: windows, macos, linux, android, web
+                             (ios is reserved), bundles desktop and mobile. add runs each platform's scaffold
+                             steps and doctor; add and remove rewrite targets and regenerate both workflows
+  brock doctor [id | bundle...]
+                             check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
+                             JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+  brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
 
 Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock worktree create <name> [--from <ref>]
@@ -59,6 +70,9 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock pr push | open | status [name]
                              push and open ask: work leaves the machine
   brock mobile push          web build, cap sync, gradle, adb install and start
+  brock mobile build [--release] [--out <file>]
+                             web build, cap sync, gradle assembleDebug (or a signed assembleRelease)
+  brock mobile keystore      make the release keystore with keytool (asks), print the gh secret set lines
   brock release [version] [--latest | --prerelease] [--full]
                              run .github/workflows/release.yml for v<version>, notes from
                              release-notes/v<version>.md (asks)
@@ -88,6 +102,9 @@ const COMMANDS = {
   structure: (ctx) => runStructure(ctx),
   prose: (ctx) => runProse(ctx),
   migrate: (ctx) => runMigrate(ctx),
+  platform: (ctx) => runPlatform(ctx),
+  doctor: (ctx) => runDoctorCommand(ctx),
+  web: (ctx) => runWeb(ctx),
 };
 
 const main = async () => {
@@ -104,7 +121,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, from: values.from, to: values.to, report: values.report, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, from: values.from, to: values.to, report: values.report, passthrough });
 };
 
 main().then(

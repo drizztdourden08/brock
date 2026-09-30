@@ -1,8 +1,9 @@
 <!-- @layer docs @kind doc -->
 # create-brock
 
-The scaffolder. It copies the blank app, writes the identity into it, wires the
-dependencies, writes the pnpm files and runs the first `brock sync`.
+The scaffolder. It copies the blank app, writes the identity into it, asks which
+platforms it ships to, wires the dependencies, writes the pnpm files, runs the first
+`brock sync` (which writes the CI and release workflows) and the platform steps.
 
 ```
 pnpm create @drizztdourden08/brock my-app
@@ -30,6 +31,7 @@ The scaffolded app's `.npmrc` carries the scope line, so installs inside it need
 --author-name <text>   (default: git config user.name)
 --author-email <text>  (default: git config user.email)
 --modules a,b          Brock module ids to install and record, beside the template's own
+--platforms a,b        platform ids and bundles for targets (default desktop)
 --local <path>         Brock checkout; every @drizztdourden08/* dependency becomes a link: spec
 --tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
 --yes                  accept the defaults, ask nothing
@@ -38,6 +40,44 @@ The scaffolded app's `.npmrc` carries the scope line, so installs inside it need
 
 Without `--yes`, each identity field no flag supplied is asked for on the terminal,
 with the default shown. The target folder must be empty or absent.
+
+## Platforms
+
+Without `--platforms` and without `--yes`, the terminal lists the bundles and the platforms
+by number and takes numbers or ids, comma separated; Enter keeps `desktop`:
+
+```
+Which platforms does the app ship to? Numbers or ids, comma separated.
+   1  desktop  Windows, macOS and Linux (bundle)
+   2  mobile   Android today, iOS once it is supported (bundle)
+   3  windows  Windows
+   4  macos    macOS
+   5  linux    Linux
+   6  android  Android
+   7  ios      iOS, not supported yet
+   8  web      Web
+Platforms (desktop):
+```
+
+The answer goes into `targets` in `brock.config.ts` as typed, bundles included, so
+`mobile` gains iOS later with no config change. Choosing `ios` says it is not supported
+yet and asks again; `--platforms ios` fails the same way. An unknown word lists the ids.
+
+Each chosen platform then runs its scaffold steps in two passes. Before the install, the
+steps that only edit files: the Capacitor packages in `package.json` for Android (plus
+`sharp` in `onlyBuiltDependencies` for `@capacitor/assets`, and `mobile/` lines in
+`.gitignore`, `.proseignore` and `.jscpd.json`), the `build:web` and `dev:web` scripts
+for the web. After `--install`, the steps that need the tools: the Tessera brand icons,
+the web build and `cap add android` into `mobile/android`, the launcher icons and splash
+from the brand set with `@capacitor/assets`, and the Gradle patches (signing from the
+`BROCK_KEYSTORE_*` variables, `versionCode` and `versionName` from `package.json`).
+Without `--install` those wait, and the closing lines say to run
+`<app> platform add <targets>` after `pnpm install`. Every step skips what is done, so
+running it again is safe.
+
+Then it prints the doctor report for the chosen platforms (what this machine has and the
+install command for what it lacks; it installs nothing) and the release secrets the
+chosen platforms need, with how to make them.
 
 ## Working against a checkout
 
@@ -65,8 +105,9 @@ the new app's `pnpm-workspace.yaml` (`packages: []` plus the catalog, and
 `onlyBuiltDependencies` for electron and esbuild), next to an `.npmrc` with the pnpm
 settings every Brock repo uses. `brock sync` then writes `.brock/` and the managed
 config files (eslint, stylelint, markdownlint, tsconfig, the Vite and electron-builder
-configs). With `--modules`, the ids go into `brock.config.ts` and the packages into
-`dependencies`; the module arrays fill on the next sync after `pnpm install`.
+configs, and for a standalone app `.github/workflows/ci.yml` and `release.yml` composed
+from the chosen platforms). With `--modules`, the ids go into `brock.config.ts` and the
+packages into `dependencies`; the module arrays fill on the next sync after `pnpm install`.
 
 Every app starts with the modules the template's `brock.config.ts` lists, `updater` today,
 so a new app has "Check for updates" and the update dialog from the first launch. The

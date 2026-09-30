@@ -1,0 +1,36 @@
+  build-android:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+__SETUP__
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # The action asks for the retired "tools" package by default; Gradle fetches the rest.
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Decode the signing keystore
+        shell: bash
+        run: echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build the signed APK
+        shell: bash
+        env:
+          BROCK_KEYSTORE_FILE: ${{ runner.temp }}/release.jks
+          BROCK_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          BROCK_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          mkdir -p upload
+          pnpm --dir "$APP_DIR" exec brock mobile build --release --out "$GITHUB_WORKSPACE/upload/__APK__"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: upload/*

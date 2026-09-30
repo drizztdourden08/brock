@@ -64,7 +64,42 @@
     ],
     "packExclude": [
       "native/**"
-    ]
+    ],
+    "ci": [
+      {
+        "name": "Install libusb and pkg-config (Linux)",
+        "run": "sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev pkg-config",
+        "os": "linux"
+      },
+      {
+        "name": "Install libusb and pkg-config (macOS)",
+        "run": "brew install libusb pkg-config",
+        "os": "macos"
+      }
+    ],
+    "doctor": [
+      {
+        "name": "libusb and pkg-config",
+        "os": "linux",
+        "probe": [
+          "pkg-config",
+          "--exists",
+          "libusb-1.0"
+        ],
+        "install": "sudo apt-get install -y libusb-1.0-0-dev pkg-config"
+      },
+      {
+        "name": "libusb and pkg-config",
+        "os": "macos",
+        "probe": [
+          "pkg-config",
+          "--exists",
+          "libusb-1.0"
+        ],
+        "install": "brew install libusb pkg-config"
+      }
+    ],
+    "udevRules": "./resources/controllers.rules"
   },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",

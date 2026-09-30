@@ -11,6 +11,13 @@ interface ModuleMigration {
   summary: string;
 }
 
+interface ModuleDoctorCheck {
+  name: string;
+  os: 'windows' | 'linux' | 'macos';
+  probe: string[];
+  install: string;
+}
+
 interface ModuleExtraResource {
   from: string;
   to: string;
@@ -30,6 +37,8 @@ interface BrockModuleManifest {
   prepare?: string;
   extraResources?: ModuleExtraResource[];
   packExclude?: string[];
+  doctor?: ModuleDoctorCheck[];
+  udevRules?: string;
 }
 
 interface ResolvedModule {
@@ -38,4 +47,4 @@ interface ResolvedModule {
   manifest: BrockModuleManifest;
 }
 
-export type { BrockModuleManifest, ModuleCiStep, ModuleExtraResource, ModuleMigration, ResolvedModule };
+export type { BrockModuleManifest, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ResolvedModule };

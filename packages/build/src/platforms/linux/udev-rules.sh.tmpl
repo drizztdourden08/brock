@@ -1,0 +1,10 @@
+
+RULES_PATH=/etc/udev/rules.d/99-__ID__.rules
+cat > "$RULES_PATH" <<'RULES'
+__RULES__
+RULES
+
+if command -v udevadm >/dev/null 2>&1; then
+  udevadm control --reload-rules || true
+  udevadm trigger || true
+fi

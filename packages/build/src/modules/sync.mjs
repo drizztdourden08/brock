@@ -4,6 +4,8 @@ import { dirname, join } from 'node:path';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
+import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
+import { renderWorkflows } from '../release/render-workflows.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -82,10 +84,13 @@ const syncApp = (rootDir, config, opts = {}) => {
   const { check = false, onMissing = 'throw' } = opts;
   const { modules, missing } = resolveModules(rootDir, config.modules ?? []);
   if (onMissing === 'throw') assertResolved(missing);
+  const inWorkspace = findWorkspaceRoot(rootDir) !== null;
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
-    ...renderManagedFiles({ inWorkspace: findWorkspaceRoot(rootDir) !== null }),
+    ...renderManagedFiles({ inWorkspace }),
     ...renderLaunchers(rootDir),
+    ...platformManagedFiles({ rootDir, config, modules }),
+    ...(inWorkspace ? [] : renderWorkflows(config, modules)),
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);
   const pinned = pinApp(rootDir, OWN_PACKAGE.version, check).length > 0 ? ['package.json'] : [];

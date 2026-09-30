@@ -12,11 +12,23 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> worktree finish [name] | remove <name>
 <repo> pr push | open | status [name]
 <repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]
+<repo> mobile push | build [--release] [--out <file>] | keystore
 ```
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 
 `<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
+
+`mobile` drives the Capacitor Android project. It reads `mobile` from `brock.workspace.mjs`
+when there is one, else the `capacitor.config.json` that `platform add android` writes at the app
+root (`android.path` names `mobile/android`, the web build is `brock web build`). `build` runs the
+web build, `cap sync` and `gradlew assembleDebug`; `--release` runs `assembleRelease` signed from
+`BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD` and `BROCK_KEY_ALIAS`, or from the keystore
+`mobile keystore` made, and `--out` copies the APK there. `push` builds the debug APK and installs
+it on the online device. `keystore` asks before `keytool` writes `~/.brock/keystores/<app id>.jks`
+with a random password beside it, then prints the three `gh secret set` lines the release workflow
+needs (`ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`). It never runs them:
+the values stay in their files and you run the lines yourself.
 
 A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. A plugin adds verbs, targets and steps through `definePlugin`.
 

@@ -14,6 +14,7 @@ import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
+import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
 import { useShellMenu } from '../../behavior/useShellMenu';
@@ -29,8 +30,10 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
 
+  const phase = useBootStore((s) => s.phase);
+  useOpenHomeOnStart(phase === 'painting' || phase === 'ready');
   useRendererBoot(settingsStore, bootTasks);
-  const ready = useBootStore((s) => s.phase === 'ready');
+  const ready = phase === 'ready';
   useProfileHydration(settingsStore);
   useKeyboardShortcuts();
   useStandardEscapeLayers();

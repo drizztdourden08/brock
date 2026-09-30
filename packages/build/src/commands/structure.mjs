@@ -3,6 +3,8 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { scopeOf } from './adopt.mjs';
 import { checkShapes } from './structure-shape.mjs';
+import { checkScreens } from '../screens/check-screens.mjs';
+import { SCREENS_CONFIG, SCREENS_DIR } from '../screens/screen-conventions.constants.mjs';
 
 const GENERIC_FOLDERS = new Set(['lib', 'utils', 'helpers', 'misc', 'common']);
 const DEFAULT_GLOBS = ['apps/*', 'packages/*', 'tooling/*'];
@@ -51,7 +53,12 @@ const walk = (dir, visit, depth = 0) => {
   }
 };
 
-const checkSrc = (rootDir, dir, findings) => {
+const screensOwned = (dir) => {
+  const screens = join(dir, SCREENS_DIR);
+  return existsSync(join(screens, SCREENS_CONFIG)) ? [screens] : [];
+};
+
+const checkSrc = async (rootDir, dir, findings) => {
   const src = join(dir, 'src');
   if (!existsSync(src)) return;
   walk(src, (full, name, depth) => {
@@ -59,7 +66,9 @@ const checkSrc = (rootDir, dir, findings) => {
     if (GENERIC_FOLDERS.has(name)) findings.push(`${at}: folder "${name}" names a layer, not a subject`);
     if (depth > MAX_DEPTH_BELOW_SRC) findings.push(`${at}: deeper than ${MAX_DEPTH_BELOW_SRC} levels below src`);
   });
-  if (existsSync(join(src, 'index.ts')) || existsSync(join(src, 'main.tsx'))) findings.push(...checkShapes(rootDir, src));
+  if (existsSync(join(src, 'index.ts')) || existsSync(join(src, 'main.tsx'))) findings.push(...checkShapes(rootDir, src, screensOwned(dir)));
+  const label = relative(rootDir, dir).replace(/\\/g, '/');
+  findings.push(...(await checkScreens(dir)).map((finding) => (label === '' ? finding : `${label}/${finding}`)));
 };
 
 const hasBarrel = (dir, pkg) => {
@@ -84,13 +93,13 @@ const packageProblems = (dir, label, pkg, scope) => {
   return problems;
 };
 
-const checkPackage = (rootDir, dir, scope, findings) => {
+const checkPackage = async (rootDir, dir, scope, findings) => {
   const label = relative(rootDir, dir).replace(/\\/g, '/') || '.';
   const pkgFile = join(dir, 'package.json');
   if (!existsSync(pkgFile)) { findings.push(`${label}: no package.json; every workspace folder is a package`); return; }
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
   if (!isAppDir(dir, label)) findings.push(...packageProblems(dir, label, pkg, scope));
-  checkSrc(rootDir, dir, findings);
+  await checkSrc(rootDir, dir, findings);
 };
 
 const scopeFromFile = (rootDir) => {
@@ -113,18 +122,18 @@ const rootKind = (rootDir, dirs) => {
 /**
  * @param {string} rootDir
  * @param {string} scope
- * @returns {{ findings: string[], counted: number }}
+ * @returns {Promise<{ findings: string[], counted: number }>}
  */
-const collectFindings = (rootDir, scope) => {
+const collectFindings = async (rootDir, scope) => {
   const findings = [];
   const { globs, declared } = workspaceGlobs(rootDir);
   const bases = new Set(globs.map(globBase).filter((b) => b.includes('/')));
   const dirs = globs.flatMap((g) => expandGlob(rootDir, g, bases));
   const kind = rootKind(rootDir, dirs);
-  if (kind === 'app') checkSrc(rootDir, rootDir, findings);
-  else if (kind === 'package') checkPackage(rootDir, rootDir, scope, findings);
+  if (kind === 'app') await checkSrc(rootDir, rootDir, findings);
+  else if (kind === 'package') await checkPackage(rootDir, rootDir, scope, findings);
   else if (!dirs.length && !declared) findings.push('no workspace folders found (apps/*, packages/*, tooling/* or pnpm-workspace.yaml)');
-  for (const dir of dirs) checkPackage(rootDir, dir, scope, findings);
+  for (const dir of dirs) await checkPackage(rootDir, dir, scope, findings);
   return { findings, counted: dirs.length + (kind ? 1 : 0) };
 };
 
@@ -134,7 +143,7 @@ const collectFindings = (rootDir, scope) => {
  */
 const runStructure = async ({ rootDir, scope: explicitScope }) => {
   const scope = resolveScope(rootDir, explicitScope);
-  const { findings, counted } = collectFindings(rootDir, scope);
+  const { findings, counted } = await collectFindings(rootDir, scope);
   if (!findings.length) {
     console.log(`brock structure: ${counted} package(s) under ${scope}, no findings.`);
     return 0;

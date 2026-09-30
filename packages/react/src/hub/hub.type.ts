@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
+import type { ScreenParams } from '../navigation/navigation.type';
 
 interface HubTarget {
   hub?: string;
@@ -12,6 +13,7 @@ interface HubRenderContext {
   hub: HubDef;
   page: HubPage;
   tab: HubTab | null;
+  params: ScreenParams;
   open: (target: HubTarget) => void;
   close: () => void;
   profile: Profile | null;

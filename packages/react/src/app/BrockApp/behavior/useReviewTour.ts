@@ -9,7 +9,7 @@ import type { ReviewTourInput } from '../BrockApp.type';
 
 const useReviewTour = (input: ReviewTourInput): void => {
   const { ready, menu, slots = NO_SLOTS, moduleIds } = input;
-  const { product, home, homeScreen } = useBrock();
+  const { product, home, homeScreen, screenTree } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
   const started = useRef(false);
@@ -17,9 +17,9 @@ const useReviewTour = (input: ReviewTourInput): void => {
   useEffect(() => {
     if (!ready || started.current || !isReviewLaunch()) return;
     started.current = true;
-    const env = { product, home, homeScreen, screens: registry.list(), menu, slotCount: slots.length, moduleIds, developerTools };
+    const env = { product, home, homeScreen, screens: registry.list(), menu, slotCount: slots.length, moduleIds, developerTools, screenTree };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
-  }, [ready, product, home, homeScreen, registry, menu, slots, moduleIds, developerTools]);
+  }, [ready, product, home, homeScreen, screenTree, registry, menu, slots, moduleIds, developerTools]);
 };
 
 export { useReviewTour };

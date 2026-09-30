@@ -4,6 +4,8 @@ import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-co
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { RendererModule, TitleBarSlot } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
+import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
+import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsEffect } from '../../stores/settings-store.type';
@@ -15,17 +17,18 @@ type SettingsControls<S extends object> = Pick<SettingsControlProps<S>, 'renderC
 
 interface BrockAppSettings<S extends object> extends SettingsControls<S> {
   defaults: S;
-  tabs: TabDef<S>[];
+  tabs?: TabDef<S>[];
   effects?: SettingsEffect<S>[];
 }
 
 interface BrockAppProps<S extends object> {
   product: ProductConfig;
   settings: BrockAppSettings<S>;
-  screens: ScreenDef[];
+  screens?: ScreenDef[];
+  screenTree?: ScreenTree;
   modules?: RendererModule[];
   bootTasks?: RendererBootTask[];
-  home: string;
+  home?: string;
   menu?: MenuEntry[];
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
@@ -47,6 +50,26 @@ interface MenuBuildInput {
   onReportBug: () => void;
 }
 
+interface AppScreensInput {
+  screens?: readonly ScreenDef[];
+  screenTree?: ScreenTree;
+  builtInTabs: TabDef<object>[];
+  moduleScreens: readonly ScreenDef[];
+  menu?: readonly MenuEntry[];
+  homeScreen?: string;
+  productHome: string;
+  credits?: ReactNode;
+  legalText?: string;
+}
+
+interface AppScreens {
+  registry: ScreenRegistry;
+  tree: ResolvedScreenTree | null;
+  tabs: TabDef<object>[];
+  menu: MenuEntry[];
+  homeScreen: string;
+}
+
 interface ReviewTourInput {
   ready: boolean;
   menu: readonly MenuEntry[];
@@ -54,4 +77,4 @@ interface ReviewTourInput {
   moduleIds: readonly string[];
 }
 
-export type { BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput };
+export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput };

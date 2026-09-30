@@ -39,24 +39,26 @@ const checkComponentFolder = (dir, label) => {
 const checkModuleFolder = (dir, label) =>
   entriesOf(dir).filter((name) => !isDir(join(dir, name)) && !MODULE_FILE.test(name)).map((name) => `${label}/${name}: a module file is kebab-case.ts, <subject>.type.ts, <subject>.constants.ts, <id>.task.ts or index.ts`);
 
-const walk = (rootDir, dir, findings) => {
+const walk = (rootDir, dir, findings, skip) => {
+  if (skip.has(dir)) return;
   const label = relative(rootDir, dir).replace(/\\/g, '/');
   if (isComponentFolder(dir)) { findings.push(...checkComponentFolder(dir, label)); return; }
   findings.push(...checkModuleFolder(dir, label));
   for (const name of entriesOf(dir)) {
     const path = join(dir, name);
-    if (isDir(path)) walk(rootDir, path, findings);
+    if (isDir(path)) walk(rootDir, path, findings, skip);
   }
 };
 
 /**
  * @param {string} rootDir
  * @param {string} srcDir
+ * @param {string[]} [skipDirs] folders another check owns
  * @returns {string[]}
  */
-const checkShapes = (rootDir, srcDir) => {
+const checkShapes = (rootDir, srcDir, skipDirs = []) => {
   const findings = [];
-  if (existsSync(srcDir)) walk(rootDir, srcDir, findings);
+  if (existsSync(srcDir)) walk(rootDir, srcDir, findings, new Set(skipDirs));
   return findings;
 };
 

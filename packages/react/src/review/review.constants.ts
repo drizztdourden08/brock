@@ -54,6 +54,9 @@ const SELECTORS = {
   paletteRowIcon: '.search-row__icon',
   paletteRowLabel: '.search-row__label',
   dialogClose: '.dialog .window-header__close',
+  hubNavItem: '.fullscreen-layer:not(.fullscreen-layer--hidden) .section-nav__item',
+  hubPage: '.fullscreen-layer:not(.fullscreen-layer--hidden) .hub-screen__page',
+  switchItem: '.fullscreen-layer:not(.fullscreen-layer--hidden) .floating-switch__item',
 } as const;
 
 const RESET_CLOSERS = [

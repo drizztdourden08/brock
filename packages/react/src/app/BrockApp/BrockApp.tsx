@@ -3,43 +3,36 @@ import { useMemo } from 'react';
 import { mergeModules } from '../../modules/merge-modules';
 import { STANDARD_TITLE_BAR_SLOTS } from '../../overlays/standard-title-bar-slots.constants';
 import { PlatformProvider } from '../../platform/PlatformProvider';
-import { createBuiltInScreens } from '../../screens/built-in/built-in-screens';
-import { createScreenRegistry } from '../../screens/create-screen-registry';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
 import { SettingsStoreContext } from '../../stores/settings-context';
 import { BrockContext } from '../brock-context';
 import type { BrockContextValue, SettingsControlsValue } from '../brock-context.type';
+import { useAppScreens } from './behavior/useAppScreens';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
 import { ModuleProviders } from './sub-components/ModuleProviders';
-import { NO_MENU, NO_MODULES } from './BrockApp.constants';
+import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const {
-    product, settings, screens, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, home, menu = NO_MENU, layout = 'menu', screenGroups,
-    profileHooks, homeScreen = product.homeScreen, credits, legalText,
-  } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const log = useHostBoot(merged.logChannels, profileHooks);
   const titleBarSlots = useMemo(() => [...STANDARD_TITLE_BAR_SLOTS, ...merged.titleBar], [merged.titleBar]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const settingsStore = useProfileSettingsStore(settings);
+  const appTabs = settings.tabs ?? NO_TABS;
 
-  const tabs = useMemo(() => [...settings.tabs, ...merged.settingsTabs] as TabDef<object>[], [settings.tabs, merged.settingsTabs]);
-
-  const registry = useMemo(() => {
-    const all = createScreenRegistry([...screens, ...merged.screens]);
-    for (const screen of createBuiltInScreens({ legalText, credits })) {
-      if (!all.has(screen.id)) all.register(screen);
-    }
-    return all;
-  }, [screens, merged.screens, legalText, credits]);
+  const builtInTabs = useMemo(
+    () => [...appTabs, ...merged.settingsTabs] as TabDef<object>[],
+    [appTabs, merged.settingsTabs],
+  );
+  const { registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
 
   const settingsControls = useMemo<SettingsControlsValue>(
     () => ({
@@ -53,10 +46,10 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const context = useMemo<BrockContextValue>(
     () => ({
-      product, home, tabs, settingsControls, menu, homeScreen,
+      product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
       logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance,
     }),
-    [product, home, tabs, settingsControls, menu, homeScreen],
+    [product, home, tabs, settingsControls, menu, homeScreen, tree],
   );
 
   return (

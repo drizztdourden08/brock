@@ -29,11 +29,13 @@ src/product.ts           defineProduct(config.product)
 src/main.tsx             <BrockApp ... />
 src/theme.css            Tessera palette seeds
 src/settings.type.ts     AppSettings
-src/settings.constants.ts  defaults, tabs
+src/settings.constants.ts  the settings defaults
 src/ipc/contract.type.ts  channel augmentation
 src/ipc/contract.constants.ts  the app maps
-src/screens/HomeScreen.tsx  the first screen
-src/menu.constants.ts    title bar menu
+src/screens/screens.config.ts  the buckets, their menu entries, home
+src/screens/game/home.hero.tsx  the Game hub home
+src/screens/game/general.settings.ts  the General settings page
+src/screens/credits.card.tsx  the Credits screen
 src/boot/<id>.task.ts    renderer boot tasks, shown on the splash (welcome.task.ts)
 electron/boot/<id>.task.ts  main boot tasks
 build/icons, build/splash  installer icons and splash, copied from Tessera by brock icons
@@ -62,12 +64,33 @@ painted, then the splash fades out while the app fades in.
 Dependency versions are `catalog:` entries resolved from `pnpm-workspace.yaml`; change a
 version there and it applies everywhere.
 
+## Screens
+
+Every screen is a file in `src/screens`, and its name says what it is. Nothing else needs
+wiring: `pnpm dev` and `pnpm sync` write `.brock/screens.ts` from the files, and the menu,
+the hubs, Escape and the review read it.
+
+```
+src/screens/screens.config.ts   the buckets, in switch and menu order, and home
+src/screens/<bucket>/<id>.hero.tsx      the hub home (HeroProps, with slots)
+src/screens/<bucket>/<id>.page.tsx      a page in the hub (PageProps)
+src/screens/<bucket>/<page>/<id>.tab.tsx  one header tab of a page (PageProps)
+src/screens/<bucket>/<id>.settings.ts   a settings page: default-export the sections
+src/screens/<bucket>/<group>/...        a nav group inside the hub
+src/screens/<id>.card.tsx               a card screen (CardProps)
+src/screens/<id>.custom.tsx             a screen that draws its own layer (CardProps)
+```
+
+Each file default-exports its component (or its sections) and may export `meta` with a
+`title`, `icon`, `order`, `shortcut`, `devOnly` or `requiresProfile`. A new bucket is a
+folder plus an entry in `screens.config.ts`, where `menu` is `entry`, `submenu` or
+`hidden`. `pnpm structure` names any file that does not fit.
+
 ## Adding things
 
-- A screen: `defineScreen({ id, title, render })` in `src/screens/`, then add it to
-  `SCREENS` in `src/main.tsx`.
-- A setting: a field on `AppSettings`, a default in `DEFAULT_SETTINGS`, a tab or a
-  section in `SETTINGS_TABS`.
+- A screen: a file in `src/screens`, as above.
+- A setting: a field on `AppSettings`, a default in `DEFAULT_SETTINGS`, and a row in a
+  `.settings.ts` page (`src/screens/game/general.settings.ts` to start).
 - An IPC channel: declare it on the contract in `src/ipc/contract.type.ts`, name it in the
   matching map, handle it in main through `bootstrapApp`'s `handlers`. For example
   `'notes:list': () => Promise<string[]>` on `InvokeContract` and

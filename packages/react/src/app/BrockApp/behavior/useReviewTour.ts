@@ -1,14 +1,14 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
 import { isReviewLaunch } from '../../../host/is-review-launch';
-import type { MenuEntry } from '../../../menu/menu.type';
-import type { TitleBarSlot } from '../../../modules/renderer-module.type';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { NO_SLOTS } from '../../../shell/TitleBar/TitleBar.constants';
+import type { ReviewTourInput } from '../BrockApp.type';
 
-const useReviewTour = (settled: boolean, menu: readonly MenuEntry[], slots: readonly TitleBarSlot[] = NO_SLOTS): void => {
+const useReviewTour = (input: ReviewTourInput): void => {
+  const { settled, menu, slots = NO_SLOTS, moduleIds } = input;
   const { product, home, homeScreen } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
@@ -17,9 +17,9 @@ const useReviewTour = (settled: boolean, menu: readonly MenuEntry[], slots: read
   useEffect(() => {
     if (!settled || started.current || !isReviewLaunch()) return;
     started.current = true;
-    const env = { product, home, homeScreen, screens: registry.list(), menu, slotCount: slots.length, developerTools };
+    const env = { product, home, homeScreen, screens: registry.list(), menu, slotCount: slots.length, moduleIds, developerTools };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
-  }, [settled, product, home, homeScreen, registry, menu, slots, developerTools]);
+  }, [settled, product, home, homeScreen, registry, menu, slots, moduleIds, developerTools]);
 };
 
 export { useReviewTour };

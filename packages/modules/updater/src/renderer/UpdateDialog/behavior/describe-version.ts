@@ -11,7 +11,7 @@ const describeVersion = (version: VersionOption): string => {
   const date = version.releaseDate ? new Date(version.releaseDate).toLocaleDateString() : '';
   return [formatBytes(version.downloadSize), date, stateOf(version), version.prerelease ? 'pre-release' : '']
     .filter((part) => part.length > 0)
-    .join(', ');
+    .join(' · ');
 };
 
 export { describeVersion };

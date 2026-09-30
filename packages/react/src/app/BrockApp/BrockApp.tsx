@@ -69,6 +69,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
               <AppShell
                 settingsStore={settingsStore}
                 log={log}
+                moduleIds={merged.ids}
                 moduleMenu={merged.menu}
                 titleBarSlots={titleBarSlots}
                 searchActions={merged.searchActions}

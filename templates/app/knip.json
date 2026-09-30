@@ -17,6 +17,7 @@
   ],
   "ignoreDependencies": [
     "@electron-toolkit/utils",
+    "velopack",
     "zustand"
   ]
 }

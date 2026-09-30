@@ -1,11 +1,11 @@
 <!-- @layer docs @kind doc -->
 # brock-updater
 
-Self-update through Velopack. The module runs the Velopack startup hooks, checks the product's GitHub releases, lists every installable version, downloads the chosen one with progress, and hands the swap to Velopack. The renderer side adds a version tag to the title bar, a "Check for updates" menu entry and the UpdateDialog.
+Self-update through Velopack. The module runs the Velopack startup hooks, checks the product's GitHub releases, lists every installable version, downloads the chosen one with progress, and hands the swap to Velopack. The renderer side adds a "Check for updates" menu entry, the UpdateDialog and an "Update available" badge in the title bar.
 
 ## Where updates come from
 
-The feed is the product's `repo` in `brock.config.ts`. Without a `repo` the module is inert: nothing is checked and the dialog says so.
+The feed is the product's `repo` in `brock.config.ts`. Without a `repo` the module is inert: nothing is checked, the menu entry stays, and the dialog says the app has no update source.
 
 | Input | Effect |
 |---|---|
@@ -24,16 +24,18 @@ A build that Velopack did not install (a dev run, a portable copy) cannot apply 
 
 ## Install
 
+Every app `create-brock` makes starts with it: the template lists `updater` in `modules`, and its `package.json` declares the module and `velopack`. An older app adds it with:
+
 ```sh
 brock add updater
 ```
 
-`velopack` loads from `node_modules` at runtime, so the app declares it too. The manifest lists it under `peers`, and `brock add updater` adds it to the app.
+`velopack` loads from `node_modules` at runtime, so the app declares it too. The manifest lists it under `peers`, and both `create-brock` and `brock add updater` add it to the app.
 
 `brock sync` then imports the module on all three sides. The preload adds `window.api.updater`:
 
 ```ts
-window.api.updater.capabilities()           // { canCheck, canInstall }
+window.api.updater.capabilities()           // { hasSource, canCheck, canInstall }
 window.api.updater.getVersion()
 window.api.updater.check()                  // UpdateInfo | null
 window.api.updater.getAvailable()
@@ -78,10 +80,11 @@ The updater never interrupts. The startup check is silent, and the dialog opens 
 
 | Where | What it does |
 |---|---|
-| Title bar version tag | `v<version>` beside the title, contributed through `RendererModule.titleBar`. A found update tints it and adds a dot. A click opens the dialog on the found update, or runs a check and opens the dialog when there is none. The dialog shows the release notes of the chosen version. |
-| Menu entry | "Check for updates" runs a check and opens the dialog. |
+| Menu entry | "Check for updates", above Credits and About, runs a check and opens the dialog. |
+| Title bar badge | "Update available" in the left group, contributed through `RendererModule.titleBar` as a conditional slot. It shows only while a found update waits, pulses, and opens the dialog on it. The title bar carries no version tag. |
+| Dialog | The found version or "is the latest", the pre-release toggle and version picker, the release notes of the chosen version, the download progress, and a footnote with the bug report button. Escape closes it. |
 
-`VersionTag` is exported too, for an app that draws its own title bar. `useUpdaterStore` holds the state for an app that wants its own badge or button:
+`UpdateBadge` is exported too, for an app that draws its own title bar. `useUpdaterStore` holds the state for an app that wants its own badge or button:
 
 ```tsx
 const status = useUpdaterStore((s) => s.status);            // idle, checking, available, downloading, ready, error

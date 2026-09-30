@@ -8,6 +8,7 @@ import { iconSlotChecks } from '../src/review/checks/icon-slot-checks';
 import { menuChecks } from '../src/review/checks/menu-checks';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
 import { menuPathTo } from '../src/review/menu/menu-path-to';
+import { updaterChecks } from '../src/review/checks/updater-checks';
 import type { BootSnapshot, MenuItemSnapshot, ReviewOutcome } from '../src/review/review.type';
 
 const failed = (outcomes: readonly ReviewOutcome[]): string[] => outcomes.filter((o) => !o.pass).map((o) => o.id);
@@ -115,5 +116,15 @@ describe('iconSlotChecks', () => {
 
   it('accepts drawn icons and plain glyphs', () => {
     expect(failed(iconSlotChecks('palette-icons', [{ label: 'Star', text: '*', hasElement: false }], known))).toEqual([]);
+  });
+});
+
+describe('updaterChecks', () => {
+  it('passes a title bar with no version tag and no badge before any check', () => {
+    expect(failed(updaterChecks({ versionShown: false, badgeShown: false }))).toEqual([]);
+  });
+
+  it('fails a permanent version tag and a badge nobody found an update for', () => {
+    expect(failed(updaterChecks({ versionShown: true, badgeShown: true }))).toEqual(['no-version-tag', 'no-update-badge']);
   });
 });

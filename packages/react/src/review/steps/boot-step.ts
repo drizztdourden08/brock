@@ -2,7 +2,7 @@
 import { bootChecks } from '../checks/boot-checks';
 import { find } from '../dom/find';
 import { imageLoaded } from '../dom/image-loaded';
-import { SELECTORS } from '../review.constants';
+import { CONDITIONAL_SLOT_CLASS, SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
 
 const isShown = (element: HTMLElement | null): boolean =>
@@ -20,7 +20,7 @@ const bootStep: ReviewStep = {
       logoLoaded: await imageLoaded(SELECTORS.logo),
       searchButton: find(SELECTORS.searchButton) !== null,
       bugReportButton: find(SELECTORS.bugReportButton) !== null,
-      slotsRendered: slots.map((slot) => slot.childElementCount > 0),
+      slotsRendered: slots.map((slot) => slot.childElementCount > 0 || slot.classList.contains(CONDITIONAL_SLOT_CLASS)),
       expectedSlots: slotCount,
     }));
     await tour.capture('boot');

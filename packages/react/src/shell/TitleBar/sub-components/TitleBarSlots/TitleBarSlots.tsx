@@ -7,7 +7,7 @@ import './TitleBarSlots.css';
 const TitleBarSlots = (props: TitleBarSlotsProps) => {
   const { slots = NO_SLOTS } = props;
   return slots.map((Slot, index) => (
-    <Box key={Slot.displayName ?? index} className="titlebar__slot">
+    <Box key={Slot.displayName ?? index} className={Slot.conditional ? 'titlebar__slot titlebar__slot--conditional' : 'titlebar__slot'}>
       <Slot />
     </Box>
   ));

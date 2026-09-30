@@ -11,6 +11,7 @@ import type { BrockAppLayout } from '../../BrockApp.type';
 interface AppShellProps<S extends object> {
   settingsStore: SettingsStore<S>;
   log: AppLogBus;
+  moduleIds?: readonly string[];
   moduleMenu: readonly MenuEntry[];
   titleBarSlots?: readonly TitleBarSlot[];
   searchActions?: readonly SearchAction[];

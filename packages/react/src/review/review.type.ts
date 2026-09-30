@@ -12,6 +12,7 @@ interface ReviewEnv {
   screens: readonly ScreenDef[];
   menu: readonly MenuEntry[];
   slotCount: number;
+  moduleIds: readonly string[];
   developerTools: boolean;
 }
 
@@ -78,6 +79,11 @@ interface AboutSnapshot {
   appVersion: string;
 }
 
+interface UpdaterTitleBarSnapshot {
+  versionShown: boolean;
+  badgeShown: boolean;
+}
+
 interface SettingRowsSnapshot {
   total: number;
   empty: string[];
@@ -85,5 +91,5 @@ interface SettingRowsSnapshot {
 
 export type {
   AboutSnapshot, BootSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
-  ReviewOutcome, ReviewStep, SettingRowsSnapshot, StepTour,
+  ReviewOutcome, ReviewStep, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
 };

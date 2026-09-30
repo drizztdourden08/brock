@@ -29,9 +29,9 @@ The scaffolded app's `.npmrc` carries the scope line, so installs inside it need
 --app-id <reverse-dns> Windows AppUserModelId and electron-builder appId (default: com.example.<id>)
 --author-name <text>   (default: git config user.name)
 --author-email <text>  (default: git config user.email)
---modules a,b          Brock module ids to install and record
+--modules a,b          Brock module ids to install and record, beside the template's own
 --local <path>         Brock checkout; every @drizztdourden08/* dependency becomes a link: spec
---tessera <path>       Tessera checkout (default: <local>/../tessera)
+--tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
 --yes                  accept the defaults, ask nothing
 --install              run pnpm install after scaffolding
 ```
@@ -47,7 +47,8 @@ pnpm dlx create-brock my-app --local X:\brock --yes --install
 
 `--local` maps `brock-core`, `brock-electron`, `brock-react`, `brock-build` and
 `brock-lint-config` to `packages/*` in that checkout, a module id to
-`packages/modules/<id>`, and Tessera to the sibling `tessera` folder. The spec is
+`packages/modules/<id>`, and Tessera to the sibling `tessera` folder when there is one (the registry
+version otherwise, as from a worktree). The spec is
 `link:`, not `file:`: pnpm installs a `file:` directory as a package of its own and then
 tries to resolve its dependencies, and the checkout's `workspace:*` siblings only resolve
 inside the Brock workspace. A `link:` symlinks the folder and keeps its own
@@ -66,6 +67,13 @@ settings every Brock repo uses. `brock sync` then writes `.brock/` and the manag
 config files (eslint, stylelint, markdownlint, tsconfig, the Vite and electron-builder
 configs). With `--modules`, the ids go into `brock.config.ts` and the packages into
 `dependencies`; the module arrays fill on the next sync after `pnpm install`.
+
+Every app starts with the modules the template's `brock.config.ts` lists, `updater` today,
+so a new app has "Check for updates" and the update dialog from the first launch. The
+module and the `peers` its manifest declares (`velopack` for the updater) go into
+`dependencies` in both modes: read from the checkout with `--local` or when the scaffolder
+runs from the Brock repo, and with `pnpm add` right after `--install` otherwise. A peer is
+loaded by the module, not the app, so it also goes into `knip.json` `ignoreDependencies`.
 
 The catalog is read from the Brock repo's own `pnpm-workspace.yaml` next to the
 template, or from `template/pnpm-workspace.yaml` in the published package. The `prepack`

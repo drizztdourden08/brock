@@ -67,5 +67,12 @@ version there and it applies everywhere.
   matching map, handle it in main through `bootstrapApp`'s `handlers`. For example
   `'notes:list': () => Promise<string[]>` on `InvokeContract` and
   `listNotes: 'notes:list'` in `APP_INVOKE_MAP`.
-- A module: `pnpm brock add updater` (or any package with a `package.json#brock`
+- A module: `pnpm brock add input` (or any package with a `package.json#brock`
   manifest).
+
+## Updates
+
+The app starts with the `updater` module: a "Check for updates" menu entry, the update
+dialog and an "Update available" badge in the title bar once a newer release is found.
+It reads the GitHub releases of `product.repo` in `brock.config.ts`. Without a `repo` it
+checks nothing and the dialog says the app has no update source.

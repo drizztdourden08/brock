@@ -13,9 +13,9 @@ Options:
   --app-id <reverse-dns> Windows AppUserModelId / electron-builder appId (default: com.example.<id>)
   --author-name <text>   (default: git config user.name)
   --author-email <text>  (default: git config user.email)
-  --modules a,b          Brock module ids to install and record
+  --modules a,b          Brock module ids to install and record, beside the template's own
   --local <path>         Brock checkout; dependencies become file: links into it
-  --tessera <path>       Tessera checkout (default: <local>/../tessera)
+  --tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
   --yes                  accept the defaults, ask nothing
   --install              run pnpm install after scaffolding
   -h, --help

@@ -106,8 +106,10 @@ the new app's `pnpm-workspace.yaml` (`packages: []` plus the catalog, and
 settings every Brock repo uses. `brock sync` then writes `.brock/` and the managed
 config files (eslint, stylelint, markdownlint, tsconfig, the Vite and electron-builder
 configs, and for a standalone app `.github/workflows/ci.yml` and `release.yml` composed
-from the chosen platforms). With `--modules`, the ids go into `brock.config.ts` and the
-packages into `dependencies`; the module arrays fill on the next sync after `pnpm install`.
+from the chosen platforms). `brock.config.ts` gets `ports: { base }`, derived from the id
+by `derivePortBase` (see brock-thread `/ports`), so the dev server port is written down and
+can be changed. With `--modules`, the ids go into `brock.config.ts` and the packages into
+`dependencies`; the module arrays fill on the next sync after `pnpm install`.
 
 Every app starts with the modules the template's `brock.config.ts` lists, `updater` today,
 so a new app has "Check for updates" and the update dialog from the first launch. The

@@ -6,6 +6,7 @@ export default defineBrockConfig({
     id: 'brock-template-app',
     name: 'Brock App',
     appId: 'com.drizztdourden08.brock-template-app',
+    ports: { base: 35800 },
     description: 'A blank Brock app.',
     author: { name: 'drizztdourden_', email: 'drizztdourden08@users.noreply.github.com' },
     icons: { brand: 'brock' },

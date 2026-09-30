@@ -13,6 +13,7 @@ import { TitleBar } from '../../../../shell/TitleBar/TitleBar';
 import { useBrock } from '../../../useBrock';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
+import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
 import { useShellMenu } from '../../behavior/useShellMenu';
@@ -32,6 +33,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const { settled } = useStartup();
   useShellReady(settled);
+  useOpenHomeOnStart(settled);
   useProfileHydration(settingsStore);
   useKeyboardShortcuts();
   useStandardEscapeLayers();

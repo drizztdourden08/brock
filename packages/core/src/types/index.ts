@@ -4,3 +4,4 @@ export type {
   GpuDiagnostics, OsDiagnostics, RuntimeVersions, SystemDiagnostics,
 } from './diagnostics.type';
 export type { PlaySession } from './session.type';
+export type { LanAddress } from './network.type';

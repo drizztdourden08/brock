@@ -9,6 +9,9 @@ interface MenuItem {
   disabled?: boolean;
   checked?: boolean;
   screen?: string;
+  bucket?: string;
+  page?: string;
+  tab?: string;
   onClick?: () => void;
   children?: MenuEntry[];
   section?: string;

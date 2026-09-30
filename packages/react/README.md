@@ -8,22 +8,16 @@ The renderer layer of Brock: `BrockApp`, the platform provider and its hosts, th
 ```tsx
 import '@drizztdourden08/tessera/tokens.css';
 import './theme.css';
-import { BrockApp, defineScreen } from '@drizztdourden08/brock-react';
+import { BrockApp } from '@drizztdourden08/brock-react';
 import { product } from './product';
-import { DEFAULT_SETTINGS, SETTINGS_TABS } from './settings';
+import { DEFAULT_SETTINGS } from './settings.constants';
 import { rendererModules } from '../.brock/modules.renderer';
+import { screenTree } from '../.brock/screens';
 
-const home = defineScreen({ id: 'home', title: 'Home', layer: 'own', render: () => <HomeView /> });
-
-<BrockApp
-  product={product}
-  settings={{ defaults: DEFAULT_SETTINGS, tabs: SETTINGS_TABS }}
-  screens={[home]}
-  modules={rendererModules}
-  home="home"
-  menu={[{ key: 'rooms', label: 'Rooms', icon: 'users', screen: 'rooms' }]}
-/>
+<BrockApp product={product} settings={{ defaults: DEFAULT_SETTINGS }} screenTree={screenTree} modules={rendererModules} />
 ```
+
+`screenTree` comes from the files in `src/screens` (see Screens by convention). An app not yet converted passes `screens`, `home`, `menu` and `settings.tabs` as before.
 
 `BrockApp` composes, outermost first: `PlatformProvider` (host factories plus module ports), the app context, the screen registry, the settings store, the module Providers, then the shell: `TitleBar` where the host has window chrome, `ScreenHost` (the home screen with the open screen over it), `ConfirmDialog` and `BootProgressBar`. Built-in screens `profiles`, `settings` and `about` are registered unless the app supplies one with the same id, plus `credits` when the `credits` prop is given.
 
@@ -36,7 +30,8 @@ Startup picks the profile: the pinned instance profile (an unknown name fails lo
 | App | `BrockApp`, `useBrock`, `useProduct`, `useDeveloperTools`, `useConfirmDialog`, `buildMenu` |
 | Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer`, `matchesShortcut` |
-| Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React) |
+| Screen conventions | `defineScreens`, `buildScreenTree`, `resolveScreenTree`, `deriveMenu`, `ScreensConfig`, `BucketDef`, `ScreenMeta`, `ScreenEntry`, `ScreenTree`, `CardProps`, `PageProps`, `HeroProps`, `HeroSlots` |
+| Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React), `joinRoute`, `resolveRoute`, `routeAliases` |
 | Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useBootProgressStore`, `bootProgress`, `useWidgetPrefStore` |
 | Platform | `PlatformProvider`, `usePlatform`, `useCapability`, `getPlatform`, `setPlatformPorts`, `installApiShim`, `createElectronFactory`, `createWebFactory` |
 | Settings | `SettingsHub`, `SettingsLayout`, `SettingsPage`, `SettingsPageContext`, `createTabRegistry`, `resolveSections`, `matchTabs` |
@@ -81,9 +76,20 @@ defineScreen({
 
 `defineHub` returns a fullscreen screen, so a hub sits in the same card as every other screen: the hub title with the profile name as subtitle, the active page's tabs in the header, the section nav and the page inside. With two hubs or more, a hub switch overhangs the top edge of the card and moves between them.
 
+## Screens by convention
+
+An app lists its buckets in `src/screens/screens.config.ts` with `defineScreens({ buckets, home, settings? })` and drops one file per screen under `src/screens`. `brock sync` and the dev server write `.brock/screens.ts`, which calls `buildScreenTree(config, entries)`; `BrockApp` takes the result as `screenTree`.
+
+- A bucket folder is one hub. `<id>.hero.tsx` is its home and gets `HeroProps`: the page props plus `slots` (`Backdrop`, `Art`, `Facts`, `Actions`). `<id>.page.tsx` is a page and gets `PageProps` (`params`, `profile`, `open`, `close`, `bucket`, `page`, `tab`). A folder of `<tab>.tab.tsx` files is one page with header tabs. `<id>.settings.ts` default-exports sections and becomes a settings page. A subfolder without tabs is a nav group.
+- At the root, `<id>.card.tsx` is a card screen and `<id>.custom.tsx` draws its own layer; both get `CardProps`.
+- `meta: ScreenMeta` sets `title`, `icon`, `order`, `shortcut`, `devOnly` and `requiresProfile`.
+- `resolveScreenTree(tree, builtInTabs)` runs inside `BrockApp`: it adds the built-in and module settings tabs to the settings bucket, turns each hub into a screen with `defineHub`, derives the menu with `deriveMenu` and points the `settings` route at the settings bucket, so no separate Settings screen is registered.
+- The menu reads `BucketDef.menu`: `entry` for one entry, `submenu` for one child per page, `hidden` for none. The home bucket is already the Home entry. `MenuItem` takes `{ bucket, page, tab }` as a target, and `open('game/tracker/map')` opens that bucket, page and tab.
+- The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in.
+
 ## Escape and home
 
-Escape closes the topmost thing: an open escape layer, then the confirm dialog, then the open screen. With nothing open it opens the home screen, the Home menu entry's target. `product.homeScreen` names it (`settings` by default) and the `homeScreen` prop overrides it. A surface that must close first, a palette for example, registers itself with `useEscapeLayer({ isOpen, close })` or `escapeLayers.add`; the last one registered that reports open is closed first.
+Escape closes the topmost thing: an open escape layer, then the confirm dialog, then the open screen. With nothing open it opens the home screen, the Home menu entry's target. With a `screenTree` that is `config.home`; otherwise `product.homeScreen` names it (`settings` by default). The `homeScreen` prop overrides both. A surface that must close first, a palette for example, registers itself with `useEscapeLayer({ isOpen, close })` or `escapeLayers.add`; the last one registered that reports open is closed first.
 
 ## Menu
 
@@ -138,6 +144,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 - `BootProgressBar`: the label flips from light to dark over the fill through a clipped duplicate element; the 1000 ms minimum on-screen time is cosmetic and never gates readiness. `ratio` is 0..1 for a determinate bar and null for an indeterminate sweep; phase `ready` completes the bar and lets it fade; `bootProgress` is the imperative surface for the code doing the work.
 - `ProfilesScreen` doubles as the setup screen when no profile exists (the form is forced open); picking a profile makes it active and closes the screen; `createOptions()` is merged into the create request. In `CreateProfileForm`, Enter in the name field submits, `canSubmit: false` blocks submit while an extra field is incomplete, and `extraFields` render between the name and the actions. `WorkspaceSwitch.label` is the accessible name for the whole switch.
 - Profiles store: selecting a profile records it as the default for the next launch (skipped on an automated launch) and bumps its last-played time; `loaded` is true once the first refresh finished. `useProfiles().remove` asks first through the confirm dialog, and when the active profile is deleted the profiles screen opens so the app is never left without one.
+- `confirmAction(options)` is the promise form: it resolves `true` on confirm and `false` on cancel, Escape or a newer dialog.
 - The shell shows one confirm dialog at a time; `dialogs` is the imperative surface for code outside React; `confirmDelete` is a red destructive confirm that closes itself before running `onConfirm`; `dismiss` runs the config's `onCancel`.
 - Every store made with `createSessionStore` is tracked, and `resetAllSessionStores()` returns each to its initial state when a new profile is selected. Widget preference values must survive a JSON round-trip; the widget-pref store is a session store, so a new profile starts empty and the host hydrates it from disk and saves on change.
 
@@ -145,6 +152,10 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 - A mobile shell running edge to edge forwards the display cutout sizes as custom properties on the document root (`--sai-top`, `--sai-right`, `--sai-bottom`, `--sai-left`, in CSS px) and fires the `safeareainsets` window event when they change; hosts that set none read as zero. `applyNotchMode` toggles `notch-fill` or `notch-safe` on the document root.
 - `useWidgetPref` is a `useState` drop-in whose value belongs to the profile: with a widget id the value survives unmount, a profile switch and a restart; with null it degrades to plain local state. The stored value is cast to the caller's type without validation; a value written by an older build with another shape lands there and the next write corrects it.
+
+- `useNow(intervalMs, active = true)` returns the current time and ticks every `intervalMs` while `active`.
+- `useCopyText(resetMs = COPIED_RESET_MS)` returns `{ copied, error, copy(text) }`. `copy` writes to the clipboard and resolves true or false; `copied` resets after `resetMs`.
+- `useKeyedGuard()` guards async work per key: `guard(key, work)` returns the work's result, or undefined when it threw. `isBusy(key?)` with no key asks whether any key is busy. `errorOf(key)` and `clearError(key?)` read and clear the recorded message. `keyedGuardReducer` is the pure state machine behind it.
 
 ## Stories
 

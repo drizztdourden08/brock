@@ -3,10 +3,17 @@ import type { LogLevel } from '@drizztdourden08/brock-core';
 import { bugReport } from '../../bug-report/bug-report';
 import type { EscapeLayer } from '../../escape/escape.type';
 import type { MenuItem } from '../../menu/menu.type';
+import type { RouteShortcut } from '../../navigation/navigation.type';
+import type { ScreenDef } from '../../screens/screen.type';
+import type { TabDef } from '../../settings/settings.type';
 import { palette } from '../../palette/palette';
 
 const NO_MODULES: never[] = [];
 const NO_MENU: never[] = [];
+const NO_SCREENS: ScreenDef[] = [];
+const NO_TABS: TabDef<object>[] = [];
+const NO_SHORTCUTS: readonly RouteShortcut[] = [];
+const NO_BACKGROUND = '';
 const NO_MODULE_IDS: readonly string[] = [];
 const PROFILES_SCREEN = 'profiles';
 const CREDITS_SCREEN = 'credits';
@@ -33,6 +40,6 @@ const STANDARD_ESCAPE_LAYERS: readonly EscapeLayer[] = [
 ];
 
 export {
-  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, NO_MENU, NO_MODULE_IDS, NO_MODULES,
+  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
   PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, STANDARD_ESCAPE_LAYERS, TOP_ENTRIES, WIDGETS_SECTION,
 };

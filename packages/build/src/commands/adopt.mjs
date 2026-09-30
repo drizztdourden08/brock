@@ -8,6 +8,8 @@ import { releaseWorkflow } from '../release/release-workflow.mjs';
 import { RELEASE_WORKFLOW_FILE } from '../release/workflows.constants.mjs';
 import { installLauncher } from '../launcher/install-launcher.mjs';
 import { launcherName } from '../launcher/launcher-name.mjs';
+import { ignoreGenerated } from './adopt-gitignore.mjs';
+import { handWrittenSplash } from './hand-written-splash.mjs';
 import { knipJson } from './knip-config.mjs';
 import { THREAD, workspaceConfig } from './workspace-config.mjs';
 
@@ -22,7 +24,7 @@ const scopeOf = (pkg, explicit) => {
   return name.startsWith('@') ? name.split('/')[0] : `@${name.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 'app'}`;
 };
 
-const FILES = (scope, rootDir) => ({
+const FILES = (scope, rootDir, local) => ({
   'brock.workspace.mjs': workspaceConfig(rootDir, scope.replace(/^@/, '')),
   'eslint.config.mjs': `/* @layer root-config @kind config */
 import { brockEslint } from '${LINT_CONFIG}';
@@ -39,7 +41,7 @@ import { brockMarkdownlint } from '${LINT_CONFIG}/markdownlint';
 
 export default brockMarkdownlint();
 `,
-  'knip.json': knipJson(rootDir),
+  'knip.json': knipJson(rootDir, { linked: Boolean(local) }),
   '.jscpd.json': `{
   "threshold": 0,
   "minTokens": 50,
@@ -86,13 +88,13 @@ const SCRIPTS = {
 /**
  * @param {string} rootDir
  * @param {string} scope
- * @param {boolean} force
+ * @param {{ force: boolean, local?: string }} opts
  * @returns {{ written: string[], kept: string[] }}
  */
-const writeConfigFiles = (rootDir, scope, force) => {
+const writeConfigFiles = (rootDir, scope, { force, local }) => {
   const written = [];
   const kept = [];
-  for (const [name, content] of Object.entries(FILES(scope, rootDir))) {
+  for (const [name, content] of Object.entries(FILES(scope, rootDir, local))) {
     const target = join(rootDir, name);
     if (existsSync(target) && (!force || NEVER_OVERWRITE.has(name))) { kept.push(name); continue; }
     mkdirSync(dirname(target), { recursive: true });
@@ -175,11 +177,13 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   }
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
   const scope = scopeOf(pkg, explicitScope);
-  const files = writeConfigFiles(rootDir, scope, force);
+  const files = writeConfigFiles(rootDir, scope, { force, local });
+  if (ignoreGenerated(rootDir).length) files.written.push('.gitignore (generated outputs)');
   addTooling(pkg, { rootDir, local, force });
   const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
   printSummary(scope, files, addLauncher(rootDir, scope, { force, files }));
+  for (const page of handWrittenSplash(rootDir)) console.log(`  ${page}: holds a hand-written boot splash or logo path. Brock owns the splash and the logos; remove them.`);
   return 0;
 };
 

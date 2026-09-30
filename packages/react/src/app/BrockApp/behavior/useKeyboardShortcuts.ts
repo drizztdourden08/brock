@@ -6,10 +6,10 @@ import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import type { ScreenDef } from '../../../screens/screen.type';
 import { isScreenAllowed } from '../../../screens/is-screen-allowed';
-import { matchesShortcut } from '../../../screens/matches-shortcut';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { closeTopmost } from './close-topmost';
+import { shortcutTarget } from './shortcut-target';
 
 const isEditing = (target: EventTarget | null): boolean => {
   const el = target as HTMLElement | null;
@@ -18,7 +18,7 @@ const isEditing = (target: EventTarget | null): boolean => {
 
 const useKeyboardShortcuts = (): void => {
   const { window: win } = usePlatform();
-  const { homeScreen } = useBrock();
+  const { homeScreen, shortcuts } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
 
@@ -34,14 +34,14 @@ const useKeyboardShortcuts = (): void => {
       if (e.key === 'Escape') { closeTopmost(e, allowed(registry.get(homeScreen)) ? homeScreen : null); return; }
       if (isEditing(e.target) && !(e.ctrlKey || e.metaKey)) return;
 
-      const screen = registry.list().find((def) => def.shortcut !== undefined && matchesShortcut(e, def.shortcut) && allowed(def));
-      if (!screen) return;
+      const target = shortcutTarget(e, registry, shortcuts, allowed);
+      if (target === undefined) return;
       e.preventDefault();
-      nav.toggle(screen.id);
+      nav.toggle(target);
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [win, homeScreen, registry, developerTools]);
+  }, [win, homeScreen, shortcuts, registry, developerTools]);
 };
 
 export { useKeyboardShortcuts };

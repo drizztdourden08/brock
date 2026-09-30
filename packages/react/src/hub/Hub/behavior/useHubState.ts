@@ -18,8 +18,8 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext): HubState => {
   }, [open, def.id]);
 
   const context = useMemo<HubRenderContext>(
-    () => ({ hub: def, page, tab, open: openTarget, close, profile }),
-    [def, page, tab, openTarget, close, profile],
+    () => ({ hub: def, page, tab, params, open: openTarget, close, profile }),
+    [def, page, tab, params, openTarget, close, profile],
   );
   const selectPage = useCallback((id: string) => openTarget({ section: id }), [openTarget]);
   const selectTab = useCallback((id: string) => openTarget({ section: page.id, tab: id }), [openTarget, page.id]);

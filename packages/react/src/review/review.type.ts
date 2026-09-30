@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ProductConfig, ReviewCheck } from '@drizztdourden08/brock-core';
 import type { MenuEntry } from '../menu/menu.type';
+import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { ScreenDef } from '../screens/screen.type';
 
 type ReviewOutcome = Omit<ReviewCheck, 'step'>;
@@ -14,6 +15,7 @@ interface ReviewEnv {
   slotCount: number;
   moduleIds: readonly string[];
   developerTools: boolean;
+  screenTree: ResolvedScreenTree | null;
 }
 
 interface StepTour {
@@ -79,6 +81,13 @@ interface AboutSnapshot {
   appVersion: string;
 }
 
+interface BucketSnapshot {
+  hub: string;
+  reachedVia: string | null;
+  expected: readonly string[];
+  shown: readonly string[];
+}
+
 interface UpdaterTitleBarSnapshot {
   versionShown: boolean;
   badgeShown: boolean;
@@ -90,6 +99,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
 };

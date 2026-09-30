@@ -5,8 +5,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrockApp } from '@drizztdourden08/brock-react';
 import { rendererModules } from '../.brock/modules.renderer';
-import { SCREENS, SETTINGS } from './main.constants';
-import { MENU } from './menu.constants';
+import { screenTree } from '../.brock/screens';
+import { SETTINGS } from './main.constants';
 import { product } from './product';
 import type { AppSettings } from './settings.type';
 
@@ -18,10 +18,8 @@ createRoot(root).render(
     <BrockApp<AppSettings>
       product={product}
       settings={SETTINGS}
-      screens={SCREENS}
+      screenTree={screenTree}
       modules={rendererModules}
-      home="home"
-      menu={MENU}
     />
   </StrictMode>,
 );

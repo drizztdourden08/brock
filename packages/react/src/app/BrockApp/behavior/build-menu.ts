@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
+import { withRoutes } from '../../../menu/with-routes';
 import {
   ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
   WIDGETS_SECTION,
@@ -32,8 +33,8 @@ const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
     { ...REPORT_BUG_ENTRY, onClick: onReportBug },
     { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },
   ];
-  const app = filterDevEntries(appMenu, developerTools);
-  const modules = filterDevEntries([...moduleMenu, ...standard], developerTools);
+  const app = filterDevEntries(withRoutes(appMenu), developerTools);
+  const modules = filterDevEntries(withRoutes([...moduleMenu, ...standard]), developerTools);
   const named = screensNamed([...app, ...modules]);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
   const top = TOP_ENTRIES.filter(unnamed);

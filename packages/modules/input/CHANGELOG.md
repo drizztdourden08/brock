@@ -1,0 +1,35 @@
+# @drizztdourden08/brock-input
+
+## 0.1.1
+
+### Patch Changes
+
+- ade72f8: Breaking: the widget host moves to the Tessera WidgetManager v2 on DockLayout. Widgets dock in a split tree around the main view (the home or game view), float over it, or open in a window of their own when their definition sets `popOut: true`, with pin, snap, towing and drag back in handled by brock-electron over the new `widget:*` channels of brock-core. The layout is `{ v: 2, dock, floating, popped, frame }` and saved layouts migrate on load; `useWidgetLayoutStore` loses `update` and gains `change`, `setLayout` and `popOut`, and `StandardOverlays` no longer takes `widgets`. Hero pages draw the Tessera Hero composite and take its slots (`Title`, `Eyebrow`, `Backdrop`, `Art`, `Actions`, `Tools`, `Facts rows`, `Aside`, `Panel`). Migrations `widget-layout-v2` and `hero-slots` turn the old uses into to-dos. The input module draws its devices and calibration with Tessera's PressedGrid, StickPlot and CalibrationPanel, the update dialog and the bug report use Tessera's Small tones, a pref changed in a popped widget reaches the app and is saved with the profile, the main view grip shows only while dragging, and the review checks the dock (no grip at rest), a headless pop-out window (focus, a pref set there kept after the dock back, closing) and the hero slots.
+- bfbecb8: An automation launch leaves SDL3 off, so it never takes a controller from a running session.
+- 4a48945: The input module reads SDL3 controllers, keeps the mapping database and calibration, plays rumble, and adds a Controllers screen.
+- c48024b: The input module carries the SDL3 addon source, fetches its prebuild on install and before `brock dev` and `brock build`, and ships it in a packaged app through module manifest fields that the builder config reads.
+- 8498845: Platforms are separate ids (windows, macos, linux, android, web, with ios reserved) and bundles (desktop, mobile) in `targets`. Each one is a strategy with doctor checks, scaffold steps, CI and release jobs and secrets. `brock sync` composes `ci.yml` (lint, structure, tests and the headless review on Linux) and `release.yml` from them. create-brock asks for the platforms or takes `--platforms`; `platform add`, `remove` and `list`, `doctor` and `web build` are new commands. Android gets a Capacitor project in `mobile/android` with signing from the environment, `mobile build --release` and `mobile keystore`; Linux debs install module udev rules.
+- ae6b8e2: The shell matches the reference app out of the box: logos, window icon, splashes and the home screen come from the product config, screens and hubs share one framed card, Escape opens home, and the menu has sections, icons, a Dev Console and Credits.
+- Updated dependencies [0a52cd7]
+- Updated dependencies [ade72f8]
+- Updated dependencies [9a08468]
+- Updated dependencies [c48024b]
+- Updated dependencies [e406f70]
+- Updated dependencies [fd0a736]
+- Updated dependencies [8498845]
+- Updated dependencies [f62f048]
+- Updated dependencies [38edbcc]
+- Updated dependencies [068a02d]
+- Updated dependencies [b1fa12d]
+- Updated dependencies [ae6b8e2]
+- Updated dependencies [14c3674]
+- Updated dependencies [2cc7040]
+- Updated dependencies [7e039b6]
+- Updated dependencies [9fdc2e1]
+- Updated dependencies [d50bd75]
+- Updated dependencies [23907ce]
+- Updated dependencies [a8a87be]
+- Updated dependencies [e2cf0ee]
+  - @drizztdourden08/brock-core@0.1.1
+  - @drizztdourden08/brock-electron@0.1.1
+  - @drizztdourden08/brock-react@0.1.1

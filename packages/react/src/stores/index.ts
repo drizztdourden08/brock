@@ -13,6 +13,7 @@ export type { ProfilesState, UseProfilesResult } from './profiles.type';
 export { useProfiles } from './useProfiles';
 export { useDialogStore } from './useDialogStore';
 export { dialogs } from './dialogs';
-export type { ConfirmDialogConfig, DialogState } from './dialog.type';
+export { confirmAction } from './confirm-action';
+export type { ConfirmDialogConfig, ConfirmActionOptions, DialogState } from './dialog.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';

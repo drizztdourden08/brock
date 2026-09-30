@@ -51,6 +51,11 @@ interface ProductLogos {
   mark: string;
 }
 
+interface ProductPorts {
+  base: number;
+  strict?: boolean;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -71,6 +76,7 @@ interface ProductConfig {
   logos: ProductLogos;
   homeScreen: string;
   modules: string[];
+  ports?: ProductPorts;
 }
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
@@ -81,5 +87,5 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
-  ProductIcons, ProductLogos, ProductConfig, ProductInput,
+  ProductIcons, ProductLogos, ProductPorts, ProductConfig, ProductInput,
 };

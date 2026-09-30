@@ -11,6 +11,7 @@ import { profileHandlers } from '../handlers/profile-handlers';
 import { sessionHandlers } from '../handlers/session-handlers';
 import { uiViewsHandlers } from '../handlers/ui-views-handlers';
 import { diagnosticsHandlers } from '../diagnostics/ipc-handlers';
+import { networkHandlers } from '../network/ipc-handlers';
 import { sessionLogHandlers } from '../handlers/session-log-handler';
 import { screenshotHandlers } from '../handlers/screenshot-handler';
 
@@ -26,6 +27,7 @@ const baseHandlers = ({ dataDomains = [] }: BootstrapOptions): HandlerGroup[] =>
   sessionHandlers,
   uiViewsHandlers,
   diagnosticsHandlers,
+  networkHandlers,
   sessionLogHandlers,
   screenshotHandlers,
 ];

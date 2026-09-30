@@ -145,6 +145,8 @@ npx brock structure --check
 pnpm lint
 ```
 
+`brock adopt` also writes the knip entries a thread repo needs (`brock.workspace.mjs`, `.worktrees/**` ignored, `brock-thread` ignored when linked) and appends the generated outputs to `.gitignore` (`build/icons`, `build/splash`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`). `brock check` and `brock sync` at the root run once per app that `brock.workspace.mjs` targets.
+
 `brock adopt` never overwrites an existing file unless `--force` is given, and never touches an existing `pnpm-workspace.yaml` or `.npmrc`. A repo that is not a Brock app uses only this: the lint stack and the structure check do not need `bootstrapApp` or `BrockApp`. A single-package repo (Tessera: `src/` at the root, no `packages/`) is checked as one package.
 
 ## A Brock app inside a workspace

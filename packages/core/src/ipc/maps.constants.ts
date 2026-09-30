@@ -5,6 +5,7 @@ const BASE_INVOKE_MAP = {
   getUserDataPath: 'app:getUserDataPath',
   getAppVersion: 'app:getVersion',
   getSystemDiagnostics: 'diagnostics:getSystem',
+  getLanAddresses: 'network:lanAddresses',
 
   getDataLocation: 'storage:getLocation',
   revealDataFolder: 'storage:reveal',

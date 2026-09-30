@@ -39,6 +39,7 @@ export type { MainBootContext, MainBootTask, MainBootTaskDef } from './boot/boot
 export { DEFAULT_PERMISSIONS, DEFAULT_EXTERNAL_PROTOCOLS } from './window/security.constants';
 export { captureWindow } from './handlers/capture-window';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';
+export { lanAddresses } from './network/lan-addresses';
 
 export { serveDirectoryScheme } from './protocol/serve-directory-scheme';
 export { servedFilePathOf } from './protocol/served-file-path-of';

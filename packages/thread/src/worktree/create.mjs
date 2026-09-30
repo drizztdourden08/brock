@@ -5,9 +5,10 @@ import { addWorktree } from './add-worktree.mjs';
 import { installDependencies } from './install.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 import { userDataStep } from '../provision/user-data.mjs';
+import { portSlotStep } from '../ports/port-slot-step.mjs';
 
 const runProvision = async (worktree, ctx) => {
-  for (const step of [userDataStep(), ...ctx.provision]) {
+  for (const step of [userDataStep(), portSlotStep(), ...ctx.provision]) {
     ctx.log(`Provision: ${step.name}`);
     await step.run(worktree);
   }

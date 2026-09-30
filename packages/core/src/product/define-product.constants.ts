@@ -4,6 +4,8 @@ import type { ProductIcons, ProductLogos, WindowConfig } from './product.type';
 const SLUG = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const REVERSE_DNS = /^[a-z0-9]+(\.[a-z0-9-]+)+$/i;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+const PORT_BASE_MIN = 1024;
+const PORT_BASE_MAX = 65335;
 
 const BLACK = '#000000';
 
@@ -28,4 +30,4 @@ const DEFAULT_LOGOS: ProductLogos = {
 
 const DEFAULT_HOME_SCREEN = 'settings';
 
-export { SLUG, REVERSE_DNS, HEX_COLOR, DEFAULT_WINDOW, BRAND_ICONS, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN };
+export { SLUG, REVERSE_DNS, HEX_COLOR, PORT_BASE_MIN, PORT_BASE_MAX, DEFAULT_WINDOW, BRAND_ICONS, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN };

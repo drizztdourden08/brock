@@ -1,6 +1,7 @@
 /* @layer core @kind types */
 import type { FileStat, DataLocation, StorageSummary, StoragePort } from './platform/ports/storage.type';
 import type { SystemDiagnostics } from './types/diagnostics.type';
+import type { LanAddress } from './types/network.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
 import type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
@@ -29,6 +30,7 @@ interface InvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
+  'network:lanAddresses': () => Promise<LanAddress[]>;
 
   'storage:getLocation': () => Promise<DataLocation>;
   'storage:reveal': () => Promise<void>;

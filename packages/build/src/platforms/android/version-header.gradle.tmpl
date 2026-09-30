@@ -1,0 +1,5 @@
+
+def appPackage = new JsonSlurper().parse(file('../../../package.json'))
+def appVersionName = appPackage.version
+def appVersionParts = appVersionName.tokenize('.-+').take(3).collect { it.toInteger() }
+def appVersionCode = appVersionParts[0] * 10000 + appVersionParts[1] * 100 + appVersionParts[2]

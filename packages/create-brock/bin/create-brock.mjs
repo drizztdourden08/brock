@@ -2,6 +2,8 @@
 import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { defaultIdentity, identityProblem } from '../src/identity.mjs';
+import { DEFAULT_TARGETS, targetInputProblem } from '@drizztdourden08/brock-build';
+import { promptPlatforms } from '../src/platform-prompt.mjs';
 import { promptIdentity } from '../src/prompts.mjs';
 import { scaffold } from '../src/scaffold.mjs';
 
@@ -14,6 +16,9 @@ Options:
   --author-name <text>   (default: git config user.name)
   --author-email <text>  (default: git config user.email)
   --modules a,b          Brock module ids to install and record, beside the template's own
+  --platforms a,b        platform ids and bundles for targets: windows, macos, linux, android, web,
+                         desktop (windows, macos, linux), mobile (android; iOS once it lands).
+                         Default desktop. Without it and without --yes, asked on the terminal
   --local <path>         Brock checkout; dependencies become file: links into it
   --tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
   --yes                  accept the defaults, ask nothing
@@ -30,6 +35,7 @@ const OPTIONS = {
   'author-name': { type: 'string' },
   'author-email': { type: 'string' },
   modules: { type: 'string' },
+  platforms: { type: 'string' },
   local: { type: 'string' },
   tessera: { type: 'string' },
   yes: { type: 'boolean', default: false },
@@ -54,6 +60,13 @@ const identityFromFlags = (targetDir, values) => {
 
 const optionalPath = (value) => (value ? resolve(value) : null);
 
+const listOf = (value) => (value ?? '').split(',').map((item) => item.trim()).filter(Boolean);
+
+const chooseTargets = (values) => {
+  if (values.platforms !== undefined) return Promise.resolve(listOf(values.platforms));
+  return values.yes ? Promise.resolve(DEFAULT_TARGETS) : promptPlatforms(DEFAULT_TARGETS);
+};
+
 const main = async () => {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: OPTIONS });
   const [dir] = positionals;
@@ -69,11 +82,18 @@ const main = async () => {
     console.error(`create-brock: ${problem}`);
     return 1;
   }
-  const modules = (values.modules ?? '').split(',').map((m) => m.trim()).filter(Boolean);
+  const modules = listOf(values.modules);
+  const targets = await chooseTargets(values);
+  const targetProblem = targetInputProblem(targets);
+  if (targetProblem) {
+    console.error(`create-brock: --platforms: ${targetProblem}`);
+    return 1;
+  }
   return scaffold({
     targetDir,
     identity,
     modules,
+    targets,
     local: optionalPath(values.local),
     tessera: optionalPath(values.tessera),
     install: values.install,

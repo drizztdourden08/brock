@@ -27,7 +27,7 @@ const VELOPACK_BINDINGS = {
 
 const BUILDER_TARGETS = {
   win32: ['--win', '--dir'],
-  linux: ['--linux', 'dir'],
+  linux: ['--linux', 'dir', 'deb'],
   darwin: ['--mac'],
 };
 

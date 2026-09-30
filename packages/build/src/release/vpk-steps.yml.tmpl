@@ -1,0 +1,21 @@
+
+      - name: Set up .NET for vpk
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # vpk and the velopack package the app loads must be the same version.
+      - name: Install vpk
+        shell: bash
+        run: |
+          VPK=$(cd "$APP_DIR" && node -p "require('velopack/package.json').version" 2>/dev/null || true)
+          if [ -n "$VPK" ]; then dotnet tool install -g vpk --version "$VPK"; else dotnet tool install -g vpk; fi
+
+      # The previous release lets vpk build a delta and list every version in the feed.
+      - name: Fetch the previous release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+            --outputDir "$APP_DIR/release/velopack" --token "$GH_TOKEN" || echo "no previous release to delta against"

@@ -1,15 +1,13 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
-const TEMPLATE = join(import.meta.dirname, 'release-workflow.yml.tmpl');
-const RELEASE_WORKFLOW_FILE = '.github/workflows/release.yml';
+import { DEFAULT_TARGETS } from '../platforms/platforms.constants.mjs';
+import { composeWorkflows } from './compose-workflows.mjs';
 
 /**
  * @param {string} appDir the app folder, relative to the repo root
- * @returns {string}
+ * @param {string[]} [targets] ids and bundles
+ * @returns {string} release.yml for a repo whose root is not the app
  */
-const releaseWorkflow = (appDir) =>
-  readFileSync(TEMPLATE, 'utf8').replace(/\r\n/g, '\n').replace('__APP_DIR__', appDir.replace(/\\/g, '/') || '.');
+const releaseWorkflow = (appDir, targets = DEFAULT_TARGETS) =>
+  composeWorkflows({ targets, appDir: appDir.replace(/\\/g, '/') || '.', prefix: '' }).release;
 
-export { releaseWorkflow, RELEASE_WORKFLOW_FILE };
+export { releaseWorkflow };

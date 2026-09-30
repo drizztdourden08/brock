@@ -1,8 +1,7 @@
 /* @layer tooling-scripts @kind config */
 import { existsSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { appTools } from './app-tools.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { loadBrockConfig } from './load-config.mjs';
@@ -10,10 +9,7 @@ import { ownsSplashPage } from './splash/owns-splash-page.mjs';
 import { screensPlugin } from './screens/screens-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
-
-const SOURCE_SCOPE = '@drizztdourden08/';
-const SHARED_SINGLETONS = ['react', 'react-dom', 'zustand', '@drizztdourden08/tessera'];
-const SOURCE_SPECS = ['workspace:', 'link:'];
+import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
 
 const readScope = (dir) => {
   const file = join(dir, 'brock.scope');
@@ -79,16 +75,6 @@ const externalDependenciesOf = (rootDir, sources) => {
   };
   for (const name of sources) visit(name);
   return external;
-};
-
-const importFromApp = (rootDir, name) => {
-  const appRequire = createRequire(join(rootDir, 'package.json'));
-  return import(pathToFileURL(appRequire.resolve(name)).href);
-};
-
-const appTools = async (rootDir) => {
-  const [vite, reactPlugin] = await Promise.all([importFromApp(rootDir, 'vite'), importFromApp(rootDir, '@vitejs/plugin-react')]);
-  return { mergeConfig: vite.mergeConfig, workspaceRootOf: vite.searchForWorkspaceRoot, react: reactPlugin.default };
 };
 
 /**

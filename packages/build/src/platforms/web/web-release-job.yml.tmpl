@@ -1,0 +1,19 @@
+  build-web:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+__SETUP__
+
+      - name: Build the web app
+        run: pnpm --dir "$APP_DIR" exec brock web build
+
+      - name: Zip the static files
+        shell: bash
+        run: |
+          mkdir -p upload
+          (cd "$APP_DIR/dist/web" && zip -qr "$GITHUB_WORKSPACE/upload/__ZIP__" .)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-web
+          path: upload/*

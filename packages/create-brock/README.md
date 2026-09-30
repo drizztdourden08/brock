@@ -33,7 +33,7 @@ The scaffolded app's `.npmrc` carries the scope line, so installs inside it need
 --modules a,b          Brock module ids to install and record, beside the template's own
 --platforms a,b        platform ids and bundles for targets (default desktop)
 --local <path>         Brock checkout; every @drizztdourden08/* dependency becomes a link: spec
---tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
+--tessera <path|registry>  Tessera checkout, or registry for the published package (default: <local>/../tessera when present, else the registry)
 --yes                  accept the defaults, ask nothing
 --install              run pnpm install after scaffolding
 ```

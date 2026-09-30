@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { TESSERA_REGISTRY } from './create-brock.constants.mjs';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { linkSpec, MODULE_PACKAGES } from '@drizztdourden08/brock-build';
@@ -21,6 +22,7 @@ const LOCAL_PACKAGES = {
  * @returns {string | null} null keeps the registry spec
  */
 const tesseraSpec = ({ local, tessera }) => {
+  if (tessera === TESSERA_REGISTRY) return null;
   if (tessera) return linkSpec(tessera);
   const sibling = resolve(local, '../tessera');
   return existsSync(join(sibling, 'package.json')) ? linkSpec(sibling) : null;

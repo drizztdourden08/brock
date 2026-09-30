@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { TESSERA_REGISTRY } from '../src/create-brock.constants.mjs';
 import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { defaultIdentity, identityProblem } from '../src/identity.mjs';
@@ -20,7 +21,7 @@ Options:
                          desktop (windows, macos, linux), mobile (android; iOS once it lands).
                          Default desktop. Without it and without --yes, asked on the terminal
   --local <path>         Brock checkout; dependencies become link: specs into it
-  --tessera <path>       Tessera checkout (default: <local>/../tessera when present, else the registry)
+  --tessera <path|registry>  Tessera checkout, or registry for the published package (default: <local>/../tessera when present, else the registry)
   --yes                  accept the defaults, ask nothing
   --install              run pnpm install after scaffolding
   -h, --help
@@ -95,7 +96,7 @@ const main = async () => {
     modules,
     targets,
     local: optionalPath(values.local),
-    tessera: optionalPath(values.tessera),
+    tessera: values.tessera === TESSERA_REGISTRY ? TESSERA_REGISTRY : optionalPath(values.tessera),
     install: values.install,
   });
 };

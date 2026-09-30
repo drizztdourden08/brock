@@ -66,10 +66,13 @@ jobs:
       - name: Upgrade it to this checkout
         working-directory: ${{ runner.temp }}/prev/app
         run: node "$GITHUB_WORKSPACE/packages/build/bin/brock.mjs" upgrade --local "$GITHUB_WORKSPACE"
-      - name: Keep the upgrade report
+      - name: Keep the upgrade and review reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: upgrade-report
-          path: ${{ runner.temp }}/prev/app/.worktrees/*/upgrade-report.md
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/prev/app/.worktrees/*/upgrade-report.md
+            ${{ runner.temp }}/prev/app/.worktrees/*/.user-data/Data/review/
           if-no-files-found: ignore

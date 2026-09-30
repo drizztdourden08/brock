@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -119,7 +119,7 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(Array.from({ length: 9 }, () => '0.1.1'));
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(readdirSync(join(import.meta.dirname, '..', 'migrations', '0.1.1')).filter((f: string) => f.endsWith('.mjs')).map(() => '0.1.1'));
   });
 
   it('orders module migrations with the build ones by version', () => {
@@ -199,5 +199,22 @@ describe('removed-shell-exports', () => {
     expect(readFileSync(join(root, 'src', 'shell.tsx'), 'utf8')).toBe(source);
     expect(run.todos.map((todo) => todo.message.split(' ')[0])).toEqual(['TitleBar', 'About']);
     expect(run.todos[0]?.message).toContain('WindowTitleBar');
+  });
+});
+
+describe('index-boot-splash', () => {
+  it('removes the hand-written boot splash and leaves an empty root', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'brock-migrate-'));
+    dirs.push(root);
+    mkdirSync(join(root, 'src'), { recursive: true });
+    writeFileSync(join(root, 'package.json'), '{"name":"x"}');
+    const html = '<!DOCTYPE html>\n<html lang="en" class="booting">\n  <head>\n    <style>\n      #boot-splash { position: fixed; }\n    </style>\n  </head>\n  <body>\n    <div id="root">\n      <div id="boot-splash">\n        <img src="./logos/icon-256.png" alt="" />\n        <div class="boot-splash__spinner"></div>\n      </div>\n    </div>\n  </body>\n</html>\n';
+    writeFileSync(join(root, 'src', 'index.html'), html);
+    const only = upgradeFrom('0.1.0').filter((m) => m.file.endsWith('index-boot-splash.mjs'));
+    const run = await runMigrations(root, only);
+    const out = readFileSync(join(root, 'src', 'index.html'), 'utf8');
+    expect(out).not.toMatch(/boot-splash|booting/);
+    expect(out).toContain('<div id="root"></div>');
+    expect(run.todos).toEqual([]);
   });
 });

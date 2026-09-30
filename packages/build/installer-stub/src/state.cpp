@@ -25,6 +25,19 @@ void BeginInstall(HWND window, ui::Mode mode) {
   Repaint(window);
 }
 
+// A licence set in the product config stands between every install button and
+// the install itself; accepting it once covers whichever mode was chosen.
+void RequestInstall(HWND window, ui::Mode mode) {
+  if (!theme::kHasLicence || g.licenceAccepted) {
+    BeginInstall(window, mode);
+    return;
+  }
+  g.ui.mode = mode;
+  g.licenceBack = g.ui.screen;
+  g.ui.screen = ui::Screen::Licence;
+  Repaint(window);
+}
+
 }  // namespace
 
 Shell g;
@@ -46,14 +59,16 @@ void Repaint(HWND window) { InvalidateRect(window, nullptr, FALSE); }
 
 void OnClick(HWND window, ui::Btn id) {
   switch (id) {
-    case ui::Btn::Install:
-      g.ui.path = install::DefaultPath(ui::Mode::PerUser);
-      BeginInstall(window, ui::Mode::PerUser);
+    case ui::Btn::Install: {
+      ui::Mode mode = theme::kMachineScope ? ui::Mode::Global : ui::Mode::PerUser;
+      g.ui.path = install::DefaultPath(mode);
+      RequestInstall(window, mode);
       break;
+    }
     case ui::Btn::Global: GoLocation(window, ui::Mode::Global); break;
     case ui::Btn::Portable: GoLocation(window, ui::Mode::Portable); break;
     case ui::Btn::Back:
-      g.ui.screen = ui::Screen::Welcome;
+      g.ui.screen = g.ui.screen == ui::Screen::Licence ? g.licenceBack : ui::Screen::Welcome;
       Repaint(window);
       break;
     case ui::Btn::Browse:
@@ -62,7 +77,16 @@ void OnClick(HWND window, ui::Btn id) {
       }
       Repaint(window);
       break;
-    case ui::Btn::Confirm: BeginInstall(window, g.ui.mode); break;
+    case ui::Btn::Confirm: RequestInstall(window, g.ui.mode); break;
+    case ui::Btn::Accept:
+      g.licenceAccepted = true;
+      BeginInstall(window, g.ui.mode);
+      break;
+    case ui::Btn::ReadLicence: install::OpenLicence(); break;
+    case ui::Btn::Launch:
+      install::LaunchInstalled(install::InstalledRoot(g.ui.mode, g.ui.path));
+      DestroyWindow(window);
+      break;
     case ui::Btn::Continue:
       g.ui.bytesDone = 0;
       g.ui.bytesTotal = 0;
@@ -92,12 +116,17 @@ void OnManifestReady(HWND window) {
   Repaint(window);
 }
 
+void OnInstalled(HWND window) {
+  g.ui.screen = ui::Screen::Done;
+  Repaint(window);
+}
+
 void OnFailed(HWND window, WPARAM reason) {
   switch (reason) {
-    case flow::kFailChecksum: g.ui.error = L"The download did not match its signature."; break;
-    case flow::kFailUnpack: g.ui.error = L"The archive could not be unpacked."; break;
-    case flow::kFailLaunch: g.ui.error = L"The installer could not be started."; break;
-    default: g.ui.error = L"Could not reach the release server. Check your connection."; break;
+    case flow::kFailChecksum: g.ui.error = theme::kFailChecksumText; break;
+    case flow::kFailUnpack: g.ui.error = theme::kFailUnpackText; break;
+    case flow::kFailLaunch: g.ui.error = theme::kFailLaunchText; break;
+    default: g.ui.error = theme::kFailNetworkText; break;
   }
   g.ui.screen = ui::Screen::Checking;
   Repaint(window);

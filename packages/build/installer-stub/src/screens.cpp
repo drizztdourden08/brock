@@ -59,8 +59,8 @@ void Welcome(Graphics& g, const State& s, std::vector<Hit>* hits) {
                15.0f);
   draw::Label(g, theme::kWelcomeFine, 11.0f, FontStyleRegular, theme::kFaint,
               RectF(44.0f, 256.0f, 392.0f, 18.0f), StringAlignmentCenter);
-  draw::Button(g, hits, s, Btn::Global, RectF(85.0f, 278.0f, 148.0f, 32.0f), L"Install globally",
-               false, 12.0f);
+  draw::Button(g, hits, s, Btn::Global, RectF(85.0f, 278.0f, 148.0f, 32.0f),
+               theme::kWelcomeFolderLabel, false, 12.0f);
   draw::Button(g, hits, s, Btn::Portable, RectF(247.0f, 278.0f, 148.0f, 32.0f), L"Portable", false,
                12.0f);
 }
@@ -98,6 +98,39 @@ void Location(Graphics& g, const State& s, std::vector<Hit>* hits) {
                14.0f);
 }
 
+void Licence(Graphics& g, const State& s, std::vector<Hit>* hits) {
+  draw::Logo(g, 44.0f, 20.0f);
+  draw::Tracked(g, theme::kLicenceTitle, 15.0f, theme::kText, 240.0f, 74.0f, 2.0f);
+  draw::Label(g, theme::kLicenceLead, 11.5f, FontStyleRegular, theme::kDim,
+              RectF(40.0f, 100.0f, 400.0f, 18.0f), StringAlignmentCenter);
+  RectF box(32.0f, 126.0f, 416.0f, 144.0f);
+  draw::FillRound(g, box, 8.0f, draw::Rgb(theme::kSurface));
+  draw::StrokeRound(g, box, 8.0f, draw::Rgb(theme::kHairline));
+  // The opening of the text, cut at a word; the full text opens in a viewer.
+  const std::wstring& text = draw::LicenceText();
+  draw::Label(g, text.empty() ? theme::kLicenceMissing : text.c_str(), 11.0f, FontStyleRegular,
+              theme::kDim, RectF(box.X + 14.0f, box.Y + 12.0f, box.Width - 28.0f, box.Height - 24.0f),
+              StringAlignmentNear, true, StringTrimmingEllipsisWord);
+  draw::Button(g, hits, s, Btn::Back, RectF(32.0f, 286.0f, 100.0f, 40.0f), L"Back", false, 13.0f);
+  draw::Button(g, hits, s, Btn::ReadLicence, RectF(142.0f, 286.0f, 124.0f, 40.0f), L"Read in full",
+               false, 12.0f);
+  draw::Button(g, hits, s, Btn::Accept, RectF(276.0f, 286.0f, 172.0f, 40.0f),
+               L"Accept and install", true, 13.0f);
+}
+
+void Done(Graphics& g, const State& s, std::vector<Hit>* hits) {
+  draw::Logo(g, 84.0f, 20.0f);
+  draw::Tracked(g, theme::kBrand, 20.0f, theme::kText, 240.0f, 112.0f, 3.0f);
+  wchar_t line[64];
+  swprintf_s(line, L"Version %s installed", s.version.c_str());
+  draw::Label(g, line, 12.0f, FontStyleRegular, theme::kAccent, RectF(40.0f, 144.0f, 400.0f, 20.0f),
+              StringAlignmentCenter);
+  draw::Label(g, theme::kDoneBody, 11.5f, FontStyleRegular, theme::kDim,
+              RectF(40.0f, 168.0f, 400.0f, 20.0f), StringAlignmentCenter);
+  draw::Button(g, hits, s, Btn::Launch, RectF(122.0f, 208.0f, 236.0f, 42.0f), L"Start", true, 15.0f);
+  draw::Button(g, hits, s, Btn::Close, RectF(185.0f, 264.0f, 110.0f, 30.0f), L"Close", false, 12.0f);
+}
+
 void Progress(Graphics& g, const State& s) {
   draw::Logo(g, 76.0f, 32.0f);
   draw::Tracked(g, theme::kBrand, 18.0f, theme::kText, 240.0f, 122.0f, 3.0f);
@@ -126,6 +159,21 @@ void Progress(Graphics& g, const State& s) {
               RectF(40.0f, 300.0f, 400.0f, 20.0f), StringAlignmentCenter);
 }
 
+// Where each screen's first line of text starts, just under its mark. The
+// gradient is gone by then.
+float HeaderFade(Screen screen) {
+  switch (screen) {
+    case Screen::Checking: return 152.0f;
+    case Screen::Handoff: return 90.0f;
+    case Screen::Location:
+    case Screen::Licence: return 70.0f;
+    case Screen::Progress: return 116.0f;
+    case Screen::Welcome:
+    case Screen::Done:
+    default: return 108.0f;
+  }
+}
+
 }  // namespace
 
 void PaintFrame(Graphics& g, const State& s, std::vector<Hit>* hits) {
@@ -133,7 +181,7 @@ void PaintFrame(Graphics& g, const State& s, std::vector<Hit>* hits) {
   g.SetTextRenderingHint(TextRenderingHintAntiAlias);
   g.SetPixelOffsetMode(PixelOffsetModeHalf);
   RectF frame(0.0f, 0.0f, static_cast<float>(theme::kWidth), static_cast<float>(theme::kHeight));
-  draw::FillRound(g, frame, 12.0f, draw::Rgb(theme::kGround));
+  draw::Backdrop(g, HeaderFade(s.screen));
   draw::StrokeRound(g, frame, 12.0f, draw::Rgb(theme::kHairline));
   if (hits != nullptr) hits->clear();
   switch (s.screen) {
@@ -141,7 +189,9 @@ void PaintFrame(Graphics& g, const State& s, std::vector<Hit>* hits) {
     case Screen::Handoff: Handoff(g, s, hits); break;
     case Screen::Welcome: Welcome(g, s, hits); break;
     case Screen::Location: Location(g, s, hits); break;
+    case Screen::Licence: Licence(g, s, hits); break;
     case Screen::Progress: Progress(g, s); break;
+    case Screen::Done: Done(g, s, hits); break;
   }
   if (s.screen != Screen::Checking) draw::VersionStamp(g, s);
   // Last, so it sits above whatever the screen drew.

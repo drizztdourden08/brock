@@ -48,10 +48,20 @@ ui::State Sample(const std::wstring& screen) {
     s.mode = screen == L"location" ? ui::Mode::Global : ui::Mode::Portable;
     s.path = install::DefaultPath(s.mode);
     s.freeSpace = install::FreeSpaceLine(s.path);
+  } else if (screen == L"licence") {
+    s.screen = ui::Screen::Licence;
+    s.mode = theme::kMachineScope ? ui::Mode::Global : ui::Mode::PerUser;
   } else if (screen == L"progress") {
     s.screen = ui::Screen::Progress;
     s.bytesDone = 96571392ull;
     s.bytesTotal = 150994944ull;
+  } else if (screen == L"done") {
+    s.screen = ui::Screen::Done;
+  } else if (screen == L"error") {
+    // A failure lands back on the first screen with the reason where the status was.
+    s.screen = ui::Screen::Checking;
+    s.stubVersion = mine;
+    s.error = theme::kFailNetworkText;
   } else {
     s.screen = ui::Screen::Welcome;
   }

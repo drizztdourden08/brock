@@ -5,6 +5,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 
+#include <string>
 #include <vector>
 
 #include "paint.h"
@@ -12,10 +13,17 @@
 namespace ui {
 namespace draw {
 
-// Loads the font family and the embedded logo. The graphics runtime must
-// already be started when this is called.
+// Loads the font family, the embedded mark and the licence text. The graphics
+// runtime must already be started when this is called.
 void Init();
 void Free();
+
+// The licence from product.installer.licence, empty when there is none.
+const std::wstring& LicenceText();
+
+// The whole window's ground: the look gradient across the top, giving way to
+// the theme's background colour at `fade`, where the screen's text begins.
+void Backdrop(Gdiplus::Graphics& g, float fade);
 
 Gdiplus::Color Rgb(DWORD argb);
 Gdiplus::Color Mix(DWORD a, DWORD b, float t);

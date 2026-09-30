@@ -33,9 +33,12 @@ Usage:
                              the update package and a delta when the previous release was downloaded there.
                              On Windows it also builds the small installer (<prefix>windows-setup.exe, needs the
                              Visual Studio C++ tools) and install.json; --full adds the payload it fetches
-                             (<prefix>windows-payload.exe, with the app icon, a splash and product.accent) and
+                             (<prefix>windows-payload.exe, with the app icon, the Setup splash and the accent) and
                              <prefix>windows-directory.zip. macOS stops after electron-builder (dmg, zip).
                              Needs vpk: dotnet tool install -g vpk --version <the app's velopack version>
+  brock package --render-installer
+                             Windows: build the installer stub and write its screens, the mark and the Setup
+                             splash as PNGs into release/installer-preview; installs nothing, packs nothing
   brock icons [--force]      copy the Tessera brand set (icons.brand) into build/icons, build/splash and public/logos
                              (skips a file newer than its source; --force copies all)
   brock start [args]         run dist/electron/main.js with Electron; unknown options reach the app
@@ -121,7 +124,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, from: values.from, to: values.to, report: values.report, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, report: values.report, passthrough });
 };
 
 main().then(

@@ -35,16 +35,12 @@ const UNPACKED_DIRS = { win32: 'win-unpacked', linux: 'linux-unpacked' };
 
 const CHANNEL_BY_PLATFORM = { win32: 'win', linux: 'linux', darwin: 'osx' };
 
-const SPLASH_ICON_SIZE = 256;
-const SPLASH_FALLBACK_SIZE = { width: 480, height: 360 };
-
 const VPK_INSTALL_HINT = 'dotnet tool install -g vpk --version <the velopack version the app installs>';
 
 const STUB_VERSION = 1;
 const STUB_OUT = 'release/installer-stub';
 const STUB_DIR = new URL('../../installer-stub/', import.meta.url);
 const INSTALL_MANIFEST = 'install.json';
-const DEFAULT_ACCENT = '#E8A33D';
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 const STUB_SOURCES = [
@@ -61,6 +57,6 @@ const VC_TOOLS = 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64';
 export {
   RELEASE_DIR, VELOPACK_OUT, MIB, SPLASH_FILE, BUILDER_CONFIG_FILE, NOTES_DIR, UNUSED_ELECTRON_FILES, ARCH_NAMES,
   VELOPACK_ASAR_UNPACK, VELOPACK_NATIVE_DIR, VELOPACK_BINDINGS, BUILDER_TARGETS, UNPACKED_DIRS, CHANNEL_BY_PLATFORM,
-  SPLASH_ICON_SIZE, SPLASH_FALLBACK_SIZE, VPK_INSTALL_HINT, STUB_VERSION, STUB_OUT, STUB_DIR, INSTALL_MANIFEST,
-  DEFAULT_ACCENT, HEX_COLOR, STUB_SOURCES, STUB_LIBS, VSWHERE, VC_TOOLS,
+  VPK_INSTALL_HINT, STUB_VERSION, STUB_OUT, STUB_DIR, INSTALL_MANIFEST,
+  HEX_COLOR, STUB_SOURCES, STUB_LIBS, VSWHERE, VC_TOOLS,
 };

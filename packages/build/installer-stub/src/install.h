@@ -18,6 +18,9 @@ bool BrowseForFolder(HWND owner, std::wstring* path);
 
 bool RunSetup(const std::wstring& exe, const std::vector<std::wstring>& args, bool elevated);
 bool Handoff(const std::wstring& exe);
+// Writes the embedded licence to a temporary text file and opens it in the
+// default viewer, for reading it in full.
+void OpenLicence();
 bool Unpack(const std::wstring& archive, const std::wstring& directory);
 
 /**

@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { scopeOf } from './adopt.mjs';
 import { checkShapes } from './structure-shape.mjs';
+import { checkInstallerFolder } from '../installer/check-installer-folder.mjs';
 import { checkScreens } from '../screens/check-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from '../screens/screen-conventions.constants.mjs';
 
@@ -98,7 +99,8 @@ const checkPackage = async (rootDir, dir, scope, findings) => {
   const pkgFile = join(dir, 'package.json');
   if (!existsSync(pkgFile)) { findings.push(`${label}: no package.json; every workspace folder is a package`); return; }
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
-  if (!isAppDir(dir, label)) findings.push(...packageProblems(dir, label, pkg, scope));
+  if (isAppDir(dir, label)) findings.push(...checkInstallerFolder(rootDir, dir));
+  else findings.push(...packageProblems(dir, label, pkg, scope));
   await checkSrc(rootDir, dir, findings);
 };
 
@@ -130,7 +132,10 @@ const collectFindings = async (rootDir, scope) => {
   const bases = new Set(globs.map(globBase).filter((b) => b.includes('/')));
   const dirs = globs.flatMap((g) => expandGlob(rootDir, g, bases));
   const kind = rootKind(rootDir, dirs);
-  if (kind === 'app') await checkSrc(rootDir, rootDir, findings);
+  if (kind === 'app') {
+    findings.push(...checkInstallerFolder(rootDir, rootDir));
+    await checkSrc(rootDir, rootDir, findings);
+  }
   else if (kind === 'package') await checkPackage(rootDir, rootDir, scope, findings);
   else if (!dirs.length && !declared) findings.push('no workspace folders found (apps/*, packages/*, tooling/* or pnpm-workspace.yaml)');
   for (const dir of dirs) await checkPackage(rootDir, dir, scope, findings);

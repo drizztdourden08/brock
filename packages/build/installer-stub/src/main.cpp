@@ -110,6 +110,7 @@ LRESULT CALLBACK Proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
       return 0;
     case flow::kFinished: DestroyWindow(window); return 0;
     case flow::kFailed: app::OnFailed(window, wparam); return 0;
+    case flow::kInstalled: app::OnInstalled(window); return 0;
     case WM_DESTROY:
       flow::Cancel();
       PostQuitMessage(0);

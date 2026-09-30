@@ -1,8 +1,10 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { installerInputs } from '../installer/installer-inputs.mjs';
+import { renderInstallerPreview } from '../installer/render-installer-preview.mjs';
+import { writeSetupSplash } from '../installer/write-setup-splash.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
-import { writeInstallerSplash } from '../packaging/installer-splash.mjs';
 import { namePackOutputs } from '../packaging/name-pack-outputs.mjs';
 import {
   BUILDER_CONFIG_FILE, BUILDER_TARGETS, NOTES_DIR, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
@@ -34,31 +36,39 @@ const runBuilder = (rootDir, platform) =>
   runBin(rootDir, 'electron-builder', [...BUILDER_TARGETS[platform], '--publish', 'never', '--config', BUILDER_CONFIG_FILE]);
 
 /**
+ * @param {string} rootDir
+ * @param {import('../installer/installer-inputs.mjs').InstallerInputs | null} inputs
+ */
+const windowsExtras = (rootDir, inputs) =>
+  (inputs ? { splash: writeSetupSplash(rootDir, inputs), accent: inputs.colours.accent, installer: inputs.config.installer } : {});
+
+/**
  * @param {{ rootDir: string, platform: string, product: object, version: string }} app
  * @param {{ full: boolean, channel: string | null }} opts
  * @returns {Promise<number>}
  */
 const packVelopack = async ({ rootDir, platform, product, version }, { full, channel }) => {
-  const splash = platform === 'win32' ? writeInstallerSplash(rootDir, product) : null;
-  const extras = { splash, accent: product.accent, notes: releaseNotesFor(rootDir, version), channel, full };
+  const inputs = platform === 'win32' ? await installerInputs(rootDir, product) : null;
+  const extras = { ...windowsExtras(rootDir, inputs), notes: releaseNotesFor(rootDir, version), channel, full };
   const packDir = join(RELEASE_DIR, UNPACKED_DIRS[platform]);
   const code = await runVpk(rootDir, vpkPackArgs({ product, version, platform, packDir, outputDir: VELOPACK_OUT, extras }));
   if (code !== 0) return code;
   const naming = { id: product.id, prefix: artifactPrefixOf(product), platform, channel, full };
   const named = namePackOutputs(join(rootDir, VELOPACK_OUT), naming);
   console.log(`brock package: packed ${version}${channel ? ` (${channel})` : ''} into ${VELOPACK_OUT}: the update package${named.length ? `, ${named.join(', ')}` : ''}`);
-  if (platform === 'win32') await shipInstaller(rootDir, product, { outDir: VELOPACK_OUT, version });
+  if (inputs) await shipInstaller(rootDir, inputs, { outDir: VELOPACK_OUT, version });
   return 0;
 };
 
 /**
- * @param {{ rootDir: string, full?: boolean, channel?: string, passthrough?: string[]}} ctx
+ * @param {{ rootDir: string, full?: boolean, channel?: string, renderInstaller?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
-const runPackage = async ({ rootDir, full = false, channel, passthrough = [] }) => {
+const runPackage = async ({ rootDir, full = false, channel, renderInstaller, passthrough = [] }) => {
   const platform = process.platform;
   if (!BUILDER_TARGETS[platform]) throw new Error(`brock package does not know how to package on ${platform}`);
   const { product } = await loadBrockConfig(rootDir);
+  if (renderInstaller) return renderInstallerPreview(rootDir, product);
   const version = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')).version;
   const built = await runBuild({ rootDir, passthrough });
   if (built !== 0) return built;

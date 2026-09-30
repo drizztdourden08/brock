@@ -3,7 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { splashIconOf } from './installer-splash.mjs';
+import { LICENCE_STAGED, MARK_STAGED } from '../installer/installer.constants.mjs';
+import { markPng } from '../installer/mark-png.mjs';
 import { STUB_DIR, STUB_LIBS, STUB_OUT, STUB_SOURCES, VC_TOOLS, VSWHERE } from './packaging.constants.mjs';
 import { stubProductHeader } from './stub-product-header.mjs';
 import { packIconOf } from './vpk-args.mjs';
@@ -21,7 +22,7 @@ const findVcvars = () => {
 
 /**
  * @param {string} rootDir
- * @param {string | null} rel
+ * @param {string | null | undefined} rel
  * @param {string} what
  */
 const requireAsset = (rootDir, rel, what) => {
@@ -31,22 +32,30 @@ const requireAsset = (rootDir, rel, what) => {
 
 /**
  * @param {string} rootDir
- * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
+ * @param {string | undefined} licence  root-relative
+ */
+const licenceText = (rootDir, licence) => (licence ? readFileSync(requireAsset(rootDir, licence, `product.installer.licence (${licence})`)) : '\n');
+
+/**
+ * @param {string} rootDir
+ * @param {import('../installer/installer-inputs.mjs').InstallerInputs} inputs
  * @param {string} manifestUrl
  * @returns {string} the staging folder
  */
-const stageStub = (rootDir, product, manifestUrl) => {
+const stageStub = (rootDir, inputs, manifestUrl) => {
+  const { config, colours } = inputs;
   const out = join(rootDir, STUB_OUT);
   const res = join(fileURLToPath(STUB_DIR), 'res');
   mkdirSync(join(out, 'obj'), { recursive: true });
-  writeFileSync(join(out, 'product.h'), stubProductHeader(product, manifestUrl));
+  writeFileSync(join(out, 'product.h'), stubProductHeader({ config, colours, manifestUrl }));
   const rc = readFileSync(join(res, 'resources.rc.tmpl'), 'utf8')
-    .replaceAll('__PRODUCT__', product.name.replace(/"/g, '""'))
-    .replaceAll('__STUB_FILE__', `${product.id}-setup`);
+    .replaceAll('__PRODUCT__', config.name.replace(/"/g, '""'))
+    .replaceAll('__STUB_FILE__', `${config.id}-setup`);
   writeFileSync(join(out, 'resources.rc'), rc);
   copyFileSync(join(res, 'app.manifest'), join(out, 'app.manifest'));
-  copyFileSync(requireAsset(rootDir, packIconOf(product, 'win32'), 'a Windows .ico'), join(out, 'app.ico'));
-  copyFileSync(requireAsset(rootDir, splashIconOf(product), 'a 256 px PNG icon'), join(out, 'logo-256.png'));
+  copyFileSync(requireAsset(rootDir, packIconOf(config, 'win32'), 'a Windows .ico'), join(out, 'app.ico'));
+  writeFileSync(join(out, MARK_STAGED), markPng(rootDir, inputs).png);
+  writeFileSync(join(out, LICENCE_STAGED), licenceText(rootDir, config.installer.licence));
   return out;
 };
 
@@ -71,13 +80,15 @@ const compile = (out, vcvars) => {
 
 /**
  * @param {string} rootDir
- * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
- * @param {{ manifestUrl: string, target: string }} opts
+ * @param {import('../installer/installer-inputs.mjs').InstallerInputs} inputs
+ * @param {string} manifestUrl
+ * @returns {string} the built stub
  */
-const buildInstallerStub = (rootDir, product, { manifestUrl, target }) => {
-  const out = stageStub(rootDir, product, manifestUrl);
-  compile(out, findVcvars());
-  copyFileSync(join(out, STUB_EXE), target);
+const buildInstallerStub = (rootDir, inputs, manifestUrl) => {
+  const vcvars = findVcvars();
+  const out = stageStub(rootDir, inputs, manifestUrl);
+  compile(out, vcvars);
+  return join(out, STUB_EXE);
 };
 
 export { buildInstallerStub };

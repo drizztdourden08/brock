@@ -65,7 +65,7 @@ the new app's `pnpm-workspace.yaml` (`packages: []` plus the catalog, and
 `onlyBuiltDependencies` for electron and esbuild), next to an `.npmrc` with the pnpm
 settings every Brock repo uses. `brock sync` then writes `.brock/` and the managed
 config files (eslint, stylelint, markdownlint, tsconfig, the Vite and electron-builder
-configs). With `--modules`, the ids go into `brock.config.ts` and the packages into
+configs). `brock.config.ts` gets `ports: { base }`, derived from the id by `derivePortBase` (see brock-thread `/ports`), so the dev server port is written down and can be changed. With `--modules`, the ids go into `brock.config.ts` and the packages into
 `dependencies`; the module arrays fill on the next sync after `pnpm install`.
 
 Every app starts with the modules the template's `brock.config.ts` lists, `updater` today,

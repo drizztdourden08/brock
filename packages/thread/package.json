@@ -17,7 +17,8 @@
   },
   "exports": {
     ".": "./src/index.mjs",
-    "./cli": "./src/cli/run-thread.mjs"
+    "./cli": "./src/cli/run-thread.mjs",
+    "./ports": "./src/ports/index.mjs"
   },
   "files": [
     "src",

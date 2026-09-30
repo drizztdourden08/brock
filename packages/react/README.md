@@ -138,6 +138,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 - `BootProgressBar`: the label flips from light to dark over the fill through a clipped duplicate element; the 1000 ms minimum on-screen time is cosmetic and never gates readiness. `ratio` is 0..1 for a determinate bar and null for an indeterminate sweep; phase `ready` completes the bar and lets it fade; `bootProgress` is the imperative surface for the code doing the work.
 - `ProfilesScreen` doubles as the setup screen when no profile exists (the form is forced open); picking a profile makes it active and closes the screen; `createOptions()` is merged into the create request. In `CreateProfileForm`, Enter in the name field submits, `canSubmit: false` blocks submit while an extra field is incomplete, and `extraFields` render between the name and the actions. `WorkspaceSwitch.label` is the accessible name for the whole switch.
 - Profiles store: selecting a profile records it as the default for the next launch (skipped on an automated launch) and bumps its last-played time; `loaded` is true once the first refresh finished. `useProfiles().remove` asks first through the confirm dialog, and when the active profile is deleted the profiles screen opens so the app is never left without one.
+- `confirmAction(options)` is the promise form: it resolves `true` on confirm and `false` on cancel, Escape or a newer dialog.
 - The shell shows one confirm dialog at a time; `dialogs` is the imperative surface for code outside React; `confirmDelete` is a red destructive confirm that closes itself before running `onConfirm`; `dismiss` runs the config's `onCancel`.
 - Every store made with `createSessionStore` is tracked, and `resetAllSessionStores()` returns each to its initial state when a new profile is selected. Widget preference values must survive a JSON round-trip; the widget-pref store is a session store, so a new profile starts empty and the host hydrates it from disk and saves on change.
 
@@ -145,6 +146,10 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 - A mobile shell running edge to edge forwards the display cutout sizes as custom properties on the document root (`--sai-top`, `--sai-right`, `--sai-bottom`, `--sai-left`, in CSS px) and fires the `safeareainsets` window event when they change; hosts that set none read as zero. `applyNotchMode` toggles `notch-fill` or `notch-safe` on the document root.
 - `useWidgetPref` is a `useState` drop-in whose value belongs to the profile: with a widget id the value survives unmount, a profile switch and a restart; with null it degrades to plain local state. The stored value is cast to the caller's type without validation; a value written by an older build with another shape lands there and the next write corrects it.
+
+- `useNow(intervalMs, active = true)` returns the current time and ticks every `intervalMs` while `active`.
+- `useCopyText(resetMs = COPIED_RESET_MS)` returns `{ copied, error, copy(text) }`. `copy` writes to the clipboard and resolves true or false; `copied` resets after `resetMs`.
+- `useKeyedGuard()` guards async work per key: `guard(key, work)` returns the work's result, or undefined when it threw. `isBusy(key?)` with no key asks whether any key is busy. `errorOf(key)` and `clearError(key?)` read and clear the recorded message. `keyedGuardReducer` is the pure state machine behind it.
 
 ## Stories
 

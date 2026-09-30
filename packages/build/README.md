@@ -10,6 +10,7 @@ build step.
 | `/config` | `defineBrockConfig(cfg)` for `brock.config.ts`; `loadBrockConfig(rootDir)` imports that file under Node's type stripping |
 | `/vite` | `defineBrockViteConfig(rootDir, overrides?)`: the electron-vite config (main and preload from `electron/`, renderer from `src/` with `index.html` and `splash.html`, React plugin, react deduped, `@drizztdourden08/*` bundled instead of externalized) |
 | `/builder` | `createBuilderConfig(product, { rootDir })` and `loadBuilderConfig(rootDir)` for electron-builder |
+| `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs? })` for app e2e tests, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
 | `.` | Everything above plus `syncApp`, `resolveModules`, `ensureElectron` and the built-in module registry |
 
 ## The CLI
@@ -17,6 +18,7 @@ build step.
 ```
 brock sync [--check]       regenerate the managed files, or report drift with --check
 brock check                sync --check, for CI
+                           at a repo root with brock.workspace.mjs, both run once per electron target's app
 brock add <id | spec>      install a module package, record its id, sync
 brock dev [-- args]        electron-vite dev
 brock build [-- args]      electron-vite build; copies the brand icon set first when icons.brand is set
@@ -90,6 +92,28 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 window opens off screen and unfocused, and the app writes under `<dir>`. Add `--review` for the
 automated review, which writes `<dir>/Data/review/review/report.md` and exits 1 on a failed check.
 
+## Ports and the dev server
+
+The Vite factory reads `product.ports.base` (or `derivePortBase(product.id)` when unset) and the checkout's port slot, and sets the renderer `server.port` to `base + 10 x slot` with `strictPort` from `product.ports.strict`, true by default. `devServerPort(rootDir, product)` returns that pair. The scheme lives in brock-thread (`/ports`); `portFor`, `portSlotOf`, `derivePortBase` and `PORT_OFFSETS` are re-exported here.
+
+## App e2e tests
+
+`--review` covers the shell. For checks only the app knows, `launchAppForTest` from `/testing` starts the built app the way the review does, headless:
+
+```ts
+import { launchAppForTest } from '@drizztdourden08/brock-build/testing';
+
+const { page, close } = await launchAppForTest({ appDir: join(import.meta.dirname, '..') });
+await page.getByRole('button', { name: 'Settings' }).click();
+await close();
+```
+
+It refuses first when `dist/electron/main.js` or a chunk beside it imports a package or a file Node cannot find from there, and lists each one. It then runs the app's own Electron with `--no-focus --muted` and a fresh `--user-data` under the system temp folder, waits for the first window (60 s by default) and puts the tail of the main output in the error when that fails. `close()` quits and removes the folder. Playwright is an optional peer: add `playwright-core` (or `playwright`) to the app's dev dependencies.
+
+## brock adopt
+
+Beside the lint configs and the repo command, `adopt` writes `knip.json` with `brock.workspace.mjs` as an entry, `.worktrees/**` ignored and, with `--local`, `@drizztdourden08/brock-thread` in `ignoreDependencies`. It appends to `.gitignore` every generated output it lacks: `node_modules/`, `dist/`, `release/`, `.user-data/`, `.brock-port-slot`, and at any depth `build/icons/`, `build/splash/`, `build/installer-splash.png`, the six generated `public/logos` files and `.brock/profile-config.json`. It writes no splash or logo markup, and prints the app pages (`src/index.html`) that still hold a hand-written boot splash or `./logos/` path.
+
 ## What sync writes
 
 ```
@@ -122,7 +146,7 @@ comes from the installed package's `package.json#brock.id`.
 import { defineBrockConfig } from '@drizztdourden08/brock-build/config';
 
 export default defineBrockConfig({
-  product: { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author: { name: 'Me' } },
+  product: { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author: { name: 'Me' }, ports: { base: 41800 } },
   targets: ['desktop'],
   modules: [],
 });

@@ -49,7 +49,7 @@ Each subpath exports one object:
 
 ```
 my-app/
-  brock.config.ts                  OWNED      product input, targets, modules
+  brock.config.ts                  OWNED      product input (ports.base included), targets, modules
   package.json                     OWNED ONCE
   electron.vite.config.ts          MANAGED    defineBrockViteConfig(import.meta.dirname)
   electron-builder.config.cjs      MANAGED
@@ -109,7 +109,7 @@ interface MainContext {
 
 Boot order: Velopack hooks (updater module) -> portable mode -> `--user-data` -> `app.setName(product.id)` -> crash forensics -> app identity (AppUserModelId `product.appId` on every Windows launch, `<appId>.instance.<name>` for a named instance) -> privileged schemes (`product.schemes` + modules) -> whenReady: paths, data dirs (`product.dataDirs` + modules), session log rotation, base handlers, module `register`, app handlers, createWindow (title and size from `product.window`, icon from the renderer `logos/` folder), module `onWindow`, app `onWindow` -> quit hooks.
 
-Base handlers: window, app, dialog, file, storage, profiles, config, sessions, uiViews, diagnostics, session log, test:screenshot.
+Base handlers: window, app, dialog, file, storage, profiles, config, sessions, uiViews, diagnostics, network, session log, test:screenshot. `network:lanAddresses` (`getLanAddresses` in `BASE_INVOKE_MAP`) returns `lanAddresses()`: every non-internal interface address, IPv4 first, as `{ interfaceName, address, family, cidr }`. Main code calls `lanAddresses()` from `@drizztdourden08/brock-electron/main` directly.
 
 Window rules are fixed: an automation launch (`flags.isHeadlessLaunch()`) opens off every monitor, `focusable: false`, `showInactive`, kept in the background; a normal launch opens at opacity 0 with the splash child window and is revealed on `window:shellReady` or an 8 s watchdog. `--muted` and `--sound` are forwarded to the renderer as `--startup-muted` / `--startup-sound`, never applied to the webContents.
 
@@ -165,6 +165,14 @@ Every app gets the standard features below. `StandardOverlays` mounts them in on
 - The menu files the `useWidgetMenuEntries()` items under Widgets and adds Report a bug to Advanced. The palette and the bug report dialog are escape layers, so Escape closes them before anything else.
 - `STANDARD_TITLE_BAR_SLOTS` (`SearchButton`, `BugReportButton`) come before the module slots.
 
+Small helpers every app gets from brock-react, one per file:
+
+- `confirmAction({ title, message, confirmLabel?, cancelLabel?, variant? })` shows the shell's confirm dialog and resolves `true` on confirm, `false` on cancel or Escape. A second call cancels the first.
+- `useNow(intervalMs, active = true)` returns `Date.now()` and ticks while `active`.
+- `useCopyText(resetMs = 2000)` returns `{ copied, error, copy(text) }`; `copied` goes back to false after `resetMs`.
+- `useKeyedGuard()` runs async work under a key: `guard(key, work)` marks the key busy, clears its old error and records a new one when the work throws. `isBusy(key?)`, `errorOf(key)` and `clearError(key?)` read and reset it. The state lives in the pure `keyedGuardReducer`.
+- `redactSecrets(line)` (brock-core) masks bearer and basic credentials, `key=value` pairs whose key names a token, secret, password or key, credentials inside a URL, and known token shapes (GitHub, GitLab, npm, Slack, OpenAI style, Google, AWS, JWT). The debug text and the bug report run every log line through it.
+
 Tessera is imported as `@drizztdourden08/tessera/*`; `tokens.css` first, then the app's `theme.css`.
 
 ## Build
@@ -174,7 +182,19 @@ defineBrockViteConfig(rootDir, overrides?)   // electron-vite: main electron/mai
 createBuilderConfig(product, { rootDir })    // electron-builder: appId, productName, icons, artifact names, file associations, asarUnpack for Velopack, the afterPack hook
 ```
 
+`brock sync` and `brock check` run from an app root, or from a repo root with `brock.workspace.mjs`: there they find the app folders from the workspace's electron targets (then from the `pnpm-workspace.yaml` globs) and run once per app.
+
 `brock` CLI: `sync [--check]`, `add <id | spec>`, `dev` (electron-vite dev), `build` (electron-vite build), `icons [--force]` (copies the Tessera brand set into `build/` and `public/logos/` and draws the bot variant; `dev` and `build` run it first), `start [-- args]` (runs `dist/electron/main.js` with Electron; automation args pass through, so `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test), `package [--full] [--channel <name>]`.
+
+## Ports
+
+`product.ports = { base, strict? }` in `brock.config.ts` gives the app a block of local ports. The dev renderer serves on `base + 0`. Offsets `+1` to `+9` are reserved for the app's tools (a site, an API, a static server); `portFor(base, slot, offset)` from `@drizztdourden08/brock-build` computes one.
+
+The main checkout is slot 0. `<repo> worktree create` gives each thread worktree the lowest free slot from 1 and writes it to `.brock-port-slot` at the worktree root, kept out of git through `.git/info/exclude`. `launch` writes it too for a worktree made before slots existed. Slot N moves the whole block to `base + 10 x N`, up to slot 19. `BROCK_PORT_SLOT` in the environment wins over the file.
+
+`defineBrockViteConfig` sets the renderer `server.port` to that port and `strictPort` to `ports.strict`, true by default, so a port in use is an error, never a silent move to the next one.
+
+Without `ports`, the base comes from the app id: an FNV-1a hash of the id picks one of 140 bases from 20000 to 47800 in steps of 200, below the Windows dynamic range. `create-brock` writes that base into `brock.config.ts`, so it is visible and can be changed.
 
 ## Packaging and releases
 
@@ -198,6 +218,21 @@ Every Brock app carries a built-in review: `--review` (or `--review=<name>`, def
 Once the shell is ready the renderer drives the real UI with DOM clicks and key presses and asks main for a PNG after each step. The tour covers the title bar (title, logo, search and bug report buttons, module slots), the first-run profile form, the menu (Home, Profiles, Settings unless it is home, About, Quit, icons, the Advanced section, Escape), every registered screen in its FullScreenLayer frame, Escape opening the home screen, the Ctrl+K palette, the bug report dialog, the About logo and version, and the logs widget. Main adds the global checks: the tour finished, the app version is not the Electron version, no renderer console errors, no failed loads, no main log errors, and a resolved window icon.
 
 Main writes `Data/review/<name>/report.json` and `report.md` with the steps and their screenshots (`NN-<step>.png`), every check with pass or fail and a reason, and the console errors, failed loads and main log warnings seen during the run. It prints the `report.json` path and exits 0 when every check passes, 1 otherwise. A 60 s watchdog writes a partial report and exits 1. The tour code is its own chunk, loaded only on a review launch.
+
+App-specific end-to-end tests use `launchAppForTest` from `@drizztdourden08/brock-build/testing`. The review covers the shell; this helper is for what only the app knows. It checks `dist/electron/main.js` first and refuses, with the list, when the built main imports a package or a file Node cannot find. It then starts the built app with Playwright's `_electron`, `--no-focus --muted` and a fresh temporary `--user-data`, waits for the first window, and returns `{ app, page, userData, close }`; `close()` quits the app and removes the folder. Playwright is an optional peer: the app adds `playwright-core` as a dev dependency when it writes such tests.
+
+## What Brock gives an app
+
+- The shell: title bar, menu, profiles, settings hub, About, search palette, bug report, toasts, widgets and the logs widget.
+- The updater module, with the title bar badge and the update dialog.
+- The automated review, `--review`, with a report and screenshots.
+- A port block per app and per thread worktree, with `strictPort` (see Ports).
+- `brock check` and `brock sync` at an app root or a workspace root.
+- `brock adopt` for a repo: lint configs, knip entries (`brock.workspace.mjs`, `.worktrees/**` ignored, `brock-thread` ignored when linked), `.gitignore` lines for every generated output (`build/icons`, `build/splash`, `build/installer-splash.png`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`), and the repo command. It writes no splash or logo markup and names any app page that carries a hand-written one.
+- `launchAppForTest` for app-specific e2e tests.
+- `confirmAction`, `useNow`, `useCopyText`, `useKeyedGuard` in brock-react, `redactSecrets` in brock-core, and `lanAddresses()` with the `network:lanAddresses` channel in brock-electron.
+
+A zip export and import of data domains stays in each app: what goes in the archive, the manifest and the checks on import depend on the app's own records.
 
 ## Acceptance for a blank app
 

@@ -33,6 +33,10 @@
       "default": "./src/vite-config.mjs"
     },
     "./builder": "./src/builder-config.mjs",
+    "./testing": {
+      "types": "./src/testing/index.d.mts",
+      "default": "./src/testing/index.mjs"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -57,10 +61,14 @@
     "@vitejs/plugin-react": ">=5",
     "electron": ">=38",
     "electron-builder": ">=26",
-    "electron-vite": ">=5"
+    "electron-vite": ">=5",
+    "playwright-core": ">=1.40"
   },
   "peerDependenciesMeta": {
     "electron-builder": {
+      "optional": true
+    },
+    "playwright-core": {
       "optional": true
     }
   }

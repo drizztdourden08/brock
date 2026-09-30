@@ -8,6 +8,7 @@ import {
 import { initRepository } from './git-init.mjs';
 import { applyDependencies } from './local-links.mjs';
 import { writePnpmFiles } from './pnpm-files.mjs';
+import { writePortBase } from './port-base.mjs';
 import { writeReleaseWorkflow } from './release-files.mjs';
 import { applyIdentity } from './substitute.mjs';
 import { templateModules } from './template-modules.mjs';
@@ -121,6 +122,7 @@ const scaffold = async (plan) => {
   console.log(`create-brock: copying ${basename(templateDir)} template to ${targetDir}`);
   copyTemplate(templateDir, targetDir);
   applyIdentity(targetDir, identity);
+  console.log(`create-brock: dev ports from ${writePortBase(targetDir, identity.id)} (product.ports.base)`);
   const { added, pending } = applyDependencies(targetDir, { modules, version: BROCK_VERSION, templateDir, local, tessera });
   if (added.length) console.log(`create-brock: added ${added.join(', ')} to dependencies`);
   const workspaceRoot = findWorkspaceRoot(targetDir);

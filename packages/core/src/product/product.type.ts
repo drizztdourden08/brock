@@ -92,7 +92,6 @@ interface ProductConfig {
   icons: ProductIcons;
   logos: ProductLogos;
   homeScreen: string;
-  modules: string[];
   ports?: ProductPorts;
   installer: InstallerConfig;
 }

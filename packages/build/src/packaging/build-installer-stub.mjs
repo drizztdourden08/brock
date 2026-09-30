@@ -47,7 +47,8 @@ const stageStub = (rootDir, inputs, manifestUrl) => {
   const out = join(rootDir, STUB_OUT);
   const res = join(fileURLToPath(STUB_DIR), 'res');
   mkdirSync(join(out, 'obj'), { recursive: true });
-  writeFileSync(join(out, 'product.h'), stubProductHeader({ config, colours, manifestUrl }));
+  const appVersion = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')).version ?? '0.0.0';
+  writeFileSync(join(out, 'product.h'), stubProductHeader({ config, colours, manifestUrl, appVersion }));
   const rc = readFileSync(join(res, 'resources.rc.tmpl'), 'utf8')
     .replaceAll('__PRODUCT__', config.name.replace(/"/g, '""'))
     .replaceAll('__STUB_FILE__', `${config.id}-setup`);

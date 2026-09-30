@@ -23,7 +23,7 @@ bool Flag(const std::wstring& arg, const wchar_t* name, std::wstring* value) {
 // text lengths the running installer has to fit.
 ui::State Sample(const std::wstring& screen) {
   ui::State s;
-  s.version = L"0.15.2";
+  s.version = BROCK_PREVIEW_VERSION;
   s.phase = 0.38f;
   // Derived from kStubVersion, never written out. A hardcoded number here renders a
   // version the built stub does not report, which is exactly how a wrong one survived

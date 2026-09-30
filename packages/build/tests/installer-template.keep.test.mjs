@@ -109,7 +109,7 @@ describe('stubColours', () => {
 
 describe('stubProductHeader', () => {
   const header = (installer = INSTALLER) =>
-    stubProductHeader({ config: { ...CONFIG, installer }, colours: stubColours(LOOK, FALLBACK_THEME), manifestUrl: 'https://x/install.json' });
+    stubProductHeader({ config: { ...CONFIG, installer }, colours: stubColours(LOOK, FALLBACK_THEME), manifestUrl: 'https://x/install.json', appVersion: '1.2.3' });
 
   it('writes every colour, the gradient and the angle as macros', () => {
     const text = header();

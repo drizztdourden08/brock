@@ -31,16 +31,18 @@ const colourMacros = (names, prefix, colours) =>
  * @property {import('@drizztdourden08/brock-core/product').ProductConfig} config
  * @property {import('../installer/stub-colours.mjs').StubColours} colours
  * @property {string} manifestUrl
+ * @property {string} appVersion  shown by the preview renders
  */
 
 /**
  * @param {StubHeaderInput} input
  * @returns {string} the product.h the stub sources include
  */
-const stubProductHeader = ({ config, colours, manifestUrl }) => {
+const stubProductHeader = ({ config, colours, manifestUrl, appVersion }) => {
   const { installer } = config;
   const macros = {
     BROCK_STUB_VERSION: String(STUB_VERSION),
+    BROCK_PREVIEW_VERSION: wide(appVersion),
     BROCK_PRODUCT: wide(config.name),
     BROCK_PACK_ID: wide(config.id),
     BROCK_BRAND: wide(config.name.toUpperCase()),

@@ -2,12 +2,15 @@
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { basename, join, relative } from 'node:path';
-import { appendModuleId, findWorkspaceRoot, installLauncher, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES } from '@drizztdourden08/brock-build';
+import {
+  appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES,
+} from '@drizztdourden08/brock-build';
 import { initRepository } from './git-init.mjs';
 import { applyDependencies } from './local-links.mjs';
 import { writePnpmFiles } from './pnpm-files.mjs';
 import { writeReleaseWorkflow } from './release-files.mjs';
 import { applyIdentity } from './substitute.mjs';
+import { templateModules } from './template-modules.mjs';
 import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
 
 /**
@@ -76,16 +79,31 @@ const removeRootOwnedFiles = (targetDir) => {
 };
 
 /**
- * @param {ScaffoldPlan} plan
- * @param {string | null} workspaceRoot
- * @param {object} config
- * @returns {number} exit code
+ * @param {string} targetDir
+ * @param {string[]} packages module packages whose peers were not known before install
+ * @returns {Promise<number>} exit code
  */
-const installThenResync = ({ targetDir, modules }, workspaceRoot, config) => {
-  const code = runInstall(workspaceRoot ?? targetDir);
-  if (code !== 0) return code;
-  if (modules.length) syncApp(targetDir, config, { onMissing: 'skip' });
+const installPendingPeers = async (targetDir, packages) => {
+  for (const name of packages) {
+    const code = await installPeers(targetDir, name);
+    if (code !== 0) return code;
+  }
   return 0;
+};
+
+/**
+ * @param {string} targetDir
+ * @param {string | null} workspaceRoot
+ * @param {{ modules: string[] }} config
+ * @param {string[]} pending
+ * @returns {Promise<{ code: number, sync: { missing: { id: string }[] } | null }>} the resync, when it ran
+ */
+const installThenResync = async (targetDir, workspaceRoot, config, pending) => {
+  const code = runInstall(workspaceRoot ?? targetDir);
+  if (code !== 0) return { code, sync: null };
+  const peersCode = await installPendingPeers(targetDir, pending);
+  if (peersCode !== 0) return { code: peersCode, sync: null };
+  return { code: 0, sync: config.modules.length ? syncApp(targetDir, config, { onMissing: 'skip' }) : null };
 };
 
 /**
@@ -93,16 +111,17 @@ const installThenResync = ({ targetDir, modules }, workspaceRoot, config) => {
  * @returns {Promise<number>} exit code
  */
 const scaffold = async (plan) => {
-  const { targetDir, identity, modules, local, tessera, install } = plan;
+  const { targetDir, identity, local, tessera, install } = plan;
   if (!isEmptyDir(targetDir)) {
     console.error(`create-brock: ${targetDir} is not empty`);
     return 1;
   }
   const templateDir = locateTemplate();
+  const modules = [...new Set([...templateModules(templateDir), ...plan.modules])];
   console.log(`create-brock: copying ${basename(templateDir)} template to ${targetDir}`);
   copyTemplate(templateDir, targetDir);
   applyIdentity(targetDir, identity);
-  const added = applyDependencies(targetDir, { modules, version: BROCK_VERSION, local, tessera });
+  const { added, pending } = applyDependencies(targetDir, { modules, version: BROCK_VERSION, templateDir, local, tessera });
   if (added.length) console.log(`create-brock: added ${added.join(', ')} to dependencies`);
   const workspaceRoot = findWorkspaceRoot(targetDir);
   if (workspaceRoot) {
@@ -120,13 +139,11 @@ const scaffold = async (plan) => {
   console.log(`create-brock: wrote ${sync.written.length} managed file(s)`);
   const command = writeLauncher(targetDir, identity.id, workspaceRoot);
 
-  if (install) {
-    const code = installThenResync(plan, workspaceRoot, config);
-    if (code !== 0) return code;
-  }
+  const installed = install ? await installThenResync(targetDir, workspaceRoot, config, pending) : { code: 0, sync: null };
+  if (installed.code !== 0) return installed.code;
   const repository = initRepository(targetDir, identity);
   if (repository) console.log(`create-brock: ${repository}`);
-  printNextSteps(plan, sync, command);
+  printNextSteps(plan, installed.sync ?? sync, command);
   return 0;
 };
 

@@ -14,6 +14,7 @@ interface VersionOption extends UpdateInfo {
 }
 
 interface UpdaterCapabilities {
+  hasSource: boolean;
   canCheck: boolean;
   canInstall: boolean;
 }

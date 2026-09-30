@@ -7,7 +7,7 @@ import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
 
-type TitleBarSlot = ComponentType;
+type TitleBarSlot = ComponentType & { conditional?: boolean };
 
 interface RendererModule {
   id: string;
@@ -23,6 +23,7 @@ interface RendererModule {
 }
 
 interface MergedModules {
+  ids: string[];
   screens: ScreenDef[];
   settingsTabs: TabDef<object>[];
   menu: MenuEntry[];

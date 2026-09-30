@@ -11,5 +11,5 @@ export default defineBrockConfig({
     icons: { brand: 'brock' },
   },
   targets: ['desktop'],
-  modules: [],
+  modules: ['updater'],
 });

@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
-import type { RendererModule } from '../../modules/renderer-module.type';
+import type { RendererModule, TitleBarSlot } from '../../modules/renderer-module.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsEffect } from '../../stores/settings-store.type';
@@ -45,4 +45,11 @@ interface MenuBuildInput {
   onReportBug: () => void;
 }
 
-export type { BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput };
+interface ReviewTourInput {
+  settled: boolean;
+  menu: readonly MenuEntry[];
+  slots?: readonly TitleBarSlot[];
+  moduleIds: readonly string[];
+}
+
+export type { BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput };

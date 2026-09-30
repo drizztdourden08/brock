@@ -24,6 +24,7 @@ const useUpdateDialog = (): UpdateDialogModel => {
     notes: choice.chosen?.releaseNotes ?? info?.releaseNotes ?? '',
     showPicker: capabilities.canInstall && choice.groups.length > 0,
     showPrereleaseNote: choice.chosen?.prerelease === true,
+    showFootnote: capabilities.canCheck,
   };
 };
 

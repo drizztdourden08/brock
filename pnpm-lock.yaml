@@ -450,6 +450,9 @@ importers:
       '@drizztdourden08/brock-react':
         specifier: workspace:*
         version: link:../../packages/react
+      '@drizztdourden08/brock-updater':
+        specifier: workspace:*
+        version: link:../../packages/modules/updater
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
         version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -462,6 +465,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
+      velopack:
+        specifier: 'catalog:'
+        version: 1.2.158
       zustand:
         specifier: 'catalog:'
         version: 5.0.15(@types/react@19.3.0)(react@19.3.0)

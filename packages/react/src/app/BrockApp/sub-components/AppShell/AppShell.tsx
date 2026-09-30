@@ -20,10 +20,11 @@ import { useShellReady } from '../../behavior/useShellReady';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
 import { useStartup } from '../../behavior/useStartup';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
+import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, log, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
+  const { settingsStore, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
   const { product, home, logoSrc, instanceLogoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
@@ -38,7 +39,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const fullMenu = useShellMenu(moduleMenu, railed);
   const titleBarHidden = useTitleBarHidden();
-  useReviewTour(settled, fullMenu, titleBarSlots);
+  useReviewTour({ settled, menu: fullMenu, slots: titleBarSlots, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
 

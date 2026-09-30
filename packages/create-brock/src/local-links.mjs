@@ -2,6 +2,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { MODULE_PACKAGES } from '@drizztdourden08/brock-build';
+import { modulePeers } from './module-peers.mjs';
 
 const SCOPE = '@drizztdourden08/';
 
@@ -18,13 +19,23 @@ const LOCAL_PACKAGES = {
 const toLinkSpec = (dir) => `link:${resolve(dir).replace(/\\/g, '/')}`;
 
 /**
+ * @param {{ local: string, tessera?: string | null}} paths
+ * @returns {string | null} null keeps the registry spec
+ */
+const tesseraSpec = ({ local, tessera }) => {
+  if (tessera) return toLinkSpec(tessera);
+  const sibling = resolve(local, '../tessera');
+  return existsSync(join(sibling, 'package.json')) ? toLinkSpec(sibling) : null;
+};
+
+/**
  * @param {string} packageName
  * @param {{ local: string, tessera?: string | null}} paths
  */
 const localSpecFor = (packageName, { local, tessera }) => {
   if (!packageName.startsWith(SCOPE)) return null;
   const short = packageName.slice(SCOPE.length);
-  if (short === 'tessera') return toLinkSpec(tessera ?? resolve(local, '../tessera'));
+  if (short === 'tessera') return tesseraSpec({ local, tessera });
   if (LOCAL_PACKAGES[short]) return toLinkSpec(join(local, LOCAL_PACKAGES[short]));
   if (short.startsWith('brock-')) return toLinkSpec(join(local, 'packages/modules', short.slice('brock-'.length)));
   return null;
@@ -46,25 +57,43 @@ const rewriteWorkspaceSpecs = (deps, version) =>
 
 /**
  * @param {Record<string, string>} dependencies
- * @param {string[]} modules
- * @param {string} version
- * @returns {string[]}  Package names added for the modules
+ * @param {Record<string, string>} specs
+ * @returns {string[]} the names added
  */
-const addModuleDependencies = (dependencies, modules, version) => {
+const addMissing = (dependencies, specs) => {
+  const fresh = Object.keys(specs).filter((name) => !dependencies[name]);
+  for (const name of fresh) dependencies[name] = specs[name];
+  return fresh;
+};
+
+/**
+ * @param {Record<string, string>} dependencies
+ * @param {string[]} modules
+ * @param {{ version: string, local: string | null, templateDir: string }} opts
+ * @returns {{ added: string[], peers: string[], pending: string[] }} pending: peers wait for install
+ */
+const addModuleDependencies = (dependencies, modules, { version, local, templateDir }) => {
   const added = [];
+  const peers = [];
+  const pending = [];
   for (const id of modules) {
     const name = MODULE_PACKAGES[id] ?? id;
-    if (dependencies[name]) continue;
-    dependencies[name] = MODULE_PACKAGES[id] ? `^${version}` : 'latest';
-    added.push(name);
+    added.push(...addMissing(dependencies, { [name]: MODULE_PACKAGES[id] ? `^${version}` : 'latest' }));
+    const declared = modulePeers(id, { local, templateDir });
+    if (!declared) {
+      pending.push(name);
+      continue;
+    }
+    peers.push(...Object.keys(declared));
+    added.push(...addMissing(dependencies, declared));
   }
-  return added;
+  return { added, peers, pending };
 };
 
 const linkedNames = (pkg) =>
   Object.entries({ ...pkg.dependencies, ...pkg.devDependencies }).filter(([, spec]) => spec.startsWith('link:')).map(([name]) => name);
 
-const ignoreLinkedInKnip = (targetDir, names) => {
+const ignoreInKnip = (targetDir, names) => {
   const file = join(targetDir, 'knip.json');
   if (names.length === 0 || !existsSync(file)) return;
   const knip = JSON.parse(readFileSync(file, 'utf8'));
@@ -74,23 +103,23 @@ const ignoreLinkedInKnip = (targetDir, names) => {
 
 /**
  * @param {string} targetDir
- * @param {{ modules: string[], version: string, local?: string | null, tessera?: string | null}} opts
- * @returns {string[]}  Package names added for the modules
+ * @param {{ modules: string[], version: string, templateDir: string, local?: string | null, tessera?: string | null}} opts
+ * @returns {{ added: string[], pending: string[] }}
  */
-const applyDependencies = (targetDir, { modules, version, local = null, tessera = null }) => {
+const applyDependencies = (targetDir, { modules, version, templateDir, local = null, tessera = null }) => {
   const file = join(targetDir, 'package.json');
   const pkg = JSON.parse(readFileSync(file, 'utf8'));
   pkg.dependencies ??= {};
-  const added = addModuleDependencies(pkg.dependencies, modules, version);
+  const { added, peers, pending } = addModuleDependencies(pkg.dependencies, modules, { version, local, templateDir });
   const blocks = ['dependencies', 'devDependencies'].filter((block) => pkg[block]);
   for (const block of blocks) pkg[block] = rewriteWorkspaceSpecs(pkg[block], version);
   if (local) {
     const paths = { local, tessera };
     for (const block of blocks) pkg[block] = rewriteToLocal(pkg[block], paths);
-    ignoreLinkedInKnip(targetDir, linkedNames(pkg));
   }
+  ignoreInKnip(targetDir, [...peers, ...(local ? linkedNames(pkg) : [])]);
   writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
-  return added;
+  return { added, pending };
 };
 
 export { applyDependencies };

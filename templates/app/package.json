@@ -26,10 +26,12 @@
     "@drizztdourden08/brock-core": "workspace:*",
     "@drizztdourden08/brock-electron": "workspace:*",
     "@drizztdourden08/brock-react": "workspace:*",
+    "@drizztdourden08/brock-updater": "workspace:*",
     "@drizztdourden08/tessera": "catalog:",
     "@electron-toolkit/utils": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "velopack": "catalog:",
     "zustand": "catalog:"
   },
   "devDependencies": {

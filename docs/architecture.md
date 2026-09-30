@@ -13,7 +13,7 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-react` | renderer | `BrockApp`, platform provider and hosts, stores kit, screen registry, shell views, settings engine |
 | `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories, ensure-electron, the `brock` CLI (sync, check, add, dev, build, package, start), the release workflow template |
 | `@drizztdourden08/create-brock` | tooling | the scaffolder: `pnpm create @drizztdourden08/brock` |
-| `@drizztdourden08/brock-updater` | module | Velopack updater, the title bar version tag, UpdateDialog |
+| `@drizztdourden08/brock-updater` | module | Velopack updater, the title bar update badge, UpdateDialog |
 | `@drizztdourden08/brock-secrets` | module | safeStorage secret store, device-code sign-in |
 | `@drizztdourden08/brock-input` | module | SDL3 controllers, mapping DB, calibration, haptics, InputTester |
 | `@drizztdourden08/brock-display` | module | refresh rate, synced rate, display mode switch |
@@ -153,7 +153,7 @@ The bridge adds `isDev`, `os`, `getFilePath`, `startup` (`fresh`, `automation`, 
 - Logos come from `product.logos`: `app` (default `./logos/icon-256.png`) in the title bar, the about screen and both splashes, `instance` (default `./logos/icon-bot.svg`) for a named instance. The title bar hides in `borderless` and `fullscreen` window modes, read from the `windowMode` setting.
 - Shell views (each with a Storylite story): `TitleBar` (product name, menu slot, instance badge, module slots beside the title, window controls), `BootProgressBar`, `About`, `SettingsHub<S>` + `SettingsLayout<S>` + `SettingsPage`, `ConfirmDialog`, `ScreenLayer`.
 - `RendererModule { id; screens?; settingsTabs?; menu?; Provider?; titleBar?: TitleBarSlot[]; searchActions?: SearchAction[]; widgets?: WidgetDef[]; ports?: Partial<Record<HostShell, Partial<PortCreators>>> }`. A module menu entry with `section` joins that submenu; one without sits before Credits. Ports are merged into the host factory with `withPorts`.
-- `titleBar` is how a module puts something in the title bar, since brock-react cannot import a module. A `TitleBarSlot` is a `ComponentType` with no props: it reads its own store and renders a small control, or `null`. `BrockApp` merges the slots of every module in load order and `TitleBar` renders them after the title and the instance badge, keyed by `displayName`. The updater contributes its version tag this way.
+- `titleBar` is how a module puts something in the title bar, since brock-react cannot import a module. A `TitleBarSlot` is a `ComponentType` with no props: it reads its own store and renders a small control, or `null`. `BrockApp` merges the slots of every module in load order and `TitleBar` renders them after the title and the instance badge, keyed by `displayName`. A slot that is empty most of the time sets `conditional = true`, and the review stops expecting it to draw. The updater contributes its "Update available" badge this way.
 
 Every app gets the standard features below. `StandardOverlays` mounts them in one place inside `AppShell`: `<StandardOverlays menu={fullMenu} actions={merged.searchActions} widgets={merged.widgets} />`.
 

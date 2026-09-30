@@ -12,6 +12,9 @@ const ABOUT_SCREEN = ABOUT_ENTRY.screen ?? 'about';
 const VERSION_LABEL = 'Version';
 const PROFILES_SCREEN = 'profiles';
 const LOGS_WIDGET_KEY = `widget-${LOGS_WIDGET_ID}`;
+const UPDATER_MODULE_ID = 'updater';
+const UPDATE_MENU_LABEL = 'Check for updates';
+const CONDITIONAL_SLOT_CLASS = 'titlebar__slot--conditional';
 
 const BUILT_IN_ENTRIES: readonly Pick<MenuItem, 'key' | 'label' | 'screen'>[] = [HOME_ENTRY, ...TOP_ENTRIES, ABOUT_ENTRY, QUIT_ENTRY];
 
@@ -20,6 +23,9 @@ const SELECTORS = {
   title: '.titlebar__title',
   logo: '.titlebar__logo',
   slot: '.titlebar__slot',
+  versionTag: '.titlebar .version-tag',
+  updateBadge: '.titlebar .titlebar__update-badge',
+  updateDialog: '.dialog.update-dialog',
   menuButton: '.titlebar__left button[aria-label="Menu"]',
   searchButton: '.titlebar .search-button',
   bugReportButton: '.titlebar .bug-report-button',
@@ -53,10 +59,11 @@ const RESET_CLOSERS = [
   { open: SELECTORS.menu, control: SELECTORS.menuButton },
   { open: SELECTORS.palette, control: SELECTORS.paletteScrim },
   { open: SELECTORS.bugReportDialog, control: SELECTORS.dialogClose },
+  { open: SELECTORS.updateDialog, control: SELECTORS.dialogClose },
   { open: SELECTORS.layer, control: SELECTORS.layerClose },
 ] as const;
 
 export {
-  ABOUT_SCREEN, ADVANCED_SECTION, BUILT_IN_ENTRIES, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME, SELECTORS, SETTLE_MS,
-  VERSION_LABEL, WAIT_MS,
+  ABOUT_SCREEN, ADVANCED_SECTION, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME,
+  SELECTORS, SETTLE_MS, UPDATE_MENU_LABEL, UPDATER_MODULE_ID, VERSION_LABEL, WAIT_MS,
 };

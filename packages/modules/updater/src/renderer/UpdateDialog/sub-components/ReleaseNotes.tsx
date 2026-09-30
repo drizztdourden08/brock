@@ -7,8 +7,8 @@ const ReleaseNotes = (props: ReleaseNotesProps) => {
 
   return (
     <Box className="update-dialog__notes">
-      <Text className="update-dialog__notes-title">Release notes</Text>
-      <ScrollArea className="update-dialog__notes-body">
+      <Text as="h4" className="update-dialog__notes-title">Release Notes</Text>
+      <ScrollArea className="update-dialog__notes-content">
         <Text as="p" className="update-dialog__notes-text">{notes}</Text>
       </ScrollArea>
     </Box>

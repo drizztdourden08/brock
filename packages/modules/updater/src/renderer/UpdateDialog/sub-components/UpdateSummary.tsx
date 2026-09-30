@@ -5,21 +5,24 @@ import type { UpdateSummaryProps } from '../UpdateDialog.type';
 const UpdateSummary = (props: UpdateSummaryProps) => {
   const { status, info, currentVersion, capabilities } = props;
 
+  if (!capabilities.hasSource) {
+    return <Text as="p" className="update-dialog__status">This app has no update source, so it cannot check for updates.</Text>;
+  }
   if (!capabilities.canCheck) {
     return <Text as="p" className="update-dialog__status">This build does not check for updates.</Text>;
-  }
-  if (status === 'checking') {
-    return <Text as="p" className="update-dialog__status">Checking for a newer version.</Text>;
   }
 
   return (
     <>
-      <Text as="p" className="update-dialog__version">
-        {info ? `Version ${info.version} is available.` : `Version ${currentVersion} is the latest.`}
-      </Text>
-      {!capabilities.canInstall && info && (
-        <Text as="p" className="update-dialog__status">
-          This build cannot update itself. The release page has the download.
+      {status === 'checking' && <Text as="p" className="update-dialog__status">Checking for newer version...</Text>}
+      {info && (
+        <Text as="p" className="update-dialog__version">
+          Version <Text as="strong">{info.version}</Text> is available
+        </Text>
+      )}
+      {status !== 'checking' && !info && (
+        <Text as="p" className="update-dialog__version">
+          Version <Text as="strong">{currentVersion}</Text> is the latest
         </Text>
       )}
     </>

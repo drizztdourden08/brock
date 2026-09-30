@@ -5,14 +5,18 @@ import type { BugReportButtonProps } from './BugReportButton.type';
 import './BugReportButton.css';
 
 const BugReportButton = (props: BugReportButtonProps) => {
-  const { className = '' } = props;
+  const { className = '', onBeforeOpen } = props;
+  const open = () => {
+    onBeforeOpen?.();
+    bugReport.open();
+  };
   return (
     <IconButton
       variant="ghost"
       size="sm"
       label="Report a bug"
       className={`bug-report-button${className ? ` ${className}` : ''}`}
-      onClick={bugReport.open}
+      onClick={open}
     >
       <Icon name="bug" size={14} />
     </IconButton>

@@ -9,7 +9,7 @@ const UPDATER_IDLE: UpdaterData = {
   versions: [],
   prefs: { allowPrerelease: false },
   currentVersion: '',
-  capabilities: { canCheck: false, canInstall: false },
+  capabilities: { hasSource: false, canCheck: false, canInstall: false },
   dialogOpen: false,
 };
 

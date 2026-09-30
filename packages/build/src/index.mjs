@@ -8,6 +8,7 @@ export { syncApp, BROCK_VERSION } from './modules/sync.mjs';
 export { appendModuleId } from './commands/add.mjs';
 export { resolveModules } from './modules/resolve.mjs';
 export { BUILT_IN_MODULES, MODULE_PACKAGES, packageForModule, parseAddInput } from './modules/registry.mjs';
+export { installPeers } from './modules/install-peers.mjs';
 export { MANAGED_FILES } from './managed/templates.mjs';
 export { findWorkspaceRoot, mergeCatalog } from './workspace.mjs';
 export { installLauncher } from './launcher/install-launcher.mjs';

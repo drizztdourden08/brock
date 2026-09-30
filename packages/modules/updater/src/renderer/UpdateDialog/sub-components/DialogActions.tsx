@@ -6,14 +6,14 @@ import { isBusy } from '../behavior/is-busy';
 
 const DialogActions = (props: DialogActionsProps) => {
   const {
-    status, canInstall, hasChoices, selected, isLatest, action, info, confirmRef, onApply, onOpenReleasePage, onClose,
+    status, canCheck, canInstall, hasChoices, selected, isLatest, action, info, confirmRef, onApply, onOpenReleasePage, onClose,
   } = props;
   const busy = isBusy(status);
   const canAct = busy || status === 'available' || (status === 'idle' && hasChoices);
 
   return (
     <>
-      <Button variant="tertiary" onClick={onClose}>Later</Button>
+      <Button variant="tertiary" onClick={onClose}>{canCheck ? 'Later' : 'Close'}</Button>
       {canInstall && canAct && (
         <Button
           ref={confirmRef}

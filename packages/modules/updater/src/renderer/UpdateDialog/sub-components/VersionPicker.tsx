@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Box, Select, Text, Toggle } from '@drizztdourden08/tessera/primitives';
+import { Box, Select, Small, Toggle } from '@drizztdourden08/tessera/primitives';
 import type { VersionPickerProps } from '../UpdateDialog.type';
 
 const VersionPicker = (props: VersionPickerProps) => {
@@ -16,7 +16,7 @@ const VersionPicker = (props: VersionPickerProps) => {
         />
       </Box>
       <Box className="update-dialog__picker">
-        <Text className="update-dialog__picker-label">Version to install</Text>
+        <Small tone="dim">Version to install</Small>
         <Select
           value={selected}
           onChange={onSelect}

@@ -1,29 +1,29 @@
 /* @layer renderer-shell @kind component */
-import { Text } from '@drizztdourden08/tessera/primitives';
+import { P, Small, Strong } from '@drizztdourden08/tessera/primitives';
 import type { UpdateSummaryProps } from '../UpdateDialog.type';
 
 const UpdateSummary = (props: UpdateSummaryProps) => {
   const { status, info, currentVersion, capabilities } = props;
 
   if (!capabilities.hasSource) {
-    return <Text as="p" className="update-dialog__status">This app has no update source, so it cannot check for updates.</Text>;
+    return <Small tone="muted">This app has no update source, so it cannot check for updates.</Small>;
   }
   if (!capabilities.canCheck) {
-    return <Text as="p" className="update-dialog__status">This build does not check for updates.</Text>;
+    return <Small tone="muted">This build does not check for updates.</Small>;
   }
 
   return (
     <>
-      {status === 'checking' && <Text as="p" className="update-dialog__status">Checking for newer version...</Text>}
+      {status === 'checking' && <Small tone="muted">Checking for newer version...</Small>}
       {info && (
-        <Text as="p" className="update-dialog__version">
-          Version <Text as="strong">{info.version}</Text> is available
-        </Text>
+        <P className="update-dialog__version">
+          Version <Strong>{info.version}</Strong> is available
+        </P>
       )}
       {status !== 'checking' && !info && (
-        <Text as="p" className="update-dialog__version">
-          Version <Text as="strong">{currentVersion}</Text> is the latest
-        </Text>
+        <P className="update-dialog__version">
+          Version <Strong>{currentVersion}</Strong> is the latest
+        </P>
       )}
     </>
   );

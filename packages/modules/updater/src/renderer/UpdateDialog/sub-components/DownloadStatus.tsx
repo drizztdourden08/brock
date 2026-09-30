@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Box, ProgressBar, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, ProgressBar, Small, Text } from '@drizztdourden08/tessera/primitives';
 import type { DownloadStatusProps } from '../UpdateDialog.type';
 
 const DownloadStatus = (props: DownloadStatusProps) => {
@@ -10,20 +10,16 @@ const DownloadStatus = (props: DownloadStatusProps) => {
       {status === 'downloading' && (
         <Box className="update-dialog__progress">
           <ProgressBar value={percent} live />
-          <Text className="update-dialog__progress-text">{`${Math.round(percent)}%`}</Text>
+          <Text variant="caption" className="update-dialog__progress-text">{`${Math.round(percent)}%`}</Text>
         </Box>
       )}
       {status === 'ready' && (
-        <Text as="p" className="update-dialog__ready">
-          Downloaded. The app closes and starts again on the new version.
-        </Text>
+        <Small tone="success">Downloaded. The app closes and starts again on the new version.</Small>
       )}
       {!canInstall && info && (
-        <Text as="p" className="update-dialog__status">
-          This build cannot update itself. The release page has the download.
-        </Text>
+        <Small tone="muted">This build cannot update itself. The release page has the download.</Small>
       )}
-      {status === 'error' && <Text as="p" className="update-dialog__error">{`Update failed: ${error ?? 'unknown error'}`}</Text>}
+      {status === 'error' && <Small tone="danger">{`Update failed: ${error ?? 'unknown error'}`}</Small>}
     </>
   );
 };

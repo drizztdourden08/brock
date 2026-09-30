@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { Button, Flex } from '@drizztdourden08/tessera/primitives';
-import { StickView } from './StickView';
-import { TriggerView } from './TriggerView';
+import { StickPlot } from '@drizztdourden08/tessera/composites';
+import { Button, Flex, ProgressBar, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import type { AxesPanelProps } from './AxesPanel.type';
 
 const AxesPanel = (props: AxesPanelProps) => {
@@ -13,19 +12,20 @@ const AxesPanel = (props: AxesPanelProps) => {
     <Flex gap="lg" align="start" wrap>
       {presentSticks.map(({ side, label, xAxis, yAxis, point, calibrated }) => (
         <Flex key={side} direction="column" align="center" gap="xs">
-          <StickView label={label} point={point} calibrated={calibrated} />
+          <StickPlot x={point.x} y={point.y} label={label} calibrated={calibrated} />
           <Button variant="tertiary" size="sm" onClick={() => onCalibrate({ kind: 'stick', slot: { side, label, xAxis, yAxis } })}>
             Calibrate
           </Button>
         </Flex>
       ))}
       {presentTriggers.map(({ axisIndex, label, value, calibrated }) => (
-        <Flex key={axisIndex} direction="column" gap="xs">
-          <TriggerView label={label} value={value} calibrated={calibrated} />
+        <Stack key={axisIndex} gap="xs" className="device-card__trigger">
+          <StatRow label={label} value={`${value.toFixed(2)}${calibrated ? ' cal' : ''}`} mono />
+          <ProgressBar value={value} max={1} live />
           <Button variant="tertiary" size="sm" onClick={() => onCalibrate({ kind: 'trigger', slot: { axisIndex, label } })}>
             Calibrate
           </Button>
-        </Flex>
+        </Stack>
       ))}
     </Flex>
   );

@@ -184,8 +184,9 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   records every file each migration touched; `--report` writes that and the to-dos as
   JSON for the upgrade verb.
 - `src/upgrade/codemods/` holds the helpers: `findJsxProps` reads a JSX element's
-  props, with type arguments and nested braces, and `removeSpans` deletes them and the
-  lines they leave empty.
+  props, with type arguments and nested braces, `removeSpans` deletes them and the
+  lines they leave empty, and `patternTodos` turns each match of a list of rules into a
+  to-do on its line, for a change that only the app author can make.
 
 The 0.1.1 folder holds these, each with a test in `tests/`:
 
@@ -207,6 +208,13 @@ The 0.1.1 folder holds these, each with a test in `tests/`:
 - `knip-custom-pages` adds `src/screens/**/*.custom.tsx` to the knip entries after
   `src/main.tsx`, since the build reads a custom page's `searchEntries` instead of
   importing it.
+- `widget-layout-v2` (breaking) flags code that still patched a widget through the
+  layout store's `update`, read the flat `layout.widgets`, passed `topOffset` or
+  `onUpdate` to `WidgetManager`, or gave `widgets` to `StandardOverlays`. Stored layouts
+  need nothing: the host runs `migrateLayout` on load.
+- `hero-slots` (breaking) flags a hero page that fills `Facts` with children, which now
+  takes `rows`, or puts its heading inside `Backdrop`, which is now the scene behind the
+  Hero composite.
 
 ## Platforms
 

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { PressedGridItem } from '@drizztdourden08/tessera/composites';
 import type { DeviceEntry, VibrateSegment } from '../../device.type';
 import type { StickPoint } from '../../calibration.type';
 import type { StickSlot, TriggerSlot } from '../axis-slot.type';
@@ -26,4 +27,9 @@ interface TriggerReading extends TriggerSlot {
   calibrated: boolean;
 }
 
-export type { DeviceCardProps, RumblePreset, CalibrationTarget, StickReading, TriggerReading };
+interface ButtonReading {
+  items: PressedGridItem[];
+  pressed: string[];
+}
+
+export type { ButtonReading, DeviceCardProps, RumblePreset, CalibrationTarget, StickReading, TriggerReading };

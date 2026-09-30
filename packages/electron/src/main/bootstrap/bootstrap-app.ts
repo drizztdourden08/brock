@@ -32,6 +32,9 @@ import { armScreenshotFlag } from './screenshot-flag';
 import { armSplashScreenshotFlag } from './splash-screenshot-flag';
 import { armReviewFlag } from './review-flag';
 import { installAppLifecycle } from './app-lifecycle';
+import { registerHandlerGroups } from './register-handlers';
+import { widgetHandlers } from '../widgets/widget-handlers';
+import { widgetWindowSetup } from '../widgets/widget-window-setup';
 import { logBoot } from './boot-timing';
 
 const onReady = async ({ ctx, options, dataDirs, setup }: ReadyInput): Promise<void> => {
@@ -59,6 +62,7 @@ const onReady = async ({ ctx, options, dataDirs, setup }: ReadyInput): Promise<v
   armScreenshotFlag(ctx);
   armSplashScreenshotFlag(ctx);
   armReviewFlag(ctx, setup.icon);
+  registerHandlerGroups([widgetHandlers(widgetWindowSetup(setup, plan))], ctx);
 
   const openWindow = async (): Promise<void> => {
     const win = createWindow(setup, plan);

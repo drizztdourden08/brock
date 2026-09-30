@@ -12,3 +12,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
+
+.device-card__trigger {
+  min-width: var(--size-160);
+}

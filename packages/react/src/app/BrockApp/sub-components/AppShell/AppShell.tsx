@@ -8,6 +8,7 @@ import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
+import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
@@ -44,6 +45,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: fullMenu, slots: titleBarSlots, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
+  const stage = <WidgetHost widgets={widgets} main={<ScreenHost home={home} className="brock-app__screens" />} />;
 
   return (
     <Box className="brock-app">
@@ -60,12 +62,10 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
       )}
       <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
         {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
-        {railed
-          ? <Box className="brock-app__stage"><ScreenHost home={home} className="brock-app__screens" /></Box>
-          : <ScreenHost home={home} className="brock-app__screens" />}
+        {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
       </Box>
       <ConfirmDialog />
-      <StandardOverlays menu={fullMenu} actions={searchActions} widgets={widgets} />
+      <StandardOverlays menu={fullMenu} actions={searchActions} />
     </Box>
   );
 };

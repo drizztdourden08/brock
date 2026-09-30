@@ -20,4 +20,6 @@ export type { BucketDef, BucketGroupDef, MenuPlacement, ScreenMeta, ScreensConfi
 export type {
   BucketEntry, CardEntry, HeroEntry, PageEntry, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource, TabEntry,
 } from './conventions/screen-tree.type';
-export type { CardProps, HeroActionsProps, HeroArtProps, HeroFrame, HeroProps, HeroSlotProps, HeroSlots, Open, PageProps } from './kinds/screen-kinds.type';
+export type {
+  CardProps, HeroActionsProps, HeroArtProps, HeroFactsProps, HeroFrame, HeroProps, HeroSlotProps, HeroSlots, Open, PageProps,
+} from './kinds/screen-kinds.type';

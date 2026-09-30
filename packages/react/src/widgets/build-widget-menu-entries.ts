@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { MenuItem } from '../menu/menu.type';
 import { WIDGET_KEY_PREFIX } from './widget.constants';
@@ -16,7 +17,7 @@ const buildWidgetMenuEntries = (
       key: `${WIDGET_KEY_PREFIX}${def.id}`,
       label: def.label,
       icon: def.icon,
-      checked: layout.widgets.some((w) => w.id === def.id && w.visible),
+      checked: isWidgetOpen(layout, def.id),
       onClick: () => toggle(def.id),
     }));
 

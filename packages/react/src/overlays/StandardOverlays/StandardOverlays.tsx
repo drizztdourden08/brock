@@ -2,14 +2,12 @@
 import { BugReportDialog } from '../../bug-report/BugReportDialog/BugReportDialog';
 import { PaletteHost } from '../../palette/PaletteHost/PaletteHost';
 import { ToastHost } from '../../toast/ToastHost/ToastHost';
-import { WidgetHost } from '../../widgets/WidgetHost/WidgetHost';
 import type { StandardOverlaysProps } from './StandardOverlays.type';
 
 const StandardOverlays = (props: StandardOverlaysProps) => {
-  const { menu, actions, widgets } = props;
+  const { menu, actions } = props;
   return (
     <>
-      <WidgetHost widgets={widgets} />
       <PaletteHost menu={menu} actions={actions} />
       <BugReportDialog />
       <ToastHost />

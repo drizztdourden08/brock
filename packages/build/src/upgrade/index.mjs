@@ -5,3 +5,4 @@ export { runMigrations } from './run-migrations.mjs';
 export { pinApp } from './pin-app.mjs';
 export { findJsxProps } from './codemods/find-jsx-props.mjs';
 export { removeSpans } from './codemods/remove-spans.mjs';
+export { patternTodos } from './codemods/pattern-todos.mjs';

@@ -89,6 +89,13 @@ interface BucketSnapshot {
   shown: readonly string[];
 }
 
+interface HeroSnapshot {
+  hub: string;
+  rendered: boolean;
+  title: string;
+  slots: readonly string[];
+}
+
 interface UpdaterTitleBarSnapshot {
   versionShown: boolean;
   badgeShown: boolean;
@@ -112,6 +119,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
 };

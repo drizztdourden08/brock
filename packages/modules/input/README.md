@@ -92,6 +92,6 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 ## Renderer side
 
-The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed, draws both sticks and both triggers, runs a stick or trigger calibration, plays rumble patterns, and takes a new mapping line.
+The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed (Tessera `PressedGrid`), draws both sticks (`StickPlot`) and both triggers (`StatRow` over a `ProgressBar`), runs a stick or trigger calibration in a Tessera `CalibrationPanel` (the stick step draws a large `StickPlot` with the measured range, the recorded center and the dead zones; the trigger step shows the peak as the bar's second value), plays rumble patterns, and takes a new mapping line.
 
 The stores are exported for an app screen of its own: `useControllerDevicesStore`, `useControllerState(deviceKey)` and `useCalibrationStore`. `applyStickCalibration` and `applyTriggerCalibration` turn a raw reading into a calibrated one.

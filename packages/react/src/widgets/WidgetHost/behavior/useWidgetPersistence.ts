@@ -10,13 +10,13 @@ const useWidgetPersistence = (profileId: string | null): void => {
   useEffect(() => {
     hydratedFor.current = null;
     if (!profileId) {
-      useWidgetLayoutStore.getState().replace({ widgets: [] });
+      useWidgetLayoutStore.getState().replace(null);
       return;
     }
     let live = true;
     void profileViews.read(profileId).then((views) => {
       if (!live) return;
-      useWidgetLayoutStore.getState().replace(views.widgetLayout ?? { widgets: [] });
+      useWidgetLayoutStore.getState().replace(views.widgetLayout);
       useWidgetPrefStore.getState().hydrate(views.widgetPrefs ?? {});
       hydratedFor.current = profileId;
     });

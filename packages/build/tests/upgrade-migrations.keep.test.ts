@@ -119,7 +119,7 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.1.1')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(Array.from({ length: 7 }, () => '0.1.1'));
+    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(Array.from({ length: 9 }, () => '0.1.1'));
   });
 
   it('orders module migrations with the build ones by version', () => {

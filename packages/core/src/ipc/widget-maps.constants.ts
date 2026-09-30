@@ -6,6 +6,7 @@ const WIDGET_INVOKE_MAP = {
   listPoppedWidgets: 'widget:listPopped',
   setWidgetPin: 'widget:setPin',
   getWidgetWindowState: 'widget:getWindowState',
+  reviewSetWidgetPref: 'review:setWidgetPref',
 } as const satisfies Record<string, keyof WidgetInvokeContract>;
 
 const WIDGET_SEND_MAP = {
@@ -14,6 +15,7 @@ const WIDGET_SEND_MAP = {
   setWidgetFrame: 'widget:setFrame',
   publishWidgetSlice: 'widget:publish',
   subscribeWidgetRelay: 'widget:subscribe',
+  setWidgetPrefs: 'widget:setPrefs',
 } as const satisfies Record<string, keyof WidgetSendContract>;
 
 const WIDGET_EVENT_MAP = {
@@ -26,6 +28,8 @@ const WIDGET_EVENT_MAP = {
   onWidgetPopped: 'widget:popped',
   onWidgetFrame: 'widget:frame',
   onWidgetWindowState: 'widget:windowState',
+  onWidgetPrefs: 'widget:prefs',
+  onReviewWidgetPref: 'review:widgetPref',
 } as const satisfies Record<string, keyof WidgetEventContract>;
 
 export { WIDGET_EVENT_MAP, WIDGET_INVOKE_MAP, WIDGET_SEND_MAP };

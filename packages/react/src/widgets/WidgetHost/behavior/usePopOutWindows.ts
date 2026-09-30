@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { getWidgetDefinition, setFrame, setPopped } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
+import { useWidgetPrefStore } from '../../../stores/useWidgetPrefStore';
 import { dockBack } from '../../dock-back';
 import { poppedWindows } from '../../popped-windows';
 import { useWidgetLayoutStore } from '../../useWidgetLayoutStore';
@@ -31,6 +32,7 @@ const listen = (): (() => void) => {
     api.onWidgetFrame((id, patch) => store().change((layout) => setFrame(layout, id, patch, getWidgetDefinition(store().definitions, id)))),
     api.onWidgetDragOver((id, point) => store().setExternalDrag(point ? { id, point, released: false } : null)),
     api.onWidgetDropIn((id, point) => store().setExternalDrag({ id, point, released: true })),
+    api.onWidgetPrefs((id, prefs) => useWidgetPrefStore.getState().replaceWidget(id, prefs)),
   ];
   return () => {
     for (const off of offs) off();

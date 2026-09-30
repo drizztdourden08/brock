@@ -59,6 +59,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       layout={layout}
       onLayoutChange={setLayout}
       main={main}
+      mainGrip="dragging"
       onMainRect={trackMainRect}
       onPopOut={popOut}
       externalDrag={externalDrag}

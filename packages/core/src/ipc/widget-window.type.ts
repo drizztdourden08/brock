@@ -50,12 +50,14 @@ interface WidgetFrameWire {
   show: 'always' | 'context-only';
 }
 
+type WidgetPrefsWire = Record<string, unknown>;
+
 interface WidgetSlice {
   kind: string;
   data: unknown;
 }
 
 export type {
-  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetSlice, WidgetSnapLink, WidgetWindowBounds,
+  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds,
   WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState,
 };

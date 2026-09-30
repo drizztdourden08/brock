@@ -23,6 +23,7 @@ const widgetHandlers = (setup: WidgetWindowSetup): HandlerGroup => ({
     on('widget:setFrame', (_event, id, patch) => emit('widget:frame', id, patch));
     on('widget:publish', (_event, slice) => relayToWidgetWindows(slice));
     on('widget:subscribe', (_event, id) => emit('widget:snapshotRequest', id));
+    on('widget:setPrefs', (_event, id, prefs) => emit('widget:prefs', id, prefs));
   },
 });
 

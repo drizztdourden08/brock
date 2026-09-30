@@ -20,6 +20,7 @@ const SEARCH_TOP = 5;
 const SEARCH_SETTINGS_PAGES = 4;
 const SEARCH_HIT_CLASS = 'search-hit';
 const POP_OUT_WAIT_MS = 8000;
+const REVIEW_PREF_KEY = 'reviewProbe';
 
 const HERO_SLOT_SELECTORS = {
   eyebrow: '.hero__eyebrow',
@@ -64,6 +65,7 @@ const SELECTORS = {
   aboutValue: '.stat-row__value',
   logsWidget: '.logs-widget',
   dockPane: '.dock-layout__pane',
+  mainGrip: '.dock-grip',
   hero: '.fullscreen-layer:not(.fullscreen-layer--hidden) .hero',
   heroTitle: '.hero__title',
   paletteScrim: '.command-palette-scrim',
@@ -88,6 +90,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PROFILE_NAME,
+  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME,
   HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

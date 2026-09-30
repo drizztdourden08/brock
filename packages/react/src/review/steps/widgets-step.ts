@@ -21,6 +21,8 @@ const widgetsStep: ReviewStep = {
     if (shown === null) return;
     const docked = shown.closest(SELECTORS.dockPane) !== null;
     tour.check('logs-widget-docks', docked, 'the logs widget docked in a pane beside the main view', 'the logs widget did not dock in a pane');
+    const gripHidden = find(SELECTORS.mainGrip) === null;
+    tour.check('main-grip-at-rest', gripHidden, 'no main view grip shows while nothing is dragged', 'the main view grip shows while nothing is dragged');
     await tour.capture('logs-widget');
     const hidden = await pickMenuPath(path) ? await waitFor(() => find(SELECTORS.logsWidget) === null) : null;
     tour.check('logs-widget-closes', hidden !== null, `${route} hid the logs widget again`, `${route} left the logs widget on screen`);

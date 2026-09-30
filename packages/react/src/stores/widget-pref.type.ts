@@ -5,6 +5,7 @@ interface WidgetPrefState {
   byWidget: WidgetPrefs;
   setPref: (widgetId: string, key: string, value: unknown) => void;
   hydrate: (prefs: WidgetPrefs) => void;
+  replaceWidget: (widgetId: string, prefs: Record<string, unknown>) => void;
 }
 
 export type { WidgetPrefs, WidgetPrefState };

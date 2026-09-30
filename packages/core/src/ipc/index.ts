@@ -7,6 +7,6 @@ export type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire }
 export type { InvokeContract, SendContract, EventContract, IpcNamespaces } from '../augment';
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
 export type {
-  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetSlice, WidgetSnapLink, WidgetWindowBounds,
+  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds,
   WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState,
 } from './widget-window.type';

@@ -1,6 +1,6 @@
 /* @layer core @kind types */
 import type {
-  PoppedWidgetWire, WidgetDockBack, WidgetFrameWire, WidgetPinMode, WidgetSlice, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen,
+  PoppedWidgetWire, WidgetDockBack, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetSlice, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen,
   WidgetWindowPoint, WidgetWindowState,
 } from './widget-window.type';
 
@@ -9,6 +9,7 @@ interface WidgetInvokeContract {
   'widget:listPopped': () => Promise<WidgetWindowInfo[]>;
   'widget:setPin': (id: string, mode: WidgetPinMode) => Promise<WidgetPinMode>;
   'widget:getWindowState': (id: string) => Promise<WidgetWindowState | null>;
+  'review:setWidgetPref': (id: string, key: string, value: unknown) => Promise<boolean>;
 }
 
 interface WidgetSendContract {
@@ -17,6 +18,7 @@ interface WidgetSendContract {
   'widget:setFrame': (id: string, patch: Partial<WidgetFrameWire>) => void;
   'widget:publish': (slice: WidgetSlice) => void;
   'widget:subscribe': (id: string) => void;
+  'widget:setPrefs': (id: string, prefs: WidgetPrefsWire) => void;
 }
 
 interface WidgetEventContract {
@@ -29,6 +31,8 @@ interface WidgetEventContract {
   'widget:popped': (id: string, patch: Partial<PoppedWidgetWire>) => void;
   'widget:frame': (id: string, patch: Partial<WidgetFrameWire>) => void;
   'widget:windowState': (state: WidgetWindowState) => void;
+  'widget:prefs': (id: string, prefs: WidgetPrefsWire) => void;
+  'review:widgetPref': (key: string, value: unknown) => void;
 }
 
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract };

@@ -190,7 +190,8 @@ The 0.1.1 folder holds four, each with a test in `tests/`:
 - `menu-built-in-about` drops an app menu entry that only repeats the built-in About
   entry, and flags one that replaces it without an icon.
 - `gitignore-generated-files` adds the bot logos, the installer splash and the
-  profile store that newer Brock writes to `.gitignore`, so an upgrade never commits them.
+  profile store and the port slot file that newer Brock writes to `.gitignore`, so an
+  upgrade never commits them.
 
 ## Platforms
 

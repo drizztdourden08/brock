@@ -6,6 +6,7 @@ const generated = [
   'public/logos/icon-bot-256.png',
   'build/installer-splash.png',
   '.brock/profile-config.json',
+  '.brock-port-slot',
 ];
 
 const apply = ({ source }) => {
@@ -19,7 +20,7 @@ const apply = ({ source }) => {
 
 const migration = Object.freeze({
   id: 'gitignore-generated-files',
-  summary: 'brock icons now writes the bot logos and the installer splash, and the profile store sits in .brock; git ignores them.',
+  summary: 'Brock now writes the bot logos, the installer splash, the profile store and the port slot file; git ignores them.',
   files: /^\.gitignore$/,
   apply,
 });

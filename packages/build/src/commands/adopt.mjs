@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { followBrockPin } from '@drizztdourden08/brock-thread';
+import { followBrockPin, keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
 import { releaseAppDir } from '../release/release-app-dir.mjs';
 import { releaseWorkflow } from '../release/release-workflow.mjs';
@@ -112,7 +112,7 @@ const writeConfigFiles = (rootDir, scope, { force, local }) => {
 const toolingSpecFor = (rootDir, local) => {
   if (!local) return () => `^${OWN_PACKAGE.version}`;
   if (resolve(local) === resolve(rootDir)) return () => 'workspace:*';
-  return (folder) => `link:${resolve(local, folder).replace(/\\/g, '/')}`;
+  return (folder) => linkSpec(resolve(local, folder));
 };
 
 /**
@@ -182,6 +182,7 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   addTooling(pkg, { rootDir, local, force });
   const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
+  if (keepCrossDriveLinks(rootDir).length) files.written.push('.npmrc and .gitattributes (links across drives)');
   printSummary(scope, files, addLauncher(rootDir, scope, { force, files }));
   for (const page of handWrittenSplash(rootDir)) console.log(`  ${page}: holds a hand-written boot splash or logo path. Brock owns the splash and the logos; remove them.`);
   return 0;

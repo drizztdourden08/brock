@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { mergeCatalog } from '@drizztdourden08/brock-build';
+import { keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
 
@@ -75,12 +75,11 @@ const neededCatalog = (targetDir, templateDir) => {
 
 /**
  * @param {string} targetDir
- * @param {string} templateDir
+ * @param {Record<string, string>} catalog
  * @param {string | null} workspaceRoot
  * @returns {string[]} the files written or updated
  */
-const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null) => {
-  const catalog = neededCatalog(targetDir, templateDir);
+const writeCatalog = (targetDir, catalog, workspaceRoot) => {
   if (workspaceRoot) {
     const added = mergeCatalog(workspaceRoot, catalog);
     return added.length ? [`${join(workspaceRoot, 'pnpm-workspace.yaml')} (+${added.length} catalog entries)`] : [];
@@ -88,6 +87,18 @@ const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null) => {
   writeFileSync(join(targetDir, 'pnpm-workspace.yaml'), renderWorkspaceYaml(catalog), 'utf8');
   writeFileSync(join(targetDir, '.npmrc'), NPMRC, 'utf8');
   return ['pnpm-workspace.yaml', '.npmrc'];
+};
+
+/**
+ * @param {string} targetDir
+ * @param {string} templateDir
+ * @param {string | null} workspaceRoot
+ * @returns {string[]} the files written or updated
+ */
+const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null) => {
+  const written = writeCatalog(targetDir, neededCatalog(targetDir, templateDir), workspaceRoot);
+  const crossDrive = keepCrossDriveLinks(targetDir, workspaceRoot ?? targetDir).length > 0;
+  return crossDrive ? [...written, 'prefer-frozen-lockfile=false and a .gitattributes line (the links cross drives)'] : written;
 };
 
 export { writePnpmFiles };

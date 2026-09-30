@@ -94,6 +94,21 @@ tries to resolve its dependencies, and the checkout's `workspace:*` siblings onl
 inside the Brock workspace. A `link:` symlinks the folder and keeps its own
 `node_modules`.
 
+The spec stays absolute (`link:X:/brock/packages/core`). On one drive pnpm stores it in the
+lockfile as a relative path and nothing more is needed. When the app sits on another
+Windows drive than the checkout (app on `C:`, Brock on `X:`), no relative path reaches the
+checkout, so the lockfile keeps `link:X:/...`, and pnpm's headless install (the one that
+trusts an up-to-date lockfile) joins it to the app folder and links `C:\app\X:\...`. So
+when a link crosses drives, the scaffolder adds `prefer-frozen-lockfile=false` to the
+app's `.npmrc` (the workspace root's for a member). Every `pnpm install` then resolves
+the links from `package.json`, and the lockfile still pins the registry packages. That
+install rewrites the lockfile with LF endings, so `.gitattributes` gets
+`pnpm-lock.yaml text eol=lf` and a CRLF checkout does not show it as changed. Both lines
+are committed, so worktrees get them too. `brock add --local`, `brock adopt --local` and
+`upgrade --local` add the same lines in the same case; a same-drive app gets nothing.
+`pnpm install --frozen-lockfile` always runs headless, so a worktree install uses
+`--fix-lockfile` for such a lockfile instead.
+
 ## What it writes
 
 The template at `templates/app` in the Brock repo (or `template/` in the published

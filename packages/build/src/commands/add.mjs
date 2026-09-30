@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 import { CONFIG_FILE } from '../config.mjs';
 import { installPeers } from '../modules/install-peers.mjs';
 import { packageNameOf, parseAddInput } from '../modules/registry.mjs';
@@ -45,8 +46,9 @@ const linkLocalModule = (rootDir, id, packageName, local) => {
   if (!existsSync(join(dir, 'package.json'))) throw new Error(`No module package at ${dir}`);
   const file = join(rootDir, 'package.json');
   const pkg = JSON.parse(readFileSync(file, 'utf8'));
-  pkg.dependencies = { ...(pkg.dependencies ?? {}), [packageName]: `link:${dir.replace(/\\/g, '/')}` };
+  pkg.dependencies = { ...(pkg.dependencies ?? {}), [packageName]: linkSpec(dir) };
   writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
+  if (keepCrossDriveLinks(rootDir).length) console.log('brock add: the link crosses drives; .npmrc and .gitattributes carry the lines for it');
 };
 
 /**

@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { join } from 'node:path';
+import { keepCrossDriveLinks } from '../links/keep-cross-drive-links.mjs';
 import { jsonFile } from '../provision/json-file.mjs';
 import { followBrockPin } from './follow-brock-pin.mjs';
 import { linkBrock } from './link-brock.mjs';
@@ -28,6 +29,7 @@ const bumpApp = (dir, plan) => {
   const changed = [...(pkg.brock?.version === plan.target ? [] : [PIN_FIELD]), ...deps];
   if (changed.length > 0) file.write(followed.pkg);
   if (plan.relink) ignoreInKnip(dir, deps);
+  keepCrossDriveLinks(dir);
   return changed;
 };
 

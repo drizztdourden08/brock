@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
 import { bugReport } from '../../../bug-report/bug-report';
-import type { SearchAction } from '../../palette.type';
+import type { SearchAction } from '../../../search/search.type';
 
 const useStandardActions = (): SearchAction[] => useMemo(() => [
   {

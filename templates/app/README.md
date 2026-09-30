@@ -35,6 +35,7 @@ src/ipc/contract.constants.ts  the app maps
 src/screens/screens.config.ts  the buckets, their menu entries, home
 src/screens/game/home.hero.tsx  the Game hub home
 src/screens/game/general.settings.ts  the General settings page
+src/screens/game/controls.custom.tsx  a custom page with searchEntries
 src/screens/credits.card.tsx  the Credits screen
 src/boot/<id>.task.ts    renderer boot tasks, shown on the splash (welcome.task.ts)
 electron/boot/<id>.task.ts  main boot tasks
@@ -74,17 +75,30 @@ the hubs, Escape and the review read it.
 src/screens/screens.config.ts   the buckets, in switch and menu order, and home
 src/screens/<bucket>/<id>.hero.tsx      the hub home (HeroProps, with slots)
 src/screens/<bucket>/<id>.page.tsx      a page in the hub (PageProps)
+src/screens/<bucket>/<id>.custom.tsx    a custom page: standard frame, free content (PageProps)
 src/screens/<bucket>/<page>/<id>.tab.tsx  one header tab of a page (PageProps)
 src/screens/<bucket>/<id>.settings.ts   a settings page: default-export the sections
 src/screens/<bucket>/<group>/...        a nav group inside the hub
 src/screens/<id>.card.tsx               a card screen (CardProps)
-src/screens/<id>.custom.tsx             a screen that draws its own layer (CardProps)
+src/screens/<id>.layer.tsx              a full-bleed screen that draws its own layer (CardProps)
 ```
 
 Each file default-exports its component (or its sections) and may export `meta` with a
-`title`, `icon`, `order`, `shortcut`, `devOnly` or `requiresProfile`. A new bucket is a
+`title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile` or `keywords`. A new bucket is a
 folder plus an entry in `screens.config.ts`, where `menu` is `entry`, `submenu` or
 `hidden`. `pnpm structure` names any file that does not fit.
+
+A custom page is the exception to the standard pages: only its content is hand built.
+It also exports `searchEntries`, a literal list of `{ label, keywords?, anchor?,
+description? }`, and marks each element with `data-search-anchor`. Keep them few.
+
+## Search
+
+Ctrl+K opens the search palette; inside a hub it searches that hub. Nothing is registered
+by hand: `pnpm dev` and `pnpm sync` write `.brock/search.ts` from the screens, the
+settings rows and the custom pages' `searchEntries`, read from the source without loading
+any page. Modules, widgets, the menu and `registerSearchActions` join at runtime, and a
+page adds what it shows with `useSearchEntries(entries)` while it is open.
 
 ## Adding things
 

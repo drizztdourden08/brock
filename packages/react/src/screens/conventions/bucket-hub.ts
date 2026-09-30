@@ -5,7 +5,7 @@ import { heroPage } from './hero-page';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
 import type { BucketDef } from './screens-config.type';
-import type { BucketEntry, HeroEntry, PageEntry, SettingsEntry, TabEntry } from './screen-tree.type';
+import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, SettingsEntry, TabEntry } from './screen-tree.type';
 import { tabPages } from './tab-pages';
 
 const withoutPage = (groups: readonly HubGroup[], page: HubPage): HubGroup[] =>
@@ -13,7 +13,7 @@ const withoutPage = (groups: readonly HubGroup[], page: HubPage): HubGroup[] =>
 
 const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef => {
   const hero = entries.find((entry): entry is HeroEntry => entry.kind === 'hero');
-  const content = entries.filter((entry): entry is PageEntry | SettingsEntry => entry.kind === 'page' || entry.kind === 'settings');
+  const content = entries.filter((entry): entry is PageEntry | FreePageEntry | SettingsEntry => entry.kind !== 'hero' && entry.kind !== 'tab');
   const tabs = entries.filter((entry): entry is TabEntry => entry.kind === 'tab');
   const groups = hubGroups(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs)]);
   const home = hero ? heroPage(bucket, hero) : groups.at(0)?.pages.at(0);
@@ -25,6 +25,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     shortcut: bucket.shortcut,
     home,
     groups: hero ? groups : withoutPage(groups, home),
+    search: { placeholder: `Search ${bucket.title}` },
   };
 };
 

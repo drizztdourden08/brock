@@ -1,11 +1,14 @@
 /* @layer renderer-shell @kind constants */
+import type { MenuEntry } from '../menu/menu.type';
+import type { SearchAction } from '../search/search.type';
 import type { ScreenDef } from '../screens/screen.type';
 import type { HubDef, HubTab } from './hub.type';
 
 const HUB_DEFS = new WeakMap<ScreenDef, HubDef>();
-const HUB_SEARCH_SHORTCUT = 'Mod+K';
-const SEARCH_MARK_SELECTOR = '.section-nav__search-mark';
+const OPEN_HUB_SEARCH_MARK = '.fullscreen-layer:not(.fullscreen-layer--hidden) .section-nav__search-mark';
 const DEFAULT_SEARCH_PLACEHOLDER = 'Search';
 const NO_TABS: HubTab[] = [];
+const NO_MENU: readonly MenuEntry[] = [];
+const NO_ACTIONS: readonly SearchAction[] = [];
 
-export { DEFAULT_SEARCH_PLACEHOLDER, HUB_DEFS, HUB_SEARCH_SHORTCUT, NO_TABS, SEARCH_MARK_SELECTOR };
+export { DEFAULT_SEARCH_PLACEHOLDER, HUB_DEFS, NO_ACTIONS, NO_MENU, NO_TABS, OPEN_HUB_SEARCH_MARK };

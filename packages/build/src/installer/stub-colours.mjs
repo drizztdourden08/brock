@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { blendHex } from './blend-hex.mjs';
-import { FALLBACK_INK, STAMP_HAIRLINE_SHARE, TRACK_SURFACE_SHARE, VIA_SHARE } from './installer.constants.mjs';
+import { STAMP_HAIRLINE_SHARE, TRACK_SURFACE_SHARE, VIA_SHARE } from './installer.constants.mjs';
 import { pickInk } from './pick-ink.mjs';
 
 /**
@@ -14,29 +14,31 @@ import { pickInk } from './pick-ink.mjs';
  */
 
 /**
- * @param {import('@drizztdourden08/brock-core/look').ResolvedLook & { ink?: string }} look
+ * @param {import('@drizztdourden08/brock-core/look').ResolvedLook} look
  * @param {import('./read-theme-tokens.mjs').ThemeTokens} theme
  * @returns {StubColours}
  */
 const stubColours = (look, theme) => {
   const accent = look.accent.toLowerCase();
   const onAccent = theme.primary === accent ? theme.onPrimary : pickInk(accent, [theme.onPrimary, theme.text]);
+  const hairline = theme.border ?? theme.hairline;
+  const faint = theme.textMuted ?? theme.textFaint;
   return {
     bg: theme.bg,
     surface: theme.surface,
-    hairline: theme.hairline,
+    hairline,
     text: theme.text,
     dim: theme.textDim,
-    faint: theme.textFaint,
+    faint,
     accent,
     onAccent,
-    track: theme.track ?? blendHex(theme.surface, theme.hairline, TRACK_SURFACE_SHARE),
-    stamp: theme.stamp ?? blendHex(theme.hairline, theme.textFaint, STAMP_HAIRLINE_SHARE),
+    track: theme.track ?? blendHex(theme.surface, hairline, TRACK_SURFACE_SHARE),
+    stamp: theme.stamp ?? blendHex(hairline, faint, STAMP_HAIRLINE_SHARE),
     from: look.from.toLowerCase(),
     via: (look.via ?? blendHex(look.from, look.to, VIA_SHARE)).toLowerCase(),
     to: look.to.toLowerCase(),
     angle: look.angle,
-    ink: (look.ink ?? FALLBACK_INK).toLowerCase(),
+    ink: look.ink.toLowerCase(),
   };
 };
 

@@ -25,7 +25,7 @@ const TOKENS = {
   },
 };
 
-const LOOK = { from: '#3B6FE0', via: null, to: '#0e0e12', angle: 160, accent: '#E8A33D', source: 'palette' };
+const LOOK = { from: '#3B6FE0', via: null, to: '#0e0e12', angle: 160, accent: '#E8A33D', ink: '#F2F3F7', shade: '#0e0f13', source: 'palette' };
 
 const INSTALLER = { scope: 'user', shortcuts: { desktop: true, startMenu: true }, launchAfterInstall: true, folderName: 'Brock App' };
 
@@ -78,7 +78,7 @@ describe('stubColours', () => {
     expect(colours).toEqual({
       bg: '#12100e', surface: '#1b1815', hairline: '#322b24', text: '#ece6da', dim: '#a89e8d', faint: '#7c7365',
       accent: '#e8a33d', onAccent: '#1a1207', track: '#221e1a', stamp: '#463f36',
-      from: '#3b6fe0', via: '#253f79', to: '#0e0e12', angle: 160, ink: '#ffffff',
+      from: '#3b6fe0', via: '#253f79', to: '#0e0e12', angle: 160, ink: '#f2f3f7',
     });
   });
 
@@ -88,6 +88,12 @@ describe('stubColours', () => {
     expect(colours).toMatchObject({ bg: '#101014', dim: '#a0a0ad', faint: '#6e6e7a', via: '#6b3a1a' });
     expect(colours.track).toBe('#1f1f26');
     expect(colours.stamp).toBe('#3e3e48');
+  });
+
+  it('outlines with border and writes quiet text with textMuted when Tessera has them', () => {
+    const dark = { ...TOKENS.theme.dark, border: '#27272B', textMuted: '#81818a' };
+    const theme = installerTheme(tempDir({ 'tokens.json': JSON.stringify({ theme: { dark } }) }));
+    expect(stubColours(LOOK, theme)).toMatchObject({ hairline: '#27272b', faint: '#81818a' });
   });
 
   it('uses onPrimary on the Tessera primary and the most readable ink on any other accent', () => {
@@ -114,7 +120,7 @@ describe('stubProductHeader', () => {
     expect(text).toContain('#define BROCK_LOOK_FROM 0xFF3B6FE0');
     expect(text).toContain('#define BROCK_LOOK_VIA 0xFF253F79');
     expect(text).toContain('#define BROCK_LOOK_ANGLE 160.0f');
-    expect(text).toContain('#define BROCK_C_HEADER_INK 0xFFFFFFFF');
+    expect(text).toContain('#define BROCK_C_HEADER_INK 0xFFF2F3F7');
     for (const name of ['BG', 'SURFACE', 'HAIRLINE', 'TEXT', 'DIM', 'FAINT', 'ACCENT', 'ON_ACCENT', 'TRACK', 'STAMP']) {
       expect(text).toMatch(new RegExp(`#define BROCK_C_${name} 0xFF[0-9A-F]{6}\\n`));
     }

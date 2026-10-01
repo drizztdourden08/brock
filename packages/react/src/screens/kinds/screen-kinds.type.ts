@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import type { HeroArt, HeroFactRow, HeroProps as HeroCompositeProps } from '@drizztdourden08/tessera/composites';
+import type { FactsPanelGroup, HeroArt, HeroProps as HeroCompositeProps } from '@drizztdourden08/tessera/composites';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import type { BucketDef } from '../conventions/screens-config.type';
 
@@ -31,7 +31,7 @@ interface HeroActionsProps {
 type HeroArtProps = HeroArt;
 
 interface HeroFactsProps {
-  rows: readonly HeroFactRow[];
+  rows: readonly FactsPanelGroup[];
 }
 
 interface HeroSlots {

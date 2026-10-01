@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
+import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
 import { STANDARD_TITLE_BAR_SLOTS } from '../../overlays/standard-title-bar-slots.constants';
 import { PlatformProvider } from '../../platform/PlatformProvider';
@@ -15,7 +16,7 @@ import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
 import { ModuleProviders } from './sub-components/ModuleProviders';
-import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
+import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
@@ -56,30 +57,32 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   );
 
   return (
-    <PlatformProvider ports={merged.ports}>
-      <BrockContext.Provider value={context}>
-        <ScreenRegistryContext.Provider value={registry}>
-          <SettingsStoreContext.Provider value={settingsStore}>
-            <ModuleProviders providers={merged.providers}>
-              {poppedId !== null ? <WidgetWindow id={poppedId} widgets={merged.widgets} /> : (
-                <AppShell
-                  settingsStore={settingsStore}
-                  bootTasks={allBootTasks}
-                  log={log}
-                  moduleIds={merged.ids}
-                  moduleMenu={merged.menu}
-                  titleBarSlots={titleBarSlots}
-                  searchActions={merged.searchActions}
-                  widgets={merged.widgets}
-                  layout={layout}
-                  screenGroups={screenGroups}
-                />
-              )}
-            </ModuleProviders>
-          </SettingsStoreContext.Provider>
-        </ScreenRegistryContext.Provider>
-      </BrockContext.Provider>
-    </PlatformProvider>
+    <TesseraProvider overrides={TESSERA_OVERRIDES}>
+      <PlatformProvider ports={merged.ports}>
+        <BrockContext.Provider value={context}>
+          <ScreenRegistryContext.Provider value={registry}>
+            <SettingsStoreContext.Provider value={settingsStore}>
+              <ModuleProviders providers={merged.providers}>
+                {poppedId !== null ? <WidgetWindow id={poppedId} widgets={merged.widgets} /> : (
+                  <AppShell
+                    settingsStore={settingsStore}
+                    bootTasks={allBootTasks}
+                    log={log}
+                    moduleIds={merged.ids}
+                    moduleMenu={merged.menu}
+                    titleBarSlots={titleBarSlots}
+                    searchActions={merged.searchActions}
+                    widgets={merged.widgets}
+                    layout={layout}
+                    screenGroups={screenGroups}
+                  />
+                )}
+              </ModuleProviders>
+            </SettingsStoreContext.Provider>
+          </ScreenRegistryContext.Provider>
+        </BrockContext.Provider>
+      </PlatformProvider>
+    </TesseraProvider>
   );
 };
 

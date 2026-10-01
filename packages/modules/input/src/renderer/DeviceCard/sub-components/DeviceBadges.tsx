@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Badge, Flex } from '@drizztdourden08/tessera/primitives';
+import { Flex, Status } from '@drizztdourden08/tessera/primitives';
 import type { DeviceBadgesProps } from './DeviceBadges.type';
 
 const DeviceBadges = (props: DeviceBadgesProps) => {
@@ -9,11 +9,11 @@ const DeviceBadges = (props: DeviceBadgesProps) => {
 
   return (
     <Flex gap="xs" wrap>
-      <Badge variant="neutral">{deviceKey}</Badge>
-      {sdlType && sdlType !== 'unknown' && <Badge variant="neutral">{sdlType}</Badge>}
-      {link !== 'unknown' && <Badge variant="neutral">{link}</Badge>}
-      {hasRumble && <Badge variant="success">rumble</Badge>}
-      {hasGyro && <Badge variant="success">gyro</Badge>}
+      <Status tone="neutral">{deviceKey}</Status>
+      {sdlType && sdlType !== 'unknown' && <Status tone="neutral">{sdlType}</Status>}
+      {link !== 'unknown' && <Status tone="neutral">{link}</Status>}
+      {hasRumble && <Status tone="success">rumble</Status>}
+      {hasGyro && <Status tone="success">gyro</Status>}
     </Flex>
   );
 };

@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import type { LogLevel } from '@drizztdourden08/brock-core';
+import type { TesseraOverrides } from '@drizztdourden08/tessera/primitives';
+import { clipboardWriter } from '../../host/clipboard-writer';
 import { bugReport } from '../../bug-report/bug-report';
 import type { EscapeLayer } from '../../escape/escape.type';
 import type { MenuItem } from '../../menu/menu.type';
@@ -34,6 +36,8 @@ const QUIT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'quit', label: 'Quit', icon
 const REPORT_BUG_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'report-bug', label: 'Report a bug', icon: 'bug', section: 'advanced' };
 const DEV_CONSOLE_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'dev-console', label: 'Dev Console', icon: 'cpu', section: 'advanced', devOnly: true };
 
+const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
+
 const STANDARD_ESCAPE_LAYERS: readonly EscapeLayer[] = [
   { isOpen: palette.isOpen, close: palette.close },
   { isOpen: bugReport.isOpen, close: bugReport.close },
@@ -41,5 +45,5 @@ const STANDARD_ESCAPE_LAYERS: readonly EscapeLayer[] = [
 
 export {
   ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
-  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, STANDARD_ESCAPE_LAYERS, TOP_ENTRIES, WIDGETS_SECTION,
+  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, STANDARD_ESCAPE_LAYERS, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
 };

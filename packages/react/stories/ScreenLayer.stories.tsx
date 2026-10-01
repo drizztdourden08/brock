@@ -1,7 +1,7 @@
 /* @layer stories @kind story */
 import { useState } from 'react';
 import type { StoryLiteMeta, StoryLiteStoryDefinition, StoryLiteArgTypes } from '@storylite/storylite';
-import { Badge, Box, Button, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, Status, Text } from '@drizztdourden08/tessera/primitives';
 import { ScreenLayer } from '../src';
 
 type LayerArgs = {
@@ -28,7 +28,7 @@ const Demo = (props: LayerArgs) => {
         <ScreenLayer
           title={title}
           subtitle={subtitle || undefined}
-          extra={withExtra ? <Badge variant="success">saved</Badge> : undefined}
+          extra={withExtra ? <Status tone="success">saved</Status> : undefined}
           onClose={() => setOpen(false)}
         >
           <Text>The screen body goes here.</Text>

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { Badge, Card, Flex, Text } from '@drizztdourden08/tessera/primitives';
+import { Card, Flex, Status, Text } from '@drizztdourden08/tessera/primitives';
 import type { UnavailableDeviceProps } from './UnavailableDevice.type';
 
 const UnavailableDevice = (props: UnavailableDeviceProps) => {
@@ -10,8 +10,8 @@ const UnavailableDevice = (props: UnavailableDeviceProps) => {
       <Flex direction="column" gap="xs">
         <Flex align="center" gap="sm" wrap>
           <Text variant="subtitle">{entry.product}</Text>
-          <Badge variant="warning">not opened</Badge>
-          <Badge variant="neutral">{entry.deviceKey}</Badge>
+          <Status tone="warning">not opened</Status>
+          <Status tone="neutral">{entry.deviceKey}</Status>
         </Flex>
         <Text variant="caption">
           The system sees this device but SDL could not open it. Another program may hold it, or it has no mapping yet.

@@ -23,7 +23,7 @@ const trackMainRect = (rect: Rect | null): void => {
 };
 
 const WidgetHost = (props: WidgetHostProps) => {
-  const { widgets = NO_WIDGETS, main } = props;
+  const { widgets = NO_WIDGETS, main, mainLabel } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definitions = useMemo(() => uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), [widgets, registered]);
   const profileId = useProfilesStore((s) => s.active?.id ?? null);
@@ -59,6 +59,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       layout={layout}
       onLayoutChange={setLayout}
       main={main}
+      mainLabel={mainLabel}
       mainGrip="dragging"
       onMainRect={trackMainRect}
       onPopOut={popOut}

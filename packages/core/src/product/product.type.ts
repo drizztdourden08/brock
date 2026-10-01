@@ -73,6 +73,10 @@ interface ProductPorts {
   strict?: boolean;
 }
 
+interface ProductWidgets {
+  mainLabel: string;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -93,18 +97,20 @@ interface ProductConfig {
   logos: ProductLogos;
   homeScreen: string;
   ports?: ProductPorts;
+  widgets: ProductWidgets;
   installer: InstallerConfig;
 }
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
-  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer'>> & {
+  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets'>> & {
     window?: Partial<WindowConfig>;
     logos?: Partial<ProductLogos>;
     installer?: InstallerInput;
+    widgets?: Partial<ProductWidgets>;
   };
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
-  ProductIcons, ProductLogos, ProductPorts, ProductConfig, ProductInput,
+  ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

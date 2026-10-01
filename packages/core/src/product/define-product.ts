@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
 import type { InstallerConfig, ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, WindowConfig } from './product.type';
 import {
-  BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
+  BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_MAIN_LABEL, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
 
@@ -85,6 +85,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     logos: resolveLogos(input.logos),
     homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
     ports: input.ports,
+    widgets: { mainLabel: input.widgets?.mainLabel ?? DEFAULT_MAIN_LABEL },
     installer: resolveInstaller(input),
   };
 };

@@ -45,7 +45,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: fullMenu, slots: titleBarSlots, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const stage = <WidgetHost widgets={widgets} main={<ScreenHost home={home} className="brock-app__screens" />} />;
+  const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} className="brock-app__screens" />} />;
 
   return (
     <Box className="brock-app">

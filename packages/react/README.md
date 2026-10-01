@@ -38,7 +38,7 @@ import { screenTree } from '../.brock/screens';
 | Settings | `SettingsHub`, `SettingsLayout`, `SettingsPageContext`, `createTabRegistry`, `resolveSections`, `matchTabs` |
 | Shell | `useAboutInfo`, `useRailEntries`, `ConfirmDialog`, `ProfilesScreen`, `WorkspaceSwitch` |
 | Modules | `RendererModule`, `mergeModules` |
-| Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toDropdownItems` |
+| Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toMenuGroups`, `MenuResolver` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_SLOTS` |
@@ -151,8 +151,8 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 
 ## Shell views and stores
 
-- Title bar: the shell renders Tessera's `WindowTitleBar`; an empty menu hides the menu button; the shell conceals the bar when the `windowMode` setting is `borderless` or `fullscreen`, read by key, so no module import is needed, and the bar peeks while the pointer is in the 40 px strip along the top edge; a normal launch shows no instance badge. The outside-click handler also ignores clicks inside `.dropdown-menu`. The instance badge shows the name verbatim because the name is the identifier.
-- About: Tessera's `AboutPanel` with the rows from `useAboutInfo`; the version comes from the bridge's `getAppVersion` and falls back to `0.0.0` without a bridge; the copy button puts the debug text on the clipboard through the host.
+- Title bar: the shell renders Tessera's `WindowTitleBar`, which draws the hamburger and the menu from `toMenuGroups(menu, { openScreen })` and reports every button to one `onControl`; `product.window.titleBar.controls` turns the fullscreen, pin, minimize and maximize buttons off; an empty menu hides the hamburger; the shell conceals the bar when the `windowMode` setting is `borderless` or `fullscreen`, read by key, so no module import is needed, and the bar peeks while the pointer is in the 40 px strip along the top edge; a normal launch shows no instance badge. The instance badge shows the name verbatim because the name is the identifier.
+- About: Tessera's `AboutPanel` with the rows from `useAboutInfo`; the version comes from the bridge's `getAppVersion` and falls back to `0.0.0` without a bridge; the copy button puts the debug text on the clipboard through `writeClipboard`, given to `TesseraProvider` as `overrides.writeText`; a product whose `icons.brand` is the Tessera brand of the same name shows that brand's app icon and wordmark.
 - `ProfilesScreen` doubles as the setup screen when no profile exists (the form is forced open); it wires Tessera's `ProfilePicker` and `InlineCreateForm`: picking a profile makes it active and closes the screen, deleting asks once in the row and then removes it, and `createOptions()` is merged into the create request. Enter in the name field submits, `canSubmit: false` blocks submit while an extra field is incomplete, and `extraFields` render between the name and the actions. `WorkspaceSwitch.label` is the accessible name for the whole switch.
 - Profiles store: selecting a profile records it as the default for the next launch (skipped on an automated launch) and bumps its last-played time; `loaded` is true once the first refresh finished. `useProfiles().remove` asks first through the confirm dialog, and when the active profile is deleted the profiles screen opens so the app is never left without one.
 - `confirmAction(options)` is the promise form: it resolves `true` on confirm and `false` on cancel, Escape or a newer dialog.

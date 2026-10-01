@@ -6,6 +6,7 @@ interface MenuItem {
   label: string;
   icon?: ReactNode;
   description?: string;
+  shortcut?: string;
   disabled?: boolean;
   checked?: boolean;
   screen?: string;

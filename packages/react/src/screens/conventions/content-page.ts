@@ -18,6 +18,7 @@ const contentPage = (bucket: BucketDef, entry: PageEntry | FreePageEntry | Setti
     label: entryLabel(entry),
     icon: iconNode(entry.meta?.icon ?? KIND_ICONS[entry.kind]),
     devOnly: entry.meta?.devOnly,
+    shortcut: entry.meta?.shortcut,
     render: entry.kind !== 'settings'
       ? renderPage(entry.component, bucket)
       : () => createElement(SettingsTabPage, { tabId: joinRoute(entry.bucket, entry.id) }),

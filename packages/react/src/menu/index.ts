@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind barrel */
 export type { MenuEntry, MenuItem, MenuSection } from './menu.type';
 export { MENU_SECTIONS } from './menu.constants';
-export { toDropdownItems } from './to-dropdown-items';
+export { toMenuGroups } from './to-menu-groups';
 export { withRoutes } from './with-routes';
-export type { MenuResolver } from './to-dropdown-items.type';
+export type { MenuResolver } from './to-menu-groups.type';

@@ -10,6 +10,7 @@ const heroPage = (bucket: BucketDef, entry: HeroEntry): HubPage => ({
   id: entry.id,
   label: entry.meta?.title ?? HOME_LABEL,
   icon: iconNode(entry.meta?.icon ?? KIND_ICONS.hero),
+  shortcut: entry.meta?.shortcut,
   render: renderHero(entry.component, bucket),
 });
 

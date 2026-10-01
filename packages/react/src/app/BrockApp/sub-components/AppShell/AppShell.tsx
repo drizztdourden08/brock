@@ -53,6 +53,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         <AppTitleBar
           title={product.window.title ?? product.name}
           menu={fullMenu}
+          controls={product.window.titleBar.controls}
           instanceName={instanceName()}
           logoSrc={logoSrc}
           instanceLogoSrc={instanceLogoSrc}

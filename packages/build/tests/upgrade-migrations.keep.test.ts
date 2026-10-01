@@ -117,9 +117,10 @@ describe('the 0.1.1 migration', () => {
 
 describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
-    expect(upgradeFrom('0.1.1')).toEqual([]);
+    expect(upgradeFrom('0.1.3')).toEqual([]);
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
-    expect(upgradeFrom('0.1.0').map((m) => m.version)).toEqual(readdirSync(join(import.meta.dirname, '..', 'migrations', '0.1.1')).filter((f: string) => f.endsWith('.mjs')).map(() => '0.1.1'));
+    expect(upgradeFrom('0.1.0', '0.1.1').map((m) => m.version)).toEqual(readdirSync(join(import.meta.dirname, '..', 'migrations', '0.1.1')).filter((f: string) => f.endsWith('.mjs')).map(() => '0.1.1'));
+    expect(new Set(upgradeFrom('0.1.1').map((m) => m.version))).toEqual(new Set(['0.1.3']));
   });
 
   it('orders module migrations with the build ones by version', () => {

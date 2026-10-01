@@ -39,11 +39,15 @@ const assertProductInput = (input: ProductInput): void => {
   assertInstaller(input.installer);
 };
 
-const resolveWindow = (input: ProductInput): WindowConfig => ({
-  ...DEFAULT_WINDOW,
-  ...(input.window ?? {}),
-  title: input.window?.title ?? input.name,
-});
+const resolveWindow = (input: ProductInput): WindowConfig => {
+  const { titleBar, ...rest } = input.window ?? {};
+  return {
+    ...DEFAULT_WINDOW,
+    ...rest,
+    title: rest.title ?? input.name,
+    titleBar: { controls: { ...DEFAULT_WINDOW.titleBar.controls, ...titleBar?.controls } },
+  };
+};
 
 const resolveIcons = (icons: ProductIcons = {}): ProductIcons =>
   icons.brand ? { ...BRAND_ICONS, ...icons } : icons;

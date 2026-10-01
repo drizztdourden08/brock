@@ -18,7 +18,8 @@ const isEditing = (target: EventTarget | null): boolean => {
 
 const useKeyboardShortcuts = (): void => {
   const { window: win } = usePlatform();
-  const { homeScreen, shortcuts } = useBrock();
+  const { product, homeScreen, shortcuts } = useBrock();
+  const fullscreenable = product.window.titleBar.controls.fullscreen;
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
 
@@ -28,7 +29,7 @@ const useKeyboardShortcuts = (): void => {
     const handler = (e: KeyboardEvent) => {
       if (e.altKey && e.key === 'Enter') {
         e.preventDefault();
-        win.toggleFullscreen();
+        if (fullscreenable) win.toggleFullscreen();
         return;
       }
       if (e.key === 'Escape') { closeTopmost(e, allowed(registry.get(homeScreen)) ? homeScreen : null); return; }
@@ -41,7 +42,7 @@ const useKeyboardShortcuts = (): void => {
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [win, homeScreen, shortcuts, registry, developerTools]);
+  }, [win, fullscreenable, homeScreen, shortcuts, registry, developerTools]);
 };
 
 export { useKeyboardShortcuts };

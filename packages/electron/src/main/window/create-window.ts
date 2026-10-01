@@ -26,11 +26,14 @@ const windowOptions = (setup: WindowSetup, plan: WindowPlan): BrowserWindowConst
   const { product, flags, instance, paths, icon, rendererFlags } = setup;
   const { window: config } = product;
   const { headless, startup, saved, title } = plan;
+  const { controls } = config.titleBar;
   return {
     width: startup.windowSize?.width ?? saved.width,
     height: startup.windowSize?.height ?? saved.height,
     minWidth: config.minSize.width,
     minHeight: config.minSize.height,
+    maximizable: controls.maximize,
+    fullscreenable: controls.fullscreen,
     ...(headless ? offscreenOrigin() : {}),
     center: false,
     titleBarStyle: 'hidden',

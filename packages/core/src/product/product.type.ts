@@ -17,13 +17,27 @@ interface SplashConfig {
   accent?: string;
 }
 
+interface TitleBarControls {
+  fullscreen: boolean;
+  pin: boolean;
+  minimize: boolean;
+  maximize: boolean;
+}
+
+interface TitleBarConfig {
+  controls: TitleBarControls;
+}
+
 interface WindowConfig {
   title?: string;
   defaultSize: { width: number; height: number };
   minSize: { width: number; height: number };
   backgroundColor: string;
   splash: SplashConfig;
+  titleBar: TitleBarConfig;
 }
+
+type WindowInput = Partial<Omit<WindowConfig, 'titleBar'>> & { titleBar?: { controls?: Partial<TitleBarControls> } };
 
 interface PrivilegedScheme {
   scheme: string;
@@ -103,14 +117,14 @@ interface ProductConfig {
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
   Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets'>> & {
-    window?: Partial<WindowConfig>;
+    window?: WindowInput;
     logos?: Partial<ProductLogos>;
     installer?: InstallerInput;
     widgets?: Partial<ProductWidgets>;
   };
 
 export type {
-  ProductAuthor, ProductRepo, SplashConfig, WindowConfig, PrivilegedScheme, FileAssociation,
+  ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, FileAssociation,
   ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

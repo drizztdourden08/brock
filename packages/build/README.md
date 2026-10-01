@@ -260,6 +260,15 @@ export default defineBrockConfig({
 });
 ```
 
+`product.window.titleBar.controls` turns title bar buttons off: `{ fullscreen, pin, minimize,
+maximize }`, each `true` by default; close always stays. `maximize: false` also makes the main
+window not maximizable, and `fullscreen: false` makes it not fullscreenable and turns Alt+Enter
+off. `product.widgets.mainLabel` names the main view in the widget dock (default `Main`).
+
+```ts
+product: { /* ... */ window: { titleBar: { controls: { fullscreen: false, pin: false } } }, widgets: { mainLabel: 'Board' } },
+```
+
 `targets` takes platform ids (`windows`, `macos`, `linux`, `android`, `web`; `ios` is
 reserved) and bundles: `desktop` is Windows, macOS and Linux, `mobile` is Android today and
 iOS once it is supported, with no config change. `web: { manifest: false }` drops the web app

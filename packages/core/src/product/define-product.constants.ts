@@ -14,6 +14,7 @@ const DEFAULT_WINDOW: WindowConfig = {
   minSize: { width: 360, height: 280 },
   backgroundColor: BLACK,
   splash: { width: 480, height: 360 },
+  titleBar: { controls: { fullscreen: true, pin: true, minimize: true, maximize: true } },
 };
 
 const BRAND_ICONS: ProductIcons = {

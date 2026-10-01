@@ -8,7 +8,7 @@ const windowHandlers: HandlerGroup = {
     on('window:minimize', () => window()?.minimize());
     on('window:maximize', () => {
       const win = window();
-      if (!win) return;
+      if (!win?.isMaximizable()) return;
       if (win.isMaximized()) win.unmaximize();
       else win.maximize();
     });
@@ -16,10 +16,11 @@ const windowHandlers: HandlerGroup = {
     on('window:openDevTools', () => window()?.webContents.openDevTools());
     on('window:toggleFullscreen', () => {
       const win = window();
-      if (win) win.setFullScreen(!win.isFullScreen());
+      if (win?.isFullScreenable()) win.setFullScreen(!win.isFullScreen());
     });
     on('window:setFullscreen', (_e, value) => {
-      window()?.setFullScreen(value);
+      const win = window();
+      if (win?.isFullScreenable()) win.setFullScreen(value);
     });
 
     handle('window:isMaximized', () => window()?.isMaximized() ?? false);

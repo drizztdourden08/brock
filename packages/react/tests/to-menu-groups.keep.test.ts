@@ -11,11 +11,11 @@ const MENU: MenuEntry[] = [
 ];
 
 describe('toMenuGroups', () => {
-  it('wraps the menu in one group with ids, separators and display shortcuts', () => {
+  it('wraps the menu in one group with ids, separators and shortcuts', () => {
     const [group] = toMenuGroups(MENU, { openScreen: () => undefined });
     const [home, separator, advanced] = group?.items ?? [];
     expect(group?.items).toHaveLength(3);
-    expect(home).toMatchObject({ id: 'home', label: 'Home', icon: 'house', shortcut: 'Ctrl+,' });
+    expect(home).toMatchObject({ id: 'home', label: 'Home', icon: 'house', shortcut: 'Mod+Comma' });
     expect(separator).toEqual({ separator: true });
     expect((advanced as TesseraMenuItem).children).toMatchObject([{ id: 'quit' }, { separator: true }]);
   });

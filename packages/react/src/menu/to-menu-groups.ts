@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuGroup, MenuItem as TesseraMenuItem, MenuNode } from '@drizztdourden08/tessera/composites';
 import { menuItemIcon } from './menu-item-icon';
-import { menuShortcut } from './menu-shortcut';
 import { MENU_GROUP_ID, MENU_SEPARATOR } from './menu.constants';
 import type { MenuEntry, MenuItem } from './menu.type';
 import type { MenuResolver } from './to-menu-groups.type';
@@ -22,7 +21,7 @@ const toMenuItem = (item: MenuItem, resolve: MenuResolver): TesseraMenuItem => {
     label,
     icon: menuItemIcon(icon),
     description,
-    shortcut: shortcut === undefined ? undefined : menuShortcut(shortcut),
+    shortcut,
     disabled,
     checked,
     onSelect: selectOf(item, resolve),

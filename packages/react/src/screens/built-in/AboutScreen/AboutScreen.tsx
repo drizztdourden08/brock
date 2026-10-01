@@ -11,9 +11,17 @@ const AboutScreenBody = (props: AboutScreenOptions) => {
   const { legalText } = props;
   const { product, logoSrc } = useBrock();
   const { rows, copyText } = useAboutInfo();
-  const brand = aboutBrand(product);
+  const branded = aboutBrand(product);
   return (
-    <AboutPanel title={product.name} brand={brand} logo={brand ? undefined : logoSrc} rows={rows} legal={legalText} copyText={copyText} />
+    <AboutPanel
+      title={product.name}
+      brand={branded?.brand}
+      heading={branded?.heading}
+      logo={branded ? undefined : logoSrc}
+      rows={rows}
+      legal={legalText}
+      copyText={copyText}
+    />
   );
 };
 

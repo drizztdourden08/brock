@@ -13,10 +13,4 @@ const MENU_GROUP_ID = 'menu';
 
 const MENU_SEPARATOR: MenuSeparator = { separator: true };
 
-const SHORTCUT_DISPLAY: Readonly<Record<string, string>> = {
-  mod: 'Ctrl',
-  comma: ',',
-  period: '.',
-};
-
-export { MENU_GROUP_ID, MENU_SECTIONS, MENU_SEPARATOR, SHORTCUT_DISPLAY, UNKNOWN_SECTION_ICON };
+export { MENU_GROUP_ID, MENU_SECTIONS, MENU_SEPARATOR, UNKNOWN_SECTION_ICON };

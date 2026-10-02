@@ -1,0 +1,134 @@
+/* @layer tooling-scripts @kind test */
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { runMigrate } from '../src/commands/migrate.mjs';
+import { tesseraRenamesStep } from '../src/upgrade/tessera/tessera-renames-step.mjs';
+
+const made = [];
+
+const RELEASE = {
+  version: '0.4.0',
+  cssCustomProperties: { '--c-gold': '--c-primary' },
+  components: { TabBar: 'Tabs' },
+  cssClasses: { 'tab-bar': 'tabs', 'search-results__count': 'search-results__summary (the summary text)' },
+};
+
+const RELEASES = [{ version: '0.2.0', components: { OldGone: 'Gone' } }, RELEASE, { version: '0.5.0', components: { Tabs: 'TabStrip' } }];
+
+const VIEW = "import { OldGone, TabBar } from '@drizztdourden08/tessera/primitives';\nconst a = <TabBar className=\"tab-bar\" />;\n";
+const CSS = '.tab-bar { color: var(--c-gold); }\n.search-results__count { color: red; }\n';
+
+const tesseraAt = (dir, version, releases) => ({
+  [`${dir}node_modules/@drizztdourden08/tessera/package.json`]: { name: '@drizztdourden08/tessera', version },
+  [`${dir}node_modules/@drizztdourden08/tessera/RENAMES.json`]: { releases },
+});
+
+const repo = (files) => {
+  const root = mkdtempSync(join(tmpdir(), 'brock-tessera-renames-'));
+  made.push(root);
+  for (const [file, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, file)), { recursive: true });
+    writeFileSync(join(root, file), typeof text === 'string' ? text : JSON.stringify(text, null, 2));
+  }
+  return root;
+};
+
+const app = (extra = {}, { version = '0.4.0', releases = RELEASES, pkg = { name: 'app' } } = {}) =>
+  repo({ 'package.json': pkg, ...tesseraAt('', version, releases), 'src/view.tsx': VIEW, 'src/view.css': CSS, ...extra });
+
+const read = (root, file) => readFileSync(join(root, file), 'utf8');
+
+const versions = (run) => run.applied.map((entry) => entry.version);
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+describe('the Tessera renames step: releases and the pin', () => {
+  it('replays the releases after the pin up to the installed version and pins it', () => {
+    const root = app({}, { pkg: { name: 'app', brock: { version: '0.1.3', tessera: '0.3.0' } } });
+    expect(versions(tesseraRenamesStep({ rootDir: root }))).toEqual(['0.4.0']);
+    expect(read(root, 'src/view.tsx')).toBe("import { OldGone, Tabs } from '@drizztdourden08/tessera/primitives';\nconst a = <Tabs className=\"tabs\" />;\n");
+    expect(JSON.parse(read(root, 'package.json')).brock).toEqual({ version: '0.1.3', tessera: '0.4.0' });
+  });
+
+  it('starts from 0.3.0 without a pin, and from --tessera-from when given', () => {
+    const baseline = app();
+    expect(versions(tesseraRenamesStep({ rootDir: baseline }))).toEqual(['0.4.0']);
+    expect(JSON.parse(read(baseline, 'package.json')).brock.tessera).toBe('0.4.0');
+    const older = app();
+    expect(versions(tesseraRenamesStep({ rootDir: older, from: '0.1.0' }))).toEqual(['0.2.0', '0.4.0']);
+    expect(read(older, 'src/view.tsx')).toContain('import { Gone, Tabs }');
+  });
+
+  it('replays next on Tessera main every time, and keeps the installed version pinned', () => {
+    const root = app({}, { version: '0.3.0', releases: [{ ...RELEASE, version: 'next' }], pkg: { name: 'app', brock: { tessera: '0.3.0' } } });
+    const first = tesseraRenamesStep({ rootDir: root });
+    expect(first).toMatchObject({ range: { from: '0.3.0', to: '0.3.0', next: true }, pinned: null });
+    expect(first.applied[0].touched).toEqual(['src/view.css', 'src/view.tsx']);
+    const second = tesseraRenamesStep({ rootDir: root });
+    expect(versions(second)).toEqual(['next']);
+    expect(second.applied[0].touched).toEqual([]);
+  });
+
+  it('skips an entry whose value is also a key of the release, with a warning', () => {
+    const chained = { version: 'next', cssClasses: { 'old-a': 'mid-b', 'mid-b': 'new-c' } };
+    const root = app({ 'src/chain.css': '.old-a { color: red; }\n.mid-b { color: blue; }\n' }, { version: '0.3.0', releases: [chained] });
+    const run = tesseraRenamesStep({ rootDir: root });
+    expect(run.warnings).toEqual([expect.stringContaining('cssClasses: old-a -> mid-b is skipped')]);
+    expect(read(root, 'src/chain.css')).toBe('.old-a { color: red; }\n.new-c { color: blue; }\n');
+  });
+
+  it('changes nothing when Tessera is not installed', () => {
+    const root = repo({ 'package.json': { name: 'app' }, 'src/view.css': CSS });
+    expect(tesseraRenamesStep({ rootDir: root })).toMatchObject({ applied: [], skipped: '@drizztdourden08/tessera is not installed', pinned: null });
+    expect(read(root, 'src/view.css')).toBe(CSS);
+  });
+});
+
+describe('the Tessera renames step: files', () => {
+  it('touches JSON under src, and never node_modules, dist or a generated file', () => {
+    const generated = "/* generated by brock sync, do not edit */\nconst a = 'var(--c-gold)';\n";
+    const root = app({ 'src/theme.json': '{ "accent": "var(--c-gold)" }\n', 'src/dist/a.css': '.tab-bar {}\n', 'src/gen.ts': generated, 'lib/a.css': '.tab-bar {}\n' });
+    tesseraRenamesStep({ rootDir: root });
+    expect(read(root, 'src/theme.json')).toBe('{ "accent": "var(--c-primary)" }\n');
+    expect(read(root, 'src/dist/a.css')).toBe('.tab-bar {}\n');
+    expect(read(root, 'src/gen.ts')).toBe(generated);
+    expect(read(root, 'lib/a.css')).toBe('.tab-bar {}\n');
+  });
+
+  it('covers packages and apps of a monorepo from the app folder', () => {
+    const root = repo({
+      'pnpm-workspace.yaml': 'packages:\n  - apps/*\n  - packages/*\n',
+      'apps/desktop/brock.config.ts': 'export default {};\n',
+      'apps/desktop/package.json': { name: 'desktop' },
+      ...tesseraAt('apps/desktop/', '0.4.0', RELEASES),
+      'apps/desktop/tests/e2e.test.ts': "const tab = '.tab-bar';\n",
+      'packages/design/src/Panel.css': '.tab-bar { color: var(--c-gold); }\n',
+    });
+    const run = tesseraRenamesStep({ rootDir: join(root, 'apps/desktop') });
+    expect(run.applied[0].touched).toEqual(['tests/e2e.test.ts', '../../packages/design/src/Panel.css']);
+    expect(read(root, 'packages/design/src/Panel.css')).toBe('.tabs { color: var(--c-primary); }\n');
+  });
+});
+
+describe('brock migrate --tessera-from', () => {
+  it('replays the renames alone and numbers their to-dos in the report', async () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const root = app();
+    expect(await runMigrate({ rootDir: root, tesseraFrom: '0.3.0', report: 'out/run.json' })).toBe(0);
+    const report = JSON.parse(read(root, 'out/run.json'));
+    expect(report.applied).toEqual([expect.objectContaining({ id: 'tessera-renames', version: '0.4.0', source: '@drizztdourden08/tessera' })]);
+    expect(report.todos).toEqual([expect.objectContaining({ number: 1, migration: 'tessera-renames', file: 'src/view.css', line: 2 })]);
+    expect(report.tessera).toMatchObject({ pinned: '0.4.0', range: { from: '0.3.0', to: '0.4.0', next: false } });
+  });
+
+  it('asks for --from or --tessera-from', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(await runMigrate({ rootDir: app() })).toBe(1);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('--tessera-from <version>'));
+  });
+});

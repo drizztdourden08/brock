@@ -12,6 +12,7 @@ const OPTIONS = {
   'render-installer': { type: 'boolean', default: false },
   from: { type: 'string' },
   to: { type: 'string' },
+  'tessera-from': { type: 'string' },
   report: { type: 'string' },
   help: { type: 'boolean', short: 'h', default: false },
   version: { type: 'boolean', short: 'v', default: false },

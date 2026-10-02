@@ -13,6 +13,7 @@ import { gateSteps } from './gate-steps.mjs';
 import { renderReport } from './render-report.mjs';
 import { runIn } from './run-in.mjs';
 import { runSteps } from './run-steps.mjs';
+import { tesseraBefore } from './tessera-before.mjs';
 import { MIGRATIONS_FILE, REPORT_FILE, WORKTREE_PREFIX } from './upgrade.constants.mjs';
 
 const worktreeNameFor = (version) => `${WORKTREE_PREFIX}${version.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
@@ -36,11 +37,12 @@ const printChangelog = (changelog, plan, log) => {
 };
 
 const runGate = (worktree, plan, { review, log }) => {
+  const tesseraFrom = tesseraBefore(worktree.path);
   const install = runSteps([installStep(worktree.path)], log);
   const changelog = changelogBetween(worktree.path, { from: plan.current, to: plan.target, online: plan.mode === 'registry' });
   printChangelog(changelog, plan, log);
   if (install.failed) return { results: install.results, failed: install.failed, changelog };
-  const gate = runSteps(gateSteps({ ...worktree, plan, review }), log);
+  const gate = runSteps(gateSteps({ ...worktree, plan, review, tesseraFrom }), log);
   return { results: [...install.results, ...gate.results], failed: gate.failed, changelog };
 };
 

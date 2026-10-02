@@ -39,8 +39,10 @@ brock structure [--check] [--scope @x]
                            verify the folder standard: package names, barrels, folder names, depth;
                            a package with package.json brock.designSystem true needs Name.usage.ts
                            in every component folder outside sub-components/
-brock migrate --from <version> [--to <version>] [--report <file>]
-                           run the Brock migrations after --from, up to --to, over the files the app owns
+brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--report <file>]
+                           run the Brock migrations after --from, up to --to, over the files the app owns,
+                           then replay Tessera's RENAMES.json and pin brock.tessera;
+                           --tessera-from alone replays only the Tessera renames
 brock platform list | add <id | bundle>... | remove <id | bundle>...
                            the targets in brock.config.ts; add runs the platform steps and the doctor,
                            add and remove rewrite targets and both workflows
@@ -241,6 +243,54 @@ compound that moves too, or name a package the app lists, its `index.ts` holds o
 one statement per file, and each package that holds one gains the dependency. Any other
 compound stays, with a to-do naming each import that keeps it; a component folder or
 file in an app's `src` outside the parts folders and Brock's own folders is a to-do too.
+
+### Tessera renames
+
+Tessera ships `RENAMES.json`: its renamed custom properties, components, classes, props
+and prop values, and its removed exports, grouped by release, oldest first. After the
+Brock migrations, `brock migrate` replays it over the app's code (`src/upgrade/tessera/`),
+and `brock upgrade` gets it through the `brock migrate` step of its gate.
+
+- Range: from `--tessera-from`, else `package.json#brock.tessera` (the Tessera version
+  the code was last replayed to), else `0.3.0`, the baseline; up to the installed
+  Tessera's `package.json` version. Each release in that range replays in order. A
+  `next` release (Tessera linked to main) replays every time; the pin is still the
+  installed version. `brock upgrade` passes `--tessera-from` with the Tessera version the
+  worktree had before its install when the app has no pin yet. The step then writes
+  `brock.tessera`.
+- An entry whose value is also a key of the same release would rename twice on a second
+  replay, so it is skipped with a warning.
+- Files: `.ts`, `.tsx`, `.mts`, `.mjs`, `.css` and `.json` (not `package.json`) under the
+  app's `src`, `electron` and `tests`, and every package and app of its monorepo, through
+  the owned-files walk. A file whose head says it is generated is skipped. Scripts are
+  parsed with the app's TypeScript compiler API, else Brock's.
+- Each map is one pass, longer keys first, so a renamed name is never renamed again:
+  - `cssCustomProperties`: the whole `--token` (not followed by a name character), in
+    stylesheets, every script string and JSON.
+  - `components`: only a name imported from `@drizztdourden08/tessera*` in that file;
+    the import, its JSX tags and its type and value references. An aliased import
+    renames the imported name alone; a re-export is a to-do for its importers.
+  - `cssClasses`: selectors in stylesheets (`.old` not followed by a name character,
+    outside comments, strings and `url()`); class tokens in strings under a `class*`
+    JSX attribute, a `cx`, `cn`, `clsx` or `classnames` call or a `*Class(Name)(s)`
+    binding; and `.old` in other strings, such as a `querySelector` selector. A
+    class-list value (`range-slider` to `slider slider--range`) writes every class.
+    A longer name built from a key that RENAMES.json does not list
+    (`tab-bar__strip`, `` `tab-bar--${tone}` ``) is a to-do, and so is a string that is
+    exactly an old class anywhere else.
+  - `props` `Component.prop`: the JSX attribute on that Tessera component, when the
+    new prop belongs to the same component or to its plain rename; otherwise a to-do.
+  - `propValues` `Component.prop`: a string literal the attribute can take (ternary
+    branches, `??` and `||` fallbacks), under its old or renamed prop. A bare type key
+    (`WidgetVisibility`) renames literals annotated with that Tessera type, `as` or
+    `satisfies` it; any other string holding an old value is a to-do.
+  - `removedExports`: a to-do at each import or re-export of the name.
+- A value that is not a name (it has spaces or parentheses, such as
+  `Slider (with range; see MIGRATION.md)`) is never written: each occurrence becomes a
+  to-do with the note. Rerunning the step changes nothing it already changed.
+- The report is the migration report: one `tessera-renames` entry per release, its
+  to-dos numbered after the Brock ones, and a `tessera` summary with the range, the pin
+  and the warnings.
 
 ## Platforms
 

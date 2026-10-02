@@ -9,20 +9,21 @@ const scriptStep = (path, script) => ({
   run: () => (brockInstallOf.packageOf(path)?.scripts?.[script] ? runIn.pnpm(path, ['run', script]) : null),
 });
 
-const migrateArgs = (plan) => [
+const migrateArgs = (plan, tesseraFrom) => [
   'migrate',
   '--from', plan.current ?? '0.0.0',
   ...(plan.mode === 'registry' ? ['--to', plan.target] : []),
+  ...(tesseraFrom ? ['--tessera-from', tesseraFrom] : []),
   '--report', MIGRATIONS_FILE,
 ];
 
 /**
- * @param {{ path: string, name: string, plan: import('./upgrade.type.mjs').UpgradePlan, review: boolean }} worktree
+ * @param {{ path: string, name: string, plan: import('./upgrade.type.mjs').UpgradePlan, review: boolean, tesseraFrom?: string | null }} worktree
  * @returns {{ name: string, run: () => number | null, skipped?: string }[]}
  */
-const gateSteps = ({ path, name, plan, review }) => [
+const gateSteps = ({ path, name, plan, review, tesseraFrom = null }) => [
   { name: 'brock sync', run: () => runIn.brock(path, ['sync']) },
-  { name: 'brock migrate', run: () => runIn.brock(path, migrateArgs(plan)) },
+  { name: 'brock migrate', run: () => runIn.brock(path, migrateArgs(plan, tesseraFrom)) },
   ...GATE_SCRIPTS.map((script) => scriptStep(path, script)),
   { name: 'brock icons', skipped: '--no-review', run: () => (review ? runIn.brock(path, ['icons']) : null) },
   {

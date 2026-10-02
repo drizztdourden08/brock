@@ -48,9 +48,12 @@ Usage:
                              plus its own command: bin/<name>.mjs, linked by the postinstall
   brock structure [--check] [--scope @x]
                              verify the folder standard: package names, barrels, folder names, depth
-  brock migrate --from <version> [--to <version>] [--report <file>]
+  brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--report <file>]
                              run the Brock migrations after --from, up to --to (open when left off), over the
-                             files the app owns; --report writes the touched files and numbered to-dos as JSON
+                             files the app owns, then replay Tessera's RENAMES.json from --tessera-from (else
+                             package.json brock.tessera, else 0.3.0) to the installed Tessera, its next release
+                             too when Tessera is linked to main, and pin brock.tessera; --tessera-from alone
+                             replays only the renames. --report writes the touched files and numbered to-dos as JSON
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock platform list | add <id | bundle>... | remove <id | bundle>...
@@ -132,7 +135,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, report: values.report, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], report: values.report, passthrough });
 };
 
 main().then(

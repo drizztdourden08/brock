@@ -47,6 +47,9 @@ brock platform list | add <id | bundle>... | remove <id | bundle>...
 brock doctor [id | bundle...]
                            check this machine for what the targets need; prints install commands only
 brock web build | dev      the renderer alone into dist/web, from vite.web.config.ts
+brock tessera <args...>    Tessera's own command line, such as tessera new compound SaveSlot, run in the
+                           current folder so it finds tessera.config.json from there; every word after
+                           tessera reaches it, --help too; Tessera comes from the app's or repo's node_modules
 ```
 
 In a repo you do not type `brock`: you type the repo's own command (`archipelia`,

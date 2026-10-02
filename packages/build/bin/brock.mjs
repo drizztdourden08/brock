@@ -61,6 +61,8 @@ Usage:
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
+  brock tessera <args...>    Tessera's own command line (new, ...), run in the current folder so it finds
+                             tessera.config.json from there; every word after tessera reaches it, --help too
 
 Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock worktree create <name> [--from <ref>]
@@ -110,7 +112,13 @@ const COMMANDS = {
   web: (ctx) => runWeb(ctx),
 };
 
+const runTesseraWords = async (args) => {
+  const { runTesseraCommand } = await import('../src/commands/tessera.mjs');
+  return runTesseraCommand({ args, cwd: process.cwd() });
+};
+
 const main = async () => {
+  if (process.argv[2] === 'tessera') return runTesseraWords(process.argv.slice(3));
   const { values, positionals, passthrough } = parseCli(process.argv.slice(2));
   if (values.version) {
     console.log(OWN_PACKAGE.version);

@@ -7,7 +7,7 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 
 | Package | Runs in | Holds |
 |---|---|---|
-| `@drizztdourden08/brock-lint-config` | tooling | ESLint rules and factories, stylelint, markdownlint, tsconfig bases |
+| `@drizztdourden08/brock-lint-config` | tooling | Brock's app preset on `@drizztdourden08/standards`: the same ESLint, stylelint and markdownlint factories and tsconfig bases, with Brock's extension |
 | `@drizztdourden08/brock-core` | everywhere | product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, log bus, module manifest type, automation flags, registry |
 | `@drizztdourden08/brock-electron` | main, preload | `/main`: `bootstrapApp`, paths, portable mode, window, splash, window state, IPC handlers, diagnostics, crash forensics, session log. `/preload`: `createPreloadBridge` |
 | `@drizztdourden08/brock-react` | renderer | `BrockApp`, platform provider and hosts, stores kit, screen registry, shell views, settings engine |

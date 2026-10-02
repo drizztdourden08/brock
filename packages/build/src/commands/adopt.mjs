@@ -1,7 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { followBrockPin, keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
+import { scopeOf } from '@drizztdourden08/standards/structure';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
 import { releaseAppDir } from '../release/release-app-dir.mjs';
 import { releaseWorkflow } from '../release/release-workflow.mjs';
@@ -18,18 +20,14 @@ const BUILD = '@drizztdourden08/brock-build';
 const TOOLING_PACKAGES = { [LINT_CONFIG]: 'packages/lint-config', [BUILD]: 'packages/build', [THREAD]: 'packages/thread' };
 const TOOL_DEPS = { knip: '^5.65.0', jscpd: '^4.0.5' };
 
-const scopeOf = (pkg, explicit) => {
-  if (explicit) return explicit.startsWith('@') ? explicit : `@${explicit}`;
-  const name = pkg.name ?? '';
-  return name.startsWith('@') ? name.split('/')[0] : `@${name.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 'app'}`;
-};
+const standardsFile = (path) => readFileSync(createRequire(import.meta.url).resolve(`@drizztdourden08/standards/${path}`), 'utf8');
 
 const FILES = (scope, rootDir, local) => ({
   'brock.workspace.mjs': workspaceConfig(rootDir, scope.replace(/^@/, '')),
   'eslint.config.mjs': `/* @layer root-config @kind config */
 import { brockEslint } from '${LINT_CONFIG}';
 
-export default brockEslint({});
+export default brockEslint({ presets: ['react-app'] });
 `,
   'stylelint.config.mjs': `/* @layer root-config @kind config */
 import { brockStylelint } from '${LINT_CONFIG}/stylelint';
@@ -42,17 +40,7 @@ import { brockMarkdownlint } from '${LINT_CONFIG}/markdownlint';
 export default brockMarkdownlint();
 `,
   'knip.json': knipJson(rootDir, { linked: Boolean(local) }),
-  '.jscpd.json': `{
-  "threshold": 0,
-  "minTokens": 50,
-  "minLines": 5,
-  "format": ["typescript", "tsx", "javascript", "css"],
-  "ignore": ["**/node_modules/**", "**/dist/**", "**/out/**", "**/release/**", "**/.brock/**", "**/.user-data/**", "**/fonts/**", ".worktrees/**"],
-  "gitignore": true,
-  "reporters": ["console"],
-  "absolute": false
-}
-`,
+  '.jscpd.json': standardsFile('jscpd/base.json'),
   'pnpm-workspace.yaml': `packages:
   - 'apps/*'
   - 'packages/*'
@@ -62,14 +50,7 @@ onlyBuiltDependencies:
   - electron
   - esbuild
 `,
-  '.npmrc': `@drizztdourden08:registry=https://npm.pkg.github.com
-auto-install-peers=true
-dedupe-peer-dependents=true
-public-hoist-pattern[]=*eslint*
-public-hoist-pattern[]=*stylelint*
-public-hoist-pattern[]=*markdownlint*
-public-hoist-pattern[]=typescript
-`,
+  '.npmrc': standardsFile('templates/npmrc'),
   'brock.scope': `${scope}\n`,
   [RELEASE_WORKFLOW_FILE]: releaseWorkflow(releaseAppDir(rootDir)),
 });
@@ -188,4 +169,4 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   return 0;
 };
 
-export { runAdopt, scopeOf };
+export { runAdopt };

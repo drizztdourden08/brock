@@ -8,6 +8,10 @@ import { releaseWorkflow } from '../release/release-workflow.mjs';
 import { RELEASE_WORKFLOW_FILE } from '../release/workflows.constants.mjs';
 import { installLauncher } from '../launcher/install-launcher.mjs';
 import { launcherName } from '../launcher/launcher-name.mjs';
+import { designPackageOf } from '../tessera/design-package-of.mjs';
+import { tesseraConfigFor } from '../tessera/tessera-config-for.mjs';
+import { TESSERA_CONFIG_FILE } from '../tessera/tessera.constants.mjs';
+import { tokenGlobs } from '../tessera/token-globs.mjs';
 import { ignoreGenerated } from './adopt-gitignore.mjs';
 import { handWrittenSplash } from './hand-written-splash.mjs';
 import { knipJson } from './knip-config.mjs';
@@ -34,7 +38,7 @@ export default brockEslint({});
   'stylelint.config.mjs': `/* @layer root-config @kind config */
 import { brockStylelint } from '${LINT_CONFIG}/stylelint';
 
-export default brockStylelint({ uiGlobs: ['**/src/**/*.css'], tokenGlobs: ['**/src/**/theme.css', '**/tokens/**/*.css'] });
+export default brockStylelint({ uiGlobs: ['**/src/**/*.css'], tokenGlobs: [${tokenGlobs(rootDir).map((glob) => `'${glob}'`).join(', ')}] });
 `,
   '.markdownlint-cli2.mjs': `/* @layer root-config @kind config */
 import { brockMarkdownlint } from '${LINT_CONFIG}/markdownlint';
@@ -71,10 +75,11 @@ public-hoist-pattern[]=*markdownlint*
 public-hoist-pattern[]=typescript
 `,
   'brock.scope': `${scope}\n`,
+  [TESSERA_CONFIG_FILE]: `${JSON.stringify(tesseraConfigFor(rootDir, designPackageOf(rootDir, scope)), null, 2)}\n`,
   [RELEASE_WORKFLOW_FILE]: releaseWorkflow(releaseAppDir(rootDir)),
 });
 
-const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc']);
+const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc', TESSERA_CONFIG_FILE]);
 
 const SCRIPTS = {
   lint: 'eslint . && stylelint "**/*.css" --ignore-path .gitignore --allow-empty-input && brock prose && knip && jscpd .',

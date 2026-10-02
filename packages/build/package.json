@@ -41,6 +41,10 @@
       "types": "./src/testing/index.d.mts",
       "default": "./src/testing/index.mjs"
     },
+    "./theme": {
+      "types": "./src/look/app-theme-css.d.mts",
+      "default": "./src/look/app-theme-css.mjs"
+    },
     "./package.json": "./package.json"
   },
   "files": [

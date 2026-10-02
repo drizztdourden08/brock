@@ -23,6 +23,7 @@ pnpm lint:md             markdownlint
 ```
 brock.config.ts          product identity, targets, modules      yours
 pnpm-workspace.yaml      the catalog of dependency versions       yours
+tessera.config.json      where Tessera's tools put parts and find the theme ($schema alone: src/<kind>, src/theme.css)
 electron/main.ts         bootstrapApp(product, { modules })       yours
 electron/preload.ts      createPreloadBridge({ maps, namespaces }) yours
 src/product.ts           defineProduct(config.product)
@@ -54,7 +55,7 @@ The splash shows `logos.mark` (`./logos/mark.svg`), the brand mark without its t
 The splash window is the only loading screen. The build writes its page from the product
 name, the mark and the look: `product.look = { gradient: [from, to, via?], angle? }` in
 `brock.config.ts`, else the Tessera brand gradient, else a gradient from the primary seed
-in `src/theme.css` into near black. A `src/splash.html` of its own replaces the generated
+in the app theme (`theme.css` of `tessera.config.json`, `src/theme.css` by default) into near black. A `src/splash.html` of its own replaces the generated
 one. The app window stays hidden until every boot task is done and the home screen has
 painted, then the splash fades out while the app fades in.
 

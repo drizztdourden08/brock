@@ -19,6 +19,14 @@ interface MigrationRun {
   todos: MigrationTodo[];
 }
 
+interface WorkspaceStepResult {
+  /** Files written or moved, relative to rootDir. */
+  touched?: string[];
+  /** Folders or files moved, relative to rootDir; to-dos of earlier migrations follow them. */
+  moved?: { from: string; to: string }[];
+  todos?: { file: string; line?: number | null; message: string }[];
+}
+
 interface ModuleWithMigrations {
   packageName: string;
   dir: string;
@@ -45,7 +53,8 @@ declare const runMigrations: (rootDir: string, migrations: MigrationEntry[]) => 
 declare const pinApp: (rootDir: string, version: string, check: boolean) => string[];
 declare const findJsxProps: (source: string, element: string, names: string[]) => JsxProp[];
 declare const removeSpans: (source: string, spans: { start: number; end: number }[]) => string;
+declare const designPackageStep: (ctx: { rootDir: string }) => WorkspaceStepResult;
 declare const patternTodos: (source: string, rules: PatternRule[]) => { line: number; message: string }[];
 
-export { collectMigrations, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
-export type { JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations };
+export { collectMigrations, designPackageStep, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
+export type { JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations, WorkspaceStepResult };

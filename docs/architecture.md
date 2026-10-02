@@ -64,7 +64,8 @@ my-app/
   src/index.html                   OWNED ONCE the page with an empty #root; nothing loads inside it before the reveal
   src/boot/<id>.task.ts            OWNED      a renderer boot task
   src/main.tsx                     OWNED ONCE <BrockApp product screenTree modules bootTasks settings />
-  src/theme.css                    OWNED      Tessera palette seeds
+  src/theme.css                    OWNED      Tessera palette seeds (theme.css of tessera.config.json moves it)
+  tessera.config.json              OWNED      where Tessera's tools put parts; $schema alone keeps the defaults
   src/settings.type.ts             OWNED      AppSettings
   src/settings.constants.ts        OWNED      the settings defaults
   src/ipc/contract.type.ts         OWNED      the augmentation
@@ -132,7 +133,7 @@ A task is `defineBootTask({ label, weight?, after?, timeoutMs?, run })`. The id 
 
 A failed or timed out task stops the boot on the splash with the error and Retry, Open logs and Quit. Retry reloads the app window when only a renderer task failed, and relaunches the app otherwise. The watchdog turns 8 s of silence from the renderer (30 s in development) into the same error screen; the renderer sends a heartbeat every second while its tasks run. The app window never shows half loaded.
 
-The look comes from `resolveLook(product, sources)` in brock-core: `product.look = { gradient: [from, to, via?], angle? }` first, then the Tessera brand gradient (`brands.<brand>.gradient` and `angle` in the Tessera package `tokens.json`), then a gradient derived from the palette seeds (`--p-primary` from `src/theme.css` or Tessera, into `--p-black`). The build resolves it and writes `splash.html`: static HTML with Tessera's token stylesheets, the app theme, two inlined font faces, the look as custom properties and the page stylesheet (`packages/build/src/splash/splash-page.css`, tokens only). The page talks to main through the splash preload (`window.brockSplash`). An app that ships `src/splash.html` replaces the generated page.
+The look comes from `resolveLook(product, sources)` in brock-core: `product.look = { gradient: [from, to, via?], angle? }` first, then the Tessera brand gradient (`brands.<brand>.gradient` and `angle` in the Tessera package `tokens.json`), then a gradient derived from the palette seeds (`--p-primary` from the app theme, `theme.css` of `tessera.config.json` or `src/theme.css`, or Tessera, into `--p-black`). The build resolves it and writes `splash.html`: static HTML with Tessera's token stylesheets, the app theme, two inlined font faces, the look as custom properties and the page stylesheet (`packages/build/src/splash/splash-page.css`, tokens only). The page talks to main through the splash preload (`window.brockSplash`). An app that ships `src/splash.html` replaces the generated page.
 
 `--screenshot-splash=<name>` writes `Data/screenshots/<name>.png` of the splash mid-boot, and `<name>-failed.png` when the boot stops, then quits unless `--review` or `--screenshot` also runs.
 

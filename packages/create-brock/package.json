@@ -29,6 +29,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@drizztdourden08/brock-build": "workspace:*"
+    "@drizztdourden08/brock-build": "workspace:*",
+    "@drizztdourden08/standards": "^1.0.0"
   }
 }

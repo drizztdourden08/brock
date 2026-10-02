@@ -7,7 +7,8 @@
     "react",
     "react-dom",
     "zustand",
-    "rimraf"
+    "rimraf",
+    "@drizztdourden08/standards"
   ],
   "workspaces": {
     ".": {
@@ -22,7 +23,7 @@
     "packages/lint-config": {
       "entry": [
         "*.mjs",
-        "rules/*.mjs"
+        "stylelint-rules/*.mjs"
       ],
       "project": [
         "**/*.mjs"
@@ -30,6 +31,7 @@
     },
     "packages/build": {
       "entry": [
+        "standards.extension.mjs",
         "src/*.mjs",
         "migrations/*/*.mjs",
         "tests/**/*.test.ts",

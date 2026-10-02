@@ -45,16 +45,20 @@
   },
   "files": [
     "bin",
+    "standards.extension.mjs",
     "src",
     "installer-stub",
     "migrations",
     "README.md",
     "CHANGELOG.md"
   ],
+  "standards": {
+    "extension": "./standards.extension.mjs"
+  },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
-    "@drizztdourden08/brock-lint-config": "workspace:*",
     "@drizztdourden08/brock-thread": "workspace:*",
+    "@drizztdourden08/standards": "^1.0.0",
     "@resvg/resvg-js": "catalog:",
     "pngjs": "catalog:",
     "rcedit": "catalog:"

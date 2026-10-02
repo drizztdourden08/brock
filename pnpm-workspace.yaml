@@ -20,7 +20,6 @@ catalog:
   electron-builder: ^26.8.1
   electron-vite: ^5.0.0
   eslint: ^10.4.0
-  eslint-plugin-react-hooks: ^7.1.1
   markdownlint-cli2: ^0.22.1
   node-addon-api: ^8.9.1
   react: ^19.2.6
@@ -28,7 +27,6 @@ catalog:
   stylelint: ^17.13.0
   stylelint-config-standard: ^40.0.0
   typescript: ^6.0.3
-  typescript-eslint: ^8.60.1
   velopack: ^1.2.158
   vite: ^7.3.3
   vitest: ^4.1.7
@@ -36,6 +34,9 @@ catalog:
   pngjs: ^7.0.0
   rcedit: ^5.0.2
   '@resvg/resvg-js': ^2.6.2
+
+overrides:
+  '@drizztdourden08/standards': 'link:X:/standards'
 
 onlyBuiltDependencies:
   - electron

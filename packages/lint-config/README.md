@@ -1,14 +1,14 @@
 <!-- @layer docs @kind doc -->
 # brock-lint-config
 
-The lint stack every Brock repo runs: the local ESLint rules and the writing gate, stylelint token rules, markdownlint rules, and the tsconfig bases.
+Brock's app preset on top of [`@drizztdourden08/standards`](https://github.com/drizztdourden08/standards). The rules, the factories and the word lists live in standards; this package keeps the names Brock apps import, so an app config does not change.
 
 ## Use
 
 ```js
 // eslint.config.mjs
 import { brockEslint } from '@drizztdourden08/brock-lint-config';
-export default brockEslint({ primitivesGlobs: ['src/ui/primitives/**/*.tsx'], allow: ['enhanced'] });
+export default brockEslint({ presets: ['react-app'], primitivesGlobs: ['src/ui/primitives/**/*.tsx'], allow: ['enhanced'] });
 
 // stylelint.config.mjs
 import { brockStylelint } from '@drizztdourden08/brock-lint-config/stylelint';
@@ -20,24 +20,16 @@ export default brockMarkdownlint({ ignores: ['vendor/**'] });
 ```
 
 ```json
-// tsconfig.json
 { "extends": "@drizztdourden08/brock-lint-config/tsconfig/react.json", "include": ["src"] }
 ```
 
-## Rules
+## What it adds to standards
 
-| Rule | Blocks |
+`brockEslint` is `standardsEslint` with the `react-app` preset and Brock's extension, `standards.extension.mjs`, which the package also declares in its `package.json`, so installing it is enough:
+
+| Facet | Adds |
 |---|---|
-| `local/no-raw-html` (warn) | a lowercase JSX tag outside `primitivesGlobs` |
-| `local/no-raw-color` | a hex, rgb() or hsl() literal in an inline style object |
-| `local/no-as-element-with-primitive` | `as="button"` and friends when a primitive exists |
-| `local/no-static-inline-style` | a fully static `style={{...}}` object |
-| `local/no-em-dash` / `BROCK001` | em dash, en dash |
-| `local/no-smart-punctuation` / `BROCK002` | unicode ellipsis, curly quotes |
-| `local/no-slop-prose` / `BROCK003` | stock phrases, connectors, slop words, filler adverbs, `ensure` as a verb |
-| `func-style` | `function` declarations; arrow functions only |
-| `no-restricted-syntax` | inline `export`; raw `input`, `select`, `textarea` outside primitives |
+| ESLint | raw-control messages that name the Tessera components (`TextInput`, `Select`, `TextArea`), default exports for screen files, module entries, `brock.workspace.mjs` and `boot/*.task.ts`, and screen files as lists for `local/one-export-per-file` |
+| stylelint | `@drizztdourden08/tessera/tokens.css` as a token source for `brock/no-token-override` and `brock/no-token-shadow` |
 
-None of the writing rules has an auto-fix. Rewrite the sentence.
-
-A domain word the gate should skip goes in the factory's `allow`. A lowercase entry matches any casing; an entry with a capital matches only that casing.
+Every option of the standards factories works here. The rules, their ids (`local/*`, `BROCK001` to `BROCK006`, `brock/no-token-*`) and the extension API are documented in the standards README; the structure guide is its `docs/structure.md`.

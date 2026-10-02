@@ -2,7 +2,7 @@
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 
-const COMPONENT_OPTIONAL = ['{Name}.css', '{Name}.type.ts', '{Name}.constants.ts', 'behavior', 'sub-components'];
+const COMPONENT_OPTIONAL = ['{Name}.css', '{Name}.type.ts', '{Name}.constants.ts', '{Name}.usage.ts', 'behavior', 'sub-components'];
 const BEHAVIOR_FILE = /^(?:use[A-Z]\w*|[a-z][a-z0-9-]*)(?:\.type|\.constants)?\.ts$/;
 const SUB_COMPONENT_FILE = /^[A-Z]\w*(?:\.tsx|\.type\.ts|\.constants\.ts|\.css)$/;
 const MODULE_FILE = /^(?:[a-z][a-z0-9-]*(?:\.type|\.constants|\.task)?\.ts|use[A-Z]\w*\.ts|[A-Z]\w*(?:\.tsx|\.type\.ts|\.constants\.ts|\.css)|index\.ts|augment\.ts|main\.tsx|[a-z][a-z0-9-]*\.(?:html|css))$/;
@@ -25,12 +25,13 @@ const checkSubComponents = (dir, label) => {
   return findings;
 };
 
-const checkComponentFolder = (dir, label) => {
+const checkComponentFolder = (dir, label, requireUsage = false) => {
   const name = basename(dir);
   const allowed = new Set([`${name}.tsx`, 'index.ts', ...COMPONENT_OPTIONAL.map((f) => f.replace('{Name}', name))]);
   const entries = entriesOf(dir);
-  const findings = entries.filter((e) => !allowed.has(e)).map((e) => `${label}/${e}: not part of a component folder (${name}.tsx, index.ts, ${name}.css, ${name}.type.ts, ${name}.constants.ts, behavior/, sub-components/)`);
+  const findings = entries.filter((e) => !allowed.has(e)).map((e) => `${label}/${e}: not part of a component folder (${name}.tsx, index.ts, ${name}.css, ${name}.type.ts, ${name}.constants.ts, ${name}.usage.ts, behavior/, sub-components/)`);
   if (!entries.includes('index.ts')) findings.push(`${label}: missing index.ts`);
+  if (requireUsage && !entries.includes(`${name}.usage.ts`)) findings.push(`${label}: missing ${name}.usage.ts (every design-system component documents when to use it)`);
   if (entries.includes('behavior')) findings.push(...checkBehavior(join(dir, 'behavior'), label));
   if (entries.includes('sub-components')) findings.push(...checkSubComponents(join(dir, 'sub-components'), label));
   return findings;
@@ -39,14 +40,14 @@ const checkComponentFolder = (dir, label) => {
 const checkModuleFolder = (dir, label) =>
   entriesOf(dir).filter((name) => !isDir(join(dir, name)) && !MODULE_FILE.test(name)).map((name) => `${label}/${name}: a module file is kebab-case.ts, <subject>.type.ts, <subject>.constants.ts, <id>.task.ts or index.ts`);
 
-const walk = (rootDir, dir, findings, skip) => {
-  if (skip.has(dir)) return;
+const walk = (rootDir, dir, findings, options) => {
+  if (options.skip.has(dir)) return;
   const label = relative(rootDir, dir).replace(/\\/g, '/');
-  if (isComponentFolder(dir)) { findings.push(...checkComponentFolder(dir, label)); return; }
+  if (isComponentFolder(dir)) { findings.push(...checkComponentFolder(dir, label, options.designSystem)); return; }
   findings.push(...checkModuleFolder(dir, label));
   for (const name of entriesOf(dir)) {
     const path = join(dir, name);
-    if (isDir(path)) walk(rootDir, path, findings, skip);
+    if (isDir(path)) walk(rootDir, path, findings, options);
   }
 };
 
@@ -54,11 +55,12 @@ const walk = (rootDir, dir, findings, skip) => {
  * @param {string} rootDir
  * @param {string} srcDir
  * @param {string[]} [skipDirs] folders another check owns
+ * @param {{ designSystem?: boolean }} [opts] designSystem: every top-level component folder needs {Name}.usage.ts
  * @returns {string[]}
  */
-const checkShapes = (rootDir, srcDir, skipDirs = []) => {
+const checkShapes = (rootDir, srcDir, skipDirs = [], { designSystem = false } = {}) => {
   const findings = [];
-  if (existsSync(srcDir)) walk(rootDir, srcDir, findings, new Set(skipDirs));
+  if (existsSync(srcDir)) walk(rootDir, srcDir, findings, { skip: new Set(skipDirs), designSystem });
   return findings;
 };
 

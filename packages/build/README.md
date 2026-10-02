@@ -36,7 +36,9 @@ brock adopt [--scope @x] [--local <brockRepo>] [--force]
                            give any repo the lint configs, pnpm files and the lint-config dependency,
                            plus its own command: bin/<repo>.mjs, linked by the postinstall
 brock structure [--check] [--scope @x]
-                           verify the folder standard: package names, barrels, folder names, depth
+                           verify the folder standard: package names, barrels, folder names, depth;
+                           a package with package.json brock.designSystem true needs Name.usage.ts
+                           in every component folder outside sub-components/
 brock migrate --from <version> [--to <version>] [--report <file>]
                            run the Brock migrations after --from, up to --to, over the files the app owns
 brock platform list | add <id | bundle>... | remove <id | bundle>...

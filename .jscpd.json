@@ -16,7 +16,8 @@
     "**/.brock/**",
     "**/.user-data/**",
     "**/fonts/**",
-    ".worktrees/**"
+    ".worktrees/**",
+    ".claude/worktrees/**"
   ],
   "gitignore": true,
   "reporters": [

@@ -67,7 +67,7 @@ const customPageNote = (rootDir, dir) => {
   return [`${relative(rootDir, dir).replace(/\\/g, '/') || '.'}: custom pages per bucket: ${customPageCounts(files, buckets) || 'no buckets'}`];
 };
 
-const checkSrc = async (rootDir, dir, out) => {
+const checkSrc = async (rootDir, dir, out, designSystem = false) => {
   const { findings, notes } = out;
   notes.push(...customPageNote(rootDir, dir));
   const src = join(dir, 'src');
@@ -77,7 +77,7 @@ const checkSrc = async (rootDir, dir, out) => {
     if (GENERIC_FOLDERS.has(name)) findings.push(`${at}: folder "${name}" names a layer, not a subject`);
     if (depth > MAX_DEPTH_BELOW_SRC) findings.push(`${at}: deeper than ${MAX_DEPTH_BELOW_SRC} levels below src`);
   });
-  if (existsSync(join(src, 'index.ts')) || existsSync(join(src, 'main.tsx'))) findings.push(...checkShapes(rootDir, src, screensOwned(dir)));
+  if (existsSync(join(src, 'index.ts')) || existsSync(join(src, 'main.tsx'))) findings.push(...checkShapes(rootDir, src, screensOwned(dir), { designSystem }));
   const label = relative(rootDir, dir).replace(/\\/g, '/');
   findings.push(...(await checkScreens(dir)).map((finding) => (label === '' ? finding : `${label}/${finding}`)));
 };
@@ -112,7 +112,7 @@ const checkPackage = async (rootDir, dir, scope, out) => {
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
   if (isAppDir(dir, label)) findings.push(...checkInstallerFolder(rootDir, dir));
   else findings.push(...packageProblems(dir, label, pkg, scope));
-  await checkSrc(rootDir, dir, out);
+  await checkSrc(rootDir, dir, out, pkg.brock?.designSystem === true);
 };
 
 const scopeFromFile = (rootDir) => {

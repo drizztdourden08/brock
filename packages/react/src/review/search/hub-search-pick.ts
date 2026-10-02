@@ -12,12 +12,30 @@ import { SELECTORS } from '../review.constants';
 import type { SearchSample, StepTour } from '../review.type';
 import { reachedTarget } from './reached-target';
 
-const hitFor = (label: string): HTMLElement | undefined =>
-  [...document.querySelectorAll<HTMLElement>(SELECTORS.hubSearchHit)].find((hit) => hit.textContent.trim().startsWith(label));
+const liveRow = (anchor: string): HTMLElement | null =>
+  find(`${SELECTORS.hubSearchResults} [data-setting-key="${CSS.escape(anchor)}"]`);
+
+const groupHeading = (pageId: string): HTMLElement | null =>
+  find(`${SELECTORS.hubSearchResults} [data-group="${CSS.escape(pageId)}"] .search-results__heading`);
 
 const focusedSearch = (): HTMLInputElement | null => {
   const input = find(SELECTORS.hubSearchInput);
   return input instanceof HTMLInputElement && document.activeElement === input ? input : null;
+};
+
+const checkLiveResult = async (tour: StepTour, sample: SearchSample, bucket: string): Promise<void> => {
+  const anchor = sample.target?.anchor ?? '';
+  const row = await waitFor(() => liveRow(anchor));
+  tour.check('search-hub-finds', row !== null, `the "${bucket}" hub search shows the live "${sample.label}" row`, `the "${bucket}" hub search does not show the live "${sample.label}" row`);
+  if (row === null) return undefined;
+  tour.check('search-hub-editable', row.querySelector(SELECTORS.liveControl) !== null, `the "${sample.label}" result holds its control, editable in place`, `the "${sample.label}" result has no control to edit`);
+  await tour.capture('search-hub');
+  const route = sample.target?.route ?? '';
+  const heading = groupHeading(route.split(ROUTE_SEPARATOR)[1] ?? '');
+  if (heading) click(heading);
+  const reached = heading !== null && await reachedTarget({ ...sample, target: { route } });
+  tour.check('search-hub-opens-page', reached, `the result group heading opened ${route}`, `the result group heading did not open ${route}`);
+  return undefined;
 };
 
 const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void> => {
@@ -31,14 +49,7 @@ const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void
   tour.check('search-hub-shortcut', input !== null && !palette.isOpen(), `Ctrl+K inside the "${bucket}" hub focused its search`, `Ctrl+K inside the "${bucket}" hub did not focus its search`);
   if (input === null) return undefined;
   typeText(input, sample.label);
-  const hit = await waitFor(() => hitFor(sample.label));
-  tour.check('search-hub-finds', hit !== null, `the "${bucket}" hub search lists "${sample.label}"`, `the "${bucket}" hub search does not list "${sample.label}"`);
-  if (hit === null) return undefined;
-  await tour.capture('search-hub');
-  click(hit);
-  const reached = await reachedTarget(sample);
-  tour.check('search-hub-jumps', reached, `the hub hit opened ${sample.target?.route ?? ''} and flashed "${sample.label}"`, `the hub hit did not open and flash "${sample.label}"`);
-  return undefined;
+  return checkLiveResult(tour, sample, bucket);
 };
 
 export { hubSearchPick };

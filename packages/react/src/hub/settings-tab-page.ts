@@ -8,6 +8,7 @@ const settingsTabPage = (tab: { id: string; label: string; navIcon?: ReactNode }
   id: tab.id,
   label: tab.label,
   icon: icon ?? tab.navIcon,
+  settingsTab: tab.id,
   render: () => createElement(SettingsTabPage, { tabId: tab.id }),
 });
 

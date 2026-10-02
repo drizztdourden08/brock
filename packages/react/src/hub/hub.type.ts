@@ -33,6 +33,7 @@ interface HubPage {
   render: (ctx: HubRenderContext) => ReactNode;
   devOnly?: boolean;
   shortcut?: string;
+  settingsTab?: string;
 }
 
 interface HubGroup {

@@ -62,7 +62,7 @@ settings/features/                    a module folder: no .tsx of its own name
 | `UPPER_SNAKE` constants live in `*.constants.ts` | `local/constants-in-constants-file` |
 | A `useX` hook lives alone in `useX.ts` | `local/hook-file-named-after-hook` |
 | A component imports only `./<Name>.css`; theme and token sheets are imported by the entry | `local/css-beside-component` |
-| A component folder holds `Name.tsx`, `index.ts` and, optionally, `Name.css`, `Name.type.ts`, `Name.constants.ts`, `behavior/`, `sub-components/`; a flat component is `Name.tsx`; a module folder holds kebab-case `.ts` files, `useX.ts`, `<subject>.type.ts`, `<subject>.constants.ts`, `index.ts` | `brock structure` |
+| A component folder holds `Name.tsx`, `index.ts` and, optionally, `Name.css`, `Name.type.ts`, `Name.constants.ts`, `Name.usage.ts`, `behavior/`, `sub-components/`; a flat component is `Name.tsx`; a module folder holds kebab-case `.ts` files, `useX.ts`, `<subject>.type.ts`, `<subject>.constants.ts`, `index.ts` | `brock structure` |
 | Stories, tests and config files are exempt from the shape rules; a file that is a list by nature goes under `shapeOff: [{ files, why }]` | `brockEslint` |
 
 ## Where raw values live
@@ -96,6 +96,7 @@ A disable without a reason fails (`reportDescriptionlessDisables`).
 | Every package is named `<scope>/<subject>` and has `exports["."]` pointing at a real file | `brock structure` |
 | No folder named `lib`, `utils`, `helpers`, `misc` or `common`; name the subject | `local/no-generic-folder-names`, `brock structure` |
 | Nothing deeper than five levels below `src` | `brock structure` |
+| In a package whose `package.json` has `"brock": { "designSystem": true }`, every component folder outside `sub-components/` holds `Name.usage.ts`, the note on when to use the component | `brock structure` |
 | No comments, in TS, JS and CSS alike. A comment passes only when it has a working form: the first-line header tag, a tool directive on the allow list (`DEFAULT_COMMENT_ALLOW`, extended per repo through `comments.allow`), and a JSDoc type block in plain JavaScript, which has no other type syntax | `local/no-comments`, stylelint `comment-pattern` |
 | A JSDoc type block is types, not prose: every line starts with a type tag (`@param`, `@returns`, `@typedef`, `@property`, `@type`, `@template`, `@callback`, `@import`), at most 10 lines, the note after a tag at most 60 characters and never a sentence. No description line. A `.ts` file carries no JSDoc at all | `local/no-comments` |
 | No raw HTML outside the design-system primitives. Every screen is built from Tessera components (`Box`, `Text`, `Flex`, `Button`, ...), and a missing piece becomes a new primitive in Tessera, not a `<div>` in the app | `local/no-raw-html`, off only under `primitivesGlobs` |

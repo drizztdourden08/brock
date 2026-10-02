@@ -32,6 +32,7 @@ interface HubPage {
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
   devOnly?: boolean;
+  settingsTab?: string;
 }
 
 interface HubGroup {

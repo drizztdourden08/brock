@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-build
 
+## 0.1.2
+
+### Patch Changes
+
+- 7f38965: `brock structure` accepts `Name.usage.ts` in a component folder. A package whose `package.json` has `"brock": { "designSystem": true }` must have one in every component folder outside `sub-components/`.
+- Updated dependencies [25be8fe]
+- Updated dependencies [f60b232]
+  - @drizztdourden08/brock-core@0.1.2
+  - @drizztdourden08/brock-lint-config@0.1.2
+  - @drizztdourden08/brock-thread@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

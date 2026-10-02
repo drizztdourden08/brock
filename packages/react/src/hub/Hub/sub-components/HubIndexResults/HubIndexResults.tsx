@@ -48,7 +48,6 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
     <SearchResults
       query={query}
       count={count}
-      summary={`${count} ${count === 1 ? 'result matches' : 'results match'} "${needle}"`}
       jumps={jumps}
       onJump={onOpenPage}
       groups={groups}

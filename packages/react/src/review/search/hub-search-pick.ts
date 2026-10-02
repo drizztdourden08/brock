@@ -16,7 +16,7 @@ const liveRow = (anchor: string): HTMLElement | null =>
   find(`${SELECTORS.hubSearchResults} [data-setting-key="${CSS.escape(anchor)}"]`);
 
 const groupHeading = (pageId: string): HTMLElement | null =>
-  find(`${SELECTORS.hubSearchResults} [data-group="${CSS.escape(pageId)}"] .search-results__heading`);
+  find(`${SELECTORS.hubSearchResults} [data-group="${CSS.escape(pageId)}"] .search-results__open`);
 
 const focusedSearch = (): HTMLInputElement | null => {
   const input = find(SELECTORS.hubSearchInput);
@@ -34,7 +34,7 @@ const checkLiveResult = async (tour: StepTour, sample: SearchSample, bucket: str
   const heading = groupHeading(route.split(ROUTE_SEPARATOR)[1] ?? '');
   if (heading) click(heading);
   const reached = heading !== null && await reachedTarget({ ...sample, target: { route } });
-  tour.check('search-hub-opens-page', reached, `the result group heading opened ${route}`, `the result group heading did not open ${route}`);
+  tour.check('search-hub-opens-page', reached, `the result group's Open button opened ${route}`, `the result group's Open button did not open ${route}`);
   return undefined;
 };
 

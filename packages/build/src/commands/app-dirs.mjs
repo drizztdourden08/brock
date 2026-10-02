@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { expandGlob, globBase, workspaceGlobs } from './structure.mjs';
+import { expandGlob, globBase, workspaceGlobs } from '@drizztdourden08/standards/structure';
 
 const APP_MARKER = 'brock.config.ts';
 

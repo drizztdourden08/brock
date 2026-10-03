@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import { WidgetManager, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
-import type { Rect } from '@drizztdourden08/tessera/composites';
+import type { Rect, ScreenPoint, WidgetGates } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
@@ -11,7 +11,7 @@ import { SettingsStoreContext } from '../../stores/settings-context';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { dragRelease } from '../drag-release';
-import { NO_WIDGETS } from '../widget.constants';
+import { NO_IDS, NO_WIDGETS } from '../widget.constants';
 import { poppedShown } from '../popped-shown';
 import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
@@ -20,7 +20,6 @@ import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
-import type { ScreenPoint } from '../widget.type';
 import type { WidgetHostProps } from './WidgetHost.type';
 
 const trackMainRect = (rect: Rect | null): void => {
@@ -41,7 +40,9 @@ const WidgetHost = (props: WidgetHostProps) => {
   const pageOpen = useNavigationStore((s) => s.active !== null);
   const developerTools = useDeveloperTools();
   const settingsStore = useContext(SettingsStoreContext);
-  const gates = useMemo(() => ({ definitions, developerTools, contextActive: true, pageOpen }), [definitions, developerTools, pageOpen]);
+  const gates = useMemo<WidgetGates>(() => ({
+    definitions, developerToolsEnabled: developerTools, contextActive: true, pageOpen, forcedIds: NO_IDS, contentIds: definitions.map((def) => def.id),
+  }), [definitions, developerTools, pageOpen]);
   const shown = useMemo(() => poppedShown(layout, gates), [layout, gates]);
   const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
 

@@ -39,18 +39,6 @@ interface WidgetRelayState {
   append: (kind: string, items: readonly unknown[], limit: number) => void;
 }
 
-interface ScreenPoint {
-  screenX: number;
-  screenY: number;
-}
-
-interface PoppedGates {
-  definitions: readonly WidgetDef[];
-  developerTools: boolean;
-  contextActive: boolean;
-  pageOpen: boolean;
-}
-
 interface SettingsSlice {
   profile: Profile | null;
   settings: Record<string, unknown>;
@@ -61,4 +49,4 @@ interface ProfileViews {
   widgetPrefs?: WidgetPrefs;
 }
 
-export type { PoppedGates, ProfileViews, ScreenPoint, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState };
+export type { ProfileViews, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState };

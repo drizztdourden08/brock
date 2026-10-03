@@ -21,7 +21,7 @@ const layout: WidgetLayout = {
   popped: [{ id: 'tools', bounds: { x: 1, y: 2, width: 300, height: 200 } }, { id: 'radar' }, { id: 'pinned' }],
 };
 
-const gates = { definitions, developerTools: true, contextActive: true, pageOpen: false };
+const gates = { definitions, developerToolsEnabled: true, contextActive: true, pageOpen: false, forcedIds: [], contentIds: definitions.map((d) => d.id) };
 const shownIds = (over: Partial<typeof gates>) => poppedShown(layout, { ...gates, ...over }).map((p) => p.id);
 
 describe('poppedShown', () => {
@@ -30,7 +30,7 @@ describe('poppedShown', () => {
   });
 
   it('hides a devOnly widget once developer tools are off, keeping its memory in the layout', () => {
-    expect(shownIds({ developerTools: false })).toEqual(['radar']);
+    expect(shownIds({ developerToolsEnabled: false })).toEqual(['radar']);
     expect(layout.popped[0]?.bounds).toEqual({ x: 1, y: 2, width: 300, height: 200 });
   });
 

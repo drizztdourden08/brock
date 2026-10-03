@@ -81,7 +81,7 @@
         "stories/**/*.stories.tsx",
         "stories/_samples/*.tsx",
         "src/compounds/*/*.usage.ts",
-        "src/compounds/app-tree.ts",
+        "src/compounds/app-tree.*.ts",
         "tests/**/*.test.ts"
       ],
       "project": [

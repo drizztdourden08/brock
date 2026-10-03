@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind data */
+/* @layer renderer-shell @kind constants */
 import type { AppTree } from '@drizztdourden08/tessera';
 
 const APP_TREE = [
@@ -6,11 +6,5 @@ const APP_TREE = [
   { at: ['navigation'], answers: { 'between profiles': null } },
   { at: ['data', 'controller or keyboard input'], answers: { 'a calibration step': null } },
 ] as const satisfies AppTree;
-
-declare module '@drizztdourden08/tessera' {
-  interface TesseraApps {
-    brock: { parts: 'AboutPanel' | 'CalibrationPanel' | 'ProfilesPanel' | 'ReleaseNotesPanel'; tree: typeof APP_TREE };
-  }
-}
 
 export { APP_TREE };

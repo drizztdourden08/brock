@@ -26,6 +26,6 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@drizztdourden08/standards": "^1.0.0"
+    "@drizztdourden08/standards": "^1.0.3"
   }
 }

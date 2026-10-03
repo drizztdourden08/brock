@@ -11,24 +11,13 @@ permissions:
 
 jobs:
   gate:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-          registry-url: https://npm.pkg.github.com
-          scope: '@drizztdourden08'
-      - run: pnpm install --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm lint
-      - run: pnpm lint:md
-      - run: pnpm structure
-      - run: pnpm test
-      - run: pnpm app:build
+    uses: drizztdourden08/standards/.github/workflows/ci.yml@v1
+    permissions:
+      contents: read
+      packages: read
+    with:
+      scripts: lint lint:md structure test app:build
+      sync-check: false
 
   upgrade:
     runs-on: windows-latest

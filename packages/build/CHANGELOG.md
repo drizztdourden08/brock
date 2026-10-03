@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-build
 
+## 0.5.0
+
+### Patch Changes
+
+- Updated dependencies [ff027d0]
+  - @drizztdourden08/brock-core@0.5.0
+  - @drizztdourden08/brock-thread@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

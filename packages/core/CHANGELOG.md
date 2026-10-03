@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-core
 
+## 0.5.0
+
+### Minor Changes
+
+- ff027d0: The widget IPC contract grows for widget windows that work end to end: `WidgetWindowOpen` carries a `seq`, `at` (the drag-out screen point), `atCursor` and `taskbar`, `widget:closed` carries the window's `seq`, `widget:patchSettings` and `widget:settingsPatch` relay a settings change from a widget window to the app, and the review gets `review:widgetProbe` (`WidgetProbeRequest`, `WidgetProbeResult`) and `review:captureWidget`.
+
 ## 0.4.0
 
 ## 0.3.0

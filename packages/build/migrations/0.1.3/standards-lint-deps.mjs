@@ -24,12 +24,18 @@ const knipJson = (source) => {
   return write(source, data);
 };
 
-const apply = ({ path, source }) => ({ source: basename(path) === 'knip.json' ? knipJson(source) : packageJson(source), todos: [] });
+const CATALOG_LINE = new RegExp(`^[ \t]+['"]?(?:${CARRIED.join('|')})['"]?:.*\r?\n`, 'gm');
+
+const workspaceYaml = (source) => source.replace(CATALOG_LINE, '');
+
+const EDITS = Object.freeze({ 'knip.json': knipJson, 'pnpm-workspace.yaml': workspaceYaml });
+
+const apply = ({ path, source }) => ({ source: (EDITS[basename(path)] ?? packageJson)(source), todos: [] });
 
 const migration = Object.freeze({
   id: 'standards-lint-deps',
-  summary: 'brock-lint-config now sits on @drizztdourden08/standards, which carries typescript-eslint and eslint-plugin-react-hooks: an app drops them from devDependencies, and knip ignores standards, whose stylelint plugins it sees through the lint config.',
-  files: /(^|\/)(package|knip)\.json$/,
+  summary: 'brock-lint-config now sits on @drizztdourden08/standards, which carries typescript-eslint and eslint-plugin-react-hooks: an app drops them from devDependencies and its pnpm catalog, and knip ignores standards, whose stylelint plugins it sees through the lint config.',
+  files: /(^|\/)((package|knip)\.json|pnpm-workspace\.yaml)$/,
   apply,
 });
 

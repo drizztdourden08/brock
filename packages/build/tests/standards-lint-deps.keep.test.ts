@@ -13,12 +13,14 @@ const PACKAGE = {
   devDependencies: { '@drizztdourden08/brock-lint-config': '^0.1.2', 'eslint-plugin-react-hooks': '^7.1.1', 'typescript-eslint': '^8.60.1', eslint: '^9.0.0' },
 };
 const KNIP = { entry: ['src/main.tsx'], ignoreDependencies: ['zustand'] };
+const CATALOG = 'catalog:\n  eslint: ^9.0.0\n  eslint-plugin-react-hooks: ^7.1.1\n  typescript-eslint: ^8.60.1\n  zustand: ^5.0.0\n';
 
 const app = (): string => {
   const root = mkdtempSync(join(tmpdir(), 'brock-standards-deps-'));
   dirs.push(root);
   writeFileSync(join(root, 'package.json'), `${JSON.stringify(PACKAGE, null, 2)}\n`);
   writeFileSync(join(root, 'knip.json'), `${JSON.stringify(KNIP, null, 2)}\n`);
+  writeFileSync(join(root, 'pnpm-workspace.yaml'), CATALOG);
   return root;
 };
 
@@ -35,6 +37,7 @@ describe('standards-lint-deps', () => {
     await runMigrations(root, migration());
     expect(read(root, 'package.json').devDependencies).toEqual({ '@drizztdourden08/brock-lint-config': '^0.1.2', eslint: '^9.0.0' });
     expect(read(root, 'knip.json').ignoreDependencies).toEqual(['@drizztdourden08/standards', 'zustand']);
+    expect(readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')).toBe('catalog:\n  eslint: ^9.0.0\n  zustand: ^5.0.0\n');
     const again = await runMigrations(root, migration());
     expect(again.applied.flatMap((m) => m.touched)).toEqual([]);
   });

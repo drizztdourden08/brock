@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Profile } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, WidgetDefinition, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 
@@ -7,6 +8,7 @@ interface WidgetDef extends WidgetDefinition {
   icon?: string;
   render: () => ReactNode;
   settings?: () => ReactNode;
+  taskbar?: boolean;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
@@ -34,6 +36,19 @@ interface WidgetRegistryState {
 interface WidgetRelayState {
   slices: Record<string, unknown>;
   receive: (kind: string, data: unknown) => void;
+  append: (kind: string, items: readonly unknown[], limit: number) => void;
+}
+
+interface PoppedGates {
+  definitions: readonly WidgetDef[];
+  developerTools: boolean;
+  contextActive: boolean;
+  pageOpen: boolean;
+}
+
+interface SettingsSlice {
+  profile: Profile | null;
+  settings: Record<string, unknown>;
 }
 
 interface ProfileViews {
@@ -41,4 +56,4 @@ interface ProfileViews {
   widgetPrefs?: WidgetPrefs;
 }
 
-export type { ProfileViews, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState };
+export type { PoppedGates, ProfileViews, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState };

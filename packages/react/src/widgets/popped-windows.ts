@@ -1,25 +1,36 @@
 /* @layer renderer-shell @kind logic */
+import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import type { PoppedWidget } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../host/host-api';
 
-const opened = new Set<string>();
+const opened = new Map<string, number>();
+let counter = 0;
 
-const open = ({ id, ...facts }: PoppedWidget): void => {
+const open = ({ id, ...facts }: PoppedWidget, extra: Partial<WidgetWindowOpen> = {}): void => {
   if (opened.has(id)) return;
-  opened.add(id);
-  void hostApi()?.popOutWidget(id, facts);
+  counter += 1;
+  opened.set(id, counter);
+  void hostApi()?.popOutWidget(id, { ...facts, ...extra, seq: counter });
 };
 
-const sync = (popped: readonly PoppedWidget[]): void => {
-  const wanted = new Set(popped.map((p) => p.id));
-  for (const id of [...opened]) {
-    if (wanted.has(id)) continue;
-    opened.delete(id);
-    hostApi()?.dockBackWidget(id, 'close');
-  }
-  for (const entry of popped) open(entry);
+const close = (id: string): void => {
+  if (!opened.delete(id)) return;
+  hostApi()?.dockBackWidget(id, 'close');
 };
 
-const poppedWindows = { open, sync, forget: (id: string): void => { opened.delete(id); } };
+const sync = (shown: readonly PoppedWidget[], extraOf: (id: string) => Partial<WidgetWindowOpen>): void => {
+  const wanted = new Set(shown.map((p) => p.id));
+  for (const id of [...opened.keys()]) if (!wanted.has(id)) close(id);
+  for (const entry of shown) open(entry, extraOf(entry.id));
+};
+
+const settle = (id: string, seq: number | undefined): boolean => {
+  const current = opened.get(id);
+  if (current === undefined || (seq !== undefined && seq !== current)) return false;
+  opened.delete(id);
+  return true;
+};
+
+const poppedWindows = { open, sync, settle, isOpen: (id: string): boolean => opened.has(id) };
 
 export { poppedWindows };

@@ -14,9 +14,13 @@ const NO_WIDGETS: readonly WidgetDef[] = [];
 const WIDGET_KEY_PREFIX = 'widget-';
 const WIDGET_QUERY_KEY = 'widget';
 const RELAY_DELAY_MS = 200;
+const RELAY_LOG_LIMIT = 1000;
+const RELEASE_TIMEOUT_MS = 1500;
+const DRAG_SLOP_PX = 6;
 
-const RELAY_SLICES = { log: 'log', frames: 'frames', prefs: 'prefs' } as const;
+const RELAY_SLICES = { log: 'log', logAppend: 'log+', frames: 'frames', prefs: 'prefs', settings: 'settings' } as const;
 
 export {
-  NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_SLICES, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX, WIDGET_QUERY_KEY,
+  DRAG_SLOP_PX, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
+  WIDGET_QUERY_KEY,
 };

@@ -1,14 +1,18 @@
 /* @layer renderer-shell @kind component */
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
+import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import { WidgetManager, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
 import type { Rect } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
+import { SettingsStoreContext } from '../../stores/settings-context';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
+import { dragRelease } from '../drag-release';
 import { NO_WIDGETS } from '../widget.constants';
+import { poppedShown } from '../popped-shown';
 import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
@@ -32,11 +36,16 @@ const WidgetHost = (props: WidgetHostProps) => {
   const externalDrag = useWidgetLayoutStore((s) => s.externalDrag);
   const pageOpen = useNavigationStore((s) => s.active !== null);
   const developerTools = useDeveloperTools();
+  const settingsStore = useContext(SettingsStoreContext);
+  const gates = useMemo(() => ({ definitions, developerTools, contextActive: true, pageOpen }), [definitions, developerTools, pageOpen]);
+  const shown = useMemo(() => poppedShown(layout, gates), [layout, gates]);
+  const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
 
   useEffect(() => useWidgetLayoutStore.getState().setDefinitions(definitions), [definitions]);
+  useEffect(() => dragRelease.watch(window), []);
   useWidgetPersistence(profileId);
-  usePopOutWindows();
-  useWidgetRelayPublisher();
+  usePopOutWindows(shown, extraOf);
+  useWidgetRelayPublisher(settingsStore);
 
   const content = useMemo<Record<string, ReactNode>>(
     () => Object.fromEntries(definitions.map((def) => [def.id, def.render()])),
@@ -47,10 +56,12 @@ const WidgetHost = (props: WidgetHostProps) => {
     [definitions],
   );
 
-  const popOut = useCallback((id: string) => {
-    const memory = useWidgetLayoutStore.getState().layout.poppedMemory?.[id];
-    if (getWidgetDefinition(definitions, id)?.popOut === true) poppedWindows.open({ ...memory, id });
-  }, [definitions]);
+  const popOut = useCallback((id: string, point?: { x: number; y: number }) => {
+    const current = useWidgetLayoutStore.getState().layout;
+    const facts = { ...current.poppedMemory?.[id], id };
+    if (poppedShown({ ...current, popped: [facts] }, gates).length === 0) return;
+    poppedWindows.open(facts, { ...extraOf(id), atCursor: point !== undefined || dragRelease.releasing() });
+  }, [gates, extraOf]);
   const dropIn = useCallback(() => useWidgetLayoutStore.getState().setExternalDrag(null), []);
 
   return (

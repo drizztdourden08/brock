@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-electron
 
+## 0.6.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes

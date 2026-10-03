@@ -1,5 +1,29 @@
 # @drizztdourden08/brock-build
 
+## 0.2.0
+
+### Minor Changes
+
+- ee89ad0: `brock tessera <args...>` runs Tessera's own command line (`runTessera` from `@drizztdourden08/tessera/cli`) in the current folder, so `tessera.config.json` is found from there; every word after `tessera` reaches it, `--help` too, and the repo command (`bin/<repo>.mjs tessera new compound SaveSlot`) reaches it the same way. Tessera comes from the folder's own `node_modules`, else from an app of its workspace; without it the command says how to add it and exits 1.
+- becd8b0: Migrations may hold a workspace step, `workspace({ rootDir })`, for a change no single file can make; it returns `{ touched, moved, todos }`, runs after the file steps of its version, and earlier to-dos follow the files it moves. The 0.1.3 `design-package` migration uses it: a monorepo gets `packages/design` (`@<scope>/design`), a root `tessera.config.json` that points at it with one `apps` entry per app, and every app compound whose imports it can rewrite moved there and imported from `@<scope>/design`; a compound it cannot move, and a component outside the parts folders, becomes a to-do. A single-app repo gets a `tessera.config.json` with `$schema` alone.
+- 1f2ce71: `brock structure` and `brock prose` run the checks of `@drizztdourden08/standards`, with Brock's extension in `brock-build/standards.extension.mjs`: `brock.config.ts` marks an app, `build/installer` and `src/screens` keep their own checks, `<id>.task.ts` is a module file. Installing `brock-build` is enough for `standards structure` to load it. Breaking: the `brock.designSystem` flag is gone; list `@drizztdourden08/standards/extensions/usage-files` in `standards.config.mjs` instead. `brock adopt` and `create-brock` take `.npmrc`, `.jscpd.json` and the knip schema from the standards templates, and the generated `eslint.config.mjs` names the `react-app` preset. `brock-thread` checks PR text with the shared writing lists from standards.
+- becd8b0: Brock reads the app layout from `tessera.config.json`. The splash look, the splash token sheet and the installer take the app theme from `theme.css` of that file (with the app's `apps` entry merged in), through the app's own `@drizztdourden08/tessera/config`, and keep `src/theme.css` when there is no file or the installed Tessera has no config entry; a file that breaks the schema stops with an error naming it. `appThemeCss(rootDir)` is the new `@drizztdourden08/brock-build/theme` entry, and the managed `stylelint.config.mjs` takes its token file from it. A new app carries a root `tessera.config.json` with `$schema` alone. `brock adopt` writes one when it is missing: `$schema` alone for a single app, `package`, `parts` and one `apps` entry per app when the repo has `packages/design`.
+- e19834d: `brock migrate` replays Tessera's `RENAMES.json` after the Brock migrations: each release after `--tessera-from` (new), else `package.json#brock.tessera` (new pin), else 0.3.0, up to the installed Tessera, plus `next` when Tessera is linked to main; then it pins `brock.tessera` to the installed version. `brock migrate --tessera-from <version>` alone replays only the renames. Custom properties are renamed as whole tokens, components only where a file imports them from Tessera (the import, JSX tags and references), classes in class lists and selectors with a name boundary and longer keys first, props and prop values on the Tessera component's JSX, and literals typed with a renamed Tessera type. A value that is a note, a removed export, and a longer class built from a renamed one become numbered to-dos in the migration report; an entry whose value is also a key of its release is skipped with a warning, so a second replay changes nothing. `brock upgrade` passes the Tessera version the worktree had before its install as `--tessera-from` when the app has no pin yet.
+
+### Patch Changes
+
+- Brock takes Tessera 0.4.0: SectionNav is SideNav and HeaderTabs is HeaderAnchorNav (replayed with Brock's own Tessera renames step), the title bar menu, the fixed-head search results and the config loader are the published ones.
+
+  New apps' knip ignores `@drizztdourden08/standards`, whose stylelint plugins it sees through brock-lint-config; the `standards-lint-deps` upgrade step does the same for an existing app and drops `typescript-eslint` and `eslint-plugin-react-hooks`, which standards now carries.
+
+- f818087: Breaking: Brock moves to the next Tessera. The title bar menu is Tessera's hamburger `DropdownMenu`, built from `MenuGroup[]` by `toMenuGroups` in place of `toDropdownItems`, and a bucket or page `shortcut` shows beside its entry. `product.window.titleBar.controls` turns the fullscreen, pin, minimize and maximize buttons off; maximize and fullscreen off also make the main window not maximizable or fullscreenable. About shows the Tessera brand icon and wordmark when the product is that brand, the copy buttons write through `TesseraProvider` `overrides.writeText`, Hero facts take `FactsPanelGroup[]`, and the input module's device badges are `Status`. Migrations `progress-bar-tone` and `facts-panel-names` rewrite app code; `badge-status`, `tessera-provider-overrides`, `window-title-bar-config` and `dropdown-menu-groups` leave to-dos.
+- Updated dependencies [1f2ce71]
+- Updated dependencies [f818087]
+- Updated dependencies [e19834d]
+- Updated dependencies [374cf2f]
+  - @drizztdourden08/brock-thread@0.2.0
+  - @drizztdourden08/brock-core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes

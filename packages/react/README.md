@@ -99,7 +99,7 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 - `useSearchEntries(entries, route?)` adds `SearchEntrySeed` entries while the caller is mounted, pointing at the page open when it mounted (or `route`). Pass a stable list.
 - `rankEntries(entries, query)` folds case and accents and needs every word to match the label, a keyword, the description or the breadcrumb. `entriesInBucket(entries, id)` keeps what one hub shows.
 - `openSearchTarget(target)` opens the route through `nav.open` and scrolls to the element whose `data-setting-key`, `data-section` or `data-search-anchor` equals `anchor`, flashing it with `search-hit`.
-- A generated hub has search on: NavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
+- A generated hub has search on: SideNavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
 
 ## Escape and home
 
@@ -111,7 +111,7 @@ The built-in order is Home, Profiles, Settings (left out when it is home), the a
 
 ## Settings
 
-A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, mobileOnly? }`. Sections hold items keyed by settings key (dotted paths allowed). `SettingsHub` wires the tabs into Tessera's `NavLayout` and `SearchResults`; `SettingsLayout` feeds one tab's sections, with per-section reset and lock overlays, to `SettingsGroupList` inside Tessera's `SettingsPage`. The settings store hydrates per profile, patches, runs effects `(patch, next, prev)` and saves 300 ms after the last change. The `settings` prop of `BrockApp` also carries the control hooks the hub forwards to every tab: `renderControl` for non-boolean keys, `isDisabled`, `lockCauseOf` and `lockOverlay`; a tab that needs its own layout still uses `TabDef.render`.
+A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, mobileOnly? }`. Sections hold items keyed by settings key (dotted paths allowed). `SettingsHub` wires the tabs into Tessera's `SideNavLayout` and `SearchResults`; `SettingsLayout` feeds one tab's sections, with per-section reset and lock overlays, as one Tessera `SettingsSection` per section inside `SettingsPage`. The settings store hydrates per profile, patches, runs effects `(patch, next, prev)` and saves 300 ms after the last change. The `settings` prop of `BrockApp` also carries the control hooks the hub forwards to every tab: `renderControl` for non-boolean keys, `isDisabled`, `lockCauseOf` and `lockOverlay`; a tab that needs its own layout still uses `TabDef.render`.
 
 ## App shell
 

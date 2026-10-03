@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.6.1
+
+### Patch Changes
+
+- 227dadf: Brock takes Tessera 0.7.1: the hero title fits its column, and the logs widget uses Tessera's own "1 entry" / "n entries" count instead of Brock's workaround.
+  - @drizztdourden08/brock-core@0.6.1
+
 ## 0.6.0
 
 ### Minor Changes

@@ -16,7 +16,7 @@ const liveRow = (anchor: string): HTMLElement | null =>
   find(`${SELECTORS.hubSearchResults} [data-setting-key="${CSS.escape(anchor)}"]`);
 
 const groupHeading = (pageId: string): HTMLElement | null =>
-  find(`${SELECTORS.hubSearchResults} [data-group="${CSS.escape(pageId)}"] .search-results__open`);
+  find(`${SELECTORS.hubSearchResults} [data-group="${CSS.escape(pageId)}"] .search-result-group__open`);
 
 const focusedSearch = (): HTMLInputElement | null => {
   const input = find(SELECTORS.hubSearchInput);

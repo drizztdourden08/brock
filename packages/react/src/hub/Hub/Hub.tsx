@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
-import { NavLayout } from '@drizztdourden08/tessera/composites';
+import { SideNavLayout } from '@drizztdourden08/tessera/composites';
 import { activateEntry } from '../../search/activate-entry';
 import type { SearchEntry } from '../../search/search.type';
 import { useHubSearch } from '../../settings/SettingsHub/behavior/useHubSearch';
@@ -31,9 +31,9 @@ const Hub = (props: HubProps) => {
   const results = ownIndex ? <HubSearchHits query={query} index={ownIndex} onOpen={openHit} /> : indexed;
 
   return (
-    <NavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
+    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
       {tab ? tab.render(context) : page.render(context)}
-    </NavLayout>
+    </SideNavLayout>
   );
 };
 

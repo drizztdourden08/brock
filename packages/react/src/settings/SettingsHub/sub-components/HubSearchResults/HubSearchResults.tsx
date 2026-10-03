@@ -15,7 +15,6 @@ const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => 
 
   return (
     <SearchResults
-      framed
       query={query}
       count={matches.total}
       summary={`${matches.total} ${matches.total === 1 ? 'setting' : 'settings'} match "${shown}"`}

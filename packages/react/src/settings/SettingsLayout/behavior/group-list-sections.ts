@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind logic */
-import type { SettingsGroupListSection } from '@drizztdourden08/tessera/composites';
+import type { SettingsSectionData } from '@drizztdourden08/tessera/composites';
 import type { GroupListInput } from '../SettingsLayout.type';
 import { changedKeys } from './changed-keys';
 import { defaultsPatch } from './defaults-patch';
 
-const groupListSections = <S extends object>(input: GroupListInput<S>): SettingsGroupListSection[] => {
+const groupListSections = <S extends object>(input: GroupListInput<S>): SettingsSectionData[] => {
   const { sections, settings, defaults, onChange, lockOf, renderRow } = input;
   const isLocked = (key: string): boolean => lockOf(key) !== null;
 
@@ -12,7 +12,7 @@ const groupListSections = <S extends object>(input: GroupListInput<S>): Settings
     const groups = section.groups.map((group) => ({
       id: group.id ?? undefined,
       title: group.title ?? undefined,
-      rows: group.items.map((item) => ({ key: item.key, content: renderRow(item), lock: lockOf(item.key) })),
+      rows: group.items.map((item) => ({ id: item.key, content: renderRow(item), lock: lockOf(item.key) })),
     }));
     if (!defaults) return { id: section.id, title: section.title, groups };
     const resettable = changedKeys(section.groups, settings, defaults, isLocked);

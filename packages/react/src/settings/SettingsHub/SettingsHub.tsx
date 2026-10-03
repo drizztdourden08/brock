@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo, useState } from 'react';
-import { NavLayout } from '@drizztdourden08/tessera/composites';
+import { SideNavLayout } from '@drizztdourden08/tessera/composites';
 import { usePlatform } from '../../platform/usePlatform';
 import { SettingsPageContext } from '../SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../SettingsLayout/SettingsLayout.type';
@@ -36,7 +36,7 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
   const search = useMemo(() => ({ value: query, onChange: setQuery, placeholder: searchPlaceholder }), [query, setQuery, searchPlaceholder]);
 
   return (
-    <NavLayout
+    <SideNavLayout
       className={className}
       nav={{ config: navConfig, activeId, onSelect: openTab, search }}
       results={<HubSearchResults tabs={visibleTabs} query={query} onOpenTab={openTab} {...control} />}
@@ -46,7 +46,7 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
           <HubTabContent tab={active} {...control} />
         </SettingsPageContext.Provider>
       )}
-    </NavLayout>
+    </SideNavLayout>
   );
 };
 

@@ -42,10 +42,10 @@ const SELECTORS = {
   versionTag: '.window-title-bar .version-tag',
   updateBadge: '.window-title-bar .titlebar__update-badge',
   updateDialog: '.dialog.update-dialog',
-  menuButton: '.window-title-bar__start .menu-button',
+  menuButton: '.window-title-bar__start .dropdown-trigger',
   searchButton: '.window-title-bar .search-button',
   bugReportButton: '.window-title-bar .bug-report-button',
-  menu: '.menu-button__drop [role="menu"]',
+  menu: '.dropdown-drop [role="menu"]',
   subMenu: '.dropdown-menu--sub [role="menu"]',
   menuItem: [
     ':scope > .dropdown__group > .dropdown__item', ':scope > .dropdown__group > .dropdown__submenu-trigger',
@@ -82,7 +82,7 @@ const SELECTORS = {
   liveControl: 'input, button, select, textarea, [role="switch"], [role="radio"], [role="slider"]',
   dialogClose: '.dialog .window-header__close',
   hubNavItem: '.screen-layer:not(.screen-layer--hidden) .side-nav__item',
-  hubPage: '.screen-layer:not(.screen-layer--hidden) .nav-layout__pane',
+  hubPage: '.screen-layer:not(.screen-layer--hidden) .side-nav-layout__pane',
   switchItem: '.screen-layer:not(.screen-layer--hidden) .floating-switch__item',
 } as const;
 

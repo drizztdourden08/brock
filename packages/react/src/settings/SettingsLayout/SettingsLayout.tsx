@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { SettingsGroupList, SettingsPage } from '@drizztdourden08/tessera/composites';
+import { SettingsPage, SettingsSection } from '@drizztdourden08/tessera/composites';
+import { EmptyState, useTesseraStrings } from '@drizztdourden08/tessera/primitives';
 import type { SettingItem, SettingsLayoutProps } from '../settings.type';
 import { groupListSections } from './behavior/group-list-sections';
 import { resolveSections } from './behavior/resolve-sections';
@@ -11,6 +12,7 @@ import { DefaultControl } from './sub-components/DefaultControl';
 const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
   const { sections, settings, defaults, onChange, renderControl, isDisabled, lockCauseOf, lockOverlay, emptyMessage } = props;
   const page = useContext(SettingsPageContext);
+  const { panels } = useTesseraStrings();
   const query = page?.variant === 'results' ? page.query : '';
 
   const lockOf = useCallback((key: string) => lockCauseOf?.(key, settings) ?? null, [lockCauseOf, settings]);
@@ -27,7 +29,13 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
   );
 
   const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, renderRow });
-  const body = <SettingsGroupList sections={listed} renderLock={lockOverlay} emptyMessage={emptyMessage} />;
+  const body = listed.length === 0
+    ? <EmptyState message={emptyMessage ?? panels.settingsEmpty} />
+    : (
+      <>
+        {listed.map((section) => <SettingsSection key={section.id} {...section} renderLock={lockOverlay} />)}
+      </>
+    );
 
   if (!page) return body;
   if (page.variant === 'results') return resolved.length > 0 ? body : null;

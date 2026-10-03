@@ -9,7 +9,7 @@ const pageIdOf = (hub: HubDef, entry: SearchEntry): string => entry.target?.rout
 const hitOf = (page: HubPage, entry: SearchEntry): SearchResultsHit => {
   const at = entry.breadcrumb.indexOf(page.label);
   const tail = at === -1 ? [] : entry.breadcrumb.slice(at + 1);
-  return { id: entry.id, label: entry.label, detail: tail.length > 0 ? tail.join(' > ') : entry.description };
+  return { id: entry.id, label: entry.label, path: tail, description: entry.description };
 };
 
 const hubResultGroups = (hub: HubDef, pages: readonly HubPage[], ranked: readonly SearchEntry[]): SearchResultsGroup[] => {

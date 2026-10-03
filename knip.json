@@ -80,6 +80,7 @@
       "entry": [
         "stories/**/*.stories.tsx",
         "stories/_samples/*.tsx",
+        "src/compounds/*/*.usage.ts",
         "tests/**/*.test.ts"
       ],
       "project": [
@@ -94,6 +95,9 @@
       ]
     },
     "packages/modules/input": {
+      "entry": [
+        "src/compounds/*/*.usage.ts"
+      ],
       "project": [
         "src/**/*.{ts,tsx}"
       ],

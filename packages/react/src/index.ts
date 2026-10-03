@@ -13,6 +13,7 @@ export * from './stores';
 export * from './settings';
 export * from './hub';
 export * from './shell';
+export * from './compounds';
 export * from './modules';
 export * from './menu';
 export * from './escape';

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useState } from 'react';
 import { DEFAULT_TRIGGER_DEADZONE } from '../../../calibration/calibration.constants';
-import type { CalibrationPanelAction } from '@drizztdourden08/tessera/composites';
+import type { CalibrationPanelAction } from '../../../compounds/CalibrationPanel';
 import { useCalibrationStore } from '../../useCalibrationStore';
 import { useControllerState } from '../../useControllerState';
 import { MIN_TRIGGER_TRAVEL } from '../TriggerCalibrationPanel.constants';

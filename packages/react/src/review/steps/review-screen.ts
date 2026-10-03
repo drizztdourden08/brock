@@ -19,7 +19,7 @@ const reviewScreen = async (tour: StepTour, screen: ScreenDef): Promise<void> =>
   const shown = await waitFor(() => nav.active() === id && (screen.layer === 'own' || find(SELECTORS.layer) !== null));
   tour.check(`${id}-route`, shown !== null, `"${id}" opened through ${via}`, `"${id}" did not open through ${via}`);
   if (shown === null) return;
-  if (screen.layer !== 'own') tour.report(frameChecks(id, title, readFrame()));
+  if (screen.layer !== 'own' || find(SELECTORS.layer) !== null) tour.report(frameChecks(id, title, readFrame()));
   tour.report(settingRowChecks(id, settingRows()));
   await tour.capture(`screen-${id}`);
   await escapeCloses(tour, id, isClosed);

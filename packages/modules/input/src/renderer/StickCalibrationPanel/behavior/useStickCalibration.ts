@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react';
 import type { StickPoint } from '../../../calibration.type';
 import { DEFAULT_INNER_DEADZONE, DEFAULT_OUTER_DEADZONE } from '../../../calibration/calibration.constants';
-import type { CalibrationPanelAction } from '@drizztdourden08/tessera/composites';
+import type { CalibrationPanelAction } from '../../../compounds/CalibrationPanel';
 import { useCalibrationStore } from '../../useCalibrationStore';
 import { useControllerState } from '../../useControllerState';
 import { MIN_STICK_SPAN } from '../StickCalibrationPanel.constants';

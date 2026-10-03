@@ -6,6 +6,7 @@ import { getAppState } from '../profiles/get-app-state';
 import { listProfiles } from '../profiles/list-profiles';
 import { setLastProfile } from '../profiles/set-last-profile';
 import { touchProfile } from '../profiles/touch-profile';
+import { updateProfile } from '../profiles/update-profile';
 import type { ProfilesState } from './profiles.type';
 
 const useProfilesStore = create<ProfilesState>()((set, get) => ({
@@ -32,6 +33,12 @@ const useProfilesStore = create<ProfilesState>()((set, get) => ({
     const profile = await createProfile(opts);
     await get().refresh();
     return profile;
+  },
+
+  rename: async (id, name) => {
+    const renamed = await updateProfile(id, { name });
+    if (renamed && get().active?.id === id) set({ active: renamed });
+    await get().refresh();
   },
 
   remove: async (id) => {

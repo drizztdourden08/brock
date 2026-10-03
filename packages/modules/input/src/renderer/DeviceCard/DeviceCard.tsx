@@ -24,12 +24,13 @@ const DeviceCard = (props: DeviceCardProps) => {
           <Text className="device-card__name">{name ?? product}</Text>
           <DeviceBadges entry={entry} />
         </Flex>
-        <PressedGrid items={buttons.items} pressed={buttons.pressed} />
+        {!card.target && <PressedGrid items={buttons.items} pressed={buttons.pressed} />}
         <AxesPanel sticks={card.sticks} triggers={card.triggers} hasAxis={hasAxis} onCalibrate={card.setTarget} />
         <ActiveCalibration
           deviceKey={deviceKey}
           target={card.target}
           existing={card.stickCalibration}
+          buttons={buttons}
           onClose={card.closeCalibration}
         />
         {hasRumble && <RumbleActions error={card.rumbleError} onRumble={(preset) => { void card.rumble(preset); }} />}

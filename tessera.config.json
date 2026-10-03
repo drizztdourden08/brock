@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json",
+  "parts": {
+    "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds"]
+  },
+  "stories": "packages/react/stories",
+  "ai": { "usage": "enforce" }
+}

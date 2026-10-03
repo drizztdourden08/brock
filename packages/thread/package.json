@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-thread",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The thread lifecycle every Brock repo runs: worktrees, isolated launches, publish verbs, plugins.",
   "type": "module",
   "license": "UNLICENSED",
@@ -26,6 +26,6 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@drizztdourden08/standards": "^1.0.0"
+    "@drizztdourden08/standards": "^1.0.3"
   }
 }

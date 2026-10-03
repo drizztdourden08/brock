@@ -91,7 +91,7 @@ const status = useUpdaterStore((s) => s.status);            // idle, checking, a
 const checkAndOpen = useUpdaterStore((s) => s.checkAndOpen);
 ```
 
-Release notes show as plain text.
+Release notes show as plain text, in brock-react's `ReleaseNotesPanel`.
 
 ## Shipping updates
 

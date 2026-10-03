@@ -1,8 +1,9 @@
 {
   "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json",
+  "layer": "renderer-shell",
   "parts": {
     "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds"]
   },
   "stories": "packages/react/stories",
-  "ai": { "usage": "enforce" }
+  "ai": { "usage": "enforce", "tree": "packages/react/src/compounds/app-tree.ts" }
 }

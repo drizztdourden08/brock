@@ -227,7 +227,7 @@ The 0.1.1 folder holds these, each with a test in `tests/`:
   takes `rows`, or puts its heading inside `Backdrop`, which is now the scene behind the
   Hero composite.
 
-The 0.1.3 folder adds `design-package` (a workspace step). A single-app repo gets a
+The 0.2.0 folder adds `design-package` (a workspace step). A single-app repo gets a
 root `tessera.config.json` with `$schema` alone. A monorepo (apps under the workspace
 globs) gets `packages/design` named `@<scope>/design` (scope from `brock.workspace.mjs`,
 else `brock.scope`, else the root package name) with `package.json`, `tsconfig.json`, a

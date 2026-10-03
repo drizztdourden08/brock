@@ -57,7 +57,7 @@ const MONOREPO = {
   'apps/desktop/tests/deep.keep.test.ts': "import { deepLabel } from '../src/compounds/Deep/behavior/deep-label';\n",
 };
 
-const designStep = () => selectMigrations(collectMigrations([]), { from: '0.1.2', to: '0.1.3' }).filter((m) => m.file.endsWith('design-package.mjs'));
+const designStep = () => selectMigrations(collectMigrations([]), { from: '0.1.2', to: '0.2.0' }).filter((m) => m.file.endsWith('design-package.mjs'));
 
 afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });

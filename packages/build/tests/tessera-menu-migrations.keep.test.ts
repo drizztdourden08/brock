@@ -50,7 +50,7 @@ const sample = (): string => {
   return root;
 };
 
-describe('the 0.1.3 migrations', () => {
+describe('the 0.2.0 migrations', () => {
   it('renames the ProgressBar variants and the HeroFact types and classes', async () => {
     const root = sample();
     const run = await runMigrations(root, [...only('progress-bar-tone'), ...only('facts-panel-names')]);

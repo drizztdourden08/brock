@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-build
 
+## 0.4.0
+
+### Minor Changes
+
+- f90c7ee: `brock migrate` from 0.3.0 runs `brock-compounds`: app imports of `AboutPanel` and `ReleaseNotesPanel` from `@drizztdourden08/tessera` move to `@drizztdourden08/brock-react`, `CalibrationPanel` moves to `@drizztdourden08/brock-input/renderer`, and an import of `ProfilePicker` leaves a to-do pointing to `ProfilesPanel`.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.4.0
+- @drizztdourden08/brock-thread@0.4.0
+
 ## 0.3.0
 
 ### Patch Changes

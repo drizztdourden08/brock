@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.4.0
+
+### Minor Changes
+
+- f90c7ee: AboutPanel, ReleaseNotesPanel and CalibrationPanel are Brock compounds now, with ProfilesPanel replacing Tessera's ProfilePicker: brock-react exports `AboutPanel`, `ReleaseNotesPanel` and `ProfilesPanel`, and `@drizztdourden08/brock-input/renderer` exports `CalibrationPanel`, each with its props types and a Tessera usage file. The About screen sits in Tessera's `InfoScreen`, the Profiles screen can rename a profile in its row (`useProfiles().rename`), the input tester shows the buttons held while it calibrates, and the updater dialog draws brock-react's `ReleaseNotesPanel`.
+- babbff5: Brock takes Tessera 0.6.0 (peer range `^0.6.0`); Brock uses neither the renamed numeric Stepper nor Emphasis, so no code changes. Standards is at ^1.0.3.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes

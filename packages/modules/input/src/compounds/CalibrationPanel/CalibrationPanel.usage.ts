@@ -15,6 +15,7 @@ const usage = {
   rules: [
     'Keep the steps in the view and pass the current one: the title, instruction, reading and action change from step to step.',
     'Name the control in reading by its SDL name, such as LEFT_STICK or LEFT_TRIGGER; the glyph is drawn from it.',
+    'Pass family, from inputFamilyOf(vendorId), so the glyphs and the buttons held match the controller; without it the generic glyphs show.',
     'Disable the action until the reading is good enough to go on, such as a full roll of the stick.',
     'Put the controls of a step, such as the dead zone sliders, in children.',
     'Pass buttons to show the buttons held, so a stray press shows before it spoils the reading.',
@@ -35,13 +36,14 @@ const CalibrationSample = ({ onCancel, onRecord }: { onCancel: () => void; onRec
     title="Calibrate Left stick"
     instruction="Let go of the stick so it rests at its center, then record it."
     reading={{ kind: 'stick', name: 'LEFT_STICK', label: 'Left stick', x: 0.02, y: -0.01 }}
+    family="xbox"
     readout="x 0.02  y -0.01"
     action={{ label: 'Record center', onClick: onRecord }}
     onCancel={onCancel}
   />
 );
 `,
-  propsHash: 'c8aa835f94cdc3cc',
+  propsHash: '956fa427cbf322ae',
 } satisfies ComponentUsage;
 
 export { usage };

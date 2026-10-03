@@ -14,7 +14,7 @@ export default inputRenderer;
 export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID };
 export { inputApi } from './input-api';
 export { InputTester } from './InputTester';
-export { CalibrationPanel } from '../compounds/CalibrationPanel';
+export { CalibrationPanel, inputFamilyOf } from '../compounds/CalibrationPanel';
 export type {
   CalibrationButtons, CalibrationControl, CalibrationPanelAction, CalibrationPanelProps, CalibrationReading, CalibrationStickReading,
   CalibrationTriggerReading,

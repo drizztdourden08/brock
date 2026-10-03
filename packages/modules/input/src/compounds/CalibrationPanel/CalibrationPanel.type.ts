@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { PressedGridItem, StickPlotPoint, StickPlotRange } from '@drizztdourden08/tessera/composites';
+import type { InputIconFamily } from '@drizztdourden08/tessera/primitives';
 
 interface CalibrationPanelAction {
   label: string;
@@ -41,6 +42,7 @@ interface CalibrationPanelProps {
   instruction: ReactNode;
   reading?: CalibrationReading;
   buttons?: CalibrationButtons;
+  family?: InputIconFamily;
   readout?: ReactNode;
   action: CalibrationPanelAction;
   onCancel: () => void;

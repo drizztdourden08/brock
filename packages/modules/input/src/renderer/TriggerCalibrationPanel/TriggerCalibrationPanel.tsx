@@ -7,7 +7,7 @@ import { TRIGGER_STEP_TEXT } from './TriggerCalibrationPanel.constants';
 import type { TriggerCalibrationPanelProps } from './TriggerCalibrationPanel.type';
 
 const TriggerCalibrationPanel = (props: TriggerCalibrationPanelProps) => {
-  const { slot, buttons, onClose } = props;
+  const { slot, buttons, family, onClose } = props;
   const { step, action, readout, value, peak, deadzone, setDeadzone } = useTriggerCalibration(props);
 
   return (
@@ -22,6 +22,7 @@ const TriggerCalibrationPanel = (props: TriggerCalibrationPanelProps) => {
         peak: step === 'rest' ? undefined : peak,
       }}
       buttons={buttons}
+      family={family}
       readout={readout}
       action={action}
       onCancel={onClose}

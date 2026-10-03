@@ -1,8 +1,13 @@
 /* @layer renderer-shell @kind types */
+import type { InputIconFamily } from '@drizztdourden08/tessera/primitives';
+
+type InputGlyphKind = 'stick' | 'trigger' | 'button';
+
 interface InputGlyphProps {
-  kind: 'stick' | 'trigger' | 'button';
+  family: InputIconFamily;
+  kind: InputGlyphKind;
   name: string;
   label: string;
 }
 
-export type { InputGlyphProps };
+export type { InputGlyphKind, InputGlyphProps };

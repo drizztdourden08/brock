@@ -4,12 +4,12 @@ import { TriggerCalibrationPanel } from '../../TriggerCalibrationPanel';
 import type { ActiveCalibrationProps } from './ActiveCalibration.type';
 
 const ActiveCalibration = (props: ActiveCalibrationProps) => {
-  const { deviceKey, target, existing, buttons, onClose } = props;
+  const { deviceKey, target, existing, buttons, family, onClose } = props;
   if (!target) return null;
   if (target.kind === 'stick') {
-    return <StickCalibrationPanel deviceKey={deviceKey} slot={target.slot} existing={existing} buttons={buttons} onClose={onClose} />;
+    return <StickCalibrationPanel deviceKey={deviceKey} slot={target.slot} existing={existing} buttons={buttons} family={family} onClose={onClose} />;
   }
-  return <TriggerCalibrationPanel deviceKey={deviceKey} slot={target.slot} buttons={buttons} onClose={onClose} />;
+  return <TriggerCalibrationPanel deviceKey={deviceKey} slot={target.slot} buttons={buttons} family={family} onClose={onClose} />;
 };
 
 export { ActiveCalibration };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { InputIconFamily } from '@drizztdourden08/tessera/primitives';
 import type { DeviceStickCalibration, StickPoint, StickSide } from '../../calibration.type';
 import type { CalibrationButtons } from '../../compounds/CalibrationPanel';
 import type { StickSlot } from '../axis-slot.type';
@@ -8,6 +9,7 @@ interface StickCalibrationPanelProps {
   slot: StickSlot;
   existing: DeviceStickCalibration | null;
   buttons?: CalibrationButtons;
+  family?: InputIconFamily;
   onClose: () => void;
 }
 

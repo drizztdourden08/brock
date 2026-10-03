@@ -6,7 +6,7 @@ import { STICK_STEP_TEXT } from './StickCalibrationPanel.constants';
 import type { StickCalibrationPanelProps } from './StickCalibrationPanel.type';
 
 const StickCalibrationPanel = (props: StickCalibrationPanelProps) => {
-  const { slot, buttons, onClose } = props;
+  const { slot, buttons, family, onClose } = props;
   const { step, action, readout, x, y, center, range, innerDeadzone, setInner, outerDeadzone, setOuter } = useStickCalibration(props);
   const measured = step !== 'center';
 
@@ -26,6 +26,7 @@ const StickCalibrationPanel = (props: StickCalibrationPanelProps) => {
         outerDeadzone,
       }}
       buttons={buttons}
+      family={family}
       readout={readout}
       action={action}
       onCancel={onClose}

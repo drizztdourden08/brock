@@ -30,7 +30,11 @@ interface PoppedWidgetWire {
   link?: WidgetSnapLink | null;
 }
 
-type WidgetWindowOpen = Omit<PoppedWidgetWire, 'id'>;
+interface WidgetWindowOpen extends Omit<PoppedWidgetWire, 'id'> {
+  seq?: number;
+  atCursor?: boolean;
+  taskbar?: boolean;
+}
 
 interface WidgetWindowState {
   pin: WidgetPinMode;
@@ -52,12 +56,31 @@ interface WidgetFrameWire {
 
 type WidgetPrefsWire = Record<string, unknown>;
 
+type WidgetSettingsWire = Record<string, unknown>;
+
+type WidgetProbeRequest =
+  | { kind: 'window'; id: string }
+  | { kind: 'drag'; id: string; bounds: WidgetWindowBounds }
+  | { kind: 'main'; bounds?: WidgetWindowBounds }
+  | { kind: 'mainDrag'; bounds: WidgetWindowBounds }
+  | { kind: 'dragOver'; id: string; point: WidgetWindowPoint | null }
+  | { kind: 'drop'; id: string; point: WidgetWindowPoint }
+  | { kind: 'rescue'; id: string; bounds: WidgetWindowBounds }
+  | { kind: 'areas' };
+
+interface WidgetProbeResult {
+  bounds: WidgetWindowBounds | null;
+  link: WidgetSnapLink | null;
+  counted: boolean;
+  outside: string[];
+}
+
 interface WidgetSlice {
   kind: string;
   data: unknown;
 }
 
 export type {
-  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds,
-  WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState,
+  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeRequest, WidgetProbeResult, WidgetSettingsWire,
+  WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState,
 };

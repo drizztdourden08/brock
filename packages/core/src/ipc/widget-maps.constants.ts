@@ -7,6 +7,8 @@ const WIDGET_INVOKE_MAP = {
   setWidgetPin: 'widget:setPin',
   getWidgetWindowState: 'widget:getWindowState',
   reviewSetWidgetPref: 'review:setWidgetPref',
+  reviewWidgetProbe: 'review:widgetProbe',
+  reviewCaptureWidget: 'review:captureWidget',
 } as const satisfies Record<string, keyof WidgetInvokeContract>;
 
 const WIDGET_SEND_MAP = {
@@ -16,6 +18,7 @@ const WIDGET_SEND_MAP = {
   publishWidgetSlice: 'widget:publish',
   subscribeWidgetRelay: 'widget:subscribe',
   setWidgetPrefs: 'widget:setPrefs',
+  patchWidgetSettings: 'widget:patchSettings',
 } as const satisfies Record<string, keyof WidgetSendContract>;
 
 const WIDGET_EVENT_MAP = {
@@ -29,6 +32,7 @@ const WIDGET_EVENT_MAP = {
   onWidgetFrame: 'widget:frame',
   onWidgetWindowState: 'widget:windowState',
   onWidgetPrefs: 'widget:prefs',
+  onWidgetSettingsPatch: 'widget:settingsPatch',
   onReviewWidgetPref: 'review:widgetPref',
 } as const satisfies Record<string, keyof WidgetEventContract>;
 

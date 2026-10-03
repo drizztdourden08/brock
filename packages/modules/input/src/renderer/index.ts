@@ -14,6 +14,11 @@ export default inputRenderer;
 export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID };
 export { inputApi } from './input-api';
 export { InputTester } from './InputTester';
+export { CalibrationPanel } from '../compounds/CalibrationPanel';
+export type {
+  CalibrationButtons, CalibrationControl, CalibrationPanelAction, CalibrationPanelProps, CalibrationReading, CalibrationStickReading,
+  CalibrationTriggerReading,
+} from '../compounds/CalibrationPanel';
 export { useControllerDevicesStore } from './useControllerDevicesStore';
 export type { ControllerDevicesStore } from './controller-devices-store.type';
 export { useControllerStateStore } from './useControllerStateStore';

@@ -1,0 +1,58 @@
+/* @layer renderer-shell @kind style */
+.calibration-panel {
+  padding: var(--space-md);
+  border: var(--border-width-thin) solid var(--c-primary-dim);
+  border-radius: var(--radius-md);
+  background: var(--c-panel);
+}
+
+.calibration-panel .calibration-panel__title {
+  margin: 0;
+  font-weight: var(--weight-semi);
+}
+
+.calibration-panel .calibration-panel__instruction {
+  font-size: var(--text-sm);
+}
+
+.calibration-panel__readout {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.calibration-panel__stick {
+  align-self: center;
+}
+
+.calibration-panel .calibration-panel__label {
+  font-size: var(--text-xs);
+}
+
+.input-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size-24);
+  padding: 0 var(--space-xs);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-sunken);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semi);
+}
+
+.input-glyph--stick,
+.input-glyph--trigger {
+  border-color: var(--c-primary-dim);
+  color: var(--c-primary-bright);
+}
+
+.pressed-grid__cell .input-glyph {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+}

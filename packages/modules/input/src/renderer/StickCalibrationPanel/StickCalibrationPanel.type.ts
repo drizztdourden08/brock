@@ -1,11 +1,13 @@
 /* @layer renderer-shell @kind types */
 import type { DeviceStickCalibration, StickPoint, StickSide } from '../../calibration.type';
+import type { CalibrationButtons } from '../../compounds/CalibrationPanel';
 import type { StickSlot } from '../axis-slot.type';
 
 interface StickCalibrationPanelProps {
   deviceKey: string;
   slot: StickSlot;
   existing: DeviceStickCalibration | null;
+  buttons?: CalibrationButtons;
   onClose: () => void;
 }
 

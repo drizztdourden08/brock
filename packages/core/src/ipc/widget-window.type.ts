@@ -33,6 +33,7 @@ interface PoppedWidgetWire {
 interface WidgetWindowOpen extends Omit<PoppedWidgetWire, 'id'> {
   seq?: number;
   atCursor?: boolean;
+  at?: WidgetWindowPoint;
   taskbar?: boolean;
 }
 

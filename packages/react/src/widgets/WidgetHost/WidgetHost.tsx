@@ -20,11 +20,15 @@ import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
+import type { ScreenPoint } from '../widget.type';
 import type { WidgetHostProps } from './WidgetHost.type';
 
 const trackMainRect = (rect: Rect | null): void => {
   widgetMainRect.current = rect;
 };
+
+const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
+  (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
 const WidgetHost = (props: WidgetHostProps) => {
   const { widgets = NO_WIDGETS, main, mainLabel } = props;
@@ -56,11 +60,11 @@ const WidgetHost = (props: WidgetHostProps) => {
     [definitions],
   );
 
-  const popOut = useCallback((id: string, point?: { x: number; y: number }) => {
+  const popOut = useCallback((id: string, point?: ScreenPoint) => {
     const current = useWidgetLayoutStore.getState().layout;
     const facts = { ...current.poppedMemory?.[id], id };
     if (poppedShown({ ...current, popped: [facts] }, gates).length === 0) return;
-    poppedWindows.open(facts, { ...extraOf(id), atCursor: point !== undefined || dragRelease.releasing() });
+    poppedWindows.open(facts, { ...extraOf(id), ...dragOutPlace(point) });
   }, [gates, extraOf]);
   const dropIn = useCallback(() => useWidgetLayoutStore.getState().setExternalDrag(null), []);
 

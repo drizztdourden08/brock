@@ -14,9 +14,9 @@ const besideApp = (): WidgetWindowBounds => {
 };
 
 const wantedPlace = (popped?: WidgetWindowOpen): WidgetWindowBounds => {
-  if (!popped?.atCursor) return popped?.bounds ?? besideApp();
+  if (!popped?.atCursor && !popped?.at) return popped?.bounds ?? besideApp();
   const size = popped.bounds ? { width: popped.bounds.width, height: popped.bounds.height } : WIDGET_WINDOW_SIZE;
-  return placeAtCursor(screen.getCursorScreenPoint(), size);
+  return placeAtCursor(popped.at ?? screen.getCursorScreenPoint(), size);
 };
 
 const placeWidgetWindow = (popped?: WidgetWindowOpen): WidgetWindowBounds => {

@@ -5,7 +5,7 @@ import type { ScreenDef } from '../screens/screen.type';
 import type { HubDef, HubTab } from './hub.type';
 
 const HUB_DEFS = new WeakMap<ScreenDef, HubDef>();
-const OPEN_HUB_SEARCH_MARK = '.fullscreen-layer:not(.fullscreen-layer--hidden) .side-nav__search-mark';
+const OPEN_HUB_SEARCH_MARK = '.screen-layer:not(.screen-layer--hidden) .side-nav__search-mark';
 const DEFAULT_SEARCH_PLACEHOLDER = 'Search';
 const NO_TABS: HubTab[] = [];
 const NO_MENU: readonly MenuEntry[] = [];

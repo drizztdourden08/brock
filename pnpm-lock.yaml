@@ -10,8 +10,8 @@ catalogs:
       specifier: ^2.29.7
       version: 2.31.1
     '@drizztdourden08/tessera':
-      specifier: ^0.4.0
-      version: 0.4.0
+      specifier: ^0.5.0
+      version: 0.5.0
     '@electron-toolkit/utils':
       specifier: ^4.0.0
       version: 4.0.0
@@ -109,7 +109,7 @@ importers:
         version: link:packages/lint-config
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       '@electron-toolkit/utils':
         specifier: 'catalog:'
         version: 4.0.0(electron@42.11.8)
@@ -282,7 +282,7 @@ importers:
     devDependencies:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       electron:
         specifier: 'catalog:'
         version: 42.11.8
@@ -307,7 +307,7 @@ importers:
     devDependencies:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       cmake-js:
         specifier: 'catalog:'
         version: 8.0.0
@@ -338,7 +338,7 @@ importers:
     devDependencies:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       electron:
         specifier: 'catalog:'
         version: 42.11.8
@@ -385,7 +385,7 @@ importers:
     devDependencies:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       electron:
         specifier: 'catalog:'
         version: 42.11.8
@@ -410,7 +410,7 @@ importers:
     devDependencies:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       '@storylite/storylite':
         specifier: 'catalog:'
         version: 1.6.0(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
@@ -446,7 +446,7 @@ importers:
         version: link:../../packages/modules/updater
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
-        version: 0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       '@electron-toolkit/utils':
         specifier: 'catalog:'
         version: 4.0.0(electron@42.11.8)
@@ -736,13 +736,14 @@ packages:
       typescript:
         optional: true
 
-  '@drizztdourden08/tessera@0.4.0':
-    resolution: {integrity: sha512-lD8kVPELurWepkIzqu1FWoJZQb+FuIcMA/4d0XqsdLBZ1pCz+BHYoXhZNJgXTBFQFDzm6rqgNoNfUX/drhKzUg==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/tessera/0.4.0/90c4acd9c100bc1df7aad795bf2896b0789f8102}
+  '@drizztdourden08/tessera@0.5.0':
+    resolution: {integrity: sha512-3TE3I+LrETSeSydn8Z/EVap37ZeZDuOm10Q7+pU/gGOzT2Ycj6hbr6zxUazdouQUjFo4q+f5g2QxqkngBCXE1w==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/tessera/0.5.0/0e2ebb60dc215bbfd5af5d79fc0be3427c2204ae}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
+      typescript: '>=5.0'
 
   '@electron-internal/extract-zip@1.0.5':
     resolution: {integrity: sha512-+bqFCP98pLI0Tt0XQo1TmlXtwjWchISndDOxCkEcIuUgXWpBnLyRI+2DU+mesvnMMX6L1XDqYNA0lXNDHd/yiA==}
@@ -4694,7 +4695,7 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@drizztdourden08/tessera@0.4.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@drizztdourden08/tessera@0.5.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)':
     dependencies:
       '@iconify-icons/lucide': 1.2.136
       '@iconify-icons/ph': 2.0.0
@@ -4705,6 +4706,7 @@ snapshots:
       react: 19.3.0
       react-color: 2.19.3(react@19.3.0)
       react-dom: 19.3.0(react@19.3.0)
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@types/react'
 

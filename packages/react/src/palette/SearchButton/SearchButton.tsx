@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { IconButton } from '@drizztdourden08/tessera/primitives';
-import { SearchSpark } from '@drizztdourden08/tessera/composites';
+import { Icon, IconButton } from '@drizztdourden08/tessera/primitives';
 import { palette } from '../palette';
 import { usePaletteOpen } from '../usePaletteOpen';
 import type { SearchButtonProps } from './SearchButton.type';
@@ -18,7 +17,7 @@ const SearchButton = (props: SearchButtonProps) => {
       className={`search-button${className ? ` ${className}` : ''}`}
       onClick={palette.toggle}
     >
-      <SearchSpark size={14} />
+      <Icon name="search" effect="twinkle" size={14} className="search-glass" />
     </IconButton>
   );
 };

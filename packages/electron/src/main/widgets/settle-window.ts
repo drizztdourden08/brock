@@ -1,5 +1,6 @@
 /* @layer electron-main @kind logic */
 import { boundsOf } from './bounds-of';
+import { dropStaleLink } from './drop-stale-link';
 import { towLinked } from './tow-linked';
 import { widgetWindowEntries } from './widget-window-entries';
 
@@ -8,8 +9,12 @@ const settleWindow = (id: string): void => {
   if (!entry || entry.win.isDestroyed()) return;
   entry.grab = null;
   const now = boundsOf(entry.win);
-  if (!entry.towed) towLinked(id, now.x - entry.last.x, now.y - entry.last.y);
+  if (!entry.towed) {
+    towLinked(id, entry.last, now);
+    dropStaleLink(id, entry, now);
+  }
   entry.last = now;
+  entry.report.schedule();
 };
 
 export { settleWindow };

@@ -14,7 +14,7 @@ import { createReviewSession } from '../review/create-review-session';
 import { finishReview } from '../review/finish-review';
 import { REVIEW_IDLE_MS } from '../review/review.constants';
 import { watchReviewWindow } from '../review/watch-review-window';
-import { sendReviewPref } from '../widgets/send-review-pref';
+import { widgetReviewHandlers } from '../widgets/widget-review-handlers';
 
 const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void => {
   if (!ctx.flags.hasFlag(REVIEW_FLAG)) return;
@@ -61,7 +61,7 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     session.addCheck(check);
   });
   ctx.on('review:finish', () => finish(true));
-  ctx.handle('review:setWidgetPref', (_event, id, key, value) => sendReviewPref(id, key, value));
+  widgetReviewHandlers(ctx, session, stillWorking);
   bootEvents.once('failed', () => finish(false));
   stillWorking();
   ctx.log(`review "${name}" armed; the report goes to ${session.dir}`);

@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import type { WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowPoint } from '@drizztdourden08/brock-core';
+import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import type { SecurityOptions } from '../types/main-context.type';
 
 interface SnapTarget {
@@ -20,6 +20,32 @@ interface SnapCandidate {
   y: number;
 }
 
+interface Span {
+  start: number;
+  length: number;
+}
+
+interface CoverCandidate {
+  bounds: WidgetWindowBounds;
+  onTop: boolean;
+  stamp: number;
+}
+
+interface StackPlace {
+  onTop: boolean;
+  stamp: number;
+}
+
+interface BoundsReporter {
+  schedule: () => void;
+  cancel: () => void;
+  flush: () => boolean;
+}
+
+interface WidgetClosing {
+  where?: WidgetDockBack;
+}
+
 interface WidgetWindowEntry {
   win: BrowserWindow;
   pin: WidgetPinMode;
@@ -29,6 +55,13 @@ interface WidgetWindowEntry {
   towed: boolean;
   grab: WidgetWindowPoint | null;
   hiddenWithApp: boolean;
+  parked: boolean;
+  seq: number | undefined;
+  closing: WidgetClosing | null;
+  report: BoundsReporter;
+  zStamp: number;
+  over: boolean;
+  faded: boolean;
 }
 
 interface WidgetWindowSetup {
@@ -40,4 +73,11 @@ interface WidgetWindowSetup {
   security?: SecurityOptions;
 }
 
-export type { SnapCandidate, SnapTarget, Snapped, WidgetWindowEntry, WidgetWindowSetup };
+interface MainSnapState {
+  grab: WidgetWindowPoint | null;
+  hit: Snapped | null;
+}
+
+export type {
+  BoundsReporter, CoverCandidate, MainSnapState, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
+};

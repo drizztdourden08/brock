@@ -3,12 +3,14 @@ import type { BrowserWindow } from 'electron';
 import type { WidgetPinMode, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowState } from '@drizztdourden08/brock-core';
 import { applyPin } from './apply-pin';
 import { boundsOf } from './bounds-of';
+import { createBoundsReporter } from './create-bounds-reporter';
 import { liveEntries } from './live-entries';
 import { mainOnTop } from './main-on-top';
 import { tellMain } from './tell-main';
 import { tellWindow } from './tell-window';
 import { widgetWindowEntries } from './widget-window-entries';
 import { windowStateOf } from './window-state-of';
+import { zStamps } from './z-stamps';
 import type { WidgetWindowEntry } from './widget-windows.type';
 
 const liveEntry = (id: string): WidgetWindowEntry | null => {
@@ -17,15 +19,18 @@ const liveEntry = (id: string): WidgetWindowEntry | null => {
 };
 
 const register = (id: string, win: BrowserWindow, popped?: WidgetWindowOpen): WidgetWindowEntry => {
+  const snap = popped?.snap ?? true;
   const entry: WidgetWindowEntry = {
-    win, pin: popped?.pin ?? 'off', snap: popped?.snap ?? true, link: null, last: boundsOf(win), towed: false, grab: null, hiddenWithApp: false,
+    win, pin: popped?.pin ?? 'off', snap, link: snap ? popped?.link ?? null : null, last: boundsOf(win), towed: false, grab: null, hiddenWithApp: false,
+    parked: false, seq: popped?.seq, closing: null, report: createBoundsReporter(id, win), zStamp: zStamps.next(), over: false, faded: false,
   };
   widgetWindowEntries.set(id, entry);
   applyPin(entry, mainOnTop());
   return entry;
 };
 
-const unregister = (id: string): void => {
+const unregister = (id: string, win: BrowserWindow): void => {
+  if (widgetWindowEntries.get(id)?.win !== win) return;
   widgetWindowEntries.delete(id);
   for (const entry of widgetWindowEntries.values()) if (entry.link?.to === id) entry.link = null;
 };
@@ -60,6 +65,8 @@ const stateOf = (id: string): WidgetWindowState | null => {
 const list = (): WidgetWindowInfo[] =>
   liveEntries().map(([id, entry]) => ({ id, focused: entry.win.isFocused(), visible: entry.win.isVisible() }));
 
-const widgetWindowControl = { register, unregister, setPin, setSnap, mirrorMainPin, stateOf, list, windowOf: (id: string) => liveEntry(id)?.win ?? null };
+const widgetWindowControl = {
+  register, unregister, setPin, setSnap, mirrorMainPin, stateOf, list, entryOf: liveEntry, windowOf: (id: string) => liveEntry(id)?.win ?? null,
+};
 
 export { widgetWindowControl };

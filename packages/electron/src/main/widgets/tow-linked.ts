@@ -1,17 +1,20 @@
 /* @layer electron-main @kind logic */
+import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { liveEntries } from './live-entries';
-import { shiftBounds } from './shift-bounds';
+import { moveEntry } from './move-entry';
+import { sameBounds } from './same-bounds';
+import { towedBounds } from './towed-bounds';
 
-const towLinked = (anchor: string, dx: number, dy: number, seen = new Set<string>()): void => {
-  if (dx === 0 && dy === 0) return;
+const towLinked = (anchor: string, before: WidgetWindowBounds, after: WidgetWindowBounds, seen = new Set<string>([anchor])): void => {
+  if (sameBounds(before, after)) return;
   for (const [id, entry] of liveEntries()) {
     if (entry.link?.to !== anchor || seen.has(id)) continue;
     seen.add(id);
-    entry.towed = true;
-    entry.last = shiftBounds(entry.last, dx, dy);
-    entry.win.setBounds(entry.last);
-    entry.towed = false;
-    towLinked(id, dx, dy, seen);
+    const prev = entry.last;
+    const next = towedBounds(prev, entry.link.edge, before, after);
+    if (sameBounds(prev, next)) continue;
+    moveEntry(entry, next);
+    towLinked(id, prev, next, seen);
   }
 };
 

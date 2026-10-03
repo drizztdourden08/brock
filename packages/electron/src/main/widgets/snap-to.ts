@@ -1,10 +1,8 @@
 /* @layer electron-main @kind logic */
 import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
+import { spansOverlap } from './spans-overlap';
 import { SNAP_DISTANCE } from './widget-windows.constants';
 import type { SnapCandidate, SnapTarget, Snapped } from './widget-windows.type';
-
-const spansOverlap = (aStart: number, aLength: number, bStart: number, bLength: number): boolean =>
-  aStart < bStart + bLength && bStart < aStart + aLength;
 
 const besideCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds): SnapCandidate[] => {
   if (!spansOverlap(moving.y, moving.height, target.y, target.height)) return [];

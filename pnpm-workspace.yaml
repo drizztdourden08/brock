@@ -35,9 +35,6 @@ catalog:
   rcedit: ^5.0.2
   '@resvg/resvg-js': ^2.6.2
 
-overrides:
-  '@drizztdourden08/standards': 'link:X:/standards'
-
 onlyBuiltDependencies:
   - electron
   - esbuild

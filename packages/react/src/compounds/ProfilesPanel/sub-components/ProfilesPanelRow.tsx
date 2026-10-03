@@ -50,7 +50,7 @@ const ProfilesPanelRow = (props: ProfilesPanelRowProps) => {
       role="listitem"
       name={name}
       meta={meta}
-      aside={aside}
+      columns={aside === undefined ? undefined : [{ primary: aside, align: 'end' }]}
       icon={icon}
       selected={selected}
       onClick={() => onSelect(id)}

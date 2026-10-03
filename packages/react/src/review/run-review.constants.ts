@@ -13,12 +13,13 @@ import { profileStep } from './steps/profile-step';
 import { screensStep } from './steps/screens-step';
 import { searchStep } from './steps/search-step';
 import { updaterStep } from './steps/updater-step';
+import { widgetWindowsStep } from './steps/widget-windows-step';
 import { widgetsStep } from './steps/widgets-step';
 import type { ReviewStep } from './review.type';
 
 const REVIEW_STEPS: readonly ReviewStep[] = [
-  bootStep, profileStep, menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, fontsStep,
-  stylesStep,
+  bootStep, profileStep, menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, widgetWindowsStep,
+  fontsStep, stylesStep,
 ];
 
 export { REVIEW_STEPS };

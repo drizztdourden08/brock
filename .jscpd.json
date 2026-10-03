@@ -17,7 +17,7 @@
     "**/.user-data/**",
     "**/fonts/**",
     ".worktrees/**",
-    ".claude/worktrees/**"
+    "**/.claude/**"
   ],
   "gitignore": true,
   "reporters": [

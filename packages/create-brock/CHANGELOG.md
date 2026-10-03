@@ -1,5 +1,13 @@
 # @drizztdourden08/create-brock
 
+## 0.1.2
+
+### Patch Changes
+
+- 567636a: `--tessera registry` keeps the published Tessera while `--local` links Brock, so an app is not tied to a Tessera working copy that is being edited.
+- Updated dependencies [7f38965]
+  - @drizztdourden08/brock-build@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

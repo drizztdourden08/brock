@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.1.2
+
+### Patch Changes
+
+- db1a6be: A hub search shows a settings page's matching rows live, under their section titles and editable in place, as rotp's profile hub does, instead of links. Other pages keep link hits; pages whose name matches are offered as jumps. The review checks the live row, its control and the group heading.
+- f60b232: `product.widgets.mainLabel` in `brock.config.ts` names the main view in the widget dock (default `Main`). The saved layout key stays `main`.
+- Updated dependencies [25be8fe]
+- Updated dependencies [f60b232]
+  - @drizztdourden08/brock-core@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

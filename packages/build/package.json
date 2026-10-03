@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-build",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Brock build tooling: Vite and electron-builder config factories, ensure-electron, the platform strategies and workflow builder, and the brock CLI (sync, check, add, dev, build, start, adopt, structure, platform, doctor, web).",
   "type": "module",
   "license": "UNLICENSED",
@@ -49,16 +49,20 @@
   },
   "files": [
     "bin",
+    "standards.extension.mjs",
     "src",
     "installer-stub",
     "migrations",
     "README.md",
     "CHANGELOG.md"
   ],
+  "standards": {
+    "extension": "./standards.extension.mjs"
+  },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
-    "@drizztdourden08/brock-lint-config": "workspace:*",
     "@drizztdourden08/brock-thread": "workspace:*",
+    "@drizztdourden08/standards": "^1.0.0",
     "@resvg/resvg-js": "catalog:",
     "pngjs": "catalog:",
     "rcedit": "catalog:"

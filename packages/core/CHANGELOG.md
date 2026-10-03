@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-core
 
+## 0.1.2
+
+### Patch Changes
+
+- 25be8fe: `ProductConfig` drops its `modules` field. Nothing read it: the module list is the top-level `modules` of `brock.config.ts`, which `brock add` writes and `brock sync` reads.
+- f60b232: `product.widgets.mainLabel` in `brock.config.ts` names the main view in the widget dock (default `Main`). The saved layout key stays `main`.
+
 ## 0.1.1
 
 ### Patch Changes

@@ -7,7 +7,7 @@ The base-app foundation for Electron + React desktop apps built on Tessera. Pack
 
 ```
 pnpm-workspace.yaml      the workspace list and the catalog of shared versions
-packages/lint-config     the lint stack every Brock repo runs
+packages/lint-config     Brock's app preset on @drizztdourden08/standards, the lint stack every Brock repo runs
 packages/core            isomorphic: product config, the open IPC contract, ports, storage, settings, log bus
 packages/electron        main-process bootstrap, window, handlers; the preload bridge
 packages/react           BrockApp shell, stores kit, screen registry, settings engine, shell views

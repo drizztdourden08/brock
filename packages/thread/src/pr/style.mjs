@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { findSlop } from '@drizztdourden08/brock-lint-config/slop-patterns';
+import { findSlop } from '@drizztdourden08/standards/writing';
 
 const MAX_LISTED = 5;
 

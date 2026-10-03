@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-lint-config",
-  "version": "0.1.1",
-  "description": "Brock lint stack: the local ESLint rules, the writing gate, stylelint token rules, markdownlint rules and the tsconfig bases every Brock repo extends.",
+  "version": "0.1.2",
+  "description": "Brock's app preset on top of @drizztdourden08/standards: the same factories and exports as before, with the react-app preset and Brock's extension (Tessera names, screens, module entries, boot tasks, Tessera tokens).",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {
@@ -25,33 +25,33 @@
     "./slop-line-kind": "./slop-line-kind.mjs",
     "./tsconfig/*": "./tsconfig/*",
     "./stylelint-rules/*": "./stylelint-rules/*",
-    "./file-shape": "./file-shape.mjs"
+    "./file-shape": "./file-shape.mjs",
+    "./standards.extension.mjs": "./standards.extension.mjs"
   },
   "files": [
     "*.mjs",
-    "rules",
     "tsconfig",
     "README.md",
     "stylelint-rules",
     "CHANGELOG.md"
   ],
+  "standards": {
+    "extension": "./standards.extension.mjs"
+  },
   "peerDependencies": {
     "eslint": "^10.0.0",
-    "eslint-plugin-react-hooks": "^7.0.0",
     "markdownlint-cli2": "^0.22.0",
-    "stylelint": "^17.0.0",
-    "stylelint-config-standard": "^40.0.0",
-    "typescript-eslint": "^8.0.0"
+    "stylelint": "^17.0.0"
   },
   "peerDependenciesMeta": {
     "markdownlint-cli2": {
       "optional": true
     },
-    "stylelint-config-standard": {
+    "stylelint": {
       "optional": true
     }
   },
   "dependencies": {
-    "@eslint/js": "^10.0.0"
+    "@drizztdourden08/standards": "^1.0.0"
   }
 }

@@ -49,7 +49,7 @@ import { screenTree } from '../.brock/screens';
 
 ## Layout: menu or rail
 
-`layout` picks where the screens are listed. The default, `menu`, keeps them in the title-bar dropdown. `rail` draws Tessera's `SectionNav` in its `rail` variant down the left edge of the screen host: every registered screen, grouped by `ScreenDef.group` (ungrouped screens first, then groups in first-seen order), with its `icon` and `title`. The title bar then keeps only the window controls, the instance badge and the menu entries that are not screens. `screenGroups` gives a label per group id; a group without one shows its id. A `devOnly` screen is listed only with developer tools on and a `requiresProfile` screen is disabled until a profile is active. Picking the home screen closes the open one.
+`layout` picks where the screens are listed. The default, `menu`, keeps them in the title-bar dropdown. `rail` draws Tessera's `SideNav` in its `rail` variant down the left edge of the screen host: every registered screen, grouped by `ScreenDef.group` (ungrouped screens first, then groups in first-seen order), with its `icon` and `title`. The title bar then keeps only the window controls, the instance badge and the menu entries that are not screens. `screenGroups` gives a label per group id; a group without one shows its id. A `devOnly` screen is listed only with developer tools on and a `requiresProfile` screen is disabled until a profile is active. Picking the home screen closes the open one.
 
 ```tsx
 <BrockApp
@@ -60,7 +60,7 @@ import { screenTree } from '../.brock/screens';
 />
 ```
 
-`useRailEntries(screens, home, groups?)` is exported on its own: it returns the `SectionNav` config, the active id and the select handler the rail uses.
+`useRailEntries(screens, home, groups?)` is exported on its own: it returns the `SideNav` config, the active id and the select handler the rail uses.
 
 ## Screens
 

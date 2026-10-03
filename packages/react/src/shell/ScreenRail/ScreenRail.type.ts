@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { SectionNavConfig } from '@drizztdourden08/tessera/composites';
+import type { SideNavConfig } from '@drizztdourden08/tessera/composites';
 
 interface ScreenRailGroup {
   id: string;
@@ -7,7 +7,7 @@ interface ScreenRailGroup {
 }
 
 interface UseRailEntriesResult {
-  config: SectionNavConfig;
+  config: SideNavConfig;
   activeId: string;
   select: (id: string) => void;
 }

@@ -42,7 +42,6 @@
     "electron-builder": "catalog:",
     "electron-vite": "catalog:",
     "eslint": "catalog:",
-    "eslint-plugin-react-hooks": "catalog:",
     "jscpd": "catalog:",
     "knip": "catalog:",
     "markdownlint-cli2": "catalog:",
@@ -52,7 +51,6 @@
     "stylelint": "catalog:",
     "stylelint-config-standard": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "zustand": "catalog:"

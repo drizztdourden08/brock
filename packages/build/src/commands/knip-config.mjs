@@ -1,8 +1,10 @@
 /* @layer tooling-scripts @kind logic */
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { appDirs } from './app-dirs.mjs';
 import { THREAD } from './workspace-config.mjs';
 
-const SCHEMA = 'https://unpkg.com/knip@5/schema.json';
+const KNIP_BASE = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@drizztdourden08/standards/knip/base.json'), 'utf8'));
 
 const APP_WORKSPACE = {
   entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/screens/**/*.custom.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', '.markdownlint-cli2.mjs', 'brock.config.ts', 'brock.workspace.mjs'],
@@ -18,7 +20,7 @@ const APP_WORKSPACE = {
 const knipJson = (rootDir, { linked = false } = {}) => {
   const apps = appDirs(rootDir).filter((dir) => dir !== '.');
   const config = {
-    $schema: SCHEMA,
+    ...KNIP_BASE,
     entry: ['brock.workspace.mjs'],
     ignore: ['.worktrees/**'],
     ignoreDependencies: linked ? [THREAD] : [],

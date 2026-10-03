@@ -1,18 +1,12 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
 
-const NPMRC = `@drizztdourden08:registry=https://npm.pkg.github.com
-auto-install-peers=true
-dedupe-peer-dependents=true
-public-hoist-pattern[]=*eslint*
-public-hoist-pattern[]=*stylelint*
-public-hoist-pattern[]=*markdownlint*
-public-hoist-pattern[]=typescript
-`;
+const NPMRC_TEMPLATE = createRequire(import.meta.url).resolve('@drizztdourden08/standards/templates/npmrc');
 
 const BUILT_DEPENDENCIES = ['electron', 'esbuild'];
 
@@ -85,7 +79,7 @@ const writeCatalog = (targetDir, catalog, workspaceRoot) => {
     return added.length ? [`${join(workspaceRoot, 'pnpm-workspace.yaml')} (+${added.length} catalog entries)`] : [];
   }
   writeFileSync(join(targetDir, 'pnpm-workspace.yaml'), renderWorkspaceYaml(catalog), 'utf8');
-  writeFileSync(join(targetDir, '.npmrc'), NPMRC, 'utf8');
+  copyFileSync(NPMRC_TEMPLATE, join(targetDir, '.npmrc'));
   return ['pnpm-workspace.yaml', '.npmrc'];
 };
 

@@ -5,7 +5,7 @@ packages:
   - 'templates/*'
 
 catalog:
-  '@drizztdourden08/tessera': ^0.3.0
+  '@drizztdourden08/tessera': ^0.4.0
   '@changesets/cli': ^2.29.7
   '@storylite/storylite': ^1.6.0
   jscpd: ^4.0.5
@@ -20,7 +20,6 @@ catalog:
   electron-builder: ^26.8.1
   electron-vite: ^5.0.0
   eslint: ^10.4.0
-  eslint-plugin-react-hooks: ^7.1.1
   markdownlint-cli2: ^0.22.1
   node-addon-api: ^8.9.1
   react: ^19.2.6
@@ -28,7 +27,6 @@ catalog:
   stylelint: ^17.13.0
   stylelint-config-standard: ^40.0.0
   typescript: ^6.0.3
-  typescript-eslint: ^8.60.1
   velopack: ^1.2.158
   vite: ^7.3.3
   vitest: ^4.1.7
@@ -40,6 +38,3 @@ catalog:
 onlyBuiltDependencies:
   - electron
   - esbuild
-
-overrides:
-  '@drizztdourden08/tessera': 'link:X:/tessera'

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { SectionNavConfig } from '@drizztdourden08/tessera/composites';
+import type { SideNavConfig } from '@drizztdourden08/tessera/composites';
 import type { SettingsControlProps, TabDef } from '../settings.type';
 
 interface SettingsHubProps<S extends object> extends SettingsControlProps<S> {
@@ -20,7 +20,7 @@ interface TabMatches<S extends object> {
 }
 
 interface HubNavModel<S extends object> {
-  navConfig: SectionNavConfig;
+  navConfig: SideNavConfig;
   visibleTabs: TabDef<S>[];
   home: TabDef<S> | null;
 }

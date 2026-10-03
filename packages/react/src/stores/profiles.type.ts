@@ -10,6 +10,7 @@ interface ProfilesState {
   setActive: (profile: Profile | null) => void;
   select: (profile: Profile) => Promise<void>;
   create: (opts: CreateProfileOptions) => Promise<Profile>;
+  rename: (id: string, name: string) => Promise<void>;
   remove: (id: string) => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ interface UseProfilesResult {
   loaded: boolean;
   select: (profile: Profile) => Promise<void>;
   create: (opts: CreateProfileOptions) => Promise<Profile>;
+  rename: (profile: Profile, name: string) => Promise<void>;
   remove: (profile: Profile) => void;
   removeConfirmed: (profile: Profile) => void;
   refresh: () => Promise<Profile[]>;

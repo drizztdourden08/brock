@@ -1,35 +1,39 @@
 /* @layer renderer-shell @kind component */
-import { AboutPanel } from '@drizztdourden08/tessera/composites';
+import { InfoScreen } from '@drizztdourden08/tessera/composites';
 import { useBrock } from '../../../app/useBrock';
+import { AboutPanel } from '../../../compounds/AboutPanel';
 import { useAboutInfo } from '../../../shell/About/behavior/useAboutInfo';
 import { defineScreen } from '../../define-screen';
 import type { ScreenDef } from '../../screen.type';
 import { aboutBrand } from './behavior/about-brand';
-import type { AboutScreenOptions } from './AboutScreen.type';
+import type { AboutScreenBodyProps, AboutScreenOptions } from './AboutScreen.type';
+import { ABOUT_SCREEN_TITLE } from './AboutScreen.constants';
 
-const AboutScreenBody = (props: AboutScreenOptions) => {
-  const { legalText } = props;
+const AboutScreenBody = (props: AboutScreenBodyProps) => {
+  const { legalText, onClose } = props;
   const { product, logoSrc } = useBrock();
   const { rows, copyText } = useAboutInfo();
   const branded = aboutBrand(product);
   return (
-    <AboutPanel
-      title={product.name}
-      brand={branded?.brand}
-      heading={branded?.heading}
-      logo={branded ? undefined : logoSrc}
-      rows={rows}
-      legal={legalText}
-      copyText={copyText}
-    />
+    <InfoScreen title={ABOUT_SCREEN_TITLE} onClose={onClose} footer={legalText}>
+      <AboutPanel
+        title={product.name}
+        brand={branded?.brand}
+        heading={branded?.heading}
+        logo={branded ? undefined : logoSrc}
+        rows={rows}
+        copyText={copyText}
+      />
+    </InfoScreen>
   );
 };
 
 const createAboutScreen = (options: AboutScreenOptions): ScreenDef => defineScreen({
   id: 'about',
-  title: 'About',
+  title: ABOUT_SCREEN_TITLE,
+  layer: 'own',
   requiresProfile: false,
-  render: () => <AboutScreenBody legalText={options.legalText} />,
+  render: ({ close }) => <AboutScreenBody legalText={options.legalText} onClose={close} />,
 });
 
 export { createAboutScreen };

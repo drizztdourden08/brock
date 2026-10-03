@@ -1,0 +1,30 @@
+/* @layer renderer-shell @kind style */
+.release-notes-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--border-width-thin) solid var(--c-primary);
+  border-radius: var(--radius-md);
+}
+
+.release-notes-panel .release-notes-panel__title {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--border-width-thin) solid var(--c-primary);
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semi);
+}
+
+.release-notes-panel__content {
+  max-height: calc(var(--size-320) + var(--size-32) - var(--size-2));
+  background: var(--c-sunken);
+}
+
+.release-notes-panel .release-notes-panel__text {
+  padding: var(--space-md);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  user-select: none;
+}

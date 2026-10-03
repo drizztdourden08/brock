@@ -3,4 +3,8 @@ interface AboutScreenOptions {
   legalText?: string;
 }
 
-export type { AboutScreenOptions };
+interface AboutScreenBodyProps extends AboutScreenOptions {
+  onClose: () => void;
+}
+
+export type { AboutScreenBodyProps, AboutScreenOptions };

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
-import { BugReportButton } from '@drizztdourden08/brock-react';
+import { BugReportButton, ReleaseNotesPanel } from '@drizztdourden08/brock-react';
 import { Box, Callout } from '@drizztdourden08/tessera/primitives';
-import { DialogShell, ReleaseNotesPanel } from '@drizztdourden08/tessera/composites';
+import { DialogShell } from '@drizztdourden08/tessera/composites';
 import { dialogTitle } from './behavior/dialog-title';
 import { useUpdateDialog } from './behavior/useUpdateDialog';
 import { DialogActions } from './sub-components/DialogActions';

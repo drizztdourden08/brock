@@ -1,0 +1,65 @@
+/* @layer renderer-shell @kind style */
+.about-panel {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--size-448);
+  margin: 0 auto;
+}
+
+.about-panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.about-panel__logo {
+  width: var(--size-96);
+  height: var(--size-96);
+  border-radius: var(--radius-lg);
+}
+
+.about-panel__header .about-panel__mark {
+  --brand-mark-size: var(--size-96);
+}
+
+.about-panel__title {
+  margin: 0;
+  color: var(--c-text);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semi);
+}
+
+.about-panel__title .about-panel__wordmark {
+  display: block;
+}
+
+.about-panel__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.about-panel .about-panel__row {
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--c-sunken);
+}
+
+.about-panel__row .stat-row__value[data-mono] {
+  font-size: var(--text-sm);
+}
+
+.about-panel__copy {
+  align-self: center;
+  margin-top: var(--space-md);
+}
+
+.about-panel .about-panel__legal {
+  margin: var(--space-md) 0;
+  font-size: var(--text-sm);
+  text-align: center;
+}

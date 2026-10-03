@@ -15,12 +15,15 @@ const useProfiles = (): UseProfilesResult => {
   const select = useProfilesStore((s) => s.select);
   const create = useProfilesStore((s) => s.create);
   const refresh = useProfilesStore((s) => s.refresh);
+  const renameNow = useProfilesStore((s) => s.rename);
   const removeNow = useProfilesStore((s) => s.remove);
 
   const removeConfirmed = useCallback((profile: Profile) => {
     const wasActive = useProfilesStore.getState().active?.id === profile.id;
     void removeNow(profile.id).then(() => { if (wasActive) nav.open(PROFILES_SCREEN); });
   }, [removeNow]);
+
+  const rename = useCallback((profile: Profile, name: string) => renameNow(profile.id, name), [renameNow]);
 
   const remove = useCallback((profile: Profile) => {
     dialogs.confirmDelete(
@@ -30,7 +33,7 @@ const useProfiles = (): UseProfilesResult => {
     );
   }, [removeConfirmed]);
 
-  return { profiles, active, lastProfileId, loaded, select, create, remove, removeConfirmed, refresh };
+  return { profiles, active, lastProfileId, loaded, select, create, rename, remove, removeConfirmed, refresh };
 };
 
 export { useProfiles };

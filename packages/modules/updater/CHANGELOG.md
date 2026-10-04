@@ -1,5 +1,36 @@
 # @drizztdourden08/brock-updater
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [3a35c8e]
+- Updated dependencies [3a35c8e]
+- Updated dependencies [3a35c8e]
+- Updated dependencies [3a35c8e]
+- Updated dependencies [3a35c8e]
+- Updated dependencies [d358df3]
+- Updated dependencies [d358df3]
+- Updated dependencies [d358df3]
+- Updated dependencies [d358df3]
+- Updated dependencies [d358df3]
+- Updated dependencies [d358df3]
+- Updated dependencies [055bb91]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [e70afc3]
+- Updated dependencies [87fa9a3]
+- Updated dependencies [87fa9a3]
+- Updated dependencies [87fa9a3]
+- Updated dependencies [87fa9a3]
+  - @drizztdourden08/brock-core@0.17.0
+  - @drizztdourden08/brock-electron@0.17.0
+  - @drizztdourden08/brock-react@0.17.0
+
 ## 0.16.0
 
 ### Minor Changes

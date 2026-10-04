@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-core",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Brock core: product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, the log bus, module manifests. Isomorphic, no Electron and no React.",
   "type": "module",
   "license": "UNLICENSED",

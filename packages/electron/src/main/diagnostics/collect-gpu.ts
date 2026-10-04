@@ -2,26 +2,13 @@
 import { app } from 'electron';
 import type { GpuDevice, GpuDiagnostics } from '@drizztdourden08/brock-core/types';
 import type { RawGpuDevice, RawGpuInfo } from './collect-gpu.type';
+import { readGpuFeatures } from './read-gpu-features';
 
 const text = (value: unknown): string | null => (typeof value === 'string' && value ? value : null);
 
 const readGpuInfo = async (): Promise<RawGpuInfo> => {
   try {
     return (await app.getGPUInfo('complete')) as RawGpuInfo;
-  } catch {
-    return {};
-  }
-};
-
-const stringEntries = (source: object): Record<string, string> => {
-  const out: Record<string, string> = {};
-  for (const [key, value] of Object.entries(source)) if (typeof value === 'string') out[key] = value;
-  return out;
-};
-
-const readFeatures = (): Record<string, string> => {
-  try {
-    return stringEntries(app.getGPUFeatureStatus());
   } catch {
     return {};
   }
@@ -40,7 +27,7 @@ const collectGpu = async (): Promise<GpuDiagnostics> => {
   const info = await readGpuInfo();
   const aux = info.auxAttributes ?? {};
   const devices = (info.gpuDevice ?? []).map(toDevice);
-  const features = readFeatures();
+  const features = readGpuFeatures();
   return {
     devices,
     glVendor: text(aux.glVendor),

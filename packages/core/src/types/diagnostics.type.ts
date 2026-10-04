@@ -86,7 +86,41 @@ interface SystemDiagnostics {
   versions: RuntimeVersions;
 }
 
+interface ProcessMetric {
+  pid: number;
+  type: string;
+  name: string | null;
+  cpuPercent: number;
+  workingSetBytes: number;
+  privateBytes: number | null;
+}
+
+interface MainProcessMemory {
+  rssBytes: number;
+  heapUsedBytes: number;
+  heapTotalBytes: number;
+  externalBytes: number;
+}
+
+interface WidgetWindowSummary {
+  id: string;
+  visible: boolean;
+  sync: boolean;
+  group: string | null;
+}
+
+interface ProcessDiagnostics {
+  processes: ProcessMetric[];
+  main: MainProcessMemory;
+  uptimeSeconds: number;
+  windowCount: number;
+  widgetWindows: WidgetWindowSummary[];
+  ipcCalls: number;
+  versions: RuntimeVersions;
+  gpuFeatures: Record<string, string>;
+}
+
 export type {
-  DiagnosticsRect, DisplayDiagnostics, CpuDiagnostics, MemoryDiagnostics, GpuDevice,
-  GpuDiagnostics, OsDiagnostics, RuntimeVersions, SystemDiagnostics,
+  DiagnosticsRect, MainProcessMemory, ProcessDiagnostics, ProcessMetric, DisplayDiagnostics, CpuDiagnostics, MemoryDiagnostics, GpuDevice,
+  GpuDiagnostics, OsDiagnostics, RuntimeVersions, SystemDiagnostics, WidgetWindowSummary,
 };

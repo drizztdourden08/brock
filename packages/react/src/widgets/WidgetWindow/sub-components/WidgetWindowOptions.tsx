@@ -3,6 +3,8 @@ import { useMemo } from 'react';
 import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-core';
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
+import { WINDOW_GROUPS } from '../../window-groups.constants';
+import { WindowGroupControls } from '../../WindowGroupControls';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
 
 const noop = (): void => undefined;
@@ -17,6 +19,8 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
     setFrame(frameOf(createDefaultLayout(), id, definition));
     own.setPin('off');
     own.setSnap(true);
+    own.setSync(true);
+    own.setGroup(null);
     onClose();
   };
 
@@ -42,6 +46,13 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onReset={reset}
       onClose={onClose}
     >
+      <WindowGroupControls
+        sync={own.sync}
+        onSyncChange={own.setSync}
+        windowGroup={own.group}
+        windowGroups={WINDOW_GROUPS}
+        onWindowGroupChange={own.setGroup}
+      />
       {definition?.settings?.()}
     </WidgetOptions>
   );

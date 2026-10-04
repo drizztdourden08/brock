@@ -11,6 +11,11 @@
   min-width: 0;
 }
 
+.widget-window--square > .widget {
+  border: none;
+  border-radius: 0;
+}
+
 .widget-window [data-drag-widget] {
   -webkit-app-region: drag;
 }

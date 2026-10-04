@@ -33,7 +33,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const toggleOptions = useCallback((next: HTMLElement) => setAnchor((current) => (current ? null : next)), []);
 
   return (
-    <Box className="widget-window">
+    <Box className={own.square ? 'widget-window widget-window--square' : 'widget-window'}>
       <Widget
         id={id}
         tabs={tabs}

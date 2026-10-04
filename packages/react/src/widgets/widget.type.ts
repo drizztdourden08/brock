@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, WidgetDefinition, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { ShortcutKey } from '@drizztdourden08/tessera/primitives';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 
 interface WidgetDef extends WidgetDefinition {
@@ -49,4 +50,16 @@ interface ProfileViews {
   widgetPrefs?: WidgetPrefs;
 }
 
-export type { ProfileViews, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState };
+interface WindowGroupOption {
+  id: string;
+  label: string;
+}
+
+interface WindowGuideHint {
+  keys?: readonly ShortcutKey[];
+  text: string;
+}
+
+export type {
+  ProfileViews, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowGroupOption, WindowGuideHint,
+};

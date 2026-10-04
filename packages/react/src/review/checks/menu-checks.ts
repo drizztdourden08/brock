@@ -15,7 +15,7 @@ const menuChecks = (snapshot: MenuSnapshot, expected: MenuExpectation): ReviewOu
   const sections = items.filter((item) => item.isSection).map((item) => item.label);
   const missing = missingFrom(entries, expected.required);
   const missingSections = missingFrom(sections, expected.sections);
-  const missingActions = missingFrom(entries, expected.actions);
+  const missingActions = missingFrom([...entries, ...sections], expected.actions);
   const builtIn = [...expected.required, ...expected.sections, ...expected.actions];
   const bare = items.filter((item) => builtIn.includes(item.label) && !item.hasIcon).map((item) => item.label);
   const sectionText = expected.sections.length > 0 ? `the ${expected.sections.join(', ')} section` : 'no section';

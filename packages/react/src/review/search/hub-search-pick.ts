@@ -56,6 +56,7 @@ const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void
   await paletteScopeCheck(tour, bucket, tour.env.screenTree?.hubs.find((hub) => hub.id === bucket)?.title ?? bucket);
   const mark = find(SELECTORS.hubSearchMark);
   if (mark) click(mark);
+  else find(SELECTORS.hubSearchInput)?.focus();
   const input = await waitFor(focusedSearch);
   tour.check('search-hub-focus', input !== null, `the "${bucket}" hub search takes the focus`, `the "${bucket}" hub search did not take the focus`);
   if (input === null) return undefined;

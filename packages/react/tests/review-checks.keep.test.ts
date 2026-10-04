@@ -85,6 +85,11 @@ describe('menuChecks', () => {
     expect(failed(menuChecks({ open: true, items }, expected))).toEqual([]);
   });
 
+  it('counts a title bar dropdown listed as a sub-menu', () => {
+    const items = [item('Home'), item('Advanced', true, true), item('Quit'), item('View', true, true), item('Report a bug'), item('Rooms', true, true)];
+    expect(failed(menuChecks({ open: true, items }, { ...expected, actions: ['Report a bug', 'Rooms'] }))).toEqual([]);
+  });
+
   it('reports a closed menu once', () => {
     expect(menuChecks({ open: false, items: [] }, expected)).toEqual([{ id: 'menu-opens', pass: false, reason: 'the menu did not open' }]);
   });

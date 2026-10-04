@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
+import { getAppLog } from '../src/log/get-app-log';
 import { resolveSections } from '../src/settings/SettingsLayout/behavior/resolve-sections';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
 import type { Section, SettingItem } from '../src/settings/settings.type';
@@ -31,6 +32,37 @@ describe('settingRow', () => {
     const row = settingRow(MODE, context());
     expect(row).toMatchObject({ noDescription: true, hint: 'How the window sits on the screen.', input: { kind: 'segmented', options: MODE.control?.kind === 'choice' ? MODE.control.options : [] } });
     expect(row).not.toHaveProperty('description');
+  });
+
+  it('draws a choice with more than three options as a select, and follows look', () => {
+    const options = ['a', 'b', 'c', 'd'].map((value) => ({ value, label: value.toUpperCase() }));
+    const item = (look?: 'segmented' | 'select' | 'radio'): SettingItem => ({ ...MODE, control: { kind: 'choice', options, look } });
+    expect(settingRow(item(), context())).toMatchObject({ input: { kind: 'select' } });
+    expect(settingRow(item('radio'), context())).toMatchObject({ input: { kind: 'radio' } });
+    expect(settingRow(item('segmented'), context())).toMatchObject({ input: { kind: 'segmented' } });
+  });
+
+  it('maps the number, text, password, select, radio and tags controls to the SettingsRow inputs', () => {
+    const settings = { port: 38281, host: 'local', secret: '', server: 'gg', side: 'left', words: ['a'] };
+    const at = (key: string, control: SettingItem['control']) => settingRow({ ...AUDIO, key, control }, context({ settings }));
+    expect(at('port', { kind: 'number', min: 1, max: 65535, step: 1, unit: 'port' })).toMatchObject({ input: { kind: 'number', value: 38281, min: 1, max: 65535, unit: 'port' } });
+    expect(at('host', { kind: 'text', placeholder: 'Host' })).toMatchObject({ input: { kind: 'text', placeholder: 'Host' } });
+    expect(at('secret', { kind: 'password' })).toMatchObject({ input: { kind: 'password', value: '' } });
+    expect(at('server', { kind: 'select', options: [{ value: 'gg', label: 'GG' }], searchable: true })).toMatchObject({ input: { kind: 'select', searchable: true } });
+    expect(at('side', { kind: 'radio', options: [{ value: 'left', label: 'Left' }] })).toMatchObject({ input: { kind: 'radio', value: 'left' } });
+    expect(at('words', { kind: 'tags', suggestions: ['b'] })).toMatchObject({ input: { kind: 'tags', value: ['a'], suggestions: ['b'] } });
+    expect(at('port', { kind: 'text' })).toBeNull();
+  });
+
+  it('warns once in development when a row resolves to no control', () => {
+    const item: SettingItem = { ...AUDIO, key: 'mode' };
+    const before = getAppLog().getEntries().length;
+    expect(settingRow(item, context())).toBeNull();
+    expect(settingRow(item, context())).toBeNull();
+    const added = getAppLog().getEntries().slice(before);
+    expect(added).toHaveLength(1);
+    expect(added[0]).toMatchObject({ level: 'warn' });
+    expect(added[0]?.message).toContain('Settings row "mode" draws nothing');
   });
 
   it('puts a custom control in a content row that still carries the hint for search', () => {

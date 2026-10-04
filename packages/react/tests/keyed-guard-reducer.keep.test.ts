@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { keyedGuardReducer } from '../src/hooks/keyed-guard-reducer';
 import { IDLE_GUARD } from '../src/hooks/keyed-guard.constants';
+import { lastGuardError } from '../src/hooks/last-guard-error';
 
 describe('keyedGuardReducer', () => {
   it('marks a key busy and clears its old error', () => {
@@ -24,5 +25,16 @@ describe('keyedGuardReducer', () => {
     state = keyedGuardReducer(state, { type: 'fail', key: 'b', message: 'y' });
     expect(keyedGuardReducer(state, { type: 'clear', key: 'a' }).errors).toEqual({ b: 'y' });
     expect(keyedGuardReducer(state, { type: 'clear' }).errors).toEqual({});
+  });
+
+  it('reads the most recent error as lastError', () => {
+    expect(lastGuardError(IDLE_GUARD)).toBeNull();
+    let state = keyedGuardReducer(IDLE_GUARD, { type: 'fail', key: 'a', message: 'first' });
+    state = keyedGuardReducer(state, { type: 'fail', key: 'b', message: 'second' });
+    expect(lastGuardError(state)).toBe('second');
+    state = keyedGuardReducer(state, { type: 'fail', key: 'a', message: 'third' });
+    expect(lastGuardError(state)).toBe('third');
+    state = keyedGuardReducer(state, { type: 'clear', key: 'a' });
+    expect(lastGuardError(state)).toBe('second');
   });
 });

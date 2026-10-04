@@ -5,7 +5,7 @@ import { heroPage } from './hero-page';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
 import type { BucketDef } from './screens-config.type';
-import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, SettingsEntry, TabEntry } from './screen-tree.type';
+import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, PageMetaEntry, SettingsEntry, TabEntry } from './screen-tree.type';
 import { tabPages } from './tab-pages';
 
 const withoutPage = (groups: readonly HubGroup[], page: HubPage): HubGroup[] =>
@@ -13,9 +13,10 @@ const withoutPage = (groups: readonly HubGroup[], page: HubPage): HubGroup[] =>
 
 const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef => {
   const hero = entries.find((entry): entry is HeroEntry => entry.kind === 'hero');
-  const content = entries.filter((entry): entry is PageEntry | FreePageEntry | SettingsEntry => entry.kind !== 'hero' && entry.kind !== 'tab');
+  const content = entries.filter((entry): entry is PageEntry | FreePageEntry | SettingsEntry => entry.kind === 'page' || entry.kind === 'custom' || entry.kind === 'settings');
   const tabs = entries.filter((entry): entry is TabEntry => entry.kind === 'tab');
-  const groups = hubGroups(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs)]);
+  const metas = entries.filter((entry): entry is PageMetaEntry => entry.kind === 'page-meta');
+  const groups = hubGroups(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs, metas)]);
   const home = hero ? heroPage(bucket, hero) : groups.at(0)?.pages.at(0);
   if (home === undefined) throw new Error(`Bucket "${bucket.id}" has no screens: add src/screens/${bucket.id}/home.hero.tsx or a page.`);
   return {

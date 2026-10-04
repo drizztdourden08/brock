@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { beforeEach, describe, expect, it } from 'vitest';
-import { isWidgetOpen, placementOf, widgetsIn } from '@drizztdourden08/tessera/composites';
+import { isWidgetOpen, paneOf, placementOf, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { FlatWidgetLayout } from '@drizztdourden08/tessera/composites';
+import { buildWidgetMenuEntries } from '../src/widgets/build-widget-menu-entries';
 import { dockBack } from '../src/widgets/dock-back';
 import { defineWidget } from '../src/widgets/define-widget';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
@@ -90,9 +91,31 @@ describe('dockBack', () => {
     expect(placementOf(dockBack(popped(), 'logs', 'float', context), 'logs')).toBe('floating');
   });
 
+  it('docks it back into the pane and the place it left, while that pane exists', () => {
+    store().replace(null);
+    store().setDefinitions([LOGS, NOTES]);
+    store().change((layout) => ({ ...layout, dock: { kind: 'split', axis: 'row', sizes: [1, 1], children: [
+      { kind: 'main', key: 'main' },
+      { kind: 'pane', key: 'side', widgets: ['notes', 'logs', 'other'], active: 'notes', makeRoom: true },
+    ] } }));
+    store().popOut('logs');
+    const back = dockBack(store().layout, 'logs', undefined, context);
+    expect(paneOf(back.dock, 'logs')).toMatchObject({ key: 'side', widgets: ['notes', 'logs', 'other'], active: 'logs' });
+    expect(placementOf(back, 'logs')).toBe('docked');
+  });
+
   it('closes it and remembers its window when asked to close', () => {
     const layout = dockBack(popped(), 'logs', 'close', context);
     expect(isWidgetOpen(layout, 'logs')).toBe(false);
     expect(layout.poppedMemory?.logs?.id).toBe('logs');
+  });
+});
+
+describe('buildWidgetMenuEntries', () => {
+  it('lists widgets by order, then by label', () => {
+    const players = defineWidget({ id: 'players', label: 'Players', render: () => null, order: 1 });
+    const consoleWidget = defineWidget({ id: 'console', label: 'Console', render: () => null, order: 2 });
+    const entries = buildWidgetMenuEntries([NOTES, consoleWidget, LOGS, players], store().layout, () => undefined, false);
+    expect(entries.map((entry) => entry.label)).toEqual(['Players', 'Console', 'Logs', 'Notes']);
   });
 });

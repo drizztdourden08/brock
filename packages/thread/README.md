@@ -15,6 +15,8 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> mobile push | build [--release] [--out <file>] | keystore
 ```
 
+`worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch, or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
+
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 
 `<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.

@@ -7,7 +7,7 @@ import type { TabDef } from '../settings/settings.type';
 
 type SearchKind = 'screen' | 'page' | 'tab' | 'section' | 'setting' | 'entry' | 'widget' | 'action';
 
-type SearchFileKind = 'hero' | 'page' | 'tab' | 'settings' | 'custom' | 'card' | 'layer';
+type SearchFileKind = 'hero' | 'page' | 'page-meta' | 'tab' | 'settings' | 'custom' | 'card' | 'layer';
 
 interface SearchTarget {
   route: string;

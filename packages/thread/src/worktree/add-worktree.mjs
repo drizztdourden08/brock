@@ -2,6 +2,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { gitLoud, tryGit } from '../git.mjs';
+import { pickBase } from './pick-base.mjs';
 import { resumeBranch } from './resume-branch.mjs';
 import { excludeWorktrees } from './exclude-worktrees.mjs';
 
@@ -28,7 +29,7 @@ const addWorktree = ({ name, path, from, ctx }) => {
   if (excludeWorktrees(main, workspace.worktreesDir)) log(`Added /${workspace.worktreesDir}/ to .git/info/exclude.`);
   const fetched = fetchOrigin(main, log);
   if (resumeBranch({ main, path, branch, from, log })) return;
-  const base = from ?? (fetched ? `origin/${workspace.base}` : workspace.base);
+  const base = from ?? pickBase({ main, branch: workspace.base, fetched, log });
   log(`Adding worktree at ${path} on ${branch} from ${base}.`);
   gitLoud(['worktree', 'add', '--no-track', '-b', branch, path, base], main);
 };

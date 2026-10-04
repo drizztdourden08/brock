@@ -23,7 +23,7 @@ const resolveScreenTree = (tree: ScreenTree, builtInTabs: readonly TabDef<object
     tabs,
     menu: deriveMenu(config, hubs, tree.screens),
     shortcuts: [{ shortcut: SETTINGS_SHORTCUT, target: SETTINGS_ALIAS }, ...tree.shortcuts],
-    settingsAlias: settingsAlias(owner, tabs),
+    settingsAlias: settingsAlias(owner, tabs, config.settings?.page),
     search: tree.search,
   };
 };

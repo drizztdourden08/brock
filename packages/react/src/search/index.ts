@@ -6,6 +6,7 @@ export { entriesInBucket } from './entries-in-bucket';
 export { normaliseKeywords } from './normalise-keywords';
 export { openSearchTarget } from './open-search-target';
 export { scrollToAnchor } from './scroll-to-anchor';
+export * from './SearchAnchor';
 export { registerSearchActions } from './register-search-actions';
 export { useSearchActions } from './useSearchActions';
 export { useSearchActionStore } from './useSearchActionStore';

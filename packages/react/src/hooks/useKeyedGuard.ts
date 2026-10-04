@@ -2,6 +2,7 @@
 import { useCallback, useReducer } from 'react';
 import { IDLE_GUARD } from './keyed-guard.constants';
 import { keyedGuardReducer } from './keyed-guard-reducer';
+import { lastGuardError } from './last-guard-error';
 import type { KeyedGuard } from './keyed-guard.type';
 
 const useKeyedGuard = (): KeyedGuard => {
@@ -23,7 +24,7 @@ const useKeyedGuard = (): KeyedGuard => {
   const errorOf = useCallback((key: string) => state.errors[key] ?? null, [state.errors]);
   const clearError = useCallback((key?: string) => dispatch({ type: 'clear', key }), []);
 
-  return { guard, isBusy, errorOf, clearError, state };
+  return { guard, isBusy, errorOf, clearError, lastError: lastGuardError(state), state };
 };
 
 export { useKeyedGuard };

@@ -44,6 +44,12 @@ interface TabEntry extends EntryBase {
   component: ComponentType<PageProps>;
 }
 
+interface PageMetaEntry extends EntryBase {
+  kind: 'page-meta';
+  bucket: string;
+  group?: string;
+}
+
 interface SettingsEntry extends EntryBase {
   kind: 'settings';
   bucket: string;
@@ -56,7 +62,7 @@ interface CardEntry extends EntryBase {
   component: ComponentType<CardProps>;
 }
 
-type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | SettingsEntry;
+type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | PageMetaEntry | SettingsEntry;
 
 type ScreenEntry = BucketEntry | CardEntry;
 
@@ -92,6 +98,6 @@ interface PlacedPage {
 }
 
 export type {
-  BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
+  BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, PageMetaEntry, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
   TabEntry,
 };

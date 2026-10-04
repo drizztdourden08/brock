@@ -8,7 +8,7 @@ import { MENU_LABEL } from './AppTitleBar.constants';
 import type { AppTitleBarProps } from './AppTitleBar.type';
 
 const AppTitleBar = (props: AppTitleBarProps) => {
-  const { title, menu, controls, instanceName, logoSrc, instanceLogoSrc, actions = NO_ACTIONS, hidden } = props;
+  const { title, menu, controls, instanceName, logoSrc, actions = NO_ACTIONS, hidden } = props;
   const { isMaximized, isFullscreen } = useTitleBar();
   const { pinned, onControl } = useWindowControl();
   const groups = useTitleBarMenu(menu);
@@ -17,7 +17,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
     <WindowTitleBar
       title={title}
       logo={logoSrc}
-      instance={instanceName ? { name: instanceName, logo: instanceLogoSrc } : null}
+      instance={instanceName ? { name: instanceName } : null}
       menu={groups}
       menuLabel={MENU_LABEL}
       actions={actions}

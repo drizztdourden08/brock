@@ -5,10 +5,9 @@ import { byOrder } from './by-order';
 import { entryLabel } from './entry-label';
 import { entryOrder } from './entry-order';
 import { iconNode } from './icon-node';
-import { KIND_ICONS, UNORDERED } from './screens.constants';
+import { KIND_ICONS } from './screens.constants';
 import type { BucketDef } from './screens-config.type';
-import type { OrderedTab, PlacedPage, TabEntry } from './screen-tree.type';
-import { titleCase } from './title-case';
+import type { OrderedTab, PageMetaEntry, PlacedPage, TabEntry } from './screen-tree.type';
 
 const orderedTab = (bucket: BucketDef, entry: TabEntry): OrderedTab => ({
   id: entry.id,
@@ -19,19 +18,28 @@ const orderedTab = (bucket: BucketDef, entry: TabEntry): OrderedTab => ({
 
 const hubTab = (tab: OrderedTab): HubTab => ({ id: tab.id, label: tab.label, render: tab.render });
 
-const folderOf = (entry: TabEntry): string => `${entry.group ?? ''}/${entry.page}`;
+const folderOf = (entry: { group?: string }, page: string): string => `${entry.group ?? ''}/${page}`;
 
-const tabPages = (bucket: BucketDef, entries: readonly TabEntry[]): PlacedPage[] =>
-  [...new Set(entries.map(folderOf))].flatMap((folder) => {
-    const members = entries.filter((entry) => folderOf(entry) === folder);
+const tabPages = (bucket: BucketDef, entries: readonly TabEntry[], metas: readonly PageMetaEntry[] = []): PlacedPage[] =>
+  [...new Set(entries.map((entry) => folderOf(entry, entry.page)))].flatMap((folder) => {
+    const members = entries.filter((entry) => folderOf(entry, entry.page) === folder);
     const tabs = members.map((entry) => orderedTab(bucket, entry)).sort(byOrder).map(hubTab);
     const [first] = members;
     const [lead] = tabs;
     if (first === undefined || lead === undefined) return [];
+    const own: PageMetaEntry = metas.find((meta) => folderOf(meta, meta.id) === folder) ?? { kind: 'page-meta', id: first.page, bucket: bucket.id };
     return [{
       group: first.group ?? null,
-      order: UNORDERED,
-      page: { id: first.page, label: titleCase(first.page), icon: iconNode(KIND_ICONS.tab), tabs, render: lead.render },
+      order: entryOrder(own),
+      page: {
+        id: first.page,
+        label: entryLabel(own),
+        icon: iconNode(own.meta?.icon ?? KIND_ICONS.tab),
+        devOnly: own.meta?.devOnly,
+        shortcut: own.meta?.shortcut,
+        tabs,
+        render: lead.render,
+      },
     }];
   });
 

@@ -8,7 +8,7 @@ const groupsOf = (section: Section): ItemGroup[] =>
     : [{ id: null, title: null, items: section.items ?? [] }];
 
 const choiceWords = (item: SettingItem): string[] =>
-  (item.control?.kind === 'choice' ? item.control.options.flatMap((option) => [option.label, option.hint ?? '']) : []);
+  (item.control && 'options' in item.control ? item.control.options.flatMap((option) => [option.label, option.hint ?? '']) : []);
 
 const matches = (item: SettingItem, query: string): boolean =>
   [item.label, item.description ?? '', item.hint, item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));

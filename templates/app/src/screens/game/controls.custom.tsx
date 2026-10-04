@@ -1,6 +1,7 @@
 /* @layer renderer-app @kind component */
+import { SearchAnchor } from '@drizztdourden08/brock-react';
 import type { PageProps, ScreenMeta, SearchEntrySeed } from '@drizztdourden08/brock-react';
-import { Box, Stack, StatRow, Text } from '@drizztdourden08/tessera/primitives';
+import { Stack, StatRow, Text } from '@drizztdourden08/tessera/primitives';
 
 const meta: ScreenMeta = { title: 'Controls', icon: 'keyboard', order: 2, keywords: ['bindings', 'keys', 'gamepad'] };
 
@@ -16,9 +17,9 @@ const ControlsPage = (props: PageProps) => {
     <Stack>
       <Text variant="body">A custom page: it keeps the {bucket.title} hub frame, nav, header and search, and draws its own content.</Text>
       {searchEntries.map((entry) => (
-        <Box key={entry.label} data-search-anchor={entry.anchor}>
+        <SearchAnchor key={entry.label} anchor={entry.anchor ?? entry.label}>
           <StatRow label={entry.label} value={entry.description} />
-        </Box>
+        </SearchAnchor>
       ))}
     </Stack>
   );

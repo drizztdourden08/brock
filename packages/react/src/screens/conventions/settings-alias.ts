@@ -16,8 +16,11 @@ const firstSettingsPage = (hub: HubDef, tabs: readonly TabDef<object>[]): string
   return pages.map((page) => joinRoute(hub.id, page.id)).find((route) => routes.has(route)) ?? hub.id;
 };
 
-const settingsAlias = (hub: HubDef, tabs: readonly TabDef<object>[]): RouteAlias => {
-  const first = firstSettingsPage(hub, tabs);
+const namedPage = (hub: HubDef, page: string | undefined): string | null =>
+  (page !== undefined && [hub.home, ...hub.groups.flatMap((group) => group.pages)].some((candidate) => candidate.id === page) ? joinRoute(hub.id, page) : null);
+
+const settingsAlias = (hub: HubDef, tabs: readonly TabDef<object>[], page?: string): RouteAlias => {
+  const first = namedPage(hub, page) ?? firstSettingsPage(hub, tabs);
   return (params) => ({
     active: typeof params.tab === 'string' ? tabRoute(hub, params.tab) : first,
     params: withoutTab(params),

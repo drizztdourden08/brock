@@ -6,6 +6,7 @@ const KIND_ICONS: Record<ScreenEntry['kind'], IconName> = {
   hero: 'house',
   page: 'file-text',
   tab: 'layout-list',
+  'page-meta': 'layout-list',
   settings: 'settings',
   card: 'file',
   custom: 'puzzle',

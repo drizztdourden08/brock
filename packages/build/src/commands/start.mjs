@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, normalize } from 'node:path';
 import { ensureElectron } from '../ensure-electron.mjs';
+import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { resolveElectronBinary, runInherit } from '../run.mjs';
 
 const MAIN_ENTRY = join('dist', 'electron', 'main.js');
@@ -30,6 +31,7 @@ const runStart = async ({ rootDir, passthrough = [] }) => {
     console.error(`brock start: ${electron.message}`);
     return 1;
   }
+  await ensureSynced(rootDir, 'brock start');
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
   const target = mainOf(rootDir) === MAIN_ENTRY ? rootDir : entry;

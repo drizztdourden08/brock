@@ -25,6 +25,19 @@ const configFindings = (config, folders) => {
 };
 
 /**
+ * @param {{ home: string, settings?: { bucket: string, page?: string } }} config
+ * @param {import('./scan-screens.mjs').ScreenFile[]} files
+ * @returns {string[]}
+ */
+const settingsPageFindings = (config, files) => {
+  const page = config.settings?.page;
+  if (page === undefined) return [];
+  const bucket = config.settings?.bucket ?? config.home;
+  const found = files.some((file) => file.bucket === bucket && (file.kind === 'tab' ? file.page : file.id) === page);
+  return found ? [] : [`${CONFIG_PATH}: settings.page "${page}" is not a page of bucket "${bucket}"`];
+};
+
+/**
  * @param {string} rootDir the app root
  * @returns {Promise<string[]>}
  */
@@ -33,7 +46,8 @@ const checkScreens = async (rootDir) => {
   const { files, findings: layout, buckets } = scanScreens(rootDir);
   const findings = [...layout, ...searchFindings(rootDir, files)];
   try {
-    return [...findings, ...configFindings(await readScreensConfig(rootDir), buckets)];
+    const config = await readScreensConfig(rootDir);
+    return [...findings, ...configFindings(config, buckets), ...settingsPageFindings(config, files)];
   } catch (error) {
     return [...findings, `${CONFIG_PATH}: ${error instanceof Error ? error.message : String(error)}`];
   }

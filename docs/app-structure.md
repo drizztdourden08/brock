@@ -89,6 +89,25 @@ my-repo/
 
 `brock structure` enforces the screen and widget folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are all findings.
 
+## Generated files: tracked or ignored
+
+Every generated file is either committed, so a fresh checkout has it, or ignored, so it never drifts in version control. `brock adopt` and `create-brock` write the `.gitignore` lines; `brock check` fails when a tracked one drifts.
+
+| Path | Written by | Committed |
+|---|---|---|
+| `.brock/*.ts`, `.brock/manifest.json` | `brock sync` (and `dev`, `build`, `start`, `launch` when missing or stale) | yes |
+| `.brock/profile-config.json` | the launch provision step | no |
+| `electron.vite.config.ts`, `electron-builder.config.cjs`, the lint configs, `tsconfig.json`, `bin/<repo>.mjs`, `.github/workflows/*.yml` | `brock sync` | yes |
+| `build/icons/`, `build/splash/`, `build/installer-splash.png` | `brock icons`, `brock package` | no |
+| `public/logos/` icon files (`icon.*`, `icon-32.png`, `icon-24.png`, `icon-bot.*`, `mark.svg`) | `brock icons` from `icons.brand` | no; an app's own art there is committed |
+| `build/installer/` | the app (`header.png`, `splash.png` overrides) | yes |
+| `dist/`, `release/`, `out/`, `node_modules/`, `*.tsbuildinfo` | the build, the package step, pnpm | no |
+| `.user-data/`, `.worktrees/`, any other dot-folder | launches, the thread CLI | no (the `.*/` line) |
+| `.brock-port-slot` | `worktree create` | no |
+| `upgrade-report.md` | `<repo> upgrade`, in its worktree | no (the local exclude file) |
+
+An app that ignored `.brock` before keeps working: the commands above sync it before they start.
+
 ## Brock's own packages
 
 | Package | Layout |
@@ -111,29 +130,12 @@ Fixed on this branch:
 - `brock adopt` in a workspace with no design package still gives each app its own `views`, and prints where screens, widgets, views and shared parts go.
 - The App skeleton in [architecture.md](architecture.md) lists `src/widgets` and `.brock/widgets.ts`.
 
-## Archipelia
-
-Archipelia (`X:\archipelia`, main and `.worktrees/upgrade`, both at 0fcdbe4) against this page:
-
-- `src/main.tsx` still passes `screens={SCREENS}`, `home={BASE_SCREEN}` and `menu={MENU}`: `navigation/SessionScreen.tsx` is a hand `defineScreen` and `menu.constants.ts` holds four entries. They move to `src/screens` (a `.layer.tsx` or a page) and `screens.config.ts`.
-- The six session widgets are built by a `sessionWidget()` factory (`src/widgets/session-widget.ts`) and registered with `registerWidgets(SESSION_WIDGETS)` in `main.tsx`. Each becomes `src/widgets/<id>.widget.tsx` (players, hints, room, log, console, spoiler) rendering `SessionWidget` with its id; the `widget-files` migration lists them as to-dos.
-- `src/widgets` holds 33 files that are not widgets: `live-room/` (24 logic files), `session-layout*`, `reset-session-widgets`, `in-widget-window`, `widget-window.constants`. They move to `views/SessionDashboard/behavior/` or `packages/sessions`; `brock structure` flags them once the folder is checked.
-- `src/state/` holds the zustand stores (6 `use*Store.ts`) and listener helpers: the stores belong in `src/stores/`, the `listen-to-*` starters in `src/boot/<id>.task.ts` (they run at the top of `main.tsx` today).
-- `src/navigation/`, `src/setting-controls/` and `src/guide/` have no slot: `navigation/useAppNavigation.ts` goes to `src/hooks/`, the setting control renderer to a compound or `src/views/`, and `guide/view-parts.type.ts` (a hand list of the 12 views) goes stale with every new view.
-- The IPC channels live in a separate `archipelia` preload namespace (`electron/archipelia-preload.ts`, `src/ipc/archipelia-api.ts`) while `APP_*_MAP` in `src/ipc/contract.constants.ts` are empty; the channels belong in the app maps. `src/ipc/secret-names.constants.ts` is not IPC.
-- `electron/services/` (22 files) is domain wiring in the app; most of it (server store, catalog service, import and export) belongs in `packages/*`, with only the composition left in the app.
-- `electron/handlers/*-handlers.ts` matches this page; `gg-handlers.constants.ts` holds one regex that can live beside its user.
-- `packages/design/src/compounds/OptionControl/sub-components/` has five loose `.tsx` controls; `tessera.config.json` names `primitives`, `composites` and `stories` folders that do not exist.
-- `core/py/options_schema.py` is the only file in `core/`; it belongs to `tooling/engine-bundle/` or `packages/engine/`.
-- `apps/desktop` has no `eslint.config.mjs` or `stylelint.config.mjs` (`brock sync` writes them), keeps `upgrade-report.md` in the tree, and ignores `public/logos` and `build/` although the logos are generated and the installer folder holds overrides only.
-- Duplicated helpers: `isRecord` (engine, catalog), `isStringList` (presets, design), `host-label.ts` (two views, different logic); `tests/session/` and `tests/sessions/` are two folders for one area.
-
 ## Recommendations
 
 What this branch leaves alone, and why:
 
 - **App handlers by convention.** `electron/handlers/<subject>-handlers.ts` is still listed by hand in `index.ts`. A generated `.brock/handlers.main.ts`, like the boot tasks, would end that, but it needs a runtime type and a migration of every app's `main.ts`.
-- **Module renderer parts.** `updater` (`UpdateDialog`, `UpdateBadge`), `input` (`DeviceCard`, `InputTester`, `StickCalibrationPanel`, `TriggerCalibrationPanel`, the loose `InputTesterScreen.tsx`) and `display` (`DisplaySettingsTab`) keep component folders straight in `src/renderer/`, and `port-kit` has a generic `src/renderer/components/`. Sorting them into `compounds/` and `views/` changes their public import paths and brings them under the usage-file check, so it is a module release of its own.
+- **Module renderer parts.** `updater` (`UpdateDialog`), `input` (`DeviceCard`, `InputTester`, `StickCalibrationPanel`, `TriggerCalibrationPanel`, the loose `InputTesterScreen.tsx`) and `display` (`DisplaySettingsTab`) keep component folders straight in `src/renderer/`, and `port-kit` has a generic `src/renderer/components/`. Sorting them into `compounds/` and `views/` changes their public import paths and brings them under the usage-file check, so it is a module release of its own.
 - **`brock-react` `src/shell/`.** `About`, `ScreenRail` and `TitleBar` are PascalCase folders whose component moved to Tessera; only constants, types and behavior remain. Renaming them touches exported names.
 - **Stores, hooks and views are not checked.** `brock structure` does not yet look for stores outside `src/stores` or components outside the Tessera part folders; a check would flag most existing apps at once, so it should land with a migration that lists the moves.
 - **Tests in the template.** The template ships no `tests/` folder or test script, so the `tests/<area>/<name>.keep.test.ts` rule is only written down here.

@@ -7,7 +7,7 @@ const DEFAULT_EXPORT = /export\s+default\b|export\s*\{[^}]*\bdefault\b[^}]*\}/;
 const BUILT_IN_WIDGET_IDS = ['logs', 'performance'];
 
 const META_KEYS = [
-  'label', 'icon', 'popOut', 'devOnly', 'taskbar', 'settings',
+  'label', 'icon', 'order', 'popOut', 'devOnly', 'taskbar', 'settings',
   'defaultVisibility', 'defaultSide', 'defaultDockedSize', 'defaultFloatingSize',
 ];
 

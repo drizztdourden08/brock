@@ -5,6 +5,7 @@ import { Widget, createDefaultLayout, frameOf, getWidgetDefinition } from '@driz
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
 import { hostApi } from '../../host/host-api';
+import { StandardOverlays } from '../../overlays/StandardOverlays/StandardOverlays';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
@@ -13,6 +14,7 @@ import { WindowGuide } from '../WindowGuide';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
+import { useWidgetWindowEscape } from './behavior/useWidgetWindowEscape';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
 import type { WidgetWindowProps } from './WidgetWindow.type';
 import './WidgetWindow.css';
@@ -28,6 +30,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
   useWidgetRelay(id);
+  useWidgetWindowEscape();
   useReviewOptions(id, root, setAnchor);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
@@ -61,6 +64,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />
       )}
       <WindowGuide />
+      <StandardOverlays />
     </Box>
   );
 };

@@ -2,6 +2,8 @@
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { MenuItem } from '../menu/menu.type';
+import { byOrder } from '../screens/conventions/by-order';
+import { UNORDERED } from '../screens/conventions/screens.constants';
 import { WIDGET_KEY_PREFIX } from './widget.constants';
 import type { WidgetDef } from './widget.type';
 
@@ -13,7 +15,9 @@ const buildWidgetMenuEntries = (
 ): MenuItem[] =>
   definitions
     .filter((def) => def.devOnly !== true || isDev)
-    .map((def) => ({
+    .map((def) => ({ def, order: def.order ?? UNORDERED, label: def.label }))
+    .sort(byOrder)
+    .map(({ def }) => ({
       key: `${WIDGET_KEY_PREFIX}${def.id}`,
       label: def.label,
       icon: def.icon,

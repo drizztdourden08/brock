@@ -19,6 +19,7 @@ interface BucketDef {
 
 interface SettingsPlacement {
   bucket: string;
+  page?: string;
 }
 
 interface ScreensConfig {

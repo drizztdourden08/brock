@@ -9,7 +9,6 @@ interface AppTitleBarProps {
   controls: TitleBarControls;
   instanceName: string | null;
   logoSrc?: string;
-  instanceLogoSrc?: string;
   actions?: readonly WindowTitleBarAction[];
   hidden: boolean;
 }

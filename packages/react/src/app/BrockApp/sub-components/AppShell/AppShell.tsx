@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
+import { WindowGuideOverlay } from '@drizztdourden08/tessera/composites';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { instanceName } from '../../../../host/instance-name';
 import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
@@ -11,7 +12,6 @@ import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
-import { WindowGuideOverlay } from '../../../../widgets/WindowGuideOverlay';
 import { useWindowGuide } from '../../../../widgets/useWindowGuide';
 import { useWindowSquare } from '../../../../widgets/useWindowSquare';
 import { useBootStore } from '../../../../boot/useBootStore';
@@ -30,8 +30,6 @@ import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import type { AppShellProps } from './AppShell.type';
 
-const appClass = (square: boolean): string => (square ? 'brock-app brock-app--square' : 'brock-app');
-
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups } = props;
   const { product, home, logoSrc, instanceLogoSrc } = useBrock();
@@ -49,7 +47,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useIpcLogBridge(log);
 
   const fullMenu = useShellMenu(moduleMenu, railed);
-  const actions = useShellActions(titleBarActions, windowChrome);
+  const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();
   const guide = useWindowGuide();
   const actionIds = JSON.stringify(actions.map((action) => action.id));
@@ -58,10 +56,10 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: barMenu, actions, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} className="brock-app__screens" />} />;
+  const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} square={square} className="brock-app__screens" />} />;
 
   return (
-    <Box className={appClass(square)}>
+    <Box className="brock-app">
       {windowChrome && (
         <AppTitleBar
           title={product.window.title ?? product.name}

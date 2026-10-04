@@ -4,7 +4,6 @@ import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-cor
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
 import { WINDOW_GROUPS } from '../../window-groups.constants';
-import { WindowGroupControls } from '../../WindowGroupControls';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
 import { PinChoiceRow } from './PinChoiceRow';
 
@@ -39,6 +38,11 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       canPopOut
       snap={own.snap}
       onSnapChange={own.setSnap}
+      sync={own.sync}
+      onSyncChange={own.setSync}
+      group={own.group}
+      groups={WINDOW_GROUPS}
+      onGroupChange={own.setGroup}
       onMakeRoomChange={noop}
       onOpacityChange={(value) => setFrame({ opacity: value })}
       onShowChange={(value) => setFrame({ show: value })}
@@ -46,13 +50,6 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onClose={onClose}
     >
       <PinChoiceRow pin={own.pin} onPinChange={own.setPin} />
-      <WindowGroupControls
-        sync={own.sync}
-        onSyncChange={own.setSync}
-        windowGroup={own.group}
-        windowGroups={WINDOW_GROUPS}
-        onWindowGroupChange={own.setGroup}
-      />
       {definition?.settings?.()}
     </WidgetOptions>
   );

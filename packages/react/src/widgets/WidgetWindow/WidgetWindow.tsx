@@ -37,7 +37,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const toggleOptions = useCallback((next: HTMLElement) => setAnchor((current) => (current ? null : next)), []);
 
   return (
-    <Box ref={setRoot} className={own.square ? 'widget-window widget-window--square' : 'widget-window'}>
+    <Box ref={setRoot} className="widget-window">
       <Widget
         id={id}
         tabs={tabs}
@@ -45,6 +45,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         paneKey={null}
         mode="out"
         opacity={frame.opacity}
+        square={own.square}
         optionsOpen={anchor !== null}
         onActivateTab={noop}
         onOpenOptions={toggleOptions}

@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { WidgetProbeFacts, WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../host/require-host-api';
+import { nav } from '../../navigation/nav';
 import { find } from '../dom/find';
 import { until } from '../dom/until';
 import type { StepTour } from '../review.type';
@@ -9,7 +10,7 @@ import { poppedWire } from './popped-wire';
 import { probe } from './probe';
 import { sameRect } from './same-rect';
 import { soon } from './soon';
-import { MAIN_LINK, REVIEW_GROUP, SMALL_AREA, SQUARE_SELECTOR } from './widget-review.constants';
+import { MAIN_LINK, REVIEW_GROUP, SMALL_AREA, SQUARE_SCREEN, SQUARE_SELECTOR } from './widget-review.constants';
 
 const pair = (facts: WidgetProbeFacts | undefined, id: string): [WidgetWindowBounds, WidgetWindowBounds] | null => {
   const main = facts?.windows[MAIN_LINK];
@@ -51,10 +52,12 @@ const exitFullscreen = async (id: string, before: [WidgetWindowBounds, WidgetWin
 };
 
 const checkFullscreen = async (tour: StepTour, id: string, before: [WidgetWindowBounds, WidgetWindowBounds]): Promise<void> => {
+  nav.open(SQUARE_SCREEN);
   const missed = await enterFullscreen(id, before);
-  tour.check('group-fullscreen', missed === null, 'full screen filled the display with the group, opened the black backdrop and sent the square flag to every member', `full screen missed the backdrop, the square flag or the display (${missed ?? ''})`);
+  tour.check('group-fullscreen', missed === null, 'full screen filled the display with the group, opened the black backdrop and sent the square flag to every member, and the open screen drew square', `full screen missed the backdrop, the square flag or the display (${missed ?? ''})`);
   await requireHostApi().reviewCaptureGroup('group-fullscreen');
   const left = await exitFullscreen(id, before);
+  nav.close();
   tour.check('group-fullscreen-exit', left, 'leaving full screen removed the backdrop and the square flag and put every member back', 'leaving full screen left the backdrop, the square flag or moved bounds behind');
 };
 

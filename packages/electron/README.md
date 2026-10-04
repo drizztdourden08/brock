@@ -124,7 +124,8 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 ## Handlers
 
-- A cancelled dialog is an ordinary outcome: `pickFile` returns null and `saveFile` reports `saved: false` with no error.
+- A cancelled dialog is an ordinary outcome: `pickFile` and `pickPath` return null and `saveFile` reports `saved: false` with no error. `dialog:pickPath(folder, extensions)` returns the picked path, not the bytes: a folder dialog when `folder` is true, else a file dialog filtered by `extensions`.
+- `debug:revealLogs` opens `Data/debug` in the file manager, as Open logs on the boot splash does.
 - `profiles:create` writes the record only; which profile opens next time is a separate `profiles:setLast` call, so a renderer can skip it on an automation launch.
 - `network:lanAddresses` returns `lanAddresses()`: every non-internal network interface address, IPv4 before IPv6. Main code imports `lanAddresses` directly.
 - Screenshots go to `Data/screenshots/<name>.png`; the name must pass `assertSafeName`. `captureWindow` serves both the `test:screenshot` channel and the `--screenshot` launch flag.

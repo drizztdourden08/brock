@@ -15,7 +15,6 @@ const cleanAction = (def: DataDomainDef, days: number, actions: StorageActions):
     message: `Every file and folder in ${def.label} that has not changed for ${days} days is deleted. This cannot be undone.`,
     confirmLabel: 'Delete',
     variant: 'danger',
-    focus: 'cancel',
   },
   onSelect: () => actions.clean(def, days),
 });
@@ -34,7 +33,6 @@ const domainActions = (def: DataDomainDef, usage: DomainUsage | undefined, actio
       message: `${sizeText(usage)} is deleted from ${def.label}. This cannot be undone.`,
       confirmLabel: 'Clear',
       variant: 'danger',
-      focus: 'cancel',
     },
     onSelect: () => actions.clean(def, null),
   } satisfies SettingAction]),

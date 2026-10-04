@@ -149,6 +149,22 @@ describe('deriveMenu', () => {
   });
 });
 
+describe('deriveMenu with menuOrder', () => {
+  it('orders a submenu by meta.menuOrder, falling back to order, while the nav keeps order', () => {
+    const entries: ScreenEntry[] = [
+      ...ENTRIES.filter((entry) => 'bucket' in entry && entry.bucket !== 'data'),
+      { kind: 'page', bucket: 'data', id: 'library', component: View, meta: { order: 0 } },
+      { kind: 'page', bucket: 'data', id: 'servers', component: View, meta: { order: 1, menuOrder: 3 } },
+      { kind: 'page', bucket: 'data', id: 'sessions', component: View, meta: { order: 2 } },
+    ];
+    const tree = buildScreenTree(CONFIG, entries);
+    const data = (deriveMenu(CONFIG, tree.hubs, tree.screens) as MenuItem[]).find((item) => item.key === 'bucket:data');
+    expect(data?.children?.map((child) => child !== 'separator' && child.page)).toEqual(['library', 'sessions', 'servers']);
+    const flat = pageIds(hubOf(tree.hubs, 'data')).flat();
+    expect(flat.indexOf('servers')).toBeLessThan(flat.indexOf('sessions'));
+  });
+});
+
 describe('resolveRoute', () => {
   it('reads bucket, page and tab from a deep link', () => {
     expect(resolveRoute('game/tracker/map', { from: 'menu' }, noAlias)).toEqual({ active: 'game', params: { from: 'menu', section: 'tracker', tab: 'map' } });

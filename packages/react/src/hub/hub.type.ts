@@ -62,6 +62,7 @@ interface HubPage {
   header?: HubPageHeader;
   menu?: ScreenMenu;
   order?: number;
+  menuOrder?: number;
 }
 
 interface HubGroup {

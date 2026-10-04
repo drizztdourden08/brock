@@ -12,6 +12,7 @@ import { WidgetBody } from '../WidgetBody';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { WindowGuide } from '../WindowGuide';
+import { useDragStrip } from './behavior/useDragStrip';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
@@ -28,17 +29,20 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const definition = useMemo(() => getWidgetDefinition(uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), id), [widgets, registered, id]);
   const frames = useWidgetRelayStore((s) => s.slices[RELAY_SLICES.frames]) as WidgetLayout['frame'] | undefined;
   const own = usePoppedWindowState(id);
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
+  const reviewOpen = useReviewOptions(id);
   useWidgetRelay(id);
   useWidgetWindowEscape();
-  useReviewOptions(id, root, setAnchor);
+  useDragStrip(root);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
-  const tabs = useMemo(() => [{ id, label: definition?.label ?? id }], [id, definition]);
+  const label = definition?.label ?? id;
+  const tabs = useMemo(() => [{ id, label }], [id, label]);
   const popIn = useCallback(() => hostApi()?.dockBackWidget(id), [id]);
   const close = useCallback(() => hostApi()?.dockBackWidget(id, 'close'), [id]);
-  const toggleOptions = useCallback((next: HTMLElement) => setAnchor((current) => (current ? null : next)), []);
+  const options = (
+    <WidgetWindowOptions key={reviewOpen ? 'review' : 'own'} id={id} definition={definition} frame={frame} own={own} defaultOpen={reviewOpen} />
+  );
 
   return (
     <Box ref={setRoot} className="widget-window">
@@ -50,20 +54,18 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         mode="out"
         opacity={frame.opacity}
         square={own.square}
+        padding={definition?.padding}
+        fill={definition?.fill}
         pin={own.pin}
         onPinChange={own.setPin}
-        optionsOpen={anchor !== null}
+        options={options}
         onActivateTab={noop}
-        onOpenOptions={toggleOptions}
         onPopOut={popIn}
         canPopOut
         onClose={close}
       >
-        <WidgetBody id={id} label={definition?.label ?? id}>{definition?.render()}</WidgetBody>
+        <WidgetBody id={id} label={label}>{definition?.render()}</WidgetBody>
       </Widget>
-      {anchor && (
-        <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />
-      )}
       <WindowGuide />
       <StandardOverlays />
     </Box>

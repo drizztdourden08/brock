@@ -6,10 +6,10 @@ import { useToastStore } from './useToastStore';
 let nextToastId = 0;
 
 const toast = (message: string, options: ToastOptions = {}): string => {
-  const { variant = 'info', duration = TOAST_DURATION_MS } = options;
+  const { variant = 'info', duration = TOAST_DURATION_MS, action } = options;
   nextToastId += 1;
   const id = `toast-${nextToastId}`;
-  useToastStore.getState().push({ id, message, variant, duration });
+  useToastStore.getState().push({ id, message, variant, duration, ...(action ? { action } : {}) });
   return id;
 };
 

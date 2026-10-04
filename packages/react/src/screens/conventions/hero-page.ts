@@ -14,6 +14,7 @@ const heroPage = (bucket: BucketDef, entry: HeroEntry): HubPage => ({
   shortcut: entry.meta?.shortcut,
   menu: entry.meta?.menu,
   order: entry.meta?.order,
+  menuOrder: entry.meta?.menuOrder,
   render: renderHero(entry.component, bucket),
 });
 

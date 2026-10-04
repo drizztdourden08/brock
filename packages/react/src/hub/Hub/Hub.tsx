@@ -7,6 +7,7 @@ import { useHubSearch } from '../../settings/SettingsHub/behavior/useHubSearch';
 import { DEFAULT_SEARCH_PLACEHOLDER } from '../hub.constants';
 import type { HubSearchHit } from '../hub.type';
 import { buildHubNav } from './behavior/build-hub-nav';
+import { hubNavKey } from './behavior/hub-nav-key';
 import { useHubState } from './behavior/useHubState';
 import { HubIndexResults } from './sub-components/HubIndexResults';
 import { HubPageFrame } from './sub-components/HubPageFrame';
@@ -36,7 +37,7 @@ const Hub = (props: HubProps) => {
   const results = ownIndex ? <HubSearchHits query={query} index={ownIndex} onOpen={openHit} /> : indexed;
 
   return (
-    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
+    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
       <ScreenStateScope.Provider value={hubScope(context)}>
         <HubPageFrame key={`${page.id}/${sub?.id ?? ''}`} page={page} tab={tab} sub={sub} route={joinRoute(def.id, page.id)} onSelectTab={selectTab} onUp={up}>
           {hubContent(context)}

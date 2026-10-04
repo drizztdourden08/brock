@@ -21,10 +21,10 @@ const BugReportDialog = () => {
   return (
     <DialogShell open={form.open} onClose={form.close} title="Report a bug" className="bug-report" actions={actions}>
       <Box className="bug-report__form">
-        <Field label="Title" required>
+        <Field label="Title" required width="full">
           <TextInput value={form.title} placeholder="A short summary" onChange={(e) => form.setTitle(e.target.value)} />
         </Field>
-        <Field label="What happened" required hint="What you did, what you expected, and what you saw instead.">
+        <Field label="What happened" required width="full" hint="What you did, what you expected, and what you saw instead.">
           <Textarea rows={DESCRIPTION_ROWS} value={form.description} onChange={(e) => form.setDescription(e.target.value)} />
         </Field>
         <Checkbox checked={form.attach} onChange={form.setAttach} label="Attach diagnostics (system info, versions, recent log)" />

@@ -17,13 +17,28 @@ describe('toBarAction', () => {
   it('turns a status into a status pill that shows only while the status is set', () => {
     expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Hosting: Seed 42', tone: 'success' }))
       .toMatchObject({ id: 'room', bar: 'status', status: 'Hosting: Seed 42', tone: 'success' });
-    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: null }).status).toBeUndefined();
+    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: null })).toMatchObject({ bar: 'status', status: undefined });
   });
 
-  it('turns a menu into a bar button that opens its own dropdown', () => {
-    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'open', label: 'Open room' }] });
-    expect(action).toMatchObject({ id: 'rooms', bar: 'button', label: 'Rooms' });
-    expect(typeof action.onSelect).toBe('function');
+  it('passes the pulse of a status on to the pill', () => {
+    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Live', pulse: true })).toMatchObject({ pulse: true });
+  });
+
+  it('turns a menu into a title bar dropdown with its items in one group', () => {
+    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'open', label: 'Open room' }, 'separator', { key: 'new', label: 'New room' }] });
+    if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
+    expect(action).toMatchObject({ id: 'rooms', label: 'Rooms', icon: 'server' });
+    expect(action.groups).toHaveLength(1);
+    expect(action.groups[0]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['open', 'separator', 'new']);
+  });
+
+  it('keeps the groups of a menu, each with its label', () => {
+    const action = toBarAction('rooms', {
+      kind: 'menu', label: 'Rooms', icon: 'server',
+      groups: [{ label: 'Recent', items: [{ key: 'seed-42', label: 'Seed 42' }] }, { items: [{ key: 'new', label: 'New room' }] }],
+    });
+    if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
+    expect(action.groups.map((group) => [group.id, group.label])).toEqual([['rooms-0', 'Recent'], ['rooms-1', undefined]]);
   });
 });
 
@@ -55,13 +70,12 @@ describe('jobStepper', () => {
     ...patch,
   });
 
-  it('points at the current step while running, the failed step on failure and a finished step when done', () => {
+  it('points at the current step while running and the failed step on failure, with no extra step when done', () => {
     expect(jobStepper(job({})).currentId).toBe('b');
     const failed = jobStepper(job({ state: 'failed', steps: [{ id: 'a', label: 'A', weight: 1, state: 'failed' }, { id: 'b', label: 'B', weight: 1, state: 'upcoming' }] }));
     expect(failed.currentId).toBe('a');
     expect(failed.steps[0]?.error).toBe(true);
     const done = jobStepper(job({ state: 'done' }));
-    expect(done.steps.map((step) => step.id)).toEqual(['a', 'b', 'job-finished']);
-    expect(done.currentId).toBe('job-finished');
+    expect(done.steps.map((step) => step.id)).toEqual(['a', 'b']);
   });
 });

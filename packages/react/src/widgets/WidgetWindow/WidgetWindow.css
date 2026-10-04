@@ -6,15 +6,7 @@
   display: flex;
 }
 
-.widget-window > .widget {
+.widget-window > * {
   flex: 1;
   min-width: 0;
-}
-
-.widget-window [data-drag-widget] {
-  -webkit-app-region: drag;
-}
-
-.widget-window [data-drag-widget] button {
-  -webkit-app-region: no-drag;
 }

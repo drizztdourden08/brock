@@ -24,7 +24,7 @@ describe('settingRow', () => {
     const onChange = vi.fn();
     const row = settingRow(AUDIO, context({ onChange }));
     expect(row).toMatchObject({ id: 'audio', title: 'Audio', description: 'Play sound.', hint: 'Off mutes every sound.', input: { kind: 'toggle', value: true } });
-    if (row && 'input' in row && row.input.kind === 'toggle') row.input.onChange(false);
+    if (row && 'input' in row && row.input?.kind === 'toggle') row.input.onChange(false);
     expect(onChange).toHaveBeenCalledWith({ audio: false });
   });
 

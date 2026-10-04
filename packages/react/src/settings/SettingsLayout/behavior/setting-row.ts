@@ -1,34 +1,43 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
-import type { SettingsDescription, SettingsInput, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
-import type { SettingItem } from '../../settings.type';
+import type { ReactNode } from 'react';
+import type { SettingsDescription, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
+import { Stack } from '@drizztdourden08/tessera/primitives';
+import type { SettingItem, SettingValues } from '../../settings.type';
 import type { SettingRowContext } from '../SettingsLayout.type';
 import { LinkedToggle } from '../sub-components/LinkedToggle';
 import { SettingActions } from '../sub-components/SettingActions';
+import { rowActions } from './row-actions';
 import { settingInput } from './setting-input';
 import { warnMissingControl } from './warn-missing-control';
 
 const descriptionOf = (item: SettingItem): SettingsDescription =>
   (item.noDescription === true ? { noDescription: true } : { description: item.description });
 
-const actionsInput = (item: SettingItem, disabled: boolean): SettingsInput | null => {
+const withActions = (content: ReactNode, item: SettingItem, disabled: boolean, settings: SettingValues): ReactNode => {
   const actions = item.actions ?? [];
-  return actions.length > 0 ? { kind: 'custom', control: createElement(SettingActions, { actions, disabled }) } : null;
+  if (actions.length === 0) return content;
+  return createElement(Stack, { gap: 'xs' }, content, createElement(SettingActions, { actions, disabled, settings }));
 };
 
 const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<S>): SettingsSectionRow | null => {
   const { settings, onChange, renderControl, disabled, lock } = ctx;
-  const value = (settings as Record<string, unknown>)[item.key];
+  const values = settings as SettingValues;
+  const value = values[item.key];
   const set = (next: unknown): void => onChange({ [item.key]: next } as Partial<S>);
   const shared = { id: item.key, title: item.label, hint: item.hint, keywords: item.keywords, lock, ...descriptionOf(item) };
   const custom = renderControl?.(item.key, settings, onChange);
-  if (custom !== null && custom !== undefined) return { ...shared, content: custom };
+  if (custom !== null && custom !== undefined) return { ...shared, content: withActions(custom, item, disabled, values) };
   if (item.link !== undefined && typeof value === 'boolean') {
-    return { ...shared, content: createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }) };
+    return { ...shared, content: withActions(createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }), item, disabled, values) };
   }
-  const input = settingInput(item.control, value, set) ?? actionsInput(item, disabled);
-  if (!input) warnMissingControl(item.key, value);
-  return input ? { ...shared, input, disabled } : null;
+  const input = settingInput(item.control, value, set);
+  const actions = rowActions(item.actions, values);
+  if (!input && !actions) {
+    warnMissingControl(item.key, value);
+    return null;
+  }
+  return { ...shared, ...(input ? { input } : {}), ...(actions ? { actions } : {}), disabled };
 };
 
 export { settingRow };

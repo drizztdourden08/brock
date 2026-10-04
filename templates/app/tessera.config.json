@@ -1,3 +1,4 @@
 {
-  "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json"
+  "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json",
+  "guide": { "parts": ".brock/tessera-parts.ts" }
 }

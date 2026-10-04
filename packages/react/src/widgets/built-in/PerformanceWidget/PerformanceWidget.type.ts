@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ProcessDiagnostics } from '@drizztdourden08/brock-core';
-import type { StackedBarColor, StatTrend, StatTrendMeaning } from '@drizztdourden08/tessera/composites';
-import type { SparklineProps, StatusTone } from '@drizztdourden08/tessera/primitives';
+import type { StatTrend, StatTrendMeaning } from '@drizztdourden08/tessera/composites';
+import type { SparklineProps, StackedBarColor, StatusTone } from '@drizztdourden08/tessera/primitives';
 
 type PerformanceSectionId = 'renderer' | 'processes' | 'app';
 
@@ -84,8 +84,7 @@ interface GaugeReadings {
 interface PerformanceBarProps {
   active: boolean;
   refreshMs: number;
-  copied: boolean;
-  onCopy: () => void;
+  snapshot: () => string;
 }
 
 interface ByteParts {

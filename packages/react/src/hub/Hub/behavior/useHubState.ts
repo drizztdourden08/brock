@@ -1,11 +1,13 @@
 /* @layer renderer-shell @kind hook */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDeveloperTools } from '../../../app/useDeveloperTools';
 import { nav } from '../../../navigation/nav';
 import type { ScreenRenderContext } from '../../../screens/screen.type';
 import type { HubDef, HubRenderContext, HubTarget } from '../../hub.type';
 import type { HubState } from '../Hub.type';
+import { useScreenStateStore } from '../../../stores/useScreenStateStore';
 import { resolveHubPage } from './resolve-hub-page';
+import { tabStateKey } from './tab-state-key';
 import { useSubParent } from './useSubParent';
 import { visibleHubPages } from './visible-hub-pages';
 
@@ -13,7 +15,11 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext): HubState => {
   const { params, profile, open, close } = ctx;
   const developerTools = useDeveloperTools();
   const { groups, pages } = useMemo(() => visibleHubPages(def, developerTools), [def, developerTools]);
-  const { page, tab, sub, subParams } = useMemo(() => resolveHubPage(pages, def.home, params), [pages, def.home, params]);
+  const lastTabs = useScreenStateStore((s) => s.byScope[def.id]);
+  const { page, tab, sub, subParams } = useMemo(() => resolveHubPage(pages, def.home, params, lastTabs), [pages, def.home, params, lastTabs]);
+  useEffect(() => {
+    if (tab !== null && lastTabs?.[tabStateKey(page.id)] !== tab.id) useScreenStateStore.getState().put(def.id, tabStateKey(page.id), tab.id);
+  }, [def.id, page.id, tab, lastTabs]);
   useSubParent(sub === null ? null : page.id, params);
 
   const openTarget = useCallback((target: HubTarget) => {

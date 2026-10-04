@@ -24,14 +24,22 @@ type SettingControl =
 
 type SettingControlKind = SettingControl['kind'];
 
+type SettingValues = Readonly<Record<string, unknown>>;
+
 interface SettingAction {
   id?: string;
   label: string;
   icon?: IconName;
   variant?: ButtonVariant;
-  disabled?: boolean;
-  confirm?: ConfirmActionOptions;
-  onSelect: () => void | Promise<void>;
+  disabled?: boolean | ((settings: SettingValues) => boolean);
+  confirm?: string | ConfirmActionOptions;
+  onSelect: (settings: SettingValues) => void | Promise<void>;
+}
+
+interface RunSettingActionOptions {
+  settings?: SettingValues;
+  inline?: boolean;
+  onStart?: () => void;
 }
 
 type SettingDescription = SettingsDescription;
@@ -103,6 +111,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
+  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause, SettingValues,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

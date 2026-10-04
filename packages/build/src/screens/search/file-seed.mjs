@@ -1,6 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { UNKNOWN } from '../literal/literal.constants.mjs';
+import { readDefaultResult } from '../literal/read-default-result.mjs';
 import { readExport } from '../literal/read-export.mjs';
 import { entrySeeds } from './entry-seeds.mjs';
 import { normaliseKeywords } from './normalise-keywords.mjs';
@@ -12,9 +14,15 @@ const kept = (value) => value !== undefined && !(Array.isArray(value) && value.l
 /** @param {Record<string, unknown>} seed */
 const compact = (seed) => Object.fromEntries(Object.entries(seed).filter(([, value]) => kept(value)));
 
+/** @param {string} source */
+const settingsValue = (source) => {
+  const value = readExport(source, 'default');
+  return value === UNKNOWN ? readDefaultResult(source) : value;
+};
+
 /** @param {string} source @param {import('../scan-screens.mjs').ScreenFile} file */
 const contentOf = (source, file) => {
-  if (file.kind === 'settings') return { sections: settingsSeeds(readExport(source, 'default')) };
+  if (file.kind === 'settings') return { sections: settingsSeeds(settingsValue(source)) };
   if (file.kind === 'custom' && file.hasSearchEntries) return { entries: entrySeeds(readExport(source, 'searchEntries')) ?? [] };
   return {};
 };

@@ -1,13 +1,10 @@
 /* @layer renderer-shell @kind types */
-type ConfirmFocus = 'confirm' | 'cancel';
-
 interface ConfirmDialogConfig {
   title: string;
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: 'danger' | 'default';
-  focus?: ConfirmFocus;
   onConfirm: () => void;
   onCancel?: () => void;
 }
@@ -26,4 +23,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { ConfirmActionOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmFocus, DialogState };
+export type { ConfirmActionOptions, ConfirmDeleteOptions, ConfirmDialogConfig, DialogState };

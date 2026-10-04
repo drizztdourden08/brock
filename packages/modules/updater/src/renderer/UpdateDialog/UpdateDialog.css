@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind style */
 
-.update-dialog.dialog {
+.update-dialog {
   max-width: calc(var(--size-640) - var(--size-40));
 }
 
@@ -13,14 +13,4 @@
 
 .update-dialog__version {
   text-align: center;
-}
-
-.update-dialog__progress {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.update-dialog__progress-text {
-  align-self: center;
 }

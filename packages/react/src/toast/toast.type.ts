@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind types */
-import type { ToastItem, ToastVariant } from '@drizztdourden08/tessera/primitives';
+import type { ToastAction, ToastItem, ToastVariant } from '@drizztdourden08/tessera/primitives';
 
 interface ToastOptions {
   variant?: ToastVariant;
   duration?: number;
+  action?: ToastAction;
 }
 
 interface ToastState {

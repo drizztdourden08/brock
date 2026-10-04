@@ -14,10 +14,16 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   tone?: 'neutral' | 'danger';
 }
 
-interface TitleBarMenuSpec extends TitleBarItemBase {
-  kind: 'menu';
+interface TitleBarMenuGroup {
+  label?: string;
   items: readonly MenuEntry[];
 }
+
+interface TitleBarMenuBase extends TitleBarItemBase {
+  kind: 'menu';
+}
+
+type TitleBarMenuSpec = TitleBarMenuBase & ({ items: readonly MenuEntry[]; groups?: undefined } | { groups: readonly TitleBarMenuGroup[]; items?: undefined });
 
 interface TitleBarStatusSpec extends TitleBarItemBase {
   kind: 'status';
@@ -38,19 +44,7 @@ interface TitleBarItemEntry {
   source: TitleBarItemSource;
 }
 
-interface TitleBarMenuOpen {
-  id: string;
-  items: readonly MenuEntry[];
-  anchor: HTMLElement | null;
-}
-
-interface TitleBarMenuState {
-  open: TitleBarMenuOpen | null;
-  show: (open: TitleBarMenuOpen) => void;
-  hide: () => void;
-}
-
 export type {
-  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuSpec, TitleBarMenuState,
+  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
   TitleBarStatusSpec,
 };

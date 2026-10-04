@@ -20,10 +20,9 @@ interface PoppedWindowControls {
 interface WidgetWindowOptionsProps {
   id: string;
   definition: WidgetDef | undefined;
-  anchor: HTMLElement;
   frame: WidgetFrame;
   own: PoppedWindowControls;
-  onClose: () => void;
+  defaultOpen: boolean;
 }
 
 interface ReviewOptionsRequest {

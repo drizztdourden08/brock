@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { ProcessMetric } from '@drizztdourden08/brock-core';
-import type { StackedBarSegment } from '@drizztdourden08/tessera/composites';
+import type { StackedBarSegment } from '@drizztdourden08/tessera/primitives';
 import { MAIN_WINDOW, MEMORY_GROUPS } from '../PerformanceWidget.constants';
 import type { MemoryGroupId } from '../PerformanceWidget.type';
 

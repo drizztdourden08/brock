@@ -1,14 +1,13 @@
 /* @layer renderer-shell @kind logic */
-import { createElement } from 'react';
 import type { SettingsSectionData, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
 import type { DataDomainDef } from '@drizztdourden08/brock-core';
 import { formatBytes } from '@drizztdourden08/brock-core';
-import { SettingActions } from '../../../settings/SettingsLayout/sub-components/SettingActions';
+import { rowActions } from '../../../settings/SettingsLayout/behavior/row-actions';
 import type { ActionRowInput, StorageSectionsInput } from '../StoragePage.type';
 import { domainActions } from './domain-actions';
 
 const actionRow = ({ id, title, description, hint, actions }: ActionRowInput): SettingsSectionRow => ({
-  id, title, description, hint, input: { kind: 'custom', control: createElement(SettingActions, { actions }) },
+  id, title, description, hint, actions: rowActions(actions),
 });
 
 const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSectionRow => {

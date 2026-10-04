@@ -23,13 +23,16 @@ const move = (source, map = CONFIG_MAP) => configKeyMoves(source, map, CONTEXT);
 
 const made = [];
 
+const jsonText = (value) => `${JSON.stringify(value, null, 2)}\n`;
+
 const repo = (files) => {
   const root = mkdtempSync(join(tmpdir(), 'brock-config-keys-'));
   made.push(root);
-  for (const [file, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), typeof text === 'string' ? text : `${JSON.stringify(text, null, 2)}\n`);
-  }
+  Object.entries(files).forEach(([file, value]) => {
+    const path = join(root, file);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, typeof value === 'string' ? value : jsonText(value));
+  });
   return root;
 };
 

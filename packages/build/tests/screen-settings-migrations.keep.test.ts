@@ -1,8 +1,8 @@
 /* @layer tooling-scripts @kind test */
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 import { collectMigrations, runMigrations, selectMigrations } from '../src/upgrade/index.mjs';
 
 const release = () => selectMigrations(collectMigrations([]), { from: '0.9.0', to: '0.10.0' });
@@ -45,21 +45,19 @@ const SCREEN = [
   '',
 ].join('\n');
 
-const roots: string[] = [];
+const FILES: Readonly<Record<string, string>> = { 'screens/game/general.settings.ts': PAGE, 'SyncTab.tsx': TAB, 'saves.tsx': SCREEN };
 
-afterEach(() => {
-  roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true }));
-});
-
-const sample = (): string => {
+const migrateSample = async () => {
   const root = mkdtempSync(join(tmpdir(), 'brock-settings-rows-'));
-  roots.push(root);
-  const files: Record<string, string> = { 'package.json': '{"name":"x"}', 'src/screens/game/general.settings.ts': PAGE, 'src/SyncTab.tsx': TAB, 'src/saves.tsx': SCREEN };
-  for (const [file, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), text);
+  try {
+    writeFileSync(join(root, 'package.json'), '{"name":"x"}');
+    mkdirSync(join(root, 'src', 'screens', 'game'), { recursive: true });
+    Object.entries(FILES).forEach(([file, text]) => writeFileSync(join(root, 'src', file), text));
+    const run = await runMigrations(root, release());
+    return { run, page: readFileSync(join(root, 'src', 'screens', 'game', 'general.settings.ts'), 'utf8') };
+  } finally {
+    rmSync(root, { recursive: true, force: true });
   }
-  return root;
 };
 
 describe('the 0.10.0 settings row and screen migrations', () => {
@@ -68,9 +66,8 @@ describe('the 0.10.0 settings row and screen migrations', () => {
   });
 
   it('leaves a to-do on each row without a hint or a description, naming the fields, and changes no file', async () => {
-    const root = sample();
-    const run = await runMigrations(root, release());
-    expect(readFileSync(join(root, 'src/screens/game/general.settings.ts'), 'utf8')).toBe(PAGE);
+    const { run, page } = await migrateSample();
+    expect(page).toBe(PAGE);
     const rows = run.todos.filter((todo) => todo.migration === 'settings-row-hints');
     expect(rows.map(({ file, line }) => `${file}:${line}`)).toEqual(['src/SyncTab.tsx:5', 'src/screens/game/general.settings.ts:5', 'src/screens/game/general.settings.ts:7']);
     const [tab, fullscreen, scale] = rows.map(({ message }) => message);
@@ -80,7 +77,7 @@ describe('the 0.10.0 settings row and screen migrations', () => {
   });
 
   it('leaves a to-do on each screen defined without an icon', async () => {
-    const run = await runMigrations(sample(), release());
+    const { run } = await migrateSample();
     const screens = run.todos.filter((todo) => todo.migration === 'screen-icons');
     expect(screens.map(({ file, line }) => `${file}:${line}`)).toEqual(['src/saves.tsx:3']);
     expect(screens[0]?.message).toContain('defineScreen now needs icon');

@@ -25,7 +25,7 @@ npx brock structure --check
 pnpm lint
 ```
 
-`brock adopt` also writes the knip entries a thread repo needs (`brock.workspace.mjs`, `.worktrees/**` ignored, `brock-thread` ignored when linked) and appends the generated outputs to `.gitignore` (`build/icons`, `build/splash`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`). `brock check` and `brock sync` at the root run once per app that `brock.workspace.mjs` targets.
+`brock adopt` also writes the knip entries a thread repo needs (`brock.workspace.mjs`, `brock-thread` ignored when linked) and appends to `.gitignore` the dot-folder rule (every folder that needs ignoring is a dot-folder: `.*/` ignores them all, and each tracked dot-folder gets a `!` line) and the generated outputs (`build/icons`, `build/splash`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`). `brock check` and `brock sync` at the root run once per app that `brock.workspace.mjs` targets.
 
 `brock adopt` never overwrites an existing file unless `--force` is given, and never touches an existing `pnpm-workspace.yaml` or `.npmrc`. A repo that is not a Brock app uses only this: the lint stack and the structure check do not need `bootstrapApp` or `BrockApp`. A single-package repo (Tessera: `src/` at the root, no `packages/`) is checked as one package.
 
@@ -70,7 +70,7 @@ The verbs then work the same in every repo:
 <repo> pr push | open | status [name]                push and open put work on a public repo and ask
 ```
 
-A plugin adds verbs, targets and steps through `definePlugin`: `@drizztdourden08/brock-plugin-snes` for a SNES port, a repo's own plugin package for its own tooling, and the assistant plugin that lives in the ai-config repo. Everything a person and an assistant both do is in the core; what only an assistant does is in that one plugin.
+A plugin adds verbs, targets and steps through `definePlugin`: `@drizztdourden08/brock-plugin-snes` for a SNES port, a repo's own plugin package for its own tooling, and the assistant plugin that lives in the assistant config repo. Besides the plugins `brock.workspace.mjs` lists and the `brock-plugin-*` packages in `package.json`, the thread CLI loads every `tools/brock-plugin-*/index.mjs` it finds inside a top-level dot-folder of the repo. Everything a person and an assistant both do is in the core; what only an assistant does is in that one plugin.
 
 ## pnpm
 

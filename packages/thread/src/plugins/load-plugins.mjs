@@ -1,11 +1,11 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const AI_PLUGIN_DIRS = ['.claude/tools/brock-plugin-ai', '.ai/tools/brock-plugin-ai'];
 const PLUGIN_PACKAGE = /brock-plugin-/;
+const PLUGIN_FOLDER = /^brock-plugin-/;
 
 const importPlugin = async (rootDir, entry) => {
   if (typeof entry !== 'string') return entry;
@@ -27,10 +27,28 @@ const declaredPluginPackages = (rootDir) => {
   }
 };
 
+const foldersIn = (dir) => {
+  try {
+    return readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  } catch {
+    return [];
+  }
+};
+
+const dotFolderPlugins = (rootDir) => {
+  const byName = new Map();
+  for (const dot of foldersIn(rootDir).filter((name) => name.startsWith('.') && name !== '.git')) {
+    const tools = join(rootDir, dot, 'tools');
+    for (const name of foldersIn(tools).filter((folder) => PLUGIN_FOLDER.test(folder))) {
+      if (!byName.has(name) && existsSync(join(tools, name, 'index.mjs'))) byName.set(name, join(tools, name));
+    }
+  }
+  return [...byName.values()];
+};
+
 const discoveredEntries = (rootDir, listed) => {
   const fromPackages = declaredPluginPackages(rootDir).filter((name) => !listed.includes(name));
-  const aiDir = AI_PLUGIN_DIRS.map((dir) => join(rootDir, dir)).find((dir) => existsSync(join(dir, 'index.mjs')));
-  return [...fromPackages, ...(aiDir ? [aiDir] : [])];
+  return [...fromPackages, ...dotFolderPlugins(rootDir)];
 };
 
 const mergeVerbs = (plugins) => {

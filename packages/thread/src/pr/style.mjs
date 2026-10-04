@@ -9,7 +9,7 @@ const POLICY = [
     why: 'carries [sync-ack]. That marker is the maintainer\'s approval to give and never the assistant\'s to type. Hand the drift report back instead.',
   },
   {
-    test: /co-authored-by:|generated with \[?claude|\u{1F916} generated/iu,
+    test: /^\s*co-authored-by:|^\W*generated (?:with|by)\b|\u{1F916}/imu,
     why: 'carries an attribution or co-author line. This project does not want them in commit messages or PR descriptions. Delete the line.',
   },
 ];

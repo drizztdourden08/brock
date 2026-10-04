@@ -56,6 +56,8 @@ Usage:
                              replays only the renames. --report writes the touched files and numbered to-dos as JSON
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
+  brock knip [args]          knip with every git-ignored path under ignore, so it also works in a worktree
+                             inside a dot-folder; every word after knip reaches it
   brock platform list | add <id | bundle>... | remove <id | bundle>...
                              the platforms in brock.config.ts targets: windows, macos, linux, android, web
                              (ios is reserved), bundles desktop and mobile. add runs each platform's scaffold
@@ -120,8 +122,14 @@ const runTesseraWords = async (args) => {
   return runTesseraCommand({ args, cwd: process.cwd() });
 };
 
+const runKnipWords = async (args) => {
+  const { runKnip } = await import('../src/commands/knip.mjs');
+  return runKnip({ rootDir: process.cwd(), args });
+};
+
 const main = async () => {
   if (process.argv[2] === 'tessera') return runTesseraWords(process.argv.slice(3));
+  if (process.argv[2] === 'knip') return runKnipWords(process.argv.slice(3));
   const { values, positionals, passthrough } = parseCli(process.argv.slice(2));
   if (values.version) {
     console.log(OWN_PACKAGE.version);

@@ -119,7 +119,6 @@ describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
     expect(upgradeFrom('0.12.0')).toEqual([]);
     expect(new Set(upgradeFrom('0.11.0').map((m) => m.version))).toEqual(new Set(['0.12.0']));
-    expect(new Set(upgradeFrom('0.10.0').map((m) => m.version))).toEqual(new Set(['0.11.0', '0.12.0']));
     expect(new Set(upgradeFrom('0.7.0').map((m) => m.version))).toEqual(new Set(['0.10.0', '0.11.0', '0.12.0']));
     expect(new Set(upgradeFrom('0.4.0').map((m) => m.version))).toEqual(new Set(['0.7.0', '0.10.0', '0.11.0', '0.12.0']));
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);

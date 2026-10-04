@@ -106,7 +106,7 @@ interface WidgetWindowSummary {
   id: string;
   visible: boolean;
   sync: boolean;
-  group: string | null;
+  cluster: number;
 }
 
 interface ProcessDiagnostics {

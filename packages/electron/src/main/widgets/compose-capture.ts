@@ -5,7 +5,7 @@ import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { getMainWindow } from '../window/get-main-window';
 import { boundsOf } from './bounds-of';
 import { boundsUnion } from './bounds-union';
-import { groupLayouts } from './group-layouts';
+import { clusterLayouts } from './cluster-layouts';
 import { liveEntries } from './live-entries';
 import { COMPOSE_MAX, COMPOSE_MARGIN, COMPOSE_SHADE } from './widget-windows.constants';
 import type { CaptureSheet } from './widget-windows.type';
@@ -42,7 +42,7 @@ const paste = async (sheet: CaptureSheet, win: BrowserWindow): Promise<void> => 
 
 const composeCapture = async (): Promise<Buffer | null> => {
   const main = getMainWindow();
-  const backdrops = [...groupLayouts.values()].flatMap((layout) => (layout.backdrop && !layout.backdrop.isDestroyed() ? [layout.backdrop] : []));
+  const backdrops = clusterLayouts.all().flatMap((layout) => (layout.backdrop && !layout.backdrop.isDestroyed() ? [layout.backdrop] : []));
   const widgets = liveEntries().filter(([, entry]) => entry.win.isVisible()).sort(([, a], [, b]) => a.zStamp - b.zStamp).map(([, entry]) => entry.win);
   const windows = [...(main && !main.isDestroyed() ? [main] : []), ...widgets];
   const region = boundsUnion([...backdrops, ...windows].map(boundsOf));

@@ -1,21 +1,24 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
-import { activeGroup } from './active-group';
+import { activeCluster } from './active-cluster';
 import { boundsOf } from './bounds-of';
 import { closeAllWidgetWindows } from './close-all-widget-windows';
+import { clusterTow } from './cluster-tow';
+import { endMove } from './end-move';
 import { flushWidgetBounds } from './flush-widget-bounds';
 import { isMainNormal } from './is-main-normal';
-import { followMainGroup } from './follow-main-group';
+import { followMainCluster } from './follow-main-cluster';
 import { mainSnap } from './main-snap';
 import { resizeSession } from './resize-session';
+import { towCluster } from './tow-cluster';
 import { towHold } from './tow-hold';
-import { towLinked } from './tow-linked';
 import { widgetVisibility } from './widget-visibility';
+import { windowGuide } from './window-guide';
 import { zStamps } from './z-stamps';
 import { MAIN_ANCHOR } from './widget-windows.constants';
 
 const parkAlone = (): void => {
-  if (activeGroup(MAIN_ANCHOR) === null) widgetVisibility.park();
+  if (!activeCluster(MAIN_ANCHOR)) widgetVisibility.park();
 };
 
 const trackBounds = (main: BrowserWindow): void => {
@@ -32,12 +35,12 @@ const trackBounds = (main: BrowserWindow): void => {
       return;
     }
     const now = boundsOf(main);
-    if (!towHold.held() && !quiet) towLinked(MAIN_ANCHOR, normal, now);
+    if (!towHold.held() && !quiet) towCluster(MAIN_ANCHOR, normal, now);
     normal = now;
     widgetVisibility.unpark();
   };
   const schedule = (): void => {
-    resized ||= resizeSession.active();
+    resized ||= resizeSession.active() || clusterTow.active();
     if (pending) return;
     pending = true;
     setImmediate(tow);
@@ -71,14 +74,18 @@ const trackShown = (main: BrowserWindow): void => {
 const followMainWindow = (main: BrowserWindow): void => {
   trackBounds(main);
   trackShown(main);
-  followMainGroup(main);
+  followMainCluster(main);
   main.on('will-move', (event, proposed) => {
+    windowGuide.touch(MAIN_ANCHOR, 'moving');
     const wanted = mainSnap.dragTo(main, proposed);
     if (!wanted) return;
     event.preventDefault();
     main.setBounds(wanted);
   });
-  main.on('moved', mainSnap.settle);
+  main.on('moved', () => {
+    windowGuide.end(MAIN_ANCHOR);
+    setImmediate(() => endMove(MAIN_ANCHOR));
+  });
   main.on('close', flushWidgetBounds);
   main.on('closed', closeAllWidgetWindows);
 };

@@ -8,6 +8,6 @@ export type { InvokeContract, SendContract, EventContract, IpcNamespaces } from 
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
 export type {
   PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
-  WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
-  WidgetWindowState, WindowGroupAction, WindowGuideMode, WindowGuideState,
+  WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
+  WidgetWindowState, WindowClusterAction, WindowGuideMode, WindowGuideState,
 } from './widget-window.type';

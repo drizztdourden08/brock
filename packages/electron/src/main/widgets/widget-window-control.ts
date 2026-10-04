@@ -8,8 +8,10 @@ import { createBoundsReporter } from './create-bounds-reporter';
 import { entryFacts } from './entry-facts';
 import { liveEntries } from './live-entries';
 import { mainOnTop } from './main-on-top';
+import { releaseLinks } from './release-links';
 import { tellMain } from './tell-main';
 import { tellWindow } from './tell-window';
+import { widgetRuntime } from './widget-runtime';
 import { widgetWindowEntries } from './widget-window-entries';
 import { windowStateOf } from './window-state-of';
 import { zStamps } from './z-stamps';
@@ -22,7 +24,7 @@ const liveEntry = (id: string): WidgetWindowEntry | null => {
 
 const register = (id: string, win: BrowserWindow, popped?: WidgetWindowOpen): WidgetWindowEntry => {
   const entry: WidgetWindowEntry = {
-    win, ...entryFacts(popped), last: boundsOf(win), towed: false, grab: null, hiddenWithApp: false, parked: false, closing: null,
+    win, ...entryFacts(popped), last: boundsOf(win), towed: false, hiddenWithApp: false, parked: false, closing: null,
     report: createBoundsReporter(id, win), zStamp: zStamps.next(), over: false, faded: false, square: false,
   };
   widgetWindowEntries.set(id, entry);
@@ -35,7 +37,7 @@ const register = (id: string, win: BrowserWindow, popped?: WidgetWindowOpen): Wi
 const unregister = (id: string, win: BrowserWindow): void => {
   if (widgetWindowEntries.get(id)?.win !== win) return;
   widgetWindowEntries.delete(id);
-  for (const entry of widgetWindowEntries.values()) if (entry.link?.to === id) entry.link = null;
+  releaseLinks(id, !widgetRuntime.quitting);
 };
 
 const setPin = (id: string, mode: WidgetPinMode): WidgetPinMode => {

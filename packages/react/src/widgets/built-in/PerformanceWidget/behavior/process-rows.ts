@@ -11,7 +11,7 @@ const processRow = (metric: ProcessMetric): PerformanceRow => ({
 
 const windowRow = (window: WidgetWindowSummary): PerformanceRow => ({
   label: `Widget window ${window.id}`,
-  value: [window.visible ? 'shown' : 'hidden', window.sync ? 'synced' : 'independent', window.group ? `group ${window.group}` : 'no group'].join(', '),
+  value: [window.visible ? 'shown' : 'hidden', window.sync ? 'synced' : 'independent', window.cluster > 1 ? `snapped with ${window.cluster - 1} more` : 'not snapped'].join(', '),
 });
 
 const processRows = (sample: ProcessSample | null): PerformanceRow[] => {

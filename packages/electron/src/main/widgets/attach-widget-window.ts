@@ -5,13 +5,14 @@ import { getMainWindow } from '../window/get-main-window';
 import { boundsOf } from './bounds-of';
 import { cursorInApp } from './cursor-in-app';
 import { dragBounds } from './drag-bounds';
-import { followGroup } from './follow-group';
+import { endMove } from './end-move';
 import { endResize } from './end-resize';
+import { followCluster } from './follow-cluster';
 import { onWillResize } from './on-will-resize';
 import { resizeSession } from './resize-session';
 import { settleWindow } from './settle-window';
+import { towCluster } from './tow-cluster';
 import { towHold } from './tow-hold';
-import { towLinked } from './tow-linked';
 import { watchDragIn } from './watch-drag-in';
 import { watchModifiers } from './watch-modifiers';
 import { widgetRuntime } from './widget-runtime';
@@ -23,7 +24,7 @@ import type { WidgetWindowEntry } from './widget-windows.type';
 const followLive = (id: string, entry: WidgetWindowEntry): void => {
   if (entry.towed || entry.win.isDestroyed()) return;
   const now = boundsOf(entry.win);
-  if (!towHold.held() && !resizeSession.active()) towLinked(id, entry.last, now);
+  if (!towHold.held() && !resizeSession.active()) towCluster(id, entry.last, now);
   entry.last = now;
 };
 
@@ -35,20 +36,25 @@ const tellClosed = (id: string, entry: WidgetWindowEntry): void => {
 const watchManipulation = (id: string, win: BrowserWindow): void => {
   win.on('will-move', (event, proposed) => {
     if (cursorInApp(id, win)) return;
-    windowGuide.touch('moving');
+    windowGuide.touch(id, 'moving');
     const wanted = dragBounds(id, proposed);
     if (!wanted) return;
     event.preventDefault();
     win.setBounds(wanted);
   });
   win.on('will-resize', (event, proposed, details) => {
-    windowGuide.touch('resizing');
+    windowGuide.touch(id, 'resizing');
     onWillResize(id, win, { event, proposed, edge: details.edge });
   });
-  win.on('moved', windowGuide.end);
+  win.on('moved', () => {
+    settleWindow(id);
+    endMove(id);
+    windowGuide.end(id);
+  });
   win.on('resized', () => {
     endResize(id);
-    windowGuide.end();
+    settleWindow(id);
+    windowGuide.end(id);
   });
 };
 
@@ -58,20 +64,20 @@ const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowE
   };
   watchManipulation(id, win);
   win.on('move', () => followLive(id, entry));
-  win.on('moved', () => settleWindow(id));
-  win.on('resized', () => settleWindow(id));
   win.on('focus', raise);
   win.on('show', raise);
   win.on('close', () => entry.report.flush());
   win.on('closed', () => {
     endResize(id);
+    endMove(id);
+    windowGuide.end(id);
     entry.report.cancel();
     widgetWindowControl.unregister(id, win);
     tellClosed(id, entry);
   });
   watchDragIn(id, win, entry);
   watchModifiers(win);
-  followGroup(id, win);
+  followCluster(id, win);
 };
 
 export { attachWidgetWindow };

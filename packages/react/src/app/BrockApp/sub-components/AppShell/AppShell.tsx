@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { WindowGuideOverlay } from '@drizztdourden08/tessera/composites';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { instanceName } from '../../../../host/instance-name';
 import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
@@ -12,7 +11,7 @@ import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
-import { useWindowGuide } from '../../../../widgets/useWindowGuide';
+import { WindowGuide } from '../../../../widgets/WindowGuide';
 import { useWindowSquare } from '../../../../widgets/useWindowSquare';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
@@ -49,7 +48,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const fullMenu = useShellMenu(moduleMenu, railed);
   const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();
-  const guide = useWindowGuide();
   const actionIds = JSON.stringify(actions.map((action) => action.id));
   const barMenu = useMemo(() => withoutActionEntries(fullMenu, JSON.parse(actionIds) as string[]), [fullMenu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
@@ -77,7 +75,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
       </Box>
       <ConfirmDialog />
-      <WindowGuideOverlay open={guide.open} mode={guide.mode} snapping={guide.snapping} />
+      <WindowGuide />
       <StandardOverlays menu={fullMenu} actions={searchActions} />
     </Box>
   );

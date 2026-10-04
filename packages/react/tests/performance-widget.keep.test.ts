@@ -24,7 +24,7 @@ const PROCESSES: ProcessDiagnostics = {
   main: { rssBytes: 80 * MIB, heapUsedBytes: 10 * MIB, heapTotalBytes: 20 * MIB, externalBytes: MIB },
   uptimeSeconds: 3700,
   windowCount: 2,
-  widgetWindows: [{ id: 'logs', visible: true, sync: true, group: '1' }],
+  widgetWindows: [{ id: 'logs', visible: true, sync: true, cluster: 2 }],
   ipcCalls: 40,
   versions: { node: '22', v8: '13', chrome: '140', electron: '38' },
   gpuFeatures: { gpu_compositing: 'enabled' },
@@ -72,7 +72,7 @@ describe('performanceGroups and the snapshot', () => {
     expect(rows['IPC calls']).toBe('3.3/s, 40 total');
     expect(rows['Uptime']).toBe('1h 1m');
     expect(rows['renderer 11']).toBe('2.5% CPU, 50.0 MB');
-    expect(rows['Widget window logs']).toBe('shown, synced, group 1');
+    expect(rows['Widget window logs']).toBe('shown, synced, snapped with 1 more');
   });
 
   it('copies every shown row under a dated title', () => {

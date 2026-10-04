@@ -16,7 +16,7 @@ const checkAreas = async (tour: StepTour, id: string): Promise<void> => {
   const back = rescued.outside.length === 0 && rescued.bounds !== null && rescued.bounds.x !== LOST_AT;
   const saved = back && await soon(() => sameRect(poppedEntry(id)?.bounds, rescued.bounds));
   tour.check('pop-out-rescued', saved, `a lost "${id}" window came back into a work area and its bounds were saved`, `a lost "${id}" window stayed out of reach or its bounds were not saved`);
-  await probe({ kind: 'drag', id, bounds: own });
+  await probe({ kind: 'drag', alone: true, id, bounds: own });
 };
 
 export { checkAreas };

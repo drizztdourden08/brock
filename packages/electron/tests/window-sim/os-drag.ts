@@ -4,6 +4,8 @@ import { cursor } from './fake-electron';
 import type { FakeWindow } from './fake-electron';
 import type { DragEdge, DragOptions, DragStep, Rect, SimInsets } from './window-sim.type';
 
+const MOVE_GRAB = { x: 80, y: 10 } as const;
+
 const sidesOf = (edge: DragEdge) => ({ left: edge.includes('left'), right: edge.includes('right'), top: edge.includes('top'), bottom: edge.includes('bottom') });
 
 const outer = (b: Rect, i: SimInsets): Rect => ({ x: b.x - i.left, y: b.y - i.top, width: b.width + i.left + i.right, height: b.height + i.top + i.bottom });
@@ -82,7 +84,30 @@ const resizeDrag = async (win: FakeWindow, edge: DragEdge, path: readonly DragSt
   await vi.advanceTimersByTimeAsync(1000);
 };
 
+const moveDrag = async (win: FakeWindow, path: readonly DragStep[], options: DragOptions = {}): Promise<void> => {
+  const stepMs = options.stepMs ?? 16;
+  const start = { ...win.bounds };
+  const grab = { x: start.x + MOVE_GRAB.x, y: start.y + MOVE_GRAB.y };
+  for (const [index, step] of [{ dx: 0, dy: 0 }, ...path].entries()) {
+    cursor.x = grab.x + step.dx;
+    cursor.y = grab.y + step.dy;
+    const proposed = { ...start, x: start.x + step.dx, y: start.y + step.dy };
+    const event = {
+      defaultPrevented: false,
+      preventDefault(): void {
+        this.defaultPrevented = true;
+      },
+    };
+    win.emit('will-move', event, { ...proposed });
+    if (!event.defaultPrevented) win.place(proposed);
+    await vi.advanceTimersByTimeAsync(stepMs);
+    options.onStep?.(index);
+  }
+  win.emit('moved');
+  await vi.advanceTimersByTimeAsync(1000);
+};
+
 const line = (to: DragStep, count: number): DragStep[] =>
   Array.from({ length: count }, (_, index) => ({ dx: Math.round((to.dx * (index + 1)) / count), dy: Math.round((to.dy * (index + 1)) / count) }));
 
-export { line, resizeDrag };
+export { line, moveDrag, resizeDrag };

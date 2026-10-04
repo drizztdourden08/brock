@@ -1,18 +1,31 @@
 /* @layer electron-main @kind logic */
 import type { WindowGuideMode, WindowGuideState } from '@drizztdourden08/brock-core';
 import { emit } from '../ipc/emit';
-import { getMainWindow } from '../window/get-main-window';
+import { anyWindow } from './any-window';
 import { modifierState } from './modifier-state';
-import { GUIDE_IDLE_MS } from './widget-windows.constants';
+import { widgetWindowEntries } from './widget-window-entries';
+import { CLOSED_GUIDE, GUIDE_IDLE_MS } from './widget-windows.constants';
 
-let state: WindowGuideState = { open: false, mode: 'moving', snapping: true };
+let state: WindowGuideState = CLOSED_GUIDE;
+let holder: string | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
 
-const send = (next: WindowGuideState): void => {
-  if (next.open === state.open && next.mode === state.mode && next.snapping === state.snapping) return;
+const snappingFor = (id: string, mode: WindowGuideMode): boolean => {
+  const own = widgetWindowEntries.get(id)?.snap ?? true;
+  return mode === 'moving' ? own : own && !modifierState.ctrl;
+};
+
+const tell = (id: string, next: WindowGuideState): void => {
+  const win = anyWindow(id);
+  if (win) emit(win, 'widget:guide', next);
+};
+
+const send = (id: string, next: WindowGuideState): void => {
+  if (holder !== null && holder !== id && state.open) tell(holder, { ...state, open: false });
+  const same = holder === id && next.open === state.open && next.mode === state.mode && next.snapping === state.snapping;
+  holder = id;
   state = next;
-  const main = getMainWindow();
-  if (main && !main.isDestroyed()) emit(main, 'widget:guide', state);
+  if (!same) tell(id, next);
 };
 
 const clearIdle = (): void => {
@@ -20,22 +33,23 @@ const clearIdle = (): void => {
   timer = null;
 };
 
-const end = (): void => {
+const end = (id: string): void => {
+  if (holder !== id) return;
   clearIdle();
-  send({ ...state, open: false });
+  send(id, { ...state, open: false });
 };
 
-const touch = (mode: WindowGuideMode): void => {
-  send({ open: true, mode, snapping: !modifierState.ctrl });
+const touch = (id: string, mode: WindowGuideMode): void => {
+  send(id, { open: true, mode, snapping: snappingFor(id, mode) });
   if (process.platform !== 'linux') return;
   clearIdle();
-  timer = setTimeout(end, GUIDE_IDLE_MS);
+  timer = setTimeout(() => end(id), GUIDE_IDLE_MS);
 };
 
 const refresh = (): void => {
-  if (state.open) send({ ...state, snapping: !modifierState.ctrl });
+  if (holder !== null && state.open) send(holder, { ...state, snapping: snappingFor(holder, state.mode) });
 };
 
-const windowGuide = { touch, end, refresh, current: (): WindowGuideState => state };
+const windowGuide = { touch, end, refresh, current: (): WindowGuideState => state, holder: (): string | null => (state.open ? holder : null) };
 
 export { windowGuide };

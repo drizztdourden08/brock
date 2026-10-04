@@ -16,7 +16,7 @@ const checkBoundsRoundTrip = async (tour: StepTour, id: string): Promise<void> =
     tour.check('pop-out-bounds-saved', false, '', `no bounds came back for the app or the "${id}" window`);
     return;
   }
-  const moved = (await probe({ kind: 'drag', id, bounds: { ...own, x: main.x + main.width + FREE_GAP, y: main.y + EDGE_DROP } })).bounds;
+  const moved = (await probe({ kind: 'drag', alone: true, id, bounds: { ...own, x: main.x + main.width + FREE_GAP, y: main.y + EDGE_DROP } })).bounds;
   const saved = await soon(() => sameRect(poppedEntry(id)?.bounds, moved));
   tour.check('pop-out-bounds-saved', saved, `moving the "${id}" window reached the layout`, `the layout kept stale bounds after the "${id}" window moved`);
   profileViews.flush();

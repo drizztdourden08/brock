@@ -23,7 +23,7 @@ const checkSnapAndTow = async (tour: StepTour, id: string): Promise<void> => {
   const start = (await probe({ kind: 'main' })).bounds;
   const own = (await probe({ kind: 'window', id })).bounds;
   if (!start || !own) return;
-  const snapped = await probe({ kind: 'drag', id, bounds: { ...own, x: start.x + start.width + SNAP_NEAR, y: start.y + EDGE_DROP } });
+  const snapped = await probe({ kind: 'drag', alone: true, id, bounds: { ...own, x: start.x + start.width + SNAP_NEAR, y: start.y + EDGE_DROP } });
   const linked = snapped.link?.to === MAIN_LINK && snapped.link.edge === 'right' && snapped.bounds?.x === start.x + start.width;
   tour.check('pop-out-snaps', linked, `the "${id}" window snapped onto the app's right edge and linked to it`, `the "${id}" window did not snap onto the app's right edge`);
   if (!linked || !snapped.bounds) return;

@@ -1,7 +1,7 @@
 /* @layer core @kind types */
 import type {
   PoppedWidgetPatch, WidgetDockBack, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeRequest, WidgetProbeResult, WidgetSettingsWire, WidgetSlice,
-  WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState, WindowGuideState,
+  WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState, WindowGuideState,
 } from './widget-window.type';
 
 interface WidgetInvokeContract {
@@ -9,7 +9,6 @@ interface WidgetInvokeContract {
   'widget:listPopped': () => Promise<WidgetWindowInfo[]>;
   'widget:setPin': (id: string, mode: WidgetPinMode) => Promise<WidgetPinMode>;
   'widget:getWindowState': (id: string) => Promise<WidgetWindowState | null>;
-  'widget:getMainGroup': () => Promise<WidgetWindowGroup | null>;
   'review:setWidgetPref': (id: string, key: string, value: unknown) => Promise<boolean>;
   'review:widgetProbe': (request: WidgetProbeRequest) => Promise<WidgetProbeResult>;
   'review:captureWidget': (id: string, step: string) => Promise<string | null>;
@@ -20,8 +19,6 @@ interface WidgetSendContract {
   'widget:dockBack': (id: string, where?: WidgetDockBack) => void;
   'widget:setSnap': (id: string, on: boolean) => void;
   'widget:setSync': (id: string, on: boolean) => void;
-  'widget:setGroup': (id: string, group: WidgetWindowGroup | null) => void;
-  'widget:setMainGroup': (group: WidgetWindowGroup | null) => void;
   'widget:setFrame': (id: string, patch: Partial<WidgetFrameWire>) => void;
   'widget:publish': (slice: WidgetSlice) => void;
   'widget:subscribe': (id: string) => void;
@@ -39,7 +36,6 @@ interface WidgetEventContract {
   'widget:popped': (id: string, patch: PoppedWidgetPatch) => void;
   'widget:frame': (id: string, patch: Partial<WidgetFrameWire>) => void;
   'widget:windowState': (state: WidgetWindowState) => void;
-  'widget:mainGroup': (group: WidgetWindowGroup | null) => void;
   'widget:guide': (state: WindowGuideState) => void;
   'widget:square': (on: boolean) => void;
   'widget:prefs': (id: string, prefs: WidgetPrefsWire) => void;

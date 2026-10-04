@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { createDefaultLayout, getWidgetDefinition, isWidgetOpen, migrateLayout, openWidget, popOutWidget, removeEverywhere } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
+import { dropWindowGroups } from './drop-window-groups';
 import type { WidgetDef, WidgetLayoutState } from './widget.type';
 
 const toggled = (layout: WidgetLayout, id: string, definitions: readonly WidgetDef[]): WidgetLayout =>
@@ -12,7 +13,7 @@ const useWidgetLayoutStore = create<WidgetLayoutState>()((set) => ({
   layout: createDefaultLayout(),
   externalDrag: null,
   setDefinitions: (definitions) => set({ definitions }),
-  replace: (stored) => set({ layout: migrateLayout(stored) }),
+  replace: (stored) => set({ layout: dropWindowGroups(migrateLayout(stored)) }),
   setLayout: (layout) => set({ layout }),
   change: (fn) => set((state) => ({ layout: fn(state.layout) })),
   setExternalDrag: (externalDrag) => set({ externalDrag }),

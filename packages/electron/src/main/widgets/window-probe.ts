@@ -1,12 +1,12 @@
 /* @layer electron-main @kind logic */
 import { BrowserWindow } from 'electron';
-import type { WidgetProbeFacts, WidgetProbeRequest, WidgetWindowBounds, WindowGroupAction } from '@drizztdourden08/brock-core';
+import type { WidgetProbeFacts, WidgetProbeRequest, WidgetWindowBounds, WindowClusterAction, WindowGuideMode } from '@drizztdourden08/brock-core';
 import { getMainWindow } from '../window/get-main-window';
 import { offscreenOrigin } from '../window/offscreen-origin';
 import { anyWindow } from './any-window';
-import { groupLayout } from './group-layout';
-import { groupOf } from './group-of';
-import { groupVisibility } from './group-visibility';
+import { clusterLayout } from './cluster-layout';
+import { clusterVisibility } from './cluster-visibility';
+import { guideDrawn } from './guide-drawn';
 import { modifierState } from './modifier-state';
 import { probeFacts } from './probe-facts';
 import { driveResize } from './drive-resize';
@@ -33,12 +33,17 @@ const resize = async (id: string, bounds: WidgetWindowBounds): Promise<WidgetPro
   return probeFacts(id);
 };
 
-const runGroup = (id: string, action: WindowGroupAction, area?: WidgetWindowBounds): void => {
-  const group = groupOf(id);
-  if (group === null) return;
-  if (action === 'maximize' || action === 'fullscreen') groupLayout.enter(group, action === 'maximize' ? 'maximized' : 'fullscreen', area);
-  else if (action === 'minimize') groupVisibility.minimize(group);
-  else if (!groupLayout.restore(group)) groupVisibility.restore(group);
+const runCluster = (id: string, action: WindowClusterAction, area?: WidgetWindowBounds): void => {
+  if (action === 'maximize' || action === 'fullscreen') clusterLayout.enter(id, action === 'maximize' ? 'maximized' : 'fullscreen', area);
+  else if (action === 'minimize') clusterVisibility.minimize(id);
+  else if (!clusterLayout.restore(id)) clusterVisibility.restore(id);
+};
+
+const guide = async (id: string, mode: WindowGuideMode | null): Promise<WidgetProbeFacts> => {
+  if (mode) windowGuide.touch(id, mode);
+  else windowGuide.end(id);
+  await settled();
+  return probeFacts(id, await guideDrawn());
 };
 
 const pressCtrl = async (ctrl: boolean): Promise<WidgetProbeFacts> => {
@@ -52,17 +57,12 @@ const windowProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeFact
   if (request.kind === 'focusAway') return focusAway(request.id);
   if (request.kind === 'resize') return resize(request.id, request.bounds);
   if (request.kind === 'modifier') return pressCtrl(request.ctrl);
-  if (request.kind === 'group') {
-    runGroup(request.id, request.action, request.area);
+  if (request.kind === 'cluster') {
+    runCluster(request.id, request.action, request.area);
     await settled();
     return probeFacts(request.id);
   }
-  if (request.kind === 'guide') {
-    if (request.mode) windowGuide.touch(request.mode);
-    else windowGuide.end();
-    await settled();
-    return probeFacts(request.id);
-  }
+  if (request.kind === 'guide') return guide(request.id, request.mode);
   return null;
 };
 

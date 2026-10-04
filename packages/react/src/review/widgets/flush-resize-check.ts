@@ -7,7 +7,7 @@ import { sameRect } from './same-rect';
 import { EDGE_SHIFT, FLUSH_DROP, MAIN_LINK, SNAP_NEAR } from './widget-review.constants';
 
 const snapLeftOf = async (id: string, main: WidgetWindowBounds, width: number): Promise<WidgetWindowBounds | null> => {
-  const placed = await probe({ kind: 'drag', id, bounds: { x: main.x - width - SNAP_NEAR, y: main.y + FLUSH_DROP, width, height: main.height - FLUSH_DROP } });
+  const placed = await probe({ kind: 'drag', alone: true, id, bounds: { x: main.x - width - SNAP_NEAR, y: main.y + FLUSH_DROP, width, height: main.height - FLUSH_DROP } });
   return placed.link?.to === MAIN_LINK && placed.link.edge === 'left' ? placed.bounds : null;
 };
 
@@ -58,7 +58,7 @@ const checkFlushResize = async (tour: StepTour, id: string): Promise<void> => {
   const taller = (await probe({ kind: 'window', id })).bounds;
   if (taller) await checkSeam(tour, id, { main, own: taller });
   await probe({ kind: 'main', bounds: main });
-  await probe({ kind: 'drag', id, bounds: own });
+  await probe({ kind: 'drag', alone: true, id, bounds: own });
 };
 
 export { checkFlushResize };

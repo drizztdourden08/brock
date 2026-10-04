@@ -1,35 +1,22 @@
 /* @layer electron-main @kind test */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { line, resizeDrag } from './window-sim/os-drag';
-import { closeScene, openMain, openWidget } from './window-sim/scene';
+import { openMain, openWidget } from './window-sim/scene';
+import { box, simLifecycle } from './window-sim/sim-lifecycle';
 import type { FakeWindow } from './window-sim/fake-electron';
 import type { Rect } from './window-sim/window-sim.type';
 
 vi.mock('electron', async () => (await import('./window-sim/fake-electron')).fakeElectron);
 
-const box = (x: number, y: number, width: number, height: number): Rect => ({ x, y, width, height });
 const MAIN = box(700, 150, 800, 600);
+const sim = simLifecycle(2_100_000_000_000);
 
-let windows: FakeWindow[] = [];
-let clock = 2_100_000_000_000;
-
-const open = (scene: Record<string, Rect>): Record<string, FakeWindow> => {
+const open = <K extends string>(scene: Record<K, Rect>): Record<K | 'main', FakeWindow> => {
   const main = openMain(MAIN);
-  const opened = Object.fromEntries(Object.entries(scene).map(([id, bounds]) => [id, openWidget(id, bounds)]));
-  windows = [main, ...Object.values(opened)];
-  return { main, ...opened };
+  const opened = Object.fromEntries(Object.entries<Rect>(scene).map(([id, bounds]) => [id, openWidget(id, bounds)])) as Record<K, FakeWindow>;
+  sim.track([main, ...Object.values<FakeWindow>(opened)]);
+  return { ...opened, main };
 };
-
-beforeEach(() => {
-  clock += 3_600_000;
-  vi.useFakeTimers({ now: clock });
-});
-
-afterEach(() => {
-  closeScene(windows);
-  windows = [];
-  vi.useRealTimers();
-});
 
 describe('two widgets stacked against the left edge of main', () => {
   const STACK = { top: box(400, 150, 300, 300), bottom: box(400, 450, 300, 300) };

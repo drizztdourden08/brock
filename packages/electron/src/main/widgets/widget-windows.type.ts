@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowPoint } from '@drizztdourden08/brock-core';
+import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import type { SecurityOptions } from '../types/main-context.type';
 import type { AspectLock } from '../window/aspect-lock.type';
 
@@ -54,7 +54,6 @@ interface WidgetWindowEntry {
   link: WidgetSnapLink | null;
   last: WidgetWindowBounds;
   towed: boolean;
-  grab: WidgetWindowPoint | null;
   hiddenWithApp: boolean;
   parked: boolean;
   seq: number | undefined;
@@ -64,13 +63,12 @@ interface WidgetWindowEntry {
   over: boolean;
   faded: boolean;
   sync: boolean;
-  group: WidgetWindowGroup | null;
   wantsTaskbar: boolean;
   taskbar: boolean;
   square: boolean;
 }
 
-type EntryFacts = Pick<WidgetWindowEntry, 'pin' | 'snap' | 'link' | 'seq' | 'sync' | 'group' | 'wantsTaskbar' | 'taskbar'>;
+type EntryFacts = Pick<WidgetWindowEntry, 'pin' | 'snap' | 'link' | 'seq' | 'sync' | 'wantsTaskbar' | 'taskbar'>;
 
 interface WidgetWindowSetup {
   headless: boolean;
@@ -81,9 +79,11 @@ interface WidgetWindowSetup {
   security?: SecurityOptions;
 }
 
-interface MainSnapState {
-  grab: WidgetWindowPoint | null;
+interface MoveSession {
+  id: string;
+  members: Set<string>;
   hit: Snapped | null;
+  grab: WidgetWindowPoint | null;
 }
 
 interface ResizeEdges {
@@ -183,23 +183,29 @@ interface ModifierInput {
   modifiers?: readonly string[];
 }
 
-interface GroupMember {
+interface ClusterMember {
   id: string;
   win: BrowserWindow;
   entry: WidgetWindowEntry | null;
 }
 
-type GroupMode = 'normal' | 'maximized' | 'fullscreen';
+type LayoutMode = 'normal' | 'maximized' | 'fullscreen';
 
-type GroupTarget = Exclude<GroupMode, 'normal'>;
+type LayoutTarget = Exclude<LayoutMode, 'normal'>;
 
-interface GroupLayout {
-  mode: GroupMode;
+interface ClusterLayout {
+  mode: LayoutMode;
   saved: Map<string, WidgetWindowBounds>;
   onTop: Map<string, boolean>;
   backdrop: BrowserWindow | null;
   area: WidgetWindowBounds | null;
   release: (() => void) | null;
+}
+
+interface PathStep {
+  id: string;
+  entry: WidgetWindowEntry;
+  link: WidgetSnapLink | null;
 }
 
 interface CaptureSheet {
@@ -211,6 +217,6 @@ interface CaptureSheet {
 }
 
 export type {
-  BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, LineWindow, MainSnapState, ManipulationRules,
-  MinSize, ModifierInput, PackSpan, ResizeEdges, ResizeFollower, ResizeNeighbour, ResizeRequest, ResizeSession, ResizeStart, ResizeStep, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup, WillResizeCue,
+  BoundsReporter, CaptureSheet, ClusterLayout, ClusterMember, CoverCandidate, EdgeMove, EdgeWindow, EntryFacts, LayoutMode, LayoutTarget, LineWindow, ManipulationRules,
+  MinSize, MoveSession, ModifierInput, PackSpan, PathStep, ResizeEdges, ResizeFollower, ResizeNeighbour, ResizeRequest, ResizeSession, ResizeStart, ResizeStep, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup, WillResizeCue,
 };

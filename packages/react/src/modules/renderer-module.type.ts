@@ -8,6 +8,7 @@ import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
+import type { BeforeQuit } from '../quit/quit.type';
 
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
@@ -25,6 +26,7 @@ interface RendererModule {
   ports?: ModulePorts;
   logChannels?: string[];
   bootTasks?: RendererBootTask[];
+  beforeQuit?: BeforeQuit;
 }
 
 interface MergedModules {
@@ -39,6 +41,7 @@ interface MergedModules {
   ports: ModulePorts;
   logChannels: string[];
   bootTasks: RendererBootTask[];
+  beforeQuit: BeforeQuit[];
 }
 
 export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };

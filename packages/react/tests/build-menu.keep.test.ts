@@ -16,6 +16,7 @@ const BASE: MenuBuildInput = {
   onQuit: noop,
   onDevConsole: noop,
   onReportBug: noop,
+  onShortcuts: noop,
 };
 
 const keys = (entries: readonly MenuEntry[]): string[] => entries.map((entry) => (entry === 'separator' ? '|' : entry.key));
@@ -50,17 +51,17 @@ describe('buildMenu', () => {
       moduleMenu: [{ key: 'pads', label: 'Controllers', section: 'advanced', screen: 'pads' }],
     });
     expect(keys(menu)).toEqual(['home', 'profiles', '|', 'section:widgets', 'section:advanced', 'section:data', '|', 'about', 'quit']);
-    expect(keys(item(menu, 'section:advanced')?.children ?? [])).toEqual(['pads', 'report-bug']);
+    expect(keys(item(menu, 'section:advanced')?.children ?? [])).toEqual(['pads', 'keyboard-shortcuts', 'report-bug']);
     expect(item(menu, 'section:data')?.label).toBe('Data');
   });
 
   it('shows the Dev Console and dev-only entries only with developer tools', () => {
     const devEntry: MenuItem = { key: 'probe', label: 'Probe', devOnly: true, onClick: noop };
     expect(item(buildMenu({ ...BASE, appMenu: [devEntry] }), 'probe')).toBeUndefined();
-    expect(keys(item(buildMenu(BASE), 'section:advanced')?.children ?? [])).toEqual(['report-bug']);
+    expect(keys(item(buildMenu(BASE), 'section:advanced')?.children ?? [])).toEqual(['keyboard-shortcuts', 'report-bug']);
     const dev = buildMenu({ ...BASE, appMenu: [devEntry], developerTools: true });
     expect(item(dev, 'probe')).toBeDefined();
-    expect(keys(item(dev, 'section:advanced')?.children ?? [])).toEqual(['report-bug', 'dev-console']);
+    expect(keys(item(dev, 'section:advanced')?.children ?? [])).toEqual(['keyboard-shortcuts', 'report-bug', 'dev-console']);
   });
 
   it('skips a built-in whose screen the app already names', () => {

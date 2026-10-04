@@ -6,7 +6,7 @@ import { palette } from '../palette/palette';
 
 const SEARCH_ACTION: WindowTitleBarAction = { id: 'search', label: 'Search', icon: 'search', shortcut: ['ctrl', 'K'], onSelect: palette.toggle };
 
-const REPORT_BUG_ACTION: WindowTitleBarAction = { id: REPORT_BUG_ENTRY.key, label: REPORT_BUG_ENTRY.label, icon: 'bug', tone: 'danger', onSelect: bugReport.open };
+const REPORT_BUG_ACTION: WindowTitleBarAction = { id: REPORT_BUG_ENTRY.key, label: REPORT_BUG_ENTRY.label, icon: 'bug', onSelect: bugReport.open };
 
 const STANDARD_TITLE_BAR_ACTIONS: readonly WindowTitleBarAction[] = [SEARCH_ACTION, REPORT_BUG_ACTION];
 

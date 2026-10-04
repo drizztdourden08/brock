@@ -29,3 +29,6 @@ export * from './search';
 export * from './widgets';
 export * from './overlays';
 export * from './boot';
+export * from './errors';
+export * from './shortcuts-help';
+export * from './quit';

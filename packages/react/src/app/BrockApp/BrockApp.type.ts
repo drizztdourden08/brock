@@ -5,6 +5,7 @@ import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
+import type { BeforeQuit } from '../../quit/quit.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
@@ -39,6 +40,7 @@ interface BrockAppProps<S extends object> {
   homeScreen?: string;
   credits?: ReactNode;
   legalText?: string;
+  beforeQuit?: BeforeQuit;
 }
 
 interface MenuBuildInput {
@@ -51,6 +53,12 @@ interface MenuBuildInput {
   onQuit: () => void;
   onDevConsole: () => void;
   onReportBug: () => void;
+  onShortcuts: () => void;
+}
+
+interface ShellKeyContext {
+  toggleFullscreen?: () => void;
+  home: () => string | null;
 }
 
 interface AppScreensInput {
@@ -80,4 +88,4 @@ interface ReviewTourInput {
   moduleIds: readonly string[];
 }
 
-export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput };
+export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext };

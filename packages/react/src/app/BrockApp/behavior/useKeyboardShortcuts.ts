@@ -8,7 +8,7 @@ import type { ScreenDef } from '../../../screens/screen.type';
 import { isScreenAllowed } from '../../../screens/is-screen-allowed';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
-import { closeTopmost } from './close-topmost';
+import { handleShellKey } from './handle-shell-key';
 import { shortcutTarget } from './shortcut-target';
 
 const isEditing = (target: EventTarget | null): boolean => {
@@ -26,13 +26,12 @@ const useKeyboardShortcuts = (): void => {
   useEffect(() => {
     const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>
       screen !== undefined && isScreenAllowed(screen, developerTools, useProfilesStore.getState().active !== null);
+    const context = {
+      toggleFullscreen: fullscreenable ? () => win.toggleFullscreen() : undefined,
+      home: () => (allowed(registry.get(homeScreen)) ? homeScreen : null),
+    };
     const handler = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === 'Enter') {
-        e.preventDefault();
-        if (fullscreenable) win.toggleFullscreen();
-        return;
-      }
-      if (e.key === 'Escape') { closeTopmost(e, allowed(registry.get(homeScreen)) ? homeScreen : null); return; }
+      if (handleShellKey(e, context)) return;
       if (isEditing(e.target) && !(e.ctrlKey || e.metaKey)) return;
 
       const target = shortcutTarget(e, registry, shortcuts, allowed);

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind barrel */
 export { createSettingsStore } from './create-settings-store';
-export type { CreateSettingsStoreOptions, SettingsEffect, SettingsState, SettingsStore, UseSettingsResult } from './settings-store.type';
+export type { CreateSettingsStoreOptions, SettingsEffect, SettingsSaveStatus, SettingsState, SettingsStore, UseSettingsResult } from './settings-store.type';
 export { SettingsStoreContext } from './settings-context';
 export { useSettings } from './useSettings';
 export { useSettingsStore } from './useSettingsStore';

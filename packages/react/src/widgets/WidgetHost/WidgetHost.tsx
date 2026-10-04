@@ -7,6 +7,7 @@ import type { Rect, ScreenPoint, WidgetGates } from '@drizztdourden08/tessera/co
 import { uniqueById } from '../../collections/unique-by-id';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
+import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { SettingsStoreContext } from '../../stores/settings-context';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
@@ -16,6 +17,7 @@ import { poppedShown } from '../popped-shown';
 import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
+import { widgetErrorLabel } from '../widget-error-label';
 import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
@@ -55,7 +57,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   useWidgetLayoutGlobal();
 
   const content = useMemo<Record<string, ReactNode>>(
-    () => Object.fromEntries(definitions.map((def) => [def.id, def.render()])),
+    () => Object.fromEntries(definitions.map((def) => [def.id, <RenderErrorBoundary scope={`Widget ${def.id}`} label={widgetErrorLabel(def.label)}>{def.render()}</RenderErrorBoundary>])),
     [definitions],
   );
   const settingsContent = useMemo<Record<string, ReactNode>>(

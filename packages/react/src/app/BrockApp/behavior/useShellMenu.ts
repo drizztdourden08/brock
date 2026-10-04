@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
 import { bugReport } from '../../../bug-report/bug-report';
+import { requestQuit } from '../../../quit/request-quit';
+import { shortcutsHelp } from '../../../shortcuts-help/shortcuts-help';
 import type { MenuEntry } from '../../../menu/menu.type';
 import { usePlatform } from '../../../platform/usePlatform';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
@@ -27,9 +29,10 @@ const useShellMenu = (moduleMenu: readonly MenuEntry[], railed: boolean): MenuEn
       homeScreen,
       hasCredits,
       developerTools,
-      onQuit: () => win.close(),
+      onQuit: () => void requestQuit(() => win.close()),
       onDevConsole: () => win.openDevTools(),
       onReportBug: bugReport.open,
+      onShortcuts: shortcutsHelp.open,
     });
     return railed ? stripScreenEntries(built) : built;
   }, [menu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, win, railed]);

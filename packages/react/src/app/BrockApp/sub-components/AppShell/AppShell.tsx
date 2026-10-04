@@ -12,6 +12,7 @@ import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
 import { WindowGuide } from '../../../../widgets/WindowGuide';
 import { useWindowSquare } from '../../../../widgets/useWindowSquare';
+import { BootFailureGate } from '../../../../boot/BootFailureGate';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
@@ -19,6 +20,7 @@ import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
+import { useSaveFailureToast } from '../../behavior/useSaveFailureToast';
 import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
@@ -40,6 +42,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useRendererBoot(settingsStore, bootTasks);
   const ready = phase === 'ready';
   useProfileHydration(settingsStore);
+  useSaveFailureToast(settingsStore);
   useKeyboardShortcuts();
   useStandardEscapeLayers();
   useIpcLogBridge(log);
@@ -53,7 +56,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: barMenu, actions, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} square={square} className="brock-app__screens" />} />;
+  const main = <BootFailureGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootFailureGate>;
+  const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={main} />;
 
   return (
     <Box className="brock-app">

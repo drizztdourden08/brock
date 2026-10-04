@@ -3,12 +3,35 @@ import type { StoreApi, UseBoundStore } from 'zustand';
 
 type SettingsEffect<S> = (patch: Partial<S>, next: S, prev: S) => void;
 
-interface SettingsState<S extends object> {
+type SettingsSaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
+
+interface SettingsWrite<S> {
+  profileId: string;
+  settings: S;
+}
+
+interface SettingsSaveState {
+  saveStatus: SettingsSaveStatus;
+  saveError: string | null;
+  savedAt: number | null;
+}
+
+type SettingsSaveReport = (report: Partial<SettingsSaveState>) => void;
+
+interface SettingsSaver<S> {
+  schedule: (profileId: string, settings: S) => void;
+  flush: () => Promise<void>;
+  retry: () => Promise<void>;
+  clear: () => void;
+}
+
+interface SettingsState<S extends object> extends SettingsSaveState {
   settings: S;
   hydrated: boolean;
   profileId: string | null;
   hydrate: (profileId: string) => Promise<void>;
   patch: (patch: Partial<S>) => void;
+  retrySave: () => Promise<void>;
   reset: () => void;
 }
 
@@ -31,4 +54,7 @@ interface UseSettingsResult<S extends object> {
   hydrated: boolean;
 }
 
-export type { CreateSettingsStoreOptions, SettingsEffect, SettingsState, SettingsStore, UseSettingsResult };
+export type {
+  CreateSettingsStoreOptions, SettingsEffect, SettingsSaveReport, SettingsSaver, SettingsSaveState, SettingsSaveStatus, SettingsState, SettingsStore, SettingsWrite,
+  UseSettingsResult,
+};

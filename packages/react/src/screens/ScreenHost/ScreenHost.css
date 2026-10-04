@@ -16,3 +16,7 @@
 @media (prefers-reduced-motion: reduce) {
   .screen-host__scrim { animation: none; }
 }
+
+.screen-host__home {
+  display: contents;
+}

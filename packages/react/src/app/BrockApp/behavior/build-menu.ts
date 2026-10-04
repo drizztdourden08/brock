@@ -6,6 +6,7 @@ import {
   ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
+import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
 import type { MenuBuildInput } from '../BrockApp.type';
 import { filterDevEntries } from './filter-dev-entries';
 import { groupSections } from './group-sections';
@@ -27,9 +28,10 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
   entries.filter((entry) => entry === 'separator' || entry.section === undefined);
 
 const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
-  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, onQuit, onDevConsole, onReportBug } = input;
+  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
+    { ...SHORTCUTS_HELP_ENTRY, onClick: onShortcuts },
     { ...REPORT_BUG_ENTRY, onClick: onReportBug },
     { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },
   ];

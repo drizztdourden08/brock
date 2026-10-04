@@ -4,10 +4,12 @@ import { Box } from '@drizztdourden08/tessera/primitives';
 import { Widget, createDefaultLayout, frameOf, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
+import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { hostApi } from '../../host/host-api';
 import { StandardOverlays } from '../../overlays/StandardOverlays/StandardOverlays';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
+import { widgetErrorLabel } from '../widget-error-label';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { WindowGuide } from '../WindowGuide';
@@ -58,7 +60,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         canPopOut
         onClose={close}
       >
-        {definition?.render()}
+        <RenderErrorBoundary scope={`Widget ${id}`} label={widgetErrorLabel(definition?.label ?? id)}>{definition?.render()}</RenderErrorBoundary>
       </Widget>
       {anchor && (
         <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />

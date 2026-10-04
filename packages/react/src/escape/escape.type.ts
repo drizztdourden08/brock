@@ -18,4 +18,13 @@ interface EscapeState {
   homeAvailable: boolean;
 }
 
-export type { EscapeAction, EscapeLayer, EscapeLayerRegistry, EscapeState };
+interface TextField {
+  tagName: string;
+  type?: string;
+  value: string;
+  readOnly?: boolean;
+  disabled?: boolean;
+  dispatchEvent: (event: Event) => boolean;
+}
+
+export type { EscapeAction, EscapeLayer, EscapeLayerRegistry, EscapeState, TextField };

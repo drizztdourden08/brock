@@ -1,0 +1,29 @@
+/* @layer renderer-shell @kind style */
+
+.shortcuts-help {
+  width: var(--size-512);
+  max-width: 90vw;
+}
+
+.shortcuts-help__group + .shortcuts-help__group {
+  margin-top: var(--space-md);
+}
+
+.shortcuts-help__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+}
+
+.shortcuts-help__row {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shortcuts-help__keys {
+  flex: none;
+  margin: 0;
+}

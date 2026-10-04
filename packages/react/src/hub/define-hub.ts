@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
 import { defineScreen } from '../screens/define-screen';
+import { ScreenSubtitle } from '../shell/ScreenSubtitle';
 import type { ScreenDef } from '../screens/screen.type';
 import { Hub } from './Hub';
 import { HubSwitch } from './Hub/sub-components/HubSwitch';
@@ -14,7 +15,7 @@ const defineHub = (def: HubDef): ScreenDef => {
     icon: def.icon,
     header: 'own',
     shortcut: def.shortcut,
-    subtitle: (ctx) => ctx.profile?.name,
+    subtitle: () => createElement(ScreenSubtitle),
     floating: (ctx) => createElement(HubSwitch, { current: def.id, onSelect: (id: string) => ctx.open(id) }),
     render: (ctx) => createElement(Hub, { def, ctx }),
   });

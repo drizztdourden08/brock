@@ -5,6 +5,7 @@ import type { ScreenParams } from '../../navigation/navigation.type';
 import { SettingsHub } from '../../settings/SettingsHub/SettingsHub';
 import { useSettings } from '../../stores/useSettings';
 import { useBrock } from '../../app/useBrock';
+import { ScreenSubtitle } from '../../shell/ScreenSubtitle';
 import { defineScreen } from '../define-screen';
 
 const requestedTab = (params: ScreenParams): string | undefined => (typeof params.tab === 'string' ? params.tab : undefined);
@@ -30,7 +31,7 @@ const settingsScreen = defineScreen({
   header: 'own',
   shortcut: 'Mod+Comma',
   keepMounted: true,
-  subtitle: (ctx) => ctx.profile?.name,
+  subtitle: () => <ScreenSubtitle />,
   render: (ctx) => <SettingsScreenBody params={ctx.params} />,
 });
 

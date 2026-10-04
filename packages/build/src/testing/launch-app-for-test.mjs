@@ -6,6 +6,7 @@ import { resolveElectronBinary } from '../run.mjs';
 import { assertLaunchable } from './assert-launchable.mjs';
 import { loadElectronDriver } from './load-electron-driver.mjs';
 import { FIRST_WINDOW_TIMEOUT_MS, HEADLESS_ARGS, OUTPUT_TAIL } from './testing.constants.mjs';
+import { waitForAppPage } from './wait-for-app-page.mjs';
 
 const captureOutput = (app) => {
   const output = [];
@@ -21,9 +22,9 @@ const cleanEnv = (env) => {
   return next;
 };
 
-const firstPage = async (app, timeout, outputOf) => {
+const appPage = async (app, timeout, outputOf) => {
   try {
-    const page = await app.firstWindow({ timeout });
+    const page = await waitForAppPage(app, timeout);
     await page.waitForLoadState('domcontentloaded');
     return page;
   } catch (error) {
@@ -47,7 +48,7 @@ const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST
     cwd: root,
     env: cleanEnv(env),
   });
-  const page = await firstPage(app, timeoutMs, captureOutput(app)).catch((error) => {
+  const page = await appPage(app, timeoutMs, captureOutput(app)).catch((error) => {
     rmSync(userData, { recursive: true, force: true });
     throw error;
   });

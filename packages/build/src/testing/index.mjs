@@ -2,4 +2,6 @@
 export { launchAppForTest } from './launch-app-for-test.mjs';
 export { assertLaunchable } from './assert-launchable.mjs';
 export { unresolvableImports } from './unresolvable-imports.mjs';
+export { readDockLayout } from './read-dock-layout.mjs';
+export { widgetWindows } from './widget-windows.mjs';
 export { HEADLESS_ARGS } from './testing.constants.mjs';

@@ -55,7 +55,7 @@ An app pins Brock once, in `package.json#brock.version`, and every Brock depende
 4. It prints the changelog between the two versions, read from the installed packages' `CHANGELOG.md`, else from the GitHub release notes.
 5. It runs the target's `brock sync`, then `brock migrate` from the old version to the new one.
 6. The gate: `pnpm lint`, `typecheck`, `structure` and `test` (a missing script is skipped), `brock icons`, then `launch brock-<version> none --review` headless. `--no-review` skips the last two.
-7. It writes `upgrade-report.md` in the worktree: the package.json fields changed, each step, each migration with the files it touched, the numbered to-dos and the changelog. The file stays out of git and serves as the PR body.
+7. It writes `.brock/upgrade-report.md` in the worktree and prints its path: the package.json fields changed, each step, each migration with the files it touched, the numbered to-dos and the changelog. The file stays out of git and serves as the PR body.
 8. Green: it commits through `worktree commit` and prints the `pr open` command. It never opens the PR, since publishing asks. Red: it keeps the worktree, names the failed step and exits 1. Running it again resumes the same worktree.
 
 `<repo> upgrade --check` compares only. It exits 0 when the app is current, 1 when it is behind and 2 when the registry cannot be reached, printing both versions. That exit code is the hook for a scheduled workflow that opens the upgrade PR each week; the workflow is not generated yet.

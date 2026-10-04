@@ -2,7 +2,7 @@
 import { app } from 'electron';
 import { rm } from 'fs/promises';
 import { basename } from 'path';
-import { DEFAULT_REVIEW_NAME, REVIEW_FLAG } from '@drizztdourden08/brock-core/review';
+import { DEFAULT_REVIEW_NAME, GLOBAL_STEP, REVIEW_FLAG } from '@drizztdourden08/brock-core/review';
 import { assertSafeName } from '@drizztdourden08/brock-core/storage';
 import type { MainContext } from '../types/main-context.type';
 import { writeCapture } from '../handlers/write-capture';
@@ -12,7 +12,8 @@ import { bootState } from '../boot/boot-state';
 import { whenRevealed } from '../boot/when-revealed';
 import { createReviewSession } from '../review/create-review-session';
 import { finishReview } from '../review/finish-review';
-import { REVIEW_IDLE_MS } from '../review/review.constants';
+import { captureReviewSplash } from '../review/capture-review-splash';
+import { REVIEW_IDLE_MS, REVIEW_START_MS } from '../review/review.constants';
 import { watchReviewWindow } from '../review/watch-review-window';
 import { widgetReviewHandlers } from '../widgets/widget-review-handlers';
 
@@ -27,6 +28,7 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
   const cleared = rm(session.dir, { recursive: true, force: true }).catch(() => undefined);
   const untap = tapMainConsole(session.addMainLine);
   bootEvents.once('window', (win) => watchReviewWindow(win, session));
+  const splashShot = captureReviewSplash(session, cleared);
 
   let done = false;
   let idle: ReturnType<typeof setTimeout> | null = null;
@@ -36,13 +38,18 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     if (idle) clearTimeout(idle);
     untap();
     session.setBoot({ ...bootState.timeline });
-    void finishReview(session, finished);
+    void splashShot().then(() => finishReview(session, finished));
+  };
+
+  const neverStarted = (): void => {
+    const seconds = Math.round(REVIEW_START_MS / 1000);
+    session.addCheck({ id: 'tour-started', step: GLOBAL_STEP, pass: false, reason: `no tour progress within ${seconds} s of launch: the renderer did not load or the boot never finished` });
+    finish(false);
   };
 
   const stillWorking = (): void => {
     if (idle) clearTimeout(idle);
     idle = setTimeout(() => finish(false), REVIEW_IDLE_MS);
-    idle.unref();
   };
 
   ctx.handle('review:capture', async (_event, step) => {
@@ -63,7 +70,7 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
   ctx.on('review:finish', () => finish(true));
   widgetReviewHandlers(ctx, session, stillWorking);
   bootEvents.once('failed', () => finish(false));
-  stillWorking();
+  idle = setTimeout(neverStarted, REVIEW_START_MS);
   ctx.log(`review "${name}" armed; the report goes to ${session.dir}`);
 };
 

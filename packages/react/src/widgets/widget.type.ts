@@ -52,11 +52,27 @@ interface SettingsSlice {
   settings: Record<string, unknown>;
 }
 
+interface WidgetRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface WidgetLayoutReading {
+  layout: WidgetLayout;
+  docked: string[];
+  floating: string[];
+  popped: string[];
+  main: WidgetRect | null;
+  rects: Record<string, WidgetRect>;
+}
+
 interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
 }
 
 export type {
-  ProfileViews, SettingsSlice, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutState, WidgetRegistryState, WidgetRelayState,
+  ProfileViews, SettingsSlice, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState,
 };

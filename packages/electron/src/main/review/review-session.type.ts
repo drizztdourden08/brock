@@ -12,6 +12,7 @@ interface ReviewSession {
   dir: string;
   run: () => ReviewRun;
   nextStep: (name: string) => ReviewStepRecord;
+  splashStep: (name: string) => ReviewStepRecord;
   addCheck: (check: ReviewCheck) => void;
   addConsoleError: (message: string) => void;
   addFailedLoad: (message: string) => void;

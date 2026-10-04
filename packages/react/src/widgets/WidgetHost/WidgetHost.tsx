@@ -19,6 +19,7 @@ import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
+import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
 import type { WidgetHostProps } from './WidgetHost.type';
 
@@ -51,6 +52,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   useWidgetPersistence(profileId);
   usePopOutWindows(shown, extraOf);
   useWidgetRelayPublisher(settingsStore);
+  useWidgetLayoutGlobal();
 
   const content = useMemo<Record<string, ReactNode>>(
     () => Object.fromEntries(definitions.map((def) => [def.id, def.render()])),

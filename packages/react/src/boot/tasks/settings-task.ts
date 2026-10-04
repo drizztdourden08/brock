@@ -2,6 +2,7 @@
 import type { SettingsStore } from '../../stores/settings-store.type';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { abortable } from '../abortable';
+import { SETTINGS_TASK } from '../boot.constants';
 import type { RendererBootTask } from '../renderer-boot.type';
 
 const hydratedFor = <S extends object>(store: SettingsStore<S>, profileId: string): Promise<void> =>
@@ -22,7 +23,7 @@ const hydratedFor = <S extends object>(store: SettingsStore<S>, profileId: strin
   });
 
 const settingsTask = <S extends object>(store: SettingsStore<S>): RendererBootTask => ({
-  id: 'settings',
+  id: SETTINGS_TASK,
   label: 'Loading settings',
   after: ['profiles'],
   run: async ({ signal }) => {

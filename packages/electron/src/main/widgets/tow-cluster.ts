@@ -23,7 +23,7 @@ const towCluster = (id: string, before: WidgetWindowBounds, after: WidgetWindowB
     towLinked(id, before, after);
     return;
   }
-  const members = moveSession.of(id)?.members ?? new Set(clusterOf(id));
+  const members = moveSession.of(id)?.members ?? new Set(clusterOf(id, before));
   clusterTow.run(() => {
     for (const other of members) if (other !== id) shift(other, after.x - before.x, after.y - before.y);
   });

@@ -32,8 +32,8 @@ const checkTop = async (tour: StepTour, id: string, start: FlushPair): Promise<v
 const checkBottom = async (tour: StepTour, id: string, start: FlushPair): Promise<void> => {
   const wanted = { ...start.own, height: start.own.height + EDGE_SHIFT };
   const after = await dragTo(id, wanted);
-  const alone = flush(after) && sameRect(after?.main, start.main) && sameRect(after?.own, wanted);
-  tour.check('resize-flush-bottom', alone, `dragging the bottom edge of the "${id}" window off the app's bottom left the app untouched`, `the bottom-edge drag moved the app or another edge (${JSON.stringify(after)})`);
+  const locked = flush(after) && sameRect(after?.main, { ...start.main, height: start.main.height + EDGE_SHIFT }) && sameRect(after?.own, wanted);
+  tour.check('resize-flush-bottom', locked, `dragging the bottom edge of the "${id}" window, lined up with the app's bottom, moved the app's bottom with it`, `the bottom-edge drag did not move the lined-up bottom of the app, or moved another edge (${JSON.stringify(after)})`);
 };
 
 const checkSeam = async (tour: StepTour, id: string, start: FlushPair): Promise<void> => {
@@ -56,7 +56,8 @@ const checkFlushResize = async (tour: StepTour, id: string): Promise<void> => {
   const raised = (await probe({ kind: 'window', id })).bounds;
   if (raised) await checkBottom(tour, id, { main, own: raised });
   const taller = (await probe({ kind: 'window', id })).bounds;
-  if (taller) await checkSeam(tour, id, { main, own: taller });
+  const grown = (await probe({ kind: 'main' })).bounds;
+  if (taller && grown) await checkSeam(tour, id, { main: grown, own: taller });
   await probe({ kind: 'main', bounds: main });
   await probe({ kind: 'drag', alone: true, id, bounds: own });
 };

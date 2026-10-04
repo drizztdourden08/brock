@@ -5,6 +5,7 @@ import { isAcross } from './is-across';
 import { oppositeEdge } from './opposite-edge';
 import { resizeSides } from './resize-sides';
 import { resizeSnap } from './resize-snap';
+import { resizeTargets } from './resize-targets';
 import { EMPTY_BOUNDS, NO_SIDES, RESIZE_SIDES } from './widget-windows.constants';
 import type { EdgeMove, MinSize, ResizeEdges, ResizeFollower, ResizeRequest, ResizeSession, ResizeStep } from './widget-windows.type';
 
@@ -31,8 +32,8 @@ const draggedTo = (session: ResizeSession, proposed: WidgetWindowBounds): Widget
 
 const snapSides = (b: WidgetWindowBounds, session: ResizeSession): WidgetWindowBounds => {
   const { sides, min } = session;
-  const across = resizeSnap(b, { ...NO_SIDES, left: sides.left, right: sides.right }, session.xTargets, min);
-  return resizeSnap(across, { ...NO_SIDES, top: sides.top, bottom: sides.bottom }, session.yTargets, min);
+  const across = resizeSnap(b, { ...NO_SIDES, left: sides.left, right: sides.right }, resizeTargets(session, true), min);
+  return resizeSnap(across, { ...NO_SIDES, top: sides.top, bottom: sides.bottom }, resizeTargets(session, false), min);
 };
 
 const roomFor = (line: number, side: WidgetEdge, followers: readonly ResizeFollower[]): number =>

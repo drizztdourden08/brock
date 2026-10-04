@@ -24,12 +24,6 @@ interface SimWindowOptions {
   insets?: SimInsets;
 }
 
-interface SimEvent {
-  kind: string;
-  window: string;
-  bounds: Rect;
-}
-
 interface DragStep {
   dx: number;
   dy: number;
@@ -40,6 +34,7 @@ type DragEdge = 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' |
 interface DragOptions {
   stepMs?: number;
   onStep?: (index: number) => void;
+  cancel?: boolean;
 }
 
-export type { DragEdge, DragOptions, DragStep, Rect, SimEvent, SimInsets, SimWindowOptions };
+export type { DragEdge, DragOptions, DragStep, Rect, SimInsets, SimWindowOptions };

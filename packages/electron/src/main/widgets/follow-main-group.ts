@@ -3,7 +3,8 @@ import type { BrowserWindow } from 'electron';
 import { activeGroup } from './active-group';
 import { followGroup } from './follow-group';
 import { groupLayout } from './group-layout';
-import { resizeBounds } from './resize-bounds';
+import { endResize } from './end-resize';
+import { onWillResize } from './on-will-resize';
 import { watchModifiers } from './watch-modifiers';
 import { MAIN_ANCHOR } from './widget-windows.constants';
 
@@ -17,12 +18,9 @@ const followMainGroup = (main: BrowserWindow): void => {
       groupLayout.enter(group, 'fullscreen');
     });
   });
-  main.on('will-resize', (event, proposed, details) => {
-    const wanted = resizeBounds(MAIN_ANCHOR, proposed, details.edge);
-    if (!wanted) return;
-    event.preventDefault();
-    main.setBounds(wanted);
-  });
+  main.on('will-resize', (event, proposed, details) => onWillResize(MAIN_ANCHOR, main, { event, proposed, edge: details.edge }));
+  main.on('resized', () => endResize(MAIN_ANCHOR));
+  main.on('closed', () => endResize(MAIN_ANCHOR));
   watchModifiers(main);
 };
 

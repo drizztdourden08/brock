@@ -75,6 +75,7 @@ const resizeDrag = async (win: FakeWindow, edge: DragEdge, path: readonly DragSt
     options.onStep?.(index);
   }
   win.resizing = false;
+  if (options.cancel) win.place(inner(start, win.insets));
   win.emit('resized');
   const replay = win.takePending();
   if (replay) win.setBounds(replay);

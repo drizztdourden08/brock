@@ -1,13 +1,12 @@
 /* @layer electron-main @kind test */
 import { EventEmitter } from 'events';
-import type { Rect, SimEvent, SimInsets, SimWindowOptions } from './window-sim.type';
+import type { Rect, SimInsets, SimWindowOptions } from './window-sim.type';
 
 const DISPLAY = { id: 1, bounds: { x: 0, y: 0, width: 1920, height: 1080 }, workArea: { x: 0, y: 0, width: 1920, height: 1040 }, scaleFactor: 2 };
 const WINDOWS_INSETS: SimInsets = { left: 6, top: 0, right: 6, bottom: 6 };
 
 const cursor = { x: 0, y: 0 };
 const sims = new Map<object, FakeWindow>();
-const log: SimEvent[] = [];
 
 const copy = (r: Rect): Rect => ({ x: r.x, y: r.y, width: r.width, height: r.height });
 
@@ -53,7 +52,6 @@ class FakeWindow extends EventEmitter {
     this.setCalls += 1;
     const wanted = { ...this.bounds, ...next };
     if (this.resizing) this.pending = copy(wanted);
-    log.push({ kind: 'setBounds', window: this.name, bounds: copy(wanted) });
     this.place(wanted);
   };
 
@@ -121,7 +119,6 @@ const simOf = (win: object): FakeWindow => {
 const resetSim = (): void => {
   for (const sim of sims.values()) sim.removeAllListeners();
   sims.clear();
-  log.length = 0;
   cursor.x = 0;
   cursor.y = 0;
 };
@@ -140,4 +137,4 @@ const fakeElectron = {
   nativeImage: { createEmpty: () => ({}) },
 };
 
-export { FakeWindow, cursor, fakeElectron, log as simLog, resetSim, simOf };
+export { FakeWindow, cursor, fakeElectron, resetSim, simOf };

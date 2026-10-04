@@ -8,6 +8,7 @@ import { checkAreas } from '../widgets/area-check';
 import { checkBoundsRoundTrip } from '../widgets/bounds-check';
 import { checkDevGate } from '../widgets/dev-gate-check';
 import { checkDropIn } from '../widgets/drop-check';
+import { checkFlushResize } from '../widgets/flush-resize-check';
 import { checkContextGate } from '../widgets/gate-check';
 import { checkGrid } from '../widgets/grid-check';
 import { checkGroups } from '../widgets/group-check';
@@ -43,6 +44,7 @@ const windowChecks = async (tour: StepTour, id: string): Promise<void> => {
   await checkSync(tour, id);
   await checkGrid(tour, id);
   await checkSharedEdge(tour, id);
+  await checkFlushResize(tour, id);
   await checkGroups(tour, id);
   await checkGuide(tour, id);
   await checkDropIn(tour, id);

@@ -140,6 +140,13 @@ describe('Ctrl, release and a third window', () => {
     expect(linkOf('logs')).toBeNull();
   });
 
+  it('puts the shared edge back on both windows when Esc cancels the drag', async () => {
+    const { main, logs } = snappedPair();
+    await resizeDrag(logs, 'right', line({ dx: 40, dy: 0 }, 20), { cancel: true });
+    expect(logs.bounds).toEqual(LOGS);
+    expect(main.bounds).toEqual(MAIN);
+  });
+
   it('keeps every window where the drag left it once the mouse is released', async () => {
     const { main, logs } = snappedPair();
     await resizeDrag(logs, 'top', line({ dx: 0, dy: -60 }, 30), { stepMs: 50 });

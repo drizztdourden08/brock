@@ -14,6 +14,8 @@ import { useMountedScreens } from './behavior/useMountedScreens';
 import type { ScreenHostProps } from './ScreenHost.type';
 import './ScreenHost.css';
 
+const covers = (shown: ScreenDef | null, home: string): boolean => shown !== null && shown.id !== home && shown.layer !== 'own';
+
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
   const registry = useScreenRegistry();
@@ -55,7 +57,7 @@ const ScreenHost = (props: ScreenHostProps) => {
     );
   };
 
-  const covered = shown !== null && shown.id !== home && shown.layer !== 'own';
+  const covered = covers(shown, home);
 
   return (
     <Box className={className}>

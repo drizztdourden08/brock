@@ -46,7 +46,7 @@ import { screenTree } from '../.brock/screens';
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost`, `useToastStore` |
-| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
 
@@ -89,6 +89,22 @@ An app lists its buckets in `src/screens/screens.config.ts` with `defineScreens(
 - `resolveScreenTree(tree, builtInTabs)` runs inside `BrockApp`: it adds the built-in and module settings tabs to the settings bucket, turns each hub into a screen with `defineHub`, derives the menu with `deriveMenu` and points the `settings` route at the settings bucket, so no separate Settings screen is registered.
 - The menu reads `BucketDef.menu`: `entry` for one entry, `submenu` for one child per page, `hidden` for none. The home bucket is already the Home entry. `MenuItem` takes `{ bucket, page, tab }` as a target, and `open('game/tracker/map')` opens that bucket, page and tab.
 - The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in. The page renders the slots it fills and the frame draws one `Hero` with them.
+
+## Widgets by convention
+
+An app drops one file per widget in `src/widgets`: `<id>.widget.tsx`, whose default export is the component and whose optional `meta: WidgetMeta` holds the `defineWidget` fields but `id` and `render` (`label`, `icon`, `popOut`, `devOnly`, `taskbar`, `defaultVisibility`, `defaultSide`, `defaultDockedSize`, `defaultFloatingSize`) plus `settings`, a component for the options panel. `brock sync` and the dev server write `.brock/widgets.ts`, which calls `widgetsFromFiles([{ id, component, meta }])`; `BrockApp` takes the result as `widgets` and adds it to the module widgets, in the main window and in a popped widget window. A widget without `label` is named after its id in title case. `defineWidget`, `registerWidgets` and `RendererModule.widgets` still work.
+
+Brock's own widgets have the same shape: `src/widgets/built-in/logs.widget.tsx` and `performance.widget.tsx` beside their component folders, listed in `built-in-widgets.constants.ts` through `widgetsFromFiles`.
+
+## Performance widget
+
+The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not, and it pops out like any widget. Three sections of Tessera `StatRow`s:
+
+- **Renderer:** frame rate and average and worst frame time (`requestAnimationFrame`), long tasks and their total time (`PerformanceObserver` `longtask`), event loop lag (the worst drift of a 100 ms timer), the JS heap and its limit where `performance.memory` exists, the DOM node count.
+- **Processes:** from `diagnostics:getProcesses` in main: the process count with total CPU and memory, the main process memory and heap, uptime, the window count, IPC calls per second and in total, the Electron, Chrome and Node versions, GPU compositing, then one row per process (CPU, working set) and one per widget window (shown, synced, group). In a browser preview there is no main process and the section says so.
+- **App:** version, screen and route, profile, the open widgets, the active modules, and the errors and warnings since start (counted by the app log bus; a popped window counts the relayed log).
+
+The options panel (`PerformanceSettings`) sets the refresh, 0.5, 1, 2 or 5 s (1 s by default), and which sections show, both kept with `useWidgetPref`. Nothing is sampled while the widget is off screen: an `IntersectionObserver` on its root and the page visibility gate the frame loop, the observers, the lag timer and the IPC poll, so a closed, tabbed-away or minimized widget costs nothing, and a hidden section is not sampled either. Copy snapshot copies the shown rows as text, under a dated title. The review's `performance` step opens it from the Widgets menu, checks that it samples, that the frame rate and the process row read numbers and that a value moves within 2.5 s, captures it and closes it.
 
 ## Search
 

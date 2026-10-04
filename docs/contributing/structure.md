@@ -10,8 +10,9 @@ Brock's extension, declared by `brock-build` and `brock-lint-config` in their `p
 | `brock.config.ts` marks an app: no package name or barrel check | `brock-build/standards.extension.mjs` |
 | `build/installer` holds only the two overrides | `brock-build/standards.extension.mjs` |
 | `src/screens` has its own checks (layout, search entries, `screens.config.ts`) and the custom-page note | `brock-build/standards.extension.mjs` |
-| `<id>.task.ts` is a module file (boot tasks) | `brock-build/standards.extension.mjs` |
-| raw-control messages name the Tessera components; screen files, module entries, `brock.workspace.mjs` and boot tasks may default-export; screen files are lists | `brock-lint-config/standards.extension.mjs` |
+| `src/widgets` holds only `<id>.widget.tsx` files with a default export and known `meta` keys, in an app | `brock-build/standards.extension.mjs` |
+| `<id>.task.ts` (boot tasks) and `<id>.widget.tsx` are module files | `brock-build/standards.extension.mjs` |
+| raw-control messages name the Tessera components; screen and widget files, module entries, `brock.workspace.mjs` and boot tasks may default-export; screen and widget files are lists | `brock-lint-config/standards.extension.mjs` |
 | `@drizztdourden08/tessera/tokens.css` is a token source for `brock/no-token-*` | `brock-lint-config/standards.extension.mjs` |
 
 A design-system package that must carry `Name.usage.ts` in every component folder lists `@drizztdourden08/standards/extensions/usage-files` in its `standards.config.mjs`; the `brock.designSystem` flag is gone.

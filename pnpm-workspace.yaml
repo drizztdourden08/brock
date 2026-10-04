@@ -5,7 +5,7 @@ packages:
   - 'templates/*'
 
 catalog:
-  '@drizztdourden08/tessera': ^0.9.0
+  '@drizztdourden08/tessera': ^0.9.1
   '@changesets/cli': ^2.29.7
   '@storylite/storylite': ^1.6.0
   jscpd: ^4.0.5

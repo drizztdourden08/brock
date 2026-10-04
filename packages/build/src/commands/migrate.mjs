@@ -52,10 +52,11 @@ const withTessera = (run, { applied, ...tessera }) => {
   return { applied: [...run.applied, ...applied.map(withoutTodos)], todos, tessera };
 };
 
-const writeReport = (rootDir, report, run) => {
-  const file = resolve(rootDir, report);
+const writeReport = (report, run) => {
+  const file = resolve(process.cwd(), report);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, `${JSON.stringify(run, null, 2)}\n`, 'utf8');
+  console.log(`  Report: ${file}`);
 };
 
 /**
@@ -70,7 +71,7 @@ const runMigrate = async ({ rootDir, from, to, tesseraFrom, report }) => {
   const range = { from: from ?? null, to: to ?? null };
   const run = withTessera(await brockRun(rootDir, range), tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
   printRun(run, range);
-  if (report) writeReport(rootDir, report, run);
+  if (report) writeReport(report, run);
   return 0;
 };
 

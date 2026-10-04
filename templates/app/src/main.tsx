@@ -8,6 +8,7 @@ import { rendererModules } from '../.brock/modules.renderer';
 import { rendererBootTasks } from '../.brock/boot.renderer';
 import { screenTree } from '../.brock/screens';
 import { appWidgetLayout, appWidgets } from '../.brock/widgets';
+import { appReview } from '../.brock/review';
 import { SETTINGS } from './main.constants';
 import { product } from './product';
 import type { AppSettings } from './settings.type';
@@ -25,6 +26,7 @@ createRoot(root).render(
       bootTasks={rendererBootTasks}
       widgets={appWidgets}
       widgetLayout={appWidgetLayout}
+      review={appReview}
     />
   </StrictMode>,
 );

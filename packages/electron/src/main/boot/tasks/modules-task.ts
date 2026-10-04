@@ -2,6 +2,7 @@
 import type { BootstrapOptions } from '../../types/main-context.type';
 import { baseHandlers } from '../../bootstrap/base-handlers';
 import { registerHandlerGroups } from '../../bootstrap/register-handlers';
+import { buildServices } from '../../services/build-services';
 import type { MainBootTask } from '../boot-state.type';
 
 const modulesTask = (options: BootstrapOptions): MainBootTask => ({
@@ -9,6 +10,7 @@ const modulesTask = (options: BootstrapOptions): MainBootTask => ({
   label: 'Starting modules',
   run: async (ctx) => {
     const modules = options.modules ?? [];
+    await buildServices(ctx, options.services);
     registerHandlerGroups(baseHandlers(options), ctx);
     for (const [index, module] of modules.entries()) {
       ctx.report(index / (modules.length + 1), module.id);

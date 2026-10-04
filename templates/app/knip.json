@@ -4,6 +4,7 @@
     "electron/main.ts",
     "electron/preload.ts",
     "src/main.tsx",
+    "src/ipc/contract.type.ts",
     "src/screens/**/*.custom.tsx",
     ".brock/*.ts",
     "*.config.{cjs,ts,mjs}",

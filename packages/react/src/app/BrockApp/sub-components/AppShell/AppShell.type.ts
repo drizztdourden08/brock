@@ -9,6 +9,7 @@ import type { LayoutPreset } from '../../../../widgets/layout-preset.type';
 import type { WidgetContextSource } from '../../../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
+import type { AppReview } from '../../../../review/app-review.type';
 import type { BrockAppLayout } from '../../BrockApp.type';
 
 interface AppShellProps<S extends object> {
@@ -24,6 +25,7 @@ interface AppShellProps<S extends object> {
   widgetContext?: WidgetContextSource;
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
+  review?: AppReview;
 }
 
 export type { AppShellProps };

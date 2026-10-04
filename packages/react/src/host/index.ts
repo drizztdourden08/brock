@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind barrel */
+export { channelApi } from './channel-api';
 export { hostApi } from './host-api';
 export { requireHostApi } from './require-host-api';
 export { instanceName } from './instance-name';

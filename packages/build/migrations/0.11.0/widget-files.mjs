@@ -1,13 +1,11 @@
 /* @layer tooling-scripts @kind logic */
-import { jsxAttributes } from '../../src/upgrade/codemods/jsx-attributes.mjs';
+import { withBrockAppProp } from '../../src/upgrade/codemods/brock-app-prop.mjs';
 import { findJsxProps, patternTodos } from '../../src/upgrade/index.mjs';
 
 const CONVENTION = 'Widgets now live in src/widgets/<id>.widget.tsx: the default export is the component, `meta` holds label, icon, popOut, devOnly, defaultVisibility (\'context-only\'), defaultSide and the default sizes. brock sync lists them in .brock/widgets.ts, which src/main.tsx hands to BrockApp as widgets.';
 
 const MAIN = /(^|\/)src\/main\.tsx$/;
 const WIDGET_FILE = /(^|\/)src\/widgets\/[^/]+\.widget\.tsx$/;
-const BROCK_IMPORT = /^import[^\n]*from '\.\.\/\.brock\/[^']+';[ \t]*$/gm;
-const WIDGETS_IMPORT = "import { appWidgets } from '../.brock/widgets';";
 const GENERATED = 'appWidgets';
 
 const idNote = (source, index) => {
@@ -33,25 +31,7 @@ const appPropTodos = (source) => findJsxProps(source, 'BrockApp', ['widgets'])
   .filter((prop) => source.slice(prop.start, prop.end).replace(/\s/g, '') !== `widgets={${GENERATED}}`)
   .map((prop) => ({ line: prop.line, message: `${CONVENTION} These widgets are passed by hand: move each one to src/widgets, then pass widgets={appWidgets} from '../.brock/widgets'.` }));
 
-const lastAttribute = (source) => {
-  const tag = /<BrockApp(?![\w$.])/.exec(source);
-  return tag ? jsxAttributes(source, tag.index + tag[0].length).at(-1) ?? null : null;
-};
-
-const withWidgetsProp = (source) => {
-  const brockImports = [...source.matchAll(BROCK_IMPORT)];
-  const attribute = lastAttribute(source);
-  const wired = source.includes("'../.brock/widgets'") || findJsxProps(source, 'BrockApp', ['widgets']).length > 0;
-  if (wired || brockImports.length === 0 || !attribute) return source;
-  const lineStart = source.lastIndexOf('\n', attribute.start) + 1;
-  const indent = /^[ \t]*/.exec(source.slice(lineStart))?.[0] ?? '';
-  const ownLine = source.slice(lineStart, attribute.start).trim() === '';
-  const prop = ownLine ? `\n${indent}widgets={${GENERATED}}` : ` widgets={${GENERATED}}`;
-  const withProp = `${source.slice(0, attribute.end)}${prop}${source.slice(attribute.end)}`;
-  const lastImport = brockImports.at(-1);
-  const at = lastImport.index + lastImport[0].length;
-  return `${withProp.slice(0, at)}\n${WIDGETS_IMPORT}${withProp.slice(at)}`;
-};
+const withWidgetsProp = (source) => withBrockAppProp(source, { prop: 'widgets', name: GENERATED, from: '../.brock/widgets' });
 
 const apply = ({ path, source }) => {
   if (WIDGET_FILE.test(path)) return { source, todos: [] };

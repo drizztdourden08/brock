@@ -1,8 +1,12 @@
 /* @layer renderer-app @kind types */
 import type { EventContract, InvokeContract, SendContract } from '@drizztdourden08/brock-core/augment';
+import type { EventContractOf, InvokeContractOf, SendContractOf } from '@drizztdourden08/brock-core/ipc';
+import type { APP_CHANNELS } from './contract.constants';
 
 declare module '@drizztdourden08/brock-core/augment' {
-  interface InvokeContract {}
+  interface InvokeContract extends InvokeContractOf<typeof APP_CHANNELS> {}
+  interface SendContract extends SendContractOf<typeof APP_CHANNELS> {}
+  interface EventContract extends EventContractOf<typeof APP_CHANNELS> {}
 }
 
 export type { EventContract, InvokeContract, SendContract };

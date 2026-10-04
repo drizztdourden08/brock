@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-thread
 
+## 0.8.1
+
+### Patch Changes
+
+- 03dcade: Standards moved to 0.x: Brock depends on `@drizztdourden08/standards` ^0.6.0 and calls its shared workflows at `@v0`. The family never takes a major version; `standards sync --check` now rejects a changeset that asks for one.
+
 ## 0.8.0
 
 ### Patch Changes

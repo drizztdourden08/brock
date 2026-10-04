@@ -1,5 +1,43 @@
 # @drizztdourden08/brock-secrets
 
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [55befe4]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+  - @drizztdourden08/brock-react@0.16.0
+  - @drizztdourden08/brock-core@0.16.0
+  - @drizztdourden08/brock-electron@0.16.0
+
 ## 0.15.0
 
 ### Patch Changes

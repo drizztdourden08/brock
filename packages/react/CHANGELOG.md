@@ -1,5 +1,44 @@
 # @drizztdourden08/brock-react
 
+## 0.16.0
+
+### Minor Changes
+
+- 7ef6122: `defineScreen` takes an icon name, like menu entries and `ScreenMeta`, or an element.
+- 7ef6122: The hero frame passes `product.icons.brand` to Tessera's `Hero`, so a branded app shows its brand backdrop, and a hero that renders no `<Art>` shows the brand's mascot, or its `BrandMark` when the brand has none. A hero with no art and no backdrop shrinks to its content and aligns to the top instead of leaving an empty band above the title.
+- 7ef6122: `hostApi<M>()` and `requireHostApi<M>()` take the app's own maps as a type argument (`{ invoke?, send?, events? }`, for example `typeof APP_INVOKE_MAP`) and add their methods to the base ones, so an app reaches its channels without a cast. Without one they return the base `IpcApi` as before. brock-core exports `AppIpcMaps` and `AppIpcApi`.
+- 7ef6122: `useKeyedGuard` returns `lastError`, the most recent error still set, for a view with one alert.
+- 7ef6122: brock-react exports `SearchAnchor` (`anchor`, `className?`, `children`), so a custom page marks where a search hit lands without writing `data-search-anchor` by hand. The template's custom page uses it.
+- 7ef6122: Settings items take the control kinds `number` (`min`, `max`, `step`, `unit`), `text` and `password` (`placeholder`), `select` (`options`, `searchable`), `radio` and `tags` (`suggestions`, `placeholder`), each mapped to the Tessera `SettingsRow` input of the same name. A `choice` control takes `look: 'segmented' | 'select' | 'radio'` and is drawn as a select when it has more than three options, a segmented control otherwise. In development a row that resolves to no control logs a warning once instead of drawing nothing in silence.
+- 7ef6122: `screens.config.ts` takes `settings: { bucket, page? }`: the Settings entry, the palette and Mod+Comma open that page when it is set, instead of the first settings page in nav order. `brock structure` names a `settings.page` the bucket does not hold.
+- 7ef6122: A tab page takes its meta from `<page>.page.ts` beside its folder: a file that exports only `meta: ScreenMeta` (title, icon, order, shortcut, devOnly, keywords). The screen sync writes it as a `page-meta` entry, the nav and the search index name and place the page with it, and `brock structure` names a `.page.ts` with no tab folder beside it or no `meta` export.
+- 55befe4: `@drizztdourden08/brock-build/testing` exports `readDockLayout(page)` and `widgetWindows(app)`. `readDockLayout` returns the widget layout from brock-react's layout store (`layout`, the `docked`, `floating` and `popped` ids, the main view's rect and each drawn widget's rect); `widgetWindows` returns every popped widget window from main with its id, bounds, visibility, focus, minimized and always-on-top state. Neither reads Tessera's class names. brock-react's `WidgetHost` installs the layout reader on automation launches only.
+- 9a3b1f6: `beforeQuit` on `BrockApp` and `RendererModule` returns an optional message; when one does, Quit and the title bar close button show a confirm first. `quitGuards` and `requestQuit` are exported.
+- 9a3b1f6: Every screen and widget, docked or popped out, renders inside `RenderErrorBoundary` (Tessera's `ErrorBoundary`): a throw shows "This page hit an error" with Reload page, Go home and Report a bug and logs the error to the log bus, instead of blanking the whole app. `RenderErrorBoundary` and `reportRenderError` are exported.
+- 9a3b1f6: Jumping to a search result focuses the row's control after the scroll, and a toast says "Could not find <item> on this page" when the row does not appear in time. `scrollToAnchor` and `openSearchTarget` take an optional label for that toast.
+- 9a3b1f6: Settings saves report their state: the settings store adds `saveStatus`, `saveError`, `savedAt` and `retrySave()`, the settings and hub headers show Saved after a write or Not saved with Retry, and a failed write raises a danger toast.
+- 9a3b1f6: A Keyboard shortcuts entry in the Advanced menu and Ctrl+/ open a dialog listing the framework shortcuts and every screen and page shortcut with Tessera's `Shortcut` keycaps. `shortcutsHelp` opens it from code.
+- 7ef6122: `WidgetMeta.order` sorts the Widgets menu, then the label, instead of the file name order. `brock structure` accepts `order` as a widget meta field.
+- 7ef6122: A popped widget window mounts the standard overlays (the confirm dialog, the bug report dialog and the toasts) and registers the escape layers, so `confirmAction` and `toast` work there. `StandardOverlays` now holds the confirm dialog, and its `menu` is optional: without it the palette is left out. brock-react exports `useWindowKind()` (`{ kind: 'main' }` or `{ kind: 'widget', id }`) and `widgetWindowId()`.
+
+### Patch Changes
+
+- 7ef6122: With a base screen under a fullscreen screen or hub, `ScreenHost` draws a scrim (Tessera's `--c-scrim`) over the base layer, so the base content no longer shows through around the card or collides with the bucket switch.
+- 7ef6122: `confirmAction` is the one confirmation API: `dialogs.confirmDelete` (and the hook's `confirmDelete`) is deprecated and is now a thin call to it with a red Delete button.
+- 7ef6122: Pop in docks a widget back into the pane it left, at its old place among that pane's tabs, while that pane still exists, instead of on its `defaultSide`.
+- 9a3b1f6: The hub and settings headers draw the active profile as a small tag after the title, and only when two profiles or more exist, so the bucket title stays the heading.
+- 55befe4: The review opens every widget the app and its modules register (the `src/widgets` files and module widgets): docked and captured as `widget-<id>`, then popped and captured as `widget-<id>-popped` when its definition sets `popOut`. A context-only widget is shown as `always` for its captures and set back after; a devOnly one is opened only while developer tools are on.
+- 55befe4: A renderer boot task that fills a session store must run `after: ['settings']`, because the profile hydration resets every session store before `settings` resolves; the architecture Boot section and the brock-react README now say so. In development the renderer boot warns in the app log when that reset wipes a session store something already filled, naming the app and module tasks that can run before `settings`.
+- 7ef6122: A tab page draws its tabs in the page header beside the title, with Tessera's `SettingsPage` `tabs`, the same strip a settings page uses for its anchors, instead of in the window header row.
+- 7ef6122: The title bar draws the app logo for a named instance too and marks the instance with the badge alone, instead of the near-identical bot logo.
+- 9a3b1f6: A renderer boot task that fails while the window is showing draws a panel in the window, "<task> failed" with the error, Retry and Open logs, like the splash, instead of leaving only the title bar.
+- 9a3b1f6: Escape in a non-empty text field clears the field first; only the next Escape closes the top layer.
+- 9a3b1f6: The title bar Report a bug button uses the neutral tone instead of danger.
+- 9a3b1f6: A fullscreen screen moves focus to its heading when it opens, makes the base screen behind it inert, and gives focus back to the opener when it closes.
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+  - @drizztdourden08/brock-core@0.16.0
+
 ## 0.15.0
 
 ### Minor Changes

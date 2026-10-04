@@ -13,6 +13,7 @@ import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsEffect } from '../../stores/settings-store.type';
 import type { SettingsControlProps, TabDef } from '../../settings/settings.type';
 import type { WidgetDef } from '../../widgets/widget.type';
+import type { AppReview } from '../../review/app-review.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -41,6 +42,7 @@ interface BrockAppProps<S extends object> {
   credits?: ReactNode;
   legalText?: string;
   beforeQuit?: BeforeQuit;
+  review?: AppReview;
 }
 
 interface MenuBuildInput {
@@ -86,6 +88,7 @@ interface ReviewTourInput {
   menu: readonly MenuEntry[];
   actions?: readonly WindowTitleBarAction[];
   moduleIds: readonly string[];
+  review?: AppReview;
 }
 
 export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext };

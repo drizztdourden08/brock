@@ -57,6 +57,7 @@ Usage:
                              package.json brock.tessera, else 0.3.0) to the installed Tessera, its next release
                              too when Tessera is linked to main, and pin brock.tessera; --tessera-from alone
                              replays only the renames. --report writes the touched files and numbered to-dos as JSON
+                             to <file>, relative to the current directory (not --root), and prints the path
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock knip [args]          knip with every git-ignored path under ignore, so it also works in a worktree

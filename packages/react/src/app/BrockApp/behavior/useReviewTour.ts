@@ -8,7 +8,7 @@ import { NO_ACTIONS } from '../../../shell/TitleBar/TitleBar.constants';
 import type { ReviewTourInput } from '../BrockApp.type';
 
 const useReviewTour = (input: ReviewTourInput): void => {
-  const { ready, menu, actions = NO_ACTIONS, moduleIds } = input;
+  const { ready, menu, actions = NO_ACTIONS, moduleIds, review = null } = input;
   const { product, home, homeScreen, screenTree } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
@@ -17,9 +17,9 @@ const useReviewTour = (input: ReviewTourInput): void => {
   useEffect(() => {
     if (!ready || started.current || !isReviewLaunch()) return;
     started.current = true;
-    const env = { product, home, homeScreen, screens: registry.list(), menu, actions, moduleIds, developerTools, screenTree };
+    const env = { product, home, homeScreen, screens: registry.list(), menu, actions, moduleIds, developerTools, screenTree, review };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
-  }, [ready, product, home, homeScreen, screenTree, registry, menu, actions, moduleIds, developerTools]);
+  }, [ready, product, home, homeScreen, screenTree, registry, menu, actions, moduleIds, developerTools, review]);
 };
 
 export { useReviewTour };

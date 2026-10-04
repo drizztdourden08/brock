@@ -7,6 +7,7 @@ import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.ty
 import type { SettingsStore } from '../../../../stores/settings-store.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
+import type { AppReview } from '../../../../review/app-review.type';
 import type { BrockAppLayout } from '../../BrockApp.type';
 
 interface AppShellProps<S extends object> {
@@ -20,6 +21,7 @@ interface AppShellProps<S extends object> {
   widgets?: readonly WidgetDef[];
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
+  review?: AppReview;
 }
 
 export type { AppShellProps };

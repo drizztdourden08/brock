@@ -16,18 +16,20 @@ my-app/
   eslint.config.mjs, stylelint.config.mjs, .markdownlint-cli2.mjs, tsconfig.json   managed by brock sync
   bin/<repo>.mjs                   the repo command
   electron/
-    main.ts                        bootstrapApp(product, { modules, bootTasks, handlers })
+    main.ts                        bootstrapApp(product, { modules, bootTasks, handlers: mainHandlers, services })
     preload.ts                     createPreloadBridge({ maps, namespaces })
     boot/<id>.task.ts              main boot tasks
-    handlers/index.ts              handlers: HandlerGroup[]
-    handlers/<subject>-handlers.ts one HandlerGroup per subject
+    handlers/<subject>-handlers.ts one HandlerGroup per subject, exported as <subject>Handlers
+    services/                      createAppServices(ctx), the graph bootstrapApp builds as ctx.services
     <subject>/                     main-side logic the handlers call (kebab-case functions)
   src/
-    main.tsx                       <BrockApp screenTree widgets modules bootTasks settings />
+    main.tsx                       <BrockApp screenTree widgets modules bootTasks settings review />
     index.html, product.ts, theme.css
     settings.type.ts, settings.constants.ts, main.constants.ts
-    ipc/contract.type.ts           the channel augmentation
-    ipc/contract.constants.ts      the app channel maps
+    ipc/contract.constants.ts      APP_CHANNELS = defineChannels({...}), and its maps for the preload
+    ipc/contract.type.ts           the augmentation, from the declaration's types
+    review/seed.ts                 fills the app with data before the review tour
+    review/<id>.step.ts            the app's own review steps
     screens/screens.config.ts      buckets, menu placement, home
     screens/<bucket>/<id>.<kind>.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx
     widgets/<id>.widget.tsx        one widget per file
@@ -69,8 +71,10 @@ my-repo/
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
 | Renderer boot task | `src/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
-| IPC channel | `src/ipc/` | `contract.type.ts` (augmentation), `contract.constants.ts` (maps) | `electron/preload.ts` and the typed `handle` |
-| IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, listed in `index.ts` | `bootstrapApp({ handlers })` in `electron/main.ts` |
+| IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |
+| IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, exporting `<subject>Handlers` | `brock sync` into `.brock/handlers.main.ts`, passed as `handlers` in `electron/main.ts` |
+| App services | `electron/services/` | `app-services.ts` (`createAppServices(ctx)`), `AppServices` augmented | `bootstrapApp({ services })`, read as `ctx.services` |
+| Review seed and steps | `src/review/` | `seed.ts`, `<id>.step.ts` (default export: `defineReviewSeed`, `defineReviewStep`) | `brock sync` into `.brock/review.ts`, passed as `review` in `src/main.tsx` ([review-steps.md](review-steps.md)) |
 | Settings | `src/` and `src/screens/` | `settings.type.ts`, `settings.constants.ts`, `<id>.settings.ts` pages | `BrockApp settings`, the screen sync |
 | Tessera view | `src/views/` | `<Name>/<Name>.tsx` component folder | imported by screens and widgets |
 | Tessera compound | `src/compounds/` (one app) or `packages/design/src/compounds/` | `<Name>/<Name>.tsx`, `<Name>.usage.ts` | `brock tessera new compound`, `brock tessera check` |
@@ -84,8 +88,10 @@ my-repo/
 | Other static files | `public/` | any | served at the page root |
 | Installer | `build/installer/` | `header.png`, `splash.png` | `brock package` |
 | Tests | `tests/<area>/`, `tests/e2e/` | `<name>.keep.test.ts`, `<name>.e2e.ts` | `vitest` |
-| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `manifest.json` | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
+| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `manifest.json` | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
 | Config | the app root | `brock.config.ts`, `tessera.config.json`, the managed configs | `brock sync` rewrites the managed ones |
+
+A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
 `brock structure` enforces the screen and widget folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are all findings.
 
@@ -106,7 +112,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 | `.brock-port-slot` | `worktree create` | no |
 | `upgrade-report.md` | `<repo> upgrade`, in its worktree | no (the local exclude file) |
 
-An app that ignored `.brock` before keeps working: the commands above sync it before they start.
+`.brock/*.ts` stays committed even though `dev`, `build`, `start` and `launch` sync it first: a fresh checkout type-checks and lints without a sync, and `brock check` in CI catches a registry nobody regenerated. The `.*/` rule ignores every dot-folder, so the `.gitignore` keeps `!.brock/` (and `.brock/profile-config.json`, which stays ignored); `brock migrate` adds both where an older `.gitignore` lacks them. An app that ignored `.brock` before keeps working: the commands above sync it before they start.
 
 ## Brock's own packages
 
@@ -134,7 +140,6 @@ Fixed on this branch:
 
 What this branch leaves alone, and why:
 
-- **App handlers by convention.** `electron/handlers/<subject>-handlers.ts` is still listed by hand in `index.ts`. A generated `.brock/handlers.main.ts`, like the boot tasks, would end that, but it needs a runtime type and a migration of every app's `main.ts`.
 - **Module renderer parts.** `updater` (`UpdateDialog`), `input` (`DeviceCard`, `InputTester`, `StickCalibrationPanel`, `TriggerCalibrationPanel`, the loose `InputTesterScreen.tsx`) and `display` (`DisplaySettingsTab`) keep component folders straight in `src/renderer/`, and `port-kit` has a generic `src/renderer/components/`. Sorting them into `compounds/` and `views/` changes their public import paths and brings them under the usage-file check, so it is a module release of its own.
 - **`brock-react` `src/shell/`.** `About`, `ScreenRail` and `TitleBar` are PascalCase folders whose component moved to Tessera; only constants, types and behavior remain. Renaming them touches exported names.
 - **Stores, hooks and views are not checked.** `brock structure` does not yet look for stores outside `src/stores` or components outside the Tessera part folders; a check would flag most existing apps at once, so it should land with a migration that lists the moves.

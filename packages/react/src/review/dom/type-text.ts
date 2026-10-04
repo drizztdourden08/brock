@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind logic */
-const typeText = (input: HTMLInputElement, text: string): void => {
+const typeText = (input: HTMLInputElement | HTMLTextAreaElement, text: string): void => {
   input.focus();
-  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, text);
+  const proto = input instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, 'value')?.set?.call(input, text);
   input.dispatchEvent(new Event('input', { bubbles: true }));
 };
 

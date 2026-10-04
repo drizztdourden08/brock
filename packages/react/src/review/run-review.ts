@@ -2,13 +2,16 @@
 import { requireHostApi } from '../host/require-host-api';
 import { createStepTour } from './create-step-tour';
 import { settle } from './dom/settle';
-import { REVIEW_STEPS } from './run-review.constants';
+import { appSteps } from './app/app-steps';
+import { seedSteps } from './app/seed-steps';
+import { BUILT_IN_STEP_NAMES, STEPS_AFTER_SEED, STEPS_BEFORE_SEED } from './run-review.constants';
 import type { ReviewEnv } from './review.type';
 import { resetUi } from './steps/reset-ui';
 
 const runReview = async (env: ReviewEnv): Promise<void> => {
   await settle();
-  for (const step of REVIEW_STEPS) {
+  const steps = [...STEPS_BEFORE_SEED, ...seedSteps(env.review), ...STEPS_AFTER_SEED, ...appSteps(env.review, BUILT_IN_STEP_NAMES)];
+  for (const step of steps) {
     const tour = createStepTour(env, step.name);
     try {
       await step.run(tour);

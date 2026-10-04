@@ -25,7 +25,7 @@ import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit, review } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
@@ -78,6 +78,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     widgets={allWidgets}
                     layout={layout}
                     screenGroups={screenGroups}
+                    review={review}
                   />
                 )}
               </ModuleProviders>

@@ -5,6 +5,7 @@ import type { MenuEntry } from '../menu/menu.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { SearchTarget } from '../search/search.type';
 import type { ScreenDef } from '../screens/screen.type';
+import type { AppReview } from './app-review.type';
 
 type ReviewOutcome = Omit<ReviewCheck, 'step'>;
 
@@ -18,6 +19,7 @@ interface ReviewEnv {
   moduleIds: readonly string[];
   developerTools: boolean;
   screenTree: ResolvedScreenTree | null;
+  review: AppReview | null;
 }
 
 interface StepTour {

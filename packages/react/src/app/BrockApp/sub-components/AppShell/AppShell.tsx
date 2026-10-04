@@ -31,7 +31,7 @@ import { AppTitleBar } from '../AppTitleBar';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups, review } = props;
   const { product, home, logoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
@@ -53,7 +53,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const actionIds = JSON.stringify(actions.map((action) => action.id));
   const barMenu = useMemo(() => withoutActionEntries(fullMenu, JSON.parse(actionIds) as string[]), [fullMenu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
-  useReviewTour({ ready, menu: barMenu, actions, moduleIds });
+  useReviewTour({ ready, menu: barMenu, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);
   const main = <BootFailureGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootFailureGate>;

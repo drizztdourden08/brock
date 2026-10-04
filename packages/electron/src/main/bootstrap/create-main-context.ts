@@ -10,6 +10,7 @@ import { createNodeFileStore } from '../files/node-file-store';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
 import { getMainWindow } from '../window/get-main-window';
+import { servicesProxy } from '../services/services-proxy';
 
 const createMainContext = ({ product, flags, instance, profileHooks }: ContextInput): MainContext => {
   const files = createNodeFileStore();
@@ -38,6 +39,7 @@ const createMainContext = ({ product, flags, instance, profileHooks }: ContextIn
     on,
     emit: emitToWindow,
     log,
+    services: servicesProxy,
   };
 };
 

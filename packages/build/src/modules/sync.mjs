@@ -2,11 +2,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { renderBootFiles } from '../boot/render-boot-files.mjs';
+import { renderHandlersFiles } from '../handlers/render-handlers.mjs';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
 import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
 import { renderWorkflows } from '../release/render-workflows.mjs';
+import { renderReviewFiles } from '../review/render-review.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
@@ -91,6 +93,8 @@ const syncApp = (rootDir, config, opts = {}) => {
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
     ...renderBootFiles(rootDir),
+    ...renderHandlersFiles(rootDir),
+    ...renderReviewFiles(rootDir),
     ...renderScreensFiles(rootDir),
     ...renderWidgetsFiles(rootDir),
     ...renderManagedFiles({ inWorkspace }),

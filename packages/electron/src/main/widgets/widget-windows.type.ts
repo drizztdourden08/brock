@@ -122,8 +122,16 @@ interface ResizeNeighbour extends EdgeWindow {
 interface ResizeFollower {
   id: string;
   side: WidgetEdge;
+  edge: WidgetEdge;
   start: WidgetWindowBounds;
   min: MinSize;
+}
+
+interface LineWindow {
+  other: ResizeNeighbour;
+  edge: WidgetEdge;
+  far: boolean;
+  span: Span;
 }
 
 interface ResizeStart {
@@ -203,6 +211,6 @@ interface CaptureSheet {
 }
 
 export type {
-  BoundsReporter, CaptureSheet, CoverCandidate, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
+  BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, LineWindow, MainSnapState, ManipulationRules,
   MinSize, ModifierInput, PackSpan, ResizeEdges, ResizeFollower, ResizeNeighbour, ResizeRequest, ResizeSession, ResizeStart, ResizeStep, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup, WillResizeCue,
 };

@@ -1,0 +1,8 @@
+/* @layer renderer-shell @kind style */
+
+.brand-search-results__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+}

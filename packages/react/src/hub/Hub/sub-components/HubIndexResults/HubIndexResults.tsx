@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { SearchResults } from '@drizztdourden08/tessera/composites';
 import type { SearchResultsHit } from '@drizztdourden08/tessera/composites';
 import { useBrock } from '../../../../app/useBrock';
 import { uniqueById } from '../../../../collections/unique-by-id';
@@ -14,6 +13,7 @@ import { hubLiveGroups } from '../../behavior/hub-live-groups';
 import { hubPageEntries } from '../../behavior/hub-page-entries';
 import { hubResultGroups } from '../../behavior/hub-result-groups';
 import type { HubIndexResultsProps } from './HubIndexResults.type';
+import { BrandSearchResults } from '../../../../search/BrandSearchResults';
 
 const HubIndexResults = (props: HubIndexResultsProps) => {
   const { def, pages, query, onOpen, onOpenPage } = props;
@@ -45,7 +45,7 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
   };
 
   return (
-    <SearchResults
+    <BrandSearchResults
       query={query}
       count={count}
       jumps={jumps}

@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { SearchResults } from '@drizztdourden08/tessera/composites';
 import type { SearchResultsHit } from '@drizztdourden08/tessera/composites';
 import type { HubSearchHitsProps } from './HubSearchHits.type';
+import { BrandSearchResults } from '../../../../search/BrandSearchResults';
 
 const HubSearchHits = (props: HubSearchHitsProps) => {
   const { query, index, onOpen } = props;
@@ -14,7 +14,7 @@ const HubSearchHits = (props: HubSearchHitsProps) => {
     if (hit) onOpen(hit);
   };
 
-  return <SearchResults query={query} count={hits.length} hits={hits} onOpenHit={openHit} idleMessage="Type to search this hub." />;
+  return <BrandSearchResults query={query} count={hits.length} hits={hits} onOpenHit={openHit} idleMessage="Type to search this hub." />;
 };
 
 export { HubSearchHits };

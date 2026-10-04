@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { SearchResults } from '@drizztdourden08/tessera/composites';
 import { liveTabGroup } from '../../behavior/live-tab-group';
 import { matchTabs } from '../../behavior/match-tabs';
 import type { HubSearchResultsProps } from './HubSearchResults.type';
+import { BrandSearchResults } from '../../../../search/BrandSearchResults';
 
 const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => {
   const { tabs, query, onOpenTab, ...control } = props;
@@ -14,7 +14,7 @@ const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => 
   const groups = matches.withRows.map(({ tab, count }) => liveTabGroup({ tab, count, query: normalized, control }));
 
   return (
-    <SearchResults
+    <BrandSearchResults
       query={query}
       count={matches.total}
       summary={`${matches.total} ${matches.total === 1 ? 'setting' : 'settings'} match "${shown}"`}

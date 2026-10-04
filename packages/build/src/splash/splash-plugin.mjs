@@ -20,7 +20,7 @@ const splashPageOf = async (rootDir, product) => {
 /**
  * @param {string} rootDir
  * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
- * @returns {Promise<import('vite').HtmlTagDescriptor[]>}  The look as custom properties, so the window draws the boot failure splash as the splash page does
+ * @returns {Promise<import('vite').HtmlTagDescriptor[]>}  The look, for the app page
  */
 const lookTagsOf = async (rootDir, product) => {
   const { look } = await appLook(rootDir, product);

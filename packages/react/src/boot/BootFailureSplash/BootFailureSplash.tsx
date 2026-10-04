@@ -2,13 +2,13 @@
 import { Splash } from '@drizztdourden08/tessera/primitives';
 import { useBrock } from '../../app/useBrock';
 import { useAppVersion } from '../../diagnostics/useAppVersion';
-import { useBootStore } from '../useBootStore';
 import { failureTitle } from './behavior/failure-title';
 import { useFailureActions } from './behavior/useFailureActions';
+import type { BootFailureSplashProps } from './BootFailureSplash.type';
 import './BootFailureSplash.css';
 
-const BootFailureSplash = () => {
-  const failure = useBootStore((s) => (s.phase === 'failed' ? s.failure : null));
+const BootFailureSplash = (props: BootFailureSplashProps) => {
+  const { failure } = props;
   const { product } = useBrock();
   const version = useAppVersion();
   const actions = useFailureActions();

@@ -35,7 +35,7 @@ interface ActionRunner {
 
 interface RowActionScope {
   id: string;
-  runner: ActionRunner;
+  runner?: ActionRunner;
 }
 
 interface SettingRowContext<S extends object> {

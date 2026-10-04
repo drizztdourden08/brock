@@ -32,7 +32,7 @@ const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<
     return { ...shared, content: withActions(createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }), item, disabled, values) };
   }
   const input = settingInput(item.control, value, set, { label: item.label, disabled });
-  const actions = rowActions(item.actions, values, runner ? { id: item.key, runner } : undefined);
+  const actions = rowActions(item.actions, values, { id: item.key, runner });
   if (!input && !actions) {
     warnMissingControl(item.key, value);
     return null;

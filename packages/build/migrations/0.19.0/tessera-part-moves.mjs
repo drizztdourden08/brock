@@ -43,7 +43,7 @@ const removeEdit = (file, statement) => {
 const newImport = (file, statement, moved, target) =>
   `\nimport ${typeOnly(statement) ? 'type ' : ''}${listText(file, moved)} from '${target}';`;
 
-const moveEdits = (ts, file, statement, move, imports) => {
+const moveEdits = ({ ts, file, imports }, statement, move) => {
   const named = namedImports(ts, statement);
   const moved = named.elements.filter((specifier) => move.names.has(importedName(specifier)));
   if (moved.length === 0) return [];
@@ -59,7 +59,7 @@ const editsOf = (ts, file) => {
   const imports = importsOf(ts, file);
   return imports.flatMap((statement) => {
     const move = MOVES.find((entry) => entry.from === moduleOf(ts, statement));
-    return move ? moveEdits(ts, file, statement, move, imports) : [];
+    return move ? moveEdits({ ts, file, imports }, statement, move) : [];
   });
 };
 

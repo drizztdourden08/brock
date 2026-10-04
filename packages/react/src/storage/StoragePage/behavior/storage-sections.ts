@@ -7,7 +7,7 @@ import type { ActionRowInput, StorageSectionsInput } from '../StoragePage.type';
 import { domainActions } from './domain-actions';
 
 const actionRow = ({ id, title, description, hint, actions, runner }: ActionRowInput): SettingsSectionRow => ({
-  id, title, description, hint, actions: rowActions(actions, {}, runner ? { id, runner } : undefined),
+  id, title, description, hint, actions: rowActions(actions, {}, { id, runner }),
 });
 
 const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSectionRow => {

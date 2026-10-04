@@ -1,27 +1,32 @@
 /* @layer tooling-scripts @kind test */
 import { afterEach, describe, expect, it } from 'vitest';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { collectMigrations, runMigrations, selectMigrations } from '../src/upgrade/index.mjs';
 
-const dirs: string[] = [];
+const roots: string[] = [];
 
 const step = () => selectMigrations(collectMigrations([]), { from: '0.18.0', to: null }).filter((m) => m.file.endsWith('tessera-part-moves.mjs'));
 
+const appWith = (files: Record<string, string>): string => {
+  const root = mkdtempSync(join(tmpdir(), 'brock-part-moves-'));
+  const src = join(root, 'src');
+  roots.push(root);
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'moves' }));
+  mkdirSync(src);
+  Object.entries(files).forEach(([name, text]) => writeFileSync(join(src, name), text));
+  return root;
+};
+
 const migrate = async (files: Record<string, string>) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-migrate-'));
-  dirs.push(root);
-  mkdirSync(join(root, 'src'), { recursive: true });
-  writeFileSync(join(root, 'package.json'), '{"name":"x"}');
-  for (const [name, text] of Object.entries(files)) writeFileSync(join(root, 'src', name), text);
+  const root = appWith(files);
   const run = await runMigrations(root, step());
-  const read = (name: string) => readFileSync(join(root, 'src', name), 'utf8');
-  return { root, run, read };
+  return { root, run, read: (name: string) => readFileSync(join(root, 'src', name), 'utf8') };
 };
 
 afterEach(() => {
-  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+  roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true }));
 });
 
 describe('tessera-part-moves', () => {

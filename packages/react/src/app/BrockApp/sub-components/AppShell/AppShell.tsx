@@ -13,6 +13,7 @@ import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
 import { WindowGuide } from '../../../../widgets/WindowGuide';
 import { useWindowSquare } from '../../../../widgets/useWindowSquare';
 import { BootFailureSplash } from '../../../../boot/BootFailureSplash';
+import { BootGate } from '../../../../boot/BootGate';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
@@ -41,10 +42,10 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const railed = layout === 'rail';
 
   const phase = useBootStore((s) => s.phase);
+  const failure = useBootStore((s) => (s.phase === 'failed' ? s.failure : null));
   useOpenHomeOnStart(phase === 'painting' || phase === 'ready');
   useRendererBoot(settingsStore, bootTasks);
   const ready = phase === 'ready';
-  const failed = phase === 'failed';
   useProfileHydration(settingsStore);
   useSaveFailureToast(settingsStore);
   useKeyboardShortcuts();
@@ -62,12 +63,12 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: barMenu, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const main = failed ? null : <ScreenHost home={home} square={square} className="brock-app__screens" />;
+  const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootGate>;
   const stage = <WidgetHost widgets={widgets} layout={widgetLayout} widgetContext={widgetContext} mainLabel={product.widgets.mainLabel} main={main} />;
 
   return (
     <>
-      <Box className="brock-app" inert={failed}>
+      <Box className="brock-app" inert={failure !== null}>
         {windowChrome && (
           <AppTitleBar
             title={product.window.title ?? product.name}
@@ -87,7 +88,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         <JobHost />
         <StandardOverlays menu={fullMenu} actions={searchActions} />
       </Box>
-      <BootFailureSplash />
+      <BootFailureSplash failure={failure} />
     </>
   );
 };

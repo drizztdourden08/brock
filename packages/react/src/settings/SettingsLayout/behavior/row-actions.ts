@@ -17,9 +17,9 @@ const rowAction = (action: SettingAction, index: number, settings: SettingValues
     icon: action.icon ? createElement(Icon, { name: action.icon }) : undefined,
     tone: action.variant === 'danger' ? 'danger' : undefined,
     disabled: actionDisabled(action, settings),
-    loading: scope?.runner.busy[key] === true,
+    loading: scope?.runner?.busy[key] === true,
     confirm: typeof action.confirm === 'string' ? action.confirm : undefined,
-    onClick: () => void (scope ? scope.runner.run(key, action, options) : runSettingAction(action, options)),
+    onClick: () => void (scope?.runner ? scope.runner.run(key, action, options) : runSettingAction(action, options)),
   };
 };
 

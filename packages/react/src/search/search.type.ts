@@ -39,6 +39,8 @@ interface SearchEntry {
 
 interface SearchEntrySeed {
   label: string;
+  id?: string;
+  params?: ScreenParams;
   keywords?: readonly string[];
   anchor?: string;
   description?: string;

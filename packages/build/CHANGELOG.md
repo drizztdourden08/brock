@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-build
 
+## 0.20.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.20.0
+- @drizztdourden08/brock-thread@0.20.0
+
 ## 0.19.0
 
 ### Minor Changes

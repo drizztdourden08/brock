@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { Size } from '@drizztdourden08/tessera/composites';
+import type { MenuItem } from '../menu/menu.type';
 import type { WidgetDef } from './widget.type';
 
 const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'render'> = {
@@ -11,6 +12,7 @@ const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'render'> = {
 
 const PROFILE_VIEWS_PREFIX = 'profile:';
 const VIEWS_SAVE_DELAY_MS = 250;
+const FLUSH_EVENTS = ['beforeunload', 'pagehide'] as const;
 const NO_WIDGETS: readonly WidgetDef[] = [];
 const NO_IDS: readonly string[] = [];
 const WIDGET_KEY_PREFIX = 'widget-';
@@ -25,8 +27,10 @@ const RELAY_SLICES = { log: 'log', logAppend: 'log+', frames: 'frames', prefs: '
 const REVIEW_OPTIONS_SLICE = 'review-options';
 const WIDGET_LAYOUT_GLOBAL = '__brockWidgetLayout';
 const DRAWN_WIDGET_SELECTOR = '[data-widget-id]';
+const LAYOUT_MAIN = 'main';
+const RESET_LAYOUT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'widgets-reset-layout', label: 'Reset layout', icon: 'rotate-ccw' };
 
 export {
-  DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOATING_MIN, NO_IDS, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, REVIEW_OPTIONS_SLICE, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
+  DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOATING_MIN, FLUSH_EVENTS, LAYOUT_MAIN, NO_IDS, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, RESET_LAYOUT_ENTRY, REVIEW_OPTIONS_SLICE, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
   WIDGET_LAYOUT_GLOBAL, WIDGET_QUERY_KEY,
 };

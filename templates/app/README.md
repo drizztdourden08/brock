@@ -116,10 +116,24 @@ export { meta };
 
 The default export is the component. `meta` is optional: `label` (the file name in title
 case without it), `icon`, `popOut`, `devOnly`, `taskbar`, `defaultVisibility`
-(`'context-only'` shows it only while a game or session runs), `defaultSide`,
-`defaultDockedSize`, `defaultFloatingSize` and `settings`, a component drawn in the
-widget's options panel. `src/widgets` holds widget files only: a widget with parts
-imports them from `src/views`. `pnpm structure` names anything else there.
+(`'context-only'` shows it only while a game or session runs, as `BrockApp`'s
+`widgetContext` hook says), `defaultOpen`, `defaultSide`, `defaultDockedSize`,
+`defaultFloatingSize` and `settings`, a component drawn in the widget's options panel.
+`src/widgets` holds widget files and `layout.ts` only: a widget with parts imports them
+from `src/views`. `pnpm structure` names anything else there.
+
+`src/widgets/layout.ts` is the layout a new profile starts with and the one
+Menu > Widgets > Reset layout comes back to: rows of widget ids around `'main'`, the main
+view.
+
+```ts
+export default defineLayoutPreset({ rows: [['main', 'notes']], widths: [[0.76, 0.24]] });
+```
+
+A widget keeps its own state per profile with `useWidgetState(key, initial)`, a `useState`
+that survives a restart, a profile switch and a screen opened over it. App state reaches a
+popped widget window with `shareWithWidgets(store, { kind, pick })` in a boot task and
+`useWidgetSlice(kind)` in the widget.
 
 Brock adds two widgets of its own: Logs and Performance (frame rate, long tasks, heap,
 every process's CPU and memory, the app state, and a Copy snapshot button for bug reports).

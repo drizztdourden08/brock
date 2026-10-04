@@ -1,45 +1,15 @@
 /* @layer renderer-shell @kind hook */
-import { useEffect, useRef } from 'react';
-import { useWidgetPrefStore } from '../../../stores/useWidgetPrefStore';
-import { profileViews } from '../../profile-views';
-import { useWidgetLayoutStore } from '../../useWidgetLayoutStore';
+import { useEffect } from 'react';
+import { widgetPersistence } from '../../widget-persistence';
 
 const useWidgetPersistence = (profileId: string | null): void => {
-  const hydratedFor = useRef<string | null>(null);
-
   useEffect(() => {
-    hydratedFor.current = null;
-    if (!profileId) {
-      useWidgetLayoutStore.getState().replace(null);
-      return;
-    }
     let live = true;
-    void profileViews.read(profileId).then((views) => {
-      if (!live) return;
-      useWidgetLayoutStore.getState().replace(views.widgetLayout);
-      useWidgetPrefStore.getState().hydrate(views.widgetPrefs ?? {});
-      hydratedFor.current = profileId;
-    });
+    void widgetPersistence.load(profileId, () => live);
     return () => { live = false; };
   }, [profileId]);
 
-  useEffect(() => {
-    const offLayout = useWidgetLayoutStore.subscribe((state, prev) => {
-      const id = hydratedFor.current;
-      if (id && state.layout !== prev.layout) void profileViews.patch(id, { widgetLayout: state.layout });
-    });
-    const offPrefs = useWidgetPrefStore.subscribe((state, prev) => {
-      const id = hydratedFor.current;
-      if (id && state.byWidget !== prev.byWidget) void profileViews.patch(id, { widgetPrefs: state.byWidget });
-    });
-    window.addEventListener('beforeunload', profileViews.flush);
-    return () => {
-      offLayout();
-      offPrefs();
-      window.removeEventListener('beforeunload', profileViews.flush);
-      profileViews.flush();
-    };
-  }, []);
+  useEffect(widgetPersistence.watch, []);
 };
 
 export { useWidgetPersistence };

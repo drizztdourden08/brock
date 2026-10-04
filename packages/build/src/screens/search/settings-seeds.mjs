@@ -12,7 +12,7 @@ const rowSeeds = (items) => (Array.isArray(items) ? items : []).map(asRecord).fl
   const key = text(item.key);
   const label = text(item.label);
   if (key === undefined || label === undefined) return [];
-  return [{ key, label, description: text(item.description), keywords: normaliseKeywords(item.keywords) }];
+  return [{ key, label, description: text(item.description), hint: text(item.hint), keywords: normaliseKeywords(item.keywords) }];
 });
 
 /** @param {Record<string, unknown>} section @param {string} title */
@@ -23,7 +23,7 @@ const subsectionSeeds = (section, title) => (Array.isArray(section.subsections) 
 
 /**
  * @param {unknown} value the default export of a .settings.ts file, read as a literal
- * @returns {{ id: string, title: string, sub?: string, rows: { key: string, label: string, description?: string, keywords: string[] }[] }[]}
+ * @returns {{ id: string, title: string, sub?: string, rows: { key: string, label: string, description?: string, hint?: string, keywords: string[] }[] }[]}
  */
 const settingsSeeds = (value) => (Array.isArray(value) ? value : []).map(asRecord).flatMap((section) => {
   const id = text(section.id);

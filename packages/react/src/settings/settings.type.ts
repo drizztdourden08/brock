@@ -1,23 +1,29 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { SettingsDescription } from '@drizztdourden08/tessera/composites';
 
 interface SettingChoice {
   value: string;
   label: string;
+  hint?: string;
 }
 
 type SettingControl =
   | { kind: 'choice'; options: SettingChoice[] }
   | { kind: 'range'; min: number; max: number; step?: number; format?: (value: number) => string };
 
-interface SettingItem {
+type SettingDescription = SettingsDescription;
+
+interface SettingItemFields {
   key: string;
   label: string;
-  description: string;
+  hint: string;
   keywords?: string;
   link?: string;
   control?: SettingControl;
 }
+
+type SettingItem = SettingItemFields & SettingDescription;
 
 interface SubSection {
   id: string;
@@ -74,6 +80,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingChoice, SettingControl, SettingItem, SettingLockCause, SettingsControlProps,
-  SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
+  LockOverlayProps, RenderControl, Section, SettingChoice, SettingControl, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
+  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

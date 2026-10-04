@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
+import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
+import type { RenderControl, SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
 
 interface ItemGroup {
   id: string | null;
@@ -22,7 +23,15 @@ interface GroupListInput<S extends object> {
   defaults?: S;
   onChange: SettingsPatch<S>;
   lockOf: (key: string) => SettingLockCause | null;
-  renderRow: (item: SettingItem) => ReactNode;
+  rowOf: (item: SettingItem) => SettingsSectionRow | null;
+}
+
+interface SettingRowContext<S extends object> {
+  settings: S;
+  onChange: SettingsPatch<S>;
+  renderControl?: RenderControl<S>;
+  disabled: boolean;
+  lock: SettingLockCause | null;
 }
 
 interface SettingsPageContextValue {
@@ -33,4 +42,4 @@ interface SettingsPageContextValue {
   query: string;
 }
 
-export type { GroupListInput, ItemGroup, ResolvedSection, SettingsPageContextValue, SettingsRecord };
+export type { GroupListInput, ItemGroup, ResolvedSection, SettingRowContext, SettingsPageContextValue, SettingsRecord };

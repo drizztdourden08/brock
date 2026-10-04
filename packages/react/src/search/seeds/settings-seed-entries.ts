@@ -22,6 +22,7 @@ const sectionEntries = (page: SearchEntry, section: SearchSectionSeed): SearchEn
     label: row.label,
     keywords: row.keywords ?? [],
     description: row.description,
+    hint: row.hint,
     breadcrumb: [...crumbs, ...trail],
     target: { route, anchor: row.key },
     icon: page.icon,

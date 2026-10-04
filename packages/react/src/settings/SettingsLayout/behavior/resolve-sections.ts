@@ -7,10 +7,11 @@ const groupsOf = (section: Section): ItemGroup[] =>
     ? section.subsections.map((sub) => ({ id: sub.id, title: sub.title, items: sub.items }))
     : [{ id: null, title: null, items: section.items ?? [] }];
 
+const choiceWords = (item: SettingItem): string[] =>
+  (item.control?.kind === 'choice' ? item.control.options.flatMap((option) => [option.label, option.hint ?? '']) : []);
+
 const matches = (item: SettingItem, query: string): boolean =>
-  item.label.toLowerCase().includes(query) ||
-  item.description.toLowerCase().includes(query) ||
-  (item.keywords ?? '').toLowerCase().includes(query);
+  [item.label, item.description ?? '', item.hint, item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));
 
 const resolveSections = (sections: readonly Section[], query: string): ResolvedSection[] =>
   sections

@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-port-kit",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "Brock port kit module: the WebAssembly game core lifecycle, save slots and SRAM, the frame presenter, the audio adapter, live settings, the ROM source, an asset pipeline runner and ensure-wasm. The game supplies a typed port definition.",
   "type": "module",
   "license": "UNLICENSED",

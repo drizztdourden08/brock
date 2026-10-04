@@ -15,13 +15,19 @@ const topEntries = async (dir: string): Promise<string[]> => {
   }
 };
 
-const removeAll = async (paths: readonly string[]): Promise<CleanCount> => {
-  const sizes = await mapLimit(paths, STAT_LANES, async (full) => {
-    const bytes = await pathBytes(full);
+const removeOne = async (full: string): Promise<number | null> => {
+  const bytes = await pathBytes(full);
+  try {
     await rm(full, { recursive: true, force: true });
     return bytes;
-  });
-  return { removed: paths.length, bytes: sizes.reduce((sum, bytes) => sum + bytes, 0) };
+  } catch {
+    return null;
+  }
+};
+
+const removeAll = async (paths: readonly string[]): Promise<CleanCount> => {
+  const removed = (await mapLimit(paths, STAT_LANES, removeOne)).filter((bytes) => bytes !== null);
+  return { removed: removed.length, bytes: removed.reduce((sum, bytes) => sum + bytes, 0) };
 };
 
 const cleanDir = async (dir: string, olderThanMs: number | null, now = Date.now()): Promise<CleanCount> => {

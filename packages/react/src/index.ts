@@ -32,3 +32,6 @@ export * from './boot';
 export * from './errors';
 export * from './shortcuts-help';
 export * from './quit';
+export * from './title-bar';
+export * from './jobs';
+export * from './storage';

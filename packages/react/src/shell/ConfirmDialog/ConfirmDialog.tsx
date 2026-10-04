@@ -9,16 +9,17 @@ const ConfirmDialog = () => {
   const dialog = useDialogStore((s) => s.dialog);
   const dismiss = useDialogStore((s) => s.dismiss);
 
-  if (dialog?.focus === 'cancel') return <CancelFirstDialog dialog={dialog} onCancel={dismiss} />;
+  if (!dialog) return <Dialog open={false} title="" message="" onConfirm={noop} onCancel={dismiss} />;
+  if (dialog.focus === 'cancel') return <CancelFirstDialog dialog={dialog} onCancel={dismiss} />;
   return (
     <Dialog
-      open={dialog !== null}
-      title={dialog?.title ?? ''}
-      message={dialog?.message ?? ''}
-      confirmLabel={dialog?.confirmLabel}
-      cancelLabel={dialog?.cancelLabel}
-      variant={dialog?.variant}
-      onConfirm={dialog?.onConfirm ?? noop}
+      open
+      title={dialog.title}
+      message={dialog.message}
+      confirmLabel={dialog.confirmLabel}
+      cancelLabel={dialog.cancelLabel}
+      variant={dialog.variant}
+      onConfirm={dialog.onConfirm}
       onCancel={dismiss}
     />
   );

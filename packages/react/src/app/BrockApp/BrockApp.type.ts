@@ -6,6 +6,7 @@ import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { BeforeQuit } from '../../quit/quit.type';
+import type { TitleBarItemEntry } from '../../title-bar/title-bar-item.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
@@ -41,6 +42,7 @@ interface BrockAppProps<S extends object> {
   credits?: ReactNode;
   legalText?: string;
   beforeQuit?: BeforeQuit;
+  titleBar?: readonly TitleBarItemEntry[];
 }
 
 interface MenuBuildInput {

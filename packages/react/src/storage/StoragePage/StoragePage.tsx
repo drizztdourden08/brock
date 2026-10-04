@@ -1,0 +1,29 @@
+/* @layer renderer-shell @kind component */
+import { useMemo, useState } from 'react';
+import { SettingsSection } from '@drizztdourden08/tessera/composites';
+import { Callout, EmptyState, Stack } from '@drizztdourden08/tessera/primitives';
+import { useSearchEntries } from '../../search/useSearchEntries';
+import { storageSearchEntries } from './behavior/storage-search-entries';
+import { storageSections } from './behavior/storage-sections';
+import { useStorageActions } from './behavior/useStorageActions';
+import { useStorageDomains } from './behavior/useStorageDomains';
+import type { StoragePageProps } from './StoragePage.type';
+
+const StoragePage = (props: StoragePageProps) => {
+  const state = useStorageDomains(props.domains);
+  const actions = useStorageActions(state.refresh);
+  const [picked, setPicked] = useState<readonly string[] | null>(null);
+  const chosen = picked ?? state.domains.filter((def) => def.portable !== false).map((def) => def.domain);
+  const sections = storageSections({ state, actions, chosen, onChoose: setPicked });
+  useSearchEntries(useMemo(() => storageSearchEntries(state.domains), [state.domains]));
+
+  if (!state.available) return <EmptyState message="Storage is only available in the desktop app." />;
+  return (
+    <Stack gap="lg" data-storage-page>
+      {state.error !== null && <Callout tone="danger">{`Could not read the data folder: ${state.error}`}</Callout>}
+      {sections.map((section) => <SettingsSection key={section.id} {...section} />)}
+    </Stack>
+  );
+};
+
+export { StoragePage };

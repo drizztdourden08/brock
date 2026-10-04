@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
-import type { SettingsDescription, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
+import type { SettingsDescription, SettingsInput, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
 import type { SettingItem } from '../../settings.type';
 import type { SettingRowContext } from '../SettingsLayout.type';
 import { LinkedToggle } from '../sub-components/LinkedToggle';
@@ -11,7 +11,10 @@ import { warnMissingControl } from './warn-missing-control';
 const descriptionOf = (item: SettingItem): SettingsDescription =>
   (item.noDescription === true ? { noDescription: true } : { description: item.description });
 
-const hasActions = (item: SettingItem): boolean => (item.actions?.length ?? 0) > 0;
+const actionsInput = (item: SettingItem, disabled: boolean): SettingsInput | null => {
+  const actions = item.actions ?? [];
+  return actions.length > 0 ? { kind: 'custom', control: createElement(SettingActions, { actions, disabled }) } : null;
+};
 
 const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<S>): SettingsSectionRow | null => {
   const { settings, onChange, renderControl, disabled, lock } = ctx;
@@ -23,10 +26,7 @@ const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<
   if (item.link !== undefined && typeof value === 'boolean') {
     return { ...shared, content: createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }) };
   }
-  const input = settingInput(item.control, value, set);
-  if (!input && hasActions(item)) {
-    return { ...shared, input: { kind: 'custom', control: createElement(SettingActions, { actions: item.actions ?? [], disabled }) }, disabled };
-  }
+  const input = settingInput(item.control, value, set) ?? actionsInput(item, disabled);
   if (!input) warnMissingControl(item.key, value);
   return input ? { ...shared, input, disabled } : null;
 };

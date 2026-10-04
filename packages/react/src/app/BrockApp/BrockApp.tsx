@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
-import { STANDARD_TITLE_BAR_ACTIONS } from '../../overlays/standard-title-bar-actions.constants';
+import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
@@ -14,6 +14,7 @@ import { useBrandPalette } from './behavior/useBrandPalette';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { useQuitGuards } from './behavior/useQuitGuards';
+import { useTitleBarSources } from './behavior/useTitleBarSources';
 import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
@@ -25,14 +26,14 @@ import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit, titleBar = NO_TITLE_BAR_ITEMS } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks);
   useQuitGuards(merged.beforeQuit, beforeQuit);
-  const titleBarActions = useMemo(() => [...STANDARD_TITLE_BAR_ACTIONS, ...merged.titleBarActions], [merged.titleBarActions]);
+  const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const settingsStore = useProfileSettingsStore(settings);

@@ -21,5 +21,5 @@ export type {
   BucketEntry, CardEntry, HeroEntry, PageEntry, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource, TabEntry,
 } from './conventions/screen-tree.type';
 export type {
-  CardProps, HeroActionsProps, HeroArtProps, HeroFactsProps, HeroFrame, HeroProps, HeroSlotProps, HeroSlots, Open, PageProps,
+  CardProps, HeroActionsProps, HeroArtProps, HeroBackdropProps, HeroFactsProps, HeroFrame, HeroProps, HeroShadeProps, HeroSlotProps, HeroSlots, Open, PageProps,
 } from './kinds/screen-kinds.type';

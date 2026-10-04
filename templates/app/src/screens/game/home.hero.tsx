@@ -20,7 +20,7 @@ const HomeHero = (props: HeroProps) => {
     <>
       <Eyebrow>Home</Eyebrow>
       <Title>{product.name}</Title>
-      <Art src={product.logos.mark} alt="" />
+      <Art kind="image" src={product.logos.mark} alt="" />
       <Tools>
         <Button size="sm" variant="secondary" onClick={() => open('profiles')}>Profiles</Button>
       </Tools>

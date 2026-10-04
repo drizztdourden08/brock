@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import type { FactsPanelGroup, HeroArt, HeroProps as HeroCompositeProps } from '@drizztdourden08/tessera/composites';
+import type { FactsPanelGroup, HeroArt, HeroBackdrop, HeroProps as HeroCompositeProps, HeroShade } from '@drizztdourden08/tessera/composites';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import type { BucketDef } from '../conventions/screens-config.type';
 
@@ -30,6 +30,12 @@ interface HeroActionsProps {
 
 type HeroArtProps = HeroArt;
 
+type HeroBackdropProps = HeroBackdrop | { kind: 'none' };
+
+interface HeroShadeProps {
+  value: HeroShade;
+}
+
 interface HeroFactsProps {
   rows: readonly FactsPanelGroup[];
 }
@@ -37,7 +43,8 @@ interface HeroFactsProps {
 interface HeroSlots {
   Title: ComponentType<HeroSlotProps>;
   Eyebrow: ComponentType<HeroSlotProps>;
-  Backdrop: ComponentType<HeroSlotProps>;
+  Backdrop: ComponentType<HeroBackdropProps>;
+  Shade: ComponentType<HeroShadeProps>;
   Art: ComponentType<HeroArtProps>;
   Actions: ComponentType<HeroActionsProps>;
   Tools: ComponentType<HeroSlotProps>;
@@ -46,7 +53,7 @@ interface HeroSlots {
   Panel: ComponentType<HeroSlotProps>;
 }
 
-type HeroSlotValues = Partial<Pick<HeroCompositeProps, 'title' | 'eyebrow' | 'backdrop' | 'art' | 'actions' | 'tools' | 'facts' | 'aside' | 'panel'>>;
+type HeroSlotValues = Partial<Pick<HeroCompositeProps, 'title' | 'eyebrow' | 'backdrop' | 'shade' | 'art' | 'actions' | 'tools' | 'facts' | 'aside' | 'panel'>>;
 
 type HeroSlotName = keyof HeroSlotValues;
 
@@ -68,6 +75,6 @@ interface HeroRootProps {
 }
 
 export type {
-  CardProps, HeroActionsProps, HeroArtProps, HeroFactsProps, HeroFrame, HeroProps, HeroRootProps, HeroSlotName, HeroSlotProps, HeroSlotValues,
-  HeroSlots, Open, PageProps, PutHeroSlot,
+  CardProps, HeroActionsProps, HeroArtProps, HeroBackdropProps, HeroFactsProps, HeroFrame, HeroProps, HeroRootProps, HeroShadeProps, HeroSlotName, HeroSlotProps,
+  HeroSlotValues, HeroSlots, Open, PageProps, PutHeroSlot,
 };

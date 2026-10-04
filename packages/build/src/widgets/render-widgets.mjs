@@ -24,18 +24,21 @@ const entryLine = (file) => {
 
 /**
  * @param {{ id: string, path: string, hasMeta: boolean }[]} files
+ * @param {{ path: string } | null} [layout] src/widgets/layout.ts, when the app has one
  * @returns {string} the content of .brock/widgets.ts
  */
-const renderWidgets = (files) => {
+const renderWidgets = (files, layout = null) => {
   const list = files.length ? ['[', ...files.map(entryLine), ']'].join('\n') : '[]';
   return [
     GENERATED_HEADER,
     `import { widgetsFromFiles } from '${REACT_PACKAGE}';`,
     ...files.map(importLine),
+    ...(layout ? [`import appWidgetLayout from '../${layout.path.replace(/\.ts$/, '')}';`] : []),
     '',
     `const appWidgets = widgetsFromFiles(${list});`,
+    ...(layout ? [] : ['const appWidgetLayout = undefined;']),
     '',
-    'export { appWidgets };',
+    'export { appWidgetLayout, appWidgets };',
     '',
   ].join('\n');
 };
@@ -44,6 +47,9 @@ const renderWidgets = (files) => {
  * @param {string} rootDir the app root
  * @returns {{ path: string, content: string }[]} .brock/widgets.ts, always
  */
-const renderWidgetsFiles = (rootDir) => [{ path: WIDGETS_OUTPUT, content: renderWidgets(scanWidgets(rootDir).files.filter((file) => file.hasDefault)) }];
+const renderWidgetsFiles = (rootDir) => {
+  const { files, layout } = scanWidgets(rootDir);
+  return [{ path: WIDGETS_OUTPUT, content: renderWidgets(files.filter((file) => file.hasDefault), layout?.hasDefault ? layout : null) }];
+};
 
 export { renderWidgets, renderWidgetsFiles };

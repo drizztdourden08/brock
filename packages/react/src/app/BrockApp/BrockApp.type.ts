@@ -12,6 +12,8 @@ import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsEffect } from '../../stores/settings-store.type';
 import type { SettingsControlProps, TabDef } from '../../settings/settings.type';
+import type { LayoutPreset } from '../../widgets/layout-preset.type';
+import type { WidgetContextSource } from '../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../widgets/widget.type';
 
 type BrockAppLayout = 'menu' | 'rail';
@@ -32,6 +34,8 @@ interface BrockAppProps<S extends object> {
   modules?: RendererModule[];
   bootTasks?: RendererBootTask[];
   widgets?: readonly WidgetDef[];
+  widgetLayout?: LayoutPreset;
+  widgetContext?: WidgetContextSource;
   home?: string;
   menu?: MenuEntry[];
   layout?: BrockAppLayout;

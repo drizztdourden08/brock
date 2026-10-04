@@ -3,23 +3,22 @@ import { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import { WidgetManager, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
-import type { Rect, ScreenPoint, WidgetGates } from '@drizztdourden08/tessera/composites';
+import type { Rect, ScreenPoint } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
-import { useNavigationStore } from '../../navigation/useNavigationStore';
-import { useDeveloperTools } from '../../app/useDeveloperTools';
-import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { SettingsStoreContext } from '../../stores/settings-context';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { dragRelease } from '../drag-release';
-import { FLOATING_MIN, NO_IDS, NO_WIDGETS } from '../widget.constants';
+import { FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
 import { poppedShown } from '../popped-shown';
 import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
-import { widgetErrorLabel } from '../widget-error-label';
+import { WidgetBody } from '../WidgetBody';
+import { WidgetIdContext } from '../widget-id-context';
 import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
+import { useWidgetGates } from './behavior/useWidgetGates';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
@@ -33,23 +32,20 @@ const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
   (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
 const WidgetHost = (props: WidgetHostProps) => {
-  const { widgets = NO_WIDGETS, main, mainLabel } = props;
+  const { widgets = NO_WIDGETS, main, mainLabel, widgetContext, layout: preset = null } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definitions = useMemo(() => uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), [widgets, registered]);
   const profileId = useProfilesStore((s) => s.active?.id ?? null);
   const layout = useWidgetLayoutStore((s) => s.layout);
   const setLayout = useWidgetLayoutStore((s) => s.setLayout);
   const externalDrag = useWidgetLayoutStore((s) => s.externalDrag);
-  const pageOpen = useNavigationStore((s) => s.active !== null);
-  const developerTools = useDeveloperTools();
   const settingsStore = useContext(SettingsStoreContext);
-  const gates = useMemo<WidgetGates>(() => ({
-    definitions, developerToolsEnabled: developerTools, contextActive: true, pageOpen, forcedIds: NO_IDS, contentIds: definitions.map((def) => def.id),
-  }), [definitions, developerTools, pageOpen]);
+  const gates = useWidgetGates(definitions, widgetContext);
   const shown = useMemo(() => poppedShown(layout, gates), [layout, gates]);
   const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
 
   useEffect(() => useWidgetLayoutStore.getState().setDefinitions(definitions), [definitions]);
+  useEffect(() => useWidgetLayoutStore.getState().setPreset(preset), [preset]);
   useEffect(() => dragRelease.watch(window), []);
   useWidgetPersistence(profileId);
   usePopOutWindows(shown, extraOf);
@@ -57,11 +53,11 @@ const WidgetHost = (props: WidgetHostProps) => {
   useWidgetLayoutGlobal();
 
   const content = useMemo<Record<string, ReactNode>>(
-    () => Object.fromEntries(definitions.map((def) => [def.id, <RenderErrorBoundary scope={`Widget ${def.id}`} label={widgetErrorLabel(def.label)}>{def.render()}</RenderErrorBoundary>])),
+    () => Object.fromEntries(definitions.map((def) => [def.id, <WidgetBody id={def.id} label={def.label}>{def.render()}</WidgetBody>])),
     [definitions],
   );
   const settingsContent = useMemo<Record<string, ReactNode>>(
-    () => Object.fromEntries(definitions.flatMap((def) => (def.settings ? [[def.id, def.settings()]] : []))),
+    () => Object.fromEntries(definitions.flatMap((def) => (def.settings ? [[def.id, <WidgetIdContext.Provider value={def.id}>{def.settings()}</WidgetIdContext.Provider>]] : []))),
     [definitions],
   );
 
@@ -86,10 +82,10 @@ const WidgetHost = (props: WidgetHostProps) => {
       onPopOut={popOut}
       externalDrag={externalDrag}
       onExternalDrop={dropIn}
-      contextActive
-      pageOpen={pageOpen}
+      contextActive={gates.contextActive}
+      pageOpen={gates.pageOpen}
       settingsContent={settingsContent}
-      developerToolsEnabled={developerTools}
+      developerToolsEnabled={gates.developerToolsEnabled}
     >
       {content}
     </WidgetManager>

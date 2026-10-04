@@ -48,10 +48,18 @@ describe('renderWidgets', () => {
       "  { id: 'live-room', component: LiveRoomWidget, meta: liveRoomWidgetMeta },",
       "  { id: 'notes', component: NotesWidget },",
       ']);',
+      'const appWidgetLayout = undefined;',
       '',
-      'export { appWidgets };',
+      'export { appWidgetLayout, appWidgets };',
       '',
     ].join('\n'));
+  });
+
+  it('imports src/widgets/layout.ts as the app widget layout when there is one', () => {
+    const source = renderWidgets([], { path: 'src/widgets/layout.ts' });
+    expect(source).toContain("import appWidgetLayout from '../src/widgets/layout';");
+    expect(source).not.toContain('const appWidgetLayout');
+    expect(source).toContain('export { appWidgetLayout, appWidgets };');
   });
 
   it('writes an empty list when the app has no widget files', () => {

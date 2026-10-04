@@ -31,6 +31,7 @@ my-app/
     screens/screens.config.ts      buckets, menu placement, home
     screens/<bucket>/<id>.<kind>.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx
     widgets/<id>.widget.tsx        one widget per file
+    widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
     boot/<id>.task.ts              renderer boot tasks
     views/<Name>/                  Tessera views: the screens' state-owning bodies
     compounds/<Name>/              Tessera compounds: one app concept drawn from Tessera parts
@@ -67,6 +68,7 @@ my-repo/
 | Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<id>.card.tsx`, `<id>.layer.tsx` | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
+| Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
 | Renderer boot task | `src/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
 | IPC channel | `src/ipc/` | `contract.type.ts` (augmentation), `contract.constants.ts` (maps) | `electron/preload.ts` and the typed `handle` |
@@ -124,7 +126,7 @@ An app that ignored `.brock` before keeps working: the commands above sync it be
 
 Fixed on this branch:
 
-- The template has `src/widgets/notes.widget.tsx`, `.brock/widgets.ts` and `widgets={appWidgets}` in `src/main.tsx`; its README lists the widgets and the Tessera part folders.
+- The template has `src/widgets/notes.widget.tsx`, `src/widgets/layout.ts` (Notes beside the main view), `.brock/widgets.ts` and `widgets={appWidgets}` with `widgetLayout={appWidgetLayout}` in `src/main.tsx`; its README lists the widgets and the Tessera part folders.
 - Brock's built-in widgets sit in `packages/react/src/widgets/built-in/` as `<id>.widget.tsx` files with their component folders, the same shape as `screens/built-in/` and as an app's `src/widgets`.
 - `brock-electron`'s handler files all end in `-handlers.ts` (`dialog-handlers.ts`, `screenshot-handlers.ts` and `session-log-handlers.ts` were `dialogs.ts`, `screenshot-handler.ts` and `session-log-handler.ts`).
 - `brock adopt` in a workspace with no design package still gives each app its own `views`, and prints where screens, widgets, views and shared parts go.

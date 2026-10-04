@@ -29,9 +29,14 @@ const createReviewSession = ({ name, app, windowIcon }: ReviewSessionInput): Rev
     markLoaded: (url) => { loaded.add(url); },
     addRequestError: (url, message) => { if (!requestErrors.has(url)) requestErrors.set(url, message); },
     nextStep: (step) => {
-      const index = run.steps.length + 1;
+      const index = run.steps.filter((seen) => seen.index > 0).length + 1;
       const record = { index, name: step, file: reviewStepFile(index, step) };
       run.steps.push(record);
+      return record;
+    },
+    splashStep: (step) => {
+      const record = { index: 0, name: step, file: reviewStepFile(0, step) };
+      run.steps.unshift(record);
       return record;
     },
     addCheck: (check) => { run.checks.push(check); },

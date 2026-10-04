@@ -2,7 +2,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { appDirs } from '../commands/app-dirs.mjs';
-import { DESIGN_DIR, SHARED_KINDS, TESSERA_SCHEMA_REF } from './tessera.constants.mjs';
+import { DESIGN_DIR, SHARED_KINDS } from './tessera.constants.mjs';
+import { tesseraSchemaRef } from './tessera-schema-ref.mjs';
 
 const appEntry = (rootDir, app) => ({
   parts: { views: `${app}/src/views` },
@@ -17,9 +18,10 @@ const appEntry = (rootDir, app) => ({
 const tesseraConfigFor = (rootDir, designPackage) => {
   const apps = appDirs(rootDir).filter((app) => app !== '.');
   const appEntries = Object.fromEntries(apps.map((app) => [app, appEntry(rootDir, app)]));
-  if (!designPackage) return apps.length ? { $schema: TESSERA_SCHEMA_REF, apps: appEntries } : { $schema: TESSERA_SCHEMA_REF };
+  const $schema = tesseraSchemaRef(rootDir);
+  if (!designPackage) return apps.length ? { $schema, apps: appEntries } : { $schema };
   return {
-    $schema: TESSERA_SCHEMA_REF,
+    $schema,
     package: designPackage,
     parts: Object.fromEntries(SHARED_KINDS.map((kind) => [kind, `${DESIGN_DIR}/src/${kind}`])),
     stories: `${DESIGN_DIR}/stories`,

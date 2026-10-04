@@ -2,11 +2,13 @@
 import { app } from 'electron';
 import { buildReviewReport } from '@drizztdourden08/brock-core/review';
 import { readMainLogIssues } from '../logs/read-main-log-issues';
+import { REVIEW_QUIT_GRACE_MS } from './review.constants';
 import type { ReviewSession } from './review-session.type';
 import { writeReviewReport } from './write-review-report';
 
 const quitWith = (code: number): void => {
   app.once('quit', () => app.exit(code));
+  setTimeout(() => app.exit(code), REVIEW_QUIT_GRACE_MS);
   app.quit();
 };
 

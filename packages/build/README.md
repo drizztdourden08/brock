@@ -11,7 +11,7 @@ build step.
 | `/vite` | `defineBrockViteConfig(rootDir, overrides?)`: the electron-vite config (main and preload from `electron/`, renderer from `src/` with `index.html` and `splash.html`, the splash preload beside the app preload, React plugin, react deduped, `@drizztdourden08/*` bundled instead of externalized) |
 | `/vite-web` | `defineBrockWebConfig(rootDir, overrides?)`: the renderer alone for the web and Android targets (relative base, `dist/web`, the web app manifest) |
 | `/builder` | `createBuilderConfig(product, { rootDir })` and `loadBuilderConfig(rootDir)` for electron-builder |
-| `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs? })` for app e2e tests, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
+| `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs? })` for app e2e tests, `readDockLayout(page)`, `widgetWindows(app)`, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
 | `.` | Everything above plus `syncApp`, `resolveModules`, `ensureElectron` and the built-in module registry |
 
 ## The CLI
@@ -132,11 +132,19 @@ await page.getByRole('button', { name: 'Settings' }).click();
 await close();
 ```
 
-It refuses first when `dist/electron/main.js` or a chunk beside it imports a package or a file Node cannot find from there, and lists each one. It then runs the app's own Electron with `--no-focus --muted` and a fresh `--user-data` under the system temp folder, waits for the first window (60 s by default) and puts the tail of the main output in the error when that fails. `close()` quits and removes the folder. Playwright is an optional peer: add `playwright-core` (or `playwright`) to the app's dev dependencies.
+It refuses first when `dist/electron/main.js` or a chunk beside it imports a package or a file Node cannot find from there, and lists each one. It then runs the app's own Electron with `--no-focus --muted` and a fresh `--user-data` under the system temp folder, waits for the app window, the one that loads the renderer index and not `splash.html` or a widget window, and for the splash to close, which means every boot task resolved and the window was revealed (60 s by default). It puts the tail of the main output in the error when that fails, and says when the splash was still open. `close()` quits and removes the folder. Playwright is an optional peer: add `playwright-core` (or `playwright`) to the app's dev dependencies.
+
+```ts
+const { app, page } = await launchAppForTest({ appDir });
+const dock = await readDockLayout(page);   // { layout, docked, floating, popped, main, rects }
+const popped = await widgetWindows(app);   // [{ id, bounds, visible, focused, minimized, alwaysOnTop }]
+```
+
+`readDockLayout` reads brock-react's widget layout store through a reader the renderer installs on automation launches only, plus the rect of the main view and of each drawn widget. `widgetWindows` reads every popped widget window's state from main. Neither depends on Tessera's class names.
 
 ## brock adopt
 
-Beside the lint configs and the repo command, `adopt` writes `tessera.config.json` at the repo root when it is missing: `$schema` alone for a single app; with a `packages/design` package, `package` set to its name, `parts` pointing at its `src/primitives`, `src/composites` and `src/compounds`, and an `apps` entry per app for its `src/views` (and its `src/theme.css` when it has one). `--force` never replaces it. The root `stylelint.config.mjs` takes every theme that file names as a token file. It also writes `knip.json` with `brock.workspace.mjs` as an entry, `.worktrees/**` ignored and, with `--local`, `@drizztdourden08/brock-thread` in `ignoreDependencies`. It appends to `.gitignore` every generated output it lacks: `node_modules/`, `dist/`, `release/`, `.user-data/`, `.brock-port-slot`, and at any depth `build/icons/`, `build/splash/`, `build/installer-splash.png`, the eight generated `public/logos` files and `.brock/profile-config.json`. It writes no splash or logo markup, and prints the app pages (`src/index.html`) that still hold a hand-written boot splash or `./logos/` path.
+Beside the lint configs and the repo command, `adopt` writes `tessera.config.json` at the repo root when it is missing: `$schema` alone for a single app, pointing at Tessera's schema wherever Tessera is installed (the root `node_modules`, else `packages/design`, else any workspace package); with a `packages/design` package, `package` set to its name, `parts` pointing at its `src/primitives`, `src/composites` and `src/compounds`, and an `apps` entry per app for its `src/views` (and its `src/theme.css` when it has one). `--force` never replaces it. The root `stylelint.config.mjs` takes every theme that file names as a token file. It also writes `knip.json` with `brock.workspace.mjs` as an entry, `.worktrees/**` ignored and, with `--local`, `@drizztdourden08/brock-thread` in `ignoreDependencies`. It appends to `.gitignore` every generated output it lacks: `node_modules/`, `dist/`, `release/`, `.user-data/`, `.brock-port-slot`, and at any depth `build/icons/`, `build/splash/`, `build/installer-splash.png`, the eight generated `public/logos` files and `.brock/profile-config.json`. It writes no splash or logo markup, and prints the app pages (`src/index.html`) that still hold a hand-written boot splash or `./logos/` path.
 
 ## What sync writes
 

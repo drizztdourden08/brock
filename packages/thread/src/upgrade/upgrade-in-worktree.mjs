@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { git } from '../git.mjs';
 import { jsonFile } from '../provision/json-file.mjs';
 import { createVerb } from '../worktree/create.mjs';
@@ -75,8 +75,10 @@ const upgradeInWorktree = async (plan, { review }, ctx) => {
   const { results, failed, changelog } = runGate(worktree, plan, { review, log: ctx.log });
   const migrations = jsonFile(join(worktree.path, MIGRATIONS_FILE)).read();
   const report = renderReport({ app: ctx.workspace.name, plan, worktree }, { fields, steps: results, failed }, { migrations, changelog });
-  writeFileSync(join(worktree.path, REPORT_FILE), report, 'utf8');
-  ctx.log(`Report: ${join(worktree.path, REPORT_FILE)}`);
+  const reportPath = join(worktree.path, REPORT_FILE);
+  mkdirSync(dirname(reportPath), { recursive: true });
+  writeFileSync(reportPath, report, 'utf8');
+  ctx.log(`Report: ${reportPath}`);
   if (failed) {
     ctx.log(`Red: the ${failed} step failed. The worktree stays at ${worktree.path}. Fix it there, then run ${ctx.workspace.name} upgrade again.`);
     return 1;

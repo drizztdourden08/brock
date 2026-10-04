@@ -20,7 +20,7 @@ Use published ranges, not `link:` paths into a local checkout. A `link:` spec ti
 1. Commit or finish open work first. `upgrade` runs in its own worktree from the current `main`.
 2. `<app> upgrade --check` says how far behind the app is.
 3. `<app> upgrade` creates the worktree, bumps the Brock packages, moves Tessera to the range Brock asks for, runs `pnpm install`, runs every Brock migration after the app's `brock.version`, replays Tessera's `RENAMES.json` after the app's `brock.tessera`, then runs the gate (lint, typecheck, structure, test) and the review.
-4. Read `upgrade-report.md` in the worktree. Every to-do names a file, a line and what to change. Mechanical renames are already done; the to-dos are the changes that need a person.
+4. Read `.brock/upgrade-report.md` in the worktree; `upgrade` prints its path. Every to-do names a file, a line and what to change. Mechanical renames are already done; the to-dos are the changes that need a person.
 5. When the gate is green and the review passes, merge the worktree branch.
 
 `brock migrate --from <version> [--tessera-from <version>]` runs the same migrations by hand, for example after a partial upgrade.

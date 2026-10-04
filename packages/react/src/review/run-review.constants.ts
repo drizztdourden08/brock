@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import { aboutStep } from './steps/about-step';
+import { appWidgetsStep } from './steps/app-widgets-step';
 import { bootStep } from './steps/boot-step';
 import { bucketsStep } from './steps/buckets-step';
 import { bugReportStep } from './steps/bug-report-step';
@@ -19,7 +20,7 @@ import { widgetsStep } from './steps/widgets-step';
 import type { ReviewStep } from './review.type';
 
 const REVIEW_STEPS: readonly ReviewStep[] = [
-  bootStep, profileStep, menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, widgetWindowsStep,
+  bootStep, profileStep, menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, widgetWindowsStep,
   fontsStep, stylesStep,
 ];
 

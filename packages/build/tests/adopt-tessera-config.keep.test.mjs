@@ -72,3 +72,34 @@ describe('brock adopt and tessera.config.json', () => {
     expect(config(root)).toEqual({ theme: { css: 'styles/look.css' } });
   });
 });
+
+describe('brock adopt and the Tessera schema path', () => {
+  it('points $schema into the package that installs Tessera when the root does not', async () => {
+    const root = repo({
+      'package.json': { name: 'acme' },
+      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n  - 'packages/*'\n",
+      'packages/design/package.json': { name: '@acme/design' },
+      'packages/design/node_modules/@drizztdourden08/tessera/tessera.config.schema.json': '{}',
+      'apps/desktop/package.json': { name: '@acme/desktop' },
+      'apps/desktop/brock.config.ts': 'export default {};\n',
+    });
+    await runAdopt({ rootDir: root });
+    expect(config(root).$schema).toBe('./packages/design/node_modules/@drizztdourden08/tessera/tessera.config.schema.json');
+  });
+
+  it('finds Tessera in an app package too, and prefers the root install', async () => {
+    const files = {
+      'package.json': { name: 'acme' },
+      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n",
+      'apps/desktop/package.json': { name: '@acme/desktop' },
+      'apps/desktop/brock.config.ts': 'export default {};\n',
+      'apps/desktop/node_modules/@drizztdourden08/tessera/tessera.config.schema.json': '{}',
+    };
+    const inApp = repo(files);
+    await runAdopt({ rootDir: inApp });
+    expect(config(inApp).$schema).toBe('./apps/desktop/node_modules/@drizztdourden08/tessera/tessera.config.schema.json');
+    const atRoot = repo({ ...files, 'node_modules/@drizztdourden08/tessera/tessera.config.schema.json': '{}' });
+    await runAdopt({ rootDir: atRoot });
+    expect(config(atRoot).$schema).toBe(SCHEMA);
+  });
+});

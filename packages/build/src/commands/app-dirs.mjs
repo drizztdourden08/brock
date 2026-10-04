@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { expandGlob, globBase, workspaceGlobs } from '@drizztdourden08/standards/structure';
+import { workspaceDirs } from '../workspace-dirs.mjs';
 
 const APP_MARKER = 'brock.config.ts';
 
@@ -11,11 +11,7 @@ const APP_MARKER = 'brock.config.ts';
  */
 const appDirs = (rootDir) => {
   if (existsSync(join(rootDir, APP_MARKER))) return ['.'];
-  const { globs, declared } = workspaceGlobs(rootDir);
-  if (!declared) return [];
-  const bases = new Set(globs.map(globBase));
-  return globs
-    .flatMap((glob) => expandGlob(rootDir, glob, bases))
+  return workspaceDirs(rootDir)
     .filter((dir) => existsSync(join(dir, APP_MARKER)))
     .map((dir) => relative(rootDir, dir).replace(/\\/g, '/'));
 };

@@ -4,6 +4,7 @@ import type { Rect, SimInsets, SimWindowOptions } from './window-sim.type';
 
 const DISPLAY = { id: 1, bounds: { x: 0, y: 0, width: 1920, height: 1080 }, workArea: { x: 0, y: 0, width: 1920, height: 1040 }, scaleFactor: 2 };
 const WINDOWS_INSETS: SimInsets = { left: 6, top: 0, right: 6, bottom: 6 };
+const BEHIND_TASKBAR = ['floating', 'torn-off-menu', 'modal-panel', 'main-menu', 'status'];
 
 const cursor = { x: 0, y: 0 };
 const sims = new Map<object, FakeWindow>();
@@ -78,8 +79,10 @@ class FakeWindow extends EventEmitter {
   isFullScreen = (): boolean => false;
   isFocused = (): boolean => false;
   isAlwaysOnTop = (): boolean => this.onTop;
-  setAlwaysOnTop = (on: boolean): void => {
-    this.onTop = on;
+  pinLevels: string[] = [];
+  setAlwaysOnTop = (on: boolean, level = 'floating'): void => {
+    this.pinLevels.push(level);
+    this.onTop = on && !(process.platform === 'win32' && BEHIND_TASKBAR.includes(level));
   };
   getParentWindow = (): FakeWindow | null => this.parent;
   setParentWindow = (parent: FakeWindow | null): void => {

@@ -2,6 +2,7 @@
 import type { HandlerGroup } from '../types/main-context.type';
 import { mainGroupControl } from '../widgets/main-group-control';
 import { widgetWindowControl } from '../widgets/widget-window-control';
+import { setPinned } from './set-pinned';
 
 const windowHandlers: HandlerGroup = {
   id: 'window',
@@ -32,7 +33,7 @@ const windowHandlers: HandlerGroup = {
     handle('window:isFullscreen', () => mainGroupControl.isFullscreen() ?? window()?.isFullScreen() ?? false);
     handle('window:setAlwaysOnTop', (_event, value) => {
       const win = window();
-      win?.setAlwaysOnTop(value);
+      if (win) setPinned(win, value);
       const onTop = win?.isAlwaysOnTop() ?? false;
       widgetWindowControl.mirrorMainPin(onTop);
       return onTop;

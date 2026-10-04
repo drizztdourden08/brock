@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
-import type { RenderControl, SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
+import type { RenderControl, RunSettingActionOptions, SettingAction, SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
 
 interface ItemGroup {
   id: string | null;
@@ -26,12 +26,25 @@ interface GroupListInput<S extends object> {
   rowsOf: (item: SettingItem) => SettingsSectionRow[];
 }
 
+type BusyActions = Readonly<Record<string, true>>;
+
+interface ActionRunner {
+  busy: BusyActions;
+  run: (key: string, action: SettingAction, options?: RunSettingActionOptions) => Promise<void>;
+}
+
+interface RowActionScope {
+  id: string;
+  runner: ActionRunner;
+}
+
 interface SettingRowContext<S extends object> {
   settings: S;
   onChange: SettingsPatch<S>;
   renderControl?: RenderControl<S>;
   disabled: boolean;
   lock: SettingLockCause | null;
+  runner?: ActionRunner;
 }
 
 interface SettingsPageContextValue {
@@ -42,4 +55,4 @@ interface SettingsPageContextValue {
   query: string;
 }
 
-export type { GroupListInput, ItemGroup, ResolvedSection, SettingRowContext, SettingsPageContextValue, SettingsRecord };
+export type { ActionRunner, BusyActions, GroupListInput, ItemGroup, ResolvedSection, RowActionScope, SettingRowContext, SettingsPageContextValue, SettingsRecord };

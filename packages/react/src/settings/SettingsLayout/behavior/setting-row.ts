@@ -21,7 +21,7 @@ const withActions = (content: ReactNode, item: SettingItem, disabled: boolean, s
 };
 
 const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<S>): SettingsSectionRow | null => {
-  const { settings, onChange, renderControl, disabled, lock } = ctx;
+  const { settings, onChange, renderControl, disabled, lock, runner } = ctx;
   const values = settings as SettingValues;
   const value = values[item.key];
   const set = (next: unknown): void => onChange({ [item.key]: next } as Partial<S>);
@@ -31,8 +31,8 @@ const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<
   if (item.link !== undefined && typeof value === 'boolean') {
     return { ...shared, content: withActions(createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }), item, disabled, values) };
   }
-  const input = settingInput(item.control, value, set);
-  const actions = rowActions(item.actions, values);
+  const input = settingInput(item.control, value, set, { label: item.label, disabled });
+  const actions = rowActions(item.actions, values, runner ? { id: item.key, runner } : undefined);
   if (!input && !actions) {
     warnMissingControl(item.key, value);
     return null;

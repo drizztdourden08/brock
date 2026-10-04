@@ -55,6 +55,7 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'window:isFullscreen': () => Promise<boolean>;
 
   'dialog:pickFile': (extensions: string[]) => Promise<PickedFileWire | null>;
+  'dialog:pickPath': (folder: boolean, extensions: string[]) => Promise<string | null>;
   'dialog:saveFile': (name: string, data: ArrayBuffer, extensions: string[]) => Promise<SaveFileResultWire>;
 
   'profiles:list': () => Promise<Profile[]>;
@@ -73,6 +74,8 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
 
   'uiViews:load': () => Promise<Record<string, unknown>>;
   'uiViews:save': (data: Record<string, unknown>) => Promise<void>;
+
+  'debug:revealLogs': () => Promise<void>;
 
   'test:screenshot': (name: string) => Promise<string>;
   'review:capture': (step: string) => Promise<string>;

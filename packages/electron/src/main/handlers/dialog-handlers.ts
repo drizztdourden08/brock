@@ -1,6 +1,6 @@
 /* @layer electron-main @kind logic */
 import { dialog } from 'electron';
-import type { FileFilter } from 'electron';
+import type { FileFilter, OpenDialogOptions } from 'electron';
 import { readFile, writeFile } from 'fs/promises';
 import { basename } from 'path';
 import type { HandlerGroup } from '../types/main-context.type';
@@ -21,6 +21,14 @@ const dialogHandlers: HandlerGroup = {
       const picked = result.filePaths[0];
       if (result.canceled || picked === undefined) return null;
       return { name: basename(picked), data: toArrayBuffer(await readFile(picked)) };
+    });
+
+    handle('dialog:pickPath', async (_event, folder, extensions) => {
+      const win = window();
+      if (!win) return null;
+      const options: OpenDialogOptions = folder ? { properties: ['openDirectory'] } : { filters: filtersFor(extensions), properties: ['openFile'] };
+      const result = await dialog.showOpenDialog(win, options);
+      return result.canceled ? null : result.filePaths[0] ?? null;
     });
 
     handle('dialog:saveFile', async (_event, name, data, extensions) => {

@@ -7,6 +7,7 @@ import type { SettingItem, SettingsLayoutProps } from '../settings.type';
 import { groupListSections } from './behavior/group-list-sections';
 import { resolveSections } from './behavior/resolve-sections';
 import { settingRows } from './behavior/setting-rows';
+import { useActionRunner } from './behavior/useActionRunner';
 import { SettingsPageContext } from './behavior/settings-page-context';
 
 const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
@@ -15,12 +16,13 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
   const { panels } = useTesseraStrings();
   const query = page?.variant === 'results' ? page.query : '';
 
+  const runner = useActionRunner();
   const lockOf = useCallback((key: string) => lockCauseOf?.(key, settings) ?? null, [lockCauseOf, settings]);
   const resolved = useMemo(() => resolveSections(sections, query), [sections, query]);
   const anchors = useMemo(() => resolved.map((s) => ({ id: s.id, label: s.title })), [resolved]);
 
   const rowsOf = (item: SettingItem): SettingsSectionRow[] =>
-    settingRows(item, { settings, onChange, renderControl, disabled: isDisabled?.(item.key, settings) ?? false, lock: lockOf(item.key) });
+    settingRows(item, { settings, onChange, renderControl, disabled: isDisabled?.(item.key, settings) ?? false, lock: lockOf(item.key), runner });
 
   const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, rowsOf });
   const body = listed.length === 0

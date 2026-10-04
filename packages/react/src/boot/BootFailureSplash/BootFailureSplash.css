@@ -1,0 +1,16 @@
+/* @layer renderer-shell @kind style */
+
+.boot-failure-splash.boot-failure-splash {
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--c-lift) 14%, transparent), transparent 58%),
+    linear-gradient(var(--look-angle, 135deg), var(--look-from, var(--c-bg)), var(--look-via, var(--c-bg)), var(--look-to, var(--c-bg)));
+  color: var(--look-ink, var(--c-text));
+}
+
+.boot-failure-splash .ts-title {
+  color: var(--look-ink, var(--c-text));
+}
+
+.boot-failure-splash .ts-mark {
+  filter: drop-shadow(0 var(--size-4) var(--size-16) color-mix(in oklab, var(--look-shade, var(--c-bg)) 40%, transparent));
+}

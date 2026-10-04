@@ -2,7 +2,8 @@
 import type { SettingsInput } from '@drizztdourden08/tessera/composites';
 import type { SettingChoiceLook, SettingControl, SettingControlKind } from '../../settings.type';
 import { SEGMENTED_MOST } from './setting-input.constants';
-import type { SettingChange, SettingInputOf } from './setting-input.type';
+import { json, path } from './custom-setting-inputs';
+import type { SettingChange, SettingInputOf, SettingInputRow } from './setting-input.type';
 
 const isText = (value: unknown): value is string => typeof value === 'string';
 
@@ -35,13 +36,15 @@ const password: SettingInputOf<'password'> = (control, value, onChange) =>
 const tags: SettingInputOf<'tags'> = (control, value, onChange) =>
   (isList(value) ? { kind: 'tags', value, suggestions: control.suggestions, placeholder: control.placeholder, onChange } : null);
 
-const inputBuilders: { [K in SettingControlKind]: SettingInputOf<K> } = { choice, select, radio, range, number, text, password, tags };
+const inputBuilders: { [K in SettingControlKind]: SettingInputOf<K> } = { choice, select, radio, range, number, text, password, tags, path, json };
 
-const inputFor = <K extends SettingControlKind>(control: Extract<SettingControl, { kind: K }>, value: unknown, onChange: SettingChange): SettingsInput | null =>
-  (inputBuilders[control.kind] as SettingInputOf<K>)(control, value, onChange);
+const NO_ROW: SettingInputRow = { label: '', disabled: false };
 
-const settingInput = (control: SettingControl | undefined, value: unknown, onChange: SettingChange): SettingsInput | null => {
-  if (control) return inputFor(control, value, onChange);
+const inputFor = <K extends SettingControlKind>(control: Extract<SettingControl, { kind: K }>, value: unknown, onChange: SettingChange, row: SettingInputRow): SettingsInput | null =>
+  (inputBuilders[control.kind] as SettingInputOf<K>)(control, value, onChange, row);
+
+const settingInput = (control: SettingControl | undefined, value: unknown, onChange: SettingChange, row: SettingInputRow = NO_ROW): SettingsInput | null => {
+  if (control) return inputFor(control, value, onChange, row);
   return typeof value === 'boolean' ? { kind: 'toggle', value, onChange } : null;
 };
 

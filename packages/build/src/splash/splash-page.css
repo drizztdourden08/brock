@@ -8,8 +8,6 @@
 }
 
 .splash__mark {
-  width: var(--size-96);
-  height: var(--size-96);
   filter: drop-shadow(0 var(--size-4) var(--size-16) color-mix(in oklab, var(--look-shade) 40%, transparent));
   animation: splash-rise var(--duration-drawer) var(--ease-emphasized) both;
 }
@@ -24,10 +22,6 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
-}
-
-.splash__message {
-  max-height: calc(var(--text-sm) * var(--leading-normal) * 3);
 }
 
 @keyframes splash-rise {

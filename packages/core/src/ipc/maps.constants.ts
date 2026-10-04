@@ -30,6 +30,7 @@ const BASE_INVOKE_MAP = {
   isFullscreen: 'window:isFullscreen',
 
   pickFile: 'dialog:pickFile',
+  pickPath: 'dialog:pickPath',
   saveFile: 'dialog:saveFile',
 
   listProfiles: 'profiles:list',
@@ -48,6 +49,8 @@ const BASE_INVOKE_MAP = {
 
   loadUiViews: 'uiViews:load',
   saveUiViews: 'uiViews:save',
+
+  revealLogsFolder: 'debug:revealLogs',
 
   takeScreenshot: 'test:screenshot',
   reviewCapture: 'review:capture',

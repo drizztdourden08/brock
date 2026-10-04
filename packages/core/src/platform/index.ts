@@ -13,6 +13,6 @@ export type {
   DataExportFormat, DataExportManifest, DataExportResult, DataImportDomain, DataImportPlan, DataImportResult, DataManifestDomain, DomainCleanResult, DomainEntry,
 } from './ports/data-domain.type';
 export type { WindowControlsPort, Unsub } from './ports/window-controls.type';
-export type { PickedFile, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
+export type { PickedFile, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
 export type { DevicePort, BackEdge } from './ports/device.type';
 export type { Capabilities, PlatformPorts } from '../augment';

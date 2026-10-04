@@ -43,6 +43,7 @@ const createStorage = (): StoragePort => {
     reveal: () => api.revealDataFolder(),
     revealProfile: async (profileId) => (await api.revealProfileFolder(profileId)).success,
     getSummary: () => api.getStorageSummary(),
+    revealLogs: () => api.revealLogsFolder(),
   };
 };
 
@@ -72,6 +73,8 @@ const createFilePicker = (): FilePickerPort => {
       return picked ? { name: picked.name, bytes: new Uint8Array(picked.data) } : null;
     },
     saveFile: ({ name, bytes, extensions }) => api.saveFile(name, toArrayBuffer(bytes), extensions ?? []),
+    pickPath: (opts) => api.pickPath(opts?.folder === true, opts?.extensions ?? []),
+    pathOf: (file) => api.getFilePath(file) || null,
   };
 };
 

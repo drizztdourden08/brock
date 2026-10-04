@@ -6,8 +6,8 @@ import { rowActions } from '../../../settings/SettingsLayout/behavior/row-action
 import type { ActionRowInput, StorageSectionsInput } from '../StoragePage.type';
 import { domainActions } from './domain-actions';
 
-const actionRow = ({ id, title, description, hint, actions }: ActionRowInput): SettingsSectionRow => ({
-  id, title, description, hint, actions: rowActions(actions),
+const actionRow = ({ id, title, description, hint, actions, runner }: ActionRowInput): SettingsSectionRow => ({
+  id, title, description, hint, actions: rowActions(actions, {}, runner ? { id, runner } : undefined),
 });
 
 const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSectionRow => {
@@ -18,11 +18,12 @@ const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSec
     description: usage ? `${formatBytes(usage.bytes)} · ${usage.count} item${usage.count === 1 ? '' : 's'}` : 'Measuring the folder',
     hint: def.description ?? `Data/${def.dir}`,
     actions: domainActions(def, usage, input.actions),
+    runner: input.runner,
   });
 };
 
 const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
-  const { state, actions, chosen, onChoose } = input;
+  const { state, actions, chosen, onChoose, runner } = input;
   const portable = state.domains.filter((def) => def.portable !== false);
   const none = chosen.length === 0;
   return [
@@ -42,6 +43,7 @@ const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
         { id: 'export-zip', label: 'Export to zip', icon: 'archive', disabled: none, onSelect: () => actions.exportTo('zip', chosen) },
         { id: 'export-folder', label: 'Export to folder', icon: 'upload', disabled: none, onSelect: () => actions.exportTo('folder', chosen) },
       ],
+      runner,
     }),
     actionRow({
       id: 'storage-import',
@@ -52,11 +54,12 @@ const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
         { id: 'import-zip', label: 'Import zip', icon: 'download', onSelect: () => actions.importFrom('zip') },
         { id: 'import-folder', label: 'Import folder', icon: 'folder', onSelect: () => actions.importFrom('folder') },
       ],
+      runner,
     }),
   ];
 };
 
-const locationRow = ({ state, actions }: StorageSectionsInput): SettingsSectionRow => {
+const locationRow = ({ state, actions, runner }: StorageSectionsInput): SettingsSectionRow => {
   const total = Object.values(state.usage).reduce((sum, usage) => sum + (usage?.bytes ?? 0), 0);
   return actionRow({
     id: 'storage-location',
@@ -64,6 +67,7 @@ const locationRow = ({ state, actions }: StorageSectionsInput): SettingsSectionR
     description: state.location ? `${state.location.path} · ${formatBytes(total)}` : 'Finding the data folder',
     hint: state.location?.osLabel ?? 'Where this app keeps its files.',
     actions: [{ id: 'open-root', label: 'Open folder', icon: 'folder-open', disabled: state.location?.canReveal !== true, onSelect: actions.revealRoot }],
+    runner,
   });
 };
 

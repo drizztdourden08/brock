@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { CopyButton, Flex, Status } from '@drizztdourden08/tessera/primitives';
+import { CopyButton } from '@drizztdourden08/tessera/composites';
+import { Flex, Status } from '@drizztdourden08/tessera/primitives';
 import { MS_PER_SECOND } from '../PerformanceWidget.constants';
 import type { PerformanceBarProps } from '../PerformanceWidget.type';
 

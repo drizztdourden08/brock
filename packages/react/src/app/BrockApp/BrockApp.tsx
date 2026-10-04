@@ -13,6 +13,7 @@ import { useAppScreens } from './behavior/useAppScreens';
 import { useBrandPalette } from './behavior/useBrandPalette';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
+import { useQuitGuards } from './behavior/useQuitGuards';
 import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
@@ -24,12 +25,13 @@ import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks);
+  useQuitGuards(merged.beforeQuit, beforeQuit);
   const titleBarActions = useMemo(() => [...STANDARD_TITLE_BAR_ACTIONS, ...merged.titleBarActions], [merged.titleBarActions]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);

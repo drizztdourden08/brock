@@ -1,0 +1,5 @@
+/* @layer renderer-shell @kind style */
+
+.screen-host__home {
+  display: contents;
+}

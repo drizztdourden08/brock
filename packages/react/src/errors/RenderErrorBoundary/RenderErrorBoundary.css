@@ -1,0 +1,5 @@
+/* @layer renderer-shell @kind style */
+
+.render-error {
+  margin: var(--space-md);
+}

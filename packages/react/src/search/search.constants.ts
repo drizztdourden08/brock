@@ -12,12 +12,16 @@ const ANCHOR_BUDGET_MS = 1500;
 const ANCHOR_FLASH_MS = 1200;
 const ANCHOR_FLASH_CLASS = 'search-hit';
 const ANCHOR_ATTRIBUTES: readonly string[] = ['data-setting-key', 'data-section', 'data-search-anchor'];
+const ANCHOR_CONTROL_SELECTORS: readonly string[] = [
+  'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [role="switch"], [role="slider"], [role="radio"][aria-checked="true"]',
+  'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+];
 const SCREEN_ID_PREFIX = 'screen:';
 const SETTING_ID_PREFIX = 'setting:';
 const WORD_SPLIT = /[\s,;/|]+/;
 const EDGE_PUNCTUATION = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu;
 
 export {
-  ANCHOR_ATTRIBUTES, ANCHOR_BUDGET_MS, ANCHOR_FLASH_CLASS, ANCHOR_FLASH_MS, BREADCRUMB_WEIGHTS, DESCRIPTION_WEIGHTS, EDGE_PUNCTUATION, KEYWORD_WEIGHTS,
+  ANCHOR_ATTRIBUTES, ANCHOR_BUDGET_MS, ANCHOR_CONTROL_SELECTORS, ANCHOR_FLASH_CLASS, ANCHOR_FLASH_MS, BREADCRUMB_WEIGHTS, DESCRIPTION_WEIGHTS, EDGE_PUNCTUATION, KEYWORD_WEIGHTS,
   KIND_BOOST, LABEL_WEIGHTS, SCREEN_ID_PREFIX, SETTING_ID_PREFIX, SETTINGS_BREADCRUMB, SETTINGS_SCREEN, WORD_SPLIT,
 };

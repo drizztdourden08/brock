@@ -9,6 +9,7 @@ import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { TabDef } from '../../settings/settings.type';
 import { palette } from '../../palette/palette';
+import { shortcutsHelp } from '../../shortcuts-help/shortcuts-help';
 
 const NO_MODULES: never[] = [];
 const NO_MENU: never[] = [];
@@ -41,6 +42,7 @@ const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 const STANDARD_ESCAPE_LAYERS: readonly EscapeLayer[] = [
   { isOpen: palette.isOpen, close: palette.close },
   { isOpen: bugReport.isOpen, close: bugReport.close },
+  { isOpen: shortcutsHelp.isOpen, close: shortcutsHelp.close },
 ];
 
 export {

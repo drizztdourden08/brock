@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
+import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { useScreenRegistry } from '../useScreenRegistry';
@@ -11,6 +12,7 @@ import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
 import { useMountedScreens } from './behavior/useMountedScreens';
 import type { ScreenHostProps } from './ScreenHost.type';
+import './ScreenHost.css';
 
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
@@ -29,8 +31,12 @@ const ScreenHost = (props: ScreenHostProps) => {
   const shown = allowed(active) ? active : null;
   const mounted = useMountedScreens(shown);
 
+  const guarded = (screen: ScreenDef, hidden: boolean): ReactNode => (
+    <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>{screen.render(ctx)}</RenderErrorBoundary>
+  );
+
   const draw = (screen: ScreenDef, hidden: boolean): ReactNode => {
-    if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{screen.render(ctx)}</Box>;
+    if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{guarded(screen, hidden)}</Box>;
     return (
       <ScreenLayer
         key={screen.id}
@@ -44,14 +50,20 @@ const ScreenHost = (props: ScreenHostProps) => {
         hidden={hidden}
         onClose={close}
       >
-        {screen.render(ctx)}
+        {guarded(screen, hidden)}
       </ScreenLayer>
     );
   };
 
+  const covered = shown !== null && shown.id !== home && shown.layer !== 'own';
+
   return (
     <Box className={className}>
-      {allowed(homeScreen) && homeScreen.render(ctx)}
+      <Box className="screen-host__home" inert={covered || undefined}>
+        {allowed(homeScreen) && (
+          <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>{homeScreen.render(ctx)}</RenderErrorBoundary>
+        )}
+      </Box>
       {mounted.map((id) => {
         const screen = registry.get(id);
         return screen && id !== home ? draw(screen, shown?.id !== id) : null;

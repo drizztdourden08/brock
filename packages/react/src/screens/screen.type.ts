@@ -5,7 +5,7 @@ import type { ScreenParams } from '../navigation/navigation.type';
 
 type ScreenLayerKind = 'fullscreen' | 'own';
 
-type ScreenHeader = 'page' | 'own';
+type ScreenHeader = 'page' | 'own' | 'none';
 
 interface ScreenRenderContext {
   params: ScreenParams;

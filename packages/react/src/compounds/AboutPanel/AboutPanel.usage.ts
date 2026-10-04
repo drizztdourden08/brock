@@ -30,11 +30,10 @@ const usage = {
     rule: 'The ready-made body of the About screen.',
   },
   example: `import { InfoScreen } from '@drizztdourden08/tessera/composites';
-import { Icon } from '@drizztdourden08/tessera/primitives';
 import { AboutPanel } from '@drizztdourden08/brock-react';
 
 const AboutSample = ({ onClose }: { onClose: () => void }) => (
-  <InfoScreen title="About" icon={<Icon name="info" />} heading="Brock" onClose={onClose} footer="Names and marks belong to their owners.">
+  <InfoScreen title="About" onClose={onClose} footer="Names and marks belong to their owners.">
     <AboutPanel title="Brock" brand="brock" rows={[{ label: 'Version', value: '0.4.0' }]} copyText="Brock 0.4.0" />
   </InfoScreen>
 );

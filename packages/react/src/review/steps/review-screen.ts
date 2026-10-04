@@ -22,7 +22,9 @@ const reviewScreen = async (tour: StepTour, screen: ScreenDef): Promise<void> =>
   tour.check(`${id}-route`, shown !== null, `"${id}" opened through ${via}`, `"${id}" did not open through ${via}`);
   if (shown === null) return;
   if (screen.layer !== 'own' || find(SELECTORS.layer) !== null) tour.report(frameChecks(id, title, readFrame()));
-  if (screen.header !== 'own') tour.report(pageHeaderChecks(id, screen.layer === 'own' ? null : title, pageHeader(find(SELECTORS.layer) ?? document)));
+  const header = pageHeader(find(SELECTORS.layer) ?? document);
+  if (screen.header === 'none') tour.check(`${id}-no-page-header`, !header.shown, `"${id}" shows no page header, only its window title`, `"${id}" shows a page header it should not have`);
+  else if (screen.header !== 'own') tour.report(pageHeaderChecks(id, screen.layer === 'own' ? null : title, header));
   tour.report(settingRowChecks(id, settingRows()));
   await tour.capture(`screen-${id}`);
   await escapeCloses(tour, id, isClosed);

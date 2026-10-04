@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-input
 
+## 0.17.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.17.1
+- @drizztdourden08/brock-electron@0.17.1
+- @drizztdourden08/brock-react@0.17.1
+
 ## 0.17.0
 
 ### Patch Changes

@@ -61,7 +61,8 @@ Usage:
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock knip [args]          knip with every git-ignored path under ignore, so it also works in a worktree
-                             inside a dot-folder; every word after knip reaches it
+                             inside a dot-folder; a dependency an app declares for the Brock and workspace
+                             packages it bundles counts as used, built or not; every word after knip reaches it
   brock platform list | add <id | bundle>... | remove <id | bundle>...
                              the platforms in brock.config.ts targets: windows, macos, linux, android, web
                              (ios is reserved), bundles desktop and mobile. add runs each platform's scaffold

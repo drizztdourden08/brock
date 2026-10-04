@@ -16,6 +16,14 @@
  */
 
 /**
+ * @typedef {object} UpgradeApp
+ * @property {string} dir the app folder, absolute
+ * @property {string} label the app folder relative to the repo root, `.` for a root app
+ * @property {string | null} from the app's brock.version before the bump, else the plan's
+ * @property {string | null} tesseraFrom for --tessera-from
+ */
+
+/**
  * @typedef {object} StepResult
  * @property {string} name
  * @property {'passed' | 'failed' | 'skipped'} status

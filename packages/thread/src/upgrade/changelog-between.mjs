@@ -38,13 +38,13 @@ const merge = (sections) => {
 };
 
 /**
- * @param {string} dir the upgraded checkout, after install
+ * @param {string | string[]} dirs the upgraded checkout and its apps, after install
  * @param {{ from: string | null, to: string, online: boolean }} range
  * @returns {{ version: string, entries: string[] }[]} oldest first
  */
-const changelogBetween = (dir, { from, to, online }) => {
+const changelogBetween = (dirs, { from, to, online }) => {
   const inRange = ({ version }) => (from === null || compareVersions(version, from) > 0) && compareVersions(version, to) <= 0;
-  const installed = installedChangelogs(dir).flatMap(sectionsOf).filter(inRange);
+  const installed = [dirs].flat().flatMap(installedChangelogs).flatMap(sectionsOf).filter(inRange);
   const sections = installed.length > 0 || !online ? installed : releaseNotes(to).filter(inRange);
   return merge(sections).sort((a, b) => compareVersions(a.version, b.version));
 };

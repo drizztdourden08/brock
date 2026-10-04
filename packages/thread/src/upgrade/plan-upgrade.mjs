@@ -1,7 +1,13 @@
 /* @layer tooling-scripts @kind logic */
 import { resolve } from 'node:path';
+import { appDirs } from './app-dirs.mjs';
 import { brockInstallOf } from './brock-install.mjs';
 import { latestBrock } from './latest-brock.mjs';
+
+const installOf = (rootDir) => {
+  const installs = [rootDir, ...appDirs(rootDir)].map(brockInstallOf.read);
+  return installs.find((install) => install.mode !== 'none') ?? installs[0];
+};
 
 const assertUpgradable = (install) => {
   if (install.mode === 'workspace') throw new Error('Brock comes from this workspace (workspace: specs), so it moves with the checkout. There is nothing to upgrade.');
@@ -21,7 +27,7 @@ const linkPlan = (install, local) => {
  * @returns {{ plan: import('./upgrade.type.mjs').UpgradePlan | null, offline: string | null }}
  */
 const planUpgrade = (rootDir, requested, local) => {
-  const install = brockInstallOf.read(rootDir);
+  const install = installOf(rootDir);
   assertUpgradable(install);
   const localDir = typeof local === 'string' ? resolve(local) : null;
   if (localDir || install.mode === 'link') return { plan: linkPlan(install, localDir), offline: null };

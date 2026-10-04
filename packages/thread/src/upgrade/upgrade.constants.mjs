@@ -5,6 +5,8 @@ const BUILD_PACKAGE = '@drizztdourden08/brock-build';
 const TESSERA_PACKAGE = '@drizztdourden08/tessera';
 const REACT_PACKAGE = '@drizztdourden08/brock-react';
 const CATALOG_SPEC = 'catalog:';
+const APP_MARKER = 'brock.config.ts';
+const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 const LOCAL_SPEC = /^(?:link|file|workspace|portal):/;
 const DEFAULT_REGISTRY = 'https://npm.pkg.github.com';
 const BROCK_REPO = 'drizztdourden08/brock';
@@ -19,6 +21,6 @@ const DEPENDENCY_BLOCKS = Object.freeze(['dependencies', 'devDependencies']);
 const CHECK_EXIT = Object.freeze({ upToDate: 0, behind: 1, offline: 2 });
 
 export {
-  BROCK_PACKAGE, BROCK_REPO, BROCK_SCOPE, BUILD_PACKAGE, CATALOG_SPEC, CHECK_EXIT, CHECKOUT_PACKAGE_DIRS, DEFAULT_REGISTRY, DEPENDENCY_BLOCKS,
-  GATE_SCRIPTS, LOCAL_SPEC, MIGRATIONS_FILE, NPM_TIMEOUT_MS, PIN_FIELD, REACT_PACKAGE, REPORT_FILE, TESSERA_PACKAGE, WORKTREE_PREFIX,
+  APP_MARKER, BROCK_PACKAGE, BROCK_REPO, BROCK_SCOPE, BUILD_PACKAGE, CATALOG_SPEC, CHECK_EXIT, CHECKOUT_PACKAGE_DIRS, DEFAULT_REGISTRY, DEPENDENCY_BLOCKS,
+  GATE_SCRIPTS, LOCAL_SPEC, MIGRATIONS_FILE, NPM_TIMEOUT_MS, PIN_FIELD, REACT_PACKAGE, REPORT_FILE, TESSERA_PACKAGE, WORKSPACE_FILE, WORKTREE_PREFIX,
 };

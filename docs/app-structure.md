@@ -115,7 +115,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 | `dist/`, `release/`, `out/`, `node_modules/`, `*.tsbuildinfo` | the build, the package step, pnpm | no |
 | `.user-data/`, `.worktrees/`, any other dot-folder | launches, the thread CLI | no (the `.*/` line) |
 | `.brock-port-slot` | `worktree create` | no |
-| `upgrade-report.md` | `<repo> upgrade`, in its worktree | no (the local exclude file) |
+| `upgrade-report.md` | `<repo> upgrade`, in each app of its worktree | no (the local exclude file) |
 
 `.brock/*.ts` stays committed even though `dev`, `build`, `start` and `launch` sync it first: a fresh checkout type-checks and lints without a sync, and `brock check` in CI catches a registry nobody regenerated. The `.*/` rule ignores every dot-folder, so the `.gitignore` keeps `!.brock/` (and `.brock/profile-config.json`, which stays ignored); `brock migrate` adds both where an older `.gitignore` lacks them. An app that ignored `.brock` before keeps working: the commands above sync it before they start.
 

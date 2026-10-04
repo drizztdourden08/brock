@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-build
 
+## 0.17.1
+
+### Patch Changes
+
+- 1ebfc4c: `brock knip` counts a dependency an app declares for the Brock and workspace packages it bundles (their `dependencies` and `peerDependencies`) as used. Knip reads `package.json#main` (`dist/electron/main.js`) whenever it exists, so a fresh worktree flagged those packages as unused until a build ran, and the upgrade gate, which lints before it builds, went red. The template's `knip.json` no longer lists `@electron-toolkit/utils`, `velopack` and `zustand` in `ignoreDependencies`.
+- Updated dependencies [1ebfc4c]
+- Updated dependencies [1ebfc4c]
+  - @drizztdourden08/brock-thread@0.17.1
+  - @drizztdourden08/brock-core@0.17.1
+
 ## 0.17.0
 
 ### Minor Changes

@@ -20,16 +20,17 @@ const followCatalog = (dir, range) => {
 /**
  * @param {string} dir the app (or workspace root) folder
  * @param {string | null} range brock-react's Tessera peer range at the target
+ * @param {string} [workspaceRoot] the folder whose pnpm-workspace.yaml holds the catalog
  * @returns {string[]} the fields changed
  */
-const followTessera = (dir, range) => {
+const followTessera = (dir, range, workspaceRoot = dir) => {
   if (!range || range === '*') return [];
   const file = jsonFile(join(dir, 'package.json'));
   const pkg = file.read() ?? {};
   const block = DEPENDENCY_BLOCKS.find((name) => typeof pkg[name]?.[TESSERA_PACKAGE] === 'string');
   if (!block) return [];
   const spec = pkg[block][TESSERA_PACKAGE];
-  if (spec === CATALOG_SPEC) return followCatalog(dir, range);
+  if (spec === CATALOG_SPEC) return followCatalog(workspaceRoot, range);
   if (LOCAL_SPEC.test(spec) || spec === range) return [];
   file.write({ ...pkg, [block]: { ...pkg[block], [TESSERA_PACKAGE]: range } });
   return [`${block}.${TESSERA_PACKAGE}`];

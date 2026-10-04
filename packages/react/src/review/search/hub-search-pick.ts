@@ -8,8 +8,9 @@ import { press } from '../dom/press-key';
 import { settle } from '../dom/settle';
 import { typeText } from '../dom/type-text';
 import { waitFor } from '../dom/wait-for';
-import { SELECTORS } from '../review.constants';
+import { SEARCH_MISS, SELECTORS } from '../review.constants';
 import type { SearchSample, StepTour } from '../review.type';
+import { checkMascot } from './mascot-check';
 import { reachedTarget } from './reached-target';
 
 const liveRow = (anchor: string): HTMLElement | null =>
@@ -38,6 +39,15 @@ const checkLiveResult = async (tour: StepTour, sample: SearchSample, bucket: str
   return undefined;
 };
 
+const checkIdleAndEmpty = async (tour: StepTour, input: HTMLInputElement, bucket: string): Promise<void> => {
+  input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+  checkMascot(tour, 'search-hub-mascot-idle', `the empty "${bucket}" hub search`, await waitFor(() => find(SELECTORS.hubSearchIdle)));
+  await tour.capture('search-hub-idle');
+  typeText(input, SEARCH_MISS);
+  checkMascot(tour, 'search-hub-mascot-empty', `the "${bucket}" hub search with no match`, await waitFor(() => find(SELECTORS.hubSearchEmpty)));
+  await tour.capture('search-hub-empty');
+};
+
 const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void> => {
   const bucket = sample.target?.route.split(ROUTE_SEPARATOR)[0] ?? '';
   nav.open(bucket);
@@ -48,6 +58,7 @@ const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void
   const input = await waitFor(focusedSearch);
   tour.check('search-hub-shortcut', input !== null && !palette.isOpen(), `Ctrl+K inside the "${bucket}" hub focused its search`, `Ctrl+K inside the "${bucket}" hub did not focus its search`);
   if (input === null) return undefined;
+  await checkIdleAndEmpty(tour, input, bucket);
   typeText(input, sample.label);
   return checkLiveResult(tour, sample, bucket);
 };

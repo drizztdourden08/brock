@@ -185,7 +185,7 @@ Brock's own compounds sit in `src/compounds/<Name>/`, the `parts.compounds` fold
 
 ## Automated review
 
-On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, search from both the palette and a hub, the bug report dialog, About, the logs widget docking, a pop-out widget opening in its own window, and the hero homes. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
+On a `--review` launch `BrockApp` loads `review/run-review` as a separate chunk once startup settles; a normal launch never loads it. The tour drives the shell like a person, from the registries and the product config: title bar, first-run profile form, menu, every screen (through its menu entry when one exists, else `nav.open`), Escape to home, the palette, search from both the palette and a hub (with the brand mascot in the palette and in the hub search before typing and with no match), the bug report dialog, About, the logs widget docking, a pop-out widget opening in its own window, and the hero homes. Each step sends its checks and a screenshot request to main, which writes the report. Run it with `brock start -- --review --no-focus --muted --user-data=<dir>` after a build; the report is `Data/review/<name>/report.md`.
 
 ## Checks
 

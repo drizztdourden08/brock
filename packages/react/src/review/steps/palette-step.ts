@@ -5,6 +5,7 @@ import { find } from '../dom/find';
 import { press } from '../dom/press-key';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
+import { checkMascot } from '../search/mascot-check';
 import type { ReviewStep } from '../review.type';
 import { escapeCloses } from './escape-closes';
 import { readPaletteIcons } from './read-palette-icons';
@@ -16,6 +17,7 @@ const paletteStep: ReviewStep = {
     const opened = await waitFor(() => find(SELECTORS.palette));
     tour.check('palette-opens', opened !== null, 'Ctrl+K opened the search palette', 'Ctrl+K did not open the search palette');
     if (opened === null) return;
+    checkMascot(tour, 'palette-mascot', 'the palette', opened);
     await tour.capture('palette');
     tour.report(iconSlotChecks('palette-icons', readPaletteIcons(), (text) => Object.hasOwn(ICONS, text)));
     await escapeCloses(tour, 'palette', () => find(SELECTORS.palette) === null);

@@ -20,6 +20,7 @@ const BOOT_OVERLAYS = ['#boot-splash', '.boot-bar', 'html.booting', '[data-boot-
 const SEARCH_TOP = 5;
 const SEARCH_SETTINGS_PAGES = 4;
 const SEARCH_HIT_CLASS = 'search-hit';
+const SEARCH_MISS = 'qzxjvw';
 const POP_OUT_WAIT_MS = 8000;
 const REVIEW_PREF_KEY = 'reviewProbe';
 
@@ -87,6 +88,9 @@ const SELECTORS = {
   paletteInput: '.command-palette--open input.command-palette__input, .command-palette--open .command-palette__input input',
   hubSearchInput: '.screen-layer:not(.screen-layer--hidden) input.side-nav__search-input, .screen-layer:not(.screen-layer--hidden) .side-nav__search-input input',
   hubSearchResults: '.screen-layer:not(.screen-layer--hidden) .search-results',
+  hubSearchIdle: '.screen-layer:not(.screen-layer--hidden) .search-results--idle',
+  hubSearchEmpty: '.screen-layer:not(.screen-layer--hidden) .search-results__body .search-results__empty',
+  mascot: '.chosen-mascot',
   liveControl: 'input, button, select, textarea, [role="switch"], [role="radio"], [role="slider"]',
   dialogClose: '.dialog .window-header__close',
   hubNavItem: '.screen-layer:not(.screen-layer--hidden) .side-nav__item',
@@ -104,5 +108,5 @@ const RESET_CLOSERS = [
 
 export {
   ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
-  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
+  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

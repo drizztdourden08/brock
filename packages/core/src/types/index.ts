@@ -5,3 +5,4 @@ export type {
 } from './diagnostics.type';
 export type { PlaySession } from './session.type';
 export type { LanAddress } from './network.type';
+export type { JobLogLevel, JobLogLine, JobOptions, JobSnapshot, JobState, JobStepDef, JobStepState, JobStepWire } from './job.type';

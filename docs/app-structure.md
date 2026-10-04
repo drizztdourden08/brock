@@ -16,14 +16,14 @@ my-app/
   eslint.config.mjs, stylelint.config.mjs, .markdownlint-cli2.mjs, tsconfig.json   managed by brock sync
   bin/<repo>.mjs                   the repo command
   electron/
-    main.ts                        bootstrapApp(product, { modules, bootTasks, handlers: mainHandlers, services })
+    main.ts                        bootstrapApp(product, { modules, bootTasks, handlers: mainHandlers, services, dataDomains })
     preload.ts                     createPreloadBridge({ maps, namespaces })
     boot/<id>.task.ts              main boot tasks
     handlers/<subject>-handlers.ts one HandlerGroup per subject, exported as <subject>Handlers
     services/                      createAppServices(ctx), the graph bootstrapApp builds as ctx.services
     <subject>/                     main-side logic the handlers call (kebab-case functions)
   src/
-    main.tsx                       <BrockApp screenTree widgets modules bootTasks settings review />
+    main.tsx                       <BrockApp screenTree widgets titleBar modules bootTasks settings review />
     index.html, product.ts, theme.css
     settings.type.ts, settings.constants.ts, main.constants.ts
     ipc/contract.constants.ts      APP_CHANNELS = defineChannels({...}), and its maps for the preload
@@ -34,6 +34,7 @@ my-app/
     screens/<bucket>/<id>.<kind>.tsx, screens/<bucket>/<page>/<sub>.sub.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx, screens/<id>.base.tsx
     widgets/<id>.widget.tsx        one widget per file
     widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
+    title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
     boot/<id>.task.ts              renderer boot tasks
     views/<Name>/                  Tessera views: the screens' state-owning bodies
     compounds/<Name>/              Tessera compounds: one app concept drawn from Tessera parts
@@ -71,6 +72,8 @@ my-repo/
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
+| Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`) | `brock sync` into `.brock/title-bar.ts` |
+| Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp`; the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
 | Renderer boot task | `src/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
 | IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |
@@ -90,12 +93,12 @@ my-repo/
 | Other static files | `public/` | any | served at the page root |
 | Installer | `build/installer/` | `header.png`, `splash.png` | `brock package` |
 | Tests | `tests/<area>/`, `tests/e2e/` | `<name>.keep.test.ts`, `<name>.e2e.ts` | `vitest` |
-| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `manifest.json` | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
+| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `title-bar.ts`, `manifest.json` | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
 | Config | the app root | `brock.config.ts`, `tessera.config.json`, the managed configs | `brock sync` rewrites the managed ones |
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
-`brock structure` enforces the screen and widget folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are all findings.
+`brock structure` enforces the screen, widget and title bar folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`).
 
 ## Generated files: tracked or ignored
 

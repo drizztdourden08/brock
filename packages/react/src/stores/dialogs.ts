@@ -4,7 +4,7 @@ import type { ConfirmDialogConfig } from './dialog.type';
 import { useDialogStore } from './useDialogStore';
 
 const confirmDelete = (title: string, message: string, onConfirm: () => void): void => {
-  void confirmAction({ title, message, confirmLabel: 'Delete', variant: 'danger' }).then((confirmed) => { if (confirmed) onConfirm(); });
+  void confirmAction({ title, message, confirmLabel: 'Delete', variant: 'danger', focus: 'cancel' }).then((confirmed) => { if (confirmed) onConfirm(); });
 };
 
 const dialogs = {

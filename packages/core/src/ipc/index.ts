@@ -14,6 +14,7 @@ export type { AppIpcApi, AppIpcMaps, InvokeApi, SendApi, EventApi, IpcApi, IpcHo
 export type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './payloads.type';
 export type { InvokeContract, SendContract, EventContract, IpcNamespaces } from '../augment';
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
+export type { DataEventContract, DataInvokeContract, DataSendContract } from './data-contract.type';
 export type {
   PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
   WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,

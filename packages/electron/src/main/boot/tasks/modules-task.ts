@@ -11,7 +11,7 @@ const modulesTask = (options: BootstrapOptions): MainBootTask => ({
   run: async (ctx) => {
     const modules = options.modules ?? [];
     await buildServices(ctx, options.services);
-    registerHandlerGroups(baseHandlers(options), ctx);
+    registerHandlerGroups(baseHandlers(), ctx);
     for (const [index, module] of modules.entries()) {
       ctx.report(index / (modules.length + 1), module.id);
       await module.register(ctx);

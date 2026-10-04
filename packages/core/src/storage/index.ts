@@ -13,6 +13,7 @@ export { getAppState } from './get-app-state';
 export { saveAppState } from './save-app-state';
 export { APP_STATE_FILE, DEFAULT_APP_STATE } from './app-state.constants';
 export type { AppState } from './app-state.type';
+export { DATA_EXPORT_JOB, DATA_IMPORT_JOB } from './data-jobs.constants';
 export { createProfileStore } from './profiles/profile-store';
 export { profileDir } from './profiles/profile-dir';
 export { profileFile } from './profiles/profile-file';

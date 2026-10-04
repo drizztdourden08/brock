@@ -1,6 +1,7 @@
 /* @layer core @kind constants */
 import type { InvokeContract, SendContract, EventContract } from '../augment';
 import { WIDGET_EVENT_MAP, WIDGET_INVOKE_MAP, WIDGET_SEND_MAP } from './widget-maps.constants';
+import { DATA_EVENT_MAP, DATA_INVOKE_MAP, DATA_SEND_MAP } from './data-maps.constants';
 
 const BASE_INVOKE_MAP = {
   getUserDataPath: 'app:getUserDataPath',
@@ -51,6 +52,7 @@ const BASE_INVOKE_MAP = {
   takeScreenshot: 'test:screenshot',
   reviewCapture: 'review:capture',
   ...WIDGET_INVOKE_MAP,
+  ...DATA_INVOKE_MAP,
 } as const satisfies Record<string, keyof InvokeContract>;
 
 const BASE_SEND_MAP = {
@@ -68,6 +70,7 @@ const BASE_SEND_MAP = {
   reviewCheck: 'review:check',
   reviewFinish: 'review:finish',
   ...WIDGET_SEND_MAP,
+  ...DATA_SEND_MAP,
 } as const satisfies Record<string, keyof SendContract>;
 
 const BASE_EVENT_MAP = {
@@ -76,6 +79,7 @@ const BASE_EVENT_MAP = {
   onLogEntry: 'log:entry',
   onImportProgress: 'import:progress',
   ...WIDGET_EVENT_MAP,
+  ...DATA_EVENT_MAP,
 } as const satisfies Record<string, keyof EventContract>;
 
 export { BASE_INVOKE_MAP, BASE_SEND_MAP, BASE_EVENT_MAP };

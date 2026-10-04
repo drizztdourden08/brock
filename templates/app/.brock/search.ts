@@ -9,6 +9,7 @@ const searchIndex = buildSearchIndex(config, [
   {"kind":"hero","id":"home","bucket":"game","title":"Home","icon":"house","keywords":["start","overview","profile"]},
   {"kind":"sub","id":"new","bucket":"game","page":"saves","title":"New save","icon":"save","keywords":["create","slot"]},
   {"kind":"page","id":"saves","bucket":"game","title":"Saves","icon":"save","keywords":["slots","progress"]},
+  {"kind":"page","id":"storage","bucket":"game","title":"Storage","icon":"hard-drive","keywords":["data","disk","folder","export","import","clean"]},
 ]);
 
 export { searchIndex };

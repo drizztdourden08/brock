@@ -8,6 +8,7 @@ import GameGeneralSettings, { meta as gameGeneralSettingsMeta } from '../src/scr
 import GameHomeHero, { meta as gameHomeHeroMeta } from '../src/screens/game/home.hero';
 import GameSavesNewSub, { meta as gameSavesNewSubMeta } from '../src/screens/game/saves/new.sub';
 import GameSavesPage, { meta as gameSavesPageMeta } from '../src/screens/game/saves.page';
+import GameStoragePage, { meta as gameStoragePageMeta } from '../src/screens/game/storage.page';
 
 const screenTree = buildScreenTree(config, [
   { kind: 'card', id: 'credits', component: CreditsCard, meta: creditsCardMeta },
@@ -16,6 +17,7 @@ const screenTree = buildScreenTree(config, [
   { kind: 'hero', bucket: 'game', id: 'home', component: GameHomeHero, meta: gameHomeHeroMeta },
   { kind: 'sub', bucket: 'game', page: 'saves', id: 'new', component: GameSavesNewSub, meta: gameSavesNewSubMeta },
   { kind: 'page', bucket: 'game', id: 'saves', component: GameSavesPage, meta: gameSavesPageMeta },
+  { kind: 'page', bucket: 'game', id: 'storage', component: GameStoragePage, meta: gameStoragePageMeta },
 ], searchIndex);
 
 export { screenTree };

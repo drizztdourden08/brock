@@ -9,6 +9,7 @@ import { rendererBootTasks } from '../.brock/boot.renderer';
 import { screenTree } from '../.brock/screens';
 import { appWidgetLayout, appWidgets } from '../.brock/widgets';
 import { appReview } from '../.brock/review';
+import { appTitleBar } from '../.brock/title-bar';
 import { SETTINGS } from './main.constants';
 import { product } from './product';
 import type { AppSettings } from './settings.type';
@@ -27,6 +28,7 @@ createRoot(root).render(
       widgets={appWidgets}
       widgetLayout={appWidgetLayout}
       review={appReview}
+      titleBar={appTitleBar}
     />
   </StrictMode>,
 );

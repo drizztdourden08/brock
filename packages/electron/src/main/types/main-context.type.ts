@@ -7,6 +7,8 @@ import type { ProfileStore, ProfileStoreHooks } from '@drizztdourden08/brock-cor
 import type { AppServices, EventContract } from '@drizztdourden08/brock-core/augment';
 import type { BootTask } from '@drizztdourden08/brock-core/boot';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
+import type { JobRegistry, StartJob } from '../jobs/job.type';
+import type { DataDomains } from '../storage/domain-files.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -30,6 +32,9 @@ interface MainContext {
   paths: MainPaths;
   files: FileStore;
   profiles: ProfileStore;
+  storage: DataDomains;
+  job: StartJob;
+  jobs: JobRegistry;
   window: () => BrowserWindow | null;
   handle: HandleFn;
   on: OnFn;

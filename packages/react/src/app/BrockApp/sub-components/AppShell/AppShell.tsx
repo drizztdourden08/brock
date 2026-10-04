@@ -30,6 +30,8 @@ import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
+import { JobHost } from '../../../../jobs/JobHost';
+import { TitleBarMenuHost } from '../../../../title-bar/TitleBarMenuHost';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -81,6 +83,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
       </Box>
       <WindowGuide />
+      <TitleBarMenuHost />
+      <JobHost />
       <StandardOverlays menu={fullMenu} actions={searchActions} />
     </Box>
   );

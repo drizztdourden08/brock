@@ -36,6 +36,7 @@ import { registerHandlerGroups } from './register-handlers';
 import { widgetHandlers } from '../widgets/widget-handlers';
 import { widgetWindowSetup } from '../widgets/widget-window-setup';
 import { logBoot } from './boot-timing';
+import { externalProtocols } from '../window/external-protocols';
 
 const onReady = async ({ ctx, options, dataDirs, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
@@ -88,13 +89,14 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
     ...(options.automationFlags ?? []),
   ]);
   const instance = parseInstanceConfig();
+  if (options.security?.externalProtocols) externalProtocols.allowed = new Set(options.security.externalProtocols);
   const paths = resolvePaths(options.paths);
   const icon = resolveWindowIcon(paths.renderer, instance.name);
   applyAppIdentity(instance.name, { appId: product.appId, iconPath: icon });
   registerPrivilegedSchemes([...product.schemes, ...modules.flatMap((m) => m.schemes ?? [])]);
   app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 
-  const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks });
+  const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains });
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];
   const setup: WindowSetup = {
     product, flags, instance, paths, icon,

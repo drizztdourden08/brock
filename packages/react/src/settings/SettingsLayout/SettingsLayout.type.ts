@@ -23,7 +23,7 @@ interface GroupListInput<S extends object> {
   defaults?: S;
   onChange: SettingsPatch<S>;
   lockOf: (key: string) => SettingLockCause | null;
-  rowOf: (item: SettingItem) => SettingsSectionRow | null;
+  rowsOf: (item: SettingItem) => SettingsSectionRow[];
 }
 
 interface SettingRowContext<S extends object> {

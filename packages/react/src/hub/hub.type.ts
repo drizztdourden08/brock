@@ -28,7 +28,8 @@ interface HubTab {
 interface HubPage {
   id: string;
   label: string;
-  icon?: ReactNode;
+  icon: ReactNode;
+  fullBleed?: boolean;
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
   devOnly?: boolean;
@@ -61,7 +62,7 @@ interface HubDef {
   home: HubPage;
   groups: HubGroup[];
   search?: HubSearch;
-  icon?: ReactNode;
+  icon: ReactNode;
   shortcut?: string;
 }
 

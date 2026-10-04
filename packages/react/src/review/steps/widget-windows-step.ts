@@ -2,7 +2,9 @@
 import { requireHostApi } from '../../host/require-host-api';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
 import { widgets } from '../../widgets/widgets';
+import { delay } from '../dom/delay';
 import { settle } from '../dom/settle';
+import { REVIEW_OPTIONS_SLICE } from '../../widgets/widget.constants';
 import type { ReviewStep, StepTour } from '../review.type';
 import { checkAreas } from '../widgets/area-check';
 import { checkBoundsRoundTrip } from '../widgets/bounds-check';
@@ -20,6 +22,7 @@ import { checkSharedEdge } from '../widgets/shared-edge-check';
 import { checkSync } from '../widgets/sync-check';
 import { checkSnapAndTow } from '../widgets/tow-check';
 import { windowOpen } from '../widgets/window-open';
+import { OPTIONS_WAIT_MS } from '../widgets/widget-review.constants';
 
 const popOut = async (tour: StepTour, id: string, check: string): Promise<boolean> => {
   widgets.popOut(id);
@@ -33,8 +36,17 @@ const captureWidget = async (id: string, name: string): Promise<void> => {
   await requireHostApi().reviewCaptureWidget(id, name);
 };
 
+const captureOptions = async (id: string): Promise<void> => {
+  requireHostApi().publishWidgetSlice({ kind: REVIEW_OPTIONS_SLICE, data: { id, open: true } });
+  await delay(OPTIONS_WAIT_MS);
+  await captureWidget(id, 'widget-options');
+  requireHostApi().publishWidgetSlice({ kind: REVIEW_OPTIONS_SLICE, data: { id, open: false } });
+  await settle();
+};
+
 const windowChecks = async (tour: StepTour, id: string): Promise<void> => {
   await captureWidget(id, 'widget-window');
+  await captureOptions(id);
   await checkPin(tour, id);
   await checkBoundsRoundTrip(tour, id);
   await checkSnapAndTow(tour, id);

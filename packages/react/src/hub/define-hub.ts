@@ -13,6 +13,7 @@ const defineHub = (def: HubDef): ScreenDef => {
     id: def.id,
     title: def.title,
     icon: def.icon,
+    header: 'own',
     shortcut: def.shortcut,
     subtitle: (ctx) => ctx.profile?.name,
     extra: (ctx) => createElement(HubHeaderTabs, { def, ctx }),

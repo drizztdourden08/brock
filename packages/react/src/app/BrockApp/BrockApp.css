@@ -34,9 +34,3 @@ html.notch-safe .brock-app {
   position: absolute;
   inset: 0;
 }
-
-.brock-app--square .screen-layer__card,
-.brock-app--square .widget {
-  border: none;
-  border-radius: 0;
-}

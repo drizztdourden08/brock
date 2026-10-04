@@ -20,6 +20,7 @@ const itemEntry = (tab: TabDef<object>, trail: readonly string[], item: SettingI
   icon: tab.navIcon,
   breadcrumb: [...tabCrumbs(tab, input.settingsPlace), tab.label, ...trail],
   description: item.description,
+  hint: item.hint,
   keywords: normaliseKeywords(item.keywords),
   toggle: settingToggle(item.key, input),
   target: tabTarget(tab, input.settingsPlace, item.key),

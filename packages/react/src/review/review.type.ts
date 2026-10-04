@@ -69,6 +69,7 @@ interface MenuExpectation {
 interface TitleBarExpectation {
   actions?: readonly WindowTitleBarAction[];
   controls?: Pick<TitleBarControls, 'pin' | 'fullscreen'>;
+  windowGroups?: boolean;
 }
 
 interface ViewMenuSnapshot {
@@ -87,6 +88,12 @@ interface FrameSnapshot {
   card: boolean;
   title: string | null;
   closeButton: boolean;
+}
+
+interface PageHeaderSnapshot {
+  shown: boolean;
+  icon: boolean;
+  title: string | null;
 }
 
 interface AboutSnapshot {
@@ -132,6 +139,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

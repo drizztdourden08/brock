@@ -13,7 +13,7 @@ import { useMountedScreens } from './behavior/useMountedScreens';
 import type { ScreenHostProps } from './ScreenHost.type';
 
 const ScreenHost = (props: ScreenHostProps) => {
-  const { home, className = 'screen-host' } = props;
+  const { home, square = false, className = 'screen-host' } = props;
   const registry = useScreenRegistry();
   const { active: activeId, params, open, close } = useNavigation();
   const profile = useProfilesStore((s) => s.active);
@@ -35,6 +35,9 @@ const ScreenHost = (props: ScreenHostProps) => {
       <ScreenLayer
         key={screen.id}
         title={screen.title}
+        icon={screen.icon}
+        header={screen.header}
+        square={square}
         subtitle={screen.subtitle?.(ctx)}
         extra={screen.extra?.(ctx)}
         floating={screen.floating?.(ctx)}

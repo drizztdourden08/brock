@@ -38,8 +38,8 @@ const SETTINGS = [
   "const modes = [{ value: 'a', label: 'A' }];",
   'const asPercent = (value: number): string => `${value}%`;',
   'const sections: Section[] = [',
-  "  { id: 'window', title: 'Window', items: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', keywords: 'Borderless', control: { kind: 'choice', options: modes } }] },",
-  "  { id: 'audio', title: 'Audio', subsections: [{ id: 'mix', title: 'Mix', items: [{ key: 'volume', label: 'Volume', description: 'Level.', control: { kind: 'range', format: asPercent } }] }] },",
+  "  { id: 'window', title: 'Window', items: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', hint: 'Pick how the window opens.', keywords: 'Borderless', control: { kind: 'choice', options: modes } }] },",
+  "  { id: 'audio', title: 'Audio', subsections: [{ id: 'mix', title: 'Mix', items: [{ key: 'volume', label: 'Volume', description: 'Level.', hint: 'Drag to set the level.', control: { kind: 'range', format: asPercent } }] }] },",
   '];',
   'export default sections;',
   '',
@@ -181,8 +181,8 @@ describe('renderSearch', () => {
     expect(seed('general')).toEqual({
       kind: 'settings', id: 'general', bucket: 'game',
       sections: [
-        { id: 'window', title: 'Window', rows: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', keywords: ['borderless'] }] },
-        { id: 'mix', title: 'Audio', sub: 'Mix', rows: [{ key: 'volume', label: 'Volume', description: 'Level.', keywords: [] }] },
+        { id: 'window', title: 'Window', rows: [{ key: 'windowMode', label: 'Window mode', description: 'How it opens.', hint: 'Pick how the window opens.', keywords: ['borderless'] }] },
+        { id: 'mix', title: 'Audio', sub: 'Mix', rows: [{ key: 'volume', label: 'Volume', description: 'Level.', hint: 'Drag to set the level.', keywords: [] }] },
       ],
     });
   });

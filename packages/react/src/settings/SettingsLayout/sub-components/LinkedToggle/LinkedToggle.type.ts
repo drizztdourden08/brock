@@ -1,11 +1,11 @@
 /* @layer renderer-shell @kind types */
 import type { SettingItem } from '../../../settings.type';
 
-interface DefaultControlProps {
+interface LinkedToggleProps {
   item: SettingItem;
-  value: unknown;
+  checked: boolean;
   disabled: boolean;
-  onChange: (value: unknown) => void;
+  onChange: (checked: boolean) => void;
 }
 
-export type { DefaultControlProps };
+export type { LinkedToggleProps };

@@ -29,6 +29,7 @@ interface SearchEntry {
   target?: SearchTarget;
   icon?: ReactNode;
   description?: string;
+  hint?: string;
   devOnly?: boolean;
   disabled?: boolean;
   checked?: boolean;
@@ -47,6 +48,7 @@ interface SearchRowSeed {
   key: string;
   label: string;
   description?: string;
+  hint?: string;
   keywords?: readonly string[];
 }
 

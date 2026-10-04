@@ -23,6 +23,7 @@ const scoreToken = (entry: SearchEntry, token: string): number => Math.max(
   scoreField(entry.label, token, LABEL_WEIGHTS),
   scoreKeywords(entry.keywords, token),
   scoreField(entry.description, token, DESCRIPTION_WEIGHTS),
+  scoreField(entry.hint, token, DESCRIPTION_WEIGHTS),
   scoreField(entry.breadcrumb.join(' '), token, BREADCRUMB_WEIGHTS),
 );
 

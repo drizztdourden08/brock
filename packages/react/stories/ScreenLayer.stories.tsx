@@ -1,7 +1,7 @@
 /* @layer stories @kind story */
 import { useState } from 'react';
 import type { StoryLiteMeta, StoryLiteStoryDefinition, StoryLiteArgTypes } from '@storylite/storylite';
-import { Box, Button, Status, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, Icon, Status, Text } from '@drizztdourden08/tessera/primitives';
 import { ScreenLayer } from '../src';
 
 type LayerArgs = {
@@ -27,6 +27,7 @@ const Demo = (props: LayerArgs) => {
       {open && (
         <ScreenLayer
           title={title}
+          icon={<Icon name="layers" />}
           subtitle={subtitle || undefined}
           extra={withExtra ? <Status tone="success">saved</Status> : undefined}
           onClose={() => setOpen(false)}

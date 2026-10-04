@@ -1,5 +1,44 @@
 # @drizztdourden08/brock-build
 
+## 0.10.0
+
+### Minor Changes
+
+- a265770: Every screen shows Tessera's page header with an icon and a title.
+
+  - Breaking: `ScreenDef.icon`, `HubDef.icon` and `HubPage.icon` are required, and `ScreenLayer` takes a required `icon`. Every built-in screen has one: Profiles, Settings, About, Credits and the input tester.
+  - A fullscreen screen's content sits in Tessera's `ScreenPage` inside the `ScreenLayer` card, with the screen icon and title. `header: 'own'` leaves the content to draw its own headers; hubs and the settings screen use it. Each hub page draws under its own header: settings pages in `SettingsPage` with their anchors, a settings tab that renders itself in `SettingsPage` too, and every other page in `ScreenPage`. `HubPage.fullBleed` keeps a page such as a bucket's hero home filling the pane.
+  - The About screen passes the app name as the `InfoScreen` heading and an info icon.
+  - The `screen-icons` migration (0.10.0) leaves a to-do on each `defineScreen` or `defineHub` call without an icon.
+  - The review checks the page header, its icon and its title on every screen and every hub page that has one.
+
+- a265770: Every settings row has a description and a hint, as in Tessera 0.10.0.
+
+  - Breaking: a settings item is `{ key, label, hint, description | noDescription: true, keywords?, link?, control? }`, the same shape as Tessera's `SettingsItem`. The typecheck fails on an item without a `hint`, or without a `description` or an explicit `noDescription: true`. `SettingDescription` and `SettingItemFields` are exported, and a `choice` option takes its own `hint`.
+  - Each item draws as a Tessera `SettingsRow`: the description under the title at rest, and the hint in its place while the control is pointed at or focused. A custom control from `renderControl` stays a content row, and a boolean item with a `link` stays a toggle with the link. `DefaultControl` is gone.
+  - Search finds hints: the hub search matches the hint and each option's label and hint, the palette scores the hint like the description, and the build-time search seeds read `hint` from `.settings.ts` pages.
+  - Every built-in row has a real description and hint: the template's General page, the display module's window and refresh rate rows, the updater dialog's pre-release and version rows, and the input module's dead zone sliders, which are now settings rows.
+  - The `settings-row-hints` migration (0.10.0) leaves a to-do on each app settings row, in a `.settings.ts` page, a settings tab or a Tessera `SettingsSection`, that lacks a hint or a description, naming the missing fields.
+  - The review points at a settings row on each settings page, checks that its hint replaces the description, and captures it.
+
+- a265770: Brock takes Tessera 0.10.0. The catalog and the brock-react peer move to `^0.10.0`.
+
+  - `brock migrate` replays the new `configKeys` group of Tessera's `RENAMES.json`: dotted setting paths moved inside JSON files a project keeps, by file name, where `*` stands for any one key such as an app folder. The step edits `tessera.config.json` and `package.json` at the app root, the repo root and every workspace package in place. A key whose parent stays the same is renamed where it stands, an object whose every key moves to the same new sibling is renamed whole, and any other key is cut and pasted at the indentation of its new place, with an emptied parent removed. Order, layout and indentation are kept, a second run changes nothing, and a target that is already set is never overwritten: it becomes a to-do. For Tessera 0.10.0 that moves the usage settings object to `guide`, at the top level and under each `apps` entry, and the `package.json` guide script to `guide`.
+  - Brock's own `tessera.config.json` holds `guide`, and the prose exception for the old key is gone.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.10.0
+- @drizztdourden08/brock-thread@0.10.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [28540bb]
+  - @drizztdourden08/brock-core@0.9.0
+  - @drizztdourden08/brock-thread@0.9.0
+
 ## 0.8.1
 
 ### Patch Changes

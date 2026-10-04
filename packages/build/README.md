@@ -257,8 +257,8 @@ The 0.7.0 folder adds two, each with a test in `tests/`:
 
 ### Tessera renames
 
-Tessera ships `RENAMES.json`: its renamed custom properties, components, classes, props
-and prop values, and its removed exports, grouped by release, oldest first. After the
+Tessera ships `RENAMES.json`: its renamed custom properties, components, classes, props,
+prop values and config keys, and its removed exports, grouped by release, oldest first. After the
 Brock migrations, `brock migrate` replays it over the app's code (`src/upgrade/tessera/`),
 and `brock upgrade` gets it through the `brock migrate` step of its gate.
 
@@ -296,6 +296,15 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
     (`WidgetVisibility`) renames literals annotated with that Tessera type, `as` or
     `satisfies` it; any other string holding an old value is a to-do.
   - `removedExports`: a to-do at each import or re-export of the name.
+  - `configKeys`, grouped by file name (`tessera.config.json`, `package.json`): each key
+    is a dotted path into that file, `*` standing for any one key such as an app folder,
+    and the value is the path the same value moves to. Every such file at the app root,
+    the repo root and each workspace package is edited in place: the key text is renamed
+    where it stands when the parent stays the same, an object whose every key moves to
+    the same new sibling is renamed whole, and anything else is cut and pasted at the
+    indentation of its new place, with an emptied parent removed. The rest of the file,
+    its order, layout and indentation, stays as it was. A target path that is already set
+    is never overwritten; it becomes a to-do.
 - A value that is not a name (it has spaces or parentheses, such as
   `Slider (with range; see MIGRATION.md)`) is never written: each occurrence becomes a
   to-do with the note. Rerunning the step changes nothing it already changed.

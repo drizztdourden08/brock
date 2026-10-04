@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind barrel */
-export type { ScreenDef, ScreenLayerKind, ScreenRenderContext } from './screen.type';
+export type { ScreenDef, ScreenHeader, ScreenLayerKind, ScreenRenderContext } from './screen.type';
 export { defineScreen } from './define-screen';
 export { createScreenRegistry } from './create-screen-registry';
 export { ScreenRegistryContext } from './screen-registry-context';

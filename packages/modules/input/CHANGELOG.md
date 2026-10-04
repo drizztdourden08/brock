@@ -1,5 +1,45 @@
 # @drizztdourden08/brock-input
 
+## 0.10.0
+
+### Minor Changes
+
+- a265770: Every screen shows Tessera's page header with an icon and a title.
+
+  - Breaking: `ScreenDef.icon`, `HubDef.icon` and `HubPage.icon` are required, and `ScreenLayer` takes a required `icon`. Every built-in screen has one: Profiles, Settings, About, Credits and the input tester.
+  - A fullscreen screen's content sits in Tessera's `ScreenPage` inside the `ScreenLayer` card, with the screen icon and title. `header: 'own'` leaves the content to draw its own headers; hubs and the settings screen use it. Each hub page draws under its own header: settings pages in `SettingsPage` with their anchors, a settings tab that renders itself in `SettingsPage` too, and every other page in `ScreenPage`. `HubPage.fullBleed` keeps a page such as a bucket's hero home filling the pane.
+  - The About screen passes the app name as the `InfoScreen` heading and an info icon.
+  - The `screen-icons` migration (0.10.0) leaves a to-do on each `defineScreen` or `defineHub` call without an icon.
+  - The review checks the page header, its icon and its title on every screen and every hub page that has one.
+
+- a265770: Every settings row has a description and a hint, as in Tessera 0.10.0.
+
+  - Breaking: a settings item is `{ key, label, hint, description | noDescription: true, keywords?, link?, control? }`, the same shape as Tessera's `SettingsItem`. The typecheck fails on an item without a `hint`, or without a `description` or an explicit `noDescription: true`. `SettingDescription` and `SettingItemFields` are exported, and a `choice` option takes its own `hint`.
+  - Each item draws as a Tessera `SettingsRow`: the description under the title at rest, and the hint in its place while the control is pointed at or focused. A custom control from `renderControl` stays a content row, and a boolean item with a `link` stays a toggle with the link. `DefaultControl` is gone.
+  - Search finds hints: the hub search matches the hint and each option's label and hint, the palette scores the hint like the description, and the build-time search seeds read `hint` from `.settings.ts` pages.
+  - Every built-in row has a real description and hint: the template's General page, the display module's window and refresh rate rows, the updater dialog's pre-release and version rows, and the input module's dead zone sliders, which are now settings rows.
+  - The `settings-row-hints` migration (0.10.0) leaves a to-do on each app settings row, in a `.settings.ts` page, a settings tab or a Tessera `SettingsSection`, that lacks a hint or a description, naming the missing fields.
+  - The review points at a settings row on each settings page, checks that its hint replaces the description, and captures it.
+
+### Patch Changes
+
+- Updated dependencies [a265770]
+- Updated dependencies [a265770]
+- Updated dependencies [a265770]
+- Updated dependencies [a265770]
+  - @drizztdourden08/brock-react@0.10.0
+  - @drizztdourden08/brock-core@0.10.0
+  - @drizztdourden08/brock-electron@0.10.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [28540bb]
+  - @drizztdourden08/brock-core@0.9.0
+  - @drizztdourden08/brock-electron@0.9.0
+  - @drizztdourden08/brock-react@0.9.0
+
 ## 0.8.1
 
 ### Patch Changes

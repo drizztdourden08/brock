@@ -66,7 +66,7 @@ const Home = () => {
   );
 };
 
-const homeScreen = defineScreen({ id: 'home', title: 'Home', requiresProfile: false, render: () => <Home /> });
+const homeScreen = defineScreen({ id: 'home', title: 'Home', icon: <Icon name="house" />, requiresProfile: false, render: () => <Home /> });
 
 const Demo = (props: HubStoryArgs) => {
   const { withSearch, secondHub } = props;

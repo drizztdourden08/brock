@@ -24,8 +24,8 @@ const WINDOW_SECTION: Section = {
   id: 'window',
   title: 'Window',
   items: [
-    { key: 'startFullscreen', label: 'Start fullscreen', description: 'Open the window fullscreen on launch.' },
-    { key: 'showTips', label: 'Show tips', description: 'Short hints on first use of a screen.', keywords: 'hints help' },
+    { key: 'startFullscreen', label: 'Start fullscreen', description: 'Open the window fullscreen on launch.', hint: 'Takes effect the next time the app starts.' },
+    { key: 'showTips', label: 'Show tips', description: 'Short hints on first use of a screen.', hint: 'Off hides the tips on every screen.', keywords: 'hints help' },
   ],
 };
 
@@ -36,7 +36,7 @@ const AUDIO_SECTION: Section = {
     {
       id: 'output',
       title: 'Output',
-      items: [{ key: 'enableAudio', label: 'Enable audio', description: 'Turn every sound on or off.' }],
+      items: [{ key: 'enableAudio', label: 'Enable audio', description: 'Turn every sound on or off.', hint: 'Off mutes the app whatever the volume.' }],
     },
   ],
 };
@@ -45,8 +45,8 @@ const DEVELOPER_SECTION: Section = {
   id: 'developer',
   title: 'Developer',
   items: [
-    { key: 'developerToolsEnabled', label: 'Developer tools', description: 'Show the developer entries in menus.' },
-    { key: 'allowDebugLogging', label: 'Debug logging', description: 'Write verbose logs to the session file.' },
+    { key: 'developerToolsEnabled', label: 'Developer tools', description: 'Show the developer entries in menus.', hint: 'On adds the developer entries to the menu and the palette.' },
+    { key: 'allowDebugLogging', label: 'Debug logging', description: 'Write verbose logs to the session file.', hint: 'On keeps detailed lines, so the log grows faster.' },
   ],
 };
 

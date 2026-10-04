@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
+import { Icon } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import { SettingsHub } from '../../settings/SettingsHub/SettingsHub';
 import { useSettings } from '../../stores/useSettings';
@@ -25,6 +26,8 @@ const SettingsScreenBody = (props: { params: ScreenParams }) => {
 const settingsScreen = defineScreen({
   id: 'settings',
   title: 'Settings',
+  icon: <Icon name="settings" />,
+  header: 'own',
   shortcut: 'Mod+Comma',
   keepMounted: true,
   subtitle: (ctx) => ctx.profile?.name,

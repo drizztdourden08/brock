@@ -4,6 +4,8 @@ import { useTitleBar } from '../../../../shell/TitleBar/behavior/useTitleBar';
 import { useTitleBarMenu } from '../../../../shell/TitleBar/behavior/useTitleBarMenu';
 import { useWindowControl } from '../../../../shell/TitleBar/behavior/useWindowControl';
 import { NO_ACTIONS } from '../../../../shell/TitleBar/TitleBar.constants';
+import { useMainWindowGroup } from '../../../../widgets/useMainWindowGroup';
+import { WINDOW_GROUPS } from '../../../../widgets/window-groups.constants';
 import { MENU_LABEL } from './AppTitleBar.constants';
 import type { AppTitleBarProps } from './AppTitleBar.type';
 
@@ -12,6 +14,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
   const { isMaximized, isFullscreen } = useTitleBar();
   const { pinned, onControl } = useWindowControl();
   const groups = useTitleBarMenu(menu);
+  const windowGroup = useMainWindowGroup();
 
   return (
     <WindowTitleBar
@@ -27,6 +30,9 @@ const AppTitleBar = (props: AppTitleBarProps) => {
       fullscreen={isFullscreen}
       onControl={onControl}
       concealed={hidden}
+      windowGroup={windowGroup.group}
+      windowGroups={WINDOW_GROUPS}
+      onWindowGroupChange={windowGroup.setGroup}
     />
   );
 };

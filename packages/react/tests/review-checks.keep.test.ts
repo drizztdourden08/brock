@@ -4,6 +4,7 @@ import type { MenuEntry } from '../src/menu/menu.type';
 import { aboutChecks } from '../src/review/checks/about-checks';
 import { bootChecks } from '../src/review/checks/boot-checks';
 import { frameChecks } from '../src/review/checks/frame-checks';
+import { pageHeaderChecks } from '../src/review/checks/page-header-checks';
 import { iconSlotChecks } from '../src/review/checks/icon-slot-checks';
 import { menuChecks } from '../src/review/checks/menu-checks';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
@@ -107,6 +108,15 @@ describe('frameChecks', () => {
     expect(failed(frameChecks('about', 'About', { layers: 1, card: true, title: 'About', closeButton: true }))).toEqual([]);
     expect(failed(frameChecks('about', 'About', { layers: 0, card: false, title: null, closeButton: false })))
       .toEqual(['about-opens', 'about-frame', 'about-header', 'about-close-control']);
+  });
+});
+
+describe('pageHeaderChecks', () => {
+  it('needs the page header with an icon and the expected title', () => {
+    expect(failed(pageHeaderChecks('credits', 'Credits', { shown: true, icon: true, title: 'Credits' }))).toEqual([]);
+    expect(failed(pageHeaderChecks('about', null, { shown: true, icon: true, title: 'Brock' }))).toEqual([]);
+    expect(failed(pageHeaderChecks('credits', 'Credits', { shown: true, icon: false, title: 'Credits' }))).toEqual(['credits-page-header']);
+    expect(failed(pageHeaderChecks('credits', 'Credits', { shown: false, icon: false, title: null }))).toEqual(['credits-page-header']);
   });
 });
 

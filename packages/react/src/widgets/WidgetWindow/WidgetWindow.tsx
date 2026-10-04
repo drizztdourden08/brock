@@ -10,6 +10,7 @@ import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
+import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
 import { WidgetPinMenu } from './sub-components/WidgetPinMenu';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
@@ -29,6 +30,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const actions = root?.querySelector<HTMLElement>(TITLEBAR_ACTIONS_SELECTOR) ?? null;
   useWidgetRelay(id);
+  useReviewOptions(id, root, setAnchor);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
   const tabs = useMemo(() => [{ id, label: definition?.label ?? id }], [id, definition]);
@@ -37,7 +39,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const toggleOptions = useCallback((next: HTMLElement) => setAnchor((current) => (current ? null : next)), []);
 
   return (
-    <Box ref={setRoot} className={own.square ? 'widget-window widget-window--square' : 'widget-window'}>
+    <Box ref={setRoot} className="widget-window">
       <Widget
         id={id}
         tabs={tabs}
@@ -45,6 +47,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         paneKey={null}
         mode="out"
         opacity={frame.opacity}
+        square={own.square}
         optionsOpen={anchor !== null}
         onActivateTab={noop}
         onOpenOptions={toggleOptions}

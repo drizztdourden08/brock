@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { Slider } from '@drizztdourden08/tessera/primitives';
+import { SettingsSection } from '@drizztdourden08/tessera/composites';
+import { deadZonePercent } from '../dead-zone-percent';
 import { CalibrationPanel } from '../../compounds/CalibrationPanel';
 import { useStickCalibration } from './behavior/useStickCalibration';
 import { STICK_STEP_TEXT } from './StickCalibrationPanel.constants';
@@ -32,10 +33,24 @@ const StickCalibrationPanel = (props: StickCalibrationPanelProps) => {
       onCancel={onClose}
     >
       {step === 'review' && (
-        <>
-          <Slider label="Inner dead zone" value={innerDeadzone} min={0} max={0.5} step={0.01} onChange={setInner} showValue />
-          <Slider label="Outer dead zone" value={outerDeadzone} min={0.5} max={1} step={0.01} onChange={setOuter} showValue />
-        </>
+        <SettingsSection
+          rows={[
+            {
+              id: 'innerDeadzone',
+              title: 'Inner dead zone',
+              description: 'How far the stick moves from its center before it counts.',
+              hint: 'Raise it if the stick drifts at rest. Too high and small moves get lost.',
+              input: { kind: 'slider', value: innerDeadzone, min: 0, max: 0.5, step: 0.01, formatValue: deadZonePercent, onChange: setInner },
+            },
+            {
+              id: 'outerDeadzone',
+              title: 'Outer dead zone',
+              description: 'How far out the stick reads as fully pushed.',
+              hint: 'Lower it if a full push never reaches the edge. The ring on the plot shows where it starts.',
+              input: { kind: 'slider', value: outerDeadzone, min: 0.5, max: 1, step: 0.01, formatValue: deadZonePercent, onChange: setOuter },
+            },
+          ]}
+        />
       )}
     </CalibrationPanel>
   );

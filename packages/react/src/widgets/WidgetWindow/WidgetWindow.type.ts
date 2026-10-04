@@ -29,6 +29,11 @@ interface WidgetWindowOptionsProps {
   onClose: () => void;
 }
 
+interface ReviewOptionsRequest {
+  id: string;
+  open: boolean;
+}
+
 interface PinChoice {
   value: WidgetPinMode;
   label: string;
@@ -46,4 +51,4 @@ interface WidgetPinMenuProps extends PinControlProps {
   host: HTMLElement;
 }
 
-export type { PinChoice, PinControlProps, WidgetPinMenuProps, WidgetWindowOptionsProps, WidgetWindowProps };
+export type { PinChoice, PinControlProps, ReviewOptionsRequest, WidgetPinMenuProps, WidgetWindowOptionsProps, WidgetWindowProps };

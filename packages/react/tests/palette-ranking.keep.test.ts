@@ -10,7 +10,7 @@ const entry = (id: string, label: string, extra: Partial<SearchEntry> = {}): Sea
   id, kind: 'action', label, keywords: [], breadcrumb: [], run: () => undefined, ...extra,
 });
 
-const screen = (id: string, extra: Partial<ScreenDef> = {}): ScreenDef => ({ id, title: id, render: () => null, ...extra });
+const screen = (id: string, extra: Partial<ScreenDef> = {}): ScreenDef => ({ id, title: id, icon: null, render: () => null, ...extra });
 
 const TABS: TabDef<object>[] = [{
   id: 'display',
@@ -18,8 +18,8 @@ const TABS: TabDef<object>[] = [{
   navIcon: null,
   group: 'General',
   sections: () => [{ id: 'window', title: 'Window', items: [
-    { key: 'fullscreen', label: 'Start fullscreen', description: 'Open the window fullscreen' },
-    { key: 'scale', label: 'Scale', description: 'Pixel scale' },
+    { key: 'fullscreen', label: 'Start fullscreen', description: 'Open the window fullscreen', hint: 'Applies on the next launch' },
+    { key: 'scale', label: 'Scale', description: 'Pixel scale', hint: 'Whole multiples keep pixels sharp' },
   ] }],
 }];
 
@@ -89,6 +89,11 @@ describe('buildCatalog', () => {
     fullscreen?.toggle?.flip();
     expect(patch).toHaveBeenCalledWith({ fullscreen: false });
     expect(catalog.find((e) => e.id === 'setting:scale')?.toggle).toBeUndefined();
+  });
+
+  it('finds a setting by the words of its hint', () => {
+    const ranked = rankEntries(buildCatalog(input()), 'sharp');
+    expect(ranked.map((e) => e.id)).toEqual(['setting:scale']);
   });
 
   it('walks nested menu entries into a breadcrumb and adds registered actions', () => {

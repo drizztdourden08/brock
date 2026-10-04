@@ -3,12 +3,13 @@ import { find } from '../dom/find';
 import { soon } from './soon';
 import type { StepTour } from '../review.type';
 import { probe } from './probe';
-import { GUIDE_SELECTOR } from './widget-review.constants';
+import { GUIDE_SELECTOR, GUIDE_SNAP_SELECTOR } from './widget-review.constants';
 
 const guideIs = (mode: string, snapping: string): Promise<boolean> =>
   soon(() => {
     const guide = find(GUIDE_SELECTOR);
-    return guide?.getAttribute('data-window-guide') === mode && guide.getAttribute('data-snapping') === snapping;
+    const snap = guide ? find(GUIDE_SNAP_SELECTOR, guide) : null;
+    return guide?.getAttribute('data-mode') === mode && snap !== null && (snap.hasAttribute('data-off') ? 'off' : 'on') === snapping;
   });
 
 const checkGuide = async (tour: StepTour, id: string): Promise<void> => {

@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind component */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { SettingsSection } from '@drizztdourden08/tessera/composites';
-import { Button, SegmentedControl, Text, Toggle } from '@drizztdourden08/tessera/primitives';
+import { Button, Text } from '@drizztdourden08/tessera/primitives';
 import { effectiveHz } from '../../../rates/effective-hz';
 import { useDisplayStore } from '../../useDisplayStore';
 import { useRefreshRate } from '../../useRefreshRate';
+import { refreshRateRows } from '../behavior/refresh-rate-rows';
 import { selectedRate } from '../behavior/selected-rate';
 import type { DisplaySectionProps } from '../DisplaySettingsTab.type';
 import { ChangeRateDialog } from './ChangeRateDialog';
@@ -17,10 +18,8 @@ const RefreshRateSection = (props: DisplaySectionProps) => {
   const applying = useDisplayStore((s) => s.applying);
   const applyRate = useDisplayStore((s) => s.applyRate);
   const [confirming, setConfirming] = useState(false);
-  const rates = status.availableRates;
-  const selected = selectedRate(settings.syncedRateTargetHz, rates);
+  const selected = selectedRate(settings.syncedRateTargetHz, status.availableRates);
   const currentHz = effectiveHz(info) ?? status.currentHz;
-  const rateOptions = useMemo(() => rates.map((hz) => ({ value: String(hz), label: `${hz} Hz` })), [rates]);
 
   const handleSynced = useCallback((syncedRateInFullscreen: boolean) => { onChange({ syncedRateInFullscreen }); }, [onChange]);
   const handleTarget = useCallback((value: string) => { onChange({ syncedRateTargetHz: Number(value) }); }, [onChange]);
@@ -31,23 +30,22 @@ const RefreshRateSection = (props: DisplaySectionProps) => {
     void applyRate(selected);
   }, [applyRate, selected]);
 
+  const canChange = status.supported && status.availableRates.length > 0 && !applying;
+  const readout = <RateReadout currentHz={currentHz} />;
+  const changeButton = (
+    <Button variant="secondary" disabled={!canChange} onClick={handleOpen}>
+      {applying ? 'Changing...' : 'Change refresh rate'}
+    </Button>
+  );
+  const rows = refreshRateRows({ settings, status, selected, readout, changeButton, onSynced: handleSynced, onTarget: handleTarget });
+
   return (
-    <SettingsSection title="Refresh rate" description="A multiple of 60 shows every frame of 60 Hz content for the same time.">
-      <RateReadout currentHz={currentHz} />
-      <Toggle
-        label="Synced rate in fullscreen"
-        description={status.supported ? 'Switch the display to the target rate while in fullscreen, and back when fullscreen ends.' : status.unsupportedReason}
-        checked={settings.syncedRateInFullscreen}
-        disabled={!status.supported}
-        onChange={handleSynced}
-      />
-      <SegmentedControl label="Target refresh rate" value={String(selected)} options={rateOptions} onChange={handleTarget} disabled={!rates.length} />
-      <Button variant="secondary" disabled={!status.supported || !rates.length || applying} onClick={handleOpen}>
-        {applying ? 'Changing...' : 'Change refresh rate'}
-      </Button>
-      {status.lastError ? <Text variant="caption" className="display-tab__warning">{status.lastError}</Text> : null}
+    <>
+      <SettingsSection title="Refresh rate" description="A multiple of 60 shows every frame of 60 Hz content for the same time." rows={rows}>
+        {status.lastError ? <Text variant="caption" className="display-tab__warning">{status.lastError}</Text> : undefined}
+      </SettingsSection>
       <ChangeRateDialog open={confirming} targetHz={selected} currentHz={currentHz} onConfirm={handleConfirm} onCancel={handleCancel} />
-    </SettingsSection>
+    </>
   );
 };
 

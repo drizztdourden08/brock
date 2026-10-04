@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { WidgetPinMode, WidgetWindowState } from '@drizztdourden08/brock-core';
+import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { SegmentOption } from '@drizztdourden08/tessera/primitives';
 import type { PinChoice } from './WidgetWindow.type';
 
@@ -21,5 +22,6 @@ const PIN_TEXT = {
 } as const;
 
 const TITLEBAR_ACTIONS_SELECTOR = '.widget__titlebar-actions';
+const OPTIONS_BUTTON_SELECTOR = `${TITLEBAR_ACTIONS_SELECTOR} .widget__btn[aria-label="${TESSERA_STRINGS.common.options}"]`;
 
-export { INITIAL_WINDOW_STATE, PIN_CHOICES, PIN_SEGMENTS, PIN_TEXT, TITLEBAR_ACTIONS_SELECTOR };
+export { INITIAL_WINDOW_STATE, OPTIONS_BUTTON_SELECTOR, PIN_CHOICES, PIN_SEGMENTS, PIN_TEXT, TITLEBAR_ACTIONS_SELECTOR };

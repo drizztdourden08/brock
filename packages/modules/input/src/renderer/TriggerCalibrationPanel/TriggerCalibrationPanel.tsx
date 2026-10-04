@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { Slider } from '@drizztdourden08/tessera/primitives';
+import { SettingsSection } from '@drizztdourden08/tessera/composites';
+import { deadZonePercent } from '../dead-zone-percent';
 import { SDL_AXIS_NAMES } from '../../input.constants';
 import { CalibrationPanel } from '../../compounds/CalibrationPanel';
 import { useTriggerCalibration } from './behavior/useTriggerCalibration';
@@ -28,7 +29,15 @@ const TriggerCalibrationPanel = (props: TriggerCalibrationPanelProps) => {
       onCancel={onClose}
     >
       {step === 'review' && (
-        <Slider label="Dead zone" value={deadzone} min={0} max={0.3} step={0.01} onChange={setDeadzone} showValue />
+        <SettingsSection
+          rows={[{
+            id: 'deadzone',
+            title: 'Dead zone',
+            description: 'How far the trigger moves before it counts.',
+            hint: 'Raise it if the trigger reads a press at rest. Too high and light presses get lost.',
+            input: { kind: 'slider', value: deadzone, min: 0, max: 0.3, step: 0.01, formatValue: deadZonePercent, onChange: setDeadzone },
+          }]}
+        />
       )}
     </CalibrationPanel>
   );

@@ -62,7 +62,7 @@
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
     "@drizztdourden08/brock-thread": "workspace:*",
-    "@drizztdourden08/standards": "^1.0.5",
+    "@drizztdourden08/standards": "^0.6.0",
     "@resvg/resvg-js": "catalog:",
     "pngjs": "catalog:",
     "rcedit": "catalog:"

@@ -8,7 +8,7 @@ concurrency: release
 
 jobs:
   release:
-    uses: drizztdourden08/standards/.github/workflows/release.yml@v1
+    uses: drizztdourden08/standards/.github/workflows/release.yml@v0
     secrets: inherit
     permissions:
       contents: write

@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   gate:
-    uses: drizztdourden08/standards/.github/workflows/ci.yml@v1
+    uses: drizztdourden08/standards/.github/workflows/ci.yml@v0
     permissions:
       contents: read
       packages: read

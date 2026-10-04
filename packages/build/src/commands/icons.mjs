@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { relative } from 'node:path';
+import { brandRim } from '../icons/brand-rim.mjs';
 import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 
@@ -16,7 +17,8 @@ const runIcons = async ({ rootDir, force = false }) => {
     return 0;
   }
   if (!result.written.length) {
-    console.log(`brock icons: ${label} already carries the ${config.product.icons.brand} set (${result.current.length} file(s), --force recopies).`);
+    const rim = brandRim(config.product.icons);
+    console.log(`brock icons: ${label} already carries the ${config.product.icons.brand}${rim ? ` ${rim}-rim` : ''} set (${result.current.length} file(s), --force recopies).`);
     return 0;
   }
   console.log(`brock icons: wrote ${result.written.length} file(s) from ${result.brandDir} in ${label}:`);

@@ -52,8 +52,11 @@ interface FileAssociation {
   icon?: string;
 }
 
+type ProductIconRim = 'light' | 'dark';
+
 interface ProductIcons {
   brand?: string;
+  rim?: ProductIconRim;
   ico?: string;
   png256?: string;
   png512?: string;
@@ -125,6 +128,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, FileAssociation,
-  ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
+  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

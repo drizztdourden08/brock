@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
 import type { InstallerConfig, ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, WindowConfig } from './product.type';
 import {
-  BRAND_ICONS, DEFAULT_HOME_SCREEN, DEFAULT_MAIN_LABEL, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
+  BRAND_APP_LOGO, BRAND_ICONS, BRAND_RIMS, DEFAULT_HOME_SCREEN, DEFAULT_MAIN_LABEL, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
 
@@ -49,11 +49,14 @@ const resolveWindow = (input: ProductInput): WindowConfig => {
   };
 };
 
-const resolveIcons = (icons: ProductIcons = {}): ProductIcons =>
-  icons.brand ? { ...BRAND_ICONS, ...icons } : icons;
+const resolveIcons = (icons: ProductIcons = {}): ProductIcons => {
+  if (!icons.brand) return icons;
+  const rim = icons.rim ?? BRAND_RIMS[icons.brand];
+  return { ...BRAND_ICONS, ...icons, ...(rim ? { rim } : {}) };
+};
 
-const resolveLogos = (logos: Partial<ProductLogos> = {}): ProductLogos => {
-  const app = logos.app ?? DEFAULT_LOGOS.app;
+const resolveLogos = (logos: Partial<ProductLogos> = {}, icons: ProductIcons = {}): ProductLogos => {
+  const app = logos.app ?? (icons.brand ? BRAND_APP_LOGO : DEFAULT_LOGOS.app);
   return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance), mark: logos.mark ?? DEFAULT_LOGOS.mark };
 };
 
@@ -86,7 +89,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     schemes: input.schemes ?? [],
     fileAssociations: input.fileAssociations ?? [],
     icons: resolveIcons(input.icons),
-    logos: resolveLogos(input.logos),
+    logos: resolveLogos(input.logos, input.icons),
     homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
     ports: input.ports,
     widgets: { mainLabel: input.widgets?.mainLabel ?? DEFAULT_MAIN_LABEL },

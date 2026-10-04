@@ -14,6 +14,8 @@ const GENERATED = [
   '**/public/logos/icon.svg',
   '**/public/logos/icon.ico',
   '**/public/logos/icon-256.png',
+  '**/public/logos/icon-32.png',
+  '**/public/logos/icon-24.png',
   '**/public/logos/icon-bot.svg',
   '**/public/logos/icon-bot.ico',
   '**/public/logos/icon-bot-256.png',

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { BrandApp } from '@drizztdourden08/tessera/brand';
+import type { BrandApp, BrandRimTone } from '@drizztdourden08/tessera/brand';
 
 interface AboutPanelRow {
   label: string;
@@ -12,6 +12,7 @@ type AboutPanelHeading = 'wordmark' | 'title';
 interface AboutPanelProps {
   title: string;
   brand?: BrandApp;
+  rim?: BrandRimTone;
   heading?: AboutPanelHeading;
   logo?: string;
   rows: readonly AboutPanelRow[];

@@ -1,11 +1,16 @@
 /* @layer tooling-scripts @kind logic */
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { isCurrent } from './is-current.mjs';
 
 /**
  * @typedef {{ written: string[], current: string[] }} WriteReport  Root-relative paths
  */
+
+/**
+ * @param {string} source @param {string} target  Absolute paths
+ * @returns {boolean}  True when the target holds the same bytes
+ */
+const sameFile = (source, target) => existsSync(target) && readFileSync(source).equals(readFileSync(target));
 
 /**
  * @param {string} brandDir @param {string} rootDir
@@ -20,7 +25,7 @@ const copyFiles = (brandDir, rootDir, files, force) => {
     const source = join(brandDir, from);
     if (!existsSync(source)) throw new Error(`The brand at ${brandDir} is missing ${source}`);
     const target = join(rootDir, to);
-    if (!force && isCurrent(source, target)) {
+    if (!force && sameFile(source, target)) {
       current.push(to);
       continue;
     }

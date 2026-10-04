@@ -1,9 +1,11 @@
 /* @layer tooling-scripts @kind config */
 const TESSERA_PACKAGE = '@drizztdourden08/tessera';
+const BRAND_DIR = 'brand';
+const BRAND_RIMS = Object.freeze({ brock: 'light' });
 const ICON_SIZES = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 
 /**
- * @typedef {{ from: string, to: string }} BrandFile  Paths relative to brand/<brand>/ and the app root
+ * @typedef {{ from: string, to: string }} BrandFile  Paths relative to the brand folder and the app root
  */
 
 /** @type {BrandFile[]} */
@@ -19,6 +21,8 @@ const BRAND_FILES = [
   { from: 'icon/icon.svg', to: 'public/logos/icon.svg' },
   { from: 'icon/icon.ico', to: 'public/logos/icon.ico' },
   { from: 'icon/png/icon-256.png', to: 'public/logos/icon-256.png' },
+  { from: 'icon/png/icon-32.png', to: 'public/logos/icon-32.png' },
+  { from: 'icon/png/icon-24.png', to: 'public/logos/icon-24.png' },
 ];
 
 /**
@@ -27,4 +31,4 @@ const BRAND_FILES = [
  */
 const markFile = (brand) => ({ from: `../${brand}.svg`, to: 'public/logos/mark.svg' });
 
-export { TESSERA_PACKAGE, BRAND_FILES, markFile };
+export { TESSERA_PACKAGE, BRAND_DIR, BRAND_RIMS, BRAND_FILES, markFile };

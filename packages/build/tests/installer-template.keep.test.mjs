@@ -178,18 +178,24 @@ describe('Setup splash', () => {
 });
 
 describe('markSourceOf', () => {
-  const config = (mark = './logos/mark.svg') => ({ icons: { brand: 'brock' }, logos: { mark } });
+  const config = (mark = './logos/mark.svg', icons = { brand: 'brock' }) => ({ icons, logos: { mark } });
 
-  it('prefers the Tessera mark PNG, then the app mark, then the brand SVG', () => {
-    const tesseraRoot = tempDir({ 'brand/brock/mark/mark-256.png': 'png', 'brand/brock.svg': '<svg/>' });
+  it('prefers the Tessera mark PNG, then the app mark, then the brand SVG, from the light rim set for brock', () => {
+    const tesseraRoot = tempDir({ 'brand/light-rim/brock/mark/mark-256.png': 'png', 'brand/light-rim/brock.svg': '<svg/>', 'brand/brock/mark/mark-256.png': 'png' });
     const rootDir = tempDir({ 'public/logos/mark.svg': '<svg/>' });
-    expect(markSourceOf(rootDir, { config: config(), tesseraRoot })).toMatchObject({ mime: 'image/png', from: 'brand/brock/mark/mark-256.png' });
+    expect(markSourceOf(rootDir, { config: config(), tesseraRoot })).toMatchObject({ mime: 'image/png', from: 'brand/light-rim/brock/mark/mark-256.png' });
     expect(markSourceOf(rootDir, { config: config(), tesseraRoot: tempDir() })).toMatchObject({ from: 'public/logos/mark.svg' });
-    expect(markSourceOf(tempDir(), { config: config(), tesseraRoot: tempDir({ 'brand/brock.svg': '<svg/>' }) })).toMatchObject({ from: 'brand/brock.svg' });
+    expect(markSourceOf(tempDir(), { config: config(), tesseraRoot: tempDir({ 'brand/light-rim/brock.svg': '<svg/>' }) })).toMatchObject({ from: 'brand/light-rim/brock.svg' });
+  });
+
+  it('reads the rim product.icons.rim names, and the plain set for a brand with no rim', () => {
+    const tesseraRoot = tempDir({ 'brand/dark-rim/brock/mark/mark-256.png': 'png', 'brand/archipelia/mark/mark-256.png': 'png' });
+    expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'brock', rim: 'dark' }), tesseraRoot })).toMatchObject({ from: 'brand/dark-rim/brock/mark/mark-256.png' });
+    expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'archipelia' }), tesseraRoot })).toMatchObject({ from: 'brand/archipelia/mark/mark-256.png' });
   });
 
   it('keeps an app mark that is not the default over the brand', () => {
-    const tesseraRoot = tempDir({ 'brand/brock/mark/mark-256.png': 'png' });
+    const tesseraRoot = tempDir({ 'brand/light-rim/brock/mark/mark-256.png': 'png' });
     const rootDir = tempDir({ 'public/logos/own.svg': '<svg/>' });
     expect(markSourceOf(rootDir, { config: config('./logos/own.svg'), tesseraRoot })).toMatchObject({ from: 'public/logos/own.svg' });
   });

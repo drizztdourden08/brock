@@ -19,6 +19,7 @@ const AboutScreenBody = (props: AboutScreenBodyProps) => {
       <AboutPanel
         title={product.name}
         brand={branded?.brand}
+        rim={branded ? product.icons.rim : undefined}
         heading={branded?.heading}
         logo={branded ? undefined : logoSrc}
         rows={rows}

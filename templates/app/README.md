@@ -47,8 +47,9 @@ public/logos/            the app logo, its bot variant and the window icons, wri
 
 `icons: { brand: 'brock' }` in `brock.config.ts` names the Tessera brand whose files
 `brock icons` copies; `build/` and the `public/logos/` files are generated and ignored by
-git. The title bar and the about screen show `logos.app` (`./logos/icon-256.png` by
-default); a named instance shows `logos.instance`, the bot variant the same command draws.
+git. The title bar shows `logos.app` (`./logos/icon-32.png` with a brand, the 32 px icon,
+so the rim stays crisp at 20 px); `icons.rim` picks the rimmed set (`'light'` by default for
+`brock`); a named instance shows `logos.instance`, the bot variant the same command draws.
 The splash shows `logos.mark` (`./logos/mark.svg`), the brand mark without its tile. An app with its own art drops `brand`, sets `ico`,
 `png256` and `png512` for the installer and puts its logos in `public/logos/`.
 

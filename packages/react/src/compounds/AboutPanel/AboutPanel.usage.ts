@@ -15,6 +15,7 @@ const usage = {
   rules: [
     'Pass brand only when the product is that Tessera brand, and set heading to title when the product name is not the brand name, so the wordmark never names another app.',
     'Give logo when there is no brand; brand wins when both are set.',
+    'Pass rim, the product.icons.rim, so the brand draws as its bare mark with that rim, readable on the panel surface.',
     'Keep each row a short fact with its own label: the label is the row key.',
     'Pass copyText as null while the debug text is gathered, so the button shows a spinner; leave it out to hide the button.',
     'Inside InfoScreen, put legal text in the screen footer and leave legal out.',
@@ -37,7 +38,7 @@ const AboutSample = ({ onClose }: { onClose: () => void }) => (
   </InfoScreen>
 );
 `,
-  propsHash: '48c91032b9f2b46a',
+  propsHash: '51201793ee52fd08',
 } satisfies ComponentUsage;
 
 export { usage };

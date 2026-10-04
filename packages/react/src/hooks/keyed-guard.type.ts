@@ -15,6 +15,7 @@ interface KeyedGuard {
   isBusy: (key?: string) => boolean;
   errorOf: (key: string) => string | null;
   clearError: (key?: string) => void;
+  lastError: string | null;
   state: KeyedGuardState;
 }
 

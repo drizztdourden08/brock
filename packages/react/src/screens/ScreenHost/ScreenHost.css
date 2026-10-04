@@ -1,0 +1,18 @@
+/* @layer renderer-shell @kind style */
+
+.screen-host__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background: var(--c-scrim);
+  animation: screen-host-scrim-in 0.2s ease-out;
+  pointer-events: none;
+}
+
+@keyframes screen-host-scrim-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-host__scrim { animation: none; }
+}

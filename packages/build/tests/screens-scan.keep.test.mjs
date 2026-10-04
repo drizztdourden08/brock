@@ -132,6 +132,14 @@ describe('checkScreens', () => {
     expect(findings).toEqual(["src/screens/tools: bucket folder not declared in screens.config.ts; add { id: 'tools', ... } to buckets"]);
   });
 
+  it('names a settings.page the settings bucket does not hold', async () => {
+    const config = CONFIG.replace("home: 'game',", "home: 'game',\n  settings: { bucket: 'game', page: 'nowhere' },");
+    const findings = await checkScreens(appWith({ ...VALID, 'src/screens/screens.config.ts': config }));
+    expect(findings).toEqual(['src/screens/screens.config.ts: settings.page "nowhere" is not a page of bucket "game"']);
+    const fine = CONFIG.replace("home: 'game',", "home: 'game',\n  settings: { bucket: 'game', page: 'tracker' },");
+    expect(await checkScreens(appWith({ ...VALID, 'src/screens/screens.config.ts': fine }))).toEqual([]);
+  });
+
   it('skips an app without screens.config.ts', async () => {
     const root = mkdtempSync(join(tmpdir(), 'brock-scan-'));
     roots.push(root);
@@ -152,6 +160,28 @@ describe('renderScreens', () => {
     expect(out).toContain('], searchIndex);');
     expect(out).toContain("{ kind: 'custom', bucket: 'game', id: 'controls', component: GameControlsCustom, meta: gameControlsCustomMeta },");
     expect(out).toContain('export { screenTree };');
+  });
+});
+
+describe('page meta files', () => {
+  const META_ONLY = "import type { ScreenMeta } from '@drizztdourden08/brock-react';\nconst meta: ScreenMeta = { title: 'Tracker', icon: 'map', order: 1 };\nexport { meta };\n";
+
+  it('reads <page>.page.ts beside a tab folder as that page meta', () => {
+    const root = appWith({ ...VALID, 'src/screens/game/tracker.page.ts': META_ONLY });
+    const { files, findings } = scanScreens(root);
+    expect(findings).toEqual([]);
+    const out = renderScreens(files);
+    expect(out).toContain("import { meta as gameTrackerPageMetaMeta } from '../src/screens/game/tracker.page';");
+    expect(out).toContain("{ kind: 'page-meta', bucket: 'game', id: 'tracker', meta: gameTrackerPageMetaMeta },");
+    expect(renderSearch(root, files)).toContain('{"kind":"page-meta","id":"tracker","bucket":"game","title":"Tracker","icon":"map"}');
+  });
+
+  it('rejects a page meta file with no tab folder or no meta export', () => {
+    const { findings } = scanScreens(appWith({ ...VALID, 'src/screens/game/orphan.page.ts': META_ONLY, 'src/screens/game/tracker.page.ts': 'export default 1;\n' }));
+    expect(findings).toEqual([
+      'src/screens/game/tracker.page.ts: a page meta file exports meta: ScreenMeta and nothing else',
+      'src/screens/game/orphan.page.ts: no orphan/ tab folder beside it; a .page.ts file holds the meta of the tab page in that folder',
+    ]);
   });
 });
 

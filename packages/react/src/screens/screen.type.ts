@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
+import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
 
 type ScreenLayerKind = 'fullscreen' | 'own';
@@ -31,4 +32,6 @@ interface ScreenDef {
   floating?: (ctx: ScreenRenderContext) => ReactNode;
 }
 
-export type { ScreenDef, ScreenHeader, ScreenLayerKind, ScreenRenderContext };
+type ScreenInput = Omit<ScreenDef, 'icon'> & { icon: IconName | Exclude<ReactNode, string> };
+
+export type { ScreenDef, ScreenHeader, ScreenInput, ScreenLayerKind, ScreenRenderContext };

@@ -1,0 +1,10 @@
+/* @layer renderer-shell @kind style */
+
+.hero-root--bare .hero__frame {
+  height: auto;
+}
+
+.hero-root--bare .hero__grid {
+  grid-template-rows: auto auto auto;
+  align-content: start;
+}

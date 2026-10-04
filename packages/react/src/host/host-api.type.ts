@@ -1,6 +1,4 @@
 /* @layer renderer-shell @kind types */
-import type { IpcApi } from '@drizztdourden08/brock-core';
-
-type ApiWindow = Window & { api?: IpcApi };
+type ApiWindow = Window & { api?: unknown };
 
 export type { ApiWindow };

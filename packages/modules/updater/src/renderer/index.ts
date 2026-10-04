@@ -18,7 +18,6 @@ export { updaterApi } from './updater-api';
 export { useUpdaterStore } from './useUpdaterStore';
 export type { UpdateStatus, UpdaterData, UpdaterActions, UpdaterStoreState } from './updater-store.type';
 export { UpdateDialog } from './UpdateDialog';
-export { UpdateBadge } from './UpdateBadge';
 export { useUpdateAction } from './useUpdateAction';
 export { UpdaterProvider } from './UpdaterProvider';
 export type { UpdaterProviderProps } from './UpdaterProvider';

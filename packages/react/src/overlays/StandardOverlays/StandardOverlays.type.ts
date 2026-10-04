@@ -3,7 +3,7 @@ import type { MenuEntry } from '../../menu/menu.type';
 import type { SearchAction } from '../../search/search.type';
 
 interface StandardOverlaysProps {
-  menu: readonly MenuEntry[];
+  menu?: readonly MenuEntry[];
   actions?: readonly SearchAction[];
 }
 

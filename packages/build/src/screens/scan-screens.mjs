@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
 import { layoutFindings } from './layout-findings.mjs';
+import { pageMetaFindings } from './page-meta-findings.mjs';
 
 /**
  * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
@@ -39,6 +40,10 @@ const addFile = (state, rel, name, place) => {
   }
   const source = readFileSync(join(state.rootDir, rel), 'utf8');
   const exports = { hasMeta: META_EXPORT.test(source), hasSearchEntries: SEARCH_ENTRIES_EXPORT.test(source) };
+  if (found.kind === 'page-meta' && !exports.hasMeta) {
+    state.findings.push(`${rel}: a page meta file exports meta: ScreenMeta and nothing else`);
+    return;
+  }
   state.files.push({ ...found, bucket: place.bucket, group: place.group, page: place.page, path: rel, ...exports });
 };
 
@@ -75,7 +80,8 @@ const scanFolder = (state, rel, name, place) => {
 const scanScreens = (rootDir) => {
   const state = { rootDir, files: [], findings: [], buckets: [] };
   if (existsSync(join(rootDir, SCREENS_DIR))) scanDir(state, SCREENS_DIR, { level: 'root' });
-  return { files: state.files, findings: [...state.findings, ...layoutFindings(state.files, state.buckets)], buckets: state.buckets };
+  const findings = [...state.findings, ...layoutFindings(state.files, state.buckets), ...pageMetaFindings(state.files)];
+  return { files: state.files, findings, buckets: state.buckets };
 };
 
 export { scanScreens };

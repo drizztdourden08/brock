@@ -12,7 +12,7 @@ const keyedGuardReducer = (state: KeyedGuardState, action: KeyedGuardAction): Ke
     case 'done':
       return { ...state, busy: without(state.busy, action.key) };
     case 'fail':
-      return { busy: without(state.busy, action.key), errors: { ...state.errors, [action.key]: action.message } };
+      return { busy: without(state.busy, action.key), errors: { ...without(state.errors, action.key), [action.key]: action.message } };
     case 'clear':
       return action.key === undefined ? { ...state, errors: IDLE_GUARD.errors } : { ...state, errors: without(state.errors, action.key) };
   }

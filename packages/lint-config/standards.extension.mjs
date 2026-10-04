@@ -1,8 +1,8 @@
 /* @layer tooling-scripts @kind config */
 import { defineExtension } from '@drizztdourden08/standards';
 
-const SCREEN_FILE_GLOBS = ['**/src/screens/**/*.{hero,page,tab,card,custom,layer}.tsx', '**/src/screens/**/*.settings.ts'];
-const SCREEN_FILE = '(^|\\/)src\\/screens\\/.+\\.(?:(?:hero|page|tab|card|custom|layer)\\.tsx|settings\\.ts)$';
+const SCREEN_FILE_GLOBS = ['**/src/screens/**/*.{hero,page,tab,card,custom,layer}.tsx', '**/src/screens/**/*.{settings,page}.ts'];
+const SCREEN_FILE = '(^|\\/)src\\/screens\\/.+\\.(?:(?:hero|page|tab|card|custom|layer)\\.tsx|(?:settings|page)\\.ts)$';
 const WIDGET_FILE_GLOBS = ['**/src/widgets/**/*.widget.tsx'];
 const WIDGET_FILE = '(^|\\/)src\\/widgets\\/(?:.+\\/)?[a-z][a-z0-9-]*\\.widget\\.tsx$';
 

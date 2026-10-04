@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { writeBootFiles } from '../boot/write-boot-files.mjs';
 import { ensureElectron } from '../ensure-electron.mjs';
+import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { prepareModules } from '../modules/prepare-modules.mjs';
@@ -16,6 +17,11 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
   const electron = ensureElectron(rootDir);
   if (!electron.ok) {
     console.error(`brock ${mode}: ${electron.message}`);
+    return 1;
+  }
+  const problem = await ensureSynced(rootDir, `brock ${mode}`);
+  if (problem) {
+    console.error(`brock ${mode}: ${problem}`);
     return 1;
   }
   const config = await loadBrockConfig(rootDir);

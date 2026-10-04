@@ -19,6 +19,7 @@ const metaName = (name) => `${name.charAt(0).toLowerCase()}${name.slice(1)}Meta`
 const importLine = (file) => {
   const name = identifierOf(file);
   const from = `../${file.path.replace(/\.tsx?$/, '')}`;
+  if (file.kind === 'page-meta') return `import { meta as ${metaName(name)} } from '${from}';`;
   return file.hasMeta ? `import ${name}, { meta as ${metaName(name)} } from '${from}';` : `import ${name} from '${from}';`;
 };
 
@@ -28,9 +29,9 @@ const entryLine = (file) => {
   const place = [['bucket', file.bucket], ['group', file.group], ['page', file.page], ['id', file.id]]
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}: '${value}'`);
-  const body = file.kind === 'settings' ? `sections: ${name}` : `component: ${name}`;
+  const body = { settings: [`sections: ${name}`], 'page-meta': [] }[file.kind] ?? [`component: ${name}`];
   const meta = file.hasMeta ? [`meta: ${metaName(name)}`] : [];
-  return `  { ${[`kind: '${file.kind}'`, ...place, body, ...meta].join(', ')} },`;
+  return `  { ${[`kind: '${file.kind}'`, ...place, ...body, ...meta].join(', ')} },`;
 };
 
 /**

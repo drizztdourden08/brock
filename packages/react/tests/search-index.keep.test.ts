@@ -68,6 +68,12 @@ describe('buildSearchIndex', () => {
     expect(byId('screen:credits')).toMatchObject({ kind: 'screen', label: 'Credits', target: { route: 'credits' } });
   });
 
+  it('names a tab page from its page meta seed', () => {
+    const index = buildSearchIndex(CONFIG, [...SEEDS, { kind: 'page-meta', bucket: 'data', id: 'tracker', title: 'Map room', icon: 'map', keywords: ['atlas'] }]);
+    expect(index.find((entry) => entry.id === 'screen:data/tracker')).toMatchObject({ kind: 'page', label: 'Map room', icon: 'map', keywords: ['atlas'] });
+    expect(index.find((entry) => entry.id === 'screen:data/tracker/map')).toMatchObject({ breadcrumb: ['Data', 'Map room'] });
+  });
+
   it('indexes settings sections and rows with the row key as anchor', () => {
     expect(byId('section:game/display#window')).toMatchObject({ kind: 'section', target: { route: 'game/display', anchor: 'window' } });
     expect(byId('setting:windowMode')).toMatchObject({

@@ -7,6 +7,7 @@ const OPTIONS = {
   local: { type: 'string' },
   force: { type: 'boolean', default: false },
   check: { type: 'boolean', default: false },
+  'if-stale': { type: 'boolean', default: false },
   full: { type: 'boolean', default: false },
   channel: { type: 'string' },
   'render-installer': { type: 'boolean', default: false },

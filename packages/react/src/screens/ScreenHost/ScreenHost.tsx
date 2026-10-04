@@ -11,6 +11,7 @@ import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
 import { useMountedScreens } from './behavior/useMountedScreens';
 import type { ScreenHostProps } from './ScreenHost.type';
+import './ScreenHost.css';
 
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
@@ -52,6 +53,7 @@ const ScreenHost = (props: ScreenHostProps) => {
   return (
     <Box className={className}>
       {allowed(homeScreen) && homeScreen.render(ctx)}
+      {allowed(homeScreen) && shown !== null && shown.id !== home && shown.layer !== 'own' && <Box className="screen-host__scrim" aria-hidden="true" />}
       {mounted.map((id) => {
         const screen = registry.get(id);
         return screen && id !== home ? draw(screen, shown?.id !== id) : null;

@@ -8,7 +8,6 @@ import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
 import { withoutActionEntries } from '../../../../shell/TitleBar/behavior/without-action-entries';
 import { NO_ACTION_SOURCES } from '../../../../shell/TitleBar/TitleBar.constants';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
-import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
 import { WindowGuide } from '../../../../widgets/WindowGuide';
@@ -31,7 +30,7 @@ import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups } = props;
-  const { product, home, logoSrc, instanceLogoSrc } = useBrock();
+  const { product, home, logoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
@@ -65,7 +64,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           controls={product.window.titleBar.controls}
           instanceName={instanceName()}
           logoSrc={logoSrc}
-          instanceLogoSrc={instanceLogoSrc}
           actions={actions}
           hidden={titleBarHidden}
         />
@@ -74,7 +72,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
         {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
       </Box>
-      <ConfirmDialog />
       <WindowGuide />
       <StandardOverlays menu={fullMenu} actions={searchActions} />
     </Box>

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { relative } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
+import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
 import { syncTargets } from './sync-targets.mjs';
@@ -33,15 +34,22 @@ const syncOne = async (appDir, check) => {
   return check ? reportCheck(result, label) : reportSync(result, label);
 };
 
+const syncIfStale = async (appDir) => {
+  const problem = await ensureSynced(appDir, 'brock sync');
+  if (!problem) return 0;
+  console.error(`brock sync: ${problem}`);
+  return 1;
+};
+
 /**
- * @param {{ rootDir: string, check?: boolean}} ctx
+ * @param {{ rootDir: string, check?: boolean, ifStale?: boolean }} ctx
  * @returns {Promise<number>} exit code
  */
-const runSync = async ({ rootDir, check = false }) => {
+const runSync = async ({ rootDir, check = false, ifStale = false }) => {
   const apps = await syncTargets(rootDir);
   if (!apps.length) throw new Error(`No ${CONFIG_FILE} in ${rootDir}, and no electron target in brock.workspace.mjs points at an app.`);
   let code = 0;
-  for (const appDir of apps) code = Math.max(code, await syncOne(appDir, check));
+  for (const appDir of apps) code = Math.max(code, await (ifStale && !check ? syncIfStale(appDir) : syncOne(appDir, check)));
   return code;
 };
 

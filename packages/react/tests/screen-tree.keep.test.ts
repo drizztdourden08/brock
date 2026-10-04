@@ -70,6 +70,15 @@ describe('buildScreenTree', () => {
     expect(tracker?.tabs?.map((tab) => tab.id)).toEqual(['items', 'map']);
   });
 
+  it('takes a tab page label, icon and order from its page meta file', () => {
+    const meta: ScreenEntry = { kind: 'page-meta', bucket: 'game', id: 'tracker', meta: { title: 'Map room', icon: 'map', order: 0 } };
+    const game = hubOf(buildScreenTree(CONFIG, [...ENTRIES, meta]).hubs, 'game');
+    const tracker = game.groups[0]?.pages.find((page) => page.id === 'tracker');
+    expect(tracker?.label).toBe('Map room');
+    expect(tracker?.tabs?.map((tab) => tab.id)).toEqual(['items', 'map']);
+    expect(game.groups[0]?.pages.at(0)?.id).toBe('tracker');
+  });
+
   it('turns a custom page into a hub page with the standard frame and search on', () => {
     const game = hubOf(tree.hubs, 'game');
     expect(game.groups[0]?.pages.find((page) => page.id === 'controls')?.label).toBe('Controls');
@@ -109,6 +118,13 @@ describe('resolveScreenTree', () => {
       .toEqual({ active: 'game', params: { section: 'display', tab: undefined } });
     expect(resolved.settingsAlias({ tab: 'display-module', anchor: 'x' })).toEqual({ active: 'game/display-module', params: { anchor: 'x' } });
     expect(resolved.shortcuts[0]).toEqual({ shortcut: 'Mod+Comma', target: 'settings' });
+  });
+
+  it('opens settings.page when the config names one, and the first page when it names none there', () => {
+    const named = resolveScreenTree(buildScreenTree({ ...CONFIG, settings: { bucket: 'game', page: 'mixer' } }, ENTRIES), [MODULE_TAB]);
+    expect(named.settingsAlias({})).toEqual({ active: 'game/mixer', params: {} });
+    const unknown = resolveScreenTree(buildScreenTree({ ...CONFIG, settings: { bucket: 'game', page: 'nope' } }, ENTRIES), [MODULE_TAB]);
+    expect(unknown.settingsAlias({})).toEqual({ active: 'game/display', params: {} });
   });
 
   it('honours settings.bucket', () => {

@@ -9,9 +9,12 @@ import { seedPlace } from './seed-place';
 import { settingsSeedEntries } from './settings-seed-entries';
 import { tabSeedEntries } from './tab-seed-entries';
 
-const bucketSeedEntries = (bucket: BucketDef, seed: SearchFileSeed): SearchEntry[] => {
+const pageMetaOf = (seed: SearchFileSeed, seeds: readonly SearchFileSeed[]): SearchFileSeed | undefined =>
+  seeds.find((other) => other.kind === 'page-meta' && other.bucket === seed.bucket && other.group === seed.group && other.id === seed.page);
+
+const bucketSeedEntries = (bucket: BucketDef, seed: SearchFileSeed, seeds: readonly SearchFileSeed[] = []): SearchEntry[] => {
   const place = seedPlace(bucket, seed.group);
-  if (seed.kind === 'tab') return tabSeedEntries(place, seed);
+  if (seed.kind === 'tab') return tabSeedEntries(place, seed, pageMetaOf(seed, seeds));
   if (seed.kind !== 'page' && seed.kind !== 'custom' && seed.kind !== 'settings') return [];
   const page = pageEntry(place, seed, entryLabel({ id: seed.id, meta: { title: seed.title } }), seed.icon ?? KIND_ICONS[seed.kind]);
   if (seed.kind === 'settings') return [page, ...settingsSeedEntries(page, seed.sections ?? [])];

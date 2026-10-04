@@ -5,6 +5,7 @@ import type { SettingItem } from '../../settings.type';
 import type { SettingRowContext } from '../SettingsLayout.type';
 import { LinkedToggle } from '../sub-components/LinkedToggle';
 import { settingInput } from './setting-input';
+import { warnMissingControl } from './warn-missing-control';
 
 const descriptionOf = (item: SettingItem): SettingsDescription =>
   (item.noDescription === true ? { noDescription: true } : { description: item.description });
@@ -20,6 +21,7 @@ const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<
     return { ...shared, content: createElement(LinkedToggle, { item, checked: value, disabled, onChange: set }) };
   }
   const input = settingInput(item.control, value, set);
+  if (!input) warnMissingControl(item.key, value);
   return input ? { ...shared, input, disabled } : null;
 };
 

@@ -34,4 +34,15 @@ type IpcApi<
   E extends EventMap = typeof BASE_EVENT_MAP,
 > = IpcHostApi & InvokeApi<I> & SendApi<S> & EventApi<E> & IpcNamespaces;
 
-export type { InvokeApi, SendApi, EventApi, IpcApi, IpcHostApi, StartupInfo, InstanceInfo };
+interface AppIpcMaps {
+  invoke?: InvokeMap;
+  send?: SendMap;
+  events?: EventMap;
+}
+
+type AppIpcApi<M extends AppIpcMaps = AppIpcMaps> = IpcApi
+  & (M extends { invoke: infer I extends InvokeMap } ? InvokeApi<I> : unknown)
+  & (M extends { send: infer S extends SendMap } ? SendApi<S> : unknown)
+  & (M extends { events: infer E extends EventMap } ? EventApi<E> : unknown);
+
+export type { AppIpcApi, AppIpcMaps, InvokeApi, SendApi, EventApi, IpcApi, IpcHostApi, StartupInfo, InstanceInfo };

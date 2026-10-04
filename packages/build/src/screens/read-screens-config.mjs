@@ -18,12 +18,12 @@ const assertShape = (config) => {
   const buckets = /** @type {{ buckets?: unknown }} */ (config ?? {}).buckets;
   if (!Array.isArray(buckets) || buckets.some((bucket) => typeof bucket?.id !== 'string')) throw new Error('buckets must be a list of { id, title, icon, menu }');
   if (typeof (/** @type {{ home?: unknown }} */ (config).home) !== 'string') throw new Error('home must name a bucket');
-  return /** @type {{ buckets: { id: string }[], home: string, settings?: { bucket: string } }} */ (config);
+  return /** @type {{ buckets: { id: string }[], home: string, settings?: { bucket: string, page?: string } }} */ (config);
 };
 
 /**
  * @param {string} rootDir
- * @returns {Promise<{ buckets: { id: string }[], home: string, settings?: { bucket: string } }>}
+ * @returns {Promise<{ buckets: { id: string }[], home: string, settings?: { bucket: string, page?: string } }>}
  */
 const readScreensConfig = async (rootDir) => {
   const source = readFileSync(join(rootDir, SCREENS_DIR, SCREENS_CONFIG), 'utf8');

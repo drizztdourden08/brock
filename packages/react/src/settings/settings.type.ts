@@ -8,9 +8,19 @@ interface SettingChoice {
   hint?: string;
 }
 
+type SettingChoiceLook = 'segmented' | 'select' | 'radio';
+
 type SettingControl =
-  | { kind: 'choice'; options: SettingChoice[] }
-  | { kind: 'range'; min: number; max: number; step?: number; format?: (value: number) => string };
+  | { kind: 'choice'; options: SettingChoice[]; look?: SettingChoiceLook }
+  | { kind: 'select'; options: SettingChoice[]; searchable?: boolean }
+  | { kind: 'radio'; options: SettingChoice[] }
+  | { kind: 'range'; min: number; max: number; step?: number; format?: (value: number) => string }
+  | { kind: 'number'; min?: number; max?: number; step?: number; unit?: string }
+  | { kind: 'text'; placeholder?: string }
+  | { kind: 'password'; placeholder?: string }
+  | { kind: 'tags'; suggestions?: readonly string[]; placeholder?: string };
+
+type SettingControlKind = SettingControl['kind'];
 
 type SettingDescription = SettingsDescription;
 
@@ -80,6 +90,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingChoice, SettingControl, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
+  LockOverlayProps, RenderControl, Section, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

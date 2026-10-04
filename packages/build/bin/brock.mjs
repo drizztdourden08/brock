@@ -22,12 +22,15 @@ import { runThread, threadVerbNames } from '@drizztdourden08/brock-thread/cli';
 const USAGE = `brock ${OWN_PACKAGE.version}
 
 Usage:
-  brock sync [--check]       regenerate the managed files, or report drift with --check
+  brock sync [--check | --if-stale]
+                             regenerate the managed files, or report drift with --check; --if-stale syncs only
+                             when .brock is missing or older than its inputs, then checks the renderer entry
   brock check                sync --check, for CI
   brock add <id | spec> [--local <brockRepo>]
                              install a module package (or link it from a Brock checkout), record its id, sync
-  brock dev [args]           electron-vite dev; unknown options and anything after -- reach it
-  brock build [args]         electron-vite build; copies the brand icon set first when icons.brand is set
+  brock dev [args]           electron-vite dev; unknown options and anything after -- reach it; syncs first
+                             when .brock is missing or stale, and stops when the renderer entry misses a file
+  brock build [args]         electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set
   brock package [--full] [--channel <name>]
                              build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
                              the update package and a delta when the previous release was downloaded there.
@@ -143,7 +146,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], report: values.report, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], report: values.report, passthrough });
 };
 
 main().then(

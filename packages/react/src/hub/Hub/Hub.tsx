@@ -15,7 +15,7 @@ import type { HubProps } from './Hub.type';
 
 const Hub = (props: HubProps) => {
   const { def, ctx } = props;
-  const { groups, pages, page, tab, context, selectPage } = useHubState(def, ctx);
+  const { groups, pages, page, tab, context, selectPage, selectTab } = useHubState(def, ctx);
   const { query, setQuery, clear } = useHubSearch();
 
   const navConfig = useMemo(() => buildHubNav(def.home, groups), [def.home, groups]);
@@ -33,7 +33,7 @@ const Hub = (props: HubProps) => {
 
   return (
     <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
-      <HubPageFrame key={page.id} page={page}>{tab ? tab.render(context) : page.render(context)}</HubPageFrame>
+      <HubPageFrame key={page.id} page={page} tab={tab} onSelectTab={selectTab}>{tab ? tab.render(context) : page.render(context)}</HubPageFrame>
     </SideNavLayout>
   );
 };

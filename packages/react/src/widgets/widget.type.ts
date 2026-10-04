@@ -9,6 +9,7 @@ interface WidgetDef extends WidgetDefinition {
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;
+  order?: number;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
@@ -57,6 +58,13 @@ interface ProfileViews {
   widgetPrefs?: WidgetPrefs;
 }
 
+type WindowKind = { kind: 'main' } | { kind: 'widget'; id: string };
+
+interface DockOrigin {
+  pane: string;
+  index: number;
+}
+
 export type {
-  ProfileViews, SettingsSlice, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutState, WidgetRegistryState, WidgetRelayState,
+  DockOrigin, ProfileViews, SettingsSlice, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

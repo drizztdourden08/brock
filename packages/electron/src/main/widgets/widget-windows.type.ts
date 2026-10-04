@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowPoint } from '@drizztdourden08/brock-core';
+import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import type { SecurityOptions } from '../types/main-context.type';
 
 interface SnapTarget {
@@ -10,7 +10,7 @@ interface SnapTarget {
 
 interface Snapped {
   bounds: WidgetWindowBounds;
-  link: WidgetSnapLink;
+  link: WidgetSnapLink | null;
 }
 
 interface SnapCandidate {
@@ -62,7 +62,14 @@ interface WidgetWindowEntry {
   zStamp: number;
   over: boolean;
   faded: boolean;
+  sync: boolean;
+  group: WidgetWindowGroup | null;
+  wantsTaskbar: boolean;
+  taskbar: boolean;
+  square: boolean;
 }
+
+type EntryFacts = Pick<WidgetWindowEntry, 'pin' | 'snap' | 'link' | 'seq' | 'sync' | 'group' | 'wantsTaskbar' | 'taskbar'>;
 
 interface WidgetWindowSetup {
   headless: boolean;
@@ -78,6 +85,88 @@ interface MainSnapState {
   hit: Snapped | null;
 }
 
+type Axis = 'x' | 'y';
+
+interface ResizeEdges {
+  left: boolean;
+  right: boolean;
+  top: boolean;
+  bottom: boolean;
+}
+
+interface MinSize {
+  width: number;
+  height: number;
+}
+
+interface EdgeWindow {
+  id: string;
+  bounds: WidgetWindowBounds;
+  min: MinSize;
+}
+
+interface EdgeMove {
+  id: string;
+  bounds: WidgetWindowBounds;
+}
+
+interface EdgeScan {
+  others: readonly EdgeWindow[];
+  side: EdgeSide;
+  tolerance: number;
+}
+
+interface SharedResize {
+  bounds: WidgetWindowBounds;
+  moves: EdgeMove[];
+}
+
+interface EdgeSide {
+  axis: Axis;
+  far: boolean;
+}
+
+interface ManipulationRules {
+  snap: boolean;
+  shared: boolean;
+}
+
+interface ModifierInput {
+  type?: string;
+  key?: string;
+  keyCode?: string;
+  control?: boolean;
+  modifiers?: readonly string[];
+}
+
+interface GroupMember {
+  id: string;
+  win: BrowserWindow;
+  entry: WidgetWindowEntry | null;
+}
+
+type GroupMode = 'normal' | 'maximized' | 'fullscreen';
+
+type GroupTarget = Exclude<GroupMode, 'normal'>;
+
+interface GroupLayout {
+  mode: GroupMode;
+  saved: Map<string, WidgetWindowBounds>;
+  onTop: Map<string, boolean>;
+  backdrop: BrowserWindow | null;
+  area: WidgetWindowBounds | null;
+  release: (() => void) | null;
+}
+
+interface CaptureSheet {
+  pixels: Buffer;
+  width: number;
+  height: number;
+  scale: number;
+  origin: WidgetWindowBounds;
+}
+
 export type {
-  BoundsReporter, CoverCandidate, MainSnapState, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
+  Axis, BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeScan, EdgeSide, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
+  MinSize, ModifierInput, ResizeEdges, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
 };

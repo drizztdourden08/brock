@@ -9,7 +9,8 @@ const showIfFree = (entry: WidgetWindowEntry): void => {
   if (!entry.parked && !entry.hiddenWithApp && !entry.win.isDestroyed()) entry.win.showInactive();
 };
 
-const followers = (): WidgetWindowEntry[] => liveEntries().map(([, entry]) => entry).filter((entry) => entry.pin === 'with-app');
+const followers = (): WidgetWindowEntry[] =>
+  liveEntries().map(([, entry]) => entry).filter((entry) => entry.sync || entry.pin === 'with-app').sort((a, b) => a.zStamp - b.zStamp);
 
 const hideWithApp = (): void => {
   for (const entry of followers()) {

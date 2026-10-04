@@ -23,10 +23,10 @@ describe('snapTo', () => {
   });
 
   it('lands flush on the left, top and bottom edges', () => {
-    expect(snapTo(box(-110, 150), [{ to: 'main', bounds: APP }])?.link.edge).toBe('left');
+    expect(snapTo(box(-110, 150), [{ to: 'main', bounds: APP }])?.link?.edge).toBe('left');
     expect(snapTo(box(-110, 150), [{ to: 'main', bounds: APP }])?.bounds.x).toBe(-100);
     expect(snapTo(box(300, 705), [{ to: 'main', bounds: APP }])?.bounds).toEqual(box(300, 700));
-    expect(snapTo(box(300, -195), [{ to: 'main', bounds: APP }])?.link.edge).toBe('top');
+    expect(snapTo(box(300, -195), [{ to: 'main', bounds: APP }])?.link?.edge).toBe('top');
   });
 
   it('keeps a window that is out of reach where it is', () => {

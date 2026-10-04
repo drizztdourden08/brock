@@ -5,6 +5,12 @@ type WidgetEdge = 'left' | 'right' | 'top' | 'bottom';
 
 type WidgetDockBack = WidgetEdge | 'float' | 'close';
 
+type WidgetWindowGroup = string;
+
+type WindowGuideMode = 'moving' | 'resizing';
+
+type WindowGroupAction = 'maximize' | 'fullscreen' | 'minimize' | 'restore';
+
 interface WidgetWindowBounds {
   x: number;
   y: number;
@@ -28,6 +34,8 @@ interface PoppedWidgetWire {
   pin?: WidgetPinMode;
   snap?: boolean;
   link?: WidgetSnapLink | null;
+  sync?: boolean;
+  group?: WidgetWindowGroup | null;
 }
 
 interface WidgetWindowOpen extends Omit<PoppedWidgetWire, 'id'> {
@@ -42,6 +50,15 @@ interface WidgetWindowState {
   onTop: boolean;
   snap: boolean;
   link: WidgetSnapLink | null;
+  sync: boolean;
+  group: WidgetWindowGroup | null;
+  square: boolean;
+}
+
+interface WindowGuideState {
+  open: boolean;
+  mode: WindowGuideMode;
+  snapping: boolean;
 }
 
 interface WidgetWindowInfo {
@@ -67,13 +84,32 @@ type WidgetProbeRequest =
   | { kind: 'dragOver'; id: string; point: WidgetWindowPoint | null }
   | { kind: 'drop'; id: string; point: WidgetWindowPoint }
   | { kind: 'rescue'; id: string; bounds: WidgetWindowBounds }
-  | { kind: 'areas' };
+  | { kind: 'areas' }
+  | { kind: 'focusAway'; id: string }
+  | { kind: 'resize'; id: string; bounds: WidgetWindowBounds }
+  | { kind: 'group'; id: string; action: WindowGroupAction }
+  | { kind: 'modifier'; ctrl: boolean }
+  | { kind: 'guide'; id: string; mode: WindowGuideMode | null };
+
+interface WidgetProbeFacts {
+  visible: boolean;
+  taskbar: boolean;
+  sync: boolean;
+  group: WidgetWindowGroup | null;
+  square: boolean;
+  backdrop: boolean;
+  ctrl: boolean;
+  guide: WindowGuideState;
+  area: WidgetWindowBounds | null;
+  windows: Record<string, WidgetWindowBounds>;
+}
 
 interface WidgetProbeResult {
   bounds: WidgetWindowBounds | null;
   link: WidgetSnapLink | null;
   counted: boolean;
   outside: string[];
+  facts?: WidgetProbeFacts;
 }
 
 interface WidgetSlice {
@@ -82,6 +118,7 @@ interface WidgetSlice {
 }
 
 export type {
-  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeRequest, WidgetProbeResult, WidgetSettingsWire,
-  WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState,
+  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
+  WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
+  WidgetWindowState, WindowGroupAction, WindowGuideMode, WindowGuideState,
 };

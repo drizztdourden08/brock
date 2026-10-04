@@ -8,6 +8,7 @@ import { isReachable } from './is-reachable';
 import { liveEntries } from './live-entries';
 import { mainSnap } from './main-snap';
 import { mainSnapState } from './main-snap-state';
+import { probeFacts } from './probe-facts';
 import { moveEntry } from './move-entry';
 import { relink } from './relink';
 import { rescueWidgetWindows } from './rescue-widget-windows';
@@ -17,7 +18,8 @@ import { snapTargets } from './snap-targets';
 import { snapTo } from './snap-to';
 import { widgetAreas } from './widget-areas';
 import { widgetWindowControl } from './widget-window-control';
-import { PROBE_SETTLE_MS } from './widget-windows.constants';
+import { windowProbe } from './window-probe';
+import { MAIN_ANCHOR, PROBE_SETTLE_MS } from './widget-windows.constants';
 
 const settled = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, PROBE_SETTLE_MS); });
 
@@ -77,15 +79,21 @@ const rescue = (id: string, bounds: WidgetWindowBounds): WidgetProbeResult => {
   return windowResult(id);
 };
 
+const withFacts = async (request: WidgetProbeRequest): Promise<WidgetProbeResult> => {
+  const facts = await windowProbe(request);
+  const id = 'id' in request ? request.id : null;
+  return facts ? { ...windowResult(id === MAIN_ANCHOR ? null : id), facts } : windowResult(null);
+};
+
 const widgetProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeResult> => {
-  if (request.kind === 'window') return windowResult(request.id);
+  if (request.kind === 'window') return { ...windowResult(request.id), facts: probeFacts(request.id) };
   if (request.kind === 'drag') return dragRelease(request.id, request.bounds);
   if (request.kind === 'main') return setMain(request.bounds, false);
   if (request.kind === 'mainDrag') return setMain(request.bounds, true);
   if (request.kind === 'dragOver') return dragIn(request.id, request.point, false);
   if (request.kind === 'drop') return dragIn(request.id, request.point, true);
   if (request.kind === 'rescue') return rescue(request.id, request.bounds);
-  return windowResult(null);
+  return withFacts(request);
 };
 
 export { widgetProbe };

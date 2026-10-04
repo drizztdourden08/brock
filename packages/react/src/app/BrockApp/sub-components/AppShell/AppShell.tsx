@@ -5,13 +5,15 @@ import { instanceName } from '../../../../host/instance-name';
 import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
 import { useCapability } from '../../../../platform/useCapability';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
-import { useTitleBarActions } from '../../../../shell/TitleBar/behavior/useTitleBarActions';
 import { withoutActionEntries } from '../../../../shell/TitleBar/behavior/without-action-entries';
 import { NO_ACTION_SOURCES } from '../../../../shell/TitleBar/TitleBar.constants';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
+import { WindowGuideOverlay } from '../../../../widgets/WindowGuideOverlay';
+import { useWindowGuide } from '../../../../widgets/useWindowGuide';
+import { useWindowSquare } from '../../../../widgets/useWindowSquare';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
@@ -19,6 +21,7 @@ import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
+import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
@@ -26,6 +29,8 @@ import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import type { AppShellProps } from './AppShell.type';
+
+const appClass = (square: boolean): string => (square ? 'brock-app brock-app--square' : 'brock-app');
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups } = props;
@@ -44,7 +49,9 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useIpcLogBridge(log);
 
   const fullMenu = useShellMenu(moduleMenu, railed);
-  const actions = useTitleBarActions(titleBarActions);
+  const actions = useShellActions(titleBarActions, windowChrome);
+  const square = useWindowSquare();
+  const guide = useWindowGuide();
   const actionIds = JSON.stringify(actions.map((action) => action.id));
   const barMenu = useMemo(() => withoutActionEntries(fullMenu, JSON.parse(actionIds) as string[]), [fullMenu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
@@ -54,7 +61,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} className="brock-app__screens" />} />;
 
   return (
-    <Box className="brock-app">
+    <Box className={appClass(square)}>
       {windowChrome && (
         <AppTitleBar
           title={product.window.title ?? product.name}
@@ -72,6 +79,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
       </Box>
       <ConfirmDialog />
+      <WindowGuideOverlay open={guide.open} mode={guide.mode} snapping={guide.snapping} />
       <StandardOverlays menu={fullMenu} actions={searchActions} />
     </Box>
   );

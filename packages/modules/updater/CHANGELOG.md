@@ -1,5 +1,47 @@
 # @drizztdourden08/brock-updater
 
+## 0.16.0
+
+### Minor Changes
+
+- 7ef6122: Breaking: brock-updater no longer exports `UpdateBadge` or its CSS; the title bar status action from `useUpdateAction` replaced it. Apps that import `UpdateBadge` switch to `useUpdateAction`; migration `update-badge-removed` turns each import into a to-do.
+
+### Patch Changes
+
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [55befe4]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [9a3b1f6]
+- Updated dependencies [7ef6122]
+- Updated dependencies [7ef6122]
+  - @drizztdourden08/brock-react@0.16.0
+  - @drizztdourden08/brock-core@0.16.0
+  - @drizztdourden08/brock-electron@0.16.0
+
 ## 0.15.0
 
 ### Patch Changes

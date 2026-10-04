@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-electron
 
+## 0.16.0
+
+### Patch Changes
+
+- 55befe4: The review watchdog starts in main at launch. When no tour progress (a capture or a check) arrives within 60 s, for example because the renderer failed to load, main writes a partial report with a failed `tour-started` check and exits 1, instead of waiting for minutes. Main also exits 5 s after the report when something holds the quit. brock-core exports `GLOBAL_STEP` from its review entry.
+- 55befe4: Every `--review` run captures the splash mid-boot as step 00 (`00-splash.png`, or `00-splash-failed.png` when the boot stops first) and adds a `splash-captured` check, without `--screenshot-splash`. The reveal waits for the capture, at most 5 s. `--screenshot-splash` works as before.
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+  - @drizztdourden08/brock-core@0.16.0
+
 ## 0.15.0
 
 ### Minor Changes

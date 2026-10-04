@@ -1,5 +1,29 @@
 # @drizztdourden08/brock-build
 
+## 0.16.0
+
+### Minor Changes
+
+- 7ef6122: `screens.config.ts` takes `settings: { bucket, page? }`: the Settings entry, the palette and Mod+Comma open that page when it is set, instead of the first settings page in nav order. `brock structure` names a `settings.page` the bucket does not hold.
+- 7ef6122: `brock dev`, `build` (and so `package`), `start` and the repo command's `launch` run `brock sync` first when `.brock` is missing or older than its inputs (`brock.config.ts`, `package.json`, `src/screens`, `src/widgets`, `src/boot`, `electron/boot`), so a fresh checkout that ignores `.brock` launches. `dev` and `build` stop with a message naming the missing file when `src/main.tsx` imports a `.brock` file that does not exist, instead of starting a renderer that errors and hangs. `brock sync --if-stale` is the step `launch` runs.
+- 7ef6122: A tab page takes its meta from `<page>.page.ts` beside its folder: a file that exports only `meta: ScreenMeta` (title, icon, order, shortcut, devOnly, keywords). The screen sync writes it as a `page-meta` entry, the nav and the search index name and place the page with it, and `brock structure` names a `.page.ts` with no tab folder beside it or no `meta` export.
+- 55befe4: `@drizztdourden08/brock-build/testing` exports `readDockLayout(page)` and `widgetWindows(app)`. `readDockLayout` returns the widget layout from brock-react's layout store (`layout`, the `docked`, `floating` and `popped` ids, the main view's rect and each drawn widget's rect); `widgetWindows` returns every popped widget window from main with its id, bounds, visibility, focus, minimized and always-on-top state. Neither reads Tessera's class names. brock-react's `WidgetHost` installs the layout reader on automation launches only.
+- 7ef6122: Breaking: brock-updater no longer exports `UpdateBadge` or its CSS; the title bar status action from `useUpdateAction` replaced it. Apps that import `UpdateBadge` switch to `useUpdateAction`; migration `update-badge-removed` turns each import into a to-do.
+- 7ef6122: `WidgetMeta.order` sorts the Widgets menu, then the label, instead of the file name order. `brock structure` accepts `order` as a widget meta field.
+
+### Patch Changes
+
+- 55befe4: `brock adopt` points the `$schema` of a new `tessera.config.json` at Tessera's schema wherever Tessera is installed: the root `node_modules`, else `packages/design`, else any workspace package, written relative to the repo root. With no install yet it keeps the root path.
+- 7ef6122: docs/app-structure.md lists which generated files are committed and which are ignored, and the Archipelia review moved out of it to docs/reviews/archipelia.md.
+- 55befe4: `launchAppForTest` returns the app window, not the splash. It waits for the window that loads the renderer index (never `splash.html` or a widget window) and for the splash to close, which happens once every boot task resolved and the window was revealed. When it times out with the splash still open, the error says the boot never finished. An app no longer needs its own launcher for this.
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+- Updated dependencies [55befe4]
+- Updated dependencies [7ef6122]
+  - @drizztdourden08/brock-core@0.16.0
+  - @drizztdourden08/brock-thread@0.16.0
+
 ## 0.15.0
 
 ### Patch Changes

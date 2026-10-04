@@ -4,6 +4,16 @@ import type { SettingControl, SettingControlKind } from '../../settings.type';
 
 type SettingChange = (next: unknown) => void;
 
-type SettingInputOf<K extends SettingControlKind> = (control: Extract<SettingControl, { kind: K }>, value: unknown, onChange: SettingChange) => SettingsInput | null;
+interface SettingInputRow {
+  label: string;
+  disabled: boolean;
+}
 
-export type { SettingChange, SettingInputOf };
+type SettingInputOf<K extends SettingControlKind> = (
+  control: Extract<SettingControl, { kind: K }>,
+  value: unknown,
+  onChange: SettingChange,
+  row: SettingInputRow,
+) => SettingsInput | null;
+
+export type { SettingChange, SettingInputOf, SettingInputRow };

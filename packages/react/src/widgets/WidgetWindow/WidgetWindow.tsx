@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { Widget, createDefaultLayout, frameOf, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
@@ -12,7 +12,6 @@ import { WidgetBody } from '../WidgetBody';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { WindowGuide } from '../WindowGuide';
-import { useDragStrip } from './behavior/useDragStrip';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
@@ -29,11 +28,9 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const definition = useMemo(() => getWidgetDefinition(uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), id), [widgets, registered, id]);
   const frames = useWidgetRelayStore((s) => s.slices[RELAY_SLICES.frames]) as WidgetLayout['frame'] | undefined;
   const own = usePoppedWindowState(id);
-  const [root, setRoot] = useState<HTMLElement | null>(null);
   const reviewOpen = useReviewOptions(id);
   useWidgetRelay(id);
   useWidgetWindowEscape();
-  useDragStrip(root);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
   const label = definition?.label ?? id;
@@ -45,13 +42,14 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   );
 
   return (
-    <Box ref={setRoot} className="widget-window">
+    <Box className="widget-window">
       <Widget
         id={id}
         tabs={tabs}
         activeId={id}
         paneKey={null}
         mode="out"
+        dragRegion
         opacity={frame.opacity}
         square={own.square}
         padding={definition?.padding}

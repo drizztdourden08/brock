@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { DataDomainDef, DataExportFormat, DataLocation, DomainUsage } from '@drizztdourden08/brock-core';
 import type { SettingAction } from '../../settings/settings.type';
+import type { ActionRunner } from '../../settings/SettingsLayout/SettingsLayout.type';
 
 interface StoragePageProps {
   domains?: readonly string[];
@@ -28,6 +29,7 @@ interface StorageSectionsInput {
   actions: StorageActions;
   chosen: readonly string[];
   onChoose: (next: readonly string[]) => void;
+  runner?: ActionRunner;
 }
 
 interface ActionRowInput {
@@ -36,6 +38,7 @@ interface ActionRowInput {
   description: string;
   hint: string;
   actions: readonly SettingAction[];
+  runner?: ActionRunner;
 }
 
 export type { ActionRowInput, StorageActions, StorageDomainsState, StoragePageProps, StorageSectionsInput };

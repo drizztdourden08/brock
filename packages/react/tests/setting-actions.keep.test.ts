@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { isValidElement } from 'react';
 import { settingRows } from '../src/settings/SettingsLayout/behavior/setting-rows';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
+import { withoutKey } from '../src/settings/SettingsLayout/behavior/without-key';
 import { SettingActions } from '../src/settings/SettingsLayout/sub-components/SettingActions';
 import type { SettingItem } from '../src/settings/settings.type';
 import { confirmDelete } from '../src/stores/confirm-delete';
@@ -88,6 +89,25 @@ describe('settings row actions', () => {
 
   it('still draws nothing for an item with neither a control nor actions', () => {
     expect(settingRows({ ...OWNER, key: 'nothing', actions: [] }, context())).toEqual([]);
+  });
+});
+
+describe('row action runner', () => {
+  it('passes the busy state of the runner to the row action as loading, keyed by the row', () => {
+    const run = vi.fn(() => Promise.resolve());
+    const item: SettingItem = { ...OWNER, actions: [{ id: 'rebuild', label: 'Rebuild', onSelect: () => undefined }, { id: 'copy', label: 'Copy', onSelect: () => undefined }] };
+    const row = settingRow(item, { ...context({ cache: 1 }), runner: { busy: { 'owner/rebuild': true }, run } });
+    const [rebuild, copy] = row && 'actions' in row ? row.actions ?? [] : [];
+    expect(rebuild?.loading).toBe(true);
+    expect(copy?.loading).toBe(false);
+    copy?.onClick();
+    expect(run).toHaveBeenCalledWith('owner/copy', item.actions?.[1], { settings: { cache: 1 }, inline: true });
+  });
+
+  it('drops a finished run from the busy record, and keeps the record when nothing changes', () => {
+    const busy = { 'a/x': true, 'b/y': true } as const;
+    expect(withoutKey(busy, 'a/x')).toEqual({ 'b/y': true });
+    expect(withoutKey(busy, 'c/z')).toBe(busy);
   });
 });
 

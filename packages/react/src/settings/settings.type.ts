@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { SettingsDescription } from '@drizztdourden08/tessera/composites';
-import type { ButtonVariant, IconName } from '@drizztdourden08/tessera/primitives';
+import type { ButtonVariant, IconName, JsonShape, PathKind } from '@drizztdourden08/tessera/primitives';
 import type { ConfirmActionOptions } from '../stores/dialog.type';
 
 interface SettingChoice {
@@ -20,7 +20,9 @@ type SettingControl =
   | { kind: 'number'; min?: number; max?: number; step?: number; unit?: string }
   | { kind: 'text'; placeholder?: string }
   | { kind: 'password'; placeholder?: string }
-  | { kind: 'tags'; suggestions?: readonly string[]; placeholder?: string };
+  | { kind: 'tags'; suggestions?: readonly string[]; placeholder?: string }
+  | { kind: 'path'; pick?: PathKind; accept?: readonly string[]; placeholder?: string }
+  | { kind: 'json'; shape?: JsonShape };
 
 type SettingControlKind = SettingControl['kind'];
 

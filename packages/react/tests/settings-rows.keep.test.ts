@@ -1,6 +1,12 @@
 /* @layer renderer-shell @kind test */
+import { isValidElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { JsonInput } from '@drizztdourden08/tessera/primitives';
+import type { JsonInputProps } from '@drizztdourden08/tessera/primitives';
 import { getAppLog } from '../src/log/get-app-log';
+import { SettingPathField } from '../src/settings/SettingsLayout/sub-components/SettingPathField';
+import type { SettingPathFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingPathField/SettingPathField.type';
+import { dialogExtensions } from '../src/settings/SettingsLayout/sub-components/SettingPathField/behavior/dialog-extensions';
 import { resolveSections } from '../src/settings/SettingsLayout/behavior/resolve-sections';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
 import type { Section, SettingItem } from '../src/settings/settings.type';
@@ -68,6 +74,33 @@ describe('settingRow', () => {
   it('puts a custom control in a content row that still carries the hint for search', () => {
     const row = settingRow(AUDIO, context({ renderControl: () => 'custom' }));
     expect(row).toMatchObject({ id: 'audio', content: 'custom', hint: 'Off mutes every sound.' });
+  });
+});
+
+describe('path and json controls', () => {
+  const settings = { rom: 'C:/roms/game.gb', extra: { speed: 2 } };
+  const at = (key: string, control: SettingItem['control']) => settingRow({ ...AUDIO, key, control }, context({ settings }));
+  const controlOf = (row: ReturnType<typeof settingRow>) => (row && 'input' in row && row.input?.kind === 'custom' ? row.input.control : null);
+
+  it('draws a path control as a PathField named by the row label, with the path as its read-only text', () => {
+    const row = at('rom', { kind: 'path', pick: 'file', accept: ['.gb'] });
+    expect(row).toMatchObject({ input: { kind: 'custom', text: 'C:/roms/game.gb' } });
+    const control = controlOf(row);
+    expect(isValidElement<SettingPathFieldProps>(control) && control.type === SettingPathField).toBe(true);
+    expect(isValidElement<SettingPathFieldProps>(control) ? control.props : null).toMatchObject({ value: 'C:/roms/game.gb', label: 'Audio', disabled: false, control: { accept: ['.gb'] } });
+    expect(at('extra', { kind: 'path' })).toBeNull();
+  });
+
+  it('draws a json control as a JsonInput with its shape, and nothing for a missing value', () => {
+    const control = controlOf(at('extra', { kind: 'json', shape: 'object' }));
+    expect(isValidElement<JsonInputProps>(control) && control.type === JsonInput).toBe(true);
+    expect(isValidElement<JsonInputProps>(control) ? control.props : null).toMatchObject({ value: { speed: 2 }, shape: 'object', 'aria-label': 'Audio' });
+    expect(at('missing', { kind: 'json' })).toBeNull();
+  });
+
+  it('turns accepted endings into the extensions of the native dialog', () => {
+    expect(dialogExtensions(['.yaml', '*.yml', 'gb', '.'])).toEqual(['yaml', 'yml', 'gb']);
+    expect(dialogExtensions(undefined)).toEqual([]);
   });
 });
 

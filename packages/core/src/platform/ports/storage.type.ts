@@ -39,6 +39,7 @@ interface StoragePort {
   reveal: () => Promise<void>;
   revealProfile: (profileId: string) => Promise<boolean>;
   getSummary: () => Promise<StorageSummary>;
+  revealLogs?: () => Promise<void>;
 }
 
 export type { FileStat, DataLocation, DataDomainDef, DomainUsage, StorageSummary, StoragePort };

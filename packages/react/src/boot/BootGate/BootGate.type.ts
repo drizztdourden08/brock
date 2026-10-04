@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 
-interface BootFailureGateProps {
+interface BootGateProps {
   children: ReactNode;
 }
 
-export type { BootFailureGateProps };
+export type { BootGateProps };

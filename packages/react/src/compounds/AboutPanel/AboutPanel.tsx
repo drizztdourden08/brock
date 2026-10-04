@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { BrandWordmark } from '@drizztdourden08/tessera/brand';
-import { Box, CopyButton, Paragraph, StatRow, Text } from '@drizztdourden08/tessera/primitives';
+import { CopyButton } from '@drizztdourden08/tessera/composites';
+import { Box, Paragraph, StatRow, Text } from '@drizztdourden08/tessera/primitives';
 import { ABOUT_PANEL_TEXT } from './AboutPanel.constants';
 import { AboutLogo } from './sub-components/AboutLogo';
 import type { AboutPanelProps } from './AboutPanel.type';
@@ -18,7 +19,7 @@ const AboutPanel = (props: AboutPanelProps) => {
         </Text>
       </Box>
       <Box className="about-panel__rows">
-        {rows.map((row) => <StatRow key={row.label} className="about-panel__row" label={row.label} value={row.value} mono />)}
+        {rows.map((row) => <StatRow key={row.label} className="about-panel__row" label={row.label} value={row.value} mono size="sm" />)}
       </Box>
       {copyText !== undefined && (
         <CopyButton text={copyText ?? ''} label={copyLabel ?? ABOUT_PANEL_TEXT.copy} showLabel variant="secondary" size="md" loading={copyText === null} className="about-panel__copy" />

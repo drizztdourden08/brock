@@ -27,11 +27,11 @@ ${styles}
   </head>
   <body class="ts-splash splash">
     <main class="ts-stage">
-      <img class="splash__mark" src="${escapeHtml(mark)}" alt="" />
+      <img class="ts-mark splash__mark" src="${escapeHtml(mark)}" alt="" />
       <h1 class="ts-title splash__name">${escapeHtml(name)}</h1>
       <p class="ts-status" id="splash-status" aria-live="polite">Starting</p>
       <section class="splash__failure" id="splash-failure" hidden>
-        <p class="ts-status ts-status--danger splash__message" id="splash-message"></p>
+        <p class="ts-detail" id="splash-message"></p>
         <div class="ts-actions">
           <button class="ts-button ts-button--primary" id="splash-retry" type="button">Retry</button>
           <button class="ts-button" id="splash-logs" type="button">Open logs</button>

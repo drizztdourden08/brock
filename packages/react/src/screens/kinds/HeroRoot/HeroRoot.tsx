@@ -5,7 +5,6 @@ import { heroBrandArt } from '../hero-brand-art';
 import { heroBrandOf } from '../hero-brand-of';
 import { HeroSlotContext } from '../hero-slot-context';
 import type { HeroRootProps, HeroSlotValues, PutHeroSlot } from '../screen-kinds.type';
-import './HeroRoot.css';
 
 const HeroRoot = (props: HeroRootProps) => {
   const { frame, children } = props;
@@ -18,11 +17,10 @@ const HeroRoot = (props: HeroRootProps) => {
   }, []);
 
   const art = values.art ?? brandArt;
-  const bare = art === undefined && values.backdrop === undefined;
 
   return (
     <HeroSlotContext.Provider value={put}>
-      <Composite {...values} art={art} brand={brand} title={values.title} label={label} className={bare ? 'hero-root hero-root--bare' : 'hero-root'} />
+      <Composite {...values} art={art} brand={brand} title={values.title} label={label} />
       {children}
     </HeroSlotContext.Provider>
   );

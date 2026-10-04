@@ -12,7 +12,8 @@ import { useBrock } from '../../../useBrock';
 import { WidgetHost } from '../../../../widgets/WidgetHost/WidgetHost';
 import { WindowGuide } from '../../../../widgets/WindowGuide';
 import { useWindowSquare } from '../../../../widgets/useWindowSquare';
-import { BootFailureGate } from '../../../../boot/BootFailureGate';
+import { BootFailureSplash } from '../../../../boot/BootFailureSplash';
+import { BootGate } from '../../../../boot/BootGate';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
@@ -41,6 +42,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const railed = layout === 'rail';
 
   const phase = useBootStore((s) => s.phase);
+  const failure = useBootStore((s) => (s.phase === 'failed' ? s.failure : null));
   useOpenHomeOnStart(phase === 'painting' || phase === 'ready');
   useRendererBoot(settingsStore, bootTasks);
   const ready = phase === 'ready';
@@ -61,30 +63,33 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: barMenu, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const main = <BootFailureGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootFailureGate>;
+  const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootGate>;
   const stage = <WidgetHost widgets={widgets} layout={widgetLayout} widgetContext={widgetContext} mainLabel={product.widgets.mainLabel} main={main} />;
 
   return (
-    <Box className="brock-app">
-      {windowChrome && (
-        <AppTitleBar
-          title={product.window.title ?? product.name}
-          menu={barMenu}
-          controls={product.window.titleBar.controls}
-          instanceName={instanceName()}
-          logoSrc={logoSrc}
-          actions={actions}
-          hidden={titleBarHidden}
-        />
-      )}
-      <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
-        {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
-        {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
+    <>
+      <Box className="brock-app" inert={failure !== null}>
+        {windowChrome && (
+          <AppTitleBar
+            title={product.window.title ?? product.name}
+            menu={barMenu}
+            controls={product.window.titleBar.controls}
+            instanceName={instanceName()}
+            logoSrc={logoSrc}
+            actions={actions}
+            hidden={titleBarHidden}
+          />
+        )}
+        <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
+          {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
+          {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
+        </Box>
+        <WindowGuide />
+        <JobHost />
+        <StandardOverlays menu={fullMenu} actions={searchActions} />
       </Box>
-      <WindowGuide />
-      <JobHost />
-      <StandardOverlays menu={fullMenu} actions={searchActions} />
-    </Box>
+      <BootFailureSplash failure={failure} />
+    </>
   );
 };
 

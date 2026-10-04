@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-input",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Brock input module: SDL3 controllers with hotplug and live state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and the InputTester screen.",
   "type": "module",
   "license": "UNLICENSED",

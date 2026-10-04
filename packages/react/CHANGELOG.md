@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-react
 
+## 0.12.0
+
+### Minor Changes
+
+- f751683: The product brand's mascot joins search: Flint for `brock`, Pelago for `archipelia` and Sentri for `rotp` sit in the command palette's input row and in every hub search, looking around before you type and jumping up when nothing matches. A brand without a mascot, or no brand, keeps the plain search icon. The review checks the mascot in the palette and in the hub search, and captures the hub search before typing and with no match.
+- f751683: Brock moves to Tessera 0.12.0 (brock-react's peer is `^0.12.0`). A widget window now draws Tessera's own pin menu in its title bar and Tessera's Pin row in its options panel, in place of Brock's `WidgetPinMenu` and the Stacking row; the pin stays off or on top, sync stays a separate option, and a saved `with-app` pin still opens as off with sync on. The `widget:popped` event carries the new `PoppedWidgetPatch`, whose pin is never `with-app`. The review reads the page header through the `content-header` classes.
+- 59c1c9d: Brock moves to Tessera 0.13.0 (brock-react's peer is `^0.13.0`).
+
+  - Palettes: `BrockApp` imports Tessera's brand palettes into the `ds.palette` layer and sets `data-palette` on the document root to `product.icons.brand`, in the main window and in popped widget windows. The starter `src/theme.css` sets no seeds and only overrides; the `brock-palette` upgrade step turns an untouched starter theme (the old blue or the Brock seeds) into that override-only file and keeps a theme the app changed. The splash, the look and the installer read the brand palette while `theme.css` sets no seeds.
+  - Breaking for hero homes: `Art` takes a `kind` (`image` or `node`), `Backdrop` takes Tessera's `HeroBackdrop` (`node`, `image`, `color`) or `kind: 'none'`, and the new `Shade` slot takes `value`. The `hero-kinds` upgrade step adds `kind="image"` to art and turns a `Backdrop` with children into a to-do.
+  - About has no page header, as Tessera's InfoScreen now draws none; the screen declares the new `header: 'none'` and the review checks that no header shows.
+  - The search mascot comes from Tessera's `mascotForBrand`; Brock's own brand to mascot table is gone.
+
+### Patch Changes
+
+- Updated dependencies [f751683]
+  - @drizztdourden08/brock-core@0.12.0
+
 ## 0.11.0
 
 ### Minor Changes

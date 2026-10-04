@@ -5,6 +5,8 @@ import { formatRelativeTime } from '@drizztdourden08/brock-core';
 import { ProfilesPanel } from '../../compounds/ProfilesPanel';
 import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
+import { useNavigationStore } from '../../navigation/useNavigationStore';
+import { PROFILES_SCREEN } from '../../app/BrockApp/BrockApp.constants';
 import { getAppLog } from '../../log/get-app-log';
 import type { ProfilesScreenProps } from './ProfilesScreen.type';
 
@@ -24,7 +26,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
 
   const handleSelect = useCallback(async (profile: Profile) => {
     await select(profile);
-    close();
+    if (useNavigationStore.getState().active === PROFILES_SCREEN) close();
   }, [select, close]);
 
   const handleCreate = useCallback(async (name: string) => {

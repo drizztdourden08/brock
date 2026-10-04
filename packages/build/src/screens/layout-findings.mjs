@@ -2,7 +2,7 @@
 import { SCREENS_DIR } from './screen-conventions.constants.mjs';
 
 /** @param {import('./scan-screens.mjs').ScreenFile} file */
-const pageKey = (file) => `${file.group ?? ''}/${file.kind === 'tab' ? file.page : file.id}`;
+const pageKey = (file) => `${file.group ?? ''}/${file.kind === 'tab' || file.kind === 'sub' ? file.page : file.id}`;
 
 /** @param {string[]} ids */
 const repeated = (ids) => [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];

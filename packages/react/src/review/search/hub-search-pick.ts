@@ -1,16 +1,15 @@
 /* @layer renderer-shell @kind logic */
 import { nav } from '../../navigation/nav';
 import { ROUTE_SEPARATOR } from '../../navigation/navigation.constants';
-import { palette } from '../../palette/palette';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
-import { press } from '../dom/press-key';
 import { settle } from '../dom/settle';
 import { typeText } from '../dom/type-text';
 import { waitFor } from '../dom/wait-for';
 import { SEARCH_MISS, SELECTORS } from '../review.constants';
 import type { SearchSample, StepTour } from '../review.type';
 import { checkMascot } from './mascot-check';
+import { paletteScopeCheck } from './palette-scope-check';
 import { reachedTarget } from './reached-target';
 
 const liveRow = (anchor: string): HTMLElement | null =>
@@ -54,9 +53,11 @@ const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void
   const opened = await waitFor(() => nav.active() === bucket && find(SELECTORS.layer));
   if (opened === null) return tour.check('search-hub-opens', false, '', `the "${bucket}" hub did not open`);
   await settle();
-  press({ key: 'k', ctrlKey: true });
+  await paletteScopeCheck(tour, bucket, tour.env.screenTree?.hubs.find((hub) => hub.id === bucket)?.title ?? bucket);
+  const mark = find(SELECTORS.hubSearchMark);
+  if (mark) click(mark);
   const input = await waitFor(focusedSearch);
-  tour.check('search-hub-shortcut', input !== null && !palette.isOpen(), `Ctrl+K inside the "${bucket}" hub focused its search`, `Ctrl+K inside the "${bucket}" hub did not focus its search`);
+  tour.check('search-hub-focus', input !== null, `the "${bucket}" hub search takes the focus`, `the "${bucket}" hub search did not take the focus`);
   if (input === null) return undefined;
   await checkIdleAndEmpty(tour, input, bucket);
   typeText(input, sample.label);

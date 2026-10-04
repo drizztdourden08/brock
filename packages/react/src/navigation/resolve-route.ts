@@ -3,8 +3,9 @@ import { ROUTE_SEPARATOR } from './navigation.constants';
 import type { ResolvedRoute, RouteAlias, ScreenParams } from './navigation.type';
 
 const deepLink = (id: string, params: ScreenParams): ResolvedRoute => {
-  const [active = id, section, tab] = id.split(ROUTE_SEPARATOR);
+  const [active = id, section, ...rest] = id.split(ROUTE_SEPARATOR);
   if (section === undefined || section === '') return { active, params };
+  const tab = rest.length === 0 ? undefined : rest.join(ROUTE_SEPARATOR);
   return { active, params: { ...params, section, tab } };
 };
 

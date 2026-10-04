@@ -18,7 +18,7 @@ const closeTopmost = (e: KeyboardEvent, homeScreen: string | null): void => {
   e.preventDefault();
   if (action === 'layer') layer?.close();
   else if (action === 'dialog') dialog.dismiss();
-  else if (action === 'screen') nav.close();
+  else if (action === 'screen') nav.escape();
   else if (homeScreen !== null) nav.open(homeScreen);
 };
 

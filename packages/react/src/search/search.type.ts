@@ -7,7 +7,7 @@ import type { TabDef } from '../settings/settings.type';
 
 type SearchKind = 'screen' | 'page' | 'tab' | 'section' | 'setting' | 'entry' | 'widget' | 'action';
 
-type SearchFileKind = 'hero' | 'page' | 'page-meta' | 'tab' | 'settings' | 'custom' | 'card' | 'layer';
+type SearchFileKind = 'hero' | 'page' | 'page-meta' | 'tab' | 'sub' | 'settings' | 'custom' | 'card' | 'layer' | 'base';
 
 interface SearchTarget {
   route: string;
@@ -39,6 +39,8 @@ interface SearchEntry {
 
 interface SearchEntrySeed {
   label: string;
+  id?: string;
+  params?: ScreenParams;
   keywords?: readonly string[];
   anchor?: string;
   description?: string;
@@ -69,6 +71,7 @@ interface SearchFileSeed {
   icon?: string;
   keywords?: readonly string[];
   devOnly?: boolean;
+  path?: string;
   sections?: readonly SearchSectionSeed[];
   entries?: readonly SearchEntrySeed[];
 }
@@ -119,6 +122,16 @@ interface FieldWeights {
   substring: number;
 }
 
+interface RankedInScope {
+  inScope: SearchEntry[];
+  rest: SearchEntry[];
+}
+
+interface PaletteScope {
+  bucket: string;
+  title: string;
+}
+
 interface SearchActionState {
   actions: SearchAction[];
   add: (actions: readonly SearchAction[]) => () => void;
@@ -130,6 +143,6 @@ interface LiveSearchState {
 }
 
 export type {
-  CatalogInput, FieldWeights, LiveSearchState, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed,
+  CatalogInput, FieldWeights, LiveSearchState, PaletteScope, RankedInScope, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed,
   SearchKind, SearchRowSeed, SearchSectionSeed, SearchTarget, SearchToggle, SeedPlace, SettingsPlace,
 };

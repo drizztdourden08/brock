@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ScreenParams } from '../navigation/navigation.type';
+import type { ScreenMenu } from '../screens/conventions/screens-config.type';
 
 interface HubTarget {
   hub?: string;
@@ -13,6 +14,8 @@ interface HubRenderContext {
   hub: HubDef;
   page: HubPage;
   tab: HubTab | null;
+  sub: HubSubPage | null;
+  subParams: Record<string, string>;
   params: ScreenParams;
   open: (target: HubTarget) => void;
   close: () => void;
@@ -25,6 +28,26 @@ interface HubTab {
   render: (ctx: HubRenderContext) => ReactNode;
 }
 
+interface HubSubPage {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  path: string;
+  header?: HubPageHeader;
+  render: (ctx: HubRenderContext) => ReactNode;
+}
+
+interface HubPrimaryAction {
+  label: string;
+  icon?: ReactNode;
+  open: string;
+}
+
+interface HubPageHeader {
+  primary?: HubPrimaryAction;
+  search?: { placeholder?: string };
+}
+
 interface HubPage {
   id: string;
   label: string;
@@ -35,6 +58,10 @@ interface HubPage {
   devOnly?: boolean;
   shortcut?: string;
   settingsTab?: string;
+  subs?: HubSubPage[];
+  header?: HubPageHeader;
+  menu?: ScreenMenu;
+  order?: number;
 }
 
 interface HubGroup {
@@ -66,4 +93,4 @@ interface HubDef {
   shortcut?: string;
 }
 
-export type { HubDef, HubGroup, HubPage, HubRenderContext, HubSearch, HubSearchHit, HubTab, HubTarget };
+export type { HubDef, HubGroup, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget };

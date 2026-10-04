@@ -6,6 +6,8 @@ import CreditsCard, { meta as creditsCardMeta } from '../src/screens/credits.car
 import GameControlsCustom, { meta as gameControlsCustomMeta } from '../src/screens/game/controls.custom';
 import GameGeneralSettings, { meta as gameGeneralSettingsMeta } from '../src/screens/game/general.settings';
 import GameHomeHero, { meta as gameHomeHeroMeta } from '../src/screens/game/home.hero';
+import GameSavesNewSub, { meta as gameSavesNewSubMeta } from '../src/screens/game/saves/new.sub';
+import GameSavesPage, { meta as gameSavesPageMeta } from '../src/screens/game/saves.page';
 import GameStoragePage, { meta as gameStoragePageMeta } from '../src/screens/game/storage.page';
 
 const screenTree = buildScreenTree(config, [
@@ -13,6 +15,8 @@ const screenTree = buildScreenTree(config, [
   { kind: 'custom', bucket: 'game', id: 'controls', component: GameControlsCustom, meta: gameControlsCustomMeta },
   { kind: 'settings', bucket: 'game', id: 'general', sections: GameGeneralSettings, meta: gameGeneralSettingsMeta },
   { kind: 'hero', bucket: 'game', id: 'home', component: GameHomeHero, meta: gameHomeHeroMeta },
+  { kind: 'sub', bucket: 'game', page: 'saves', id: 'new', component: GameSavesNewSub, meta: gameSavesNewSubMeta },
+  { kind: 'page', bucket: 'game', id: 'saves', component: GameSavesPage, meta: gameSavesPageMeta },
   { kind: 'page', bucket: 'game', id: 'storage', component: GameStoragePage, meta: gameStoragePageMeta },
 ], searchIndex);
 

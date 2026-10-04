@@ -70,6 +70,7 @@ interface ShellKeyContext {
 }
 
 interface AppScreensInput {
+  home?: string;
   screens?: readonly ScreenDef[];
   screenTree?: ScreenTree;
   builtInTabs: TabDef<object>[];
@@ -82,6 +83,7 @@ interface AppScreensInput {
 }
 
 interface AppScreens {
+  base: string;
   registry: ScreenRegistry;
   tree: ResolvedScreenTree | null;
   tabs: TabDef<object>[];

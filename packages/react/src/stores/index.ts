@@ -16,5 +16,7 @@ export { dialogs } from './dialogs';
 export { confirmAction } from './confirm-action';
 export { confirmDelete } from './confirm-delete';
 export type { ConfirmActionOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmFocus, DialogState } from './dialog.type';
+export { useScreenStateStore } from './useScreenStateStore';
+export type { ScreenStates, ScreenStateSetter, ScreenStateState, ScreenViews } from './screen-state.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';

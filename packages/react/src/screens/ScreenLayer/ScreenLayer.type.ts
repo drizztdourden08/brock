@@ -11,6 +11,7 @@ interface ScreenLayerProps {
   floating?: ReactNode;
   hidden?: boolean;
   square?: boolean;
+  onBack?: () => void;
   onClose: () => void;
   children: ReactNode;
 }

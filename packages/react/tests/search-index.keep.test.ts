@@ -125,6 +125,17 @@ describe('buildCatalog with the index', () => {
     expect(entry).toMatchObject({ breadcrumb: ['Game', 'Controls'], keywords: ['deck'], target: { route: 'game/controls' } });
   });
 
+  it('keeps two live entries with one label apart by id, and opens their params', () => {
+    const live = [
+      liveEntry({ label: 'Weekly', id: 'preset-1', params: { presetId: 'preset-1' } }, 'game/controls'),
+      liveEntry({ label: 'Weekly', id: 'preset-2', params: { presetId: 'preset-2' } }, 'game/controls'),
+    ];
+    const found = buildCatalog(input({ live })).filter((candidate) => candidate.label === 'Weekly');
+    expect(found.map((entry) => entry.id)).toEqual(['entry:game/controls#preset-1', 'entry:game/controls#preset-2']);
+    expect(found[1]?.target).toEqual({ route: 'game/controls', params: { presetId: 'preset-2' } });
+    expect(entriesInBucket(found, 'game')).toHaveLength(2);
+  });
+
   it('turns widget menu toggles into widget entries', () => {
     const widgets = [{ key: 'widget-logs', label: 'Logs', checked: false, onClick: () => undefined }];
     expect(buildCatalog(input({ widgets })).find((entry) => entry.id === 'widget:logs')?.kind).toBe('widget');

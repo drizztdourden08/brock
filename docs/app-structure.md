@@ -31,7 +31,7 @@ my-app/
     review/seed.ts                 fills the app with data before the review tour
     review/<id>.step.ts            the app's own review steps
     screens/screens.config.ts      buckets, menu placement, home
-    screens/<bucket>/<id>.<kind>.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx
+    screens/<bucket>/<id>.<kind>.tsx, screens/<bucket>/<page>/<sub>.sub.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx, screens/<id>.base.tsx
     widgets/<id>.widget.tsx        one widget per file
     widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
     title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
@@ -68,7 +68,7 @@ my-repo/
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<id>.card.tsx`, `<id>.layer.tsx` | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx` | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |

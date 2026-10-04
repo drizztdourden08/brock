@@ -17,9 +17,10 @@ const resolveScreenTree = (tree: ScreenTree, builtInTabs: readonly TabDef<object
   if (owner === undefined) throw new Error(`screens.config.ts: settings bucket "${settingsBucket}" is not declared.`);
   return {
     home: config.home,
+    base: tree.base?.id ?? null,
     settingsBucket,
     hubs,
-    screens: [...hubs.map((hub) => defineHub(hub)), ...tree.screens],
+    screens: [...hubs.map((hub) => defineHub(hub)), ...tree.screens, ...(tree.base ? [tree.base] : [])],
     tabs,
     menu: deriveMenu(config, hubs, tree.screens),
     shortcuts: [{ shortcut: SETTINGS_SHORTCUT, target: SETTINGS_ALIAS }, ...tree.shortcuts],

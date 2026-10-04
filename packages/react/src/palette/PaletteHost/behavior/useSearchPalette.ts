@@ -6,6 +6,7 @@ import { useSearchIndex } from '../../../search/useSearchIndex';
 import { usePaletteStore } from '../../usePaletteStore';
 import type { PaletteItem, PaletteModel } from '../PaletteHost.type';
 import { paletteGroups } from './palette-groups';
+import { usePaletteScope } from './usePaletteScope';
 import { useStandardActions } from './useStandardActions';
 
 const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAction[]): PaletteModel => {
@@ -16,7 +17,8 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   const standard = useStandardActions();
   const given = useMemo(() => [...actions, ...standard], [actions, standard]);
   const catalog = useSearchIndex(open, menu, given);
-  const groups = useMemo(() => paletteGroups(catalog, query), [catalog, query]);
+  const scope = usePaletteScope();
+  const groups = useMemo(() => paletteGroups(catalog, query, scope), [catalog, query, scope]);
   const activeIndex = query.trim().length === 0 ? -1 : undefined;
 
   const runItem = useCallback((item: PaletteItem) => {

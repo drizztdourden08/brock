@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-input
 
+## 0.15.0
+
+### Patch Changes
+
+- Updated dependencies [96f7759]
+- Updated dependencies [96f7759]
+  - @drizztdourden08/brock-core@0.15.0
+  - @drizztdourden08/brock-electron@0.15.0
+  - @drizztdourden08/brock-react@0.15.0
+
 ## 0.14.0
 
 ### Patch Changes

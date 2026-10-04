@@ -1,8 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { memo, useMemo } from 'react';
 import { formatBytes } from '@drizztdourden08/brock-core';
-import { StackedBar } from '@drizztdourden08/tessera/composites';
-import { Flex, Span, Stack } from '@drizztdourden08/tessera/primitives';
+import { Flex, Span, StackedBar, Stack } from '@drizztdourden08/tessera/primitives';
 import { memorySegments } from '../behavior/memory-segments';
 import { processTotals } from '../behavior/process-totals';
 import type { PerformanceMemoryProps } from '../PerformanceWidget.type';

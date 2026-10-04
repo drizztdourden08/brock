@@ -3,34 +3,46 @@ import { brockInstallOf } from './brock-install.mjs';
 import { runIn } from './run-in.mjs';
 import { GATE_SCRIPTS, MIGRATIONS_FILE } from './upgrade.constants.mjs';
 
-const scriptStep = (path, script) => ({
-  name: `pnpm ${script}`,
-  skipped: 'the app has no such script',
-  run: () => (brockInstallOf.packageOf(path)?.scripts?.[script] ? runIn.pnpm(path, ['run', script]) : null),
+const inApp = (name, { label }) => (label === '.' ? name : `${name} in ${label}`);
+
+const scriptStep = (place, script) => ({
+  name: inApp(`pnpm ${script}`, place),
+  skipped: 'no such script there',
+  run: () => (brockInstallOf.packageOf(place.dir)?.scripts?.[script] ? runIn.pnpm(place.dir, ['run', script]) : null),
 });
 
-const migrateArgs = (plan, tesseraFrom) => [
+const migrateArgs = (plan, app) => [
   'migrate',
-  '--from', plan.current ?? '0.0.0',
+  '--from', app.from ?? '0.0.0',
   ...(plan.mode === 'registry' ? ['--to', plan.target] : []),
-  ...(tesseraFrom ? ['--tessera-from', tesseraFrom] : []),
+  ...(app.tesseraFrom ? ['--tessera-from', app.tesseraFrom] : []),
   '--report', MIGRATIONS_FILE,
 ];
 
-/**
- * @param {{ path: string, name: string, plan: import('./upgrade.type.mjs').UpgradePlan, review: boolean, tesseraFrom?: string | null }} worktree
- * @returns {{ name: string, run: () => number | null, skipped?: string }[]}
- */
-const gateSteps = ({ path, name, plan, review, tesseraFrom = null }) => [
-  { name: 'brock sync', run: () => runIn.brock(path, ['sync']) },
-  { name: 'brock migrate', run: () => runIn.brock(path, migrateArgs(plan, tesseraFrom)) },
-  ...GATE_SCRIPTS.map((script) => scriptStep(path, script)),
-  { name: 'brock icons', skipped: '--no-review', run: () => (review ? runIn.brock(path, ['icons']) : null) },
+const appSteps = (plan, app) => [
+  { name: inApp('brock sync', app), run: () => runIn.brock(app.dir, ['sync']) },
+  { name: inApp('brock migrate', app), run: () => runIn.brock(app.dir, migrateArgs(plan, app)) },
+];
+
+const scriptPlaces = (path, apps) => [{ dir: path, label: '.' }, ...apps.filter((app) => app.dir !== path)];
+
+const reviewSteps = ({ path, name, review, apps }) => [
+  ...apps.map((app) => ({ name: inApp('brock icons', app), skipped: '--no-review', run: () => (review ? runIn.brock(app.dir, ['icons']) : null) })),
   {
     name: `launch ${name} none --review`,
     skipped: '--no-review',
-    run: () => (review ? runIn.brock(path, ['launch', name, 'none', '--review']) : null),
+    run: () => (review ? runIn.brock(path, ['launch', name, 'none', '--review'], apps.map((app) => app.dir)) : null),
   },
+];
+
+/**
+ * @param {{ path: string, name: string, plan: import('./upgrade.type.mjs').UpgradePlan, review: boolean, apps: import('./upgrade.type.mjs').UpgradeApp[] }} worktree
+ * @returns {{ name: string, run: () => number | null, skipped?: string }[]}
+ */
+const gateSteps = (worktree) => [
+  ...worktree.apps.flatMap((app) => appSteps(worktree.plan, app)),
+  ...scriptPlaces(worktree.path, worktree.apps).flatMap((place) => GATE_SCRIPTS.map((script) => scriptStep(place, script))),
+  ...reviewSteps(worktree),
 ];
 
 export { gateSteps };

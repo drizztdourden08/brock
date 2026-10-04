@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUILD_PACKAGE } from './upgrade.constants.mjs';
 
@@ -18,7 +19,9 @@ const node = (dir, args) => spawnSync(process.execPath, args, { cwd: dir, stdio:
 
 const brockBin = (dir) => join(dir, 'node_modules', ...BUILD_PACKAGE.split('/'), 'bin', 'brock.mjs');
 
-const brock = (dir, args) => node(dir, [brockBin(dir), ...args]);
+const binAmong = (dirs) => dirs.map(brockBin).find((bin) => existsSync(bin)) ?? brockBin(dirs[0]);
+
+const brock = (dir, args, binDirs = []) => node(dir, [binAmong([dir, ...binDirs]), ...args]);
 
 const runIn = Object.freeze({ pnpm, brock });
 

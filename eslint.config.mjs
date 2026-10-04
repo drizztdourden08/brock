@@ -30,6 +30,6 @@ export default brockEslint({
     'packages/electron/src/main/logs/**',
     'packages/electron/src/preload/**',
   ],
-  defaultExportGlobs: ['packages/lint-config/markdown-rules.mjs'],
+  defaultExportGlobs: ['packages/lint-config/markdown-rules.mjs', 'packages/build/src/knip-brock-dependencies.mjs'],
   ignores: ['templates/app/dist/**', 'templates/app/out/**', '**/.brock/**', 'packages/create-brock/template/**'],
 });

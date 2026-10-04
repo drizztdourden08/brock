@@ -135,10 +135,6 @@
         "src/**/*.{ts,tsx}",
         "electron/**/*.ts",
         ".brock/*.ts"
-      ],
-      "ignoreDependencies": [
-        "@electron-toolkit/utils",
-        "velopack"
       ]
     }
   }

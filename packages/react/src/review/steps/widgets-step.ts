@@ -5,6 +5,7 @@ import { menuPathTo } from '../menu/menu-path-to';
 import { pickMenuPath } from '../menu/pick-menu-path';
 import { LOGS_WIDGET_KEY, SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
+import { checkFloatResize } from '../widgets/float-resize-check';
 import { checkPopOut } from './pop-out-check';
 
 const widgetsStep: ReviewStep = {
@@ -26,6 +27,7 @@ const widgetsStep: ReviewStep = {
     await tour.capture('logs-widget');
     const hidden = await pickMenuPath(path) ? await waitFor(() => find(SELECTORS.logsWidget) === null) : null;
     tour.check('logs-widget-closes', hidden !== null, `${route} hid the logs widget again`, `${route} left the logs widget on screen`);
+    await checkFloatResize(tour);
     await checkPopOut(tour);
   },
 };

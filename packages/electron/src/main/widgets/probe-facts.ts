@@ -11,7 +11,8 @@ import { modifierState } from './modifier-state';
 import { squareState } from './square-state';
 import { widgetWindowEntries } from './widget-window-entries';
 import { windowGuide } from './window-guide';
-import { MAIN_ANCHOR } from './widget-windows.constants';
+import { MAIN_ANCHOR, NO_DRAWING } from './widget-windows.constants';
+import type { GuideDrawing } from './widget-windows.type';
 
 const allBounds = (): Record<string, WidgetWindowBounds> => {
   const main = getMainWindow();
@@ -32,14 +33,15 @@ const ownFacts = (id: string): Pick<WidgetProbeFacts, 'visible' | 'taskbar' | 's
   return { visible: shown(win), taskbar: entry?.taskbar === true && owned === null, sync: entry?.sync ?? true, square: entry?.square === true };
 };
 
-const probeFacts = (id: string, guideDrawn: string[] = []): WidgetProbeFacts => ({
+const probeFacts = (id: string, drawing: GuideDrawing = NO_DRAWING): WidgetProbeFacts => ({
   ...ownFacts(id),
   cluster: clusterOf(id).sort(),
   backdrop: backdropShown(),
   ctrl: modifierState.ctrl,
   guide: windowGuide.current(),
   guideIn: windowGuide.holder(),
-  guideDrawn,
+  guideDrawn: drawing.drawn,
+  guideBeside: drawing.beside,
   area: clusterLayouts.of(id)?.area ?? null,
   windows: allBounds(),
 });

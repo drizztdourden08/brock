@@ -11,7 +11,7 @@ import { SettingsStoreContext } from '../../stores/settings-context';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { dragRelease } from '../drag-release';
-import { NO_IDS, NO_WIDGETS } from '../widget.constants';
+import { FLOATING_MIN, NO_IDS, NO_WIDGETS } from '../widget.constants';
 import { poppedShown } from '../popped-shown';
 import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
@@ -78,6 +78,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       mainLabel={mainLabel}
       mainGrip="dragging"
       onMainRect={trackMainRect}
+      floatingMin={FLOATING_MIN}
       onPopOut={popOut}
       externalDrag={externalDrag}
       onExternalDrop={dropIn}

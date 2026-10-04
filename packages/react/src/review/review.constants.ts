@@ -15,9 +15,14 @@ const PROFILES_SCREEN = 'profiles';
 const LOGS_WIDGET_KEY = `widget-${LOGS_WIDGET_ID}`;
 const PERFORMANCE_WIDGET_KEY = `widget-${PERFORMANCE_WIDGET_ID}`;
 const PERFORMANCE_LIVE_MS = 2500;
-const PERFORMANCE_ROWS = { frameRate: 'Frame rate', allProcesses: 'All processes' } as const;
-const FPS_VALUE = /^\d+ fps$/;
-const PROCESS_COUNT_VALUE = /^\d+, /;
+const PERFORMANCE_TILES = { frameRate: 'Frame rate', cpu: 'CPU', memory: 'Memory', lag: 'Event loop lag' } as const;
+const PERFORMANCE_GAUGES: readonly string[] = ['CPU', 'Memory'];
+const PERFORMANCE_PROCESSES: readonly string[] = ['Main', 'Renderer'];
+const FPS_VALUE = /^\d+$/;
+const PERFORMANCE_WINDOW_SIZES = [
+  { name: 'performance-window-narrow', bounds: { width: 320, height: 760 } },
+  { name: 'performance-window-wide', bounds: { width: 780, height: 620 } },
+] as const;
 const UPDATER_MODULE_ID = 'updater';
 const UPDATE_MENU_LABEL = 'Check for updates';
 const BAR_ITEM_ATTRIBUTE = 'data-bar-item';
@@ -84,7 +89,15 @@ const SELECTORS = {
   aboutValue: '.stat-row__value',
   logsWidget: '.logs-widget',
   performanceWidget: '.performance-widget',
-  statRow: '.stat-row',
+  widgetBody: '.widget__content',
+  scrollArea: '.scroll-area',
+  statTile: '.stat-tile',
+  statTileLabel: '.stat-tile__label',
+  statTileValue: '.stat-tile__value',
+  sparklineLine: '.sparkline__line',
+  gaugeLabel: '.gauge__label',
+  barSegment: '.stacked-bar__segment',
+  barName: '.stacked-bar__name',
   dockPane: '.dock-layout__pane',
   mainGrip: '.dock-grip',
   hero: '.screen-layer:not(.screen-layer--hidden) .hero',
@@ -115,6 +128,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, PERFORMANCE_LIVE_MS, PERFORMANCE_ROWS, PERFORMANCE_WIDGET_KEY, PROCESS_COUNT_VALUE, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
+  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, PERFORMANCE_GAUGES, PERFORMANCE_LIVE_MS, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PERFORMANCE_WINDOW_SIZES, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
   HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

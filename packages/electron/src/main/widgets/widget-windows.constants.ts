@@ -1,6 +1,6 @@
 /* @layer electron-main @kind constants */
 import type { WidgetEdge, WindowGuideState } from '@drizztdourden08/brock-core';
-import type { ResizeEdges } from './widget-windows.type';
+import type { GuideDrawing, ResizeEdges } from './widget-windows.type';
 
 const SNAP_DISTANCE = 14;
 const WIDGET_WINDOW_SIZE = { width: 360, height: 480 } as const;
@@ -25,7 +25,7 @@ const TOW_HOLD_MS = 400;
 const GUIDE_IDLE_MS = 1500;
 const CLOSED_GUIDE: WindowGuideState = { open: false, mode: 'moving', snapping: true };
 const COMPOSE_MAX = 1600;
-const GUIDE_DRAWN_SCRIPT = "document.querySelector('.window-guide--open') !== null";
+const GUIDE_DRAWN_SCRIPT = "(() => { const open = document.querySelector('.window-guide--open'); if (!open) return ''; return open.querySelector('.window-guide__beside') ? 'beside' : 'centred'; })()";
 const COMPOSE_MARGIN = 24;
 const COMPOSE_SHADE = 40;
 const BACKDROP_COLOR = '#000000';
@@ -39,14 +39,16 @@ const RESIZE_SIDES: readonly WidgetEdge[] = ['left', 'right', 'top', 'bottom'];
 const VERTICAL_SIDES: readonly WidgetEdge[] = ['top', 'bottom'];
 const ACROSS_SIDES: readonly WidgetEdge[] = ['left', 'right'];
 const EMPTY_BOUNDS = { x: 0, y: 0, width: 0, height: 0 } as const;
+const NO_DRAWING: GuideDrawing = { drawn: [], beside: [] };
 const NO_SIDES: ResizeEdges = { left: false, right: false, top: false, bottom: false };
 const AXIS_EDGE_PLATFORMS: readonly string[] = ['darwin'];
 const PROBE_RESIZE_STEPS = 8;
+const PROBE_MOUSE_EVENTS = { down: 'mouseDown', move: 'mouseMove', up: 'mouseUp' } as const;
 const PROBE_BORDERS = { left: 6, top: 0, right: 6, bottom: 6 } as const;
 
 export {
   ACROSS_SIDES, AXIS_EDGE_PLATFORMS, BACKDROP_COLOR, BOUNDS_DEBOUNCE_MS, CLOSED_GUIDE, COMPOSE_MARGIN, COMPOSE_MAX, COMPOSE_SHADE, CTRL_KEYS, CTRL_MODIFIERS, CURSOR_GRAB, DISPLAY_SETTLE_MS, DRAG_FADE_OPACITY, EMPTY_BOUNDS, FLUSH_TOLERANCE, FOCUS_AWAY_MS,
-  GUIDE_DRAWN_SCRIPT, GUIDE_IDLE_MS, HEADLESS_AREA, KEY_RELEASES, MAIN_ANCHOR, MAIN_MIN_FALLBACK, NO_SIDES, OWNER_PLATFORMS, PROBE_BORDERS,
+  GUIDE_DRAWN_SCRIPT, GUIDE_IDLE_MS, HEADLESS_AREA, KEY_RELEASES, MAIN_ANCHOR, MAIN_MIN_FALLBACK, NO_DRAWING, NO_SIDES, OWNER_PLATFORMS, PROBE_BORDERS, PROBE_MOUSE_EVENTS,
   PROBE_RESIZE_STEPS, PROBE_SETTLE_MS, QUIT_FLUSH_MS, REACH_MIN, RESIZE_SIDES,
   SIZE_TOLERANCE, SNAP_DISTANCE, STALE_GROUP_FILE, TITLE_STRIP, TOW_HOLD_MS, TOW_MIN_OVERLAP, VERTICAL_SIDES, WIDGET_QUERY_KEY, WIDGET_WINDOW_MIN, WIDGET_WINDOW_OFFSET, WIDGET_WINDOW_SIZE,
 };

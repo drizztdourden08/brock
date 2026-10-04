@@ -93,6 +93,7 @@ interface ProcessMetric {
   cpuPercent: number;
   workingSetBytes: number;
   privateBytes: number | null;
+  window: string | null;
 }
 
 interface MainProcessMemory {
@@ -118,6 +119,7 @@ interface ProcessDiagnostics {
   ipcCalls: number;
   versions: RuntimeVersions;
   gpuFeatures: Record<string, string>;
+  memoryTotalBytes: number;
 }
 
 export type {

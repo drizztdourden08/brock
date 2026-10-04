@@ -216,7 +216,12 @@ interface CaptureSheet {
   origin: WidgetWindowBounds;
 }
 
+interface GuideDrawing {
+  drawn: string[];
+  beside: string[];
+}
+
 export type {
-  BoundsReporter, CaptureSheet, ClusterLayout, ClusterMember, CoverCandidate, EdgeMove, EdgeWindow, EntryFacts, LayoutMode, LayoutTarget, LineWindow, ManipulationRules,
+  BoundsReporter, CaptureSheet, ClusterLayout, ClusterMember, CoverCandidate, EdgeMove, EdgeWindow, EntryFacts, GuideDrawing, LayoutMode, LayoutTarget, LineWindow, ManipulationRules,
   MinSize, MoveSession, ModifierInput, PackSpan, PathStep, ResizeEdges, ResizeFollower, ResizeNeighbour, ResizeRequest, ResizeSession, ResizeStart, ResizeStep, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup, WillResizeCue,
 };

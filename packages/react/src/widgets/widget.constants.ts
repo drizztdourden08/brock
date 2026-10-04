@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import type { Size } from '@drizztdourden08/tessera/composites';
 import type { WidgetDef } from './widget.type';
 
 const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'render'> = {
@@ -18,11 +19,12 @@ const RELAY_DELAY_MS = 200;
 const RELAY_LOG_LIMIT = 1000;
 const RELEASE_TIMEOUT_MS = 1500;
 const DRAG_SLOP_PX = 6;
+const FLOATING_MIN: Size = { width: 240, height: 160 };
 
 const RELAY_SLICES = { log: 'log', logAppend: 'log+', frames: 'frames', prefs: 'prefs', settings: 'settings' } as const;
 const REVIEW_OPTIONS_SLICE = 'review-options';
 
 export {
-  DRAG_SLOP_PX, NO_IDS, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, REVIEW_OPTIONS_SLICE, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
+  DRAG_SLOP_PX, FLOATING_MIN, NO_IDS, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, REVIEW_OPTIONS_SLICE, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
   WIDGET_QUERY_KEY,
 };

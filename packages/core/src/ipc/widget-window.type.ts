@@ -59,6 +59,7 @@ interface WindowGuideState {
   open: boolean;
   mode: WindowGuideMode;
   snapping: boolean;
+  pointer?: WidgetWindowPoint | null;
 }
 
 interface WidgetWindowInfo {
@@ -89,7 +90,8 @@ type WidgetProbeRequest =
   | { kind: 'resize'; id: string; bounds: WidgetWindowBounds }
   | { kind: 'cluster'; id: string; action: WindowClusterAction; area?: WidgetWindowBounds }
   | { kind: 'modifier'; ctrl: boolean }
-  | { kind: 'guide'; id: string; mode: WindowGuideMode | null };
+  | { kind: 'mouse'; id: string; action: 'down' | 'move' | 'up'; point: WidgetWindowPoint }
+  | { kind: 'guide'; id: string; mode: WindowGuideMode | null; pointer?: WidgetWindowPoint };
 
 interface WidgetProbeFacts {
   visible: boolean;
@@ -102,6 +104,7 @@ interface WidgetProbeFacts {
   guide: WindowGuideState;
   guideIn: string | null;
   guideDrawn: string[];
+  guideBeside: string[];
   area: WidgetWindowBounds | null;
   windows: Record<string, WidgetWindowBounds>;
 }

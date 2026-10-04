@@ -7,6 +7,7 @@ import type { StepTour } from '../review.type';
 
 const pinTo = async (id: string, mode: WidgetPinMode): Promise<boolean> => {
   const api = requireHostApi();
+  if (!(await until(async () => (await api.getWidgetWindowState(id)) !== null))) return false;
   const answer = await api.setWidgetPin(id, mode);
   return answer === mode && until(async () => (await api.getWidgetWindowState(id))?.onTop === (mode === 'top'));
 };

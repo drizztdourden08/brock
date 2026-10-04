@@ -6,7 +6,9 @@ import { boundsOf } from './bounds-of';
 import { cursorInApp } from './cursor-in-app';
 import { dragBounds } from './drag-bounds';
 import { followGroup } from './follow-group';
-import { resizeBounds } from './resize-bounds';
+import { endResize } from './end-resize';
+import { onWillResize } from './on-will-resize';
+import { resizeSession } from './resize-session';
 import { settleWindow } from './settle-window';
 import { towHold } from './tow-hold';
 import { towLinked } from './tow-linked';
@@ -21,7 +23,7 @@ import type { WidgetWindowEntry } from './widget-windows.type';
 const followLive = (id: string, entry: WidgetWindowEntry): void => {
   if (entry.towed || entry.win.isDestroyed()) return;
   const now = boundsOf(entry.win);
-  if (!towHold.held()) towLinked(id, entry.last, now);
+  if (!towHold.held() && !resizeSession.active()) towLinked(id, entry.last, now);
   entry.last = now;
 };
 
@@ -41,13 +43,13 @@ const watchManipulation = (id: string, win: BrowserWindow): void => {
   });
   win.on('will-resize', (event, proposed, details) => {
     windowGuide.touch('resizing');
-    const wanted = resizeBounds(id, proposed, details.edge);
-    if (!wanted) return;
-    event.preventDefault();
-    win.setBounds(wanted);
+    onWillResize(id, win, { event, proposed, edge: details.edge });
   });
   win.on('moved', windowGuide.end);
-  win.on('resized', windowGuide.end);
+  win.on('resized', () => {
+    endResize(id);
+    windowGuide.end();
+  });
 };
 
 const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowEntry): void => {
@@ -62,6 +64,7 @@ const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowE
   win.on('show', raise);
   win.on('close', () => entry.report.flush());
   win.on('closed', () => {
+    endResize(id);
     entry.report.cancel();
     widgetWindowControl.unregister(id, win);
     tellClosed(id, entry);

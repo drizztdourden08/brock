@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-secrets
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [e0ea131]
+  - @drizztdourden08/brock-react@0.7.1
+  - @drizztdourden08/brock-core@0.7.1
+  - @drizztdourden08/brock-electron@0.7.1
+
 ## 0.7.0
 
 ### Patch Changes

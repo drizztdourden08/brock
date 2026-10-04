@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.7.1
+
+### Patch Changes
+
+- e0ea131: Brock takes Tessera 0.9.1: a Button leaving its loading state shows its label at once, so the About "Copy debug info" button is no longer blank in background windows and review captures.
+  - @drizztdourden08/brock-core@0.7.1
+
 ## 0.7.0
 
 ### Minor Changes

@@ -4,9 +4,9 @@ import type { ProductConfig, PrivilegedScheme } from '@drizztdourden08/brock-cor
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { FileStore, DataDomainDef } from '@drizztdourden08/brock-core/platform';
 import type { ProfileStore, ProfileStoreHooks } from '@drizztdourden08/brock-core/storage';
-import type { EventContract } from '@drizztdourden08/brock-core/augment';
+import type { AppServices, EventContract } from '@drizztdourden08/brock-core/augment';
 import type { BootTask } from '@drizztdourden08/brock-core/boot';
-import type { HandleFn, OnFn } from '../ipc/handle.type';
+import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
 import type { JobRegistry, StartJob } from '../jobs/job.type';
 import type { DataDomains } from '../storage/domain-files.type';
 
@@ -22,7 +22,7 @@ interface MainPaths {
   data: (...segments: string[]) => string;
 }
 
-type EmitToWindow = <K extends keyof EventContract>(channel: K, ...args: Parameters<EventContract[K]>) => void;
+type EmitToWindow = <K extends keyof EventContract>(channel: ChannelArg<K>, ...args: Parameters<EventContract[K]>) => void;
 
 interface MainContext {
   product: ProductConfig;
@@ -40,7 +40,10 @@ interface MainContext {
   on: OnFn;
   emit: EmitToWindow;
   log: (message: string, level?: MainLogLevel) => void;
+  readonly services: AppServices;
 }
+
+type ServicesFactory = (ctx: MainContext) => AppServices | Promise<AppServices>;
 
 interface MainModule {
   id: string;
@@ -75,6 +78,7 @@ interface SecurityOptions {
 interface BootstrapOptions {
   modules?: MainModule[];
   handlers?: HandlerGroup[];
+  services?: ServicesFactory;
   bootTasks?: BootTask<MainContext>[];
   automationFlags?: string[];
   dataDomains?: DataDomainDef[];
@@ -89,5 +93,5 @@ interface BootstrapOptions {
 
 export type {
   MainLogLevel, InstanceInfo, MainPaths, EmitToWindow, MainContext, MainModule, HandlerGroup,
-  BootstrapPaths, SecurityOptions, BootstrapOptions,
+  BootstrapPaths, SecurityOptions, BootstrapOptions, ServicesFactory,
 };

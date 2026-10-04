@@ -5,8 +5,11 @@ import type { TitleBarActionSource } from '../../../../modules/renderer-module.t
 import type { SearchAction } from '../../../../search/search.type';
 import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsStore } from '../../../../stores/settings-store.type';
+import type { LayoutPreset } from '../../../../widgets/layout-preset.type';
+import type { WidgetContextSource } from '../../../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
+import type { AppReview } from '../../../../review/app-review.type';
 import type { BrockAppLayout } from '../../BrockApp.type';
 
 interface AppShellProps<S extends object> {
@@ -18,8 +21,11 @@ interface AppShellProps<S extends object> {
   titleBarActions?: readonly TitleBarActionSource[];
   searchActions?: readonly SearchAction[];
   widgets?: readonly WidgetDef[];
+  widgetLayout?: LayoutPreset;
+  widgetContext?: WidgetContextSource;
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
+  review?: AppReview;
 }
 
 export type { AppShellProps };

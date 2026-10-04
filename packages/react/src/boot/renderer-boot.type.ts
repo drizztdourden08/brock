@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind types */
-import type { BootFailure, BootTask, BootTaskContext, BootTaskDef, Profile, ProductConfig } from '@drizztdourden08/brock-core';
+import type { BootFailure, BootTask, BootTaskContext, BootTaskDef, Platform, Profile, ProductConfig } from '@drizztdourden08/brock-core';
 
 interface RendererBootExtras {
   profile: Profile | null;
   product: ProductConfig;
+  platform: Platform;
+  openExternal: (url: string) => void;
 }
 
 type RendererBootContext = BootTaskContext<RendererBootExtras>;

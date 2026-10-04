@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
 import { useBrock } from '../app/useBrock';
+import { openExternal } from '../host/open-external';
+import { getPlatform } from '../platform/get-platform';
 import type { SettingsStore } from '../stores/settings-store.type';
 import { useProfilesStore } from '../stores/useProfilesStore';
 import type { RendererBootTask } from './renderer-boot.type';
@@ -16,7 +18,7 @@ const useRendererBoot = <S extends object>(settings: SettingsStore<S>, contribut
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    const extras = () => ({ product, profile: useProfilesStore.getState().active });
+    const extras = () => ({ product, profile: useProfilesStore.getState().active, platform: getPlatform(), openExternal });
     void runRendererBoot(rendererBootTasks(settings, contributed), extras);
   }, []);
 };

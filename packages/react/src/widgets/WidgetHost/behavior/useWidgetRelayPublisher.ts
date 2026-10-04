@@ -5,6 +5,7 @@ import type { SettingsStore } from '../../../stores/settings-store.type';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useWidgetPrefStore } from '../../../stores/useWidgetPrefStore';
 import { relayLog } from '../../relay-log';
+import { shareWithWidgets } from '../../share-with-widgets';
 import { RELAY_SLICES } from '../../widget.constants';
 import type { SettingsSlice } from '../../widget.type';
 import { useWidgetLayoutStore } from '../../useWidgetLayoutStore';
@@ -22,8 +23,6 @@ const relay = (settingsStore: SettingsStore<object> | null): (() => void) => {
   const log = relayLog(publish);
   const sendSettings = (): void => publish(RELAY_SLICES.settings, settingsOf(settingsStore));
   const snapshot = (): void => {
-    publish(RELAY_SLICES.frames, useWidgetLayoutStore.getState().layout.frame);
-    publish(RELAY_SLICES.prefs, useWidgetPrefStore.getState().byWidget);
     sendSettings();
     log.sendAll();
   };
@@ -31,12 +30,6 @@ const relay = (settingsStore: SettingsStore<object> | null): (() => void) => {
     log.stop,
     api.onWidgetSnapshotRequest(snapshot),
     api.onWidgetSettingsPatch((patch) => settingsStore?.getState().patch(patch)),
-    useWidgetLayoutStore.subscribe((state, prev) => {
-      if (state.layout.frame !== prev.layout.frame) publish(RELAY_SLICES.frames, state.layout.frame);
-    }),
-    useWidgetPrefStore.subscribe((state, prev) => {
-      if (state.byWidget !== prev.byWidget) publish(RELAY_SLICES.prefs, state.byWidget);
-    }),
     useProfilesStore.subscribe((state, prev) => {
       if (state.active !== prev.active) sendSettings();
     }),
@@ -50,8 +43,19 @@ const relay = (settingsStore: SettingsStore<object> | null): (() => void) => {
   };
 };
 
+const shareLayoutAndPrefs = (): (() => void) => {
+  const offs = [
+    shareWithWidgets(useWidgetLayoutStore, { kind: RELAY_SLICES.frames, pick: (state) => state.layout.frame, delay: 0 }),
+    shareWithWidgets(useWidgetPrefStore, { kind: RELAY_SLICES.prefs, pick: (state) => state.byWidget, delay: 0 }),
+  ];
+  return () => {
+    for (const off of offs) off();
+  };
+};
+
 const useWidgetRelayPublisher = (settingsStore: SettingsStore<object> | null): void => {
   const active = useWidgetLayoutStore((s) => s.layout.popped.length > 0);
+  useEffect(shareLayoutAndPrefs, []);
   useEffect(() => (active ? relay(settingsStore) : undefined), [active, settingsStore]);
 };
 

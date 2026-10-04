@@ -29,6 +29,7 @@ const GENERATED = [
   '**/public/logos/icon-bot.svg',
   '**/public/logos/icon-bot.ico',
   '**/public/logos/icon-bot-256.png',
+  '**/public/logos/mark.svg',
 ];
 
 const SINGLE_DOT_FOLDER = /^(?:\/|\*\*\/)?(?:[^!#\s]\S*\/)?\.[^/\s*?[\]!]+\/(?:\*\*)?$/;

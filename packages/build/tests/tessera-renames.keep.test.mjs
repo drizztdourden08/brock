@@ -119,11 +119,27 @@ describe('brock migrate --tessera-from', () => {
   it('replays the renames alone and numbers their to-dos in the report', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     const root = app();
-    expect(await runMigrate({ rootDir: root, tesseraFrom: '0.3.0', report: 'out/run.json' })).toBe(0);
+    expect(await runMigrate({ rootDir: root, tesseraFrom: '0.3.0', report: join(root, 'out/run.json') })).toBe(0);
     const report = JSON.parse(read(root, 'out/run.json'));
     expect(report.applied).toEqual([expect.objectContaining({ id: 'tessera-renames', version: '0.4.0', source: '@drizztdourden08/tessera' })]);
     expect(report.todos).toEqual([expect.objectContaining({ number: 1, migration: 'tessera-renames', file: 'src/view.css', line: 2 })]);
     expect(report.tessera).toMatchObject({ pinned: '0.4.0', range: { from: '0.3.0', to: '0.4.0', next: false } });
+  });
+
+  it('writes --report relative to the current directory, not --root, and prints the path', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const root = app();
+    const cwd = app();
+    const before = process.cwd();
+    try {
+      process.chdir(cwd);
+      expect(await runMigrate({ rootDir: root, tesseraFrom: '0.3.0', report: 'out/run.json' })).toBe(0);
+    } finally {
+      process.chdir(before);
+    }
+    expect(() => read(cwd, 'out/run.json')).not.toThrow();
+    expect(() => read(root, 'out/run.json')).toThrow();
+    expect(log).toHaveBeenCalledWith(expect.stringContaining(join(cwd, 'out', 'run.json')));
   });
 
   it('asks for --from or --tessera-from', async () => {

@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { addGeneratedProp, findJsxProps, patternTodos } from '../../src/upgrade/index.mjs';
+import { withBrockAppProp } from '../../src/upgrade/codemods/brock-app-prop.mjs';
+import { findJsxProps, patternTodos } from '../../src/upgrade/index.mjs';
 
 const CONVENTION = 'Widgets now live in src/widgets/<id>.widget.tsx: the default export is the component, `meta` holds label, icon, popOut, devOnly, defaultVisibility (\'context-only\'), defaultSide and the default sizes. brock sync lists them in .brock/widgets.ts, which src/main.tsx hands to BrockApp as widgets.';
 
@@ -30,7 +31,7 @@ const appPropTodos = (source) => findJsxProps(source, 'BrockApp', ['widgets'])
   .filter((prop) => source.slice(prop.start, prop.end).replace(/\s/g, '') !== `widgets={${GENERATED}}`)
   .map((prop) => ({ line: prop.line, message: `${CONVENTION} These widgets are passed by hand: move each one to src/widgets, then pass widgets={appWidgets} from '../.brock/widgets'.` }));
 
-const withWidgetsProp = (source) => addGeneratedProp(source, { prop: 'widgets', name: GENERATED, file: 'widgets' });
+const withWidgetsProp = (source) => withBrockAppProp(source, { prop: 'widgets', name: GENERATED, from: '../.brock/widgets' });
 
 const apply = ({ path, source }) => {
   if (WIDGET_FILE.test(path)) return { source, todos: [] };

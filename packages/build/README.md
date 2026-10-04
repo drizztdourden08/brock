@@ -41,7 +41,8 @@ brock structure [--check] [--scope @x]
 brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--report <file>]
                            run the Brock migrations after --from, up to --to, over the files the app owns,
                            then replay Tessera's RENAMES.json and pin brock.tessera;
-                           --tessera-from alone replays only the Tessera renames
+                           --tessera-from alone replays only the Tessera renames;
+                           --report <file> (relative to the current directory) writes the run as JSON
 brock platform list | add <id | bundle>... | remove <id | bundle>...
                            the targets in brock.config.ts; add runs the platform steps and the doctor,
                            add and remove rewrite targets and both workflows
@@ -203,7 +204,8 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
   `.worktrees`).
 - A change the codemod cannot make safely is a to-do, never a guess. The runner
   records every file each migration touched; `--report` writes that and the to-dos as
-  JSON for the upgrade verb.
+  JSON for the upgrade verb. Its path is relative to the current directory, never to
+  `--root`, and the command prints where it wrote it.
 - `src/upgrade/codemods/` holds the helpers: `findJsxProps` reads a JSX element's
   props, with type arguments and nested braces, `removeSpans` deletes them and the
   lines they leave empty, and `patternTodos` turns each match of a list of rules into a

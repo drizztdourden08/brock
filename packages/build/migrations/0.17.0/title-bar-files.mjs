@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { addGeneratedProp, patternTodos } from '../../src/upgrade/index.mjs';
+import { withBrockAppProp } from '../../src/upgrade/codemods/brock-app-prop.mjs';
+import { patternTodos } from '../../src/upgrade/index.mjs';
 
 const MAIN = /(^|\/)src\/main\.tsx$/;
 
@@ -11,7 +12,7 @@ const RULES = [
 ];
 
 const apply = ({ path, source }) => {
-  const next = MAIN.test(path) ? addGeneratedProp(source, { prop: 'titleBar', name: 'appTitleBar', file: 'title-bar' }) : source;
+  const next = MAIN.test(path) ? withBrockAppProp(source, { prop: 'titleBar', name: 'appTitleBar', from: '../.brock/title-bar' }) : source;
   return { source: next, todos: patternTodos(next, RULES) };
 };
 

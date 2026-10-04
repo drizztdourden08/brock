@@ -19,9 +19,13 @@ import { widgetWindowsStep } from './steps/widget-windows-step';
 import { widgetsStep } from './steps/widgets-step';
 import type { ReviewStep } from './review.type';
 
-const REVIEW_STEPS: readonly ReviewStep[] = [
-  bootStep, profileStep, menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, widgetWindowsStep,
+const STEPS_BEFORE_SEED: readonly ReviewStep[] = [bootStep, profileStep];
+
+const STEPS_AFTER_SEED: readonly ReviewStep[] = [
+  menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, widgetWindowsStep,
   fontsStep, stylesStep,
 ];
 
-export { REVIEW_STEPS };
+const BUILT_IN_STEP_NAMES: ReadonlySet<string> = new Set([...STEPS_BEFORE_SEED, ...STEPS_AFTER_SEED].map((step) => step.name));
+
+export { BUILT_IN_STEP_NAMES, STEPS_AFTER_SEED, STEPS_BEFORE_SEED };

@@ -1,10 +1,12 @@
 /* @layer renderer-app @kind constants */
-import type { EventContract, InvokeContract, SendContract } from './contract.type';
+import { defineChannels } from '@drizztdourden08/brock-core';
 
-const APP_INVOKE_MAP = {} as const satisfies Record<string, keyof InvokeContract>;
+const APP_CHANNELS = defineChannels({});
 
-const APP_SEND_MAP = {} as const satisfies Record<string, keyof SendContract>;
+const APP_INVOKE_MAP = APP_CHANNELS.maps.invoke;
 
-const APP_EVENT_MAP = {} as const satisfies Record<string, keyof EventContract>;
+const APP_SEND_MAP = APP_CHANNELS.maps.send;
 
-export { APP_INVOKE_MAP, APP_SEND_MAP, APP_EVENT_MAP };
+const APP_EVENT_MAP = APP_CHANNELS.maps.events;
+
+export { APP_CHANNELS, APP_INVOKE_MAP, APP_SEND_MAP, APP_EVENT_MAP };

@@ -1,7 +1,7 @@
 /* @layer electron-main @kind barrel */
 export { bootstrapApp } from './bootstrap/bootstrap-app';
 export type {
-  MainContext, MainModule, HandlerGroup, BootstrapOptions, BootstrapPaths, SecurityOptions,
+  MainContext, MainModule, HandlerGroup, BootstrapOptions, BootstrapPaths, SecurityOptions, ServicesFactory,
   InstanceInfo, MainPaths, MainLogLevel, EmitToWindow,
 } from './types/main-context.type';
 

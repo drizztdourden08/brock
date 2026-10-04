@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import { app, BrowserWindow } from 'electron';
 import type { LifecycleInput } from './app-lifecycle.type';
+import { disposeServices } from '../services/dispose-services';
 
 const installAppLifecycle = ({ ctx, modules, onWillQuit, recreateWindow }: LifecycleInput): void => {
   app.on('activate', () => {
@@ -10,6 +11,7 @@ const installAppLifecycle = ({ ctx, modules, onWillQuit, recreateWindow }: Lifec
   app.on('will-quit', () => {
     for (const module of modules) module.onWillQuit?.(ctx);
     onWillQuit?.(ctx);
+    disposeServices(ctx);
   });
 
   app.on('window-all-closed', () => {

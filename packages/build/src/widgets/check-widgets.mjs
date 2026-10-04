@@ -27,8 +27,9 @@ const fileFindings = (file) => [
  * @returns {string[]} what brock structure reports about src/widgets
  */
 const checkWidgets = (rootDir) => {
-  const { files, findings } = scanWidgets(rootDir);
-  return [...findings, ...files.flatMap(fileFindings)];
+  const { files, layout, findings } = scanWidgets(rootDir);
+  const layoutFindings = layout && !layout.hasDefault ? [`${layout.path}: no default export; the layout file default-exports defineLayoutPreset({ rows })`] : [];
+  return [...findings, ...layoutFindings, ...files.flatMap(fileFindings)];
 };
 
 export { checkWidgets };

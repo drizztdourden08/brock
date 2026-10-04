@@ -8,13 +8,14 @@ import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
 import { SettingsStoreContext } from '../../stores/settings-context';
 import { BrockContext } from '../brock-context';
-import type { BrockContextValue, SettingsControlsValue } from '../brock-context.type';
+import type { BrockContextValue } from '../brock-context.type';
 import { useAppScreens } from './behavior/useAppScreens';
 import { useBrandPalette } from './behavior/useBrandPalette';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { useQuitGuards } from './behavior/useQuitGuards';
 import { useTitleBarSources } from './behavior/useTitleBarSources';
+import { useSettingsControls } from './behavior/useSettingsControls';
 import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
@@ -26,7 +27,10 @@ import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit, titleBar = NO_TITLE_BAR_ITEMS } = props;
+  const {
+    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, home = NO_BACKGROUND, layout = 'menu',
+    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS,
+  } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
@@ -42,15 +46,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const builtInTabs = useMemo(() => [...appTabs, ...merged.settingsTabs] as TabDef<object>[], [appTabs, merged.settingsTabs]);
   const { registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
 
-  const settingsControls = useMemo<SettingsControlsValue>(
-    () => ({
-      renderControl: settings.renderControl as SettingsControlsValue['renderControl'],
-      isDisabled: settings.isDisabled as SettingsControlsValue['isDisabled'],
-      lockCauseOf: settings.lockCauseOf as SettingsControlsValue['lockCauseOf'],
-      lockOverlay: settings.lockOverlay,
-    }),
-    [settings.renderControl, settings.isDisabled, settings.lockCauseOf, settings.lockOverlay],
-  );
+  const settingsControls = useSettingsControls(settings);
 
   const context = useMemo<BrockContextValue>(
     () => ({
@@ -77,8 +73,11 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
                     widgets={allWidgets}
+                    widgetLayout={widgetLayout}
+                    widgetContext={widgetContext}
                     layout={layout}
                     screenGroups={screenGroups}
+                    review={review}
                   />
                 )}
               </ModuleProviders>

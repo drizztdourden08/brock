@@ -7,6 +7,7 @@ import { checkScreens } from './src/screens/check-screens.mjs';
 import { scanScreens } from './src/screens/scan-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from './src/screens/screen-conventions.constants.mjs';
 import { customPageCounts } from './src/screens/search/custom-page-counts.mjs';
+import { nodeBarrelNotes } from './src/renderer-imports/node-barrel-notes.mjs';
 import { checkWidgets } from './src/widgets/check-widgets.mjs';
 import { WIDGETS_DIR } from './src/widgets/widget-conventions.constants.mjs';
 import { checkTitleBar } from './src/title-bar/check-title-bar.mjs';
@@ -41,16 +42,19 @@ const brockAppChecks = async ({ rootDir, packageDir, label, kind }) => {
   const titleBar = hasTitleBar(packageDir) ? checkTitleBar(packageDir).map((finding) => `${prefix}${finding}`) : [];
   return {
     findings: [...(kind === 'app' ? checkInstallerFolder(rootDir, packageDir) : []), ...screens, ...widgets, ...titleBar],
-    notes: customPageNote(packageDir, label),
+    notes: [...customPageNote(packageDir, label), ...(isApp(packageDir) ? nodeBarrelNotes(packageDir, prefix) : [])],
   };
 };
 
 export default defineExtension({
   id: 'brock-app',
-  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files and <id>.action.ts title bar items',
+  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files, <id>.step.ts review steps and <id>.action.ts title bar items',
   structure: {
     appMarkers: [APP_MARKER],
-    moduleFiles: [{ pattern: /^[a-z][a-z0-9-]*\.task\.ts$/, label: '<id>.task.ts' }, { pattern: /^[a-z][a-z0-9-]*\.widget\.tsx$/, label: '<id>.widget.tsx' },
+    moduleFiles: [
+      { pattern: /^[a-z][a-z0-9-]*\.task\.ts$/, label: '<id>.task.ts' },
+      { pattern: /^[a-z][a-z0-9-]*\.widget\.tsx$/, label: '<id>.widget.tsx' },
+      { pattern: /^[a-z][a-z0-9-]*\.step\.ts$/, label: '<id>.step.ts' },
       { pattern: /^[a-z][a-z0-9-]*\.action\.ts$/, label: '<id>.action.ts' },
     ],
     ownedDirs: conventionOwned,

@@ -103,6 +103,8 @@ interface EventContract extends WidgetEventContract, DataEventContract {
 
 interface IpcNamespaces {}
 
+interface AppServices {}
+
 interface Capabilities {
   windowChrome: boolean;
   selfUpdate: boolean;
@@ -123,5 +125,5 @@ export type {
   BaseProfile, ProfileExtension, ProfileCreateExtension, ProfilePatchExtension,
   Profile, CreateProfileOptions, ProfilePatch,
   InvokeContract, SendContract, EventContract, IpcNamespaces,
-  Capabilities, PlatformPorts,
+  Capabilities, PlatformPorts, AppServices,
 };

@@ -7,7 +7,7 @@ import { THREAD } from './workspace-config.mjs';
 const KNIP_BASE = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@drizztdourden08/standards/knip/base.json'), 'utf8'));
 
 const APP_WORKSPACE = {
-  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/screens/**/*.custom.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', '.markdownlint-cli2.mjs', 'brock.config.ts', 'brock.workspace.mjs'],
+  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/ipc/contract.type.ts', 'src/screens/**/*.custom.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', '.markdownlint-cli2.mjs', 'brock.config.ts', 'brock.workspace.mjs'],
   project: ['src/**/*.{ts,tsx}', 'electron/**/*.ts', '.brock/*.ts'],
   ignoreDependencies: ['@electron-toolkit/utils', 'zustand'],
 };

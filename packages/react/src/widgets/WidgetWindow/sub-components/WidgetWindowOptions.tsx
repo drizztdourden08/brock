@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-core';
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
+import { WidgetIdContext } from '../../widget-id-context';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
 
 const noop = (): void => undefined;
@@ -45,7 +46,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onReset={reset}
       onClose={onClose}
     >
-      {definition?.settings?.()}
+      <WidgetIdContext.Provider value={id}>{definition?.settings?.()}</WidgetIdContext.Provider>
     </WidgetOptions>
   );
 };

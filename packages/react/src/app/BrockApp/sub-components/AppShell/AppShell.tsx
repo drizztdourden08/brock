@@ -5,6 +5,9 @@ import { instanceName } from '../../../../host/instance-name';
 import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
 import { useCapability } from '../../../../platform/useCapability';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
+import { useTitleBarActions } from '../../../../shell/TitleBar/behavior/useTitleBarActions';
+import { withoutActionEntries } from '../../../../shell/TitleBar/behavior/without-action-entries';
+import { NO_ACTION_SOURCES } from '../../../../shell/TitleBar/TitleBar.constants';
 import { useScreenRegistry } from '../../../../screens/useScreenRegistry';
 import { ConfirmDialog } from '../../../../shell/ConfirmDialog/ConfirmDialog';
 import { useBrock } from '../../../useBrock';
@@ -25,7 +28,7 @@ import { AppTitleBar } from '../AppTitleBar';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarSlots, searchActions, widgets, layout = 'menu', screenGroups } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, layout = 'menu', screenGroups } = props;
   const { product, home, logoSrc, instanceLogoSrc } = useBrock();
   const windowChrome = useCapability('windowChrome');
   const registry = useScreenRegistry();
@@ -41,8 +44,11 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useIpcLogBridge(log);
 
   const fullMenu = useShellMenu(moduleMenu, railed);
+  const actions = useTitleBarActions(titleBarActions);
+  const actionIds = JSON.stringify(actions.map((action) => action.id));
+  const barMenu = useMemo(() => withoutActionEntries(fullMenu, JSON.parse(actionIds) as string[]), [fullMenu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
-  useReviewTour({ ready, menu: fullMenu, slots: titleBarSlots, moduleIds });
+  useReviewTour({ ready, menu: barMenu, actions, moduleIds });
 
   const screens = useMemo(() => registry.list(), [registry]);
   const stage = <WidgetHost widgets={widgets} mainLabel={product.widgets.mainLabel} main={<ScreenHost home={home} className="brock-app__screens" />} />;
@@ -52,12 +58,12 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
       {windowChrome && (
         <AppTitleBar
           title={product.window.title ?? product.name}
-          menu={fullMenu}
+          menu={barMenu}
           controls={product.window.titleBar.controls}
           instanceName={instanceName()}
           logoSrc={logoSrc}
           instanceLogoSrc={instanceLogoSrc}
-          slots={titleBarSlots}
+          actions={actions}
           hidden={titleBarHidden}
         />
       )}

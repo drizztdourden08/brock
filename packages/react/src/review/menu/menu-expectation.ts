@@ -1,18 +1,20 @@
 /* @layer renderer-shell @kind logic */
+import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { MenuEntry } from '../../menu/menu.type';
-import { MENU_SECTIONS } from '../../menu/menu.constants';
-import { ADVANCED_SECTION, BUILT_IN_ENTRIES } from '../review.constants';
-import type { MenuExpectation } from '../review.type';
+import { BUILT_IN_ENTRIES, SECTION_KEY_PREFIX } from '../review.constants';
+import type { MenuExpectation, TitleBarExpectation } from '../review.type';
 import { isMenuItem } from './is-menu-item';
 
-const menuExpectation = (menu: readonly MenuEntry[], homeScreen: string): MenuExpectation => {
+const menuExpectation = (menu: readonly MenuEntry[], homeScreen: string, titleBar: TitleBarExpectation = {}): MenuExpectation => {
+  const { actions = [], controls } = titleBar;
   const top = menu.filter(isMenuItem);
   const required = BUILT_IN_ENTRIES
     .filter((entry) => entry.screen === undefined || entry.screen !== homeScreen)
     .map((entry) => (top.find((item) => item.key === entry.key)
       ?? top.find((item) => entry.screen !== undefined && item.screen === entry.screen))?.label ?? entry.label);
-  const advanced = MENU_SECTIONS.find((section) => section.id === ADVANCED_SECTION)?.label ?? ADVANCED_SECTION;
-  return { required, sections: [advanced] };
+  const sections = top.filter((item) => item.key.startsWith(SECTION_KEY_PREFIX)).map((item) => item.label);
+  const view = controls && (controls.pin || controls.fullscreen) ? TESSERA_STRINGS.windows.view : null;
+  return { required, sections, actions: actions.map((action) => action.label), view };
 };
 
 export { menuExpectation };

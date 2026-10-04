@@ -9,6 +9,7 @@ import { menuChecks } from '../src/review/checks/menu-checks';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
 import { menuPathTo } from '../src/review/menu/menu-path-to';
 import { updaterChecks } from '../src/review/checks/updater-checks';
+import { viewMenuChecks } from '../src/review/checks/view-menu-checks';
 import type { BootSnapshot, MenuItemSnapshot, ReviewOutcome } from '../src/review/review.type';
 
 const failed = (outcomes: readonly ReviewOutcome[]): string[] => outcomes.filter((o) => !o.pass).map((o) => o.id);
@@ -22,8 +23,8 @@ const BOOT: BootSnapshot = {
   logoLoaded: true,
   searchButton: true,
   bugReportButton: true,
-  slotsRendered: [true, true],
-  expectedSlots: 2,
+  barItems: ['control:pin', 'action:search', 'action:report-bug', 'control:fullscreen'],
+  expectedBarItems: ['action:search', 'action:report-bug'],
 };
 
 const MENU: MenuEntry[] = [
@@ -41,19 +42,31 @@ describe('bootChecks', () => {
   });
 
   it('names what is wrong', () => {
-    const outcomes = bootChecks({ ...BOOT, title: 'Other', logoLoaded: false, slotsRendered: [true, false] });
-    expect(failed(outcomes)).toEqual(['title-text', 'title-bar-logo', 'title-bar-slots']);
-    expect(reasonOf(outcomes, 'title-bar-slots')).toBe('title bar slot 2 rendered nothing');
+    const outcomes = bootChecks({ ...BOOT, title: 'Other', logoLoaded: false, bugReportButton: false, barItems: ['action:search'] });
+    expect(failed(outcomes)).toEqual(['title-text', 'title-bar-logo', 'bug-report-button', 'title-bar-actions']);
+    expect(reasonOf(outcomes, 'title-bar-actions')).toBe('no bar item for the title bar action action:report-bug');
   });
 
-  it('fails a missing slot', () => {
-    expect(reasonOf(bootChecks({ ...BOOT, slotsRendered: [true] }), 'title-bar-slots')).toBe('1 of 2 title bar slots mounted');
+  it('expects only the actions the bar draws', () => {
+    expect(failed(bootChecks({ ...BOOT, expectedBarItems: [] }))).toEqual([]);
   });
 });
 
 describe('menuExpectation', () => {
   it('drops Settings when it is the home screen and takes labels from the built menu', () => {
-    expect(menuExpectation(MENU, 'settings')).toEqual({ required: ['Home', 'Profiles', 'About', 'Quit'], sections: ['Advanced'] });
+    expect(menuExpectation(MENU, 'settings')).toEqual({ required: ['Home', 'Profiles', 'About', 'Quit'], sections: ['Advanced'], actions: [], view: null });
+  });
+
+  it('expects the sections the menu holds, every title bar action and the View sub-menu', () => {
+    const actions = [
+      { id: 'search', label: 'Search', icon: 'search', onSelect: () => undefined },
+      { id: 'updater:check', label: 'Check for updates', icon: 'refresh-cw', bar: 'status', onSelect: () => undefined },
+    ] as const;
+    const plain = MENU.filter((entry) => entry === 'separator' || !entry.children);
+    expect(menuExpectation(plain, 'settings', { actions, controls: { pin: true, fullscreen: false } })).toMatchObject({
+      sections: [], actions: ['Search', 'Check for updates'], view: 'View',
+    });
+    expect(menuExpectation(plain, 'settings', { controls: { pin: false, fullscreen: false } }).view).toBeNull();
   });
 
   it('asks for Settings when home is elsewhere', () => {
@@ -63,10 +76,11 @@ describe('menuExpectation', () => {
 });
 
 describe('menuChecks', () => {
-  const expected = { required: ['Home', 'Quit'], sections: ['Advanced'] };
+  const expected = { required: ['Home', 'Quit'], sections: ['Advanced'], actions: ['Report a bug'], view: 'View' };
 
   it('passes a full menu', () => {
-    expect(failed(menuChecks({ open: true, items: [item('Home'), item('Advanced', true, true), item('Quit')] }, expected))).toEqual([]);
+    const items = [item('Home'), item('Advanced', true, true), item('Quit'), item('View', true, true), item('Report a bug')];
+    expect(failed(menuChecks({ open: true, items }, expected))).toEqual([]);
   });
 
   it('reports a closed menu once', () => {
@@ -75,7 +89,7 @@ describe('menuChecks', () => {
 
   it('catches missing entries, sections and icons', () => {
     const outcomes = menuChecks({ open: true, items: [item('Home', false)] }, expected);
-    expect(failed(outcomes)).toEqual(['menu-entries', 'menu-sections', 'menu-icons']);
+    expect(failed(outcomes)).toEqual(['menu-entries', 'menu-sections', 'menu-actions', 'menu-view', 'menu-icons']);
     expect(reasonOf(outcomes, 'menu-icons')).toBe('no icon on Home');
   });
 });
@@ -119,12 +133,23 @@ describe('iconSlotChecks', () => {
   });
 });
 
-describe('updaterChecks', () => {
-  it('passes a title bar with no version tag and no badge before any check', () => {
-    expect(failed(updaterChecks({ versionShown: false, badgeShown: false }))).toEqual([]);
+describe('viewMenuChecks', () => {
+  it('passes a View sub-menu with the pin and full screen', () => {
+    expect(failed(viewMenuChecks({ open: true, labels: ['Pin window on top', 'Fullscreen'] }, ['Pin window on top', 'Fullscreen']))).toEqual([]);
   });
 
-  it('fails a permanent version tag and a badge nobody found an update for', () => {
-    expect(failed(updaterChecks({ versionShown: true, badgeShown: true }))).toEqual(['no-version-tag', 'no-update-badge']);
+  it('names a missing item and a sub-menu that did not open', () => {
+    expect(reasonOf(viewMenuChecks({ open: true, labels: ['Fullscreen'] }, ['Pin window on top', 'Fullscreen']), 'menu-view-items')).toBe('the View sub-menu lacks Pin window on top');
+    expect(failed(viewMenuChecks({ open: false, labels: [] }, ['Fullscreen']))).toEqual(['menu-view-opens']);
+  });
+});
+
+describe('updaterChecks', () => {
+  it('passes a title bar with no version tag and no update status before any check', () => {
+    expect(failed(updaterChecks({ versionShown: false, statusShown: false }))).toEqual([]);
+  });
+
+  it('fails a permanent version tag and an update status nobody found an update for', () => {
+    expect(failed(updaterChecks({ versionShown: true, statusShown: true }))).toEqual(['no-version-tag', 'no-update-status']);
   });
 });

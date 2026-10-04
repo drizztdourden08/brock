@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { TitleBarControls } from '@drizztdourden08/brock-core';
+import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../../../../menu/menu.type';
-import type { TitleBarSlot } from '../../../../modules/renderer-module.type';
 
 interface AppTitleBarProps {
   title: string;
@@ -10,7 +10,7 @@ interface AppTitleBarProps {
   instanceName: string | null;
   logoSrc?: string;
   instanceLogoSrc?: string;
-  slots?: readonly TitleBarSlot[];
+  actions?: readonly WindowTitleBarAction[];
   hidden: boolean;
 }
 

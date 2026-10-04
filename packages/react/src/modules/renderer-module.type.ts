@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
+import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../menu/menu.type';
 import type { SearchAction } from '../search/search.type';
 import type { ModulePorts } from '../platform/platform.type';
@@ -8,7 +9,9 @@ import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
 
-type TitleBarSlot = ComponentType & { conditional?: boolean };
+type TitleBarActionHook = () => WindowTitleBarAction | null;
+
+type TitleBarActionSource = WindowTitleBarAction | TitleBarActionHook;
 
 interface RendererModule {
   id: string;
@@ -16,7 +19,7 @@ interface RendererModule {
   settingsTabs?: TabDef<object>[];
   menu?: MenuEntry[];
   Provider?: ComponentType<{ children: ReactNode }>;
-  titleBar?: TitleBarSlot[];
+  titleBarActions?: TitleBarActionSource[];
   searchActions?: SearchAction[];
   widgets?: WidgetDef[];
   ports?: ModulePorts;
@@ -30,7 +33,7 @@ interface MergedModules {
   settingsTabs: TabDef<object>[];
   menu: MenuEntry[];
   providers: ComponentType<{ children: ReactNode }>[];
-  titleBar: TitleBarSlot[];
+  titleBarActions: TitleBarActionSource[];
   searchActions: SearchAction[];
   widgets: WidgetDef[];
   ports: ModulePorts;
@@ -38,4 +41,4 @@ interface MergedModules {
   bootTasks: RendererBootTask[];
 }
 
-export type { MergedModules, RendererModule, TitleBarSlot };
+export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };

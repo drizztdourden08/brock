@@ -19,7 +19,7 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   settingsTabs: modules.flatMap((m) => m.settingsTabs ?? []),
   menu: modules.flatMap((m) => m.menu ?? []),
   providers: modules.flatMap((m) => (m.Provider ? [m.Provider] : [])),
-  titleBar: modules.flatMap((m) => m.titleBar ?? []),
+  titleBarActions: modules.flatMap((m) => m.titleBarActions ?? []),
   searchActions: modules.flatMap((m) => m.searchActions ?? []),
   widgets: modules.flatMap((m) => m.widgets ?? []),
   ports: mergePorts(modules.flatMap((m) => (m.ports ? [m.ports] : []))),

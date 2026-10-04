@@ -7,14 +7,15 @@ const SETTLE_MS = 300;
 const WAIT_MS = 3000;
 const POLL_MS = 50;
 const REVIEW_PROFILE_NAME = 'Review';
-const ADVANCED_SECTION = 'advanced';
+const SECTION_KEY_PREFIX = 'section:';
 const ABOUT_SCREEN = ABOUT_ENTRY.screen ?? 'about';
 const VERSION_LABEL = 'Version';
 const PROFILES_SCREEN = 'profiles';
 const LOGS_WIDGET_KEY = `widget-${LOGS_WIDGET_ID}`;
 const UPDATER_MODULE_ID = 'updater';
 const UPDATE_MENU_LABEL = 'Check for updates';
-const CONDITIONAL_SLOT_CLASS = 'titlebar__slot--conditional';
+const BAR_ITEM_ATTRIBUTE = 'data-bar-item';
+const BAR_ITEM_PREFIX = 'action:';
 const BOOT_OVERLAYS = ['#boot-splash', '.boot-bar', 'html.booting', '[data-boot-overlay]'] as const;
 const SEARCH_TOP = 5;
 const SEARCH_SETTINGS_PAGES = 4;
@@ -38,13 +39,13 @@ const SELECTORS = {
   titleBar: '.window-title-bar',
   title: '.window-title-bar__title',
   logo: '.window-title-bar__logo',
-  slot: '.titlebar__slot',
+  barItem: '.window-title-bar [data-bar-item]',
   versionTag: '.window-title-bar .version-tag',
-  updateBadge: '.window-title-bar .titlebar__update-badge',
+  updateStatus: '.window-title-bar [data-bar-item="action:updater:check"]',
   updateDialog: '.dialog.update-dialog',
   menuButton: '.window-title-bar__start .dropdown-trigger',
-  searchButton: '.window-title-bar .search-button',
-  bugReportButton: '.window-title-bar .bug-report-button',
+  searchButton: '.window-title-bar [data-bar-item="action:search"]',
+  bugReportButton: '.window-title-bar [data-bar-item="action:report-bug"]',
   menu: '.dropdown-drop [role="menu"]',
   subMenu: '.dropdown-menu--sub [role="menu"]',
   menuItem: [
@@ -95,6 +96,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, ADVANCED_SECTION, BOOT_OVERLAYS, BUILT_IN_ENTRIES, CONDITIONAL_SLOT_CLASS, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME,
+  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
   HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

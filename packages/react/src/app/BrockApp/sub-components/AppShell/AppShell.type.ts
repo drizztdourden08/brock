@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { AppLogBus } from '../../../../log/app-log.type';
 import type { MenuEntry } from '../../../../menu/menu.type';
-import type { TitleBarSlot } from '../../../../modules/renderer-module.type';
+import type { TitleBarActionSource } from '../../../../modules/renderer-module.type';
 import type { SearchAction } from '../../../../search/search.type';
 import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsStore } from '../../../../stores/settings-store.type';
@@ -15,7 +15,7 @@ interface AppShellProps<S extends object> {
   log: AppLogBus;
   moduleIds?: readonly string[];
   moduleMenu: readonly MenuEntry[];
-  titleBarSlots?: readonly TitleBarSlot[];
+  titleBarActions?: readonly TitleBarActionSource[];
   searchActions?: readonly SearchAction[];
   widgets?: readonly WidgetDef[];
   layout?: BrockAppLayout;

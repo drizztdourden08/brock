@@ -14,7 +14,4 @@ const UpdateBadge = () => {
   );
 };
 
-UpdateBadge.displayName = 'UpdateBadge';
-UpdateBadge.conditional = true;
-
 export { UpdateBadge };

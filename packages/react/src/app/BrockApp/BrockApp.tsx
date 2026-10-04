@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
-import { STANDARD_TITLE_BAR_SLOTS } from '../../overlays/standard-title-bar-slots.constants';
+import { STANDARD_TITLE_BAR_ACTIONS } from '../../overlays/standard-title-bar-actions.constants';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
@@ -27,7 +27,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   const log = useHostBoot(merged.logChannels, profileHooks);
-  const titleBarSlots = useMemo(() => [...STANDARD_TITLE_BAR_SLOTS, ...merged.titleBar], [merged.titleBar]);
+  const titleBarActions = useMemo(() => [...STANDARD_TITLE_BAR_ACTIONS, ...merged.titleBarActions], [merged.titleBarActions]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const settingsStore = useProfileSettingsStore(settings);
   const appTabs = settings.tabs ?? NO_TABS;
@@ -70,7 +70,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     log={log}
                     moduleIds={merged.ids}
                     moduleMenu={merged.menu}
-                    titleBarSlots={titleBarSlots}
+                    titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
                     widgets={merged.widgets}
                     layout={layout}

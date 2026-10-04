@@ -3,13 +3,13 @@ import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { UpdaterProvider } from './UpdaterProvider';
 import { UPDATER_MENU } from './updater-menu.constants';
-import { UpdateBadge } from './UpdateBadge';
+import { useUpdateAction } from './useUpdateAction';
 
 const updaterRenderer: RendererModule = {
   id: 'updater',
   Provider: UpdaterProvider,
   menu: UPDATER_MENU,
-  titleBar: [UpdateBadge],
+  titleBarActions: [useUpdateAction],
 };
 
 export default updaterRenderer;
@@ -19,6 +19,7 @@ export { useUpdaterStore } from './useUpdaterStore';
 export type { UpdateStatus, UpdaterData, UpdaterActions, UpdaterStoreState } from './updater-store.type';
 export { UpdateDialog } from './UpdateDialog';
 export { UpdateBadge } from './UpdateBadge';
+export { useUpdateAction } from './useUpdateAction';
 export { UpdaterProvider } from './UpdaterProvider';
 export type { UpdaterProviderProps } from './UpdaterProvider';
 export type { UpdaterApi, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs } from '../updater.type';

@@ -9,7 +9,7 @@ const readUpdaterTitleBar = async (): Promise<UpdaterTitleBarSnapshot> => {
   const text = find(SELECTORS.titleBar)?.textContent ?? '';
   return {
     versionShown: find(SELECTORS.versionTag) !== null || (appVersion.length > 0 && text.includes(appVersion)),
-    badgeShown: find(SELECTORS.updateBadge) !== null,
+    statusShown: find(SELECTORS.updateStatus) !== null,
   };
 };
 

@@ -2,7 +2,8 @@
 import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
-import type { RendererModule, TitleBarSlot } from '../../modules/renderer-module.type';
+import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
+import type { RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
@@ -73,7 +74,7 @@ interface AppScreens {
 interface ReviewTourInput {
   ready: boolean;
   menu: readonly MenuEntry[];
-  slots?: readonly TitleBarSlot[];
+  actions?: readonly WindowTitleBarAction[];
   moduleIds: readonly string[];
 }
 

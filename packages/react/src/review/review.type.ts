@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
-import type { ProductConfig, ReviewCheck } from '@drizztdourden08/brock-core';
+import type { ProductConfig, ReviewCheck, TitleBarControls } from '@drizztdourden08/brock-core';
+import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../menu/menu.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { SearchTarget } from '../search/search.type';
@@ -13,7 +14,7 @@ interface ReviewEnv {
   homeScreen: string;
   screens: readonly ScreenDef[];
   menu: readonly MenuEntry[];
-  slotCount: number;
+  actions: readonly WindowTitleBarAction[];
   moduleIds: readonly string[];
   developerTools: boolean;
   screenTree: ResolvedScreenTree | null;
@@ -43,8 +44,8 @@ interface BootSnapshot {
   logoLoaded: boolean | null;
   searchButton: boolean;
   bugReportButton: boolean;
-  slotsRendered: readonly boolean[];
-  expectedSlots: number;
+  barItems: readonly string[];
+  expectedBarItems: readonly string[];
 }
 
 interface MenuItemSnapshot {
@@ -61,6 +62,18 @@ interface MenuSnapshot {
 interface MenuExpectation {
   required: readonly string[];
   sections: readonly string[];
+  actions: readonly string[];
+  view: string | null;
+}
+
+interface TitleBarExpectation {
+  actions?: readonly WindowTitleBarAction[];
+  controls?: Pick<TitleBarControls, 'pin' | 'fullscreen'>;
+}
+
+interface ViewMenuSnapshot {
+  open: boolean;
+  labels: readonly string[];
 }
 
 interface IconSlotSnapshot {
@@ -98,7 +111,7 @@ interface HeroSnapshot {
 
 interface UpdaterTitleBarSnapshot {
   versionShown: boolean;
-  badgeShown: boolean;
+  statusShown: boolean;
 }
 
 interface SearchSample {
@@ -120,5 +133,5 @@ interface SettingRowsSnapshot {
 
 export type {
   AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, ReviewEnv,
-  ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, UpdaterTitleBarSnapshot,
+  ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

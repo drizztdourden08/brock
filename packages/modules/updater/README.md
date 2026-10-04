@@ -81,10 +81,10 @@ The updater never interrupts. The startup check is silent, and the dialog opens 
 | Where | What it does |
 |---|---|
 | Menu entry | "Check for updates", above Credits and About, runs a check and opens the dialog. |
-| Title bar badge | "Update available" in the left group, contributed through `RendererModule.titleBar` as a conditional slot. It shows only while a found update waits, pulses, and opens the dialog on it. The title bar carries no version tag. |
+| Title bar action | `useUpdateAction`, contributed through `RendererModule.titleBarActions`: Check for updates as a `status` action. The bar shows an "Update available" pill only while a found update waits; it pulses and opens the dialog. The hamburger always lists Check for updates, with "Update available" as its subtitle while an update waits, in place of the menu entry of the same key. The title bar carries no version tag. |
 | Dialog | The found version or "is the latest", the pre-release toggle and version picker, the release notes of the chosen version, the download progress, and a footnote with the bug report button. Escape closes it. |
 
-`UpdateBadge` is exported too, for an app that draws its own title bar. `useUpdaterStore` holds the state for an app that wants its own badge or button:
+`useUpdateAction` and `UpdateBadge` are exported too, for an app that draws its own title bar. `useUpdaterStore` holds the state for an app that wants its own badge or button:
 
 ```tsx
 const status = useUpdaterStore((s) => s.status);            // idle, checking, available, downloading, ready, error

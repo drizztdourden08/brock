@@ -19,7 +19,7 @@ const HOME = [
 ].join('\n');
 
 const made: string[] = [];
-const heroKinds = () => selectMigrations(collectMigrations([]), { from: '0.10.0', to: '0.11.0' }).filter((m) => m.file.endsWith('hero-kinds.mjs'));
+const heroKinds = () => selectMigrations(collectMigrations([]), { from: '0.11.0', to: '0.12.0' }).filter((m) => m.file.endsWith('hero-kinds.mjs'));
 
 const homeApp = (source: string): string => {
   const root = mkdtempSync(join(tmpdir(), 'brock-hero-kinds-'));

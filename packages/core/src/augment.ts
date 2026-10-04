@@ -1,6 +1,6 @@
 /* @layer core @kind types */
 import type { FileStat, DataLocation, StorageSummary, StoragePort } from './platform/ports/storage.type';
-import type { SystemDiagnostics } from './types/diagnostics.type';
+import type { ProcessDiagnostics, SystemDiagnostics } from './types/diagnostics.type';
 import type { LanAddress } from './types/network.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
@@ -31,6 +31,7 @@ interface InvokeContract extends WidgetInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
+  'diagnostics:getProcesses': () => Promise<ProcessDiagnostics>;
   'network:lanAddresses': () => Promise<LanAddress[]>;
 
   'storage:getLocation': () => Promise<DataLocation>;

@@ -86,8 +86,6 @@ interface MainSnapState {
   hit: Snapped | null;
 }
 
-type Axis = 'x' | 'y';
-
 interface ResizeEdges {
   left: boolean;
   right: boolean;
@@ -117,31 +115,51 @@ interface PackSpan {
   min: number;
 }
 
-interface EdgeScan {
-  others: readonly EdgeWindow[];
-  side: EdgeSide;
-  tolerance: number;
+interface ResizeNeighbour extends EdgeWindow {
+  canFollow: boolean;
 }
 
-interface SharedResize {
+interface ResizeFollower {
+  id: string;
+  side: WidgetEdge;
+  start: WidgetWindowBounds;
+  min: MinSize;
+}
+
+interface ResizeStart {
+  id: string;
+  edge: string;
+  sides: ResizeEdges;
+  known: boolean;
+  start: WidgetWindowBounds;
+  first: WidgetWindowBounds;
+  min: MinSize;
+  locked: boolean;
+  others: readonly ResizeNeighbour[];
+}
+
+interface ResizeSession extends Omit<ResizeStart, 'others'> {
+  last: WidgetWindowBounds;
+  followers: ResizeFollower[];
+  xTargets: WidgetWindowBounds[];
+  yTargets: WidgetWindowBounds[];
+}
+
+interface ResizeStep {
   bounds: WidgetWindowBounds;
   moves: EdgeMove[];
 }
 
-interface ResizePlan {
-  id: string;
-  current: WidgetWindowBounds;
+interface WillResizeCue {
+  event: { preventDefault: () => void };
   proposed: WidgetWindowBounds;
   edge?: string;
-  others: readonly EdgeWindow[];
-  rules: ManipulationRules;
-  min: MinSize;
-  lock: AspectLock;
 }
 
-interface EdgeSide {
-  axis: Axis;
-  far: boolean;
+interface ResizeRequest {
+  proposed: WidgetWindowBounds;
+  rules: ManipulationRules;
+  lock: AspectLock;
 }
 
 interface ManipulationRules {
@@ -185,6 +203,6 @@ interface CaptureSheet {
 }
 
 export type {
-  Axis, BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeScan, EdgeSide, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
-  MinSize, ModifierInput, PackSpan, ResizeEdges, ResizePlan, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
+  BoundsReporter, CaptureSheet, CoverCandidate, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
+  MinSize, ModifierInput, PackSpan, ResizeEdges, ResizeFollower, ResizeNeighbour, ResizeRequest, ResizeSession, ResizeStart, ResizeStep, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup, WillResizeCue,
 };

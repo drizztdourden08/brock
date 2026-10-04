@@ -5,6 +5,7 @@ import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { prepareModules } from '../modules/prepare-modules.mjs';
 import { runBin } from '../run.mjs';
+import { writeWidgetsFile } from '../widgets/write-widgets.mjs';
 
 /**
  * @param {'dev' | 'build'} mode
@@ -22,6 +23,7 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
   if (copied?.written.length) console.log(`brock ${mode}: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
   await prepareModules(rootDir, config.modules);
   for (const path of writeBootFiles(rootDir)) console.log(`brock ${mode}: wrote ${path}, the boot task list changed`);
+  for (const path of writeWidgetsFile(rootDir)) console.log(`brock ${mode}: wrote ${path}, the widget list changed`);
   return runBin(rootDir, 'electron-vite', [mode, ...passthrough]);
 };
 

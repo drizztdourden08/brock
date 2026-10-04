@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, WidgetDefinition, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
@@ -12,6 +12,14 @@ interface WidgetDef extends WidgetDefinition {
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
+
+type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings'>> & { settings?: ComponentType };
+
+interface WidgetFile {
+  id: string;
+  component: ComponentType;
+  meta?: WidgetMeta;
+}
 
 interface WidgetLayoutState {
   definitions: readonly WidgetDef[];
@@ -50,5 +58,5 @@ interface ProfileViews {
 }
 
 export type {
-  ProfileViews, SettingsSlice, WidgetDef, WidgetInput, WidgetLayoutState, WidgetRegistryState, WidgetRelayState,
+  ProfileViews, SettingsSlice, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutState, WidgetRegistryState, WidgetRelayState,
 };

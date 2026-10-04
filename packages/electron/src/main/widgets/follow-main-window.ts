@@ -7,6 +7,7 @@ import { flushWidgetBounds } from './flush-widget-bounds';
 import { isMainNormal } from './is-main-normal';
 import { followMainGroup } from './follow-main-group';
 import { mainSnap } from './main-snap';
+import { resizeSession } from './resize-session';
 import { towHold } from './tow-hold';
 import { towLinked } from './tow-linked';
 import { widgetVisibility } from './widget-visibility';
@@ -20,19 +21,23 @@ const parkAlone = (): void => {
 const trackBounds = (main: BrowserWindow): void => {
   let normal = boundsOf(main);
   let pending = false;
+  let resized = false;
   const tow = (): void => {
     pending = false;
+    const quiet = resized;
+    resized = false;
     if (main.isDestroyed() || main.isMinimized()) return;
     if (!isMainNormal(main)) {
       parkAlone();
       return;
     }
     const now = boundsOf(main);
-    if (!towHold.held()) towLinked(MAIN_ANCHOR, normal, now);
+    if (!towHold.held() && !quiet) towLinked(MAIN_ANCHOR, normal, now);
     normal = now;
     widgetVisibility.unpark();
   };
   const schedule = (): void => {
+    resized ||= resizeSession.active();
     if (pending) return;
     pending = true;
     setImmediate(tow);

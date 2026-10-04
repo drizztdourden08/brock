@@ -7,13 +7,12 @@ import { manipulationRules } from '../src/main/widgets/manipulation-rules';
 import { mapIntoArea } from '../src/main/widgets/map-into-area';
 import { resizeEdges } from '../src/main/widgets/resize-edges';
 import { resizeSnap } from '../src/main/widgets/resize-snap';
-import { sharedEdgeResize } from '../src/main/widgets/shared-edge-resize';
+import { changed, planStep } from './window-sim/plan-step';
 import { snapTo } from '../src/main/widgets/snap-to';
 
 const APP = { x: 100, y: 100, width: 800, height: 600 };
 const MIN = { width: 240, height: 160 };
 const box = (x: number, y: number, width = 200, height = 300) => ({ x, y, width, height });
-const edgeWindow = (id: string, bounds: ReturnType<typeof box>) => ({ id, bounds, min: MIN });
 const ALL_EDGES = { left: false, right: false, top: false, bottom: false };
 
 describe('snapTo corners', () => {
@@ -139,39 +138,39 @@ describe('group layout maths', () => {
   });
 });
 
-describe('sharedEdgeResize', () => {
+describe('the shared edge of a resize', () => {
   const top = box(500, 100, 300, 200);
   const bottom = box(500, 300, 300, 200);
   const leftOf = box(200, 100, 300, 400);
+  const drag = (to: Partial<ReturnType<typeof box>>, edge: string) => ({ from: top, to: { ...top, ...to }, edge });
 
   it('leaves the matching edge of a window stacked below alone, since it does not face the dragged edge', () => {
-    const result = sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('bottom', bottom)]);
-    expect(result).toEqual({ bounds: { ...top, x: 460, width: 340 }, moves: [] });
+    const others = [{ id: 'bottom', bounds: bottom }];
+    const result = planStep('top', drag({ x: 460, width: 340 }, 'left'), others);
+    expect(result.bounds).toEqual({ ...top, x: 460, width: 340 });
+    expect(changed(result, others)).toEqual([]);
   });
 
   it('drags only the facing edge of the neighbour across the seam', () => {
-    const result = sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('bottom', bottom), edgeWindow('left', leftOf)]);
-    expect(result.moves).toEqual([{ id: 'left', bounds: { ...leftOf, width: 260 } }]);
+    const others = [{ id: 'bottom', bounds: bottom }, { id: 'left', bounds: leftOf }];
+    expect(changed(planStep('top', drag({ x: 460, width: 340 }, 'left'), others), others)).toEqual([{ id: 'left', bounds: { ...leftOf, width: 260 } }]);
   });
 
   it('leaves windows that are not on the edge alone', () => {
-    const far = box(500, 800, 300, 200);
-    expect(sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('far', far)]).moves).toEqual([]);
+    expect(planStep('top', drag({ x: 460, width: 340 }, 'left'), [{ id: 'far', bounds: box(500, 800, 300, 200) }]).moves).toEqual([]);
   });
 
   it('never stretches a window beside it when an outer edge moves', () => {
-    const beside = box(800, 100, 300, 200);
-    const result = sharedEdgeResize(top, { ...top, height: 260 }, [edgeWindow('beside', beside)]);
-    expect(result.moves).toEqual([]);
+    const others = [{ id: 'beside', bounds: box(800, 100, 300, 200) }];
+    expect(changed(planStep('top', drag({ height: 260 }, 'bottom'), others), others)).toEqual([]);
   });
 
   it('moves the facing edge across the seam when the bottom edge is shared', () => {
-    const result = sharedEdgeResize(top, { ...top, height: 240 }, [edgeWindow('bottom', bottom)]);
-    expect(result.moves).toEqual([{ id: 'bottom', bounds: { ...bottom, y: 340, height: 160 } }]);
+    expect(planStep('top', drag({ height: 240 }, 'bottom'), [{ id: 'bottom', bounds: bottom }]).moves).toEqual([{ id: 'bottom', bounds: { ...bottom, y: 340, height: 160 } }]);
   });
 
   it('stops at the minimum size of every window it moves', () => {
-    const result = sharedEdgeResize(top, { ...top, x: 260, width: 540 }, [edgeWindow('left', leftOf)]);
+    const result = planStep('top', drag({ x: 260, width: 540 }, 'left'), [{ id: 'left', bounds: leftOf }]);
     expect(result.bounds.x).toBe(440);
     expect(result.moves).toEqual([{ id: 'left', bounds: { ...leftOf, width: 240 } }]);
   });

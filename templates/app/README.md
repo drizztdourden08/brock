@@ -38,6 +38,10 @@ src/screens/game/home.hero.tsx  the Game hub home
 src/screens/game/general.settings.ts  the General settings page
 src/screens/game/controls.custom.tsx  a custom page with searchEntries
 src/screens/credits.card.tsx  the Credits screen
+src/widgets/<id>.widget.tsx  a widget: tool panels docked, floating or in their own window (notes.widget.tsx)
+src/views/, src/compounds/  Tessera parts: views own state, compounds draw one app concept (brock tessera new)
+src/primitives/, src/composites/  the rare app-only primitive or composite (brock tessera new)
+src/stores/use<Thing>Store.ts, src/hooks/use<Thing>.ts  app state and shared hooks
 src/boot/<id>.task.ts    renderer boot tasks, shown on the splash (welcome.task.ts)
 electron/boot/<id>.task.ts  main boot tasks
 build/icons, build/splash  installer icons and splash, copied from Tessera by brock icons
@@ -94,6 +98,32 @@ A custom page is the exception to the standard pages: only its content is hand b
 It also exports `searchEntries`, a literal list of `{ label, keywords?, anchor?,
 description? }`, and marks each element with `data-search-anchor`. Keep them few.
 
+## Widgets
+
+Every widget is a file in `src/widgets`, named `<id>.widget.tsx`. Nothing else needs wiring:
+`pnpm dev` and `pnpm sync` write `.brock/widgets.ts` from the files, and `src/main.tsx`
+passes it to `BrockApp` as `widgets`. Each one gets an entry in the Widgets menu, can dock,
+float or pop out, and keeps its prefs per profile.
+
+```tsx
+const meta: WidgetMeta = { label: 'Notes', icon: 'pencil', defaultSide: 'right', popOut: true };
+
+const NotesWidget = () => { ... };
+
+export default NotesWidget;
+export { meta };
+```
+
+The default export is the component. `meta` is optional: `label` (the file name in title
+case without it), `icon`, `popOut`, `devOnly`, `taskbar`, `defaultVisibility`
+(`'context-only'` shows it only while a game or session runs), `defaultSide`,
+`defaultDockedSize`, `defaultFloatingSize` and `settings`, a component drawn in the
+widget's options panel. `src/widgets` holds widget files only: a widget with parts
+imports them from `src/views`. `pnpm structure` names anything else there.
+
+Brock adds two widgets of its own: Logs and Performance (frame rate, long tasks, heap,
+every process's CPU and memory, the app state, and a Copy snapshot button for bug reports).
+
 ## Search
 
 Ctrl+K opens the search palette; inside a hub it searches that hub. Nothing is registered
@@ -105,6 +135,9 @@ page adds what it shows with `useSearchEntries(entries)` while it is open.
 ## Adding things
 
 - A screen: a file in `src/screens`, as above.
+- A widget: `src/widgets/<id>.widget.tsx`, as above.
+- A Tessera part: `pnpm brock tessera new view <Name>` (or `compound`, `composite`,
+  `primitive`) writes `src/<kind>/<Name>/`, the place `tessera.config.json` defaults to.
 - A setting: a field on `AppSettings`, a default in `DEFAULT_SETTINGS`, and a row in a
   `.settings.ts` page (`src/screens/game/general.settings.ts` to start).
 - An IPC channel: declare it on the contract in `src/ipc/contract.type.ts`, name it in the

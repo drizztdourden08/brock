@@ -15,14 +15,15 @@ const appEntry = (rootDir, app) => ({
  * @returns {Record<string, unknown>}  the tessera.config.json content
  */
 const tesseraConfigFor = (rootDir, designPackage) => {
-  if (!designPackage) return { $schema: TESSERA_SCHEMA_REF };
   const apps = appDirs(rootDir).filter((app) => app !== '.');
+  const appEntries = Object.fromEntries(apps.map((app) => [app, appEntry(rootDir, app)]));
+  if (!designPackage) return apps.length ? { $schema: TESSERA_SCHEMA_REF, apps: appEntries } : { $schema: TESSERA_SCHEMA_REF };
   return {
     $schema: TESSERA_SCHEMA_REF,
     package: designPackage,
     parts: Object.fromEntries(SHARED_KINDS.map((kind) => [kind, `${DESIGN_DIR}/src/${kind}`])),
     stories: `${DESIGN_DIR}/stories`,
-    apps: Object.fromEntries(apps.map((app) => [app, appEntry(rootDir, app)])),
+    apps: appEntries,
   };
 };
 

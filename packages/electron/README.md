@@ -38,7 +38,7 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 6. On ready: `initPaths`, data folders (`product.dataDirs` plus module `dataDirs`), session-log rotation, the splash window, then the main boot tasks: `modules` (base handlers, module `register`, app `handlers`, `onReady`), `window-state` (the hidden app window, module `onWindow`, app `onWindow`), then module and app main tasks.
 7. Quit hooks: module `onWillQuit`, app `onWillQuit`, quit on last window closed except on macOS.
 
-Base handlers: boot, window, aspectRatio, app, dialog, file, storage, profiles (with `config:*`), sessions, uiViews, diagnostics, sessionLog, screenshot. A `HandlerGroup` with `devOnly: true` is never registered when `app.isPackaged`.
+Base handlers: boot, window, aspectRatio, app, dialog, file, storage, profiles (with `config:*`), sessions, uiViews, diagnostics (`diagnostics:getSystem` for the bug report, `diagnostics:getProcesses` for the performance widget: `app.getAppMetrics()`, the main process memory, uptime, the windows and widget windows, the IPC call count and the GPU feature status), network, sessionLog, screenshot. The typed `handle` and `on` count every call they serve; `diagnostics:getProcesses` reports the total. A `HandlerGroup` with `devOnly: true` is never registered when `app.isPackaged`.
 
 ## Window rules
 

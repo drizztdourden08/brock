@@ -9,8 +9,7 @@ import { groupOf } from './group-of';
 import { groupVisibility } from './group-visibility';
 import { modifierState } from './modifier-state';
 import { probeFacts } from './probe-facts';
-import { resizeBounds } from './resize-bounds';
-import { settleWindow } from './settle-window';
+import { driveResize } from './drive-resize';
 import { windowGuide } from './window-guide';
 import { FOCUS_AWAY_MS, MAIN_ANCHOR, PROBE_SETTLE_MS } from './widget-windows.constants';
 
@@ -29,10 +28,7 @@ const focusAway = async (id: string): Promise<WidgetProbeFacts> => {
 
 const resize = async (id: string, bounds: WidgetWindowBounds): Promise<WidgetProbeFacts> => {
   const win = anyWindow(id);
-  if (win) {
-    win.setBounds(resizeBounds(id, bounds) ?? bounds);
-    if (id !== MAIN_ANCHOR) settleWindow(id);
-  }
+  if (win) driveResize(win, bounds);
   await settled();
   return probeFacts(id);
 };

@@ -8,6 +8,7 @@ import { pinApp } from '../upgrade/pin-app.mjs';
 import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
 import { renderWorkflows } from '../release/render-workflows.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
+import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -91,6 +92,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
     ...renderBootFiles(rootDir),
     ...renderScreensFiles(rootDir),
+    ...renderWidgetsFiles(rootDir),
     ...renderManagedFiles({ inWorkspace }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),

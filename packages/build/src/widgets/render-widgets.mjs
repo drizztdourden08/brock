@@ -1,0 +1,49 @@
+/* @layer tooling-scripts @kind logic */
+import { GENERATED_HEADER, REACT_PACKAGE } from '../screens/screen-conventions.constants.mjs';
+import { scanWidgets } from './scan-widgets.mjs';
+import { WIDGETS_OUTPUT } from './widget-conventions.constants.mjs';
+
+/** @param {string} id */
+const identifierOf = (id) => `${id.split('-').map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join('')}Widget`;
+
+/** @param {string} name */
+const metaName = (name) => `${name.charAt(0).toLowerCase()}${name.slice(1)}Meta`;
+
+/** @param {{ id: string, path: string, hasMeta: boolean }} file */
+const importLine = (file) => {
+  const name = identifierOf(file.id);
+  const from = `../${file.path.replace(/\.tsx$/, '')}`;
+  return file.hasMeta ? `import ${name}, { meta as ${metaName(name)} } from '${from}';` : `import ${name} from '${from}';`;
+};
+
+/** @param {{ id: string, hasMeta: boolean }} file */
+const entryLine = (file) => {
+  const name = identifierOf(file.id);
+  return `  { ${[`id: '${file.id}'`, `component: ${name}`, ...(file.hasMeta ? [`meta: ${metaName(name)}`] : [])].join(', ')} },`;
+};
+
+/**
+ * @param {{ id: string, path: string, hasMeta: boolean }[]} files
+ * @returns {string} the content of .brock/widgets.ts
+ */
+const renderWidgets = (files) => {
+  const list = files.length ? ['[', ...files.map(entryLine), ']'].join('\n') : '[]';
+  return [
+    GENERATED_HEADER,
+    `import { widgetsFromFiles } from '${REACT_PACKAGE}';`,
+    ...files.map(importLine),
+    '',
+    `const appWidgets = widgetsFromFiles(${list});`,
+    '',
+    'export { appWidgets };',
+    '',
+  ].join('\n');
+};
+
+/**
+ * @param {string} rootDir the app root
+ * @returns {{ path: string, content: string }[]} .brock/widgets.ts, always
+ */
+const renderWidgetsFiles = (rootDir) => [{ path: WIDGETS_OUTPUT, content: renderWidgets(scanWidgets(rootDir).files.filter((file) => file.hasDefault)) }];
+
+export { renderWidgets, renderWidgetsFiles };

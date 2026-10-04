@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-plugin-snes",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "The SNES port bundle for brock-thread: the wasm core build, ROM checks, the private fixture vault, save states and the provision steps a port needs.",
   "type": "module",
   "license": "UNLICENSED",

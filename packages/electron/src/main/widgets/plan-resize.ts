@@ -5,8 +5,8 @@ import { isAcross } from './is-across';
 import { oppositeEdge } from './opposite-edge';
 import { resizeSides } from './resize-sides';
 import { resizeSnap } from './resize-snap';
-import { NO_SIDES, RESIZE_SIDES } from './widget-windows.constants';
-import type { MinSize, ResizeEdges, ResizeFollower, ResizeRequest, ResizeSession, ResizeStep } from './widget-windows.type';
+import { EMPTY_BOUNDS, NO_SIDES, RESIZE_SIDES } from './widget-windows.constants';
+import type { EdgeMove, MinSize, ResizeEdges, ResizeFollower, ResizeRequest, ResizeSession, ResizeStep } from './widget-windows.type';
 
 const { lineOf, withLine } = resizeSides;
 
@@ -35,23 +35,27 @@ const snapSides = (b: WidgetWindowBounds, session: ResizeSession): WidgetWindowB
   return resizeSnap(across, { ...NO_SIDES, top: sides.top, bottom: sides.bottom }, session.yTargets, min);
 };
 
-const roomFor = (line: number, side: WidgetEdge, followers: readonly ResizeFollower[]): number => {
-  const far = side === 'right' || side === 'bottom';
-  return followers.reduce((at, f) => {
+const roomFor = (line: number, side: WidgetEdge, followers: readonly ResizeFollower[]): number =>
+  followers.reduce((at, f) => {
     const keep = isAcross(side) ? f.min.width : f.min.height;
-    const fixed = lineOf(f.start, side);
-    return far ? Math.min(at, fixed - keep) : Math.max(at, fixed + keep);
+    const fixed = lineOf(f.start, oppositeEdge(f.edge));
+    return f.edge === 'right' || f.edge === 'bottom' ? Math.max(at, fixed + keep) : Math.min(at, fixed - keep);
   }, line);
-};
+
+const followerMoves = (followers: readonly ResizeFollower[], place: (f: ResizeFollower, at: WidgetWindowBounds) => WidgetWindowBounds): EdgeMove[] =>
+  [...new Set(followers.map((f) => f.id))].map((id) => {
+    const own = followers.filter((f) => f.id === id);
+    return { id, bounds: own.reduce((at, f) => place(f, at), own[0]?.start ?? EMPTY_BOUNDS) };
+  });
 
 const withFollowers = (b: WidgetWindowBounds, session: ResizeSession, shared: boolean): ResizeStep => {
-  if (!shared) return { bounds: b, moves: session.followers.map((f) => ({ id: f.id, bounds: f.start })) };
+  if (!shared) return { bounds: b, moves: followerMoves(session.followers, (_f, at) => at) };
   const bounds = RESIZE_SIDES.reduce((at, side) => {
     const group = session.followers.filter((f) => f.side === side);
     const line = lineOf(at, side);
     return group.length === 0 || line === lineOf(session.start, side) ? at : withLine(at, side, roomFor(line, side, group));
   }, b);
-  const moves = session.followers.map((f) => ({ id: f.id, bounds: withLine(f.start, oppositeEdge(f.side), lineOf(bounds, f.side)) }));
+  const moves = followerMoves(session.followers, (f, at) => withLine(at, f.edge, lineOf(bounds, f.side)));
   return { bounds, moves };
 };
 

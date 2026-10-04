@@ -69,7 +69,6 @@ interface MenuExpectation {
 interface TitleBarExpectation {
   actions?: readonly WindowTitleBarAction[];
   controls?: Pick<TitleBarControls, 'pin' | 'fullscreen'>;
-  windowGroups?: boolean;
 }
 
 interface ViewMenuSnapshot {

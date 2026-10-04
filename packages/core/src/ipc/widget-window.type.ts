@@ -7,11 +7,9 @@ type WidgetEdge = 'left' | 'right' | 'top' | 'bottom';
 
 type WidgetDockBack = WidgetEdge | 'float' | 'close';
 
-type WidgetWindowGroup = string;
-
 type WindowGuideMode = 'moving' | 'resizing';
 
-type WindowGroupAction = 'maximize' | 'fullscreen' | 'minimize' | 'restore';
+type WindowClusterAction = 'maximize' | 'fullscreen' | 'minimize' | 'restore';
 
 interface WidgetWindowBounds {
   x: number;
@@ -37,7 +35,6 @@ interface PoppedWidgetWire {
   snap?: boolean;
   link?: WidgetSnapLink | null;
   sync?: boolean;
-  group?: WidgetWindowGroup | null;
 }
 
 type PoppedWidgetPatch = Partial<Omit<PoppedWidgetWire, 'id' | 'pin'>> & { pin?: WidgetPinMode };
@@ -55,7 +52,6 @@ interface WidgetWindowState {
   snap: boolean;
   link: WidgetSnapLink | null;
   sync: boolean;
-  group: WidgetWindowGroup | null;
   square: boolean;
 }
 
@@ -82,16 +78,16 @@ type WidgetSettingsWire = Record<string, unknown>;
 
 type WidgetProbeRequest =
   | { kind: 'window'; id: string }
-  | { kind: 'drag'; id: string; bounds: WidgetWindowBounds }
+  | { kind: 'drag'; id: string; bounds: WidgetWindowBounds; alone?: boolean }
   | { kind: 'main'; bounds?: WidgetWindowBounds }
-  | { kind: 'mainDrag'; bounds: WidgetWindowBounds }
+  | { kind: 'mainDrag'; bounds: WidgetWindowBounds; alone?: boolean }
   | { kind: 'dragOver'; id: string; point: WidgetWindowPoint | null }
   | { kind: 'drop'; id: string; point: WidgetWindowPoint }
   | { kind: 'rescue'; id: string; bounds: WidgetWindowBounds }
   | { kind: 'areas' }
   | { kind: 'focusAway'; id: string }
   | { kind: 'resize'; id: string; bounds: WidgetWindowBounds }
-  | { kind: 'group'; id: string; action: WindowGroupAction; area?: WidgetWindowBounds }
+  | { kind: 'cluster'; id: string; action: WindowClusterAction; area?: WidgetWindowBounds }
   | { kind: 'modifier'; ctrl: boolean }
   | { kind: 'guide'; id: string; mode: WindowGuideMode | null };
 
@@ -99,11 +95,13 @@ interface WidgetProbeFacts {
   visible: boolean;
   taskbar: boolean;
   sync: boolean;
-  group: WidgetWindowGroup | null;
+  cluster: string[];
   square: boolean;
   backdrop: boolean;
   ctrl: boolean;
   guide: WindowGuideState;
+  guideIn: string | null;
+  guideDrawn: string[];
   area: WidgetWindowBounds | null;
   windows: Record<string, WidgetWindowBounds>;
 }
@@ -123,6 +121,6 @@ interface WidgetSlice {
 
 export type {
   PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
-  WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
-  WidgetWindowState, WindowGroupAction, WindowGuideMode, WindowGuideState,
+  WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
+  WidgetWindowState, WindowClusterAction, WindowGuideMode, WindowGuideState,
 };

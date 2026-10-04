@@ -1,11 +1,11 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
-import type { WidgetProbeFacts, WidgetWindowBounds, WidgetWindowGroup } from '@drizztdourden08/brock-core';
+import type { WidgetProbeFacts, WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { getMainWindow } from '../window/get-main-window';
 import { anyWindow } from './any-window';
 import { boundsOf } from './bounds-of';
-import { groupLayouts } from './group-layouts';
-import { groupOf } from './group-of';
+import { clusterLayouts } from './cluster-layouts';
+import { clusterOf } from './cluster-of';
 import { liveEntries } from './live-entries';
 import { modifierState } from './modifier-state';
 import { squareState } from './square-state';
@@ -20,7 +20,7 @@ const allBounds = (): Record<string, WidgetWindowBounds> => {
 };
 
 const backdropShown = (): boolean =>
-  [...groupLayouts.values()].some((layout) => layout.backdrop !== null && !layout.backdrop.isDestroyed() && layout.backdrop.isVisible());
+  clusterLayouts.all().some((layout) => layout.backdrop !== null && !layout.backdrop.isDestroyed() && layout.backdrop.isVisible());
 
 const shown = (win: BrowserWindow | null): boolean => win !== null && win.isVisible() && !win.isMinimized();
 
@@ -32,13 +32,16 @@ const ownFacts = (id: string): Pick<WidgetProbeFacts, 'visible' | 'taskbar' | 's
   return { visible: shown(win), taskbar: entry?.taskbar === true && owned === null, sync: entry?.sync ?? true, square: entry?.square === true };
 };
 
-const areaOf = (group: WidgetWindowGroup | null): WidgetWindowBounds | null => (group === null ? null : groupLayouts.get(group)?.area ?? null);
-
-const probeFacts = (id: string): WidgetProbeFacts => {
-  const group = groupOf(id);
-  return {
-    ...ownFacts(id), group, backdrop: backdropShown(), ctrl: modifierState.ctrl, guide: windowGuide.current(), area: areaOf(group), windows: allBounds(),
-  };
-};
+const probeFacts = (id: string, guideDrawn: string[] = []): WidgetProbeFacts => ({
+  ...ownFacts(id),
+  cluster: clusterOf(id).sort(),
+  backdrop: backdropShown(),
+  ctrl: modifierState.ctrl,
+  guide: windowGuide.current(),
+  guideIn: windowGuide.holder(),
+  guideDrawn,
+  area: clusterLayouts.of(id)?.area ?? null,
+  windows: allBounds(),
+});
 
 export { probeFacts };

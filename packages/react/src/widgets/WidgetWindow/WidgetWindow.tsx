@@ -9,6 +9,7 @@ import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
+import { WindowGuide } from '../WindowGuide';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
@@ -59,6 +60,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
       {anchor && (
         <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />
       )}
+      <WindowGuide />
     </Box>
   );
 };

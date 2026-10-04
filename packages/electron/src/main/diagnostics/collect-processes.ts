@@ -3,6 +3,7 @@ import { app, BrowserWindow } from 'electron';
 import type { ProcessMetric as AppProcessMetric } from 'electron';
 import type { ProcessDiagnostics, ProcessMetric, WidgetWindowSummary } from '@drizztdourden08/brock-core/types';
 import { ipcCallCount } from '../ipc/ipc-call-count';
+import { clusterOf } from '../widgets/cluster-of';
 import { widgetWindowControl } from '../widgets/widget-window-control';
 import { collectVersions } from './collect-versions';
 import { KIB } from './collect-processes.constants';
@@ -19,7 +20,7 @@ const toMetric = (metric: AppProcessMetric): ProcessMetric => ({
 
 const widgetWindows = (): WidgetWindowSummary[] => widgetWindowControl.list().map(({ id, visible }) => {
   const state = widgetWindowControl.stateOf(id);
-  return { id, visible, sync: state?.sync ?? false, group: state?.group ?? null };
+  return { id, visible, sync: state?.sync ?? false, cluster: clusterOf(id).length };
 });
 
 const collectProcesses = (): ProcessDiagnostics => {

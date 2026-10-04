@@ -2,9 +2,9 @@
 import { emit } from '../ipc/emit';
 import { squareState } from './square-state';
 import { tellWindow } from './tell-window';
-import type { GroupMember } from './widget-windows.type';
+import type { ClusterMember } from './widget-windows.type';
 
-const squareMember = (member: GroupMember, on: boolean): void => {
+const squareMember = (member: ClusterMember, on: boolean): void => {
   if (member.win.isDestroyed()) return;
   if (!member.entry) {
     squareState.main = on;

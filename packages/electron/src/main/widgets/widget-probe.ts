@@ -6,13 +6,11 @@ import { dragInSignal } from './drag-in-signal';
 import { dropPointAt } from './drop-point-at';
 import { isReachable } from './is-reachable';
 import { liveEntries } from './live-entries';
-import { mainSnap } from './main-snap';
-import { mainSnapState } from './main-snap-state';
-import { probeFacts } from './probe-facts';
+import { modifierState } from './modifier-state';
 import { moveEntry } from './move-entry';
-import { relink } from './relink';
+import { moveStep } from './move-step';
+import { probeFacts } from './probe-facts';
 import { rescueWidgetWindows } from './rescue-widget-windows';
-import { settleWindow } from './settle-window';
 import { snapMainAt } from './snap-main-at';
 import { snapTargets } from './snap-targets';
 import { snapTo } from './snap-to';
@@ -20,6 +18,7 @@ import { widgetAreas } from './widget-areas';
 import { widgetWindowControl } from './widget-window-control';
 import { windowProbe } from './window-probe';
 import { MAIN_ANCHOR, PROBE_SETTLE_MS } from './widget-windows.constants';
+import type { MoveSession } from './widget-windows.type';
 
 const settled = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, PROBE_SETTLE_MS); });
 
@@ -38,25 +37,40 @@ const mainResult = (): WidgetProbeResult => {
   return { bounds: main && !main.isDestroyed() ? boundsOf(main) : null, link: null, counted: false, outside: outside() };
 };
 
-const dragRelease = (id: string, bounds: WidgetWindowBounds): WidgetProbeResult => {
+const startDrag = (id: string, alone: boolean): MoveSession => {
+  const held = modifierState.ctrl;
+  modifierState.ctrl = alone;
+  const session = moveStep(id);
+  modifierState.ctrl = held;
+  return session;
+};
+
+const dragRelease = async (id: string, bounds: WidgetWindowBounds, alone: boolean): Promise<WidgetProbeResult> => {
   const entry = widgetWindowControl.entryOf(id);
   if (!entry) return windowResult(null);
-  const hit = entry.snap ? snapTo(bounds, snapTargets(id)) : null;
-  if (entry.snap) relink(id, entry, hit?.link ?? null);
-  entry.win.setBounds(hit?.bounds ?? bounds);
-  settleWindow(id);
+  const session = startDrag(id, alone);
+  session.hit = entry.snap ? snapTo(bounds, snapTargets(id).filter((target) => !session.members.has(target.to))) : null;
+  entry.win.setBounds(session.hit?.bounds ?? bounds);
+  entry.win.emit('moved');
+  await settled();
   return windowResult(id);
 };
 
-const setMain = async (bounds: WidgetWindowBounds | undefined, drag: boolean): Promise<WidgetProbeResult> => {
+const setMain = async (bounds: WidgetWindowBounds | undefined): Promise<WidgetProbeResult> => {
   const main = getMainWindow();
   if (!main || main.isDestroyed() || !bounds) return mainResult();
-  const hit = drag ? snapMainAt(bounds) : null;
-  main.setBounds(hit?.bounds ?? bounds);
-  if (drag) {
-    mainSnapState.hit = hit;
-    mainSnap.settle();
-  }
+  main.setBounds(bounds);
+  await settled();
+  return mainResult();
+};
+
+const dragMain = async (bounds: WidgetWindowBounds, alone: boolean): Promise<WidgetProbeResult> => {
+  const main = getMainWindow();
+  if (!main || main.isDestroyed()) return mainResult();
+  const session = startDrag(MAIN_ANCHOR, alone);
+  session.hit = snapMainAt(bounds, session.members);
+  main.setBounds(session.hit?.bounds ?? bounds);
+  main.emit('moved');
   await settled();
   return mainResult();
 };
@@ -87,9 +101,9 @@ const withFacts = async (request: WidgetProbeRequest): Promise<WidgetProbeResult
 
 const widgetProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeResult> => {
   if (request.kind === 'window') return { ...windowResult(request.id), facts: probeFacts(request.id) };
-  if (request.kind === 'drag') return dragRelease(request.id, request.bounds);
-  if (request.kind === 'main') return setMain(request.bounds, false);
-  if (request.kind === 'mainDrag') return setMain(request.bounds, true);
+  if (request.kind === 'drag') return dragRelease(request.id, request.bounds, request.alone === true);
+  if (request.kind === 'main') return setMain(request.bounds);
+  if (request.kind === 'mainDrag') return dragMain(request.bounds, request.alone === true);
   if (request.kind === 'dragOver') return dragIn(request.id, request.point, false);
   if (request.kind === 'drop') return dragIn(request.id, request.point, true);
   if (request.kind === 'rescue') return rescue(request.id, request.bounds);

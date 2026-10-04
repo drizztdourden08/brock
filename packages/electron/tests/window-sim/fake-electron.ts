@@ -31,6 +31,7 @@ class FakeWindow extends EventEmitter {
   setCalls = 0;
   private destroyed = false;
   private visible = true;
+  private minimized = false;
   private onTop = false;
   private parent: FakeWindow | null = null;
 
@@ -74,7 +75,17 @@ class FakeWindow extends EventEmitter {
 
   isDestroyed = (): boolean => this.destroyed;
   isVisible = (): boolean => this.visible;
-  isMinimized = (): boolean => false;
+  isMinimized = (): boolean => this.minimized;
+  minimize = (): void => {
+    if (this.minimized) return;
+    this.minimized = true;
+    this.emit('minimize');
+  };
+  restore = (): void => {
+    if (!this.minimized) return;
+    this.minimized = false;
+    this.emit('restore');
+  };
   isMaximized = (): boolean => false;
   isFullScreen = (): boolean => false;
   isFocused = (): boolean => false;

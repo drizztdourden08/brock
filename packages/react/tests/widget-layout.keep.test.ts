@@ -50,6 +50,14 @@ describe('the widget layout store', () => {
     expect(widgetsIn(store().layout.dock)).toEqual([]);
   });
 
+  it('drops the window group a saved popped widget still carries', () => {
+    store().replace(FLAT);
+    const saved = { ...store().layout, popped: [{ id: 'logs', snap: true, group: '2' }], poppedMemory: { notes: { id: 'notes', group: '1' } } };
+    store().replace(saved);
+    expect(store().layout.popped).toEqual([{ id: 'logs', snap: true }]);
+    expect(store().layout.poppedMemory).toEqual({ notes: { id: 'notes' } });
+  });
+
   it('opens a widget docked on its default side and toggles it away', () => {
     store().toggle('logs');
     expect(placementOf(store().layout, 'logs')).toBe('docked');

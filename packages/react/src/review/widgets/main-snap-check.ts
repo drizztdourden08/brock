@@ -7,7 +7,7 @@ const checkMainSnap = async (tour: StepTour, id: string): Promise<void> => {
   const start = (await probe({ kind: 'main' })).bounds;
   const own = (await probe({ kind: 'window', id })).bounds;
   if (!start || !own) return;
-  const free = await probe({ kind: 'drag', id, bounds: { ...own, x: start.x + start.width + FREE_GAP, y: start.y + EDGE_DROP } });
+  const free = await probe({ kind: 'drag', alone: true, id, bounds: { ...own, x: start.x + start.width + FREE_GAP, y: start.y + EDGE_DROP } });
   if (!free.bounds || free.link) {
     tour.check('main-snaps-to-widget', false, '', `the "${id}" window could not be parked away from the app`);
     return;

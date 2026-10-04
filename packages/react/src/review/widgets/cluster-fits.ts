@@ -11,7 +11,7 @@ const sameOrder = (after: readonly WidgetWindowBounds[], before: readonly Widget
     return (a.x < b.x ? x.x <= y.x : true) && (a.y < b.y ? x.y <= y.y : true);
   }));
 
-const groupFits = (after: readonly WidgetWindowBounds[], before: readonly WidgetWindowBounds[], area: WidgetWindowBounds): boolean => {
+const clusterFits = (after: readonly WidgetWindowBounds[], before: readonly WidgetWindowBounds[], area: WidgetWindowBounds): boolean => {
   const left = Math.min(...after.map((b) => b.x));
   const right = Math.max(...after.map((b) => b.x + b.width));
   const top = Math.min(...after.map((b) => b.y));
@@ -20,4 +20,4 @@ const groupFits = (after: readonly WidgetWindowBounds[], before: readonly Widget
   return after.length === before.length && after.every((b) => inside(b, area)) && filled && sameOrder(after, before);
 };
 
-export { groupFits };
+export { clusterFits };

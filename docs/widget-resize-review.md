@@ -110,3 +110,9 @@ One resize session per drag, in `resize-session.ts`.
 9. `aspect-ratio.ts` no longer listens to `will-resize`; main's ratio is applied inside the session.
 
 The simulator in `packages/electron/tests/window-sim` models Electron's window loop with the measured behaviour (raw rectangle with 6/0/6/6 borders, cursor-driven dragged side, `preventDefault` semantics, synchronous `resize` and `move`, replay of pending bounds at mouse up, `resized` at the end, minimum sizes) and drives the real Brock handlers. `resize-drag.keep.test.ts` replays the owner's drags; it failed on 22 of 23 cases before the fix.
+
+## Follow-up: the stacked seam
+
+After the fix the owner found that resizing at the point where two stacked windows meet resized only one of them. The cause was step 2 of the session: a follower had to have its facing edge flush with a side of the dragged window and overlap that window along the side. Two widgets stacked against main's left edge share main's edge, not each other's, so dragging one widget's right edge moved main but left the other widget behind, and a window that met the line only end to end (a widget stacked below main's bottom corner) never joined when main's left edge moved. Followers of followers were not chained.
+
+Followers are now taken along the dragged line in `line-followers.ts`. A window joins when its facing edge lies on the line and it overlaps a window already reached, or when its matching edge lies on the line, it sits on the far side of the line and it meets a window already reached there end to end. The dragged window's own side of the line never chains end to end, so two windows side by side whose bottoms line up still resize alone. A window can follow on two sides and gets one move. `stacked-seam.keep.test.ts` replays both cases; it failed on 5 of 8 cases before the change.

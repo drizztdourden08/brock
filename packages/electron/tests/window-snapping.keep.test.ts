@@ -151,9 +151,12 @@ describe('the shared edge of a resize', () => {
     expect(changed(result, others)).toEqual([]);
   });
 
-  it('drags only the facing edge of the neighbour across the seam', () => {
+  it('drags the facing edge across the seam and the matching edge of the window stacked below, since both are flush with it', () => {
     const others = [{ id: 'bottom', bounds: bottom }, { id: 'left', bounds: leftOf }];
-    expect(changed(planStep('top', drag({ x: 460, width: 340 }, 'left'), others), others)).toEqual([{ id: 'left', bounds: { ...leftOf, width: 260 } }]);
+    expect(changed(planStep('top', drag({ x: 460, width: 340 }, 'left'), others), others)).toEqual([
+      { id: 'left', bounds: { ...leftOf, width: 260 } },
+      { id: 'bottom', bounds: { ...bottom, x: 460, width: 340 } },
+    ]);
   });
 
   it('leaves windows that are not on the edge alone', () => {

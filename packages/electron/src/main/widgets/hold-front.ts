@@ -1,10 +1,10 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
-import type { GroupMember } from './widget-windows.type';
+import type { ClusterMember } from './widget-windows.type';
 
 const live = (win: BrowserWindow): boolean => !win.isDestroyed();
 
-const holdFront = (members: readonly GroupMember[], backdrop: BrowserWindow): (() => void) => {
+const holdFront = (members: readonly ClusterMember[], backdrop: BrowserWindow): (() => void) => {
   const windows = [backdrop, ...members.map((member) => member.win)];
   const front = (on: boolean): void => {
     for (const win of windows.filter(live)) win.setAlwaysOnTop(on, 'screen-saver');

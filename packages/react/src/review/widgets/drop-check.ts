@@ -27,7 +27,7 @@ const checkCovered = async (tour: StepTour, id: string, coverId: string): Promis
     return;
   }
   await requireHostApi().setWidgetPin(coverId, 'top');
-  await probe({ kind: 'drag', id: coverId, bounds: { x: main.x + COVER_INSET, y: main.y + COVER_INSET, width: COVER_SIZE, height: COVER_SIZE } });
+  await probe({ kind: 'drag', alone: true, id: coverId, bounds: { x: main.x + COVER_INSET, y: main.y + COVER_INSET, width: COVER_SIZE, height: COVER_SIZE } });
   const drop = await probe({ kind: 'drop', id, point: { x: COVER_POINT, y: COVER_POINT } });
   const ignored = !drop.counted && placement(id) === 'popped';
   tour.check('drop-in-covered', ignored, 'a drop where another window covers the app did not count', 'a drop under another window still docked the widget');

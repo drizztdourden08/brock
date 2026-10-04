@@ -1,8 +1,8 @@
 /* @layer electron-main @kind logic */
 import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
-import type { GroupMember } from './widget-windows.type';
+import type { ClusterMember } from './widget-windows.type';
 
-const placeMember = (member: GroupMember, bounds: WidgetWindowBounds, report: boolean): void => {
+const placeMember = (member: ClusterMember, bounds: WidgetWindowBounds, report: boolean): void => {
   const { entry, win } = member;
   if (win.isDestroyed()) return;
   if (!entry) {

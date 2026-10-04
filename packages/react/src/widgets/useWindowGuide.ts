@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { WindowGuideState } from '@drizztdourden08/brock-core';
 import { hostApi } from '../host/host-api';
-import { CLOSED_GUIDE } from './window-groups.constants';
+import { CLOSED_GUIDE } from './WindowGuide/WindowGuide.constants';
 
 const useWindowGuide = (): WindowGuideState => {
   const [guide, setGuide] = useState<WindowGuideState>(CLOSED_GUIDE);

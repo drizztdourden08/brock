@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron';
 import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { BACKDROP_COLOR } from './widget-windows.constants';
 
-const groupBackdrop = (area: WidgetWindowBounds): BrowserWindow => {
+const clusterBackdrop = (area: WidgetWindowBounds): BrowserWindow => {
   const backdrop = new BrowserWindow({
     ...area,
     frame: false,
@@ -25,4 +25,4 @@ const groupBackdrop = (area: WidgetWindowBounds): BrowserWindow => {
   return backdrop;
 };
 
-export { groupBackdrop };
+export { clusterBackdrop };

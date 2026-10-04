@@ -5,6 +5,7 @@ import { widgets } from '../../widgets/widgets';
 import type { StepTour } from '../review.type';
 import { probe } from './probe';
 import { sameRect } from './same-rect';
+import { checkStackedSeam } from './stacked-seam-check';
 import { windowOpen } from './window-open';
 import { withReviewWidget } from './with-review-widget';
 import { EDGE_SHIFT, FREE_GAP, MAIN_LINK, STACK_SIZE, STACK_WIDGET_ID } from './widget-review.constants';
@@ -13,8 +14,8 @@ const stackBoth = async (id: string, otherId: string): Promise<{ x: number; y: n
   const main = (await probe({ kind: 'window', id })).facts?.windows[MAIN_LINK];
   if (!main) return null;
   const x = main.x + main.width + FREE_GAP;
-  await probe({ kind: 'drag', id, bounds: { x, y: main.y, ...STACK_SIZE } });
-  await probe({ kind: 'drag', id: otherId, bounds: { x, y: main.y + STACK_SIZE.height, ...STACK_SIZE } });
+  await probe({ kind: 'drag', alone: true, id, bounds: { x, y: main.y, ...STACK_SIZE } });
+  await probe({ kind: 'drag', alone: true, id: otherId, bounds: { x, y: main.y + STACK_SIZE.height, ...STACK_SIZE } });
   return { x, y: main.y };
 };
 
@@ -55,6 +56,7 @@ const checkStack = async (tour: StepTour, id: string, otherId: string): Promise<
   await checkSeam(tour, id, otherId, at);
   await requireHostApi().reviewCaptureGroup('window-grid');
   await checkCtrl(tour, id, otherId, at);
+  await checkStackedSeam(tour, id, otherId);
 };
 
 const checkSharedEdge = (tour: StepTour, id: string): Promise<void> =>

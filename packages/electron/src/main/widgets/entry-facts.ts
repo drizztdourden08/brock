@@ -7,7 +7,7 @@ const entryFacts = (popped: WidgetWindowOpen = {}): EntryFacts => {
   const sync = popped.pin === 'with-app' || (popped.sync ?? true);
   const wantsTaskbar = popped.taskbar === true;
   return {
-    pin: popped.pin === 'top' ? 'top' : 'off', snap, link: snap ? popped.link ?? null : null, seq: popped.seq, sync, group: popped.group ?? null, wantsTaskbar, taskbar: wantsTaskbar || !sync,
+    pin: popped.pin === 'top' ? 'top' : 'off', snap, link: snap ? popped.link ?? null : null, seq: popped.seq, sync, wantsTaskbar, taskbar: wantsTaskbar || !sync,
   };
 };
 

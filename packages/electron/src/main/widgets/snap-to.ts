@@ -1,11 +1,17 @@
 /* @layer electron-main @kind logic */
 import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
+import { alignAlong } from './align-along';
+import { isAcross } from './is-across';
+import { spansNear } from './spans-near';
 import { spansOverlap } from './spans-overlap';
 import { SNAP_DISTANCE } from './widget-windows.constants';
-import type { SnapCandidate, SnapTarget, Snapped } from './widget-windows.type';
+import type { SnapCandidate, SnapTarget, Snapped, Span } from './widget-windows.type';
 
-const besideCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds): SnapCandidate[] => {
-  if (!spansOverlap(moving.y, moving.height, target.y, target.height)) return [];
+const spanOf = (bounds: WidgetWindowBounds, across: boolean): Span =>
+  (across ? { start: bounds.y, length: bounds.height } : { start: bounds.x, length: bounds.width });
+
+const besideCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds, reach: number): SnapCandidate[] => {
+  if (!spansNear(spanOf(moving, true), spanOf(target, true), reach)) return [];
   const rightOf = target.x + target.width;
   return [
     { edge: 'right', distance: Math.abs(moving.x - rightOf), x: rightOf, y: moving.y },
@@ -13,8 +19,8 @@ const besideCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds
   ];
 };
 
-const stackedCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds): SnapCandidate[] => {
-  if (!spansOverlap(moving.x, moving.width, target.x, target.width)) return [];
+const stackedCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBounds, reach: number): SnapCandidate[] => {
+  if (!spansNear(spanOf(moving, false), spanOf(target, false), reach)) return [];
   const below = target.y + target.height;
   return [
     { edge: 'bottom', distance: Math.abs(moving.y - below), x: moving.x, y: below },
@@ -22,16 +28,38 @@ const stackedCandidates = (moving: WidgetWindowBounds, target: WidgetWindowBound
   ];
 };
 
+const cornered = (moving: WidgetWindowBounds, candidate: SnapCandidate, targets: readonly SnapTarget[], reach: number): WidgetWindowBounds => {
+  const across = isAcross(candidate.edge);
+  const placed = { ...moving, x: candidate.x, y: candidate.y };
+  const along = alignAlong(spanOf(placed, across), targets.map((target) => spanOf(target.bounds, across)), reach);
+  return across ? { ...placed, y: along } : { ...placed, x: along };
+};
+
+const touching = (own: Span, other: Span): boolean => own.start === other.start + other.length || own.start + own.length === other.start;
+
+const placeCandidate = (moving: WidgetWindowBounds, candidate: SnapCandidate, target: SnapTarget, targets: readonly SnapTarget[]): Snapped | null => {
+  const bounds = cornered(moving, candidate, targets, SNAP_DISTANCE);
+  const across = isAcross(candidate.edge);
+  const own = spanOf(bounds, across);
+  const other = spanOf(target.bounds, across);
+  if (spansOverlap(own.start, own.length, other.start, other.length)) return { bounds, link: { to: target.to, edge: candidate.edge } };
+  return touching(own, other) ? { bounds, link: null } : null;
+};
+
 const snapTo = (moving: WidgetWindowBounds, targets: readonly SnapTarget[], reach = SNAP_DISTANCE): Snapped | null => {
-  let best: (SnapCandidate & { to: string }) | null = null;
+  let best: Snapped | null = null;
+  let bestDistance = reach + 1;
   for (const target of targets) {
-    const candidates = [...besideCandidates(moving, target.bounds), ...stackedCandidates(moving, target.bounds)];
+    const candidates = [...besideCandidates(moving, target.bounds, reach), ...stackedCandidates(moving, target.bounds, reach)];
     for (const candidate of candidates) {
-      if (candidate.distance <= reach && (!best || candidate.distance < best.distance)) best = { ...candidate, to: target.to };
+      if (candidate.distance > reach || candidate.distance >= bestDistance) continue;
+      const placed = placeCandidate(moving, candidate, target, targets);
+      if (!placed) continue;
+      best = placed;
+      bestDistance = candidate.distance;
     }
   }
-  if (!best) return null;
-  return { bounds: { ...moving, x: best.x, y: best.y }, link: { to: best.to, edge: best.edge } };
+  return best;
 };
 
 export { snapTo };

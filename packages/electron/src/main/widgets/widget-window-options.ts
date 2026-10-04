@@ -12,7 +12,7 @@ const widgetWindowOptions = (setup: WidgetWindowSetup, id: string, popped?: Widg
   minHeight: WIDGET_WINDOW_MIN.height,
   frame: false,
   autoHideMenuBar: true,
-  skipTaskbar: popped?.taskbar !== true,
+  skipTaskbar: popped?.taskbar !== true && popped?.sync !== false,
   title: `${setup.title} - ${id}`,
   show: false,
   focusable: !setup.headless,

@@ -4,6 +4,8 @@ import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
 import { boundsOf } from './bounds-of';
 import { crossesScale } from './crosses-scale';
 import { dragWanted } from './drag-wanted';
+import { manipulationRules } from './manipulation-rules';
+import { modifierState } from './modifier-state';
 import { relink } from './relink';
 import { shouldIntervene } from './should-intervene';
 import { snapTargets } from './snap-targets';
@@ -17,7 +19,7 @@ const draggedEntry = (id: string): WidgetWindowEntry | null => {
 };
 
 const snapWhileDragging = (id: string, entry: WidgetWindowEntry, wanted: WidgetWindowBounds, crossing: boolean): Snapped | null => {
-  if (!entry.snap) return null;
+  if (!manipulationRules(modifierState.ctrl, entry.snap).snap) return null;
   const hit = crossing ? null : snapTo(wanted, snapTargets(id));
   relink(id, entry, hit?.link ?? null);
   return hit;

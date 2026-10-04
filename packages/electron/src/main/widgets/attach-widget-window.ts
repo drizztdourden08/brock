@@ -5,18 +5,23 @@ import { getMainWindow } from '../window/get-main-window';
 import { boundsOf } from './bounds-of';
 import { cursorInApp } from './cursor-in-app';
 import { dragBounds } from './drag-bounds';
+import { followGroup } from './follow-group';
+import { resizeBounds } from './resize-bounds';
 import { settleWindow } from './settle-window';
+import { towHold } from './tow-hold';
 import { towLinked } from './tow-linked';
 import { watchDragIn } from './watch-drag-in';
+import { watchModifiers } from './watch-modifiers';
 import { widgetRuntime } from './widget-runtime';
 import { widgetWindowControl } from './widget-window-control';
+import { windowGuide } from './window-guide';
 import { zStamps } from './z-stamps';
 import type { WidgetWindowEntry } from './widget-windows.type';
 
 const followLive = (id: string, entry: WidgetWindowEntry): void => {
   if (entry.towed || entry.win.isDestroyed()) return;
   const now = boundsOf(entry.win);
-  towLinked(id, entry.last, now);
+  if (!towHold.held()) towLinked(id, entry.last, now);
   entry.last = now;
 };
 
@@ -25,17 +30,31 @@ const tellClosed = (id: string, entry: WidgetWindowEntry): void => {
   if (main && !widgetRuntime.quitting) emit(main, 'widget:closed', id, entry.closing ? entry.closing.where : 'close', entry.seq);
 };
 
-const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowEntry): void => {
-  const raise = (): void => {
-    entry.zStamp = zStamps.next();
-  };
+const watchManipulation = (id: string, win: BrowserWindow): void => {
   win.on('will-move', (event, proposed) => {
     if (cursorInApp(id, win)) return;
+    windowGuide.touch('moving');
     const wanted = dragBounds(id, proposed);
     if (!wanted) return;
     event.preventDefault();
     win.setBounds(wanted);
   });
+  win.on('will-resize', (event, proposed, details) => {
+    windowGuide.touch('resizing');
+    const wanted = resizeBounds(id, proposed, details.edge);
+    if (!wanted) return;
+    event.preventDefault();
+    win.setBounds(wanted);
+  });
+  win.on('moved', windowGuide.end);
+  win.on('resized', windowGuide.end);
+};
+
+const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowEntry): void => {
+  const raise = (): void => {
+    entry.zStamp = zStamps.next();
+  };
+  watchManipulation(id, win);
   win.on('move', () => followLive(id, entry));
   win.on('moved', () => settleWindow(id));
   win.on('resized', () => settleWindow(id));
@@ -48,6 +67,8 @@ const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowE
     tellClosed(id, entry);
   });
   watchDragIn(id, win, entry);
+  watchModifiers(win);
+  followGroup(id, win);
 };
 
 export { attachWidgetWindow };

@@ -2,8 +2,10 @@
 import type { BrowserWindow } from 'electron';
 import type { WidgetPinMode, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowState } from '@drizztdourden08/brock-core';
 import { applyPin } from './apply-pin';
+import { applySync } from './apply-sync';
 import { boundsOf } from './bounds-of';
 import { createBoundsReporter } from './create-bounds-reporter';
+import { entryFacts } from './entry-facts';
 import { liveEntries } from './live-entries';
 import { mainOnTop } from './main-on-top';
 import { tellMain } from './tell-main';
@@ -19,12 +21,12 @@ const liveEntry = (id: string): WidgetWindowEntry | null => {
 };
 
 const register = (id: string, win: BrowserWindow, popped?: WidgetWindowOpen): WidgetWindowEntry => {
-  const snap = popped?.snap ?? true;
   const entry: WidgetWindowEntry = {
-    win, pin: popped?.pin ?? 'off', snap, link: snap ? popped?.link ?? null : null, last: boundsOf(win), towed: false, grab: null, hiddenWithApp: false,
-    parked: false, seq: popped?.seq, closing: null, report: createBoundsReporter(id, win), zStamp: zStamps.next(), over: false, faded: false,
+    win, ...entryFacts(popped), last: boundsOf(win), towed: false, grab: null, hiddenWithApp: false, parked: false, closing: null,
+    report: createBoundsReporter(id, win), zStamp: zStamps.next(), over: false, faded: false, square: false,
   };
   widgetWindowEntries.set(id, entry);
+  applySync(entry);
   applyPin(entry, mainOnTop());
   return entry;
 };

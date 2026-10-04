@@ -7,6 +7,8 @@ import { crossesScale } from './crosses-scale';
 import { dragWanted } from './drag-wanted';
 import { isMainNormal } from './is-main-normal';
 import { mainSnapState } from './main-snap-state';
+import { manipulationRules } from './manipulation-rules';
+import { modifierState } from './modifier-state';
 import { oppositeEdge } from './opposite-edge';
 import { relink } from './relink';
 import { shouldIntervene } from './should-intervene';
@@ -21,7 +23,7 @@ const dragTo = (main: BrowserWindow, proposed: WidgetWindowBounds): WidgetWindow
   mainSnapState.grab ??= { x: cursor.x - current.x, y: cursor.y - current.y };
   const wanted = dragWanted(cursor, mainSnapState.grab, current);
   const crossing = crossesScale(current, wanted);
-  const hit = crossing ? null : snapMainAt(wanted);
+  const hit = crossing || !manipulationRules(modifierState.ctrl, true).snap ? null : snapMainAt(wanted);
   const next = hit?.bounds ?? wanted;
   mainSnapState.hit = hit;
   return shouldIntervene(proposed, next, hit !== null, crossing) ? next : null;
@@ -31,9 +33,10 @@ const settle = (): void => {
   const { hit } = mainSnapState;
   mainSnapState.grab = null;
   mainSnapState.hit = null;
-  const entry = hit ? widgetWindowEntries.get(hit.link.to) : undefined;
-  if (!hit || !entry || entry.win.isDestroyed() || !entry.snap || entry.link) return;
-  relink(hit.link.to, entry, { to: MAIN_ANCHOR, edge: oppositeEdge(hit.link.edge) });
+  const link = hit?.link ?? null;
+  const entry = link ? widgetWindowEntries.get(link.to) : undefined;
+  if (!link || !entry || entry.win.isDestroyed() || !entry.snap || entry.link) return;
+  relink(link.to, entry, { to: MAIN_ANCHOR, edge: oppositeEdge(link.edge) });
 };
 
 const mainSnap = { dragTo, settle };

@@ -1,5 +1,33 @@
 # @drizztdourden08/brock-react
 
+## 0.18.0
+
+### Minor Changes
+
+- 70d80cf: Brock moves to Tessera ^0.16.1 and standards ^0.7.0, which Tessera 0.16's lint extension needs. Breaking: `BackTitle` and `BackTitleProps`, `titleBarMenu`, the `focus` option of `confirmAction` and the `ConfirmFocus` type are gone, replaced by Tessera's header Back buttons, title bar dropdowns and danger dialogs; migration `shell-workarounds-removed` lists each use. StackedBar comes from the primitives, the faint text colour is gone from Brock's styles, Brock's stylesheets name no Tessera internals, and the bug report fields take the full dialog width now that Field stops at 512 px.
+
+### Patch Changes
+
+- 70d80cf: Back is Tessera's: a screen passes `onBack` to ScreenWindow, whose header draws Back outside the heading, so the hub dialog is named by its title alone (it read "Back Multiworld"), and a hub sub-page passes `back: { label, onSelect }` to ScreenPage for its "Back to <page>" button (B-07, B-08).
+- 70d80cf: The confirm dialog is Tessera's `Dialog`, which starts a danger dialog on Cancel, keeps Tab inside and gives focus back; Brock's cancel-first dialog is gone. `confirmDelete({ what, consequence })` is unchanged.
+- 70d80cf: About copies its debug info, and the Performance widget its snapshot, through Tessera's `CopyButton`.
+- 70d80cf: The review check floating-widget-resizes measures the grown size against the main view's real limit, so a layout with rows above and below main passes.
+- 70d80cf: A hub's side nav remembers open or folded per hub through its `storageKey`.
+- 70d80cf: `JobDialog` draws Tessera's `JobDialog` and `TaskProgress`, and a done job ticks every step through Stepper `complete` instead of a made up Done step (B-15).
+- 70d80cf: A tab page opened by a route that names no tab opens on its last tab, remembered per tab page in screen state.
+- 70d80cf: Screen and page `meta.menuOrder` orders the title bar menu, falling back to `meta.order`, so the menu and the nav can sort differently.
+- 2473089: The review focuses the hub search field when the side nav is open (Tessera 0.16 opens it with labels), counts a title bar dropdown listed as a sub-menu as a menu action, finds the screen card and the Back button by their Tessera 0.16 markup, and checks on every screen that focus moves in, the page behind is inert and the title bar and widget dock stay usable.
+- 70d80cf: A failed settings save shows a danger toast with Retry, and `toast()` takes an `action` (ux-48).
+- 70d80cf: Screens take focus, make the page behind inert and give focus back through Tessera's ScreenLayer; Brock's own focus and inert code is gone. The title bar and the widget dock sit outside the screens' parent and stay usable, and the review checks it on every screen (ux-38).
+- 70d80cf: `SettingAction.onSelect` gets the current settings, and `disabled` takes a boolean or `(settings) => boolean`.
+- 70d80cf: Settings row actions draw through SettingsRow `actions`, after the control or in its place, with the danger tone and an in-row question when `confirm` is a string; the second row under a control is gone (B-11).
+- 70d80cf: The keyboard shortcuts dialog lists its keys with Tessera's `ShortcutList`.
+- 70d80cf: A `kind: 'menu'` title bar item is a Tessera title bar dropdown (`bar: 'dropdown'` with `groups`), which folds into a sub-menu of the main menu as the bar narrows, and takes `groups` with labels or plain `items`. A status item passes `pulse` on, and the job status pulses while a job runs. `TitleBarMenuHost` and its store are gone (B-12).
+- da0b1eb: The title bar Search button is primary with a twinkle on the looking glass, and Report a bug is red (danger) with a ping, as the owner asked (Tessera 0.16.1 tone and effect on title bar actions). This reverts the neutral bug button of 0.17.
+- 70d80cf: Widgets use Tessera's body padding and fill: the Performance widget drops its own padding, the Logs widget uses `padding: 'none'`, `fill` and LogPanel `height="fill"`, and widget `meta` accepts `padding` and `fill`.
+- 70d80cf: A popped widget window passes its options to Tessera's `Widget.options`, so the gear opens `WidgetOptions` in a `ControlMenu`, with the drag shortcuts as a `ShortcutList`. Its title strip is marked `data-app-region="drag"` and the Search button `no-drag`, in place of Brock's `-webkit-app-region` rules, so a click on the strip closes an open menu (tessera-66, I-61).
+  - @drizztdourden08/brock-core@0.18.0
+
 ## 0.17.1
 
 ### Patch Changes

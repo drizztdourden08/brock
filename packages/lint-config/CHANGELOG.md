@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.18.0
+
+### Minor Changes
+
+- 70d80cf: Brock moves to Tessera ^0.16.1 and standards ^0.7.0, which Tessera 0.16's lint extension needs. Breaking: `BackTitle` and `BackTitleProps`, `titleBarMenu`, the `focus` option of `confirmAction` and the `ConfirmFocus` type are gone, replaced by Tessera's header Back buttons, title bar dropdowns and danger dialogs; migration `shell-workarounds-removed` lists each use. StackedBar comes from the primitives, the faint text colour is gone from Brock's styles, Brock's stylesheets name no Tessera internals, and the bug report fields take the full dialog width now that Field stops at 512 px.
+
+### Patch Changes
+
+- 70d80cf: The generated `.brock` files are never linted: `brockEslint` ignores `**/.brock/**`, the templates list it, and migration `eslint-brock-ignore` adds it to the ESLint config of the app and of the workspace root.
+
 ## 0.17.1
 
 ## 0.17.0

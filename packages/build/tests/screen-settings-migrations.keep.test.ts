@@ -22,6 +22,29 @@ const PAGE = [
   '',
 ].join('\n');
 
+const TEMPLATE_PAGE = [
+  "import type { Section } from '@drizztdourden08/brock-react';",
+  '',
+  'const sections: Section[] = [',
+  '  {',
+  "    id: 'window',",
+  "    title: 'Window',",
+  '    items: [',
+  '      {',
+  "        key: 'startFullscreen',",
+  "        label: 'Start fullscreen',",
+  "        description: 'Open in fullscreen on launch.',",
+  '      },',
+  "      { key: 'enableAudio', label: 'Audio', description: 'Play sound.' },",
+  "      { key: 'ink', label: 'Ink', description: 'Pen colour.' },",
+  '    ],',
+  '  },',
+  '];',
+  '',
+  'export default sections;',
+  '',
+].join('\n');
+
 const TAB = [
   "import { SettingsSection } from '@drizztdourden08/tessera/composites';",
   '',
@@ -74,6 +97,26 @@ describe('the 0.10.0 settings row and screen migrations', () => {
     expect(tab).toContain('"Sync" has no hint and no description (or noDescription: true)');
     expect(fullscreen).toContain('"Start fullscreen" has no hint. Add hint.');
     expect(scale).toContain('Add hint and description (or noDescription: true)');
+  });
+
+  it('gives the rows create-brock scaffolded their template hint and keeps the to-do for app rows', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'brock-template-rows-'));
+    try {
+      writeFileSync(join(root, 'package.json'), '{"name":"x"}');
+      mkdirSync(join(root, 'src', 'screens', 'game'), { recursive: true });
+      const file = join(root, 'src', 'screens', 'game', 'general.settings.ts');
+      writeFileSync(file, TEMPLATE_PAGE);
+      const run = await runMigrations(root, release());
+      const page = readFileSync(file, 'utf8');
+      expect(page).toContain("{ key: 'enableAudio', label: 'Audio', description: 'Play sound.', hint: 'Off mutes every sound the app plays, whatever the volume.' }");
+      expect(page).toContain("        description: 'Open in fullscreen on launch.',\n        hint: 'On, the app opens fullscreen the next time it starts. The window you have now stays as it is.',\n      },");
+      expect(run.todos.filter((todo) => todo.migration === 'settings-row-hints').map(({ message }) => message.slice(message.indexOf('The settings row')))).toEqual(['The settings row "Ink" has no hint. Add hint.']);
+      const again = await runMigrations(root, release());
+      expect(readFileSync(file, 'utf8')).toBe(page);
+      expect(again.todos.filter((todo) => todo.migration === 'settings-row-hints')).toHaveLength(1);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('leaves a to-do on each screen defined without an icon', async () => {

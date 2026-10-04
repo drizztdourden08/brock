@@ -7,6 +7,15 @@ const NO_TYPESCRIPT = `${FIELDS} TypeScript is not installed, so the rows here w
 
 const ROW_LISTS = new Set(['items', 'rows']);
 
+const TEMPLATE_HINTS = Object.freeze({
+  'windowMode|Window mode': 'Pick how the window sits on the screen. It changes right away.',
+  'startFullscreen|Start fullscreen': 'On, the app opens fullscreen the next time it starts. The window you have now stays as it is.',
+  'enableAudio|Audio': 'Off mutes every sound the app plays, whatever the volume.',
+  'masterVolume|Master volume': 'Drag to scale every sound at once. 100% plays them as made.',
+  'developerToolsEnabled|Developer tools': 'On, the menu shows the developer entries and the shortcut opens the browser developer tools.',
+  'allowDebugLogging|Debug logging': 'On, the session log keeps the detailed lines that help when you report a bug. The log grows faster.',
+});
+
 const nameOf = (ts, node) => (node.name && (ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) ? node.name.text : null);
 
 const listNameOf = (ts, list) => {
@@ -37,24 +46,42 @@ const missingOf = (fields) => [
   ...(fields.has('description') || fields.has('noDescription') ? [] : ['description (or noDescription: true)']),
 ];
 
-const todoOf = (ts, file, object) => {
+const textOf = (ts, fields, name) => {
+  const field = fields.get(name);
+  return field && ts.isPropertyAssignment(field) && ts.isStringLiteralLike(field.initializer) ? field.initializer.text : null;
+};
+
+const templateHintOf = (ts, fields) => (fields.has('hint') ? null : TEMPLATE_HINTS[`${textOf(ts, fields, 'key')}|${textOf(ts, fields, 'label')}`] ?? null);
+
+const hintEdit = (file, object, after, hint) => {
+  const source = file.text;
+  const lineStart = source.lastIndexOf('\n', after.getStart(file)) + 1;
+  const indent = /^[ \t]*/.exec(source.slice(lineStart))?.[0] ?? '';
+  const multiline = source.slice(object.getStart(file), after.getStart(file)).includes('\n');
+  return { start: after.end, end: after.end, text: `${multiline ? `,\n${indent}` : ', '}hint: '${hint.replace(/'/g, "\\'")}'` };
+};
+
+const rowOf = (ts, file, object) => {
   const fields = fieldsOf(ts, object);
-  if (!isRow(ts, object, fields)) return [];
-  const missing = missingOf(fields);
-  if (missing.length === 0) return [];
-  return [{ line: tsSource.lineOf(file, object), message: `${FIELDS} The settings row ${labelOf(ts, fields)} has no ${missing.join(' and no ')}. Add ${missing.join(' and ')}.` }];
+  if (!isRow(ts, object, fields)) return { edits: [], todos: [] };
+  const hint = templateHintOf(ts, fields);
+  const edits = hint ? [hintEdit(file, object, fields.get('description') ?? fields.get('label'), hint)] : [];
+  const missing = missingOf(hint ? new Map([...fields, ['hint', null]]) : fields);
+  if (missing.length === 0) return { edits, todos: [] };
+  return { edits, todos: [{ line: tsSource.lineOf(file, object), message: `${FIELDS} The settings row ${labelOf(ts, fields)} has no ${missing.join(' and no ')}. Add ${missing.join(' and ')}.` }] };
 };
 
 const apply = ({ path, source }) => {
   const ts = loadTypescript(process.cwd());
   if (!ts) return { source, todos: /\.settings\.ts$/.test(path) ? [{ line: 1, message: NO_TYPESCRIPT }] : [] };
   const file = tsSource.parse(ts, path, source);
-  return { source, todos: rowsOf(ts, file).flatMap((object) => todoOf(ts, file, object)) };
+  const rows = rowsOf(ts, file).map((object) => rowOf(ts, file, object));
+  return { source: tsSource.applyEdits(source, rows.flatMap((row) => row.edits)), todos: rows.flatMap((row) => row.todos) };
 };
 
 const migration = Object.freeze({
   id: 'settings-row-hints',
-  summary: 'Every settings row now needs a hint and a description, or noDescription: true: each app row without them, in a .settings.ts page, a settings tab or a Tessera SettingsSection, becomes a to-do naming the missing fields.',
+  summary: 'Every settings row now needs a hint and a description, or noDescription: true. A row create-brock scaffolded gets the template hint; every other row without them, in a .settings.ts page, a settings tab or a Tessera SettingsSection, becomes a to-do naming the missing fields.',
   files: /(?:^|\/)src\/.+\.tsx?$/,
   apply,
 });

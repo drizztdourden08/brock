@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import { ABOUT_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES } from '../app/BrockApp/BrockApp.constants';
 import type { MenuItem } from '../menu/menu.type';
-import { LOGS_WIDGET_ID } from '../widgets/LogsWidget/LogsWidget.constants';
+import { LOGS_WIDGET_ID } from '../widgets/built-in/LogsWidget/LogsWidget.constants';
 
 const SETTLE_MS = 300;
 const WAIT_MS = 3000;

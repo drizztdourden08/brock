@@ -15,6 +15,7 @@ import { tesseraConfigFor } from '../tessera/tessera-config-for.mjs';
 import { TESSERA_CONFIG_FILE } from '../tessera/tessera.constants.mjs';
 import { tokenGlobs } from '../tessera/token-globs.mjs';
 import { ignoreGenerated } from './adopt-gitignore.mjs';
+import { layoutLines } from './adopt-layout.mjs';
 import { handWrittenSplash } from './hand-written-splash.mjs';
 import { knipJson } from './knip-config.mjs';
 import { THREAD, workspaceConfig } from './workspace-config.mjs';
@@ -170,6 +171,7 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
   if (keepCrossDriveLinks(rootDir).length) files.written.push('.npmrc and .gitattributes (links across drives)');
   printSummary(scope, files, addLauncher(rootDir, scope, { force, files }));
+  for (const line of layoutLines(rootDir)) console.log(line);
   for (const page of handWrittenSplash(rootDir)) console.log(`  ${page}: holds a hand-written boot splash or logo path. Brock owns the splash and the logos; remove them.`);
   return 0;
 };

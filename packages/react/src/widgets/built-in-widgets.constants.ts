@@ -1,20 +1,11 @@
 /* @layer renderer-shell @kind constants */
-import { createElement } from 'react';
-import { defineWidget } from './define-widget';
-import { LogsWidget } from './LogsWidget/LogsWidget';
-import { LOGS_WIDGET_ID } from './LogsWidget/LogsWidget.constants';
+import LogsWidget, { meta as logsMeta } from './built-in/logs.widget';
+import { LOGS_WIDGET_ID } from './built-in/LogsWidget/LogsWidget.constants';
 import type { WidgetDef } from './widget.type';
+import { widgetsFromFiles } from './widgets-from-files';
 
-const BUILT_IN_WIDGETS: readonly WidgetDef[] = [
-  defineWidget({
-    id: LOGS_WIDGET_ID,
-    label: 'Logs',
-    render: () => createElement(LogsWidget),
-    defaultSide: 'bottom',
-    defaultDockedSize: 240,
-    defaultFloatingSize: { width: 640, height: 360 },
-    popOut: true,
-  }),
-];
+const BUILT_IN_WIDGETS: readonly WidgetDef[] = widgetsFromFiles([
+  { id: LOGS_WIDGET_ID, component: LogsWidget, meta: logsMeta },
+]);
 
 export { BUILT_IN_WIDGETS };

@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-display
 
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [df9c1df]
+- Updated dependencies [df9c1df]
+- Updated dependencies [df9c1df]
+- Updated dependencies [df9c1df]
+  - @drizztdourden08/brock-react@0.19.0
+  - @drizztdourden08/brock-core@0.19.0
+  - @drizztdourden08/brock-electron@0.19.0
+
 ## 0.18.0
 
 ### Patch Changes

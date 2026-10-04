@@ -26,18 +26,18 @@ const createDomainFiles = (domain: string, dirOf: () => string): DomainFiles => 
     dir: dirOf,
     path: at,
     exists: async (rel) => (await stat(at(rel)).catch(() => null)) !== null,
-    readJson: (rel, fallback) => readJsonAt(file(rel), fallback),
-    writeJson: (rel, value) => writeAtomic(file(rel), `${JSON.stringify(value, null, 2)}\n`),
+    readJson: async (rel, fallback) => readJsonAt(file(rel), fallback),
+    writeJson: async (rel, value) => writeAtomic(file(rel), `${JSON.stringify(value, null, 2)}\n`),
     readText: async (rel) => (await readOrNull(file(rel)))?.toString('utf8') ?? null,
-    writeText: (rel, text) => writeAtomic(file(rel), text),
+    writeText: async (rel, text) => writeAtomic(file(rel), text),
     readBytes: async (rel) => {
       const data = await readOrNull(file(rel));
       return data ? new Uint8Array(data) : null;
     },
-    writeBytes: (rel, data) => writeAtomic(file(rel), data),
-    list: (dir = '') => listEntries(dirOf(), at(dir)),
-    remove: (rel) => rm(file(rel), { recursive: true, force: true }),
-    size: (rel = '') => pathBytes(at(rel)),
+    writeBytes: async (rel, data) => writeAtomic(file(rel), data),
+    list: async (dir = '') => listEntries(dirOf(), at(dir)),
+    remove: async (rel) => rm(file(rel), { recursive: true, force: true }),
+    size: async (rel = '') => pathBytes(at(rel)),
   };
 };
 

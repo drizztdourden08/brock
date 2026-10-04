@@ -51,6 +51,6 @@ interface TitleBarMenuState {
 }
 
 export type {
-  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuOpen, TitleBarMenuSpec, TitleBarMenuState,
+  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuSpec, TitleBarMenuState,
   TitleBarStatusSpec,
 };

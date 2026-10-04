@@ -55,6 +55,7 @@ declare const findJsxProps: (source: string, element: string, names: string[]) =
 declare const removeSpans: (source: string, spans: { start: number; end: number }[]) => string;
 declare const designPackageStep: (ctx: { rootDir: string }) => WorkspaceStepResult;
 declare const patternTodos: (source: string, rules: PatternRule[]) => { line: number; message: string }[];
+declare const addGeneratedProp: (source: string, wiring: { prop: string; name: string; file: string }) => string;
 
-export { collectMigrations, designPackageStep, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
+export { addGeneratedProp, collectMigrations, designPackageStep, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
 export type { JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations, WorkspaceStepResult };

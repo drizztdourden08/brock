@@ -34,7 +34,8 @@ const createDataDomains = (defs: readonly DataDomainDef[], dataPath: (dir: strin
     return found;
   };
   const filesOf = (domain: string): DomainFiles => {
-    const known = files.get(domain) ?? createDomainFiles(domain, () => dataPath(def(domain).dir));
+    const { dir } = def(domain);
+    const known = files.get(domain) ?? createDomainFiles(domain, () => dataPath(dir));
     files.set(domain, known);
     return known;
   };

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { scanFlatDir } from '../scan-flat-dir.mjs';
 import { META_EXPORT } from '../screens/screen-conventions.constants.mjs';
 import { DEFAULT_EXPORT, FILE_HINT, FOLDER_HINT, WIDGET_ID, WIDGET_SUFFIX, WIDGETS_DIR } from './widget-conventions.constants.mjs';
 
@@ -23,11 +24,6 @@ const readEntry = (rootDir, entry) => {
  * @param {string} rootDir the app root
  * @returns {{ files: WidgetFile[], findings: string[] }} files by id, and strays
  */
-const scanWidgets = (rootDir) => {
-  const dir = join(rootDir, WIDGETS_DIR);
-  if (!existsSync(dir)) return { files: [], findings: [] };
-  const read = readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).map((entry) => readEntry(rootDir, entry));
-  return { files: read.flatMap(({ file }) => (file ? [file] : [])), findings: read.flatMap(({ finding }) => (finding ? [finding] : [])) };
-};
+const scanWidgets = (rootDir) => scanFlatDir(rootDir, WIDGETS_DIR, readEntry);
 
 export { scanWidgets };

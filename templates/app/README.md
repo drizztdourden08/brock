@@ -24,7 +24,7 @@ pnpm lint:md             markdownlint
 brock.config.ts          product identity, targets, modules      yours
 pnpm-workspace.yaml      the catalog of dependency versions       yours
 tessera.config.json      where Tessera's tools put parts and find the theme ($schema alone: src/<kind>, src/theme.css)
-electron/main.ts         bootstrapApp(product, { modules })       yours
+electron/main.ts         bootstrapApp(product, { modules, dataDomains })  yours
 electron/preload.ts      createPreloadBridge({ maps, namespaces }) yours
 src/product.ts           defineProduct(config.product)
 src/main.tsx             <BrockApp ... />
@@ -37,8 +37,10 @@ src/screens/screens.config.ts  the buckets, their menu entries, home
 src/screens/game/home.hero.tsx  the Game hub home
 src/screens/game/general.settings.ts  the General settings page
 src/screens/game/controls.custom.tsx  a custom page with searchEntries
+src/screens/game/storage.page.tsx  the built-in Storage page: folder sizes, clean, export and import
 src/screens/credits.card.tsx  the Credits screen
 src/widgets/<id>.widget.tsx  a widget: tool panels docked, floating or in their own window (notes.widget.tsx)
+src/title-bar/<id>.action.ts  a title bar item: a button, a dropdown menu or a status tag
 src/views/, src/compounds/  Tessera parts: views own state, compounds draw one app concept (brock tessera new)
 src/primitives/, src/composites/  the rare app-only primitive or composite (brock tessera new)
 src/stores/use<Thing>Store.ts, src/hooks/use<Thing>.ts  app state and shared hooks
@@ -123,6 +125,30 @@ imports them from `src/views`. `pnpm structure` names anything else there.
 
 Brock adds two widgets of its own: Logs and Performance (frame rate, long tasks, heap,
 every process's CPU and memory, the app state, and a Copy snapshot button for bug reports).
+
+## Title bar
+
+An item of the app's own in the title bar is a file in `src/title-bar`, named
+`<id>.action.ts`. `pnpm dev` and `pnpm sync` write `.brock/title-bar.ts` from the files,
+and `src/main.tsx` passes it to `BrockApp` as `titleBar`.
+
+```ts
+export default defineTitleBarItem({ kind: 'menu', label: 'Rooms', icon: 'server', items: [...] });
+```
+
+`kind` is `'button'` (`onSelect`), `'menu'` (a dropdown of its own, `items` are menu
+entries) or `'status'` (a tag with `status` and `tone`, drawn while `status` is set). A
+status that reads app state default-exports a hook from `src/hooks` that returns the item
+or `null`. App items sit after Search, Report a bug and the module items, whose order and
+the window controls stay fixed, and fold into the main menu when the bar is too narrow.
+
+## Storage
+
+`dataDomains` in `electron/main.ts` names the app's folders under `Data/`. Main code reads
+and writes them with `ctx.storage.domain('<id>')` (`readJson`, `writeJson`, `readBytes`,
+`writeBytes`, `list`, `remove`, `size`), and the renderer with `dataDomain('<id>')`.
+`src/screens/game/storage.page.tsx` draws the built-in Storage page from them; move it to
+any bucket.
 
 ## Search
 

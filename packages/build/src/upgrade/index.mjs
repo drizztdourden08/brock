@@ -6,6 +6,7 @@ export { pinApp } from './pin-app.mjs';
 export { findJsxProps } from './codemods/find-jsx-props.mjs';
 export { removeSpans } from './codemods/remove-spans.mjs';
 export { patternTodos } from './codemods/pattern-todos.mjs';
+export { addGeneratedProp } from './codemods/add-generated-prop.mjs';
 export { designPackageStep } from './design/design-package-step.mjs';
 export { loadTypescript } from './tessera/load-typescript.mjs';
 export { tsSource } from './tessera/ts-source.mjs';

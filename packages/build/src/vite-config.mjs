@@ -10,6 +10,7 @@ import { loadBrockConfig } from './load-config.mjs';
 import { ownsSplashPage } from './splash/owns-splash-page.mjs';
 import { screensPlugin } from './screens/screens-plugin.mjs';
 import { widgetsPlugin } from './widgets/widgets-plugin.mjs';
+import { titleBarPlugin } from './title-bar/title-bar-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
 import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS, SPLASH_PRELOAD } from './vite.constants.mjs';
@@ -128,7 +129,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     renderer: {
       root: src,
       publicDir: resolve(rootDir, 'public'),
-      plugins: [react(), splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir })],
+      plugins: [react(), splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir })],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       server: { ...devServerPort(rootDir, product), fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {

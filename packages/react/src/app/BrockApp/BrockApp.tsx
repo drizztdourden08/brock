@@ -15,6 +15,7 @@ import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
+import { NO_WIDGETS } from '../../widgets/widget.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
@@ -22,13 +23,14 @@ import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   const log = useHostBoot(merged.logChannels, profileHooks);
   const titleBarActions = useMemo(() => [...STANDARD_TITLE_BAR_ACTIONS, ...merged.titleBarActions], [merged.titleBarActions]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
+  const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const settingsStore = useProfileSettingsStore(settings);
   const appTabs = settings.tabs ?? NO_TABS;
 
@@ -51,9 +53,9 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const context = useMemo<BrockContextValue>(
     () => ({
       product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
-      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance,
+      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance, moduleIds: merged.ids,
     }),
-    [product, home, tabs, settingsControls, menu, homeScreen, tree],
+    [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids],
   );
 
   return (
@@ -63,7 +65,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
           <ScreenRegistryContext.Provider value={registry}>
             <SettingsStoreContext.Provider value={settingsStore}>
               <ModuleProviders providers={merged.providers}>
-                {poppedId !== null ? <WidgetWindow id={poppedId} widgets={merged.widgets} /> : (
+                {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} /> : (
                   <AppShell
                     settingsStore={settingsStore}
                     bootTasks={allBootTasks}
@@ -72,7 +74,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     moduleMenu={merged.menu}
                     titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
-                    widgets={merged.widgets}
+                    widgets={allWidgets}
                     layout={layout}
                     screenGroups={screenGroups}
                   />

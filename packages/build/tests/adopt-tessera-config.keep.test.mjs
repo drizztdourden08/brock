@@ -54,6 +54,18 @@ describe('brock adopt and tessera.config.json', () => {
     });
   });
 
+  it('keeps each app\'s views in its own src for a monorepo with no design package yet', async () => {
+    const root = repo({
+      'package.json': { name: 'acme' },
+      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n",
+      'apps/desktop/package.json': { name: '@acme/desktop' },
+      'apps/desktop/brock.config.ts': 'export default {};\n',
+    });
+    await runAdopt({ rootDir: root });
+    expect(config(root)).toEqual({ $schema: SCHEMA, apps: { 'apps/desktop': { parts: { views: 'apps/desktop/src/views' } } } });
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('shared Tessera parts go in a packages/design package'));
+  });
+
   it('keeps a tessera.config.json that exists, even with --force', async () => {
     const root = repo({ 'package.json': { name: 'solo' }, 'tessera.config.json': '{ "theme": { "css": "styles/look.css" } }\n' });
     await runAdopt({ rootDir: root, force: true });

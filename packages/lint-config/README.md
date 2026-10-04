@@ -29,7 +29,7 @@ export default brockMarkdownlint({ ignores: ['vendor/**'] });
 
 | Facet | Adds |
 |---|---|
-| ESLint | raw-control messages that name the Tessera components (`TextInput`, `Select`, `TextArea`), default exports for screen files, module entries, `brock.workspace.mjs` and `boot/*.task.ts`, and screen files as lists for `local/one-export-per-file` |
+| ESLint | raw-control messages that name the Tessera components (`TextInput`, `Select`, `TextArea`), default exports for screen files, widget files (`src/widgets/**/<id>.widget.tsx`), module entries, `brock.workspace.mjs` and `boot/*.task.ts`, and screen and widget files as lists for `local/one-export-per-file` |
 | stylelint | `@drizztdourden08/tessera/tokens.css` as a token source for `brock/no-token-override` and `brock/no-token-shadow` |
 
 Every option of the standards factories works here. The rules, their ids (`local/*`, `BROCK001` to `BROCK006`, `brock/no-token-*`) and the extension API are documented in the standards README; the structure guide is its `docs/structure.md`.

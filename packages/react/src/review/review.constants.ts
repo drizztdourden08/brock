@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind constants */
 import { ABOUT_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES } from '../app/BrockApp/BrockApp.constants';
 import type { MenuItem } from '../menu/menu.type';
-import { LOGS_WIDGET_ID } from '../widgets/LogsWidget/LogsWidget.constants';
+import { LOGS_WIDGET_ID } from '../widgets/built-in/LogsWidget/LogsWidget.constants';
+import { PERFORMANCE_WIDGET_ID } from '../widgets/built-in/PerformanceWidget/PerformanceWidget.constants';
 
 const SETTLE_MS = 300;
 const WAIT_MS = 3000;
@@ -12,6 +13,11 @@ const ABOUT_SCREEN = ABOUT_ENTRY.screen ?? 'about';
 const VERSION_LABEL = 'Version';
 const PROFILES_SCREEN = 'profiles';
 const LOGS_WIDGET_KEY = `widget-${LOGS_WIDGET_ID}`;
+const PERFORMANCE_WIDGET_KEY = `widget-${PERFORMANCE_WIDGET_ID}`;
+const PERFORMANCE_LIVE_MS = 2500;
+const PERFORMANCE_ROWS = { frameRate: 'Frame rate', allProcesses: 'All processes' } as const;
+const FPS_VALUE = /^\d+ fps$/;
+const PROCESS_COUNT_VALUE = /^\d+, /;
 const UPDATER_MODULE_ID = 'updater';
 const UPDATE_MENU_LABEL = 'Check for updates';
 const BAR_ITEM_ATTRIBUTE = 'data-bar-item';
@@ -76,6 +82,8 @@ const SELECTORS = {
   aboutLabel: '.stat-row__label',
   aboutValue: '.stat-row__value',
   logsWidget: '.logs-widget',
+  performanceWidget: '.performance-widget',
+  statRow: '.stat-row',
   dockPane: '.dock-layout__pane',
   mainGrip: '.dock-grip',
   hero: '.screen-layer:not(.screen-layer--hidden) .hero',
@@ -103,6 +111,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, LOGS_WIDGET_KEY, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
+  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, PERFORMANCE_LIVE_MS, PERFORMANCE_ROWS, PERFORMANCE_WIDGET_KEY, PROCESS_COUNT_VALUE, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
   HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, SEARCH_HIT_CLASS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

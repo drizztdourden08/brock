@@ -133,12 +133,18 @@ interface SearchPick {
   picked: boolean;
 }
 
+interface PerformanceSnapshot {
+  before: Readonly<Record<string, string>>;
+  after: Readonly<Record<string, string>>;
+  sampling: boolean;
+}
+
 interface SettingRowsSnapshot {
   total: number;
   empty: string[];
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

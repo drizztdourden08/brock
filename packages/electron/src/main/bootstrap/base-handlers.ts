@@ -4,7 +4,7 @@ import { bootHandlers } from '../boot/ipc-handlers';
 import { windowHandlers } from '../window/ipc-handlers';
 import { aspectRatioHandlers } from '../window/aspect-ratio';
 import { appHandlers } from '../app/ipc-handlers';
-import { dialogHandlers } from '../handlers/dialogs';
+import { dialogHandlers } from '../handlers/dialog-handlers';
 import { fileHandlers } from '../handlers/file-handlers';
 import { storageHandlers } from '../handlers/storage-handlers';
 import { profileHandlers } from '../handlers/profile-handlers';
@@ -12,8 +12,8 @@ import { sessionHandlers } from '../handlers/session-handlers';
 import { uiViewsHandlers } from '../handlers/ui-views-handlers';
 import { diagnosticsHandlers } from '../diagnostics/ipc-handlers';
 import { networkHandlers } from '../network/ipc-handlers';
-import { sessionLogHandlers } from '../handlers/session-log-handler';
-import { screenshotHandlers } from '../handlers/screenshot-handler';
+import { sessionLogHandlers } from '../handlers/session-log-handlers';
+import { screenshotHandlers } from '../handlers/screenshot-handlers';
 
 const baseHandlers = ({ dataDomains = [] }: BootstrapOptions): HandlerGroup[] => [
   bootHandlers,

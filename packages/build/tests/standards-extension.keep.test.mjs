@@ -36,7 +36,42 @@ describe('the brock-app extension', () => {
   });
 
   it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts']);
+    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx']);
+  });
+
+  it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta', async () => {
+    const widget = "const meta = { label: 'Notes', icon: 'pencil', popOut: true };\nconst Notes = () => null;\nexport default Notes;\nexport { meta };\n";
+    const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/widgets/notes.widget.tsx': widget });
+    expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
+  });
+
+  it('names whatever does not belong in src/widgets', async () => {
+    const root = tree({
+      'package.json': '{ "name": "app" }',
+      'brock.config.ts': '',
+      'src/widgets/session-layout.ts': '',
+      'src/widgets/live-room/room.ts': '',
+      'src/widgets/Players.widget.tsx': 'export default null;\n',
+      'src/widgets/hints.widget.tsx': 'const Hints = () => null;\nexport { Hints };\n',
+      'src/widgets/logs.widget.tsx': 'export default null;\n',
+      'src/widgets/room.widget.tsx': "const meta = { title: 'Room' };\nexport default null;\nexport { meta };\n",
+    });
+    const { findings } = await collectFindings(root, '@app', [brockApp]);
+    expect(findings.map((finding) => finding.split(': ')[0]).sort()).toEqual([
+      'src/widgets/Players.widget.tsx',
+      'src/widgets/hints.widget.tsx',
+      'src/widgets/live-room',
+      'src/widgets/logs.widget.tsx',
+      'src/widgets/room.widget.tsx',
+      'src/widgets/session-layout.ts',
+    ]);
+    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, popOut, devOnly, taskbar, settings, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize)');
+    expect(findings).toContain('src/widgets/logs.widget.tsx: "logs" is a built-in Brock widget id; pick another');
+  });
+
+  it('leaves the src/widgets folder of a package that is not an app to the shape check', async () => {
+    const root = tree({ 'package.json': '{ "name": "@app/kit", "exports": "./src/index.ts" }', 'src/index.ts': '', 'src/widgets/logs.widget.tsx': 'export default null;\n' });
+    expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
   });
 
   it('is what brock-build declares for discovery', async () => {

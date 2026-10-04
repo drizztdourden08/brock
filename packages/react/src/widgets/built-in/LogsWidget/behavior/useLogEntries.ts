@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useMemo, useState } from 'react';
 import type { LogEntry } from '@drizztdourden08/brock-core';
-import { getAppLog } from '../../../log/get-app-log';
-import { RELAY_SLICES } from '../../widget.constants';
-import { useWidgetRelayStore } from '../../useWidgetRelayStore';
-import { widgetWindowId } from '../../widget-window-id';
+import { getAppLog } from '../../../../log/get-app-log';
+import { RELAY_SLICES } from '../../../widget.constants';
+import { useWidgetRelayStore } from '../../../useWidgetRelayStore';
+import { widgetWindowId } from '../../../widget-window-id';
 import { LOG_ENTRY_LIMIT } from '../LogsWidget.constants';
 
 const useLogEntries = (limit = LOG_ENTRY_LIMIT): LogEntry[] => {

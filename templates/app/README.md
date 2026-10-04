@@ -28,7 +28,7 @@ electron/main.ts         bootstrapApp(product, { modules })       yours
 electron/preload.ts      createPreloadBridge({ maps, namespaces }) yours
 src/product.ts           defineProduct(config.product)
 src/main.tsx             <BrockApp ... />
-src/theme.css            Tessera palette seeds
+src/theme.css            overrides over the brand palette (empty to start)
 src/settings.type.ts     AppSettings
 src/settings.constants.ts  the settings defaults
 src/ipc/contract.type.ts  channel augmentation

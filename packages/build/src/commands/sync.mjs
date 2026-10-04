@@ -1,10 +1,15 @@
 /* @layer tooling-scripts @kind logic */
-import { relative } from 'node:path';
+import { existsSync } from 'node:fs';
+import { join, relative } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
+import { hasGuideParts } from '../tessera/has-guide-parts.mjs';
+import { TESSERA_CONFIG_FILE } from '../tessera/tessera.constants.mjs';
+import { findWorkspaceRoot } from '../workspace.mjs';
 import { syncTargets } from './sync-targets.mjs';
+import { runTesseraCommand } from './tessera.mjs';
 
 const reportCheck = (result, label) => {
   if (!result.drifted.length) {
@@ -41,6 +46,16 @@ const syncIfStale = async (appDir) => {
   return 1;
 };
 
+const configDirOf = (rootDir) => (existsSync(join(rootDir, TESSERA_CONFIG_FILE)) ? rootDir : findWorkspaceRoot(rootDir) ?? rootDir);
+
+const writePartNames = async (rootDir) => {
+  const configDir = configDirOf(rootDir);
+  if (!hasGuideParts(configDir)) return;
+  console.log('brock sync: tessera.config.json sets guide.parts, running tessera guide.');
+  const code = await runTesseraCommand({ args: ['guide'], cwd: configDir });
+  if (code !== 0) console.warn('brock sync: tessera guide reported problems; brock tessera check lists them.');
+};
+
 /**
  * @param {{ rootDir: string, check?: boolean, ifStale?: boolean }} ctx
  * @returns {Promise<number>} exit code
@@ -50,6 +65,7 @@ const runSync = async ({ rootDir, check = false, ifStale = false }) => {
   if (!apps.length) throw new Error(`No ${CONFIG_FILE} in ${rootDir}, and no electron target in brock.workspace.mjs points at an app.`);
   let code = 0;
   for (const appDir of apps) code = Math.max(code, await (ifStale && !check ? syncIfStale(appDir) : syncOne(appDir, check)));
+  if (!check && !ifStale) await writePartNames(rootDir);
   return code;
 };
 

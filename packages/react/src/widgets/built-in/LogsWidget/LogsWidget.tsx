@@ -8,7 +8,6 @@ import { useWidgetPref } from '../../../hooks/useWidgetPref';
 import { toLogRows } from './behavior/to-log-rows';
 import { useLogEntries } from './behavior/useLogEntries';
 import { FILTERS_PREF, LOG_LEVEL_KINDS, LOGS_WIDGET_ID, NO_FILTERS } from './LogsWidget.constants';
-import './LogsWidget.css';
 
 const LogsWidget = () => {
   const entries = useLogEntries();
@@ -27,6 +26,7 @@ const LogsWidget = () => {
   return (
     <LogPanel
       className="logs-widget"
+      height="fill"
       rows={rows}
       kinds={LOG_LEVEL_KINDS}
       filters={filters}

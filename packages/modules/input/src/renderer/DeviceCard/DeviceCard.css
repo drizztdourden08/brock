@@ -8,7 +8,7 @@
 
 .device-card__mapping {
   overflow-wrap: anywhere;
-  color: var(--c-text-faint);
+  color: var(--c-text-muted);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }

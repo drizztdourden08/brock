@@ -47,9 +47,6 @@
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   background: var(--c-sunken);
-}
-
-.about-panel__row .stat-row__value[data-mono] {
   font-size: var(--text-sm);
 }
 

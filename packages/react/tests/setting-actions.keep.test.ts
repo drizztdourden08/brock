@@ -27,20 +27,51 @@ afterEach(() => {
 });
 
 describe('settings row actions', () => {
-  it('draws an item with actions and no control as a custom input holding the action buttons', () => {
+  it('draws an item with actions and no control as a row with SettingsRow actions and no input', () => {
     const row = settingRow(OWNER, context());
-    expect(row).toMatchObject({ id: 'owner', title: 'Owner id', hint: OWNER.hint, input: { kind: 'custom' } });
-    const control = row && 'input' in row && row.input.kind === 'custom' ? row.input.control : null;
-    expect(isValidElement(control) && control.type === SettingActions).toBe(true);
+    expect(row).toMatchObject({ id: 'owner', title: 'Owner id', hint: OWNER.hint });
+    expect(row).not.toHaveProperty('input');
+    const actions = row && 'actions' in row ? row.actions ?? [] : [];
+    expect(actions.map((action) => [action.id, action.label, action.tone])).toEqual([['copy', 'Copy', undefined], ['reset', 'Reset', 'danger']]);
     expect(settingRows(OWNER, context())).toHaveLength(1);
   });
 
-  it('keeps the control of an item that has one and adds the actions as a row under it', () => {
+  it('keeps the control of an item that has one and puts the actions in the same row', () => {
     const item: SettingItem = { ...OWNER, key: 'site', control: { kind: 'text', placeholder: 'https://' } };
     const rows = settingRows(item, context({ site: 'https://archipelago.gg' }));
-    expect(rows.map((row) => row.id)).toEqual(['site', 'site:actions']);
-    expect(rows[0]).toMatchObject({ input: { kind: 'text', value: 'https://archipelago.gg' } });
-    expect(rows[1]).toMatchObject({ hint: OWNER.hint, noDescription: true });
+    expect(rows.map((row) => row.id)).toEqual(['site']);
+    expect(rows[0]).toMatchObject({ input: { kind: 'text', value: 'https://archipelago.gg' }, actions: [{ id: 'copy' }, { id: 'reset' }] });
+  });
+
+  it('asks a string confirm in the row, and a dialog confirm through confirmAction before it runs', async () => {
+    const forget = vi.fn();
+    const reset = vi.fn();
+    const item: SettingItem = {
+      ...OWNER,
+      actions: [
+        { id: 'forget', label: 'Forget', variant: 'danger', confirm: 'Forget it?', onSelect: forget },
+        { id: 'reset', label: 'Reset', confirm: { title: 'Reset?', message: 'A new id is made.' }, onSelect: reset },
+      ],
+    };
+    const row = settingRow(item, context());
+    const [inline, dialog] = row && 'actions' in row ? row.actions ?? [] : [];
+    expect(inline?.confirm).toBe('Forget it?');
+    expect(dialog?.confirm).toBeUndefined();
+    inline?.onClick();
+    await vi.waitFor(() => expect(forget).toHaveBeenCalledOnce());
+    dialog?.onClick();
+    await vi.waitFor(() => expect(useDialogStore.getState().dialog).toMatchObject({ title: 'Reset?' }));
+    expect(reset).not.toHaveBeenCalled();
+    useDialogStore.getState().dialog?.onConfirm();
+    await vi.waitFor(() => expect(reset).toHaveBeenCalledOnce());
+  });
+
+  it('keeps SettingActions for a custom control, under it in the same row', () => {
+    const row = settingRow(OWNER, { ...context(), renderControl: () => 'custom' });
+    const content = row && 'content' in row ? row.content : null;
+    expect(isValidElement(content)).toBe(true);
+    const children = isValidElement<{ children: unknown[] }>(content) ? content.props.children : [];
+    expect(children.some((child) => isValidElement(child) && child.type === SettingActions)).toBe(true);
   });
 
   it('still draws nothing for an item with neither a control nor actions', () => {

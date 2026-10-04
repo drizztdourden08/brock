@@ -9,6 +9,8 @@ const meta: WidgetMeta = {
   defaultDockedSize: 240,
   defaultFloatingSize: { width: 640, height: 360 },
   popOut: true,
+  padding: 'none',
+  fill: true,
 };
 
 export default LogsWidget;

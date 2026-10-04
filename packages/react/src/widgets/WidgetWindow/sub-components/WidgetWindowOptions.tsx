@@ -1,5 +1,4 @@
 /* @layer renderer-shell @kind component */
-import { useMemo } from 'react';
 import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-core';
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
@@ -9,8 +8,7 @@ import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
 const noop = (): void => undefined;
 
 const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
-  const { id, definition, anchor, frame, own, onClose } = props;
-  const anchorRef = useMemo(() => ({ current: anchor }), [anchor]);
+  const { id, definition, frame, own, defaultOpen } = props;
   const back = (where?: WidgetDockBack): void => hostApi()?.dockBackWidget(id, where);
   const setFrame = (patch: Partial<WidgetFrameWire>): void => hostApi()?.setWidgetFrame(id, patch);
 
@@ -19,7 +17,6 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
     own.setPin('off');
     own.setSnap(true);
     own.setSync(true);
-    onClose();
   };
 
   return (
@@ -29,7 +26,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       makeRoom={false}
       opacity={frame.opacity}
       show={frame.show}
-      anchorRef={anchorRef}
+      defaultOpen={defaultOpen}
       onDock={(edge) => back(edge)}
       onFloat={() => back('float')}
       onPopOut={() => back()}
@@ -44,9 +41,8 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onOpacityChange={(value) => setFrame({ opacity: value })}
       onShowChange={(value) => setFrame({ show: value })}
       onReset={reset}
-      onClose={onClose}
     >
-      <WidgetIdContext.Provider value={id}>{definition?.settings?.()}</WidgetIdContext.Provider>
+      {definition?.settings && <WidgetIdContext.Provider value={id}>{definition.settings()}</WidgetIdContext.Provider>}
     </WidgetOptions>
   );
 };

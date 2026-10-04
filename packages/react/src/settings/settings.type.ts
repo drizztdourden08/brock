@@ -30,8 +30,13 @@ interface SettingAction {
   icon?: IconName;
   variant?: ButtonVariant;
   disabled?: boolean;
-  confirm?: ConfirmActionOptions;
+  confirm?: string | ConfirmActionOptions;
   onSelect: () => void | Promise<void>;
+}
+
+interface RunSettingActionOptions {
+  inline?: boolean;
+  onStart?: () => void;
 }
 
 type SettingDescription = SettingsDescription;
@@ -103,6 +108,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
+  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

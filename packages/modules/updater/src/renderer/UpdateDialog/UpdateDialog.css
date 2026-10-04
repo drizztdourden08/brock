@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind style */
 
-.update-dialog.dialog {
+.update-dialog {
   max-width: calc(var(--size-640) - var(--size-40));
 }
 

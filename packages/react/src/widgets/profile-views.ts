@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { isRecord } from '../collections/is-record';
 import { hostApi } from '../host/host-api';
 import { PROFILE_VIEWS_PREFIX, VIEWS_SAVE_DELAY_MS } from './widget.constants';
 import type { ProfileViews } from './widget.type';
@@ -9,9 +10,6 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 let dirty = false;
 
 const keyOf = (profileId: string): string => `${PROFILE_VIEWS_PREFIX}${profileId}`;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const fetchAll = async (): Promise<Record<string, unknown>> => {
   const api = hostApi();

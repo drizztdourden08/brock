@@ -7,6 +7,4 @@ const seedTarget = (route: string, seed: SearchEntrySeed): SearchTarget => ({
   ...(seed.params === undefined ? {} : { params: seed.params }),
 });
 
-const seedEntryId = (route: string, seed: SearchEntrySeed): string => `entry:${route}#${seed.id ?? seed.anchor ?? seed.label}`;
-
-export { seedEntryId, seedTarget };
+export { seedTarget };

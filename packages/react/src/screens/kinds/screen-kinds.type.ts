@@ -14,10 +14,19 @@ interface CardProps {
   close: () => void;
 }
 
+type BaseProps = CardProps;
+
 interface PageProps extends CardProps {
   bucket: BucketDef;
   page: string;
   tab: string | null;
+  openSub: (sub: string, params?: Record<string, string>) => void;
+}
+
+interface SubPageProps extends PageProps {
+  sub: string;
+  subParams: Record<string, string>;
+  back: () => void;
 }
 
 interface HeroSlotProps {
@@ -75,6 +84,6 @@ interface HeroRootProps {
 }
 
 export type {
-  CardProps, HeroActionsProps, HeroArtProps, HeroBackdropProps, HeroFactsProps, HeroFrame, HeroProps, HeroRootProps, HeroShadeProps, HeroSlotName, HeroSlotProps,
-  HeroSlotValues, HeroSlots, Open, PageProps, PutHeroSlot,
+  BaseProps, CardProps, HeroActionsProps, HeroArtProps, HeroBackdropProps, HeroFactsProps, HeroFrame, HeroProps, HeroRootProps, HeroShadeProps, HeroSlotName, HeroSlotProps,
+  HeroSlotValues, HeroSlots, Open, PageProps, PutHeroSlot, SubPageProps,
 };

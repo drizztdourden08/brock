@@ -15,5 +15,7 @@ export { useDialogStore } from './useDialogStore';
 export { dialogs } from './dialogs';
 export { confirmAction } from './confirm-action';
 export type { ConfirmDialogConfig, ConfirmActionOptions, DialogState } from './dialog.type';
+export { useScreenStateStore } from './useScreenStateStore';
+export type { ScreenStates, ScreenStateSetter, ScreenStateState, ScreenViews } from './screen-state.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';

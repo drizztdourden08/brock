@@ -4,10 +4,12 @@ import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
+import { useCanGoBack } from '../../navigation/useCanGoBack';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { useScreenRegistry } from '../useScreenRegistry';
 import { isScreenAllowed } from '../is-screen-allowed';
+import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
 import { useMountedScreens } from './behavior/useMountedScreens';
@@ -19,7 +21,8 @@ const covers = (shown: ScreenDef | null, home: string): boolean => shown !== nul
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
   const registry = useScreenRegistry();
-  const { active: activeId, params, open, close } = useNavigation();
+  const { active: activeId, params, open, close, back } = useNavigation();
+  const canGoBack = useCanGoBack();
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
 
@@ -34,7 +37,9 @@ const ScreenHost = (props: ScreenHostProps) => {
   const mounted = useMountedScreens(shown);
 
   const guarded = (screen: ScreenDef, hidden: boolean): ReactNode => (
-    <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>{screen.render(ctx)}</RenderErrorBoundary>
+    <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>
+      <ScreenStateScope.Provider value={screen.id}>{screen.render(ctx)}</ScreenStateScope.Provider>
+    </RenderErrorBoundary>
   );
 
   const draw = (screen: ScreenDef, hidden: boolean): ReactNode => {
@@ -50,6 +55,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         extra={screen.extra?.(ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
+        onBack={canGoBack && !hidden ? back : undefined}
         onClose={close}
       >
         {guarded(screen, hidden)}
@@ -63,7 +69,9 @@ const ScreenHost = (props: ScreenHostProps) => {
     <Box className={className}>
       <Box className="screen-host__home" inert={covered || undefined}>
         {allowed(homeScreen) && (
-          <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>{homeScreen.render(ctx)}</RenderErrorBoundary>
+          <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>
+            <ScreenStateScope.Provider value={homeScreen.id}>{homeScreen.render(ctx)}</ScreenStateScope.Provider>
+          </RenderErrorBoundary>
         )}
       </Box>
       {allowed(homeScreen) && covered && <Box className="screen-host__scrim" aria-hidden="true" />}

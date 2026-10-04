@@ -1,24 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-const quoteChars = '"\'`';
-
-const stringEnd = (source, at) => {
-  for (let i = at + 1; i < source.length; i += 1) {
-    if (source[i] === '\\') i += 1;
-    else if (source[i] === source[at]) return i;
-  }
-  return source.length;
-};
-
-const closingOf = (source, at, [open, close]) => {
-  let depth = 0;
-  for (let i = at; i < source.length; i += 1) {
-    if (quoteChars.includes(source[i])) i = stringEnd(source, i);
-    else if (source[i] === open) depth += 1;
-    else if (source[i] === close) depth -= 1;
-    if (depth === 0) return i;
-  }
-  return source.length;
-};
+import { closingIndex as closingOf } from './closing-index.mjs';
+import { stringEnd } from './string-end.mjs';
 
 const valueEnd = (source, at) => (source[at] === '{' ? closingOf(source, at, '{}') : stringEnd(source, at)) + 1;
 

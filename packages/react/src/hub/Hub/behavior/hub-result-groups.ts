@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { SearchResultsGroup, SearchResultsHit } from '@drizztdourden08/tessera/composites';
-import { ROUTE_SEPARATOR } from '../../../navigation/navigation.constants';
 import type { SearchEntry } from '../../../search/search.type';
 import type { HubDef, HubPage } from '../../hub.type';
-
-const pageIdOf = (hub: HubDef, entry: SearchEntry): string => entry.target?.route.split(ROUTE_SEPARATOR)[1] ?? hub.home.id;
+import { pageIdOf } from './page-id-of';
 
 const hitOf = (page: HubPage, entry: SearchEntry): SearchResultsHit => {
   const at = entry.breadcrumb.indexOf(page.label);

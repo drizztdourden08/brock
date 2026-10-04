@@ -13,6 +13,7 @@ const problemsOf = (config: ScreensConfig, entries: readonly ScreenEntry[]): str
     ...(ids.includes(config.home) ? [] : [`home "${config.home}" is not a declared bucket`]),
     ...(ids.includes(settings) ? [] : [`settings.bucket "${settings}" is not a declared bucket`]),
     ...undeclared.map((id) => `src/screens/${id} is not a bucket declared in screens.config.ts`),
+    ...entries.filter((entry) => entry.kind === 'base' && ids.includes(entry.id)).map((entry) => `the base screen "${entry.id}" has the id of a bucket`),
   ];
 };
 

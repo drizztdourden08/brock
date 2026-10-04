@@ -2,6 +2,7 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, WidgetDefinition, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { ScreenViews } from '../stores/screen-state.type';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import type { LayoutPreset } from './layout-preset.type';
 
@@ -77,6 +78,7 @@ interface WidgetLayoutReading {
 interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
+  screens?: ScreenViews;
 }
 
 interface SharedStore<S> {

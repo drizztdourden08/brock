@@ -4,12 +4,11 @@ import { nav } from '../../navigation/nav';
 import { bucketChecks } from '../checks/bucket-checks';
 import { menuReachChecks } from '../checks/menu-reach-checks';
 import { find } from '../dom/find';
-import { isClosed } from '../dom/is-closed';
 import { navLabels } from '../dom/nav-labels';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
-import { escapeCloses } from './escape-closes';
+import { hubBackCheck } from './hub-back-check';
 import { openBucket } from './open-bucket';
 import { resetUi } from './reset-ui';
 import { visitHubPages } from './visit-hub-pages';
@@ -30,7 +29,7 @@ const bucketsStep: ReviewStep = {
       tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, expected: pages.map((page) => page.label), shown: navLabels() }));
       if (opened === null) continue;
       await visitHubPages(tour, hub, pages);
-      await escapeCloses(tour, hub.id, isClosed);
+      await hubBackCheck(tour, hub);
     }
   },
 };

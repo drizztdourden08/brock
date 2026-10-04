@@ -11,19 +11,21 @@ const KIND_SUFFIXES = [
   { kind: 'hero', suffix: '.hero.tsx' },
   { kind: 'page', suffix: '.page.tsx' },
   { kind: 'tab', suffix: '.tab.tsx' },
+  { kind: 'sub', suffix: '.sub.tsx' },
   { kind: 'page-meta', suffix: '.page.ts' },
   { kind: 'settings', suffix: '.settings.ts' },
   { kind: 'card', suffix: '.card.tsx' },
   { kind: 'custom', suffix: '.custom.tsx' },
   { kind: 'layer', suffix: '.layer.tsx' },
+  { kind: 'base', suffix: '.base.tsx' },
 ];
 
 /** @type {Record<'root' | 'bucket' | 'group' | 'page', string[]>} */
 const KINDS_AT = {
-  root: ['card', 'layer'],
+  root: ['card', 'layer', 'base'],
   bucket: ['hero', 'page', 'page-meta', 'settings', 'custom'],
   group: ['page', 'page-meta', 'settings', 'custom'],
-  page: ['tab'],
+  page: ['tab', 'sub'],
 };
 
 /** @type {Record<string, string>} */
@@ -32,13 +34,15 @@ const MISPLACED = {
   page: 'a page sits in a bucket folder, src/screens/<bucket>/ or a group folder inside it',
   settings: 'a settings page sits in a bucket folder, src/screens/<bucket>/ or a group folder inside it',
   tab: 'a tab sits in its page folder: src/screens/<bucket>/<page>/<tab>.tab.tsx',
+  sub: 'a sub-page sits in the folder of its page: src/screens/<bucket>/<page>/<sub>.sub.tsx, beside <page>.page.tsx or the tabs of that page',
   'page-meta': 'a page meta file sits beside its tab folder: src/screens/<bucket>/<page>.page.ts next to <page>/',
   card: 'card screens sit at the root of src/screens',
   custom: 'a custom page sits in a bucket folder, src/screens/<bucket>/ or a group folder inside it; a full-bleed screen at the root is <id>.layer.tsx (brock migrate renames it)',
   layer: 'layers sit at the root of src/screens',
+  base: 'the base screen sits at the root of src/screens: src/screens/<id>.base.tsx',
 };
 
-const NAMING_HINT = 'name it <id>.hero.tsx, .page.tsx, .custom.tsx, .settings.ts, .card.tsx, .layer.tsx, <page>/<tab>.tab.tsx or <page>.page.ts beside a tab folder';
+const NAMING_HINT = 'name it <id>.hero.tsx, .page.tsx, .custom.tsx, .settings.ts, .card.tsx, .layer.tsx, .base.tsx, <page>/<tab>.tab.tsx, <page>/<sub>.sub.tsx or <page>.page.ts beside a tab folder';
 const SCREEN_ID = /^[a-z][a-z0-9-]*$/;
 const META_EXPORT = /export\s*\{[^}]*\bmeta\b[^}]*\}|export\s+const\s+meta\b/;
 const SEARCH_ENTRIES_EXPORT = /export\s*\{[^}]*\bsearchEntries\b[^}]*\}|export\s+const\s+searchEntries\b/;

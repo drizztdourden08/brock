@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import { seedEntryId, seedTarget } from '../seed-target';
+import { seedEntryId } from '../seed-entry-id';
+import { seedTarget } from '../seed-target';
 import type { SearchEntry, SearchEntrySeed } from '../search.type';
 
 const customSeedEntries = (page: SearchEntry, seeds: readonly SearchEntrySeed[]): SearchEntry[] => {

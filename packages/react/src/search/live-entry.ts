@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { normaliseKeywords } from './normalise-keywords';
-import { seedEntryId, seedTarget } from './seed-target';
+import { seedEntryId } from './seed-entry-id';
+import { seedTarget } from './seed-target';
 import type { SearchEntry, SearchEntrySeed } from './search.type';
 
 const liveEntry = (seed: SearchEntrySeed, route: string): SearchEntry => ({

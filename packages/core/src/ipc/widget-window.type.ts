@@ -40,6 +40,8 @@ interface PoppedWidgetWire {
   group?: WidgetWindowGroup | null;
 }
 
+type PoppedWidgetPatch = Partial<Omit<PoppedWidgetWire, 'id' | 'pin'>> & { pin?: WidgetPinMode };
+
 interface WidgetWindowOpen extends Omit<PoppedWidgetWire, 'id'> {
   seq?: number;
   atCursor?: boolean;
@@ -120,7 +122,7 @@ interface WidgetSlice {
 }
 
 export type {
-  PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
+  PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
   WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
   WidgetWindowState, WindowGroupAction, WindowGuideMode, WindowGuideState,
 };

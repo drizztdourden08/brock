@@ -1,6 +1,6 @@
 /* @layer core @kind types */
 import type {
-  PoppedWidgetWire, WidgetDockBack, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeRequest, WidgetProbeResult, WidgetSettingsWire, WidgetSlice,
+  PoppedWidgetPatch, WidgetDockBack, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeRequest, WidgetProbeResult, WidgetSettingsWire, WidgetSlice,
   WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint, WidgetWindowState, WindowGuideState,
 } from './widget-window.type';
 
@@ -36,7 +36,7 @@ interface WidgetEventContract {
   'widget:bounds': (id: string, bounds: WidgetWindowBounds) => void;
   'widget:dragOver': (id: string, point: WidgetWindowPoint | null) => void;
   'widget:dropIn': (id: string, point: WidgetWindowPoint) => void;
-  'widget:popped': (id: string, patch: Partial<PoppedWidgetWire>) => void;
+  'widget:popped': (id: string, patch: PoppedWidgetPatch) => void;
   'widget:frame': (id: string, patch: Partial<WidgetFrameWire>) => void;
   'widget:windowState': (state: WidgetWindowState) => void;
   'widget:mainGroup': (group: WidgetWindowGroup | null) => void;

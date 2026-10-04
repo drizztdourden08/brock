@@ -12,9 +12,7 @@ import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
-import { WidgetPinMenu } from './sub-components/WidgetPinMenu';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
-import { TITLEBAR_ACTIONS_SELECTOR } from './WidgetWindow.constants';
 import type { WidgetWindowProps } from './WidgetWindow.type';
 import './WidgetWindow.css';
 
@@ -28,7 +26,6 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const own = usePoppedWindowState(id);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
-  const actions = root?.querySelector<HTMLElement>(TITLEBAR_ACTIONS_SELECTOR) ?? null;
   useWidgetRelay(id);
   useReviewOptions(id, root, setAnchor);
 
@@ -48,6 +45,8 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         mode="out"
         opacity={frame.opacity}
         square={own.square}
+        pin={own.pin}
+        onPinChange={own.setPin}
         optionsOpen={anchor !== null}
         onActivateTab={noop}
         onOpenOptions={toggleOptions}
@@ -57,7 +56,6 @@ const WidgetWindow = (props: WidgetWindowProps) => {
       >
         {definition?.render()}
       </Widget>
-      {actions && <WidgetPinMenu pin={own.pin} onPinChange={own.setPin} host={actions} />}
       {anchor && (
         <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />
       )}

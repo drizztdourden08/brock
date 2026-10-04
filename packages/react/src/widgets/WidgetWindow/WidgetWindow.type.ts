@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { WidgetPinMode, WidgetWindowGroup } from '@drizztdourden08/brock-core';
 import type { WidgetFrame } from '@drizztdourden08/tessera/composites';
-import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { WidgetDef } from '../widget.type';
 
 interface WidgetWindowProps {
@@ -34,21 +33,4 @@ interface ReviewOptionsRequest {
   open: boolean;
 }
 
-interface PinChoice {
-  value: WidgetPinMode;
-  label: string;
-  short: string;
-  hint: string;
-  icon: IconName;
-}
-
-interface PinControlProps {
-  pin: WidgetPinMode;
-  onPinChange: (mode: WidgetPinMode) => void;
-}
-
-interface WidgetPinMenuProps extends PinControlProps {
-  host: HTMLElement;
-}
-
-export type { PinChoice, PinControlProps, ReviewOptionsRequest, WidgetPinMenuProps, WidgetWindowOptionsProps, WidgetWindowProps };
+export type { ReviewOptionsRequest, WidgetWindowOptionsProps, WidgetWindowProps };

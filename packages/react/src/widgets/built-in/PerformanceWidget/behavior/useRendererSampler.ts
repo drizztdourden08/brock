@@ -1,13 +1,22 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useState } from 'react';
-import type { FrameCounter, PerformanceWithMemory, RendererSample, TaskCounter } from '../PerformanceWidget.type';
+import type { FrameCounter, PerformanceWithMemory, RendererFeed, RendererSample, TaskCounter } from '../PerformanceWidget.type';
 import { countFrame } from './count-frame';
+import { pushSeries } from './push-series';
 import { takeRendererSample } from './take-renderer-sample';
 import { watchEventLoopLag } from './watch-event-loop-lag';
 import { watchLongTasks } from './watch-long-tasks';
 
-const useRendererSampler = (active: boolean, refreshMs: number): RendererSample | null => {
-  const [sample, setSample] = useState<RendererSample | null>(null);
+const nextFeed = (feed: RendererFeed | null, sample: RendererSample): RendererFeed => ({
+  sample,
+  fps: pushSeries(feed?.fps, sample.fps),
+  lag: pushSeries(feed?.lag, sample.lagMs),
+  longTasks: (feed?.longTasks ?? 0) + sample.longTasks,
+  longTaskMs: (feed?.longTaskMs ?? 0) + sample.longTaskMs,
+});
+
+const useRendererSampler = (active: boolean, refreshMs: number): RendererFeed | null => {
+  const [feed, setFeed] = useState<RendererFeed | null>(null);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -25,7 +34,8 @@ const useRendererSampler = (active: boolean, refreshMs: number): RendererSample 
     const timer = setInterval(() => {
       const now = performance.now();
       const heap = (performance as PerformanceWithMemory).memory;
-      setSample(takeRendererSample({ frames, tasks, elapsedMs: now - started, heap, domNodes: document.getElementsByTagName('*').length }));
+      const sample = takeRendererSample({ frames, tasks, elapsedMs: now - started, heap, domNodes: document.getElementsByTagName('*').length });
+      setFeed((current) => nextFeed(current, sample));
       started = now;
     }, refreshMs);
     return () => {
@@ -36,7 +46,7 @@ const useRendererSampler = (active: boolean, refreshMs: number): RendererSample 
     };
   }, [active, refreshMs]);
 
-  return sample;
+  return feed;
 };
 
 export { useRendererSampler };

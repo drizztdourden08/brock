@@ -2,10 +2,17 @@
 import { useEffect, useState } from 'react';
 import { hostApi } from '../../../../host/host-api';
 import { MS_PER_SECOND } from '../PerformanceWidget.constants';
-import type { ProcessSample } from '../PerformanceWidget.type';
+import type { ProcessFeed, ProcessSample } from '../PerformanceWidget.type';
+import { processTotals } from './process-totals';
+import { pushSeries } from './push-series';
 
-const useProcessSampler = (active: boolean, refreshMs: number): ProcessSample | null => {
-  const [sample, setSample] = useState<ProcessSample | null>(null);
+const nextFeed = (feed: ProcessFeed | null, sample: ProcessSample): ProcessFeed => {
+  const totals = processTotals(sample.data);
+  return { sample, cpu: pushSeries(feed?.cpu, totals.cpuPercent), memory: pushSeries(feed?.memory, totals.memoryBytes) };
+};
+
+const useProcessSampler = (active: boolean, refreshMs: number): ProcessFeed | null => {
+  const [feed, setFeed] = useState<ProcessFeed | null>(null);
 
   useEffect(() => {
     const api = hostApi();
@@ -18,9 +25,9 @@ const useProcessSampler = (active: boolean, refreshMs: number): ProcessSample | 
         const at = performance.now();
         const ipcPerSecond = previous && at > previous.at ? ((data.ipcCalls - previous.calls) * MS_PER_SECOND) / (at - previous.at) : null;
         previous = { calls: data.ipcCalls, at };
-        if (live) setSample({ data, ipcPerSecond });
+        if (live) setFeed((current) => nextFeed(current, { data, ipcPerSecond }));
       } catch {
-        if (live) setSample(null);
+        if (live) setFeed(null);
       }
     };
     void poll();
@@ -31,7 +38,7 @@ const useProcessSampler = (active: boolean, refreshMs: number): ProcessSample | 
     };
   }, [active, refreshMs]);
 
-  return sample;
+  return feed;
 };
 
 export { useProcessSampler };

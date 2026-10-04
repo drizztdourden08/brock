@@ -132,10 +132,20 @@ interface SearchPick {
   picked: boolean;
 }
 
+interface PerformanceReading {
+  tiles: Readonly<Record<string, string>>;
+  sparklines: readonly string[];
+  gauges: readonly string[];
+  segments: number;
+  legend: readonly string[];
+  ownScroll: boolean;
+}
+
 interface PerformanceSnapshot {
-  before: Readonly<Record<string, string>>;
-  after: Readonly<Record<string, string>>;
+  before: PerformanceReading;
+  after: PerformanceReading;
   sampling: boolean;
+  inBody: boolean;
 }
 
 interface SettingRowsSnapshot {
@@ -144,6 +154,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceReading, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

@@ -5,7 +5,7 @@ import { GUIDE_HINTS } from './WindowGuide.constants';
 
 const WindowGuide = () => {
   const guide = useWindowGuide();
-  return <WindowGuideOverlay open={guide.open} mode={guide.mode} snapping={guide.snapping} hints={GUIDE_HINTS[guide.mode]} defaultHints={false} />;
+  return <WindowGuideOverlay open={guide.open} mode={guide.mode} snapping={guide.snapping} hints={GUIDE_HINTS[guide.mode]} defaultHints={false} pointer={guide.pointer ?? null} />;
 };
 
 export { WindowGuide };

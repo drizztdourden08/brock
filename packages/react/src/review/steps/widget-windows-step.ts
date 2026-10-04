@@ -9,8 +9,13 @@ import { checkBoundsRoundTrip } from '../widgets/bounds-check';
 import { checkDevGate } from '../widgets/dev-gate-check';
 import { checkDropIn } from '../widgets/drop-check';
 import { checkContextGate } from '../widgets/gate-check';
+import { checkGrid } from '../widgets/grid-check';
+import { checkGroups } from '../widgets/group-check';
+import { checkGuide } from '../widgets/guide-check';
 import { checkMainSnap } from '../widgets/main-snap-check';
 import { checkRestartRestore } from '../widgets/restart-check';
+import { checkSharedEdge } from '../widgets/shared-edge-check';
+import { checkSync } from '../widgets/sync-check';
 import { checkSnapAndTow } from '../widgets/tow-check';
 import { windowOpen } from '../widgets/window-open';
 
@@ -33,6 +38,11 @@ const windowChecks = async (tour: StepTour, id: string): Promise<void> => {
   await checkRestartRestore(tour, id);
   await checkMainSnap(tour, id);
   await checkAreas(tour, id);
+  await checkSync(tour, id);
+  await checkGrid(tour, id);
+  await checkSharedEdge(tour, id);
+  await checkGroups(tour, id);
+  await checkGuide(tour, id);
   await checkDropIn(tour, id);
 };
 

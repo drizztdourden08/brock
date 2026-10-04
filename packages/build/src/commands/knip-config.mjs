@@ -22,7 +22,6 @@ const knipJson = (rootDir, { linked = false } = {}) => {
   const config = {
     ...KNIP_BASE,
     entry: ['brock.workspace.mjs'],
-    ignore: ['.worktrees/**'],
     ignoreDependencies: linked ? [THREAD] : [],
   };
   if (apps.length > 0) config.workspaces = Object.fromEntries(apps.map((dir) => [dir, APP_WORKSPACE]));

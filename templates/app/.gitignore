@@ -1,12 +1,24 @@
+# Every folder that needs ignoring is a dot-folder, and the .*/ line below
+# ignores them all, at any depth. A dot-folder the repo tracks gets a ! line
+# here. Never add a line for a single dot-folder: .*/ already covers it.
+.*/
+!.github/
+!.changeset/
+!.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.brock/
+.brock/profile-config.json
+
 node_modules/
 dist/
 release/
 out/
 *.tsbuildinfo
-.vite/
-.user-data/
+.brock-port-slot
 build/icons/
 build/splash/
+build/installer-splash.png
 public/logos/icon.svg
 public/logos/icon.ico
 public/logos/icon-256.png
@@ -16,6 +28,3 @@ public/logos/icon-bot.svg
 public/logos/icon-bot.ico
 public/logos/icon-bot-256.png
 public/logos/mark.svg
-build/installer-splash.png
-.brock/profile-config.json
-.brock-port-slot

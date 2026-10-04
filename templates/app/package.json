@@ -16,10 +16,10 @@
     "start:headless": "brock start -- --no-focus --muted",
     "sync": "brock sync",
     "typecheck": "tsc --noEmit",
-    "lint": "pnpm typecheck && eslint . && stylelint \"src/**/*.css\" && brock prose && knip && jscpd .",
+    "lint": "pnpm typecheck && eslint . && stylelint \"src/**/*.css\" && brock prose && brock knip && jscpd .",
     "lint:md": "markdownlint-cli2",
     "structure": "brock structure --check",
-    "deadcode": "knip",
+    "deadcode": "brock knip",
     "duplicates": "jscpd ."
   },
   "dependencies": {

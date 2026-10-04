@@ -14,10 +14,7 @@
     "**/out/**",
     "**/release/**",
     "**/.brock/**",
-    "**/.user-data/**",
-    "**/fonts/**",
-    ".worktrees/**",
-    "**/.claude/**"
+    "**/fonts/**"
   ],
   "gitignore": true,
   "reporters": [

@@ -26,10 +26,10 @@ Every package depends on its siblings with `workspace:*` and on shared tooling w
 
 ```
 pnpm install
-pnpm lint             tsc, eslint (typed), stylelint, brock prose, knip, jscpd over every package and the template
+pnpm lint             tsc, eslint (typed), stylelint, brock prose, brock knip, jscpd over every package and the template
 pnpm lint:md
 pnpm prose            brock prose: the writing gate over the text files the other linters skip
-pnpm deadcode         knip: unused files, exports, types and dependencies
+pnpm deadcode         brock knip: knip over the paths git does not ignore; unused files, exports, types and dependencies
 pnpm duplicates       jscpd: duplicated blocks across TS, JS and CSS
 pnpm structure        brock structure --check: package names, barrels, folder names, depth
 pnpm app:build        build the in-repo blank app

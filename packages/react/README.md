@@ -100,6 +100,7 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 - `rankEntries(entries, query)` folds case and accents and needs every word to match the label, a keyword, the description, the hint or the breadcrumb. `entriesInBucket(entries, id)` keeps what one hub shows.
 - `openSearchTarget(target)` opens the route through `nav.open` and scrolls to the element whose `data-setting-key`, `data-section` or `data-search-anchor` equals `anchor`, flashing it with `search-hit`.
 - A generated hub has search on: SideNavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
+- The product brand's mascot (`product.icons.brand`: Flint for `brock`, Pelago for `archipelia`, Sentri for `rotp`) sits in the palette's input row, as Tessera's `CommandPalette` `mascot`, and in every hub search: it looks around while the field is empty and jumps up in alarm when nothing matches. A brand without a mascot, or no brand, shows the plain search icon and no mascot.
 
 ## Escape and home
 

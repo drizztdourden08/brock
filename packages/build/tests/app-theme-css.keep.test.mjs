@@ -5,6 +5,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { appThemeCss } from '../src/look/app-theme-css.mjs';
+import { loadLookSources } from '../src/look/load-look-sources.mjs';
+import { themePalette } from '../src/look/theme-palette.mjs';
 import { readTokenCss } from '../src/splash/read-token-css.mjs';
 
 const TESSERA = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
@@ -65,6 +67,29 @@ describe('appThemeCss', () => {
     writeFileSync(join(old, 'package.json'), JSON.stringify({ name: '@drizztdourden08/tessera', exports: { '.': './index.mjs' } }));
     const root = appWith({ 'tessera.config.json': { theme: { css: 'styles/look.css' } } }, old);
     expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
+  });
+});
+
+describe('the brand palette', () => {
+  const OVERRIDE_ONLY = '/* @layer renderer-app @kind style */\n';
+
+  it('is the palette the app shows when theme.css sets no seeds', () => {
+    expect(themePalette(appWith({ 'src/theme.css': OVERRIDE_ONLY }), 'brock')).toBe('brock');
+    expect(themePalette(appWith({ 'src/theme.css': ':root { --p-primary: #123456; }\n' }), 'brock')).toBeNull();
+    expect(themePalette(appWith({ 'src/theme.css': OVERRIDE_ONLY }), undefined)).toBeNull();
+  });
+
+  it('gives the splash seeds when theme.css sets none, and theme.css still wins', () => {
+    const plain = loadLookSources(appWith({ 'src/theme.css': OVERRIDE_ONLY }), { icons: { brand: 'brock' } });
+    expect(plain.seeds.primary).toBe('#f0862b');
+    const own = loadLookSources(appWith({ 'src/theme.css': ':root { --p-primary: #123456; }\n' }), { icons: { brand: 'brock' } });
+    expect(own.seeds.primary).toBe('#123456');
+  });
+
+  it('sits in the splash stylesheet before the theme', () => {
+    const css = readTokenCss(appWith({ 'src/theme.css': ':root { --p-primary: #123456; }\n' }), TESSERA, 'brock');
+    expect(css.indexOf('[data-palette="brock"]')).toBeGreaterThan(-1);
+    expect(css.indexOf('[data-palette="brock"]')).toBeLessThan(css.indexOf('#123456'));
   });
 });
 

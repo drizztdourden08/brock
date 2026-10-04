@@ -1,4 +1,7 @@
 /* @layer renderer-shell @kind style */
+@import url('@drizztdourden08/tessera/palettes/archipelia.css') layer(ds.palette);
+@import url('@drizztdourden08/tessera/palettes/brock.css') layer(ds.palette);
+@import url('@drizztdourden08/tessera/palettes/rotp.css') layer(ds.palette);
 
 .brock-app {
   display: flex;

@@ -10,6 +10,7 @@ import { SettingsStoreContext } from '../../stores/settings-context';
 import { BrockContext } from '../brock-context';
 import type { BrockContextValue, SettingsControlsValue } from '../brock-context.type';
 import { useAppScreens } from './behavior/useAppScreens';
+import { useBrandPalette } from './behavior/useBrandPalette';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { AppShell } from './sub-components/AppShell';
@@ -26,6 +27,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
+  useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks);
   const titleBarActions = useMemo(() => [...STANDARD_TITLE_BAR_ACTIONS, ...merged.titleBarActions], [merged.titleBarActions]);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { tesseraDir } from '../icons/tessera-dir.mjs';
 import { appLook } from '../look/app-look.mjs';
+import { themePalette } from '../look/theme-palette.mjs';
 import { installerTheme } from './installer-theme.mjs';
 import { stubColours } from './stub-colours.mjs';
 
@@ -20,7 +21,7 @@ import { stubColours } from './stub-colours.mjs';
 const installerInputs = async (rootDir, product) => {
   const { config, look } = await appLook(rootDir, product);
   const tesseraRoot = tesseraDir(rootDir);
-  return { config, look, colours: stubColours(look, installerTheme(tesseraRoot)), tesseraRoot };
+  return { config, look, colours: stubColours(look, installerTheme(tesseraRoot, themePalette(rootDir, config.icons.brand))), tesseraRoot };
 };
 
 export { installerInputs };

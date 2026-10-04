@@ -12,7 +12,8 @@ import { splashStyles } from './splash-styles.mjs';
  */
 const splashPageOf = async (rootDir, product) => {
   const { config, look } = await appLook(rootDir, product);
-  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, styles: splashStyles(rootDir, look) });
+  const brand = config.icons.brand ?? null;
+  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, palette: brand, styles: splashStyles(rootDir, look, brand) });
 };
 
 /**

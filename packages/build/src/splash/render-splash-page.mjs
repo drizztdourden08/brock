@@ -8,14 +8,15 @@ import { SPLASH_SCRIPT } from './splash-script.mjs';
  * @property {string} name  The app name
  * @property {string} mark  The mark without its tile, relative to the page
  * @property {string} styles  Every rule, in cascade order
+ * @property {string | null} [palette]  The data-palette of the page root, the app's brand
  */
 
 /**
  * @param {SplashPageInput} input
  * @returns {string}  The splash window page: static HTML with no bundle
  */
-const renderSplashPage = ({ name, mark, styles }) => `<!DOCTYPE html>
-<html lang="en">
+const renderSplashPage = ({ name, mark, styles, palette = null }) => `<!DOCTYPE html>
+<html lang="en"${palette ? ` data-palette="${escapeHtml(palette)}"` : ''}>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy" content="${SPLASH_CSP}" />

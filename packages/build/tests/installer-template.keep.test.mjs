@@ -65,6 +65,15 @@ describe('installerTheme', () => {
     expect(installerTheme(root)).toMatchObject({ bg: '#101014', surface: '#1a1a20', primary: '#f0862b', onPrimary: '#101014' });
   });
 
+  it('reads the brand palette when the app shows it, and the default theme for a palette Tessera lacks', () => {
+    const surface = '#141414';
+    const palettes = { brock: { dark: { ...TOKENS.theme.dark, surface } } };
+    const root = tempDir({ 'tokens.json': JSON.stringify({ ...TOKENS, palettes }) });
+    expect(installerTheme(root, 'brock')).toMatchObject({ surface });
+    expect(installerTheme(root, 'acme')).toMatchObject({ surface: '#1a1a20' });
+    expect(installerTheme(root)).toMatchObject({ surface: '#1a1a20' });
+  });
+
   it('falls back when the dark theme misses a colour', () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const partial = { theme: { dark: { ...TOKENS.theme.dark, textFaint: 'grey' } } };

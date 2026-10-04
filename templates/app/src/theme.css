@@ -1,12 +1,1 @@
 /* @layer renderer-app @kind style */
-
-:root {
-  --p-primary: #f0862b;
-  --p-secondary: #b9babc;
-  --p-tertiary: #8a8b8d;
-  --p-white: #f3f1ee;
-  --p-black: #121314;
-  --p-on-primary: var(--p-pure-black);
-  --p-on-secondary: var(--p-pure-black);
-  --p-on-tertiary: var(--p-pure-black);
-}

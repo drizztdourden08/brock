@@ -28,12 +28,24 @@ describe('tesseraBefore', () => {
     expect(tesseraBefore(repo({ 'package.json': { name: 'app' }, [TESSERA]: { version: '0.3.2' } }))).toBe('0.3.2');
   });
 
-  it('looks in the apps of a monorepo', () => {
-    expect(tesseraBefore(repo({ 'package.json': { name: 'repo' }, [`apps/desktop/${TESSERA}`]: { version: '0.4.0' } }))).toBe('0.4.0');
+  it('reads the Tessera installed in the app of a monorepo', () => {
+    const root = repo({ 'package.json': { name: 'repo' }, [`apps/desktop/${TESSERA}`]: { version: '0.4.0' } });
+    expect(tesseraBefore(root, join(root, 'apps', 'desktop'))).toBe('0.4.0');
   });
 
-  it('leaves the pin to brock migrate, and gives null without Tessera', () => {
-    expect(tesseraBefore(repo({ 'package.json': { brock: { tessera: '0.3.0' } }, [TESSERA]: { version: '0.4.0' } }))).toBeNull();
+  it('takes the app pin first, then the root pin, over the installed Tessera', () => {
+    const root = repo({
+      'package.json': { brock: { tessera: '0.2.0' } },
+      [TESSERA]: { version: '0.5.0' },
+      'apps/desktop/package.json': { brock: { tessera: '0.4.0' } },
+      'apps/web/package.json': { name: 'web' },
+    });
+    expect(tesseraBefore(root, join(root, 'apps', 'desktop'))).toBe('0.4.0');
+    expect(tesseraBefore(root, join(root, 'apps', 'web'))).toBe('0.2.0');
+    expect(tesseraBefore(root)).toBe('0.2.0');
+  });
+
+  it('gives null without a pin or an installed Tessera', () => {
     expect(tesseraBefore(repo({ 'package.json': { name: 'app' } }))).toBeNull();
   });
 });

@@ -53,11 +53,11 @@ An app pins Brock once, in `package.json#brock.version`, and every Brock depende
 
 1. The target is the version given, else the newest `@drizztdourden08/brock-build` on the scope registry (`npm view`).
 2. It creates the worktree `brock-<version>` (dots become dashes) through `worktree create`, so the main checkout stays untouched.
-3. It bumps `brock.version`, moves every Brock dependency to it and runs `pnpm install` when a dependency changed.
+3. It finds the apps: the root when it holds `brock.config.ts`, else every workspace package that does (`apps/desktop` in a monorepo). It bumps `brock.version` in the root and in each app, moves every Brock dependency of the root, the apps and the other workspace packages to it, moves the Brock entries of the `pnpm-workspace.yaml` catalog, and runs `pnpm install` when a `package.json` or the catalog changed.
 4. It prints the changelog between the two versions, read from the installed packages' `CHANGELOG.md`, else from the GitHub release notes.
-5. It runs the target's `brock sync`, then `brock migrate` from the old version to the new one.
-6. The gate: `pnpm lint`, `typecheck`, `structure` and `test` (a missing script is skipped), `brock icons`, then `launch brock-<version> none --review` headless. `--no-review` skips the last two.
-7. It writes `.brock/upgrade-report.md` in the worktree and prints its path: the package.json fields changed, each step, each migration with the files it touched, the numbered to-dos and the changelog. The file stays out of git and serves as the PR body.
+5. In each app it runs the target's `brock sync`, then `brock migrate` from that app's old `brock.version` to the new one, with `--tessera-from` set to the app's `brock.tessera`, else the root's, else the Tessera installed before. Both pins are read in the main checkout, so a resumed upgrade starts from the same place.
+6. The gate: `pnpm lint`, `typecheck`, `structure` and `test` at the root, then in each app (a missing script is skipped), `brock icons` in each app, then `launch brock-<version> none --review` headless. `--no-review` skips the icons and the launch.
+7. It writes `.brock/upgrade-report.md` in each app of the worktree and prints every path: the package.json fields changed, each step, each migration with the files it touched, the numbered to-dos and the changelog. The file stays out of git and serves as the PR body.
 8. Green: it commits through `worktree commit` and prints the `pr open` command. It never opens the PR, since publishing asks. Red: it keeps the worktree, names the failed step and exits 1. Running it again resumes the same worktree.
 
 `<repo> upgrade --check` compares only. It exits 0 when the app is current, 1 when it is behind and 2 when the registry cannot be reached, printing both versions. That exit code is the hook for a scheduled workflow that opens the upgrade PR each week; the workflow is not generated yet.

@@ -277,8 +277,8 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
   the code was last replayed to), else `0.3.0`, the baseline; up to the installed
   Tessera's `package.json` version. Each release in that range replays in order. A
   `next` release (Tessera linked to main) replays every time; the pin is still the
-  installed version. `brock upgrade` passes `--tessera-from` with the Tessera version the
-  worktree had before its install when the app has no pin yet. The step then writes
+  installed version. `brock upgrade` passes `--tessera-from` with each app's own pin, else the
+  root's, else the Tessera version installed before the upgrade. The step then writes
   `brock.tessera`.
 - An entry whose value is also a key of the same release would rename twice on a second
   replay, so it is skipped with a warning.

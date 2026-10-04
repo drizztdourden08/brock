@@ -18,9 +18,6 @@
     ".brock/*.ts"
   ],
   "ignoreDependencies": [
-    "@drizztdourden08/standards",
-    "@electron-toolkit/utils",
-    "velopack",
-    "zustand"
+    "@drizztdourden08/standards"
   ]
 }

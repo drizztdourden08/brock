@@ -1,12 +1,13 @@
 /* @layer renderer-shell @kind logic */
 import type { ScreenParams } from '../../../navigation/navigation.type';
 import { matchSub } from '../../../screens/conventions/match-sub';
+import { tabStateKey } from './tab-state-key';
 import type { HubPage } from '../../hub.type';
 import type { HubSelection } from '../Hub.type';
 
 const paramString = (value: unknown): string | null => (typeof value === 'string' ? value : null);
 
-const resolveHubPage = (pages: readonly HubPage[], home: HubPage, params: ScreenParams): HubSelection => {
+const resolveHubPage = (pages: readonly HubPage[], home: HubPage, params: ScreenParams, lastTabs: Readonly<Record<string, unknown>> = {}): HubSelection => {
   const section = paramString(params.section);
   const page = pages.find((candidate) => candidate.id === section) ?? home;
   const tabs = page.tabs ?? [];
@@ -14,7 +15,8 @@ const resolveHubPage = (pages: readonly HubPage[], home: HubPage, params: Screen
   const named = tabs.find((candidate) => candidate.id === wanted);
   const found = named === undefined && wanted !== null ? matchSub(page.subs ?? [], wanted) : null;
   if (found) return { page, tab: null, sub: found.sub, subParams: found.params };
-  return { page, tab: named ?? tabs.at(0) ?? null, sub: null, subParams: {} };
+  const last = wanted === null ? tabs.find((candidate) => candidate.id === lastTabs[tabStateKey(page.id)]) : undefined;
+  return { page, tab: named ?? last ?? tabs.at(0) ?? null, sub: null, subParams: {} };
 };
 
 export { resolveHubPage };

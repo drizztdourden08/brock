@@ -66,6 +66,18 @@ describe('settings row actions', () => {
     await vi.waitFor(() => expect(reset).toHaveBeenCalledOnce());
   });
 
+  it('hands the current settings to onSelect and to a disabled function', async () => {
+    const onSelect = vi.fn();
+    const item: SettingItem = { ...OWNER, actions: [{ id: 'rebuild', label: 'Rebuild', disabled: (values) => values.cache === 0, onSelect }] };
+    const empty = settingRow(item, context({ cache: 0 }));
+    expect(empty && 'actions' in empty ? empty.actions?.[0]?.disabled : null).toBe(true);
+    const full = settingRow(item, context({ cache: 12 }));
+    const [rebuild] = full && 'actions' in full ? full.actions ?? [] : [];
+    expect(rebuild?.disabled).toBe(false);
+    rebuild?.onClick();
+    await vi.waitFor(() => expect(onSelect).toHaveBeenCalledWith({ cache: 12 }));
+  });
+
   it('keeps SettingActions for a custom control, under it in the same row', () => {
     const row = settingRow(OWNER, { ...context(), renderControl: () => 'custom' });
     const content = row && 'content' in row ? row.content : null;

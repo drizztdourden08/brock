@@ -12,7 +12,7 @@ import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
 import type { StepTour } from '../review.type';
 import { probe } from './probe';
-import { FLOAT_HANDLE, FLOAT_SHRINK, FLOAT_TOLERANCE, GROW, MAIN_LINK } from './widget-review.constants';
+import { FLOAT_HANDLE, FLOAT_SHRINK, FLOAT_TOLERANCE, GROW, MAIN_LINK, MAIN_VIEW } from './widget-review.constants';
 
 const frameOf = (id: string): HTMLElement | null => find(`.dock-layout__floating[data-floating-id="${id}"]`);
 
@@ -25,6 +25,13 @@ const handlePoint = (id: string): WidgetWindowPoint | null => {
 
 const sized = (box: DOMRect | undefined, width: number, height: number): boolean =>
   box !== undefined && Math.abs(box.width - width) <= FLOAT_TOLERANCE && Math.abs(box.height - height) <= FLOAT_TOLERANCE;
+
+const grownSize = (start: DOMRect): { width: number; height: number } => {
+  const main = find(MAIN_VIEW)?.getBoundingClientRect();
+  const width = start.width + GROW;
+  const height = start.height + GROW;
+  return main ? { width: Math.min(width, main.right - start.left), height: Math.min(height, main.bottom - start.top) } : { width, height };
+};
 
 const mouse = (action: 'down' | 'move' | 'up', point: WidgetWindowPoint) => probe({ kind: 'mouse', id: MAIN_LINK, action, point });
 
@@ -55,12 +62,13 @@ const checkGrow = async (tour: StepTour, id: string, from: WidgetWindowPoint): P
     await tour.capture('floating-resize');
   });
   const grown = frameOf(id)?.getBoundingClientRect();
-  const resized = live.resizing && start !== undefined && sized(grown, start.width + GROW, start.height + GROW);
+  const expected = start ? grownSize(start) : null;
+  const resized = live.resizing && expected !== null && sized(grown, expected.width, expected.height);
   tour.check(
     'floating-widget-resizes',
     resized,
-    `dragging the corner of the floating "${id}" widget grew it by ${GROW} pixels each way and kept the size`,
-    `the floating "${id}" widget went from ${sizeText(start)} to ${sizeText(grown)} (resizing shown: ${String(live.resizing)})`,
+    `dragging the corner of the floating "${id}" widget grew it by up to ${GROW} pixels each way, inside the main view, and kept the size`,
+    `the floating "${id}" widget went from ${sizeText(start)} to ${sizeText(grown)}, expected ${Math.round(expected?.width ?? 0)}x${Math.round(expected?.height ?? 0)} (resizing shown: ${String(live.resizing)})`,
   );
 };
 

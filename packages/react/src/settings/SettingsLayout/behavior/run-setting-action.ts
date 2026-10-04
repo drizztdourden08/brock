@@ -18,7 +18,7 @@ const runSettingAction = async (action: SettingAction, options: RunSettingAction
   if (question && !(await confirmAction(question))) return;
   options.onStart?.();
   try {
-    await action.onSelect();
+    await action.onSelect(options.settings ?? {});
   } catch (err) {
     toast(`${action.label} failed: ${messageOf(err)}`, { variant: 'danger' });
   }

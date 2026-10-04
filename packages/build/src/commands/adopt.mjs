@@ -32,7 +32,7 @@ const FILES = (scope, rootDir, local) => ({
   'eslint.config.mjs': `/* @layer root-config @kind config */
 import { brockEslint } from '${LINT_CONFIG}';
 
-export default brockEslint({ presets: ['react-app'] });
+export default brockEslint({ presets: ['react-app'], ignores: ['**/.brock/**'] });
 `,
   'stylelint.config.mjs': `/* @layer root-config @kind config */
 import { brockStylelint } from '${LINT_CONFIG}/stylelint';

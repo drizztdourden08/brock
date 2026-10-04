@@ -45,6 +45,7 @@ interface ScreenMeta {
   title?: string;
   icon?: IconName;
   order?: number;
+  menuOrder?: number;
   shortcut?: string;
   devOnly?: boolean;
   requiresProfile?: boolean;

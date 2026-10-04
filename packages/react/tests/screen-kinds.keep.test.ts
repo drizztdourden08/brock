@@ -90,6 +90,16 @@ describe('sub-pages', () => {
     expect(resolveHubPage(pages, home, { section: 'sessions', tab: 'nope' }).sub).toBeNull();
   });
 
+  it('opens a tab page on its last tab when the route names none, and on the route tab when it does', () => {
+    const pages = pagesOf(hubOf('multiworld'));
+    const home = hubOf('multiworld').home;
+    const [first, second] = (pageOf(hubOf('multiworld'), 'games').tabs ?? []).map((tab) => tab.id);
+    expect(resolveHubPage(pages, home, { section: 'games' }).tab?.id).toBe(first);
+    expect(resolveHubPage(pages, home, { section: 'games' }, { 'tab:games': second }).tab?.id).toBe(second);
+    expect(resolveHubPage(pages, home, { section: 'games', tab: first }, { 'tab:games': second }).tab?.id).toBe(first);
+    expect(resolveHubPage(pages, home, { section: 'games' }, { 'tab:games': 'gone' }).tab?.id).toBe(first);
+  });
+
   it('are in the search index under their page, unless their path takes params', () => {
     const index = buildSearchIndex(CONFIG, [
       { kind: 'page', bucket: 'multiworld', group: 'library', id: 'sessions', title: 'Sessions' },

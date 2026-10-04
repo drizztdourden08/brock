@@ -7,6 +7,7 @@ import { collectMigrations } from '../upgrade/collect-migrations.mjs';
 import { runMigrations } from '../upgrade/run-migrations.mjs';
 import { selectMigrations } from '../upgrade/select-migrations.mjs';
 import { tesseraRenamesStep } from '../upgrade/tessera/tessera-renames-step.mjs';
+import { runSync } from './sync.mjs';
 
 const MISSING_FROM = 'brock migrate: --from <version> is required (the Brock version the app upgrades from), or --tessera-from <version> to replay the Tessera renames alone.';
 
@@ -69,10 +70,13 @@ const runMigrate = async ({ rootDir, from, to, tesseraFrom, report }) => {
     return 1;
   }
   const range = { from: from ?? null, to: to ?? null };
-  const run = withTessera(await brockRun(rootDir, range), tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
+  const brock = await brockRun(rootDir, range);
+  const run = withTessera(brock, tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
   printRun(run, range);
   if (report) writeReport(report, run);
-  return 0;
+  if (!brock.applied.some((m) => m.touched.length > 0)) return 0;
+  console.log('brock migrate: migrations changed the app, so brock sync runs again to regenerate .brock.');
+  return runSync({ rootDir });
 };
 
 export { runMigrate };

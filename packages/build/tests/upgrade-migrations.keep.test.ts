@@ -85,7 +85,8 @@ describe('the 0.1.1 migration', () => {
     await runMigrations(root, upgradeFrom('0.1.0'));
     const again = await runMigrations(root, upgradeFrom('0.1.0'));
     expect(again.applied.flatMap((m) => m.touched)).toEqual([]);
-    expect(again.todos).toHaveLength(4);
+    expect(again.todos).toHaveLength(5);
+    expect(again.todos.at(-1)?.migration).toBe('guide-parts');
   });
 
   it('gives windowMode and masterVolume a control, or a to-do when the item spans lines', async () => {
@@ -117,14 +118,14 @@ describe('the 0.1.1 migration', () => {
 
 describe('selectMigrations', () => {
   it('keeps the versions after from, up to to', () => {
-    expect(new Set(upgradeFrom('0.13.0').map((m) => m.version))).toEqual(new Set(['0.16.0', '0.17.0']));
-    expect(new Set(upgradeFrom('0.12.0').map((m) => m.version))).toEqual(new Set(['0.13.0', '0.16.0', '0.17.0']));
-    expect(new Set(upgradeFrom('0.7.0').map((m) => m.version))).toEqual(new Set(['0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0']));
-    expect(new Set(upgradeFrom('0.4.0').map((m) => m.version))).toEqual(new Set(['0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0']));
+    expect(new Set(upgradeFrom('0.13.0').map((m) => m.version))).toEqual(new Set(['0.16.0', '0.17.0', '0.18.0']));
+    expect(new Set(upgradeFrom('0.12.0').map((m) => m.version))).toEqual(new Set(['0.13.0', '0.16.0', '0.17.0', '0.18.0']));
+    expect(new Set(upgradeFrom('0.7.0').map((m) => m.version))).toEqual(new Set(['0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0', '0.18.0']));
+    expect(new Set(upgradeFrom('0.4.0').map((m) => m.version))).toEqual(new Set(['0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0', '0.18.0']));
     expect(upgradeFrom('0.0.9', '0.1.0')).toEqual([]);
     expect(upgradeFrom('0.1.0', '0.1.1').map((m) => m.version)).toEqual(readdirSync(join(import.meta.dirname, '..', 'migrations', '0.1.1')).filter((f: string) => f.endsWith('.mjs')).map(() => '0.1.1'));
-    expect(new Set(upgradeFrom('0.1.1').map((m) => m.version))).toEqual(new Set(['0.2.0', '0.4.0', '0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0']));
-    expect(new Set(upgradeFrom('0.2.0').map((m) => m.version))).toEqual(new Set(['0.4.0', '0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0']));
+    expect(new Set(upgradeFrom('0.1.1').map((m) => m.version))).toEqual(new Set(['0.2.0', '0.4.0', '0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0', '0.18.0']));
+    expect(new Set(upgradeFrom('0.2.0').map((m) => m.version))).toEqual(new Set(['0.4.0', '0.7.0', '0.10.0', '0.11.0', '0.12.0', '0.13.0', '0.16.0', '0.17.0', '0.18.0']));
   });
 
   it('orders module migrations with the build ones by version', () => {

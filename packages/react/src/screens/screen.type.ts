@@ -33,6 +33,7 @@ interface ScreenDef {
   floating?: (ctx: ScreenRenderContext) => ReactNode;
   menu?: ScreenMenu;
   order?: number;
+  menuOrder?: number;
 }
 
 type ScreenInput = Omit<ScreenDef, 'icon'> & { icon: IconName | Exclude<ReactNode, string> };

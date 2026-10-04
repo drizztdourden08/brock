@@ -10,7 +10,7 @@ my-app/
   brock.config.ts                  product, targets, modules
   brock.workspace.mjs              the thread CLI: repo name, base branch, launch targets
   brock.scope                      the npm scope
-  tessera.config.json              where Tessera parts live; $schema alone keeps src/<kind>
+  tessera.config.json              where Tessera parts live; $schema alone keeps src/<kind>; guide.parts names .brock/tessera-parts.ts
   package.json, pnpm-workspace.yaml, .npmrc, knip.json, .jscpd.json
   electron.vite.config.ts, electron-builder.config.cjs,
   eslint.config.mjs, stylelint.config.mjs, .markdownlint-cli2.mjs, tsconfig.json   managed by brock sync
@@ -93,7 +93,7 @@ my-repo/
 | Other static files | `public/` | any | served at the page root |
 | Installer | `build/installer/` | `header.png`, `splash.png` | `brock package` |
 | Tests | `tests/<area>/`, `tests/e2e/` | `<name>.keep.test.ts`, `<name>.e2e.ts` | `vitest` |
-| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `title-bar.ts`, `manifest.json` | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
+| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `title-bar.ts`, `manifest.json`, and `tessera-parts.ts` (the part names `tessera guide` writes when `guide.parts` names it) | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
 | Config | the app root | `brock.config.ts`, `tessera.config.json`, the managed configs | `brock sync` rewrites the managed ones |
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.

@@ -85,8 +85,7 @@ describe('the 0.1.1 migration', () => {
     await runMigrations(root, upgradeFrom('0.1.0'));
     const again = await runMigrations(root, upgradeFrom('0.1.0'));
     expect(again.applied.flatMap((m) => m.touched)).toEqual([]);
-    expect(again.todos).toHaveLength(5);
-    expect(again.todos.at(-1)?.migration).toBe('guide-parts');
+    expect(again.todos.map((todo) => todo.migration)).toEqual(['base-setting-controls', 'brock-app-logo-src', 'brock-app-logo-src', 'menu-built-in-about', 'guide-parts']);
   });
 
   it('gives windowMode and masterVolume a control, or a to-do when the item spans lines', async () => {

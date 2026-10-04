@@ -25,22 +25,22 @@ const renderSplashPage = ({ name, mark, styles, palette = null }) => `<!DOCTYPE 
 ${styles}
     </style>
   </head>
-  <body class="splash">
-    <main class="splash__stage">
+  <body class="ts-splash splash">
+    <main class="ts-stage">
       <img class="splash__mark" src="${escapeHtml(mark)}" alt="" />
-      <h1 class="splash__name">${escapeHtml(name)}</h1>
-      <p class="splash__status" id="splash-status" aria-live="polite">Starting</p>
+      <h1 class="ts-title splash__name">${escapeHtml(name)}</h1>
+      <p class="ts-status" id="splash-status" aria-live="polite">Starting</p>
       <section class="splash__failure" id="splash-failure" hidden>
-        <p class="splash__message" id="splash-message"></p>
-        <div class="splash__actions">
-          <button class="splash__button splash__button--primary" id="splash-retry" type="button">Retry</button>
-          <button class="splash__button" id="splash-logs" type="button">Open logs</button>
-          <button class="splash__button" id="splash-quit" type="button">Quit</button>
+        <p class="ts-status ts-status--danger splash__message" id="splash-message"></p>
+        <div class="ts-actions">
+          <button class="ts-button ts-button--primary" id="splash-retry" type="button">Retry</button>
+          <button class="ts-button" id="splash-logs" type="button">Open logs</button>
+          <button class="ts-button" id="splash-quit" type="button">Quit</button>
         </div>
       </section>
     </main>
-    <span class="splash__version" id="splash-version"></span>
-    <div class="splash__bar" id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"><div class="splash__fill"></div></div>
+    <span class="ts-version" id="splash-version"></span>
+    <div class="ts-progress ts-progress--edge" id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"></div>
     <script>${SPLASH_SCRIPT}</script>
   </body>
 </html>

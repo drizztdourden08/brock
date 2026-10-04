@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind constants */
 const SPLASH_PAGE = 'splash.html';
 const SPLASH_STYLESHEET = 'splash-page.css';
+const TESSERA_SPLASH_STYLESHEET = 'splash.css';
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const TOKEN_LAYERS = '@layer ds.base, ds.palette, ds.semantic;';
 const TOKEN_FILES = [
@@ -15,4 +16,4 @@ const SPLASH_FONTS = [
 ];
 const SPLASH_CSP = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; font-src data:";
 
-export { FONTS_DIR, HTML_ESCAPES, SPLASH_CSP, SPLASH_FONTS, SPLASH_PAGE, SPLASH_STYLESHEET, TOKEN_FILES, TOKEN_LAYERS, TOKENS_DIR };
+export { FONTS_DIR, HTML_ESCAPES, SPLASH_CSP, SPLASH_FONTS, SPLASH_PAGE, SPLASH_STYLESHEET, TESSERA_SPLASH_STYLESHEET, TOKEN_FILES, TOKEN_LAYERS, TOKENS_DIR };

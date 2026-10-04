@@ -84,8 +84,7 @@ interface GaugeReadings {
 interface PerformanceBarProps {
   active: boolean;
   refreshMs: number;
-  copied: boolean;
-  onCopy: () => void;
+  snapshot: () => string;
 }
 
 interface ByteParts {

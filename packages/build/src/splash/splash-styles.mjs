@@ -5,7 +5,7 @@ import { tesseraDir } from '../icons/tessera-dir.mjs';
 import { lookProperties } from './look-properties.mjs';
 import { readSplashFonts } from './read-splash-fonts.mjs';
 import { readTokenCss } from './read-token-css.mjs';
-import { SPLASH_STYLESHEET } from './splash.constants.mjs';
+import { SPLASH_STYLESHEET, TESSERA_SPLASH_STYLESHEET } from './splash.constants.mjs';
 
 /**
  * @param {string} rootDir  The app root
@@ -19,6 +19,7 @@ const splashStyles = (rootDir, look, brand = null) => {
     readSplashFonts(tesseraRoot),
     readTokenCss(rootDir, tesseraRoot, brand),
     lookProperties(look),
+    readFileSync(join(tesseraRoot, TESSERA_SPLASH_STYLESHEET), 'utf8'),
     readFileSync(join(import.meta.dirname, SPLASH_STYLESHEET), 'utf8'),
   ].join('\n');
 };

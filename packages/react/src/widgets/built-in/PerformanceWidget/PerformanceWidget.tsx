@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo, useState } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
-import { useCopyText } from '../../../hooks/useCopyText';
 import { useWidgetPref } from '../../../hooks/useWidgetPref';
 import { buildSnapshot } from './behavior/build-snapshot';
 import { performanceGroups } from './behavior/performance-groups';
@@ -30,12 +29,11 @@ const PerformanceWidget = () => {
   const processSample = processes?.sample ?? null;
   const facts = useAppFacts();
   const groups = useMemo(() => performanceGroups(shown, rendererSample, processSample, facts), [shown, rendererSample, processSample, facts]);
-  const { copied, copy } = useCopyText();
-  const copySnapshot = useCallback(() => void copy(buildSnapshot(groups, new Date())), [copy, groups]);
+  const snapshot = useCallback(() => buildSnapshot(groups, new Date()), [groups]);
 
   return (
     <Box ref={setRoot} className="performance-widget" data-sampling={active ? 'on' : 'off'}>
-      <PerformanceBar active={active} refreshMs={refreshMs} copied={copied} onCopy={copySnapshot} />
+      <PerformanceBar active={active} refreshMs={refreshMs} snapshot={snapshot} />
       <PerformanceTiles renderer={renderer} processes={processes} shown={shown} />
       <Box className="performance-widget__panels">
         <PerformanceGauges renderer={rendererSample} processes={processSample} shown={shown} />

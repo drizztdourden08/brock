@@ -10,4 +10,5 @@ export { useWidgetRegistryStore } from './useWidgetRegistryStore';
 export { WidgetHost } from './WidgetHost';
 export type { WidgetHostProps } from './WidgetHost';
 export { LogsWidget, LOGS_WIDGET_ID } from './built-in/LogsWidget';
+export { PerformanceWidget, PERFORMANCE_WIDGET_ID } from './built-in/PerformanceWidget';
 export type { WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutState, WidgetRegistryState } from './widget.type';

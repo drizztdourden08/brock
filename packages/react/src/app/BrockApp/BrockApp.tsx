@@ -53,9 +53,9 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const context = useMemo<BrockContextValue>(
     () => ({
       product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
-      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance,
+      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance, moduleIds: merged.ids,
     }),
-    [product, home, tabs, settingsControls, menu, homeScreen, tree],
+    [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids],
   );
 
   return (

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import type { AppLogBus } from './app-log.type';
+import type { AppLogState } from './app-log.type';
 
-const appLogState: { bus: AppLogBus | null } = { bus: null };
+const appLogState: AppLogState = { bus: null, counts: { warn: 0, error: 0 } };
 
 export { appLogState };

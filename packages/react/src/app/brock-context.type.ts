@@ -18,6 +18,7 @@ interface BrockContextValue {
   screenTree: ResolvedScreenTree | null;
   logoSrc: string;
   instanceLogoSrc: string;
+  moduleIds: readonly string[];
 }
 
 export type { BrockContextValue, SettingsControlsValue };

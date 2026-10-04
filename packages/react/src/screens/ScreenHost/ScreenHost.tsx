@@ -67,7 +67,7 @@ const ScreenHost = (props: ScreenHostProps) => {
 
   return (
     <Box className={className}>
-      <Box className="screen-host__home" inert={covered || undefined}>
+      <Box className="screen-host__home">
         {allowed(homeScreen) && (
           <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>
             <ScreenStateScope.Provider value={homeScreen.id}>{homeScreen.render(ctx)}</ScreenStateScope.Provider>

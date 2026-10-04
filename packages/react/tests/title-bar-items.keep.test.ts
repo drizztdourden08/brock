@@ -70,13 +70,12 @@ describe('jobStepper', () => {
     ...patch,
   });
 
-  it('points at the current step while running, the failed step on failure and a finished step when done', () => {
+  it('points at the current step while running and the failed step on failure, with no extra step when done', () => {
     expect(jobStepper(job({})).currentId).toBe('b');
     const failed = jobStepper(job({ state: 'failed', steps: [{ id: 'a', label: 'A', weight: 1, state: 'failed' }, { id: 'b', label: 'B', weight: 1, state: 'upcoming' }] }));
     expect(failed.currentId).toBe('a');
     expect(failed.steps[0]?.error).toBe(true);
     const done = jobStepper(job({ state: 'done' }));
-    expect(done.steps.map((step) => step.id)).toEqual(['a', 'b', 'job-finished']);
-    expect(done.currentId).toBe('job-finished');
+    expect(done.steps.map((step) => step.id)).toEqual(['a', 'b']);
   });
 });

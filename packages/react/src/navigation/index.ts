@@ -11,5 +11,3 @@ export type {
 export { useNavigation } from './useNavigation';
 export { useCanGoBack } from './useCanGoBack';
 export { useUnsavedChanges } from './useUnsavedChanges';
-export { BackTitle } from './BackTitle';
-export type { BackTitleProps } from './BackTitle';

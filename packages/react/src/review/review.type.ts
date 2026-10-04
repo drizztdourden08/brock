@@ -91,6 +91,13 @@ interface FrameSnapshot {
   closeButton: boolean;
 }
 
+interface ScreenFocusSnapshot {
+  focusInside: boolean;
+  pageInert: boolean;
+  titleBarReachable: boolean | null;
+  dockReachable: boolean | null;
+}
+
 interface PageHeaderSnapshot {
   shown: boolean;
   icon: boolean;
@@ -156,6 +163,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceReading, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

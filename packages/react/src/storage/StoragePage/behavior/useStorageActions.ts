@@ -18,7 +18,6 @@ const confirmImport = (plan: DataImportPlan): Promise<boolean> => {
     message: `What is in these folders now is deleted and replaced with the export${from} (${plural(known.reduce((sum, entry) => sum + entry.files, 0), 'file')}).`,
     confirmLabel: 'Replace',
     variant: 'danger',
-    focus: 'cancel',
   });
 };
 

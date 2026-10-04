@@ -2,7 +2,6 @@
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ScreenPage, SettingsPage } from '@drizztdourden08/tessera/composites';
-import { BackTitle } from '../../../../navigation/BackTitle';
 import { SettingsPageContext } from '../../../../settings/SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../../../../settings/SettingsLayout/SettingsLayout.type';
 import { PageActionsContext } from '../../../page-actions-context';
@@ -19,8 +18,7 @@ const HubPageFrame = (props: HubPageFrameProps) => {
     : undefined), [page.tabs, tab, onSelectTab]);
   const body = <PageActionsContext.Provider value={setSlotted}>{children}</PageActionsContext.Provider>;
   if (sub) {
-    const title = <BackTitle title={sub.label} label={`Back to ${page.label}`} onBack={onUp} />;
-    return <ScreenPage icon={sub.icon} title={title} actions={actions}>{body}</ScreenPage>;
+    return <ScreenPage icon={sub.icon} title={sub.label} back={{ label: page.label, onSelect: onUp }} actions={actions}>{body}</ScreenPage>;
   }
   if (page.fullBleed === true) return body;
   if (page.settingsTab !== undefined) return <SettingsPageContext.Provider value={settingsPage}>{body}</SettingsPageContext.Provider>;

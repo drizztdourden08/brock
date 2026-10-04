@@ -80,10 +80,10 @@ describe('settings row actions', () => {
 });
 
 describe('confirmDelete', () => {
-  it('asks with the danger look and Cancel focused, and resolves the choice', async () => {
+  it('asks with the danger look, which Tessera starts on Cancel, and resolves the choice', async () => {
     const answer = confirmDelete({ what: '12 runs', consequence: 'Their output files go too.' });
     expect(useDialogStore.getState().dialog).toMatchObject({
-      title: 'Delete 12 runs?', message: 'Their output files go too.', confirmLabel: 'Delete', variant: 'danger', focus: 'cancel',
+      title: 'Delete 12 runs?', message: 'Their output files go too.', confirmLabel: 'Delete', variant: 'danger',
     });
     useDialogStore.getState().dialog?.onConfirm();
     await expect(answer).resolves.toBe(true);
@@ -92,8 +92,8 @@ describe('confirmDelete', () => {
     await expect(second).resolves.toBe(false);
   });
 
-  it('keeps the deprecated callback form working with the same focus', () => {
+  it('keeps the deprecated callback form working with the danger look', () => {
     dialogs.confirmDelete('Delete preset?', 'It cannot be undone.', () => undefined);
-    expect(useDialogStore.getState().dialog).toMatchObject({ variant: 'danger', focus: 'cancel', confirmLabel: 'Delete' });
+    expect(useDialogStore.getState().dialog).toMatchObject({ variant: 'danger', confirmLabel: 'Delete' });
   });
 });

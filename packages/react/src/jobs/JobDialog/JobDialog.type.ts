@@ -8,11 +8,4 @@ interface JobDialogProps {
   onClose: () => void;
 }
 
-interface JobDialogActionsProps {
-  job: JobSnapshot;
-  onHide: () => void;
-  onCancel: () => void;
-  onClose: () => void;
-}
-
-export type { JobDialogActionsProps, JobDialogProps };
+export type { JobDialogProps };

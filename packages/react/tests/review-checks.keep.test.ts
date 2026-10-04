@@ -5,6 +5,7 @@ import { aboutChecks } from '../src/review/checks/about-checks';
 import { bootChecks } from '../src/review/checks/boot-checks';
 import { frameChecks } from '../src/review/checks/frame-checks';
 import { pageHeaderChecks } from '../src/review/checks/page-header-checks';
+import { screenFocusChecks } from '../src/review/checks/screen-focus-checks';
 import { iconSlotChecks } from '../src/review/checks/icon-slot-checks';
 import { menuChecks } from '../src/review/checks/menu-checks';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
@@ -108,6 +109,19 @@ describe('frameChecks', () => {
     expect(failed(frameChecks('about', 'About', { layers: 1, card: true, title: 'About', closeButton: true }))).toEqual([]);
     expect(failed(frameChecks('about', 'About', { layers: 0, card: false, title: null, closeButton: false })))
       .toEqual(['about-opens', 'about-frame', 'about-header', 'about-close-control']);
+  });
+});
+
+describe('screenFocusChecks', () => {
+  it('passes a screen that takes focus and makes the page inert while the title bar and dock stay usable', () => {
+    expect(failed(screenFocusChecks('about', { focusInside: true, pageInert: true, titleBarReachable: true, dockReachable: true }))).toEqual([]);
+    expect(failed(screenFocusChecks('about', { focusInside: false, pageInert: false, titleBarReachable: false, dockReachable: false })))
+      .toEqual(['about-focus-in', 'about-page-inert', 'about-title-bar-usable', 'about-dock-usable']);
+  });
+
+  it('skips the title bar and dock checks when the window has neither', () => {
+    expect(screenFocusChecks('about', { focusInside: true, pageInert: true, titleBarReachable: null, dockReachable: null }).map((check) => check.id))
+      .toEqual(['about-focus-in', 'about-page-inert']);
   });
 });
 

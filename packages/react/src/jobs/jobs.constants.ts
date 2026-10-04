@@ -4,6 +4,8 @@ import type { JobState } from '@drizztdourden08/brock-core/types';
 
 const JOB_BAR_ID = 'brock-jobs';
 
+const JOB_BAR_LABEL = 'Background job';
+
 const JOB_BAR_TONE: Record<JobState, StatusTone> = {
   running: 'info',
   done: 'success',
@@ -11,4 +13,4 @@ const JOB_BAR_TONE: Record<JobState, StatusTone> = {
   cancelled: 'warning',
 };
 
-export { JOB_BAR_ID, JOB_BAR_TONE };
+export { JOB_BAR_ID, JOB_BAR_LABEL, JOB_BAR_TONE };

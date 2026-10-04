@@ -5,6 +5,8 @@ import type { ScreenParams } from '../navigation/navigation.type';
 
 type ScreenLayerKind = 'fullscreen' | 'own';
 
+type ScreenHeader = 'page' | 'own';
+
 interface ScreenRenderContext {
   params: ScreenParams;
   profile: Profile | null;
@@ -15,7 +17,8 @@ interface ScreenRenderContext {
 interface ScreenDef {
   id: string;
   title: string;
-  icon?: ReactNode;
+  icon: ReactNode;
+  header?: ScreenHeader;
   render: (ctx: ScreenRenderContext) => ReactNode;
   layer?: ScreenLayerKind;
   keepMounted?: boolean;
@@ -28,4 +31,4 @@ interface ScreenDef {
   floating?: (ctx: ScreenRenderContext) => ReactNode;
 }
 
-export type { ScreenDef, ScreenLayerKind, ScreenRenderContext };
+export type { ScreenDef, ScreenHeader, ScreenLayerKind, ScreenRenderContext };

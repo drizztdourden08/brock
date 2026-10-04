@@ -1,8 +1,10 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
+import { pageHeaderChecks } from '../checks/page-header-checks';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
+import { pageHeader } from '../dom/page-header';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
 import type { StepTour } from '../review.type';
@@ -24,7 +26,9 @@ const visitHubPages = async (tour: StepTour, hub: HubDef, pages: readonly HubPag
     const shown = await waitFor(() => showing(hub, page));
     const id = `${hub.id}-${page.id}`;
     tour.check(`${id}-page`, shown !== null, `the "${page.label}" page of "${hub.id}" opens from its nav entry`, `the "${page.label}" page of "${hub.id}" did not open from its nav entry`);
-    if (shown !== null) await tour.capture(`bucket-${id}`);
+    if (shown === null) continue;
+    if (page.fullBleed !== true) tour.report(pageHeaderChecks(id, page.label, pageHeader(find(SELECTORS.hubPage) ?? document)));
+    await tour.capture(`bucket-${id}`);
   }
 };
 

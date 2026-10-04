@@ -9,6 +9,7 @@ import type { HubSearchHit } from '../hub.type';
 import { buildHubNav } from './behavior/build-hub-nav';
 import { useHubState } from './behavior/useHubState';
 import { HubIndexResults } from './sub-components/HubIndexResults';
+import { HubPageFrame } from './sub-components/HubPageFrame';
 import { HubSearchHits } from './sub-components/HubSearchHits';
 import type { HubProps } from './Hub.type';
 
@@ -32,7 +33,7 @@ const Hub = (props: HubProps) => {
 
   return (
     <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
-      {tab ? tab.render(context) : page.render(context)}
+      <HubPageFrame key={page.id} page={page}>{tab ? tab.render(context) : page.render(context)}</HubPageFrame>
     </SideNavLayout>
   );
 };

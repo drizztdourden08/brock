@@ -67,16 +67,16 @@ import { screenTree } from '../.brock/screens';
 
 ```ts
 defineScreen({
-  id, title, icon?, render(ctx), layer?: 'fullscreen' | 'own', keepMounted?, devOnly?,
+  id, title, icon, render(ctx), layer?: 'fullscreen' | 'own', header?: 'page' | 'own', keepMounted?, devOnly?,
   group?, shortcut?: 'Mod+Comma', requiresProfile?, subtitle?(ctx), extra?(ctx), floating?(ctx),
 });
 ```
 
-`ctx` carries `params`, `profile`, `open` and `close`. A fullscreen screen draws inside `ScreenLayer`, the reference frame: a card at 90% of the window over a scrim, one header with the title, `subtitle`, `extra` controls and the close button, and `floating` overhanging the top edge. It enters over 0.2 s, with no entrance while the app boots. An own screen draws its own frame. Every screen with a shortcut toggles on it.
+`ctx` carries `params`, `profile`, `open` and `close`. Every screen has an `icon` and a `title`. A fullscreen screen draws inside `ScreenLayer`, the reference frame: a card at 90% of the window over a scrim, one header with the title, `subtitle`, `extra` controls and the close button, and `floating` overhanging the top edge. Inside the card, the screen's content sits in Tessera's `ScreenPage`, the page header with the glowing icon and the title over the backdrop, which compacts once the body scrolls; `header: 'own'` leaves the content to draw its own headers, as a hub does for its pages. `ScreenLayer` takes `square` for a window shown fullscreen, and `BrockApp` sets it while the window is in a full screen window group. It enters over 0.2 s, with no entrance while the app boots. An own screen draws its own frame. Every screen with a shortcut toggles on it.
 
 ## Hubs
 
-`defineHub` returns a fullscreen screen, so a hub sits in the same card as every other screen: the hub title with the profile name as subtitle, the active page's tabs in the header, the section nav and the page inside. With two hubs or more, a hub switch overhangs the top edge of the card and moves between them.
+`defineHub` returns a fullscreen screen, so a hub sits in the same card as every other screen: the hub title with the profile name as subtitle, the active page's tabs in the header, the section nav and the page inside. `HubDef.icon` and `HubPage.icon` are required. Each page draws under a page header with its icon and label: a settings page in Tessera's `SettingsPage`, with its section anchors, and any other page in `ScreenPage`. A page with `fullBleed: true`, such as a bucket's hero home, fills the pane itself. With two hubs or more, a hub switch overhangs the top edge of the card and moves between them.
 
 ## Screens by convention
 

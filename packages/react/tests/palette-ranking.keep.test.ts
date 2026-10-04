@@ -10,7 +10,7 @@ const entry = (id: string, label: string, extra: Partial<SearchEntry> = {}): Sea
   id, kind: 'action', label, keywords: [], breadcrumb: [], run: () => undefined, ...extra,
 });
 
-const screen = (id: string, extra: Partial<ScreenDef> = {}): ScreenDef => ({ id, title: id, render: () => null, ...extra });
+const screen = (id: string, extra: Partial<ScreenDef> = {}): ScreenDef => ({ id, title: id, icon: null, render: () => null, ...extra });
 
 const TABS: TabDef<object>[] = [{
   id: 'display',

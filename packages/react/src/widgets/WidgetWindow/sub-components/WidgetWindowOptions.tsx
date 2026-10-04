@@ -6,6 +6,7 @@ import { hostApi } from '../../../host/host-api';
 import { WINDOW_GROUPS } from '../../window-groups.constants';
 import { WindowGroupControls } from '../../WindowGroupControls';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
+import { PinChoiceRow } from './PinChoiceRow';
 
 const noop = (): void => undefined;
 
@@ -36,8 +37,6 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onFloat={() => back('float')}
       onPopOut={() => back()}
       canPopOut
-      pin={own.pin}
-      onPinChange={own.setPin}
       snap={own.snap}
       onSnapChange={own.setSnap}
       onMakeRoomChange={noop}
@@ -46,6 +45,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onReset={reset}
       onClose={onClose}
     >
+      <PinChoiceRow pin={own.pin} onPinChange={own.setPin} />
       <WindowGroupControls
         sync={own.sync}
         onSyncChange={own.setSync}

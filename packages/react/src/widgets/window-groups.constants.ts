@@ -17,7 +17,7 @@ const WINDOW_GROUP_TEXT = {
   group: 'Window group',
   none: 'None',
   sync: 'Sync with main window',
-  syncHint: 'Shows, hides, minimizes and raises with the main window',
+  syncHint: 'Shows, hides, minimizes and raises with the main window, and stays on top whenever it is',
   moving: 'Moving a window',
   resizing: 'Resizing a window',
   snapOn: 'Snapping on',
@@ -28,7 +28,7 @@ const WINDOW_GUIDE_HINTS: readonly WindowGuideHint[] = [
   { keys: ['ctrl'], text: 'Hold Ctrl to skip snapping' },
   { keys: ['ctrl'], text: 'Hold Ctrl while resizing to resize only this window' },
   { text: 'Edges and corners snap to the windows around, so they line up into a grid' },
-  { text: 'An edge shared by snapped windows resizes them all together' },
+  { text: 'Dragging an edge shared with a snapped window moves its facing edge too, and nothing else' },
   { text: 'Windows in the same group maximize, go full screen, minimize, restore and close together' },
 ];
 

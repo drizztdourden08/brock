@@ -13,6 +13,7 @@ import { checkGrid } from '../widgets/grid-check';
 import { checkGroups } from '../widgets/group-check';
 import { checkGuide } from '../widgets/guide-check';
 import { checkMainSnap } from '../widgets/main-snap-check';
+import { checkPin } from '../widgets/pin-check';
 import { checkRestartRestore } from '../widgets/restart-check';
 import { checkSharedEdge } from '../widgets/shared-edge-check';
 import { checkSync } from '../widgets/sync-check';
@@ -33,6 +34,7 @@ const captureWidget = async (id: string, name: string): Promise<void> => {
 
 const windowChecks = async (tour: StepTour, id: string): Promise<void> => {
   await captureWidget(id, 'widget-window');
+  await checkPin(tour, id);
   await checkBoundsRoundTrip(tour, id);
   await checkSnapAndTow(tour, id);
   await checkRestartRestore(tour, id);

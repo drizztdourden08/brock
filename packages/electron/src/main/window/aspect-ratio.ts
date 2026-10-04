@@ -1,10 +1,10 @@
 /* @layer electron-main @kind logic */
-import { app } from 'electron';
-import type { BrowserWindow, Rectangle } from 'electron';
+import type { BrowserWindow } from 'electron';
 import type { HandlerGroup } from '../types/main-context.type';
+import { aspectLock } from './aspect-lock';
+import { ratioBounds } from './ratio-bounds';
 
-let lockedRatio = 0;
-let lockedExtraHeight = 0;
+const enforced = new WeakSet<BrowserWindow>();
 
 const snapToRatio = (win: BrowserWindow, ratio: number, extraHeight: number): void => {
   const [w = 0, h = 0] = win.getSize();
@@ -23,43 +23,15 @@ const snapToRatio = (win: BrowserWindow, ratio: number, extraHeight: number): vo
   }
 };
 
-const fitBounds = (bounds: Rectangle, edge: string): { width: number; height: number } | null => {
-  if (edge === 'left' || edge === 'right') {
-    return { width: bounds.width, height: Math.round(bounds.width / lockedRatio) + lockedExtraHeight };
-  }
-  if (edge === 'bottom' || edge === 'top') {
-    return { width: Math.round((bounds.height - lockedExtraHeight) * lockedRatio), height: bounds.height };
-  }
-  const wForH = Math.round((bounds.height - lockedExtraHeight) * lockedRatio);
-  const hForW = Math.round(bounds.width / lockedRatio) + lockedExtraHeight;
-  const fitsW = wForH <= bounds.width;
-  const fitsH = hForW <= bounds.height;
-  if (fitsW && fitsH) {
-    return wForH * bounds.height >= bounds.width * hForW
-      ? { width: wForH, height: bounds.height }
-      : { width: bounds.width, height: hForW };
-  }
-  if (fitsW) return { width: wForH, height: bounds.height };
-  if (fitsH) return { width: bounds.width, height: hForW };
-  return null;
-};
-
 const enforceOnResize = (win: BrowserWindow): void => {
+  if (enforced.has(win)) return;
+  enforced.add(win);
   win.on('will-resize', (e, newBounds, details) => {
-    if (lockedRatio <= 0) return;
-    const edge: string = details.edge;
-    const target = fitBounds(newBounds, edge);
-    if (!target) {
-      e.preventDefault();
-      return;
-    }
-    if (target.width === newBounds.width && target.height === newBounds.height) return;
-
+    if (e.defaultPrevented || aspectLock.get().ratio <= 0) return;
+    const target = ratioBounds(win.getBounds(), newBounds, details.edge, aspectLock.get());
+    if (target === newBounds) return;
     e.preventDefault();
-    const cur = win.getBounds();
-    const x = edge.includes('left') ? cur.x + cur.width - target.width : newBounds.x;
-    const y = edge.includes('top') ? cur.y + cur.height - target.height : newBounds.y;
-    win.setBounds({ x, y, width: target.width, height: target.height });
+    if (target) win.setBounds(target);
   });
 };
 
@@ -69,15 +41,14 @@ const aspectRatioHandlers: HandlerGroup = {
     on('window:setAspectRatioLock', (_e, ratio, extraHeight) => {
       const win = window();
       if (!win) return;
-      lockedRatio = ratio;
-      lockedExtraHeight = extraHeight;
+      aspectLock.set({ ratio: Math.max(ratio, 0), extraHeight });
       if (ratio <= 0) {
         win.setAspectRatio(0);
         return;
       }
+      enforceOnResize(win);
       snapToRatio(win, ratio, extraHeight);
     });
-    app.on('browser-window-created', (_event, win) => enforceOnResize(win));
   },
 };
 

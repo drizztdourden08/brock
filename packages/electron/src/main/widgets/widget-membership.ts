@@ -1,9 +1,11 @@
 /* @layer electron-main @kind logic */
 import type { WidgetWindowGroup } from '@drizztdourden08/brock-core';
 import { getMainWindow } from '../window/get-main-window';
+import { applyPin } from './apply-pin';
 import { applySync } from './apply-sync';
 import { groupLayout } from './group-layout';
 import { mainGroup } from './main-group';
+import { mainOnTop } from './main-on-top';
 import { tellMain } from './tell-main';
 import { tellWindow } from './tell-window';
 import { widgetWindowControl } from './widget-window-control';
@@ -22,6 +24,7 @@ const setSync = (id: string, on: boolean): void => {
   if (!entry || entry.sync === on) return;
   entry.sync = on;
   applySync(entry);
+  applyPin(entry, mainOnTop());
   if (on && mainAway() && entry.win.isVisible()) {
     entry.hiddenWithApp = true;
     entry.win.hide();

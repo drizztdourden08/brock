@@ -10,7 +10,7 @@ const showIfFree = (entry: WidgetWindowEntry): void => {
 };
 
 const followers = (): WidgetWindowEntry[] =>
-  liveEntries().map(([, entry]) => entry).filter((entry) => entry.sync || entry.pin === 'with-app').sort((a, b) => a.zStamp - b.zStamp);
+  liveEntries().map(([, entry]) => entry).filter((entry) => entry.sync).sort((a, b) => a.zStamp - b.zStamp);
 
 const hideWithApp = (): void => {
   for (const entry of followers()) {

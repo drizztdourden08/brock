@@ -144,14 +144,14 @@ describe('sharedEdgeResize', () => {
   const bottom = box(500, 300, 300, 200);
   const leftOf = box(200, 100, 300, 400);
 
-  it('moves the left edge of every window stacked flush on that edge', () => {
+  it('leaves the matching edge of a window stacked below alone, since it does not face the dragged edge', () => {
     const result = sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('bottom', bottom)]);
-    expect(result.moves).toEqual([{ id: 'bottom', bounds: { ...bottom, x: 460, width: 340 } }]);
+    expect(result).toEqual({ bounds: { ...top, x: 460, width: 340 }, moves: [] });
   });
 
-  it('drags the facing edge of the neighbour across the seam', () => {
+  it('drags only the facing edge of the neighbour across the seam', () => {
     const result = sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('bottom', bottom), edgeWindow('left', leftOf)]);
-    expect(result.moves).toContainEqual({ id: 'left', bounds: { ...leftOf, width: 260 } });
+    expect(result.moves).toEqual([{ id: 'left', bounds: { ...leftOf, width: 260 } }]);
   });
 
   it('leaves windows that are not on the edge alone', () => {
@@ -159,10 +159,15 @@ describe('sharedEdgeResize', () => {
     expect(sharedEdgeResize(top, { ...top, x: 460, width: 340 }, [edgeWindow('far', far)]).moves).toEqual([]);
   });
 
-  it('works on the bottom edge of windows side by side', () => {
+  it('never stretches a window beside it when an outer edge moves', () => {
     const beside = box(800, 100, 300, 200);
     const result = sharedEdgeResize(top, { ...top, height: 260 }, [edgeWindow('beside', beside)]);
-    expect(result.moves).toEqual([{ id: 'beside', bounds: { ...beside, height: 260 } }]);
+    expect(result.moves).toEqual([]);
+  });
+
+  it('moves the facing edge across the seam when the bottom edge is shared', () => {
+    const result = sharedEdgeResize(top, { ...top, height: 240 }, [edgeWindow('bottom', bottom)]);
+    expect(result.moves).toEqual([{ id: 'bottom', bounds: { ...bottom, y: 340, height: 160 } }]);
   });
 
   it('stops at the minimum size of every window it moves', () => {

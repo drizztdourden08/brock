@@ -1,5 +1,7 @@
 /* @layer core @kind types */
-type WidgetPinMode = 'off' | 'top' | 'with-app';
+type WidgetPinMode = 'off' | 'top';
+
+type StoredPinMode = WidgetPinMode | 'with-app';
 
 type WidgetEdge = 'left' | 'right' | 'top' | 'bottom';
 
@@ -31,7 +33,7 @@ interface WidgetSnapLink {
 interface PoppedWidgetWire {
   id: string;
   bounds?: WidgetWindowBounds;
-  pin?: WidgetPinMode;
+  pin?: StoredPinMode;
   snap?: boolean;
   link?: WidgetSnapLink | null;
   sync?: boolean;
@@ -118,7 +120,7 @@ interface WidgetSlice {
 }
 
 export type {
-  PoppedWidgetWire, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
+  PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
   WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,
   WidgetWindowState, WindowGroupAction, WindowGuideMode, WindowGuideState,
 };

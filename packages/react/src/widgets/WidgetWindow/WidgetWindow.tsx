@@ -11,7 +11,9 @@ import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
+import { WidgetPinMenu } from './sub-components/WidgetPinMenu';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
+import { TITLEBAR_ACTIONS_SELECTOR } from './WidgetWindow.constants';
 import type { WidgetWindowProps } from './WidgetWindow.type';
 import './WidgetWindow.css';
 
@@ -24,6 +26,8 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const frames = useWidgetRelayStore((s) => s.slices[RELAY_SLICES.frames]) as WidgetLayout['frame'] | undefined;
   const own = usePoppedWindowState(id);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const [root, setRoot] = useState<HTMLElement | null>(null);
+  const actions = root?.querySelector<HTMLElement>(TITLEBAR_ACTIONS_SELECTOR) ?? null;
   useWidgetRelay(id);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
@@ -33,7 +37,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const toggleOptions = useCallback((next: HTMLElement) => setAnchor((current) => (current ? null : next)), []);
 
   return (
-    <Box className={own.square ? 'widget-window widget-window--square' : 'widget-window'}>
+    <Box ref={setRoot} className={own.square ? 'widget-window widget-window--square' : 'widget-window'}>
       <Widget
         id={id}
         tabs={tabs}
@@ -42,9 +46,6 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         mode="out"
         opacity={frame.opacity}
         optionsOpen={anchor !== null}
-        pin={own.pin}
-        onTop={own.onTop}
-        onPinChange={own.setPin}
         onActivateTab={noop}
         onOpenOptions={toggleOptions}
         onPopOut={popIn}
@@ -53,6 +54,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
       >
         {definition?.render()}
       </Widget>
+      {actions && <WidgetPinMenu pin={own.pin} onPinChange={own.setPin} host={actions} />}
       {anchor && (
         <WidgetWindowOptions id={id} definition={definition} anchor={anchor} frame={frame} own={own} onClose={() => setAnchor(null)} />
       )}

@@ -28,6 +28,7 @@ const register = (id: string, win: BrowserWindow, popped?: WidgetWindowOpen): Wi
   widgetWindowEntries.set(id, entry);
   applySync(entry);
   applyPin(entry, mainOnTop());
+  if (popped?.pin === 'with-app') tellMain(id, { pin: entry.pin, sync: entry.sync });
   return entry;
 };
 
@@ -40,10 +41,10 @@ const unregister = (id: string, win: BrowserWindow): void => {
 const setPin = (id: string, mode: WidgetPinMode): WidgetPinMode => {
   const entry = liveEntry(id);
   if (!entry) return 'off';
-  entry.pin = mode;
+  entry.pin = mode === 'top' ? 'top' : 'off';
   applyPin(entry, mainOnTop());
-  tellMain(id, { pin: mode });
-  return mode;
+  tellMain(id, { pin: entry.pin });
+  return entry.pin;
 };
 
 const setSnap = (id: string, on: boolean): void => {
@@ -56,7 +57,7 @@ const setSnap = (id: string, on: boolean): void => {
 };
 
 const mirrorMainPin = (onTop: boolean): void => {
-  for (const [, entry] of liveEntries()) if (entry.pin === 'with-app') applyPin(entry, onTop);
+  for (const [, entry] of liveEntries()) if (entry.sync) applyPin(entry, onTop);
 };
 
 const stateOf = (id: string): WidgetWindowState | null => {

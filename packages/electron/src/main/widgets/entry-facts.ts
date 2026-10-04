@@ -4,10 +4,10 @@ import type { EntryFacts } from './widget-windows.type';
 
 const entryFacts = (popped: WidgetWindowOpen = {}): EntryFacts => {
   const snap = popped.snap ?? true;
-  const sync = popped.sync ?? true;
+  const sync = popped.pin === 'with-app' || (popped.sync ?? true);
   const wantsTaskbar = popped.taskbar === true;
   return {
-    pin: popped.pin ?? 'off', snap, link: snap ? popped.link ?? null : null, seq: popped.seq, sync, group: popped.group ?? null, wantsTaskbar, taskbar: wantsTaskbar || !sync,
+    pin: popped.pin === 'top' ? 'top' : 'off', snap, link: snap ? popped.link ?? null : null, seq: popped.seq, sync, group: popped.group ?? null, wantsTaskbar, taskbar: wantsTaskbar || !sync,
   };
 };
 

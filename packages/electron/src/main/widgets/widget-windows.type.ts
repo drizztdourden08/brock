@@ -2,6 +2,7 @@
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import type { WidgetDockBack, WidgetEdge, WidgetPinMode, WidgetSnapLink, WidgetWindowBounds, WidgetWindowGroup, WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import type { SecurityOptions } from '../types/main-context.type';
+import type { AspectLock } from '../window/aspect-lock.type';
 
 interface SnapTarget {
   to: string;
@@ -127,6 +128,17 @@ interface SharedResize {
   moves: EdgeMove[];
 }
 
+interface ResizePlan {
+  id: string;
+  current: WidgetWindowBounds;
+  proposed: WidgetWindowBounds;
+  edge?: string;
+  others: readonly EdgeWindow[];
+  rules: ManipulationRules;
+  min: MinSize;
+  lock: AspectLock;
+}
+
 interface EdgeSide {
   axis: Axis;
   far: boolean;
@@ -174,5 +186,5 @@ interface CaptureSheet {
 
 export type {
   Axis, BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeScan, EdgeSide, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
-  MinSize, ModifierInput, PackSpan, ResizeEdges, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
+  MinSize, ModifierInput, PackSpan, ResizeEdges, ResizePlan, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
 };

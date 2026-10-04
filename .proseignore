@@ -1,2 +1,0 @@
-# <glob>  <why the prose check skips it>
-tessera.config.json  Tessera owns its key names and renames the one this check flags in Tessera 0.10.0; drop this line when Brock takes that release

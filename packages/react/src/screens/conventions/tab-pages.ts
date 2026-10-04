@@ -4,6 +4,7 @@ import { renderPage } from '../kinds/render-page';
 import { byOrder } from './by-order';
 import { entryLabel } from './entry-label';
 import { entryOrder } from './entry-order';
+import { pageMetaFields } from './page-meta-fields';
 import { iconNode } from './icon-node';
 import { KIND_ICONS } from './screens.constants';
 import type { BucketDef } from './screens-config.type';
@@ -35,8 +36,7 @@ const tabPages = (bucket: BucketDef, entries: readonly TabEntry[], metas: readon
         id: first.page,
         label: entryLabel(own),
         icon: iconNode(own.meta?.icon ?? KIND_ICONS.tab),
-        devOnly: own.meta?.devOnly,
-        shortcut: own.meta?.shortcut,
+        ...pageMetaFields(own.meta),
         tabs,
         render: lead.render,
       },

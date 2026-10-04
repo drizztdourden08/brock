@@ -7,7 +7,7 @@ import { bucketSeedEntries } from './seeds/bucket-seed-entries';
 import { screenSeedEntry } from './seeds/screen-seed-entry';
 
 const seedEntries = (config: ScreensConfig, seed: SearchFileSeed, seeds: readonly SearchFileSeed[]): SearchEntry[] => {
-  if (seed.kind === 'card' || seed.kind === 'layer') return [screenSeedEntry(seed, seed.kind)];
+  if (seed.kind === 'card' || seed.kind === 'layer' || seed.kind === 'base') return [screenSeedEntry(seed, seed.kind)];
   const bucket = config.buckets.find((candidate) => candidate.id === seed.bucket);
   return bucket === undefined ? [] : bucketSeedEntries(bucket, seed, seeds);
 };

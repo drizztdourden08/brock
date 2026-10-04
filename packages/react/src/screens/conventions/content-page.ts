@@ -5,6 +5,7 @@ import { joinRoute } from '../../navigation/join-route';
 import { renderPage } from '../kinds/render-page';
 import { entryLabel } from './entry-label';
 import { entryOrder } from './entry-order';
+import { pageMetaFields } from './page-meta-fields';
 import { iconNode } from './icon-node';
 import { KIND_ICONS } from './screens.constants';
 import type { BucketDef } from './screens-config.type';
@@ -17,8 +18,7 @@ const contentPage = (bucket: BucketDef, entry: PageEntry | FreePageEntry | Setti
     id: entry.id,
     label: entryLabel(entry),
     icon: iconNode(entry.meta?.icon ?? KIND_ICONS[entry.kind]),
-    devOnly: entry.meta?.devOnly,
-    shortcut: entry.meta?.shortcut,
+    ...pageMetaFields(entry.meta),
     settingsTab: entry.kind === 'settings' ? joinRoute(entry.bucket, entry.id) : undefined,
     render: entry.kind !== 'settings'
       ? renderPage(entry.component, bucket)

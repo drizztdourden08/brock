@@ -12,6 +12,8 @@ const heroPage = (bucket: BucketDef, entry: HeroEntry): HubPage => ({
   icon: iconNode(entry.meta?.icon ?? KIND_ICONS.hero),
   fullBleed: true,
   shortcut: entry.meta?.shortcut,
+  menu: entry.meta?.menu,
+  order: entry.meta?.order,
   render: renderHero(entry.component, bucket),
 });
 

@@ -1,12 +1,12 @@
 /* @layer renderer-shell @kind types */
-import type { ComponentType } from 'react';
-import type { HubDef, HubTab } from '../../hub/hub.type';
-import type { MenuEntry } from '../../menu/menu.type';
+import type { ComponentType, ReactNode } from 'react';
+import type { HubDef, HubSubPage, HubTab } from '../../hub/hub.type';
+import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { RouteAlias, RouteShortcut } from '../../navigation/navigation.type';
 import type { SearchEntry } from '../../search/search.type';
 import type { Section, TabDef } from '../../settings/settings.type';
 import type { ScreenDef } from '../screen.type';
-import type { CardProps, HeroProps, PageProps } from '../kinds/screen-kinds.type';
+import type { BaseProps, CardProps, HeroProps, PageProps, SubPageProps } from '../kinds/screen-kinds.type';
 import type { ScreenMeta, ScreensConfig } from './screens-config.type';
 
 type SettingsSource = readonly Section[] | ((settings: never) => Section[]);
@@ -44,6 +44,14 @@ interface TabEntry extends EntryBase {
   component: ComponentType<PageProps>;
 }
 
+interface SubEntry extends EntryBase {
+  kind: 'sub';
+  bucket: string;
+  group?: string;
+  page: string;
+  component: ComponentType<SubPageProps>;
+}
+
 interface PageMetaEntry extends EntryBase {
   kind: 'page-meta';
   bucket: string;
@@ -62,14 +70,20 @@ interface CardEntry extends EntryBase {
   component: ComponentType<CardProps>;
 }
 
-type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | PageMetaEntry | SettingsEntry;
+interface BaseEntry extends EntryBase {
+  kind: 'base';
+  component: ComponentType<BaseProps>;
+}
 
-type ScreenEntry = BucketEntry | CardEntry;
+type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | SubEntry | PageMetaEntry | SettingsEntry;
+
+type ScreenEntry = BucketEntry | CardEntry | BaseEntry;
 
 interface ScreenTree {
   config: ScreensConfig;
   hubs: HubDef[];
   screens: ScreenDef[];
+  base?: ScreenDef;
   tabs: TabDef<object>[];
   shortcuts: RouteShortcut[];
   search: readonly SearchEntry[];
@@ -77,6 +91,7 @@ interface ScreenTree {
 
 interface ResolvedScreenTree {
   home: string;
+  base: string | null;
   settingsBucket: string;
   hubs: HubDef[];
   screens: ScreenDef[];
@@ -91,6 +106,19 @@ interface OrderedTab extends HubTab {
   order: number;
 }
 
+type MenuIconOf = (label: string) => ReactNode | undefined;
+
+interface PlacedMenuItem {
+  path: string[];
+  item: MenuItem;
+  order: number;
+}
+
+interface SubMatch {
+  sub: HubSubPage;
+  params: Record<string, string>;
+}
+
 interface PlacedPage {
   group: string | null;
   order: number;
@@ -98,6 +126,6 @@ interface PlacedPage {
 }
 
 export type {
-  BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, PageMetaEntry, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
-  TabEntry,
+  BaseEntry, BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, MenuIconOf, PageMetaEntry, PlacedMenuItem, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
+  SubEntry, SubMatch, TabEntry,
 };

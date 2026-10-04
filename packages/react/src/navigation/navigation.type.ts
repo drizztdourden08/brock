@@ -1,11 +1,28 @@
 /* @layer renderer-shell @kind types */
 type ScreenParams = Record<string, unknown>;
 
-interface NavigationState {
+type NavigationHistory = Record<string, ScreenParams[]>;
+
+interface SavedNavigation {
   active: string | null;
   params: ScreenParams;
+  history: NavigationHistory;
+  remembered: Record<string, ScreenParams>;
+}
+
+interface NavigationSnapshot extends SavedNavigation {
+  parent: ScreenParams | null;
+}
+
+type NavigationStep = Partial<NavigationSnapshot>;
+
+interface NavigationState extends NavigationSnapshot {
   open: (id: string, params?: ScreenParams) => void;
   close: () => void;
+  back: () => boolean;
+  up: (parent: ScreenParams) => void;
+  setParent: (parent: ScreenParams | null) => void;
+  restore: (saved: SavedNavigation | null) => void;
 }
 
 interface UseNavigationResult {
@@ -13,6 +30,7 @@ interface UseNavigationResult {
   params: ScreenParams;
   open: (id: string, params?: ScreenParams) => void;
   close: () => void;
+  back: () => boolean;
 }
 
 interface ResolvedRoute {
@@ -32,4 +50,14 @@ interface RouteShortcut {
   target: string;
 }
 
-export type { NavigationState, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, ScreenParams, UseNavigationResult };
+type LeaveGuard = () => boolean;
+
+interface LeaveGuardRegistry {
+  add: (guard: LeaveGuard) => () => void;
+  dirty: () => boolean;
+}
+
+export type {
+  LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
+  UseNavigationResult,
+};

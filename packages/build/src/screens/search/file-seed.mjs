@@ -35,6 +35,7 @@ const fileSeed = (rootDir, file) => {
     page: file.page,
     title: text(meta.title),
     icon: text(meta.icon),
+    path: file.kind === 'sub' ? text(meta.path) : undefined,
     keywords: normaliseKeywords(meta.keywords),
     devOnly: meta.devOnly === true ? true : undefined,
     ...contentOf(source, file),

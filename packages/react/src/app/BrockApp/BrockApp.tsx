@@ -20,13 +20,13 @@ import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
 import { NO_WIDGETS } from '../../widgets/widget.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
-import { NO_BACKGROUND, NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
+import { NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
-  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, home = NO_BACKGROUND, layout = 'menu', screenGroups, profileHooks, beforeQuit, review } = props;
+  const { product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, layout = 'menu', screenGroups, profileHooks, beforeQuit, review } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
@@ -40,7 +40,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const appTabs = settings.tabs ?? NO_TABS;
 
   const builtInTabs = useMemo(() => [...appTabs, ...merged.settingsTabs] as TabDef<object>[], [appTabs, merged.settingsTabs]);
-  const { registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
+  const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
 
   const settingsControls = useSettingsControls(settings);
 

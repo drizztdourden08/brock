@@ -17,10 +17,12 @@ import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
+import { useMouseBack } from '../../behavior/useMouseBack';
 import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
 import { useSaveFailureToast } from '../../behavior/useSaveFailureToast';
+import { useScreenPersistence } from '../../behavior/useScreenPersistence';
 import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
@@ -44,6 +46,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useProfileHydration(settingsStore);
   useSaveFailureToast(settingsStore);
   useKeyboardShortcuts();
+  useMouseBack();
+  useScreenPersistence();
   useStandardEscapeLayers();
   useIpcLogBridge(log);
 

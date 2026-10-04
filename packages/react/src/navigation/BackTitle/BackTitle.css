@@ -1,0 +1,19 @@
+/* @layer renderer-shell @kind style */
+
+.back-title {
+  display: inline-flex;
+  gap: var(--space-xs);
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.back-title__button {
+  flex-shrink: 0;
+}
+
+.back-title__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

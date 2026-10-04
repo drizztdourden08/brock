@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
-import { focusHubSearch } from '../../../hub/focus-hub-search';
 import { PALETTE_KEY } from '../../palette.constants';
 import { usePaletteStore } from '../../usePaletteStore';
 
@@ -18,7 +17,7 @@ const usePaletteShortcut = (): void => {
       const state = usePaletteStore.getState();
       if (isPaletteChord(event)) {
         claim(event);
-        if (state.open || !focusHubSearch()) state.toggle();
+        state.toggle();
         return;
       }
       if (event.key === 'Escape' && state.open) {

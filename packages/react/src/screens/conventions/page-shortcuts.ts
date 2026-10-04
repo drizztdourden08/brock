@@ -6,6 +6,8 @@ import type { ScreenEntry } from './screen-tree.type';
 
 const targetOf = (entry: ScreenEntry): string | null => {
   if (isCardEntry(entry)) return null;
+  if (entry.kind === 'base') return entry.id;
+  if (entry.kind === 'sub') return null;
   if (entry.kind === 'hero') return entry.bucket;
   if (entry.kind === 'tab') return joinRoute(entry.bucket, entry.page, entry.id);
   return joinRoute(entry.bucket, entry.id);

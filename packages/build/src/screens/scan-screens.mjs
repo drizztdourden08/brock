@@ -2,8 +2,10 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
+import { baseFindings } from './base-findings.mjs';
 import { layoutFindings } from './layout-findings.mjs';
 import { pageMetaFindings } from './page-meta-findings.mjs';
+import { subPageFindings } from './sub-page-findings.mjs';
 
 /**
  * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
@@ -21,13 +23,13 @@ const classify = (name) => {
 const entriesOf = (dir) => readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
 
 /** @param {string} dir */
-const holdsTabs = (dir) => entriesOf(dir).some((entry) => entry.isFile() && entry.name.endsWith('.tab.tsx'));
+const holdsPageFiles = (dir) => entriesOf(dir).some((entry) => entry.isFile() && (entry.name.endsWith('.tab.tsx') || entry.name.endsWith('.sub.tsx')));
 
 /** @param {{ kind: string, id: string } | null} found @param {Place} place */
 const problemWith = (found, place) => {
   if (!found) return `unknown screen file; ${NAMING_HINT}`;
   if (KINDS_AT[place.level].includes(found.kind)) return SCREEN_ID.test(found.id) ? null : `"${found.id}" is not a kebab-case id`;
-  return place.level === 'page' ? 'a page folder holds only <tab>.tab.tsx files' : MISPLACED[found.kind];
+  return place.level === 'page' ? 'a page folder holds only <tab>.tab.tsx and <sub>.sub.tsx files' : MISPLACED[found.kind];
 };
 
 /** @param {ScanState} state @param {string} rel @param {string} name @param {Place} place */
@@ -50,7 +52,7 @@ const addFile = (state, rel, name, place) => {
 /** @param {ScanState} state @param {string} rel @param {string} name @param {Place} place */
 const childPlace = (state, rel, name, place) => {
   if (place.level === 'root') return { level: 'bucket', bucket: name };
-  if (place.level !== 'page' && holdsTabs(join(state.rootDir, rel))) return { ...place, level: 'page', page: name };
+  if (place.level !== 'page' && holdsPageFiles(join(state.rootDir, rel))) return { ...place, level: 'page', page: name };
   return place.level === 'bucket' ? { ...place, level: 'group', group: name } : null;
 };
 
@@ -80,7 +82,9 @@ const scanFolder = (state, rel, name, place) => {
 const scanScreens = (rootDir) => {
   const state = { rootDir, files: [], findings: [], buckets: [] };
   if (existsSync(join(rootDir, SCREENS_DIR))) scanDir(state, SCREENS_DIR, { level: 'root' });
-  const findings = [...state.findings, ...layoutFindings(state.files, state.buckets), ...pageMetaFindings(state.files)];
+  const findings = [
+    ...state.findings, ...layoutFindings(state.files, state.buckets), ...pageMetaFindings(state.files), ...subPageFindings(state.files), ...baseFindings(state.files, state.buckets),
+  ];
   return { files: state.files, findings, buckets: state.buckets };
 };
 

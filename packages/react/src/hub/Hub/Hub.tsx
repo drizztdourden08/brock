@@ -11,11 +11,15 @@ import { useHubState } from './behavior/useHubState';
 import { HubIndexResults } from './sub-components/HubIndexResults';
 import { HubPageFrame } from './sub-components/HubPageFrame';
 import { HubSearchHits } from './sub-components/HubSearchHits';
+import { hubContent } from './behavior/hub-content';
+import { hubScope } from './behavior/hub-scope';
+import { joinRoute } from '../../navigation/join-route';
+import { ScreenStateScope } from '../../screens/screen-state-scope';
 import type { HubProps } from './Hub.type';
 
 const Hub = (props: HubProps) => {
   const { def, ctx } = props;
-  const { groups, pages, page, tab, context, selectPage, selectTab } = useHubState(def, ctx);
+  const { groups, pages, page, tab, sub, context, selectPage, selectTab, up } = useHubState(def, ctx);
   const { query, setQuery, clear } = useHubSearch();
 
   const navConfig = useMemo(() => buildHubNav(def.home, groups), [def.home, groups]);
@@ -33,7 +37,11 @@ const Hub = (props: HubProps) => {
 
   return (
     <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search }} results={search ? results : undefined}>
-      <HubPageFrame key={page.id} page={page} tab={tab} onSelectTab={selectTab}>{tab ? tab.render(context) : page.render(context)}</HubPageFrame>
+      <ScreenStateScope.Provider value={hubScope(context)}>
+        <HubPageFrame key={`${page.id}/${sub?.id ?? ''}`} page={page} tab={tab} sub={sub} route={joinRoute(def.id, page.id)} onSelectTab={selectTab} onUp={up}>
+          {hubContent(context)}
+        </HubPageFrame>
+      </ScreenStateScope.Provider>
     </SideNavLayout>
   );
 };

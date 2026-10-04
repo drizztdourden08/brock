@@ -12,6 +12,8 @@ import { NO_ACTIONS, NO_MENU } from '../../../hub.constants';
 import { hubLiveGroups } from '../../behavior/hub-live-groups';
 import { hubPageEntries } from '../../behavior/hub-page-entries';
 import { hubResultGroups } from '../../behavior/hub-result-groups';
+import { rankOrder } from '../../behavior/rank-order';
+import { rankedJumps } from '../../behavior/ranked-jumps';
 import type { HubIndexResultsProps } from './HubIndexResults.type';
 import { BrandSearchResults } from '../../../../search/BrandSearchResults';
 
@@ -31,12 +33,10 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
     if (needle === '') return [];
     const live = hubLiveGroups(pages, tabs, normalized, { settings, onChange: patch, ...settingsControls });
     const linked = hubResultGroups(def, pages.filter((page) => page.settingsTab === undefined), ranked);
-    const order = (id: string): number => pages.findIndex((page) => page.id === id);
+    const order = rankOrder(def, pages, ranked);
     return [...live, ...linked].sort((a, b) => order(a.id) - order(b.id));
   }, [def, pages, tabs, normalized, needle, settings, patch, settingsControls, ranked]);
-  const jumps = useMemo(() => (needle === '' ? [] : pages
-    .filter((page) => page.label.toLowerCase().includes(normalized))
-    .map((page) => ({ id: page.id, label: page.label, icon: page.icon }))), [pages, needle, normalized]);
+  const jumps = useMemo(() => rankedJumps(def, pages, ranked), [def, pages, ranked]);
   const count = groups.reduce((sum, group) => sum + (group.count ?? 0), 0);
 
   const openHit = (hit: SearchResultsHit) => {

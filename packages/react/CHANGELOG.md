@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-react
 
+## 0.17.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.17.1
+
 ## 0.17.0
 
 ### Minor Changes

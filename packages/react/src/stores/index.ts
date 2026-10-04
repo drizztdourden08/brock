@@ -14,6 +14,7 @@ export { useProfiles } from './useProfiles';
 export { useDialogStore } from './useDialogStore';
 export { dialogs } from './dialogs';
 export { confirmAction } from './confirm-action';
-export type { ConfirmDialogConfig, ConfirmActionOptions, DialogState } from './dialog.type';
+export { confirmDelete } from './confirm-delete';
+export type { ConfirmActionOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmFocus, DialogState } from './dialog.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';

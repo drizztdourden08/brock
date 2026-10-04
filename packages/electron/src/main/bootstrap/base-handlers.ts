@@ -1,5 +1,5 @@
 /* @layer electron-main @kind config */
-import type { BootstrapOptions, HandlerGroup } from '../types/main-context.type';
+import type { HandlerGroup } from '../types/main-context.type';
 import { bootHandlers } from '../boot/ipc-handlers';
 import { windowHandlers } from '../window/ipc-handlers';
 import { aspectRatioHandlers } from '../window/aspect-ratio';
@@ -14,15 +14,21 @@ import { diagnosticsHandlers } from '../diagnostics/ipc-handlers';
 import { networkHandlers } from '../network/ipc-handlers';
 import { sessionLogHandlers } from '../handlers/session-log-handlers';
 import { screenshotHandlers } from '../handlers/screenshot-handlers';
+import { dataDomainHandlers } from '../storage/ipc-handlers';
+import { transferHandlers } from '../storage/transfer-handlers';
+import { jobHandlers } from '../jobs/ipc-handlers';
 
-const baseHandlers = ({ dataDomains = [] }: BootstrapOptions): HandlerGroup[] => [
+const baseHandlers = (): HandlerGroup[] => [
   bootHandlers,
   windowHandlers,
   aspectRatioHandlers,
   appHandlers,
   dialogHandlers,
   fileHandlers,
-  storageHandlers(dataDomains),
+  storageHandlers,
+  dataDomainHandlers,
+  transferHandlers,
+  jobHandlers,
   profileHandlers,
   sessionHandlers,
   uiViewsHandlers,

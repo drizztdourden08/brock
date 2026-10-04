@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { SettingsDescription } from '@drizztdourden08/tessera/composites';
+import type { ButtonVariant, IconName } from '@drizztdourden08/tessera/primitives';
+import type { ConfirmActionOptions } from '../stores/dialog.type';
 
 interface SettingChoice {
   value: string;
@@ -22,6 +24,16 @@ type SettingControl =
 
 type SettingControlKind = SettingControl['kind'];
 
+interface SettingAction {
+  id?: string;
+  label: string;
+  icon?: IconName;
+  variant?: ButtonVariant;
+  disabled?: boolean;
+  confirm?: ConfirmActionOptions;
+  onSelect: () => void | Promise<void>;
+}
+
 type SettingDescription = SettingsDescription;
 
 interface SettingItemFields {
@@ -31,6 +43,7 @@ interface SettingItemFields {
   keywords?: string;
   link?: string;
   control?: SettingControl;
+  actions?: readonly SettingAction[];
 }
 
 type SettingItem = SettingItemFields & SettingDescription;
@@ -90,6 +103,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, Section, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
+  LockOverlayProps, RenderControl, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

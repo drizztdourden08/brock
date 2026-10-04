@@ -6,7 +6,7 @@ import { EmptyState, useTesseraStrings } from '@drizztdourden08/tessera/primitiv
 import type { SettingItem, SettingsLayoutProps } from '../settings.type';
 import { groupListSections } from './behavior/group-list-sections';
 import { resolveSections } from './behavior/resolve-sections';
-import { settingRow } from './behavior/setting-row';
+import { settingRows } from './behavior/setting-rows';
 import { SettingsPageContext } from './behavior/settings-page-context';
 
 const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
@@ -19,10 +19,10 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
   const resolved = useMemo(() => resolveSections(sections, query), [sections, query]);
   const anchors = useMemo(() => resolved.map((s) => ({ id: s.id, label: s.title })), [resolved]);
 
-  const rowOf = (item: SettingItem): SettingsSectionRow | null =>
-    settingRow(item, { settings, onChange, renderControl, disabled: isDisabled?.(item.key, settings) ?? false, lock: lockOf(item.key) });
+  const rowsOf = (item: SettingItem): SettingsSectionRow[] =>
+    settingRows(item, { settings, onChange, renderControl, disabled: isDisabled?.(item.key, settings) ?? false, lock: lockOf(item.key) });
 
-  const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, rowOf });
+  const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, rowsOf });
   const body = listed.length === 0
     ? <EmptyState message={emptyMessage ?? panels.settingsEmpty} />
     : (

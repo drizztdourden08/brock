@@ -12,6 +12,7 @@ import type { DevicePort } from './platform/ports/device.type';
 import type { ReviewCheck } from './review/review.type';
 import type { BootFailure, BootProgress } from './boot/boot-task.type';
 import type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './ipc/widget-contract.type';
+import type { DataEventContract, DataInvokeContract, DataSendContract } from './ipc/data-contract.type';
 
 interface BaseProfile {
   id: string;
@@ -27,7 +28,7 @@ type Profile = BaseProfile & ProfileExtension;
 type CreateProfileOptions = { name: string; initialConfig?: Record<string, unknown> } & ProfileCreateExtension;
 type ProfilePatch = { name?: string } & ProfilePatchExtension;
 
-interface InvokeContract extends WidgetInvokeContract {
+interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
@@ -77,7 +78,7 @@ interface InvokeContract extends WidgetInvokeContract {
   'review:capture': (step: string) => Promise<string>;
 }
 
-interface SendContract extends WidgetSendContract {
+interface SendContract extends WidgetSendContract, DataSendContract {
   'window:minimize': () => void;
   'window:maximize': () => void;
   'window:close': () => void;
@@ -93,7 +94,7 @@ interface SendContract extends WidgetSendContract {
   'review:finish': () => void;
 }
 
-interface EventContract extends WidgetEventContract {
+interface EventContract extends WidgetEventContract, DataEventContract {
   'window:maximized': (maximized: boolean) => void;
   'window:fullscreen': (fullscreen: boolean) => void;
   'log:entry': (entry: LogEntryWire) => void;

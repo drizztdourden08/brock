@@ -9,6 +9,9 @@ export type { FactoryMap } from './resolve-platform.type';
 export type { PlatformFactory, PortCreators } from './factory.type';
 export type { FileStore } from './ports/file-store.type';
 export type { FileStat, DataLocation, DataDomainDef, DomainUsage, StorageSummary, StoragePort } from './ports/storage.type';
+export type {
+  DataExportFormat, DataExportManifest, DataExportResult, DataImportDomain, DataImportPlan, DataImportResult, DataManifestDomain, DomainCleanResult, DomainEntry,
+} from './ports/data-domain.type';
 export type { WindowControlsPort, Unsub } from './ports/window-controls.type';
 export type { PickedFile, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
 export type { DevicePort, BackEdge } from './ports/device.type';

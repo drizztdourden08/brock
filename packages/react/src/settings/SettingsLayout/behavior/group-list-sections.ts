@@ -5,14 +5,14 @@ import { changedKeys } from './changed-keys';
 import { defaultsPatch } from './defaults-patch';
 
 const groupListSections = <S extends object>(input: GroupListInput<S>): SettingsSectionData[] => {
-  const { sections, settings, defaults, onChange, lockOf, rowOf } = input;
+  const { sections, settings, defaults, onChange, lockOf, rowsOf } = input;
   const isLocked = (key: string): boolean => lockOf(key) !== null;
 
   return sections.map((section) => {
     const groups = section.groups.map((group) => ({
       id: group.id ?? undefined,
       title: group.title ?? undefined,
-      rows: group.items.map(rowOf).filter((row) => row !== null),
+      rows: group.items.flatMap(rowsOf),
     }));
     if (!defaults) return { id: section.id, title: section.title, groups };
     const resettable = changedKeys(section.groups, settings, defaults, isLocked);

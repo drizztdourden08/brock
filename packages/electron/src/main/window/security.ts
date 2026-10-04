@@ -1,20 +1,16 @@
 /* @layer electron-main @kind logic */
-import { shell } from 'electron';
 import type { BrowserWindow } from 'electron';
 import type { SecurityOptions } from '../types/main-context.type';
-import { DEFAULT_EXTERNAL_PROTOCOLS, DEFAULT_PERMISSIONS } from './security.constants';
-
-const protocolOf = (url: string): string | null => {
-  try { return new URL(url).protocol; } catch { return null; }
-};
+import { DEFAULT_PERMISSIONS } from './security.constants';
+import { externalProtocols } from './external-protocols';
+import { openExternal } from './open-external';
 
 const applyWindowSecurity = (win: BrowserWindow, options: SecurityOptions = {}): void => {
-  const protocols = new Set(options.externalProtocols ?? DEFAULT_EXTERNAL_PROTOCOLS);
+  if (options.externalProtocols) externalProtocols.allowed = new Set(options.externalProtocols);
   const permissions = new Set(options.permissions ?? DEFAULT_PERMISSIONS);
 
   win.webContents.setWindowOpenHandler(({ url }) => {
-    const protocol = protocolOf(url);
-    if (protocol && protocols.has(protocol)) void shell.openExternal(url);
+    void openExternal(url);
     return { action: 'deny' };
   });
 

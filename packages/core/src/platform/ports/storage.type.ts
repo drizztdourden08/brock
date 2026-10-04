@@ -15,6 +15,10 @@ interface DataDomainDef {
   domain: string;
   label: string;
   dir: string;
+  description?: string;
+  cleanOlderThanDays?: readonly number[];
+  clearable?: boolean;
+  portable?: boolean;
 }
 
 interface DomainUsage {

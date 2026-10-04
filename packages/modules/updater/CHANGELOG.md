@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-updater
 
+## 0.8.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.8.1
+- @drizztdourden08/brock-electron@0.8.1
+- @drizztdourden08/brock-react@0.8.1
+
 ## 0.8.0
 
 ### Patch Changes

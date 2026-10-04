@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-lint-config",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Brock's app preset on top of @drizztdourden08/standards: the same factories and exports as before, with the react-app preset and Brock's extension (Tessera names, screens, module entries, boot tasks, Tessera tokens).",
   "type": "module",
   "license": "UNLICENSED",

@@ -25,17 +25,32 @@ interface ProfilesPanelProps {
   className?: string;
 }
 
-interface ProfilesPanelModel {
-  formShown: boolean;
-  createError: string | null;
-  renamingId: string | null;
-  renameError: string | null;
-  openCreate: () => void;
-  cancelCreate: () => void;
-  submitCreate: (name: string) => void;
-  startRename: (id: string) => void;
-  cancelRename: () => void;
-  submitRename: (id: string, name: string) => void;
+interface ProfilesPanelPick {
+  id: string;
+  from: string | null;
 }
 
-export type { ProfilesPanelItem, ProfilesPanelModel, ProfilesPanelProps };
+interface PressHandlers {
+  onClickCapture: () => void;
+  onClick: () => void;
+  onKeyDownCapture: () => void;
+}
+
+interface PressFlag {
+  handlers: PressHandlers;
+  take: () => boolean;
+}
+
+interface ProfilesPanelModel {
+  createShown: boolean;
+  createError: string | null;
+  renameError: string | null;
+  pickedId: string | null;
+  pressHandlers: PressHandlers;
+  openChange: (open: boolean) => void;
+  submitCreate: (name: string, close: () => void) => void;
+  submitRename: (id: string, name: string) => void;
+  pick: (id: string) => void;
+}
+
+export type { PressFlag, ProfilesPanelItem, ProfilesPanelModel, ProfilesPanelPick, ProfilesPanelProps };

@@ -6,14 +6,3 @@
   max-width: var(--size-640);
   margin: 0 auto;
 }
-
-.profiles-panel__list {
-  min-height: 0;
-}
-
-.profiles-panel__rename {
-  padding: var(--space-xs) var(--space-sm);
-  border: var(--border-width-thin) solid var(--c-primary-dim);
-  border-radius: var(--radius-md);
-  background: var(--c-inset);
-}

@@ -37,10 +37,10 @@ const resize = async (id: string, bounds: WidgetWindowBounds): Promise<WidgetPro
   return probeFacts(id);
 };
 
-const runGroup = (id: string, action: WindowGroupAction): void => {
+const runGroup = (id: string, action: WindowGroupAction, area?: WidgetWindowBounds): void => {
   const group = groupOf(id);
   if (group === null) return;
-  if (action === 'maximize' || action === 'fullscreen') groupLayout.enter(group, action === 'maximize' ? 'maximized' : 'fullscreen');
+  if (action === 'maximize' || action === 'fullscreen') groupLayout.enter(group, action === 'maximize' ? 'maximized' : 'fullscreen', area);
   else if (action === 'minimize') groupVisibility.minimize(group);
   else if (!groupLayout.restore(group)) groupVisibility.restore(group);
 };
@@ -57,7 +57,7 @@ const windowProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeFact
   if (request.kind === 'resize') return resize(request.id, request.bounds);
   if (request.kind === 'modifier') return pressCtrl(request.ctrl);
   if (request.kind === 'group') {
-    runGroup(request.id, request.action);
+    runGroup(request.id, request.action, request.area);
     await settled();
     return probeFacts(request.id);
   }

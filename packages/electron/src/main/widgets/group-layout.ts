@@ -9,9 +9,10 @@ import { groupBackdrop } from './group-backdrop';
 import { groupLayouts } from './group-layouts';
 import { groupMembers } from './group-members';
 import { holdFront } from './hold-front';
+import { fitIntoArea } from './fit-into-area';
 import { largestOverlap } from './largest-overlap';
-import { mapIntoArea } from './map-into-area';
 import { memberOf } from './member-of';
+import { minSizeOf } from './min-size-of';
 import { placeMember } from './place-member';
 import { releaseLayout } from './release-layout';
 import { squareMember } from './square-member';
@@ -40,7 +41,7 @@ const finish = (layout: GroupLayout, members: readonly GroupMember[]): void => {
   layout.release = holdFront(members, layout.backdrop);
 };
 
-const enter = (group: WidgetWindowGroup, mode: GroupTarget): boolean => {
+const enter = (group: WidgetWindowGroup, mode: GroupTarget, target?: WidgetWindowBounds): boolean => {
   const members = groupMembers(group);
   if (members.length < 2) return false;
   const prior = groupLayouts.get(group);
@@ -50,12 +51,12 @@ const enter = (group: WidgetWindowGroup, mode: GroupTarget): boolean => {
   const box = boundsUnion(bases);
   if (!box) return false;
   const areas = groupAreas(mode === 'fullscreen');
-  const area = areas[largestOverlap(bases, areas)] ?? box;
+  const area = target ?? areas[largestOverlap(bases, areas)] ?? box;
   const saved = new Map(prior?.saved ?? []);
+  const fitted = fitIntoArea(bases, members.map((member) => minSizeOf(member.win)), area);
   members.forEach((member, index) => {
-    const base = bases[index] ?? boundsOf(member.win);
-    if (!saved.has(member.id)) saved.set(member.id, base);
-    placeMember(member, mapIntoArea(base, box, area), false);
+    if (!saved.has(member.id)) saved.set(member.id, bases[index] ?? boundsOf(member.win));
+    placeMember(member, fitted[index] ?? area, false);
   });
   const onTop = new Map(members.map((member) => [member.id, member.win.isAlwaysOnTop()]));
   const layout: GroupLayout = { mode, saved, onTop, backdrop: null, area, release: null };

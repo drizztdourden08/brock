@@ -87,7 +87,7 @@ type WidgetProbeRequest =
   | { kind: 'areas' }
   | { kind: 'focusAway'; id: string }
   | { kind: 'resize'; id: string; bounds: WidgetWindowBounds }
-  | { kind: 'group'; id: string; action: WindowGroupAction }
+  | { kind: 'group'; id: string; action: WindowGroupAction; area?: WidgetWindowBounds }
   | { kind: 'modifier'; ctrl: boolean }
   | { kind: 'guide'; id: string; mode: WindowGuideMode | null };
 

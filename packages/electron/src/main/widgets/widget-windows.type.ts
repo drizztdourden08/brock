@@ -110,6 +110,12 @@ interface EdgeMove {
   bounds: WidgetWindowBounds;
 }
 
+interface PackSpan {
+  from: number;
+  to: number;
+  min: number;
+}
+
 interface EdgeScan {
   others: readonly EdgeWindow[];
   side: EdgeSide;
@@ -168,5 +174,5 @@ interface CaptureSheet {
 
 export type {
   Axis, BoundsReporter, CaptureSheet, CoverCandidate, EdgeMove, EdgeScan, EdgeSide, EdgeWindow, EntryFacts, GroupLayout, GroupMember, GroupMode, GroupTarget, MainSnapState, ManipulationRules,
-  MinSize, ModifierInput, ResizeEdges, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
+  MinSize, ModifierInput, PackSpan, ResizeEdges, SharedResize, SnapCandidate, SnapTarget, Snapped, Span, StackPlace, WidgetWindowEntry, WidgetWindowSetup,
 };

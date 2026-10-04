@@ -4,11 +4,12 @@ import { requireHostApi } from '../../host/require-host-api';
 import { find } from '../dom/find';
 import { until } from '../dom/until';
 import type { StepTour } from '../review.type';
+import { groupFits } from './group-fits';
 import { poppedWire } from './popped-wire';
 import { probe } from './probe';
 import { sameRect } from './same-rect';
 import { soon } from './soon';
-import { MAIN_LINK, RATIO_TOLERANCE, REVIEW_GROUP, SQUARE_SELECTOR } from './widget-review.constants';
+import { MAIN_LINK, REVIEW_GROUP, SMALL_AREA, SQUARE_SELECTOR } from './widget-review.constants';
 
 const pair = (facts: WidgetProbeFacts | undefined, id: string): [WidgetWindowBounds, WidgetWindowBounds] | null => {
   const main = facts?.windows[MAIN_LINK];
@@ -18,12 +19,7 @@ const pair = (facts: WidgetProbeFacts | undefined, id: string): [WidgetWindowBou
 
 const fills = (facts: WidgetProbeFacts | undefined, id: string, before: [WidgetWindowBounds, WidgetWindowBounds]): boolean => {
   const after = pair(facts, id);
-  const area = facts?.area;
-  if (!after || !area) return false;
-  const left = Math.min(after[0].x, after[1].x);
-  const right = Math.max(after[0].x + after[0].width, after[1].x + after[1].width);
-  const ratio = (b: [WidgetWindowBounds, WidgetWindowBounds]): number => b[0].width / b[1].width;
-  return left === area.x && right === area.x + area.width && Math.abs(ratio(after) / ratio(before) - 1) <= RATIO_TOLERANCE;
+  return after !== null && facts?.area !== null && facts?.area !== undefined && groupFits(after, before, facts.area);
 };
 
 const restored = (facts: WidgetProbeFacts | undefined, id: string, before: [WidgetWindowBounds, WidgetWindowBounds]): boolean => {
@@ -62,6 +58,14 @@ const checkFullscreen = async (tour: StepTour, id: string, before: [WidgetWindow
   tour.check('group-fullscreen-exit', left, 'leaving full screen removed the backdrop and the square flag and put every member back', 'leaving full screen left the backdrop, the square flag or moved bounds behind');
 };
 
+const checkSmallArea = async (tour: StepTour, id: string, before: [WidgetWindowBounds, WidgetWindowBounds], real: WidgetWindowBounds | null): Promise<void> => {
+  const area = { ...SMALL_AREA, x: (real?.x ?? 0) + SMALL_AREA.x, y: (real?.y ?? 0) + SMALL_AREA.y };
+  const small = (await probe({ kind: 'group', id: MAIN_LINK, action: 'maximize', area })).facts;
+  const back = (await probe({ kind: 'group', id: MAIN_LINK, action: 'restore' })).facts;
+  const kept = fills(small, id, before) && restored(back, id, before);
+  tour.check('group-maximize-small', kept, `on a simulated ${SMALL_AREA.width}x${SMALL_AREA.height} work area the group stayed inside it, filled it in order, and restore put it back`, `on a simulated ${SMALL_AREA.width}x${SMALL_AREA.height} work area a member spilled out or did not come back (${JSON.stringify({ area, windows: small?.windows })})`);
+};
+
 const checkGroups = async (tour: StepTour, id: string): Promise<void> => {
   const joined = await joinGroup(id, REVIEW_GROUP);
   const saved = joined && await soon(() => poppedWire(id)?.group === REVIEW_GROUP);
@@ -69,9 +73,10 @@ const checkGroups = async (tour: StepTour, id: string): Promise<void> => {
   const before = pair((await probe({ kind: 'window', id })).facts, id);
   if (!saved || !before) return;
   const max = (await probe({ kind: 'group', id: MAIN_LINK, action: 'maximize' })).facts;
-  tour.check('group-maximize', fills(max, id, before), 'maximizing the app scaled the whole group into the work area', `the group did not fill the work area in proportion (${JSON.stringify({ area: max?.area, windows: max?.windows })})`);
+  tour.check('group-maximize', fills(max, id, before), 'maximizing the app scaled the whole group into the work area, every member inside it and in order', `a member left the work area or the group did not fill it (${JSON.stringify({ area: max?.area, windows: max?.windows })})`);
   const back = (await probe({ kind: 'group', id: MAIN_LINK, action: 'restore' })).facts;
   tour.check('group-restore', restored(back, id, before), 'restoring put every member back on its exact bounds', `restoring moved a member (${JSON.stringify(back?.windows)})`);
+  await checkSmallArea(tour, id, before, max?.area ?? null);
   await checkFullscreen(tour, id, before);
   await joinGroup(id, null);
 };

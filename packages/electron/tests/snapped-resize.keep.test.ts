@@ -28,16 +28,22 @@ describe('a snapped pair side by side', () => {
     expect(changed(result, others)).toEqual([]);
   });
 
-  it('leaves the neighbour alone when the top edge moves, though both tops line up', () => {
+  it('moves the top edge of the neighbour too when both tops line up', () => {
     const result = planStep('a', { from: a, to: { ...a, y: 60, height: 440 }, edge: 'top' }, others);
     expect(result.bounds).toEqual(box(100, 60, 300, 440));
-    expect(changed(result, others)).toEqual([]);
+    expect(changed(result, others)).toEqual([{ id: 'b', bounds: box(400, 60, 300, 440) }]);
   });
 
-  it('leaves the neighbour alone when the bottom edge moves, though both bottoms line up', () => {
+  it('moves the bottom edge of the neighbour too when both bottoms line up', () => {
     const result = planStep('a', { from: a, to: { ...a, height: 440 }, edge: 'bottom' }, others);
     expect(result.bounds).toEqual(box(100, 100, 300, 440));
-    expect(changed(result, others)).toEqual([]);
+    expect(changed(result, others)).toEqual([{ id: 'b', bounds: box(400, 100, 300, 440) }]);
+  });
+
+  it('leaves the neighbour alone when the edges do not line up', () => {
+    const shorter = [{ id: 'b', bounds: box(400, 140, 300, 300) }];
+    expect(changed(planStep('a', { from: a, to: { ...a, y: 60, height: 440 }, edge: 'top' }, shorter), shorter)).toEqual([]);
+    expect(changed(planStep('a', { from: a, to: { ...a, height: 440 }, edge: 'bottom' }, shorter), shorter)).toEqual([]);
   });
 
   it('moves the facing edge of the left window when the right window drags the shared edge', () => {
@@ -67,16 +73,17 @@ describe('a snapped pair stacked', () => {
     expect(result.moves).toEqual([{ id: 'bottom', bounds: box(100, 340, 300, 160) }]);
   });
 
-  it('leaves the lower window alone when the left, right or top edge moves', () => {
-    expect(changed(planStep('top', { from: top, to: { ...top, x: 60, width: 340 }, edge: 'left' }, others), others)).toEqual([]);
-    expect(changed(planStep('top', { from: top, to: { ...top, width: 340 }, edge: 'right' }, others), others)).toEqual([]);
+  it('moves the lined-up left or right edge of the lower window, and leaves it alone when the top edge moves', () => {
+    expect(changed(planStep('top', { from: top, to: { ...top, x: 60, width: 340 }, edge: 'left' }, others), others)).toEqual([{ id: 'bottom', bounds: box(60, 300, 340, 200) }]);
+    expect(changed(planStep('top', { from: top, to: { ...top, width: 340 }, edge: 'right' }, others), others)).toEqual([{ id: 'bottom', bounds: box(100, 300, 340, 200) }]);
     expect(changed(planStep('top', { from: top, to: { ...top, y: 60, height: 240 }, edge: 'top' }, others), others)).toEqual([]);
   });
 
-  it('still snaps the dragged edge to the neighbour', () => {
-    const result = planStep('top', { from: top, to: { ...top, width: 306 }, edge: 'right' }, others);
-    expect(result.bounds).toEqual(top);
-    expect(changed(result, others)).toEqual([]);
+  it('still snaps the dragged edge to a neighbour edge it does not line up with', () => {
+    const wider = [{ id: 'bottom', bounds: box(100, 300, 320, 200) }];
+    const result = planStep('top', { from: top, to: { ...top, width: 310 }, edge: 'right' }, wider);
+    expect(result.bounds).toEqual({ ...top, width: 320 });
+    expect(changed(result, wider)).toEqual([]);
   });
 });
 
@@ -100,11 +107,11 @@ describe('the main window aspect lock', () => {
     expect(result.moves).toEqual([{ id: 'main', bounds: box(100, 100, 760, 450) }]);
   });
 
-  it('keeps the main window in proportion, and only the flush facing edge follows', () => {
+  it('keeps the main window in proportion, and the facing and lined-up edges follow', () => {
     const below = box(100, 550, 800, 300);
     const result = planStep('main', { from: main, to: { ...main, width: 960 }, edge: 'right' }, [{ id: 'below', bounds: below }], { lock: WIDE });
     expect(result.bounds).toEqual(box(100, 100, 960, 540));
-    expect(result.moves).toEqual([{ id: 'below', bounds: box(100, 640, 800, 210) }]);
+    expect(result.moves).toEqual([{ id: 'below', bounds: box(100, 640, 960, 210) }]);
   });
 
   it('leaves the main window free when no lock is set', () => {
@@ -123,7 +130,7 @@ describe('the drag start', () => {
     expect(first.moves).toEqual([{ id: 'b', bounds: b }]);
     const later = planStep('a', { from: a, first: raw, to: { ...raw, y: 60, height: 446 }, edge: 'top' }, [{ id: 'b', bounds: b }]);
     expect(later.bounds).toEqual(box(100, 60, 300, 440));
-    expect(later.moves).toEqual([{ id: 'b', bounds: b }]);
+    expect(later.moves).toEqual([{ id: 'b', bounds: box(400, 60, 300, 440) }]);
   });
 
   it('never makes a window that only becomes flush mid-drag a follower', () => {

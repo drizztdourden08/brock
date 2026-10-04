@@ -149,8 +149,7 @@ interface ResizeStart {
 interface ResizeSession extends Omit<ResizeStart, 'others'> {
   last: WidgetWindowBounds;
   followers: ResizeFollower[];
-  xTargets: WidgetWindowBounds[];
-  yTargets: WidgetWindowBounds[];
+  around: EdgeMove[];
 }
 
 interface ResizeStep {

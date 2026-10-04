@@ -3,6 +3,7 @@ import type { WidgetEdge, WidgetWindowBounds } from '@drizztdourden08/brock-core
 import { isAcross } from './is-across';
 import { oppositeEdge } from './opposite-edge';
 import { resizeSides } from './resize-sides';
+import { spansNear } from './spans-near';
 import { spansOverlap } from './spans-overlap';
 import { FLUSH_TOLERANCE } from './widget-windows.constants';
 import type { LineWindow, ResizeFollower, ResizeNeighbour, Span } from './widget-windows.type';
@@ -18,11 +19,9 @@ const onLine = (start: WidgetWindowBounds, side: WidgetEdge, other: ResizeNeighb
   return near(resizeSides.lineOf(other.bounds, side), at) ? { other, edge: side, far: false, span } : null;
 };
 
-const endToEnd = (a: Span, b: Span): boolean => near(a.start + a.length, b.start) || near(b.start + b.length, a.start);
-
 const joined = (a: Pick<LineWindow, 'far' | 'span'>, b: LineWindow): boolean => {
   if (a.far !== b.far) return spansOverlap(a.span.start, a.span.length, b.span.start, b.span.length);
-  return a.far && b.far && endToEnd(a.span, b.span);
+  return spansNear(a.span, b.span, FLUSH_TOLERANCE);
 };
 
 const lineFollowers = (start: WidgetWindowBounds, side: WidgetEdge, others: readonly ResizeNeighbour[]): ResizeFollower[] => {

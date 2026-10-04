@@ -53,11 +53,11 @@ describe('two widgets stacked against the left edge of main', () => {
     expect(w.bottom.bounds).toEqual(box(400, 750, 260, 250));
   });
 
-  it('keeps the outer left edge of one widget to itself', async () => {
+  it('moves the lined-up outer left edge of the other widget with the dragged one', async () => {
     const w = open(STACK);
     await resizeDrag(w.top, 'left', line({ dx: -40, dy: 0 }, 20));
     expect(w.top.bounds).toEqual(box(360, 150, 340, 300));
-    expect(w.bottom.bounds).toEqual(STACK.bottom);
+    expect(w.bottom.bounds).toEqual(box(360, 450, 340, 300));
     expect(w.main.bounds).toEqual(MAIN);
   });
 });

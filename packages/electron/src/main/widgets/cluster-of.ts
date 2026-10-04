@@ -1,17 +1,19 @@
 /* @layer electron-main @kind logic */
-import { liveEntries } from './live-entries';
+import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
+import { placedWindows } from './placed-windows';
+import { reachFrom } from './reach-from';
+import { snapLinks } from './snap-links';
+import { touches } from './touches';
 
-const clusterOf = (id: string): string[] => {
-  const links = liveEntries().filter(([, entry]) => !entry.closing).flatMap(([own, entry]) => (entry.link ? [[own, entry.link.to]] : []));
-  const found = new Set([id]);
-  const queue = [id];
-  for (let at = queue.shift(); at !== undefined; at = queue.shift()) {
-    const here = at;
-    const next = links.filter((pair) => pair.includes(here)).flat().filter((other) => !found.has(other));
-    for (const other of next) found.add(other);
-    queue.push(...next);
-  }
-  return [...found];
+const clusterOf = (id: string, from?: WidgetWindowBounds): string[] => {
+  const placed = placedWindows();
+  if (from) placed.set(id, from);
+  const links = snapLinks.pairs();
+  return reachFrom(id, (at) => {
+    const own = placed.get(at);
+    const touching = own ? [...placed].filter(([other, bounds]) => other !== at && touches(own, bounds)).map(([other]) => other) : [];
+    return [...touching, ...snapLinks.around(links, at)];
+  });
 };
 
 export { clusterOf };

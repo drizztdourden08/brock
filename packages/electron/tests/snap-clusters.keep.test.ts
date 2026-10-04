@@ -67,12 +67,12 @@ describe('moving a snap cluster', () => {
     expect(s.logs.bounds).toEqual(LOGS);
   });
 
-  it('never moves the cluster while a member resizes', async () => {
+  it('never moves the cluster while a member resizes, only the edges lined up with the dragged one', async () => {
     const s = cluster();
     await resizeDrag(s.logs, 'left', line({ dx: -40, dy: 0 }, 10));
     expect(s.logs.bounds).toEqual(box(360, 150, 340, 400));
     expect(s.main.bounds).toEqual(MAIN);
-    expect(s.notes.bounds).toEqual(NOTES);
+    expect(s.notes.bounds).toEqual(box(360, 550, 340, 200));
   });
 });
 

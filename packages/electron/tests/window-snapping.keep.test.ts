@@ -144,18 +144,18 @@ describe('the shared edge of a resize', () => {
   const leftOf = box(200, 100, 300, 400);
   const drag = (to: Partial<ReturnType<typeof box>>, edge: string) => ({ from: top, to: { ...top, ...to }, edge });
 
-  it('leaves the matching edge of a window stacked below alone, since it does not face the dragged edge', () => {
+  it('moves the lined-up matching edge of a window stacked below with the dragged edge', () => {
     const others = [{ id: 'bottom', bounds: bottom }];
     const result = planStep('top', drag({ x: 460, width: 340 }, 'left'), others);
     expect(result.bounds).toEqual({ ...top, x: 460, width: 340 });
-    expect(changed(result, others)).toEqual([]);
+    expect(changed(result, others)).toEqual([{ id: 'bottom', bounds: { ...bottom, x: 460, width: 340 } }]);
   });
 
   it('drags the facing edge across the seam and the matching edge of the window stacked below, since both are flush with it', () => {
     const others = [{ id: 'bottom', bounds: bottom }, { id: 'left', bounds: leftOf }];
     expect(changed(planStep('top', drag({ x: 460, width: 340 }, 'left'), others), others)).toEqual([
-      { id: 'left', bounds: { ...leftOf, width: 260 } },
       { id: 'bottom', bounds: { ...bottom, x: 460, width: 340 } },
+      { id: 'left', bounds: { ...leftOf, width: 260 } },
     ]);
   });
 
@@ -163,9 +163,11 @@ describe('the shared edge of a resize', () => {
     expect(planStep('top', drag({ x: 460, width: 340 }, 'left'), [{ id: 'far', bounds: box(500, 800, 300, 200) }]).moves).toEqual([]);
   });
 
-  it('never stretches a window beside it when an outer edge moves', () => {
-    const others = [{ id: 'beside', bounds: box(800, 100, 300, 200) }];
-    expect(changed(planStep('top', drag({ height: 260 }, 'bottom'), others), others)).toEqual([]);
+  it('stretches a window beside it only when its edge lines up with the dragged outer edge', () => {
+    const beside = [{ id: 'beside', bounds: box(800, 100, 300, 200) }];
+    expect(changed(planStep('top', drag({ height: 260 }, 'bottom'), beside), beside)).toEqual([{ id: 'beside', bounds: box(800, 100, 300, 260) }]);
+    const taller = [{ id: 'beside', bounds: box(800, 100, 300, 250) }];
+    expect(changed(planStep('top', drag({ height: 260 }, 'bottom'), taller), taller)).toEqual([]);
   });
 
   it('moves the facing edge across the seam when the bottom edge is shared', () => {

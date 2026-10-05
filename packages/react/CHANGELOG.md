@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-react
 
+## 0.28.1
+
+### Patch Changes
+
+- 8c8d415: A tour click step whose click target is in a widget popped into its own window goes on when the user clicks it there. Before, the click never reached the main window's tour and the step fell back to Next. The step keeps Next hidden and its hint line; the main window relays the click target to the widget window (the `tour-click` slice), which sends the click back over IPC (`advanceWidgetTour`, `onWidgetTourAdvance`), and the tour moves on only if that step is still shown. The listener goes when the step changes, the tour closes or the widget docks back. The review clicks the popped widget in its own window (`reviewWidgetProbe({ kind: 'click', id, selector })`, a real mouse click) and checks the tour moves on.
+- 8c8d415: While a tour is open the shell shortcuts work again (Ctrl+K, screen shortcuts, Back, Alt+Enter): the shell handler holds only Escape and the plain keys the open step moves on (Left, plus Right and Enter on a Next step). Tessera takes its keys in the capture phase, so nothing else needed holding.
+- Updated dependencies [8c8d415]
+  - @drizztdourden08/brock-core@0.28.1
+
 ## 0.28.0
 
 ### Minor Changes

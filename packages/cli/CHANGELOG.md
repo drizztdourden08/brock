@@ -1,5 +1,13 @@
 # @drizztdourden08/brock
 
+## 0.28.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-build@0.28.1
+- @drizztdourden08/create-brock@0.28.1
+- @drizztdourden08/brock-thread@0.28.1
+
 ## 0.28.0
 
 ### Patch Changes

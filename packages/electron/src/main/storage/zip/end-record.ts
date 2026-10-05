@@ -1,7 +1,8 @@
 /* @layer electron-main @kind logic */
 import {
-  END_SIGNATURE, END_SIZE, MAX_16, MAX_32, ZIP64_END_SIGNATURE, ZIP64_END_SIZE, ZIP64_LOCATOR_SIGNATURE, ZIP64_LOCATOR_SIZE, ZIP64_VERSION,
+  END_SIGNATURE, END_SIZE, MAX_16, MAX_32, ZIP64_END_SIGNATURE, ZIP64_END_SIZE, ZIP64_LIMITS, ZIP64_LOCATOR_SIGNATURE, ZIP64_LOCATOR_SIZE, ZIP64_VERSION,
 } from './zip.constants';
+import type { ZipLimits } from './zip.type';
 
 const zip64End = (count: number, size: number, offset: number): Buffer => {
   const end = Buffer.alloc(ZIP64_END_SIZE);
@@ -24,19 +25,20 @@ const zip64Locator = (endOffset: number): Buffer => {
   return locator;
 };
 
-const classicEnd = (count: number, size: number, offset: number): Buffer => {
+const classicEnd = (count: number, size: number, offset: number, limits: ZipLimits): Buffer => {
+  const entries = count >= limits.count ? MAX_16 : count;
   const end = Buffer.alloc(END_SIZE);
   end.writeUInt32LE(END_SIGNATURE, 0);
-  end.writeUInt16LE(Math.min(count, MAX_16), 8);
-  end.writeUInt16LE(Math.min(count, MAX_16), 10);
-  end.writeUInt32LE(Math.min(size, MAX_32), 12);
-  end.writeUInt32LE(Math.min(offset, MAX_32), 16);
+  end.writeUInt16LE(entries, 8);
+  end.writeUInt16LE(entries, 10);
+  end.writeUInt32LE(size >= limits.bytes ? MAX_32 : size, 12);
+  end.writeUInt32LE(offset >= limits.bytes ? MAX_32 : offset, 16);
   return end;
 };
 
-const endRecord = (count: number, size: number, offset: number): Buffer => {
-  const wide = count >= MAX_16 || size >= MAX_32 || offset >= MAX_32;
-  const tail = classicEnd(count, size, offset);
+const endRecord = (count: number, size: number, offset: number, limits: ZipLimits = ZIP64_LIMITS): Buffer => {
+  const wide = count >= limits.count || size >= limits.bytes || offset >= limits.bytes;
+  const tail = classicEnd(count, size, offset, limits);
   if (!wide) return tail;
   return Buffer.concat([zip64End(count, size, offset), zip64Locator(offset + size), tail]);
 };

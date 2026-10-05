@@ -1,6 +1,6 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdtemp, readdir, rm, stat, utimes, writeFile } from 'fs/promises';
+import { mkdtemp, readdir, readFile, rm, stat, utimes, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { createDataDomains } from '../src/main/storage/create-data-domains';
@@ -13,6 +13,9 @@ import { endRecord } from '../src/main/storage/zip/end-record';
 import { openZipReader } from '../src/main/storage/zip/open-zip-reader';
 import { parseCentral } from '../src/main/storage/zip/parse-central';
 import { zipHeader } from '../src/main/storage/zip/zip-header';
+import {
+  END_SIGNATURE, END_SIZE, MAX_16, MAX_32, ZIP64_END_SIGNATURE, ZIP64_END_SIZE, ZIP64_LOCATOR_SIGNATURE, ZIP64_LOCATOR_SIZE,
+} from '../src/main/storage/zip/zip.constants';
 
 const APP = { app: 'test-app', appVersion: '1.2.3' };
 
@@ -53,20 +56,49 @@ describe('zip writer and reader', () => {
     await reader.close();
   });
 
-  it('writes zip64 records past 65535 files, and reads them back', async () => {
-    const path = join(root, 'many.zip');
-    const zip = await createZipWriter(path);
-    const count = 65_540;
-    for (let index = 0; index < count; index += 1) await zip.add(`f/${index}.txt`, Buffer.from(String(index)));
-    await zip.close();
-    const reader = await openZipReader(path);
-    expect(reader.records).toHaveLength(count);
+  it('refuses a file that is not a zip', async () => {
+    const path = join(root, 'fake.zip');
+    await writeFile(path, 'not a zip at all');
+    await expect(openZipReader(path)).rejects.toThrow(/not a zip/);
+  });
+});
+
+describe('zip64', () => {
+  it('writes the zip64 end records once the entry count reaches the limit, and reads them back', async () => {
+    const limits = { count: 4, bytes: MAX_32 };
+    const writeZip = async (name: string, count: number): Promise<Buffer> => {
+      const zip = await createZipWriter(join(root, name), limits);
+      for (let index = 0; index < count; index += 1) await zip.add(`f/${index}.txt`, Buffer.from(String(index)));
+      await zip.close();
+      return readFile(join(root, name));
+    };
+    const below = await writeZip('three.zip', 3);
+    expect(below.readUInt32LE(below.length - END_SIZE)).toBe(END_SIGNATURE);
+    expect(below.readUInt16LE(below.length - END_SIZE + 10)).toBe(3);
+    expect(below.readUInt32LE(below.length - END_SIZE - ZIP64_LOCATOR_SIZE)).not.toBe(ZIP64_LOCATOR_SIGNATURE);
+    const wide = await writeZip('five.zip', 5);
+    const locator = wide.length - END_SIZE - ZIP64_LOCATOR_SIZE;
+    const zip64 = locator - ZIP64_END_SIZE;
+    expect(wide.readUInt16LE(wide.length - END_SIZE + 10)).toBe(MAX_16);
+    expect(wide.readUInt32LE(locator)).toBe(ZIP64_LOCATOR_SIGNATURE);
+    expect(wide.readBigUInt64LE(locator + 8)).toBe(BigInt(zip64));
+    expect(wide.readUInt32LE(zip64)).toBe(ZIP64_END_SIGNATURE);
+    expect(wide.readBigUInt64LE(zip64 + 32)).toBe(5n);
+    const reader = await openZipReader(join(root, 'five.zip'));
+    expect(reader.records.map((record) => record.name)).toEqual(['f/0.txt', 'f/1.txt', 'f/2.txt', 'f/3.txt', 'f/4.txt']);
     const last = reader.records.at(-1);
     if (!last) throw new Error('no last record');
-    expect(last.name).toBe(`f/${count - 1}.txt`);
-    expect((await reader.read(last)).toString()).toBe(String(count - 1));
+    expect((await reader.read(last)).toString()).toBe('4');
     await reader.close();
-  }, 60_000);
+  });
+
+  it('switches to zip64 at 65535 entries by default', () => {
+    expect(endRecord(MAX_16 - 1, 100, 200)).toHaveLength(END_SIZE);
+    const wide = endRecord(MAX_16, 100, 200);
+    expect(wide).toHaveLength(ZIP64_END_SIZE + ZIP64_LOCATOR_SIZE + END_SIZE);
+    expect(wide.readBigUInt64LE(32)).toBe(BigInt(MAX_16));
+    expect(wide.readUInt16LE(ZIP64_END_SIZE + ZIP64_LOCATOR_SIZE + 10)).toBe(MAX_16);
+  });
 
   it('keeps sizes and offsets past 4 GB in the zip64 extra field', () => {
     const record = { name: 'big.bin', method: 0, crc: 1, compressed: 5_000_000_000, size: 5_000_000_000, offset: 6_000_000_000, time: 0, date: 33 };
@@ -83,12 +115,6 @@ describe('zip writer and reader', () => {
     expect(wide).toHaveLength(56 + 20 + 22);
     expect(wide.readBigUInt64LE(48)).toBe(5_000_000_000n);
     expect(wide.readBigUInt64LE(56 + 8)).toBe(5_000_000_100n);
-  });
-
-  it('refuses a file that is not a zip', async () => {
-    const path = join(root, 'fake.zip');
-    await writeFile(path, 'not a zip at all');
-    await expect(openZipReader(path)).rejects.toThrow(/not a zip/);
   });
 });
 

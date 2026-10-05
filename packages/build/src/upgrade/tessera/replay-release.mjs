@@ -17,11 +17,12 @@ const unique = (todos) => [...new Map(todos.map((todo) => [`${todo.line}\n${todo
  * @param {typeof import('typescript') | null} ts null leaves scripts alone
  * @param {{ path: string, source: string }} input
  * @param {Record<string, any>} release
+ * @param {{ edits: { start: number, end: number, text: string }[], todos: { line: number, message: string }[] }} [typed] this file's typed object props
  * @returns {{ source: string, todos: { line: number, message: string }[] }}
  */
-const replayRelease = (ts, { path, source }, release) => {
+const replayRelease = (ts, { path, source }, release, typed) => {
   let result = { source, todos: [] };
-  if (SCRIPT_FILE.test(path) && ts) result = scriptRenames(ts, { path, source }, release);
+  if (SCRIPT_FILE.test(path) && ts) result = scriptRenames(ts, { path, source }, release, typed);
   else if (STYLE_FILE.test(path)) result = styleRenames(source, release);
   else if (DATA_FILE.test(path)) result = dataRenames(source, release);
   return { source: result.source, todos: unique(result.todos) };

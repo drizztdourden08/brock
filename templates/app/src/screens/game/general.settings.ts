@@ -1,4 +1,5 @@
 /* @layer renderer-app @kind config */
+import { widgets } from '@drizztdourden08/brock-react';
 import type { ScreenMeta, Section } from '@drizztdourden08/brock-react';
 
 const meta: ScreenMeta = { title: 'General', icon: 'settings', order: 1 };
@@ -28,6 +29,13 @@ const sections: Section[] = [
         label: 'Start fullscreen',
         description: 'Open in fullscreen on launch.',
         hint: 'On, the app opens fullscreen the next time it starts. The window you have now stays as it is.',
+      },
+      {
+        key: 'widgetLayout',
+        label: 'Widget layout',
+        description: 'Put the widgets back where they start.',
+        hint: 'Closes the widgets you opened and docks the others where the app first placed them.',
+        actions: [{ id: 'reset-layout', label: 'Reset', icon: 'rotate-ccw', tone: 'danger', confirm: 'Reset the layout?', onSelect: () => widgets.reset() }],
       },
     ],
   },

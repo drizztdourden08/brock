@@ -309,6 +309,16 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
     exactly an old class anywhere else.
   - `props` `Component.prop`: the JSX attribute on that Tessera component, when the
     new prop belongs to the same component or to its plain rename; otherwise a to-do.
+  - `props` `Type.prop` on object literals (`SettingsRowAction.onClick` to `onSelect`):
+    the prop, method or shorthand (`onClick` becomes `onSelect: onClick`) of an object
+    literal whose type is that Tessera type, declared by Tessera's own package. The type
+    is the literal's contextual type from the TypeScript checker, else its own type, so
+    an annotation, `as`, `satisfies`, a return type, a call argument, an array element
+    and a JSX prop value all count. A new value that is a bare name or `Type.newProp`
+    is written; a note is a to-do on the prop. The checker runs once per release, over
+    only the files holding an object literal with a prop some key names, and only those
+    literals are asked; files the program reads beside them are parsed once and shared
+    between releases.
   - `propValues` `Component.prop`: a string literal the attribute can take (ternary
     branches, `??` and `||` fallbacks), under its old or renamed prop. A bare type key
     (`WidgetVisibility`) renames literals annotated with that Tessera type, `as` or

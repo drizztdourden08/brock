@@ -3,6 +3,7 @@ import { confirmAction } from '../../../stores/confirm-action';
 import type { ConfirmActionOptions } from '../../../stores/dialog.type';
 import { toast } from '../../../toast/toast';
 import type { RunSettingActionOptions, SettingAction } from '../../settings.type';
+import { actionTone } from './action-tone';
 
 const messageOf = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
@@ -10,7 +11,7 @@ const questionOf = (action: SettingAction, inline: boolean): ConfirmActionOption
   const { confirm } = action;
   if (confirm === undefined) return null;
   if (typeof confirm !== 'string') return confirm;
-  return inline ? null : { title: confirm, message: '', confirmLabel: action.label, variant: action.variant === 'danger' ? 'danger' : 'default' };
+  return inline ? null : { title: confirm, message: '', confirmLabel: action.label, variant: actionTone(action) === 'danger' ? 'danger' : 'default' };
 };
 
 const runSettingAction = async (action: SettingAction, options: RunSettingActionOptions = {}): Promise<void> => {

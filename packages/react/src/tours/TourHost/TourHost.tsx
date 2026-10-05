@@ -9,6 +9,7 @@ import { useTourStore } from '../useTourStore';
 import { useActiveStep } from './behavior/useActiveStep';
 import { useAdvanceOn } from './behavior/useAdvanceOn';
 import { useFirstRunTour } from './behavior/useFirstRunTour';
+import { useRelayedClick } from './behavior/useRelayedClick';
 import { useTourProgress } from './behavior/useTourProgress';
 import { useTourSpot } from './behavior/useTourSpot';
 import { KEEP_USABLE, TOUR_CLASS } from './TourHost.constants';
@@ -36,6 +37,7 @@ const TourHost = (props: TourHostProps) => {
   useSearchActions(useMemo(() => tourSearchActions(list), [list]));
   useAdvanceOn(step, key, tour.next);
   useTourSpot(tour.shown ? step : null, popped);
+  useRelayedClick(tour.shown ? step : null, key, popped, tour.next);
 
   return <GuidedTour tour={tour} keep={KEEP_USABLE} mascot="auto" className={TOUR_CLASS} />;
 };

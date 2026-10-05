@@ -5,6 +5,7 @@ import type { TourShown, TourStepDef } from '../../tours/tour.type';
 import { useTourStore } from '../../tours/useTourStore';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
+import { probe } from '../widgets/probe';
 import { RING_OFF_CLASS, TOUR_SELECTORS } from './tours-step.constants';
 
 const layer = (): HTMLElement | null => find(TOUR_SELECTORS.layer);
@@ -26,6 +27,23 @@ const movedOn = (id: string, index: number): boolean => {
   return active?.id !== id || active.index !== index;
 };
 
+const clickNext = (): string => {
+  const next = find(TOUR_SELECTORS.next);
+  if (next) click(next);
+  return 'its Next button';
+};
+
+const clickTarget = (step: TourStepDef): string => {
+  const relayed = tourTargets.poppedClick(step);
+  if (relayed) {
+    void probe({ kind: 'click', id: relayed.widget, selector: relayed.selector });
+    return `a click on its target in the "${relayed.widget}" window`;
+  }
+  const target = tourTargets.resolve(tourTargets.clickOf(step));
+  if (target) click(target);
+  return 'a click on its target';
+};
+
 const advance = (step: TourStepDef): string => {
   const on = step.advanceOn;
   if (on && 'event' in on) {
@@ -36,9 +54,7 @@ const advance = (step: TourStepDef): string => {
     tours.next();
     return `the "${on.context}" context`;
   }
-  const target = on ? tourTargets.resolve(tourTargets.clickOf(step)) : find(TOUR_SELECTORS.next);
-  if (target) click(target);
-  return on ? 'a click on its target' : 'its Next button';
+  return on ? clickTarget(step) : clickNext();
 };
 
 const tourReading = { layer, lit, shown, movedOn, advance };

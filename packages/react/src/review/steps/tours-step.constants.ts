@@ -6,6 +6,8 @@ const TOUR_SELECTORS = {
   veil: '.tour-spotlight__veil',
   mascot: '.guided-tour__mascot--shown .mascot-stage__actor',
   next: '.guided-tour__actions button:last-of-type',
+  primary: '.guided-tour__actions .btn--primary',
+  hint: '.guided-tour__hint',
 } as const;
 
 const RING_OFF_CLASS = 'tour-spotlight__ring--off';

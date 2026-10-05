@@ -24,6 +24,7 @@ interface WidgetSendContract {
   'widget:subscribe': (id: string) => void;
   'widget:setPrefs': (id: string, prefs: WidgetPrefsWire) => void;
   'widget:patchSettings': (patch: WidgetSettingsWire) => void;
+  'widget:tourAdvance': (step: string) => void;
 }
 
 interface WidgetEventContract {
@@ -40,6 +41,7 @@ interface WidgetEventContract {
   'widget:square': (on: boolean) => void;
   'widget:prefs': (id: string, prefs: WidgetPrefsWire) => void;
   'widget:settingsPatch': (patch: WidgetSettingsWire) => void;
+  'widget:tourAdvanced': (step: string) => void;
   'review:widgetPref': (key: string, value: unknown) => void;
 }
 

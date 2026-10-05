@@ -12,6 +12,7 @@ import { guideDrawn } from './guide-drawn';
 import { modifierState } from './modifier-state';
 import { probeFacts } from './probe-facts';
 import { tourSpotLit } from './tour-spot-lit';
+import { clickInWindow } from './click-in-window';
 import { driveResize } from './drive-resize';
 import { windowGuide } from './window-guide';
 import { FOCUS_AWAY_MS, MAIN_ANCHOR, PROBE_MOUSE_EVENTS, PROBE_SETTLE_MS } from './widget-windows.constants';
@@ -64,6 +65,12 @@ const sendMouse = async (id: string, action: keyof typeof PROBE_MOUSE_EVENTS, po
   return probeFacts(id);
 };
 
+const clickIn = async (id: string, selector: string): Promise<WidgetProbeFacts> => {
+  const clicked = await clickInWindow(anyWindow(id), selector);
+  await settled();
+  return { ...probeFacts(id), clicked };
+};
+
 const windowProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeFacts | null> => {
   if (request.kind === 'mouse') return sendMouse(request.id, request.action, request.point);
   if (request.kind === 'focusAway') return focusAway(request.id);
@@ -76,6 +83,7 @@ const windowProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeFact
   }
   if (request.kind === 'guide') return guide(request.id, request.mode, request.pointer);
   if (request.kind === 'tourSpot') return { ...probeFacts(request.id), tourLit: await tourSpotLit(anyWindow(request.id)) };
+  if (request.kind === 'click') return clickIn(request.id, request.selector);
   return null;
 };
 

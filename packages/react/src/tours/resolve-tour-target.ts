@@ -33,14 +33,24 @@ const litTargetOf = (step: TourStepDef): BrockTourTarget | undefined =>
 
 const inWidget = (target: BrockTourTarget): target is NamedTourTarget => 'selector' in target || 'tour' in target || 'widget' in target;
 
-const poppedSpotOf = (step: TourStepDef): TourSpotSlice | null => {
-  const lit = litTargetOf(step);
-  if (!lit || !inWidget(lit)) return null;
-  const widget = 'widget' in lit ? lit.widget : step.widget;
-  if (widget === undefined || !isPopped(widget)) return null;
-  return { widget, selector: 'widget' in lit ? `${selectorOf(lit)} ${POPPED_WIDGET_PART}` : selectorOf(lit) };
+const poppedPartOf = (step: TourStepDef, target: BrockTourTarget | undefined): { widget: string; target: NamedTourTarget } | null => {
+  if (!target || !inWidget(target)) return null;
+  const widget = 'widget' in target ? target.widget : step.widget;
+  return widget !== undefined && isPopped(widget) ? { widget, target } : null;
 };
 
-const tourTargets = { resolve: resolveTourTarget, clickOf: clickTargetOf, litOf: litTargetOf, poppedSpot: poppedSpotOf };
+const poppedSpotOf = (step: TourStepDef): TourSpotSlice | null => {
+  const part = poppedPartOf(step, litTargetOf(step));
+  if (!part) return null;
+  const selector = selectorOf(part.target);
+  return { widget: part.widget, selector: 'widget' in part.target ? `${selector} ${POPPED_WIDGET_PART}` : selector };
+};
+
+const poppedClickOf = (step: TourStepDef): TourSpotSlice | null => {
+  const part = poppedPartOf(step, clickTargetOf(step));
+  return part ? { widget: part.widget, selector: selectorOf(part.target) } : null;
+};
+
+const tourTargets = { resolve: resolveTourTarget, clickOf: clickTargetOf, litOf: litTargetOf, poppedSpot: poppedSpotOf, poppedClick: poppedClickOf };
 
 export { tourTargets };

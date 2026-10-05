@@ -1,10 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { renameValue } from './rename-value.mjs';
 
-const NOT_NAMES = new Set(['removed']);
-
 const renameOf = (owner, value, components) => {
-  if (renameValue.identifier(value)) return NOT_NAMES.has(value) ? null : value;
+  if (renameValue.propName(value)) return value;
   const to = renameValue.propPath(value);
   return to && (to.component === owner || components[owner] === to.component) ? to.prop : null;
 };

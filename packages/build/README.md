@@ -308,17 +308,31 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
     (`tab-bar__strip`, `` `tab-bar--${tone}` ``) is a to-do, and so is a string that is
     exactly an old class anywhere else.
   - `props` `Component.prop`: the JSX attribute on that Tessera component, when the
-    new prop belongs to the same component or to its plain rename; otherwise a to-do.
+    new value is a bare prop name (`CommandInput.aria-label` to `label`) or a prop of
+    the same component or of its plain rename; otherwise a to-do.
   - `props` `Type.prop` on object literals (`SettingsRowAction.onClick` to `onSelect`):
     the prop, method or shorthand (`onClick` becomes `onSelect: onClick`) of an object
-    literal whose type is that Tessera type, declared by Tessera's own package. The type
+    literal whose type is that Tessera type, or its `TypeProps` type for a component
+    key, declared by Tessera's own package. The type
     is the literal's contextual type from the TypeScript checker, else its own type, so
     an annotation, `as`, `satisfies`, a return type, a call argument, an array element
     and a JSX prop value all count. A new value that is a bare name or `Type.newProp`
     is written; a note is a to-do on the prop. The checker runs once per release, over
-    only the files holding an object literal with a prop some key names, and only those
-    literals are asked; files the program reads beside them are parsed once and shared
-    between releases.
+    only the files holding an object literal with a prop some key names, or naming a
+    component a wildcard key covers, and only those literals are asked; files the
+    program reads beside them are parsed once and shared between releases.
+  - `props` `Component.prefix*` (`CommandInput.aria-*`, `CommandInput.on*`,
+    `CommandInput.*`): every prop of that component starting with the text before the
+    `*`, on its JSX attributes and on object literals typed as its props type. An exact
+    key comes first, then the longest matching prefix, so `aria-label` follows
+    `CommandInput.aria-label` and `aria-hidden` follows `CommandInput.aria-*`, not
+    `CommandInput.*`. A prop the component still takes is left alone
+    (`aria-describedby`, `onKeyDown`), and so is `key`: the checker reads the props
+    type of the tag or the literal from the installed Tessera. When it cannot (Tessera's
+    types do not resolve), a release's `keep` list (`{ "CommandInput": ["onKeyDown"] }`)
+    stands in; without one, the to-do says Brock could not tell and asks to check. The
+    value is always a note: each covered prop is a to-do naming the prop and the key,
+    never a rename.
   - `propValues` `Component.prop`: a string literal the attribute can take (ternary
     branches, `??` and `||` fallbacks), under its old or renamed prop. A bare type key
     (`WidgetVisibility`) renames literals annotated with that Tessera type, `as` or

@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': patch
+---
+
+The Tessera renames replay now reads `props` keys that end in `*`, such as Tessera 0.23.1's `CommandInput.aria-*`, `CommandInput.on*` and `CommandInput.*`, which it used to skip. Such a key covers every prop of that component starting with the text before the `*`. An exact key still comes first, then the longest matching prefix, and a prop the component still takes is left alone, read from the installed Tessera's types (the props type of the JSX tag or of the object literal), else from a `keep` list in the release, else the to-do says to check it. The value is always a note, so each covered prop becomes a to-do and is never renamed. This works on JSX attributes and on object literals typed as the props type; an exact `Component.prop` key now also reaches an object literal typed as `ComponentProps`. A `props` value that is a bare prop name (`label`) is a rename to that prop of the same component on JSX attributes too, so `CommandInput.aria-label` becomes `label` instead of a to-do.

@@ -2,6 +2,7 @@
 import { literalRenames } from './literal-renames.mjs';
 import { propRules } from './prop-rules.mjs';
 import { renameTodos } from './rename-todos.mjs';
+import { tesseraTags } from './tessera-tags.mjs';
 import { tsSource } from './ts-source.mjs';
 import { valueLiterals } from './value-literals.mjs';
 
@@ -13,12 +14,6 @@ const valueRules = (release, props) => {
   }
   return rules;
 };
-
-const isTag = (ts, node) => ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node);
-
-const tagsOf = (ts, file, owners) =>
-  tsSource.nodesOf(ts, file, (node) => isTag(ts, node) && ts.isIdentifier(node.tagName) && owners.has(node.tagName.text))
-    .map((tag) => ({ tag, component: owners.get(tag.tagName.text) }));
 
 const attributesOf = (ts, tag) => tag.attributes.properties.filter((attribute) => ts.isJsxAttribute(attribute));
 
@@ -62,7 +57,7 @@ const jsxRenames = (ts, file, imports, release) => {
   const props = propRules(release);
   const rules = { props, values: valueRules(release, props), version: release.version, literals: stringTexts(ts, file) };
   const owners = new Map(imports.filter((entry) => !entry.reexport).map((entry) => [entry.local, entry.imported]));
-  const results = tagsOf(ts, file, owners).flatMap(({ tag, component }) =>
+  const results = tesseraTags(ts, file, owners).flatMap(({ tag, component }) =>
     attributesOf(ts, tag).flatMap((attribute) => attributeRenames(ts, file, { path: `${component}.${attribute.name.getText(file)}`, attribute }, rules)));
   return { edits: results.flatMap((result) => result.edits), todos: results.flatMap((result) => result.todos) };
 };

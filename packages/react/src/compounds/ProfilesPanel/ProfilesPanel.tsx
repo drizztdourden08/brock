@@ -9,7 +9,7 @@ import './ProfilesPanel.css';
 
 const ProfilesPanel = (props: ProfilesPanelProps) => {
   const {
-    title, profiles, onCreate, onRename, onDelete, createOpen = false, extraFields, canSubmit, placeholder = PROFILES_PANEL_TEXT.placeholder,
+    title, profiles, selectedId = null, onSelect, onCreate, onRename, onDelete, createOpen = false, extraFields, canSubmit, placeholder = PROFILES_PANEL_TEXT.placeholder,
     newLabel = PROFILES_PANEL_TEXT.newProfile, className = '',
   } = props;
   const panel = useProfilesPanel(props);
@@ -26,7 +26,7 @@ const ProfilesPanel = (props: ProfilesPanelProps) => {
   ));
 
   return (
-    <Box className={`profiles-panel${className ? ` ${className}` : ''}`} {...panel.pressHandlers}>
+    <Box className={`profiles-panel${className ? ` ${className}` : ''}`}>
       <SectionHeader title={title} />
       {panel.renameError && <Box role="alert"><Callout tone="danger">{panel.renameError}</Callout></Box>}
       <ManagedList<ProfilesPanelItem>
@@ -35,8 +35,9 @@ const ProfilesPanel = (props: ProfilesPanelProps) => {
         getId={PROFILE_ROW.getId}
         getName={PROFILE_ROW.getName}
         render={PROFILE_ROW.render}
-        selectedId={panel.pickedId}
-        onSelect={panel.pick}
+        selectedId={selectedId}
+        onActivate={onSelect}
+        actionVisibility="hover"
         create={create}
         createOpen={panel.createShown}
         onCreateOpenChange={panel.openChange}

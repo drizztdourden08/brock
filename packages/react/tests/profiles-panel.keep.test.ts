@@ -16,6 +16,9 @@ interface HarnessProps {
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
+const TWO_PROFILES: ProfilesPanelItem[] = [{ id: 'p1', name: 'Mira' }, { id: 'p2', name: 'Second run' }];
+const THREE_PROFILES: ProfilesPanelItem[] = [...TWO_PROFILES, { id: 'p3', name: 'Third run' }];
+
 const Harness = ({ start, failWith, onSelect, onDelete }: HarnessProps) => {
   const [profiles, setProfiles] = useState(start);
   const [selected, setSelected] = useState<string | null>(start[0]?.id ?? null);
@@ -65,8 +68,13 @@ const press = async (target: HTMLElement | null | undefined) => {
   await settle();
 };
 
-const key = async (target: Element | null | undefined, name: string) => {
-  act(() => { target?.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true })); });
+const ACTIVATING_KEYS = new Set(['Enter', ' ']);
+
+const key = async (target: HTMLElement | null | undefined, name: string) => {
+  act(() => {
+    const kept = target?.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }));
+    if (kept && target instanceof HTMLButtonElement && ACTIVATING_KEYS.has(name)) target.click();
+  });
   await settle();
 };
 
@@ -86,7 +94,7 @@ afterEach(() => {
   host = null;
 });
 
-describe('ProfilesPanel on ManagedList', () => {
+describe('ProfilesPanel create form', () => {
   it('opens the first run form with focus in the name, no Cancel and no way out by Escape, and lands on the new row after the create', async () => {
     await mount({ start: [] });
     expect(document.body.textContent).toContain('Create a profile to get started');
@@ -129,21 +137,49 @@ describe('ProfilesPanel on ManagedList', () => {
     expect(nameInput()).not.toBeNull();
     expect(document.querySelector('[role="alert"]')?.textContent).toBe('A profile named Mira exists.');
   });
+});
 
-  it('activates a profile on a press, and only moves the pick with the arrow keys, which shows the delete of that row', async () => {
+describe('ProfilesPanel rows', () => {
+  it('deletes a profile that is not the active one with the mouse, without switching to it', async () => {
     const onSelect = vi.fn();
     const onDelete = vi.fn();
-    await mount({ start: [{ id: 'p1', name: 'Mira' }, { id: 'p2', name: 'Second run' }], onSelect, onDelete });
-    expect(buttonNamed('Delete Mira')).toBeDefined();
-    rowOf('Mira')?.focus();
-    await key(rowOf('Mira'), 'ArrowDown');
-    expect(onSelect).not.toHaveBeenCalled();
-    expect(rowOf('Second run')?.getAttribute('aria-pressed')).toBe('true');
-    expect(buttonNamed('Delete Second run')).toBeDefined();
-    await press(rowOf('Second run'));
-    expect(onSelect).toHaveBeenCalledWith('p2');
+    await mount({ start: TWO_PROFILES, onSelect, onDelete });
+    expect(buttonNamed('Rename Second run')).toBeDefined();
     await press(buttonNamed('Delete Second run'));
     await press(buttonNamed('Delete'));
     expect(onDelete).toHaveBeenCalledWith('p2');
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(rowOf('Mira')?.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('moves focus with the arrow keys, Home and End without switching profile', async () => {
+    const onSelect = vi.fn();
+    await mount({ start: THREE_PROFILES, onSelect });
+    rowOf('Mira')?.focus();
+    await key(rowOf('Mira'), 'ArrowDown');
+    expect(document.activeElement).toBe(rowOf('Second run'));
+    await key(rowOf('Second run'), 'End');
+    expect(document.activeElement).toBe(rowOf('Third run'));
+    await key(rowOf('Third run'), 'Home');
+    expect(document.activeElement).toBe(rowOf('Mira'));
+    await key(rowOf('Mira'), 'ArrowDown');
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(rowOf('Mira')?.getAttribute('aria-pressed')).toBe('true');
+    expect(rowOf('Second run')?.getAttribute('aria-pressed')).toBe('false');
+    expect(rowOf('Second run')?.tabIndex).toBe(0);
+    expect(rowOf('Mira')?.tabIndex).toBe(-1);
+  });
+
+  it('switches profile on Enter or a press on a row', async () => {
+    const onSelect = vi.fn();
+    await mount({ start: THREE_PROFILES, onSelect });
+    rowOf('Mira')?.focus();
+    await key(rowOf('Mira'), 'ArrowDown');
+    await key(rowOf('Second run'), 'Enter');
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith('p2');
+    expect(rowOf('Second run')?.getAttribute('aria-pressed')).toBe('true');
+    await press(rowOf('Third run'));
+    expect(onSelect).toHaveBeenLastCalledWith('p3');
+    expect(rowOf('Third run')?.getAttribute('aria-pressed')).toBe('true');
   });
 });

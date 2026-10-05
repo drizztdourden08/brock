@@ -20,10 +20,11 @@ const usage = {
     'Pass extraFields and canSubmit for the fields a new profile needs beyond its name.',
   ],
   a11y: [
-    'The profiles are a list in a section named Profiles; each row is a button, pressed while it is the picked profile.',
-    'A press or Enter on a row makes it the active profile; the arrow keys, Home and End only move the pick, and F2 renames the focused row.',
+    'The profiles are a list in a section named Profiles; each row is a button, pressed while it is the active profile.',
+    'A click, Enter or Space on a row makes it the active profile; the arrow keys, Home and End only move focus, and F2 renames the focused row.',
+    'The rows are one Tab stop; Tab from the focused row reaches its rename and delete.',
     'New moves focus to the name field; Escape or Cancel closes the form and focus goes back to New; after a create, focus goes to the new row.',
-    'Rename and delete show on the picked row; delete asks once in the row before it calls onDelete.',
+    'Rename and delete show on the active row, and on any other row under the pointer or while it holds focus; delete asks once in the row before it calls onDelete.',
     'The rename and delete buttons are named after the profile, such as Rename Mira.',
   ],
   tree: {

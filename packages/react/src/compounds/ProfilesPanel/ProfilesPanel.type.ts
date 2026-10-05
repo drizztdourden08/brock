@@ -25,32 +25,13 @@ interface ProfilesPanelProps {
   className?: string;
 }
 
-interface ProfilesPanelPick {
-  id: string;
-  from: string | null;
-}
-
-interface PressHandlers {
-  onClickCapture: () => void;
-  onClick: () => void;
-  onKeyDownCapture: () => void;
-}
-
-interface PressFlag {
-  handlers: PressHandlers;
-  take: () => boolean;
-}
-
 interface ProfilesPanelModel {
   createShown: boolean;
   createError: string | null;
   renameError: string | null;
-  pickedId: string | null;
-  pressHandlers: PressHandlers;
   openChange: (open: boolean) => void;
   submitCreate: (name: string, close: () => void) => void;
   submitRename: (id: string, name: string) => void;
-  pick: (id: string) => void;
 }
 
-export type { PressFlag, ProfilesPanelItem, ProfilesPanelModel, ProfilesPanelPick, ProfilesPanelProps };
+export type { ProfilesPanelItem, ProfilesPanelModel, ProfilesPanelProps };

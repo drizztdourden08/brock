@@ -18,12 +18,15 @@ const CUSTOM_PROPERTY = /^--[\w-]+$/;
 const CLASS_NAME = /^-?[A-Za-z_][\w-]*$/;
 const PROP_PATH = /^([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$-]*)$/;
 const PROP_PATHS = /[A-Za-z_$][\w$]*\.[A-Za-z_$][\w$-]*/g;
+const PROP_NAME = /^[A-Za-z_$][\w$-]*$/;
+const NOT_PROP_NAMES = Object.freeze(['removed']);
+const WILDCARD_KEY = /^([A-Za-z_$][\w$]*)\.([\w$-]*)\*$/;
 const LITERAL_VALUE = /^[^\s()]+$/;
 const CLASS_ATTRIBUTE = /class/i;
 const CLASS_HOLDER = /^(?:cx|cn|clsx|classnames|twMerge)$|class(?:name)?(?:es|s)?$/i;
 
 export {
   APP_ROOTS, CLASS_ATTRIBUTE, CLASS_HOLDER, CLASS_NAME, CUSTOM_PROPERTY, DATA_FILE, GENERATED_MARK, IDENTIFIER, LITERAL_VALUE, NEXT_RELEASE,
-  PROP_PATH, PROP_PATHS, RENAME_MAPS, RENAMES_FILE, RENAMES_STEP_ID, REPO_ROOTS, SCRIPT_FILE, STYLE_FILE, TESSERA_BASELINE, TESSERA_IMPORT,
-  TESSERA_PACKAGE, TESSERA_PIN,
+  NOT_PROP_NAMES, PROP_NAME, PROP_PATH, PROP_PATHS, RENAME_MAPS, RENAMES_FILE, RENAMES_STEP_ID, REPO_ROOTS, SCRIPT_FILE, STYLE_FILE, TESSERA_BASELINE, TESSERA_IMPORT,
+  TESSERA_PACKAGE, TESSERA_PIN, WILDCARD_KEY,
 };

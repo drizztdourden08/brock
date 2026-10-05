@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-react
 
+## 0.25.0
+
+### Minor Changes
+
+- 8903da0: Brock moves to Tessera 0.21.0: the workspace catalog and brock-react's peer range are `^0.21.0` (MIGRATION §181 to §191). `brock upgrade` from 0.24 replays RENAMES.json (ManagedList to ItemList, MasterDetail to ListDetail, ContentHeaderBack to BackAction, `onClick` to `onSelect` and `variant` to `tone` on the action shapes, ToastContainer to ToastStack, the removed JsonInput, NamedRange and SetPicker, and the merged strings). The profiles list is Tessera's `ItemList`, and SettingsRow actions take `onSelect`.
+
+  `ScreenLayer` takes `back`, Tessera's `BackAction` `{ onSelect, label? }`, in place of `onBack`. The shell passes the page Back goes to as the label, the hub page or sub-page of the last history step, else the screen title, so the arrow reads Back to Saves. The 0.25.0 migration `screen-layer-back` rewrites `<ScreenLayer onBack={fn}>` to `back={{ onSelect: fn }}` and lists an `onBack` it cannot rewrite as a to-do.
+
+- 8903da0: Toasts go through Tessera's one queue. `ToastHost` is a single `ToastStack` at the bottom right with `max={3}`, and `toast(message, { variant, duration, action })` and `dismissToast(id)` are thin wrappers over Tessera's `toast()` and `toast.dismiss()`. The same message and variant raised again joins the toast already shown, with a count such as ×2, and a toast with no `duration` leaves after Tessera's 5 s, where Brock's own default was 4 s. `useToastStore` and `ToastState` are removed: the 0.25.0 migration `toast-store-gone` lists each use as a to-do.
+
+### Patch Changes
+
+- 8903da0: The `json` settings control draws Tessera's `CodeBlock` with `editable` and `language="json"`, since JsonInput is gone. Each edit goes through `JSON.parse` and the `shape` check; the parsed value is saved only while the text parses, and otherwise the field is marked invalid, the line read from the parse message is tinted, and the message shows under the field. `shape` keeps its values, now typed `SettingJsonShape`.
+- 8903da0: A menu entry with `confirm`, such as Widgets > Reset layout, asks before it runs from the Ctrl+K palette too. Its row carries a compact `ConfirmIconButton` (`size="xs"`) in the `action` slot; pressing it, the row or Enter asks with the check and the X. The check runs the entry and closes the palette, and the X or Escape cancels and leaves the palette open. Before, the palette ran Reset layout at once.
+- 8903da0: The question before leaving a page with unsaved changes takes Tessera's merged words: it is titled Unsaved changes, where it read Discard changes?, with Discard and Keep editing, read from `common.unsavedTitle`, `common.discard` and `common.keepEditing`.
+  - @drizztdourden08/brock-core@0.25.0
+
 ## 0.24.1
 
 ### Patch Changes

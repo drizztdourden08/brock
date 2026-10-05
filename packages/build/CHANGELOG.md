@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-build
 
+## 0.25.0
+
+### Minor Changes
+
+- 8903da0: Brock moves to Tessera 0.21.0: the workspace catalog and brock-react's peer range are `^0.21.0` (MIGRATION §181 to §191). `brock upgrade` from 0.24 replays RENAMES.json (ManagedList to ItemList, MasterDetail to ListDetail, ContentHeaderBack to BackAction, `onClick` to `onSelect` and `variant` to `tone` on the action shapes, ToastContainer to ToastStack, the removed JsonInput, NamedRange and SetPicker, and the merged strings). The profiles list is Tessera's `ItemList`, and SettingsRow actions take `onSelect`.
+
+  `ScreenLayer` takes `back`, Tessera's `BackAction` `{ onSelect, label? }`, in place of `onBack`. The shell passes the page Back goes to as the label, the hub page or sub-page of the last history step, else the screen title, so the arrow reads Back to Saves. The 0.25.0 migration `screen-layer-back` rewrites `<ScreenLayer onBack={fn}>` to `back={{ onSelect: fn }}` and lists an `onBack` it cannot rewrite as a to-do.
+
+- 8903da0: Toasts go through Tessera's one queue. `ToastHost` is a single `ToastStack` at the bottom right with `max={3}`, and `toast(message, { variant, duration, action })` and `dismissToast(id)` are thin wrappers over Tessera's `toast()` and `toast.dismiss()`. The same message and variant raised again joins the toast already shown, with a count such as ×2, and a toast with no `duration` leaves after Tessera's 5 s, where Brock's own default was 4 s. `useToastStore` and `ToastState` are removed: the 0.25.0 migration `toast-store-gone` lists each use as a to-do.
+
+### Patch Changes
+
+- 8903da0: The Setup splash sets the app name in Tessera's TrueType title font, `fonts/chakra-petch/chakra-petch-latin-600-normal.ttf`, which Tessera 0.21 ships beside the WOFF2 file. resvg loads it straight from the package with the system fonts, by the family it declares, `Chakra Petch SemiBold`, so Brock's own WOFF2 to TrueType converter is gone. Segoe UI stays the fallback.
+  - @drizztdourden08/brock-core@0.25.0
+  - @drizztdourden08/brock-thread@0.25.0
+
 ## 0.24.1
 
 ### Patch Changes

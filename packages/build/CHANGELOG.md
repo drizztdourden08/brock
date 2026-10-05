@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-build
 
+## 0.26.0
+
+### Minor Changes
+
+- 0204060: `SettingAction` takes `tone` in place of `variant`, named as in Tessera's `ActionData` (variant became tone on every action shape in Tessera 0.21). `tone` is a `ButtonVariant`: `'danger'` gives the settings row its danger tone and a string `confirm` dialog its danger look, and `SettingActions` draws its buttons in it. `variant` is a deprecated alias that still works until 0.27; when both are set, `tone` wins. The Storage page's Clear action uses `tone`.
+
+  The 0.26.0 migration `setting-action-tone` rewrites `variant:` to `tone:` in the settings actions of an `actions: [...]` list (a JSX `actions` prop and mapped entries too) and in objects typed `SettingAction` by an annotation, a return type, `as` or `satisfies`. The `variant` of a `confirm` dialog stays. An object with `label`, `onSelect` and `variant` it cannot place, and an action that sets both, become to-dos. A second run changes nothing.
+
+  The template's General page shows a row action: Widget layout, with a Reset in the danger tone that asks first.
+
+### Patch Changes
+
+- 0204060: The Tessera renames replay now renames props of object literals typed by their context. A `props` key on a type, such as `SettingsRowAction.onClick` to `onSelect`, renames the prop, method or shorthand of each object literal whose contextual type from the TypeScript checker (else its own type) is that Tessera type: under an annotation, `as` or `satisfies`, a function's return type, a call argument, an array element or a JSX prop value. Before, nothing renamed those props. A note in place of a name is a to-do on the prop. The checker runs once per release, over only the files with an object literal holding a prop some key names, asks only those literals, and shares the files it reads beside them between releases.
+  - @drizztdourden08/brock-core@0.26.0
+  - @drizztdourden08/brock-thread@0.26.0
+
 ## 0.25.0
 
 ### Minor Changes

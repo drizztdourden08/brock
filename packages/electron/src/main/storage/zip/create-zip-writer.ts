@@ -4,10 +4,10 @@ import { crc32, deflateRawSync } from 'zlib';
 import { dosStamp } from './dos-stamp';
 import { endRecord } from './end-record';
 import { zipHeader } from './zip-header';
-import { DEFLATED, STORED } from './zip.constants';
-import type { ZipRecord, ZipWriter } from './zip.type';
+import { DEFLATED, STORED, ZIP64_LIMITS } from './zip.constants';
+import type { ZipLimits, ZipRecord, ZipWriter } from './zip.type';
 
-const createZipWriter = async (path: string): Promise<ZipWriter> => {
+const createZipWriter = async (path: string, limits: ZipLimits = ZIP64_LIMITS): Promise<ZipWriter> => {
   const handle = await open(path, 'w');
   const records: ZipRecord[] = [];
   let offset = 0;
@@ -27,7 +27,7 @@ const createZipWriter = async (path: string): Promise<ZipWriter> => {
   const close = async (): Promise<void> => {
     const start = offset;
     await write(Buffer.concat(records.map((record) => zipHeader(record, 'central'))));
-    await write(endRecord(records.length, offset - start, start));
+    await write(endRecord(records.length, offset - start, start, limits));
     await handle.close();
   };
   const abort = async (): Promise<void> => {

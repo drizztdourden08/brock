@@ -1,5 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import '../src/navigation/nav';
+import '../src/screens/screen-persistence';
+import '../src/widgets/widget-persistence';
 
 interface Disk {
   file: Record<string, unknown>;

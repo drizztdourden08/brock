@@ -16,6 +16,11 @@ interface ZipWriter {
   abort: () => Promise<void>;
 }
 
+interface ZipLimits {
+  count: number;
+  bytes: number;
+}
+
 interface CentralLocation {
   count: number;
   size: number;
@@ -28,4 +33,4 @@ interface ZipReader {
   close: () => Promise<void>;
 }
 
-export type { CentralLocation, ZipReader, ZipRecord, ZipWriter };
+export type { CentralLocation, ZipLimits, ZipReader, ZipRecord, ZipWriter };

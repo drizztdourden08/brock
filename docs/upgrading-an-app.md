@@ -25,6 +25,10 @@ Use published ranges, not `link:` paths into a local checkout. A `link:` spec ti
 
 `brock migrate --from <version> [--tessera-from <version>]` runs the same migrations by hand, for example after a partial upgrade.
 
+The `RENAMES.json` replay also moves imports between Tessera entry points. Each release lists in `moves` the parts that changed entry point, under the name they have after that release's renames, so `PathField` from `/primitives` becomes `PathInput` from `/composites` in one replay. An import or `export { … } from` re-export of a moved name through the old subpath (`/primitives`, `/composites`, `/brand`, `/data` and the others) takes it from the new one: a mixed list splits, the moved names join an import of the same kind already on the new entry, and a default import stays where it is. An import from `@drizztdourden08/tessera` itself never moves, so an app that imports from the root has nothing to change.
+
+Brock 0.19 and 0.23 shipped the 0.17 and 0.20 moves as the migrations `tessera-part-moves` and `tessera-tier-moves`, before `RENAMES.json` recorded them. Those migrations still run for an app that comes from before them, and the replay then finds those imports already moved. Running both, in either order and as often as you like, leaves the same imports with no name imported twice.
+
 ## What the gate enforces
 
 ### Files and code

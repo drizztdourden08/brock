@@ -1,5 +1,0 @@
----
-'@drizztdourden08/brock-electron': patch
----
-
-Snapping no longer stays off after a Ctrl move or resize. Main only knew Ctrl from the key and mouse events of Brock windows, so a Ctrl release it never received kept it believing Ctrl was held: on Windows the move and resize loop takes the keyboard, so letting go of Ctrl during a drag never reached the window, and a release while another app had the focus, or with the cursor only over title strips and borders, was lost too. Every later drag then moved one window alone and every resize ran without snapping or shared edges, for every window, until some unrelated event said otherwise. Main now forgets Ctrl when a move or a resize ends (on macOS, where `moved` comes on every step, only when a resize ends) and when no Brock window has the focus any more, so the next plain drag moves the cluster and snaps again, and a window moved alone with Ctrl rejoins on its next plain drag. Ctrl held through the next drag is read again from that window's key repeat or mouse events.

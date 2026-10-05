@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-electron
 
+## 0.21.1
+
+### Patch Changes
+
+- 0e425f6: Snapping no longer stays off after a Ctrl move or resize. Main only knew Ctrl from the key and mouse events of Brock windows, so a Ctrl release it never received kept it believing Ctrl was held: on Windows the move and resize loop takes the keyboard, so letting go of Ctrl during a drag never reached the window, and a release while another app had the focus, or with the cursor only over title strips and borders, was lost too. Every later drag then moved one window alone and every resize ran without snapping or shared edges, for every window, until some unrelated event said otherwise. Main now forgets Ctrl when a move or a resize ends (on macOS, where `moved` comes on every step, only when a resize ends) and when no Brock window has the focus any more, so the next plain drag moves the cluster and snaps again, and a window moved alone with Ctrl rejoins on its next plain drag. Ctrl held through the next drag is read again from that window's key repeat or mouse events.
+- 0e425f6: Widget windows restored at launch no longer appear before the app window. They are created hidden and held until the app window is revealed after boot; the reveal waits for them to be ready to show (at most 1.5 s each), then shows the app window and every held widget window in the same tick, each at opacity 0, and fades them in together with the same 220 ms ramp. Widget windows still show without taking the focus, synced ones stay owned by the app window, and on an automation launch (`--no-focus`) they stay off screen. A widget window that becomes ready during the fade fades in too; one opened after the launch shows at once, as before. Boot holds added while the reveal waits for others are now waited for as well.
+  - @drizztdourden08/brock-core@0.21.1
+
 ## 0.21.0
 
 ### Patch Changes

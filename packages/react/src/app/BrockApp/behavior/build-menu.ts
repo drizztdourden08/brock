@@ -7,6 +7,7 @@ import {
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
+import { tourMenu } from '../../../tours/tour-menu-entry';
 import type { MenuBuildInput } from '../BrockApp.type';
 import { filterDevEntries } from './filter-dev-entries';
 import { groupSections } from './group-sections';
@@ -29,8 +30,10 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
 
 const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
   const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
+  const tourEntry = input.tours ? tourMenu.entry(input.tours.list, tourMenu.section([...appMenu, ...moduleMenu]), input.tours.start) : null;
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
+    ...(tourEntry ? [tourEntry] : []),
     { ...SHORTCUTS_HELP_ENTRY, onClick: onShortcuts },
     { ...REPORT_BUG_ENTRY, onClick: onReportBug },
     { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },

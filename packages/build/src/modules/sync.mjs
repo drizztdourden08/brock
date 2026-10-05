@@ -12,6 +12,7 @@ import { renderReviewFiles } from '../review/render-review.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
 import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
+import { renderToursFiles } from '../tours/render-tours.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -99,6 +100,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderScreensFiles(rootDir),
     ...renderWidgetsFiles(rootDir),
     ...renderTitleBarFiles(rootDir),
+    ...renderToursFiles(rootDir),
     ...renderManagedFiles({ inWorkspace }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),

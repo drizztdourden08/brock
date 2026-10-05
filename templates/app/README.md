@@ -44,6 +44,7 @@ src/screens/game/storage.page.tsx  the built-in Storage page: folder sizes, clea
 src/screens/credits.card.tsx  the Credits screen
 src/widgets/<id>.widget.tsx  a widget: tool panels docked, floating or in their own window (notes.widget.tsx)
 src/title-bar/<id>.action.ts  a title bar item: a button, a dropdown menu or a status tag
+src/tours/<id>.tour.ts   a guided tour, step by step (welcome.tour.ts runs on a profile's first start)
 src/views/, src/compounds/  Tessera parts: views own state, compounds draw one app concept (brock tessera new)
 src/primitives/, src/composites/  the rare app-only primitive or composite (brock tessera new)
 src/stores/use<Thing>Store.ts, src/hooks/use<Thing>.ts  app state and shared hooks
@@ -161,6 +162,42 @@ button or a status also takes `tone` and `effect` (`'twinkle'`, `'ping'`, ...), 
 status that reads app state default-exports a hook from `src/hooks` that returns the item
 or `null`. App items sit after Search, Report a bug and the module items, whose order and
 the window controls stay fixed, and fold into the main menu when the bar is too narrow.
+
+## Tours
+
+A guided tour is a file in `src/tours`, named `<id>.tour.ts`. `pnpm dev` and `pnpm sync`
+write `.brock/tours.ts` from the files, and `src/main.tsx` passes it to `BrockApp` as
+`tours`. Each step lights one part of the app: the rest dims and blurs, a bubble explains
+it and the brand mascot walks over to present it.
+
+```ts
+export default defineTour({
+  id: 'welcome',
+  title: 'Welcome',
+  trigger: 'first-run',
+  steps: [
+    { id: 'menu', target: { shell: 'menu' }, title: 'The menu', body: 'Every screen is here.' },
+    { id: 'notes', widget: 'notes', advanceOn: { click: { widget: 'notes' } }, title: 'Notes', body: 'Click it to write.' },
+    { id: 'settings', open: 'settings', target: { shell: 'screen' }, title: 'Settings', body: 'Saved with your profile.' },
+  ],
+});
+```
+
+A step points at its part with `target`: `{ shell: 'menu' | 'search' | 'report-bug' |
+'title-bar' | 'screen' }`, `{ widget: '<id>' }`, `{ setting: '<key>' }` for a settings row, `{ tour: '<name>' }` for an element
+marked `data-tour="<name>"`, or `{ selector }`. Before it shows, a step can `open` a screen
+or a hub page (`'game/saves'`), open a `widget`, set a `context`, and run `before(ctx)`,
+which may be async; keep it safe to run twice, since Back runs it again. `advanceOn` makes
+the user act to go on: `{ click: target }`, `{ event: '<name>' }` (sent with
+`tours.emit('<name>')`) or `{ context: '<name>' }`. `mascot` names the mascot's state for
+the step (`'wave'`, `'point'`, `'idea'`, ...).
+
+`trigger: 'first-run'` starts a tour once, the first time a profile opens the app.
+Menu > Advanced > Take the tour (Help when the app has a Help group) and the search
+palette start any tour; `tours.start(id)`, `tours.stop()` and `useTour()` drive them from
+code. A finished tour is kept per profile and does not come back by itself. The arrow
+keys and Enter step through, Escape closes, and the title bar stays usable. The review
+runs every tour end to end and captures each step.
 
 ## Storage
 

@@ -14,6 +14,7 @@ import { performanceStep } from './steps/performance-step';
 import { profileStep } from './steps/profile-step';
 import { screensStep } from './steps/screens-step';
 import { searchStep } from './steps/search-step';
+import { toursStep } from './steps/tours-step';
 import { updaterStep } from './steps/updater-step';
 import { widgetWindowsStep } from './steps/widget-windows-step';
 import { widgetsStep } from './steps/widgets-step';
@@ -23,7 +24,7 @@ const STEPS_BEFORE_SEED: readonly ReviewStep[] = [bootStep, profileStep];
 
 const STEPS_AFTER_SEED: readonly ReviewStep[] = [
   menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, widgetWindowsStep,
-  fontsStep, stylesStep,
+  toursStep, fontsStep, stylesStep,
 ];
 
 const BUILT_IN_STEP_NAMES: ReadonlySet<string> = new Set([...STEPS_BEFORE_SEED, ...STEPS_AFTER_SEED].map((step) => step.name));

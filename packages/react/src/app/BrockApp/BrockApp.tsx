@@ -3,6 +3,8 @@ import { useMemo } from 'react';
 import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
 import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
+import { NO_TOURS } from '../../tours/tours.constants';
+import { useTourRegistry } from '../../tours/useTourRegistry';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
@@ -29,7 +31,7 @@ import './BrockApp.css';
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, layout = 'menu',
-    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS,
+    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -37,6 +39,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks);
   useQuitGuards(merged.beforeQuit, beforeQuit);
+  useTourRegistry(tours, merged.tours);
   const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);

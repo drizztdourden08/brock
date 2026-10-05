@@ -9,6 +9,7 @@ import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit } from '../quit/quit.type';
+import type { TourDef } from '../tours/tour.type';
 
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
@@ -27,6 +28,7 @@ interface RendererModule {
   logChannels?: string[];
   bootTasks?: RendererBootTask[];
   beforeQuit?: BeforeQuit;
+  tours?: readonly TourDef[];
 }
 
 interface MergedModules {
@@ -42,6 +44,7 @@ interface MergedModules {
   logChannels: string[];
   bootTasks: RendererBootTask[];
   beforeQuit: BeforeQuit[];
+  tours: TourDef[];
 }
 
 export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };

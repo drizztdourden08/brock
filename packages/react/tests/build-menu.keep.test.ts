@@ -80,4 +80,11 @@ describe('buildMenu', () => {
     const items = menu.flatMap((entry) => (entry === 'separator' ? [] : [entry, ...(entry.children ?? [])]));
     expect(items.filter((entry) => entry !== 'separator' && !entry.icon)).toEqual([]);
   });
+
+  it('adds Take the tour under Advanced, or under Help when the app has a Help group', () => {
+    const tours = { list: [{ id: 'welcome', title: 'Welcome' }], start: noop };
+    expect(keys(item(buildMenu({ ...BASE, tours }), 'section:advanced')?.children ?? [])).toContain('take-the-tour');
+    const help = buildMenu({ ...BASE, tours, appMenu: [{ key: 'docs', label: 'Docs', section: 'help' }] });
+    expect(keys(item(help, 'section:help')?.children ?? [])).toEqual(['docs', 'take-the-tour']);
+  });
 });

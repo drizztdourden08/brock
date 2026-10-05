@@ -33,4 +33,4 @@ const contrast = (a, b) => {
 const pickInk = (background, inks) =>
   inks.reduce((best, ink) => (contrast(background, ink) > contrast(background, best) ? ink : best));
 
-export { pickInk };
+export { contrast, pickInk };

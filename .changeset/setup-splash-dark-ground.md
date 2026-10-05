@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': patch
+---
+
+The installer's Setup splash (`build/installer-splash.png`) now sits on the same dark ground as the boot splash. It drops the white radial glow and the shadow behind the mark, and paints the palette's dark gradient (`gradientDarkFrom` to `gradientDarkTo` in Tessera's `tokens.json`, the values of `--c-gradient-dark-from` and `--c-gradient-dark-to`). An app with colours of its own gets the `--look-dark-from` and `--look-dark-to` pair from `darkPair`, and a dark pair set in `theme.css` comes next. The mark comes from Tessera's `brand/dark-ground/`. The app name is in the palette's dark text, which must hold 4.5:1 at both ends of the gradient; if it doesn't, the name falls back to white or black, whichever reads better. `brock icons` now draws the Setup splash too for an app that ships to Windows, so you can check it before a release. The installer's downloader window keeps the bright look across its top.

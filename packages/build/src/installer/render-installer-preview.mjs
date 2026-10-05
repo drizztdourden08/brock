@@ -62,7 +62,7 @@ const renderInstallerPreview = async (rootDir, product) => {
   writeFileSync(join(dir, PREVIEW_MARK), mark.png);
   const splash = setupSplashPng(rootDir, inputs);
   writeFileSync(join(dir, PREVIEW_SPLASH), splash.png);
-  console.log(`brock package: accent ${colours.accent}, gradient ${colours.from} ${colours.via} ${colours.to} at ${colours.angle}deg, mark from ${mark.from}, Setup splash from ${splash.from}`);
+  console.log(`brock package: accent ${colours.accent}, gradient ${colours.from} ${colours.via} ${colours.to} at ${colours.angle}deg, mark from ${mark.from}, Setup splash from ${splash.from} (${inputs.splash.from} to ${inputs.splash.to}, text ${inputs.splash.ink})`);
   const exe = tryBuildStub(rootDir, inputs);
   if (!exe) return 1;
   const screens = PREVIEW_SCREENS.filter((screen) => screen !== 'licence' || config.installer.licence);

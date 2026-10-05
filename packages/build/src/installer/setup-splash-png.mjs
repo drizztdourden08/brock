@@ -12,14 +12,14 @@ import { setupSplashSvg } from './setup-splash-svg.mjs';
  * @returns {{ png: Buffer, from: string }}  the image Velopack's Setup shows
  */
 const setupSplashPng = (rootDir, inputs) => {
-  const { config, colours } = inputs;
+  const { config, colours, splash } = inputs;
   const override = join(INSTALLER_DIR, SPLASH_OVERRIDE);
   if (existsSync(join(rootDir, override))) return { png: readFileSync(join(rootDir, override)), from: override };
-  const mark = markSourceOf(rootDir, inputs);
+  const mark = markSourceOf(rootDir, inputs, { ground: 'dark' });
   if (!mark) throw new Error(`The Setup splash needs a mark: ${config.logos.mark} under public/ (brock icons writes it from icons.brand), or ${override}`);
   const { width, height } = config.window.splash;
-  const svg = setupSplashSvg({ width, height, colours, mark, name: config.window.title ?? config.name });
-  return { png: rasteriseSvg(svg, width), from: 'the look' };
+  const svg = setupSplashSvg({ width, height, ground: splash, angle: colours.angle, mark, name: config.window.title ?? config.name });
+  return { png: rasteriseSvg(svg, width), from: `the dark ground, mark from ${mark.from}` };
 };
 
 export { setupSplashPng };

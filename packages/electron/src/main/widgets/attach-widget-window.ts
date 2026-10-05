@@ -8,6 +8,7 @@ import { dragBounds } from './drag-bounds';
 import { endMove } from './end-move';
 import { endResize } from './end-resize';
 import { followCluster } from './follow-cluster';
+import { modifierRelease } from './modifier-release';
 import { onWillResize } from './on-will-resize';
 import { resizeSession } from './resize-session';
 import { settleWindow } from './settle-window';
@@ -50,11 +51,13 @@ const watchManipulation = (id: string, win: BrowserWindow): void => {
     settleWindow(id);
     endMove(id);
     windowGuide.end(id);
+    modifierRelease.afterMove();
   });
   win.on('resized', () => {
     endResize(id);
     settleWindow(id);
     windowGuide.end(id);
+    modifierRelease.afterResize();
   });
 };
 

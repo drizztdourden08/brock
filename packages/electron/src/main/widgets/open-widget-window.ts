@@ -8,6 +8,7 @@ import { alignToLink } from './align-to-link';
 import { attachWidgetWindow } from './attach-widget-window';
 import { widgetWindowControl } from './widget-window-control';
 import { widgetWindowEntries } from './widget-window-entries';
+import { widgetReveal } from './widget-reveal';
 import { widgetWindowOptions } from './widget-window-options';
 import { WIDGET_QUERY_KEY } from './widget-windows.constants';
 import type { WidgetWindowSetup } from './widget-windows.type';
@@ -33,9 +34,8 @@ const openWidgetWindow = (setup: WidgetWindowSetup, id: string, popped?: WidgetW
   applyWindowSecurity(win, setup.security);
   attachWidgetWindow(id, win, entry);
   alignToLink(entry);
-  win.once('ready-to-show', () => {
-    if (!entry.parked && !entry.hiddenWithApp && !win.isDestroyed()) win.showInactive();
-  });
+  widgetReveal.opened(win);
+  win.once('ready-to-show', () => widgetReveal.ready(entry));
   loadRendererPage(win, setup.renderer, { [WIDGET_QUERY_KEY]: id });
 };
 

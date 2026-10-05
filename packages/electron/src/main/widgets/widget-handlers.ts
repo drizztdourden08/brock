@@ -10,6 +10,7 @@ import { relayToWidgetWindows } from './relay-to-widget-windows';
 import { watchDisplays } from './watch-displays';
 import { widgetRuntime } from './widget-runtime';
 import { widgetMembership } from './widget-membership';
+import { widgetReveal } from './widget-reveal';
 import { widgetWindowControl } from './widget-window-control';
 import type { WidgetWindowSetup } from './widget-windows.type';
 
@@ -18,6 +19,7 @@ const widgetHandlers = (setup: WidgetWindowSetup): HandlerGroup => ({
   register: ({ handle, on, emit }) => {
     widgetRuntime.headless = setup.headless;
     bootEvents.on('window', followMainWindow);
+    widgetReveal.watch();
     watchDisplays();
     holdQuitForBounds();
     dropStaleGroupFile();

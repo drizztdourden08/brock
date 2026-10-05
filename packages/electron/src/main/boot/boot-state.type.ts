@@ -33,6 +33,7 @@ interface BootState {
 
 interface BootEventMap {
   progress: [side: BootSide];
+  presenting: [];
   revealed: [];
   failed: [failure: BootFailureRecord];
   window: [win: BrowserWindow];

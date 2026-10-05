@@ -8,6 +8,8 @@ const BEHIND_TASKBAR = ['floating', 'torn-off-menu', 'modal-panel', 'main-menu',
 
 const cursor = { x: 0, y: 0 };
 const sims = new Map<object, FakeWindow>();
+const focused: { win: FakeWindow | null } = { win: null };
+const shows: { name: string; how: 'show' | 'showInactive'; opacity: number }[] = [];
 
 const copy = (r: Rect): Rect => ({ x: r.x, y: r.y, width: r.width, height: r.height });
 
@@ -21,6 +23,7 @@ class FakeWebContents extends EventEmitter {
 }
 
 class FakeWindow extends EventEmitter {
+  static getFocusedWindow = (): FakeWindow | null => focused.win;
   readonly name: string;
   readonly insets: SimInsets;
   readonly webContents = new FakeWebContents();
@@ -30,7 +33,9 @@ class FakeWindow extends EventEmitter {
   pending: Rect | null = null;
   setCalls = 0;
   private destroyed = false;
-  private visible = true;
+  private visible: boolean;
+  opacity = 1;
+  focusCalls = 0;
   private minimized = false;
   private onTop = false;
   private parent: FakeWindow | null = null;
@@ -41,6 +46,7 @@ class FakeWindow extends EventEmitter {
     this.bounds = { x: options.x ?? 0, y: options.y ?? 0, width: options.width ?? 800, height: options.height ?? 600 };
     this.min = { width: options.minWidth ?? 0, height: options.minHeight ?? 0 };
     this.insets = options.insets ?? WINDOWS_INSETS;
+    this.visible = options.show !== false;
     sims.set(this, this);
   }
 
@@ -100,16 +106,23 @@ class FakeWindow extends EventEmitter {
     this.parent = parent;
   };
   setSkipTaskbar = (): void => undefined;
-  setOpacity = (): void => undefined;
+  getOpacity = (): number => this.opacity;
+  setOpacity = (opacity: number): void => {
+    this.opacity = opacity;
+  };
   setAspectRatio = (): void => undefined;
   setFullScreen = (): void => undefined;
   unmaximize = (): void => undefined;
   moveTop = (): void => undefined;
-  focus = (): void => undefined;
+  focus = (): void => {
+    this.focusCalls += 1;
+  };
   show = (): void => {
+    shows.push({ name: this.name, how: 'show', opacity: this.opacity });
     this.visible = true;
   };
   showInactive = (): void => {
+    shows.push({ name: this.name, how: 'showInactive', opacity: this.opacity });
     this.visible = true;
   };
   hide = (): void => {
@@ -135,6 +148,12 @@ const resetSim = (): void => {
   sims.clear();
   cursor.x = 0;
   cursor.y = 0;
+  focused.win = null;
+  shows.length = 0;
+};
+
+const focusSim = (win: FakeWindow | null): void => {
+  focused.win = win;
 };
 
 const fakeElectron = {
@@ -151,4 +170,4 @@ const fakeElectron = {
   nativeImage: { createEmpty: () => ({}) },
 };
 
-export { FakeWindow, cursor, fakeElectron, resetSim, simOf };
+export { FakeWindow, cursor, fakeElectron, focusSim, resetSim, shows, simOf };

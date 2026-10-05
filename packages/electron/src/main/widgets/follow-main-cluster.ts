@@ -4,6 +4,7 @@ import { activeCluster } from './active-cluster';
 import { clusterLayout } from './cluster-layout';
 import { endResize } from './end-resize';
 import { followCluster } from './follow-cluster';
+import { modifierRelease } from './modifier-release';
 import { onWillResize } from './on-will-resize';
 import { watchModifiers } from './watch-modifiers';
 import { windowGuide } from './window-guide';
@@ -25,6 +26,7 @@ const followMainCluster = (main: BrowserWindow): void => {
   main.on('resized', () => {
     endResize(MAIN_ANCHOR);
     windowGuide.end(MAIN_ANCHOR);
+    modifierRelease.afterResize();
   });
   main.on('closed', () => endResize(MAIN_ANCHOR));
   watchModifiers(main);

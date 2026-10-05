@@ -9,6 +9,7 @@ import { flushWidgetBounds } from './flush-widget-bounds';
 import { isMainNormal } from './is-main-normal';
 import { followMainCluster } from './follow-main-cluster';
 import { mainSnap } from './main-snap';
+import { modifierRelease } from './modifier-release';
 import { resizeSession } from './resize-session';
 import { towCluster } from './tow-cluster';
 import { towHold } from './tow-hold';
@@ -84,6 +85,7 @@ const followMainWindow = (main: BrowserWindow): void => {
   });
   main.on('moved', () => {
     windowGuide.end(MAIN_ANCHOR);
+    modifierRelease.afterMove();
     setImmediate(() => endMove(MAIN_ANCHOR));
   });
   main.on('close', flushWidgetBounds);

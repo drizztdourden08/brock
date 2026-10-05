@@ -69,6 +69,7 @@ const SELECTORS = {
   askingMenuItem: '.dropdown__item--asking',
   menuLabel: '.dropdown__label',
   menuAsk: '.dropdown__label--ask [aria-live]',
+  menuLabelShown: ':scope > [aria-live]',
   menuIcon: '.dropdown__icon',
   sectionTrigger: 'dropdown__submenu-trigger',
   layer: '.screen-layer:not(.screen-layer--hidden)',

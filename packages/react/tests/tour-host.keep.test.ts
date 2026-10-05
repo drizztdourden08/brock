@@ -79,7 +79,7 @@ describe('TourHost', () => {
     mount([POPPED]);
     act(() => { tours.start('popped'); });
     await flush();
-    expect(useTourStore.getState().spot).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"]' });
+    expect(useTourStore.getState().spot).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"] .widget__content' });
     act(() => tours.stop());
     await flush();
     expect(useTourStore.getState().spot).toBeNull();

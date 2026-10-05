@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetLayoutStore } from '../widgets/useWidgetLayoutStore';
-import { QUOTED, SHELL_TARGETS } from './tours.constants';
+import { POPPED_WIDGET_PART, QUOTED, SHELL_TARGETS } from './tours.constants';
 import type { BrockTourTarget, NamedTourTarget, TourSpotSlice, TourStepDef } from './tour.type';
 
 const attribute = (name: string, value: string): string => `[${name}="${value.replace(QUOTED, '\\$&')}"]`;
@@ -37,7 +37,8 @@ const poppedSpotOf = (step: TourStepDef): TourSpotSlice | null => {
   const lit = litTargetOf(step);
   if (!lit || !inWidget(lit)) return null;
   const widget = 'widget' in lit ? lit.widget : step.widget;
-  return widget !== undefined && isPopped(widget) ? { widget, selector: selectorOf(lit) } : null;
+  if (widget === undefined || !isPopped(widget)) return null;
+  return { widget, selector: 'widget' in lit ? `${selectorOf(lit)} ${POPPED_WIDGET_PART}` : selectorOf(lit) };
 };
 
 const tourTargets = { resolve: resolveTourTarget, clickOf: clickTargetOf, litOf: litTargetOf, poppedSpot: poppedSpotOf };

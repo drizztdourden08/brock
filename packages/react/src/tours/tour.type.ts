@@ -76,6 +76,11 @@ interface TourProgress {
   last: Readonly<Record<string, number>>;
 }
 
+interface AppTourState {
+  progress: TourProgress;
+  firstUse: boolean;
+}
+
 interface ActiveTour {
   id: string;
   index: number;
@@ -101,13 +106,16 @@ interface TourState {
   tours: readonly TourDef[];
   active: ActiveTour | null;
   progress: TourProgress;
-  progressFor: string | null;
+  loaded: boolean;
+  firstUse: boolean;
   shown: TourShown | null;
   spot: TourSpotSlice | null;
   clickRelay: TourClickSlice | null;
   setTours: (tours: readonly TourDef[]) => void;
   setActive: (active: ActiveTour | null) => void;
-  setProgress: (progress: TourProgress, profileId?: string | null) => void;
+  setProgress: (progress: TourProgress) => void;
+  setLoaded: (progress: TourProgress, firstUse: boolean) => void;
+  setFirstUse: (firstUse: boolean) => void;
   setShown: (shown: TourShown | null) => void;
   setSpot: (spot: TourSpotSlice | null) => void;
   setClickRelay: (clickRelay: TourClickSlice | null) => void;
@@ -126,6 +134,6 @@ interface TourApi {
 }
 
 export type {
-  ActiveTour, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
+  ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
   TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

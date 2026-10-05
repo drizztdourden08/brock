@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { TourAdvance } from '@drizztdourden08/tessera/composites';
-import type { TourDef, TourProgress, TourShellPart } from './tour.type';
+import type { AppTourState, TourDef, TourProgress, TourShellPart } from './tour.type';
 
 const NO_TOURS: readonly TourDef[] = [];
 
@@ -21,6 +21,10 @@ const TITLE_BAR_SELECTOR = SHELL_TARGETS['title-bar'];
 const POPPED_WIDGET_PART = '.widget__content';
 
 const FIRST_RUN_DELAY_MS = 600;
+
+const PROFILE_TOURS_FIELD = 'tours';
+
+const NO_TOUR_STATE: AppTourState = { progress: EMPTY_PROGRESS, firstUse: false };
 
 const TOUR_MENU_KEY = 'take-the-tour';
 
@@ -45,6 +49,6 @@ const TOUR_STEP_KEYS: Readonly<Record<TourAdvance, readonly string[]>> = {
 };
 
 export {
-  CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOURS, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
+  CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOUR_STATE, NO_TOURS, PROFILE_TOURS_FIELD, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
   TOUR_KEYWORDS, TOUR_MENU_KEY, TOUR_MENU_LABEL, TOUR_SEARCH_GROUP,
 };

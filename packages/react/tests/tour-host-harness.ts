@@ -55,7 +55,7 @@ const cleanUp = (): void => {
   Reflect.deleteProperty(window, 'api');
   const { layout } = useWidgetLayoutStore.getState();
   useWidgetLayoutStore.setState({ layout: { ...layout, popped: [] } });
-  useTourStore.setState({ tours: NO_TOURS, active: null, progress: EMPTY_PROGRESS, progressFor: null, shown: null, spot: null, clickRelay: null });
+  useTourStore.setState({ tours: NO_TOURS, active: null, progress: EMPTY_PROGRESS, loaded: false, firstUse: false, shown: null, spot: null, clickRelay: null });
   useWidgetRelayStore.setState({ slices: {} });
   document.body.replaceChildren();
 };

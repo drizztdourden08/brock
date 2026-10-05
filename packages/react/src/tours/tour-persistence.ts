@@ -1,23 +1,30 @@
 /* @layer renderer-shell @kind logic */
-import { profileViews } from '../widgets/profile-views';
+import { tourAppState } from './tour-app-state';
 import { tourProgress } from './tour-progress';
-import { EMPTY_PROGRESS } from './tours.constants';
+import { NO_TOUR_STATE } from './tours.constants';
+import type { AppTourState } from './tour.type';
 import { useTourStore } from './useTourStore';
 
-const loadTourProgress = async (profileId: string | null, live: () => boolean = () => true): Promise<void> => {
-  const store = useTourStore.getState();
-  store.setActive(null);
-  store.setProgress(EMPTY_PROGRESS, null);
-  if (!profileId) return;
-  const views = await profileViews.read(profileId);
-  if (live()) useTourStore.getState().setProgress(tourProgress.read(views.tours), profileId);
+const prepared = async (): Promise<AppTourState> => {
+  try {
+    return await tourAppState.prepare();
+  } catch {
+    return NO_TOUR_STATE;
+  }
 };
 
-const watchTourProgress = (): (() => void) => useTourStore.subscribe((state, prev) => {
-  if (state.progress === prev.progress || state.progressFor === null || state.progressFor !== prev.progressFor) return;
-  void profileViews.patch(state.progressFor, { tours: state.progress });
+const loadTourState = async (live: () => boolean = () => true): Promise<void> => {
+  const next = await prepared();
+  if (!live()) return;
+  const { progress, setLoaded } = useTourStore.getState();
+  setLoaded(tourProgress.merge(next.progress, progress), next.firstUse);
+};
+
+const watchTourState = (): (() => void) => useTourStore.subscribe((state, prev) => {
+  if (!state.loaded || !prev.loaded || (state.progress === prev.progress && state.firstUse === prev.firstUse)) return;
+  tourAppState.save({ progress: state.progress, firstUse: state.firstUse }).catch(() => undefined);
 });
 
-const tourPersistence = { load: loadTourProgress, watch: watchTourProgress };
+const tourPersistence = { load: loadTourState, watch: watchTourState };
 
 export { tourPersistence };

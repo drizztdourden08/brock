@@ -5,8 +5,7 @@ import type { ProfileStore, ProfileStoreHooks } from './profile-store.type';
 import { readJson } from '../read-json';
 import { writeJson } from '../write-json';
 import { newId } from '../id';
-import { getAppState } from '../get-app-state';
-import { saveAppState } from '../save-app-state';
+import { updateAppState } from '../update-app-state';
 import { profileDir } from './profile-dir';
 import { profileFile } from './profile-file';
 import { configFile } from './config-file';
@@ -56,13 +55,11 @@ const createProfileStore = (files: FileStore, hooks: ProfileStoreHooks = {}): Pr
 
   const remove = async (id: string): Promise<void> => {
     await files.remove(profileDir(id));
-    const state = await getAppState(files);
-    if (state.lastProfileId === id) await saveAppState(files, { ...state, lastProfileId: null });
+    await updateAppState(files, (state) => (state.lastProfileId === id ? { ...state, lastProfileId: null } : state));
   };
 
   const setLast = async (id: string): Promise<void> => {
-    const state = await getAppState(files);
-    await saveAppState(files, { ...state, lastProfileId: id });
+    await updateAppState(files, (state) => ({ ...state, lastProfileId: id }));
   };
 
   const touch = async (id: string): Promise<void> => {

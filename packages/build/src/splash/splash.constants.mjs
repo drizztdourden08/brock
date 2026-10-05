@@ -10,10 +10,11 @@ const TOKEN_FILES = [
 ];
 const TOKENS_DIR = 'src/tokens';
 const FONTS_DIR = 'fonts';
+const TITLE_FONT = { css: 'chakra-petch/chakra-petch.css', file: 'chakra-petch-latin-600-normal.woff2' };
 const SPLASH_FONTS = [
   { css: 'inter/inter.css', file: 'InterVariable-subset.woff2' },
-  { css: 'chakra-petch/chakra-petch.css', file: 'chakra-petch-latin-600-normal.woff2' },
+  TITLE_FONT,
 ];
 const SPLASH_CSP = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; font-src data:";
 
-export { FONTS_DIR, HTML_ESCAPES, SPLASH_CSP, SPLASH_FONTS, SPLASH_PAGE, SPLASH_STYLESHEET, TESSERA_SPLASH_STYLESHEET, TOKEN_FILES, TOKEN_LAYERS, TOKENS_DIR };
+export { FONTS_DIR, HTML_ESCAPES, SPLASH_CSP, SPLASH_FONTS, SPLASH_PAGE, SPLASH_STYLESHEET, TESSERA_SPLASH_STYLESHEET, TITLE_FONT, TOKEN_FILES, TOKEN_LAYERS, TOKENS_DIR };

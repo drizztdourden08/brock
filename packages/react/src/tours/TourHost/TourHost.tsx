@@ -41,7 +41,7 @@ const TourHost = (props: TourHostProps) => {
   useSearchActions(useMemo(() => tourSearchActions(list), [list]));
   useAdvanceOn(step, stepKey);
   useKeepUsable(def !== null, keep, stepKey);
-  useTouringClass(def !== null);
+  useTouringClass(def !== null, step);
 
   return <GuidedTour tour={tour} mascot="auto" className={TOUR_CLASS} />;
 };

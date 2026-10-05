@@ -184,7 +184,7 @@ export default defineTour({
 ```
 
 A step points at its part with `target`: `{ shell: 'menu' | 'search' | 'report-bug' |
-'title-bar' | 'screen' }`, `{ widget: '<id>' }`, `{ tour: '<name>' }` for an element
+'title-bar' | 'screen' }`, `{ widget: '<id>' }`, `{ setting: '<key>' }` for a settings row, `{ tour: '<name>' }` for an element
 marked `data-tour="<name>"`, or `{ selector }`. Before it shows, a step can `open` a screen
 or a hub page (`'game/saves'`), open a `widget`, set a `context`, and run `before(ctx)`,
 which may be async; keep it safe to run twice, since Back runs it again. `advanceOn` makes

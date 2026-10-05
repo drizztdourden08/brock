@@ -8,7 +8,7 @@ import type { ScreenParams } from '../navigation/navigation.type';
 
 type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen';
 
-type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string };
+type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string };
 
 type TourAdvanceOn =
   | { readonly click: string | BrockTourTarget }

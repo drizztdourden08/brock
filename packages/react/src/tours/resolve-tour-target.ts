@@ -10,6 +10,7 @@ const isPopped = (id: string): boolean => useWidgetLayoutStore.getState().layout
 const selectorOf = (target: Exclude<BrockTourTarget, { current: unknown }>): string | null => {
   if ('shell' in target) return SHELL_TARGETS[target.shell];
   if ('widget' in target) return isPopped(target.widget) ? null : attribute('data-widget-id', target.widget);
+  if ('setting' in target) return attribute('data-setting-key', target.setting);
   if ('tour' in target) return attribute('data-tour', target.tour);
   return target.selector;
 };

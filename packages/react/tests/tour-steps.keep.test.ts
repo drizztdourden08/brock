@@ -33,6 +33,9 @@ describe('toGuidedSteps', () => {
     useWidgetLayoutStore.setState({ layout: { ...layout, popped: [{ id: 'notes' }] } });
     expect(current(notes?.target)).toBeNull();
     useWidgetLayoutStore.setState({ layout });
+    document.body.insertAdjacentHTML('beforeend', '<div data-setting-key="windowMode"></div>');
+    const [row] = toGuidedSteps(defineTour({ id: 'r', title: 'R', steps: [{ id: 'row', title: 'Row', body: 'B', target: { setting: 'windowMode' } }] }));
+    expect(current(row?.target)).toBe(document.querySelector('[data-setting-key="windowMode"]'));
   });
 
   it('opens the screen, sets the context and awaits before when a step enters', async () => {

@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-updater",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "Brock updater module: Velopack startup hooks, check, download and apply from the product's GitHub releases, a version picker and the UpdateDialog.",
   "type": "module",
   "license": "UNLICENSED",

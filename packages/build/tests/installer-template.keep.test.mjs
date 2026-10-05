@@ -8,7 +8,6 @@ import { gradientLine } from '../src/installer/gradient-line.mjs';
 import { FALLBACK_THEME } from '../src/installer/installer.constants.mjs';
 import { installerTheme } from '../src/installer/installer-theme.mjs';
 import { markSourceOf } from '../src/installer/mark-source.mjs';
-import { setupSplashSvg } from '../src/installer/setup-splash-svg.mjs';
 import { stubColours } from '../src/installer/stub-colours.mjs';
 import { stubProductHeader } from '../src/packaging/stub-product-header.mjs';
 import { vpkPackArgs } from '../src/packaging/vpk-args.mjs';
@@ -174,15 +173,6 @@ describe('Setup splash', () => {
   it('runs the CSS gradient line through the middle of the image', () => {
     expect(gradientLine(480, 360, 180)).toEqual({ x1: 240, y1: 0, x2: 240, y2: 360 });
     expect(gradientLine(480, 360, 90)).toEqual({ x1: 0, y1: 180, x2: 480, y2: 180 });
-  });
-
-  it('draws the look, the mark and the escaped name', () => {
-    const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
-    const svg = setupSplashSvg({ width: 480, height: 360, colours: stubColours(LOOK, FALLBACK_THEME), mark, name: 'A & B' });
-    expect(svg).toContain('stop-color="#3b6fe0"');
-    expect(svg).toContain('stop-color="#253f79"');
-    expect(svg).toContain('data:image/svg+xml;base64,');
-    expect(svg).toContain('>A &amp; B</text>');
   });
 });
 

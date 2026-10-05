@@ -82,7 +82,7 @@ describe('path and json controls', () => {
   const at = (key: string, control: SettingItem['control']) => settingRow({ ...AUDIO, key, control }, context({ settings }));
   const controlOf = (row: ReturnType<typeof settingRow>) => (row && 'input' in row && row.input?.kind === 'custom' ? row.input.control : null);
 
-  it('draws a path control as a PathField named by the row label, with the path as its read-only text', () => {
+  it('draws a path control as a Tessera PathInput (SettingPathField) named by the row label, with the path as its read-only text', () => {
     const row = at('rom', { kind: 'path', pick: 'file', accept: ['.gb'] });
     expect(row).toMatchObject({ input: { kind: 'custom', text: 'C:/roms/game.gb' } });
     const control = controlOf(row);

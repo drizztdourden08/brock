@@ -9,16 +9,16 @@ import { SPLASH_STYLESHEET, TESSERA_SPLASH_STYLESHEET } from './splash.constants
 
 /**
  * @param {string} rootDir  The app root
- * @param {import('@drizztdourden08/brock-core/look').ResolvedLook} look
+ * @param {{ look: import('@drizztdourden08/brock-core/look').ResolvedLook, dark: import('@drizztdourden08/brock-core/look').DarkPair | null }} looks  dark: the splash ground of an app with colours of its own
  * @param {string | null} [brand]  The Tessera brand id from product.icons.brand
  * @returns {string}  Every rule the splash page needs, in cascade order
  */
-const splashStyles = (rootDir, look, brand = null) => {
+const splashStyles = (rootDir, { look, dark }, brand = null) => {
   const tesseraRoot = tesseraDir(rootDir);
   return [
     readSplashFonts(tesseraRoot),
     readTokenCss(rootDir, tesseraRoot, brand),
-    lookProperties(look),
+    lookProperties(look, dark),
     readFileSync(join(tesseraRoot, TESSERA_SPLASH_STYLESHEET), 'utf8'),
     readFileSync(join(import.meta.dirname, SPLASH_STYLESHEET), 'utf8'),
   ].join('\n');

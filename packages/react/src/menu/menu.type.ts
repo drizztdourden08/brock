@@ -11,7 +11,7 @@ interface MenuItem {
   checked?: boolean;
   screen?: string;
   fresh?: boolean;
-  confirm?: string;
+  confirm?: string | true;
   bucket?: string;
   page?: string;
   tab?: string;
@@ -23,16 +23,10 @@ interface MenuItem {
 
 type MenuEntry = MenuItem | 'separator';
 
-interface MenuConfirmState {
-  armed: string | null;
-  arm: (key: string) => void;
-  disarm: () => void;
-}
-
 interface MenuSection {
   id: string;
   label: string;
   icon: string;
 }
 
-export type { MenuConfirmState, MenuEntry, MenuItem, MenuSection };
+export type { MenuEntry, MenuItem, MenuSection };

@@ -16,12 +16,20 @@ interface PaletteSeeds {
 interface LookInks {
   light: string;
   dark: string;
+  dim?: string;
 }
 
 interface LookSources {
   brand?: ProductLook | null;
   seeds: PaletteSeeds;
   inks?: LookInks;
+  themeSeeds?: boolean;
+  themeDark?: boolean;
+}
+
+interface DarkPair {
+  from: string;
+  to: string;
 }
 
 type LookSource = 'product' | 'brand' | 'palette';
@@ -41,4 +49,4 @@ interface ResolvedLook {
 
 type LookStops = Pick<ResolvedLook, 'from' | 'via' | 'to' | 'angle'>;
 
-export type { LookGradient, LookInks, LookProduct, LookSource, LookSources, LookStops, PaletteSeeds, ProductLook, ResolvedLook };
+export type { DarkPair, LookGradient, LookInks, LookProduct, LookSource, LookSources, LookStops, PaletteSeeds, ProductLook, ResolvedLook };

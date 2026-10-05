@@ -29,9 +29,6 @@ const trackMainRect = (rect: Rect | null): void => {
   widgetMainRect.current = rect;
 };
 
-const pickContent = (content: Record<string, ReactNode>, ids: readonly string[]): Record<string, ReactNode> =>
-  Object.fromEntries(ids.flatMap((id) => (id in content ? [[id, content[id]]] : [])));
-
 const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
   (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
@@ -45,7 +42,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   const externalDrag = useWidgetLayoutStore((s) => s.externalDrag);
   const settingsStore = useContext(SettingsStoreContext);
   const legacy = useLegacyWidgetContext(widgetContext);
-  const gates = useWidgetGates(definitions, layout, legacy);
+  const gates = useWidgetGates(definitions, legacy);
   const shown = useMemo(() => poppedShown(layout, gates), [layout, gates]);
   const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
 
@@ -61,7 +58,6 @@ const WidgetHost = (props: WidgetHostProps) => {
     () => Object.fromEntries(definitions.map((def) => [def.id, <WidgetBody id={def.id} label={def.label}>{def.render()}</WidgetBody>])),
     [definitions],
   );
-  const shownContent = useMemo(() => pickContent(content, gates.contentIds), [content, gates.contentIds]);
   const settingsContent = useMemo<Record<string, ReactNode>>(
     () => Object.fromEntries(definitions.flatMap((def) => (def.settings ? [[def.id, <WidgetIdContext.Provider value={def.id}>{def.settings()}</WidgetIdContext.Provider>]] : []))),
     [definitions],
@@ -93,7 +89,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       settingsContent={settingsContent}
       developerToolsEnabled={gates.developerToolsEnabled}
     >
-      {shownContent}
+      {content}
     </WidgetManager>
   );
 };

@@ -27,7 +27,7 @@ const toMenuItem = (item: MenuItem, resolve: MenuResolver): TesseraMenuItem => {
     checked,
     onSelect: selectOf(item, resolve),
     children: children && toMenuNodes(children, resolve),
-    ...confirmPart(item, resolve),
+    ...confirmPart(item),
   };
 };
 

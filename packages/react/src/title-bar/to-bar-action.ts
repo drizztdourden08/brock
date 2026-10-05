@@ -13,8 +13,8 @@ const menuGroups = (id: string, spec: TitleBarMenuSpec): MenuGroup[] => {
 
 const toBarAction = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction => {
   const { label, icon } = spec;
-  if (spec.kind === 'menu') return { id, label, icon, bar: 'dropdown', groups: menuGroups(id, spec) };
   const look = { tone: spec.tone, effect: spec.effect };
+  if (spec.kind === 'menu') return { id, label, icon, bar: 'dropdown', ...look, groups: menuGroups(id, spec) };
   if (spec.kind === 'status') {
     return { id, label, icon, bar: 'status', status: spec.status ?? undefined, ...look, pulse: spec.pulse, onSelect: spec.onSelect ?? noop };
   }

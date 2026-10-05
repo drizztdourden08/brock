@@ -48,6 +48,17 @@ describe('toBarAction', () => {
     if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
     expect(action.groups.map((group) => [group.id, group.label])).toEqual([['rooms-0', 'Recent'], ['rooms-1', undefined]]);
   });
+
+  it('passes the tone and effect of a menu on to its dropdown', () => {
+    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', tone: 'primary', effect: 'twinkle', items: [{ key: 'new', label: 'New room' }] });
+    expect(action).toMatchObject({ bar: 'dropdown', tone: 'primary', effect: 'twinkle' });
+  });
+
+  it('makes a menu entry with confirm a Tessera confirm item in a dropdown', () => {
+    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'drop', label: 'Drop room', confirm: true, onClick: () => undefined }] });
+    if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
+    expect(action.groups[0]?.items[0]).toMatchObject({ id: 'drop', label: 'Drop room', kind: 'confirm' });
+  });
 });
 
 describe('appTitleBarSources', () => {

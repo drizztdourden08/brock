@@ -1,13 +1,16 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
-import { BrandMark, ChosenMascot, mascotForBrand } from '@drizztdourden08/tessera/brand';
+import { AnimatedMascot, BrandMark } from '@drizztdourden08/tessera/brand';
 import type { BrandApp } from '@drizztdourden08/tessera/brand';
 import type { HeroArt } from '@drizztdourden08/tessera/composites';
+import { brandMascot } from '../../brand/brand-mascot';
+import { HERO_GREETING } from './hero-brand-art.constants';
 
 const heroBrandArt = (brand: BrandApp | undefined): HeroArt | undefined => {
   if (brand === undefined) return undefined;
-  const mascot = mascotForBrand(brand);
-  const node = mascot === null ? createElement(BrandMark, { app: brand, size: 'xl' }) : createElement(ChosenMascot, { mascot, size: 'xl' });
+  const node = brandMascot(brand) === null
+    ? createElement(BrandMark, { app: brand, size: 'xl', ground: 'dark' })
+    : createElement(AnimatedMascot, { brand: 'auto', animation: HERO_GREETING, size: 'xl' });
   return { kind: 'node', node };
 };
 

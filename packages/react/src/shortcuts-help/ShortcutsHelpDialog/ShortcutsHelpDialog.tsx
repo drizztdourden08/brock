@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { Button, ShortcutList } from '@drizztdourden08/tessera/primitives';
-import type { ShortcutListGroup } from '@drizztdourden08/tessera/primitives';
-import { DialogShell } from '@drizztdourden08/tessera/composites';
+import { Button } from '@drizztdourden08/tessera/primitives';
+import type { ShortcutListGroup } from '@drizztdourden08/tessera/composites';
+import { DialogShell, ShortcutList } from '@drizztdourden08/tessera/composites';
 import { shortcutKeys } from '../shortcut-keys';
 import { SHORTCUTS_HELP_LABEL } from '../shortcuts-help.constants';
 import { useShortcutsHelpStore } from '../useShortcutsHelpStore';

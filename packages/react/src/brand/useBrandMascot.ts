@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useContext } from 'react';
-import { mascotForBrand } from '@drizztdourden08/tessera/brand';
-import type { MascotName } from '@drizztdourden08/tessera/brand';
+import type { AnimatedMascotChoice } from '@drizztdourden08/tessera/brand';
 import { BrockContext } from '../app/brock-context';
+import { brandMascot } from './brand-mascot';
 
-const useBrandMascot = (): MascotName | undefined => mascotForBrand(useContext(BrockContext)?.product.icons.brand) ?? undefined;
+const useBrandMascot = (): AnimatedMascotChoice | undefined =>
+  (brandMascot(useContext(BrockContext)?.product.icons.brand) === null ? undefined : 'auto');
 
 export { useBrandMascot };

@@ -5,14 +5,14 @@ import type { MenuEntry } from '../menu/menu.type';
 interface TitleBarItemBase {
   label: string;
   icon: IconName;
+  tone?: StatusTone;
+  effect?: IconEffect;
 }
 
 interface TitleBarButtonSpec extends TitleBarItemBase {
   kind: 'button';
   onSelect: () => void;
   shortcut?: string;
-  tone?: StatusTone;
-  effect?: IconEffect;
 }
 
 interface TitleBarMenuGroup {
@@ -29,8 +29,6 @@ type TitleBarMenuSpec = TitleBarMenuBase & ({ items: readonly MenuEntry[]; group
 interface TitleBarStatusSpec extends TitleBarItemBase {
   kind: 'status';
   status: string | null;
-  tone?: StatusTone;
-  effect?: IconEffect;
   pulse?: boolean;
   onSelect?: () => void;
 }

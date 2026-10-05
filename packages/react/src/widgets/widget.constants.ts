@@ -30,7 +30,7 @@ const REVIEW_OPTIONS_SLICE = 'review-options';
 const WIDGET_LAYOUT_GLOBAL = '__brockWidgetLayout';
 const DRAWN_WIDGET_SELECTOR = '[data-widget-id]';
 const LAYOUT_MAIN = 'main';
-const RESET_LAYOUT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'widgets-reset-layout', label: 'Reset layout', icon: 'rotate-ccw', confirm: 'Click again to reset' };
+const RESET_LAYOUT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'widgets-reset-layout', label: 'Reset layout', icon: 'rotate-ccw', confirm: true };
 
 export {
   CONTEXT_DEFAULTS, DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOATING_MIN, FLUSH_EVENTS, LAYOUT_MAIN, NO_IDS, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, RESET_LAYOUT_ENTRY, REVIEW_OPTIONS_SLICE, VIEWS_SAVE_DELAY_MS, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,

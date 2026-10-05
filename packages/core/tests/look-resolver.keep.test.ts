@@ -1,6 +1,7 @@
 /* @layer core @kind test */
 import { describe, expect, it } from 'vitest';
 import { resolveLook } from '../src/look/resolve-look';
+import { darkPair } from '../src/look/dark-pair';
 import { mixHex } from '../src/look/mix-hex';
 import { DEFAULT_INKS, DEFAULT_LOOK_ANGLE } from '../src/look/look.constants';
 import { contrastRatio } from '../src/look/contrast-ratio';
@@ -60,5 +61,30 @@ describe('mixHex', () => {
 
   it('rejects a value that is not a six digit colour', () => {
     expect(() => mixHex('blue', '#000000', 0.5)).toThrow();
+  });
+});
+
+describe('darkPair', () => {
+  const dim = '#8a8b8d';
+  const inks = { ...DEFAULT_INKS, dim };
+
+  it('leaves the palette pair to an app on a Tessera brand or palette', () => {
+    const brand = resolveLook({}, { seeds, brand: { gradient: ['#f0862b', '#1a1208'] } });
+    expect(darkPair(brand, { seeds, inks })).toBeNull();
+    expect(darkPair(resolveLook({}, { seeds }), { seeds, inks })).toBeNull();
+  });
+
+  it('darkens the colours of an app of its own until the dim text holds 4.5:1 at both ends', () => {
+    const look = resolveLook({ look: { gradient: ['#f5d76e', '#e8a33d'] } }, { seeds });
+    const pair = darkPair(look, { seeds, inks });
+    expect(pair).not.toBeNull();
+    for (const stop of [pair?.from ?? '', pair?.to ?? '']) expect(contrastRatio(dim, stop)).toBeGreaterThanOrEqual(4.5);
+    const themed = darkPair(resolveLook({}, { seeds }), { seeds, inks, themeSeeds: true });
+    expect(contrastRatio(dim, themed?.from ?? '')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('keeps the dark pair the app theme sets itself', () => {
+    const look = resolveLook({ look: { gradient: ['#f5d76e', '#e8a33d'] } }, { seeds });
+    expect(darkPair(look, { seeds, inks, themeSeeds: true, themeDark: true })).toBeNull();
   });
 });

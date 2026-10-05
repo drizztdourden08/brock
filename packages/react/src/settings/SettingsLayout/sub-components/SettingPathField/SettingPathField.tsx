@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { PathField } from '@drizztdourden08/tessera/primitives';
+import { PathInput } from '@drizztdourden08/tessera/composites';
 import { usePlatform } from '../../../../platform/usePlatform';
 import { dialogExtensions } from './behavior/dialog-extensions';
 import type { SettingPathFieldProps } from './SettingPathField.type';
@@ -9,7 +9,7 @@ const SettingPathField = (props: SettingPathFieldProps) => {
   const { pickPath, pathOf } = usePlatform().filePicker;
   const browse = pickPath ? () => pickPath({ folder: control.pick === 'folder', extensions: dialogExtensions(control.accept) }) : undefined;
   return (
-    <PathField
+    <PathInput
       value={value === '' ? null : value}
       onChange={(next) => onChange(next ?? '')}
       onBrowse={browse}

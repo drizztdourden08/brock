@@ -9,7 +9,6 @@ import { click } from '../dom/click';
 import { find } from '../dom/find';
 import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
-import { labelOf } from '../menu/label-of';
 import { menuPathTo } from '../menu/menu-path-to';
 import { pickMenuPath } from '../menu/pick-menu-path';
 import { SELECTORS } from '../review.constants';
@@ -17,14 +16,14 @@ import type { StepTour } from '../review.type';
 
 const store = () => useWidgetLayoutStore.getState();
 
-const armedItem = (): HTMLElement | null =>
-  [...document.querySelectorAll<HTMLElement>(SELECTORS.anyMenuItem)].find((item) => labelOf(item) === RESET_LAYOUT_ENTRY.confirm) ?? null;
+const armedItem = (): HTMLElement | null => find(SELECTORS.askingMenuItem);
 
 const armReset = async (tour: StepTour, path: readonly string[]): Promise<HTMLElement | null> => {
   const picked = await pickMenuPath(path);
   const armed = picked ? await waitFor(armedItem) : null;
   const kept = find(SELECTORS.logsWidget) !== null;
-  tour.check('reset-layout-asks', armed !== null && kept, `the first click turned the entry into "${RESET_LAYOUT_ENTRY.confirm ?? ''}" and left the layout as it was`, armed === null ? 'the first click did not ask for a second one' : 'the first click already reset the layout');
+  const asked = armed?.querySelector(SELECTORS.menuAsk)?.textContent.trim() ?? '';
+  tour.check('reset-layout-asks', armed !== null && kept, `the first click turned the entry into "${asked}" and left the layout as it was`, armed === null ? 'the first click did not ask for a second one' : 'the first click already reset the layout');
   if (armed) await tour.capture('widgets-reset-layout-asks');
   return armed;
 };

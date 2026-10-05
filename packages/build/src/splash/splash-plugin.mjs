@@ -12,9 +12,9 @@ import { splashStyles } from './splash-styles.mjs';
  * @returns {Promise<string>}
  */
 const splashPageOf = async (rootDir, product) => {
-  const { config, look } = await appLook(rootDir, product);
+  const { config, look, dark } = await appLook(rootDir, product);
   const brand = config.icons.brand ?? null;
-  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, palette: brand, styles: splashStyles(rootDir, look, brand) });
+  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, palette: brand, styles: splashStyles(rootDir, { look, dark }, brand) });
 };
 
 /**
@@ -23,8 +23,8 @@ const splashPageOf = async (rootDir, product) => {
  * @returns {Promise<import('vite').HtmlTagDescriptor[]>}  The look, for the app page
  */
 const lookTagsOf = async (rootDir, product) => {
-  const { look } = await appLook(rootDir, product);
-  return [{ tag: 'style', attrs: { 'data-brock-look': '' }, children: lookProperties(look), injectTo: 'head' }];
+  const { look, dark } = await appLook(rootDir, product);
+  return [{ tag: 'style', attrs: { 'data-brock-look': '' }, children: lookProperties(look, dark), injectTo: 'head' }];
 };
 
 /**

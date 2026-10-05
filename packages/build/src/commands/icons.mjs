@@ -26,7 +26,7 @@ const runIcons = async ({ rootDir, force = false }) => {
   const label = relative(process.cwd(), rootDir) || '.';
   const result = copyBrandIcons(rootDir, config, { force });
   const splash = await drawSetupSplash(rootDir, config);
-  if (splash) console.log(`brock icons: drew ${splash} on the dark ground in ${label}.`);
+  if (splash) console.log(`brock icons: drew ${splash} on the dark ground in ${label}`);
   if (!result) {
     console.log(`brock icons: ${label} sets no icons.brand; the icon path fields are used as written.`);
     return 0;

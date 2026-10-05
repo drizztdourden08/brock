@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-build
 
+## 0.22.0
+
+### Minor Changes
+
+- 73a287e: A central context registry replaces the single widget context. `useContextsStore` holds named contexts, each `{ active, data? }`; the app and modules set them with `contexts.set('session', { active, data })` or `useSetAppContext('session', active, data?)` in a component, and read them with `useAppContext('session')`. A widget names the context it needs with `context: 'session'` in its definition or file `meta` (which makes it `context-only` by default) and shows only while that context is active, docked, floating and popped; module widgets register the same way as app widgets. The registry is relayed to popped widget windows, so `useAppContext` reads the same contexts there. `BrockApp`'s and `WidgetHost`'s `widgetContext` prop is deprecated but keeps working, driving the `default` context that context-only widgets with no context of their own follow; the `widget-context-registry` migration (0.22.0) lists each use as a to-do.
+- 73a287e: The review copies `src/review/fixtures/` into the app data folder, at the same paths, before the seed runs, for sample files that are easier to keep as files. `brock sync` lists them in `.brock/review.ts` (`fixtures`, lazy `?url` imports), the copy reports a `fixtures-copied` check in the `seed` step, and `brock structure` leaves the folder alone. A fresh app ships `src/review/fixtures/notes/review-note.txt`, which its seed reads into the Notes widget.
+
+### Patch Changes
+
+- 73a287e: The `guide/` folder `tessera guide` writes is generated output: a fresh app ignores it in git, `brock dev`, `brock build` and `brock start` write it again when it is missing, and the `guide-folder-ignored` migration (0.22.0) adds `/guide/` (or the `guide.out` folders) to the `.gitignore` beside `tessera.config.json` and makes a tracked copy a to-do.
+- Updated dependencies [73a287e]
+- Updated dependencies [73a287e]
+  - @drizztdourden08/brock-core@0.22.0
+  - @drizztdourden08/brock-thread@0.22.0
+
 ## 0.21.1
 
 ### Patch Changes

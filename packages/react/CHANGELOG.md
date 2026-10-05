@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-react
 
+## 0.22.0
+
+### Minor Changes
+
+- 73a287e: A central context registry replaces the single widget context. `useContextsStore` holds named contexts, each `{ active, data? }`; the app and modules set them with `contexts.set('session', { active, data })` or `useSetAppContext('session', active, data?)` in a component, and read them with `useAppContext('session')`. A widget names the context it needs with `context: 'session'` in its definition or file `meta` (which makes it `context-only` by default) and shows only while that context is active, docked, floating and popped; module widgets register the same way as app widgets. The registry is relayed to popped widget windows, so `useAppContext` reads the same contexts there. `BrockApp`'s and `WidgetHost`'s `widgetContext` prop is deprecated but keeps working, driving the `default` context that context-only widgets with no context of their own follow; the `widget-context-registry` migration (0.22.0) lists each use as a to-do.
+- 73a287e: The review copies `src/review/fixtures/` into the app data folder, at the same paths, before the seed runs, for sample files that are easier to keep as files. `brock sync` lists them in `.brock/review.ts` (`fixtures`, lazy `?url` imports), the copy reports a `fixtures-copied` check in the `seed` step, and `brock structure` leaves the folder alone. A fresh app ships `src/review/fixtures/notes/review-note.txt`, which its seed reads into the Notes widget.
+- 73a287e: App title bar items (`src/title-bar/<id>.action.ts`) take `tone` (any Tessera `StatusTone`) and `effect` (an `IconEffect`) on buttons and status tags, the same values Brock's Search and Report a bug items use. Tessera's title bar dropdown has neither, so a menu item takes none.
+
+### Patch Changes
+
+- 73a287e: Importing a data area asks Merge (the default) or Replace in its confirm dialog (`confirmChoice`, a confirm dialog with a radio group). Merge keeps what is there and keeps the newer file when both have the same path; `storage:applyImport` takes the mode, the result counts the kept files (`kept`), and imported files keep the modified time they were exported with.
+- 73a287e: A job that succeeded clears its title bar tag by itself 30 s after it finished; a failed or cancelled job keeps its tag until it is opened. A job whose dialog is open stays until the dialog is hidden.
+- 73a287e: Hub navigation: the Home entry, and Escape with nothing open, always open the home hub on its home page (`nav.home(id)`, `open(id, params, { fresh: true })`, a menu item with `fresh: true`), while the hub switch and a hub's own menu entry still reopen the page it was left on. Escape goes up one level, a sub-page to its page and a page to the hub home, then closes the hub; Back, Alt+Left and the mouse Back button keep walking the whole history. The review checks Escape going up and then closing.
+- 73a287e: Reset layout in the Widgets menu asks first, in place, like Tessera's `ConfirmIconButton`: the first click turns the entry into Click again to reset and keeps the menu open, the second resets, and it goes back after 5 s. Any title bar menu item can do the same with `confirm: '<armed label>'` (`useMenuConfirmStore`).
+- 73a287e: A widget or screen write reaches the saved views at once when they are already loaded, so a flush on `pagehide` right after a change saves it; the restart test runs on fake timers.
+- Updated dependencies [73a287e]
+  - @drizztdourden08/brock-core@0.22.0
+
 ## 0.21.1
 
 ### Patch Changes

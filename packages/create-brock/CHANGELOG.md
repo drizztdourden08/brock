@@ -1,5 +1,19 @@
 # @drizztdourden08/create-brock
 
+## 0.22.0
+
+### Minor Changes
+
+- 73a287e: The review copies `src/review/fixtures/` into the app data folder, at the same paths, before the seed runs, for sample files that are easier to keep as files. `brock sync` lists them in `.brock/review.ts` (`fixtures`, lazy `?url` imports), the copy reports a `fixtures-copied` check in the `seed` step, and `brock structure` leaves the folder alone. A fresh app ships `src/review/fixtures/notes/review-note.txt`, which its seed reads into the Notes widget.
+
+### Patch Changes
+
+- 73a287e: The `guide/` folder `tessera guide` writes is generated output: a fresh app ignores it in git, `brock dev`, `brock build` and `brock start` write it again when it is missing, and the `guide-folder-ignored` migration (0.22.0) adds `/guide/` (or the `guide.out` folders) to the `.gitignore` beside `tessera.config.json` and makes a tracked copy a to-do.
+- Updated dependencies [73a287e]
+- Updated dependencies [73a287e]
+- Updated dependencies [73a287e]
+  - @drizztdourden08/brock-build@0.22.0
+
 ## 0.21.1
 
 ### Patch Changes

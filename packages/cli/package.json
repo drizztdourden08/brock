@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock",
-  "version": "0.21.1",
+  "version": "0.22.0",
   "description": "The global brock command. A repo's own command reaches it; it runs the Brock version that repo pinned.",
   "type": "module",
   "license": "UNLICENSED",

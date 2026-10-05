@@ -13,6 +13,7 @@ const crossfade = async (win: BrowserWindow): Promise<void> => {
   const { splash } = bootState;
   win.setOpacity(0);
   (bootState.present ?? (() => win.show()))();
+  bootEvents.emit('presenting');
   const fades = [fadeTo(win, 1)];
   if (splash && !splash.isDestroyed()) fades.push(fadeTo(splash, 0));
   await Promise.all(fades);

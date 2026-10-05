@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
 import { ctrlFromInput } from './ctrl-from-input';
+import { modifierRelease } from './modifier-release';
 import { modifierState } from './modifier-state';
 import { windowGuide } from './window-guide';
 import type { ModifierInput } from './widget-windows.type';
@@ -14,6 +15,7 @@ const watchModifiers = (win: BrowserWindow): void => {
   };
   win.webContents.on('before-input-event', (_event, input) => read(input));
   win.webContents.on('input-event', (_event, input) => read(input));
+  win.on('blur', modifierRelease.afterBlur);
 };
 
 export { watchModifiers };

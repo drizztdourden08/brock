@@ -21,6 +21,7 @@ interface SimWindowOptions {
   minWidth?: number;
   minHeight?: number;
   title?: string;
+  show?: boolean;
   insets?: SimInsets;
 }
 

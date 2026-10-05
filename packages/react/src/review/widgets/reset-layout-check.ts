@@ -29,6 +29,14 @@ const armReset = async (tour: StepTour, path: readonly string[]): Promise<HTMLEl
   return armed;
 };
 
+const confirmReset = async (tour: StepTour, path: readonly string[]): Promise<boolean> => {
+  const armed = await armReset(tour, path);
+  if (armed) click(armed);
+  const picked = armed !== null && (await waitFor(() => find(SELECTORS.logsWidget) === null)) !== null;
+  await closeMenu();
+  return picked;
+};
+
 const checkResetLayout = async (tour: StepTour): Promise<void> => {
   const path = menuPathTo(tour.env.menu, (item) => item.key === RESET_LAYOUT_ENTRY.key);
   tour.check('reset-layout-entry', path !== null && path.at(-1) === RESET_LAYOUT_ENTRY.label, `the Widgets menu ends with ${path?.join(' > ') ?? ''}`, 'the menu has no Reset layout entry');
@@ -36,10 +44,7 @@ const checkResetLayout = async (tour: StepTour): Promise<void> => {
   const before = store().layout;
   widgets.open(LOGS_WIDGET_ID);
   await waitFor(() => find(SELECTORS.logsWidget));
-  const armed = await armReset(tour, path);
-  if (armed) click(armed);
-  const picked = armed !== null && (await waitFor(() => find(SELECTORS.logsWidget) === null)) !== null;
-  await closeMenu();
+  const picked = await confirmReset(tour, path);
   const { preset, definitions, layout } = store();
   const expected = widgetsIn(presetLayout(preset, definitions).dock);
   const reset = picked && !isWidgetOpen(layout, LOGS_WIDGET_ID) && JSON.stringify(widgetsIn(layout.dock)) === JSON.stringify(expected);

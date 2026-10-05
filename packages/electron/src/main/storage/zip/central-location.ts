@@ -1,13 +1,8 @@
 /* @layer electron-main @kind logic */
 import type { FileHandle } from 'fs/promises';
+import { readAt } from './read-at';
 import { MAX_16, MAX_32, ZIP64_END_SIGNATURE, ZIP64_END_SIZE, ZIP64_LOCATOR_SIGNATURE, ZIP64_LOCATOR_SIZE } from './zip.constants';
 import type { CentralLocation } from './zip.type';
-
-const readAt = async (handle: FileHandle, position: number, length: number): Promise<Buffer> => {
-  const buffer = Buffer.alloc(length);
-  const { bytesRead } = await handle.read(buffer, 0, length, position);
-  return buffer.subarray(0, bytesRead);
-};
 
 const zip64Location = async (handle: FileHandle, tail: Buffer, end: number): Promise<CentralLocation> => {
   const at = end - ZIP64_LOCATOR_SIZE;
@@ -25,4 +20,4 @@ const centralLocation = async (handle: FileHandle, tail: Buffer, end: number): P
   return { count, size, offset };
 };
 
-export { centralLocation, readAt };
+export { centralLocation };

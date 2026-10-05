@@ -2,8 +2,9 @@
 import { open } from 'fs/promises';
 import type { FileHandle } from 'fs/promises';
 import { crc32, inflateRawSync } from 'zlib';
-import { centralLocation, readAt } from './central-location';
+import { centralLocation } from './central-location';
 import { parseCentral } from './parse-central';
+import { readAt } from './read-at';
 import { DEFLATED, END_SEARCH, END_SIGNATURE, END_SIZE, LOCAL_SIGNATURE, LOCAL_SIZE, STORED } from './zip.constants';
 import type { ZipReader, ZipRecord } from './zip.type';
 

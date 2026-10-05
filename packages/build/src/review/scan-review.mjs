@@ -14,7 +14,7 @@ const listFixtures = (folder) => {
 
 /**
  * @param {string} rootDir  The app root
- * @returns {{ seed: boolean, steps: string[], fixtures: string[] }}  The seed, the step ids and the fixture files under src/review/fixtures, sorted
+ * @returns {{ seed: boolean, steps: string[], fixtures: string[] }}  The review files, sorted
  */
 const scanReview = (rootDir) => {
   const folder = join(rootDir, REVIEW_DIR);

@@ -38,6 +38,9 @@ describe('hub history', () => {
     expect(trail('game')).toEqual([]);
   });
 
+});
+
+describe('Escape and Home in a hub', () => {
   it('goes up one level on Escape, to the hub home, then closes the hub, while Back keeps the whole history', () => {
     nav.open('game');
     nav.open('game/saves');

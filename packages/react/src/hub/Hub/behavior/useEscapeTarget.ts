@@ -4,17 +4,14 @@ import { NO_PARAMS } from '../../../navigation/navigation.constants';
 import type { ScreenParams } from '../../../navigation/navigation.type';
 import { useNavigationStore } from '../../../navigation/useNavigationStore';
 
-const UP_TO_PAGE = 'page';
-const UP_TO_HOME = 'home';
-
-const targetOf = (level: string | null, pageId: string): ScreenParams | null => {
-  if (level === UP_TO_PAGE) return { section: pageId };
-  return level === UP_TO_HOME ? NO_PARAMS : null;
+const targetOf = (level: 'page' | 'home' | null, pageId: string): ScreenParams | null => {
+  if (level === 'page') return { section: pageId };
+  return level === 'home' ? NO_PARAMS : null;
 };
 
-const levelOf = (homeId: string, pageId: string, onSub: boolean): string | null => {
-  if (onSub) return UP_TO_PAGE;
-  return pageId === homeId ? null : UP_TO_HOME;
+const levelOf = (homeId: string, pageId: string, onSub: boolean): 'page' | 'home' | null => {
+  if (onSub) return 'page';
+  return pageId === homeId ? null : 'home';
 };
 
 const useEscapeTarget = (homeId: string, pageId: string, onSub: boolean): void => {

@@ -5,14 +5,9 @@ import type { DataExportFormat, DataImportMode, DataImportPlan } from '@drizztdo
 import { requireHostApi } from '../../../host/require-host-api';
 import { jobs } from '../../../jobs/jobs';
 import { confirmChoice } from '../../../stores/confirm-choice';
-import type { DialogChoice } from '../../../stores/dialog.type';
 import { toast } from '../../../toast/toast';
 import type { StorageActions } from '../StoragePage.type';
-
-const IMPORT_CHOICES: readonly DialogChoice<DataImportMode>[] = [
-  { value: 'merge', label: 'Merge', description: 'Add the export to what is there. When both have a file at the same path, the newer one stays.' },
-  { value: 'replace', label: 'Replace', description: 'Delete what is in these folders now and put the export in its place.' },
-];
+import { IMPORT_CHOICES } from './useStorageActions.constants';
 
 const plural = (count: number, word: string): string => `${count} ${word}${count === 1 ? '' : 's'}`;
 

@@ -35,6 +35,7 @@ src/ipc/contract.constants.ts  APP_CHANNELS = defineChannels({...}): every app c
 src/ipc/contract.type.ts  the augmentation, from APP_CHANNELS
 src/review/seed.ts       fills the app with data before the review tour (a note for Notes)
 src/review/<id>.step.ts  the app's own review steps (notes.step.ts)
+src/review/fixtures/     files the review copies into the data folder before the seed (the note)
 src/screens/screens.config.ts  the buckets, their menu entries, home
 src/screens/game/home.hero.tsx  the Game hub home
 src/screens/game/general.settings.ts  the General settings page
@@ -121,8 +122,9 @@ export { meta };
 
 The default export is the component. `meta` is optional: `label` (the file name in title
 case without it), `icon`, `popOut`, `devOnly`, `taskbar`, `defaultVisibility`
-(`'context-only'` shows it only while a game or session runs, as `BrockApp`'s
-`widgetContext` hook says), `defaultOpen`, `defaultSide`, `defaultDockedSize`,
+(`'context-only'` shows it only while its context is active), `context` (the context it
+needs, such as `'session'`: the widget shows while `contexts.set('session', { active: true })`
+holds, set from anywhere or with `useSetAppContext` in a component), `defaultOpen`, `defaultSide`, `defaultDockedSize`,
 `defaultFloatingSize` and `settings`, a component drawn in the widget's options panel.
 `src/widgets` holds widget files and `layout.ts` only: a widget with parts imports them
 from `src/views`. `pnpm structure` names anything else there.
@@ -155,6 +157,7 @@ export default defineTitleBarItem({ kind: 'menu', label: 'Rooms', icon: 'server'
 
 `kind` is `'button'` (`onSelect`), `'menu'` (a dropdown of its own, `items` are menu
 entries) or `'status'` (a tag with `status` and `tone`, drawn while `status` is set). A
+button or a status also takes `tone` and `effect` (`'twinkle'`, `'ping'`, ...), as Search does. A
 status that reads app state default-exports a hook from `src/hooks` that returns the item
 or `null`. App items sit after Search, Report a bug and the module items, whose order and
 the window controls stay fixed, and fold into the main menu when the bar is too narrow.
@@ -190,7 +193,8 @@ page adds what it shows with `useSearchEntries(entries)` while it is open.
   `.brock/handlers.main.ts`. Call it with `channelApi(APP_CHANNELS).listNotes()`.
 - A review step: `src/review/<id>.step.ts` default-exports `defineReviewStep({ run })`;
   `run(tour)` opens screens, clicks, checks and captures into the same review report.
-  `src/review/seed.ts` runs before the tour reaches the screens, so they show data.
+  `src/review/seed.ts` runs before the tour reaches the screens, so they show data, and
+  the files under `src/review/fixtures/` are copied into the data folder just before it.
 - A boot task: `src/boot/<id>.task.ts` default-exports
   `defineBootTask({ label, weight?, after?, timeoutMs?, run })` from
   `@drizztdourden08/brock-react`; `run` gets `report(fraction, detail?)`, `signal`,

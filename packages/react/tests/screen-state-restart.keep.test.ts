@@ -19,7 +19,9 @@ const fakeDisk = (initial: Record<string, unknown>) => {
   return { disk, listeners };
 };
 
-const settle = (): Promise<void> => vi.advanceTimersByTimeAsync(0);
+const settle = async (): Promise<void> => {
+  await vi.advanceTimersByTimeAsync(0);
+};
 
 const RESTORE = { navigation: true, homeScreen: 'game', known: (id: string) => ['game', 'data'].includes(id) };
 

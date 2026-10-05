@@ -13,4 +13,6 @@ const JOB_BAR_TONE: Record<JobState, StatusTone> = {
   cancelled: 'warning',
 };
 
-export { JOB_BAR_ID, JOB_BAR_LABEL, JOB_BAR_TONE };
+const DONE_JOB_CLEAR_MS = 30_000;
+
+export { DONE_JOB_CLEAR_MS, JOB_BAR_ID, JOB_BAR_LABEL, JOB_BAR_TONE };

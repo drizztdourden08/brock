@@ -3,23 +3,13 @@ import { copyFile, mkdir, utimes, writeFile } from 'fs/promises';
 import { dirname } from 'path';
 import type { DataImportResult } from '@drizztdourden08/brock-core/platform';
 import { cleanDir } from './clean-dir';
+import type { Incoming, Placed } from './import-domains.type';
 import { keepsExisting } from './keeps-existing';
 import { resolveInside } from './resolve-inside';
 import type { ImportRequest } from './transfer.type';
 import { walkFiles } from './walk-files';
 import { dosDate } from './zip/dos-date';
 import { openZipReader } from './zip/open-zip-reader';
-
-interface Placed {
-  files: number;
-  kept: number;
-}
-
-interface Incoming {
-  rel: string;
-  modified: Date;
-  write: (full: string) => Promise<void>;
-}
 
 const place = async (request: ImportRequest, id: string, dir: string, incoming: readonly Incoming[]): Promise<Placed> => {
   const merge = request.mode === 'merge';

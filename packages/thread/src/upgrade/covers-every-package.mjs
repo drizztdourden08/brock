@@ -11,7 +11,7 @@ const runsEverywhere = (command, script) => {
 /**
  * @param {string | undefined} rootScript  The root package.json script of that name
  * @param {string} script  The script name, as lint or test
- * @returns {boolean}  True when the root script runs that script in every package (pnpm -r, no --filter)
+ * @returns {boolean}  True when it runs pnpm -r <script>, no filter
  */
 const coversEveryPackage = (rootScript, script) =>
   typeof rootScript === 'string' && rootScript.split(SEPARATOR).some((command) => runsEverywhere(command, script));

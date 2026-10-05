@@ -2,24 +2,11 @@
 import { useMemo } from 'react';
 import type { WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { useDeveloperTools } from '../../../app/useDeveloperTools';
-import { DEFAULT_CONTEXT } from '../../../contexts/contexts.constants';
-import { useContextsStore } from '../../../contexts/useContextsStore';
-import { isReviewLaunch } from '../../../host/is-review-launch';
 import { useNavigationStore } from '../../../navigation/useNavigationStore';
 import { NO_IDS } from '../../widget.constants';
 import type { WidgetDef } from '../../widget.type';
-import { outOfContext } from '../../out-of-context';
-
-const ID_JOIN = '\n';
-
-const useHiddenIds = (definitions: readonly WidgetDef[], layout: WidgetLayout, legacy: boolean | null): string => {
-  const contexts = useContextsStore((s) => s.contexts);
-  return useMemo(() => {
-    if (isReviewLaunch()) return '';
-    const isActive = (name: string): boolean => (name === DEFAULT_CONTEXT && legacy !== null ? legacy : contexts[name]?.active === true);
-    return outOfContext(layout, definitions, isActive).join(ID_JOIN);
-  }, [definitions, layout, legacy, contexts]);
-};
+import { useHiddenIds } from './useHiddenIds';
+import { ID_JOIN } from './useWidgetGates.constants';
 
 const useWidgetGates = (definitions: readonly WidgetDef[], layout: WidgetLayout, legacy: boolean | null): WidgetGates => {
   const hidden = useHiddenIds(definitions, layout, legacy);

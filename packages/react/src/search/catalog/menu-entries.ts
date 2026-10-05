@@ -19,7 +19,7 @@ const kindOf = (item: MenuItem, trail: readonly string[]): SearchKind => {
 };
 
 const leafEntry = (item: MenuItem, trail: readonly string[], blocked: ReadonlySet<string>): SearchEntry | null => {
-  const { label, icon, description, disabled, checked, screen, onClick } = item;
+  const { label, icon, description, disabled, checked, screen, confirm, onClick } = item;
   if (!screen && !onClick) return null;
   return {
     id: idOf(item),
@@ -32,6 +32,7 @@ const leafEntry = (item: MenuItem, trail: readonly string[], blocked: ReadonlySe
     disabled: disabled === true || (screen !== undefined && blocked.has(screen)),
     checked,
     target: screen === undefined ? undefined : { route: screen },
+    ...(confirm === undefined || onClick === undefined ? {} : { confirm }),
     run: onClick,
   };
 };

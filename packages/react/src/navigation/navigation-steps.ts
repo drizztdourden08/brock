@@ -51,9 +51,11 @@ const upStep = (state: NavigationSnapshot, parent: ScreenParams): Step | null =>
   return { params: parent, parent: null };
 };
 
-const canGoBack = (state: NavigationSnapshot): boolean =>
-  state.active !== null && ((state.history[state.active]?.length ?? 0) > 0 || state.parent !== null);
+const backTarget = (state: NavigationSnapshot): ScreenParams | null =>
+  (state.active === null ? null : state.history[state.active]?.at(-1) ?? state.parent);
 
-const navigationSteps = { open: openStep, close: closeStep, back: backStep, up: upStep, canGoBack, isHere, isBare };
+const canGoBack = (state: NavigationSnapshot): boolean => backTarget(state) !== null;
+
+const navigationSteps = { open: openStep, close: closeStep, back: backStep, up: upStep, backTarget, canGoBack, isHere, isBare };
 
 export { navigationSteps };

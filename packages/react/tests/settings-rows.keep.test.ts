@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind test */
 import { isValidElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { JsonInput } from '@drizztdourden08/tessera/primitives';
-import type { JsonInputProps } from '@drizztdourden08/tessera/primitives';
 import { getAppLog } from '../src/log/get-app-log';
+import { SettingJsonField } from '../src/settings/SettingsLayout/sub-components/SettingJsonField';
+import type { SettingJsonFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingJsonField/SettingJsonField.type';
 import { SettingPathField } from '../src/settings/SettingsLayout/sub-components/SettingPathField';
 import type { SettingPathFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingPathField/SettingPathField.type';
 import { dialogExtensions } from '../src/settings/SettingsLayout/sub-components/SettingPathField/behavior/dialog-extensions';
@@ -91,10 +91,10 @@ describe('path and json controls', () => {
     expect(at('extra', { kind: 'path' })).toBeNull();
   });
 
-  it('draws a json control as a JsonInput with its shape, and nothing for a missing value', () => {
+  it('draws a json control as a SettingJsonField with its shape, and nothing for a missing value', () => {
     const control = controlOf(at('extra', { kind: 'json', shape: 'object' }));
-    expect(isValidElement<JsonInputProps>(control) && control.type === JsonInput).toBe(true);
-    expect(isValidElement<JsonInputProps>(control) ? control.props : null).toMatchObject({ value: { speed: 2 }, shape: 'object', 'aria-label': 'Audio' });
+    expect(isValidElement<SettingJsonFieldProps>(control) && control.type === SettingJsonField).toBe(true);
+    expect(isValidElement<SettingJsonFieldProps>(control) ? control.props : null).toMatchObject({ value: { speed: 2 }, control: { shape: 'object' }, label: 'Audio' });
     expect(at('missing', { kind: 'json' })).toBeNull();
   });
 

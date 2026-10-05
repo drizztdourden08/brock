@@ -10,6 +10,15 @@ interface PaletteHostProps {
 
 interface PaletteItem extends CommandPaletteItem {
   run: () => void;
+  confirm?: string | true;
+}
+
+interface PaletteConfirmProps {
+  item: PaletteItem;
+  armed: boolean;
+  onArm: () => void;
+  onConfirm: () => void;
+  onSettle: () => void;
 }
 
 interface PaletteModel {
@@ -22,4 +31,4 @@ interface PaletteModel {
   close: () => void;
 }
 
-export type { PaletteHostProps, PaletteItem, PaletteModel };
+export type { PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel };

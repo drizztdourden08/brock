@@ -20,10 +20,10 @@ const usePaletteShortcut = (): void => {
         state.toggle();
         return;
       }
-      if (event.key === 'Escape' && state.open) {
-        claim(event);
-        state.hide();
-      }
+      if (event.key !== 'Escape' || !state.open) return;
+      claim(event);
+      if (state.asking === null) state.hide();
+      else state.settle();
     };
     window.addEventListener('keydown', handler, true);
     return () => window.removeEventListener('keydown', handler, true);

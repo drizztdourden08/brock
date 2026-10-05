@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind constants */
-import type { ManagedListRowParts } from '@drizztdourden08/tessera/composites';
+import type { ItemListRowParts } from '@drizztdourden08/tessera/composites';
 import type { ProfilesPanelItem } from './ProfilesPanel.type';
 
 const PROFILES_PANEL_TEXT = {
@@ -12,7 +12,7 @@ const PROFILES_PANEL_TEXT = {
 const PROFILE_ROW = {
   getId: (profile: ProfilesPanelItem): string => profile.id,
   getName: (profile: ProfilesPanelItem): string => profile.name,
-  render: (profile: ProfilesPanelItem): ManagedListRowParts => ({
+  render: (profile: ProfilesPanelItem): ItemListRowParts => ({
     meta: profile.meta,
     icon: profile.icon,
     columns: profile.aside === undefined ? undefined : [{ primary: profile.aside, align: 'end' }],

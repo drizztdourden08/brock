@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { BackAction } from '@drizztdourden08/tessera/primitives';
 import type { ScreenHeader } from '../screen.type';
 
 interface ScreenLayerProps {
@@ -11,7 +12,7 @@ interface ScreenLayerProps {
   floating?: ReactNode;
   hidden?: boolean;
   square?: boolean;
-  onBack?: () => void;
+  back?: BackAction;
   onClose: () => void;
   children: ReactNode;
 }

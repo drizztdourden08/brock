@@ -22,7 +22,7 @@ const setupSplashPng = (rootDir, inputs) => {
   const font = titleFont(inputs.tesseraRoot);
   const name = config.window.title ?? config.name;
   const svg = setupSplashSvg({ width, height, ground: splash, angle: colours.angle, mark, name, family: font?.family });
-  return { png: rasteriseSvg(svg, width, font?.ttf), from: `the dark ground, mark from ${mark.from}, name in ${font?.family ?? 'Segoe UI'}` };
+  return { png: rasteriseSvg(svg, width, font?.file), from: `the dark ground, mark from ${mark.from}, name in ${font?.family ?? 'Segoe UI'}` };
 };
 
 export { setupSplashPng };

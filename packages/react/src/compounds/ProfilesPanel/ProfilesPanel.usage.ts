@@ -2,7 +2,7 @@
 import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
-  job: 'A premade list of profiles to pick, create, rename and delete, drawn by ManagedList, with the create form at the top of the list.',
+  job: 'A premade list of profiles to pick, create, rename and delete, drawn by ItemList, with the create form at the top of the list.',
   useWhen: [
     'The profiles screen of a Brock app, or a first run that asks for a profile.',
     'Any list of named saves the user picks one of and manages in place.',

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { SettingsDescription, PathKind } from '@drizztdourden08/tessera/composites';
-import type { ButtonVariant, IconName, JsonShape } from '@drizztdourden08/tessera/primitives';
+import type { ButtonVariant, IconName } from '@drizztdourden08/tessera/primitives';
 import type { ConfirmActionOptions } from '../stores/dialog.type';
 
 interface SettingChoice {
@@ -11,6 +11,8 @@ interface SettingChoice {
 }
 
 type SettingChoiceLook = 'segmented' | 'select' | 'radio';
+
+type SettingJsonShape = 'object' | 'array' | 'any';
 
 type SettingControl =
   | { kind: 'choice'; options: SettingChoice[]; look?: SettingChoiceLook }
@@ -22,7 +24,7 @@ type SettingControl =
   | { kind: 'password'; placeholder?: string }
   | { kind: 'tags'; suggestions?: readonly string[]; placeholder?: string }
   | { kind: 'path'; pick?: PathKind; accept?: readonly string[]; placeholder?: string }
-  | { kind: 'json'; shape?: JsonShape };
+  | { kind: 'json'; shape?: SettingJsonShape };
 
 type SettingControlKind = SettingControl['kind'];
 
@@ -113,6 +115,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingLockCause, SettingValues,
+  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLockCause, SettingValues,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 };

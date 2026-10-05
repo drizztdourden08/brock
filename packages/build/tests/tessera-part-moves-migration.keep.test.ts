@@ -11,6 +11,8 @@ const step = () => selectMigrations(collectMigrations([]), { from: '0.18.0', to:
 
 const steps = () => selectMigrations(collectMigrations([]), { from: '0.22.0', to: null }).filter((m) => m.version === '0.23.0');
 
+const steps025 = () => selectMigrations(collectMigrations([]), { from: '0.24.1', to: null }).filter((m) => m.version === '0.25.0');
+
 const appWith = (files: Record<string, string>): string => {
   const root = mkdtempSync(join(tmpdir(), 'brock-part-moves-'));
   const src = join(root, 'src');
@@ -111,5 +113,37 @@ describe('menu-confirm-store', () => {
     const { run } = await migrate({ 'menu.ts': source }, steps());
     const found = run.todos.filter((todo) => todo.migration === 'menu-confirm-store').map((todo) => todo.line);
     expect(found).toEqual([1, 2]);
+  });
+});
+
+describe('Brock 0.25 migrations', () => {
+  it('run for an app on Brock 0.24 only', () => {
+    expect(steps025().map((m) => m.file.replace(/\\/g, '/').split('/').at(-1))).toEqual(expect.arrayContaining(['screen-layer-back.mjs', 'toast-store-gone.mjs']));
+    expect(selectMigrations(collectMigrations([]), { from: '0.25.0', to: null }).some((m) => m.version === '0.25.0')).toBe(false);
+  });
+
+  it('turns ScreenLayer onBack into back with onSelect, and changes nothing on a second run', async () => {
+    const source = 'export const A = () => <ScreenLayer title="Tools" icon={null} onBack={() => nav.back()} onClose={close}>x</ScreenLayer>;\n';
+    const { root, run, read } = await migrate({ 'a.tsx': source }, steps025());
+    const moved = read('a.tsx');
+    expect(moved).toBe('export const A = () => <ScreenLayer title="Tools" icon={null} back={{ onSelect: () => nav.back() }} onClose={close}>x</ScreenLayer>;\n');
+    expect(run.todos).toEqual([]);
+    await runMigrations(root, steps025());
+    expect(read('a.tsx')).toBe(moved);
+  });
+
+  it('leaves onBack on other parts alone, and makes an object onBack beside ScreenLayer a to-do', async () => {
+    const other = 'export const B = () => <Pager onBack={back} />;\n';
+    const object = "createElement(ScreenLayer, { title: 'Tools', onBack: back });\n";
+    const { run, read } = await migrate({ 'b.tsx': other, 'c.ts': object }, steps025());
+    expect(read('b.tsx')).toBe(other);
+    expect(read('c.ts')).toBe(object);
+    expect(run.todos.map((todo: { file: string }) => todo.file)).toEqual(['src/c.ts']);
+  });
+
+  it('makes a read of the old toast store a to-do', async () => {
+    const { run } = await migrate({ 'd.ts': "import { useToastStore } from '@drizztdourden08/brock-react';\nuseToastStore.getState().clear();\n" }, steps025());
+    expect(run.todos).toHaveLength(2);
+    expect(run.todos[0]).toMatchObject({ migration: 'toast-store-gone', line: 1 });
   });
 });

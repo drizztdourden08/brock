@@ -1,11 +1,7 @@
 /* @layer renderer-shell @kind component */
-import { ToastContainer } from '@drizztdourden08/tessera/composites';
-import { useToastStore } from '../useToastStore';
+import { ToastStack } from '@drizztdourden08/tessera/composites';
+import { MAX_TOASTS, TOAST_POSITION } from '../toast.constants';
 
-const ToastHost = () => {
-  const toasts = useToastStore((s) => s.toasts);
-  const dismiss = useToastStore((s) => s.dismiss);
-  return <ToastContainer toasts={toasts} onDismiss={dismiss} position="bottom-right" />;
-};
+const ToastHost = () => <ToastStack position={TOAST_POSITION} max={MAX_TOASTS} />;
 
 export { ToastHost };

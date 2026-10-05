@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { FAMILY_NAME_IDS, WINDOWS_PLATFORM } from './woff2.constants.mjs';
+import { FAMILY_NAME_IDS, WINDOWS_PLATFORM } from './installer.constants.mjs';
 
 /**
  * @param {Buffer} ttf

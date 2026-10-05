@@ -123,12 +123,12 @@ describe('sub-page history', () => {
 });
 
 describe('unsaved changes', () => {
-  it('asks "Discard changes?" before leaving a dirty page, and stays on Keep editing', async () => {
+  it('asks "Unsaved changes" in Tessera words before leaving a dirty page, and stays on Keep editing', async () => {
     nav.open('game/saves/new');
     const release = leaveGuards.add(() => true);
     nav.close();
     const asked = useDialogStore.getState().dialog;
-    expect(asked?.title).toBe('Discard changes?');
+    expect(asked).toMatchObject({ title: 'Unsaved changes', confirmLabel: 'Discard', cancelLabel: 'Keep editing' });
     asked?.onCancel?.();
     await new Promise((resolve) => { setTimeout(resolve, 0); });
     expect(state().active).toBe('game');

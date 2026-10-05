@@ -40,6 +40,11 @@ const startStep = (progress: TourProgress, tour: TourDef, at?: number): number =
 const firstRunTour = (tours: readonly TourDef[], progress: TourProgress): TourDef | null =>
   tours.find((tour) => tour.trigger === 'first-run' && tour.steps.length > 0 && !progress.started.includes(tour.id)) ?? null;
 
-const tourProgress = { read: readProgress, started: markStarted, step: markStep, completed: markCompleted, startStep, firstRun: firstRunTour };
+const union = (a: readonly string[], b: readonly string[]): readonly string[] => [...new Set([...a, ...b])];
+
+const mergeProgress = (into: TourProgress, from: TourProgress): TourProgress =>
+  ({ completed: union(into.completed, from.completed), started: union(into.started, from.started), last: { ...from.last, ...into.last } });
+
+const tourProgress = { read: readProgress, merge: mergeProgress, started: markStarted, step: markStep, completed: markCompleted, startStep, firstRun: firstRunTour };
 
 export { tourProgress };

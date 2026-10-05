@@ -2,24 +2,15 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { tourProgress } from '../src/tours/tour-progress';
-import { tourPersistence } from '../src/tours/tour-persistence';
 import { tours } from '../src/tours/tours';
 import { EMPTY_PROGRESS, NO_TOURS } from '../src/tours/tours.constants';
 import { toursFromFiles } from '../src/tours/tours-from-files';
 import { uniqueTours } from '../src/tours/unique-tours';
 import { useTourStore } from '../src/tours/useTourStore';
-import { profileViews } from '../src/widgets/profile-views';
 import { SESSIONS, WELCOME } from './tour-fixtures';
 
-vi.mock('../src/widgets/profile-views', () => ({
-  profileViews: {
-    read: vi.fn(() => Promise.resolve({ tours: { completed: ['welcome'], started: ['welcome'], last: {} } })),
-    patch: vi.fn(() => Promise.resolve()),
-  },
-}));
-
 const reset = (): void => {
-  useTourStore.setState({ tours: NO_TOURS, active: null, progress: EMPTY_PROGRESS, progressFor: null });
+  useTourStore.setState({ tours: NO_TOURS, active: null, progress: EMPTY_PROGRESS, loaded: false, firstUse: false });
 };
 
 beforeEach(reset);
@@ -41,7 +32,13 @@ describe('tourProgress', () => {
     expect(tourProgress.startStep(done, WELCOME)).toBe(0);
   });
 
-  it('picks the first first-run tour a profile has never started', () => {
+  it('merges two records, keeping every finished and started tour and the last steps of the first record', () => {
+    const a = { completed: ['welcome'], started: ['welcome', 'sessions'], last: { sessions: 1 } };
+    const b = { completed: ['sessions'], started: ['sessions', 'other'], last: { sessions: 0, other: 2 } };
+    expect(tourProgress.merge(a, b)).toEqual({ completed: ['welcome', 'sessions'], started: ['welcome', 'sessions', 'other'], last: { sessions: 1, other: 2 } });
+  });
+
+  it('picks the first first-run tour the app has never started', () => {
     expect(tourProgress.firstRun([SESSIONS, WELCOME], EMPTY_PROGRESS)?.id).toBe('welcome');
     expect(tourProgress.firstRun([SESSIONS, WELCOME], tourProgress.started(EMPTY_PROGRESS, 'welcome', 0))).toBeNull();
   });
@@ -74,9 +71,12 @@ describe('tours', () => {
     expect(useTourStore.getState().active).toEqual({ id: 'welcome', index: 1 });
   });
 
-  it('starts a first-run tour once per profile', () => {
+  it('starts a first-run tour once, only while the app is on its first use', () => {
     useTourStore.getState().setTours([SESSIONS, WELCOME]);
+    expect(tours.startFirstRun()).toBe(false);
+    useTourStore.getState().setLoaded(EMPTY_PROGRESS, true);
     expect(tours.startFirstRun()).toBe(true);
+    expect(useTourStore.getState().firstUse).toBe(false);
     expect(useTourStore.getState().active?.id).toBe('welcome');
     tours.stop();
     expect(tours.startFirstRun()).toBe(false);
@@ -87,21 +87,5 @@ describe('tours', () => {
     const warn = vi.fn();
     expect(uniqueTours([WELCOME, { ...SESSIONS, id: 'welcome' }], warn)).toEqual([WELCOME]);
     expect(warn).toHaveBeenCalledOnce();
-  });
-});
-
-describe('tourPersistence', () => {
-  it('loads a profile progress and writes each change back to that profile in ui-views', async () => {
-    useTourStore.getState().setTours([WELCOME, SESSIONS]);
-    await tourPersistence.load('p1');
-    expect(useTourStore.getState().progressFor).toBe('p1');
-    expect(tours.isCompleted('welcome')).toBe(true);
-    expect(tours.startFirstRun()).toBe(false);
-    const stop = tourPersistence.watch();
-    tours.start('sessions');
-    expect(profileViews.patch).toHaveBeenLastCalledWith('p1', { tours: { completed: ['welcome'], started: ['welcome', 'sessions'], last: { sessions: 0 } } });
-    stop();
-    await tourPersistence.load(null);
-    expect(useTourStore.getState().progressFor).toBeNull();
   });
 });

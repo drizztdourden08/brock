@@ -58,7 +58,9 @@ const back = (): void => {
 };
 
 const startFirstRun = (): boolean => {
-  const { active, tours: list, progress } = state();
+  const { active, tours: list, progress, loaded, firstUse, setFirstUse } = state();
+  if (!loaded || !firstUse) return false;
+  setFirstUse(false);
   const tour = active ? null : tourProgress.firstRun(list, progress);
   return tour ? start(tour.id, 0) : false;
 };

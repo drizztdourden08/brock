@@ -7,6 +7,7 @@ export { updateProfile } from './update-profile';
 export { deleteProfile } from './delete-profile';
 export { touchProfile } from './touch-profile';
 export { getAppState } from './get-app-state';
+export { updateAppState } from './update-app-state';
 export { readConfig } from './read-config';
 export { writeConfig } from './write-config';
 export { setLastProfile } from './set-last-profile';

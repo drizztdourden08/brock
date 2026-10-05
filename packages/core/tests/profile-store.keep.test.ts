@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createProfileStore } from '../src/storage/profiles/profile-store';
 import { getAppState } from '../src/storage/get-app-state';
+import { updateAppState } from '../src/storage/update-app-state';
 import type { FileStore } from '../src/platform/ports/file-store.type';
 
 declare module '../src/augment' {
@@ -58,6 +59,15 @@ describe('createProfileStore', () => {
     await store.remove(created.id);
     expect(await store.list()).toEqual([]);
     expect((await getAppState(files)).lastProfileId).toBeNull();
+  });
+
+  it('runs app state changes one after another, so a profile switch and another app-wide field never overwrite each other', async () => {
+    const files = memoryFileStore();
+    const store = createProfileStore(files);
+    await Promise.all([store.setLast('p1'), updateAppState(files, (state) => ({ ...state, firstRun: 'done' })), store.setLast('p2')]);
+    expect(await getAppState(files)).toEqual({ lastProfileId: 'p2', firstRun: 'done' });
+    const same = await updateAppState(files, (state) => state);
+    expect(same).toEqual({ lastProfileId: 'p2', firstRun: 'done' });
   });
 
   it('refuses an unsafe profile id', async () => {

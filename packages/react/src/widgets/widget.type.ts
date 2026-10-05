@@ -80,7 +80,11 @@ interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
   screens?: ScreenViews;
-  tours?: unknown;
+}
+
+interface ProfileViewsTake {
+  found: boolean;
+  taken: unknown[];
 }
 
 interface SharedStore<S> {
@@ -102,5 +106,5 @@ interface DockOrigin {
 }
 
 export type {
-  DockOrigin, ProfileViews, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

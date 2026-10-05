@@ -2,7 +2,7 @@
 import { isRecord } from '../collections/is-record';
 import { hostApi } from '../host/host-api';
 import { PROFILE_VIEWS_PREFIX, VIEWS_SAVE_DELAY_MS } from './widget.constants';
-import type { ProfileViews } from './widget.type';
+import type { ProfileViews, ProfileViewsTake } from './widget.type';
 
 let cache: Record<string, unknown> | null = null;
 let loading: Promise<Record<string, unknown>> | null = null;
@@ -59,6 +59,24 @@ const patch = (profileId: string, next: ProfileViews): Promise<void> => {
   return loadAll().then((all) => applyPatch(all, profileId, next));
 };
 
-const profileViews = { read, patch, flush: writeNow };
+const takeField = (all: Record<string, unknown>, field: string): unknown[] => {
+  const taken: unknown[] = [];
+  for (const [key, entry] of Object.entries(all)) {
+    if (!key.startsWith(PROFILE_VIEWS_PREFIX) || !isRecord(entry) || !(field in entry)) continue;
+    const { [field]: value, ...rest } = entry;
+    taken.push(value);
+    all[key] = rest;
+    dirty = true;
+  }
+  return taken;
+};
+
+const take = async (field: string): Promise<ProfileViewsTake> => {
+  const all = await loadAll();
+  const found = Object.keys(all).length > 0;
+  return { found, taken: takeField(all, field) };
+};
+
+const profileViews = { read, patch, take, flush: writeNow };
 
 export { profileViews };

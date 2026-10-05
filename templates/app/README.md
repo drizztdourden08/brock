@@ -44,7 +44,7 @@ src/screens/game/storage.page.tsx  the built-in Storage page: folder sizes, clea
 src/screens/credits.card.tsx  the Credits screen
 src/widgets/<id>.widget.tsx  a widget: tool panels docked, floating or in their own window (notes.widget.tsx)
 src/title-bar/<id>.action.ts  a title bar item: a button, a dropdown menu or a status tag
-src/tours/<id>.tour.ts   a guided tour, step by step (welcome.tour.ts runs on a profile's first start)
+src/tours/<id>.tour.ts   a guided tour, step by step (welcome.tour.ts runs on the app's first use)
 src/views/, src/compounds/  Tessera parts: views own state, compounds draw one app concept (brock tessera new)
 src/primitives/, src/composites/  the rare app-only primitive or composite (brock tessera new)
 src/stores/use<Thing>Store.ts, src/hooks/use<Thing>.ts  app state and shared hooks
@@ -193,10 +193,13 @@ the user act to go on: `{ click: target }`, `{ event: '<name>' }` (sent with
 names the mascot's state for the step (`'wave'`, `'point'`, `'idea'`, ...), or
 `{ walk: 'move', arrive: 'wave' }` to walk over first.
 
-`trigger: 'first-run'` starts a tour once, the first time a profile opens the app.
+`trigger: 'first-run'` starts a tour once, on the app's first use: after the boot and the
+splash, once the first profile is open. The app marks its first use in `app.json`, not in a
+profile, so a profile made later never starts it again, and an install that already had
+profiles never gets a first-run tour added in a later version.
 Menu > Advanced > Take the tour (Help when the app has a Help group) and the search
 palette start any tour; `tours.start(id)`, `tours.stop()` and `useTour()` drive them from
-code. A finished tour is kept per profile and does not come back by itself. The arrow
+code. A finished tour is kept for the whole app and does not come back by itself. The arrow
 keys and Enter step through, Escape closes, and the title bar stays usable. The review
 runs every tour end to end and captures each step.
 

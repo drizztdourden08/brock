@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-electron
 
+## 0.22.0
+
+### Patch Changes
+
+- 73a287e: Importing a data area asks Merge (the default) or Replace in its confirm dialog (`confirmChoice`, a confirm dialog with a radio group). Merge keeps what is there and keeps the newer file when both have the same path; `storage:applyImport` takes the mode, the result counts the kept files (`kept`), and imported files keep the modified time they were exported with.
+- 73a287e: Zip exports write zip64 records past 65535 files or 4 GB, and the reader follows them, so a zip export has no practical limit.
+- Updated dependencies [73a287e]
+  - @drizztdourden08/brock-core@0.22.0
+
 ## 0.21.1
 
 ### Patch Changes

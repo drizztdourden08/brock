@@ -42,8 +42,9 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-const open = (reset: () => void): void => {
-  catalog.entries = menuEntries([{ key: 'widgets', label: 'Widgets', children: [resetLayoutEntry(reset)] }], new Set());
+const open = (reset: () => void, onCancel?: () => void): void => {
+  const entry = resetLayoutEntry(reset);
+  catalog.entries = menuEntries([{ key: 'widgets', label: 'Widgets', children: [onCancel ? { ...entry, onCancel } : entry] }], new Set());
   const host = document.createElement('div');
   document.body.append(host);
   root = createRoot(host);
@@ -95,5 +96,17 @@ describe('Reset layout in the search palette', () => {
     expect(reset).not.toHaveBeenCalled();
     press('Escape');
     expect(usePaletteStore.getState().open).toBe(false);
+  });
+
+  it('keeps asking from the button through onAsk and onCancel, and tells the menu entry its question closed', () => {
+    const cancelled = vi.fn();
+    open(vi.fn(), cancelled);
+    act(() => button('Reset layout')?.click());
+    expect(usePaletteStore.getState().asking).not.toBeNull();
+    expect(button('Cancel')).not.toBeNull();
+    act(() => button('Cancel')?.click());
+    expect(usePaletteStore.getState().asking).toBeNull();
+    expect(cancelled).toHaveBeenCalledTimes(1);
+    expect(usePaletteStore.getState().open).toBe(true);
   });
 });

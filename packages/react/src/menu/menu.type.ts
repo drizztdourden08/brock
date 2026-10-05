@@ -12,6 +12,7 @@ interface MenuItem {
   screen?: string;
   fresh?: boolean;
   confirm?: string | true;
+  onCancel?: () => void;
   bucket?: string;
   page?: string;
   tab?: string;

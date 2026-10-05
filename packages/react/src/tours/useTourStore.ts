@@ -8,9 +8,13 @@ const useTourStore = create<TourState>()((set) => ({
   active: null,
   progress: EMPTY_PROGRESS,
   progressFor: null,
+  shown: null,
+  spot: null,
   setTours: (tours) => set({ tours }),
   setActive: (active) => set({ active }),
   setProgress: (progress, profileId) => set(profileId === undefined ? { progress } : { progress, progressFor: profileId }),
+  setShown: (shown) => set({ shown }),
+  setSpot: (spot) => set({ spot }),
 }));
 
 export { useTourStore };

@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { MascotClip } from '@drizztdourden08/tessera/brand';
-import type { TourTarget } from '@drizztdourden08/tessera/composites';
+import type { TourStepMascot, TourTarget } from '@drizztdourden08/tessera/composites';
 import type { AnchoredPlacement } from '@drizztdourden08/tessera/primitives';
 import type { AppContext } from '../contexts/contexts.type';
 import type { ScreenParams } from '../navigation/navigation.type';
@@ -9,6 +8,8 @@ import type { ScreenParams } from '../navigation/navigation.type';
 type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen';
 
 type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string };
+
+type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown }>;
 
 type TourAdvanceOn =
   | { readonly click: string | BrockTourTarget }
@@ -26,6 +27,7 @@ interface TourStepContext {
   readonly stepId: string;
   readonly index: number;
   readonly profileId: string | null;
+  readonly signal: AbortSignal;
   open: (route: string, params?: ScreenParams) => void;
   close: () => void;
   openWidget: (id: string) => void;
@@ -38,12 +40,13 @@ interface TourStepDef {
   readonly body: ReactNode;
   readonly target?: BrockTourTarget;
   readonly placement?: AnchoredPlacement;
-  readonly mascot?: MascotClip;
+  readonly mascot?: TourStepMascot;
   readonly open?: string;
   readonly widget?: string;
   readonly context?: string | TourContextChange;
   readonly before?: (ctx: TourStepContext) => void | Promise<void>;
   readonly advanceOn?: TourAdvanceOn;
+  readonly hint?: ReactNode;
 }
 
 type TourTrigger = 'first-run' | 'manual';
@@ -59,8 +62,6 @@ interface TourDef {
 type TourChoice = Pick<TourDef, 'id' | 'title'>;
 
 type TourEventListener = (name: string) => void;
-
-type TouringKey = 'close' | 'skip' | null;
 
 interface TourEntry {
   id: string;
@@ -78,14 +79,30 @@ interface ActiveTour {
   index: number;
 }
 
+interface TourShown {
+  id: string;
+  index: number;
+  step: string;
+  target: HTMLElement | null;
+}
+
+interface TourSpotSlice {
+  widget: string;
+  selector: string;
+}
+
 interface TourState {
   tours: readonly TourDef[];
   active: ActiveTour | null;
   progress: TourProgress;
   progressFor: string | null;
+  shown: TourShown | null;
+  spot: TourSpotSlice | null;
   setTours: (tours: readonly TourDef[]) => void;
   setActive: (active: ActiveTour | null) => void;
   setProgress: (progress: TourProgress, profileId?: string | null) => void;
+  setShown: (shown: TourShown | null) => void;
+  setSpot: (spot: TourSpotSlice | null) => void;
 }
 
 interface TourApi {
@@ -101,6 +118,6 @@ interface TourApi {
 }
 
 export type {
-  ActiveTour, BrockTourTarget, TourAdvanceOn, TourApi, TourChoice, TourContextChange, TourDef, TourEntry, TourEventListener, TouringKey, TourProgress,
-  TourShellPart, TourState, TourStepContext, TourStepDef, TourTrigger,
+  ActiveTour, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
+  TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger,
 };

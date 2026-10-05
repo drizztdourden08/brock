@@ -13,7 +13,7 @@ const toPaletteItem = (entry: SearchEntry): PaletteItem => ({
   disabled: entry.disabled,
   checked: entry.checked,
   toggle: entry.toggle && { checked: entry.toggle.value, onChange: entry.toggle.flip },
-  ...(entry.confirm === undefined ? {} : { confirm: entry.confirm }),
+  ...(entry.confirm === undefined ? {} : { confirm: entry.confirm, onCancel: entry.onCancel }),
   run: () => activateEntry(entry),
 });
 

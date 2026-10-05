@@ -11,6 +11,7 @@ interface PaletteHostProps {
 interface PaletteItem extends CommandPaletteItem {
   run: () => void;
   confirm?: string | true;
+  onCancel?: () => void;
 }
 
 interface PaletteConfirmProps {

@@ -91,7 +91,8 @@ type WidgetProbeRequest =
   | { kind: 'cluster'; id: string; action: WindowClusterAction; area?: WidgetWindowBounds }
   | { kind: 'modifier'; ctrl: boolean }
   | { kind: 'mouse'; id: string; action: 'down' | 'move' | 'up'; point: WidgetWindowPoint }
-  | { kind: 'guide'; id: string; mode: WindowGuideMode | null; pointer?: WidgetWindowPoint };
+  | { kind: 'guide'; id: string; mode: WindowGuideMode | null; pointer?: WidgetWindowPoint }
+  | { kind: 'tourSpot'; id: string };
 
 interface WidgetProbeFacts {
   visible: boolean;
@@ -107,6 +108,7 @@ interface WidgetProbeFacts {
   guideBeside: string[];
   area: WidgetWindowBounds | null;
   windows: Record<string, WidgetWindowBounds>;
+  tourLit?: boolean;
 }
 
 interface WidgetProbeResult {

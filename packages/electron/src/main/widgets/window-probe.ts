@@ -11,6 +11,7 @@ import { clusterVisibility } from './cluster-visibility';
 import { guideDrawn } from './guide-drawn';
 import { modifierState } from './modifier-state';
 import { probeFacts } from './probe-facts';
+import { tourSpotLit } from './tour-spot-lit';
 import { driveResize } from './drive-resize';
 import { windowGuide } from './window-guide';
 import { FOCUS_AWAY_MS, MAIN_ANCHOR, PROBE_MOUSE_EVENTS, PROBE_SETTLE_MS } from './widget-windows.constants';
@@ -74,6 +75,7 @@ const windowProbe = async (request: WidgetProbeRequest): Promise<WidgetProbeFact
     return probeFacts(request.id);
   }
   if (request.kind === 'guide') return guide(request.id, request.mode, request.pointer);
+  if (request.kind === 'tourSpot') return { ...probeFacts(request.id), tourLit: await tourSpotLit(anyWindow(request.id)) };
   return null;
 };
 

@@ -30,11 +30,16 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
     item.run();
   }, [close]);
 
+  const cancel = useCallback((item: PaletteItem) => {
+    settle();
+    item.onCancel?.();
+  }, [settle]);
+
   const ranked = useMemo(() => paletteGroups(catalog, query, scope), [catalog, query, scope]);
   const groups = useMemo(() => withConfirmActions(
     ranked,
-    (item) => createElement(PaletteConfirm, { item, armed: asking === item.id, onArm: () => ask(item.id), onConfirm: () => runNow(item), onSettle: settle }),
-  ), [ranked, asking, ask, runNow, settle]);
+    (item) => createElement(PaletteConfirm, { item, armed: asking === item.id, onArm: () => ask(item.id), onConfirm: () => runNow(item), onSettle: () => cancel(item) }),
+  ), [ranked, asking, ask, runNow, cancel]);
 
   const runItem = useCallback((item: PaletteItem) => {
     if (item.confirm === undefined) runNow(item);

@@ -1,8 +1,10 @@
 /* @layer tooling-scripts @kind logic */
-import { BRAND_FILES, markFile } from './brand-files.mjs';
+import { join } from 'node:path';
+import { BRAND_DIR, BRAND_FILES, DARK_GROUND_DIR, markFile } from './brand-files.mjs';
 import { brandRim } from './brand-rim.mjs';
 import { copyFiles } from './copy-files.mjs';
 import { locateBrand } from './locate-brand.mjs';
+import { tesseraDir } from './tessera-dir.mjs';
 import { writeBotVariant } from './bot/write-bot-variant.mjs';
 
 /**
@@ -23,9 +25,10 @@ const copyBrandIcons = (rootDir, config, { force = false } = {}) => {
   const brand = icons?.brand;
   if (!brand) return null;
   const brandDir = locateBrand(rootDir, brand, brandRim(icons));
-  const base = copyFiles(brandDir, rootDir, [...BRAND_FILES, markFile(brand)], force);
+  const base = copyFiles(brandDir, rootDir, BRAND_FILES, force);
+  const mark = copyFiles(join(tesseraDir(rootDir), BRAND_DIR, DARK_GROUND_DIR), rootDir, [markFile(brand)], force);
   const bot = writeBotVariant(brandDir, rootDir, force || base.written.length > 0);
-  return { brandDir, written: [...base.written, ...bot.written], current: [...base.current, ...bot.current] };
+  return { brandDir, written: [...base.written, ...mark.written, ...bot.written], current: [...base.current, ...mark.current, ...bot.current] };
 };
 
 export { copyBrandIcons };

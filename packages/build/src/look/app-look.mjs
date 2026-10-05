@@ -5,12 +5,14 @@ import { loadLookSources } from './load-look-sources.mjs';
 /**
  * @param {string} rootDir  The app root
  * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
- * @returns {Promise<{ config: import('@drizztdourden08/brock-core/product').ProductConfig, look: import('@drizztdourden08/brock-core/look').ResolvedLook }>}
+ * @returns {Promise<{ config: import('@drizztdourden08/brock-core/product').ProductConfig, look: import('@drizztdourden08/brock-core/look').ResolvedLook, dark: import('@drizztdourden08/brock-core/look').DarkPair | null }>}
  */
 const appLook = async (rootDir, product) => {
   const core = await loadCore(rootDir);
   const config = core.defineProduct(product);
-  return { config, look: core.resolveLook(config, loadLookSources(rootDir, config)) };
+  const sources = loadLookSources(rootDir, config);
+  const look = core.resolveLook(config, sources);
+  return { config, look, dark: core.darkPair(look, sources) };
 };
 
 export { appLook };

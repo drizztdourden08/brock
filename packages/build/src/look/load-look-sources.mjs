@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { tesseraDir } from '../icons/tessera-dir.mjs';
 import { appThemeCss } from './app-theme-css.mjs';
 import { brandPaletteCss } from './brand-palette-css.mjs';
-import { SEED_NAMES, TESSERA_PALETTE_CSS } from './look.constants.mjs';
+import { DARK_PAIR_NAMES, SEED_NAMES, TESSERA_PALETTE_CSS } from './look.constants.mjs';
 import { readBrandLook } from './read-brand-look.mjs';
 import { readLookInks } from './read-look-inks.mjs';
 import { readPaletteSeed } from './read-palette-seeds.mjs';
@@ -22,6 +22,12 @@ const seedOf = ({ rootDir, themeCss, tesseraRoot, brandCss }, name) => {
 };
 
 /**
+ * @param {string} themeCss @param {Record<string, string>} names
+ * @returns {boolean}  theme.css sets one of these custom properties
+ */
+const themeSets = (themeCss, names) => Object.values(names).some((name) => readPaletteSeed(themeCss, name) !== null);
+
+/**
  * @param {string} rootDir  The app root
  * @param {import('@drizztdourden08/brock-core/product').ProductInput} product
  * @returns {import('@drizztdourden08/brock-core/look').LookSources}
@@ -29,10 +35,12 @@ const seedOf = ({ rootDir, themeCss, tesseraRoot, brandCss }, name) => {
 const loadLookSources = (rootDir, product) => {
   const tesseraRoot = tesseraDir(rootDir);
   const files = { rootDir, themeCss: appThemeCss(rootDir), tesseraRoot, brandCss: brandPaletteCss(tesseraRoot, product.icons?.brand) };
-  const inks = readLookInks(files.tesseraRoot);
+  const inks = readLookInks(files.tesseraRoot, product.icons?.brand);
   return {
     brand: readBrandLook(files.tesseraRoot, product.icons?.brand),
     seeds: { primary: seedOf(files, SEED_NAMES.primary), black: seedOf(files, SEED_NAMES.black) },
+    themeSeeds: themeSets(files.themeCss, SEED_NAMES),
+    themeDark: themeSets(files.themeCss, DARK_PAIR_NAMES),
     ...(inks ? { inks } : {}),
   };
 };

@@ -39,6 +39,12 @@ interface PatternRule {
   near?: RegExp;
 }
 
+interface ImportMove {
+  from: string;
+  to: string;
+  names: ReadonlySet<string>;
+}
+
 interface JsxProp {
   name: string;
   start: number;
@@ -55,6 +61,7 @@ declare const findJsxProps: (source: string, element: string, names: string[]) =
 declare const removeSpans: (source: string, spans: { start: number; end: number }[]) => string;
 declare const designPackageStep: (ctx: { rootDir: string }) => WorkspaceStepResult;
 declare const patternTodos: (source: string, rules: PatternRule[]) => { line: number; message: string }[];
+declare const importMoves: (spec: { moves: readonly ImportMove[]; noTypescript: string }) => (file: { path: string; source: string }) => { source: string; todos: { line: number; message: string }[] };
 
-export { collectMigrations, designPackageStep, findJsxProps, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
-export type { JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations, WorkspaceStepResult };
+export { collectMigrations, designPackageStep, findJsxProps, importMoves, patternTodos, pinApp, removeSpans, runMigrations, selectMigrations };
+export type { ImportMove, JsxProp, MigrationEntry, PatternRule, MigrationRun, MigrationTodo, ModuleWithMigrations, WorkspaceStepResult };

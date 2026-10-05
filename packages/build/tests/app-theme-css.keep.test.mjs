@@ -86,6 +86,13 @@ describe('the brand palette', () => {
     expect(own.seeds.primary).toBe('#123456');
   });
 
+  it('tells the splash whether theme.css brings colours, or a dark ground, of its own, and reads the dim text of the palette', () => {
+    const plain = loadLookSources(appWith({ 'src/theme.css': OVERRIDE_ONLY }), { icons: { brand: 'brock' } });
+    expect(plain).toMatchObject({ themeSeeds: false, themeDark: false, inks: { dim: '#8a8b8d' } });
+    const own = loadLookSources(appWith({ 'src/theme.css': ':root { --p-primary: #123456; --p-gradient-dark-from: #101010; }\n' }), {});
+    expect(own).toMatchObject({ themeSeeds: true, themeDark: true, inks: { dim: '#9a9aa4' } });
+  });
+
   it('sits in the splash stylesheet before the theme', () => {
     const css = readTokenCss(appWith({ 'src/theme.css': ':root { --p-primary: #123456; }\n' }), TESSERA, 'brock');
     expect(css.indexOf('[data-palette="brock"]')).toBeGreaterThan(-1);

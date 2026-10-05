@@ -9,7 +9,7 @@ import { typedValues } from './typed-values.mjs';
 
 const nameStage = (ts, file, release) => {
   const imports = tesseraImports(ts, file);
-  return [componentRenames(ts, file, imports, release), jsxRenames(ts, file, imports, release), typedValues(ts, file, imports, release), removedExports(file, imports, release)];
+  return [componentRenames(ts, file, imports, release), jsxRenames(ts, file, imports, release), typedValues(ts, file, imports, release), removedExports(ts, file, imports, release)];
 };
 
 const runStage = (ts, { path, source }, stage) => {

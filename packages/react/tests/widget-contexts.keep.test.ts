@@ -4,14 +4,16 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createDefaultLayout } from '@drizztdourden08/tessera/composites';
+import { createDefaultLayout, visibleLayoutOf } from '@drizztdourden08/tessera/composites';
+import type { WidgetContextActive, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { contexts } from '../src/contexts/contexts';
 import { DEFAULT_CONTEXT, INITIAL_CONTEXTS } from '../src/contexts/contexts.constants';
 import { useAppContext } from '../src/contexts/useAppContext';
 import { useContextsStore } from '../src/contexts/useContextsStore';
 import { useSetAppContext } from '../src/contexts/useSetAppContext';
 import { defineWidget } from '../src/widgets/define-widget';
-import { outOfContext } from '../src/widgets/out-of-context';
+import { useContextActive } from '../src/widgets/WidgetHost/behavior/useContextActive';
+import type { WidgetDef } from '../src/widgets/widget.type';
 import { widgetsFromFiles } from '../src/widgets/widgets-from-files';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -20,8 +22,8 @@ const players = defineWidget({ id: 'players', label: 'Players', render: () => nu
 const legacy = defineWidget({ id: 'legacy', label: 'Legacy', render: () => null, defaultVisibility: 'context-only' });
 const logs = defineWidget({ id: 'logs', label: 'Logs', render: () => null });
 const definitions = [players, legacy, logs];
-const layout = createDefaultLayout();
-const activeIn = (names: readonly string[]) => (name: string) => names.includes(name);
+const layout: WidgetLayout = { ...createDefaultLayout(), floating: definitions.map((def) => ({ id: def.id, x: 0, y: 0, width: 200, height: 120 })) };
+const gatesOf = (contextActive: WidgetContextActive<WidgetDef>) => ({ definitions, contextActive, pageOpen: false, developerToolsEnabled: true, forcedIds: [], contentIds: definitions.map((def) => def.id) });
 
 let root: Root | null = null;
 
@@ -84,14 +86,45 @@ describe('widgets that need a context', () => {
     expect(fromFile?.defaultVisibility).toBe('context-only');
   });
 
-  it('hides each widget while its own context is inactive', () => {
-    expect(outOfContext(layout, definitions, activeIn([DEFAULT_CONTEXT]))).toEqual(['players']);
-    expect(outOfContext(layout, definitions, activeIn(['session']))).toEqual(['legacy']);
-    expect(outOfContext(layout, definitions, activeIn([DEFAULT_CONTEXT, 'session']))).toEqual([]);
+  const answers: WidgetContextActive<WidgetDef>[] = [];
+  const Probe = (props: { legacy: boolean | null; tick: number }) => {
+    answers.push(useContextActive(props.legacy));
+    return null;
+  };
+  const answerWith = (legacy: boolean | null = null): WidgetContextActive<WidgetDef> => {
+    act(() => root?.unmount());
+    root = createRoot(document.createElement('div'));
+    act(() => root?.render(createElement(Probe, { legacy, tick: 0 })));
+    return answers.at(-1) ?? false;
+  };
+
+  it('keeps the same answer across renders until a context changes', () => {
+    const first = answerWith();
+    act(() => root?.render(createElement(Probe, { legacy: null, tick: 1 })));
+    expect(answers.at(-1)).toBe(first);
+    act(() => contexts.set('session', { active: true }));
+    expect(answers.at(-1)).not.toBe(first);
+  });
+
+  const shown = (contextActive: WidgetContextActive<WidgetDef>, at: WidgetLayout = layout): string[] =>
+    visibleLayoutOf(at, gatesOf(contextActive)).floating.map((f) => f.id);
+
+  it('answers WidgetManager for each widget from its own context in the registry', () => {
+    expect(shown(answerWith())).toEqual(['legacy', 'logs']);
+    contexts.set('session', { active: true });
+    expect(shown(answerWith())).toEqual(['players', 'legacy', 'logs']);
+    contexts.set(DEFAULT_CONTEXT, { active: false });
+    expect(shown(answerWith())).toEqual(['players', 'logs']);
+  });
+
+  it('lets the deprecated widgetContext hook drive the default context', () => {
+    contexts.set(DEFAULT_CONTEXT, { active: true });
+    expect(shown(answerWith(false))).toEqual(['logs']);
   });
 
   it('keeps a widget the user set to always shown whatever its context', () => {
     const shownAlways = { ...layout, frame: { players: { opacity: 1, show: 'always' as const } } };
-    expect(outOfContext(shownAlways, definitions, activeIn([]))).toEqual(['legacy']);
+    contexts.set(DEFAULT_CONTEXT, { active: false });
+    expect(shown(answerWith(), shownAlways)).toEqual(['players', 'logs']);
   });
 });

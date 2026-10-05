@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { SettingsDescription } from '@drizztdourden08/tessera/composites';
-import type { ButtonVariant, IconName, JsonShape, PathKind } from '@drizztdourden08/tessera/primitives';
+import type { SettingsDescription, PathKind } from '@drizztdourden08/tessera/composites';
+import type { ButtonVariant, IconName, JsonShape } from '@drizztdourden08/tessera/primitives';
 import type { ConfirmActionOptions } from '../stores/dialog.type';
 
 interface SettingChoice {

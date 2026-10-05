@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
-import { Box, Button, CodeBlock } from '@drizztdourden08/tessera/primitives';
+import { Box, Button } from '@drizztdourden08/tessera/primitives';
+import { CodeBlock } from '@drizztdourden08/tessera/composites';
 import type { DiagnosticsPreviewProps } from './DiagnosticsPreview.type';
 
 const DiagnosticsPreview = (props: DiagnosticsPreviewProps) => {

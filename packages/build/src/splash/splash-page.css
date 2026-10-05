@@ -1,19 +1,7 @@
 /* @layer tooling-scripts @kind style */
 
-.splash {
-  background:
-    radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--c-lift) 14%, transparent), transparent 58%),
-    linear-gradient(var(--look-angle), var(--look-from), var(--look-via), var(--look-to));
-  color: var(--look-ink);
-}
-
-.splash__mark {
-  filter: drop-shadow(0 var(--size-4) var(--size-16) color-mix(in oklab, var(--look-shade) 40%, transparent));
-  animation: splash-rise var(--duration-drawer) var(--ease-emphasized) both;
-}
-
+.splash__mark,
 .splash__name {
-  color: var(--look-ink);
   animation: splash-rise var(--duration-drawer) var(--ease-emphasized) both;
 }
 

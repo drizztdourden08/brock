@@ -101,7 +101,7 @@ describe('the Reset layout menu entry', () => {
   it('is a plain entry that resets the layout, kept apart from the widget toggles', () => {
     const reset = vi.fn();
     const entry = resetLayoutEntry(reset);
-    expect(entry).toMatchObject({ label: 'Reset layout', icon: 'rotate-ccw' });
+    expect(entry).toMatchObject({ label: 'Reset layout', icon: 'rotate-ccw', confirm: true });
     expect(entry.checked).toBeUndefined();
     entry.onClick?.();
     expect(reset).toHaveBeenCalledTimes(1);

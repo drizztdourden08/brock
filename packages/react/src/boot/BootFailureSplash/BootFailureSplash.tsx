@@ -1,11 +1,10 @@
 /* @layer renderer-shell @kind component */
-import { Splash } from '@drizztdourden08/tessera/primitives';
+import { Splash } from '@drizztdourden08/tessera/composites';
 import { useBrock } from '../../app/useBrock';
 import { useAppVersion } from '../../diagnostics/useAppVersion';
 import { failureTitle } from './behavior/failure-title';
 import { useFailureActions } from './behavior/useFailureActions';
 import type { BootFailureSplashProps } from './BootFailureSplash.type';
-import './BootFailureSplash.css';
 
 const BootFailureSplash = (props: BootFailureSplashProps) => {
   const { failure } = props;

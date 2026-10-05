@@ -34,19 +34,21 @@ const sampleApp = () => {
     write(join(tessera, folder, 'brock.svg'), `${tag}:mark`);
     write(join(tessera, folder, 'archipelia.svg'), `${tag}:mark`);
   }
+  write(join(tessera, 'brand', 'dark-ground', 'brock.svg'), 'ground:brock');
+  write(join(tessera, 'brand', 'dark-ground', 'archipelia.svg'), 'ground:archipelia');
   return root;
 };
 
 const read = (root, file) => readFileSync(join(root, file), 'utf8');
 
 describe('copyBrandIcons with a rim', () => {
-  it('copies the light rim set for brock, the mark beside it, and the 32 and 24 px title bar icons', () => {
+  it('copies the light rim set for brock, the dark ground mark for the splash, and the 32 and 24 px title bar icons', () => {
     const root = sampleApp();
     const result = copyBrandIcons(root, { product: { icons: { brand: 'brock' } } });
     expect(result?.brandDir.split('\\').join('/')).toMatch(/brand\/light-rim\/brock$/);
     expect(read(root, 'public/logos/icon-32.png')).toBe('light:icon/png/icon-32.png');
     expect(read(root, 'public/logos/icon-24.png')).toBe('light:icon/png/icon-24.png');
-    expect(read(root, 'public/logos/mark.svg')).toBe('light:mark');
+    expect(read(root, 'public/logos/mark.svg')).toBe('ground:brock');
     expect(read(root, 'build/icons/icon.ico')).toBe('light:icon/icon.ico');
     expect(read(root, 'public/logos/icon-bot.svg')).toBe('light:bot/icon.svg');
   });
@@ -57,7 +59,7 @@ describe('copyBrandIcons with a rim', () => {
     expect(read(dark, 'public/logos/icon-256.png')).toBe('dark:icon/png/icon-256.png');
     const plain = sampleApp();
     copyBrandIcons(plain, { product: { icons: { brand: 'archipelia' } } });
-    expect(read(plain, 'public/logos/mark.svg')).toBe('plain:mark');
+    expect(read(plain, 'public/logos/mark.svg')).toBe('ground:archipelia');
   });
 
   it('recopies a set whose files differ from the copies, even when the copies are newer', () => {

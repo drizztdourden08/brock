@@ -9,6 +9,8 @@ const roots: string[] = [];
 
 const step = () => selectMigrations(collectMigrations([]), { from: '0.18.0', to: null }).filter((m) => m.file.endsWith('tessera-part-moves.mjs'));
 
+const steps = () => selectMigrations(collectMigrations([]), { from: '0.22.0', to: null }).filter((m) => m.version === '0.23.0');
+
 const appWith = (files: Record<string, string>): string => {
   const root = mkdtempSync(join(tmpdir(), 'brock-part-moves-'));
   const src = join(root, 'src');
@@ -19,9 +21,9 @@ const appWith = (files: Record<string, string>): string => {
   return root;
 };
 
-const migrate = async (files: Record<string, string>) => {
+const migrate = async (files: Record<string, string>, chosen = step()) => {
   const root = appWith(files);
-  const run = await runMigrations(root, step());
+  const run = await runMigrations(root, chosen);
   return { root, run, read: (name: string) => readFileSync(join(root, 'src', name), 'utf8') };
 };
 
@@ -60,5 +62,54 @@ describe('tessera-part-moves', () => {
     const source = "import { CopyButton } from '@drizztdourden08/tessera';\nimport { StatRow } from '@drizztdourden08/tessera/primitives';\n";
     const { read } = await migrate({ 'b.tsx': source });
     expect(read('b.tsx')).toBe(source);
+  });
+});
+
+describe('tessera-tier-moves', () => {
+  it('runs for an app on Brock 0.22 only', () => {
+    expect(steps().map((m) => m.file.replace(/\\/g, '/').split('/').at(-1))).toEqual(expect.arrayContaining(['tessera-tier-moves.mjs', 'menu-confirm-store.mjs']));
+    expect(selectMigrations(collectMigrations([]), { from: '0.23.0', to: null }).some((m) => m.file.endsWith('tessera-tier-moves.mjs'))).toBe(false);
+  });
+
+  it('moves PathField, Toast and Splash to the composites before the renames, and changes nothing on a second run', async () => {
+    const source = "import { Box, PathField, ToastContainer, Splash } from '@drizztdourden08/tessera/primitives';\nimport type { PathKind, SplashAction } from '@drizztdourden08/tessera/primitives';\n";
+    const { root, read } = await migrate({ 'a.tsx': source }, steps());
+    const moved = read('a.tsx');
+    expect(moved).toBe([
+      "import { Box } from '@drizztdourden08/tessera/primitives';",
+      "import { PathField, ToastContainer, Splash } from '@drizztdourden08/tessera/composites';",
+      "import type { PathKind, SplashAction } from '@drizztdourden08/tessera/composites';",
+      '',
+    ].join('\n'));
+    await runMigrations(root, steps());
+    expect(read('a.tsx')).toBe(moved);
+  });
+
+  it('splits one composites import three ways: Overlay to the primitives, PixelWordmark to the brand entry', async () => {
+    const source = "import { Overlay, PixelWordmark, Widget } from '@drizztdourden08/tessera/composites';\n";
+    const { read } = await migrate({ 'b.tsx': source }, steps());
+    const moved = read('b.tsx');
+    expect(moved).toContain("import { Widget } from '@drizztdourden08/tessera/composites';");
+    expect(moved).toContain("import { Overlay } from '@drizztdourden08/tessera/primitives';");
+    expect(moved).toContain("import { PixelWordmark } from '@drizztdourden08/tessera/brand';");
+  });
+
+  it('leaves the root import alone', async () => {
+    const source = "import { Splash, Overlay } from '@drizztdourden08/tessera';\n";
+    const { read } = await migrate({ 'c.tsx': source }, steps());
+    expect(read('c.tsx')).toBe(source);
+  });
+});
+
+describe('menu-confirm-store', () => {
+  it('lists each use of the removed confirm store and of MenuResolver armed', async () => {
+    const source = [
+      "import { useMenuConfirmStore, toMenuGroups } from '@drizztdourden08/brock-react';",
+      'const groups = toMenuGroups(entries, { openScreen, armed: null });',
+      '',
+    ].join('\n');
+    const { run } = await migrate({ 'menu.ts': source }, steps());
+    const found = run.todos.filter((todo) => todo.migration === 'menu-confirm-store').map((todo) => todo.line);
+    expect(found).toEqual([1, 2]);
   });
 });

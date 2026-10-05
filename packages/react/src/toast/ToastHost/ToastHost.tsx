@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { ToastContainer } from '@drizztdourden08/tessera/primitives';
+import { ToastContainer } from '@drizztdourden08/tessera/composites';
 import { useToastStore } from '../useToastStore';
 
 const ToastHost = () => {

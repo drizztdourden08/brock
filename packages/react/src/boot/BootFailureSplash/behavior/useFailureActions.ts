@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
-import type { SplashAction } from '@drizztdourden08/tessera/primitives';
+import type { SplashAction } from '@drizztdourden08/tessera/composites';
 import { usePlatform } from '../../../platform/usePlatform';
 
 const retry = (): void => window.location.reload();

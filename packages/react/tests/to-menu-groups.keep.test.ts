@@ -33,4 +33,20 @@ describe('toMenuGroups', () => {
     expect(clicked).toEqual(['about']);
     expect(note?.onSelect).toBeUndefined();
   });
+
+  it('turns an entry with confirm into a Tessera confirm item, with Tessera words or its own', () => {
+    const clicked: string[] = [];
+    const entries: MenuEntry[] = [
+      { key: 'reset', label: 'Reset layout', confirm: true, onClick: () => clicked.push('reset') },
+      { key: 'wipe', label: 'Wipe', confirm: 'Sure? Click again', onClick: () => clicked.push('wipe') },
+      { key: 'plain', label: 'Plain' },
+    ];
+    const [reset, wipe, plain] = toMenuGroups(entries, { openScreen: () => undefined })[0]?.items as TesseraMenuItem[];
+    expect(reset).toMatchObject({ kind: 'confirm', label: 'Reset layout' });
+    expect(reset?.confirm).toBeUndefined();
+    expect(wipe).toMatchObject({ kind: 'confirm', confirm: 'Sure? Click again' });
+    expect(plain?.kind).toBeUndefined();
+    reset?.onSelect?.();
+    expect(clicked).toEqual(['reset']);
+  });
 });

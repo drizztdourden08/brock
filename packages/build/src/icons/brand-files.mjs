@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind config */
 const TESSERA_PACKAGE = '@drizztdourden08/tessera';
 const BRAND_DIR = 'brand';
+const DARK_GROUND_DIR = 'dark-ground';
 const BRAND_RIMS = Object.freeze({ brock: 'light' });
 const ICON_SIZES = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 
@@ -27,8 +28,8 @@ const BRAND_FILES = [
 
 /**
  * @param {string} brand
- * @returns {BrandFile}  The mark without its tile, beside the brand folder
+ * @returns {BrandFile}  The dark ground mark, in brand/dark-ground
  */
-const markFile = (brand) => ({ from: `../${brand}.svg`, to: 'public/logos/mark.svg' });
+const markFile = (brand) => ({ from: `${brand}.svg`, to: 'public/logos/mark.svg' });
 
-export { TESSERA_PACKAGE, BRAND_DIR, BRAND_RIMS, BRAND_FILES, markFile };
+export { TESSERA_PACKAGE, BRAND_DIR, DARK_GROUND_DIR, BRAND_RIMS, BRAND_FILES, markFile };

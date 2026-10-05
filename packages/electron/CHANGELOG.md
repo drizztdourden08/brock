@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-electron
 
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [f0d71bd]
+  - @drizztdourden08/brock-core@0.30.0
+
 ## 0.29.1
 
 ### Patch Changes

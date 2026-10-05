@@ -2,18 +2,13 @@
 import type { ReactNode } from 'react';
 
 interface ProfilesPanelCreateProps {
-  title: ReactNode;
-  canCreate: boolean;
-  formShown: boolean;
-  createOpen: boolean;
+  close: () => void;
+  required: boolean;
   error: string | null;
   extraFields?: ReactNode;
   canSubmit?: boolean;
-  placeholder?: string;
-  newLabel?: string;
-  onOpen: () => void;
-  onSubmit: (name: string) => void;
-  onCancel: () => void;
+  placeholder: string;
+  onSubmit: (name: string, close: () => void) => void;
 }
 
 export type { ProfilesPanelCreateProps };

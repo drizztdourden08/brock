@@ -7,51 +7,32 @@ const useProfilesPanel = (props: ProfilesPanelProps): ProfilesPanelModel => {
   const { onCreate, onRename, createOpen = false } = props;
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameError, setRenameError] = useState<string | null>(null);
 
-  const openCreate = useCallback(() => {
-    setRenamingId(null);
-    setCreating(true);
-  }, []);
-
-  const cancelCreate = useCallback(() => {
-    setCreating(false);
+  const openChange = useCallback((open: boolean) => {
+    setCreating(open);
     setCreateError(null);
   }, []);
 
-  const submitCreate = useCallback((name: string) => {
+  const submitCreate = useCallback((name: string, close: () => void) => {
     if (!onCreate) return;
+    setCreating(true);
     setCreateError(null);
-    onCreate(name).then(() => setCreating(false), (error: unknown) => setCreateError(errorText(error)));
+    onCreate(name).then(close, (error: unknown) => setCreateError(errorText(error)));
   }, [onCreate]);
-
-  const startRename = useCallback((id: string) => {
-    setRenameError(null);
-    setRenamingId(id);
-  }, []);
-
-  const cancelRename = useCallback(() => {
-    setRenamingId(null);
-    setRenameError(null);
-  }, []);
 
   const submitRename = useCallback((id: string, name: string) => {
     if (!onRename) return;
     setRenameError(null);
-    onRename(id, name).then(() => setRenamingId(null), (error: unknown) => setRenameError(errorText(error)));
+    onRename(id, name).catch((error: unknown) => setRenameError(errorText(error)));
   }, [onRename]);
 
   return {
-    formShown: onCreate !== undefined && (creating || createOpen),
+    createShown: creating || createOpen,
     createError,
-    renamingId,
     renameError,
-    openCreate,
-    cancelCreate,
+    openChange,
     submitCreate,
-    startRename,
-    cancelRename,
     submitRename,
   };
 };

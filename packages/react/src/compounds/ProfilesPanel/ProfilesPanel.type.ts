@@ -26,15 +26,11 @@ interface ProfilesPanelProps {
 }
 
 interface ProfilesPanelModel {
-  formShown: boolean;
+  createShown: boolean;
   createError: string | null;
-  renamingId: string | null;
   renameError: string | null;
-  openCreate: () => void;
-  cancelCreate: () => void;
-  submitCreate: (name: string) => void;
-  startRename: (id: string) => void;
-  cancelRename: () => void;
+  openChange: (open: boolean) => void;
+  submitCreate: (name: string, close: () => void) => void;
   submitRename: (id: string, name: string) => void;
 }
 

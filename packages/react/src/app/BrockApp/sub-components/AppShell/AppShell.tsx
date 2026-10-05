@@ -32,6 +32,7 @@ import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
+import { TourHost } from '../../../../tours/TourHost';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -87,6 +88,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         <WindowGuide />
         <JobHost />
         <StandardOverlays menu={fullMenu} actions={searchActions} />
+        <TourHost ready={ready} />
       </Box>
       <BootFailureSplash failure={failure} />
     </>

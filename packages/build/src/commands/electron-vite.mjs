@@ -8,6 +8,7 @@ import { prepareModules } from '../modules/prepare-modules.mjs';
 import { runBin } from '../run.mjs';
 import { writeWidgetsFile } from '../widgets/write-widgets.mjs';
 import { writeTitleBarFile } from '../title-bar/write-title-bar.mjs';
+import { writeToursFile } from '../tours/write-tours.mjs';
 
 /**
  * @param {'dev' | 'build'} mode
@@ -32,6 +33,7 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
   for (const path of writeBootFiles(rootDir)) console.log(`brock ${mode}: wrote ${path}, the boot task list changed`);
   for (const path of writeWidgetsFile(rootDir)) console.log(`brock ${mode}: wrote ${path}, the widget list changed`);
   for (const path of writeTitleBarFile(rootDir)) console.log(`brock ${mode}: wrote ${path}, the title bar item list changed`);
+  for (const path of writeToursFile(rootDir)) console.log(`brock ${mode}: wrote ${path}, the tour list changed`);
   return runBin(rootDir, 'electron-vite', [mode, ...passthrough]);
 };
 

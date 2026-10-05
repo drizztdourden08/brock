@@ -17,6 +17,7 @@ import type { LayoutPreset } from '../../widgets/layout-preset.type';
 import type { WidgetContextSource } from '../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../widgets/widget.type';
 import type { AppReview } from '../../review/app-review.type';
+import type { TourChoice, TourDef } from '../../tours/tour.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -49,6 +50,7 @@ interface BrockAppProps<S extends object> {
   beforeQuit?: BeforeQuit;
   titleBar?: readonly TitleBarItemEntry[];
   review?: AppReview;
+  tours?: readonly TourDef[];
 }
 
 interface MenuBuildInput {
@@ -62,6 +64,7 @@ interface MenuBuildInput {
   onDevConsole: () => void;
   onReportBug: () => void;
   onShortcuts: () => void;
+  tours?: { list: readonly TourChoice[]; start: (id: string) => void };
 }
 
 interface ShellKeyContext {

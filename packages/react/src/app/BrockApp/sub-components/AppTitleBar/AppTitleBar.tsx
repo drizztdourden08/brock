@@ -4,7 +4,7 @@ import { useTitleBar } from '../../../../shell/TitleBar/behavior/useTitleBar';
 import { useTitleBarMenu } from '../../../../shell/TitleBar/behavior/useTitleBarMenu';
 import { useWindowControl } from '../../../../shell/TitleBar/behavior/useWindowControl';
 import { NO_ACTIONS } from '../../../../shell/TitleBar/TitleBar.constants';
-import { MENU_LABEL } from './AppTitleBar.constants';
+import { MENU_LABEL, TITLE_BAR_CLASS } from './AppTitleBar.constants';
 import type { AppTitleBarProps } from './AppTitleBar.type';
 
 const AppTitleBar = (props: AppTitleBarProps) => {
@@ -27,6 +27,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
       fullscreen={isFullscreen}
       onControl={onControl}
       concealed={hidden}
+      className={TITLE_BAR_CLASS}
     />
   );
 };

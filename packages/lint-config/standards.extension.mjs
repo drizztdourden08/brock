@@ -14,12 +14,12 @@ const RAW_CONTROLS = [
 
 const BROCK_DEFAULT_EXPORTS = [
   ...SCREEN_FILE_GLOBS, ...WIDGET_FILE_GLOBS, '**/modules/*/src/{main,preload,renderer}/index.ts', '**/brock.workspace.mjs', '**/boot/*.task.ts',
-  '**/src/review/*.step.ts', '**/src/review/seed.ts', '**/src/title-bar/*.action.ts',
+  '**/src/review/*.step.ts', '**/src/review/seed.ts', '**/src/title-bar/*.action.ts', '**/src/tours/*.tour.ts',
 ];
 
 export default defineExtension({
   id: 'brock-lint-config',
-  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget and title bar item files, module entries, boot tasks and review steps, Tessera tokens',
+  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item and tour files, module entries, boot tasks and review steps, Tessera tokens',
   eslint: {
     options: {
       rawControls: RAW_CONTROLS,

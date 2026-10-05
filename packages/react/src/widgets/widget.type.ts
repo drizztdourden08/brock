@@ -80,6 +80,7 @@ interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
   screens?: ScreenViews;
+  tours?: unknown;
 }
 
 interface SharedStore<S> {

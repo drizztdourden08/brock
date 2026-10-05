@@ -6,6 +6,8 @@ import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import type { ScreenDef } from '../../../screens/screen.type';
 import { isScreenAllowed } from '../../../screens/is-screen-allowed';
+import { touringKey } from '../../../tours/touring-key';
+import { tours } from '../../../tours/tours';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { handleShellKey } from './handle-shell-key';
@@ -31,6 +33,12 @@ const useKeyboardShortcuts = (): void => {
       home: () => (allowed(registry.get(homeScreen)) ? homeScreen : null),
     };
     const handler = (e: KeyboardEvent) => {
+      const touring = touringKey(e, tours.isOpen());
+      if (touring === 'close') {
+        e.preventDefault();
+        tours.stop();
+      }
+      if (touring !== null) return;
       if (handleShellKey(e, context)) return;
       if (isEditing(e.target) && !(e.ctrlKey || e.metaKey)) return;
 

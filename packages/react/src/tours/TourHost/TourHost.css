@@ -1,0 +1,4 @@
+/* @layer renderer-shell @kind style */
+.brock-touring .brock-app__title-bar {
+  z-index: var(--z-top);
+}

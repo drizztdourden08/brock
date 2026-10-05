@@ -4,6 +4,7 @@ import type { MenuSection } from './menu.type';
 
 const MENU_SECTIONS: readonly MenuSection[] = [
   { id: 'widgets', label: 'Widgets', icon: 'layout-grid' },
+  { id: 'help', label: 'Help', icon: 'circle-help' },
   { id: 'advanced', label: 'Advanced', icon: 'sliders-horizontal' },
 ];
 

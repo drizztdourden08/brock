@@ -26,6 +26,7 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   logChannels: [...new Set(modules.flatMap((m) => m.logChannels ?? []))],
   bootTasks: modules.flatMap((m) => m.bootTasks ?? []),
   beforeQuit: modules.flatMap((m) => (m.beforeQuit ? [m.beforeQuit] : [])),
+  tours: modules.flatMap((m) => m.tours ?? []),
 });
 
 export { mergeModules };

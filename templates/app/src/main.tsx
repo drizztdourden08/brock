@@ -10,6 +10,7 @@ import { screenTree } from '../.brock/screens';
 import { appWidgetLayout, appWidgets } from '../.brock/widgets';
 import { appReview } from '../.brock/review';
 import { appTitleBar } from '../.brock/title-bar';
+import { appTours } from '../.brock/tours';
 import { SETTINGS } from './main.constants';
 import { product } from './product';
 import type { AppSettings } from './settings.type';
@@ -29,6 +30,7 @@ createRoot(root).render(
       widgetLayout={appWidgetLayout}
       review={appReview}
       titleBar={appTitleBar}
+      tours={appTours}
     />
   </StrictMode>,
 );

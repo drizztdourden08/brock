@@ -209,7 +209,12 @@ owns. `brock migrate` collects them, orders them by version and runs each one.
 - `src/upgrade/codemods/` holds the helpers: `findJsxProps` reads a JSX element's
   props, with type arguments and nested braces, `removeSpans` deletes them and the
   lines they leave empty, and `patternTodos` turns each match of a list of rules into a
-  to-do on its line, for a change that only the app author can make.
+  to-do on its line, for a change that only the app author can make. `importMoves`
+  takes a list of `{ from, to, names }` module moves and rewrites each named import and
+  `export { … } from` re-export of those names: it splits a mixed list, joins an import
+  of the same kind (type or value) already on the new module, drops a name that import
+  already holds instead of writing it twice, and leaves a default import, a namespace
+  import and `export *` where they are.
 
 The 0.1.1 folder holds these, each with a test in `tests/`:
 
@@ -269,7 +274,8 @@ The 0.7.0 folder adds two, each with a test in `tests/`:
 ### Tessera renames
 
 Tessera ships `RENAMES.json`: its renamed custom properties, components, classes, props,
-prop values and config keys, and its removed exports, grouped by release, oldest first. After the
+prop values and config keys, its removed exports and its parts that changed entry point,
+grouped by release, oldest first. After the
 Brock migrations, `brock migrate` replays it over the app's code (`src/upgrade/tessera/`),
 and `brock upgrade` gets it through the `brock migrate` step of its gate.
 
@@ -307,6 +313,16 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
     (`WidgetVisibility`) renames literals annotated with that Tessera type, `as` or
     `satisfies` it; any other string holding an old value is a to-do.
   - `removedExports`: a to-do at each import or re-export of the name.
+  - `moves` `{ Name: { from, to } }`, run after the release's renames, so a key is the
+    name after them and a type is listed on its own: `from` and `to` are `exports`
+    subpaths of the Tessera package (`primitives`, `composites`, `brand`, `data` and the others).
+    The moves are grouped by pair and replayed with `importMoves`: an import or
+    re-export of the name from `@drizztdourden08/tessera/<from>` takes it from
+    `@drizztdourden08/tessera/<to>`. The root import never moves. The published
+    `tessera-part-moves` (0.19.0) and `tessera-tier-moves` (0.23.0) migrations made the
+    0.17 and 0.20 moves before RENAMES.json held them; they stay, and since a move finds
+    nothing left to move and never repeats a name, the migration and the replay give the
+    same imports in either order and on every rerun.
   - `configKeys`, grouped by file name (`tessera.config.json`, `package.json`): each key
     is a dotted path into that file, `*` standing for any one key such as an app folder,
     and the value is the path the same value moves to. Every such file at the app root,

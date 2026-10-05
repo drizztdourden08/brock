@@ -34,9 +34,15 @@ interface AppReviewStepEntry {
   load: () => Promise<{ default: ReviewStepDef }>;
 }
 
+interface AppReviewFixture {
+  path: string;
+  load: () => Promise<{ default: string }>;
+}
+
 interface AppReview {
   seed: (() => Promise<{ default: ReviewSeedDef }>) | null;
   steps: readonly AppReviewStepEntry[];
+  fixtures?: readonly AppReviewFixture[];
 }
 
-export type { AppReview, AppReviewStepEntry, AppReviewTour, ReviewKit, ReviewSeedDef, ReviewStepDef };
+export type { AppReview, AppReviewFixture, AppReviewStepEntry, AppReviewTour, ReviewKit, ReviewSeedDef, ReviewStepDef };

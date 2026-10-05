@@ -6,6 +6,9 @@ const appReview: AppReview = {
   steps: [
     { id: 'notes', load: () => import('../src/review/notes.step') },
   ],
+  fixtures: [
+    { path: 'notes/review-note.txt', load: () => import('../src/review/fixtures/notes/review-note.txt?url') },
+  ],
 };
 
 export { appReview };

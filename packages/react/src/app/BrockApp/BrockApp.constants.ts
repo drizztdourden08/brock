@@ -25,7 +25,7 @@ const LEVELS: readonly LogLevel[] = ['info', 'warn', 'error'];
 const CHROMELESS_WINDOW_MODES: readonly string[] = ['borderless', 'fullscreen'];
 const MOUSE_BACK_BUTTON = 3;
 
-const HOME_ENTRY: Omit<MenuItem, 'screen'> = { key: 'home', label: 'Home', icon: 'house' };
+const HOME_ENTRY: Omit<MenuItem, 'screen'> = { key: 'home', label: 'Home', icon: 'house', fresh: true };
 
 const TOP_ENTRIES: readonly MenuItem[] = [
   { key: 'profiles', label: 'Profiles', icon: 'users', screen: PROFILES_SCREEN },

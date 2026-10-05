@@ -2,18 +2,13 @@
 import { open } from 'fs/promises';
 import type { FileHandle } from 'fs/promises';
 import { crc32, inflateRawSync } from 'zlib';
+import { centralLocation, readAt } from './central-location';
 import { parseCentral } from './parse-central';
-import { DEFLATED, END_SEARCH, END_SIGNATURE, LOCAL_SIGNATURE, LOCAL_SIZE, STORED } from './zip.constants';
+import { DEFLATED, END_SEARCH, END_SIGNATURE, END_SIZE, LOCAL_SIGNATURE, LOCAL_SIZE, STORED } from './zip.constants';
 import type { ZipReader, ZipRecord } from './zip.type';
 
-const readAt = async (handle: FileHandle, position: number, length: number): Promise<Buffer> => {
-  const buffer = Buffer.alloc(length);
-  const { bytesRead } = await handle.read(buffer, 0, length, position);
-  return buffer.subarray(0, bytesRead);
-};
-
 const findEnd = (tail: Buffer): number => {
-  for (let at = tail.length - 22; at >= 0; at -= 1) if (tail.readUInt32LE(at) === END_SIGNATURE) return at;
+  for (let at = tail.length - END_SIZE; at >= 0; at -= 1) if (tail.readUInt32LE(at) === END_SIGNATURE) return at;
   throw new Error('not a zip file: no end of central directory');
 };
 
@@ -34,10 +29,9 @@ const openZipReader = async (path: string): Promise<ZipReader> => {
     const { size } = await handle.stat();
     const tailStart = Math.max(0, size - END_SEARCH);
     const tail = await readAt(handle, tailStart, size - tailStart);
-    const end = findEnd(tail);
-    const count = tail.readUInt16LE(end + 10);
-    const directory = await readAt(handle, tail.readUInt32LE(end + 16), tail.readUInt32LE(end + 12));
-    return { records: parseCentral(directory, count), read: (record) => readRecord(handle, record), close: () => handle.close() };
+    const central = await centralLocation(handle, tail, findEnd(tail));
+    const directory = await readAt(handle, central.offset, central.size);
+    return { records: parseCentral(directory, central.count), read: (record) => readRecord(handle, record), close: () => handle.close() };
   } catch (err) {
     await handle.close();
     throw err;

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
+import { useContextsStore } from '../../../contexts/useContextsStore';
 import { hostApi } from '../../../host/host-api';
 import type { SettingsStore } from '../../../stores/settings-store.type';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
@@ -47,6 +48,7 @@ const shareLayoutAndPrefs = (): (() => void) => {
   const offs = [
     shareWithWidgets(useWidgetLayoutStore, { kind: RELAY_SLICES.frames, pick: (state) => state.layout.frame, delay: 0 }),
     shareWithWidgets(useWidgetPrefStore, { kind: RELAY_SLICES.prefs, pick: (state) => state.byWidget, delay: 0 }),
+    shareWithWidgets(useContextsStore, { kind: RELAY_SLICES.contexts, pick: (state) => state.contexts, delay: 0 }),
   ];
   return () => {
     for (const off of offs) off();

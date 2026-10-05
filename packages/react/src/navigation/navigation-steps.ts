@@ -18,11 +18,11 @@ const without = <T>(record: Record<string, T>, id: string): Record<string, T> =>
 const isHere = (state: NavigationSnapshot, target: ResolvedRoute): boolean =>
   state.active === target.active && sameParams(state.params, target.params);
 
-const openStep = (state: NavigationSnapshot, target: ResolvedRoute): Step => {
+const openStep = (state: NavigationSnapshot, target: ResolvedRoute, fresh = false): Step => {
   const { active, params, history, remembered } = state;
   if (active === target.active) return { params: target.params, history: pushed(history, active, params), parent: null };
   const kept = active === null ? remembered : { ...remembered, [active]: params };
-  const back = remembered[target.active];
+  const back = fresh ? undefined : remembered[target.active];
   const restored = isBare(target.params) && back !== undefined ? back : target.params;
   return { active: target.active, params: restored, remembered: kept, parent: null };
 };
@@ -30,7 +30,7 @@ const openStep = (state: NavigationSnapshot, target: ResolvedRoute): Step => {
 const closeStep = (state: NavigationSnapshot): Step => {
   const { active, params, history, remembered } = state;
   if (active === null) return {};
-  return { active: null, params: NO_PARAMS, parent: null, history: without(history, active), remembered: { ...remembered, [active]: params } };
+  return { active: null, params: NO_PARAMS, parent: null, escapeTo: null, history: without(history, active), remembered: { ...remembered, [active]: params } };
 };
 
 const backStep = (state: NavigationSnapshot): Step | null => {

@@ -4,7 +4,7 @@ import type { NavigationSnapshot, ScreenParams } from './navigation.type';
 
 const NO_PARAMS: ScreenParams = {};
 const ROUTE_SEPARATOR = '/';
-const EMPTY_NAVIGATION: NavigationSnapshot = { active: null, params: NO_PARAMS, history: {}, remembered: {}, parent: null };
+const EMPTY_NAVIGATION: NavigationSnapshot = { active: null, params: NO_PARAMS, history: {}, remembered: {}, parent: null, escapeTo: null };
 const HISTORY_LIMIT = 50;
 const PARAM_PREFIX = ':';
 

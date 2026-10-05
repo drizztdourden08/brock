@@ -12,16 +12,22 @@ interface SavedNavigation {
 
 interface NavigationSnapshot extends SavedNavigation {
   parent: ScreenParams | null;
+  escapeTo: ScreenParams | null;
+}
+
+interface OpenOptions {
+  fresh?: boolean;
 }
 
 type NavigationStep = Partial<NavigationSnapshot>;
 
 interface NavigationState extends NavigationSnapshot {
-  open: (id: string, params?: ScreenParams) => void;
+  open: (id: string, params?: ScreenParams, options?: OpenOptions) => void;
   close: () => void;
   back: () => boolean;
   up: (parent: ScreenParams) => void;
   setParent: (parent: ScreenParams | null) => void;
+  setEscapeTo: (target: ScreenParams | null) => void;
   restore: (saved: SavedNavigation | null) => void;
 }
 
@@ -58,6 +64,6 @@ interface LeaveGuardRegistry {
 }
 
 export type {
-  LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
+  LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, OpenOptions, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
   UseNavigationResult,
 };

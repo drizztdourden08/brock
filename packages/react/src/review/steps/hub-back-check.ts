@@ -24,23 +24,30 @@ const checkBackButton = async (tour: StepTour, hub: HubDef): Promise<void> => {
   tour.check(`${hub.id}-back`, went !== null, `Back went one page back in "${hub.id}"`, `Back did not go a page back in "${hub.id}"`);
 };
 
-const escapeWalksBack = async (tour: StepTour, hub: HubDef): Promise<void> => {
-  const before = trailOf(hub);
-  if (before > 0) {
+const onHome = (hub: HubDef): boolean => {
+  const { active, params } = useNavigationStore.getState();
+  return active === hub.id && (params.section === undefined || params.section === hub.home.id) && params.tab === undefined;
+};
+
+const escapeGoesUp = async (tour: StepTour, hub: HubDef): Promise<void> => {
+  if (!onHome(hub)) {
+    const before = trailOf(hub);
     press({ key: 'Escape' });
-    const went = await waitFor(() => trailOf(hub) === before - 1 && !isClosed());
-    tour.check(`${hub.id}-escape-back`, went !== null, `Escape went one page back in "${hub.id}" before closing it`, `Escape did not go a page back in "${hub.id}"`);
+    const home = await waitFor(() => onHome(hub) && !isClosed());
+    tour.check(`${hub.id}-escape-up`, home !== null && trailOf(hub) >= before - 1, `Escape went up to the home page of "${hub.id}" in one press, keeping the history`, `Escape did not go up to the home page of "${hub.id}"`);
   }
+  press({ key: 'Escape' });
+  const closed = await waitFor(() => isClosed());
+  tour.check(`${hub.id}-escape`, closed !== null, `Escape on the home page closed "${hub.id}"`, `Escape on the home page left "${hub.id}" open`);
   for (let step = 0; step <= HISTORY_LIMIT && !isClosed(); step += 1) {
     press({ key: 'Escape' });
     await settle();
   }
-  tour.check(`${hub.id}-escape`, isClosed(), `Escape walked back through "${hub.id}" and closed it`, `Escape left "${hub.id}" open`);
 };
 
 const hubBackCheck = async (tour: StepTour, hub: HubDef): Promise<void> => {
   if (trailOf(hub) > 1) await checkBackButton(tour, hub);
-  await escapeWalksBack(tour, hub);
+  await escapeGoesUp(tour, hub);
 };
 
 export { hubBackCheck };

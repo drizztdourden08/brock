@@ -1,6 +1,6 @@
 /* @layer core @kind types */
 import type { DataDomainDef, DomainUsage } from '../platform/ports/storage.type';
-import type { DataExportFormat, DataExportResult, DataImportPlan, DataImportResult, DomainCleanResult, DomainEntry } from '../platform/ports/data-domain.type';
+import type { DataExportFormat, DataExportResult, DataImportMode, DataImportPlan, DataImportResult, DomainCleanResult, DomainEntry } from '../platform/ports/data-domain.type';
 import type { Result } from '../result/result.type';
 import type { JobSnapshot } from '../types/job.type';
 
@@ -12,7 +12,7 @@ interface DataInvokeContract {
   'storage:cleanDomain': (domain: string, olderThanDays: number) => Promise<DomainCleanResult>;
   'storage:exportDomains': (domains: string[], format: DataExportFormat) => Promise<DataExportResult | null>;
   'storage:pickImport': (format: DataExportFormat) => Promise<DataImportPlan | null>;
-  'storage:applyImport': (token: string, domains: string[]) => Promise<DataImportResult>;
+  'storage:applyImport': (token: string, domains: string[], mode?: DataImportMode) => Promise<DataImportResult>;
 
   'domain:readJson': (domain: string, path: string) => Promise<unknown>;
   'domain:writeJson': (domain: string, path: string, value: unknown) => Promise<void>;

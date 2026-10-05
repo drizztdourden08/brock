@@ -13,6 +13,7 @@ interface WidgetDef extends WidgetDefinition {
   taskbar?: boolean;
   order?: number;
   defaultOpen?: boolean;
+  context?: string;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;

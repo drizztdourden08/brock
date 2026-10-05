@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind test */
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 interface Disk {
   file: Record<string, unknown>;
@@ -19,7 +19,7 @@ const fakeDisk = (initial: Record<string, unknown>) => {
   return { disk, listeners };
 };
 
-const settle = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0); });
+const settle = (): Promise<void> => vi.advanceTimersByTimeAsync(0);
 
 const RESTORE = { navigation: true, homeScreen: 'game', known: (id: string) => ['game', 'data'].includes(id) };
 
@@ -41,7 +41,12 @@ const startApp = async () => {
   };
 };
 
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+});
+
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
@@ -55,8 +60,9 @@ describe('screen state across a restart', { timeout: 60_000 }, () => {
     first.nav.open('game/saves');
     first.nav.open('game/tracker');
     first.screens().put('game/saves', 'filter', 'weekly');
-    first.prefs().setPref('log', 'filter', 'error');
     await settle();
+    expect((disk.file['profile:p1'] as Record<string, unknown>).screens).toEqual({ state: { about: 'broken', 'data/library': { sort: 'name' } } });
+    first.prefs().setPref('log', 'filter', 'error');
     listeners.get('pagehide')?.();
     first.stop();
     const stored = disk.file['profile:p1'] as Record<string, Record<string, unknown>>;

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { IconName, StatusTone } from '@drizztdourden08/tessera/primitives';
+import type { IconEffect, IconName, StatusTone } from '@drizztdourden08/tessera/primitives';
 import type { MenuEntry } from '../menu/menu.type';
 
 interface TitleBarItemBase {
@@ -11,7 +11,8 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   kind: 'button';
   onSelect: () => void;
   shortcut?: string;
-  tone?: 'neutral' | 'danger';
+  tone?: StatusTone;
+  effect?: IconEffect;
 }
 
 interface TitleBarMenuGroup {
@@ -29,6 +30,7 @@ interface TitleBarStatusSpec extends TitleBarItemBase {
   kind: 'status';
   status: string | null;
   tone?: StatusTone;
+  effect?: IconEffect;
   pulse?: boolean;
   onSelect?: () => void;
 }

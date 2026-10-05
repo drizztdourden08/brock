@@ -4,7 +4,7 @@ import { crc32, deflateRawSync } from 'zlib';
 import { dosStamp } from './dos-stamp';
 import { endRecord } from './end-record';
 import { zipHeader } from './zip-header';
-import { DEFLATED, ENTRY_LIMIT, LIMIT_MESSAGE, STORED, ZIP_LIMIT } from './zip.constants';
+import { DEFLATED, STORED } from './zip.constants';
 import type { ZipRecord, ZipWriter } from './zip.type';
 
 const createZipWriter = async (path: string): Promise<ZipWriter> => {
@@ -19,7 +19,6 @@ const createZipWriter = async (path: string): Promise<ZipWriter> => {
     const packed = deflateRawSync(data);
     const method = packed.length < data.length ? DEFLATED : STORED;
     const body = method === DEFLATED ? packed : data;
-    if (records.length >= ENTRY_LIMIT || offset + body.length > ZIP_LIMIT) throw new Error(LIMIT_MESSAGE);
     const record: ZipRecord = { name, method, crc: crc32(data), compressed: body.length, size: data.length, offset, ...dosStamp(modified) };
     records.push(record);
     await write(zipHeader(record, 'local'));
@@ -27,8 +26,7 @@ const createZipWriter = async (path: string): Promise<ZipWriter> => {
   };
   const close = async (): Promise<void> => {
     const start = offset;
-    for (const record of records) await write(zipHeader(record, 'central'));
-    if (offset > ZIP_LIMIT) throw new Error(LIMIT_MESSAGE);
+    await write(Buffer.concat(records.map((record) => zipHeader(record, 'central'))));
     await write(endRecord(records.length, offset - start, start));
     await handle.close();
   };

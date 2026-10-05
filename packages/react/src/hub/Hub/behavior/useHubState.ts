@@ -8,6 +8,7 @@ import type { HubState } from '../Hub.type';
 import { useScreenStateStore } from '../../../stores/useScreenStateStore';
 import { resolveHubPage } from './resolve-hub-page';
 import { tabStateKey } from './tab-state-key';
+import { useEscapeTarget } from './useEscapeTarget';
 import { useSubParent } from './useSubParent';
 import { visibleHubPages } from './visible-hub-pages';
 
@@ -21,6 +22,7 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext): HubState => {
     if (tab !== null && lastTabs?.[tabStateKey(page.id)] !== tab.id) useScreenStateStore.getState().put(def.id, tabStateKey(page.id), tab.id);
   }, [def.id, page.id, tab, lastTabs]);
   useSubParent(sub === null ? null : page.id, params);
+  useEscapeTarget(def.home.id, page.id, sub !== null);
 
   const openTarget = useCallback((target: HubTarget) => {
     open(target.hub ?? def.id, { section: target.section, tab: target.tab });

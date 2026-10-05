@@ -153,3 +153,34 @@ describe('0.18.0 migrations', () => {
     expect(run.todos.some((todo) => todo.file === 'src/views/Plain.tsx')).toBe(false);
   });
 });
+
+describe('0.22.0 migrations', () => {
+  it('guide-folder-ignored ignores the guide folder beside tessera.config.json, once', async () => {
+    const root = appWith({ 'tessera.config.json': '{ "guide": { "parts": ".brock/tessera-parts.ts" } }', '.gitignore': 'dist/\nout/' });
+    const first = await runMigrations(root, only('guide-folder-ignored'));
+    expect(read(root, '.gitignore')).toBe('dist/\nout/\n/guide/\n');
+    expect(first.applied[0]?.touched).toEqual(['.gitignore']);
+    const second = await runMigrations(root, only('guide-folder-ignored'));
+    expect(read(root, '.gitignore')).toBe('dist/\nout/\n/guide/\n');
+    expect(second.applied[0]?.touched).toEqual([]);
+  });
+
+  it('guide-folder-ignored follows guide.out, and leaves an app with no tessera.config.json alone', async () => {
+    const root = appWith({ 'tessera.config.json': '{ "guide": { "out": "./docs/guide/" } }', '.gitignore': 'guide/\n' });
+    await runMigrations(root, only('guide-folder-ignored'));
+    expect(read(root, '.gitignore')).toBe('guide/\n/docs/guide/\n');
+    const bare = appWith({ '.gitignore': 'dist/\n' });
+    await runMigrations(bare, only('guide-folder-ignored'));
+    expect(read(bare, '.gitignore')).toBe('dist/\n');
+  });
+
+  it('widget-context-registry lists each widgetContext prop as a to-do and changes nothing', async () => {
+    const main = "root.render(\n  <BrockApp\n    product={product}\n    widgetContext={() => useSession((s) => s.live)}\n  />,\n);\n";
+    const root = appWith({ 'src/main.tsx': main, 'src/views/Plain.tsx': 'const widgetContext = 1;\n' });
+    const run = await runMigrations(root, only('widget-context-registry'));
+    expect(read(root, 'src/main.tsx')).toBe(main);
+    expect(run.todos).toHaveLength(1);
+    expect(run.todos[0]).toMatchObject({ file: 'src/main.tsx', line: 4 });
+    expect(run.todos[0]?.message).toContain('contexts.set');
+  });
+});

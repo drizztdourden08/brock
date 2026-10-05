@@ -1,25 +1,35 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
 import { DATA_EXPORT_JOB, DATA_IMPORT_JOB, formatBytes } from '@drizztdourden08/brock-core';
-import type { DataExportFormat, DataImportPlan } from '@drizztdourden08/brock-core';
+import type { DataExportFormat, DataImportMode, DataImportPlan } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../../host/require-host-api';
 import { jobs } from '../../../jobs/jobs';
-import { confirmAction } from '../../../stores/confirm-action';
+import { confirmChoice } from '../../../stores/confirm-choice';
+import type { DialogChoice } from '../../../stores/dialog.type';
 import { toast } from '../../../toast/toast';
 import type { StorageActions } from '../StoragePage.type';
 
+const IMPORT_CHOICES: readonly DialogChoice<DataImportMode>[] = [
+  { value: 'merge', label: 'Merge', description: 'Add the export to what is there. When both have a file at the same path, the newer one stays.' },
+  { value: 'replace', label: 'Replace', description: 'Delete what is in these folders now and put the export in its place.' },
+];
+
 const plural = (count: number, word: string): string => `${count} ${word}${count === 1 ? '' : 's'}`;
 
-const confirmImport = (plan: DataImportPlan): Promise<boolean> => {
+const confirmImport = (plan: DataImportPlan): Promise<DataImportMode | null> => {
   const known = plan.domains.filter((entry) => entry.known);
   const from = plan.exportedAt ? ` from ${plan.exportedAt.slice(0, 10)}` : '';
-  return confirmAction({
-    title: `Replace ${known.map((entry) => entry.label).join(', ')}?`,
-    message: `What is in these folders now is deleted and replaced with the export${from} (${plural(known.reduce((sum, entry) => sum + entry.files, 0), 'file')}).`,
-    confirmLabel: 'Replace',
-    variant: 'danger',
+  return confirmChoice<DataImportMode>({
+    title: `Import ${known.map((entry) => entry.label).join(', ')}`,
+    message: `The export${from} holds ${plural(known.reduce((sum, entry) => sum + entry.files, 0), 'file')}.`,
+    confirmLabel: 'Import',
+    choices: IMPORT_CHOICES,
+    initial: 'merge',
   });
 };
+
+const importedText = (files: number, folders: number, kept: number): string =>
+  `Imported ${plural(files, 'file')} into ${plural(folders, 'folder')}${kept > 0 ? `, kept ${plural(kept, 'newer file')}` : ''}`;
 
 const useStorageActions = (refresh: (domain?: string) => void): StorageActions => useMemo(() => ({
   revealRoot: () => requireHostApi().revealDataFolder(),
@@ -47,10 +57,11 @@ const useStorageActions = (refresh: (domain?: string) => void): StorageActions =
       toast('This export holds no folder this app knows', { variant: 'warning' });
       return;
     }
-    if (!(await confirmImport(plan))) return;
+    const mode = await confirmImport(plan);
+    if (mode === null) return;
     jobs.open(DATA_IMPORT_JOB);
-    const done = await api.applyDataImport(plan.token, plan.domains.filter((entry) => entry.known).map((entry) => entry.domain));
-    toast(`Imported ${plural(done.files, 'file')} into ${plural(done.domains.length, 'folder')}`, { variant: 'success' });
+    const done = await api.applyDataImport(plan.token, plan.domains.filter((entry) => entry.known).map((entry) => entry.domain), mode);
+    toast(importedText(done.files, done.domains.length, done.kept), { variant: 'success' });
     refresh();
   },
 }), [refresh]);

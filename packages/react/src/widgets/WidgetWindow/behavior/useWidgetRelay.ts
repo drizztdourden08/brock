@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useContext, useEffect } from 'react';
 import type { WidgetSlice } from '@drizztdourden08/brock-core';
+import { useContextsStore } from '../../../contexts/useContextsStore';
 import { hostApi } from '../../../host/host-api';
 import { isReviewLaunch } from '../../../host/is-review-launch';
 import { SettingsStoreContext } from '../../../stores/settings-context';
@@ -25,6 +26,7 @@ const useWidgetRelay = (id: string): void => {
       else relay.receive(kind, data);
       if (kind === RELAY_SLICES.prefs) prefs.receive(data as WidgetPrefs);
       if (kind === RELAY_SLICES.settings) settings.receive(data as SettingsSlice);
+      if (kind === RELAY_SLICES.contexts) useContextsStore.getState().hydrate(data);
     };
     const offs = [
       prefs.stop,

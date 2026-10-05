@@ -26,6 +26,7 @@ export * from './toast';
 export * from './bug-report';
 export * from './palette';
 export * from './search';
+export * from './contexts';
 export * from './widgets';
 export * from './overlays';
 export * from './boot';

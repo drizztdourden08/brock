@@ -65,6 +65,7 @@ const SELECTORS = {
     ':scope > .dropdown__group > .dropdown__item', ':scope > .dropdown__group > .dropdown__submenu-trigger',
     ':scope > .dropdown__item', ':scope > .dropdown__submenu-trigger',
   ].join(', '),
+  anyMenuItem: '.dropdown__item',
   menuLabel: '.dropdown__label',
   menuIcon: '.dropdown__icon',
   sectionTrigger: 'dropdown__submenu-trigger',

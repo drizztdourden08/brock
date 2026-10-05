@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { appDirs } from '../src/upgrade/app-dirs.mjs';
 import { bumpApp } from '../src/upgrade/bump-app.mjs';
+import { coversEveryPackage } from '../src/upgrade/covers-every-package.mjs';
 import { gateSteps } from '../src/upgrade/gate-steps.mjs';
 import { runSteps } from '../src/upgrade/run-steps.mjs';
 import { upgradeApps } from '../src/upgrade/upgrade-apps.mjs';
@@ -155,6 +156,28 @@ describe('the upgrade gate in a monorepo', () => {
       'pnpm lint in apps/desktop', 'pnpm typecheck in apps/desktop', 'pnpm structure in apps/desktop', 'pnpm test in apps/desktop',
       'brock icons in apps/desktop', 'launch brock-0-17-0 none --review',
     ]);
+  });
+
+  it('skips an app script when the root script of that name already runs it in every package', () => {
+    const root = monorepo();
+    write(root, { 'package.json': { name: 'fixture', private: true, scripts: { lint: 'pnpm -r lint', test: 'vitest run', typecheck: 'pnpm -r --filter ./apps/* typecheck' } } });
+    write(root, { 'apps/desktop/package.json': { name: '@fixture/desktop', scripts: { lint: 'exit 1', test: 'exit 1', typecheck: 'exit 1' } } });
+    const apps = upgradeApps(root, { current: '0.16.0' });
+    const steps = gateSteps({ path: root, name: 'brock-0-17-0', plan: { mode: 'link', target: '0.17.0' }, review: false, apps });
+    const lint = steps.find((step) => step.name === 'pnpm lint in apps/desktop');
+    expect(lint?.run()).toBeNull();
+    expect(lint?.skipped).toMatch(/pnpm -r/);
+    expect(steps.find((step) => step.name === 'pnpm typecheck in apps/desktop')?.skipped).toBe('no such script there');
+  });
+
+  it('reads pnpm -r in a root script as covering every package, but not with a filter or another script', () => {
+    expect(coversEveryPackage('pnpm -r lint', 'lint')).toBe(true);
+    expect(coversEveryPackage('pnpm typecheck && pnpm --recursive run lint', 'lint')).toBe(true);
+    expect(coversEveryPackage('pnpm -r --filter ./apps/* lint', 'lint')).toBe(false);
+    expect(coversEveryPackage('pnpm -r --filter=./apps/* lint', 'lint')).toBe(false);
+    expect(coversEveryPackage('pnpm -r typecheck && eslint .', 'lint')).toBe(false);
+    expect(coversEveryPackage('eslint .', 'lint')).toBe(false);
+    expect(coversEveryPackage(undefined, 'lint')).toBe(false);
   });
 
   it('starts each app from the main checkout pins, so a resumed upgrade migrates again', () => {

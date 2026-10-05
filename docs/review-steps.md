@@ -5,6 +5,7 @@ The built-in review tours the shell. An app adds two things so the tour also see
 
 | File | Runs | Step name in the report |
 |---|---|---|
+| `src/review/fixtures/` | copied into the app data folder just before the seed | `seed` |
 | `src/review/seed.ts` | right after the profile step, before the menu, screens, widgets and search | `seed` |
 | `src/review/<id>.step.ts` | after every built-in step, in file name order | `<id>` |
 
@@ -33,6 +34,10 @@ The seed runs once the review profile is active, so whatever it writes lands in 
 - Through the app's own channels (`channelApi(APP_CHANNELS)`, or `tour.api` for Brock's), so main creates the data the way the app does. This is the closest to a real user.
 - Through a store (`useWidgetPrefStore.getState().setPref(...)`, an app zustand store), for state that lives in the renderer.
 - As a fixture: `tour.platform.files` writes files under the profile's `Data/` folder (`writeText`, `writeBytes`, `mkdir`). A main service that reads its files on each call sees them at once; one that loaded them at boot needs a channel that reloads.
+
+## Fixtures
+
+Files that are easier to keep as files than to write from code, a saved session or a log, go in `src/review/fixtures/`. Each one is copied into the app data folder at the same path before the seed runs, the place `tour.platform.files` reads and writes, so `src/review/fixtures/sessions/review.json` lands at `sessions/review.json`. `brock sync` lists them in `.brock/review.ts` as lazy `?url` imports, so they load only on a review launch; the copy reports a `fixtures-copied` check in the `seed` step, and an app with fixtures and no seed still gets the step. `brock structure` leaves the folder alone, so any file name and type goes.
 
 A seed is a review step like the others: its checks and captures go in the report under `seed`, and a seed that throws fails a `step-ran` check without stopping the tour.
 
@@ -85,4 +90,4 @@ Main's watchdog ends the review when nothing is captured or checked for 30 s, so
 
 ## In a fresh app
 
-`create-brock` ships `src/review/seed.ts`, which writes a note into the Notes widget, and `src/review/notes.step.ts`, which opens the widget, checks the note shows and captures it. The built-in `app-widgets` step then also captures the widget with its note.
+`create-brock` ships `src/review/fixtures/notes/review-note.txt` and `src/review/seed.ts`, which reads that file from the data folder and writes it into the Notes widget, and `src/review/notes.step.ts`, which opens the widget, checks the note shows and captures it. The built-in `app-widgets` step then also captures the widget with its note.

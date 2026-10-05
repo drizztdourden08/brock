@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { NO_PARAMS } from './navigation.constants';
 import type { ScreenParams } from './navigation.type';
 import { navigationSteps } from './navigation-steps';
 import { resolveRoute } from './resolve-route';
@@ -7,12 +8,15 @@ import { useNavigationStore } from './useNavigationStore';
 
 const nav = {
   open: (id: string, params?: ScreenParams): void => useNavigationStore.getState().open(id, params),
+  home: (id: string): void => useNavigationStore.getState().open(id, NO_PARAMS, { fresh: true }),
   close: (): void => useNavigationStore.getState().close(),
   back: (): boolean => useNavigationStore.getState().back(),
   up: (parent: ScreenParams): void => useNavigationStore.getState().up(parent),
   escape: (): void => {
     const state = useNavigationStore.getState();
-    if (!state.back()) state.close();
+    if (state.escapeTo !== null) state.up(state.escapeTo);
+    else if (state.parent !== null) state.up(state.parent);
+    else state.close();
   },
   canGoBack: (): boolean => navigationSteps.canGoBack(useNavigationStore.getState()),
   active: (): string | null => useNavigationStore.getState().active,

@@ -11,7 +11,15 @@ describe('toBarAction', () => {
   it('turns a button into a bar button', () => {
     const onSelect = vi.fn();
     expect(toBarAction('hosting', { kind: 'button', label: 'Host', icon: 'server', onSelect, shortcut: 'Mod+H' }))
-      .toEqual({ id: 'hosting', label: 'Host', icon: 'server', bar: 'button', tone: undefined, shortcut: 'Mod+H', onSelect });
+      .toEqual({ id: 'hosting', label: 'Host', icon: 'server', bar: 'button', tone: undefined, effect: undefined, shortcut: 'Mod+H', onSelect });
+  });
+
+  it('passes the tone and effect of an app item on, as the built-in items take them', () => {
+    const onSelect = () => undefined;
+    expect(toBarAction('hosting', { kind: 'button', label: 'Host', icon: 'server', onSelect, tone: 'primary', effect: 'twinkle' }))
+      .toMatchObject({ bar: 'button', tone: 'primary', effect: 'twinkle' });
+    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Live', tone: 'success', effect: { kind: 'ping', color: 'success' } }))
+      .toMatchObject({ bar: 'status', tone: 'success', effect: { kind: 'ping', color: 'success' } });
   });
 
   it('turns a status into a status pill that shows only while the status is set', () => {

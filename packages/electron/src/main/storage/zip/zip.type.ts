@@ -16,10 +16,16 @@ interface ZipWriter {
   abort: () => Promise<void>;
 }
 
+interface CentralLocation {
+  count: number;
+  size: number;
+  offset: number;
+}
+
 interface ZipReader {
   records: ZipRecord[];
   read: (record: ZipRecord) => Promise<Buffer>;
   close: () => Promise<void>;
 }
 
-export type { ZipReader, ZipRecord, ZipWriter };
+export type { CentralLocation, ZipReader, ZipRecord, ZipWriter };

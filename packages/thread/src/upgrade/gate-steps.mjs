@@ -1,15 +1,27 @@
 /* @layer tooling-scripts @kind logic */
 import { brockInstallOf } from './brock-install.mjs';
+import { coversEveryPackage } from './covers-every-package.mjs';
 import { runIn } from './run-in.mjs';
 import { GATE_SCRIPTS, MIGRATIONS_FILE } from './upgrade.constants.mjs';
 
 const inApp = (name, { label }) => (label === '.' ? name : `${name} in ${label}`);
 
-const scriptStep = (place, script) => ({
-  name: inApp(`pnpm ${script}`, place),
-  skipped: 'no such script there',
-  run: () => (brockInstallOf.packageOf(place.dir)?.scripts?.[script] ? runIn.pnpm(place.dir, ['run', script]) : null),
-});
+const COVERED = 'the root script of that name runs it in every package (pnpm -r)';
+
+const scriptStep = (place, script, rootDir) => {
+  const step = {
+    name: inApp(`pnpm ${script}`, place),
+    skipped: 'no such script there',
+    run: () => {
+      if (place.label !== '.' && coversEveryPackage(brockInstallOf.packageOf(rootDir)?.scripts?.[script], script)) {
+        step.skipped = COVERED;
+        return null;
+      }
+      return brockInstallOf.packageOf(place.dir)?.scripts?.[script] ? runIn.pnpm(place.dir, ['run', script]) : null;
+    },
+  };
+  return step;
+};
 
 const migrateArgs = (plan, app) => [
   'migrate',
@@ -41,7 +53,7 @@ const reviewSteps = ({ path, name, review, apps }) => [
  */
 const gateSteps = (worktree) => [
   ...worktree.apps.flatMap((app) => appSteps(worktree.plan, app)),
-  ...scriptPlaces(worktree.path, worktree.apps).flatMap((place) => GATE_SCRIPTS.map((script) => scriptStep(place, script))),
+  ...scriptPlaces(worktree.path, worktree.apps).flatMap((place) => GATE_SCRIPTS.map((script) => scriptStep(place, script, worktree.path))),
   ...reviewSteps(worktree),
 ];
 

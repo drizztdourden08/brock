@@ -15,6 +15,8 @@ interface DomainCleanResult {
 
 type DataExportFormat = 'zip' | 'folder';
 
+type DataImportMode = 'replace' | 'merge';
+
 interface DataExportResult {
   path: string;
   domains: string[];
@@ -53,8 +55,9 @@ interface DataImportPlan {
 interface DataImportResult {
   domains: string[];
   files: number;
+  kept: number;
 }
 
 export type {
-  DataExportFormat, DataExportManifest, DataExportResult, DataImportDomain, DataImportPlan, DataImportResult, DataManifestDomain, DomainCleanResult, DomainEntry,
+  DataExportFormat, DataExportManifest, DataExportResult, DataImportDomain, DataImportMode, DataImportPlan, DataImportResult, DataManifestDomain, DomainCleanResult, DomainEntry,
 };

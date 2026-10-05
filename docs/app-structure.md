@@ -30,6 +30,7 @@ my-app/
     ipc/contract.type.ts           the augmentation, from the declaration's types
     review/seed.ts                 fills the app with data before the review tour
     review/<id>.step.ts            the app's own review steps
+    review/fixtures/               files copied into the app data folder before the seed runs
     screens/screens.config.ts      buckets, menu placement, home
     screens/<bucket>/<id>.<kind>.tsx, screens/<bucket>/<page>/<sub>.sub.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx, screens/<id>.base.tsx
     widgets/<id>.widget.tsx        one widget per file
@@ -79,7 +80,7 @@ my-repo/
 | IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |
 | IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, exporting `<subject>Handlers` | `brock sync` into `.brock/handlers.main.ts`, passed as `handlers` in `electron/main.ts` |
 | App services | `electron/services/` | `app-services.ts` (`createAppServices(ctx)`), `AppServices` augmented | `bootstrapApp({ services })`, read as `ctx.services` |
-| Review seed and steps | `src/review/` | `seed.ts`, `<id>.step.ts` (default export: `defineReviewSeed`, `defineReviewStep`) | `brock sync` into `.brock/review.ts`, passed as `review` in `src/main.tsx` ([review-steps.md](review-steps.md)) |
+| Review seed and steps | `src/review/` | `seed.ts`, `<id>.step.ts` (default export: `defineReviewSeed`, `defineReviewStep`), `fixtures/` (any files, at the paths they take in the data folder) | `brock sync` into `.brock/review.ts`, passed as `review` in `src/main.tsx` ([review-steps.md](review-steps.md)) |
 | Settings | `src/` and `src/screens/` | `settings.type.ts`, `settings.constants.ts`, `<id>.settings.ts` pages | `BrockApp settings`, the screen sync |
 | Tessera view | `src/views/` | `<Name>/<Name>.tsx` component folder | imported by screens and widgets |
 | Tessera compound | `src/compounds/` (one app) or `packages/design/src/compounds/` | `<Name>/<Name>.tsx`, `<Name>.usage.ts` | `brock tessera new compound`, `brock tessera check` |

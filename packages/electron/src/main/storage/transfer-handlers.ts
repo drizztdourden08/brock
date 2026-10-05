@@ -43,13 +43,13 @@ const transferHandlers: HandlerGroup = {
       return planOf(token, from, new Set(storage.list().map((def) => def.domain)));
     });
 
-    handle('storage:applyImport', async (_e, token, ids) => {
+    handle('storage:applyImport', async (_e, token, ids, mode = 'replace') => {
       const from = pending.get(token);
       if (!from) throw new Error('this import is no longer pending; pick the export again');
       pending.delete(token);
       const chosen = ids.filter((id) => storage.list().some((def) => def.domain === id));
       return job(DATA_IMPORT_JOB, stepsOf(chosen), { title: 'Importing data' }).run((running) => importDomains({
-        domains: storage, from, ids: chosen, signal: running.signal, report: stepReporter(running, storage),
+        domains: storage, from, ids: chosen, mode, signal: running.signal, report: stepReporter(running, storage),
       }));
     });
   },

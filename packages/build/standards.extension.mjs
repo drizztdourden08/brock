@@ -23,10 +23,13 @@ const hasWidgets = (dir) => isApp(dir) && existsSync(join(dir, WIDGETS_DIR));
 
 const hasTitleBar = (dir) => isApp(dir) && existsSync(join(dir, TITLE_BAR_DIR));
 
+const REVIEW_FIXTURES_DIR = 'src/review/fixtures';
+
 const conventionOwned = (dir) => [
   ...(hasScreens(dir) ? [join(dir, SCREENS_DIR)] : []),
   ...(hasWidgets(dir) ? [join(dir, WIDGETS_DIR)] : []),
   ...(hasTitleBar(dir) ? [join(dir, TITLE_BAR_DIR)] : []),
+  join(dir, REVIEW_FIXTURES_DIR),
 ];
 
 const customPageNote = (dir, label) => {

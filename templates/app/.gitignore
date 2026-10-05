@@ -19,6 +19,7 @@ out/
 build/icons/
 build/splash/
 build/installer-splash.png
+/guide/
 public/logos/icon.svg
 public/logos/icon.ico
 public/logos/icon-256.png

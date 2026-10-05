@@ -53,6 +53,13 @@ describe('brock sync: handlers and review', () => {
     const empty = renderReviewFiles(tempDir())[0].content;
     expect(empty).toContain('seed: null,');
     expect(empty).toContain('steps: [],');
+    expect(empty).toContain('fixtures: [],');
+    put(root, 'src/review/fixtures/sessions/review.json', '{}');
+    put(root, 'src/review/fixtures/run.log', 'x');
+    const withFixtures = renderReviewFiles(root)[0].content;
+    expect(withFixtures).toContain("{ path: 'run.log', load: () => import('../src/review/fixtures/run.log?url') },");
+    expect(withFixtures.indexOf("path: 'run.log'")).toBeLessThan(withFixtures.indexOf("path: 'sessions/review.json'"));
+    expect(withFixtures).toContain("{ path: 'sessions/review.json', load: () => import('../src/review/fixtures/sessions/review.json?url') },");
     put(root, 'src/review/Bad_Name.step.ts');
     expect(() => renderReviewFiles(root)).toThrow(/kebab-case/);
   });

@@ -9,10 +9,10 @@ import { whenLeft } from './when-left';
 
 const useNavigationStore = create<NavigationState>()((set, get) => ({
   ...EMPTY,
-  open: (id, params = NO_PARAMS) => {
+  open: (id, params = NO_PARAMS, options = {}) => {
     const target = resolveRoute(id, params, routeAliases.get);
     if (navigationSteps.isHere(get(), target)) return;
-    whenLeft(() => set(navigationSteps.open(get(), target)));
+    whenLeft(() => set(navigationSteps.open(get(), target, options.fresh)));
   },
   close: () => {
     if (get().active !== null) whenLeft(() => set(navigationSteps.close(get())));
@@ -26,6 +26,7 @@ const useNavigationStore = create<NavigationState>()((set, get) => ({
     if (navigationSteps.up(get(), parent) !== null) whenLeft(() => set(navigationSteps.up(get(), parent) ?? {}));
   },
   setParent: (parent) => set({ parent }),
+  setEscapeTo: (escapeTo) => set({ escapeTo }),
   restore: (saved) => set(saved ? { ...EMPTY, ...saved } : EMPTY),
 }));
 

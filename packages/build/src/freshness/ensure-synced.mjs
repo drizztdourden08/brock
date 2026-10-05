@@ -3,6 +3,7 @@ import { existsSync, utimesSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
+import { writeGuide } from '../tessera/write-guide.mjs';
 import { MANIFEST_FILE } from './freshness.constants.mjs';
 import { rendererEntryProblem } from './renderer-entry-problem.mjs';
 import { syncStaleReason } from './sync-stale-reason.mjs';
@@ -22,6 +23,7 @@ const ensureSynced = async (appDir, label) => {
     const now = new Date();
     if (existsSync(manifest)) utimesSync(manifest, now, now);
   }
+  await writeGuide(appDir, { label, missingOnly: true });
   return rendererEntryProblem(appDir);
 };
 

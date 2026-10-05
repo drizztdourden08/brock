@@ -43,13 +43,20 @@ const read = async (profileId: string): Promise<ProfileViews> => {
   return isRecord(stored) ? stored : {};
 };
 
-const patch = async (profileId: string, next: ProfileViews): Promise<void> => {
-  const all = await loadAll();
+const applyPatch = (all: Record<string, unknown>, profileId: string, next: ProfileViews): void => {
   const current = all[keyOf(profileId)];
   all[keyOf(profileId)] = { ...(isRecord(current) ? current : {}), ...next };
   dirty = true;
   if (timer !== null) clearTimeout(timer);
   timer = setTimeout(writeNow, VIEWS_SAVE_DELAY_MS);
+};
+
+const patch = (profileId: string, next: ProfileViews): Promise<void> => {
+  if (cache) {
+    applyPatch(cache, profileId, next);
+    return Promise.resolve();
+  }
+  return loadAll().then((all) => applyPatch(all, profileId, next));
 };
 
 const profileViews = { read, patch, flush: writeNow };

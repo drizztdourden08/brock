@@ -38,14 +38,45 @@ describe('hub history', () => {
     expect(trail('game')).toEqual([]);
   });
 
-  it('goes back one level on Escape before it closes the hub', () => {
+});
+
+describe('Escape and Home in a hub', () => {
+  it('goes up one level on Escape, to the hub home, then closes the hub, while Back keeps the whole history', () => {
     nav.open('game');
     nav.open('game/saves');
+    nav.open('game/tracker');
+    nav.open('game/library');
+    state().setEscapeTo({});
     nav.escape();
     expect(state().active).toBe('game');
     expect(section()).toBeUndefined();
+    expect(trail('game')).toEqual([undefined, 'saves', 'tracker']);
+    state().setEscapeTo(null);
     nav.escape();
     expect(state().active).toBeNull();
+  });
+
+  it('closes a hub on its home page at the first Escape, whatever the history holds', () => {
+    nav.open('game/saves');
+    nav.open('game');
+    nav.escape();
+    expect(state().active).toBeNull();
+  });
+
+  it('opens the hub home from Home, not the page the hub was left on', () => {
+    nav.open('game/saves');
+    nav.close();
+    nav.home('game');
+    expect(state().active).toBe('game');
+    expect(section()).toBeUndefined();
+    nav.open('game/tracker');
+    nav.home('game');
+    expect(section()).toBeUndefined();
+    expect(trail('game')).toEqual([undefined, 'tracker']);
+    nav.close();
+    nav.open('data/library');
+    nav.open('game');
+    expect(section()).toBeUndefined();
   });
 
   it('keeps each hub where it was when another hub opens, and the hub switch comes back to it', () => {
@@ -83,6 +114,7 @@ describe('sub-page history', () => {
   it('falls back to the sub-page parent when there is no history', () => {
     nav.open('game/saves/new');
     state().setParent({ section: 'saves' });
+    state().setEscapeTo({ section: 'saves' });
     expect(nav.canGoBack()).toBe(true);
     nav.escape();
     expect(state().active).toBe('game');

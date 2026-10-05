@@ -2,12 +2,13 @@
 import { useMemo } from 'react';
 import type { MenuGroup } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../../../menu/menu.type';
-import { useNavigation } from '../../../navigation/useNavigation';
+import { navResolver } from '../../../menu/nav-resolver';
+import { useMenuConfirmStore } from '../../../menu/useMenuConfirmStore';
 import { titleBarGroups } from './title-bar-groups';
 
 const useTitleBarMenu = (menu: readonly MenuEntry[]): MenuGroup[] => {
-  const { open } = useNavigation();
-  return useMemo(() => titleBarGroups(menu, { openScreen: open }), [menu, open]);
+  const armed = useMenuConfirmStore((s) => s.armed);
+  return useMemo(() => titleBarGroups(menu, { ...navResolver, armed }), [menu, armed]);
 };
 
 export { useTitleBarMenu };

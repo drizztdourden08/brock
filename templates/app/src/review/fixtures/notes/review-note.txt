@@ -1,0 +1,1 @@
+Review notes: this text is a file in src/review/fixtures, copied into the data folder before the seed ran, so the Notes widget is captured with content.

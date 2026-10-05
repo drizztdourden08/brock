@@ -1,5 +1,6 @@
 /* @layer electron-main @kind logic */
 import { CENTRAL_SIGNATURE, CENTRAL_SIZE } from './zip.constants';
+import { widenZip64 } from './widen-zip64';
 import type { ZipRecord } from './zip.type';
 
 const parseCentral = (directory: Buffer, count: number): ZipRecord[] => {
@@ -10,17 +11,22 @@ const parseCentral = (directory: Buffer, count: number): ZipRecord[] => {
     const nameLength = directory.readUInt16LE(at + 28);
     const extraLength = directory.readUInt16LE(at + 30);
     const commentLength = directory.readUInt16LE(at + 32);
+    const extraStart = at + CENTRAL_SIZE + nameLength;
+    const [size = 0, compressed = 0, offset = 0] = widenZip64(
+      [directory.readUInt32LE(at + 24), directory.readUInt32LE(at + 20), directory.readUInt32LE(at + 42)],
+      directory.subarray(extraStart, extraStart + extraLength),
+    );
     records.push({
-      name: directory.toString('utf8', at + CENTRAL_SIZE, at + CENTRAL_SIZE + nameLength),
+      name: directory.toString('utf8', at + CENTRAL_SIZE, extraStart),
       method: directory.readUInt16LE(at + 10),
       time: directory.readUInt16LE(at + 12),
       date: directory.readUInt16LE(at + 14),
       crc: directory.readUInt32LE(at + 16),
-      compressed: directory.readUInt32LE(at + 20),
-      size: directory.readUInt32LE(at + 24),
-      offset: directory.readUInt32LE(at + 42),
+      compressed,
+      size,
+      offset,
     });
-    at += CENTRAL_SIZE + nameLength + extraLength + commentLength;
+    at = extraStart + extraLength + commentLength;
   }
   return records;
 };

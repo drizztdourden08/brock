@@ -1,5 +1,5 @@
 /* @layer electron-main @kind types */
-import type { DataExportFormat, DataExportManifest } from '@drizztdourden08/brock-core/platform';
+import type { DataExportFormat, DataExportManifest, DataImportMode } from '@drizztdourden08/brock-core/platform';
 import type { DataDomains } from './domain-files.type';
 
 type TransferReport = (domain: string, done: number, total: number) => void;
@@ -24,6 +24,7 @@ interface ImportRequest {
   domains: DataDomains;
   from: ImportSource;
   ids: readonly string[];
+  mode?: DataImportMode;
   report?: TransferReport;
   signal?: AbortSignal;
 }

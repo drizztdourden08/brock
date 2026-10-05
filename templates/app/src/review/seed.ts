@@ -3,7 +3,9 @@ import { defineReviewSeed, useWidgetPrefStore } from '@drizztdourden08/brock-rea
 
 export default defineReviewSeed({
   run: async (tour) => {
-    useWidgetPrefStore.getState().setPref('notes', 'text', 'Review notes: the seed wrote this before the tour, so the Notes widget is captured with content.');
+    const note = await tour.platform.files.readText('notes/review-note.txt');
+    tour.check('note-fixture', note !== null, 'the fixture notes/review-note.txt is in the data folder', 'the fixture notes/review-note.txt was not copied');
+    useWidgetPrefStore.getState().setPref('notes', 'text', note?.trim() ?? 'Review notes: the seed wrote this before the tour.');
     await tour.settle();
     const stored = useWidgetPrefStore.getState().byWidget.notes?.text;
     tour.check('notes-seeded', typeof stored === 'string' && stored.length > 0, 'the Notes widget holds a seeded note', 'the seeded note did not reach the widget prefs');

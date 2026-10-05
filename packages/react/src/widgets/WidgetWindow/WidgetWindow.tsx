@@ -15,6 +15,7 @@ import { WindowGuide } from '../WindowGuide';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
+import { useWidgetTourClick } from './behavior/useWidgetTourClick';
 import { useWidgetWindowEscape } from './behavior/useWidgetWindowEscape';
 import { WidgetTourSpot } from './sub-components/WidgetTourSpot';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
@@ -32,6 +33,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const reviewOpen = useReviewOptions(id);
   useWidgetRelay(id);
   useWidgetWindowEscape();
+  useWidgetTourClick(id);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
   const label = definition?.label ?? id;

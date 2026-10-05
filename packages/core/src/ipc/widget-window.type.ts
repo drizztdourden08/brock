@@ -92,7 +92,8 @@ type WidgetProbeRequest =
   | { kind: 'modifier'; ctrl: boolean }
   | { kind: 'mouse'; id: string; action: 'down' | 'move' | 'up'; point: WidgetWindowPoint }
   | { kind: 'guide'; id: string; mode: WindowGuideMode | null; pointer?: WidgetWindowPoint }
-  | { kind: 'tourSpot'; id: string };
+  | { kind: 'tourSpot'; id: string }
+  | { kind: 'click'; id: string; selector: string };
 
 interface WidgetProbeFacts {
   visible: boolean;
@@ -109,6 +110,7 @@ interface WidgetProbeFacts {
   area: WidgetWindowBounds | null;
   windows: Record<string, WidgetWindowBounds>;
   tourLit?: boolean;
+  clicked?: boolean;
 }
 
 interface WidgetProbeResult {

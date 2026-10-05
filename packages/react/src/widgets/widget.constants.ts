@@ -25,7 +25,7 @@ const RELEASE_TIMEOUT_MS = 1500;
 const DRAG_SLOP_PX = 6;
 const FLOATING_MIN: Size = { width: 240, height: 160 };
 
-const RELAY_SLICES = { log: 'log', logAppend: 'log+', frames: 'frames', prefs: 'prefs', settings: 'settings', contexts: 'contexts', tourSpot: 'tour-spot' } as const;
+const RELAY_SLICES = { log: 'log', logAppend: 'log+', frames: 'frames', prefs: 'prefs', settings: 'settings', contexts: 'contexts', tourSpot: 'tour-spot', tourClick: 'tour-click' } as const;
 const REVIEW_OPTIONS_SLICE = 'review-options';
 const WIDGET_LAYOUT_GLOBAL = '__brockWidgetLayout';
 const DRAWN_WIDGET_SELECTOR = '[data-widget-id]';

@@ -10,11 +10,13 @@ const useTourStore = create<TourState>()((set) => ({
   progressFor: null,
   shown: null,
   spot: null,
+  clickRelay: null,
   setTours: (tours) => set({ tours }),
   setActive: (active) => set({ active }),
   setProgress: (progress, profileId) => set(profileId === undefined ? { progress } : { progress, progressFor: profileId }),
   setShown: (shown) => set({ shown }),
   setSpot: (spot) => set({ spot }),
+  setClickRelay: (clickRelay) => set({ clickRelay }),
 }));
 
 export { useTourStore };

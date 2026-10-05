@@ -37,6 +37,7 @@ const widgetHandlers = (setup: WidgetWindowSetup): HandlerGroup => ({
     on('widget:subscribe', (_event, id) => emit('widget:snapshotRequest', id));
     on('widget:setPrefs', (_event, id, prefs) => emit('widget:prefs', id, prefs));
     on('widget:patchSettings', (_event, patch) => emit('widget:settingsPatch', patch));
+    on('widget:tourAdvance', (_event, step) => emit('widget:tourAdvanced', step));
   },
 });
 

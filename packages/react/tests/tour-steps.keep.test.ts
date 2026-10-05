@@ -8,6 +8,9 @@ import { toGuidedSteps } from '../src/tours/to-guided-steps';
 import { tourTargets } from '../src/tours/resolve-tour-target';
 import { tourMenu } from '../src/tours/tour-menu-entry';
 import { touringHolds } from '../src/tours/touring-key';
+import { NO_TOURS } from '../src/tours/tours.constants';
+import type { TourStepDef } from '../src/tours/tour.type';
+import { useTourStore } from '../src/tours/useTourStore';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { SESSIONS, WELCOME } from './tour-fixtures';
 
@@ -52,13 +55,16 @@ describe('toGuidedSteps targets and entry', () => {
     useWidgetLayoutStore.setState({ layout: { ...layout, popped: [{ id: 'notes' }] } });
     expect(current(notes?.target)).toBeNull();
     const popped = toGuidedSteps(WELCOME)[1];
-    expect([popped?.target, popped?.advance]).toEqual([undefined, 'next']);
+    expect([popped?.target, popped?.clickTarget, popped?.advance]).toEqual([undefined, undefined, 'click']);
+    expect(tourTargets.poppedClick(WELCOME.steps[1] as TourStepDef)).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"]' });
     const inNotes = { id: 'n', title: 'N', body: 'B', widget: 'notes', advanceOn: { click: '[data-widget-id="notes"] textarea' } };
     expect(tourTargets.poppedSpot({ id: 'w', title: 'W', body: 'B', target: { widget: 'notes' } })).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"] .widget__content' });
     expect(tourTargets.poppedSpot(inNotes)).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"] textarea' });
     expect(tourTargets.poppedSpot({ id: 'm', title: 'M', body: 'B', target: { shell: 'menu' } })).toBeNull();
+    expect(tourTargets.poppedClick(inNotes)).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"] textarea' });
     useWidgetLayoutStore.setState({ layout });
     expect(tourTargets.poppedSpot(inNotes)).toBeNull();
+    expect(tourTargets.poppedClick(inNotes)).toBeNull();
     document.body.insertAdjacentHTML('beforeend', '<div data-setting-key="windowMode"></div>');
     const [row] = toGuidedSteps(defineTour({ id: 'r', title: 'R', steps: [{ id: 'row', title: 'Row', body: 'B', target: { setting: 'windowMode' } }] }));
     expect(current(row?.target)).toBe(document.querySelector('[data-setting-key="windowMode"]'));
@@ -98,9 +104,26 @@ describe('the Take the tour entry', () => {
 });
 
 describe('touring keys', () => {
-  it('holds every shell key but Alt+Enter while a tour is open, and leaves Escape to Tessera', () => {
-    expect(touringHolds({ key: 'k', altKey: false }, true)).toBe(true);
-    expect(touringHolds({ key: 'Enter', altKey: true }, true)).toBe(false);
-    expect(touringHolds({ key: 'Escape', altKey: false }, false)).toBe(false);
+  const key = (name: string, mods: Partial<Record<'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey', boolean>> = {}) =>
+    ({ key: name, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, ...mods });
+
+  it('lets shell shortcuts through during a tour, and holds only Escape and the keys the step advances on', () => {
+    expect(touringHolds(key('k', { ctrlKey: true }), 'next')).toBe(false);
+    expect(touringHolds(key('ArrowLeft', { altKey: true }), 'next')).toBe(false);
+    expect(touringHolds(key('Enter', { altKey: true }), 'next')).toBe(false);
+    expect(touringHolds(key('Escape'), 'click')).toBe(true);
+    expect(touringHolds(key('Escape', { shiftKey: true }), 'wait')).toBe(true);
+    expect(['ArrowRight', 'Enter', 'ArrowLeft'].map((name) => touringHolds(key(name), 'next'))).toEqual([true, true, true]);
+    expect(['ArrowRight', 'Enter', 'ArrowLeft'].map((name) => touringHolds(key(name), 'click'))).toEqual([false, false, true]);
+    expect(touringHolds(key('Escape'), null)).toBe(false);
+  });
+
+  it('reads the open step from the tour store when no advance is passed', () => {
+    useTourStore.setState({ tours: [SESSIONS], active: { id: 'sessions', index: 0 } });
+    expect([touringHolds(key('Enter')), touringHolds(key('k', { ctrlKey: true }))]).toEqual([false, false]);
+    useTourStore.setState({ active: { id: 'sessions', index: 1 } });
+    expect(touringHolds(key('Enter'))).toBe(true);
+    useTourStore.setState({ tours: NO_TOURS, active: null });
+    expect(touringHolds(key('Enter'))).toBe(false);
   });
 });

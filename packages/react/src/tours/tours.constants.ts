@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import type { TourAdvance } from '@drizztdourden08/tessera/composites';
 import type { TourDef, TourProgress, TourShellPart } from './tour.type';
 
 const NO_TOURS: readonly TourDef[] = [];
@@ -35,7 +36,15 @@ const TOUR_SEARCH_GROUP = 'Tours';
 
 const TOUR_KEYWORDS: readonly string[] = ['tour', 'guide', 'help', 'walkthrough', 'introduction'];
 
+const CLOSE_TOUR_KEY = 'Escape';
+
+const TOUR_STEP_KEYS: Readonly<Record<TourAdvance, readonly string[]>> = {
+  next: ['ArrowLeft', 'ArrowRight', 'Enter'],
+  click: ['ArrowLeft'],
+  wait: ['ArrowLeft'],
+};
+
 export {
-  EMPTY_PROGRESS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOURS, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
+  CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOURS, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
   TOUR_KEYWORDS, TOUR_MENU_KEY, TOUR_MENU_LABEL, TOUR_SEARCH_GROUP,
 };

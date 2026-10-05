@@ -63,6 +63,8 @@ type TourChoice = Pick<TourDef, 'id' | 'title'>;
 
 type TourEventListener = (name: string) => void;
 
+type TouringKey = Pick<KeyboardEvent, 'key' | 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'>;
+
 interface TourEntry {
   id: string;
   tour: TourDef;
@@ -91,6 +93,10 @@ interface TourSpotSlice {
   selector: string;
 }
 
+interface TourClickSlice extends TourSpotSlice {
+  step: string;
+}
+
 interface TourState {
   tours: readonly TourDef[];
   active: ActiveTour | null;
@@ -98,11 +104,13 @@ interface TourState {
   progressFor: string | null;
   shown: TourShown | null;
   spot: TourSpotSlice | null;
+  clickRelay: TourClickSlice | null;
   setTours: (tours: readonly TourDef[]) => void;
   setActive: (active: ActiveTour | null) => void;
   setProgress: (progress: TourProgress, profileId?: string | null) => void;
   setShown: (shown: TourShown | null) => void;
   setSpot: (spot: TourSpotSlice | null) => void;
+  setClickRelay: (clickRelay: TourClickSlice | null) => void;
 }
 
 interface TourApi {
@@ -118,6 +126,6 @@ interface TourApi {
 }
 
 export type {
-  ActiveTour, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
-  TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger,
+  ActiveTour, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
+  TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

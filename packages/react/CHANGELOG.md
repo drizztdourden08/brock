@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.21.0
+
+### Minor Changes
+
+- 6016488: Brock moves to Tessera 0.19.0: the workspace catalog and brock-react's peer range are `^0.19.0`. Tessera 0.19 puts rename and delete on every row of `ManagedList` (`actionVisibility`, default `'hover'`) and adds `onActivate`, so the arrow keys, Home and End can move focus without picking (MIGRATION §169). It renames nothing, so `brock upgrade` from 0.20.0 has no rename to replay.
+
+### Patch Changes
+
+- 0999a18: `ProfilesPanel` is drawn by Tessera's `ManagedList`, its props unchanged. The create form is an `InlineCreateForm` in the list's `create` slot, at the top of the list: New opens it with focus in the name field, Escape or Cancel closes it and puts focus back on New, and after a create that selects the new profile focus goes to its row. While no profile exists (`createOpen`) the form stays open with no Cancel, Escape leaves it open, and it stays open until the first create resolves. `selectedId` marks the active profile and `onSelect` is the list's `onActivate`: a click, Enter or Space on a row makes it the active profile, while the arrow keys, Home and End only move focus, so moving through the list never switches profile. The rows are one Tab stop, and Tab from the focused row reaches its rename (also F2) and delete. Rename and delete are on every row, as before: always shown on the active row, and on the others under the pointer or while the row holds focus, so a mouse user deletes any profile without switching to it. Delete still asks once in the row. A failed rename shows its message above the list.
+  - @drizztdourden08/brock-core@0.21.0
+
 ## 0.20.0
 
 ### Minor Changes

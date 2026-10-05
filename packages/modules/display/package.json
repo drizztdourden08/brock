@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-display",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "description": "Brock display module: refresh rate detection, a synced rate borrowed for fullscreen, window mode and monitor switching, and a settings tab.",
   "type": "module",
   "license": "UNLICENSED",

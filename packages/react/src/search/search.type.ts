@@ -34,6 +34,7 @@ interface SearchEntry {
   disabled?: boolean;
   checked?: boolean;
   toggle?: SearchToggle;
+  confirm?: string | true;
   run?: () => void;
 }
 

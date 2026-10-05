@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { ManagedList } from '@drizztdourden08/tessera/composites';
+import { ItemList } from '@drizztdourden08/tessera/composites';
 import { Box, Callout, SectionHeader } from '@drizztdourden08/tessera/primitives';
 import { useProfilesPanel } from './behavior/useProfilesPanel';
 import { ProfilesPanelCreate } from './sub-components/ProfilesPanelCreate';
@@ -29,7 +29,7 @@ const ProfilesPanel = (props: ProfilesPanelProps) => {
     <Box className={`profiles-panel${className ? ` ${className}` : ''}`}>
       <SectionHeader title={title} />
       {panel.renameError && <Box role="alert"><Callout tone="danger">{panel.renameError}</Callout></Box>}
-      <ManagedList<ProfilesPanelItem>
+      <ItemList<ProfilesPanelItem>
         title={PROFILES_PANEL_TEXT.list}
         items={profiles}
         getId={PROFILE_ROW.getId}

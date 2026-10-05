@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind constants */
-const TOAST_DURATION_MS = 4000;
-const MAX_TOASTS = 5;
+import type { ToastPosition } from '@drizztdourden08/tessera/composites';
 
-export { MAX_TOASTS, TOAST_DURATION_MS };
+const MAX_TOASTS = 3;
+const TOAST_POSITION: ToastPosition = 'bottom-right';
+
+export { MAX_TOASTS, TOAST_POSITION };

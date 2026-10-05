@@ -4,7 +4,8 @@ import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
-import { useCanGoBack } from '../../navigation/useCanGoBack';
+import { backLabelOf } from '../../hub/back-label-of';
+import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { useScreenRegistry } from '../useScreenRegistry';
@@ -22,7 +23,7 @@ const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
   const registry = useScreenRegistry();
   const { active: activeId, params, open, close, back } = useNavigation();
-  const canGoBack = useCanGoBack();
+  const backTarget = useBackTarget();
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
 
@@ -55,7 +56,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         extra={screen.extra?.(ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
-        onBack={canGoBack && !hidden ? back : undefined}
+        back={backTarget !== null && !hidden ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
         onClose={close}
       >
         {guarded(screen, hidden)}

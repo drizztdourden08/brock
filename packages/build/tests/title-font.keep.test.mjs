@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -19,22 +19,13 @@ afterEach(() => {
 
 const words = (family) => `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="40"><text x="4" y="30" font-family="${family}" font-size="24">brock-check</text></svg>`;
 
-const tableOf = (ttf, tag) => {
-  const index = Array.from({ length: ttf.readUInt16BE(4) }, (_, at) => 12 + at * 16).find((record) => ttf.toString('latin1', record, record + 4) === tag);
-  return ttf.subarray(ttf.readUInt32BE(index + 8), ttf.readUInt32BE(index + 8) + ttf.readUInt32BE(index + 12));
-};
-
 describe('titleFont', () => {
-  it('turns Tessera\'s WOFF2 title font into a TrueType file resvg draws with', () => {
+  it('reads Tessera\'s TrueType title font, and the name draws in it with the system fonts loaded', () => {
     const font = titleFont(TESSERA);
-    expect(font?.family).toMatch(/^Chakra Petch/);
-    expect(font.ttf.readUInt32BE(0)).toBe(0x00010000);
-    const glyf = tableOf(font.ttf, 'glyf');
-    const loca = tableOf(font.ttf, 'loca');
-    const longOffsets = tableOf(font.ttf, 'head').readInt16BE(50) === 1;
-    const last = longOffsets ? loca.readUInt32BE(loca.length - 4) : loca.readUInt16BE(loca.length - 2) * 2;
-    expect(last).toBe(glyf.length);
-    const drawn = rasteriseSvg(words(font.family), 240, font.ttf);
+    expect(font?.family).toBe('Chakra Petch SemiBold');
+    expect(font.file.replace(/\\/g, '/')).toMatch(/fonts\/chakra-petch\/chakra-petch-latin-600-normal\.ttf$/);
+    expect(readFileSync(font.file).readUInt32BE(0)).toBe(0x00010000);
+    const drawn = rasteriseSvg(words(font.family), 240, font.file);
     expect(drawn.equals(rasteriseSvg(words(font.family), 240))).toBe(false);
     expect(drawn.equals(rasteriseSvg(words('Segoe UI'), 240))).toBe(false);
   });

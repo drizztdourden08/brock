@@ -1,13 +1,12 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { FONTS_DIR, TITLE_FONT } from '../splash/splash.constants.mjs';
-import { SPLASH_FONT } from './installer.constants.mjs';
-import { fontFamily } from './woff2/font-family.mjs';
-import { woff2ToTtf } from './woff2/woff2-to-ttf.mjs';
+import { join } from 'node:path';
+import { FONTS_DIR } from '../splash/splash.constants.mjs';
+import { fontFamily } from './font-family.mjs';
+import { SPLASH_FONT, TITLE_TTF } from './installer.constants.mjs';
 
 /**
- * @typedef {{ family: string, ttf: Buffer }} TitleFont  family: the name the TrueType file declares
+ * @typedef {{ family: string, file: string }} TitleFont  family: the name the TrueType file declares; file: its path
  */
 
 const warned = new Set();
@@ -23,14 +22,14 @@ const warnOnce = (tesseraRoot, error) => {
 
 /**
  * @param {string} tesseraRoot  The installed Tessera package folder
- * @returns {TitleFont | null}  the title font as TrueType, or null if unreadable
+ * @returns {TitleFont | null}  Tessera's TrueType title font, or null if unreadable
  */
 const titleFont = (tesseraRoot) => {
   try {
-    const ttf = woff2ToTtf(readFileSync(join(tesseraRoot, FONTS_DIR, dirname(TITLE_FONT.css), TITLE_FONT.file)));
-    const family = fontFamily(ttf);
-    if (!family) throw new Error(`${TITLE_FONT.file} names no family`);
-    return { family, ttf };
+    const file = join(tesseraRoot, FONTS_DIR, TITLE_TTF);
+    const family = fontFamily(readFileSync(file));
+    if (!family) throw new Error(`${TITLE_TTF} names no family`);
+    return { family, file };
   } catch (error) {
     warnOnce(tesseraRoot, error);
     return null;

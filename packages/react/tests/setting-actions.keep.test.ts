@@ -58,9 +58,9 @@ describe('settings row actions', () => {
     const [inline, dialog] = row && 'actions' in row ? row.actions ?? [] : [];
     expect(inline?.confirm).toBe('Forget it?');
     expect(dialog?.confirm).toBeUndefined();
-    inline?.onClick();
+    inline?.onSelect();
     await vi.waitFor(() => expect(forget).toHaveBeenCalledOnce());
-    dialog?.onClick();
+    dialog?.onSelect();
     await vi.waitFor(() => expect(useDialogStore.getState().dialog).toMatchObject({ title: 'Reset?' }));
     expect(reset).not.toHaveBeenCalled();
     useDialogStore.getState().dialog?.onConfirm();
@@ -75,7 +75,7 @@ describe('settings row actions', () => {
     const full = settingRow(item, context({ cache: 12 }));
     const [rebuild] = full && 'actions' in full ? full.actions ?? [] : [];
     expect(rebuild?.disabled).toBe(false);
-    rebuild?.onClick();
+    rebuild?.onSelect();
     await vi.waitFor(() => expect(onSelect).toHaveBeenCalledWith({ cache: 12 }));
   });
 
@@ -100,7 +100,7 @@ describe('row action runner', () => {
     const [rebuild, copy] = row && 'actions' in row ? row.actions ?? [] : [];
     expect(rebuild?.loading).toBe(true);
     expect(copy?.loading).toBe(false);
-    copy?.onClick();
+    copy?.onSelect();
     expect(run).toHaveBeenCalledWith('owner/copy', item.actions?.[1], { settings: { cache: 1 }, inline: true });
   });
 

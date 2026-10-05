@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { ConfirmActionOptions } from '../stores/dialog.type';
 import type { NavigationSnapshot, ScreenParams } from './navigation.type';
 
@@ -9,10 +10,10 @@ const HISTORY_LIMIT = 50;
 const PARAM_PREFIX = ':';
 
 const DISCARD_CHANGES: ConfirmActionOptions = {
-  title: 'Discard changes?',
+  title: TESSERA_STRINGS.common.unsavedTitle,
   message: 'This page has changes that are not saved. Leave it and lose them?',
-  confirmLabel: 'Discard',
-  cancelLabel: 'Keep editing',
+  confirmLabel: TESSERA_STRINGS.common.discard,
+  cancelLabel: TESSERA_STRINGS.common.keepEditing,
   variant: 'danger',
 };
 

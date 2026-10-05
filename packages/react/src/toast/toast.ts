@@ -1,16 +1,15 @@
 /* @layer renderer-shell @kind logic */
-import { TOAST_DURATION_MS } from './toast.constants';
+import { toast as raise } from '@drizztdourden08/tessera/composites';
+import type { ToastInput } from '@drizztdourden08/tessera/composites';
 import type { ToastOptions } from './toast.type';
-import { useToastStore } from './useToastStore';
 
-let nextToastId = 0;
+const toastInput = (message: string, { variant, duration, action }: ToastOptions): ToastInput => ({
+  message,
+  ...(variant === undefined ? {} : { variant }),
+  ...(duration === undefined ? {} : { duration }),
+  ...(action === undefined ? {} : { action }),
+});
 
-const toast = (message: string, options: ToastOptions = {}): string => {
-  const { variant = 'info', duration = TOAST_DURATION_MS, action } = options;
-  nextToastId += 1;
-  const id = `toast-${nextToastId}`;
-  useToastStore.getState().push({ id, message, variant, duration, ...(action ? { action } : {}) });
-  return id;
-};
+const toast = (message: string, options: ToastOptions = {}): string => raise(toastInput(message, options));
 
 export { toast };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { nav } from '../../navigation/nav';
 import { tours } from '../../tours/tours';
 import { tourTargets } from '../../tours/resolve-tour-target';
 import type { TourDef } from '../../tours/tour.type';
@@ -6,22 +7,31 @@ import { delay } from '../dom/delay';
 import { press } from '../dom/press-key';
 import { waitFor } from '../dom/wait-for';
 import type { ReviewStep, StepTour } from '../review.type';
+import { tourLayout } from './read-tour-layout';
 import { tourReading } from './read-tour-step';
+import { checkPoppedTour } from './tour-popped-check';
 import { TOUR_SETTLE_MS, TOUR_STEP_WAIT_MS } from './tours-step.constants';
 
 const pad = (index: number): string => String(index + 1).padStart(2, '0');
+
+const layoutChecks = (tour: StepTour, name: string): void => {
+  const kept = tourLayout.titleBarKept();
+  if (kept !== null) tour.check(`${name}-title-bar`, kept, 'the title bar stays live and undimmed', 'the title bar is inert or under the veil');
+  tour.check(`${name}-bubble-on-screen`, tourLayout.bubbleOnScreen(), 'its bubble fits in the window', 'its bubble leaves the window');
+  tour.check(`${name}-mascot-clear`, tourLayout.mascotOffHole(), 'the mascot keeps off the lit part', 'the mascot stands on the lit part');
+};
 
 const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<boolean> => {
   const step = def.steps[index];
   if (!step) return false;
   const name = `tour-${def.id}-${step.id}`;
-  const shown = (await waitFor(() => tourReading.shown(step), TOUR_STEP_WAIT_MS)) !== null;
-  tour.check(name, shown, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
-  if (tourTargets.litOf(step)) tour.check(`${name}-lit`, tourReading.lit(), 'its target is lit with the glow ring', 'it found no target to light');
-  if (index === 0) tour.check(`tour-${def.id}-title-bar-usable`, tourReading.titleBarUsable(), 'the title bar stays usable over the tour', 'the title bar is inert while the tour is open');
+  const at = await waitFor(() => tourReading.shown(def.id, index), TOUR_STEP_WAIT_MS);
+  tour.check(name, at !== null, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
+  if (at && tourTargets.litOf(step)) tour.check(`${name}-lit`, tourReading.lit(at), 'its target is lit with the glow ring', 'it found no target to light');
   await delay(TOUR_SETTLE_MS);
+  if (at) layoutChecks(tour, name);
   await tour.capture(`tour-${def.id}-${pad(index)}-${step.id}`);
-  if (!shown) return false;
+  if (!at) return false;
   const how = tourReading.advance(step);
   const moved = (await waitFor(() => tourReading.movedOn(def.id, index), TOUR_STEP_WAIT_MS)) !== null;
   tour.check(`${name}-advances`, moved, `it goes on after ${how}`, `it did not go on after ${how}`);
@@ -38,13 +48,17 @@ const walkTour = async (tour: StepTour, def: TourDef): Promise<void> => {
 };
 
 const escapeCloses = async (tour: StepTour, def: TourDef): Promise<void> => {
+  nav.open(tour.env.homeScreen);
   tours.start(def.id, 0);
-  const first = def.steps[0];
-  if (first) await waitFor(() => tourReading.shown(first), TOUR_STEP_WAIT_MS);
+  await waitFor(() => tourReading.shown(def.id, 0), TOUR_STEP_WAIT_MS);
+  const open = nav.active();
   press({ key: 'Escape' });
   const closed = (await waitFor(() => tourReading.layer() === null && !tours.isOpen())) !== null;
   tour.check('tour-escape-closes', closed, 'Escape closes an open tour', 'Escape left the tour open');
+  const kept = open !== null && nav.active() === open;
+  tour.check('tour-escape-keeps-screen', kept, `Escape closed the tour only, and "${open ?? ''}" stayed open`, `Escape also changed the screen (was ${open ?? 'nothing'}, now ${nav.active() ?? 'nothing'})`);
   tours.stop();
+  nav.close();
 };
 
 const toursStep: ReviewStep = {
@@ -58,6 +72,7 @@ const toursStep: ReviewStep = {
     }
     for (const def of list) await walkTour(tour, def);
     await escapeCloses(tour, first);
+    await checkPoppedTour(tour);
   },
 };
 

@@ -49,4 +49,10 @@ describe('toMenuGroups', () => {
     reset?.onSelect?.();
     expect(clicked).toEqual(['reset']);
   });
+
+  it('passes the onCancel of a confirm entry to Tessera', () => {
+    const onCancel = (): void => undefined;
+    const [item] = toMenuGroups([{ key: 'reset', label: 'Reset', confirm: true, onCancel, onClick: () => undefined }], { openScreen: () => undefined })[0]?.items as TesseraMenuItem[];
+    expect(item?.onCancel).toBe(onCancel);
+  });
 });

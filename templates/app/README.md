@@ -189,8 +189,9 @@ marked `data-tour="<name>"`, or `{ selector }`. Before it shows, a step can `ope
 or a hub page (`'game/saves'`), open a `widget`, set a `context`, and run `before(ctx)`,
 which may be async; keep it safe to run twice, since Back runs it again. `advanceOn` makes
 the user act to go on: `{ click: target }`, `{ event: '<name>' }` (sent with
-`tours.emit('<name>')`) or `{ context: '<name>' }`. `mascot` names the mascot's state for
-the step (`'wave'`, `'point'`, `'idea'`, ...).
+`tours.emit('<name>')`) or `{ context: '<name>' }`, and `hint` says what to do. `mascot`
+names the mascot's state for the step (`'wave'`, `'point'`, `'idea'`, ...), or
+`{ walk: 'move', arrive: 'wave' }` to walk over first.
 
 `trigger: 'first-run'` starts a tour once, the first time a profile opens the app.
 Menu > Advanced > Take the tour (Help when the app has a Help group) and the search

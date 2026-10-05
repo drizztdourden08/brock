@@ -16,6 +16,7 @@ import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
 import { useWidgetWindowEscape } from './behavior/useWidgetWindowEscape';
+import { WidgetTourSpot } from './sub-components/WidgetTourSpot';
 import { WidgetWindowOptions } from './sub-components/WidgetWindowOptions';
 import type { WidgetWindowProps } from './WidgetWindow.type';
 import './WidgetWindow.css';
@@ -65,6 +66,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         <WidgetBody id={id} label={label}>{definition?.render()}</WidgetBody>
       </Widget>
       <WindowGuide />
+      <WidgetTourSpot id={id} />
       <StandardOverlays />
     </Box>
   );

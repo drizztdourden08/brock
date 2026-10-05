@@ -25,9 +25,13 @@ interface WidgetWindowOptionsProps {
   defaultOpen: boolean;
 }
 
+interface WidgetTourSpotProps {
+  id: string;
+}
+
 interface ReviewOptionsRequest {
   id: string;
   open: boolean;
 }
 
-export type { ReviewOptionsRequest, WidgetWindowOptionsProps, WidgetWindowProps };
+export type { ReviewOptionsRequest, WidgetTourSpotProps, WidgetWindowOptionsProps, WidgetWindowProps };

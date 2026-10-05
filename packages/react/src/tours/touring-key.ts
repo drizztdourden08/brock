@@ -1,10 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { TouringKey } from './tour.type';
+const touringHolds = (event: Pick<KeyboardEvent, 'key' | 'altKey'>, touring: boolean): boolean =>
+  touring && !(event.altKey && event.key === 'Enter');
 
-const touringKey = (event: Pick<KeyboardEvent, 'key' | 'altKey'>, touring: boolean): TouringKey => {
-  if (!touring) return null;
-  if (event.key === 'Escape') return 'close';
-  return event.altKey && event.key === 'Enter' ? null : 'skip';
-};
-
-export { touringKey };
+export { touringHolds };

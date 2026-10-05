@@ -1,0 +1,19 @@
+/* @layer renderer-shell @kind hook */
+import { useMemo } from 'react';
+import { useWidgetLayoutStore } from '../../../widgets/useWidgetLayoutStore';
+import { toGuidedSteps } from '../../to-guided-steps';
+import { useTourStore } from '../../useTourStore';
+import { NO_STEPS } from '../TourHost.constants';
+
+const useActiveStep = () => {
+  const list = useTourStore((s) => s.tours);
+  const active = useTourStore((s) => s.active);
+  const popped = useWidgetLayoutStore((s) => s.layout.popped);
+  const def = active ? list.find((tour) => tour.id === active.id) ?? null : null;
+  const step = def && active ? def.steps[active.index] ?? null : null;
+  const steps = useMemo(() => (def ? toGuidedSteps(def) : NO_STEPS), [def, popped]);
+  const key = def && active ? `${def.id}:${active.index}` : '';
+  return { list, def, step, steps, index: active?.index ?? 0, key, popped };
+};
+
+export { useActiveStep };

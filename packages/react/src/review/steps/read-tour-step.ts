@@ -1,31 +1,25 @@
 /* @layer renderer-shell @kind logic */
 import { tourTargets } from '../../tours/resolve-tour-target';
 import { tours } from '../../tours/tours';
-import type { TourStepDef } from '../../tours/tour.type';
+import type { TourShown, TourStepDef } from '../../tours/tour.type';
 import { useTourStore } from '../../tours/useTourStore';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
-import { SELECTORS } from '../review.constants';
 import { RING_OFF_CLASS, TOUR_SELECTORS } from './tours-step.constants';
 
 const layer = (): HTMLElement | null => find(TOUR_SELECTORS.layer);
 
-const lit = (): boolean => {
+const ringLit = (): boolean => {
   const ring = find(TOUR_SELECTORS.ring);
   return ring !== null && !ring.classList.contains(RING_OFF_CLASS);
 };
 
-const shown = (step: TourStepDef): HTMLElement | null => {
-  const root = layer();
-  if (root?.dataset.step !== step.id) return null;
-  const bubble = find(TOUR_SELECTORS.bubble, root);
-  return bubble && (tourTargets.litOf(step) === undefined || lit()) ? bubble : null;
+const shown = (id: string, index: number): TourShown | null => {
+  const at = useTourStore.getState().shown;
+  return at?.id === id && at.index === index && find(TOUR_SELECTORS.bubble) !== null ? at : null;
 };
 
-const titleBarUsable = (): boolean => {
-  const bar = find(SELECTORS.titleBar);
-  return bar !== null && bar.closest('[inert]') === null;
-};
+const lit = (at: TourShown): boolean => at.target !== null && ringLit();
 
 const movedOn = (id: string, index: number): boolean => {
   const { active } = useTourStore.getState();
@@ -47,6 +41,6 @@ const advance = (step: TourStepDef): string => {
   return on ? 'a click on its target' : 'its Next button';
 };
 
-const tourReading = { layer, lit, shown, titleBarUsable, movedOn, advance };
+const tourReading = { layer, lit, shown, movedOn, advance };
 
 export { tourReading };

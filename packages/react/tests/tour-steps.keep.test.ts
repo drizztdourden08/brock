@@ -54,8 +54,8 @@ describe('toGuidedSteps targets and entry', () => {
     const { layout } = useWidgetLayoutStore.getState();
     useWidgetLayoutStore.setState({ layout: { ...layout, popped: [{ id: 'notes' }] } });
     expect(current(notes?.target)).toBeNull();
-    const popped = toGuidedSteps(WELCOME)[1];
-    expect([popped?.target, popped?.clickTarget, popped?.advance]).toEqual([undefined, undefined, 'click']);
+    const popped = toGuidedSteps(WELCOME, 'Click it')[1];
+    expect([popped?.target, popped?.clickTarget, popped?.advance, popped?.hint]).toEqual([undefined, undefined, 'wait', 'Click it']);
     expect(tourTargets.poppedClick(WELCOME.steps[1] as TourStepDef)).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"]' });
     const inNotes = { id: 'n', title: 'N', body: 'B', widget: 'notes', advanceOn: { click: '[data-widget-id="notes"] textarea' } };
     expect(tourTargets.poppedSpot({ id: 'w', title: 'W', body: 'B', target: { widget: 'notes' } })).toEqual({ widget: 'notes', selector: '[data-widget-id="notes"] .widget__content' });

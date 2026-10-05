@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-react
 
+## 0.28.0
+
+### Minor Changes
+
+- c426f9a: Brock moves to Tessera 0.22.0: the workspace catalog and brock-react's peer range are `^0.22.0` (MIGRATION §192 to §195). RENAMES.json has no entry for 0.22.0, so an app changes nothing. A tour step takes `hint` and a walking `mascot` (`{ walk?, arrive }`, Tessera's `TourStepMascot`), and `before(ctx)` gets `ctx.signal`, aborted when the user leaves the step before it shows. A menu entry with `confirm` takes `onCancel`, run when its question closes without the second click, in the title bar menu and in the search palette. Icon buttons of size `md` are now 39 px, the height of a `md` Button (TX-45): the header Back and close buttons of every screen, so the ScreenLayer header row grows from 32 to 39 px; the title bar keeps its 28 px actions and dense rows keep their `sm` buttons.
+
+### Patch Changes
+
+- c426f9a: The confirm button of a palette row, such as Reset layout, reports its question through Tessera's `onAsk` and `onCancel` (MIGRATION 192) in place of Brock's click capture around it.
+- c426f9a: A tour step whose lit part is a widget popped into its own window lights it there: the main window relays the step's spot to the widget window, which draws Tessera's `TourSpot` over the widget, while the bubble stays in the main window. Before, the bubble sat in the middle and nothing was lit. The review lights a popped widget from a tour step and checks the widget window draws the spot and drops it when the tour closes (`reviewWidgetProbe({ kind: 'tourSpot', id })`).
+- c426f9a: Guided tours use Tessera 0.22's own parts in place of Brock's shims. The title bar is kept live with `keep`: it stays usable and undimmed for the whole tour, also when the lit part is inside it, with no lift and no inert moving of Brock's own (the MutationObserver is gone). Steps that end on a tour event or a context are Tessera `advance: 'wait'` steps, so Next hides there too, and a click target apart from the lit part is Tessera's `clickTarget`. Tessera now places the bubble, so it stays in the window beside a tall target, and keeps the mascot off the lit part. Escape is Tessera's, in the capture phase: it closes the tour and no longer reaches the shell, so the screen under the tour stays open.
+- Updated dependencies [c426f9a]
+  - @drizztdourden08/brock-core@0.28.0
+
 ## 0.27.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-core
 
+## 0.28.0
+
+### Patch Changes
+
+- c426f9a: A tour step whose lit part is a widget popped into its own window lights it there: the main window relays the step's spot to the widget window, which draws Tessera's `TourSpot` over the widget, while the bubble stays in the main window. Before, the bubble sat in the middle and nothing was lit. The review lights a popped widget from a tour step and checks the widget window draws the spot and drops it when the tour closes (`reviewWidgetProbe({ kind: 'tourSpot', id })`).
+
 ## 0.27.0
 
 ## 0.26.0

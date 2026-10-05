@@ -26,7 +26,7 @@ const domainActions = (def: DataDomainDef, usage: DomainUsage | undefined, actio
     id: 'clear',
     label: 'Clear',
     icon: 'trash-2',
-    variant: 'danger',
+    tone: 'danger',
     disabled: usage?.count === 0,
     confirm: {
       title: `Clear ${def.label}?`,

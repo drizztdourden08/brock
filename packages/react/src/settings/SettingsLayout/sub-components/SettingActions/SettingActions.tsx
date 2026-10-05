@@ -2,6 +2,7 @@
 import { Button, ButtonRow, Icon } from '@drizztdourden08/tessera/primitives';
 import type { SettingActionsProps } from './SettingActions.type';
 import { actionDisabled } from '../../behavior/action-disabled';
+import { actionTone } from '../../behavior/action-tone';
 import { useActionRunner } from '../../behavior/useActionRunner';
 
 const SettingActions = (props: SettingActionsProps) => {
@@ -15,7 +16,7 @@ const SettingActions = (props: SettingActionsProps) => {
           <Button
             key={key}
             size="sm"
-            variant={action.variant ?? 'secondary'}
+            variant={actionTone(action) ?? 'secondary'}
             icon={action.icon ? <Icon name={action.icon} /> : undefined}
             disabled={disabled || actionDisabled(action, settings)}
             loading={busy[key] === true}

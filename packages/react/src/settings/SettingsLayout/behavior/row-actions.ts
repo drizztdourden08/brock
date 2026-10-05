@@ -5,6 +5,7 @@ import { Icon } from '@drizztdourden08/tessera/primitives';
 import type { SettingAction, SettingValues } from '../../settings.type';
 import type { RowActionScope } from '../SettingsLayout.type';
 import { actionDisabled } from './action-disabled';
+import { actionTone } from './action-tone';
 import { runSettingAction } from './run-setting-action';
 
 const rowAction = (action: SettingAction, index: number, settings: SettingValues, scope: RowActionScope | undefined): SettingsRowAction => {
@@ -15,7 +16,7 @@ const rowAction = (action: SettingAction, index: number, settings: SettingValues
     id,
     label: action.label,
     icon: action.icon ? createElement(Icon, { name: action.icon }) : undefined,
-    tone: action.variant === 'danger' ? 'danger' : undefined,
+    tone: actionTone(action) === 'danger' ? 'danger' : undefined,
     disabled: actionDisabled(action, settings),
     loading: scope?.runner?.busy[key] === true,
     confirm: typeof action.confirm === 'string' ? action.confirm : undefined,

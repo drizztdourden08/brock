@@ -9,9 +9,11 @@ import { tesseraImports } from './tessera-imports.mjs';
 import { tsSource } from './ts-source.mjs';
 import { typedValues } from './typed-values.mjs';
 
-const nameStage = (ts, file, release) => {
+const NOTHING = Object.freeze({ edits: [], todos: [] });
+
+const nameStage = (ts, file, release, typed) => {
   const imports = tesseraImports(ts, file);
-  return [componentRenames(ts, file, imports, release), jsxRenames(ts, file, imports, release), typedValues(ts, file, imports, release), removedExports(ts, file, imports, release)];
+  return [componentRenames(ts, file, imports, release), jsxRenames(ts, file, imports, release), typedValues(ts, file, imports, release), removedExports(ts, file, imports, release), typed];
 };
 
 const runStage = (ts, { path, source }, stage) => {
@@ -25,10 +27,11 @@ const moveStage = (ts, { path, source }, release) => importMoves({ moves: releas
  * @param {typeof import('typescript')} ts
  * @param {{ path: string, source: string }} input a script file
  * @param {Record<string, any>} release one RENAMES.json release
+ * @param {{ edits: { start: number, end: number, text: string }[], todos: { line: number, message: string }[] }} [typed] the typed object props, found on the same text
  * @returns {{ source: string, todos: { line: number, message: string }[] }} names, strings, then the entry point moves
  */
-const scriptRenames = (ts, { path, source }, release) => {
-  const names = runStage(ts, { path, source }, (file) => nameStage(ts, file, release));
+const scriptRenames = (ts, { path, source }, release, typed = NOTHING) => {
+  const names = runStage(ts, { path, source }, (file) => nameStage(ts, file, release, typed));
   const strings = runStage(ts, { path, source: names.source }, (file) => [stringRenames(ts, file, release)]);
   const moved = moveStage(ts, { path, source: strings.source }, release);
   return { source: moved.source, todos: [...names.todos, ...strings.todos, ...moved.todos] };

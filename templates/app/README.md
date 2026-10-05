@@ -186,6 +186,9 @@ page adds what it shows with `useSearchEntries(entries)` while it is open.
   `primitive`) writes `src/<kind>/<Name>/`, the place `tessera.config.json` defaults to.
 - A setting: a field on `AppSettings`, a default in `DEFAULT_SETTINGS`, and a row in a
   `.settings.ts` page (`src/screens/game/general.settings.ts` to start).
+- A button in a settings row: `actions: [{ id, label, icon?, tone?, confirm?, onSelect }]`
+  on the row, like Widget layout's Reset; `tone: 'danger'` marks a destructive one and
+  `confirm` asks first.
 - An IPC channel: one line in `APP_CHANNELS`, for example
   `listNotes: invoke<() => Promise<string[]>>()('notes:list')`. Handle it in
   `electron/handlers/notes-handlers.ts` (exporting `notesHandlers`, a `HandlerGroup`) with

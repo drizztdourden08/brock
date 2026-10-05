@@ -4,8 +4,9 @@ import { isValidElement } from 'react';
 import { settingRows } from '../src/settings/SettingsLayout/behavior/setting-rows';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
 import { withoutKey } from '../src/settings/SettingsLayout/behavior/without-key';
+import { runSettingAction } from '../src/settings/SettingsLayout/behavior/run-setting-action';
 import { SettingActions } from '../src/settings/SettingsLayout/sub-components/SettingActions';
-import type { SettingItem } from '../src/settings/settings.type';
+import type { SettingAction, SettingItem } from '../src/settings/settings.type';
 import { confirmDelete } from '../src/stores/confirm-delete';
 import { dialogs } from '../src/stores/dialogs';
 import { useDialogStore } from '../src/stores/useDialogStore';
@@ -19,7 +20,7 @@ const OWNER: SettingItem = {
   hint: 'Copy it to share, or reset it to get a new one.',
   actions: [
     { id: 'copy', label: 'Copy', icon: 'copy', onSelect: () => undefined },
-    { id: 'reset', label: 'Reset', variant: 'danger', confirm: { title: 'Reset?', message: 'A new id is made.' }, onSelect: () => undefined },
+    { id: 'reset', label: 'Reset', tone: 'danger', confirm: { title: 'Reset?', message: 'A new id is made.' }, onSelect: () => undefined },
   ],
 };
 
@@ -50,7 +51,7 @@ describe('settings row actions', () => {
     const item: SettingItem = {
       ...OWNER,
       actions: [
-        { id: 'forget', label: 'Forget', variant: 'danger', confirm: 'Forget it?', onSelect: forget },
+        { id: 'forget', label: 'Forget', tone: 'danger', confirm: 'Forget it?', onSelect: forget },
         { id: 'reset', label: 'Reset', confirm: { title: 'Reset?', message: 'A new id is made.' }, onSelect: reset },
       ],
     };
@@ -89,6 +90,19 @@ describe('settings row actions', () => {
 
   it('still draws nothing for an item with neither a control nor actions', () => {
     expect(settingRows({ ...OWNER, key: 'nothing', actions: [] }, context())).toEqual([]);
+  });
+});
+
+describe('the deprecated variant', () => {
+  it('is still read as the tone, and tone wins when both are set', async () => {
+    const wipe: SettingAction = { id: 'old', label: 'Wipe', variant: 'danger', confirm: 'Wipe it?', onSelect: () => undefined };
+    const item: SettingItem = { ...OWNER, actions: [wipe, { id: 'both', label: 'Keep', tone: 'secondary', variant: 'danger', onSelect: () => undefined }] };
+    const row = settingRow(item, context());
+    const actions = row && 'actions' in row ? row.actions ?? [] : [];
+    expect(actions.map((action) => action.tone)).toEqual(['danger', undefined]);
+    void runSettingAction(wipe);
+    await vi.waitFor(() => expect(useDialogStore.getState().dialog).toMatchObject({ title: 'Wipe it?', variant: 'danger' }));
+    useDialogStore.getState().dialog?.onCancel?.();
   });
 });
 

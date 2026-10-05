@@ -8,6 +8,7 @@ import { replayRelease } from './replay-release.mjs';
 import { selectReleases } from './select-releases.mjs';
 import { tesseraFiles } from './tessera-files.mjs';
 import { tesseraPin } from './tessera-pin.mjs';
+import { typedProperties } from './typed-properties.mjs';
 import { GENERATED_MARK, NEXT_RELEASE, RENAMES_STEP_ID, SCRIPT_FILE, TESSERA_BASELINE, TESSERA_PACKAGE } from './tessera-renames.constants.mjs';
 import { withoutChains } from './without-chains.mjs';
 
@@ -25,8 +26,9 @@ const reload = (sources, paths) => {
 const replay = (ts, { rootDir, sources }, release) => {
   const touched = [];
   const todos = [];
+  const typed = ts ? typedProperties(ts, sources, release) : new Map();
   for (const item of sources) {
-    const result = replayRelease(ts, item, release);
+    const result = replayRelease(ts, item, release, typed.get(item.path));
     if (result.source !== item.source) {
       writeFileSync(item.file, result.source, 'utf8');
       item.source = result.source;

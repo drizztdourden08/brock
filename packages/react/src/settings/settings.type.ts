@@ -34,6 +34,7 @@ interface SettingAction {
   id?: string;
   label: string;
   icon?: IconName;
+  tone?: ButtonVariant;
   variant?: ButtonVariant;
   disabled?: boolean | ((settings: SettingValues) => boolean);
   confirm?: string | ConfirmActionOptions;

@@ -300,6 +300,12 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
   - `components`: only a name imported from `@drizztdourden08/tessera*` in that file;
     the import, its JSX tags and its type and value references. An aliased import
     renames the imported name alone; a re-export is a to-do for its importers.
+  - `components` in a usage file (`<Name>.usage.ts`, which `tessera guide` reads): the
+    `use` of each `avoidWhen` entry names a part in a string, so it is renamed when it is
+    a key, and a note there is a to-do. The `example` string is code that the guide
+    compiles, so it replays as a file of its own: its Tessera imports, their references
+    and the release's moves, written back with the escapes its quotes need. No other
+    string of the usage file changes, and a `use` key anywhere else is left alone.
   - `cssClasses`: selectors in stylesheets (`.old` not followed by a name character,
     outside comments, strings and `url()`); class tokens in strings under a `class*`
     JSX attribute, a `cx`, `cn`, `clsx` or `classnames` call or a `*Class(Name)(s)`

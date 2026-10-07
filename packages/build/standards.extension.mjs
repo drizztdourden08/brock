@@ -57,7 +57,7 @@ const brockAppChecks = async ({ rootDir, packageDir, label, kind }) => {
 
 export default defineExtension({
   id: 'brock-app',
-  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar, src/tours and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files, <id>.step.ts review steps, <id>.action.ts title bar items and <id>.tour.ts tours',
+  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar, src/tours and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files, <id>.step.ts review steps, <id>.action.ts title bar items and <id>.tour.ts tours, each with its <id>.<kind>.constants.ts',
   structure: {
     appMarkers: [APP_MARKER],
     moduleFiles: [
@@ -66,6 +66,7 @@ export default defineExtension({
       { pattern: /^[a-z][a-z0-9-]*\.step\.ts$/, label: '<id>.step.ts' },
       { pattern: /^[a-z][a-z0-9-]*\.action\.ts$/, label: '<id>.action.ts' },
       { pattern: /^[a-z][a-z0-9-]*\.tour\.ts$/, label: '<id>.tour.ts' },
+      { pattern: /^[a-z][a-z0-9-]*\.(?:task|widget|step|action|tour)\.constants\.ts$/, label: '<id>.<kind>.constants.ts' },
     ],
     ownedDirs: conventionOwned,
     checks: [brockAppChecks],

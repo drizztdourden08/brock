@@ -35,7 +35,9 @@ my-app/
     screens/<bucket>/<id>.<kind>.tsx, screens/<bucket>/<page>/<sub>.sub.tsx, screens/<id>.card.tsx, screens/<id>.layer.tsx, screens/<id>.base.tsx
     widgets/<id>.widget.tsx        one widget per file
     widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
+    widgets/<id>.widget.constants.ts that widget's constants
     title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
+    title-bar/<id>.action.constants.ts that item's constants
     tours/<id>.tour.ts             one guided tour per file: defineTour({ id, title, steps, trigger? })
     tours/<id>.tour.constants.ts   that tour's constants, such as the selectors it lights
     boot/<id>.task.ts              renderer boot tasks
@@ -71,14 +73,14 @@ my-repo/
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx` | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
-| Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
+| Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
-| Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`) | `brock sync` into `.brock/title-bar.ts` |
+| Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
 | Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
 | Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp`; the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
-| Renderer boot task | `src/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.renderer.ts` |
+| Renderer boot task | `src/boot/` | `<id>.task.ts`, `<id>.task.constants.ts` for its constants | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
 | IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |
 | IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, exporting `<subject>Handlers` | `brock sync` into `.brock/handlers.main.ts`, passed as `handlers` in `electron/main.ts` |
@@ -103,6 +105,8 @@ my-repo/
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
 `brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
+
+Each of these folders takes the constants file the constants lint rule names for a file in it, the file name with `.constants.ts` in place of its last extension: `<id>.widget.constants.ts` and `layout.constants.ts` in `src/widgets`, `<id>.action.constants.ts` in `src/title-bar`, `<id>.tour.constants.ts` in `src/tours` and `<id>.<kind>.constants.ts` (`home.hero.constants.ts`, `items.tab.constants.ts`) at any level of `src/screens`, plus `<name>.constants.ts` for constants several files there share. `brock sync` leaves them out of `.brock`. The module folders take `<id>.task.constants.ts` beside a boot task and `<id>.step.constants.ts` beside a review step (and the same for widget, title bar and tour files outside an app); `brock structure` reports any other doubled suffix, such as `<id>.page.constants.ts` in `src/review`.
 
 ## Generated files: tracked or ignored
 

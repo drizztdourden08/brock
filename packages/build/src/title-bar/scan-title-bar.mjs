@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanFlatDir } from '../scan-flat-dir.mjs';
 import { DEFAULT_EXPORT } from '../widgets/widget-conventions.constants.mjs';
-import { FILE_HINT, FOLDER_HINT, ITEM_ID, ITEM_SUFFIX, TITLE_BAR_DIR } from './title-bar-conventions.constants.mjs';
+import { CONSTANTS_FILE, FILE_HINT, FOLDER_HINT, ITEM_ID, ITEM_SUFFIX, TITLE_BAR_DIR } from './title-bar-conventions.constants.mjs';
 
 /**
  * @typedef {{ id: string, path: string, hasDefault: boolean }} TitleBarFile
@@ -13,6 +13,7 @@ import { FILE_HINT, FOLDER_HINT, ITEM_ID, ITEM_SUFFIX, TITLE_BAR_DIR } from './t
 const readEntry = (rootDir, entry) => {
   const path = `${TITLE_BAR_DIR}/${entry.name}`;
   if (entry.isDirectory()) return { finding: `${path}: ${FOLDER_HINT}` };
+  if (CONSTANTS_FILE.test(entry.name)) return {};
   if (!entry.name.endsWith(ITEM_SUFFIX)) return { finding: `${path}: not a title bar item file; ${FILE_HINT}` };
   const id = entry.name.slice(0, -ITEM_SUFFIX.length);
   if (!ITEM_ID.test(id)) return { finding: `${path}: "${id}" is not a kebab-case id` };

@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
+import { CONSTANTS_FILE, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
 import { baseFindings } from './base-findings.mjs';
 import { layoutFindings } from './layout-findings.mjs';
 import { pageMetaFindings } from './page-meta-findings.mjs';
@@ -29,7 +29,7 @@ const holdsPageFiles = (dir) => entriesOf(dir).some((entry) => entry.isFile() &&
 const problemWith = (found, place) => {
   if (!found) return `unknown screen file; ${NAMING_HINT}`;
   if (KINDS_AT[place.level].includes(found.kind)) return SCREEN_ID.test(found.id) ? null : `"${found.id}" is not a kebab-case id`;
-  return place.level === 'page' ? 'a page folder holds only <tab>.tab.tsx and <sub>.sub.tsx files' : MISPLACED[found.kind];
+  return place.level === 'page' ? 'a page folder holds only <tab>.tab.tsx and <sub>.sub.tsx files and their constants files' : MISPLACED[found.kind];
 };
 
 /** @param {ScanState} state @param {string} rel @param {string} name @param {Place} place */
@@ -61,7 +61,7 @@ const scanDir = (state, relDir, place) => {
   for (const entry of entriesOf(join(state.rootDir, relDir))) {
     const rel = `${relDir}/${entry.name}`;
     if (entry.isDirectory()) scanFolder(state, rel, entry.name, place);
-    else if (place.level !== 'root' || entry.name !== SCREENS_CONFIG) addFile(state, rel, entry.name, place);
+    else if (!CONSTANTS_FILE.test(entry.name) && (place.level !== 'root' || entry.name !== SCREENS_CONFIG)) addFile(state, rel, entry.name, place);
   }
 };
 

@@ -1,5 +1,20 @@
 # @drizztdourden08/create-brock
 
+## 0.34.0
+
+### Patch Changes
+
+- 2bb99b9: The app tsconfig includes `.brock/*.ts` instead of `.brock`. TypeScript skips dot folders when it expands a folder entry in `include`, so `.brock` matched no file, and `.brock/tessera-parts.ts`, the `guide.parts` file a fresh app sets, never reached the program because nothing imports it. `brock sync` writes the new tsconfig, and the `brock-dir-type-checked` migration (0.34.0) rewrites a bare `.brock` include entry in every `tsconfig*.json` at the app root.
+- Updated dependencies [2bb99b9]
+- Updated dependencies [55d8b24]
+- Updated dependencies [2bb99b9]
+- Updated dependencies [2bb99b9]
+- Updated dependencies [08e0cd1]
+- Updated dependencies [2bb99b9]
+- Updated dependencies [55d8b24]
+- Updated dependencies [2bb99b9]
+  - @drizztdourden08/brock-build@0.34.0
+
 ## 0.33.0
 
 ### Patch Changes

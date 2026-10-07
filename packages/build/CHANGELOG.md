@@ -1,5 +1,25 @@
 # @drizztdourden08/brock-build
 
+## 0.34.0
+
+### Minor Changes
+
+- 2bb99b9: `src/tours` takes constants files beside the tours: `<id>.tour.constants.ts`, the file the constants lint rule names for a constant in `<id>.tour.ts`, and `<name>.constants.ts` for constants several tours share. `brock structure` no longer reports them, and `brock sync` leaves them out of `.brock/tours.ts`. Before, lint asked for the constants file and the structure check refused it, so a tour's selector had to live in `src/hooks`.
+
+### Patch Changes
+
+- 2bb99b9: The app tsconfig includes `.brock/*.ts` instead of `.brock`. TypeScript skips dot folders when it expands a folder entry in `include`, so `.brock` matched no file, and `.brock/tessera-parts.ts`, the `guide.parts` file a fresh app sets, never reached the program because nothing imports it. `brock sync` writes the new tsconfig, and the `brock-dir-type-checked` migration (0.34.0) rewrites a bare `.brock` include entry in every `tsconfig*.json` at the app root.
+- 55d8b24: `brock structure` accepts the constants file the constants lint rule names in every convention folder, as it already did in `src/tours`: `<id>.widget.constants.ts` and `layout.constants.ts` in `src/widgets`, `<id>.action.constants.ts` in `src/title-bar`, `<id>.<kind>.constants.ts` (such as `library.page.constants.ts`) at any level of `src/screens`, and `<name>.constants.ts` for constants several files there share; `brock sync` leaves them out of `.brock`. Module folders take `<id>.task.constants.ts` beside a boot task and `<id>.step.constants.ts` beside a review step. Before, lint asked for these files and `brock structure` refused them.
+- 2bb99b9: `brock sync` in a workspace app runs `tessera guide` where Tessera is installed. It still reads the workspace's `tessera.config.json`, but runs Tessera in that folder only when it has Tessera, else in the first workspace package outside the `apps` entries that has it (such as `packages/design`), else in each `apps` entry with Tessera. Before, it ran at the repo root, where Tessera reported itself not installed, so the part names were never written by a sync from `apps/desktop`.
+- 2bb99b9: `brock migrate` replays Tessera's `RENAMES.json` over every workspace package that depends on Tessera, found from the `pnpm-workspace.yaml` globs, instead of every folder under `apps/` and `packages/`. A Tessera package in another folder (`tooling/*`, say) is covered now, and a package that does not use Tessera is no longer touched by a class or custom property rename.
+- 08e0cd1: A dev launch (the review's included) leaves `dist/electron/main.js` without a built renderer, and a later `brock start` opened a blank window. `brock start` now spots that half build (no `dist/renderer/index.html`, or one older than main) and runs `brock build` first. `launchAppForTest` and `assertLaunchable` throw with the reason instead of opening a blank window, and `launch --prod` refuses with it.
+- 55d8b24: `brock migrate` replays Tessera's component renames into usage files (`<Name>.usage.ts`, which `tessera guide` reads): the part each `avoidWhen` entry names in `use`, such as `use: 'ManagedList'`, becomes `use: 'ItemList'`, and a note there becomes a to-do. The `example` string replays as code of its own, so its Tessera import, the tags and references it holds and the release's entry point moves follow. No other string in a usage file changes, and a `use` key anywhere else is left alone. Before, after an upgrade the guide reported `avoidWhen names ManagedList` and could not compile the example.
+- 2bb99b9: `brock structure` accepts `context` in a widget file's `meta`. `WidgetMeta` has taken it since the context registry, but the list of widget fields the structure check reads did not, so a widget that named its context was reported as having a field that is not a widget field.
+- Updated dependencies [08e0cd1]
+- Updated dependencies [08e0cd1]
+  - @drizztdourden08/brock-core@0.34.0
+  - @drizztdourden08/brock-thread@0.34.0
+
 ## 0.33.0
 
 ### Patch Changes

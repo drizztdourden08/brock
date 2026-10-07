@@ -85,11 +85,27 @@ describe('checkTours', () => {
     });
     const findings = checkTours(dir).join('\n');
     expect(findings).toContain('src/tours/helpers.ts: not a tour file');
-    expect(findings).toContain('src/tours/parts: src/tours holds tour files only');
+    expect(findings).toContain('src/tours/parts: src/tours holds tour files and their constants files only');
     expect(findings).toContain('"Bad" is not a kebab-case id');
     expect(findings).toContain('src/tours/empty.tour.ts: no default export');
     expect(findings).toContain('defineTour names id "session", but the file name makes it "sessions"');
     expect(findings).not.toContain('welcome.tour.ts');
+  });
+
+  it('accepts the constants file lint asks for beside a tour, and a shared one, but nothing else', () => {
+    const dir = appDir({
+      'src/tours/welcome.tour.ts': "import { NEW_PRESET } from './welcome.tour.constants';\nexport default defineTour({ id: 'welcome', title: 'Welcome', steps: [] });\n",
+      'src/tours/welcome.tour.constants.ts': "const NEW_PRESET = '.presets button';\nexport { NEW_PRESET };\n",
+      'src/tours/tour-targets.constants.ts': "const MENU = '.menu';\nexport { MENU };\n",
+      'src/tours/Targets.constants.ts': '',
+      'src/tours/welcome.tour.type.ts': '',
+    });
+    expect(checkTours(dir)).toEqual([
+      'src/tours/Targets.constants.ts: not a tour file; a tour is src/tours/<id>.tour.ts, default-exporting defineTour({ id, title, steps, trigger? }); a tour\'s constants go beside it in <id>.tour.constants.ts (or <name>.constants.ts when several tours share them), and shared step helpers in src/hooks or src/stores',
+      'src/tours/welcome.tour.type.ts: not a tour file; a tour is src/tours/<id>.tour.ts, default-exporting defineTour({ id, title, steps, trigger? }); a tour\'s constants go beside it in <id>.tour.constants.ts (or <name>.constants.ts when several tours share them), and shared step helpers in src/hooks or src/stores',
+    ]);
+    expect(renderToursFiles(dir)[0]?.content).toContain("{ id: 'welcome', tour: welcomeTour }");
+    expect(renderToursFiles(dir)[0]?.content).not.toContain('constants');
   });
 });
 

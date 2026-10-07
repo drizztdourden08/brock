@@ -290,7 +290,8 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
 - An entry whose value is also a key of the same release would rename twice on a second
   replay, so it is skipped with a warning.
 - Files: `.ts`, `.tsx`, `.mts`, `.mjs`, `.css` and `.json` (not `package.json`) under the
-  app's `src`, `electron` and `tests`, and every package and app of its monorepo, through
+  app's `src`, `electron` and `tests`, and in every workspace package of its monorepo that
+  depends on Tessera (its `package.json` names it, or its `node_modules` holds it), through
   the owned-files walk. A file whose head says it is generated is skipped. Scripts are
   parsed with the app's TypeScript compiler API, else Brock's.
 - Each map is one pass, longer keys first, so a renamed name is never renamed again:

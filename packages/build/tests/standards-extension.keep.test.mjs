@@ -39,8 +39,8 @@ describe('the brock-app extension', () => {
     expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts']);
   });
 
-  it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta', async () => {
-    const widget = "const meta = { label: 'Notes', icon: 'pencil', popOut: true };\nconst Notes = () => null;\nexport default Notes;\nexport { meta };\n";
+  it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta, context included', async () => {
+    const widget = "const meta = { label: 'Notes', icon: 'pencil', popOut: true, context: 'session' };\nconst Notes = () => null;\nexport default Notes;\nexport { meta };\n";
     const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/widgets/notes.widget.tsx': widget });
     expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
   });
@@ -65,7 +65,7 @@ describe('the brock-app extension', () => {
       'src/widgets/room.widget.tsx',
       'src/widgets/session-layout.ts',
     ]);
-    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize, padding, fill)');
+    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize, padding, fill, context)');
     expect(findings).toContain('src/widgets/logs.widget.tsx: "logs" is a built-in Brock widget id; pick another');
   });
 

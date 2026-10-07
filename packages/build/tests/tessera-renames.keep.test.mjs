@@ -100,18 +100,27 @@ describe('the Tessera renames step: files', () => {
     expect(read(root, 'lib/a.css')).toBe('.tab-bar {}\n');
   });
 
-  it('covers packages and apps of a monorepo from the app folder', () => {
+  it('covers every workspace package that depends on Tessera from the app folder, and no other', () => {
     const root = repo({
-      'pnpm-workspace.yaml': 'packages:\n  - apps/*\n  - packages/*\n',
+      'pnpm-workspace.yaml': 'packages:\n  - apps/*\n  - packages/*\n  - tooling/*\n',
       'apps/desktop/brock.config.ts': 'export default {};\n',
       'apps/desktop/package.json': { name: 'desktop' },
       ...tesseraAt('apps/desktop/', '0.4.0', RELEASES),
       'apps/desktop/tests/e2e.test.ts': "const tab = '.tab-bar';\n",
+      'packages/design/package.json': { name: '@acme/design', dependencies: { '@drizztdourden08/tessera': '^0.4.0' } },
       'packages/design/src/Panel.css': '.tab-bar { color: var(--c-gold); }\n',
+      'packages/catalog/package.json': { name: '@acme/catalog' },
+      'packages/catalog/src/table.css': '.tab-bar { color: var(--c-gold); }\n',
+      'tooling/gallery/package.json': { name: 'gallery', devDependencies: { '@drizztdourden08/tessera': '^0.4.0' } },
+      'tooling/gallery/src/Page.tsx': VIEW,
+      'stray/src/x.css': '.tab-bar {}\n',
     });
     const run = tesseraRenamesStep({ rootDir: join(root, 'apps/desktop') });
-    expect(run.applied[0].touched).toEqual(['tests/e2e.test.ts', '../../packages/design/src/Panel.css']);
+    expect(run.applied[0].touched).toEqual(['tests/e2e.test.ts', '../../packages/design/src/Panel.css', '../../tooling/gallery/src/Page.tsx']);
     expect(read(root, 'packages/design/src/Panel.css')).toBe('.tabs { color: var(--c-primary); }\n');
+    expect(read(root, 'tooling/gallery/src/Page.tsx')).toContain('<Tabs className="tabs" />');
+    expect(read(root, 'packages/catalog/src/table.css')).toBe('.tab-bar { color: var(--c-gold); }\n');
+    expect(read(root, 'stray/src/x.css')).toBe('.tab-bar {}\n');
   });
 });
 

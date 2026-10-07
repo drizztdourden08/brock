@@ -191,7 +191,8 @@ which may be async; keep it safe to run twice, since Back runs it again. `advanc
 the user act to go on: `{ click: target }`, `{ event: '<name>' }` (sent with
 `tours.emit('<name>')`) or `{ context: '<name>' }`, and `hint` says what to do. `mascot`
 names the mascot's state for the step (`'wave'`, `'point'`, `'idea'`, ...), or
-`{ walk: 'move', arrive: 'wave' }` to walk over first.
+`{ walk: 'move', arrive: 'wave' }` to walk over first. A selector or another constant the
+tour needs goes beside it in `<id>.tour.constants.ts`, the file lint names for it.
 
 `trigger: 'first-run'` starts a tour once, on the app's first use: after the boot and the
 splash, once the first profile is open. The app marks its first use in `app.json`, not in a

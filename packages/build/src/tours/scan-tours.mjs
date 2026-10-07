@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanFlatDir } from '../scan-flat-dir.mjs';
 import { DEFAULT_EXPORT } from '../widgets/widget-conventions.constants.mjs';
-import { FILE_HINT, FOLDER_HINT, LITERAL_ID, TOUR_ID, TOUR_SUFFIX, TOURS_DIR } from './tour-conventions.constants.mjs';
+import { CONSTANTS_FILE, FILE_HINT, FOLDER_HINT, LITERAL_ID, TOUR_ID, TOUR_SUFFIX, TOURS_DIR } from './tour-conventions.constants.mjs';
 
 /**
  * @typedef {{ id: string, path: string, hasDefault: boolean, literalId: string | null }} TourFile
@@ -13,6 +13,7 @@ import { FILE_HINT, FOLDER_HINT, LITERAL_ID, TOUR_ID, TOUR_SUFFIX, TOURS_DIR } f
 const readEntry = (rootDir, entry) => {
   const path = `${TOURS_DIR}/${entry.name}`;
   if (entry.isDirectory()) return { finding: `${path}: ${FOLDER_HINT}` };
+  if (CONSTANTS_FILE.test(entry.name)) return {};
   if (!entry.name.endsWith(TOUR_SUFFIX)) return { finding: `${path}: not a tour file; ${FILE_HINT}` };
   const id = entry.name.slice(0, -TOUR_SUFFIX.length);
   if (!TOUR_ID.test(id)) return { finding: `${path}: "${id}" is not a kebab-case id` };

@@ -1,5 +1,24 @@
 # @drizztdourden08/brock-react
 
+## 0.34.0
+
+### Minor Changes
+
+- 80319dd: `readDockLayout(page).main` is now in window terms, like `rects`, and is the main view alone. It was measured from the dock corner, so it was off by the title bar, and it took in a neighbouring pane that does not make room. A test that compared `main` with `rects`, or allowed for the old offset, gets different numbers: drop the offset, and expect a pane beside the main view to sit outside it.
+- 08e0cd1: Show any folder or file of the machine, not only a data domain. `openFolder(path)` opens a folder in the file manager (a file is refused, since opening one would run it), and `revealPath(path)` shows a file or folder selected in its parent folder. Both resolve a `Result` and refuse a relative or missing path. Main code imports them from `@drizztdourden08/brock-electron/main`; the renderer calls `usePlatform().filePicker.openFolder` and `revealPath` (Electron only), over the new `shell:openFolder` and `shell:revealPath` channels. A settings `path` control now gives Tessera's `PathInput` a Reveal action on Electron.
+- 80319dd: A page, a tab page (through `<page>.page.ts`) or a sub page can set `meta.fill: true`: the page takes the window height and its body does not scroll, so a `ListDetail` or `ListDetailLayout` inside it scrolls its list and its editor on their own, and a long editor no longer scrolls the list out of view.
+- 6bdb953: Tessera 0.26: LogPanel keeps showing new rows in a log that starts empty, ItemList groups that can be empty with an action, row data attributes and a tour mark on New.
+
+### Patch Changes
+
+- 80319dd: `JobDialog` sets `data-job-id="<job id>"` on its dialog element, so a test finds the dialog of one job without matching its title. Tessera's `JobDialog` takes no data attributes, so Brock puts it on from its own side.
+- 80319dd: The title bar job status names the current step while a hidden job runs: "Running Sunday: Generating 40%" instead of "Running Sunday 40%". A job with no current step keeps the title and the percent.
+- 80319dd: The review's `<id>-in-menu` check skips the base screen (`<id>.base.tsx`) and any screen whose meta sets `menu: false`: they have no menu entry by design, so an app with a base screen no longer fails `session-in-menu` on every review.
+- b4dc453: The review's `title-bar-actions-sm` check leaves out title bar status items (`bar: 'status'`, such as the job status a hidden job shows): they are text, not `sm` icon buttons, so a job running during the review no longer fails the check.
+- 80319dd: A tour step whose target is absent shows its bubble centred, and now counts as shown: the review reports `<step>-centred` instead of failing `<step>-lit`, and goes on with Next. A click step (`advanceOn: { click }`) whose click target is absent too gets a Next button, so the user and the review are no longer stuck on it.
+- Updated dependencies [08e0cd1]
+  - @drizztdourden08/brock-core@0.34.0
+
 ## 0.33.0
 
 ### Minor Changes

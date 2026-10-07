@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-thread
 
+## 0.34.0
+
+### Patch Changes
+
+- 08e0cd1: A dev launch (the review's included) leaves `dist/electron/main.js` without a built renderer, and a later `brock start` opened a blank window. `brock start` now spots that half build (no `dist/renderer/index.html`, or one older than main) and runs `brock build` first. `launchAppForTest` and `assertLaunchable` throw with the reason instead of opening a blank window, and `launch --prod` refuses with it.
+
 ## 0.33.0
 
 ## 0.32.1

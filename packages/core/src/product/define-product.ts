@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
-import type { InstallerConfig, ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, WindowConfig } from './product.type';
+import type { InstallerConfig, ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, ProductWidgets, WindowConfig } from './product.type';
 import {
-  BRAND_APP_LOGO, BRAND_ICONS, BRAND_RIMS, DEFAULT_HOME_SCREEN, DEFAULT_MAIN_LABEL, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
+  BRAND_APP_LOGO, BRAND_ICONS, BRAND_RIMS, DEFAULT_HOME_SCREEN, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WIDGETS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
 
@@ -70,6 +70,11 @@ const resolveInstaller = (input: ProductInput): InstallerConfig => {
   };
 };
 
+const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets => ({
+  mainLabel: widgets.mainLabel ?? DEFAULT_WIDGETS.mainLabel,
+  keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
+});
+
 const defineProduct = (input: ProductInput): ProductConfig => {
   assertProductInput(input);
   return {
@@ -92,7 +97,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     logos: resolveLogos(input.logos, input.icons),
     homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
     ports: input.ports,
-    widgets: { mainLabel: input.widgets?.mainLabel ?? DEFAULT_MAIN_LABEL },
+    widgets: resolveWidgets(input.widgets),
     installer: resolveInstaller(input),
   };
 };

@@ -11,6 +11,7 @@ interface WidgetHostProps {
   mainLabel?: string;
   widgetContext?: WidgetContextSource;
   layout?: LayoutPreset;
+  keepFocusWithApp?: boolean;
 }
 
 export type { WidgetContextSource, WidgetHostProps };

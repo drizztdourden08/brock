@@ -23,6 +23,9 @@ const PERFORMANCE_WINDOW_SIZES = [
   { name: 'performance-window-narrow', bounds: { width: 320, height: 760 } },
   { name: 'performance-window-wide', bounds: { width: 780, height: 620 } },
 ] as const;
+const SIZE_TOLERANCE = 0.5;
+const OVERFLOW_SLACK = 1;
+const NARROW_WINDOW = { width: 600, height: 720 } as const;
 const UPDATER_MODULE_ID = 'updater';
 const UPDATE_MENU_LABEL = 'Check for updates';
 const BAR_ITEM_ATTRIBUTE = 'data-bar-item';
@@ -96,6 +99,11 @@ const SELECTORS = {
   logsWidget: '.logs-widget',
   performanceWidget: '.performance-widget',
   widgetBody: '.widget__content',
+  widget: '.widget',
+  widgetTitleButton: '.widget__titlebar-actions button',
+  barActionButton: '.window-title-bar button[data-bar-item^="action:"]',
+  layerContent: '.screen-layer:not(.screen-layer--hidden) .screen-window__content',
+  layerTitles: '.screen-layer:not(.screen-layer--hidden) :is(.window-header__title, .window-header__subtitle, .content-header__title)',
   scrollArea: '.scroll-area',
   statTile: '.stat-tile',
   statTileLabel: '.stat-tile__label',
@@ -136,6 +144,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, PERFORMANCE_GAUGES, PERFORMANCE_LIVE_MS, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PERFORMANCE_WINDOW_SIZES, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
-  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, POPPED_PAINT_MS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
+  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, NARROW_WINDOW, OVERFLOW_SLACK, PERFORMANCE_GAUGES, PERFORMANCE_LIVE_MS, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PERFORMANCE_WINDOW_SIZES, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_PROFILE_NAME, SECTION_KEY_PREFIX,
+  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, POPPED_PAINT_MS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, SIZE_TOLERANCE, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
 };

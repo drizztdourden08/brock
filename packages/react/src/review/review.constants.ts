@@ -104,7 +104,7 @@ const SELECTORS = {
   widgetTitleButton: '.widget__titlebar-actions button',
   widgetOptionsButton: '.widget__titlebar-actions .widget__options',
   widgetOptionsPanel: '[data-widget-options]',
-  barActionButton: '.window-title-bar button[data-bar-item^="action:"]',
+  barActionButton: '.window-title-bar button[data-bar-item^="action:"]:not(.window-title-bar__status)',
   layerContent: '.screen-layer:not(.screen-layer--hidden) .screen-window__content',
   layerTitles: '.screen-layer:not(.screen-layer--hidden) :is(.window-header__title, .window-header__subtitle, .content-header__title)',
   scrollArea: '.scroll-area',

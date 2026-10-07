@@ -92,6 +92,7 @@ interface ProductPorts {
 
 interface ProductWidgets {
   mainLabel: string;
+  keepFocusWithApp: boolean;
 }
 
 interface ProductConfig {

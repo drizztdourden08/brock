@@ -1,5 +1,5 @@
 /* @layer core @kind constants */
-import type { InstallerConfig, InstallScope, ProductIconRim, ProductIcons, ProductLogos, WindowConfig } from './product.type';
+import type { InstallerConfig, InstallScope, ProductIconRim, ProductIcons, ProductLogos, ProductWidgets, WindowConfig } from './product.type';
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const REVERSE_DNS = /^[a-z0-9]+(\.[a-z0-9-]+)+$/i;
@@ -34,7 +34,7 @@ const DEFAULT_LOGOS: ProductLogos = {
 const BRAND_APP_LOGO = './logos/icon-32.png';
 
 const DEFAULT_HOME_SCREEN = 'settings';
-const DEFAULT_MAIN_LABEL = 'Main';
+const DEFAULT_WIDGETS: ProductWidgets = { mainLabel: 'Main', keepFocusWithApp: true };
 
 const DEFAULT_INSTALLER: Omit<InstallerConfig, 'folderName'> = {
   scope: 'user',
@@ -47,6 +47,6 @@ const LICENCE_FILE = /\.(?:md|txt)$/i;
 const UNSAFE_FILE_CHARS = /[/\\?%*:|"<>\p{Cc}]/gu;
 
 export {
-  SLUG, REVERSE_DNS, HEX_COLOR, PORT_BASE_MIN, PORT_BASE_MAX, DEFAULT_WINDOW, BRAND_ICONS, BRAND_RIMS, BRAND_APP_LOGO, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN, DEFAULT_MAIN_LABEL,
+  SLUG, REVERSE_DNS, HEX_COLOR, PORT_BASE_MIN, PORT_BASE_MAX, DEFAULT_WINDOW, BRAND_ICONS, BRAND_RIMS, BRAND_APP_LOGO, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN, DEFAULT_WIDGETS,
   DEFAULT_INSTALLER, INSTALL_SCOPES, LICENCE_FILE, UNSAFE_FILE_CHARS,
 };

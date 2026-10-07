@@ -412,9 +412,13 @@ export default defineBrockConfig({
 maximize }`, each `true` by default; close always stays. `maximize: false` also makes the main
 window not maximizable, and `fullscreen: false` makes it not fullscreenable and turns Alt+Enter
 off. `product.widgets.mainLabel` names the main view in the widget dock (default `Main`).
+`product.widgets.keepFocusWithApp` (default `true`) keeps the keyboard with the app: a mouse
+click on a widget's button, tab or slider no longer leaves the focus there, so the arrows, Enter
+and Space keep driving the app. Tab still moves into a widget, and text fields keep the focus.
+Set it to `false` to turn it off.
 
 ```ts
-product: { /* ... */ window: { titleBar: { controls: { fullscreen: false, pin: false } } }, widgets: { mainLabel: 'Board' } },
+product: { /* ... */ window: { titleBar: { controls: { fullscreen: false, pin: false } } }, widgets: { mainLabel: 'Board', keepFocusWithApp: false } },
 ```
 
 `targets` takes platform ids (`windows`, `macos`, `linux`, `android`, `web`; `ios` is

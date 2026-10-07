@@ -23,6 +23,7 @@ import { useWidgetGates } from './behavior/useWidgetGates';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
+import { useWidgetsNeverFocus } from './behavior/useWidgetsNeverFocus';
 import type { WidgetHostProps } from './WidgetHost.type';
 
 const trackMainRect = (rect: Rect | null): void => {
@@ -33,7 +34,7 @@ const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
   (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
 const WidgetHost = (props: WidgetHostProps) => {
-  const { widgets = NO_WIDGETS, main, mainLabel, widgetContext, layout: preset = null } = props;
+  const { widgets = NO_WIDGETS, main, mainLabel, widgetContext, layout: preset = null, keepFocusWithApp = true } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definitions = useMemo(() => uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), [widgets, registered]);
   const profileId = useProfilesStore((s) => s.active?.id ?? null);
@@ -53,6 +54,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   usePopOutWindows(shown, extraOf);
   useWidgetRelayPublisher(settingsStore);
   useWidgetLayoutGlobal();
+  useWidgetsNeverFocus(keepFocusWithApp);
 
   const content = useMemo<Record<string, ReactNode>>(
     () => Object.fromEntries(definitions.map((def) => [def.id, <WidgetBody id={def.id} label={def.label}>{def.render()}</WidgetBody>])),

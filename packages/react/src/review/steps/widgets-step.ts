@@ -8,6 +8,7 @@ import { pickMenuPath } from '../menu/pick-menu-path';
 import { LOGS_WIDGET_KEY, SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
 import { checkFloatResize } from '../widgets/float-resize-check';
+import { checkWidgetFocus } from '../widgets/focus-check';
 import { checkResetLayout } from '../widgets/reset-layout-check';
 import { checkPopOut } from './pop-out-check';
 
@@ -29,6 +30,7 @@ const widgetsStep: ReviewStep = {
     tour.report(controlSizeChecks(readControlSizes(shown.closest(SELECTORS.widget) ?? shown)));
     tour.check('main-grip-at-rest', gripHidden, 'no main view grip shows while nothing is dragged', 'the main view grip shows while nothing is dragged');
     await tour.capture('logs-widget');
+    await checkWidgetFocus(tour, shown.closest(SELECTORS.widget) ?? shown);
     const hidden = await pickMenuPath(path) ? await waitFor(() => find(SELECTORS.logsWidget) === null) : null;
     tour.check('logs-widget-closes', hidden !== null, `${route} hid the logs widget again`, `${route} left the logs widget on screen`);
     await checkResetLayout(tour);

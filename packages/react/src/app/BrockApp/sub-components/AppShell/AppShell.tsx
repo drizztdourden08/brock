@@ -65,7 +65,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const screens = useMemo(() => registry.list(), [registry]);
   const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootGate>;
-  const stage = <WidgetHost widgets={widgets} layout={widgetLayout} widgetContext={widgetContext} mainLabel={product.widgets.mainLabel} main={main} />;
+  const stage = <WidgetHost widgets={widgets} layout={widgetLayout} widgetContext={widgetContext} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} />;
 
   return (
     <>

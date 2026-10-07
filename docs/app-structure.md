@@ -37,6 +37,7 @@ my-app/
     widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
     title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
     tours/<id>.tour.ts             one guided tour per file: defineTour({ id, title, steps, trigger? })
+    tours/<id>.tour.constants.ts   that tour's constants, such as the selectors it lights
     boot/<id>.task.ts              renderer boot tasks
     views/<Name>/                  Tessera views: the screens' state-owning bodies
     compounds/<Name>/              Tessera compounds: one app concept drawn from Tessera parts
@@ -75,7 +76,7 @@ my-repo/
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`) | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
 | Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`) | `brock sync` into `.brock/title-bar.ts` |
-| Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name) | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
+| Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
 | Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp`; the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
 | Renderer boot task | `src/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
@@ -101,7 +102,7 @@ my-repo/
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
-`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is not `<id>.tour.ts`, a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
+`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
 
 ## Generated files: tracked or ignored
 

@@ -14,6 +14,7 @@ const subPage = (bucket: BucketDef, entry: SubEntry): HubSubPage => ({
   icon: iconNode(entry.meta?.icon ?? KIND_ICONS.sub),
   path: entry.meta?.path ?? entry.id,
   header: hubHeader(entry.meta?.header),
+  fill: entry.meta?.fill,
   render: renderSub(entry.component, bucket),
 });
 

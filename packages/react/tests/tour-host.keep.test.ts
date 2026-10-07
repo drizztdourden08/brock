@@ -5,12 +5,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { defineTour } from '../src/tours/define-tour';
 import { tours } from '../src/tours/tours';
 import { useTourStore } from '../src/tours/useTourStore';
+import { tourReading } from '../src/review/steps/read-tour-step';
 import { useWidgetRelayStore } from '../src/widgets/useWidgetRelayStore';
 import { RELAY_SLICES } from '../src/widgets/widget.constants';
 import { WidgetTourSpot } from '../src/widgets/WidgetWindow/sub-components/WidgetTourSpot';
 import { tourHarness } from './tour-host-harness';
 
-const { flush, mount, renderInto, popWidget, stepShown } = tourHarness;
+const { flush, mount, renderInto, popWidget, stepShown, clickOn } = tourHarness;
 
 const TOUR = defineTour({
   id: 'host',
@@ -18,6 +19,16 @@ const TOUR = defineTour({
   steps: [
     { id: 'one', title: 'One', body: 'First.' },
     { id: 'two', title: 'Two', body: 'Second.', target: { tour: 'two' }, advanceOn: { event: 'went' } },
+  ],
+});
+
+const ABSENT = defineTour({
+  id: 'absent',
+  title: 'Absent',
+  steps: [
+    { id: 'gone', title: 'Gone', body: 'Its target is not drawn.', target: { tour: 'gone' } },
+    { id: 'press', title: 'Press', body: 'Its click target is not drawn.', target: { selector: '.missing' }, advanceOn: { click: '.missing' } },
+    { id: 'end', title: 'End', body: 'Last.' },
   ],
 });
 
@@ -56,6 +67,38 @@ describe('TourHost', () => {
     act(() => tours.stop());
     await flush();
     expect(useTourStore.getState().spot).toBeNull();
+  });
+});
+
+describe('a step whose target is absent', () => {
+  it('shows centred and counts as shown, and a click step offers Next so the tour and the review go on', async () => {
+    mount([ABSENT]);
+    act(() => { tours.start('absent'); });
+    await flush();
+    expect(tourReading.shown('absent', 0)).toEqual({ id: 'absent', index: 0, step: 'gone', target: null });
+    expect(document.querySelector('.guided-tour__bubble--center')).not.toBeNull();
+    act(() => tours.next());
+    await flush();
+    expect(tourReading.shown('absent', 1)?.target).toBeNull();
+    expect(document.querySelector('.guided-tour__actions .btn--primary')?.textContent).toBe('Next');
+    const step = ABSENT.steps[1];
+    if (!step) throw new Error('no press step');
+    let how = '';
+    act(() => { how = tourReading.advance(step); });
+    await flush();
+    expect(how).toBe('its Next button, since its target is absent');
+    expect(stepShown()).toBe('end');
+  });
+
+  it('keeps waiting for the click when the click target is drawn', async () => {
+    mount([ABSENT]);
+    document.querySelector('.rest')?.insertAdjacentHTML('beforeend', '<button class="missing">Here</button>');
+    act(() => { tours.start('absent', 1); });
+    await flush();
+    expect(document.querySelector('.guided-tour__actions .btn--primary')).toBeNull();
+    clickOn('.missing');
+    await flush();
+    expect(stepShown()).toBe('end');
   });
 });
 

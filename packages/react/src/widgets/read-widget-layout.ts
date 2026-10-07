@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { widgetsIn } from '@drizztdourden08/tessera/composites';
+import { mainViewRect } from './main-view-rect';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
 import { DRAWN_WIDGET_SELECTOR } from './widget.constants';
-import { widgetMainRect } from './widget-main-rect';
 import type { WidgetLayoutReading } from './widget.type';
 
 const rectOf = (element: Element): NonNullable<WidgetLayoutReading['main']> => {
@@ -22,13 +22,12 @@ const drawnRects = (): WidgetLayoutReading['rects'] => {
 
 const readWidgetLayout = (): WidgetLayoutReading => {
   const { layout } = useWidgetLayoutStore.getState();
-  const main = widgetMainRect.current;
   return {
     layout,
     docked: widgetsIn(layout.dock),
     floating: layout.floating.map((entry) => entry.id),
     popped: layout.popped.map((entry) => entry.id),
-    main: main ? { x: main.x, y: main.y, width: main.width, height: main.height } : null,
+    main: mainViewRect(layout),
     rects: drawnRects(),
   };
 };

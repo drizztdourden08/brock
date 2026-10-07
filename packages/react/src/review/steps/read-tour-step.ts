@@ -40,7 +40,8 @@ const clickTarget = (step: TourStepDef): string => {
     return `a click on its target in the "${relayed.widget}" window`;
   }
   const target = tourTargets.resolve(tourTargets.clickOf(step));
-  if (target) click(target);
+  if (!target) return `${clickNext()}, since its target is absent`;
+  click(target);
   return 'a click on its target';
 };
 

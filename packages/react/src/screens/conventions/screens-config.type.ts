@@ -53,6 +53,7 @@ interface ScreenMeta {
   menu?: ScreenMenu;
   header?: PageHeaderMeta;
   path?: string;
+  fill?: boolean;
 }
 
 export type { BucketDef, BucketGroupDef, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };

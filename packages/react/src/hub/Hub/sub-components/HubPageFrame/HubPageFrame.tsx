@@ -17,13 +17,14 @@ const HubPageFrame = (props: HubPageFrameProps) => {
     ? { items: page.tabs.map((entry) => ({ id: entry.id, label: entry.label })), activeId: tab?.id ?? page.tabs[0]?.id ?? '', onSelect: onSelectTab }
     : undefined), [page.tabs, tab, onSelectTab]);
   const body = <PageActionsContext.Provider value={setSlotted}>{children}</PageActionsContext.Provider>;
+  const scroll = (sub ?? page).fill !== true;
   if (sub) {
-    return <ScreenPage icon={sub.icon} title={sub.label} back={{ label: page.label, onSelect: onUp }} actions={actions}>{body}</ScreenPage>;
+    return <ScreenPage icon={sub.icon} title={sub.label} back={{ label: page.label, onSelect: onUp }} actions={actions} scroll={scroll}>{body}</ScreenPage>;
   }
   if (page.fullBleed === true) return body;
   if (page.settingsTab !== undefined) return <SettingsPageContext.Provider value={settingsPage}>{body}</SettingsPageContext.Provider>;
-  if (tabs) return <SettingsPage icon={page.icon} title={page.label} tabs={tabs} actions={actions}>{body}</SettingsPage>;
-  return <ScreenPage icon={page.icon} title={page.label} actions={actions}>{body}</ScreenPage>;
+  if (tabs) return <SettingsPage icon={page.icon} title={page.label} tabs={tabs} actions={actions} scroll={scroll}>{body}</SettingsPage>;
+  return <ScreenPage icon={page.icon} title={page.label} actions={actions} scroll={scroll}>{body}</ScreenPage>;
 };
 
 export { HubPageFrame };

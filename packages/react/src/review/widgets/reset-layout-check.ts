@@ -24,6 +24,7 @@ const armReset = async (tour: StepTour, path: readonly string[]): Promise<HTMLEl
   const kept = find(SELECTORS.logsWidget) !== null;
   const asked = armed?.querySelector(SELECTORS.menuAsk)?.textContent.trim() ?? '';
   tour.check('reset-layout-asks', armed !== null && kept, `the first click turned the entry into "${asked}" and left the layout as it was`, armed === null ? 'the first click did not ask for a second one' : 'the first click already reset the layout');
+  if (armed) tour.check('reset-layout-no-check', armed.getAttribute('aria-checked') === null && armed.querySelector(SELECTORS.menuCheckMark) === null, 'Reset layout draws no check mark', 'Reset layout draws a check mark like a widget it opens');
   if (armed) await tour.capture('widgets-reset-layout-asks');
   return armed;
 };

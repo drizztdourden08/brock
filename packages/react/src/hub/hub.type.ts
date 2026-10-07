@@ -34,6 +34,7 @@ interface HubSubPage {
   icon: ReactNode;
   path: string;
   header?: HubPageHeader;
+  fill?: boolean;
   render: (ctx: HubRenderContext) => ReactNode;
 }
 
@@ -53,6 +54,7 @@ interface HubPage {
   label: string;
   icon: ReactNode;
   fullBleed?: boolean;
+  fill?: boolean;
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
   devOnly?: boolean;

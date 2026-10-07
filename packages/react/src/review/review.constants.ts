@@ -70,6 +70,7 @@ const SELECTORS = {
   ].join(', '),
   anyMenuItem: '.dropdown__item',
   askingMenuItem: '.dropdown__item--asking',
+  menuCheckMark: '.dropdown__mark--check',
   menuLabel: '.dropdown__label',
   menuAsk: '.dropdown__label--ask [aria-live]',
   menuLabelShown: ':scope > [aria-live]',

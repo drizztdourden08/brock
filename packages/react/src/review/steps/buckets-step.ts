@@ -3,6 +3,7 @@ import { visibleHubPages } from '../../hub/Hub/behavior/visible-hub-pages';
 import { nav } from '../../navigation/nav';
 import { bucketChecks } from '../checks/bucket-checks';
 import { menuReachChecks } from '../checks/menu-reach-checks';
+import { menuReachIds } from '../menu/menu-reach-ids';
 import { find } from '../dom/find';
 import { navLabels } from '../dom/nav-labels';
 import { waitFor } from '../dom/wait-for';
@@ -19,8 +20,7 @@ const bucketsStep: ReviewStep = {
     const { screenTree, homeScreen, menu, developerTools } = tour.env;
     if (screenTree === null) return;
     tour.check('home-bucket', homeScreen === screenTree.home, `Escape and Home open the "${screenTree.home}" bucket`, `home is "${homeScreen}", not the config home "${screenTree.home}"`);
-    const hubIds = screenTree.hubs.map((hub) => hub.id);
-    tour.report(menuReachChecks(menu, screenTree.screens.map((screen) => screen.id).filter((id) => !hubIds.includes(id))));
+    tour.report(menuReachChecks(menu, menuReachIds(screenTree)));
     for (const hub of screenTree.hubs) {
       await resetUi();
       const reachedVia = await openBucket(tour.env, hub);

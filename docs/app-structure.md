@@ -103,6 +103,21 @@ A renderer file (anything in `src/`) imports a package that also holds Node code
 
 `brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is not `<id>.tour.ts`, a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
 
+## A page that fills the window
+
+A page scrolls as a whole by default: its header stays and its body scrolls under it. A page that holds a list beside an editor, such as Tessera's `ListDetail` or `ListDetailLayout`, sets `fill` in its meta instead, so a long editor scrolls on its own and the list stays in view:
+
+```tsx
+// src/screens/library/presets.page.tsx
+export const meta: ScreenMeta = { title: 'Presets', icon: 'sliders-horizontal', fill: true };
+
+const PresetsPage = () => <ListDetail list={list} selectedId={selectedId} onSelect={setSelectedId} detail={editor} dirty={dirty} />;
+```
+
+- The page takes the window height and its body does not scroll. `ListDetail` and `ListDetailLayout` fill it and scroll each pane themselves.
+- The page's root fills the body: render the `ListDetail` at the root, or give the root you wrap it in `flex: 1` and `min-height: 0`.
+- `fill` works on a page, on a sub page and, through `<page>.page.ts`, on a tab page. A hero page and a settings page ignore it.
+
 ## Generated files: tracked or ignored
 
 Every generated file is either committed, so a fresh checkout has it, or ignored, so it never drifts in version control. `brock adopt` and `create-brock` write the `.gitignore` lines; `brock check` fails when a tracked one drifts.

@@ -1,8 +1,10 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
 import { JobDialog as TaskDialog } from '@drizztdourden08/tessera/composites';
+import { Box } from '@drizztdourden08/tessera/primitives';
 import { jobLogRows } from './behavior/job-log-rows';
 import { jobStepper } from './behavior/job-stepper';
+import { useDialogJobId } from './behavior/useDialogJobId';
 import { JOB_LOG_KINDS } from './JobDialog.constants';
 import type { JobDialogProps } from './JobDialog.type';
 
@@ -10,10 +12,11 @@ const JobDialog = (props: JobDialogProps) => {
   const { job, onHide, onCancel, onClose } = props;
   const stepper = useMemo(() => jobStepper(job), [job]);
   const rows = useMemo(() => jobLogRows(job.log), [job.log]);
+  const markDialog = useDialogJobId(job.id);
   return (
     <TaskDialog
       open
-      title={job.title}
+      title={<Box as="span" ref={markDialog}>{job.title}</Box>}
       state={job.state}
       percent={Math.round(job.progress * 100)}
       line={job.line ?? undefined}

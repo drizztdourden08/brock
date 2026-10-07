@@ -4,6 +4,7 @@ import type { HubDef } from '../src/hub/hub.type';
 import type { MenuItem } from '../src/menu/menu.type';
 import { withRoutes } from '../src/menu/with-routes';
 import { resolveRoute } from '../src/navigation/resolve-route';
+import { menuReachIds } from '../src/review/menu/menu-reach-ids';
 import type { RouteAlias } from '../src/navigation/navigation.type';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import { deriveMenu } from '../src/screens/conventions/derive-menu';
@@ -162,6 +163,39 @@ describe('deriveMenu with menuOrder', () => {
     expect(data?.children?.map((child) => child !== 'separator' && child.page)).toEqual(['library', 'sessions', 'servers']);
     const flat = pageIds(hubOf(tree.hubs, 'data')).flat();
     expect(flat.indexOf('servers')).toBeLessThan(flat.indexOf('sessions'));
+  });
+});
+
+describe('the screens the review looks for in the menu', () => {
+  it('skips the base screen and a screen with menu false, which have no menu entry by design', () => {
+    const entries: ScreenEntry[] = [
+      ...ENTRIES,
+      { kind: 'base', id: 'session', component: View },
+      { kind: 'card', id: 'secret', component: View, meta: { menu: false } },
+    ];
+    const resolved = resolveScreenTree(buildScreenTree(CONFIG, entries), [MODULE_TAB]);
+    expect(resolved.base).toBe('session');
+    expect(resolved.screens.map((screen) => screen.id)).toContain('session');
+    expect(menuReachIds(resolved)).toEqual(['credits', 'playfield']);
+  });
+});
+
+describe('the fill page meta', () => {
+  it('reaches the hub page, a tab page and a sub page', () => {
+    const entries: ScreenEntry[] = [
+      ...ENTRIES.filter((entry) => 'bucket' in entry && entry.bucket !== 'data'),
+      { kind: 'page', bucket: 'data', id: 'presets', component: View, meta: { fill: true } },
+      { kind: 'sub', bucket: 'data', page: 'presets', id: 'edit', component: View, meta: { fill: true } },
+      { kind: 'page', bucket: 'data', id: 'plain', component: View },
+      { kind: 'tab', bucket: 'data', page: 'servers', id: 'list', component: View },
+      { kind: 'page-meta', bucket: 'data', id: 'servers', meta: { fill: true } },
+    ];
+    const pages = hubOf(buildScreenTree(CONFIG, entries).hubs, 'data').groups.flatMap((group) => group.pages);
+    const page = (id: string) => pages.find((entry) => entry.id === id);
+    expect(page('presets')?.fill).toBe(true);
+    expect(page('presets')?.subs?.[0]?.fill).toBe(true);
+    expect(page('servers')?.fill).toBe(true);
+    expect(page('plain')?.fill).toBeUndefined();
   });
 });
 

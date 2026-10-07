@@ -2,7 +2,7 @@
 import { nav } from '../../navigation/nav';
 import { tours } from '../../tours/tours';
 import { tourTargets } from '../../tours/resolve-tour-target';
-import type { TourDef } from '../../tours/tour.type';
+import type { TourDef, TourShown, TourStepDef } from '../../tours/tour.type';
 import { delay } from '../dom/delay';
 import { press } from '../dom/press-key';
 import { waitFor } from '../dom/wait-for';
@@ -21,13 +21,19 @@ const layoutChecks = (tour: StepTour, name: string): void => {
   tour.check(`${name}-mascot-clear`, tourLayout.mascotOffHole(), 'the mascot keeps off the lit part', 'the mascot stands on the lit part');
 };
 
+const targetCheck = (tour: StepTour, name: string, step: TourStepDef, at: TourShown): void => {
+  if (!tourTargets.litOf(step) || tourTargets.poppedSpot(step)) return;
+  if (at.target === null) tour.check(`${name}-centred`, true, 'its target is absent, so its bubble shows centred and goes on with Next', '');
+  else tour.check(`${name}-lit`, tourReading.lit(at), 'its target is lit with the glow ring', 'it found no target to light');
+};
+
 const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<boolean> => {
   const step = def.steps[index];
   if (!step) return false;
   const name = `tour-${def.id}-${step.id}`;
   const at = await waitFor(() => tourReading.shown(def.id, index), TOUR_STEP_WAIT_MS);
   tour.check(name, at !== null, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
-  if (at && tourTargets.litOf(step)) tour.check(`${name}-lit`, tourReading.lit(at), 'its target is lit with the glow ring', 'it found no target to light');
+  if (at) targetCheck(tour, name, step, at);
   await delay(TOUR_SETTLE_MS);
   if (at) layoutChecks(tour, name);
   await tour.capture(`tour-${def.id}-${pad(index)}-${step.id}`);

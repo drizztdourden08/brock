@@ -99,6 +99,17 @@ describe('the widget focus guard', () => {
     expect(document.activeElement).not.toBe(byId('widget-button'));
   });
 
+  it('drops focus a widget click handler moves back onto a widget control, also when no focusin reaches the document', () => {
+    mount();
+    const button = byId('widget-button');
+    const hide = (event: Event): void => event.stopImmediatePropagation();
+    window.addEventListener('focusin', hide, true);
+    button.addEventListener('click', () => button.focus());
+    click(button);
+    window.removeEventListener('focusin', hide, true);
+    expect(document.activeElement).not.toBe(button);
+  });
+
   it('lets a slider and a select hold the focus during the press and drops it on release or change', () => {
     mount();
     const slider = byId('widget-slider');

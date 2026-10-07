@@ -29,11 +29,12 @@ const guardWidgetFocus = (doc: Document): (() => void) => {
     if (fromWidgetPress() && insideWidgets(target) && target.closest(KEEPS_FOCUS) === null) blurElement(target);
   };
   const listeners = [
-    ['pointerdown', onPointerDown], ['keydown', onKeyDown], ['mousedown', onMouseDown], ['focusin', onFocusIn], ['pointerup', dropFocus], ['change', dropFocus],
+    ['pointerdown', onPointerDown, true], ['keydown', onKeyDown, true], ['mousedown', onMouseDown, true], ['focusin', onFocusIn, true],
+    ['pointerup', dropFocus, true], ['change', dropFocus, true], ['click', dropFocus, false],
   ] as const;
-  for (const [name, listener] of listeners) doc.addEventListener(name, listener as EventListener, true);
+  for (const [name, listener, capture] of listeners) doc.addEventListener(name, listener as EventListener, capture);
   return () => {
-    for (const [name, listener] of listeners) doc.removeEventListener(name, listener as EventListener, true);
+    for (const [name, listener, capture] of listeners) doc.removeEventListener(name, listener as EventListener, capture);
   };
 };
 

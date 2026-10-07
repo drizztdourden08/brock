@@ -1,7 +1,15 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { FileStore } from '@drizztdourden08/brock-core';
+import '../src/profiles/profile-store';
+import '../src/profiles/update-app-state';
+import '../src/tours/tour-persistence';
+import '../src/tours/tours';
 import { SESSIONS, WELCOME } from './tour-fixtures';
+
+const platform = vi.hoisted(() => ({ files: null as FileStore | null }));
+
+vi.mock('../src/platform/get-platform', () => ({ getPlatform: () => ({ files: platform.files }) }));
 
 interface Disk {
   files: Map<string, string>;
@@ -30,14 +38,9 @@ const newDisk = (views: Record<string, unknown> = {}, files: Record<string, unkn
 
 const appJson = (disk: Disk): Record<string, unknown> => JSON.parse(disk.files.get('app.json') ?? '{}') as Record<string, unknown>;
 
-const settle = async (): Promise<void> => {
-  for (let i = 0; i < 20; i += 1) await new Promise((resolve) => { setTimeout(resolve, 0); });
-};
-
 const boot = async (disk: Disk) => {
   vi.resetModules();
-  const files = memoryFiles(disk.files);
-  vi.doMock('../src/platform/get-platform', () => ({ getPlatform: () => ({ files }) }));
+  platform.files = memoryFiles(disk.files);
   vi.stubGlobal('window', {
     location: { search: '' },
     api: {
@@ -50,15 +53,17 @@ const boot = async (disk: Disk) => {
   const { tourPersistence } = await import('../src/tours/tour-persistence');
   const { useTourStore } = await import('../src/tours/useTourStore');
   const { profileStore } = await import('../src/profiles/profile-store');
+  const { updateAppState } = await import('../src/profiles/update-app-state');
   useTourStore.getState().setTours([SESSIONS, WELCOME]);
   await tourPersistence.load();
   const stop = tourPersistence.watch();
   const createProfile = (name: string) => profileStore().create({ name });
-  return { tours, stop, createProfile, store: () => useTourStore.getState() };
+  const flush = (): Promise<unknown> => updateAppState((state) => state);
+  return { tours, stop, createProfile, flush, store: () => useTourStore.getState() };
 };
 
 afterEach(() => {
-  vi.doUnmock('../src/platform/get-platform');
+  platform.files = null;
   vi.unstubAllGlobals();
 });
 
@@ -74,7 +79,7 @@ describe('first run is app-wide', () => {
     first.tours.stop();
     await first.createProfile('Two');
     expect(first.tours.startFirstRun()).toBe(false);
-    await settle();
+    await first.flush();
     expect(appJson(disk)).toMatchObject({ firstRun: 'done', tours: { started: ['welcome'] } });
     first.stop();
     const again = await boot(disk);

@@ -75,6 +75,8 @@ const createFilePicker = (): FilePickerPort => {
     saveFile: ({ name, bytes, extensions }) => api.saveFile(name, toArrayBuffer(bytes), extensions ?? []),
     pickPath: (opts) => api.pickPath(opts?.folder === true, opts?.extensions ?? []),
     pathOf: (file) => api.getFilePath(file) || null,
+    openFolder: (path) => api.openFolder(path),
+    revealPath: (path) => api.revealPath(path),
   };
 };
 

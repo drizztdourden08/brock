@@ -58,6 +58,9 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'dialog:pickPath': (folder: boolean, extensions: string[]) => Promise<string | null>;
   'dialog:saveFile': (name: string, data: ArrayBuffer, extensions: string[]) => Promise<SaveFileResultWire>;
 
+  'shell:openFolder': (path: string) => Promise<Result>;
+  'shell:revealPath': (path: string) => Promise<Result>;
+
   'profiles:list': () => Promise<Profile[]>;
   'profiles:create': (opts: CreateProfileOptions) => Promise<Profile>;
   'profiles:delete': (id: string) => Promise<void>;

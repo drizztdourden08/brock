@@ -4,12 +4,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, normalize, resolve } from 'node:path';
 import { automationFlags } from './automation-flags.mjs';
+import { DIST_MAIN, distProblem } from './dist-problem.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
 import { ensureAppIcons } from './ensure-app-icons.mjs';
 import { ensureAppSynced } from './ensure-app-synced.mjs';
-
-const DIST_ENTRY = join('dist', 'electron', 'main.js');
-const DIST_OUTPUTS = [DIST_ENTRY, join('dist', 'preload', 'preload.mjs'), join('dist', 'renderer', 'index.html')];
 
 const requireFrom = (dir) => createRequire(join(dir, 'package.json'));
 
@@ -67,7 +65,7 @@ const startProd = (appDir, args, log) => {
   const electron = ensureElectronBinary(appDir, log);
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  const entry = mainEntryOf(appDir) === DIST_ENTRY ? '.' : DIST_ENTRY;
+  const entry = mainEntryOf(appDir) === DIST_MAIN ? '.' : DIST_MAIN;
   log(`${appDir}> electron ${entry} ${args.join(' ')}`);
   return spawn(electron, [entry, ...args], { cwd: appDir, stdio: 'inherit', env });
 };
@@ -76,8 +74,8 @@ const notReadyWith = (dirs, userData) => (worktree, prod) => {
   if (!existsSync(dirs.userData(worktree))) {
     return `"${worktree.name}" has no ${userData} folder. Run: ${worktree.workspace.name} worktree create ${worktree.name}`;
   }
-  const missing = prod ? DIST_OUTPUTS.find((output) => !existsSync(join(dirs.app(worktree), output))) : null;
-  if (missing) return `"${worktree.name}" has no complete production build (${missing} is missing). Build it first, or launch without --prod.`;
+  const problem = prod ? distProblem(dirs.app(worktree)) : null;
+  if (problem) return `"${worktree.name}" has no complete production build (${problem}). Build it first, or launch without --prod.`;
   return null;
 };
 

@@ -3,6 +3,10 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setPopped } from '@drizztdourden08/tessera/composites';
+import '../src/hooks/useWidgetState';
+import '../src/widgets/define-widget';
+import '../src/widgets/widget-persistence';
+import '../src/widgets/WidgetBody';
 
 const LOG_BOUNDS = { x: 40, y: 60, width: 420, height: 300 };
 const FLOAT_RECT = { x: 10, y: 20, width: 300, height: 200 };

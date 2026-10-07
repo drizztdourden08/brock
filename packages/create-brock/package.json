@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/create-brock",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "Scaffold a Brock app: pnpm create @drizztdourden08/brock my-app",
   "type": "module",
   "license": "UNLICENSED",

@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-plugin-snes
 
+## 0.31.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-thread@0.31.0
+
 ## 0.30.0
 
 ### Patch Changes

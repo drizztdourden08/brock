@@ -157,12 +157,25 @@ interface PerformanceSnapshot {
   inBody: boolean;
 }
 
+interface ControlSizeSnapshot {
+  xs: number;
+  sm: number;
+  widgetButtons: readonly number[];
+  barButtons: readonly number[];
+}
+
+interface NarrowFitSnapshot {
+  width: number;
+  cutTitles: readonly string[];
+  sideScroll: boolean;
+}
+
 interface SettingRowsSnapshot {
   total: number;
   empty: string[];
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

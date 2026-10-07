@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind logic */
+import { controlSizeChecks } from '../checks/control-size-checks';
 import { find } from '../dom/find';
+import { readControlSizes } from '../dom/read-control-sizes';
 import { waitFor } from '../dom/wait-for';
 import { menuPathTo } from '../menu/menu-path-to';
 import { pickMenuPath } from '../menu/pick-menu-path';
@@ -24,6 +26,7 @@ const widgetsStep: ReviewStep = {
     const docked = shown.closest(SELECTORS.dockPane) !== null;
     tour.check('logs-widget-docks', docked, 'the logs widget docked in a pane beside the main view', 'the logs widget did not dock in a pane');
     const gripHidden = find(SELECTORS.mainGrip) === null;
+    tour.report(controlSizeChecks(readControlSizes(shown.closest(SELECTORS.widget) ?? shown)));
     tour.check('main-grip-at-rest', gripHidden, 'no main view grip shows while nothing is dragged', 'the main view grip shows while nothing is dragged');
     await tour.capture('logs-widget');
     const hidden = await pickMenuPath(path) ? await waitFor(() => find(SELECTORS.logsWidget) === null) : null;

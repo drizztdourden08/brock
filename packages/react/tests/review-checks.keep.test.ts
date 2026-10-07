@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { MenuEntry } from '../src/menu/menu.type';
 import { aboutChecks } from '../src/review/checks/about-checks';
 import { bootChecks } from '../src/review/checks/boot-checks';
+import { controlSizeChecks } from '../src/review/checks/control-size-checks';
 import { frameChecks } from '../src/review/checks/frame-checks';
 import { pageHeaderChecks } from '../src/review/checks/page-header-checks';
 import { screenFocusChecks } from '../src/review/checks/screen-focus-checks';
@@ -10,9 +11,10 @@ import { iconSlotChecks } from '../src/review/checks/icon-slot-checks';
 import { menuChecks } from '../src/review/checks/menu-checks';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
 import { menuPathTo } from '../src/review/menu/menu-path-to';
+import { narrowFitChecks } from '../src/review/checks/narrow-fit-checks';
 import { updaterChecks } from '../src/review/checks/updater-checks';
 import { viewMenuChecks } from '../src/review/checks/view-menu-checks';
-import type { BootSnapshot, MenuItemSnapshot, ReviewOutcome } from '../src/review/review.type';
+import type { BootSnapshot, ControlSizeSnapshot, MenuItemSnapshot, ReviewOutcome } from '../src/review/review.type';
 
 const failed = (outcomes: readonly ReviewOutcome[]): string[] => outcomes.filter((o) => !o.pass).map((o) => o.id);
 const reasonOf = (outcomes: readonly ReviewOutcome[], id: string): string | undefined => outcomes.find((o) => o.id === id)?.reason;
@@ -180,5 +182,36 @@ describe('updaterChecks', () => {
 
   it('fails a permanent version tag and an update status nobody found an update for', () => {
     expect(failed(updaterChecks({ versionShown: true, statusShown: true }))).toEqual(['no-version-tag', 'no-update-status']);
+  });
+});
+
+const SIZES: ControlSizeSnapshot = { xs: 20, sm: 28, widgetButtons: [20, 20, 20], barButtons: [28, 28] };
+
+describe('controlSizeChecks', () => {
+  it('passes xs widget title bar buttons beside sm window title bar actions', () => {
+    expect(failed(controlSizeChecks(SIZES))).toEqual([]);
+    expect(failed(controlSizeChecks({ ...SIZES, widgetButtons: [20.4], barButtons: [] }))).toEqual([]);
+  });
+
+  it('fails a widget title bar button drawn at sm and names its height', () => {
+    const outcomes = controlSizeChecks({ ...SIZES, widgetButtons: [20, 28] });
+    expect(failed(outcomes)).toEqual(['widget-title-buttons-xs']);
+    expect(reasonOf(outcomes, 'widget-title-buttons-xs')).toBe('the widget title bar buttons are 20 px, 28 px tall, expected xs, 20 px');
+  });
+
+  it('fails a widget title bar with no buttons and a window title bar action that shrank to xs', () => {
+    expect(failed(controlSizeChecks({ ...SIZES, widgetButtons: [], barButtons: [28, 20] }))).toEqual(['widget-title-buttons-xs', 'title-bar-actions-sm']);
+  });
+});
+
+describe('narrowFitChecks', () => {
+  it('passes a screen with no cut title and no sideways scroll', () => {
+    const outcomes = narrowFitChecks('settings', { width: 600, cutTitles: [], sideScroll: false });
+    expect(outcomes).toEqual([{ id: 'settings-fits-narrow', pass: true, reason: '"settings" fits a 600 px wide window: no title cut, no sideways scroll' }]);
+  });
+
+  it('names each cut title and a sideways scroll', () => {
+    const outcomes = narrowFitChecks('settings', { width: 600, cutTitles: ['Settings'], sideScroll: true });
+    expect(reasonOf(outcomes, 'settings-fits-narrow')).toBe('in a 600 px wide window "settings" does not fit: the title "Settings" is cut; its content scrolls sideways');
   });
 });

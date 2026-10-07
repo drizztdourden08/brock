@@ -16,7 +16,7 @@ const PAGE = `
     <input id="widget-text" type="text">
     <p id="widget-text-line">Some text</p>
   </div>
-  <div class="listbox-drop control-menu widget-options">
+  <div class="listbox-drop control-menu" data-widget-options="">
     <button id="options-row" aria-controls="options-sub">Shortcuts</button>
   </div>
   <div class="control-menu__sub-panel" id="options-sub"><button id="options-sub-item">Keys</button></div>

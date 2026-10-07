@@ -102,7 +102,7 @@ const SELECTORS = {
   widget: '.widget',
   widgetTitleButton: '.widget__titlebar-actions button',
   widgetOptionsButton: '.widget__titlebar-actions .widget__options',
-  widgetOptionsPanel: '.widget-options',
+  widgetOptionsPanel: '[data-widget-options]',
   barActionButton: '.window-title-bar button[data-bar-item^="action:"]',
   layerContent: '.screen-layer:not(.screen-layer--hidden) .screen-window__content',
   layerTitles: '.screen-layer:not(.screen-layer--hidden) :is(.window-header__title, .window-header__subtitle, .content-header__title)',

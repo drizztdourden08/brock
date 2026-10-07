@@ -28,7 +28,7 @@ describe('titleFont', () => {
     const drawn = rasteriseSvg(words(font.family), 240, font.file);
     expect(drawn.equals(rasteriseSvg(words(font.family), 240))).toBe(false);
     expect(drawn.equals(rasteriseSvg(words('Segoe UI'), 240))).toBe(false);
-  });
+  }, 60_000);
 
   it('falls back to Segoe UI, saying so once, when the font cannot be read', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);

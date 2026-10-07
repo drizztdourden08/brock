@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.32.0
+
+### Minor Changes
+
+- 92b662f: Widgets keep the keyboard with the app. A mouse click on a widget's button, tab or slider used to give it the focus, so afterwards the arrows, Enter and Space drove that control instead of the app. `WidgetHost` now runs a focus guard over the docked and floating widgets and the widget options panel in the main window: a press on a control there keeps the focus where it was and the click still fires, focus a press moves into a widget is dropped, a slider or select holds the focus only for the press and loses it on release or change, and text fields keep it. Only a pointer press inside the widgets triggers it, so Tab, the tour and the search palette still move the focus into a widget, the focus ring shows as usual, and app menus keep their keyboard navigation. A popped widget window is the widget's own app, so the guard does not run there. It is on by default; `product.widgets.keepFocusWithApp: false` in `brock.config.ts` (or `keepFocusWithApp={false}` on `WidgetHost`) turns it off. The review adds `widget-click-keeps-focus`: two real clicks on the docked logs widget's options button must leave `document.activeElement` outside the widget.
+
+### Patch Changes
+
+- Updated dependencies [92b662f]
+  - @drizztdourden08/brock-core@0.32.0
+
 ## 0.31.0
 
 ### Minor Changes

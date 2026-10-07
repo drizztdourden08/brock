@@ -14,6 +14,8 @@ const BASE_RETURNS: Returns = {
   getDataLocation: () => ({ path: '(browser)', osLabel: 'Browser', canReveal: false }),
   getStorageSummary: () => ({ location: { path: '(browser)', osLabel: 'Browser', canReveal: false }, domains: [], totalBytes: 0 }),
   revealProfileFolder: () => ({ success: false, error: 'Not available on this host' }),
+  openFolder: () => ({ success: false, error: 'Not available on this host' }),
+  revealPath: () => ({ success: false, error: 'Not available on this host' }),
   saveFile: () => ({ saved: false }),
 };
 

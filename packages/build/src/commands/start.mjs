@@ -3,7 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, normalize } from 'node:path';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { halfBuildReason } from '../freshness/half-build-reason.mjs';
 import { resolveElectronBinary, runInherit } from '../run.mjs';
+import { runBuild } from './build.mjs';
 
 const MAIN_ENTRY = join('dist', 'electron', 'main.js');
 
@@ -32,6 +34,12 @@ const runStart = async ({ rootDir, passthrough = [] }) => {
     return 1;
   }
   await ensureSynced(rootDir, 'brock start');
+  const half = halfBuildReason(rootDir);
+  if (half) {
+    console.log(`brock start: running brock build first, since ${half}.`);
+    const built = await runBuild({ rootDir });
+    if (built !== 0) return built;
+  }
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
   const target = mainOf(rootDir) === MAIN_ENTRY ? rootDir : entry;

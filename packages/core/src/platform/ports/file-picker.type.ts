@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { Result } from '../../result/result.type';
+
 interface PickedFile {
   name: string;
   bytes: Uint8Array;
@@ -26,6 +28,8 @@ interface FilePickerPort {
   saveFile: (request: SaveFileRequest) => Promise<SaveFileResult>;
   pickPath?: (opts?: PickPathOptions) => Promise<string | null>;
   pathOf?: (file: File) => string | null;
+  openFolder?: (path: string) => Promise<Result>;
+  revealPath?: (path: string) => Promise<Result>;
 }
 
 export type { PickedFile, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort };

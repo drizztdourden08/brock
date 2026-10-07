@@ -1,6 +1,6 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdir, mkdtemp, readFile, rm, utimes, writeFile } from 'fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm, utimes, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { createDataDomains } from '../src/main/storage/create-data-domains';
@@ -60,6 +60,29 @@ describe('createDataDomains', () => {
     expect(await sessions.size()).toBe(1);
     expect(await domains.usage('sessions')).toEqual({ domain: 'sessions', label: 'Sessions', count: 1, bytes: 1 });
     expect(await domains.usage('cache')).toEqual({ domain: 'cache', label: 'Cache', count: 0, bytes: 0 });
+  });
+
+  it('keeps the last of many writes to one file at once, with no temp file left', async () => {
+    const sessions = domains.domain('sessions');
+    const writes = Array.from({ length: 24 }, (_, index) => (index % 2 === 0
+      ? sessions.writeJson('state.json', { index })
+      : sessions.writeText('state.json', JSON.stringify({ index }))));
+    await Promise.all(writes);
+    expect(await sessions.readJson('state.json', null)).toEqual({ index: 23 });
+    expect(await readdir(join(root, 'sessions'))).toEqual(['state.json']);
+  });
+
+  it('lets one failed write leave the next write to the same file working', async () => {
+    const sessions = domains.domain('sessions');
+    await mkdir(join(root, 'sessions', 'taken.json', 'inside'), { recursive: true });
+    const failed = sessions.writeText('taken.json', 'x');
+    const after = sessions.writeText('free.json', 'y');
+    await expect(failed).rejects.toThrow();
+    await after;
+    await rm(join(root, 'sessions', 'taken.json'), { recursive: true });
+    await sessions.writeText('taken.json', 'z');
+    expect(await sessions.readText('taken.json')).toBe('z');
+    expect((await readdir(join(root, 'sessions'))).sort()).toEqual(['free.json', 'taken.json']);
   });
 });
 

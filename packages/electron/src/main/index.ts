@@ -38,6 +38,8 @@ export { whenRevealed } from './boot/when-revealed';
 export type { MainBootContext, MainBootTask, MainBootTaskDef } from './boot/boot-state.type';
 export { DEFAULT_PERMISSIONS, DEFAULT_EXTERNAL_PROTOCOLS } from './window/security.constants';
 export { openExternal } from './window/open-external';
+export { openFolder } from './files/open-folder';
+export { revealPath } from './files/reveal-path';
 export type { DataDomains, DomainFiles } from './storage/domain-files.type';
 export type { JobHandle, JobRegistry, StartJob } from './jobs/job.type';
 export { captureWindow } from './handlers/capture-window';

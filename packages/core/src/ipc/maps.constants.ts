@@ -33,6 +33,9 @@ const BASE_INVOKE_MAP = {
   pickPath: 'dialog:pickPath',
   saveFile: 'dialog:saveFile',
 
+  openFolder: 'shell:openFolder',
+  revealPath: 'shell:revealPath',
+
   listProfiles: 'profiles:list',
   createProfile: 'profiles:create',
   deleteProfile: 'profiles:delete',

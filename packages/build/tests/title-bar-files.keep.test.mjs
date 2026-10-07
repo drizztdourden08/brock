@@ -77,7 +77,7 @@ describe('checkTitleBar', () => {
     });
     const findings = checkTitleBar(dir).join('\n');
     expect(findings).toContain('src/title-bar/helpers.ts: not a title bar item file');
-    expect(findings).toContain('src/title-bar/parts: src/title-bar holds title bar item files only');
+    expect(findings).toContain('src/title-bar/parts: src/title-bar holds title bar item files and their constants files only');
     expect(findings).toContain('"Bad" is not a kebab-case id');
     expect(findings).toContain('src/title-bar/empty.action.ts: no default export');
     expect(findings).toContain('"search" is a standard Brock title bar item id');

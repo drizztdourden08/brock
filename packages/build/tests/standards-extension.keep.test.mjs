@@ -36,7 +36,7 @@ describe('the brock-app extension', () => {
   });
 
   it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts']);
+    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.<kind>.constants.ts']);
   });
 
   it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta, context included', async () => {

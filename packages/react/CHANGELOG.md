@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.31.0
+
+### Minor Changes
+
+- 6584277: Brock moves to Tessera 0.24.0: the workspace catalog and brock-react's peer range are `^0.24.0` (MIGRATION §198 and §199). Button and IconButton share an `xs` size of 20 px (`--control-h-xs`), `ButtonSize` and `MenuSize` take `'xs'`, and a widget's pop out, pin, options and close buttons are `xs`, so a docked widget and a popped widget window draw them at 20 px in the 30 px title bar. Brock draws no title bar button of its own on a widget, and the window title bar keeps its `sm` actions, 28 px. `--widget-btn-d` and `--menu-trigger-width` are removed; Brock's CSS used neither, and RENAMES.json maps both to `--control-h-xs`, so `brock upgrade` renames them in an app. An app button passed through `titleBarActions` or `widgetActions` with the class `widget__btn` takes `size="xs"`. Screens follow their own box: a `ScreenPage` header moves its strip, then its actions, under the title instead of cutting it, a `StageScreen` toolbar wraps under its heading, and `ScreenWindow` is a `screen-window` inline-size container, so content in a screen can use `@container screen-window`. An element positioned against the viewport inside a screen now positions against the window; Brock's full-window layers (the boot failure splash, the tour layer, the window guide, the palette, the toasts and the dock drop hints) render outside the screens or in a portal, so they still cover the whole app window.
+
+### Patch Changes
+
+- 6584277: The review checks the control sizes and how screens fit a narrow window. While the logs widget is docked, `widget-title-buttons-xs` checks that every button in its title bar is as tall as `--control-h-xs` and `title-bar-actions-sm` that the window title bar actions are as tall as `--control-h-sm`. After the screens step has toured every screen, it shrinks the app window to 600 by 720, opens each screen again, checks that no window or page title is cut and that the window content does not scroll sideways (`<id>-fits-narrow`), captures it as `screen-<id>-narrow`, then puts the window back.
+  - @drizztdourden08/brock-core@0.31.0
+
 ## 0.30.0
 
 ### Minor Changes

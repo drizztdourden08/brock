@@ -40,7 +40,7 @@ import { screenTree } from '../.brock/screens';
 | Compounds | `AboutPanel`, `ProfilesPanel`, `ReleaseNotesPanel`, with their props types |
 | Modules | `RendererModule`, `mergeModules` |
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toMenuGroups`, `MenuResolver` |
-| Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
+| Host, log, profiles | `hostApi`, `requireHostApi`, `exposeHostNamespace`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_ACTIONS` |
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
@@ -147,6 +147,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 ## Host, log and profiles
 
 - The preload installs `window.api` before the renderer runs; a web or mobile host has none unless the app installs the shim, so `hostApi()` returns null instead of throwing at module load, and `requireHostApi()` is for call sites that only run on a host with a bridge. Both take the app's own maps as a type argument and add their methods to the base ones, so an app reaches its channels without a cast: `hostApi<{ invoke: typeof APP_INVOKE_MAP; events: typeof APP_EVENT_MAP }>()`. Without one they return the base `IpcApi`.
+- `exposeHostNamespace(id, value)` puts a module's API on `window.api.<id>` when the host has no such namespace, as on Android, where the module answers from its Capacitor plugin. It never replaces a preload namespace and does nothing before `window.api` exists.
 - `instanceName` and `instanceProfile` read the launch identity flags from the preload bridge at call time. A named instance is an automated launch running beside the person's own window: marked on screen, booted into its own profile, never writing the files every launch shares. `isAutomationLaunch` is true for any automated launch, named or not.
 - There is one log bus per app, created by `BrockApp` with the module channels; plain modules reach it through `getAppLog()`. In development `__logEntries` and `__logSubscribe` are exposed on `window` so an automation harness can read them.
 - The renderer profile store wraps the core store bound to the platform `FileStore`; `configureProfileStore` must run before the first store call and resets the cached store. `setLastProfile` is a no-op on an automated launch, gated at this single seam so no call site can forget that an automated run never repoints the shared `app.json`.

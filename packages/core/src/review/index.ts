@@ -9,7 +9,7 @@ export { compareBitmaps } from './compare-bitmaps';
 export { parseBaselineConfig } from './parse-baseline-config';
 export { resolveBaselineRule } from './resolve-baseline-rule';
 export { DEFAULT_REVIEW_NAME, GLOBAL_STEP, REVIEW_FLAG } from './review.constants';
-export { BASELINE_CONFIG_FILE, BASELINE_DIFF_DIR, BASELINE_DIR, BASELINE_MASK_ATTRIBUTE } from './baseline.constants';
+export { BASELINE_CONFIG_FILE, BASELINE_DIFF_DIR, BASELINE_DIR, REVIEW_MASK } from './baseline.constants';
 export type {
   ReviewApp, ReviewCheck, ReviewEnding, ReviewLogLevel, ReviewLogLine, ReviewReport, ReviewRun, ReviewStepRecord,
 } from './review.type';

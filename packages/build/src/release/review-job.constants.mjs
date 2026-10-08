@@ -6,6 +6,7 @@ const PLAIN_REVIEW = Object.freeze({
   REVIEW_RUNNER: 'ubuntu-latest',
   REVIEW_RUN: `xvfb-run -a ${REVIEW_COMMAND}`,
   BASELINE_STEPS: '',
+  REVIEW_DATA: '.user-data',
 });
 
 const BASELINE_RUNNER = 'ubuntu-24.04';
@@ -35,6 +36,7 @@ const BASELINE_REVIEW = Object.freeze({
     `          path: \${{ env.APP_DIR }}/${BASELINE_SET}/`,
     '          if-no-files-found: error',
   ].join('\n'),
+  REVIEW_DATA: '.user-data-review',
 });
 
 export { BASELINE_REVIEW, PLAIN_REVIEW };

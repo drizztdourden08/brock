@@ -17,7 +17,7 @@ const quitWith = (code: number): void => {
 const withBaselines = async (session: ReviewSession, finished: boolean): Promise<ReviewRun> => {
   const run = session.run();
   if (!session.baselines) return run;
-  const baselines = await applyBaselines(session.baselines, { steps: run.steps, reviewDir: session.dir, finished, masksOf: session.masksOf });
+  const baselines = await applyBaselines(session.baselines, { steps: run.steps, reviewDir: session.dir, finished, masksOf: session.masksOf, settled: session.settled });
   return { ...run, baselines };
 };
 

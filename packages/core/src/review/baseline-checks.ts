@@ -10,7 +10,7 @@ const failureReason = (result: BaselineResult, platform: string): string => {
   if (result.detail !== undefined) return `"${result.capture}": ${result.detail}`;
   switch (result.status) {
     case 'differs':
-      return `"${result.capture}" differs from the ${platform} baseline in ${result.diffPixels} pixels (${baselineShare(result.ratio)}, tolerance ${baselineShare(result.tolerance)}); diff image ${result.diff ?? 'not written'}`;
+      return `"${result.capture}" differs from the ${platform} baseline in ${result.diffPixels} pixels (${baselineShare(result.ratio)}, tolerance ${baselineShare(result.tolerance)}); diff image ${result.diff ?? 'not written'}${result.settled === false ? '; the screen was still changing when it was captured' : ''}`;
     case 'size':
       return `"${result.capture}": the size differs from the baseline`;
     case 'missing':

@@ -3,8 +3,12 @@ import { BYTES_PER_PIXEL, DIFF_COLOR, FADE_BASE, FADE_WEIGHT, MASK_COLOR } from 
 import type { BitmapDiff, MaskRect, ReviewBitmap } from './baseline.type';
 import { maskGrid } from './mask-grid';
 
-const samePixel = (a: Uint8Array, b: Uint8Array, at: number): boolean =>
-  a[at] === b[at] && a[at + 1] === b[at + 1] && a[at + 2] === b[at + 2] && a[at + 3] === b[at + 3];
+const samePixel = (a: Uint8Array, b: Uint8Array, at: number, threshold: number): boolean => {
+  for (let channel = at; channel < at + BYTES_PER_PIXEL; channel += 1) {
+    if (Math.abs((a[channel] ?? 0) - (b[channel] ?? 0)) > threshold) return false;
+  }
+  return true;
+};
 
 const paint = (out: Uint8Array, at: number, color: readonly number[]): void => {
   out.set(color, at);
@@ -19,7 +23,7 @@ const fade = (source: Uint8Array, out: Uint8Array, at: number): void => {
   out[at + 3] = 255;
 };
 
-const compareBitmaps = (baseline: ReviewBitmap, current: ReviewBitmap, rects: readonly MaskRect[]): BitmapDiff => {
+const compareBitmaps = (baseline: ReviewBitmap, current: ReviewBitmap, rects: readonly MaskRect[], threshold = 0): BitmapDiff => {
   if (baseline.width !== current.width || baseline.height !== current.height) {
     throw new Error(`the sizes differ: baseline ${baseline.width}x${baseline.height}, capture ${current.width}x${current.height}`);
   }
@@ -35,7 +39,7 @@ const compareBitmaps = (baseline: ReviewBitmap, current: ReviewBitmap, rects: re
       continue;
     }
     comparedPixels += 1;
-    if (samePixel(baseline.data, current.data, at)) {
+    if (samePixel(baseline.data, current.data, at, threshold)) {
       fade(current.data, out, at);
       continue;
     }

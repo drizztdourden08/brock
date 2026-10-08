@@ -19,7 +19,7 @@ const compareBaselines = async (options: BaselineOptions, input: BaselineRunInpu
   const results: BaselineResult[] = [];
   for (const { step, key } of captured) results.push(await safely(step, key, options, input));
   const unused = await unusedBaselines(options.setDir, new Set(captured.map(({ key }) => key)), input.finished);
-  return { mode: 'compare', platform: options.platform, dir: options.setDir, results: [...results, ...unused] };
+  return { mode: 'compare', platform: options.platform, dir: options.setLabel, results: [...results, ...unused] };
 };
 
 export { compareBaselines };

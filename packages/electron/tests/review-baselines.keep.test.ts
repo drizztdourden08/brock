@@ -99,14 +99,14 @@ describe('bless and compare', () => {
     { index: 2, name: 'menu', file: '02-menu.png' },
   ];
   const input = (finished = true, list = steps): Parameters<typeof compareBaselines>[1] =>
-    ({ steps: list, reviewDir, finished, masksOf: (file) => masks.get(file) ?? [] });
+    ({ steps: list, reviewDir, finished, masksOf: (file) => masks.get(file) ?? [], settled: (file) => file !== '02-menu.png' });
   const capture = (file: string, bitmap: ReviewBitmap): Promise<void> => writeFile(join(reviewDir, file), encodePng(bitmap));
 
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), 'brock-baselines-'));
     reviewDir = join(root, 'Data', 'review', 'review');
     await mkdir(reviewDir, { recursive: true });
-    options = { mode: 'compare', root: join(root, 'tests', 'baselines'), setDir: join(root, 'tests', 'baselines', 'linux'), platform: 'linux', config: parseBaselineConfig(undefined) };
+    options = { mode: 'compare', root: join(root, 'tests', 'baselines'), setDir: join(root, 'tests', 'baselines', 'linux'), setLabel: 'tests/baselines/linux', platform: 'linux', config: parseBaselineConfig(undefined) };
     masks.clear();
     await Promise.all(steps.map((step, index) => capture(step.file, image(8, 6, index))));
   });
@@ -138,6 +138,9 @@ describe('bless and compare', () => {
 
     const tolerant = { ...options, config: parseBaselineConfig({ captures: { menu: { tolerance: 0.05 } } }) };
     expect((await compareBaselines(tolerant, input())).results[1]?.status).toBe('match');
+
+    await capture('02-menu.png', image(8, 6, 7));
+    expect((await compareBaselines(options, input())).results[2]).toMatchObject({ capture: 'menu--2', status: 'differs', settled: false });
   });
 
   it('reports a missing baseline, a size change and a baseline no capture used', async () => {
@@ -169,6 +172,7 @@ describe('readBaselineOptions', () => {
     const compare = readBaselineOptions(flags, '/app', ['--review', '--review-baselines']);
     expect(compare?.mode).toBe('compare');
     expect(compare?.root.replace(/\\/g, '/')).toMatch(/\/app\/tests\/baselines$/);
+    expect(compare?.setLabel).toBe(`tests/baselines/${compare?.platform ?? ''}`);
     const bless = readBaselineOptions(flags, '/app', ['--review', '--review-bless=shots']);
     expect(bless?.mode).toBe('bless');
     expect(bless?.setDir.replace(/\\/g, '/')).toMatch(/\/app\/shots\/[a-z0-9]+$/);

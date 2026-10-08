@@ -64,6 +64,12 @@ describe('compareBitmaps', () => {
     expect(pixelOf(result.diff, 2, 1)).toEqual([64, 128, 255, 255]);
   });
 
+  it('lets a channel threshold pass small colour drift but not a larger one', () => {
+    const drifted = withPixel(withPixel(bitmap(4, 3), 0, 0, [12, 20, 30, 255]), 1, 0, [13, 20, 30, 255]);
+    expect(compareBitmaps(bitmap(4, 3), drifted, [], 2).diffPixels).toBe(1);
+    expect(compareBitmaps(bitmap(4, 3), drifted, []).diffPixels).toBe(2);
+  });
+
   it('refuses images of different sizes', () => {
     expect(() => compareBitmaps(bitmap(4, 3), bitmap(3, 4), [])).toThrow(/sizes differ/);
   });
@@ -79,22 +85,27 @@ describe('maskGrid', () => {
 describe('parseBaselineConfig and resolveBaselineRule', () => {
   it('defaults to zero tolerance and the mask attribute', () => {
     const rule = resolveBaselineRule(parseBaselineConfig(undefined), 'screen-home');
-    expect(rule).toEqual({ tolerance: 0, rects: [], selectors: ['[data-review-mask]'] });
+    expect(rule).toEqual({ tolerance: 0, threshold: 0, rects: [], selectors: ['[data-review-mask]', '.logs-widget .log-panel__gutter'] });
   });
 
-  it('merges the global masks with the capture rule and keeps its tolerance', () => {
+  it('merges the global masks with the capture rule and keeps its tolerance and threshold', () => {
     const config = parseBaselineConfig({
+      threshold: 1,
       masks: [{ selector: '.clock' }],
-      captures: { 'screen-home': { tolerance: 0.01, masks: [{ x: 1, y: 2, width: 3, height: 4 }] } },
+      captures: { 'screen-home': { tolerance: 0.01, threshold: 3, masks: [{ x: 1, y: 2, width: 3, height: 4 }] } },
     });
     expect(resolveBaselineRule(config, 'screen-home')).toEqual({
-      tolerance: 0.01, rects: [{ x: 1, y: 2, width: 3, height: 4 }], selectors: ['[data-review-mask]', '.clock'],
+      tolerance: 0.01,
+      threshold: 3,
+      rects: [{ x: 1, y: 2, width: 3, height: 4 }],
+      selectors: ['[data-review-mask]', '.logs-widget .log-panel__gutter', '.clock'],
     });
-    expect(resolveBaselineRule(config, 'about').tolerance).toBe(0);
+    expect(resolveBaselineRule(config, 'about')).toMatchObject({ tolerance: 0, threshold: 1 });
   });
 
   it('names the bad field', () => {
     expect(() => parseBaselineConfig({ tolerance: 2 })).toThrow(/tolerance/);
+    expect(() => parseBaselineConfig({ threshold: 1.5 })).toThrow(/threshold/);
     expect(() => parseBaselineConfig({ captures: { a: { masks: [{ x: 1 }] } } })).toThrow(/captures\.a\.masks\[0\]/);
     expect(() => parseBaselineConfig([])).toThrow(/JSON object/);
   });

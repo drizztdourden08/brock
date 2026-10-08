@@ -25,6 +25,8 @@ interface ReviewSession {
   setBoot: (timeline: BootTimeline) => void;
   addMasks: (file: string, rects: readonly MaskRect[]) => void;
   masksOf: (file: string) => readonly MaskRect[];
+  markUnsettled: (file: string) => void;
+  settled: (file: string) => boolean;
 }
 
 export type { ReviewSession, ReviewSessionInput };

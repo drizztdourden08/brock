@@ -24,11 +24,14 @@ const createReviewSession = ({ name, app, windowIcon, baselines = null }: Review
   const requestErrors = new Map<string, string>();
   const unresolved = (): string[] => [...requestErrors].filter(([url]) => !loaded.has(url)).map(([, message]) => message);
   const masks = new Map<string, readonly MaskRect[]>();
+  const unsettled = new Set<string>();
   return {
     dir: getUserDataPath('review', name),
     baselines,
     addMasks: (file, rects) => { masks.set(file, [...(masks.get(file) ?? []), ...rects]); },
     masksOf: (file) => masks.get(file) ?? [],
+    markUnsettled: (file) => { unsettled.add(file); },
+    settled: (file) => !unsettled.has(file),
     run: () => ({ ...run, failedLoads: [...run.failedLoads, ...unresolved()] }),
     markLoaded: (url) => { loaded.add(url); },
     addRequestError: (url, message) => { if (!requestErrors.has(url)) requestErrors.set(url, message); },

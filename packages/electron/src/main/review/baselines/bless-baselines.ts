@@ -17,7 +17,7 @@ const blessBaselines = async (options: BaselineOptions, input: BaselineRunInput)
   }
   const unused = await unusedBaselines(options.setDir, new Set(captured.map(({ key }) => key)), input.finished);
   for (const result of unused) await rm(join(options.setDir, result.file), { force: true });
-  return { mode: 'bless', platform: options.platform, dir: options.setDir, results: [...results, ...unused] };
+  return { mode: 'bless', platform: options.platform, dir: options.setLabel, results: [...results, ...unused] };
 };
 
 export { blessBaselines };

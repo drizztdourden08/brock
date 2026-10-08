@@ -24,17 +24,20 @@ type BaselineMask = MaskRect | SelectorMask;
 
 interface BaselineRule {
   tolerance?: number;
+  threshold?: number;
   masks?: BaselineMask[];
 }
 
 interface BaselineConfig {
   tolerance: number;
+  threshold: number;
   masks: BaselineMask[];
   captures: Record<string, BaselineRule>;
 }
 
 interface ResolvedRule {
   tolerance: number;
+  threshold: number;
   rects: MaskRect[];
   selectors: string[];
 }
@@ -57,6 +60,7 @@ interface BaselineResult {
   masked: number;
   diff?: string;
   detail?: string;
+  settled?: false;
 }
 
 interface BaselineReport {

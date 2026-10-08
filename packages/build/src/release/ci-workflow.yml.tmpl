@@ -65,6 +65,6 @@ __SETUP__
         uses: actions/upload-artifact@v4
         with:
           name: review
-          path: ${{ env.APP_DIR }}/.user-data/Data/review/
+          path: ${{ env.APP_DIR }}/__REVIEW_DATA__/Data/review/
           if-no-files-found: ignore
 __PLATFORM_JOBS__

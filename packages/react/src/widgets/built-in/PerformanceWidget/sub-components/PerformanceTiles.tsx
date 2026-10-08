@@ -2,6 +2,7 @@
 import { memo, useMemo } from 'react';
 import { StatTile } from '@drizztdourden08/tessera/composites';
 import { Box, Sparkline } from '@drizztdourden08/tessera/primitives';
+import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
 import { tileSpecs } from '../behavior/tile-specs';
 import type { PerformanceTilesProps } from '../PerformanceWidget.type';
 
@@ -10,7 +11,7 @@ const PerformanceTilesView = (props: PerformanceTilesProps) => {
   const tiles = useMemo(() => tileSpecs(renderer, processes, shown), [renderer, processes, shown]);
 
   return (
-    <Box className="performance-widget__tiles">
+    <Box className="performance-widget__tiles" {...REVIEW_MASK}>
       {tiles.map((tile) => (
         <StatTile
           key={tile.id}

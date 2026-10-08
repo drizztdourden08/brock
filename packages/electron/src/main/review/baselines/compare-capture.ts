@@ -19,13 +19,13 @@ const compareCapture = async (step: ReviewStepRecord, key: string, options: Base
   if (baseline.width !== current.width || baseline.height !== current.height) {
     return { ...base, status: 'size', detail: `the baseline is ${baseline.width}x${baseline.height}, the capture ${current.width}x${current.height}` };
   }
-  const result = compareBitmaps(baseline, current, [...rule.rects, ...input.masksOf(step.file)]);
+  const result = compareBitmaps(baseline, current, [...rule.rects, ...input.masksOf(step.file)], rule.threshold);
   const measured = { ...base, diffPixels: result.diffPixels, ratio: result.ratio, masked: current.width * current.height - result.comparedPixels };
   if (result.ratio <= rule.tolerance) return { ...measured, status: 'match' };
   const diff = `${BASELINE_DIFF_DIR}/${step.file}`;
   await mkdir(join(input.reviewDir, BASELINE_DIFF_DIR), { recursive: true });
   await writeFile(join(input.reviewDir, diff), encodePng(result.diff));
-  return { ...measured, status: 'differs', diff };
+  return { ...measured, status: 'differs', diff, ...(input.settled(step.file) ? {} : { settled: false }) };
 };
 
 export { compareCapture };

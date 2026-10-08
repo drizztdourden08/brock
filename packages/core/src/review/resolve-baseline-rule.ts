@@ -1,5 +1,5 @@
 /* @layer core @kind logic */
-import { BASELINE_MASK_SELECTOR } from './baseline.constants';
+import { BUILT_IN_MASKS } from './baseline.constants';
 import type { BaselineConfig, BaselineMask, MaskRect, ResolvedRule } from './baseline.type';
 
 const isRect = (mask: BaselineMask): mask is MaskRect => !('selector' in mask);
@@ -9,8 +9,9 @@ const resolveBaselineRule = (config: BaselineConfig, capture: string): ResolvedR
   const masks = [...config.masks, ...(rule?.masks ?? [])];
   return {
     tolerance: rule?.tolerance ?? config.tolerance,
+    threshold: rule?.threshold ?? config.threshold,
     rects: masks.filter(isRect),
-    selectors: [BASELINE_MASK_SELECTOR, ...masks.flatMap((mask) => (isRect(mask) ? [] : [mask.selector]))],
+    selectors: [...BUILT_IN_MASKS, ...masks.flatMap((mask) => (isRect(mask) ? [] : [mask.selector]))],
   };
 };
 

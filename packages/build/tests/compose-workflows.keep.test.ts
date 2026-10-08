@@ -33,6 +33,8 @@ describe('composeWorkflows', () => {
     expect(ci).toContain('runs-on: ubuntu-24.04');
     expect(ci).toContain('if: always() && inputs.bless');
     expect(ci).toContain('path: ${{ env.APP_DIR }}/tests/baselines/linux/');
+    expect(ci).toContain('path: ${{ env.APP_DIR }}/.user-data-review/Data/review/');
+    expect(plain).toContain('path: ${{ env.APP_DIR }}/.user-data/Data/review/');
     expect(ci).not.toMatch(/__[A-Z_]+__/);
   });
 

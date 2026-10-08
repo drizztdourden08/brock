@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo, useState } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
+import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
 import { useWidgetPref } from '../../../hooks/useWidgetPref';
 import { buildSnapshot } from './behavior/build-snapshot';
 import { performanceGroups } from './behavior/performance-groups';
@@ -35,7 +36,7 @@ const PerformanceWidget = () => {
     <Box ref={setRoot} className="performance-widget" data-sampling={active ? 'on' : 'off'}>
       <PerformanceBar active={active} refreshMs={refreshMs} snapshot={snapshot} />
       <PerformanceTiles renderer={renderer} processes={processes} shown={shown} />
-      <Box className="performance-widget__panels">
+      <Box className="performance-widget__panels" {...REVIEW_MASK}>
         <PerformanceGauges renderer={rendererSample} processes={processSample} shown={shown} />
         <Box className="performance-widget__column">
           <PerformanceMemory processes={shown.includes('processes') ? processSample : null} />

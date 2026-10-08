@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, rmSync, symlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { build } from 'vite';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -114,22 +114,44 @@ const bundle = async (root, entry, mode) => {
   return readdirSync(outDir).map((file) => readFileSync(join(outDir, file), 'utf8')).join('\n');
 };
 
+const DEV_MARKS = ['DEV-INSPECTOR-MARK', 'DEV-EDITOR-MARK', 'DEV-DATASET-MARK', 'inspector.page.dev'];
+const DIRECT_IMPORT = "import Inspector from './src/screens/tools/inspector.page.dev';\nexport { Inspector };\n";
+const DEV_ONLY_STOP = /inspector\.page\.dev\.tsx is dev-only/;
+
+const syncedApp = () => {
+  const root = app();
+  writeChanged(root, [...renderScreensFiles(root), ...renderHandlersFiles(root)]);
+  put(root, 'entry.ts', "import { screenTree } from './.brock/screens';\nimport { mainHandlers } from './.brock/handlers.main';\nexport { screenTree, mainHandlers };\n");
+  put(root, 'direct.ts', DIRECT_IMPORT);
+  return root;
+};
+
+const linkTo = (target) => {
+  const link = join(tempDir(), 'app');
+  symlinkSync(target, link, 'junction');
+  return link;
+};
+
 describe('a production build', () => {
   it('has none of the dev-only screens or handler groups, and a development build has them all', async () => {
-    const root = app();
-    writeChanged(root, [...renderScreensFiles(root), ...renderHandlersFiles(root)]);
-    put(root, 'entry.ts', "import { screenTree } from './.brock/screens';\nimport { mainHandlers } from './.brock/handlers.main';\nexport { screenTree, mainHandlers };\n");
+    const root = syncedApp();
     const production = await bundle(root, 'entry.ts', 'production');
     expect(production).toContain('PROD-STATUS-MARK');
     expect(production).toContain('PROD-ENGINE-MARK');
-    for (const mark of ['DEV-INSPECTOR-MARK', 'DEV-EDITOR-MARK', 'DEV-DATASET-MARK', 'inspector.page.dev']) expect(production).not.toContain(mark);
+    for (const mark of DEV_MARKS) expect(production).not.toContain(mark);
     const development = await bundle(root, 'entry.ts', 'development');
     for (const mark of ['DEV-INSPECTOR-MARK', 'DEV-EDITOR-MARK', 'DEV-DATASET-MARK', 'PROD-STATUS-MARK']) expect(development).toContain(mark);
   });
 
   it('stops when shipped code imports a dev-only file itself', async () => {
-    const root = app();
-    put(root, 'entry.ts', "import Inspector from './src/screens/tools/inspector.page.dev';\nexport { Inspector };\n");
-    await expect(bundle(root, 'entry.ts', 'production')).rejects.toThrow(/inspector\.page\.dev\.tsx is dev-only/);
+    await expect(bundle(syncedApp(), 'direct.ts', 'production')).rejects.toThrow(DEV_ONLY_STOP);
+  });
+
+  it('does both when the app root is a link or a short name, which Vite resolves to the real path', async () => {
+    const root = linkTo(syncedApp());
+    const production = await bundle(root, 'entry.ts', 'production');
+    expect(production).toContain('PROD-STATUS-MARK');
+    for (const mark of DEV_MARKS) expect(production).not.toContain(mark);
+    await expect(bundle(root, 'direct.ts', 'production')).rejects.toThrow(DEV_ONLY_STOP);
   });
 });

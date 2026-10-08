@@ -7,8 +7,16 @@ import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
+import { workflowProblems } from '../release/workflow-problems.mjs';
 import { writeGuide } from '../tessera/write-guide.mjs';
 import { syncTargets } from './sync-targets.mjs';
+
+const reportProblems = (problems, label, prefix) => {
+  if (!problems.length) return 0;
+  console.error(`${prefix}: the managed workflows of ${label} would not run as written:`);
+  for (const problem of problems) console.error(`  ${problem}`);
+  return 1;
+};
 
 const reportCheck = (result, label) => {
   if (!result.drifted.length) {
@@ -35,7 +43,9 @@ const syncOne = async (appDir, check) => {
   const config = await loadBrockConfig(appDir);
   const result = syncApp(appDir, config, { check });
   const label = relative(process.cwd(), appDir) || '.';
-  return check ? reportCheck(result, label) : reportSync(result, label);
+  const code = check ? reportCheck(result, label) : reportSync(result, label);
+  const problems = reportProblems(workflowProblems(appDir, result.workflows), label, check ? 'brock check' : 'brock sync');
+  return check ? Math.max(code, problems) : code;
 };
 
 const syncIfStale = async (appDir) => {

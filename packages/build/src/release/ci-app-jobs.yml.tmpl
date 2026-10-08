@@ -12,6 +12,8 @@ __SETUP__
       - name: App gate steps
         run: pnpm --dir "$APP_DIR" exec brock gate
 __ROOT_STEPS__
+  # The review job is pinned to one image, never ubuntu-latest: the apparmor step below and the
+  # linux screenshot baselines both depend on the image, so a new Ubuntu moves only with Brock.
   review:
     runs-on: __REVIEW_RUNNER__
     steps:
@@ -31,7 +33,7 @@ __SETUP__
 
       - name: Keep the review report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: review__ARTIFACT__
           path: __REVIEW_DATA__/Data/review/

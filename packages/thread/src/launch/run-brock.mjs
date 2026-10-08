@@ -17,12 +17,13 @@ const brockBin = (appDir) => {
 /**
  * @param {string} appDir
  * @param {string[]} args
+ * @param {{ inherit?: boolean }} [opts] inherit streams the output
  * @returns {{ status: number | null, output: string } | null} null when the app has no brock-build
  */
-const runBrock = (appDir, args) => {
+const runBrock = (appDir, args, { inherit = false } = {}) => {
   const bin = brockBin(appDir);
   if (!bin) return null;
-  const result = spawnSync(process.execPath, [bin, ...args], { cwd: appDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  const result = spawnSync(process.execPath, [bin, ...args], { cwd: appDir, encoding: 'utf8', stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'] });
   return { status: result.status, output: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim() };
 };
 

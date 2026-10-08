@@ -17,6 +17,7 @@ export { keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 export { installLauncher } from './launcher/install-launcher.mjs';
 export { launcherName } from './launcher/launcher-name.mjs';
 export { releaseWorkflow } from './release/release-workflow.mjs';
+export { ensurePnpmPackageManager } from './release/pnpm-package-manager.mjs';
 export { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE } from './release/workflows.constants.mjs';
 export { composeWorkflows } from './release/compose-workflows.mjs';
 export { expandTargets } from './platforms/expand-targets.mjs';

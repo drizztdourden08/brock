@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { fillTemplate } from './fill-template.mjs';
-import { CHECKOUT_HISTORY, CHECKOUT_TAG, RELEASE_DIR } from './workflows.constants.mjs';
+import { CHECKOUT_HISTORY, CHECKOUT_RELEASE, RELEASE_DIR } from './workflows.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/module').ModuleCiStep} ModuleCiStep
@@ -12,7 +12,7 @@ import { CHECKOUT_HISTORY, CHECKOUT_TAG, RELEASE_DIR } from './workflows.constan
 const renderStep = (step) => `      - name: ${JSON.stringify(step.name)}\n        run: ${JSON.stringify(step.run)}\n\n`;
 
 const checkoutOf = (release, history) => {
-  if (release) return CHECKOUT_TAG;
+  if (release) return CHECKOUT_RELEASE;
   return history ? CHECKOUT_HISTORY : '';
 };
 

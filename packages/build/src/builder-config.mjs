@@ -4,6 +4,8 @@ import { join } from 'node:path';
 import { loadBrockConfig } from './load-config.mjs';
 import { modulePackaging } from './modules/module-packaging.mjs';
 import { createAfterPack } from './packaging/after-pack.mjs';
+import { builderIcons } from './packaging/builder-icons.mjs';
+import { linuxMetadata } from './packaging/linux-metadata.mjs';
 import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
 import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 
@@ -12,14 +14,6 @@ import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
  */
 
 const APP_FILES = ['dist/electron/**/*', 'dist/preload/**/*', 'dist/renderer/**/*', 'package.json'];
-const BRAND_BUILDER_ICONS = { win: 'build/icons/icon.ico', mac: 'build/icons/icon.png', linux: 'build/icons/png' };
-
-/**
- * @param {ProductInput['icons']} icons
- * @returns {{ win?: string, mac?: string, linux?: string }}
- */
-const builderIcons = (icons = {}) =>
-  icons.brand ? BRAND_BUILDER_ICONS : { win: icons.ico, mac: icons.png512, linux: icons.png256 };
 
 /**
  * @param {ProductInput['fileAssociations']} list
@@ -63,6 +57,7 @@ const createBuilderConfig = (product, { rootDir }) => {
   const prefix = product.artifactPrefix ?? `${product.id}-`;
   const icons = builderIcons(product.icons);
   const artifact = (os) => `${prefix}${os}-\${arch}.\${ext}`;
+  const linuxMeta = linuxMetadata(product);
   return {
     appId: product.appId,
     productName: product.name,
@@ -74,6 +69,7 @@ const createBuilderConfig = (product, { rootDir }) => {
     afterPack: createAfterPack(rootDir, icons.win),
     fileAssociations: toBuilderAssociations(product.fileAssociations),
     protocols: toBuilderProtocols(product),
+    ...(Object.keys(linuxMeta.extraMetadata).length ? { extraMetadata: linuxMeta.extraMetadata } : {}),
     ...(product.repo ? { publish: [{ provider: 'github', owner: product.repo.owner, repo: product.repo.name }] } : {}),
     win: {
       target: ['dir'],
@@ -93,7 +89,7 @@ const createBuilderConfig = (product, { rootDir }) => {
       ...(icons.linux ? { icon: icons.linux } : {}),
       artifactName: artifact('linux'),
       executableName: product.id,
-      ...(product.author?.email ? { maintainer: product.author.email } : {}),
+      ...linuxMeta.linux,
     },
     ...debOptions(rootDir),
   };

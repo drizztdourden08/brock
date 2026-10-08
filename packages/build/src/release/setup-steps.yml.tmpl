@@ -1,9 +1,9 @@
-      - uses: actions/checkout@v4__CHECKOUT__
+      - uses: actions/checkout@v7__CHECKOUT__
 
-__SYSTEM__      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
+__SYSTEM__      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm

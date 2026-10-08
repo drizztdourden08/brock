@@ -129,13 +129,15 @@ const addTooling = (pkg, ctx) => {
  * @param {string} scope
  * @param {{ written: string[], kept: string[] }} files
  * @param {{ name: string, fields: string[] }} launcher
+ * @param {string | null} pin package.json brock.version
  */
-const printSummary = (scope, { written, kept }, { name, fields }) => {
+const printSummary = (scope, { written, kept }, { name, fields }, pin) => {
   console.log(`brock adopt: scope ${scope}, command ${name}`);
   if (written.length) console.log(`  wrote ${written.join(', ')}`);
   if (kept.length) console.log(`  kept ${kept.join(', ')} (use --force to overwrite)`);
   console.log('  package.json: lint-config, brock-build and brock-thread dependencies; lint, lint:md, structure scripts');
   if (fields.length) console.log(`  package.json: ${fields.join(', ')} for the ${name} command`);
+  if (pin) console.log(`  package.json: brock.version ${pin}; brock migrate and upgrade start after it, so no older migration runs over this repo`);
   console.log(`\nNext: pnpm install (links the ${name} command), then \`${name} structure --check\` and \`pnpm lint\`.`);
 };
 
@@ -170,7 +172,7 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
   if (keepCrossDriveLinks(rootDir).length) files.written.push('.npmrc and .gitattributes (links across drives)');
-  printSummary(scope, files, addLauncher(rootDir, scope, { force, files }));
+  printSummary(scope, files, addLauncher(rootDir, scope, { force, files }), pinned.brock?.version ?? null);
   for (const line of layoutLines(rootDir)) console.log(line);
   for (const page of handWrittenSplash(rootDir)) console.log(`  ${page}: holds a hand-written boot splash or logo path. Brock owns the splash and the logos; remove them.`);
   return 0;

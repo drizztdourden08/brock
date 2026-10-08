@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': minor
+---
+
+`brock migrate --tessera-from-copy <folder> [--alias <alias>]` converts an app that imports its own copy of the design system Tessera was cut from, as Relic of the Past does. Named imports of the copy, relative or through an alias, take the Tessera entry of their tier (joined into one import per entry), then every `RENAMES.json` release from 0.4.0 to the installed Tessera replays over them, and `brock.tessera` is pinned. The copy's `Badge` becomes `Status` and its `Stepper` becomes `NumberInput` with `buttons="sides"`, never Tessera's own `Badge` or `Stepper`. Each imported name is then checked against the installed Tessera: a name another entry exports moves there, and anything that cannot be rewritten mechanically (a helper from inside the copy, a namespace import, a dynamic import or mock, a rename note, the alias config, the copy folder itself) is a numbered to-do in the report. A second run changes nothing it already changed. `tesseraRenamesStep` takes `files` and a per-release `overlay` for it.

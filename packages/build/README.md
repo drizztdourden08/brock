@@ -43,6 +43,9 @@ brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--re
                            run the Brock migrations after --from, up to --to, over the files the app owns,
                            then replay Tessera's RENAMES.json and pin brock.tessera;
                            --tessera-from alone replays only the Tessera renames;
+                           an app with no brock.version is refused: brock adopt pins it first;
+                           --tessera-from-copy <folder> [--alias <alias>]... converts an app that holds
+                           its own copy of the design system (see Tessera renames, A copy of the design system);
                            --report <file> (relative to the current directory) writes the run as JSON
 brock platform list | add <id | bundle>... | remove <id | bundle>...
                            the targets in brock.config.ts; add runs the platform steps and the doctor,
@@ -145,6 +148,8 @@ const popped = await widgetWindows(app);   // [{ id, bounds, visible, focused, m
 `readDockLayout` reads brock-react's widget layout store through a reader the renderer installs on automation launches only, plus the rect of the main view and of each drawn widget. `widgetWindows` reads every popped widget window's state from main. Neither depends on Tessera's class names.
 
 ## brock adopt
+
+`adopt` pins `package.json#brock.version` to its own version when the repo has no pin, and prints it. That is where an app that was never on Brock starts: `brock migrate` and `upgrade` run only the migrations after the pin, and `brock migrate` refuses an app with no pin at all instead of running every migration since 0.1.1 over code Brock never wrote.
 
 Beside the lint configs and the repo command, `adopt` writes `tessera.config.json` at the repo root when it is missing: `$schema` alone for a single app, pointing at Tessera's schema wherever Tessera is installed (the root `node_modules`, else `packages/design`, else any workspace package); with a `packages/design` package, `package` set to its name, `parts` pointing at its `src/primitives`, `src/composites` and `src/compounds`, and an `apps` entry per app for its `src/views` (and its `src/theme.css` when it has one). `--force` never replaces it. The root `stylelint.config.mjs` takes every theme that file names as a token file. It also writes `knip.json` with `brock.workspace.mjs` as an entry, `.worktrees/**` ignored and, with `--local`, `@drizztdourden08/brock-thread` in `ignoreDependencies`. It appends to `.gitignore` every generated output it lacks: `node_modules/`, `dist/`, `release/`, `.user-data/`, `.brock-port-slot`, and at any depth `build/icons/`, `build/splash/`, `build/installer-splash.png`, the eight generated `public/logos` files and `.brock/profile-config.json`. It writes no splash or logo markup, and prints the app pages (`src/index.html`) that still hold a hand-written boot splash or `./logos/` path.
 
@@ -371,6 +376,40 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
   to-dos numbered after the Brock ones, and a `tessera` summary with the range, the pin
   and the warnings.
 
+#### A copy of the design system
+
+`brock migrate --tessera-from-copy <folder> [--alias <alias>]...` (`src/upgrade/tessera-copy/`)
+is for an app that imports its own copy of what became Tessera instead of the package.
+`<folder>` is relative to `--root`; each `--alias` is an import alias for it (`@ds`).
+
+- Refusals: the folder is missing, Tessera is not installed (its `RENAMES.json` drives
+  the run), TypeScript is not installed, or `--tessera-from` is given too.
+- Scope: every owned `.ts`, `.tsx`, `.mts`, `.mjs` and `.css` under `--root` outside the
+  copy, generated files skipped.
+- Imports (`tessera-copy` entry): a named import or `export { … } from` whose path
+  resolves into the copy, relative or through an alias, takes the entry of its tier:
+  `composites/field-kits`, `composites/ColorPickerPopover` and `composites/ColorPicker`
+  their own entries, then `composites`, `primitives` and `data`; `tokens/index.css`
+  becomes `tokens.css`. Imports of one entry and kind join into one statement. A tag of
+  the copy's `Stepper` gains `buttons="sides"` (`COPY_ATTRIBUTES`). A namespace or default
+  import, an `export *`, a side-effect import other than the tokens, any other string
+  that names a copy path, a stylesheet `@import` or `url()` into it, and every copy
+  reference in a file that already imports Tessera are to-dos, left as they are.
+- Renames: the Tessera renames step runs from 0.3.0 (so 0.4.0 is the first release) to
+  the installed version over the converted files, and on the first run (no
+  `brock.tessera` yet) over every other file in scope that does not import Tessera. The
+  overlay `COPY_OVERLAY` makes 0.20.0's `NumberStepper` note a plain rename to
+  `NumberInput`, so the copy's `Stepper` ends as `NumberInput` with its `ariaLabel` as
+  `aria-label`; the copy's `Badge` is `Status` from 0.4.0's own entries.
+- Check (`tessera-copy-check` entry): the TypeScript checker lists what each Tessera
+  entry exports. In a converted file, an imported name its entry lacks moves to the entry
+  that has it (`importMoves`); a name no entry has is a to-do unless a rename note or a
+  removal already flags it; a name some replayed release renamed away and Tessera now
+  exports as another part, with no later rename giving it back (`Badge`), is a to-do.
+  Every config file (`tsconfig*.json`, `*.config.*`) line that names an alias or the
+  folder, and the folder itself, end the list.
+- A second run converts only what is left and changes nothing it already changed.
+
 ## Platforms
 
 Each platform is a Strategy in `src/platforms/<id>/`. The CLI and the workflow Builder only
@@ -381,13 +420,13 @@ walk the chosen strategies; neither names a platform.
 | windows | .NET 8 SDK, vpk, MSVC C++ tools (on Windows) | brand icons | none | `build-windows`: `brock package` on windows-latest, vpk, the small installer | none |
 | macos | Xcode command line tools (on macOS) | brand icons | none | `build-macos`: dmg and zip, ad hoc signed | none |
 | linux | .NET 8 SDK and vpk (on Linux), module libraries | brand icons; `build/linux/deb-postinst.sh` through sync | none | `build-linux`: deb and the vpk AppImage | none |
-| android | JDK 21, `ANDROID_HOME`, `platform-tools`, `platforms;android-36`, `build-tools;36.0.0` | Capacitor packages, ignore lines, `cap add android`, `@capacitor/assets`, Gradle signing, `versionCode` | none | `build-android`: JDK 21, setup-android, `brock mobile build --release` | `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` |
+| android | JDK 21, `ANDROID_HOME`, `platform-tools`, `platforms;android-36`, `build-tools;36.0.0` | no `capacitor.config.ts` or `.js`, Capacitor packages, ignore lines, `cap add android`, `@capacitor/assets`, Gradle signing, `versionCode` | none | `build-android`: JDK 21, setup-android, `brock mobile build --release` | `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` |
 | web | nothing beyond Node and pnpm | `build:web` and `dev:web` scripts | `web`: `brock web build` | `build-web`: `dist/web` zipped | none |
 | ios | reserved: choosing it says it is not supported yet | | | | |
 
 - `doctor` checks run on the machine and only report: each result is `ok`, `missing` with the install command for this OS, or `skip` when the check belongs to another OS. `brock doctor` exits 1 when anything is missing. A module adds its own through its manifest `doctor` entries (`name`, `os`, `probe`, `install`); the input module checks `pkg-config --exists libusb-1.0` on Linux and macOS.
 - `scaffold` steps are `files` steps (edit the tree, may ask for an install) or `tools` steps (need `node_modules`). Each returns `done`, `skipped`, `pending` or `failed` and skips what is already there, so `platform add` can run again. A step two platforms share runs once.
-- Android lives in `mobile/android` with `capacitor.config.json` at the app root, so `cap` runs from the app's own `package.json` and finds its plugins there. The Gradle patches read `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD`, `BROCK_KEY_ALIAS` (and `BROCK_KEY_PASSWORD`, which falls back to the store password) from the environment or Gradle properties; without them a release stays unsigned. `versionCode` is `major * 10000 + minor * 100 + patch` of `package.json`. `<app> mobile keystore` (brock-thread) makes the keystore with `keytool` once you agree and prints the `gh secret set` lines; it never runs them.
+- Android lives in `mobile/android` with `capacitor.config.json` at the app root, so `cap` runs from the app's own `package.json` and finds its plugins there. The first scaffold step fails while a `capacitor.config.ts` or `capacitor.config.js` sits at the app root: the Capacitor CLI reads those before the JSON, so the managed file would be ignored. An app that had one moves its Android project as docs/upgrading-an-app.md (Android) says. The Gradle patches read `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD`, `BROCK_KEY_ALIAS` (and `BROCK_KEY_PASSWORD`, which falls back to the store password) from the environment or Gradle properties; without them a release stays unsigned. `versionCode` is `major * 10000 + minor * 100 + patch` of `package.json`. `<app> mobile keystore` (brock-thread) makes the keystore with `keytool` once you agree and prints the `gh secret set` lines; it never runs them.
 - Linux: a module's manifest `udevRules` file and the app's own `build/linux/after-install.sh` become `build/linux/deb-postinst.sh`, which `brock sync` keeps and electron-builder runs as the deb `afterInstall`. The input module ships the controller rules (Nintendo, Sony, Microsoft, 8BitDo, `TAG+="uaccess"`).
 - Web: `vite.web.config.ts` builds `src/index.html` with a relative base into `dist/web`, which Capacitor also wraps, and writes `manifest.webmanifest` from the product with the brand icons. There is no deploy job; the release carries the zip.
 

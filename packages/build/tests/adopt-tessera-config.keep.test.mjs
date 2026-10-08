@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runAdopt } from '../src/commands/adopt.mjs';
+import { OWN_PACKAGE } from '../src/modules/sync.mjs';
 
 const SCHEMA = './node_modules/@drizztdourden08/tessera/tessera.config.schema.json';
 const made = [];
@@ -101,5 +102,22 @@ describe('brock adopt and the Tessera schema path', () => {
     const atRoot = repo({ ...files, 'node_modules/@drizztdourden08/tessera/tessera.config.schema.json': '{}' });
     await runAdopt({ rootDir: atRoot });
     expect(config(atRoot).$schema).toBe(SCHEMA);
+  });
+});
+
+describe('brock adopt on an app that was never on Brock', () => {
+  const pinOf = (root) => JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).brock?.version;
+
+  it('pins brock.version to the Brock version it adopts', async () => {
+    const root = repo({ 'package.json': { name: 'relic-of-the-past', version: '0.20.7' } });
+    expect(await runAdopt({ rootDir: root, scope: '@rotp' })).toBe(0);
+    expect(pinOf(root)).toBe(OWN_PACKAGE.version);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining(`brock.version ${OWN_PACKAGE.version}`));
+  });
+
+  it('keeps a pin the repo already has', async () => {
+    const root = repo({ 'package.json': { name: 'older', brock: { version: '0.20.0' } } });
+    expect(await runAdopt({ rootDir: root, scope: '@older' })).toBe(0);
+    expect(pinOf(root)).toBe('0.20.0');
   });
 });

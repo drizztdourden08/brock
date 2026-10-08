@@ -43,6 +43,7 @@ brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--re
                            run the Brock migrations after --from, up to --to, over the files the app owns,
                            then replay Tessera's RENAMES.json and pin brock.tessera;
                            --tessera-from alone replays only the Tessera renames;
+                           an app with no brock.version is refused: brock adopt pins it first;
                            --report <file> (relative to the current directory) writes the run as JSON
 brock platform list | add <id | bundle>... | remove <id | bundle>...
                            the targets in brock.config.ts; add runs the platform steps and the doctor,
@@ -145,6 +146,8 @@ const popped = await widgetWindows(app);   // [{ id, bounds, visible, focused, m
 `readDockLayout` reads brock-react's widget layout store through a reader the renderer installs on automation launches only, plus the rect of the main view and of each drawn widget. `widgetWindows` reads every popped widget window's state from main. Neither depends on Tessera's class names.
 
 ## brock adopt
+
+`adopt` pins `package.json#brock.version` to its own version when the repo has no pin, and prints it. That is where an app that was never on Brock starts: `brock migrate` and `upgrade` run only the migrations after the pin, and `brock migrate` refuses an app with no pin at all instead of running every migration since 0.1.1 over code Brock never wrote.
 
 Beside the lint configs and the repo command, `adopt` writes `tessera.config.json` at the repo root when it is missing: `$schema` alone for a single app, pointing at Tessera's schema wherever Tessera is installed (the root `node_modules`, else `packages/design`, else any workspace package); with a `packages/design` package, `package` set to its name, `parts` pointing at its `src/primitives`, `src/composites` and `src/compounds`, and an `apps` entry per app for its `src/views` (and its `src/theme.css` when it has one). `--force` never replaces it. The root `stylelint.config.mjs` takes every theme that file names as a token file. It also writes `knip.json` with `brock.workspace.mjs` as an entry, `.worktrees/**` ignored and, with `--local`, `@drizztdourden08/brock-thread` in `ignoreDependencies`. It appends to `.gitignore` every generated output it lacks: `node_modules/`, `dist/`, `release/`, `.user-data/`, `.brock-port-slot`, and at any depth `build/icons/`, `build/splash/`, `build/installer-splash.png`, the eight generated `public/logos` files and `.brock/profile-config.json`. It writes no splash or logo markup, and prints the app pages (`src/index.html`) that still hold a hand-written boot splash or `./logos/` path.
 

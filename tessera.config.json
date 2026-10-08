@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json",
   "layer": "renderer-shell",
   "parts": {
-    "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds"]
+    "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds", "packages/modules/catalog/src/compounds"]
   },
   "stories": "packages/react/stories",
   "guide": { "usage": "enforce", "tree": "packages/react/src/compounds/app-tree.constants.ts" }

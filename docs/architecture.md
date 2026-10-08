@@ -17,6 +17,7 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-secrets` | module | safeStorage secret store, device-code sign-in |
 | `@drizztdourden08/brock-input` | module | SDL3 controllers, mapping DB, calibration, haptics, InputTester |
 | `@drizztdourden08/brock-display` | module | refresh rate, synced rate, display mode switch (koffi 2 or 3) |
+| `@drizztdourden08/brock-catalog` | module | a content catalogue client behind the app's endpoint and schema: install jobs (`ctx.job`), download checks, uninstall, the installed record and guard, install links, `CatalogInstallBar` |
 | `@drizztdourden08/brock-port-kit` | module | WASM game core lifecycle, save slots (PKSV or raw states), SRAM, presenter, audio adapter, live settings, ROM source (id or original file names), asset pipeline framework, ensure-wasm (the one copy; `brock-plugin-snes` imports it) |
 
 Dependency direction: `lint-config` (dev) <- everything. `core` <- `electron`, `react`, `build`. `react` peer-depends on Tessera, React and zustand. Modules depend on `core`, and on `electron` or `react` for the side they touch. Tessera never depends on Brock.
@@ -43,7 +44,7 @@ Each subpath exports one object:
 - `preload`: a `PreloadNamespace` (brock-electron): `{ id, build(tools) }` returning the nested `window.api.<id>` object.
 - `renderer`: a `RendererModule` (brock-react): `{ id, screens?, settingsTabs?, menu?, Provider?, titleBarActions?, ports? }`.
 
-`brock.config.ts` lists module ids. `brock sync` reads each manifest and regenerates `.brock/modules.main.ts`, `.brock/modules.preload.ts` and `.brock/modules.renderer.ts`, which import the module objects and export them as arrays. The app's own `electron/main.ts`, `electron/preload.ts` and `src/main.tsx` import those arrays. `brock add <id | package>` installs the package (the built-in registry maps `updater`, `secrets`, `input`, `display`, `port-kit` to their package names; anything else is an npm spec), appends the id to `brock.config.ts` and runs sync. App code is never edited by the tool.
+`brock.config.ts` lists module ids. `brock sync` reads each manifest and regenerates `.brock/modules.main.ts`, `.brock/modules.preload.ts` and `.brock/modules.renderer.ts`, which import the module objects and export them as arrays. The app's own `electron/main.ts`, `electron/preload.ts` and `src/main.tsx` import those arrays. `brock add <id | package>` installs the package (the built-in registry maps `updater`, `secrets`, `input`, `display`, `port-kit`, `catalog` to their package names; anything else is an npm spec), appends the id to `brock.config.ts` and runs sync. App code is never edited by the tool.
 
 ## App skeleton
 
@@ -176,6 +177,10 @@ Export asks main for a target with the system dialog (a `<app>-data-<date>.zip` 
 ### Long jobs
 
 `ctx.job(id, steps, options?)` starts a job and returns its `JobHandle`: `step(id, line?)` makes a step current and marks the one before done, `progress(fraction, line?)` sets the share of the current step, `line(text)`, `log(message, level?)`, `skip(id)`, `done(line?)`, `fail(error)`, `signal` (an `AbortSignal` that fires on cancel) and `run(work)`, which calls `done` when `work` resolves and `fail` when it throws. A step is `{ id, label, weight? }`; the job's `progress` is the done weight plus the current step's share over the total. Main sends the whole `JobSnapshot` (`id`, `title`, `state`: `running`, `done`, `failed` or `cancelled`, the steps with their state, `currentStep`, `progress`, `stepProgress`, `line`, `error`, the last 1000 log lines, `startedAt`, `endedAt`, `cancellable`) on `job:update`, at once for a step, an error or the end and at most every 100 ms for progress and log lines. `job:list` returns every job main still holds, `job:cancel` aborts a cancellable running job, and `job:dismiss` forgets a finished one. Starting a job whose id is still running throws; a finished one is replaced.
+
+### Content catalogue
+
+The `catalog` module (`@drizztdourden08/brock-catalog`) is the generic content catalogue client Relic of the Past's Hookshop runs on: `configureCatalog(ctx, config)` gives it the app's endpoint, schema validators, routes and one installer per container, and it serves the reads over `catalog:*`, runs each install as the job `catalog-install:<id>` through `ctx.job` (grant, download, verify, unpack; the size and sha256 must match the grant before anything is unpacked; an update installs before it releases the old copy through the app's `onRelease`), keeps the installed record in `Data/catalog/installed.json` for the renderer's installed guard (`useCatalogInstalled`, `installedByName`), and parses install links of `config.linkScheme`. The OS registration of that scheme and the second-launch hand-off are the product's protocols; the module subscribes to `ctx.onOpen` when the main context has it, and otherwise the app hands each URL to `getCatalog(ctx).links.deliverUrl`. What a pack is, where it lands and which profiles use it stay in the app. The details are in `packages/modules/catalog/README.md`.
 
 ## Boot
 

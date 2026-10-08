@@ -50,4 +50,4 @@ const registerSite = (repoRoot, siteDir) => {
   return [...(tessera ? [TESSERA_CONFIG_FILE] : []), ...(knip ? [KNIP_FILE] : [])];
 };
 
-export { registerSite, siteViews };
+export { registerSite };

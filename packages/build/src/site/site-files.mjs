@@ -51,4 +51,4 @@ const renderSiteFiles = async (repoRoot, appDir, { workflows }) => {
   ];
 };
 
-export { renderSiteFiles, siteTsconfig, siteWorkflow };
+export { renderSiteFiles };

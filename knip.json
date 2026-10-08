@@ -109,6 +109,16 @@
         "node-addon-api"
       ]
     },
+    "packages/modules/catalog": {
+      "entry": [
+        "src/compounds/*/*.usage.ts",
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "tests/**/*.ts"
+      ]
+    },
     "packages/modules/display": {
       "entry": [
         "tests/**/*.test.ts"

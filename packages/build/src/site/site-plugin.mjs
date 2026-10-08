@@ -51,4 +51,4 @@ const sitePlugin = ({ siteDir, site }) => {
   };
 };
 
-export { sitePlugin, brandIconOf };
+export { sitePlugin };

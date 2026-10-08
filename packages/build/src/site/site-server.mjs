@@ -49,4 +49,4 @@ const siteServer = async (siteDir, site) => {
   return { port: portOf(site.ports.offset), strictPort: true, proxy: siteProxy(site.api, portOf), base, slot };
 };
 
-export { siteServer, siteProxy, apiTargetUrl, sitePortBase };
+export { siteServer, siteProxy, apiTargetUrl };

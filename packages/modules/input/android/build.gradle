@@ -2,6 +2,7 @@ import groovy.json.JsonSlurper
 
 ext {
     junitVersion = project.hasProperty('junitVersion') ? rootProject.ext.junitVersion : '4.13.2'
+    androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.7.1'
 }
 
 buildscript {
@@ -41,7 +42,7 @@ tasks.register('stageSdlJava', Copy) {
 
 tasks.configureEach { task ->
     if (task.name == 'preBuild') task.dependsOn 'stageSdlJava'
-    if (task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake')) task.dependsOn 'fetchSdl3Source'
+    if (task.name =~ /CMake|externalNativeBuild|JsonModel/) task.dependsOn 'fetchSdl3Source'
 }
 
 android {
@@ -85,5 +86,6 @@ repositories {
 
 dependencies {
     implementation project(':capacitor-android')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     testImplementation "junit:junit:$junitVersion"
 }

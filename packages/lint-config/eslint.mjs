@@ -9,6 +9,7 @@ import {
   DEFAULT_CONSOLE_GLOBS,
   slopRules,
 } from '@drizztdourden08/standards/eslint';
+import { dataBlocks } from './data-blocks.mjs';
 import brockLint from './standards.extension.mjs';
 
 const { rawControls: RAW_CONTROLS } = brockLint.eslint.options;
@@ -17,6 +18,12 @@ const { rawControls: RAW_CONTROLS } = brockLint.eslint.options;
  * @param {import('@drizztdourden08/standards').EslintOptions} [opts]
  * @returns {import('eslint').Linter.Config[]}
  */
-const brockEslint = (opts = {}) => standardsEslint({ ...opts, ignores: ['**/.brock/**', ...(opts.ignores ?? [])], presets: ['react-app', ...(opts.presets ?? [])], extensions: [brockLint, ...(opts.extensions ?? [])] });
+const brockEslint = (opts = {}) => standardsEslint({
+  ...opts,
+  ignores: ['**/.brock/**', ...(opts.ignores ?? [])],
+  presets: ['react-app', ...(opts.presets ?? [])],
+  extensions: [brockLint, ...(opts.extensions ?? [])],
+  extra: [...dataBlocks(opts.rootDir ?? process.cwd()), ...(opts.extra ?? [])],
+});
 
 export { brockEslint, LOCAL_RULES, NO_INLINE_EXPORT, RAW_CONTROLS, BOUNDARY_RULES, PRIMITIVE_RULES, DEFAULT_COMMENT_ALLOW, DEFAULT_CONSOLE_GLOBS, slopRules };

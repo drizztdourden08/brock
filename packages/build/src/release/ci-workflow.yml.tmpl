@@ -43,6 +43,9 @@ __SETUP__
       - name: Tests
         run: pnpm --dir "$APP_DIR" run --if-present test
 
+      - name: App gate steps
+        run: pnpm --dir "$APP_DIR" exec brock gate
+
   review:
     runs-on: ubuntu-latest
     steps:

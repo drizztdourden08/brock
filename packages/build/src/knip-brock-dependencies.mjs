@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { NODE_POLYFILLS_PACKAGE, NODE_POLYFILLS_SETTING } from './build-options/build-options.constants.mjs';
 import { CONFIG_FILE } from './config.mjs';
 import { sourceDependencies } from './vite-config.mjs';
 import { SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
@@ -37,6 +38,7 @@ const bundledNeeds = (appDir) => {
     }
   };
   for (const name of sourceDependencies(appDir)) visit(name, appDir);
+  if (NODE_POLYFILLS_SETTING.test(readFileSync(join(appDir, CONFIG_FILE), 'utf8'))) needed.add(NODE_POLYFILLS_PACKAGE);
   return needed;
 };
 

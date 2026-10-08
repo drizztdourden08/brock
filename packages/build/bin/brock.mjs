@@ -5,6 +5,8 @@ import { runAdd } from '../src/commands/add.mjs';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
 import { runCheck } from '../src/commands/check.mjs';
+import { runClangFormatCommand } from '../src/commands/clang-format.mjs';
+import { runGateCommand } from '../src/commands/gate.mjs';
 import { runDev } from '../src/commands/dev.mjs';
 import { runDoctorCommand } from '../src/commands/doctor.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
@@ -26,6 +28,11 @@ Usage:
                              regenerate the managed files, or report drift with --check; --if-stale syncs only
                              when .brock is missing or older than its inputs, then checks the renderer entry
   brock check                sync --check, for CI
+  brock gate                 the app's own gate steps from brock.config.ts gate: the clang-format check of
+                             gate.clangFormat, then each gate.scripts script; CI and upgrade run it too
+  brock clang-format [--check]
+                             rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
+                             the files that differ with --check
   brock add <id | spec> [--local <brockRepo>]
                              install a module package (or link it from a Brock checkout), record its id, sync
   brock dev [args]           electron-vite dev; unknown options and anything after -- reach it; syncs first
@@ -125,6 +132,8 @@ const COMMANDS = {
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
   web: (ctx) => runWeb(ctx),
+  gate: (ctx) => runGateCommand(ctx),
+  'clang-format': (ctx) => runClangFormatCommand(ctx),
 };
 
 const runTesseraWords = async (args) => {

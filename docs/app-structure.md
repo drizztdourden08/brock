@@ -19,7 +19,7 @@ my-app/
     main.ts                        bootstrapApp(product, { modules, bootTasks, handlers: mainHandlers, services, dataDomains })
     preload.ts                     createPreloadBridge({ maps, namespaces })
     boot/<id>.task.ts              main boot tasks
-    handlers/<subject>-handlers.ts one HandlerGroup per subject, exported as <subject>Handlers
+    handlers/<subject>-handlers.ts one HandlerGroup per subject, exported as <subject>Handlers (.dev.ts: dev builds only)
     services/                      createAppServices(ctx), the graph bootstrapApp builds as ctx.services
     <subject>/                     main-side logic the handlers call (kebab-case functions)
   src/
@@ -86,6 +86,10 @@ my-repo/
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
 | IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |
 | IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, exporting `<subject>Handlers` | `brock sync` into `.brock/handlers.main.ts`, passed as `handlers` in `electron/main.ts` |
+| Dev-only screen or handler group | where its kind goes | `.dev` before the extension: `inspector.page.dev.tsx`, `editor.card.dev.tsx`, `dataset-handlers.dev.ts` | `brock sync` into `.brock/screens.dev.ts` and `.brock/handlers.main.dev.ts`; a production build has none of them |
+| Data records, generated data | beside the code that reads them | `/* @layer <layer> @kind data */` header | exempt from the 200-line, one-export and constants-file rules; `brock/data-only` keeps the file to data |
+| C sources | the folders `gate.clangFormat` names | `.c`, `.h` | `brock gate` checks them against the managed `.clang-format`, `brock clang-format` rewrites them |
+| App gate step | `package.json` scripts | named in `gate.scripts` of `brock.config.ts` | `brock gate`, the CI `quality` job, `<repo> upgrade` |
 | App services | `electron/services/` | `app-services.ts` (`createAppServices(ctx)`), `AppServices` augmented | `bootstrapApp({ services })`, read as `ctx.services` |
 | Review seed and steps | `src/review/` | `seed.ts`, `<id>.step.ts` (default export: `defineReviewSeed`, `defineReviewStep`), `fixtures/` (any files, at the paths they take in the data folder) | `brock sync` into `.brock/review.ts`, passed as `review` in `src/main.tsx` ([review-steps.md](review-steps.md)) |
 | Settings | `src/` and `src/screens/` | `settings.type.ts`, `settings.constants.ts`, `<id>.settings.ts` pages | `BrockApp settings`, the screen sync |
@@ -107,6 +111,8 @@ my-repo/
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
 `brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
+
+A file whose header says `@kind data` holds data and nothing else: imports, types, and `const` declarations made of literals, arrays, objects, spreads, references to other values, constant arithmetic and `Object.freeze`, with `as const` and `satisfies` allowed. It may run past 200 lines, export several lists and name `UPPER_SNAKE` consts outside a `.constants.ts` file, which suits record files and generated tables. A function, an arrow, a call other than `Object.freeze`, a conditional, a getter, `let` or a statement in such a file is a `brock/data-only` error, so the kind exempts no code; a generated file that holds code keeps its own kind. Brock's ESLint config finds the data files by their header when it loads, so an editor picks a newly marked file up after an ESLint restart.
 
 Each of these folders takes the constants file the constants lint rule names for a file in it, the file name with `.constants.ts` in place of its last extension: `<id>.widget.constants.ts` and `layout.constants.ts` in `src/widgets`, `<id>.action.constants.ts` in `src/title-bar`, `<id>.tour.constants.ts` in `src/tours` and `<id>.<kind>.constants.ts` (`home.hero.constants.ts`, `items.tab.constants.ts`) at any level of `src/screens`, plus `<name>.constants.ts` for constants several files there share. `brock sync` leaves them out of `.brock`. The module folders take `<id>.task.constants.ts` beside a boot task and `<id>.step.constants.ts` beside a review step (and the same for widget, title bar and tour files outside an app); `brock structure` reports any other doubled suffix, such as `<id>.page.constants.ts` in `src/review`.
 
@@ -132,6 +138,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 | Path | Written by | Committed |
 |---|---|---|
 | `.brock/*.ts`, `.brock/manifest.json` | `brock sync` (and `dev`, `build`, `start`, `launch` when missing or stale) | yes |
+| `.clang-format` at the repo root | `brock sync`, while `gate.clangFormat` names C sources | yes |
 | `.brock/profile-config.json` | the launch provision step | no |
 | `electron.vite.config.ts`, `electron-builder.config.cjs`, the lint configs, `tsconfig.json`, `bin/<repo>.mjs`, `.github/workflows/*.yml` | `brock sync` | yes |
 | `build/icons/`, `build/splash/`, `build/installer-splash.png` | `brock icons`, `brock package` | no |

@@ -12,6 +12,8 @@
  * @property {BrockTarget[]} targets Platform ids and bundles this app builds for
  * @property {string[]} modules Brock module ids, in load order
  * @property {{ manifest?: boolean }} [web] manifest false drops the web app manifest
+ * @property {{ aliases?: Record<string, string>, nodePolyfills?: boolean | Record<string, unknown> }} [build] options of the managed Vite configs
+ * @property {{ scripts?: string[], clangFormat?: string[] }} [gate] the app's own gate steps
  */
 
 const CONFIG_FILE = 'brock.config.ts';

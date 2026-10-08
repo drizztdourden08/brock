@@ -96,6 +96,17 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(kept.counters.dependencies).toBe(1);
   });
 
+  it('counts vite-plugin-node-polyfills as used while build.nodePolyfills is on', () => {
+    const root = app();
+    made.push(root);
+    const polyfills = { cwd: root, issues: { dependencies: { 'package.json': { 'vite-plugin-node-polyfills': issue('.', 'vite-plugin-node-polyfills') } } }, counters: { dependencies: 1 } };
+    expect(keepBrockRuntimeDependencies(polyfills).counters.dependencies).toBe(1);
+    write(root, { 'brock.config.ts': 'export default { build: { nodePolyfills: { globals: { Buffer: true } } } };\n' });
+    expect(keepBrockRuntimeDependencies(polyfills).counters.dependencies).toBe(0);
+    write(root, { 'brock.config.ts': 'export default { build: { nodePolyfills: false } };\n' });
+    expect(keepBrockRuntimeDependencies(polyfills).counters.dependencies).toBe(1);
+  });
+
   it('leaves a workspace without brock.config.ts alone', () => {
     const root = app();
     made.push(root);

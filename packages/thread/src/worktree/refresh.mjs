@@ -1,9 +1,10 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
-import { gitLoud } from '../git.mjs';
+import { git, gitLoud } from '../git.mjs';
 import { flag } from '../cli/thread-args.mjs';
 import { guards } from './guards.mjs';
 import { clearUserData } from './clear-user-data.mjs';
+import { threadBase } from './thread-base.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 
 const rebaseTarget = (options, base) => {
@@ -37,7 +38,8 @@ const refreshVerb = {
     const worktree = createWorktreeContext(name, ctx);
     if (!existsSync(worktree.path)) throw new Error(`No worktree at ${worktree.path}. Run: ${ctx.workspace.name} worktree create ${name}`);
     guards.assertClean(worktree.path, 'refresh');
-    const onto = rebaseTarget(options, ctx.workspace.base);
+    const branch = git(['rev-parse', '--abbrev-ref', 'HEAD'], worktree.path);
+    const onto = rebaseTarget(options, threadBase.baseOf(branch, ctx.rootDir, ctx.workspace).base);
     if (onto) rebase(worktree.path, onto, ctx.log);
     else ctx.log('Branch left where it is (pass --rebase [ref] to move it).');
     if (flag(options, 'reset')) await resetUserData(worktree, ctx);

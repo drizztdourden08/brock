@@ -102,6 +102,17 @@ describe('parseBaselineConfig and resolveBaselineRule', () => {
     expect(resolveBaselineRule(config, 'about')).toMatchObject({ tolerance: 0, threshold: 1 });
   });
 
+  it('gives cluster-fullscreen a built-in channel threshold of 8 and no pixel share, which the app can override', () => {
+    expect(resolveBaselineRule(parseBaselineConfig(undefined), 'cluster-fullscreen')).toMatchObject({ tolerance: 0, threshold: 8 });
+    expect(resolveBaselineRule(parseBaselineConfig({ tolerance: 0.5, threshold: 2 }), 'cluster-fullscreen')).toMatchObject({ tolerance: 0, threshold: 8 });
+    const tightened = parseBaselineConfig({ captures: { 'cluster-fullscreen': { threshold: 0 } } });
+    expect(resolveBaselineRule(tightened, 'cluster-fullscreen')).toMatchObject({ tolerance: 0, threshold: 0 });
+    const shifted = withPixel(bitmap(4, 3), 1, 1, [18, 28, 38, 255]);
+    const moved = withPixel(bitmap(4, 3), 1, 1, [19, 20, 30, 255]);
+    expect(compareBitmaps(bitmap(4, 3), shifted, [], 8).diffPixels).toBe(0);
+    expect(compareBitmaps(bitmap(4, 3), moved, [], 8).diffPixels).toBe(1);
+  });
+
   it('names the bad field', () => {
     expect(() => parseBaselineConfig({ tolerance: 2 })).toThrow(/tolerance/);
     expect(() => parseBaselineConfig({ threshold: 1.5 })).toThrow(/threshold/);

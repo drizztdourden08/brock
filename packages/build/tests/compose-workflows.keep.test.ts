@@ -57,7 +57,8 @@ describe('composeWorkflows with screenshot baselines', () => {
     expect(ci).toContain('path: ${{ env.APP_DIR }}/tests/baselines/linux/');
     expect(ci).toContain('path: .user-data-review/Data/review/');
     expect(ci).toContain('name: review-baselines\n');
-    expect(plain).toContain('path: ${{ env.APP_DIR }}/.user-data/Data/review/');
+    expect(plain).toContain('path: .user-data/Data/review/');
+    expect(plain).not.toContain('${{ env.APP_DIR }}/.user-data');
     expect(ci).not.toMatch(/__[A-Z_]+__/);
   });
 
@@ -71,6 +72,15 @@ describe('composeWorkflows with screenshot baselines', () => {
     expect(ci).toContain("  review:\n    needs: changes\n    if: needs.changes.outputs.changed == 'true'\n    runs-on: ubuntu-24.04");
     expect(ci).toContain('name: review-baselines-desktop\n          path: ${{ env.APP_DIR }}/tests/baselines/linux/');
     expect(ci).toContain('APP_DIR: apps/desktop');
+    expect(ci).toContain('name: review-desktop\n          path: .user-data-review/Data/review/');
     expect(ci).not.toMatch(/__[A-Z_]+__/);
+  });
+
+  it('uploads the review report from the repo root, where launch writes its data, for an app in a folder', () => {
+    const app = { name: 'desktop', tagPrefix: 'desktop-v', notesDir: 'apps/desktop/release-notes' };
+    const many = composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'a-', app }).ci;
+    expect(many).toContain('name: review-desktop\n          path: .user-data/Data/review/');
+    const one = composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'a-' }).ci;
+    expect(one).toContain('name: review\n          path: .user-data/Data/review/');
   });
 });

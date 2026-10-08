@@ -7,7 +7,10 @@ const BUILT_IN_MASKS = [
   '.window-title-bar [data-bar-item="action:brock-jobs"]',
   '[data-storage-page] :is([data-section="storage-overview"], [data-section="storage-domains"]) .settings-row__description',
 ];
-const REVIEW_MASK = { 'data-review-mask': '' } as const;
+const BUILT_IN_RULES: Readonly<Record<string, { tolerance?: number; threshold?: number } | undefined>> = {
+  'cluster-fullscreen': { tolerance: 0, threshold: 8 },
+};
+const REVIEW_MASK ={ 'data-review-mask': '' } as const;
 const BASELINE_DIR = 'tests/baselines';
 const BASELINE_CONFIG_FILE = 'baselines.json';
 const BASELINE_DIFF_DIR = 'diffs';
@@ -24,5 +27,5 @@ const PERCENT_DIGITS = 3;
 
 export {
   BASELINE_CHECK, BASELINE_CONFIG_FILE, BASELINE_DIFF_DIR, BASELINE_DIR, BASELINES_CHECK,
-  BUILT_IN_MASKS, BYTES_PER_PIXEL, DIFF_COLOR, FADE_BASE, FADE_WEIGHT, MASK_COLOR, MAX_CHANNEL, PERCENT, PERCENT_DIGITS, REVIEW_MASK,
+  BUILT_IN_MASKS, BUILT_IN_RULES, BYTES_PER_PIXEL, DIFF_COLOR, FADE_BASE, FADE_WEIGHT, MASK_COLOR, MAX_CHANNEL, PERCENT, PERCENT_DIGITS, REVIEW_MASK,
 };

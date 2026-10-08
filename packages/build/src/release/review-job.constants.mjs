@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind constants */
 const REVIEW_COMMAND = 'pnpm --dir "$APP_DIR" exec brock launch main none --prod --review';
 const PLAIN_RUNNER = 'ubuntu-latest';
-const PLAIN_REVIEW_DATA = '${{ env.APP_DIR }}/.user-data';
+const PLAIN_REVIEW_DATA = '.user-data';
 
 const BASELINE_RUNNER = 'ubuntu-24.04';
 const BASELINE_SCREEN = '-screen 0 1920x1080x24';

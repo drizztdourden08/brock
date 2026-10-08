@@ -97,13 +97,18 @@ const ROTP = {
 
 const made = [];
 
+const textOf = (value) => (typeof value === 'string' ? value : `${JSON.stringify(value, null, 2)}\n`);
+
+const place = (root) => ([file, value]) => {
+  const target = join(root, file);
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, textOf(value));
+};
+
 const repo = (files, { tessera = true } = {}) => {
   const root = mkdtempSync(join(tmpdir(), 'brock-tessera-copy-'));
   made.push(root);
-  for (const [file, value] of Object.entries(files)) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), typeof value === 'string' ? value : JSON.stringify(value, null, 2));
-  }
+  Object.entries(files).forEach(place(root));
   if (tessera) {
     mkdirSync(join(root, 'node_modules/@drizztdourden08'), { recursive: true });
     symlinkSync(TESSERA_DIR, join(root, 'node_modules/@drizztdourden08/tessera'), 'junction');

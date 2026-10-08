@@ -4,7 +4,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 const usage = {
   job: 'The install action of one catalogue item: Install, or Installed with Update and Uninstall, and while the install job runs its bar, its step and Cancel.',
   useWhen: [
-    'The detail of a catalogue item the app can install, such as a music pack or a preset.',
+    'The detail of a catalogue item the app can install, such as a preset, a theme or a level.',
     'A row of an installed list that offers the update and the uninstall.',
   ],
   avoidWhen: [

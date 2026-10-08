@@ -22,7 +22,7 @@ const appRepo = () => {
     'pnpm-workspace.yaml': "packages: []\n\ncatalog:\n  vite: ^7.3.3\n",
     'brock.workspace.mjs': 'export default {};\n',
     'brock.scope': '@atlas\n',
-    'brock.config.ts': "export default { product: { id: 'atlas', name: 'Atlas', ports: { base: 30000 }, icons: { brand: 'rotp' } } };\n",
+    'brock.config.ts': "export default { product: { id: 'atlas', name: 'Atlas', ports: { base: 30000 }, icons: { brand: 'tessera' } } };\n",
     'package.json': JSON.stringify({ name: 'atlas', devDependencies: { '@drizztdourden08/brock-build': 'link:X:/brock/packages/build', typescript: 'catalog:', '@types/react': 'link:./vendor/types-react' } }),
     'tessera.config.json': '{ "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json" }\n',
     'knip.json': JSON.stringify({ entry: ['src/main.tsx'], project: ['src/**/*.ts'], ignoreDependencies: ['x'] }),
@@ -95,9 +95,12 @@ describe('brock site add', () => {
     expect(result).toEqual({ siteDir: 'apps/store-front', port: 1, changed: ['pnpm-workspace.yaml', 'tessera.config.json', 'knip.json'] });
     expect(read(root, 'pnpm-workspace.yaml')).toContain("packages:\n  - 'apps/*'\n");
     const site = await loadSite(join(root, 'apps/store-front'));
-    expect(site).toMatchObject({ site: { id: 'store-front', name: 'Store Front', brand: 'rotp' }, ports: { offset: 1 }, api: { target: { portOffset: 2 } } });
-    expect(read(root, 'apps/store-front/src/main.tsx')).toContain("import '@drizztdourden08/tessera/palettes/rotp.css';");
+    expect(site).toMatchObject({ site: { id: 'store-front', name: 'Store Front', brand: 'tessera' }, ports: { offset: 1 }, api: { target: { portOffset: 2 } } });
+    expect(read(root, 'apps/store-front/src/main.tsx')).toContain("import '@drizztdourden08/tessera/palettes/tessera.css';");
     expect(read(root, 'apps/store-front/src/main.tsx')).toContain('<TesseraProvider overrides={TESSERA_OVERRIDES}>');
+    const shell = read(root, 'apps/store-front/src/views/SiteShell/SiteShell.tsx');
+    for (const part of ['<SiteHeader', '<SiteFooter', '<BrandMark app="tessera"', '<Logo brand="tessera"', 'profileAction(person, ']) expect(shell).toContain(part);
+    expect(read(root, 'apps/store-front/src/views/SignIn/SignIn.css')).toContain('var(--c-gradient-dark-from)');
     const pkg = JSON.parse(read(root, 'apps/store-front/package.json'));
     expect(pkg.name).toBe('@atlas/store-front');
     expect(pkg.devDependencies).toMatchObject({ '@drizztdourden08/brock-build': 'link:X:/brock/packages/build', typescript: 'catalog:', vite: 'catalog:', '@types/react': 'link:../../vendor/types-react' });
@@ -113,7 +116,7 @@ describe('brock site add', () => {
 
   it('gives the next site a free tool port, past the first site and its API', async () => {
     const root = appRepo();
-    await addSite({ rootDir: root, name: 'sanctuary', api: '2' });
+    await addSite({ rootDir: root, name: 'forum', api: '2' });
     expect((await addSite({ rootDir: root, name: 'store' })).port).toBe(3);
     await expect(addSite({ rootDir: root, name: 'store' })).rejects.toThrow(/exists already/);
     await expect(addSite({ rootDir: root, name: 'Bad Name' })).rejects.toThrow(/lowercase/);

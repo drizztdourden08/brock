@@ -202,7 +202,7 @@ product: {
 
 ### Content catalogue
 
-The `catalog` module (`@drizztdourden08/brock-catalog`) is the generic content catalogue client Relic of the Past's Hookshop runs on: `configureCatalog(ctx, config)` gives it the app's endpoint, schema validators, routes and one installer per container, and it serves the reads over `catalog:*`, runs each install as the job `catalog-install:<id>` through `ctx.job` (grant, download, verify, unpack; the size and sha256 must match the grant before anything is unpacked; an update installs before it releases the old copy through the app's `onRelease`), keeps the installed record in `Data/catalog/installed.json` for the renderer's installed guard (`useCatalogInstalled`, `installedByName`), and parses install links of `config.linkScheme`. The app declares the scheme in `product.protocols` (see Links, files and custom schemes); the module subscribes to `ctx.onOpen` and takes every `url` request of that scheme, from the launch argv, a second launch or macOS `open-url`. `getCatalog(ctx).links.deliverUrl(url)` stays for a link that reaches the app another way, such as one pasted into it. What a pack is, where it lands and which profiles use it stay in the app. The details are in `packages/modules/catalog/README.md`.
+The `catalog` module (`@drizztdourden08/brock-catalog`) is a generic content catalogue client, for any app that installs items from its own catalogue (presets, themes, levels): `configureCatalog(ctx, config)` gives it the app's endpoint, schema validators, routes and one installer per container, and it serves the reads over `catalog:*`, runs each install as the job `catalog-install:<id>` through `ctx.job` (grant, download, verify, unpack; the size and sha256 must match the grant before anything is unpacked; an update installs before it releases the old copy through the app's `onRelease`), keeps the installed record in `Data/catalog/installed.json` for the renderer's installed guard (`useCatalogInstalled`, `installedByName`), and parses install links of `config.linkScheme`. The app declares the scheme in `product.protocols` (see Links, files and custom schemes); the module subscribes to `ctx.onOpen` and takes every `url` request of that scheme, from the launch argv, a second launch or macOS `open-url`. `getCatalog(ctx).links.deliverUrl(url)` stays for a link that reaches the app another way, such as one pasted into it. What an item is, where it lands and what uses it stay in the app. The details are in `packages/modules/catalog/README.md`.
 
 ## Boot
 
@@ -490,18 +490,19 @@ Without `ports`, the base comes from the app id: an FNV-1a hash of the id picks 
 
 ## Sites
 
-Brock supports desktop, mobile and web versions of an app, and a mix of them in one repo; every one of them draws with Tessera. The default setup is the app alone. `brock site add <name>` adds a site: a separate single-page web app at `apps/<name>` in the same pnpm workspace, the shape of Relic of the Past's Sanctuary and Hookshop. The layout, the config and each step are in [app-structure.md](app-structure.md), A site.
+Brock supports desktop, mobile and web versions of an app, and a mix of them in one repo; every one of them draws with Tessera. The default setup is the app alone. `brock site add <name>` adds a site: a separate single-page web app at `apps/<name>` in the same pnpm workspace, such as a community site or a store beside the desktop app. The layout, the config and each step are in [app-structure.md](app-structure.md), A site.
 
 ```ts
 // apps/store/brock.site.ts
 export default defineBrockSite({
-  site: { id: 'store', name: 'Hookshop', brand: 'rotp' },
+  site: { id: 'store', name: 'Store', brand: 'brock' },  // brand: your Tessera brand
   ports: { offset: 3 },                       // a tool port of the repo's block, in this checkout's slot
   api: { portOffset: 4 },                     // /api -> http://localhost:<same block and slot + 4>; or api: 'https://...'
   build: { nodePolyfills: true, aliases: {} },
 });
 ```
 
+- The template frames every page with Tessera's `SiteHeader` (brand, links, the profile as the title bar's dropdown action) and `SiteFooter`, routes by path, and ships a sign-in page as a `Card` on the brand gradient; the pages inside use the app parts.
 - `defineBrockSiteConfig(siteDir)` (`@drizztdourden08/brock-build/vite-site`, the managed `vite.config.ts`) builds `src/index.html` into `dist` with a `/` base, React, the `brock-site` plugin (`data-palette` and the title from the config, the Tessera brand icon as favicon), the node polyfills when asked, `@app` and `build.aliases`, the shared singletons deduplicated, the port with `strictPort` and the `/api` proxy, and `server.fs.allow` over the workspace and every linked package.
 - A site is not a Brock app: no `brock.config.ts`, so `brock sync` never writes Electron files there, the release layout does not count it (a repo with one app and two sites keeps `ci.yml`, `release.yml` and `v<version>` tags), and it has no release workflow. Its managed files are `vite.config.ts`, `tsconfig.json` and `.github/workflows/ci-<name>.yml`, written by `brock sync` from the repo root, any app or the site, and checked by `brock check`.
 - Brock provides no server kit, no cloud functions, no hosting deploy and no sign-in or session layer for a site, and will not: those stay the app's own packages. The proxy target is any process the app runs on that port or URL.

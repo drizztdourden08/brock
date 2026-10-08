@@ -40,7 +40,7 @@ the values stay in their files and you run the lines yourself.
 
 ## Linux push
 
-`linux` does for a Linux test VM what `mobile push` does for a phone, the way Relic of the Past's `push:linux` did it: build the Linux AppImage, install its desktop entry, launch it on the VM's desktop.
+`linux` does for a Linux test VM what `mobile push` does for a phone: build the Linux AppImage, install its desktop entry, launch it on the VM's desktop.
 
 ```
 <repo> linux init       write ~/.brock/linux/<repo>.json for this machine, print the one-time VM steps
@@ -59,7 +59,7 @@ linux: {
   app: 'apps/desktop',                                // default: the first electron target
   build: ['pnpm', 'exec', 'brock', 'package'],        // the default, run in the app folder
   artifactDir: 'release/velopack',                    // the default, where the AppImage lands
-  shares: [{ name: 'test-roms', path: 'test-roms' }], // host folders the VM mounts before the launch
+  shares: [{ name: 'fixtures', path: 'tests/fixtures' }], // host folders the VM mounts before the launch
   launchFlags: ['--muted'],                           // the default
 }
 ```

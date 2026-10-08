@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # brock-catalog
 
-A content catalogue client: the app's catalogue API behind its own endpoint and schema, installs that run as Brock jobs, the checks every download passes, uninstall, the installed record with its guard, and install links. It is the generic half of Relic of the Past's Hookshop client; what a pack is and where it lands stays in the app, through its installers and hooks. Archipelia can use it for presets the same way.
+A content catalogue client: the app's catalogue API behind its own endpoint and schema, installs that run as Brock jobs, the checks every download passes, uninstall, the installed record with its guard, and install links. What an item is and where it lands stays in the app, through its installers and hooks, so any app can use it for presets, themes, levels or any other content it lists.
 
 ## Install
 
@@ -19,19 +19,19 @@ Main code calls `configureCatalog(ctx, config)` from `onReady` or the app servic
 import { configureCatalog } from '@drizztdourden08/brock-catalog/main';
 
 configureCatalog(ctx, {
-  label: 'Hookshop',                                         // job titles and messages
+  label: 'Library',                                          // job titles and messages
   endpoint: {
-    baseUrl: 'https://store-api.example.com',
+    baseUrl: 'https://catalogue.example.com',
     headers: async () => ({ authorization: `Bearer ${await deviceToken()}` }),
     onUnauthorized: () => clearDeviceToken(),                 // after any 401
   },
   schema: { item: parseItem, page: parsePage, home: parseHome }, // the app's validators: unknown in, typed out
   routes: { grant: { method: 'POST', path: '/items/:id/download' } },  // defaults: GET /home, GET /items, GET /items/:id, POST /items/:id/download
-  installers: { msul: musicInstaller, rsp: spriteInstaller },  // by the grant's container
-  maxBytes: (grant) => LIMITS[grant.kind ?? 'music'],
-  linkScheme: 'relic-of-the-past',                           // install links: relic-of-the-past://install/<id>?v=<n>
-  onRelease: (record, replacement, ctx) => repointProfiles(record, replacement),  // returns how many things let go
-  onInstalled: (record) => recompileIfLanguage(record),
+  installers: { zip: presetInstaller },                      // by the grant's container
+  maxBytes: 50 * 1024 * 1024,                                // or (grant) => a cap per kind
+  linkScheme: 'my-app',                                      // install links: my-app://install/<id>?v=<n>
+  onRelease: (record, replacement, ctx) => repointSelections(record, replacement),  // returns how many things let go
+  onInstalled: (record) => refreshLibrary(record),
 });
 ```
 
@@ -49,7 +49,7 @@ The reads answer `{ ok: true, data }` or `{ ok: false, error, signedOut }`; `sig
 
 ## The installed guard
 
-`useCatalogInstalled` is one store of the installed records for every screen; `watch()` loads it and reloads it on `catalog:changed`. `installedRecordOf(itemId)` and `installedByName(kind, name)` select one record, so an editor can lock a pack the catalogue installed. `useCatalogItem(itemId, liveVersion?)` joins the record, the running job, `hasUpdate`, the last error and `install`, `uninstall` and `cancel`.
+`useCatalogInstalled` is one store of the installed records for every screen; `watch()` loads it and reloads it on `catalog:changed`. `installedRecordOf(itemId)` and `installedByName(kind, name)` select one record, so an editor can lock an item the catalogue installed. `useCatalogItem(itemId, liveVersion?)` joins the record, the running job, `hasUpdate`, the last error and `install`, `uninstall` and `cancel`.
 
 `CatalogInstallBar`, a compound on Tessera's `Button`, `ButtonRow`, `ProgressBar` and `Text`, draws it: Install, or Installed with Update and Uninstall, and the live bar with Cancel while the job runs. `installBarProps(useCatalogItem(id))` feeds it.
 

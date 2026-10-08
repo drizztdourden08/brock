@@ -52,17 +52,17 @@ const fakeJobs = () => {
   return { job, list, steps, controller };
 };
 
-const PACK = new TextEncoder().encode('pack bytes');
-const SHA = createHash('sha256').update(PACK).digest('hex');
+const ITEM = new TextEncoder().encode('item bytes');
+const SHA = createHash('sha256').update(ITEM).digest('hex');
 
 const grantFor = (version: number, sha256 = SHA) => ({
-  itemId: 'abc', version, label: 'Hyrule Music', url: 'https://cdn.example.com/abc.msul', bytes: PACK.byteLength, sha256, container: 'msul', kind: 'music',
+  itemId: 'abc', version, label: 'Starter Preset', url: 'https://cdn.example.com/abc.zip', bytes: ITEM.byteLength, sha256, container: 'zip', kind: 'preset',
 });
 
 const fetchStub = (grant: () => object) => vi.fn((url: RequestInfo | URL) => {
   const href = url instanceof Request ? url.url : String(url);
   if (href.startsWith('https://api.example.com/items/abc/download')) return Promise.resolve(Response.json(grant()));
-  if (href === 'https://cdn.example.com/abc.msul') return Promise.resolve(new Response(PACK));
+  if (href === 'https://cdn.example.com/abc.zip') return Promise.resolve(new Response(ITEM));
   if (href.startsWith('https://api.example.com/items')) return Promise.resolve(Response.json({ items: [{ id: 'abc' }], nextCursor: null }));
   return Promise.resolve(new Response('{}', { status: 401 }));
 });
@@ -81,9 +81,9 @@ const setup = (grant: () => object = () => grantFor(1)) => {
   const installed: string[] = [];
   const installer: CatalogInstaller = {
     install: async ({ file, grant: answered }) => {
-      expect(await readFile(file)).toEqual(Buffer.from(PACK));
+      expect(await readFile(file)).toEqual(Buffer.from(ITEM));
       installed.push(`${answered.label} ${answered.version}`);
-      return { installedName: `hyrule-${answered.version}` };
+      return { installedName: `starter-${answered.version}` };
     },
     uninstall: vi.fn(() => Promise.resolve()),
   };
@@ -91,24 +91,24 @@ const setup = (grant: () => object = () => grantFor(1)) => {
   const fetch = fetchStub(grant);
   vi.stubGlobal('fetch', fetch);
   const config: CatalogConfig = {
-    label: 'Hookshop', endpoint: { baseUrl: 'https://api.example.com', fetch }, installers: { msul: installer }, onRelease,
+    label: 'Library', endpoint: { baseUrl: 'https://api.example.com', fetch }, installers: { zip: installer }, onRelease,
     schema: { item: (value) => value as { id: string }, page: (value) => value as { items: { id: string }[]; nextCursor: null } },
   };
   return { catalog: configureCatalog(ctx, config), files, jobs, emit, installer, installed, onRelease, openHandlers };
 };
 
 describe('install links', () => {
-  const links = createCatalogLinks('relic-of-the-past');
+  const links = createCatalogLinks('my-app');
 
   it('reads exactly an install link of the app scheme and writes it back', () => {
-    expect(links.parse('relic-of-the-past://install/abc_1-2?v=3')).toEqual({ itemId: 'abc_1-2', version: 3 });
-    expect(links.parse('RELIC-OF-THE-PAST://install/abc/')).toEqual({ itemId: 'abc', version: null });
-    expect(links.format({ itemId: 'abc', version: 3 })).toBe('relic-of-the-past://install/abc?v=3');
-    expect(links.fromArgv(['app.exe', '--flag', 'relic-of-the-past://install/abc'])).toEqual({ itemId: 'abc', version: null });
+    expect(links.parse('my-app://install/abc_1-2?v=3')).toEqual({ itemId: 'abc_1-2', version: 3 });
+    expect(links.parse('MY-APP://install/abc/')).toEqual({ itemId: 'abc', version: null });
+    expect(links.format({ itemId: 'abc', version: 3 })).toBe('my-app://install/abc?v=3');
+    expect(links.fromArgv(['app.exe', '--flag', 'my-app://install/abc'])).toEqual({ itemId: 'abc', version: null });
   });
 
   it('refuses any other host, path, query, fragment or id', () => {
-    for (const bad of ['relic-of-the-past://open/abc', 'relic-of-the-past://install/a/b', 'relic-of-the-past://install/abc?x=1', 'relic-of-the-past://install/abc#v', 'relic-of-the-past://install/__x__', 'other://install/abc', `relic-of-the-past://install/${'a'.repeat(300)}`]) {
+    for (const bad of ['my-app://open/abc', 'my-app://install/a/b', 'my-app://install/abc?x=1', 'my-app://install/abc#v', 'my-app://install/__x__', 'other://install/abc', `my-app://install/${'a'.repeat(300)}`]) {
       expect(links.parse(bad)).toBeNull();
     }
     expect(() => createCatalogLinks('Bad Scheme')).toThrow(/scheme/);
@@ -116,21 +116,21 @@ describe('install links', () => {
 });
 
 describe('the download checks', () => {
-  const config = { label: 'Hookshop', installers: { msul: {} as CatalogInstaller }, maxBytes: 100 };
+  const config = { label: 'Library', installers: { zip: {} as CatalogInstaller }, maxBytes: 100 };
 
   it('parses a grant and refuses one it cannot trust', () => {
-    expect(parseGrant(grantFor(1))).toMatchObject({ itemId: 'abc', kind: 'music', meta: {} });
+    expect(parseGrant(grantFor(1))).toMatchObject({ itemId: 'abc', kind: 'preset', meta: {} });
     expect(() => parseGrant({ ...grantFor(1), sha256: 'nope' })).toThrow(/did not describe/);
     expect(() => checkGrant(parseGrant(grantFor(1)), 'other', config)).toThrow(/different item/);
-    expect(() => checkGrant(parseGrant({ ...grantFor(1), container: 'zip' }), 'abc', config)).toThrow(/cannot install/);
+    expect(() => checkGrant(parseGrant({ ...grantFor(1), container: 'rar' }), 'abc', config)).toThrow(/cannot install/);
     expect(() => checkGrant(parseGrant({ ...grantFor(1), url: 'http://cdn' }), 'abc', config)).toThrow(/not secure/);
     expect(() => checkGrant(parseGrant({ ...grantFor(1), bytes: 500 }), 'abc', config)).toThrow(/larger/);
   });
 
   it('accepts only the exact size and digest', () => {
     const grant = parseGrant(grantFor(1));
-    expect(() => verifyDownload(grant, { bytes: PACK.byteLength, sha256: SHA.toUpperCase() })).not.toThrow();
-    expect(() => verifyDownload(grant, { bytes: PACK.byteLength + 1, sha256: SHA })).toThrow(/does not match/);
+    expect(() => verifyDownload(grant, { bytes: ITEM.byteLength, sha256: SHA.toUpperCase() })).not.toThrow();
+    expect(() => verifyDownload(grant, { bytes: ITEM.byteLength + 1, sha256: SHA })).toThrow(/does not match/);
   });
 
   it('skips a damaged registry instead of failing', () => {
@@ -157,9 +157,9 @@ describe('installing and uninstalling', () => {
     const { catalog, jobs, emit, installed } = setup();
     expect(await catalog.reads().list()).toEqual([{ id: 'abc' }]);
     const result = await catalog.install({ itemId: 'abc', version: null });
-    expect(result).toMatchObject({ ok: true, record: { itemId: 'abc', installedName: 'hyrule-1', kind: 'music', container: 'msul' } });
+    expect(result).toMatchObject({ ok: true, record: { itemId: 'abc', installedName: 'starter-1', kind: 'preset', container: 'zip' } });
     expect(jobs.steps).toEqual(['grant', 'download', 'verify', 'unpack']);
-    expect(installed).toEqual(['Hyrule Music 1']);
+    expect(installed).toEqual(['Starter Preset 1']);
     expect(await catalog.installed()).toHaveLength(1);
     expect(emit).toHaveBeenCalledWith('catalog:changed');
   });
@@ -170,9 +170,9 @@ describe('installing and uninstalling', () => {
     await catalog.install({ itemId: 'abc', version: null });
     version = 2;
     await catalog.install({ itemId: 'abc', version: null });
-    expect(onRelease).toHaveBeenCalledWith(expect.objectContaining({ installedName: 'hyrule-1' }), 'hyrule-2', expect.anything());
+    expect(onRelease).toHaveBeenCalledWith(expect.objectContaining({ installedName: 'starter-1' }), 'starter-2', expect.anything());
     expect(installer.uninstall).toHaveBeenCalledOnce();
-    expect((await catalog.installed()).map((record) => record.installedName)).toEqual(['hyrule-2']);
+    expect((await catalog.installed()).map((record) => record.installedName)).toEqual(['starter-2']);
   });
 
   it('refuses a download whose digest does not match and installs nothing', async () => {
@@ -196,20 +196,20 @@ describe('installing and uninstalling', () => {
 
   it('takes install links of its scheme from ctx.onOpen, holds them until the window takes them, then sends each one', () => {
     const { catalog, emit, openHandlers } = setup();
-    catalog.links.listen('relic-of-the-past');
+    catalog.links.listen('my-app');
     const open = (url: string, scheme: string) => openHandlers.forEach((handler) => handler({ kind: 'url', url, scheme, source: 'launch' }));
-    open('relic-of-the-past://install/abc?v=2', 'relic-of-the-past');
+    open('my-app://install/abc?v=2', 'my-app');
     open('other://install/zzz', 'other');
-    openHandlers.forEach((handler) => handler({ kind: 'file', path: 'X:/a.msul', ext: 'msul', source: 'running' }));
+    openHandlers.forEach((handler) => handler({ kind: 'file', path: 'X:/a.preset', ext: 'preset', source: 'running' }));
     expect(catalog.links.take()).toEqual([{ itemId: 'abc', version: 2 }]);
-    open('relic-of-the-past://install/def', 'relic-of-the-past');
+    open('my-app://install/def', 'my-app');
     expect(emit).toHaveBeenCalledWith('catalog:link', { itemId: 'def', version: null });
   });
 
   it('takes a link the app hands over itself and refuses anything else', () => {
     const { catalog } = setup();
-    catalog.links.listen('relic-of-the-past');
-    expect(catalog.links.deliverUrl('relic-of-the-past://install/abc')).toBe(true);
+    catalog.links.listen('my-app');
+    expect(catalog.links.deliverUrl('my-app://install/abc')).toBe(true);
     expect(catalog.links.deliverUrl('https://example.com')).toBe(false);
     expect(catalog.links.take()).toEqual([{ itemId: 'abc', version: null }]);
   });

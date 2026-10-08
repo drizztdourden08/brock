@@ -1,0 +1,22 @@
+/* @layer renderer-app @kind hook */
+import { useCallback, useEffect, useState } from 'react';
+
+const useSitePath = () => {
+  const [path, setPath] = useState(() => window.location.pathname);
+
+  useEffect(() => {
+    const follow = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', follow);
+    return () => window.removeEventListener('popstate', follow);
+  }, []);
+
+  const go = useCallback((href: string) => {
+    if (href === window.location.pathname) return;
+    window.history.pushState(null, '', href);
+    setPath(href);
+  }, []);
+
+  return { path, go };
+};
+
+export { useSitePath };

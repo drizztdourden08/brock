@@ -20,12 +20,12 @@ afterEach(() => {
 });
 
 const FILE = 'vm.json';
-const MACHINE = { vmName: 'rotp-linux', host: '192.168.56.50', user: 'rotp' };
+const MACHINE = { vmName: 'atlas-linux', host: '192.168.56.101', user: 'tester' };
 
 describe('the machine settings', () => {
   it('reads the VM, the target and the defaults', () => {
     expect(parseMachine(MACHINE, FILE)).toEqual({
-      file: FILE, vmName: 'rotp-linux', host: '192.168.56.50', user: 'rotp', port: null, identityFile: null, builder: 'vm', wslDistro: 'Ubuntu-24.04',
+      file: FILE, vmName: 'atlas-linux', host: '192.168.56.101', user: 'tester', port: null, identityFile: null, builder: 'vm', wslDistro: 'Ubuntu-24.04',
     });
     expect(parseMachine({ ...MACHINE, port: '2222', builder: 'wsl', identityFile: '/home/me/.ssh/id_ed25519' }, FILE)).toMatchObject({ port: 2222, builder: 'wsl', identityFile: '/home/me/.ssh/id_ed25519' });
   });
@@ -43,12 +43,12 @@ describe('the machine settings', () => {
   });
 
   it('keeps the file per machine, outside the repo, unless the environment names one', () => {
-    expect(machineFile('rotp', {})).toMatch(/[\\/]\.brock[\\/]linux[\\/]rotp\.json$/);
-    expect(machineFile('rotp', { BROCK_LINUX_CONFIG: 'X:/vm.json' })).toBe('X:/vm.json');
+    expect(machineFile('atlas', {})).toMatch(/[\\/]\.brock[\\/]linux[\\/]atlas\.json$/);
+    expect(machineFile('atlas', { BROCK_LINUX_CONFIG: 'X:/vm.json' })).toBe('X:/vm.json');
   });
 
   it('writes a template with no password field', () => {
-    const template = machineTemplate('rotp');
+    const template = machineTemplate('atlas');
     expect(Object.keys(template).some((key) => /pass|secret|token/i.test(key))).toBe(false);
     expect(() => parseMachine(template, FILE)).not.toThrow();
   });
@@ -65,14 +65,14 @@ describe('the remote calls', () => {
 
   it('quotes each argument as one shell word', () => {
     expect(shellQuote('apps/desktop')).toBe('apps/desktop');
-    expect(shellQuote('Relic of the Past')).toBe("'Relic of the Past'");
+    expect(shellQuote('Atlas Studio')).toBe("'Atlas Studio'");
     expect(shellQuote("it's")).toBe("'it'\\''s'");
     expect(bashStdin(['a b', 'c'])).toBe("bash -s -- 'a b' c");
   });
 
   it('mounts a share only when it is not mounted, with sudo that never prompts', () => {
-    const line = mountLine('rotp-src', 'brock-rotp-src');
-    expect(line).toContain('mountpoint -q "$HOME"/rotp-src');
+    const line = mountLine('atlas-src', 'brock-atlas-src');
+    expect(line).toContain('mountpoint -q "$HOME"/atlas-src');
     expect(line).toContain('sudo -n mount -t vboxsf');
   });
 
@@ -83,7 +83,7 @@ describe('the remote calls', () => {
 
 describe('the host helpers', () => {
   it('maps a Windows folder to its WSL mount and a WSL file to its share', () => {
-    expect(wslMountPath('X:\\relic-of-the-past')).toBe('/mnt/x/relic-of-the-past');
+    expect(wslMountPath('X:\\atlas')).toBe('/mnt/x/atlas');
     expect(wslMountPath('C:/')).toBe('/mnt/c');
     expect(() => wslMountPath('/home/me')).toThrow(/WSL/);
     expect(wslUncPath('Ubuntu-24.04', '/home/me/.ssh/id')).toBe('\\\\wsl.localhost\\Ubuntu-24.04\\home\\me\\.ssh\\id');
@@ -106,18 +106,18 @@ describe('the repo settings', () => {
 
   it('defaults to the first electron target, brock package and its AppImage folder', async () => {
     const root = repo();
-    const workspace = { name: 'rotp', targets: { app: { kind: 'electron', appDir: (checkout) => join(checkout.path, 'apps', 'desktop') } } };
+    const workspace = { name: 'atlas', targets: { app: { kind: 'electron', appDir: (checkout) => join(checkout.path, 'apps', 'desktop') } } };
     const settings = await linuxSettings(root, workspace);
-    expect(settings).toMatchObject({ repoName: 'rotp', appDir: 'apps/desktop', build: ['pnpm', 'exec', 'brock', 'package'], artifactDir: 'release/velopack', shares: [], launchFlags: ['--muted'], icon: null });
-    expect(settings.product).toEqual({ id: 'rotp', name: 'rotp' });
+    expect(settings).toMatchObject({ repoName: 'atlas', appDir: 'apps/desktop', build: ['pnpm', 'exec', 'brock', 'package'], artifactDir: 'release/velopack', shares: [], launchFlags: ['--muted'], icon: null });
+    expect(settings.product).toEqual({ id: 'atlas', name: 'atlas' });
   });
 
   it('takes the workspace linux block and refuses a bad share', async () => {
     const root = repo();
     writeFileSync(join(root, 'apps', 'desktop', 'package.json'), '{}');
-    const linux = { app: 'apps/desktop', build: ['pnpm', 'build:linux'], shares: [{ name: 'test-roms', path: 'test-roms' }], launchFlags: [] };
-    expect(await linuxSettings(root, { name: 'rotp', linux })).toMatchObject({ build: ['pnpm', 'build:linux'], shares: [{ name: 'test-roms', path: 'test-roms' }], launchFlags: [] });
-    await expect(linuxSettings(root, { name: 'rotp', linux: { shares: [{ name: 'a b', path: 'x' }] } })).rejects.toThrow(/shares/);
-    await expect(linuxSettings(root, { name: 'rotp', linux: { build: [] } })).rejects.toThrow(/build/);
+    const linux = { app: 'apps/desktop', build: ['pnpm', 'build:linux'], shares: [{ name: 'fixtures', path: 'tests/fixtures' }], launchFlags: [] };
+    expect(await linuxSettings(root, { name: 'atlas', linux })).toMatchObject({ build: ['pnpm', 'build:linux'], shares: [{ name: 'fixtures', path: 'tests/fixtures' }], launchFlags: [] });
+    await expect(linuxSettings(root, { name: 'atlas', linux: { shares: [{ name: 'a b', path: 'x' }] } })).rejects.toThrow(/shares/);
+    await expect(linuxSettings(root, { name: 'atlas', linux: { build: [] } })).rejects.toThrow(/build/);
   });
 });

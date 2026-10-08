@@ -1,0 +1,21 @@
+/* @layer renderer-app @kind data */
+import type { ComponentUsage } from '@drizztdourden08/tessera';
+
+const usage = {
+  job: 'The sign-in page of the site: a Card centred on the brand gradient, with one line and the Sign in button.',
+  useWhen: ['The page a signed-out visitor reaches from the Sign in button of the header.'],
+  avoidWhen: [{ case: 'Signing in from inside the desktop app.', use: 'Dialog' }],
+  rules: [
+    'Hand onSignIn to the site\'s own sign-in; Brock adds no session or account layer.',
+    'Keep the card on the brand gradient, the dark pair of the splash.',
+  ],
+  a11y: ['The card title is the page heading and the button is the primary action.'],
+  buildingBlock: true,
+  example: `import { SignIn } from '@app/views/SignIn';
+
+const SignInSample = ({ onSignIn }: { onSignIn: () => void }) => <SignIn onSignIn={onSignIn} />;
+`,
+  propsHash: '6a7e332b0d07f706',
+} satisfies ComponentUsage;
+
+export { usage };

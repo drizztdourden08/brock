@@ -83,7 +83,7 @@ In a repo with `brock.workspace.mjs`, `brock sync` writes the workflows at the r
 
 ## A site
 
-Brock covers desktop, mobile and web versions of an app, and a mix of them in one repo, all drawn with Tessera. A fresh app is the app alone. `brock site add <name>` adds a site beside it: a separate web app, a single-page Vite app, at `apps/<name>` of the same repo (Relic of the Past's `apps/sanctuary` and `apps/store`). It is not the `web` platform, which builds the Electron renderer for a browser; a site has its own pages and its own build.
+Brock covers desktop, mobile and web versions of an app, and a mix of them in one repo, all drawn with Tessera. A fresh app is the app alone. `brock site add <name>` adds a site beside it: a separate web app, a single-page Vite app, at `apps/<name>` of the same repo (a community site, a store). It is not the `web` platform, which builds the Electron renderer for a browser; a site has its own pages and its own build.
 
 ```
 apps/<name>/
@@ -93,6 +93,9 @@ apps/<name>/
   src/index.html, src/main.tsx     OWNED ONCE  Tessera tokens, the brand palette, theme.css, TesseraProvider
   src/main.constants.ts            OWNED       the TesseraOverrides
   src/theme.css                    OWNED       the site's palette seeds
+  src/views/SiteShell/             OWNED ONCE  SiteHeader, the routed page and SiteFooter
+  src/views/Home/, src/views/SignIn/  OWNED ONCE  the first page and the sign-in page on the brand gradient
+  src/hooks/useSitePath.ts         OWNED ONCE  the path router
   src/views/<Name>/                OWNED       the pages; views shared with another app sit in packages/design/src/views
   public/                          OWNED       served at the page root
 .github/workflows/ci-<name>.yml    MANAGED     the site's CI, at the repo root
@@ -103,14 +106,14 @@ What `site add` does: it writes the files above, adds `apps/*` to `pnpm-workspac
 - Port: `ports.offset` is a tool port (1 to 9) of the repo's port block: the first Brock app's `product.ports.base` (or the base its id derives), moved by the checkout's slot like the app's own ports, so each worktree's site has its own port. `site add` takes the lowest offset no other site or site API uses. `ports.base` sets a base of the site's own. `strictPort` is always on.
 - API: `api` is a dev proxy for `/api` (or `api.path`), to a URL (`api: 'https://staging.example.com'`) or to a tool port of the same block and slot (`api: { portOffset: 2 }`), so a worktree's site talks to that worktree's API. The API can be anything listening there: Brock does not make or start it. `changeOrigin` and `stripPath` (drop the path before forwarding) are off by default. The same table serves `brock site preview`.
 - Build options: `build.nodePolyfills` (`true` or the options of `vite-plugin-node-polyfills`, which the site installs) for code that needs `Buffer` or `process`; `build.aliases` (import prefixes to folders, relative to the site), added to the managed `tsconfig.json` paths too. Workspace packages need no alias: a site that lists `"@<scope>/<pkg>": "workspace:*"` imports it by name, and Vite serves files from every linked package.
-- Tessera: `main.tsx` imports `tokens.css`, `palettes/<brand>.css` and `theme.css` and renders inside `TesseraProvider`; the build sets `data-palette` on `<html>` from `site.brand`, the page title from `site.name`, and serves the brand's `icon.svg` from the installed Tessera as the favicon.
+- Tessera: `main.tsx` imports `tokens.css`, `palettes/<brand>.css` and `theme.css` and renders `SiteShell` inside `TesseraProvider`; the build sets `data-palette` on `<html>` from `site.brand`, the page title from `site.name`, and serves the brand's `icon.svg` from the installed Tessera as the favicon.
 - Commands: `brock site dev`, `build` and `preview` in the site folder (the `dev`, `build` and `preview` scripts); `brock site list` prints every site with its port and API target. `brock sync` and `brock check` at the repo root, in the app or in the site cover the site's managed files.
 - Lint and structure: the root `eslint .`, `brock prose`, `brock knip`, `jscpd .` and `brock structure` reach the site, which the site's own `lint` script completes with its typecheck and stylelint.
 - CI: `ci-<name>.yml` runs on pull requests and from the Actions tab: a `changes` job (`brock affected apps/<name>`) and, only when the change touches the site, a `site` job that runs the site's `lint` and `brock site build` and keeps `dist` as an artifact.
 
-To do after Brock moves to Tessera 0.30.0: the template's single page becomes the site shell the owner approved, Tessera's `SiteHeader` (logo, title, links, and the profile drawn with the title bar's profile part) and `SiteFooter` around the pages, with sign-in on the brand gradient, so a site reuses the app's parts and differs only in its framing. Until then a new site gets the one `Home` page.
+The shell: a site reuses the app's parts and differs only in its framing. `src/views/SiteShell` draws Tessera's `SiteHeader` (the brand mark and title as the link home, `SITE_LINKS`, and the signed-in person as a profile menu built by `profileAction`, the same `WindowTitleBarDropdownAction` the app title bar takes; a Sign in button in its place while signed out), the page, and `SiteFooter` (the small logo, a note, `FOOTER_LINKS`). `src/hooks/useSitePath` routes by path with the History API, so `navigate` changes the page with no reload; a new page is a view routed by its path in `SiteShell`. `src/views/SignIn` is a `Card` centred on the brand gradient, the splash's dark pair with the light end as the card's top edge; its button calls `onSignIn`, which the template wires to a placeholder person until the app hands it to its own sign-in. Every page inside the frame uses the app parts (`Card`, `SideNavLayout`, `SettingsPage`, `DataTable`, ...).
 
-What Brock does not provide for a site, by decision: no server kit, no cloud functions, no hosting or deploy workflow, no sign-in, session or account layer. Those stay the app's own packages (Relic of the Past keeps them in its packages), and a site reaches them only through its `/api` proxy in development and through whatever host the app deploys `dist` to.
+What Brock does not provide for a site, by decision: no server kit, no cloud functions, no hosting or deploy workflow, no sign-in, session or account layer. Those stay the app's own packages, and a site reaches them only through its `/api` proxy in development and through whatever host the app deploys `dist` to.
 
 ## Release notes
 

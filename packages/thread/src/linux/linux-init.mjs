@@ -11,7 +11,7 @@ import { machineFile } from './linux-machine.mjs';
  */
 const machineTemplate = (workspaceName) => ({
   vmName: `${workspaceName}-linux`,
-  host: '192.168.56.50',
+  host: '192.168.56.101',
   user: 'you',
   port: 22,
   identityFile: '',

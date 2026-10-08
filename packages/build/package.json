@@ -78,7 +78,8 @@
   "devDependencies": {
     "electron": "catalog:",
     "electron-builder": "catalog:",
-    "electron-vite": "catalog:"
+    "electron-vite": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": ">=5",

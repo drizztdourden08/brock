@@ -11,13 +11,14 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-core` | everywhere | product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, log bus, module manifest type, automation flags, registry |
 | `@drizztdourden08/brock-electron` | main, preload | `/main`: `bootstrapApp`, paths, portable mode, window, splash, window state, IPC handlers, diagnostics, crash forensics, session log. `/preload`: `createPreloadBridge` |
 | `@drizztdourden08/brock-react` | renderer | `BrockApp`, platform provider and hosts, stores kit, screen registry, shell views, settings engine |
-| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories, ensure-electron, the platform strategies and the workflow Builder, the `brock` CLI (sync, check, add, dev, build, package, start, platform, doctor, web) |
+| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories (and the site Vite config), ensure-electron, the platform strategies and the workflow Builder, the `brock` CLI (sync, check, add, dev, build, package, start, platform, doctor, web, site) |
 | `@drizztdourden08/create-brock` | tooling | the scaffolder: `pnpm create @drizztdourden08/brock` |
 | `@drizztdourden08/brock-updater` | module | Velopack updater, the title bar update action, UpdateDialog |
 | `@drizztdourden08/brock-secrets` | module | safeStorage secret store, device-code sign-in |
 | `@drizztdourden08/brock-input` | module | SDL3 controllers, mapping DB, calibration, haptics, InputTester; on Android the `BrockInput` Capacitor plugin (Java and the JNI bridge in `android/`) |
 | `@drizztdourden08/brock-display` | module | refresh rate, synced rate, display mode switch (koffi 2 or 3); on Android the `BrockDisplay` Capacitor plugin (`android/`) |
 | `@drizztdourden08/brock-tools` | module | external binaries the app declares: locate in `Data/tools` or on `PATH`, download, SHA-256 check and unpack as a `ctx.job`, run with an argument array |
+| `@drizztdourden08/brock-catalog` | module | a content catalogue client behind the app's endpoint and schema: install jobs (`ctx.job`), download checks, uninstall, the installed record and guard, install links, `CatalogInstallBar` |
 | `@drizztdourden08/brock-port-kit` | module | WASM game core lifecycle, save slots (PKSV or raw states), SRAM, presenter, audio adapter, live settings, ROM source (id or original file names), asset pipeline framework, ensure-wasm (the one copy; `brock-plugin-snes` imports it) |
 
 Dependency direction: `lint-config` (dev) <- everything. `core` <- `electron`, `react`, `build`. `react` peer-depends on Tessera, React and zustand. Modules depend on `core`, and on `electron` or `react` for the side they touch. Tessera never depends on Brock.
@@ -46,7 +47,7 @@ Each subpath exports one object:
 - `preload`: a `PreloadNamespace` (brock-electron): `{ id, build(tools) }` returning the nested `window.api.<id>` object.
 - `renderer`: a `RendererModule` (brock-react): `{ id, screens?, settingsTabs?, menu?, Provider?, titleBarActions?, ports? }`.
 
-`brock.config.ts` lists module ids. `brock sync` reads each manifest and regenerates `.brock/modules.main.ts`, `.brock/modules.preload.ts` and `.brock/modules.renderer.ts`, which import the module objects and export them as arrays. The app's own `electron/main.ts`, `electron/preload.ts` and `src/main.tsx` import those arrays. `brock add <id | package>` installs the package (the built-in registry maps `updater`, `secrets`, `input`, `display`, `port-kit`, `tools` to their package names; anything else is an npm spec), appends the id to `brock.config.ts` and runs sync. App code is never edited by the tool.
+`brock.config.ts` lists module ids. `brock sync` reads each manifest and regenerates `.brock/modules.main.ts`, `.brock/modules.preload.ts` and `.brock/modules.renderer.ts`, which import the module objects and export them as arrays. The app's own `electron/main.ts`, `electron/preload.ts` and `src/main.tsx` import those arrays. `brock add <id | package>` installs the package (the built-in registry maps `updater`, `secrets`, `input`, `display`, `port-kit`, `tools`, `catalog` to their package names; anything else is an npm spec), appends the id to `brock.config.ts` and runs sync. App code is never edited by the tool.
 
 ## App skeleton
 
@@ -202,6 +203,10 @@ product: {
 - Linux: the same config puts `x-scheme-handler/<scheme>` and each file type's mime type (`application/x-<ext>` when none is given) in the deb's `.desktop` file, and electron-builder installs the mime XML; the managed `deb-postinst.sh` then runs `update-mime-database` and `update-desktop-database`. The Velopack AppImage has no installer, so on each packaged launch from an AppImage main writes `~/.local/share/applications/<id>.desktop` and `~/.local/share/mime/packages/<id>.xml` when their text changed, and refreshes both databases.
 - Routing: requests are parsed from argv at launch (a non-flag argument whose scheme is a declared protocol, or whose extension is declared, resolved against the working folder), from a second launch, and on macOS from `open-url` and `open-file`. Each becomes an `OpenRequest`: `{ kind: 'url', url, scheme, source }` or `{ kind: 'file', path, ext, source }`, `source` being `launch` or `running`. An app that declares a protocol or a file type takes the single-instance lock (`singleInstance` of `bootstrapApp` forces it on or off); a second launch quits before crash forensics opens the log and hands its argv to the first, which brings its window forward. A named instance and an automation launch never take the lock.
 - Delivery waits for the reveal. Then each request goes to every main handler (`ctx.onOpen(handler)`, which returns the unsubscribe, and `bootstrapApp({ onOpen(request, ctx) })`) and to the renderer: the first `app:takeOpens` call returns what arrived before it, and later ones come on `app:open`. `BrockApp` drains both into `appOpen`, which holds requests until a handler exists; a screen subscribes with `useAppOpen(handler)` or `appOpen.on(handler)`.
+
+### Content catalogue
+
+The `catalog` module (`@drizztdourden08/brock-catalog`) is a generic content catalogue client, for any app that installs items from its own catalogue (presets, themes, levels): `configureCatalog(ctx, config)` gives it the app's endpoint, schema validators, routes and one installer per container, and it serves the reads over `catalog:*`, runs each install as the job `catalog-install:<id>` through `ctx.job` (grant, download, verify, unpack; the size and sha256 must match the grant before anything is unpacked; an update installs before it releases the old copy through the app's `onRelease`), keeps the installed record in `Data/catalog/installed.json` for the renderer's installed guard (`useCatalogInstalled`, `installedByName`), and parses install links of `config.linkScheme`. The app declares the scheme in `product.protocols` (see Links, files and custom schemes); the module subscribes to `ctx.onOpen` and takes every `url` request of that scheme, from the launch argv, a second launch or macOS `open-url`. `getCatalog(ctx).links.deliverUrl(url)` stays for a link that reaches the app another way, such as one pasted into it. What an item is, where it lands and what uses it stay in the app. The details are in `packages/modules/catalog/README.md`.
 
 ## Boot
 
@@ -493,6 +498,25 @@ The main checkout is slot 0. `<repo> worktree create` gives each thread worktree
 
 Without `ports`, the base comes from the app id: an FNV-1a hash of the id picks one of 140 bases from 20000 to 47800 in steps of 200, below the Windows dynamic range. `create-brock` writes that base into `brock.config.ts`, so it is visible and can be changed.
 
+## Sites
+
+Brock supports desktop, mobile and web versions of an app, and a mix of them in one repo; every one of them draws with Tessera. The default setup is the app alone. `brock site add <name>` adds a site: a separate single-page web app at `apps/<name>` in the same pnpm workspace, such as a community site or a store beside the desktop app. The layout, the config and each step are in [app-structure.md](app-structure.md), A site.
+
+```ts
+// apps/store/brock.site.ts
+export default defineBrockSite({
+  site: { id: 'store', name: 'Store', brand: 'brock' },  // brand: your Tessera brand
+  ports: { offset: 3 },                       // a tool port of the repo's block, in this checkout's slot
+  api: { portOffset: 4 },                     // /api -> http://localhost:<same block and slot + 4>; or api: 'https://...'
+  build: { nodePolyfills: true, aliases: {} },
+});
+```
+
+- The template frames every page with Tessera's `SiteHeader` (brand, links, the profile as the title bar's dropdown action) and `SiteFooter`, routes by path, and ships a sign-in page as a `Card` on the brand gradient; the pages inside use the app parts.
+- `defineBrockSiteConfig(siteDir)` (`@drizztdourden08/brock-build/vite-site`, the managed `vite.config.ts`) builds `src/index.html` into `dist` with a `/` base, React, the `brock-site` plugin (`data-palette` and the title from the config, the Tessera brand icon as favicon), the node polyfills when asked, `@app` and `build.aliases`, the shared singletons deduplicated, the port with `strictPort` and the `/api` proxy, and `server.fs.allow` over the workspace and every linked package.
+- A site is not a Brock app: no `brock.config.ts`, so `brock sync` never writes Electron files there, the release layout does not count it (a repo with one app and two sites keeps `ci.yml`, `release.yml` and `v<version>` tags), and it has no release workflow. Its managed files are `vite.config.ts`, `tsconfig.json` and `.github/workflows/ci-<name>.yml`, written by `brock sync` from the repo root, any app or the site, and checked by `brock check`.
+- Brock provides no server kit, no cloud functions, no hosting deploy and no sign-in or session layer for a site, and will not: those stay the app's own packages. The proxy target is any process the app runs on that port or URL.
+
 ## Packaging and releases
 
 Apps ship the way Relic of the Past does: Velopack installs and updates them, GitHub Releases hosts the feed.
@@ -529,6 +553,7 @@ Layout numbers stay in the C++ sources. An app that wants more than config can p
 - Android: `capacitor.config.json` at the app root (managed: `appId` from the product as a valid Java package, `appName`, `webDir: dist/web`, `android.path: mobile/android`; there is no `.ts` config, and `platform add android` fails while a `capacitor.config.ts` or `.js` that Capacitor would read first sits beside it, see [upgrading-an-app.md](upgrading-an-app.md), Android), `cap add android`, the launcher icons and splash from the brand set through `@capacitor/assets`, and `mobile/android/app/build.gradle` patched to sign from `BROCK_KEYSTORE_*` and to read `versionCode` and `versionName` from `package.json`. The modules in `modules` that ship an Android side (input, display) reach the Gradle project through `cap sync` and `cap update`: `cap add android` wires them on the first scaffold, a later `platform add android` runs `cap update android` when `capacitor.settings.gradle` lacks one, and `mobile build` syncs on every build. A built-in module that is installed but not in `modules` stays out: `capacitor.config.json` then carries `android.includePlugins`, every package the app declares but those. `<app> mobile build [--release]` builds the APK beside the debug `mobile push`; `<app> mobile keystore` makes the release keystore with `keytool` once you agree and prints the `gh secret set` lines for `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS`.
 - Web: the managed `vite.web.config.ts` builds the renderer alone with a relative base into `dist/web` and writes a web app manifest from the product (`web: { manifest: false }` drops it). The release carries it as a zip; there is no deploy job.
 - Linux: `build/linux/deb-postinst.sh` (managed) installs each module's `udevRules` (the input module's controller rules) and runs the app's own `build/linux/after-install.sh`; electron-builder runs it after `dpkg -i`.
+- Linux test VM: `<app> linux push` sits beside `mobile push`. It builds the AppImage in a VirtualBox VM (or in WSL), installs its desktop entry and launches it on the VM's desktop; `<app> linux doctor` checks the ssh client, VirtualBox, the VM, key-only SSH access, the Guest Additions and the build tools (in WSL too when it builds there). The VM name and its address live per machine in `~/.brock/linux/<repo>.json`, never a password: every call is key-only (`BatchMode=yes`). The details are in `packages/thread/README.md`, Linux push.
 
 ### Workflows
 
@@ -613,6 +638,7 @@ An app lists its kept end-to-end tests, with the rest of its kept tests, in `tes
 - The release note standard: `release-notes/v<version>.md`, `brock release-notes check`, and the managed `ci.yml` and `release.yml` that check it, publish it as the release body and pack it for the updater, for a standalone app and every app of a Brock workspace.
 - The automated review, `--review`, with a report and screenshots, and screenshot baselines to bless and compare.
 - A port block per app and per thread worktree, with `strictPort` (see Ports).
+- Sites on request: `brock site add` for a Tessera web app beside the desktop app, on the same port block, with its own CI (see Sites).
 - `brock check` and `brock sync` at an app root or a workspace root.
 - `brock adopt` for a repo: lint configs, knip entries (`brock.workspace.mjs`, `brock-thread` ignored when linked), `.gitignore` lines for the dot-folder rule (`.*/` plus a `!` line per tracked dot-folder) and every generated output (`build/icons`, `build/splash`, `build/installer-splash.png`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`), and the repo command. It writes no splash or logo markup and names any app page that carries a hand-written one.
 - `launchAppForTest`, `readDockLayout` and `widgetWindows` for app-specific e2e tests.

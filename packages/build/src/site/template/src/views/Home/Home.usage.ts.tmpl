@@ -1,0 +1,18 @@
+/* @layer renderer-app @kind data */
+import type { ComponentUsage } from '@drizztdourden08/tessera';
+
+const usage = {
+  job: 'The first page of the site: its name, one line on what it is, and a card with the next step.',
+  useWhen: ['The landing page of a site made with brock site add, until the site has pages of its own.'],
+  avoidWhen: [{ case: 'A page that holds a list beside its detail.', use: 'ListDetail' }],
+  rules: ['Replace it with the site\'s own first page; keep the page in src/views and its words in Home.constants.ts.'],
+  a11y: ['The site name is the page heading.'],
+  buildingBlock: true,
+  example: `import { Home } from '@app/views/Home';
+
+const HomeSample = () => <Home />;
+`,
+  propsHash: '69a6789bb8733db8',
+} satisfies ComponentUsage;
+
+export { usage };

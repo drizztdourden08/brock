@@ -1,0 +1,4 @@
+/* @layer renderer-shell @kind style */
+.catalog-install-bar {
+  min-width: 0;
+}

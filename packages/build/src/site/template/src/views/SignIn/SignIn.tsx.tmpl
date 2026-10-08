@@ -1,0 +1,18 @@
+/* @layer renderer-app @kind component */
+import { Button, ButtonRow, Card, Center, Text } from '@drizztdourden08/tessera/primitives';
+import { SIGN_IN_TEXT } from './SignIn.constants';
+import type { SignInProps } from './SignIn.type';
+import './SignIn.css';
+
+const SignIn = ({ onSignIn }: SignInProps) => (
+  <Center className="sign-in">
+    <Card title={SIGN_IN_TEXT.title} className="sign-in__card">
+      <Text tone="muted">{SIGN_IN_TEXT.lead}</Text>
+      <ButtonRow>
+        <Button variant="primary" onClick={onSignIn}>{SIGN_IN_TEXT.action}</Button>
+      </ButtonRow>
+    </Card>
+  </Center>
+);
+
+export { SignIn };

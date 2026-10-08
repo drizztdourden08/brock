@@ -1,0 +1,8 @@
+/* @layer root-config @kind config */
+import { defineBrockSite } from '@drizztdourden08/brock-build/site';
+
+export default defineBrockSite({
+  site: { id: '__NAME__', name: '__TITLE__', brand: '__BRAND__' },
+  ports: { offset: __PORT_OFFSET__ },
+__API__  build: { nodePolyfills: false, aliases: {} },
+});

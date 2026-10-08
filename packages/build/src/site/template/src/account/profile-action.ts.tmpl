@@ -1,0 +1,12 @@
+/* @layer renderer-app @kind logic */
+import type { WindowTitleBarDropdownAction } from '@drizztdourden08/tessera/composites';
+
+const profileAction = (person: string, signOut: { label: string; onSelect: () => void }): WindowTitleBarDropdownAction => ({
+  id: 'profile',
+  icon: 'user',
+  label: person,
+  bar: 'dropdown',
+  groups: [{ id: 'account', items: [{ id: 'sign-out', label: signOut.label, icon: 'log-out', onSelect: signOut.onSelect }] }],
+});
+
+export { profileAction };

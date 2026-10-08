@@ -25,12 +25,14 @@
     "prose": "brock prose",
     "deadcode": "brock knip",
     "duplicates": "jscpd .",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "release-notes": "standards release-notes"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",
     "@drizztdourden08/brock-build": "workspace:*",
     "@drizztdourden08/brock-lint-config": "workspace:*",
+    "@drizztdourden08/standards": "^0.7.0",
     "@drizztdourden08/tessera": "catalog:",
     "@electron-toolkit/utils": "catalog:",
     "@storylite/storylite": "catalog:",
@@ -54,6 +56,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
+    "yaml": "^2.9.1",
     "zustand": "catalog:"
   }
 }

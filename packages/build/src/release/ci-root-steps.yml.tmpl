@@ -1,0 +1,15 @@
+
+      - name: Managed files match brock sync
+        run: pnpm exec brock check
+
+      - name: Lint and typecheck
+        run: pnpm run lint
+
+      - name: Markdown
+        run: pnpm run --if-present lint:md
+
+      - name: Structure
+        run: pnpm exec brock structure --check
+
+      - name: Tests
+        run: pnpm run --if-present test

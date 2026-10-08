@@ -17,7 +17,12 @@ const windowsPlatform = definePlatform({
     runsOn: 'windows-latest',
     vpk: true,
     collect: ['release/velopack/*'],
-    downloads: [{ glob: 'artifacts/release-windows/*-windows-setup.exe', label: 'Windows installer (.exe), a small download that installs and updates itself', latest: true }],
+    downloads: [{
+      glob: 'artifacts/release-windows/*-windows-setup.exe',
+      label: 'Windows installer (.exe), a small download that installs and updates itself',
+      latest: true,
+      preview: { glob: 'artifacts/release-windows/*-windows-payload.exe', label: 'Windows setup (.exe) of this pre-release, which updates itself' },
+    }],
   }),
 });
 

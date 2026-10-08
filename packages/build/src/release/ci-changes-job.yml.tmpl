@@ -1,0 +1,15 @@
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.changed.outputs.changed }}
+    steps:
+__SETUP__
+
+      # A pull request builds and reviews only the apps it touches: their own files, a workspace
+      # package they depend on, or a file outside every package. A manual run builds the app.
+      - name: Does this change touch the app
+        id: changed
+        shell: bash
+        env:
+          BASE: ${{ github.base_ref }}
+        run: echo "changed=$(pnpm exec brock affected "$APP_DIR" ${BASE:+"origin/$BASE"})" >> "$GITHUB_OUTPUT"

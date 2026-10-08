@@ -54,6 +54,7 @@
  * @property {string} glob artifact files, from the release job
  * @property {string} label
  * @property {boolean} [latest] link through releases/latest
+ * @property {{ glob: string, label: string }} [preview] linked in its place on a pre-release
  */
 
 /**

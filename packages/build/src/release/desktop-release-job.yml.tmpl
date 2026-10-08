@@ -10,7 +10,7 @@ __VPK__
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: |
           FULL=""
-          if [ "${{ inputs.full }}" = "true" ]; then FULL="--full"; fi
+          if [ "${{ needs.prepare.outputs.full }}" = "true" ]; then FULL="--full"; fi
           pnpm --dir "$APP_DIR" exec brock package $FULL
 
       - name: Collect the release files

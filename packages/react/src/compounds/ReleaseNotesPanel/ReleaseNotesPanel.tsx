@@ -1,13 +1,15 @@
 /* @layer renderer-shell @kind component */
-import { Box, Paragraph, ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
+import { openExternal } from '../../host/open-external';
 import { RELEASE_NOTES_TITLE } from './ReleaseNotesPanel.constants';
 import type { ReleaseNotesPanelProps } from './ReleaseNotesPanel.type';
+import { NotesBody } from './sub-components/NotesBody';
 import './ReleaseNotesPanel.css';
 
 const ReleaseNotesPanel = (props: ReleaseNotesPanelProps) => {
-  const { title = RELEASE_NOTES_TITLE, children, className = '' } = props;
+  const { title = RELEASE_NOTES_TITLE, children, markdown = false, onOpenLink = openExternal, className = '' } = props;
   const body = typeof children === 'string'
-    ? <Paragraph tone="dim" className="release-notes-panel__text">{children}</Paragraph>
+    ? <NotesBody source={children} markdown={markdown} onOpenLink={onOpenLink} />
     : children;
 
   return (

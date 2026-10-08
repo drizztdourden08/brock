@@ -2,7 +2,7 @@
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { UpdateFeed } from './update-feed.type';
 import {
-  API_ORIGIN_SUFFIX, CHANNEL_BY_PLATFORM, GITHUB_API, GITHUB_WEB, UPDATE_SOURCE_FLAG,
+  API_ORIGIN_SUFFIX, CHANNEL_BY_PLATFORM, GITHUB_API, GITHUB_WEB, RELEASE_TAG_PREFIX, UPDATE_SOURCE_FLAG,
 } from './updater-main.constants';
 
 const channelOf = (explicit: string | undefined): string =>
@@ -20,6 +20,7 @@ const resolveFeed = ({ product, flags }: Pick<MainContext, 'product' | 'flags'>,
     releasePage: `${GITHUB_WEB}/${repo.owner}/${repo.name}/releases`,
     channel: resolvedChannel,
     feedFile: `releases.${resolvedChannel}.json`,
+    tagPrefix: product.releaseTagPrefix ?? RELEASE_TAG_PREFIX,
     harness: apiOrigin !== GITHUB_API,
     localSource: flags.flagValue(UPDATE_SOURCE_FLAG),
   };

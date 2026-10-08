@@ -1,31 +1,32 @@
-name: Release
-run-name: Release ${{ inputs.version }}
+name: Release__TITLE__
+run-name: Release__TITLE__ ${{ inputs.version }}${{ inputs.prerelease && ' (pre-release)' || (inputs.set_latest && ' (latest)' || ' (draft)') }}
 
 # Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
-# Run it from the Actions tab or with `<app> release <version>`.
-# release-notes/v<version>.md must be on the default branch first: it is the release body.
+# Run it from the Actions tab or with `<repo> release <version> [--latest | --prerelease]__APP_FLAG__`.
+# __NOTES_DIR__/v<version>.md must be on the default branch first and pass `brock release-notes check`:
+# it is the release body, and the updater shows it. Tags are __TAG_PREFIX__<version>.
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release, e.g. 0.9.0 or v0.9.0. The tag must not exist yet.'
+        description: 'Version to release, e.g. 0.9.0, 0.9.0-beta.1 or v0.9.0. The tag __TAG_PREFIX__<version> must not exist yet.'
         required: true
         type: string
       full:
-        description: 'Rebuild the Windows installer payload and directory zip that the small installer fetches. The first release must be full.'
+        description: 'Rebuild the Windows installer payload and directory zip that the small installer fetches. On by itself while no latest release exists.'
         type: boolean
         default: false
       prerelease:
-        description: 'Publish as a pre-release. It never becomes the latest download.'
+        description: 'Publish as a pre-release: downloadable at once, never the latest, offered only to users who turned pre-releases on.'
         type: boolean
         default: false
       set_latest:
-        description: 'Publish at once as the latest release. Off leaves a draft.'
+        description: 'Publish at once as the latest release. Off, and not a pre-release, leaves a draft.'
         type: boolean
         default: false
 
 concurrency:
-  group: release
+  group: release__GROUP__
   cancel-in-progress: false
 
 permissions:
@@ -40,23 +41,40 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
+      full: ${{ steps.resolve.outputs.full }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check the notes and the tag
+      - name: Check the inputs, the notes and the tag
         id: resolve
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RAW="${{ inputs.version }}"
-          TAG="v${RAW#v}"
-          test -f "release-notes/$TAG.md" || { echo "::error::release-notes/$TAG.md is missing. Commit the notes first."; exit 1; }
+          VERSION="${RAW#v}"
+          TAG="__TAG_PREFIX__$VERSION"
+          NOTES="__NOTES_DIR__/v$VERSION.md"
+          if [ "${{ inputs.prerelease }}" = "true" ] && [ "${{ inputs.set_latest }}" = "true" ]; then
+            echo "::error::prerelease and set_latest exclude each other: a pre-release never becomes the latest release."
+            exit 1
+          fi
+          test -f "$NOTES" || { echo "::error::$NOTES is missing. Commit the notes first."; exit 1; }
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
             echo "::error::Tag $TAG already exists."
             exit 1
           fi
+          FULL="${{ inputs.full }}"
+          if ! gh api "repos/${{ github.repository }}/releases/latest" >/dev/null 2>&1; then
+            echo "::notice::No latest release yet, so $TAG is a full release: the small installer needs a payload to fetch."
+            FULL=true
+          fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "full=$FULL" >> "$GITHUB_OUTPUT"
 
       - uses: pnpm/action-setup@v4
         with:
@@ -71,7 +89,10 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Release note
+        run: pnpm --dir "$APP_DIR" exec brock release-notes check "${{ steps.resolve.outputs.version }}"
 
       - name: Lint
         run: pnpm lint
@@ -80,7 +101,7 @@ jobs:
         shell: bash
         run: |
           TAG="${{ steps.resolve.outputs.tag }}"
-          node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${TAG#v}"
+          node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${{ steps.resolve.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$APP_DIR/package.json"
@@ -105,28 +126,42 @@ __JOBS__
           path: artifacts
 
       - name: Write the release body
+        id: body
         shell: bash
+        env:
+          PRERELEASE: ${{ inputs.prerelease }}
         run: |
           TAG="${{ needs.prepare.outputs.tag }}"
+          NOTES="__NOTES_DIR__/v${{ needs.prepare.outputs.version }}.md"
           BASE="https://github.com/${{ github.repository }}/releases/download/${TAG}"
           LATEST="https://github.com/${{ github.repository }}/releases/latest/download"
           link() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($BASE/$(basename "$f"))"; fi; done; }
-          stub() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($LATEST/$(basename "$f"))"; fi; done; }
+          stub() {
+            for f in $1; do
+              [ -f "$f" ] || continue
+              if [ "$PRERELEASE" != "true" ]; then echo "- [$2]($LATEST/$(basename "$f"))"; continue; fi
+              shown=""
+              for p in $3; do if [ -f "$p" ]; then echo "- [$4]($BASE/$(basename "$p"))"; shown=1; fi; done
+              if [ -z "$shown" ]; then echo "- [$2]($LATEST/$(basename "$f")), which installs the latest stable release; turn on pre-releases in the app's updater to move to this one"; fi
+            done
+          }
           {
-            cat "release-notes/${TAG}.md"
+            grep -v -E '^\s*<!--.*-->\s*$' "$NOTES"
             echo ""
             echo "## Downloads"
             echo ""
 __DOWNLOADS__
           } > release-body.md
+          echo "title=$(grep -m 1 '^# ' "$NOTES" | sed 's/^# //')" >> "$GITHUB_OUTPUT"
           cat release-body.md
 
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
+          name: ${{ steps.body.outputs.title }}
           draft: ${{ inputs.set_latest != true && inputs.prerelease != true }}
           prerelease: ${{ inputs.prerelease == true }}
-          make_latest: ${{ inputs.set_latest == true }}
+          make_latest: ${{ inputs.set_latest == true && inputs.prerelease != true }}
           body_path: release-body.md
           files: artifacts/release-*/*
         env:

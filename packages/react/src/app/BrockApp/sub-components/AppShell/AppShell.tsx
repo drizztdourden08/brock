@@ -33,6 +33,7 @@ import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
 import { TourHost } from '../../../../tours/TourHost';
+import { useAppOpenBridge } from '../../../../open/useAppOpenBridge';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -54,6 +55,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useScreenPersistence();
   useStandardEscapeLayers();
   useIpcLogBridge(log);
+  useAppOpenBridge();
 
   const fullMenu = useShellMenu(moduleMenu, railed);
   const actions = useShellActions(titleBarActions);

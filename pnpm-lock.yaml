@@ -383,6 +383,25 @@ importers:
         specifier: 'catalog:'
         version: 5.0.15(@types/react@19.3.0)(react@19.3.0)
 
+  packages/modules/tools:
+    dependencies:
+      '@drizztdourden08/brock-core':
+        specifier: workspace:*
+        version: link:../../core
+      '@drizztdourden08/brock-electron':
+        specifier: workspace:*
+        version: link:../../electron
+      '@drizztdourden08/brock-react':
+        specifier: workspace:*
+        version: link:../../react
+    devDependencies:
+      electron:
+        specifier: 'catalog:'
+        version: 42.11.8
+      react:
+        specifier: 'catalog:'
+        version: 19.3.0
+
   packages/modules/updater:
     dependencies:
       '@drizztdourden08/brock-core':

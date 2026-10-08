@@ -37,4 +37,5 @@ export * from './review';
 export * from './title-bar';
 export * from './tours';
 export * from './jobs';
+export * from './open';
 export * from './storage';

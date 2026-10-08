@@ -4,6 +4,7 @@ import { useProduct } from '../app/useProduct';
 import { getAppLog } from '../log/get-app-log';
 import { usePlatform } from '../platform/usePlatform';
 import { buildDebugText } from './build-debug-text';
+import type { SystemDiagnostics } from '@drizztdourden08/brock-core';
 import type { DebugText } from './diagnostics.type';
 import { fetchSystemDiagnostics } from './fetch-system-diagnostics';
 import { readWindowEnvironment } from './read-window-environment';
@@ -16,12 +17,14 @@ const useDebugText = (collect = true): DebugText => {
   const version = useAppVersion();
   const labels = useMemo(() => runtimeLabels(info, navigator.userAgent), [info]);
   const [text, setText] = useState<string | null>(null);
+  const [system, setSystem] = useState<SystemDiagnostics | null>(null);
 
   useEffect(() => {
     if (!collect) return;
     let live = true;
     void fetchSystemDiagnostics().then((system) => {
       if (!live) return;
+      setSystem(system);
       setText(buildDebugText({
         productName: product.name,
         version,
@@ -36,7 +39,7 @@ const useDebugText = (collect = true): DebugText => {
     return () => { live = false; };
   }, [collect, product.name, version, labels, info]);
 
-  return { text: collect ? text : null, version, labels };
+  return { text: collect ? text : null, system: collect ? system : null, version, labels };
 };
 
 export { useDebugText };

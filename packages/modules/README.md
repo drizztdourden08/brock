@@ -9,6 +9,7 @@ Optional modules live here, one package each. Each carries a `package.json#brock
 | `updater` | Velopack startup hooks, check, download and apply, a version picker and the update dialog. |
 | `input` | SDL3 controllers, the mapping database, calibration, rumble and the Controllers screen. |
 | `display` | Refresh rate, a synced rate in fullscreen, window mode and monitor switching. |
+| `tools` | External binaries the app declares (ffmpeg, for one): found in `Data/tools` or on `PATH`, downloaded and checksum-verified as a job, run with an argument array. |
 | `port-kit` | What a PC port of a game compiled to WebAssembly needs, with no game in it: core lifecycle, saves and SRAM, video, audio, live settings, ROM source, asset pipeline runner, ensure-wasm. |
 
 `input` carries the source of a native SDL3 addon in `input/native`. Its postinstall downloads the prebuild for the platform from the brock releases, and `brock dev` and `brock build` fetch it too when the install skipped that step. The builder config ships it through `extraResources` in an app that lists `input`, so a blank app carries no SDL3 at all.

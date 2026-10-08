@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { ProductRepo } from '@drizztdourden08/brock-core';
+import type { BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
 
 interface IssueDraft {
   repo: ProductRepo;
@@ -8,10 +8,22 @@ interface IssueDraft {
   diagnostics: string | null;
 }
 
-interface BugReportState {
-  open: boolean;
-  show: () => void;
-  hide: () => void;
+interface BrockAppBugReport {
+  transport: BugReportTransport;
+  label?: string;
 }
 
-export type { BugReportState, IssueDraft };
+type BugReportTarget =
+  | { kind: 'transport'; label: string; send: BugReportTransport }
+  | { kind: 'github'; label: string; repo: ProductRepo }
+  | { kind: 'clipboard'; label: string };
+
+interface BugReportState {
+  open: boolean;
+  appTransport: BrockAppBugReport | null;
+  show: () => void;
+  hide: () => void;
+  setAppTransport: (transport: BrockAppBugReport | null) => void;
+}
+
+export type { BrockAppBugReport, BugReportState, BugReportTarget, IssueDraft };

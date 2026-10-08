@@ -30,6 +30,10 @@ bool Unpack(const std::wstring& archive, const std::wstring& directory);
  */
 void LaunchInstalled(const std::wstring& directory);
 
+// A portable copy runs no Velopack install hook, so the stub asks the app to
+// write its link and file type keys itself, and waits for it.
+void RegisterOsIntegration(const std::wstring& directory);
+
 /** Where an install of this mode ends up, for launching it afterwards. */
 std::wstring InstalledRoot(ui::Mode mode, const std::wstring& chosen);
 

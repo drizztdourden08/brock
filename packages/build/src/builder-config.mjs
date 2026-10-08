@@ -28,9 +28,25 @@ const toBuilderAssociations = (list = []) =>
   list.map((fa) => ({
     ext: fa.ext,
     name: fa.name,
-    ...(fa.mimeType ? { mimeType: fa.mimeType } : {}),
+    mimeType: fa.mimeType ?? `application/x-${fa.ext.toLowerCase()}`,
     ...(fa.icon ? { icon: fa.icon } : {}),
   }));
+
+/**
+ * @param {ProductInput} product
+ * @returns {{ name: string, schemes: string[] }[]} for Info.plist and the .desktop file
+ */
+const toBuilderProtocols = (product) =>
+  (product.protocols ?? []).map(({ scheme, name }) => ({ name: name ?? product.name, schemes: [scheme] }));
+
+/**
+ * @param {ProductInput['fileAssociations']} list
+ * @returns {{ extraResources?: { from: string, to: string }[] }} the icons the registry names
+ */
+const winFileIcons = (list = []) => {
+  const icons = list.filter((fa) => fa.icon).map((fa) => ({ from: `build/${fa.icon}.ico`, to: `file-icons/${fa.ext.toLowerCase()}.ico` }));
+  return icons.length ? { extraResources: icons } : {};
+};
 
 /**
  * @param {string} rootDir
@@ -57,12 +73,14 @@ const createBuilderConfig = (product, { rootDir }) => {
     asarUnpack: [VELOPACK_ASAR_UNPACK],
     afterPack: createAfterPack(rootDir, icons.win),
     fileAssociations: toBuilderAssociations(product.fileAssociations),
+    protocols: toBuilderProtocols(product),
     ...(product.repo ? { publish: [{ provider: 'github', owner: product.repo.owner, repo: product.repo.name }] } : {}),
     win: {
       target: ['dir'],
       ...(icons.win ? { icon: icons.win } : {}),
       artifactName: artifact('win'),
       signAndEditExecutable: false,
+      ...winFileIcons(product.fileAssociations),
     },
     mac: {
       target: ['dmg', 'zip'],

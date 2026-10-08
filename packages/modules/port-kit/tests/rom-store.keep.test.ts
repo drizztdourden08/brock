@@ -1,20 +1,18 @@
 /* @layer core @kind test */
-import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import type { PortDefinition } from '../src/port/port-definition.type';
 import { createRomStore } from '../src/rom/create-rom-store';
 import { memoryFiles } from './fakes/memory-files';
+import { sha1Of } from './fakes/sha1-of';
 import { testPort } from './fakes/test-port';
 
-const sha1 = (bytes: Uint8Array): string => createHash('sha1').update(bytes).digest('hex').toUpperCase();
-
-const dump = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+const dump = new Uint8Array([8, 7, 6, 5, 4, 3, 2, 1]);
 const headered = new Uint8Array([0xff, 0xff, ...dump]);
 const ORIGINAL = 'Legend of Game, The (USA) [!].smc';
 
 const portWith = (keepFileName?: boolean): PortDefinition => testPort({
   extensions: ['.sfc', '.smc'],
-  known: { [sha1(dump)]: { id: 'us', label: 'US' } },
+  known: { [sha1Of(dump)]: { id: 'us', label: 'US' } },
   normalize: (bytes: Uint8Array) => (bytes.length === dump.length + 2 ? bytes.subarray(2) : bytes),
   ...(keepFileName === undefined ? {} : { keepFileName }),
 });

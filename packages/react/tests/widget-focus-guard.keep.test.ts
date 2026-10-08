@@ -22,6 +22,7 @@ const PAGE = `
   <div class="control-menu__sub-panel" id="options-sub"><button id="options-sub-item">Keys</button></div>
   <div class="control-menu__panel"><button id="menu-item" role="menuitem">Settings</button></div>
   <div class="control-menu__sub-panel" id="menu-sub"><button id="menu-sub-item">Theme</button></div>
+  <div class="dock-divider"><div id="dock-line" class="resize-handle resize-handle--ghost" role="separator" tabindex="0"></div></div>
   <button id="palette-row">Open the Cheats widget</button>
   <div id="host"></div>
 `;
@@ -155,6 +156,15 @@ describe('the widget focus guard and the rest of the app', () => {
     click(byId('palette-row'));
     byId('widget-button').focus();
     expect(document.activeElement).toBe(byId('widget-button'));
+  });
+
+  it('leaves the focus with the app after a drag on a dock line, and keeps it there for a keyboard user who tabs to it', () => {
+    mount();
+    const line = byId('dock-line');
+    expect(click(line)).toBe(false);
+    expect(document.activeElement).not.toBe(line);
+    tabTo(line);
+    expect(document.activeElement).toBe(line);
   });
 
   it('covers the widget options panel and its sub-panel', () => {

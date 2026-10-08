@@ -9,10 +9,4 @@ interface ReleaseNotesPanelProps {
   className?: string;
 }
 
-interface MarkdownPartProps {
-  source: string;
-  onOpenLink?: (href: string) => void;
-  className?: string;
-}
-
-export type { ReleaseNotesPanelProps, MarkdownPartProps };
+export type { ReleaseNotesPanelProps };

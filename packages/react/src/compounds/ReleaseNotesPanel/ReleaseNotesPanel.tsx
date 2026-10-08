@@ -14,7 +14,7 @@ const ReleaseNotesPanel = (props: ReleaseNotesPanelProps) => {
 
   return (
     <Box as="section" className={`release-notes-panel${className ? ` ${className}` : ''}`}>
-      <Text as="h4" className="release-notes-panel__title">{title}</Text>
+      <Text as="h3" className="release-notes-panel__title">{title}</Text>
       <ScrollArea className="release-notes-panel__content">{body}</ScrollArea>
     </Box>
   );

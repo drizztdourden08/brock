@@ -24,7 +24,6 @@
 
 .release-notes-panel .release-notes-panel__markdown {
   padding: var(--space-md);
-  font-size: var(--text-sm);
 }
 
 .release-notes-panel .release-notes-panel__text {

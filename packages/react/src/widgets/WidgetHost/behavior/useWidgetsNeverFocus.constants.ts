@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind constants */
-const WIDGET_SCOPE = '[data-widget-id], [data-pane-id], [data-floating-id], [data-widget-options]';
+const WIDGET_SCOPE = '[data-widget-id], [data-pane-id], [data-floating-id], [data-widget-options], .dock-divider';
 
 const OPTIONS_SUB_PANEL = '.control-menu__sub-panel[id]';
 

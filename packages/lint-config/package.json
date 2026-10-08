@@ -52,6 +52,6 @@
     }
   },
   "dependencies": {
-    "@drizztdourden08/standards": "^0.7.0"
+    "@drizztdourden08/standards": "^0.8.0"
   }
 }

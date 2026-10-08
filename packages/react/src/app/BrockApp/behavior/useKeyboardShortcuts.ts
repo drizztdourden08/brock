@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
+import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
 import { usePlatform } from '../../../platform/usePlatform';
 import { nav } from '../../../navigation/nav';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
@@ -23,6 +24,7 @@ const useKeyboardShortcuts = (): void => {
   const fullscreenable = product.window.titleBar.controls.fullscreen;
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
+  const escapes = useEscapeStack();
 
   useEffect(() => {
     const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>
@@ -30,6 +32,7 @@ const useKeyboardShortcuts = (): void => {
     const context = {
       toggleFullscreen: fullscreenable ? () => win.toggleFullscreen() : undefined,
       home: () => (allowed(registry.get(homeScreen)) ? homeScreen : null),
+      escapes,
     };
     const handler = (e: KeyboardEvent) => {
       if (touringHolds(e)) return;
@@ -41,9 +44,10 @@ const useKeyboardShortcuts = (): void => {
       e.preventDefault();
       nav.toggle(target);
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [win, fullscreenable, homeScreen, shortcuts, registry, developerTools]);
+    const root = document.documentElement;
+    root.addEventListener('keydown', handler);
+    return () => root.removeEventListener('keydown', handler);
+  }, [win, fullscreenable, homeScreen, shortcuts, registry, developerTools, escapes]);
 };
 
 export { useKeyboardShortcuts };

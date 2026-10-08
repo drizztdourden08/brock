@@ -7,12 +7,17 @@ interface StoragePageProps {
   domains?: readonly string[];
 }
 
+interface StorageFailure {
+  error: unknown;
+}
+
 interface StorageDomainsState {
   available: boolean;
   location: DataLocation | null;
   domains: DataDomainDef[];
   usage: Partial<Record<string, DomainUsage>>;
-  error: string | null;
+  failure: StorageFailure | null;
+  loading: boolean;
   refresh: (domain?: string) => void;
 }
 
@@ -41,4 +46,4 @@ interface ActionRowInput {
   runner?: ActionRunner;
 }
 
-export type { ActionRowInput, StorageActions, StorageDomainsState, StoragePageProps, StorageSectionsInput };
+export type { ActionRowInput, StorageActions, StorageDomainsState, StorageFailure, StoragePageProps, StorageSectionsInput };

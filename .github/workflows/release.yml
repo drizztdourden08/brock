@@ -10,6 +10,8 @@ jobs:
   release:
     uses: drizztdourden08/standards/.github/workflows/release.yml@v0
     secrets: inherit
+    with:
+      release-notes: pnpm exec standards release-notes
     permissions:
       contents: write
       packages: write

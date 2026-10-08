@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
+import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
 import type { RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { BeforeQuit } from '../../quit/quit.type';
@@ -72,6 +73,7 @@ interface MenuBuildInput {
 interface ShellKeyContext {
   toggleFullscreen?: () => void;
   home: () => string | null;
+  escapes: EscapeStack;
 }
 
 interface AppScreensInput {

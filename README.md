@@ -47,3 +47,14 @@ pnpm start -- --user-data=.user-data                                # the window
 An app inside its own workspace (`apps/desktop` plus `packages/<subject>`): run `brock adopt` at the repo root first, then `create-brock apps/desktop ...`; see `docs/contributing/structure.md`.
 
 `--local` writes `link:` dependency specs to this checkout and to `../tessera`, for use while nothing is published.
+
+## Releasing Brock
+
+Brock publishes with changesets, and every release has a note in the release note standard of `@drizztdourden08/standards` (`docs/release-notes.md` there). All the packages share one version, so there is one note per Brock version: `release-notes/v<version>.md` at the repo root, titled `# Brock v<version>`.
+
+1. Merge pull requests that carry changesets into `main`. The `release` workflow opens or updates the version pull request, "release: version packages". It runs `standards release-notes version`: `changeset version`, then a draft of `release-notes/v<version>.md` written from the new changelog entries.
+2. Check out the branch of that pull request (`changeset-release/main`) and rewrite the draft for the people who use Brock: one summary paragraph, then `##` sections from the fixed list, one plain sentence per bullet. Delete the `<!-- release-notes: draft -->` line at the top.
+3. Run `pnpm release-notes check` until it reports no finding, then `pnpm lint:md`. Commit the note to that branch and push.
+4. Merge the version pull request. The `release` workflow checks the note again and refuses to publish while it is a draft or breaks the standard. Then it publishes the packages and creates the GitHub release `v<version>`, named after the title of the note, with the note as its body.
+
+`pnpm release-notes current` prints the version being released. The note can be written on that branch at any point before the merge; nothing publishes without it. The workflow is `drizztdourden08/standards/.github/workflows/release.yml@v0`, so the `v0` tag of standards must point at standards 0.8.0 or later.

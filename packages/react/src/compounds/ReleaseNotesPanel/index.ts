@@ -1,3 +1,3 @@
 /* @layer renderer-shell @kind barrel */
 export { ReleaseNotesPanel } from './ReleaseNotesPanel';
-export type { MarkdownPartProps, ReleaseNotesPanelProps } from './ReleaseNotesPanel.type';
+export type { ReleaseNotesPanelProps } from './ReleaseNotesPanel.type';

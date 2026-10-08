@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { BugReportButton, ReleaseNotesPanel } from '@drizztdourden08/brock-react';
+import { BugReportButton, ReleaseNotesPanel, openExternal } from '@drizztdourden08/brock-react';
 import { Box, Callout } from '@drizztdourden08/tessera/primitives';
 import { DialogShell } from '@drizztdourden08/tessera/composites';
 import { dialogTitle } from './behavior/dialog-title';
@@ -57,7 +57,7 @@ const UpdateDialog = () => {
             This is a pre-release. It ships before the usual testing, so expect rough edges and bugs the stable builds do not have.
           </Callout>
         )}
-        {notes.length > 0 && <ReleaseNotesPanel markdown>{notes}</ReleaseNotesPanel>}
+        {notes.length > 0 && <ReleaseNotesPanel markdown onOpenLink={openExternal}>{notes}</ReleaseNotesPanel>}
         <DownloadStatus status={status} percent={store.percent} error={store.error} canInstall={capabilities.canInstall} info={info} />
         {showFootnote && (
           <Callout variant="footnote" action={<BugReportButton onBeforeOpen={closeDialog} />}>

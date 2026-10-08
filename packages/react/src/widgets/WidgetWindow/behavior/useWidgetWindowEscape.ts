@@ -1,17 +1,19 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
+import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
 import { closeTopmost } from '../../../app/BrockApp/behavior/close-topmost';
-import { useStandardEscapeLayers } from '../../../app/BrockApp/behavior/useStandardEscapeLayers';
+import { shellTakesEscape } from '../../../escape/shell-takes-escape';
 
 const useWidgetWindowEscape = (): void => {
-  useStandardEscapeLayers();
+  const escapes = useEscapeStack();
   useEffect(() => {
+    const root = document.documentElement;
     const handler = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') closeTopmost(e, null);
+      if (e.key === 'Escape' && shellTakesEscape(e, escapes)) closeTopmost(e, null);
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, []);
+    root.addEventListener('keydown', handler);
+    return () => root.removeEventListener('keydown', handler);
+  }, [escapes]);
 };
 
 export { useWidgetWindowEscape };

@@ -102,6 +102,11 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock mobile build [--release] [--out <file>]
                              web build, cap sync, gradle assembleDebug (or a signed assembleRelease)
   brock mobile keystore      make the release keystore with keytool (asks), print the gh secret set lines
+  brock linux push [--build-only]
+                             build the Linux AppImage in the VirtualBox VM (or in WSL), install its desktop
+                             entry and launch it there, over key-only SSH; settings per machine in
+                             ~/.brock/linux/<repo>.json, never a password
+  brock linux doctor | init  check WSL, VirtualBox, the VM and SSH access; write the machine settings file
   brock release [version] [--latest | --prerelease] [--full]
                              run .github/workflows/release.yml for v<version>, notes from
                              release-notes/v<version>.md (asks)

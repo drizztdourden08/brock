@@ -13,6 +13,7 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> pr push | open | status [name]
 <repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]
 <repo> mobile push | build [--release] [--out <file>] | keystore
+<repo> linux push [--build-only] | doctor | init
 ```
 
 `worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch, or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
@@ -31,6 +32,34 @@ it on the online device. `keystore` asks before `keytool` writes `~/.brock/keyst
 with a random password beside it, then prints the three `gh secret set` lines the release workflow
 needs (`ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`). It never runs them:
 the values stay in their files and you run the lines yourself.
+
+## Linux push
+
+`linux` does for a Linux test VM what `mobile push` does for a phone, the way Relic of the Past's `push:linux` did it: build the Linux AppImage, install its desktop entry, launch it on the VM's desktop.
+
+```
+<repo> linux init       write ~/.brock/linux/<repo>.json for this machine, print the one-time VM steps
+<repo> linux doctor     ssh client, VirtualBox, the VM and its state, key-only access, Guest Additions, the build tools
+<repo> linux push [--build-only]
+```
+
+The machine file holds `vmName` (the VirtualBox VM), `host`, `user`, `port`, `identityFile` (a private key; empty uses the ssh agent and the default keys; a WSL path such as `/home/me/.ssh/id_ed25519` is read through `\\wsl.localhost`), `builder` (`vm`, the default, or `wsl`) and `wslDistro`. `BROCK_LINUX_CONFIG` names another file. It never holds a password: a key named like a password, passphrase, secret, token or credential stops the command, and every ssh and scp call runs with `BatchMode=yes`, so a VM that wants a password fails with the reason instead of asking. On Windows the key is copied for the run into a temp folder only the user can read, as Windows OpenSSH requires, and removed after.
+
+`push` refuses a VM VirtualBox does not know or that is not running. With `builder: 'vm'` it adds the current checkout as a transient VirtualBox shared folder, mounts it at `~/<repo>-src` (`sudo -n mount -t vboxsf`, so the VM user needs passwordless sudo for that mount or an fstab line), copies it with rsync to `~/<repo>` (leaving `node_modules`, `.git`, `dist`, `release`, `.user-data` and `.worktrees` out, and keeping the VM's own `node_modules`), runs `pnpm install` and the build in the app folder, and stages the newest `*.AppImage` of the artifact folder as `~/<id>.AppImage.incoming`. With `builder: 'wsl'` the same script runs in the WSL distro over `/mnt/<drive>/...`, and the AppImage is copied into the VM with scp. Then each share in `linux.shares` is mounted at `~/<name>`, the app icon (`public/logos/icon-256.png`) and a `~/.local/share/applications/<id>.desktop` entry are installed and pinned to the GNOME dock, the staged copy replaces `~/<id>.AppImage`, and the app starts detached on the logged-in desktop (Wayland when the session has a Wayland socket, else X11 on `:0`) with `--no-sandbox` and the launch flags; a launch that dies within 4 s prints the end of its log. `--build-only` stops after staging.
+
+The repo side is optional, `linux` in `brock.workspace.mjs`:
+
+```js
+linux: {
+  app: 'apps/desktop',                                // default: the first electron target
+  build: ['pnpm', 'exec', 'brock', 'package'],        // the default, run in the app folder
+  artifactDir: 'release/velopack',                    // the default, where the AppImage lands
+  shares: [{ name: 'test-roms', path: 'test-roms' }], // host folders the VM mounts before the launch
+  launchFlags: ['--muted'],                           // the default
+}
+```
+
+`setup-vm.sh` (its path is printed by `linux init`) sets a VM or a WSL distro up once: the build tools, rsync, Node 24 with pnpm, .NET 8 with vpk, the Electron runtime libraries and sshd. You run it in the VM yourself, and you authorize your key once with the line `linux init` prints; that is the only time the VM password is typed, by you, into ssh.
 
 A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. A plugin adds verbs, targets and steps through `definePlugin`.
 

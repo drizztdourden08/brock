@@ -2,6 +2,7 @@
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { NODE_POLYFILLS_PACKAGE, NODE_POLYFILLS_SETTING } from './build-options/build-options.constants.mjs';
+import { CLANG_FORMAT_PACKAGE, CLANG_FORMAT_SETTING } from './gate/gate.constants.mjs';
 import { CONFIG_FILE } from './config.mjs';
 import { sourceDependencies } from './vite-config.mjs';
 import { SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
@@ -38,7 +39,9 @@ const bundledNeeds = (appDir) => {
     }
   };
   for (const name of sourceDependencies(appDir)) visit(name, appDir);
-  if (NODE_POLYFILLS_SETTING.test(readFileSync(join(appDir, CONFIG_FILE), 'utf8'))) needed.add(NODE_POLYFILLS_PACKAGE);
+  const config = readFileSync(join(appDir, CONFIG_FILE), 'utf8');
+  if (NODE_POLYFILLS_SETTING.test(config)) needed.add(NODE_POLYFILLS_PACKAGE);
+  if (CLANG_FORMAT_SETTING.test(config)) needed.add(CLANG_FORMAT_PACKAGE);
   return needed;
 };
 

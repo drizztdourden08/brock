@@ -1,11 +1,11 @@
 /* @layer tooling-scripts @kind logic */
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { git, pushBranch } from '../git.mjs';
-import { tryGh } from '../gh.mjs';
+import { ghLoud, tryGh } from '../gh.mjs';
 import { flag } from '../cli/thread-args.mjs';
 import { prBranch } from './branch.mjs';
 import { checkPublishStyle } from './style.mjs';
+import { threadBase } from '../worktree/thread-base.mjs';
 
 const bodyFrom = (options) => {
   if (typeof options['body-file'] === 'string') return readFileSync(options['body-file'], 'utf8').trim();
@@ -40,7 +40,7 @@ const pushIfNeeded = (path, branch, log) => {
 const createPr = ({ path, branch, base, title, body, draft }) => {
   const args = ['pr', 'create', '--head', branch, '--base', base, '--title', title, '--body', body];
   if (draft) args.push('--draft');
-  execFileSync('gh', args, { cwd: path, stdio: 'inherit' });
+  ghLoud(args, path);
 };
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
@@ -50,7 +50,7 @@ const openVerb = {
   run: async (positional, options, ctx) => {
     const { workspace, log } = ctx;
     const { name, path, branch } = prBranch.target(positional, ctx);
-    const base = typeof options.base === 'string' ? options.base : workspace.base;
+    const base = typeof options.base === 'string' ? threadBase.branchName(options.base) : threadBase.baseOf(branch, path, workspace).base;
     const title = typeof options.title === 'string' ? options.title : null;
     if (!title) throw new Error(`Usage:\n${openVerb.usage}`);
     const body = bodyFrom(options);

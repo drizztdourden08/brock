@@ -2,6 +2,8 @@
 import type { FileStat, DataLocation, StorageSummary, StoragePort } from './platform/ports/storage.type';
 import type { ProcessDiagnostics, SystemDiagnostics } from './types/diagnostics.type';
 import type { LanAddress } from './types/network.type';
+import type { OpenRequest } from './types/open.type';
+import type { BugReportPayload, BugReportReceipt, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
 import type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
@@ -31,8 +33,11 @@ type ProfilePatch = { name?: string } & ProfilePatchExtension;
 interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
+  'app:takeOpens': () => Promise<OpenRequest[]>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
   'diagnostics:getProcesses': () => Promise<ProcessDiagnostics>;
+  'bugReport:transport': () => Promise<BugReportTransportInfo | null>;
+  'bugReport:send': (payload: BugReportPayload) => Promise<Result<BugReportReceipt>>;
   'network:lanAddresses': () => Promise<LanAddress[]>;
 
   'storage:getLocation': () => Promise<DataLocation>;
@@ -105,6 +110,7 @@ interface EventContract extends WidgetEventContract, DataEventContract {
   'window:fullscreen': (fullscreen: boolean) => void;
   'log:entry': (entry: LogEntryWire) => void;
   'import:progress': (progress: ImportProgress) => void;
+  'app:open': (request: OpenRequest) => void;
 }
 
 interface IpcNamespaces {}

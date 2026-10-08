@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
 import { cSources } from '../src/gate/c-sources.mjs';
 import { clangFormatFiles } from '../src/gate/clang-format-files.mjs';
-import { findClangFormat } from '../src/gate/find-clang-format.mjs';
+import { findClangFormat, systemClangFormat } from '../src/gate/find-clang-format.mjs';
 import { gateSteps } from '../src/gate/gate-steps.mjs';
 import { runClangFormat } from '../src/gate/run-clang-format.mjs';
 import { runGate } from '../src/gate/run-gate.mjs';
@@ -14,6 +14,11 @@ import { composeWorkflows } from '../src/release/compose-workflows.mjs';
 const { tempDir, put, cleanup } = tempTree('brock-gate-');
 
 afterEach(cleanup);
+
+const pin = (dir, real) => {
+  put(dir, 'node_modules/clang-format-node/package.json', JSON.stringify({ name: 'clang-format-node', bin: { 'clang-format': 'cli.mjs' } }));
+  put(dir, 'node_modules/clang-format-node/cli.mjs', `import { spawnSync } from 'node:child_process';\nprocess.exitCode = spawnSync(${JSON.stringify(real)}, process.argv.slice(2), { stdio: 'inherit' }).status ?? 1;\n`);
+};
 
 const workspace = () => {
   const root = tempDir();
@@ -55,11 +60,16 @@ describe('gate steps from brock.config.ts', () => {
     expect(lines.at(-1)).toMatch(/declares no gate steps/);
   });
 
-  it('is a step of the managed CI quality job', () => {
-    const { ci } = composeWorkflows({ targets: ['windows'], prefix: '' });
-    const quality = ci.slice(ci.indexOf('  quality:'), ci.indexOf('  review:'));
-    expect(quality).toContain('      - name: App gate steps\n        run: pnpm --dir "$APP_DIR" exec brock gate\n');
-    expect(quality.indexOf('name: Tests')).toBeLessThan(quality.indexOf('name: App gate steps'));
+  it('is a step of the quality job, in a standalone app and in each app of a workspace', () => {
+    const step = '      - name: App gate steps\n        run: pnpm --dir "$APP_DIR" exec brock gate\n';
+    const standalone = composeWorkflows({ targets: ['windows'], prefix: '' }).ci;
+    const ofApp = composeWorkflows({ targets: ['windows'], prefix: '', appDir: 'apps/desktop', app: { name: 'desktop', tagPrefix: 'desktop-v', notesDir: 'apps/desktop/release-notes' } }).ci;
+    for (const ci of [standalone, ofApp]) {
+      const quality = ci.slice(ci.indexOf('  quality:'), ci.indexOf('  review:'));
+      expect(quality).toContain(step);
+      expect(quality.indexOf('name: Release note')).toBeLessThan(quality.indexOf('name: App gate steps'));
+      expect(quality).not.toMatch(/\n\n\n/);
+    }
   });
 });
 
@@ -88,8 +98,19 @@ describe('the managed .clang-format', () => {
     expect(() => cSources(root, ['core/missing'])).toThrow(/does not exist/);
   });
 
-  it('finds clang-format from BROCK_CLANG_FORMAT first', () => {
-    expect(findClangFormat([], { BROCK_CLANG_FORMAT: '/opt/llvm/bin/clang-format' })).toBe('/opt/llvm/bin/clang-format');
+  it('runs BROCK_CLANG_FORMAT, else the clang-format-node the app or the repo pins, and nothing unpinned', () => {
+    const { root, app } = workspace();
+    expect(findClangFormat([app, root], { BROCK_CLANG_FORMAT: '/opt/llvm/bin/clang-format' })).toEqual(['/opt/llvm/bin/clang-format']);
+    expect(findClangFormat([app, root], {})).toBeNull();
+    pin(root, 'clang-format');
+    expect(findClangFormat([app, root], {})).toEqual([process.execPath, join(root, 'node_modules', 'clang-format-node', 'cli.mjs')]);
+  });
+
+  it('names the package to pin when there is none', () => {
+    const { root, app } = workspace();
+    put(root, '.clang-format', 'BasedOnStyle: Google\n');
+    put(root, 'core/a.c', 'int a;\n');
+    expect(() => runClangFormat({ appDir: app, entries: ['core'], check: true, find: () => null })).toThrow(/pnpm add -D -E clang-format-node/);
   });
 });
 
@@ -126,12 +147,13 @@ const ROTP_STYLE = [
   '',
 ].join('\n');
 
-const bin = findClangFormat([]);
+const bin = systemClangFormat();
 
 describe.skipIf(!bin)('clang-format with the managed style', () => {
   it('keeps the style of the C sources it was tuned on', () => {
     const { root, app } = workspace();
     put(root, '.clang-format', clangFormatFiles(app, { gate: { clangFormat: ['core'] } })[0].content);
+    pin(app, bin);
     put(root, 'core/hooks/style.c', ROTP_STYLE);
     expect(runClangFormat({ appDir: app, entries: ['core'], check: true, log: () => undefined })).toBe(0);
   });
@@ -139,6 +161,7 @@ describe.skipIf(!bin)('clang-format with the managed style', () => {
   it('lists the files that differ, rewrites them, then passes', () => {
     const { root, app } = workspace();
     put(root, '.clang-format', clangFormatFiles(app, { gate: { clangFormat: ['core'] } })[0].content);
+    pin(app, bin);
     put(root, 'core/good.c', 'int Add(int a, int b) { return a + b; }\n');
     put(root, 'core/bad.c', 'int  Sub( int a,int b ){\n        return a-b;\n}\n');
     const lines = [];

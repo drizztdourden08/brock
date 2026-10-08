@@ -9,4 +9,8 @@ const tryGh = (args, cwd) => {
   }
 };
 
-export { tryGh };
+const ghLoud = (args, cwd) => {
+  execFileSync('gh', args, { cwd, stdio: 'inherit' });
+};
+
+export { ghLoud, tryGh };

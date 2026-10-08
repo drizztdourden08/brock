@@ -1,23 +1,41 @@
 /* @layer tooling-scripts @kind logic */
 import { resolvePlatforms } from '../platforms/resolve-platforms.mjs';
 import { fillTemplate } from './fill-template.mjs';
+import { reviewJobValues } from './review-job-values.mjs';
 import { setupSteps } from './setup-steps.mjs';
 import { RELEASE_DIR } from './workflows.constants.mjs';
 
 /**
  * @typedef {import('../platforms/platform.type.mjs').Job} Job
  * @typedef {import('@drizztdourden08/brock-core/module').ModuleCiStep} ModuleCiStep
+ * @typedef {{ name: string, tagPrefix: string, notesDir: string }} AppOfMany
  */
+
+const JOB_HEAD = /^ {2}([a-z][\w-]*):\n/gm;
+const GATE = "    needs: changes\n    if: needs.changes.outputs.changed == 'true'\n";
 
 const jobBlock = (job) => `\n${job.text.trimEnd()}\n`;
 
-const downloadLine = (download) => `            ${download.latest ? 'stub' : 'link'} "${download.glob}" "${download.label}"`;
+const previewWords = (download) => (download.preview ? ` "${download.preview.glob}" "${download.preview.label}"` : '');
+
+const downloadLine = (download) => (download.latest
+  ? `            stub "${download.glob}" "${download.label}"${previewWords(download)}`
+  : `            link "${download.glob}" "${download.label}"`);
+
+const gated = (text) => text.replace(JOB_HEAD, (head) => `${head}${GATE}`);
+
+const rootSteps = () => fillTemplate(RELEASE_DIR, 'ci-root-steps.yml.tmpl', {}).trimEnd();
 
 /**
  * @param {Job[]} jobs
- * @param {string} appDir
+ * @param {{ appDir: string, app: AppOfMany | null }} where
  */
-const releaseText = (jobs, appDir) => fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
+const releaseText = (jobs, { appDir, app }) => fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
+  TITLE: app ? ` ${app.name}` : '',
+  GROUP: app ? `-${app.name}` : '',
+  APP_FLAG: app ? ` --app ${app.name}` : '',
+  TAG_PREFIX: app?.tagPrefix ?? 'v',
+  NOTES_DIR: app?.notesDir ?? 'release-notes',
   APP_DIR: appDir,
   JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
   NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
@@ -25,20 +43,50 @@ const releaseText = (jobs, appDir) => fillTemplate(RELEASE_DIR, 'release-workflo
 });
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[] }} input
+ * @param {Job[]} platformJobs
+ * @param {{ appDir: string, app: AppOfMany | null, setup: (os: string, opts?: object) => string, baselines: boolean }} where
+ */
+const ciText = (platformJobs, { appDir, app, setup, baselines }) => {
+  const review = reviewJobValues({ baselines, app });
+  const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', { SETUP: setup('linux'), ROOT_STEPS: app ? '' : rootSteps(), ARTIFACT: app ? `-${app.name}` : '', ...review });
+  const own = `${appJobs.trimEnd()}\n${platformJobs.map(jobBlock).join('')}`;
+  const changes = app ? `${fillTemplate(RELEASE_DIR, 'ci-changes-job.yml.tmpl', { SETUP: setup('linux', { history: true }) }).trimEnd()}\n\n` : '';
+  return fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', {
+    TITLE: app ? ` ${app.name}` : '',
+    GROUP: app ? `-${app.name}` : '',
+    APP_DIR: appDir,
+    JOBS: `${changes}${app ? gated(own) : own}`,
+    DISPATCH_INPUTS: review.DISPATCH_INPUTS,
+  });
+};
+
+/**
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], app?: AppOfMany | null, baselines?: boolean }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [] }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], app = null, baselines = false }) => {
   const { platforms } = resolvePlatforms(targets);
-  const ctx = { appDir, prefix, setup: (os, opts = {}) => setupSteps({ os, release: opts.release, systemSteps }) };
+  const setup = (os, opts = {}) => setupSteps({ os, release: opts.release, history: opts.history, systemSteps });
+  const ctx = { appDir, prefix, setup };
   const ciJobs = platforms.flatMap((platform) => (platform.ciJob ? [platform.ciJob(ctx)] : []));
   const releaseJobs = platforms.flatMap((platform) => (platform.releaseJob ? [platform.releaseJob(ctx)] : []));
-  const ci = fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', { APP_DIR: appDir, SETUP: ctx.setup('linux'), PLATFORM_JOBS: ciJobs.map(jobBlock).join('') });
   return {
-    ci: `${ci.trimEnd()}\n`,
-    release: `${releaseText(releaseJobs, appDir).trimEnd()}\n`,
-    jobs: { ci: ['quality', 'review', ...ciJobs.map((job) => job.id)], release: ['prepare', ...releaseJobs.map((job) => job.id), 'release'] },
+    ci: `${ciText(ciJobs, { appDir, app, setup, baselines }).trimEnd()}\n`,
+    release: `${releaseText(releaseJobs, { appDir, app }).trimEnd()}\n`,
+    jobs: {
+      ci: [...(app ? ['changes'] : []), 'quality', 'review', ...ciJobs.map((job) => job.id)],
+      release: ['prepare', ...releaseJobs.map((job) => job.id), 'release'],
+    },
   };
 };
 
-export { composeWorkflows };
+/**
+ * @param {ModuleCiStep[]} systemSteps
+ * @returns {string} the workspace ci.yml of a repo of apps
+ */
+const workspaceCi = (systemSteps = []) => `${fillTemplate(RELEASE_DIR, 'ci-workspace-workflow.yml.tmpl', {
+  SETUP: setupSteps({ os: 'linux', systemSteps }),
+  ROOT_STEPS: rootSteps(),
+}).trimEnd()}\n`;
+
+export { composeWorkflows, workspaceCi };

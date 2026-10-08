@@ -7,7 +7,7 @@ import { versionOfTag } from './version-of-tag';
 
 const findNewerRelease = async (feed: UpdateFeed, current: string, allowPrerelease: boolean): Promise<UpdateInfo | null> => {
   const newest = (await fetchReleases(feed, allowPrerelease))
-    .map((release) => ({ release, version: versionOfTag(release.tag_name) }))
+    .map((release) => ({ release, version: versionOfTag(release.tag_name, feed.tagPrefix) }))
     .sort((a, b) => compareVersions(b.version, a.version))[0];
   if (!newest || compareVersions(newest.version, current) <= 0) return null;
   return {

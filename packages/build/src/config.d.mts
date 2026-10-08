@@ -11,6 +11,11 @@ interface BrockWebOptions {
   manifest?: boolean;
 }
 
+interface BrockReviewOptions {
+  /** true makes the CI review job compare its captures with tests/baselines/linux, and adds the bless input. */
+  baselines?: boolean;
+}
+
 interface BrockBuildOptions {
   /** Import prefixes beside @app, each a folder relative to the app folder ('@shared': '../../shared'), for main, preload, renderer, workers and the tsconfig paths. */
   aliases?: Record<string, string>;
@@ -34,6 +39,8 @@ interface BrockConfig {
   modules: string[];
   /** The web build, for the web target. */
   web?: BrockWebOptions;
+  /** The headless review in CI. */
+  review?: BrockReviewOptions;
   /** Options of the managed Vite configs. */
   build?: BrockBuildOptions;
   /** The app's own gate steps: brock gate runs them, and so do the CI quality job and upgrade. */
@@ -44,4 +51,4 @@ declare const CONFIG_FILE: 'brock.config.ts';
 declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
-export type { BrockBuildOptions, BrockConfig, BrockGateOptions, BrockPlatform, BrockTarget, BrockWebOptions };
+export type { BrockBuildOptions, BrockConfig, BrockGateOptions, BrockPlatform, BrockReviewOptions, BrockTarget, BrockWebOptions };

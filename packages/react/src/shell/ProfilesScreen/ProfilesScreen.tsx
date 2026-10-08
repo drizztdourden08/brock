@@ -2,6 +2,8 @@
 import { useCallback, useMemo } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import { formatRelativeTime } from '@drizztdourden08/brock-core';
+import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
+import { Span } from '@drizztdourden08/tessera/primitives';
 import { ProfilesPanel } from '../../compounds/ProfilesPanel';
 import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
@@ -19,7 +21,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
     id: profile.id,
     name: profile.name,
     meta: subtitleOf?.(profile),
-    aside: formatRelativeTime(profile.lastPlayed),
+    aside: <Span {...REVIEW_MASK}>{formatRelativeTime(profile.lastPlayed)}</Span>,
   })), [profiles, subtitleOf]);
 
   const byId = useCallback((id: string): Profile | undefined => profiles.find((profile) => profile.id === id), [profiles]);

@@ -88,6 +88,10 @@ export default defineReviewStep({
 
 Main's watchdog ends the review when nothing is captured or checked for 30 s, so a long seed reports a check between slow calls.
 
+## Captures and baselines
+
+Each `tour.capture(name)` becomes a screenshot baseline named `name` (without the step number) once the app blesses a set ([architecture.md](architecture.md), Screenshot baselines). Seed data that changes from run to run (a date, a random id, a time stamp) makes every compare fail: seed fixed values, or mark the element that shows them with `data-review-mask` (`<span {...REVIEW_MASK}>{clock}</span>`, `REVIEW_MASK` from `@drizztdourden08/brock-core/review`). Give two captures in one step different names; a repeated name is told apart by its order (`name--2`), which moves when a capture is added before it.
+
 ## In a fresh app
 
 `create-brock` ships `src/review/fixtures/notes/review-note.txt` and `src/review/seed.ts`, which reads that file from the data folder and writes it into the Notes widget, and `src/review/notes.step.ts`, which opens the widget, checks the note shows and captures it. The built-in `app-widgets` step then also captures the widget with its note.

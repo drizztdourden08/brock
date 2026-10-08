@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { BootTimeline } from '../boot/boot-task.type';
+import type { BaselineReport } from './baseline.type';
 
 type ReviewLogLevel = 'warn' | 'error';
 
@@ -38,6 +39,7 @@ interface ReviewRun {
   mainLog: ReviewLogLine[];
   windowIcon: string | null;
   boot?: BootTimeline;
+  baselines?: BaselineReport;
 }
 
 interface ReviewEnding {
@@ -58,6 +60,7 @@ interface ReviewReport {
   consoleErrors: string[];
   failedLoads: string[];
   mainLog: ReviewLogLine[];
+  baselines?: BaselineReport;
 }
 
 export type { ReviewApp, ReviewCheck, ReviewEnding, ReviewLogLevel, ReviewLogLine, ReviewReport, ReviewRun, ReviewStepRecord };

@@ -44,11 +44,18 @@ export type { DataDomains, DomainFiles } from './storage/domain-files.type';
 export type { JobHandle, JobRegistry, StartJob } from './jobs/job.type';
 export { captureWindow } from './handlers/capture-window';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';
+export { writeDebugZip } from './bug-report/write-debug-zip';
+export { collectDebugFiles } from './bug-report/collect-debug-files';
+export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport } from './bug-report/bug-report.type';
 export { lanAddresses } from './network/lan-addresses';
 
 export { serveDirectoryScheme } from './protocol/serve-directory-scheme';
 export { servedFilePathOf } from './protocol/served-file-path-of';
 export { registerPrivilegedSchemes } from './protocol/privileged-schemes';
+export { registerOsIntegration } from './os-integration/register-os-integration';
+export { unregisterOsIntegration } from './os-integration/unregister-os-integration';
+export { openRequestsOf } from './open/open-requests-of';
+export type { OsIntegrationProduct } from './os-integration/os-integration.type';
 export { note } from './crash-forensics/note';
 export { noteSync } from './crash-forensics/note-sync';
 export { stackOf } from './crash-forensics/stack-of';

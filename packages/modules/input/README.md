@@ -36,6 +36,33 @@ When no addon loads, main logs one warning, every call returns an empty or false
 
 An automation launch never starts SDL3, so a test run cannot take a controller from a session already running on the same machine.
 
+## Android
+
+On Android the same SDL3 drives the controllers, inside the app's own process, through the `BrockInput` Capacitor plugin that ships in this package (`android/`). The renderer API does not change: `inputApi()` and `window.api.input` return the same `InputApi`, so app code never asks which host it runs on.
+
+| Part | Where |
+|---|---|
+| `BrockInputPlugin` | the Capacitor plugin: `start`, `stop`, `rumble`, `addMapping`, `mappingForGuid`, and the `controllerEvent` it sends |
+| `Sdl3Bridge` | loads `libbrockinput.so`, starts SDL on the UI thread and polls it every 16 ms there |
+| `Sdl3InputRouter`, `ControllerWindowCallback` | hand controller keys and stick motion to SDL before the WebView sees them |
+| `src/main/cpp` | the JNI bridge, built against the same pinned SDL3 as the desktop addon |
+
+`package.json#capacitor` makes the package a Capacitor plugin, so `cap sync` (run by `platform add android` and `<app> mobile build`) puts the library in the app's Gradle project. The library build reads the SDL3 pin from `native/package.json`, fetches that source with `node bin/ensure-sdl3-source.mjs` when it is missing (the same verified tarball as a desktop source build), compiles SDL3 statically into `libbrockinput.so`, and compiles SDL's own Java classes from that source, so the Java and C halves of SDL never drift apart. It needs the NDK and CMake the module names in `brock.android.sdkPackages`; `<app> doctor android` lists them. The library builds `arm64-v8a` only; set `brockInputAbis=arm64-v8a,x86_64` in `mobile/android/gradle.properties` to add an emulator ABI.
+
+The plugin hooks the window callback when it loads, so the app's `MainActivity` needs no change. Every pad arrives as a system input device that SDL reads directly. SDL's USB HID layer stays off: it would ask for USB permission per pad and detach the driver that presents it. While the app is paused the poll stops and SDL keeps its state, so the pads it had come back without a new `added` event.
+
+The renderer side lives in `src/renderer/android/`: it keys devices the same way main does (`vid:pid`, then `#2`), builds the same `DeviceEntry` snapshot, plays vibrate patterns with the same haptic player, and keeps calibration and added mapping lines in the WebView's `localStorage` under `brock-input:`, at the same paths as the desktop files. Added lines go back into SDL each time it starts.
+
+What Android does not do:
+
+- Raw HID capture and joystick capture: `capture.startRaw` returns `{ ok: false }`, `capture.startJoystick` returns `false`, and `listJoysticks` and `listHid` are empty. `releaseHold` and `restoreHold` return `false`.
+- The bundled `gamecontrollerdb.txt` is not loaded; SDL's built-in mappings and the lines the user adds apply.
+- `rescan` sends the current list again; SDL finds pads on its own.
+- `busType` comes from SDL's connection state (`wired` is `usb`, `wireless` is `bluetooth`), and is `unknown` when SDL does not know it.
+- A pad's keys go to SDL, so the WebView's own Gamepad API sees nothing while SDL runs.
+- Up to 8 pads at once.
+- An ABI the library was not built for (an x86_64 emulator by default) loads no library: `status()` reports controllers off and the app keeps running.
+
 ## What it stores
 
 | Path under `Data/` | Holds |

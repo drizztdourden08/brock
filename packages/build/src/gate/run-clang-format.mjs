@@ -4,18 +4,18 @@ import { existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { cSources } from './c-sources.mjs';
 import { repoRootOf } from './clang-format-files.mjs';
-import { findClangFormat } from './find-clang-format.mjs';
+import { findClangFormat, systemClangFormat } from './find-clang-format.mjs';
 import { CLANG_FORMAT_BATCH, CLANG_FORMAT_FILE, CLANG_FORMAT_HINT } from './gate.constants.mjs';
 
 const UNFORMATTED = /^(.+?):\d+:\d+: (?:error|warning): code should be clang-formatted/;
 
 const quote = (arg) => (/^[\w./:\\=+-]+$/.test(arg) ? arg : `"${arg.replace(/"/g, '\\"')}"`);
 
-const run = (bin, args) => {
+const run = ([bin, ...lead], args) => {
   const options = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 };
   const result = /\.(?:cmd|bat)$/i.test(bin)
-    ? spawnSync([bin, ...args].map(quote).join(' '), { ...options, shell: true })
-    : spawnSync(bin, args, options);
+    ? spawnSync([bin, ...lead, ...args].map(quote).join(' '), { ...options, shell: true })
+    : spawnSync(bin, [...lead, ...args], options);
   if (result.error) throw new Error(`could not run ${bin}: ${result.error.message}`);
   return { status: result.status ?? 1, out: `${result.stdout ?? ''}${result.stderr ?? ''}` };
 };
@@ -31,12 +31,17 @@ const lineCounts = (outputs) => {
   return counts;
 };
 
+const machineHint = () => {
+  const found = systemClangFormat();
+  return found ? ` This machine has ${found}, unpinned.` : '';
+};
+
 const toolFor = (appDir, repoRoot, find) => {
   const style = join(repoRoot, CLANG_FORMAT_FILE);
   if (!existsSync(style)) throw new Error(`${CLANG_FORMAT_FILE} is missing at ${repoRoot}; run brock sync, which writes it while gate.clangFormat names sources`);
-  const bin = find([appDir, repoRoot]);
-  if (!bin) throw new Error(`no clang-format found. ${CLANG_FORMAT_HINT}`);
-  return { bin, style };
+  const command = find([appDir, repoRoot]);
+  if (!command) throw new Error(`no pinned clang-format. ${CLANG_FORMAT_HINT}${machineHint()}`);
+  return { command, style };
 };
 
 const summary = (check, total, differing) => {
@@ -59,10 +64,10 @@ const report = (repoRoot, results, log) => {
  */
 const runClangFormat = ({ appDir, entries, check, log = console.log, find = findClangFormat }) => {
   const repoRoot = repoRootOf(appDir);
-  const { bin, style } = toolFor(appDir, repoRoot, find);
+  const { command, style } = toolFor(appDir, repoRoot, find);
   const files = cSources(repoRoot, entries);
   const args = check ? ['--dry-run', '--Werror', `--style=file:${style}`] : ['-i', `--style=file:${style}`];
-  const { differing, failed } = report(repoRoot, batches(files).map((batch) => run(bin, [...args, ...batch])), log);
+  const { differing, failed } = report(repoRoot, batches(files).map((batch) => run(command, [...args, ...batch])), log);
   log(summary(check, files.length, differing));
   return failed ? 1 : 0;
 };

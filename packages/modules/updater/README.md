@@ -54,7 +54,9 @@ window.api.updater.onDownloadProgress(({ percent }) => ...)
 
 `onBoot` runs `VelopackApp.build().run()` before anything else in `bootstrapApp`, because an install, update or uninstall hook may exit or restart the process. The first check runs 5 s after the window opens and is skipped on a headless automation launch.
 
-An app that needs the Velopack fast callbacks (a file association written on install, removed on uninstall) builds its own module and passes it in place of the synced one:
+The product's `protocols` and `fileAssociations` are written under `HKCU\Software\Classes` after install and after each update, and removed before uninstall, ahead of any app hook; an app with neither keeps the hooks as given.
+
+An app that needs more of the Velopack fast callbacks builds its own module and passes it in place of the synced one:
 
 ```ts
 import { createUpdaterMain } from '@drizztdourden08/brock-updater/main';
@@ -91,10 +93,14 @@ const status = useUpdaterStore((s) => s.status);            // idle, checking, a
 const checkAndOpen = useUpdaterStore((s) => s.checkAndOpen);
 ```
 
-Release notes show as plain text, in brock-react's `ReleaseNotesPanel`.
+Release notes show in brock-react's `ReleaseNotesPanel` with `markdown` on: drawn as formatted markdown by Tessera's `Markdown` primitive once the installed Tessera exports it, as text that keeps its line breaks until then. Links open in the browser.
+
+## Pre-releases
+
+A release published with `prerelease` is marked a pre-release on GitHub. The module asks Velopack's `GithubSource` and the GitHub release list for pre-releases only while `allowPrerelease` is on, the dialog's pre-release toggle, off by default. Users who never turn it on are not offered a pre-release, on any channel: the channel names the platform feed (`releases.win.json`), not the stability. A pre-release that is newer than the latest stable release is offered to those who turned it on, and the next stable release reaches everyone.
 
 ## Shipping updates
 
-`brock package` builds what this module reads: electron-builder makes the app tree, and `vpk pack` turns it into the update package, a delta against the previous release, the `releases.<channel>.json` feed and, on Windows, the small installer with its `install.json` (plus the full setup on a `--full` release). The release workflow that `create-brock` and `brock adopt` write runs it on each platform and uploads the result to the GitHub release, with `release-notes/v<version>.md` as the body. The notes also travel inside the package, which is how the dialog shows them. `docs/architecture.md` has the full sequence.
+`brock package` builds what this module reads: electron-builder makes the app tree, and `vpk pack` turns it into the update package, a delta against the previous release, the `releases.<channel>.json` feed and, on Windows, the small installer with its `install.json` (plus the full setup on a `--full` release). The release workflow that `create-brock` and `brock adopt` write runs it on each platform and uploads the result to the GitHub release, with `release-notes/v<version>.md` as the body and the downloads below it. The note also travels inside the package (`--releaseNotes`, read back as `NotesMarkdown`), which is how the dialog shows it. Every version needs its note, and the workflow checks it with `brock release-notes check` before it tags. `docs/architecture.md` has the full sequence.
 
 On Windows the installer people download is built from the same config. The downloader window takes its colours from Tessera's dark theme, the gradient from the look, and the mark from `public/logos/mark.svg`. Velopack's Setup shows a splash drawn from the same gradient, mark and name. `product.installer` sets the install scope, the shortcuts, launch after install, an optional licence and the folder name. `brock package --render-installer` writes the downloader screens and the Setup splash to `release/installer-preview/` so you can check them without installing.

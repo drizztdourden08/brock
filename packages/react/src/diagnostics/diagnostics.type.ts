@@ -40,6 +40,7 @@ interface DebugTextInput {
 
 interface DebugText {
   text: string | null;
+  system: SystemDiagnostics | null;
   version: string;
   labels: RuntimeLabels;
 }

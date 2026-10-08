@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { HidListedDevice } from '../device.type';
 import type { Sdl3Input } from './sdl3.type';
-import { toVidPid } from './vid-pid';
+import { toVidPid } from '../devices/vid-pid';
 
 const listHidDevices = (addon: Sdl3Input): HidListedDevice[] => {
   const seen = new Map<string, HidListedDevice>();

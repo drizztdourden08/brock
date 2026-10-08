@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind types */
+import type { BugReportTarget } from '../bug-report.type';
+
 interface BugReportForm {
   open: boolean;
   title: string;
@@ -8,7 +10,9 @@ interface BugReportForm {
   attach: boolean;
   setAttach: (value: boolean) => void;
   diagnostics: string | null;
-  hasRepo: boolean;
+  target: BugReportTarget | null;
+  sending: boolean;
+  error: string | null;
   canSend: boolean;
   send: () => void;
   close: () => void;

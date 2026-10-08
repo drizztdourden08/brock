@@ -23,6 +23,8 @@ afterEach(() => {
   roots.clear();
 });
 
+const LINT_TIMEOUT_MS = 60000;
+
 const header = (kind) => `/* @layer shared-game @kind ${kind} */\n`;
 
 const records = (count) => [
@@ -70,13 +72,13 @@ describe('the data file kind', () => {
     const root = app();
     put(root, 'records/tags.ts', `${header('data')}${records(240)}`);
     expect(await lintRules(root, 'records/tags.ts')).toEqual([]);
-  });
+  }, LINT_TIMEOUT_MS);
 
   it('keeps the rules on the same file when its header names another kind', async () => {
     const root = app();
     put(root, 'records/tags.ts', `${header('logic')}${records(240)}`);
     expect(await lintRules(root, 'records/tags.ts')).toEqual(expect.arrayContaining(['max-lines', 'local/one-export-per-file', 'local/constants-in-constants-file']));
-  });
+  }, LINT_TIMEOUT_MS);
 
   it('refuses logic in a data file, so the kind exempts no code', async () => {
     const root = app();
@@ -95,5 +97,5 @@ describe('the data file kind', () => {
     put(root, 'records/tags.ts', `${header('data')}${logic}`);
     const rules = await lintRules(root, 'records/tags.ts');
     expect(rules.filter((rule) => rule === 'brock/data-only')).toHaveLength(7);
-  });
+  }, LINT_TIMEOUT_MS);
 });

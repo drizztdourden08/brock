@@ -23,6 +23,10 @@ interface ModuleExtraResource {
   to: string;
 }
 
+interface ModuleAndroidSide {
+  sdkPackages?: string[];
+}
+
 interface BrockModuleManifest {
   id: string;
   description: string;
@@ -39,6 +43,7 @@ interface BrockModuleManifest {
   packExclude?: string[];
   doctor?: ModuleDoctorCheck[];
   udevRules?: string;
+  android?: ModuleAndroidSide;
 }
 
 interface ResolvedModule {
@@ -47,4 +52,4 @@ interface ResolvedModule {
   manifest: BrockModuleManifest;
 }
 
-export type { BrockModuleManifest, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ResolvedModule };
+export type { BrockModuleManifest, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ResolvedModule };

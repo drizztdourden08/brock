@@ -85,6 +85,7 @@ void InstallWorker(HWND window, ui::Mode mode, std::wstring path) {
     // The marker travels inside the zip; this is the folder that makes the copy
     // keep its profiles and saves beside itself.
     CreateDirectoryW((path + L"\\data").c_str(), nullptr);
+    if (theme::kRegistersOs) install::RegisterOsIntegration(path);
     Finish(window, path);
     return;
   }

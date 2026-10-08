@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import type { ReviewLogLine, ReviewRun } from '@drizztdourden08/brock-core/review';
+import type { MaskRect, ReviewLogLine, ReviewRun } from '@drizztdourden08/brock-core/review';
 import { reviewStepFile } from '@drizztdourden08/brock-core/review';
 import { getUserDataPath } from '../paths/get-user-data-path';
 import type { ReviewSession, ReviewSessionInput } from './review-session.type';
@@ -10,7 +10,7 @@ const addOnce = (list: string[], message: string): void => {
 
 const sameLine = (a: ReviewLogLine, b: ReviewLogLine): boolean => a.level === b.level && a.message === b.message;
 
-const createReviewSession = ({ name, app, windowIcon }: ReviewSessionInput): ReviewSession => {
+const createReviewSession = ({ name, app, windowIcon, baselines = null }: ReviewSessionInput): ReviewSession => {
   const run: ReviewRun = {
     name, app, windowIcon,
     startedAt: Date.now(),
@@ -23,8 +23,15 @@ const createReviewSession = ({ name, app, windowIcon }: ReviewSessionInput): Rev
   const loaded = new Set<string>();
   const requestErrors = new Map<string, string>();
   const unresolved = (): string[] => [...requestErrors].filter(([url]) => !loaded.has(url)).map(([, message]) => message);
+  const masks = new Map<string, readonly MaskRect[]>();
+  const unsettled = new Set<string>();
   return {
     dir: getUserDataPath('review', name),
+    baselines,
+    addMasks: (file, rects) => { masks.set(file, [...(masks.get(file) ?? []), ...rects]); },
+    masksOf: (file) => masks.get(file) ?? [],
+    markUnsettled: (file) => { unsettled.add(file); },
+    settled: (file) => !unsettled.has(file),
     run: () => ({ ...run, failedLoads: [...run.failedLoads, ...unresolved()] }),
     markLoaded: (url) => { loaded.add(url); },
     addRequestError: (url, message) => { if (!requestErrors.has(url)) requestErrors.set(url, message); },

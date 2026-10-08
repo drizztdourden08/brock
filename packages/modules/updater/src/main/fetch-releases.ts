@@ -6,7 +6,7 @@ const fetchReleases = async (feed: UpdateFeed, allowPrerelease: boolean): Promis
   const res = await fetch(`${feed.releasesApi}?per_page=${RELEASE_PAGE_SIZE}`, { headers: GITHUB_JSON });
   if (!res.ok) throw new Error(`Could not read the release list (${res.status})`);
   const releases = (await res.json()) as GithubRelease[];
-  return releases.filter((r) => !r.draft && (allowPrerelease || !r.prerelease));
+  return releases.filter((r) => !r.draft && r.tag_name.startsWith(feed.tagPrefix) && (allowPrerelease || !r.prerelease));
 };
 
 export { fetchReleases };

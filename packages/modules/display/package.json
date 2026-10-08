@@ -23,6 +23,8 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "android/build.gradle",
+    "android/src",
     "src",
     "README.md",
     "CHANGELOG.md"
@@ -38,6 +40,9 @@
     "renderer": "./src/renderer/index.ts",
     "peers": [
       "koffi"
+    ],
+    "packExclude": [
+      "android/**"
     ]
   },
   "dependencies": {
@@ -63,6 +68,11 @@
   "peerDependenciesMeta": {
     "koffi": {
       "optional": true
+    }
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
     }
   }
 }

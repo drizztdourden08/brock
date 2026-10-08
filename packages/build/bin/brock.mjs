@@ -2,6 +2,7 @@
 import { resolve } from 'node:path';
 import { parseCli } from '../src/cli-args.mjs';
 import { runAdd } from '../src/commands/add.mjs';
+import { runAffected } from '../src/commands/affected.mjs';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
 import { runCheck } from '../src/commands/check.mjs';
@@ -13,6 +14,7 @@ import { runIcons } from '../src/commands/icons.mjs';
 import { runMigrate } from '../src/commands/migrate.mjs';
 import { runPackage } from '../src/commands/package.mjs';
 import { runPlatform } from '../src/commands/platform.mjs';
+import { runReleaseNotes } from '../src/commands/release-notes.mjs';
 import { runStart } from '../src/commands/start.mjs';
 import { runProse } from '../src/commands/prose.mjs';
 import { runStructure } from '../src/commands/structure.mjs';
@@ -70,6 +72,13 @@ Usage:
                              --tessera-from-copy converts an app that holds its own copy of the design system
                              (<folder>, from --root, imported through each --alias and relative paths): its imports
                              name Tessera entry points, then every release from 0.4.0 replays over them
+  brock release-notes check [version]
+                             the release note of that version (else the app's own once the repo has notes):
+                             release-notes/v<version>.md at the repo root, its title, summary, sections and
+                             plain-English bullets; the release workflow runs it before it tags
+  brock affected <app folder> [base ref]
+                             true when the changes since the merge base with the ref touch the app: its own
+                             files, a workspace package it depends on, or a file outside every package (CI)
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock knip [args]          knip with every git-ignored path under ignore, so it also works in a worktree
@@ -87,11 +96,13 @@ Usage:
                              tessera.config.json from there; every word after tessera reaches it, --help too
 
 Thread lifecycle (brock.workspace.mjs, one worktree per thread):
-  brock worktree create <name> [--from <ref>]
+  brock worktree create <name> [--from <ref>] [--base <branch>]
   brock worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]
   brock worktree refresh <name> [--reset] [--rebase [ref]]
   brock worktree commit [name] --message "<text>" | --message-file <path>
   brock worktree finish [name] | remove <name>
+  brock worktree base [name] [<new base>]
+                             the branch the thread starts from, rebases on, opens its PR into and lands on
   brock launch <name> <state|none> [...]
                              same as worktree launch; headless and muted unless --visible
   brock pr push | open | status [name]
@@ -132,6 +143,8 @@ const COMMANDS = {
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
   web: (ctx) => runWeb(ctx),
+  'release-notes': (ctx) => runReleaseNotes(ctx),
+  affected: (ctx) => runAffected(ctx),
   gate: (ctx) => runGateCommand(ctx),
   'clang-format': (ctx) => runClangFormatCommand(ctx),
 };

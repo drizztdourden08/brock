@@ -25,13 +25,14 @@ import { NO_WIDGETS } from '../../widgets/widget.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
+import { useBugReportTransport } from '../../bug-report/useBugReportTransport';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, layout = 'menu',
-    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS,
+    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -40,6 +41,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const log = useHostBoot(merged.logChannels, profileHooks);
   useQuitGuards(merged.beforeQuit, beforeQuit);
   useTourRegistry(tours, merged.tours);
+  useBugReportTransport(bugReport);
   const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);

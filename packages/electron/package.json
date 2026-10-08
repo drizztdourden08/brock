@@ -19,6 +19,7 @@
     "./main": "./src/main/index.ts",
     "./preload": "./src/preload/index.ts",
     "./splash-preload": "./src/splash-preload/index.ts",
+    "./zip": "./src/main/storage/zip/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

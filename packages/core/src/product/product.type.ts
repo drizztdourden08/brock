@@ -42,6 +42,12 @@ type WindowInput = Partial<Omit<WindowConfig, 'titleBar'>> & { titleBar?: { cont
 interface PrivilegedScheme {
   scheme: string;
   stream?: boolean;
+  dir?: string;
+}
+
+interface DeepLinkProtocol {
+  scheme: string;
+  name?: string;
 }
 
 interface FileAssociation {
@@ -103,6 +109,7 @@ interface ProductConfig {
   author: ProductAuthor;
   repo?: ProductRepo;
   updateChannel?: string;
+  releaseTagPrefix?: string;
   accent?: string;
   look?: ProductLook;
   artifactPrefix: string;
@@ -110,6 +117,7 @@ interface ProductConfig {
   window: WindowConfig;
   dataDirs: string[];
   schemes: PrivilegedScheme[];
+  protocols: DeepLinkProtocol[];
   fileAssociations: FileAssociation[];
   icons: ProductIcons;
   logos: ProductLogos;
@@ -128,7 +136,7 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
   };
 
 export type {
-  ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, FileAssociation,
+  ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
   ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

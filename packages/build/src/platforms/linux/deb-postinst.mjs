@@ -18,12 +18,15 @@ const appHook = (rootDir) => {
  * @param {import('../platform.type.mjs').PlatformContext} ctx
  * @returns {{ path: string, content: string }[]} none when no module and no app hook asks for one
  */
+const opensLinksOrFiles = ({ protocols = [], fileAssociations = [] }) => protocols.length > 0 || fileAssociations.length > 0;
+
 const debPostinst = (ctx) => {
   const rules = moduleRules(ctx.modules);
   const hook = appHook(ctx.rootDir);
-  if (!rules.length && !hook) return [];
+  const mime = opensLinksOrFiles(ctx.config.product) ? fillTemplate(LINUX_DIR, 'mime-refresh.sh.tmpl', {}) : '';
+  if (!rules.length && !hook && !mime) return [];
   const udev = rules.length ? fillTemplate(LINUX_DIR, 'udev-rules.sh.tmpl', { ID: ctx.config.product.id, RULES: rules.join('\n\n') }) : '';
-  return [{ path: DEB_POSTINST_FILE, content: fillTemplate(LINUX_DIR, 'deb-postinst.sh.tmpl', { UDEV: udev, HOOK: hook }) }];
+  return [{ path: DEB_POSTINST_FILE, content: fillTemplate(LINUX_DIR, 'deb-postinst.sh.tmpl', { UDEV: udev, MIME: mime, HOOK: hook }) }];
 };
 
 export { debPostinst };

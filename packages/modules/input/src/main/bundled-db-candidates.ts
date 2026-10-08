@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { BUNDLED_DB_SPECIFIER, DB_FILE } from './mapping-db.constants';
+import { BUNDLED_DB_SPECIFIER, DB_FILE } from '../mapping/mapping-db.constants';
 
 const resolvePackagedDb = (): string[] => {
   try {

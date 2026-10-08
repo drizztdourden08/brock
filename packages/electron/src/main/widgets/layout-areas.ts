@@ -5,10 +5,12 @@ import { offscreenOrigin } from '../window/offscreen-origin';
 import { widgetRuntime } from './widget-runtime';
 
 const layoutAreas = (full: boolean): WidgetWindowBounds[] => {
-  if (!widgetRuntime.headless) return screen.getAllDisplays().map((display) => (full ? display.bounds : display.workArea));
+  const { headless, pinnedArea } = widgetRuntime;
+  if (!headless && !pinnedArea) return screen.getAllDisplays().map((display) => (full ? display.bounds : display.workArea));
   const primary = screen.getPrimaryDisplay();
-  const { width, height } = full ? primary.bounds : primary.workArea;
-  return [{ ...offscreenOrigin(), width, height }];
+  const shown = full ? primary.bounds : primary.workArea;
+  const { width, height } = pinnedArea ?? shown;
+  return [{ ...(headless ? offscreenOrigin() : { x: shown.x, y: shown.y }), width, height }];
 };
 
 export { layoutAreas };

@@ -5,3 +5,6 @@ export { isSyncedRate } from './is-synced-rate';
 export { syncedRateOptions } from './synced-rate-options';
 export { bestSyncedRate } from './best-synced-rate';
 export { effectiveHz } from './effective-hz';
+export { syncedRateMap } from './synced-rate-map';
+export { availableSyncedRates } from './available-synced-rates';
+export { syncedTarget } from './synced-target';

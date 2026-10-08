@@ -1,12 +1,9 @@
 /* @layer electron-main @kind logic */
 import { app, session } from 'electron';
 import type { ProductConfig } from '@drizztdourden08/brock-core/product';
-import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { BootstrapOptions } from '../types/main-context.type';
 import type { WindowSetup } from '../window/window-setup.type';
 import type { ReadyInput } from './bootstrap-app.type';
-import { applyPortableMode } from '../app/portable-mode';
-import { applyUserDataArg } from '../app/user-data-arg';
 import { installCrashForensics } from '../crash-forensics/install';
 import { noteSync } from '../crash-forensics/note-sync';
 import { stackOf } from '../crash-forensics/stack-of';
@@ -31,20 +28,26 @@ import { resolvePaths } from './resolve-paths';
 import { armScreenshotFlag } from './screenshot-flag';
 import { armSplashScreenshotFlag } from './splash-screenshot-flag';
 import { armReviewFlag } from './review-flag';
+import { pinReviewRendering } from '../review/baselines/pin-review-rendering';
 import { installAppLifecycle } from './app-lifecycle';
 import { registerHandlerGroups } from './register-handlers';
 import { widgetHandlers } from '../widgets/widget-handlers';
 import { widgetWindowSetup } from '../widgets/widget-window-setup';
 import { logBoot } from './boot-timing';
 import { externalProtocols } from '../window/external-protocols';
+import { startProcess } from './start-process';
+import { startOpenRouting } from '../open/start-open-routing';
+import { bugReportTransport } from '../bug-report/bug-report-transport';
 
-const onReady = async ({ ctx, options, dataDirs, setup }: ReadyInput): Promise<void> => {
+const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
   if (ctx.isDev) await session.defaultSession.clearCache();
 
   initPaths(app.getPath('userData'));
   await ensureDataDirectories(dataDirs);
   await rotateSessionLog();
+  startOpenRouting(ctx, options, schemes);
+  bugReportTransport.current = options.bugReport ?? null;
 
   const plan = planWindow(setup);
   const { window: config } = setup.product;
@@ -77,24 +80,20 @@ const onReady = async ({ ctx, options, dataDirs, setup }: ReadyInput): Promise<v
 };
 
 const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): void => {
+  const start = startProcess(product, options);
+  if (!start) return;
+  const { flags, portableData, userDataOverride } = start;
   const modules = options.modules ?? [];
-  for (const module of modules) module.onBoot?.(product);
-  const portableData = applyPortableMode();
-  const userDataOverride = applyUserDataArg();
-  app.setName(product.id);
   installCrashForensics();
-
-  const flags = createAutomationFlags([
-    ...modules.flatMap((m) => m.automationFlags ?? []),
-    ...(options.automationFlags ?? []),
-  ]);
   const instance = parseInstanceConfig();
   if (options.security?.externalProtocols) externalProtocols.allowed = new Set(options.security.externalProtocols);
   const paths = resolvePaths(options.paths);
   const icon = resolveWindowIcon(paths.renderer, instance.name);
   applyAppIdentity(instance.name, { appId: product.appId, iconPath: icon });
-  registerPrivilegedSchemes([...product.schemes, ...modules.flatMap((m) => m.schemes ?? [])]);
+  const schemes = [...product.schemes, ...modules.flatMap((m) => m.schemes ?? [])];
+  registerPrivilegedSchemes(schemes);
   app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+  pinReviewRendering(flags);
 
   const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains });
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];
@@ -109,7 +108,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 
   void app.whenReady()
-    .then(() => onReady({ ctx, options, dataDirs, setup }))
+    .then(() => onReady({ ctx, options, dataDirs, schemes, setup }))
     .catch((err: unknown) => {
       noteSync('error', `boot failed: ${stackOf(err)}`);
       app.exit(1);

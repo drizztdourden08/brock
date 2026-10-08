@@ -1,13 +1,13 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { installerInputs } from '../installer/installer-inputs.mjs';
 import { renderInstallerPreview } from '../installer/render-installer-preview.mjs';
 import { writeSetupSplash } from '../installer/write-setup-splash.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { namePackOutputs } from '../packaging/name-pack-outputs.mjs';
 import {
-  BUILDER_CONFIG_FILE, BUILDER_TARGETS, NOTES_DIR, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
+  BUILDER_CONFIG_FILE, BUILDER_TARGETS, COMMENT_LINE, NOTES_DIR, PACKED_NOTES, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
 } from '../packaging/packaging.constants.mjs';
 import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { runVpk } from '../packaging/run-vpk.mjs';
@@ -20,12 +20,16 @@ import { runBuild } from './build.mjs';
 /**
  * @param {string} rootDir
  * @param {string} version
- * @returns {string | null} the notes file, relative to the app root
+ * @returns {string | null} the note without its comment lines, from the app root
  */
 const releaseNotesFor = (rootDir, version) => {
   const roots = [rootDir, findWorkspaceRoot(rootDir)].filter(Boolean);
   const found = roots.map((dir) => join(dir, NOTES_DIR, `v${version}.md`)).find((file) => existsSync(file));
-  return found ? relative(rootDir, found) : null;
+  if (!found) return null;
+  const body = readFileSync(found, 'utf8').replace(/\r\n/g, '\n').split('\n').filter((line) => !COMMENT_LINE.test(line)).join('\n').trim();
+  mkdirSync(join(rootDir, RELEASE_DIR), { recursive: true });
+  writeFileSync(join(rootDir, PACKED_NOTES), `${body}\n`, 'utf8');
+  return PACKED_NOTES;
 };
 
 /**

@@ -1,4 +1,5 @@
 /* @layer core @kind logic */
+import { renderBaselineMarkdown } from './render-baseline-markdown';
 import type { ReviewReport } from './review.type';
 
 const cell = (text: string): string => text.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
@@ -26,6 +27,7 @@ const renderReviewMarkdown = (report: ReviewReport): string => {
     '|---|---|---|---|',
     ...report.checks.map((check) => `| ${check.pass ? 'pass' : 'FAIL'} | ${cell(check.step)} | ${cell(check.id)} | ${cell(check.reason)} |`),
     '',
+    ...renderBaselineMarkdown(report.baselines),
     '## Console errors',
     '',
     ...listOr(report.consoleErrors, 'None.'),

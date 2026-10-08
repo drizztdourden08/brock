@@ -40,12 +40,13 @@ import { screenTree } from '../.brock/screens';
 | Compounds | `AboutPanel`, `ProfilesPanel`, `ReleaseNotesPanel`, with their props types |
 | Modules | `RendererModule`, `mergeModules` |
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toMenuGroups`, `MenuResolver` |
-| Host, log, profiles | `hostApi`, `requireHostApi`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
+| Host, log, profiles | `hostApi`, `requireHostApi`, `exposeHostNamespace`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_ACTIONS` |
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
-| Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
+| Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildBugReportPayload`, `resolveBugReportTarget`, `BrockAppBugReport`, `BugReportTarget`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
+| Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
@@ -142,11 +143,14 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 - Startup order: the pinned instance profile (matched by id, then by name; an unknown name logs an error and opens the profiles screen instead of running on the wrong data), else the only profile, else the last one used, else the profiles screen. `settled` turns true in a `finally` block so every exit path, a failed boot included, still ends with a visible window.
 - The `first-frame` task waits for the shell to commit with the boot phase `painting`, then for two animation frames: the first commits the layout, the second proves it painted. The frame request is not cancelled on effect cleanup, because a strict-mode double invoke would cancel the only scheduled signal.
 - Keyboard: Escape follows the order under Escape and home; Alt+Enter toggles fullscreen; a screen's shortcut toggles it, a `requiresProfile` screen waits for a profile, a `devOnly` screen only responds with developer tools on; while an input, textarea or contenteditable is focused, screen shortcuts fire only with Ctrl or Meta held. A shortcut string is tokens joined by `+` (`Mod` matches Ctrl or the platform's command key; aliases `Comma`, `Period`, `Space`, `Esc`, `Return`).
+- Bug report: `BrockApp`'s `bugReport` prop (`{ transport, label? }`) sends the dialog's payload through the app; with none, the dialog asks main for its transport each time it opens, then falls back to the GitHub issue and the clipboard. `useDebugText` returns the host facts as `system` beside the text, which the payload carries.
+- Links and files the OS hands the app reach `appOpen`: `BrockApp` takes what main held since launch (`app:takeOpens`) and listens on `app:open`. A request that arrives before any handler is held for the first one; `useAppOpen(handler)` subscribes for the life of a component and always calls the latest handler.
 - When the active profile changes, every session store resets and the settings store loads that profile's config; with no profile the settings return to the defaults. Log entries main sends over IPC are forwarded into the renderer's log bus; an unknown channel lands on `ipc` and an unknown level reads as `info`.
 
 ## Host, log and profiles
 
 - The preload installs `window.api` before the renderer runs; a web or mobile host has none unless the app installs the shim, so `hostApi()` returns null instead of throwing at module load, and `requireHostApi()` is for call sites that only run on a host with a bridge. Both take the app's own maps as a type argument and add their methods to the base ones, so an app reaches its channels without a cast: `hostApi<{ invoke: typeof APP_INVOKE_MAP; events: typeof APP_EVENT_MAP }>()`. Without one they return the base `IpcApi`.
+- `exposeHostNamespace(id, value)` puts a module's API on `window.api.<id>` when the host has no such namespace, as on Android, where the module answers from its Capacitor plugin. It never replaces a preload namespace and does nothing before `window.api` exists.
 - `instanceName` and `instanceProfile` read the launch identity flags from the preload bridge at call time. A named instance is an automated launch running beside the person's own window: marked on screen, booted into its own profile, never writing the files every launch shares. `isAutomationLaunch` is true for any automated launch, named or not.
 - There is one log bus per app, created by `BrockApp` with the module channels; plain modules reach it through `getAppLog()`. In development `__logEntries` and `__logSubscribe` are exposed on `window` so an automation harness can read them.
 - The renderer profile store wraps the core store bound to the platform `FileStore`; `configureProfileStore` must run before the first store call and resets the cached store. `setLastProfile` is a no-op on an automated launch, gated at this single seam so no call site can forget that an automated run never repoints the shared `app.json`.

@@ -27,12 +27,12 @@ const removeRemnant = (worktree) => {
 
 const removeRegistered = async (worktree, ctx) => {
   const { name, path, main, log } = worktree;
-  const { branch, landed } = assertReleasable(worktree, ctx, 'remove');
+  const { branch, base, landed } = assertReleasable(worktree, ctx, 'remove');
   if (await clearUserData(worktree, ctx)) log('.user-data deleted.');
   log(`Removing worktree at ${path}.`);
   if (removeTree(path, main, log)) log(`"${name}" removed.`);
   else log(`"${name}" is unregistered but its directory survived; something still holds ${path} open. Run the same remove again once it is closed.`);
-  settleBranch({ name, branch, landed, ctx });
+  settleBranch({ name, branch, base, landed, ctx });
 };
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */

@@ -107,6 +107,16 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(keepBrockRuntimeDependencies(polyfills).counters.dependencies).toBe(1);
   });
 
+  it('counts clang-format-node as used while gate.clangFormat names sources', () => {
+    const root = app();
+    made.push(root);
+    const pinned = { cwd: root, issues: { dependencies: { 'package.json': { 'clang-format-node': issue('.', 'clang-format-node') } } }, counters: { dependencies: 1 } };
+    write(root, { 'brock.config.ts': 'export default { gate: { clangFormat: [] } };\n' });
+    expect(keepBrockRuntimeDependencies(pinned).counters.dependencies).toBe(1);
+    write(root, { 'brock.config.ts': "export default { gate: { clangFormat: ['core/game-hooks'] } };\n" });
+    expect(keepBrockRuntimeDependencies(pinned).counters.dependencies).toBe(0);
+  });
+
   it('leaves a workspace without brock.config.ts alone', () => {
     const root = app();
     made.push(root);

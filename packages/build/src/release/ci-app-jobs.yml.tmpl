@@ -1,0 +1,35 @@
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+__SETUP__
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Release note
+        run: pnpm --dir "$APP_DIR" exec brock release-notes check
+__ROOT_STEPS__
+  review:
+    runs-on: __REVIEW_RUNNER__
+    steps:
+__SETUP__
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Let Electron start its sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install xvfb
+        run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }
+
+      - name: Headless review
+        run: __REVIEW_RUN____BASELINE_STEPS__
+
+      - name: Keep the review report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review__ARTIFACT__
+          path: __REVIEW_DATA__/Data/review/
+          if-no-files-found: ignore

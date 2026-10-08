@@ -33,8 +33,22 @@ describe('composeWorkflows', () => {
     expect(ci).toContain('runs-on: ubuntu-24.04');
     expect(ci).toContain('if: always() && inputs.bless');
     expect(ci).toContain('path: ${{ env.APP_DIR }}/tests/baselines/linux/');
-    expect(ci).toContain('path: ${{ env.APP_DIR }}/.user-data-review/Data/review/');
+    expect(ci).toContain('path: .user-data-review/Data/review/');
+    expect(ci).toContain('name: review-baselines\n');
     expect(plain).toContain('path: ${{ env.APP_DIR }}/.user-data/Data/review/');
+    expect(ci).not.toMatch(/__[A-Z_]+__/);
+  });
+
+  it('gives each app of a workspace its own baselines job, bless input and artifact', () => {
+    const app = { name: 'desktop', tagPrefix: 'desktop-v', notesDir: 'apps/desktop/release-notes' };
+    const { ci, jobs } = composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'a-', app, baselines: true });
+    expect(jobs.ci).toEqual(['changes', 'quality', 'review']);
+    expect(ci).toContain('  workflow_dispatch:\n    inputs:\n      bless:');
+    expect(ci).toContain('brock affected');
+    expect(ci).toContain('brock release-notes check');
+    expect(ci).toContain("  review:\n    needs: changes\n    if: needs.changes.outputs.changed == 'true'\n    runs-on: ubuntu-24.04");
+    expect(ci).toContain('name: review-baselines-desktop\n          path: ${{ env.APP_DIR }}/tests/baselines/linux/');
+    expect(ci).toContain('APP_DIR: apps/desktop');
     expect(ci).not.toMatch(/__[A-Z_]+__/);
   });
 

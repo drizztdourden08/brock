@@ -51,7 +51,7 @@ const listVersions = async (feed: UpdateFeed, current: string, allowPrerelease: 
   const releases = await fetchReleases(feed, allowPrerelease);
   const feedUrl = feedUrlOf(releases, feed.feedFile);
   if (!feedUrl) return [];
-  const byVersion = new Map(releases.map((r) => [versionOfTag(r.tag_name), r]));
+  const byVersion = new Map(releases.map((r) => [versionOfTag(r.tag_name, feed.tagPrefix), r]));
   const tables = splitAssets(await fetchFeed(feedUrl), byVersion);
   return [...tables.full.values()]
     .flatMap((asset) => {

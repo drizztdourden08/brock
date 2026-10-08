@@ -5,11 +5,18 @@ interface SystemStep {
   os?: 'windows' | 'linux' | 'macos';
 }
 
+interface AppOfMany {
+  name: string;
+  tagPrefix: string;
+  notesDir: string;
+}
+
 interface ComposeInput {
   targets: string[];
   appDir?: string;
   prefix: string;
   systemSteps?: SystemStep[];
+  app?: AppOfMany | null;
   baselines?: boolean;
 }
 
@@ -20,6 +27,7 @@ interface ComposedWorkflows {
 }
 
 declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
+declare const workspaceCi: (systemSteps?: SystemStep[]) => string;
 
-export { composeWorkflows };
-export type { ComposeInput, ComposedWorkflows, SystemStep };
+export { composeWorkflows, workspaceCi };
+export type { AppOfMany, ComposeInput, ComposedWorkflows, SystemStep };

@@ -9,3 +9,5 @@ export { followBrockPin } from './upgrade/follow-brock-pin.mjs';
 export { compareVersions } from './upgrade/compare-versions.mjs';
 export { linkSpec } from './links/link-spec.mjs';
 export { keepCrossDriveLinks } from './links/keep-cross-drive-links.mjs';
+export { checkNoteFile, notePath } from './release-notes/check-note-file.mjs';
+export { checkReleaseNote } from './release-notes/check-note.mjs';

@@ -103,6 +103,7 @@ interface ProductConfig {
   author: ProductAuthor;
   repo?: ProductRepo;
   updateChannel?: string;
+  releaseTagPrefix?: string;
   accent?: string;
   look?: ProductLook;
   artifactPrefix: string;

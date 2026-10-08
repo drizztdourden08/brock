@@ -23,6 +23,7 @@ pnpm lint:md             markdownlint
 ```
 brock.config.ts          product identity, targets, modules      yours
 pnpm-workspace.yaml      the catalog of dependency versions       yours
+release-notes/v<version>.md  the note of each release: the release body and what the updater shows   yours
 tessera.config.json      where Tessera's tools put parts and find the theme ($schema alone: src/<kind>, src/theme.css)
 electron/main.ts         bootstrapApp(product, { modules, handlers, dataDomains })  yours
 electron/preload.ts      createPreloadBridge({ maps, namespaces }) yours

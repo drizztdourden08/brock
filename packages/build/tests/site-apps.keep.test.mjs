@@ -103,7 +103,7 @@ describe('brock site add', () => {
     expect(JSON.parse(read(root, 'tessera.config.json')).apps['apps/store-front']).toEqual({ parts: { views: 'apps/store-front/src/views' }, theme: { css: 'apps/store-front/src/theme.css' } });
     expect(JSON.parse(read(root, 'knip.json')).workspaces).toEqual({
       '.': { entry: ['src/main.tsx'], project: ['src/**/*.ts'] },
-      'apps/store-front': { entry: ['src/main.tsx', 'brock.site.ts', 'vite.config.ts'], project: ['src/**/*.{ts,tsx}'] },
+      'apps/store-front': { entry: ['brock.site.ts', 'src/**/*.usage.ts'], project: ['src/**/*.{ts,tsx}'] },
     });
     for (const file of ['apps/store-front/vite.config.ts', 'apps/store-front/tsconfig.json', '.github/workflows/ci-store-front.yml']) expect(existsSync(join(root, file))).toBe(true);
     expect(appDirs(root)).toEqual(['.']);

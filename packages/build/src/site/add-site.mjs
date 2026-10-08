@@ -12,6 +12,7 @@ import { registerSite } from './site-registrations.mjs';
 import { ensureSitesGlob } from './sites-glob.mjs';
 import { syncSites } from './sync-sites.mjs';
 import { writeSiteTemplate } from './write-site-template.mjs';
+import { writeGuide } from '../tessera/write-guide.mjs';
 
 const titleOf = (name) => name.split('-').map((word) => `${word[0].toUpperCase()}${word.slice(1)}`).join(' ');
 
@@ -82,6 +83,7 @@ const addSite = async ({ rootDir, name, brand, api }) => {
   writeFileSync(join(siteRoot, 'package.json'), `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
   const changed = [...(ensureSitesGlob(repoRoot, siteDir) ? [WORKSPACE_FILE] : []), ...registerSite(repoRoot, siteDir)];
   await syncSites(repoRoot, { check: false, only: [siteDir] });
+  await writeGuide(repoRoot, { label: 'brock site add' });
   return { siteDir, port: offset, changed };
 };
 

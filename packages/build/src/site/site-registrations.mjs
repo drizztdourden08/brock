@@ -44,7 +44,7 @@ const registerSite = (repoRoot, siteDir) => {
   const knip = editJson(join(repoRoot, KNIP_FILE), (config) => {
     config.workspaces ??= rootWorkspaceOf(config);
     if (config.workspaces[siteDir]) return false;
-    config.workspaces[siteDir] = { entry: ['src/main.tsx', 'brock.site.ts', 'vite.config.ts'], project: ['src/**/*.{ts,tsx}'] };
+    config.workspaces[siteDir] = { entry: ['brock.site.ts', 'src/**/*.usage.ts'], project: ['src/**/*.{ts,tsx}'] };
     return true;
   });
   return [...(tessera ? [TESSERA_CONFIG_FILE] : []), ...(knip ? [KNIP_FILE] : [])];

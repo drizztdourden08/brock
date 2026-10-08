@@ -13,7 +13,7 @@ const RAW_CONTROLS = [
 ];
 
 const BROCK_DEFAULT_EXPORTS = [
-  ...SCREEN_FILE_GLOBS, ...WIDGET_FILE_GLOBS, '**/modules/*/src/{main,preload,renderer}/index.ts', '**/brock.workspace.mjs', '**/boot/*.task.ts',
+  ...SCREEN_FILE_GLOBS, ...WIDGET_FILE_GLOBS, '**/modules/*/src/{main,preload,renderer}/index.ts', '**/brock.workspace.mjs', '**/brock.site.ts', '**/boot/*.task.ts',
   '**/src/review/*.step.ts', '**/src/review/seed.ts', '**/src/title-bar/*.action.ts', '**/src/tours/*.tour.ts',
 ];
 

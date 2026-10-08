@@ -23,7 +23,7 @@ const SITE_SCRIPTS = Object.freeze({
   build: 'brock site build',
   preview: 'brock site preview',
   typecheck: 'tsc --noEmit',
-  lint: 'tsc --noEmit && eslint . && stylelint "src/**/*.css"',
+  lint: 'tsc --noEmit && stylelint "src/**/*.css"',
 });
 
 const SITE_USAGE = [

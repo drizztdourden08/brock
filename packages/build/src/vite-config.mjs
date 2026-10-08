@@ -3,6 +3,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { appTools } from './app-tools.mjs';
+import { appAliases } from './build-options/app-aliases.mjs';
+import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
+import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
+import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { devServerPort } from './dev-server-port.mjs';
@@ -101,15 +105,17 @@ const splashPreloadEntry = (rootDir) => {
  */
 const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const { mergeConfig, workspaceRootOf, react } = await appTools(rootDir);
-  const { product } = await loadBrockConfig(rootDir);
+  const { product, build } = await loadBrockConfig(rootDir);
   const src = resolve(rootDir, 'src');
-  const alias = { '@app': src };
+  const alias = appAliases(rootDir, build);
+  const polyfills = await nodePolyfillPlugins(rootDir, build);
   const sources = sourceDependencies(rootDir);
   const external = externalDependenciesOf(rootDir, sources);
   const externalizeDeps = { exclude: sources, include: [...external.keys()] };
   const rollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external)] };
   const base = {
     main: {
+      plugins: [devOnlyPlugin({ rootDir })],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
@@ -130,7 +136,11 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     renderer: {
       root: src,
       publicDir: resolve(rootDir, 'public'),
-      plugins: [react(), splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir })],
+      plugins: [
+        devOnlyPlugin({ rootDir }), react(), ...polyfills(),
+        splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }),
+      ],
+      worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       server: { ...devServerPort(rootDir, product), fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {

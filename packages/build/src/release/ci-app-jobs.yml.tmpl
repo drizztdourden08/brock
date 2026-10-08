@@ -8,6 +8,9 @@ __SETUP__
 
       - name: Release note
         run: pnpm --dir "$APP_DIR" exec brock release-notes check
+
+      - name: App gate steps
+        run: pnpm --dir "$APP_DIR" exec brock gate
 __ROOT_STEPS__
   review:
     runs-on: __REVIEW_RUNNER__

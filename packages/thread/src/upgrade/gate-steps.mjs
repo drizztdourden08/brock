@@ -54,6 +54,7 @@ const reviewSteps = ({ path, name, review, apps }) => [
 const gateSteps = (worktree) => [
   ...worktree.apps.flatMap((app) => appSteps(worktree.plan, app)),
   ...scriptPlaces(worktree.path, worktree.apps).flatMap((place) => GATE_SCRIPTS.map((script) => scriptStep(place, script, worktree.path))),
+  ...worktree.apps.map((app) => ({ name: inApp('brock gate', app), run: () => runIn.brock(app.dir, ['gate']) })),
   ...reviewSteps(worktree),
 ];
 

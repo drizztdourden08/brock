@@ -20,6 +20,11 @@ build step.
 brock sync [--check]       regenerate the managed files, or report drift with --check
 brock check                sync --check, for CI
                            at a repo root with brock.workspace.mjs, both run once per electron target's app
+brock gate                 the app's own gate steps (gate in brock.config.ts): the clang-format check of
+                           gate.clangFormat, then each gate.scripts script; every step runs, exit 1 when one failed
+brock clang-format [--check]
+                           rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
+                           the files that differ with --check
 brock add <id | spec>      install a module package, record its id, sync
 brock dev [-- args]        electron-vite dev
 brock build [-- args]      electron-vite build; copies the brand icon set first when icons.brand is set
@@ -110,6 +115,9 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `look/`: `appLook` loads brock-core through the app's Vite (`runnerImport`, since core ships TypeScript source that Node cannot import) and returns `defineProduct(product)` with `resolveLook(config, sources)` and `darkPair(look, sources)`, the dark splash ground: null for a Tessera brand gradient or palette, whose `--c-gradient-dark-from` and `--c-gradient-dark-to` apply, and for a `theme.css` that sets `--p-gradient-dark-from` or `--p-gradient-dark-to` itself; for `product.look` or seeds of the app theme, the two ends of the look darkened toward black until the palette's `--c-text-dim` (`palettes.<brand>.dark.textDim` in `tokens.json`, else `theme.dark.textDim`) reads at 4.5:1 on each. `loadLookSources` reads the Tessera brand gradient from `tokens.json` in the Tessera package (`brands.<brand>.gradient`, optional `angle`) when that file exists, and the `--p-primary` and `--p-black` seeds from the app theme, falling back to the brand palette (`src/tokens/palettes/<brand>.css` in Tessera), then to Tessera's `palette.css`. `themePalette(rootDir, brand)` names the brand palette the app shows (none once `theme.css` sets a seed); the installer reads that palette's `palettes.<brand>.dark` from `tokens.json`. `appThemeCss(rootDir)` (also the `/theme` entry, which the managed `stylelint.config.mjs` reads for its token file) names that theme: `theme.css` of the `tessera.config.json` at or above the app, with the app's `apps` entry merged in, through the app's own `@drizztdourden08/tessera/config`; `src/theme.css` when there is no such file or the installed Tessera has no config entry. A file that breaks the schema stops the build with an error that names it. The installer reads the same look.
 - `boot/`: `scanBootTasks` lists `<id>.task.ts` in `src/boot` and `electron/boot`; `renderBootFiles` writes `.brock/boot.renderer.ts` and `.brock/boot.main.ts` for `brock sync` and `brock check`; `dev` and `build` rewrite them when a task file was added, renamed or removed. `brock structure` accepts `<id>.task.ts` as a module file. Brock and Tessera packages ship TypeScript source, so they are bundled instead of externalized; the exclude list is every `@drizztdourden08/*` dependency of the app.
 - `widgets/`: `scanWidgets` lists `src/widgets/<id>.widget.tsx`; `renderWidgetsFiles` writes `.brock/widgets.ts` (always, empty without widgets) for `brock sync` and `brock check`; `widgetsPlugin` rewrites it on any change under `src/widgets`, and `dev` and `build` rewrite it before electron-vite starts. `checkWidgets` is the `brock structure` rule for the folder: widget files only, kebab-case ids, a default export, known `meta` keys, no built-in id. `regenerate-plugin.mjs` is the watcher both the screens and the widgets plugins use, and `write-changed.mjs` writes generated files whose content changed.
+- `build-options/`: `appAliases` turns `build.aliases` into the alias map of every Vite side, `nodePolyfillPlugins` loads `vite-plugin-node-polyfills` from the app, and `withAliasPaths` adds the aliases to the managed `tsconfig.json`.
+- `dev-only/`: `devOnlyPlugin` sits first in main, the renderer, its workers and the web build. In a `production` build it loads each generated `.brock/<name>.dev.ts` as `devRegistryStub`, the same exports as empty lists, so no dev-only screen or handler group reaches the bundle, and it stops the build when any other module reaches a `.dev` file of the app.
+- `gate/`: `gateSteps` turns `gate` of `brock.config.ts` into steps, `runGate` runs them all and returns the failed ones, `clangFormatFiles` is the managed `.clang-format` for sync, `cSources` lists the C files, `findClangFormat` picks the binary and `runClangFormat` checks or rewrites in batches of 40 files.
 - `builder-config.mjs` works on the raw product input and fills the defaults it needs (`artifactPrefix`, `fileAssociations`, `protocols`) the same way `defineProduct` does. It passes `protocols` to electron-builder (Info.plist `CFBundleURLTypes`, the `.desktop` `x-scheme-handler`), gives each file type a mime type (`application/x-<ext>` when none is set, since Linux needs one) and ships each file type's `build/<icon>.ico` as `resources/file-icons/<ext>.ico` on Windows, where the registry entry points. The managed `deb-postinst.sh` refreshes the mime and desktop databases for a product that declares a protocol or a file type, and the stub's `BROCK_REGISTERS_OS` has a portable install run `--os-integration=register`. With `icons.brand` set it points electron-builder at the copied set (`win.icon: build/icons/icon.ico`, `mac.icon: build/icons/icon.png`, `linux.icon: build/icons/png`, `directories.buildResources: build`); without it the `ico`, `png512` and `png256` fields map to win, mac and linux as written.
 - `icons/`: Brock owns no icon art. `copyBrandIcons` resolves `@drizztdourden08/tessera/package.json` from the app root, takes `brand/<brand>/` beside it and copies the set (`icon.ico`, `icon.png` from the 1024, `png/icon-<size>.png`, `maskable-512.png`, `android/*`, `splash/*`) into `build/`, plus `icon.svg`, `icon.ico` and `icon-256.png` into `public/logos/` for the About screen and the window icon, `icon-32.png` and `icon-24.png` for the title bar (`product.logos.app` defaults to `./logos/icon-32.png` with a brand, so the 20 px logo is not a 256 px image scaled down), and `brand/dark-ground/<brand>.svg`, the mark without its tile in the colours Tessera draws it on the dark splash ground, as `public/logos/mark.svg` for the splash page and the boot failure splash.
 - `icons.rim` (`'light'` or `'dark'`) picks Tessera's rimmed set: `brand/<rim>-rim/<brand>/` and `brand/<rim>-rim/<brand>.svg`, which mirror the plain layout, carry a thin outline in the rim colour and are never tiled. It defaults to `'light'` for the `brock` brand, the light rim on dark surfaces, and to no rim for any other brand. `brandRim` resolves it from the raw config, `brandFolder` names the folder, and every reader takes it: `brock icons` (with `dev` and `build`), so the window icon, `public/logos`, `build/icons` and the bot variant all come from that tree (the splash mark comes from `brand/dark-ground/` whatever the rim), and the installer's downloader mark (`mark/mark-256.png`, else `<brand>.svg`); the Setup splash takes the same files from `brand/dark-ground/`. `icons/bot/` then writes the instance variant a named instance shows: `icon-bot.svg`, `icon-bot-256.png` and `icon-bot.ico`, the brand icon with a bot badge in the corner, drawn with pngjs and a small ICO writer. A brand folder with a `bot/` set of its own (`icon.svg`, `png/icon-256.png`, `icon.ico`) is copied instead. A file whose destination already holds the same bytes is skipped, so switching to a rim recopies the set and redraws the bot variant; `--force` copies all. `dev` and `build` run the same copy first, so a fresh clone gets its logos on the first run. A missing Tessera package or brand folder fails with the path it looked for.
@@ -178,7 +186,12 @@ package.json                  brock.version, and every Brock dependency on it
 vite.web.config.ts            defineBrockWebConfig(import.meta.dirname), for web or android
 capacitor.config.json         appId, appName, webDir dist/web, android.path mobile/android (and includePlugins when a built-in module is out of modules), for android
 build/linux/deb-postinst.sh   module udev rules and build/linux/after-install.sh, for linux
+.clang-format                 at the repo root, while gate.clangFormat names C sources
+.brock/screens.dev.ts         the dev-only screens, while src/screens holds a .dev file
+.brock/handlers.main.dev.ts   the dev-only handler groups, while electron/handlers holds a .dev file
 ```
+
+The two `.dev.ts` registries are written only while a dev-only file exists, and removed with the last one. The `tsconfig.json` paths carry `build.aliases` after `@app`.
 
 `brock.version` in `package.json` is the one Brock version an app runs. Sync adds it
 from the installed `brock-build` when it is missing. It then sets every
@@ -480,6 +493,56 @@ iOS once it is supported, with no config change. `web: { manifest: false }` drop
 manifest from the web build. `review: { baselines: true }` makes the CI review job compare its
 captures with the `tests/baselines/linux` screenshot baselines and gives the CI workflow a `bless`
 input that uploads a fresh set (docs/architecture.md, Screenshot baselines).
+
+`build` sets options of the managed Vite configs, so the one-line `electron.vite.config.ts` and
+`vite.web.config.ts` stay managed:
+
+```ts
+build: {
+  aliases: { '@shared': '../../shared', '@ds': 'src/ui/design-system' },
+  nodePolyfills: { globals: { Buffer: true, process: true } },
+},
+```
+
+- `aliases`: import prefixes beside `@app`, each a folder relative to the app folder. Main, preload,
+  the renderer, its workers and the web build resolve them, and `brock sync` adds `"<alias>/*"` to
+  the managed `tsconfig.json` paths. `@app` stays Brock's. They are meant for a migration, while code
+  moves into `src/` or a workspace package.
+- `nodePolyfills`: `true` or the options of `vite-plugin-node-polyfills`, which the app adds as a dev
+  dependency (brock-build loads it from the app; `brock knip` counts it as used). The renderer and
+  every worker build get a fresh plugin.
+- Workers need no option: the renderer builds them as ES modules (`worker.format: 'es'`), so
+  `new Worker(new URL('./x.worker.ts', import.meta.url), { type: 'module' })` and `import X from
+  './x.worker?worker'` take static and dynamic imports.
+- `public/` is the renderer's public folder in every build, so `public/wasm/core.wasm` is served at
+  `/wasm/core.wasm` in dev and copied to `dist/renderer/wasm/` (and `dist/web/wasm/`) as it is.
+
+`gate` declares the app's own gate steps, which `brock gate` runs, and with it the managed CI
+`quality` job and `<repo> upgrade`:
+
+```ts
+gate: {
+  scripts: ['generate:check', 'state-format'],
+  clangFormat: ['core/game-hooks'],
+},
+```
+
+- `scripts`: `package.json` scripts, run in order with `pnpm run`, from the app's `package.json`
+  when it has the script, else the workspace root's. A script neither declares fails the gate.
+- `clangFormat`: folders or files of C sources (`.c`, `.h`, searched under each folder outside
+  dot-folders and `node_modules`), relative to the repo root (the workspace root, else the app).
+  While it names any, `brock sync` writes the managed `.clang-format` at that root and `brock gate`
+  runs `clang-format --dry-run --Werror` against it first; `brock clang-format` rewrites the files.
+  The style is the one of Relic of the Past's `core/game-hooks`: two-space indent, attached braces,
+  short ifs, loops, cases and functions on one line, `int *p`, binary operators leading a broken
+  line, trailing comments left where they are, includes not sorted, and no column limit, so the line
+  breaks the code already has stay. It needs clang-format 16 or later, pinned so CI and every machine
+  format alike: add `clang-format-node` with an exact version (`pnpm add -D -E clang-format-node`) to the
+  app or the repo root, and Brock runs its `clang-format` bin; `brock knip` counts it as used.
+  `clang-format-node` ships LLVM's own binaries, built from source for Windows, macOS and Linux and
+  released for every LLVM release, where the older `clang-format` npm wrapper has not had a release
+  since 2023. `BROCK_CLANG_FORMAT` names another binary instead. With neither, the C check fails, names
+  the package and says where a clang-format of the machine (the `PATH`, the Visual Studio C++ tools) is.
 
 Erasable TypeScript only: Node imports this file directly, so no enums, no parameter
 properties, no extensionless relative imports.

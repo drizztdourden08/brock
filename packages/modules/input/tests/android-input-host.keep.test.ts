@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import '../src/renderer/input-api';
 
 vi.mock('@drizztdourden08/brock-react', () => {
   const api = (): Record<string, unknown> | null => (globalThis as { window?: { api?: Record<string, unknown> } }).window?.api ?? null;

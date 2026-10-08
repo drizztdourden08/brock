@@ -19,7 +19,7 @@ Use published ranges, not `link:` paths into a local checkout. A `link:` spec ti
 
 1. Commit or finish open work first. `upgrade` runs in its own worktree from the current `main`.
 2. `<app> upgrade --check` says how far behind the app is.
-3. `<app> upgrade` creates the worktree, bumps the Brock packages, moves Tessera to the range Brock asks for, runs `pnpm install`, runs every Brock migration after the app's `brock.version`, replays Tessera's `RENAMES.json` after the app's `brock.tessera`, then runs the gate (lint, typecheck, structure, test) and the review. In a monorepo the app is the workspace package that holds `brock.config.ts` (`apps/desktop`): sync and the migrations run there, from that package's own pins, and every other workspace package that names Brock moves with it. The gate runs the root scripts, then each app's own; it skips an app's script when the root script of the same name already runs it in every package (`pnpm -r <script>` with no `--filter`), so a monorepo lint does not run twice.
+3. `<app> upgrade` creates the worktree, bumps the Brock packages, moves Tessera to the range Brock asks for, runs `pnpm install`, runs every Brock migration after the app's `brock.version`, replays Tessera's `RENAMES.json` after the app's `brock.tessera`, then runs the gate (lint, typecheck, structure, test, then `brock gate` in each app for the checks its `brock.config.ts` adds) and the review. In a monorepo the app is the workspace package that holds `brock.config.ts` (`apps/desktop`): sync and the migrations run there, from that package's own pins, and every other workspace package that names Brock moves with it. The gate runs the root scripts, then each app's own; it skips an app's script when the root script of the same name already runs it in every package (`pnpm -r <script>` with no `--filter`), so a monorepo lint does not run twice.
 4. Read `.brock/upgrade-report.md` in each app of the worktree (`apps/desktop/.brock/upgrade-report.md` in a monorepo); `upgrade` prints every path. Every to-do names a file, a line and what to change. Mechanical renames are already done; the to-dos are the changes that need a person.
 5. When the gate is green and the review passes, merge the worktree branch.
 
@@ -65,10 +65,11 @@ A Brock app keeps its main process in `electron/` and its renderer in `src/`, si
 
 RotP keeps its main process in `apps/desktop/electron` and its renderer in `apps/web/src`; its root `electron.vite.config.ts` already builds the two as one app. The Brock app folder is `apps/desktop`, where `electron/` already is:
 
-1. Before the move, take every import alias other than `@app` out of the code, since Brock's managed configs resolve only `@app` (the app's `src`, for main and renderer alike, as RotP's `@app` is today):
+1. Brock's managed configs resolve `@app` (the app's `src`, for main and renderer alike, as RotP's `@app` is today) and the aliases `build.aliases` of `brock.config.ts` names. Keep the others there while the code moves, relative to the app folder: `build: { aliases: { '@shared': '../../shared', '@ds': 'src/ui/design-system', '@domains': 'src/ui/domains', '@site-kit': '../site-kit' } }`. `brock sync` adds them to the managed `tsconfig.json` paths, and every Vite side, the workers and the web build resolve them. Take each one out as its code finds its place, and delete the entry with the last import:
    - `@domains/<path>` becomes `@app/ui/domains/<path>`, a plain text replacement.
    - `@ds/<path>` goes with the conversion of the copy (above).
    - `@shared/<path>` becomes an import of a workspace package (`packages/shared` named `@rotp/shared`), the one-package-per-PR step of the programme.
+   - RotP's renderer also sets `vite-plugin-node-polyfills` on the renderer and on the extraction worker; that is `build: { nodePolyfills: { globals: { Buffer: true, process: true } } }`, with the package in the app's dev dependencies. The worker builds as an ES module with no setting.
 2. Move the renderer: `git mv apps/web/src apps/desktop/src`. Merge `apps/web/public` into `apps/desktop/public` (RotP has `public/wasm` in both, so compare before you overwrite), leaving out the `public/logos` files `brock icons` now writes.
 3. Search the repo for `apps/web/src` and `apps/web/public` and fix each hit: relative imports that crossed the two folders (`apps/desktop/electron/window/window-icon.ts` reads from `apps/web`), the tests under `tests/` that import renderer files by path, the root `tsconfig.json` paths, `vitest.config.ts`, and the root `build:web` script.
 4. Add the Brock skeleton. `create-brock` will not write into a folder that is not empty, so create it beside the app and copy across what `apps/desktop` lacks:
@@ -111,6 +112,18 @@ RotP has `apps/mobile` with `capacitor.config.ts`, `android/`, `assets/` and its
 - One exported value per implementation file. Types live in `*.type.ts`, `UPPER_SNAKE` constants in `*.constants.ts`, lists in `index.ts`.
 - No placeholder or qualifier names (`temp`, `data2`, `EnhancedX`, `xHelper`, `xUtils`).
 - Component folders hold `Name.tsx`, `index.ts` and optionally `Name.css`, `Name.type.ts`, `Name.constants.ts`, `Name.usage.ts`, `behavior/` and `sub-components/`.
+- A record file or a generated table takes `@kind data` in its header: no 200-line cap, several exports, `UPPER_SNAKE` consts in place, and data only (`brock/data-only` fails on a function, a call, a conditional or a statement there). See [app-structure.md](app-structure.md).
+- A screen or a handler group that must never ship (a dataset editor, an inspector) has `.dev` before its extension (`inspector.page.dev.tsx`, `dataset-handlers.dev.ts`); a production build has none of them.
+
+### The app's own checks
+
+`gate` in `brock.config.ts` adds the app's checks to the gate: `scripts` names `package.json` scripts (the app's own, else the workspace root's), and `clangFormat` names C source folders, relative to the repo root, which `brock sync` gives a managed `.clang-format`. `brock gate` runs them, and so do the CI `quality` job and `upgrade`. For RotP:
+
+```ts
+gate: { scripts: ['generate:check', 'state-format', 'generate:gba-asset-index:check'], clangFormat: ['core/game-hooks'] },
+```
+
+`generate:gba-asset-index:check` is a script RotP still has to add: `generate:gba-asset-index` writes the index and has no check mode. The managed style is tuned on `core/game-hooks`, yet clang-format still changes about 360 of its 21,000 lines in 80 of its 188 files (a case label that holds an `if` and a `break`, several statements on one line, a short `enum` of two values, one-line structs, hand-aligned initialisers), so pin the formatter (`pnpm add -D -E clang-format-node` in `apps/desktop` or the root), then run `<app> clang-format` once in its own commit before adding `clangFormat` to the gate.
 
 ### Wording
 

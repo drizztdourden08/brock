@@ -3,7 +3,7 @@ import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { InputOptions, InputRuntime } from './input-main.type';
 import { addonCandidates } from './addon-candidates';
 import { createControllerSource } from './controller-source';
-import { createHapticPlayer } from './haptic-player';
+import { createHapticPlayer } from '../haptics/haptic-player';
 import { loadSdl3Addon } from './load-sdl3-addon';
 import { createMappingDb } from './mapping-db';
 import { UNAVAILABLE_ADDON } from './sdl3.constants';

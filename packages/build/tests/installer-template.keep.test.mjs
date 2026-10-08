@@ -141,6 +141,15 @@ describe('stubProductHeader', () => {
     expect(text).toContain('#define BROCK_INSTALL_MACHINE 0');
     expect(text).toContain('#define BROCK_LAUNCH_AFTER 1');
     expect(text).toContain('#define BROCK_HAS_LICENCE 0');
+    expect(text).toContain('#define BROCK_REGISTERS_OS 0');
+  });
+
+  it('has a portable copy register the links and file types the product declares', () => {
+    const text = stubProductHeader({
+      config: { ...CONFIG, installer: INSTALLER, protocols: [{ scheme: 'brock-app' }] },
+      colours: stubColours(LOOK, FALLBACK_THEME), manifestUrl: 'https://x/install.json', appVersion: '1.2.3',
+    });
+    expect(text).toContain('#define BROCK_REGISTERS_OS 1');
   });
 
   it('turns the install choices into flags', () => {

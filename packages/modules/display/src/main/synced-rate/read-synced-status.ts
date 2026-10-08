@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { SyncedRateStatus } from '../../display.type';
 import { bestSyncedRate } from '../../rates/best-synced-rate';
-import { availableSyncedRates } from './available-synced-rates';
+import { availableSyncedRates } from '../../rates/available-synced-rates';
 import { resolveTarget } from './resolve-target';
 import type { SyncedRateState } from './synced-rate.type';
 
@@ -11,7 +11,7 @@ const readSyncedStatus = (state: SyncedRateState): SyncedRateStatus => {
   return {
     supported: driver.available,
     unsupportedReason: driver.unavailableReason,
-    availableRates: driver.available ? availableSyncedRates(driver) : [],
+    availableRates: driver.available ? availableSyncedRates(driver.listRates()) : [],
     currentHz,
     activeHz: rateToRestore !== null ? resolveTarget(state) : null,
     bestHz: bestSyncedRate(currentHz),

@@ -2,16 +2,18 @@
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { INPUT_TESTER_SCREEN_ID } from './input-renderer.constants';
+import { InputProvider } from './InputProvider';
 import { inputTesterScreen } from './InputTesterScreen';
 
 const inputRenderer: RendererModule = {
   id: 'input',
   screens: [inputTesterScreen],
   menu: [{ key: INPUT_TESTER_SCREEN_ID, label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: INPUT_TESTER_SCREEN_ID }],
+  Provider: InputProvider,
 };
 
 export default inputRenderer;
-export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID };
+export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID, InputProvider };
 export { inputApi } from './input-api';
 export { InputTester } from './InputTester';
 export { CalibrationPanel, inputFamilyOf } from '../compounds/CalibrationPanel';

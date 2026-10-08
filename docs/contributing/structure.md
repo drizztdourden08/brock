@@ -63,13 +63,16 @@ First time on a machine:
 The verbs then work the same in every repo:
 
 ```
-<repo> worktree create <name> [--from <ref>]        add the worktree, install, run the provision steps
+<repo> worktree create <name> [--from <ref>] [--base <branch>]   add the worktree, install, run the provision steps
 <repo> worktree launch <name> <state|none> [--visible]   the target, in that worktree, headless by default
 <repo> worktree refresh <name> [--reset] [--rebase]
 <repo> worktree commit [name] --message "..."       the repo hooks run; --no-verify is refused
-<repo> worktree finish [name]                        guards, remove, retire the branch when merged
+<repo> worktree finish [name]                        guards, remove, retire the branch when merged into its base
+<repo> worktree base [name] [<new base>]             show or change the branch the thread lands on
 <repo> pr push | open | status [name]                push and open put work on a public repo and ask
 ```
+
+Each worktree has its own base, the workspace `base` unless `create --base <branch>` (or a `--from` naming an origin branch) set another, stored in git config as `branch.<branch>.brockBase`. `refresh --rebase`, `pr open`, `pr status`, `finish` and `remove` all read it, so a thread on an integration branch retires once its work is on that branch. The rules are in `packages/thread/README.md`, Thread bases.
 
 A plugin adds verbs, targets and steps through `definePlugin`: `@drizztdourden08/brock-plugin-snes` for a SNES port, a repo's own plugin package for its own tooling, and the assistant plugin that lives in the assistant config repo. Besides the plugins `brock.workspace.mjs` lists and the `brock-plugin-*` packages in `package.json`, the thread CLI loads every `tools/brock-plugin-*/index.mjs` it finds inside a top-level dot-folder of the repo. Everything a person and an assistant both do is in the core; what only an assistant does is in that one plugin.
 

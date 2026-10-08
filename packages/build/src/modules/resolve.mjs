@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { declaredDependencies } from './declared-dependencies.mjs';
 import { packageForModule } from './registry.mjs';
 
 /**
@@ -40,18 +41,6 @@ const packageReader = (rootDir) => {
       return null;
     }
   };
-};
-
-/**
- * @param {string} rootDir
- */
-const declaredDependencies = (rootDir) => {
-  try {
-    const pkg = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8'));
-    return Object.keys({ ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) });
-  } catch {
-    return [];
-  }
 };
 
 /**

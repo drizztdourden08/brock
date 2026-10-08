@@ -1,9 +1,11 @@
 /* @layer electron-main @kind logic */
+import { registerOsIntegration, unregisterOsIntegration } from '@drizztdourden08/brock-electron/main';
 import type { MainModule } from '@drizztdourden08/brock-electron/main';
 import type { UpdaterMain, UpdaterOptions } from './updater-main.type';
 import { createUpdater } from './create-updater';
 import { registerUpdaterHandlers } from './handlers';
 import { runVelopackHooks } from './run-velopack-hooks';
+import { withOsIntegration } from './with-os-integration';
 import { DATA_DIR, FIRST_CHECK_DELAY_MS, MODULE_ID } from './updater-main.constants';
 
 const createUpdaterMain = (options: UpdaterOptions = {}): MainModule => {
@@ -13,7 +15,7 @@ const createUpdaterMain = (options: UpdaterOptions = {}): MainModule => {
   return {
     id: MODULE_ID,
     dataDirs: [DATA_DIR],
-    onBoot: () => runVelopackHooks(hooks),
+    onBoot: (product) => runVelopackHooks(withOsIntegration(product, hooks, { register: registerOsIntegration, unregister: unregisterOsIntegration })),
     register: async (ctx) => {
       updater = await createUpdater(ctx, options);
       registerUpdaterHandlers(ctx, updater);

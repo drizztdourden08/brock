@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { resolvePlatforms } from '../platforms/resolve-platforms.mjs';
 import { fillTemplate } from './fill-template.mjs';
+import { reviewJobValues } from './review-job-values.mjs';
 import { setupSteps } from './setup-steps.mjs';
 import { RELEASE_DIR } from './workflows.constants.mjs';
 
@@ -43,10 +44,11 @@ const releaseText = (jobs, { appDir, app }) => fillTemplate(RELEASE_DIR, 'releas
 
 /**
  * @param {Job[]} platformJobs
- * @param {{ appDir: string, app: AppOfMany | null, setup: (os: string, opts?: object) => string }} where
+ * @param {{ appDir: string, app: AppOfMany | null, setup: (os: string, opts?: object) => string, baselines: boolean }} where
  */
-const ciText = (platformJobs, { appDir, app, setup }) => {
-  const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', { SETUP: setup('linux'), ROOT_STEPS: app ? '' : rootSteps(), ARTIFACT: app ? `-${app.name}` : '' });
+const ciText = (platformJobs, { appDir, app, setup, baselines }) => {
+  const review = reviewJobValues({ baselines, app });
+  const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', { SETUP: setup('linux'), ROOT_STEPS: app ? '' : rootSteps(), ARTIFACT: app ? `-${app.name}` : '', ...review });
   const own = `${appJobs.trimEnd()}\n${platformJobs.map(jobBlock).join('')}`;
   const changes = app ? `${fillTemplate(RELEASE_DIR, 'ci-changes-job.yml.tmpl', { SETUP: setup('linux', { history: true }) }).trimEnd()}\n\n` : '';
   return fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', {
@@ -54,21 +56,22 @@ const ciText = (platformJobs, { appDir, app, setup }) => {
     GROUP: app ? `-${app.name}` : '',
     APP_DIR: appDir,
     JOBS: `${changes}${app ? gated(own) : own}`,
+    DISPATCH_INPUTS: review.DISPATCH_INPUTS,
   });
 };
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], app?: AppOfMany | null }} input
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], app?: AppOfMany | null, baselines?: boolean }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], app = null }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], app = null, baselines = false }) => {
   const { platforms } = resolvePlatforms(targets);
   const setup = (os, opts = {}) => setupSteps({ os, release: opts.release, history: opts.history, systemSteps });
   const ctx = { appDir, prefix, setup };
   const ciJobs = platforms.flatMap((platform) => (platform.ciJob ? [platform.ciJob(ctx)] : []));
   const releaseJobs = platforms.flatMap((platform) => (platform.releaseJob ? [platform.releaseJob(ctx)] : []));
   return {
-    ci: `${ciText(ciJobs, { appDir, app, setup }).trimEnd()}\n`,
+    ci: `${ciText(ciJobs, { appDir, app, setup, baselines }).trimEnd()}\n`,
     release: `${releaseText(releaseJobs, { appDir, app }).trimEnd()}\n`,
     jobs: {
       ci: [...(app ? ['changes'] : []), 'quality', 'review', ...ciJobs.map((job) => job.id)],

@@ -59,6 +59,7 @@ const stubProductHeader = ({ config, colours, manifestUrl, appVersion }) => {
     BROCK_INSTALL_MACHINE: flagOf(installer.scope === 'machine'),
     BROCK_LAUNCH_AFTER: flagOf(installer.launchAfterInstall),
     BROCK_HAS_LICENCE: flagOf(Boolean(installer.licence)),
+    BROCK_REGISTERS_OS: flagOf((config.protocols ?? []).length > 0 || (config.fileAssociations ?? []).length > 0),
   };
   const lines = Object.entries(macros).map(([name, value]) => `#define ${name} ${value}`);
   return ['#pragma once', '', ...lines, ''].join('\n');

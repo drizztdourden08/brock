@@ -1,0 +1,91 @@
+import groovy.json.JsonSlurper
+
+ext {
+    junitVersion = project.hasProperty('junitVersion') ? rootProject.ext.junitVersion : '4.13.2'
+    androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.7.1'
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+def pins = new JsonSlurper().parse(file('../native/package.json'))
+def sdl3SourceDir = file("../native/third_party/SDL3-${pins.sdl3}").absolutePath.replace('\\', '/')
+def sdlJavaUpstream = file("${sdl3SourceDir}/android-project/app/src/main/java/org/libsdl/app")
+def sdlJavaDir = layout.buildDirectory.dir('generated/sdl3-java').get().asFile
+def inputAbis = (findProperty('brockInputAbis') ?: 'arm64-v8a').toString().split(',').collect { it.trim() }.findAll { it }
+
+tasks.register('fetchSdl3Source', Exec) {
+    onlyIf { !file("${sdl3SourceDir}/CMakeLists.txt").exists() }
+    workingDir file('..')
+    commandLine 'node', 'bin/ensure-sdl3-source.mjs'
+}
+
+tasks.register('stageSdlJava', Copy) {
+    dependsOn 'fetchSdl3Source'
+    from sdlJavaUpstream
+    into new File(sdlJavaDir, 'org/libsdl/app')
+    doFirst {
+        if (!sdlJavaUpstream.exists()) {
+            throw new GradleException("No SDL3 Java sources at ${sdlJavaUpstream}. Run node bin/ensure-sdl3-source.mjs in the brock-input package.")
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'preBuild') task.dependsOn 'stageSdlJava'
+    if (task.name =~ /CMake|externalNativeBuild|JsonModel/) task.dependsOn 'fetchSdl3Source'
+}
+
+android {
+    namespace = 'com.drizztdourden08.brock.input'
+    compileSdk = project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 36
+    ndkVersion = '27.2.12479018'
+    defaultConfig {
+        minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 24
+        targetSdkVersion project.hasProperty('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 36
+        externalNativeBuild {
+            cmake {
+                arguments "-DSDL3_SOURCE_DIR=${sdl3SourceDir}", '-DANDROID_STL=c++_shared'
+                abiFilters(*inputAbis)
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs += sdlJavaDir
+        }
+    }
+    lint {
+        abortOnError = false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':capacitor-android')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    testImplementation "junit:junit:$junitVersion"
+}

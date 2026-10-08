@@ -72,6 +72,22 @@ Both koffi 2 (from 2.9) and koffi 3 work: the peer range is `^2.9.0 || ^3.0.0`, 
 
 `setWindowMode` moves the window to the chosen screen, then applies the mode. Borderless covers the whole screen without entering fullscreen, and going back to windowed restores the old bounds.
 
+## Android
+
+On Android the `BrockDisplay` Capacitor plugin that ships in this package (`android/`) answers the same `DisplayApi`, so `displayApi()` and `window.api.display` work unchanged and the provider and the Display tab need no app code. `cap sync` (run by `platform add android` and `<app> mobile build`) puts it in the app's Gradle project.
+
+| Call | On Android |
+|---|---|
+| `getRefreshRate` | the rate the display reports now and every rate it supports |
+| `getSyncedRateStatus` | the multiples of 60 among the supported rates |
+| `setSyncedRatePreference(true, hz)` | asks for the target rate (0 picks the highest multiple of 60) through `WindowManager.LayoutParams.preferredRefreshRate`; off clears the request |
+| `applyRefreshRate(hz)` | the same request, kept until it changes |
+| `listMonitors` | one screen, the device's |
+| `getWindowMode`, `setWindowMode` | always `fullscreen`; the Display tab hides the Window section on Android |
+| `onChanged` | fires on every `DisplayManager` change |
+
+An Android app is always full screen, so the synced rate applies as soon as the setting is on, not on entering fullscreen. The plugin asks for the exact rate the display lists (59.94 for a 60 label), since Android before 14 ignores a rate the display does not report. A preferred rate is a request: Android may keep another rate for power or thermal reasons, so the status reports what was asked, and the measured rate shows what the screen does. It uses the window's preferred rate: `Surface.setFrameRate` needs a surface of the app's own, and a display mode id forces a full mode switch.
+
 ## Automation launches
 
 A headless launch (`--no-focus`, `--muted` and the other automation flags) never changes the display. The driver reports itself unavailable and `setWindowMode` returns the current state with the reason in `lastError`.

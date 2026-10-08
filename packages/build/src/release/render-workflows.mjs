@@ -32,6 +32,7 @@ const renderWorkflows = (rootDir, config, modules) => {
     prefix: artifactPrefixOf(config.product),
     systemSteps,
     app: layout.app,
+    baselines: config.review?.baselines === true,
   });
   const at = (file) => slashed(relative(rootDir, join(layout.repoDir, file)));
   const files = workflowFilesOf(layout);

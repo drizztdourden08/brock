@@ -6,7 +6,7 @@ run-name: CI__TITLE__ ${{ github.head_ref || github.ref_name }}
 # under xvfb and fails the run when a check in its report fails.
 on:
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch:__DISPATCH_INPUTS__
 
 concurrency:
   group: ci__GROUP__-${{ github.ref }}

@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { UpdateManager } from 'velopack';
-import type { MainContext } from '@drizztdourden08/brock-electron/main';
+import type { MainContext, OsIntegrationProduct } from '@drizztdourden08/brock-electron/main';
 import type { UpdateInfo, UpdaterApi, UpdaterCapabilities, UpdaterPrefs } from '../updater.type';
 import type { UpdateFeed } from './update-feed.type';
 import type { VersionCandidate } from './update-plan.type';
@@ -14,6 +14,11 @@ interface VelopackHooks {
   beforeUninstall?: VelopackHook;
   firstRun?: VelopackHook;
   restarted?: VelopackHook;
+}
+
+interface OsIntegrationSteps {
+  register: (product: OsIntegrationProduct) => unknown;
+  unregister: (product: OsIntegrationProduct) => unknown;
 }
 
 interface UpdaterOptions {
@@ -50,5 +55,5 @@ interface UpdaterMain extends Pick<UpdaterApi, 'check' | 'listVersions' | 'apply
 }
 
 export type {
-  VelopackHook, VelopackHooks, UpdaterOptions, PrefsStore, UpdaterRuntime, UpdaterMain,
+  VelopackHook, VelopackHooks, OsIntegrationSteps, UpdaterOptions, PrefsStore, UpdaterRuntime, UpdaterMain,
 };

@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { DeviceEntry, HidListedDevice } from '../device.type';
-import type { LiveDevice } from './live-device.type';
+import type { LiveDevice } from '../devices/live-device.type';
 import type { Sdl3AddedEvent } from './sdl3.type';
 
 interface ControllerRegistry {

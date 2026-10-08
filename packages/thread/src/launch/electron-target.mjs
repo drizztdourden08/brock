@@ -8,6 +8,7 @@ import { DIST_MAIN, distProblem } from './dist-problem.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
 import { ensureAppIcons } from './ensure-app-icons.mjs';
 import { ensureAppSynced } from './ensure-app-synced.mjs';
+import { reviewDataDir } from './review-data.mjs';
 
 const requireFrom = (dir) => createRequire(join(dir, 'package.json'));
 
@@ -90,7 +91,7 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
   };
   const launch = (request) => {
     const { worktree, prod } = request;
-    const args = appArgs(request, dirs.userData(worktree), states);
+    const args = appArgs(request, reviewDataDir(request.passthrough, dirs.userData(worktree)), states);
     const appDir = dirs.app(worktree);
     ensureAppSynced(appDir, worktree.log);
     ensureAppIcons(appDir, worktree.log);

@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
-import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
+import type { JobSnapshot, OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { JobHandle, MainContext } from '@drizztdourden08/brock-electron/main';
 import { createCatalogLinks } from '../src/links/catalog-links';
 import { createCatalogClient } from '../src/main/catalog-client';
@@ -71,7 +71,12 @@ const setup = (grant: () => object = () => grantFor(1)) => {
   const files = memoryFiles();
   const jobs = fakeJobs();
   const emit = vi.fn();
-  const context: Partial<MainContext> = { files, job: jobs.job, jobs: { start: jobs.job, list: jobs.list, cancel: () => undefined, dismiss: () => undefined }, emit };
+  const openHandlers: ((request: OpenRequest) => void)[] = [];
+  const onOpen = (handler: (request: OpenRequest) => void) => {
+    openHandlers.push(handler);
+    return () => undefined;
+  };
+  const context: Partial<MainContext> = { files, job: jobs.job, jobs: { start: jobs.job, list: jobs.list, cancel: () => undefined, dismiss: () => undefined }, emit, onOpen };
   const ctx = context as MainContext;
   const installed: string[] = [];
   const installer: CatalogInstaller = {
@@ -89,7 +94,7 @@ const setup = (grant: () => object = () => grantFor(1)) => {
     label: 'Hookshop', endpoint: { baseUrl: 'https://api.example.com', fetch }, installers: { msul: installer }, onRelease,
     schema: { item: (value) => value as { id: string }, page: (value) => value as { items: { id: string }[]; nextCursor: null } },
   };
-  return { catalog: configureCatalog(ctx, config), files, jobs, emit, installer, installed, onRelease };
+  return { catalog: configureCatalog(ctx, config), files, jobs, emit, installer, installed, onRelease, openHandlers };
 };
 
 describe('install links', () => {
@@ -189,13 +194,23 @@ describe('installing and uninstalling', () => {
     expect(await catalog.uninstall('not an id')).toMatchObject({ ok: false });
   });
 
-  it('holds install links until the window takes them, then sends each one', () => {
-    const { catalog, emit } = setup();
+  it('takes install links of its scheme from ctx.onOpen, holds them until the window takes them, then sends each one', () => {
+    const { catalog, emit, openHandlers } = setup();
     catalog.links.listen('relic-of-the-past');
-    expect(catalog.links.deliverUrl('relic-of-the-past://install/abc?v=2')).toBe(true);
-    expect(catalog.links.deliverUrl('https://example.com')).toBe(false);
+    const open = (url: string, scheme: string) => openHandlers.forEach((handler) => handler({ kind: 'url', url, scheme, source: 'launch' }));
+    open('relic-of-the-past://install/abc?v=2', 'relic-of-the-past');
+    open('other://install/zzz', 'other');
+    openHandlers.forEach((handler) => handler({ kind: 'file', path: 'X:/a.msul', ext: 'msul', source: 'running' }));
     expect(catalog.links.take()).toEqual([{ itemId: 'abc', version: 2 }]);
-    catalog.links.deliverUrl('relic-of-the-past://install/def');
+    open('relic-of-the-past://install/def', 'relic-of-the-past');
     expect(emit).toHaveBeenCalledWith('catalog:link', { itemId: 'def', version: null });
+  });
+
+  it('takes a link the app hands over itself and refuses anything else', () => {
+    const { catalog } = setup();
+    catalog.links.listen('relic-of-the-past');
+    expect(catalog.links.deliverUrl('relic-of-the-past://install/abc')).toBe(true);
+    expect(catalog.links.deliverUrl('https://example.com')).toBe(false);
+    expect(catalog.links.take()).toEqual([{ itemId: 'abc', version: null }]);
   });
 });

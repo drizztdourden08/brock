@@ -98,11 +98,13 @@ Usage:
                              tessera.config.json from there; every word after tessera reaches it, --help too
 
 Thread lifecycle (brock.workspace.mjs, one worktree per thread):
-  brock worktree create <name> [--from <ref>]
+  brock worktree create <name> [--from <ref>] [--base <branch>]
   brock worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]
   brock worktree refresh <name> [--reset] [--rebase [ref]]
   brock worktree commit [name] --message "<text>" | --message-file <path>
   brock worktree finish [name] | remove <name>
+  brock worktree base [name] [<new base>]
+                             the branch the thread starts from, rebases on, opens its PR into and lands on
   brock launch <name> <state|none> [...]
                              same as worktree launch; headless and muted unless --visible
   brock pr push | open | status [name]

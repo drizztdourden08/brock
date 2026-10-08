@@ -18,6 +18,7 @@ import type { WidgetContextSource } from '../../widgets/WidgetHost/WidgetHost.ty
 import type { WidgetDef } from '../../widgets/widget.type';
 import type { AppReview } from '../../review/app-review.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
+import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -51,6 +52,7 @@ interface BrockAppProps<S extends object> {
   titleBar?: readonly TitleBarItemEntry[];
   review?: AppReview;
   tours?: readonly TourDef[];
+  bugReport?: BrockAppBugReport;
 }
 
 interface MenuBuildInput {

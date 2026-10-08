@@ -29,9 +29,9 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 
 `bootstrapApp` runs, in this order:
 
-0. Module `onBoot(product)`, before anything else. The updater module runs the Velopack hooks here, and they may exit or restart the process.
+0. `--os-integration=register` or `=unregister` writes or removes the product's link and file type keys on Windows and exits; the installer stub runs it for a portable copy. Then module `onBoot(product)`. The updater module runs the Velopack hooks here, and they may exit or restart the process.
 1. Portable mode (a `data` folder beside `Update.exe`), then `--user-data=<dir>`, which outranks it.
-2. `app.setName(product.id)`, so dev and production share one userData folder.
+2. `app.setName(product.id)`, so dev and production share one userData folder. Then the open sources: the requests in argv, macOS `open-url` and `open-file`, and the single-instance lock when the product declares a protocol or a file type (or `singleInstance: true`); a second launch hands its argv over and exits before anything is written.
 3. Crash forensics: local crash reporter, process and quit hooks, memory heartbeat, all into `Data/debug/main-console.log`.
 4. App identity: the AppUserModelId (`product.appId`, or `<appId>.instance.<slug>` for `--instance=<slug>`) on Windows, the instance dock icon on macOS.
 5. Privileged schemes: `product.schemes` plus every module's `schemes`.
@@ -50,6 +50,8 @@ The app window is created with `show: false` at its saved geometry and is shown 
 
 `--review[=<name>]` runs the renderer's review tour once the renderer boot finished; `review:capture` waits for the reveal: `brock start -- --review --no-focus --muted --user-data=<dir>` after a build, or `<app> launch main none --review`. Main registers `review:capture` (a PNG per step), `review:check` and `review:finish`, records renderer console errors, failed loads (`did-fail-load`, `webRequest` status 400 and up, request errors) and main log warnings and errors, and adds the global checks, among them `splash-closed` and `hidden-until-boot` from the boot timeline. A boot failure ends the review at once. The report lands in `Data/review/<name>/report.json` and `report.md` beside the screenshots; the process prints the JSON path and exits 0 when every check passes, 1 otherwise. The watchdog starts at launch: when no capture or check arrives within 60 s, or the tour later makes no progress for 30 s, a partial report is written and the process exits 1, forced 5 s after the report if the quit stalls.
 
+`--review-bless[=<dir>]` stores the captures as the screenshot baselines, `tests/baselines/<platform>/<capture>.png` by default, and refuses while another check of the run failed unless `--force` is given; `--review-baselines[=<dir>]` compares each capture with its baseline and fails the review on any pixel the rules in `<dir>/baselines.json` do not allow, writing a diff image per failure under `diffs/` and the results under `baselines` in both reports. Either flag pins the rendering before the app is ready (device scale 1, no hardware acceleration, one raster thread, no LCD text, sRGB, reduced motion, no caret, the default window size, a fixed 1920 by 1080 area for cluster maximize and full screen, no instance name in the drawing), and each capture first finishes the running animations, measures the masks (`data-review-mask` and the configured selectors) and waits for two equal captures in a row. The PNG reader and writer are Brock's own (`review/png`), for 8-bit RGB and RGBA. See docs/architecture.md, Screenshot baselines.
+
 ## Options
 
 | Option | Purpose |
@@ -62,12 +64,15 @@ The app window is created with `show: false` at its saved geometry and is shown 
 | `profileHooks` | Passed to the core `createProfileStore` |
 | `rendererFlags` | `(argv) => string[]`: extra `--startup-*` arguments; any `--startup-*` already in argv is forwarded as is |
 | `onReady`, `onWindow`, `onWillQuit` | App hooks around the window |
+| `onOpen` | `(request, ctx)`: each link or file the OS hands the app, after the reveal |
+| `singleInstance` | Take the single-instance lock even with nothing to open (`true`), or never (`false`) |
+| `bugReport` | `{ transport(payload, ctx), label? }`: where the bug report dialog sends its payload, in place of the GitHub issue; see brock-react, Bug report |
 | `paths` | `{ preload, renderer, splash, splashPreload }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.mjs`, `../renderer/index.html`, `../renderer/splash.html`, `../preload/splash-preload.mjs` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
 
 ## MainContext
 
-Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, profiles, window(), handle, on, emit, log }`. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
+Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, profiles, window(), handle, on, emit, log, onOpen }`. `onOpen(handler)` subscribes to the links and files the OS hands the app and returns the unsubscribe. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
 
 ## Boot details
 
@@ -126,6 +131,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 - A cancelled dialog is an ordinary outcome: `pickFile` and `pickPath` return null and `saveFile` reports `saved: false` with no error. `dialog:pickPath(folder, extensions)` returns the picked path, not the bytes: a folder dialog when `folder` is true, else a file dialog filtered by `extensions`.
 - `debug:revealLogs` opens `Data/debug` in the file manager, as Open logs on the boot splash does.
+- `bugReport:transport` answers `{ label }` when `bootstrapApp` got a `bugReport` transport, else null; `bugReport:send` runs it and answers its `Result`, an error when there is none, and the message of a transport that throws (logged as an error; a failed result is logged as a warning). `writeDebugZip(target, debugDir, payload, extras?)` writes `report.json`, the `.log`, `.txt` and `.json` files of `debugDir` under `logs/`, then each extra `{ name, data }`, with Brock's zip writer, and removes the file when a write fails.
 - `profiles:create` writes the record only; which profile opens next time is a separate `profiles:setLast` call, so a renderer can skip it on an automation launch.
 - `network:lanAddresses` returns `lanAddresses()`: every non-internal network interface address, IPv4 before IPv6. Main code imports `lanAddresses` directly.
 - Screenshots go to `Data/screenshots/<name>.png`; the name must pass `assertSafeName`. `captureWindow` serves both the `test:screenshot` channel and the `--screenshot` launch flag.
@@ -143,6 +149,9 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 - `handle`, `on` and `emit` constrain the channel to a key of the augmented contract and infer the arguments and return type, so a misspelled channel or a wrong handler signature is a compile error. `emit` is fire and forget: the render frame can be mid-disposal during a reload, which makes `webContents.send` throw, and the renderer re-subscribes on load, so a send dropped in that gap is safe to ignore.
 - Custom schemes must be declared privileged before the app is ready, once, in one call; the product's schemes and every module's are merged and a scheme listed twice keeps the first entry.
+- A product scheme with `dir` is served from `Data/<dir>` by `serveDirectoryScheme` once the app is ready; a module scheme with `dir` too.
+- Open requests are held until the reveal, then go to every `onOpen` handler and to the renderer (`app:takeOpens` once, then `app:open`). `openRequestsOf(argv, targets, { cwd, source })` is the parser: it skips the executable and flags, matches a declared scheme case-insensitively and a declared extension, and ignores an argument over 2048 characters. A second launch's argv carries Chromium's own flags too, which the parser skips.
+- Windows registration writes with `reg.exe` (an argument array, no shell) under `HKCU\Software\Classes`, then tells Explorer through `SHChangeNotify` in a hidden PowerShell child. `registerOsIntegration` stops at the first failed key and returns its error; `unregisterOsIntegration` removes what it can.
 - `serveDirectoryScheme` maps `<scheme>://<host>/<path>` to `<rootDir>/<path>`. The scheme is registered as standard, so Chromium hands the path over percent-encoded with dot segments collapsed; it is decoded and re-encoded as a file URL so a name holding `#` or `%` still resolves. A path that would leave the root answers 403. Call it after the app is ready.
 - `MainPaths.userData` is Electron's userData root and `MainPaths.data` is the `Data/` folder under it. `BootstrapPaths` relative entries resolve against `<appPath>/dist/electron`. `SecurityOptions.externalProtocols` are written with the trailing colon; `permissions` are Chromium permission names the renderer is granted. `InstanceInfo` has both fields null on a normal launch.
 

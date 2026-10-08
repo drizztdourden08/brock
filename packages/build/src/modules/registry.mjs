@@ -2,7 +2,7 @@
 
 const SCOPE = '@drizztdourden08';
 
-const BUILT_IN_MODULES = ['updater', 'secrets', 'input', 'display', 'port-kit', 'catalog'];
+const BUILT_IN_MODULES = ['updater', 'secrets', 'input', 'display', 'port-kit', 'tools', 'catalog'];
 
 /**
  * @type {Record<string, string>} id -> package name

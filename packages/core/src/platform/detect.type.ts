@@ -2,6 +2,7 @@
 interface CapacitorGlobal {
   isNativePlatform?: () => boolean;
   getPlatform?: () => string;
+  Plugins?: Record<string, unknown>;
 }
 
 interface HostGlobals {

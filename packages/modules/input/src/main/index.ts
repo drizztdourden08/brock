@@ -4,7 +4,7 @@ import type { MainModule } from '@drizztdourden08/brock-electron/main';
 import { registerCaptureHandlers } from './capture-handlers';
 import { registerInputHandlers } from './handlers';
 import { getInput } from './input-main';
-import { INPUT_DIR } from './mapping-db.constants';
+import { INPUT_DIR } from '../mapping/mapping-db.constants';
 
 const inputMain: MainModule = {
   id: 'input',
@@ -26,14 +26,14 @@ const inputMain: MainModule = {
 
 export default inputMain;
 export { inputMain, getInput };
-export { isMappingLine } from './is-mapping-line';
+export { isMappingLine } from '../mapping/is-mapping-line';
 export { applyStickCalibration } from '../calibration/apply-stick-calibration';
 export { applyTriggerCalibration } from '../calibration/apply-trigger-calibration';
 export type { InputMain, InputOptions, InputRuntime } from './input-main.type';
 export type { ControllerSource } from './controller-source.type';
-export type { HapticPlayer } from './haptic-player.type';
+export type { HapticPlayer } from '../haptics/haptic-player.type';
 export type { MappingDb } from './mapping-db.type';
-export type { CalibrationStore } from './calibration-store.type';
+export type { CalibrationStore } from '../calibration/calibration-store.type';
 export type { Sdl3Input, Sdl3Event, Sdl3EventCallback, Sdl3HidDevice, Sdl3RawCaptureResult } from './sdl3.type';
 export type {
   ControllerAddedInfo, DeviceEntry, HidListedDevice, InputStatus, VibrateResult, VibrateSegment,

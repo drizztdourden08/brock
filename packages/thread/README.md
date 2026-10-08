@@ -4,21 +4,26 @@
 The thread lifecycle every Brock repo runs: one git worktree per piece of work, launched in isolation, committed through the repo hooks and published through two verbs that ask.
 
 ```
-<repo> worktree create <name> [--from <ref>]
+<repo> worktree create <name> [--from <ref>] [--base <branch>] [--skip-install]
 <repo> worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]]
 <repo> launch main <state|none> [--visible] [--review]
 <repo> worktree refresh <name> [--reset] [--rebase [ref]]
 <repo> worktree commit [name] --message "<text>"
 <repo> worktree finish [name] | remove <name>
+<repo> worktree base [name] [<new base>]
 <repo> pr push | open | status [name]
 <repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]
 <repo> mobile push | build [--release] [--out <file>] | keystore
 <repo> linux push [--build-only] | doctor | init
 ```
 
-`worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch, or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
+`worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `worktree create --skip-install` adds the worktree and runs its provision steps with no `pnpm install`, at the root or in a target app, for a thread that only writes a file, such as a release note. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
+
+Without `--target`, `launch` picks the target whose app folder holds the folder it runs from (`pnpm --dir apps/desktop exec brock launch main none` launches `apps/desktop`), else the first target of `brock.workspace.mjs`.
+
+A review with screenshot baselines (`--review --review-baselines` or `--review --review-bless`) runs on an emptied `<userData>-review` folder beside the target's data folder (`.user-data-review`), every launch, with no provisioning, so two runs start from the same state.
 
 `<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
 
@@ -62,6 +67,18 @@ linux: {
 `setup-vm.sh` (its path is printed by `linux init`) sets a VM or a WSL distro up once: the build tools, rsync, Node 24 with pnpm, .NET 8 with vpk, the Electron runtime libraries and sshd. You run it in the VM yourself, and you authorize your key once with the line `linux init` prints; that is the only time the VM password is typed, by you, into ssh.
 
 A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. A plugin adds verbs, targets and steps through `definePlugin`.
+
+## Thread bases
+
+Each worktree has a base: the branch it starts from, rebases on, opens its PR into and lands on. It is the workspace `base` unless the thread names another, which is how a migration runs on an integration branch (`agent/grand-merge`) while `master` keeps moving.
+
+- `worktree create <name> --base <branch>` sets it, and starts the worktree from that branch (`origin/<branch>` after the fetch, as for the workspace base). `--from <ref>` naming a branch origin has (`origin/agent/grand-merge`, or `agent/grand-merge` when origin has it) makes that branch the base too; `--base` wins over it. A `--from` that names a commit, a tag or a local-only branch leaves the workspace base. A base that is no branch here or on origin is refused before the worktree is added.
+- `worktree base [name]` prints the base and where it comes from. `worktree base [name] <new base>` changes it; the workspace base removes the entry. With one word, a worktree of that name is shown; any other word is the new base of the worktree you stand in. It prints the `gh pr edit` line when an open PR targets another branch, and the `refresh --rebase` line, and runs neither.
+- `refresh --rebase` rebases on `origin/<base>`; `--rebase <ref>` still picks any ref.
+- `pr open` opens the PR into the base unless `--base` names another, and counts the commits over `origin/<base>`. `pr status` prints the PR's base and says when it is not the thread's.
+- `finish` and `remove` treat the branch as landed when a merged PR has it as head, or its tip is on `origin/<base>` or the local base; landed, the branch is deleted, local and remote. An unlanded branch must be on its upstream, else on `origin/<base>`. A branch that some branch names as its base is never deleted with a worktree.
+
+The base is stored in the repo's git config as `branch.<branch>.brockBase` (`git config branch.agent/feat.brockBase agent/grand-merge`), in the common `.git/config`, so every worktree and the main checkout read the same value. It belongs to the branch, not to the worktree folder: it survives `finish` or `remove` of an unmerged branch and comes back when `worktree create` resumes it, it follows `git branch -m`, and `git branch -D` deletes it with the branch. Git config is never cloned, so on a fresh clone a resumed branch with no entry takes the base of its open PR (`gh pr list --head`), and stores it; with no open PR it falls back to the workspace base until `worktree base` sets one. A worktree made before bases has no entry and runs on the workspace base, as before.
 
 ## Ports
 

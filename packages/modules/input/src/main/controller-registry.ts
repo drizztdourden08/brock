@@ -1,10 +1,10 @@
 /* @layer electron-main @kind logic */
 import type { DeviceEntry, HidListedDevice } from '../device.type';
 import type { ControllerRegistry } from './controller-registry.type';
-import type { LiveDevice } from './live-device.type';
+import type { LiveDevice } from '../devices/live-device.type';
 import type { Sdl3AddedEvent, Sdl3Input } from './sdl3.type';
-import { buildDeviceSnapshot } from './build-device-snapshot';
-import { createDeviceKeys } from './device-keys';
+import { buildDeviceSnapshot } from '../devices/build-device-snapshot';
+import { createDeviceKeys } from '../devices/device-keys';
 import { listHidDevices } from './list-hid-devices';
 
 const createControllerRegistry = (addon: Sdl3Input): ControllerRegistry => {

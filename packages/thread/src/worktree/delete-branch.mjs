@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { tryGit } from '../git.mjs';
+import { threadBase } from './thread-base.mjs';
 
 const deleteRemote = ({ branch, cwd, via, log }) => {
   if (!tryGit(['ls-remote', '--heads', 'origin', branch], cwd)) {
@@ -25,6 +26,10 @@ const deleteBranch = ({ branch, cwd, via, ctx }) => {
   }
   if (workspace.protectedBranches.includes(branch)) {
     log(`Branch "${branch}" kept: a protected branch is never deleted with a worktree.`);
+    return;
+  }
+  if (threadBase.basesInUse(cwd).includes(branch)) {
+    log(`Branch "${branch}" kept: another branch names it as its base.`);
     return;
   }
   if (tryGit(['branch', '-D', branch], cwd) === null) {

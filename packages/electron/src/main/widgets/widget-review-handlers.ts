@@ -3,7 +3,8 @@ import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { MainContext } from '../types/main-context.type';
 import type { ReviewSession } from '../review/review-session.type';
-import { writeCapture } from '../handlers/write-capture';
+import { captureReviewStep } from '../review/capture-review-step';
+import { stableGroupCapture } from '../review/baselines/stable-group-capture';
 import { composeCapture } from './compose-capture';
 import { sendReviewPref } from './send-review-pref';
 import { widgetProbe } from './widget-probe';
@@ -20,12 +21,12 @@ const widgetReviewHandlers = (ctx: MainContext, session: ReviewSession, stillWor
     const target = widgetWindowControl.windowOf(id);
     if (!target) return null;
     const record = session.nextStep(step);
-    await writeCapture(target, session.dir, record.file);
+    await captureReviewStep(session, target, record);
     return record.file;
   });
   ctx.handle('review:captureGroup', async (_event, step) => {
     stillWorking();
-    const png = await composeCapture();
+    const png = session.baselines ? await stableGroupCapture(session.baselines) : await composeCapture();
     if (!png) return null;
     const record = session.nextStep(step);
     await mkdir(session.dir, { recursive: true });

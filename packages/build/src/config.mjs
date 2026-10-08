@@ -12,6 +12,7 @@
  * @property {BrockTarget[]} targets Platform ids and bundles this app builds for
  * @property {string[]} modules Brock module ids, in load order
  * @property {{ manifest?: boolean }} [web] manifest false drops the web app manifest
+ * @property {{ baselines?: boolean }} [review] baselines true: CI compares captures
  */
 
 const CONFIG_FILE = 'brock.config.ts';

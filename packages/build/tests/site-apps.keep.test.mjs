@@ -11,7 +11,8 @@ import { rebased } from '../src/site/site-package.mjs';
 import { siteProxy, siteServer } from '../src/site/site-server.mjs';
 import { withSitesGlob } from '../src/site/sites-glob.mjs';
 import { syncSites } from '../src/site/sync-sites.mjs';
-import { removeTempRepos, tempRepo } from './temp-repo.mjs';
+import { renderWorkflows } from '../src/release/render-workflows.mjs';
+import { brockWorkspace, removeTempRepos, tempRepo } from './temp-repo.mjs';
 
 const BUILD_PACKAGE = resolve(import.meta.dirname, '..');
 
@@ -141,5 +142,24 @@ describe('brock site add', () => {
     expect(await syncSites(root, { check: true })).toBe(1);
     expect(await syncSites(root, { check: false })).toBe(0);
     expect(await syncSites(root, { check: true })).toBe(0);
+  });
+
+});
+
+describe('sites in a workspace of apps', () => {
+  it('puts the site CI beside each app CI of a workspace, and leaves the release layout to the apps', async () => {
+    const root = brockWorkspace({
+      'apps/tools/brock.config.ts': '',
+      'apps/tools/package.json': '{ "name": "@atlas/tools", "version": "0.1.0" }\n',
+      'apps/store/package.json': '{ "name": "@atlas/store" }\n',
+      'apps/store/brock.site.ts': "export default { site: { id: 'store', name: 'Store', brand: null }, ports: { offset: 1, base: 30000 }, api: null, build: { nodePolyfills: false, aliases: {} } };\n",
+    });
+    expect(appDirs(root)).toEqual(['apps/desktop', 'apps/tools']);
+    const config = { product: { id: 'atlas', name: 'Atlas', releaseTagPrefix: 'desktop-v' }, targets: ['linux'], modules: [] };
+    const appFiles = renderWorkflows(join(root, 'apps/desktop'), config, []).map((file) => file.path);
+    expect(appFiles).toEqual(['../../.github/workflows/ci.yml', '../../.github/workflows/ci-desktop.yml', '../../.github/workflows/release-desktop.yml']);
+    expect(await syncSites(root, { check: false })).toBe(0);
+    expect(read(root, '.github/workflows/ci-store.yml')).toContain('APP_DIR: apps/store\n');
+    expect(existsSync(join(root, '.github/workflows/release-store.yml'))).toBe(false);
   });
 });

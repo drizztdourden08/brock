@@ -17,6 +17,7 @@ interface ComposeInput {
   prefix: string;
   systemSteps?: SystemStep[];
   app?: AppOfMany | null;
+  baselines?: boolean;
 }
 
 interface ComposedWorkflows {

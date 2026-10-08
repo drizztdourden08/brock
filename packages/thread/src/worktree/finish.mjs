@@ -25,14 +25,14 @@ const finishVerb = {
     const worktree = createWorktreeContext(name, ctx);
     const { path, main, log } = worktree;
     if (!existsSync(path)) throw new Error(`No worktree at ${path}.`);
-    const { branch, landed } = assertReleasable(worktree, ctx, 'finish');
+    const { branch, base, landed } = assertReleasable(worktree, ctx, 'finish');
     const inside = resolve(path) === resolve(process.cwd());
     if (inside) process.chdir(main);
     if (await clearUserData(worktree, ctx)) log('.user-data deleted.');
     log(`Removing worktree at ${path}.`);
     const gone = removeTree(path, main, log);
     log(`"${name}" finished.`);
-    settleBranch({ name, branch, landed, ctx });
+    settleBranch({ name, branch, base, landed, ctx });
     reportSurvivor({ gone, inside, worktree, alias: ctx.workspace.name });
   },
 };

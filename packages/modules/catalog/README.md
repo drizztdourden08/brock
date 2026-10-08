@@ -55,6 +55,6 @@ The reads answer `{ ok: true, data }` or `{ ok: false, error, signedOut }`; `sig
 
 ## Install links
 
-With `linkScheme`, `<scheme>://install/<itemId>` and `?v=<n>` are parsed exactly (no other host, path, query or fragment, at most 256 characters); `createCatalogLinks(scheme)` gives `parse`, `format` and `fromArgv`. A link in this process's argv is held, and so is any link `getCatalog(ctx).links.deliverUrl(url)` receives, until the renderer takes them with `useCatalogLinks(onLink)`; after that each new one comes as `catalog:link`.
+With `linkScheme`, `<scheme>://install/<itemId>` and `?v=<n>` are parsed exactly (no other host, path, query or fragment, at most 256 characters); `createCatalogLinks(scheme)` gives `parse`, `format` and `fromArgv`. Declare the same scheme in `product.protocols`, so the installer registers it with the OS and Brock routes it: the module subscribes to `ctx.onOpen` and takes each `url` request of its scheme, whether it came in the launch argv, from a second launch (which hands it to the running app and quits) or as macOS `open-url`. Each link is held until the renderer takes them with `useCatalogLinks(onLink)`; after that each new one comes as `catalog:link`.
 
-Registering the scheme with the OS and catching a link from a second launch belongs to the product config's protocols (`product.protocols`, `ctx.onOpen`). When the running Brock gives the main context `onOpen`, the module subscribes to it and takes every URL of its scheme. On a Brock without it, the app passes each URL it receives to `getCatalog(ctx).links.deliverUrl(url)`.
+`getCatalog(ctx).links.deliverUrl(url)` is the manual path for a link that reaches the app any other way, such as one the user pastes; it answers whether the URL was an install link.

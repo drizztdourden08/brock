@@ -3,17 +3,13 @@ import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { CatalogLink } from '../catalog.type';
 import { createCatalogLinks } from '../links/catalog-links';
 import type { CatalogLinks } from '../links/catalog-links.type';
-import type { LinkInbox, OpenSubscribe } from './catalog-links-main.type';
-
-const openSourceOf = (ctx: MainContext): OpenSubscribe | null => {
-  const { onOpen } = ctx as MainContext & { onOpen?: OpenSubscribe };
-  return typeof onOpen === 'function' ? onOpen : null;
-};
+import type { LinkInbox } from './catalog-links-main.type';
 
 const createLinkInbox = (ctx: MainContext): LinkInbox => {
   let pending: CatalogLink[] = [];
   let taken = false;
   let links: CatalogLinks | null = null;
+  let stop: (() => void) | null = null;
 
   const deliver = (link: CatalogLink): void => {
     if (taken) ctx.emit('catalog:link', link);
@@ -35,11 +31,10 @@ const createLinkInbox = (ctx: MainContext): LinkInbox => {
 
   const listen = (scheme: string): void => {
     links = createCatalogLinks(scheme);
-    openSourceOf(ctx)?.((request) => {
-      if (request.kind === 'url' && request.url) deliverUrl(request.url);
+    stop?.();
+    stop = ctx.onOpen((request) => {
+      if (request.kind === 'url' && request.scheme === scheme) deliverUrl(request.url);
     });
-    const launch = links.fromArgv(process.argv);
-    if (launch) deliver(launch);
   };
 
   return { deliver, deliverUrl, take, listen };

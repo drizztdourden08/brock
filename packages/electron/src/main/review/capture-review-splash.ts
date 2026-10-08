@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import { writeCapture } from '../handlers/write-capture';
+import { captureReviewStep } from './capture-review-step';
 import { bootEvents } from '../boot/boot-events';
 import { bootState } from '../boot/boot-state';
 import { splashReady } from '../bootstrap/splash-ready';
@@ -16,7 +16,7 @@ const shoot = async (session: ReviewSession, step: string, cleared: Promise<unkn
     const splash = await Promise.race([splashReady(), timeout(SPLASH_SHOT_TIMEOUT_MS)]);
     await cleared;
     const record = session.splashStep(step);
-    await writeCapture(splash, session.dir, record.file);
+    await captureReviewStep(session, splash, record);
     session.addCheck({ id: 'splash-captured', step, pass: true, reason: `the splash was captured ${when} as ${record.file}` });
   } catch (err) {
     session.addCheck({ id: 'splash-captured', step, pass: false, reason: `the splash was not captured: ${err instanceof Error ? err.message : String(err)}` });

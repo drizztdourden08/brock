@@ -85,6 +85,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     author: input.author,
     repo: input.repo,
     updateChannel: input.updateChannel,
+    releaseTagPrefix: input.releaseTagPrefix,
     accent: input.accent,
     look: input.look,
     artifactPrefix: input.artifactPrefix ?? `${input.id}-`,

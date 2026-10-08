@@ -5,6 +5,7 @@ interface UpdateFeed {
   releasePage: string;
   channel: string;
   feedFile: string;
+  tagPrefix: string;
   harness: boolean;
   localSource: string | null;
 }

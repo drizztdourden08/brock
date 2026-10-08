@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { fillTemplate } from './fill-template.mjs';
-import { CHECKOUT_TAG, RELEASE_DIR } from './workflows.constants.mjs';
+import { CHECKOUT_HISTORY, CHECKOUT_TAG, RELEASE_DIR } from './workflows.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/module').ModuleCiStep} ModuleCiStep
@@ -11,13 +11,18 @@ import { CHECKOUT_TAG, RELEASE_DIR } from './workflows.constants.mjs';
  */
 const renderStep = (step) => `      - name: ${JSON.stringify(step.name)}\n        run: ${JSON.stringify(step.run)}\n\n`;
 
+const checkoutOf = (release, history) => {
+  if (release) return CHECKOUT_TAG;
+  return history ? CHECKOUT_HISTORY : '';
+};
+
 /**
- * @param {{ os: string, release?: boolean, systemSteps: ModuleCiStep[] }} opts
+ * @param {{ os: string, release?: boolean, history?: boolean, systemSteps: ModuleCiStep[] }} opts
  * @returns {string} checkout, module system steps, pnpm, Node, install
  */
-const setupSteps = ({ os, release = false, systemSteps }) =>
+const setupSteps = ({ os, release = false, history = false, systemSteps }) =>
   fillTemplate(RELEASE_DIR, 'setup-steps.yml.tmpl', {
-    CHECKOUT: release ? CHECKOUT_TAG : '',
+    CHECKOUT: checkoutOf(release, history),
     SYSTEM: systemSteps.filter((step) => !step.os || step.os === os).map(renderStep).join(''),
   }).trimEnd();
 

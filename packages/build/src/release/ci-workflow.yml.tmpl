@@ -1,5 +1,5 @@
-name: CI
-run-name: CI ${{ github.head_ref || github.ref_name }}
+name: CI__TITLE__
+run-name: CI__TITLE__ ${{ github.head_ref || github.ref_name }}
 
 # Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
 # Runs on pull requests and from the Actions tab. The review job launches the built app headless
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci__GROUP__-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -20,51 +20,4 @@ env:
   APP_DIR: __APP_DIR__
 
 jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-__SETUP__
-
-      - name: Build
-        run: pnpm --dir "$APP_DIR" exec brock build
-
-      - name: Managed files match brock sync
-        run: pnpm --dir "$APP_DIR" exec brock check
-
-      - name: Lint and typecheck
-        run: pnpm --dir "$APP_DIR" run lint
-
-      - name: Markdown
-        run: pnpm --dir "$APP_DIR" run --if-present lint:md
-
-      - name: Structure
-        run: pnpm --dir "$APP_DIR" exec brock structure --check
-
-      - name: Tests
-        run: pnpm --dir "$APP_DIR" run --if-present test
-
-  review:
-    runs-on: ubuntu-latest
-    steps:
-__SETUP__
-
-      - name: Build
-        run: pnpm --dir "$APP_DIR" exec brock build
-
-      - name: Let Electron start its sandbox
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-
-      - name: Install xvfb
-        run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }
-
-      - name: Headless review
-        run: xvfb-run -a pnpm --dir "$APP_DIR" exec brock launch main none --prod --review
-
-      - name: Keep the review report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: review
-          path: ${{ env.APP_DIR }}/.user-data/Data/review/
-          if-no-files-found: ignore
-__PLATFORM_JOBS__
+__JOBS__

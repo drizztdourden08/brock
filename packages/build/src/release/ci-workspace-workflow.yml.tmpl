@@ -1,0 +1,23 @@
+name: CI
+run-name: CI ${{ github.head_ref || github.ref_name }}
+
+# Managed by brock sync. The checks that cover the whole workspace: brock check, lint, markdown,
+# structure and tests. Each app builds and is reviewed in its own ci-<app>.yml, only when a change touches it.
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+__SETUP__
+__ROOT_STEPS__

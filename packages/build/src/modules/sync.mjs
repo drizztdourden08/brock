@@ -104,7 +104,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderManagedFiles({ inWorkspace }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
-    ...(inWorkspace ? [] : renderWorkflows(config, modules)),
+    ...renderWorkflows(rootDir, config, modules),
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);
   const pinned = pinApp(rootDir, OWN_PACKAGE.version, check).length > 0 ? ['package.json'] : [];

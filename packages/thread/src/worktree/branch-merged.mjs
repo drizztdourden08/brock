@@ -18,7 +18,7 @@ const isAncestorOf = (branch, ref, cwd) => tryGit(['merge-base', '--is-ancestor'
 /**
  * @param {string} branch
  * @param {string} cwd
- * @param {string} base the workspace base branch
+ * @param {string} base the thread's base branch
  * @returns {{ landed: boolean, via: string | null }}
  */
 const branchLanded = (branch, cwd, base) => {

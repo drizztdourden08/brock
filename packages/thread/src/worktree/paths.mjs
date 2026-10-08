@@ -12,6 +12,8 @@ const assertName = (name) => {
   return name;
 };
 
+const isWorktreeName = (name) => NAME_RULE.test(name) && name !== MAIN_CHECKOUT;
+
 const mainCheckout = (cwd = process.cwd()) => {
   const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   return resolve(common, '..');
@@ -46,4 +48,4 @@ const worktreePathFor = (name, workspace, cwd = process.cwd()) => {
   return registered ?? join(main, workspace.worktreesDir, name);
 };
 
-export { assertName, isWorktreeCheckout, mainCheckout, registeredWorktrees, worktreePathFor, MAIN_CHECKOUT };
+export { assertName, isWorktreeCheckout, isWorktreeName, mainCheckout, registeredWorktrees, worktreePathFor, MAIN_CHECKOUT };

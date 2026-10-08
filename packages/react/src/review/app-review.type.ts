@@ -45,4 +45,6 @@ interface AppReview {
   fixtures?: readonly AppReviewFixture[];
 }
 
-export type { AppReview, AppReviewFixture, AppReviewStepEntry, AppReviewTour, ReviewKit, ReviewSeedDef, ReviewStepDef };
+type FixtureTour = Pick<AppReviewTour, 'check'> & { platform: { files: Pick<Platform['files'], 'writeBytes'> } };
+
+export type { AppReview, AppReviewFixture, AppReviewStepEntry, AppReviewTour, FixtureTour, ReviewKit, ReviewSeedDef, ReviewStepDef };

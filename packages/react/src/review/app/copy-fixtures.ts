@@ -1,14 +1,19 @@
 /* @layer renderer-shell @kind logic */
-import type { AppReviewFixture, AppReviewTour } from '../app-review.type';
+import type { AppReviewFixture, FixtureTour } from '../app-review.type';
+
+const isInlined = (url: string): boolean => url.startsWith('data:') && url.slice(0, url.indexOf(',')).endsWith(';base64');
+
+const decodeInlined = (url: string): Uint8Array => Uint8Array.from(atob(url.slice(url.indexOf(',') + 1)), (char) => char.charCodeAt(0));
 
 const bytesOf = async (fixture: AppReviewFixture): Promise<Uint8Array> => {
   const url = (await fixture.load()).default;
+  if (isInlined(url)) return decodeInlined(url);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${fixture.path}: ${response.status} ${response.statusText}`);
   return new Uint8Array(await response.arrayBuffer());
 };
 
-const copyFixtures = async (tour: AppReviewTour, fixtures: readonly AppReviewFixture[]): Promise<void> => {
+const copyFixtures = async (tour: FixtureTour, fixtures: readonly AppReviewFixture[]): Promise<void> => {
   const failed: string[] = [];
   for (const fixture of fixtures) {
     try {

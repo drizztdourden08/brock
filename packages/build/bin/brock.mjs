@@ -40,7 +40,9 @@ Usage:
                              install a module package (or link it from a Brock checkout), record its id, sync
   brock dev [args]           electron-vite dev; unknown options and anything after -- reach it; syncs first
                              when .brock is missing or stale, and stops when the renderer entry misses a file
-  brock build [args]         electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set
+  brock build [--if-stale] [args]
+                             electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set;
+                             --if-stale builds only when dist is missing, half built or older than the app's sources
   brock package [--full] [--channel <name>]
                              build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
                              the update package and a delta when the previous release was downloaded there.

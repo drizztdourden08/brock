@@ -6,7 +6,7 @@
 __SETUP__
 
       # A pull request builds and reviews only the apps it touches: their own files, a workspace
-      # package they depend on, or a file outside every package. A manual run builds the app.
+      # package they depend on, or a file outside every package. A push or a manual run builds the app.
       - name: Does this change touch the app
         id: changed
         shell: bash

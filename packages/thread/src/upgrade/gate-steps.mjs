@@ -36,7 +36,11 @@ const appSteps = (plan, app) => [
   { name: inApp('brock migrate', app), run: () => runIn.brock(app.dir, migrateArgs(plan, app)) },
 ];
 
-const scriptPlaces = (path, apps) => [{ dir: path, label: '.' }, ...apps.filter((app) => app.dir !== path)];
+const frozenInstall = (path) => ({ name: 'pnpm install --frozen-lockfile', run: () => runIn.pnpm(path, ['install', '--frozen-lockfile']) });
+
+const checkStep = (app) => ({ name: inApp('brock check', app), run: () => runIn.brock(app.dir, ['check']) });
+
+const scriptPlaces = (path, apps) =>[{ dir: path, label: '.' }, ...apps.filter((app) => app.dir !== path)];
 
 const reviewSteps = ({ path, name, review, apps }) => [
   ...apps.map((app) => ({ name: inApp('brock icons', app), skipped: '--no-review', run: () => (review ? runIn.brock(app.dir, ['icons']) : null) })),
@@ -53,6 +57,8 @@ const reviewSteps = ({ path, name, review, apps }) => [
  */
 const gateSteps = (worktree) => [
   ...worktree.apps.flatMap((app) => appSteps(worktree.plan, app)),
+  frozenInstall(worktree.path),
+  ...worktree.apps.map(checkStep),
   ...scriptPlaces(worktree.path, worktree.apps).flatMap((place) => GATE_SCRIPTS.map((script) => scriptStep(place, script, worktree.path))),
   ...worktree.apps.map((app) => ({ name: inApp('brock gate', app), run: () => runIn.brock(app.dir, ['gate']) })),
   ...reviewSteps(worktree),

@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, normalize, resolve } from 'node:path';
 import { automationFlags } from './automation-flags.mjs';
+import { buildIfStale } from './build-if-stale.mjs';
 import { DIST_MAIN, distProblem } from './dist-problem.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
 import { ensureAppIcons } from './ensure-app-icons.mjs';
@@ -75,7 +76,7 @@ const notReadyWith = (dirs, userData) => (worktree, prod) => {
   if (!existsSync(dirs.userData(worktree))) {
     return `"${worktree.name}" has no ${userData} folder. Run: ${worktree.workspace.name} worktree create ${worktree.name}`;
   }
-  const problem = prod ? distProblem(dirs.app(worktree)) : null;
+  const problem = prod ? (buildIfStale(dirs.app(worktree)) ?? distProblem(dirs.app(worktree))) : null;
   if (problem) return `"${worktree.name}" has no complete production build (${problem}). Build it first, or launch without --prod.`;
   return null;
 };

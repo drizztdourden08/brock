@@ -18,6 +18,7 @@ interface ComposeInput {
   systemSteps?: SystemStep[];
   app?: AppOfMany | null;
   baselines?: boolean;
+  branch?: string;
 }
 
 interface ComposedWorkflows {
@@ -27,7 +28,7 @@ interface ComposedWorkflows {
 }
 
 declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
-declare const workspaceCi: (systemSteps?: SystemStep[]) => string;
+declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string) => string;
 
 export { composeWorkflows, workspaceCi };
 export type { AppOfMany, ComposeInput, ComposedWorkflows, SystemStep };

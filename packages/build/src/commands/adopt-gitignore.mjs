@@ -2,6 +2,8 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { keepGithubTracked } from '../release/keep-github-tracked.mjs';
+import { GITHUB_EXCEPTION } from '../release/workflows.constants.mjs';
 
 const NOTE = [
   '# Every folder that needs ignoring is a dot-folder, and the .*/ line below',
@@ -72,10 +74,12 @@ const ignoreGenerated = (rootDir) => {
   const present = new Set(kept.map((line) => line.trim()));
   const added = [...convention(rootDir, present), ...GENERATED.filter((line) => !present.has(line))];
   const dropped = kept.length !== current.split(/\r?\n/).length;
-  if (!added.length && !dropped) return [];
   const body = kept.join('\n').replace(/\n*$/, '');
-  writeFileSync(file, `${body ? `${body}\n` : ''}${added.join('\n')}\n`, 'utf8');
-  return added;
+  const next = `${body ? `${body}\n` : ''}${added.join('\n')}\n`;
+  const tracked = keepGithubTracked(next);
+  if (!added.length && !dropped && tracked === null) return [];
+  writeFileSync(file, tracked ?? next, 'utf8');
+  return tracked === null ? added : [...added, GITHUB_EXCEPTION];
 };
 
 export { ignoreGenerated };

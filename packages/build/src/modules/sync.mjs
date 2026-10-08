@@ -9,6 +9,7 @@ import { renderManagedFiles } from '../managed/templates.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
 import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
 import { renderWorkflows } from '../release/render-workflows.mjs';
+import { WORKFLOWS_DIR } from '../release/workflows.constants.mjs';
 import { renderReviewFiles } from '../review/render-review.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
@@ -51,6 +52,7 @@ const sameContent = (path, a, b) => {
  * @property {string[]} drifted Files whose content differed from the render
  * @property {{ id: string, packageName: string | null } []} missing  Module ids with no installed package
  * @property {{ id: string, package: string, version: string } []} modules
+ * @property {string[]} workflows The managed workflow files, from the app root
  */
 
 /**
@@ -100,6 +102,7 @@ const syncApp = (rootDir, config, opts = {}) => {
   const { modules, missing } = resolveModules(rootDir, config.modules ?? []);
   if (onMissing === 'throw') assertResolved(missing);
   const inWorkspace = findWorkspaceRoot(rootDir) !== null;
+  const workflows = renderWorkflows(rootDir, config, modules);
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
     ...renderBootFiles(rootDir),
@@ -115,7 +118,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
     ...clangFormatFiles(rootDir, config),
-    ...renderWorkflows(rootDir, config, modules),
+    ...workflows,
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);
   const pinned = pinApp(rootDir, OWN_PACKAGE.version, check).length > 0 ? ['package.json'] : [];
@@ -124,6 +127,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     drifted: [...drifted, ...pinned],
     missing,
     modules: modules.map((m) => ({ id: m.manifest.id, package: m.packageName, version: m.version })),
+    workflows: workflows.map((file) => file.path).filter((path) => path.includes(`${WORKFLOWS_DIR}/`)),
   };
 };
 

@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { followBrockPin, keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 import { scopeOf } from '@drizztdourden08/standards/structure';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
+import { ensurePnpmPackageManager } from '../release/pnpm-package-manager.mjs';
 import { releaseAppDir } from '../release/release-app-dir.mjs';
 import { releaseWorkflow } from '../release/release-workflow.mjs';
 import { RELEASE_WORKFLOW_FILE } from '../release/workflows.constants.mjs';
@@ -155,6 +156,16 @@ const addLauncher = (rootDir, scope, { force, files }) => {
 };
 
 /**
+ * @param {string} rootDir
+ * @param {{ written: string[] }} files
+ */
+const pinPackageManager = (rootDir, files) => {
+  const { status, value } = ensurePnpmPackageManager(rootDir);
+  if (status === 'added') files.written.push(`package.json packageManager ${value} (the managed workflows install that pnpm)`);
+  if (status === 'unknown') console.log('brock adopt: add "packageManager": "pnpm@<version>" to package.json; the managed workflows install the pnpm it names.');
+};
+
+/**
  * @param {{ rootDir: string, scope?: string, local?: string, force?: boolean}} ctx
  * @returns {Promise<number>} exit code
  */
@@ -171,6 +182,7 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   addTooling(pkg, { rootDir, local, force });
   const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');
+  pinPackageManager(rootDir, files);
   if (keepCrossDriveLinks(rootDir).length) files.written.push('.npmrc and .gitattributes (links across drives)');
   printSummary(scope, files, addLauncher(rootDir, scope, { force, files }), pinned.brock?.version ?? null);
   for (const line of layoutLines(rootDir)) console.log(line);

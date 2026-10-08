@@ -152,22 +152,26 @@ describe('the upgrade gate in a monorepo', () => {
     const names = gateSteps({ path: root, name: 'brock-0-17-0', plan: { mode: 'link', target: '0.17.0' }, review: true, apps }).map((step) => step.name);
     expect(names).toEqual([
       'brock sync in apps/desktop', 'brock migrate in apps/desktop',
-      'pnpm lint', 'pnpm typecheck', 'pnpm structure', 'pnpm test',
-      'pnpm lint in apps/desktop', 'pnpm typecheck in apps/desktop', 'pnpm structure in apps/desktop', 'pnpm test in apps/desktop',
+      'pnpm install --frozen-lockfile', 'brock check in apps/desktop',
+      'pnpm lint', 'pnpm typecheck', 'pnpm lint:md', 'pnpm structure', 'pnpm test',
+      'pnpm lint in apps/desktop', 'pnpm typecheck in apps/desktop', 'pnpm lint:md in apps/desktop', 'pnpm structure in apps/desktop', 'pnpm test in apps/desktop',
       'brock gate in apps/desktop',
       'brock icons in apps/desktop', 'launch brock-0-17-0 none --review',
     ]);
   });
 
-  it('runs the app gate steps of brock.config.ts through brock gate in each app', () => {
+});
+
+describe('the upgrade gate in each app of a monorepo', () => {
+  it.each(['check', 'gate'])('runs brock %s in each app: the managed files as CI checks them, and the gate steps of brock.config.ts', (verb) => {
     const root = monorepo();
     process.env.BROCK_STUB_LOG = join(root, 'brock-calls.log');
     const apps = upgradeApps(root, { current: '0.16.0' });
     const steps = gateSteps({ path: root, name: 'brock-0-17-0', plan: { mode: 'link', target: '0.17.0' }, review: false, apps });
-    const { results } = runSteps(steps.filter((step) => step.name === 'brock gate in apps/desktop'), () => {});
+    const { results } = runSteps(steps.filter((step) => step.name === `brock ${verb} in apps/desktop`), () => {});
     expect(results.map((step) => step.status)).toEqual(['passed']);
     const [call] = readFileSync(process.env.BROCK_STUB_LOG, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
-    expect(call).toEqual({ cwd: join(root, 'apps', 'desktop'), args: ['gate'] });
+    expect(call).toEqual({ cwd: join(root, 'apps', 'desktop'), args: [verb] });
   });
 
   it('skips an app script when the root script of that name already runs it in every package', () => {

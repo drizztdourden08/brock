@@ -2,7 +2,7 @@
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
-import { keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
+import { ensurePnpmPackageManager, keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
 
@@ -91,6 +91,8 @@ const writeCatalog = (targetDir, catalog, workspaceRoot) => {
  */
 const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null) => {
   const written = writeCatalog(targetDir, neededCatalog(targetDir, templateDir), workspaceRoot);
+  const packageManager = ensurePnpmPackageManager(workspaceRoot ?? targetDir);
+  if (packageManager.status === 'added') written.push(`package.json packageManager ${packageManager.value}`);
   const crossDrive = keepCrossDriveLinks(targetDir, workspaceRoot ?? targetDir).length > 0;
   return crossDrive ? [...written, 'prefer-frozen-lockfile=false and a .gitattributes line (the links cross drives)'] : written;
 };

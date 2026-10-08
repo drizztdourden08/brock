@@ -38,9 +38,34 @@ describe('composeWorkflows', () => {
     expect(release.slice(release.indexOf('build-linux:'))).toContain(LIBUSB.name);
   });
 
-  it('checks out the release tag in every build job', () => {
+  it('builds the commit prepare checked, at the release version, in every build job', () => {
     const { release } = composeWorkflows({ targets: ['desktop'], prefix: 'a-' });
-    expect(release.split('ref: ${{ needs.prepare.outputs.tag }}').length - 1).toBe(4);
+    expect(release.split('ref: ${{ needs.prepare.outputs.sha }}').length - 1).toBe(4);
+    expect(release.split('- name: Set the release version').length - 1).toBe(3);
+  });
+
+  it('runs every action on its Node 24 major and lets packageManager pick pnpm', () => {
+    const { ci, release } = composeWorkflows({ targets: ['desktop', 'android', 'web'], prefix: 'a-' });
+    const used = new Set([...`${ci}${release}`.matchAll(/uses: ([\w./-]+@v\d+)/g)].map((m) => m[1]));
+    expect([...used].sort()).toEqual([
+      'actions/checkout@v7', 'actions/download-artifact@v8', 'actions/setup-dotnet@v6', 'actions/setup-java@v6', 'actions/setup-node@v7',
+      'actions/upload-artifact@v7', 'android-actions/setup-android@v4', 'pnpm/action-setup@v6', 'softprops/action-gh-release@v3',
+    ]);
+    expect(`${ci}${release}`).not.toMatch(/pnpm\/action-setup@v6\n\s+with:/);
+  });
+
+  it('runs CI on a push to the default branch too, and cancels only pull request runs', () => {
+    const { ci } = composeWorkflows({ targets: ['desktop'], prefix: 'a-', branch: 'trunk' });
+    expect(ci).toContain('on:\n  pull_request:\n  push:\n    branches: [trunk]\n  workflow_dispatch:');
+    expect(ci).toContain("cancel-in-progress: ${{ github.event_name == 'pull_request' }}");
+    expect(composeWorkflows({ targets: ['desktop'], prefix: 'a-' }).ci).toContain('branches: [main]');
+  });
+
+  it('pins the review job to ubuntu-24.04 with or without baselines', () => {
+    for (const baselines of [false, true]) {
+      const { ci } = composeWorkflows({ targets: ['desktop'], prefix: 'a-', baselines });
+      expect(ci).toContain('  review:\n    runs-on: ubuntu-24.04\n');
+    }
   });
 });
 

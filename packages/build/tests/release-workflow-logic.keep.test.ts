@@ -52,7 +52,7 @@ describe('the composed workflows parse and wire up', () => {
     const declared = Object.keys(jobOf(parse(text) as Workflow, 'prepare').outputs ?? {});
     const read = [...text.matchAll(/needs\.prepare\.outputs\.(\w+)/g)].map((m) => m[1]);
     expect(new Set(read)).toEqual(new Set(declared));
-    expect(declared).toEqual(['tag', 'version', 'full']);
+    expect(declared).toEqual(['tag', 'version', 'full', 'sha']);
   });
 
   it('reads only the inputs it declares, and only step outputs of steps with that id', () => {
@@ -67,10 +67,17 @@ describe('the composed workflows parse and wire up', () => {
     }
   });
 
-  it('checks the release note before it tags, and in CI', () => {
-    const prepare = jobOf(release(), 'prepare');
-    const names = prepare.steps.map((step) => step.name);
-    expect(names.indexOf('Release note')).toBeLessThan(names.indexOf('Commit the version and tag it'));
+  it('checks the release note in prepare and in CI, and tags only after every build', () => {
+    const workflow = release(['desktop', 'android', 'web']);
+    const prepare = jobOf(workflow, 'prepare');
+    expect(prepare.steps.map((step) => step.name)).toContain('Release note');
+    for (const [id, job] of Object.entries(workflow.jobs).filter(([name]) => name !== 'release')) {
+      expect(JSON.stringify(job), id).not.toMatch(/git (tag|push|commit)/);
+    }
+    const publish = jobOf(workflow, 'release');
+    expect(publish.needs).toEqual(['prepare', 'build-windows', 'build-macos', 'build-linux', 'build-android', 'build-web']);
+    const names = publish.steps.map((step) => step.name ?? step.uses);
+    expect(names.indexOf('Commit the version and tag it')).toBeLessThan(names.indexOf('softprops/action-gh-release@v3'));
     expect(stepOf(prepare, 'Release note').run).toBe('pnpm --dir "$APP_DIR" exec brock release-notes check "${{ steps.resolve.outputs.version }}"');
     expect(stepOf(jobOf(ci(), 'quality'), 'Release note').run).toBe('pnpm --dir "$APP_DIR" exec brock release-notes check');
   });

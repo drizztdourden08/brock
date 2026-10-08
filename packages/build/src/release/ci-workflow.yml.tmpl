@@ -2,15 +2,18 @@ name: CI__TITLE__
 run-name: CI__TITLE__ ${{ github.head_ref || github.ref_name }}
 
 # Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
-# Runs on pull requests and from the Actions tab. The review job launches the built app headless
-# under xvfb and fails the run when a check in its report fails.
+# Runs on pull requests, on a push to __BRANCH__ (releases and release notes land there straight)
+# and from the Actions tab. The review job launches the built app headless under xvfb and fails
+# the run when a check in its report fails.
 on:
   pull_request:
+  push:
+    branches: [__BRANCH__]
   workflow_dispatch:__DISPATCH_INPUTS__
 
 concurrency:
   group: ci__GROUP__-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

@@ -6,6 +6,7 @@ import { renderInstallerPreview } from '../installer/render-installer-preview.mj
 import { writeSetupSplash } from '../installer/write-setup-splash.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { namePackOutputs } from '../packaging/name-pack-outputs.mjs';
+import { preparePackageIcons } from '../packaging/package-icons.mjs';
 import {
   BUILDER_CONFIG_FILE, BUILDER_TARGETS, COMMENT_LINE, NOTES_DIR, PACKED_NOTES, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
 } from '../packaging/packaging.constants.mjs';
@@ -41,6 +42,19 @@ const runBuilder = (rootDir, platform) =>
 
 /**
  * @param {string} rootDir
+ * @param {import('../config.mjs').BrockConfig} config
+ * @param {string} platform
+ * @returns {Promise<number>} electron-builder's exit code, or 1 when an icon is missing
+ */
+const runBuilderWithIcons = (rootDir, config, platform) => {
+  const problem = preparePackageIcons(rootDir, config, platform);
+  if (!problem) return runBuilder(rootDir, platform);
+  console.error(`brock package: ${problem}`);
+  return Promise.resolve(1);
+};
+
+/**
+ * @param {string} rootDir
  * @param {import('../installer/installer-inputs.mjs').InstallerInputs | null} inputs
  */
 const windowsExtras = (rootDir, inputs) =>
@@ -71,12 +85,13 @@ const packVelopack = async ({ rootDir, platform, product, version }, { full, cha
 const runPackage = async ({ rootDir, full = false, channel, renderInstaller, passthrough = [] }) => {
   const platform = process.platform;
   if (!BUILDER_TARGETS[platform]) throw new Error(`brock package does not know how to package on ${platform}`);
-  const { product } = await loadBrockConfig(rootDir);
+  const config = await loadBrockConfig(rootDir);
+  const { product } = config;
   if (renderInstaller) return renderInstallerPreview(rootDir, product);
   const version = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')).version;
   const built = await runBuild({ rootDir, passthrough });
   if (built !== 0) return built;
-  const packaged = await runBuilder(rootDir, platform);
+  const packaged = await runBuilderWithIcons(rootDir, config, platform);
   if (packaged !== 0 || !UNPACKED_DIRS[platform]) return packaged;
   return packVelopack({ rootDir, platform, product, version }, { full, channel: channel ?? product.updateChannel ?? null });
 };

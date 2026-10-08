@@ -2,6 +2,7 @@
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fillTemplate } from '../release/fill-template.mjs';
+import { defaultBranchOf } from '../release/default-branch.mjs';
 import { setupSteps } from '../release/setup-steps.mjs';
 import { RELEASE_DIR, WORKFLOWS_DIR } from '../release/workflows.constants.mjs';
 import { loadSite } from './load-site.mjs';
@@ -27,11 +28,13 @@ const siteTsconfig = (aliases) => `${JSON.stringify({
 
 /**
  * @param {string} appDir the site folder from the repo root
+ * @param {string} branch the default branch, where a push runs it
  * @returns {string} the managed ci-<name>.yml of a site
  */
-const siteWorkflow = (appDir) => `${fillTemplate(SITE_DIR, 'site-ci-workflow.yml.tmpl', {
+const siteWorkflow = (appDir, branch) => `${fillTemplate(SITE_DIR, 'site-ci-workflow.yml.tmpl', {
   NAME: basename(appDir),
   APP_DIR: appDir,
+  BRANCH: branch,
   CHANGES: fillTemplate(RELEASE_DIR, 'ci-changes-job.yml.tmpl', { SETUP: setupSteps({ os: 'linux', history: true, systemSteps: [] }) }).trimEnd(),
   SETUP: setupSteps({ os: 'linux', systemSteps: [] }),
 }).trimEnd()}\n`;
@@ -47,7 +50,7 @@ const renderSiteFiles = async (repoRoot, appDir, { workflows }) => {
   return [
     { path: `${appDir}/${SITE_VITE_CONFIG_FILE}`, content: fillTemplate(SITE_DIR, 'site-vite.config.ts.tmpl', {}) },
     { path: `${appDir}/${SITE_TSCONFIG_FILE}`, content: siteTsconfig(site.build.aliases) },
-    ...(workflows ? [{ path: `${WORKFLOWS_DIR}/ci-${basename(appDir)}.yml`, content: siteWorkflow(appDir) }] : []),
+    ...(workflows ? [{ path: `${WORKFLOWS_DIR}/ci-${basename(appDir)}.yml`, content: siteWorkflow(appDir, defaultBranchOf(repoRoot)) }] : []),
   ];
 };
 

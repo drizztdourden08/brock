@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { checkReleaseNote as standardsCheck } from '@drizztdourden08/standards/release-notes';
 import { checkNoteFile, checkReleaseNote } from '../src/index.mjs';
 
 const GOOD = `<!-- @layer docs @kind doc -->
@@ -58,5 +59,15 @@ describe('the release note standard', () => {
     writeFileSync(join(root, 'release-notes', 'v1.2.0.md'), GOOD);
     expect(checkNoteFile({ rootDir: root, version: 'v1.2.0', product: 'Atlas' })).toEqual([]);
     expect(checkNoteFile({ rootDir: root, version: '1.3.0' })).toEqual([expect.stringMatching(/^release-notes\/v1\.3\.0\.md: missing\./)]);
+  });
+
+  it('is the checker of standards, which also holds every newer note to the format', () => {
+    expect(checkReleaseNote).toBe(standardsCheck);
+    const root = mkdtempSync(join(tmpdir(), 'thread-notes-'));
+    made.push(root);
+    mkdirSync(join(root, 'release-notes'));
+    writeFileSync(join(root, 'release-notes', 'v1.2.0.md'), GOOD);
+    writeFileSync(join(root, 'release-notes', 'v1.3.0.md'), `<!-- release-notes: draft -->\n${GOOD.replace('v1.2.0', 'v1.3.0')}`);
+    expect(checkNoteFile({ rootDir: root, version: '1.2.0' })).toEqual([expect.stringMatching(/^release-notes\/v1\.3\.0\.md:1 {2}still a draft/)]);
   });
 });

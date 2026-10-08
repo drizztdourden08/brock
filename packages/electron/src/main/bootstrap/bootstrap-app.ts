@@ -36,6 +36,7 @@ import { logBoot } from './boot-timing';
 import { externalProtocols } from '../window/external-protocols';
 import { startProcess } from './start-process';
 import { startOpenRouting } from '../open/start-open-routing';
+import { bugReportTransport } from '../bug-report/bug-report-transport';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
@@ -45,6 +46,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
   await ensureDataDirectories(dataDirs);
   await rotateSessionLog();
   startOpenRouting(ctx, options, schemes);
+  bugReportTransport.current = options.bugReport ?? null;
 
   const plan = planWindow(setup);
   const { window: config } = setup.product;

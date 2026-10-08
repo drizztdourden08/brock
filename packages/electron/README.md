@@ -64,6 +64,7 @@ The app window is created with `show: false` at its saved geometry and is shown 
 | `onReady`, `onWindow`, `onWillQuit` | App hooks around the window |
 | `onOpen` | `(request, ctx)`: each link or file the OS hands the app, after the reveal |
 | `singleInstance` | Take the single-instance lock even with nothing to open (`true`), or never (`false`) |
+| `bugReport` | `{ transport(payload, ctx), label? }`: where the bug report dialog sends its payload, in place of the GitHub issue; see brock-react, Bug report |
 | `paths` | `{ preload, renderer, splash, splashPreload }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.mjs`, `../renderer/index.html`, `../renderer/splash.html`, `../preload/splash-preload.mjs` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
 
@@ -128,6 +129,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 - A cancelled dialog is an ordinary outcome: `pickFile` and `pickPath` return null and `saveFile` reports `saved: false` with no error. `dialog:pickPath(folder, extensions)` returns the picked path, not the bytes: a folder dialog when `folder` is true, else a file dialog filtered by `extensions`.
 - `debug:revealLogs` opens `Data/debug` in the file manager, as Open logs on the boot splash does.
+- `bugReport:transport` answers `{ label }` when `bootstrapApp` got a `bugReport` transport, else null; `bugReport:send` runs it and answers its `Result`, an error when there is none, and the message of a transport that throws (logged as an error; a failed result is logged as a warning). `writeDebugZip(target, debugDir, payload, extras?)` writes `report.json`, the `.log`, `.txt` and `.json` files of `debugDir` under `logs/`, then each extra `{ name, data }`, with Brock's zip writer, and removes the file when a write fails.
 - `profiles:create` writes the record only; which profile opens next time is a separate `profiles:setLast` call, so a renderer can skip it on an automation launch.
 - `network:lanAddresses` returns `lanAddresses()`: every non-internal network interface address, IPv4 before IPv6. Main code imports `lanAddresses` directly.
 - Screenshots go to `Data/screenshots/<name>.png`; the name must pass `assertSafeName`. `captureWindow` serves both the `test:screenshot` channel and the `--screenshot` launch flag.

@@ -9,6 +9,8 @@ const BASE_INVOKE_MAP = {
   takeOpenRequests: 'app:takeOpens',
   getSystemDiagnostics: 'diagnostics:getSystem',
   getProcessDiagnostics: 'diagnostics:getProcesses',
+  getBugReportTransport: 'bugReport:transport',
+  sendBugReport: 'bugReport:send',
   getLanAddresses: 'network:lanAddresses',
 
   getDataLocation: 'storage:getLocation',

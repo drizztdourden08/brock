@@ -10,6 +10,7 @@ import type { OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
 import type { JobRegistry, StartJob } from '../jobs/job.type';
 import type { DataDomains } from '../storage/domain-files.type';
+import type { BugReportOptions } from '../bug-report/bug-report.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -91,6 +92,7 @@ interface BootstrapOptions {
   onWillQuit?: (ctx: MainContext) => void;
   onOpen?: (request: OpenRequest, ctx: MainContext) => void;
   singleInstance?: boolean;
+  bugReport?: BugReportOptions;
   paths?: BootstrapPaths;
   security?: SecurityOptions;
 }

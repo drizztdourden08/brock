@@ -2,54 +2,49 @@
 import { useCallback, useState } from 'react';
 import { useProduct } from '../../../app/useProduct';
 import { useDebugText } from '../../../diagnostics/useDebugText';
-import { openExternal } from '../../../host/open-external';
-import { writeClipboard } from '../../../host/write-clipboard';
-import { toast } from '../../../toast/toast';
-import { buildIssueBody } from '../../build-issue-body';
-import { buildIssueUrl } from '../../build-issue-url';
+import { getAppLog } from '../../../log/get-app-log';
+import { buildBugReportPayload } from '../../build-bug-report-payload';
 import { useBugReportStore } from '../../useBugReportStore';
-import { COPIED_MESSAGE, COPY_FAILED_MESSAGE, OPENED_MESSAGE } from '../BugReportDialog.constants';
+import { useBugReportTarget } from '../../useBugReportTarget';
 import type { BugReportForm } from '../BugReportDialog.type';
-
-const copyReport = async (title: string, body: string): Promise<void> => {
-  const copied = await writeClipboard(`${title.trim()}\n\n${body}`);
-  toast(copied ? COPIED_MESSAGE : COPY_FAILED_MESSAGE, { variant: copied ? 'success' : 'danger' });
-};
+import { deliverReport } from './deliver-report';
 
 const useBugReportForm = (): BugReportForm => {
   const open = useBugReportStore((s) => s.open);
   const hide = useBugReportStore((s) => s.hide);
-  const { repo } = useProduct();
-  const { text } = useDebugText(open);
+  const product = useProduct();
+  const { text, system, version } = useDebugText(open);
+  const target = useBugReportTarget(open);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [attach, setAttach] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const diagnostics = attach ? text : null;
-  const canSend = title.trim().length > 0 && description.trim().length > 0 && (!attach || text !== null);
+  const canSend = target !== null && !sending && title.trim().length > 0 && description.trim().length > 0 && (!attach || text !== null);
 
   const close = useCallback(() => {
     hide();
     setTitle('');
     setDescription('');
     setAttach(true);
+    setError(null);
   }, [hide]);
 
   const send = useCallback(() => {
     if (!canSend) return;
-    if (repo) {
-      openExternal(buildIssueUrl({ repo, title, description, diagnostics }));
-      toast(OPENED_MESSAGE, { variant: 'success' });
-    } else {
-      void copyReport(title, buildIssueBody(description, diagnostics));
-    }
-    close();
-  }, [canSend, repo, title, description, diagnostics, close]);
+    const payload = buildBugReportPayload({ title, description, product, version, diagnostics, system: attach ? system : null, logs: attach ? getAppLog().getEntries() : [] });
+    setSending(true);
+    setError(null);
+    void deliverReport(target, payload).then((failure) => {
+      setSending(false);
+      if (failure === null) close();
+      else setError(failure);
+    });
+  }, [canSend, target, title, description, product, version, diagnostics, attach, system, close]);
 
-  return {
-    open, title, setTitle, description, setDescription, attach, setAttach,
-    diagnostics, hasRepo: repo !== undefined, canSend, send, close,
-  };
+  return { open, title, setTitle, description, setDescription, attach, setAttach, diagnostics, target, sending, error, canSend, send, close };
 };
 
 export { useBugReportForm };

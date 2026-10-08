@@ -44,6 +44,9 @@ export type { DataDomains, DomainFiles } from './storage/domain-files.type';
 export type { JobHandle, JobRegistry, StartJob } from './jobs/job.type';
 export { captureWindow } from './handlers/capture-window';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';
+export { writeDebugZip } from './bug-report/write-debug-zip';
+export { collectDebugFiles } from './bug-report/collect-debug-files';
+export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport } from './bug-report/bug-report.type';
 export { lanAddresses } from './network/lan-addresses';
 
 export { serveDirectoryScheme } from './protocol/serve-directory-scheme';

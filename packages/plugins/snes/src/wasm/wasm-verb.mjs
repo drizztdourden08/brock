@@ -1,9 +1,9 @@
 /* @layer tooling-scripts @kind logic */
+import { wasmStaleReason } from '@drizztdourden08/brock-port-kit/ensure-wasm';
 import { checkoutOf } from '../checkout-of.mjs';
 import { snesOptions } from '../snes-options.mjs';
 import { buildWasm, sdkDir } from './build-wasm.mjs';
 import { ensureEmsdk } from './ensure-emsdk.mjs';
-import { wasmStaleReason } from './wasm-stale.mjs';
 
 const USAGE = '  brock snes wasm build [--force]         build the core when a source is newer than its output';
 

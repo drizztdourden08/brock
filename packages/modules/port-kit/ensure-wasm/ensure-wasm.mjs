@@ -3,11 +3,11 @@ import { runWasmBuild } from './run-wasm-build.mjs';
 import { wasmStaleReason } from './wasm-stale-reason.mjs';
 
 /**
- * @param {{ root: string, wasm: import('./index.d.mts').WasmOptions, log: (message: string) => void }} request
+ * @param {import('./index.d.mts').EnsureWasmRequest} request
  * @returns {'current' | 'built'}
  */
-const ensureWasm = ({ root, wasm, log }) => {
-  const reason = wasmStaleReason(root, wasm);
+const ensureWasm = ({ root, wasm, log, force = false }) => {
+  const reason = wasmStaleReason(root, wasm) ?? (force ? 'forced' : null);
   if (!reason) {
     log('The wasm core is current.');
     return 'current';

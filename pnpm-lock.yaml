@@ -407,6 +407,9 @@ importers:
 
   packages/plugins/snes:
     dependencies:
+      '@drizztdourden08/brock-port-kit':
+        specifier: workspace:*
+        version: link:../../modules/port-kit
       '@drizztdourden08/brock-thread':
         specifier: workspace:*
         version: link:../../thread

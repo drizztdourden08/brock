@@ -18,6 +18,7 @@ interface EnsureWasmRequest {
   root: string;
   wasm: WasmOptions;
   log: (message: string) => void;
+  force?: boolean;
 }
 
 declare const WASM_DEFAULTS: Readonly<WasmOptions>;

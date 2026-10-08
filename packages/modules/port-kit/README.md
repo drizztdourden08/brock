@@ -55,7 +55,9 @@ const port = definePort<GameSettings>({
 
 `known` maps an upper-case SHA-1 to `{ id, label }`. The id names the stored ROM (`roms/<id>.sfc`, the first of `extensions`) and its asset blob (`assets/<id>.dat`).
 
-`rom.keepFileName: true` keeps the name the file was imported under instead: `Game (USA).smc` is stored as `roms/Game (USA).smc` and its blob as `assets/Game (USA).dat`, for a port whose ROM-to-asset naming or existing data already depends on the original name. The store then lists a ROM by hashing it rather than by its name, and skips files that are not a known dump. The name only loses its folder; one a disk would refuse (a reserved device name, `<>:"/\|?*`, a leading dot, a trailing dot or space) is refused. The default, `false`, is the id naming above. Either way the stored bytes are the `normalize`d dump, so a copier header is stripped. A core that renders to a framebuffer and hands out samples says so instead: `video: { mode: 'framebuffer', width, height, frame: 'WasmFramePtr' }` and `audio: { mode: 'samples', sampleRate, channels, samples: 'WasmAudioPtr', count: 'WasmAudioFrames' }`, with `exports.runFrame`; the kit then drives the frame loop itself.
+`rom.keepFileName: true` keeps the name the file was imported under instead: `Game (USA).smc` is stored as `roms/Game (USA).smc` and its blob as `assets/Game (USA).dat`, for a port whose ROM-to-asset naming or existing data already depends on the original name. The store then lists a ROM by its hash, not its name, and skips files that are not a known dump. The name only loses its folder; one a disk would refuse (a reserved device name, `<>:"/\|?*`, a leading dot, a trailing dot or space) is refused. The default, `false`, is the id naming above. Either way the stored bytes are the `normalize`d dump, so a copier header is stripped.
+
+A core that renders to a framebuffer and hands out samples says so instead: `video: { mode: 'framebuffer', width, height, frame: 'WasmFramePtr' }` and `audio: { mode: 'samples', sampleRate, channels, samples: 'WasmAudioPtr', count: 'WasmAudioFrames' }`, with `exports.runFrame`; the kit then drives the frame loop itself.
 
 ## Running it
 
@@ -84,4 +86,6 @@ Loading also takes a raw state: a file that does not start with `PKSV` is handed
 
 ## ensure-wasm
 
-The app runs `port-kit-ensure-wasm` before `dev` and `build`. It rebuilds the core when an output is missing or a C source is newer than it. Options come from `package.json#portKit.wasm` and use the names of the SNES thread plugin: `sourceDirs`, `skipDirs`, `sourceExtensions`, `buildScript`, `output`, `outputExtensions`, `emsdkDir`. The build script runs with `$EMSDK` on the path when the SDK is found.
+The app runs `port-kit-ensure-wasm` before `dev` and `build`. It rebuilds the core when an output is missing or a C source is newer than it. Options come from `package.json#portKit.wasm` and use the names of the SNES thread plugin: `sourceDirs`, `skipDirs`, `sourceExtensions`, `buildScript`, `output`, `outputExtensions`, `emsdkDir`. The build script runs with `$EMSDK` on the path when the SDK is found. `emsdkDir` is relative to the app folder or absolute, and `$EMSDK` wins over it.
+
+This is the only copy of the stale check. `@drizztdourden08/brock-plugin-snes` imports it from `@drizztdourden08/brock-port-kit/ensure-wasm`: its `wasmBuild()` step and `snes wasm build` ask `wasmStaleReason`, and build through `ensureWasm({ ..., force: true })` with the SDK of the main checkout. `force` builds even when the core is current.

@@ -1,0 +1,54 @@
+{
+  "name": "@drizztdourden08/brock-tools",
+  "version": "0.35.0",
+  "description": "Brock tools module: external binaries an app declares, downloaded and checksum-verified into Data/tools or found on PATH, installed as a job and run with an argument array.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/tools"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "brock": {
+    "id": "tools",
+    "description": "External binaries the app declares: download, checksum, locate on PATH or in Data/tools, and run.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "dataDirs": [
+      "tools"
+    ]
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "catalog:",
+    "react": "catalog:"
+  },
+  "peerDependencies": {
+    "electron": ">=38",
+    "react": "^19.0.0"
+  }
+}

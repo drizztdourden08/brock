@@ -438,7 +438,7 @@ the removed platforms rendered and runs `brock sync`; scaffolded folders such as
 
 ## Module ids
 
-`updater`, `secrets`, `input`, `display` and `port-kit` map to
+`updater`, `secrets`, `input`, `display`, `port-kit` and `tools` map to
 `@drizztdourden08/brock-<id>`. Any other `brock add` argument is an npm spec; the id
 comes from the installed package's `package.json#brock.id`.
 

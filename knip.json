@@ -122,6 +122,15 @@
         "koffi-v2"
       ]
     },
+    "packages/modules/tools": {
+      "entry": [
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "tests/**/*.ts"
+      ]
+    },
     "packages/modules/updater": {
       "entry": [
         "tests/**/*.test.ts"

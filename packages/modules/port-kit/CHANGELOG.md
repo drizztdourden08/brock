@@ -1,5 +1,32 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.36.0
+
+### Minor Changes
+
+- 1c018e1: Port kit can keep a ROM's original file name. `rom.keepFileName: true` in the port definition stores an imported ROM as `roms/<original name>` and its asset blob as `assets/<original stem><extension>` instead of `roms/<identity.id><ext>`, and `list()` then identifies each stored ROM by its SHA-1. Names with spaces, commas, brackets and parentheses are allowed; a name a disk would refuse is not. The default stays the identity id naming. The stored bytes are the normalized dump in both modes.
+- 3c4c039: Port kit loads raw save states. A `.sav` that does not start with the `PKSV` header is no longer refused with `magic`: `decodeSaveSlot` reads it as the core's raw state, and `loadStateBytes`, `load` and `loadNamed` hand it to the core, so states and fixtures written before the kit keep loading. The decode result now carries `format` (`'pksv'` or `'raw'`), and `decodeSaveSlot(bytes, port, { acceptRaw: false })` keeps the strict check. A container cut inside its header is now `corrupt` instead of `magic`. Saving still writes the `PKSV` container.
+- 1c967af: One wasm stale check, in port kit. `brock-plugin-snes` drops its own copy and now depends on `@drizztdourden08/brock-port-kit`: `snes.wasmBuild()` and `snes wasm build` ask port kit's `wasmStaleReason` and build through its `ensureWasm`, still with the plugin's defaults, the pinned SDK install and the main checkout's SDK folder. Port kit's `ensureWasm` takes `force: true` to build a current core, and `emsdkDir` may now be an absolute path. The SNES plugin's tests now run with the rest.
+
+### Patch Changes
+
+- Updated dependencies [273846f]
+- Updated dependencies [e40fe59]
+- Updated dependencies [aa74a6d]
+- Updated dependencies [5289e5d]
+- Updated dependencies [e40fe59]
+- Updated dependencies [6f6977d]
+- Updated dependencies [3063895]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [0f4133a]
+- Updated dependencies [cbbb865]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-core@0.36.0
+  - @drizztdourden08/brock-react@0.36.0
+  - @drizztdourden08/brock-electron@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @drizztdourden08/brock-plugin-snes
 
+## 0.36.0
+
+### Minor Changes
+
+- e40fe59: The SNES plugin carries no game of its own. `snes.roms.sha1` is empty by default, so `snes rom check` knows no ROM until the workspace lists the hashes it accepts under `snes.roms.sha1` in `brock.workspace.mjs`. The core output defaults to port kit's `public/wasm` (the plugin now starts from port kit's `WASM_DEFAULTS`); a port whose core goes elsewhere sets `snes.wasm.output`. The flags `snes.saveStateOf` gives the app come from the new `snes.states.launchFlags`, `{ game: [...], save: [...] }` with `{state}` replaced by the save name or quick slot; the defaults are `--start-game` and `--load-state=<state>`, and an app whose main process reads other flags sets its own there. The plugin README documents the options with an example.
+- 1c967af: One wasm stale check, in port kit. `brock-plugin-snes` drops its own copy and now depends on `@drizztdourden08/brock-port-kit`: `snes.wasmBuild()` and `snes wasm build` ask port kit's `wasmStaleReason` and build through its `ensureWasm`, still with the plugin's defaults, the pinned SDK install and the main checkout's SDK folder. Port kit's `ensureWasm` takes `force: true` to build a current core, and `emsdkDir` may now be an absolute path. The SNES plugin's tests now run with the rest.
+
+### Patch Changes
+
+- Updated dependencies [5a819b6]
+- Updated dependencies [34ef26d]
+- Updated dependencies [b8f4eed]
+- Updated dependencies [e40fe59]
+- Updated dependencies [1c018e1]
+- Updated dependencies [3c4c039]
+- Updated dependencies [e40fe59]
+- Updated dependencies [0aaabeb]
+- Updated dependencies [b42b735]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [1c967af]
+- Updated dependencies [7fc554a]
+  - @drizztdourden08/brock-thread@0.36.0
+  - @drizztdourden08/brock-port-kit@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

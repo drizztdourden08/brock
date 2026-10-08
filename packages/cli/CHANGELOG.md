@@ -1,5 +1,44 @@
 # @drizztdourden08/brock
 
+## 0.36.0
+
+### Patch Changes
+
+- e40fe59: Examples name no app of their own. `defineProduct`'s message for a file extension written with a dot gives `mypack` as its example, the package READMEs use neutral names (`my-app`, `api-token`, an `account` sign-in, `codegen:check` as a gate script), and the move steps in docs/upgrading-an-app.md are a general checklist.
+- Updated dependencies [273846f]
+- Updated dependencies [5a819b6]
+- Updated dependencies [e40fe59]
+- Updated dependencies [c530ec5]
+- Updated dependencies [f0e104c]
+- Updated dependencies [5289e5d]
+- Updated dependencies [5a819b6]
+- Updated dependencies [adc0d5c]
+- Updated dependencies [5a819b6]
+- Updated dependencies [0b2da5f]
+- Updated dependencies [34ef26d]
+- Updated dependencies [b8f4eed]
+- Updated dependencies [e40fe59]
+- Updated dependencies [5345962]
+- Updated dependencies [6f6977d]
+- Updated dependencies [e40fe59]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [0aaabeb]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [5a819b6]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [e344df6]
+- Updated dependencies [956b72b]
+- Updated dependencies [5116d52]
+- Updated dependencies [7fc554a]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-build@0.36.0
+  - @drizztdourden08/brock-thread@0.36.0
+  - @drizztdourden08/create-brock@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

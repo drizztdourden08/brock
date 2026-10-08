@@ -1,5 +1,27 @@
 # @drizztdourden08/brock-secrets
 
+## 0.36.0
+
+### Patch Changes
+
+- e40fe59: Examples name no app of their own. `defineProduct`'s message for a file extension written with a dot gives `mypack` as its example, the package READMEs use neutral names (`my-app`, `api-token`, an `account` sign-in, `codegen:check` as a gate script), and the move steps in docs/upgrading-an-app.md are a general checklist.
+- Updated dependencies [273846f]
+- Updated dependencies [e40fe59]
+- Updated dependencies [aa74a6d]
+- Updated dependencies [5289e5d]
+- Updated dependencies [e40fe59]
+- Updated dependencies [6f6977d]
+- Updated dependencies [3063895]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [0f4133a]
+- Updated dependencies [cbbb865]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-core@0.36.0
+  - @drizztdourden08/brock-react@0.36.0
+  - @drizztdourden08/brock-electron@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

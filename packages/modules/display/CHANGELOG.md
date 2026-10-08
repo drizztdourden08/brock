@@ -1,5 +1,31 @@
 # @drizztdourden08/brock-display
 
+## 0.36.0
+
+### Minor Changes
+
+- 273846f: The input and display modules run on Android. Each ships a Capacitor plugin in its package: `BrockInput` drives SDL3 inside the app through a JNI library built against the same pinned SDL3 source as the desktop addon, and takes controller keys before the WebView without any change to `MainActivity`; `BrockDisplay` reads the display's rates and asks Android for a synced one through the window's preferred refresh rate. `inputApi()`, `displayApi()` and `window.api.input` and `window.api.display` return the same API on Android as on the desktop, so app code does not branch; raw and joystick capture, the bundled mapping database and window modes stay desktop only (the module READMEs list each limit). `platform add android` and `mobile build` wire the modules in `modules` into the Gradle project, a built-in module left out of `modules` stays out through `android.includePlugins`, and `doctor android` asks for the NDK and CMake the input module builds with. brock-core adds `nativePlugin` and `listenNative`, brock-react adds `exposeHostNamespace`.
+
+### Patch Changes
+
+- 5d02359: Display accepts koffi 3. The `koffi` peer range is now `^2.9.0 || ^3.0.0`, so an app already on koffi 3 keeps it. Nothing in the driver changed: it declares `DEVMODEW` and the C prototypes and calls them, which koffi 3 kept, and the macOS driver only passes its pointers back and checks them for null, which holds for koffi 3's BigInt pointers. A new test runs the Windows driver on koffi 3 and the same declarations on koffi 2: struct size, the current mode read in place, the rate list, and a `CDS_TEST` mode change.
+- Updated dependencies [273846f]
+- Updated dependencies [e40fe59]
+- Updated dependencies [aa74a6d]
+- Updated dependencies [5289e5d]
+- Updated dependencies [e40fe59]
+- Updated dependencies [6f6977d]
+- Updated dependencies [3063895]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [0f4133a]
+- Updated dependencies [cbbb865]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-core@0.36.0
+  - @drizztdourden08/brock-react@0.36.0
+  - @drizztdourden08/brock-electron@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

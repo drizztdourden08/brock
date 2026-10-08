@@ -1,5 +1,45 @@
 # @drizztdourden08/create-brock
 
+## 0.36.0
+
+### Minor Changes
+
+- b42b735: Brock apps release with their note. The managed `release.yml` makes the GitHub release body the note without its comment lines plus a Downloads list, names the release after the note's title, and `brock package` hands Velopack the same note (`release/release-notes.md`), so `NotesMarkdown` carries it to the updater. A new app ships `release-notes/v0.1.0.md`, filled in with its name. The `release-notes-folder` migration (0.36.0) adds `release-notes/` with a README on the format at the repo root of an existing app, once, and leaves a to-do to write the next note.
+- 0aaabeb: Brock depends on `@drizztdourden08/standards` ^0.8.0, and `brock-thread` drops its copy of the release note checker for `@drizztdourden08/standards/release-notes`: `checkReleaseNote` is the standards function, and `checkNoteFile` runs its `checkRepoNotes` for the version named, so `brock release` and `brock release-notes check` also hold every newer note in the repo to the standard.
+
+### Patch Changes
+
+- e40fe59: An app ships only its own brand's palette. `BrockApp` no longer imports every Tessera brand palette; `brock sync` writes `.brock/palette.css`, which imports the palette of `product.icons.brand` (nothing when Tessera has no palette for the brand), and the app's `src/main.tsx` imports it right after Tessera's `tokens.css`. The `brand-palette-import` migration (0.36.0) adds that import to an existing app's `src/main.tsx` once, and leaves a to-do when the renderer entry is elsewhere. New apps from `create-brock` have the import, and its first sync writes the template brand's palette.
+- 956b72b: `brock sync` writes `.brock/tessera.ts`, a type import of the Tessera entry module, in every app that has Tessera. A `declare module '@drizztdourden08/tessera'` block, such as the parts module `tessera guide` writes, only resolves when the Tessera entry file is already in the program, and an app whose own files import Tessera through subpaths never loaded it; in an app scaffolded with `--local`, where the Brock packages are links that import their own Tessera copy, `tsc` and `pnpm lint` failed with TS2664 ("Invalid module name in augmentation") as soon as the guide wrote any part. A fresh app ships the file, and the next `brock sync` adds it to an existing one.
+- Updated dependencies [273846f]
+- Updated dependencies [5a819b6]
+- Updated dependencies [e40fe59]
+- Updated dependencies [c530ec5]
+- Updated dependencies [f0e104c]
+- Updated dependencies [5289e5d]
+- Updated dependencies [5a819b6]
+- Updated dependencies [adc0d5c]
+- Updated dependencies [5a819b6]
+- Updated dependencies [0b2da5f]
+- Updated dependencies [b8f4eed]
+- Updated dependencies [e40fe59]
+- Updated dependencies [5345962]
+- Updated dependencies [6f6977d]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [0aaabeb]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [5a819b6]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [e344df6]
+- Updated dependencies [956b72b]
+- Updated dependencies [5116d52]
+- Updated dependencies [7fc554a]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-build@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

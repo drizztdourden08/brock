@@ -41,6 +41,24 @@ An app built before Brock, such as Relic of the Past, has no `brock.version` in 
 
 Never pass an old `--from` to bring a non-Brock app "up to date": the app starts at the version it adopts.
 
+### An app with its own copy of the design system
+
+Tessera began as a copy of Relic of the Past's design system (RotP master `b2a089bd1`), and RotP still imports that copy from `apps/web/src/ui/design-system`, through the `@ds` alias and relative paths. Tessera's `RENAMES.json`, from its first release with entries (0.4.0), is the conversion path from that copy, and `brock migrate` runs it:
+
+```
+pnpm add @drizztdourden08/tessera            # in the package that holds the code
+brock migrate --tessera-from-copy apps/web/src/ui/design-system --alias @ds --report copy-report.json
+```
+
+1. The copy folder is relative to `--root` (the current directory by default). `--alias` names an import alias that stands for it, and can be given more than once. Every script and stylesheet under `--root` outside the copy is covered, so run it where all the importing code sits (RotP: the repo root, which reaches `apps/web`, `apps/sanctuary` and `tests`). It needs Tessera installed and does not need `brock.version`.
+2. Each named import or `export { … } from` of the copy takes the Tessera entry for its tier: `primitives/…` from `@drizztdourden08/tessera/primitives`, `composites/…` from `/composites` (the field kits and the colour pickers from their own entries), `data/…` from `/data`, and `tokens/index.css` becomes `@drizztdourden08/tessera/tokens.css`. Imports from the same entry join into one.
+3. Every release of `RENAMES.json` from 0.4.0 to the installed Tessera then replays over the converted files, oldest first, with the moves. The first run replays over every other script and stylesheet in scope too (the custom properties and classes they name), except a script that already imported Tessera; `brock.tessera` is pinned after it. A second run converts only what is left and changes nothing it already changed.
+4. Two copy parts share a name with a different Tessera part. The copy's `Badge` (a status word) becomes `Status`, with `variant` as `tone`, and its `Stepper` (a number with plus and minus) becomes `NumberInput` with `buttons="sides"` and `ariaLabel` as `aria-label`. Neither ever becomes Tessera's own `Badge` (a count or a dot) or `Stepper` (the wizard steps): the replay renames them at 0.4.0 and 0.6.0, before Tessera reused the names. Afterwards a converted file that still imports a copy name Tessera now uses for another part, and that no later rename gave back (`Badge`), is a to-do.
+5. Each converted import is then checked against the installed Tessera: a name another entry exports moves there, and a name no entry exports (a helper from inside the copy, such as `useAnchorMenu`) is a to-do.
+6. What cannot be rewritten safely is a to-do in the report: a namespace or default import of the copy, a string that names a copy path (a dynamic import, a `vi.mock`), a stylesheet `@import` of the copy, a file that imports both the copy and Tessera, every rename note of `RENAMES.json` (Tessera's `MIGRATION.md` explains each), each config line that maps the alias (`tsconfig.json` paths, the Vite aliases), and the copy folder itself, to delete once nothing imports it.
+
+Tests of the copy's own internals (RotP's `tests/design-system`) come out as to-dos; they test code Tessera now owns, so they go with the copy.
+
 ## What the gate enforces
 
 ### Files and code

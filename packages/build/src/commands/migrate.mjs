@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { loadBrockConfig } from '../load-config.mjs';
 import { resolveModules } from '../modules/resolve.mjs';
@@ -8,6 +8,7 @@ import { collectMigrations } from '../upgrade/collect-migrations.mjs';
 import { runMigrations } from '../upgrade/run-migrations.mjs';
 import { selectMigrations } from '../upgrade/select-migrations.mjs';
 import { tesseraRenamesStep } from '../upgrade/tessera/tessera-renames-step.mjs';
+import { tesseraCopyStep } from '../upgrade/tessera-copy/tessera-copy-step.mjs';
 import { runSync } from './sync.mjs';
 
 const MISSING_FROM = 'brock migrate: --from <version> is required (the Brock version the app upgrades from), or --tessera-from <version> to replay the Tessera renames alone.';
@@ -18,11 +19,23 @@ const neverOnBrock = (rootDir) => [
   'To replay only the Tessera renames, pass --tessera-from <version> without --from.',
 ].join('\n');
 
-const refusal = ({ rootDir, from, tesseraFrom }) => {
-  const pinned = brockPinOf(rootDir) !== null;
-  if (from || tesseraFrom) return from && !pinned ? neverOnBrock(rootDir) : null;
-  return pinned ? MISSING_FROM : neverOnBrock(rootDir);
+const copyRefusal = ({ rootDir, tesseraFrom, tesseraFromCopy }) => {
+  if (!tesseraFromCopy) return null;
+  if (tesseraFrom) return 'brock migrate: --tessera-from and --tessera-from-copy both set where the Tessera replay starts; pass one.';
+  const copyDir = resolve(rootDir, tesseraFromCopy);
+  return existsSync(copyDir) ? null : `brock migrate: the copy folder ${copyDir} does not exist (--tessera-from-copy is relative to --root).`;
 };
+
+const refusal = (ctx) => {
+  const copy = copyRefusal(ctx);
+  if (copy) return copy;
+  const pinned = brockPinOf(ctx.rootDir) !== null;
+  if (ctx.from || ctx.tesseraFrom || ctx.tesseraFromCopy) return ctx.from && !pinned ? neverOnBrock(ctx.rootDir) : null;
+  return pinned ? MISSING_FROM : neverOnBrock(ctx.rootDir);
+};
+
+const tesseraStep = ({ rootDir, tesseraFrom, tesseraFromCopy, aliases }) =>
+  (tesseraFromCopy ? tesseraCopyStep({ rootDir, copy: tesseraFromCopy, aliases: aliases ?? [] }) : tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
 
 const printTodos = (todos) => {
   if (todos.length === 0) return;
@@ -74,18 +87,24 @@ const writeReport = (report, run) => {
 };
 
 /**
- * @param {{ rootDir: string, from?: string, to?: string, tesseraFrom?: string, report?: string }} ctx
+ * @param {{ rootDir: string, from?: string, to?: string, tesseraFrom?: string, tesseraFromCopy?: string, aliases?: string[], report?: string }} ctx
  * @returns {Promise<number>} exit code; Brock migrations, then the Tessera renames
  */
-const runMigrate = async ({ rootDir, from, to, tesseraFrom, report }) => {
-  const refused = refusal({ rootDir, from, tesseraFrom });
+const runMigrate = async (ctx) => {
+  const { rootDir, from, to, report } = ctx;
+  const refused = refusal(ctx);
   if (refused) {
     console.error(refused);
     return 1;
   }
   const range = { from: from ?? null, to: to ?? null };
   const brock = await brockRun(rootDir, range);
-  const run = withTessera(brock, tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
+  const tessera = tesseraStep(ctx);
+  if (tessera.refused) {
+    console.error(`brock migrate: ${tessera.refused}`);
+    return 1;
+  }
+  const run = withTessera(brock, tessera);
   printRun(run, range);
   if (report) writeReport(report, run);
   if (!brock.applied.some((m) => m.touched.length > 0)) return 0;

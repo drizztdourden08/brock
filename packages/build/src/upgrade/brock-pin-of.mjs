@@ -12,7 +12,7 @@ const pinIn = (dir) => {
 
 /**
  * @param {string} rootDir the app folder
- * @returns {string | null} its package.json brock.version, else the workspace root's; null when the app was never on Brock
+ * @returns {string | null} brock.version of the app, else of its workspace
  */
 const brockPinOf = (rootDir) => {
   const repoRoot = findWorkspaceRoot(rootDir);

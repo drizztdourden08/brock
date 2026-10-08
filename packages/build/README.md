@@ -44,6 +44,8 @@ brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--re
                            then replay Tessera's RENAMES.json and pin brock.tessera;
                            --tessera-from alone replays only the Tessera renames;
                            an app with no brock.version is refused: brock adopt pins it first;
+                           --tessera-from-copy <folder> [--alias <alias>]... converts an app that holds
+                           its own copy of the design system (see Tessera renames, A copy of the design system);
                            --report <file> (relative to the current directory) writes the run as JSON
 brock platform list | add <id | bundle>... | remove <id | bundle>...
                            the targets in brock.config.ts; add runs the platform steps and the doctor,
@@ -373,6 +375,40 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
 - The report is the migration report: one `tessera-renames` entry per release, its
   to-dos numbered after the Brock ones, and a `tessera` summary with the range, the pin
   and the warnings.
+
+#### A copy of the design system
+
+`brock migrate --tessera-from-copy <folder> [--alias <alias>]...` (`src/upgrade/tessera-copy/`)
+is for an app that imports its own copy of what became Tessera instead of the package.
+`<folder>` is relative to `--root`; each `--alias` is an import alias for it (`@ds`).
+
+- Refusals: the folder is missing, Tessera is not installed (its `RENAMES.json` drives
+  the run), TypeScript is not installed, or `--tessera-from` is given too.
+- Scope: every owned `.ts`, `.tsx`, `.mts`, `.mjs` and `.css` under `--root` outside the
+  copy, generated files skipped.
+- Imports (`tessera-copy` entry): a named import or `export { … } from` whose path
+  resolves into the copy, relative or through an alias, takes the entry of its tier:
+  `composites/field-kits`, `composites/ColorPickerPopover` and `composites/ColorPicker`
+  their own entries, then `composites`, `primitives` and `data`; `tokens/index.css`
+  becomes `tokens.css`. Imports of one entry and kind join into one statement. A tag of
+  the copy's `Stepper` gains `buttons="sides"` (`COPY_ATTRIBUTES`). A namespace or default
+  import, an `export *`, a side-effect import other than the tokens, any other string
+  that names a copy path, a stylesheet `@import` or `url()` into it, and every copy
+  reference in a file that already imports Tessera are to-dos, left as they are.
+- Renames: the Tessera renames step runs from 0.3.0 (so 0.4.0 is the first release) to
+  the installed version over the converted files, and on the first run (no
+  `brock.tessera` yet) over every other file in scope that does not import Tessera. The
+  overlay `COPY_OVERLAY` makes 0.20.0's `NumberStepper` note a plain rename to
+  `NumberInput`, so the copy's `Stepper` ends as `NumberInput` with its `ariaLabel` as
+  `aria-label`; the copy's `Badge` is `Status` from 0.4.0's own entries.
+- Check (`tessera-copy-check` entry): the TypeScript checker lists what each Tessera
+  entry exports. In a converted file, an imported name its entry lacks moves to the entry
+  that has it (`importMoves`); a name no entry has is a to-do unless a rename note or a
+  removal already flags it; a name some replayed release renamed away and Tessera now
+  exports as another part, with no later rename giving it back (`Badge`), is a to-do.
+  Every config file (`tsconfig*.json`, `*.config.*`) line that names an alias or the
+  folder, and the folder itself, end the list.
+- A second run converts only what is left and changes nothing it already changed.
 
 ## Platforms
 

@@ -23,6 +23,19 @@ describe('composeWorkflows', () => {
     expect(ci).toContain('pull_request:');
   });
 
+  it('compares the review with the linux baselines when the app turns them on, with a bless input', () => {
+    const plain = composeWorkflows({ targets: ['desktop'], prefix: 'a-' }).ci;
+    expect(plain).toContain('  workflow_dispatch:\n\nconcurrency:');
+    expect(plain).not.toContain('review-baselines');
+    const { ci } = composeWorkflows({ targets: ['desktop'], prefix: 'a-', baselines: true });
+    expect(ci).toContain('xvfb-run -a -s "-screen 0 1920x1080x24" pnpm --dir "$APP_DIR" exec brock launch main none --prod --review ${{ inputs.bless && \'--review-bless\' || \'--review-baselines\' }}');
+    expect(ci).toContain('  workflow_dispatch:\n    inputs:\n      bless:');
+    expect(ci).toContain('runs-on: ubuntu-24.04');
+    expect(ci).toContain('if: always() && inputs.bless');
+    expect(ci).toContain('path: ${{ env.APP_DIR }}/tests/baselines/linux/');
+    expect(ci).not.toMatch(/__[A-Z_]+__/);
+  });
+
   it('drops the jobs of platforms that are not chosen', () => {
     const { release, jobs } = composeWorkflows({ targets: ['windows'], prefix: 'a-' });
     expect(jobs.release).toEqual(['prepare', 'build-windows', 'release']);

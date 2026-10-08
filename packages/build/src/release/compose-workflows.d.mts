@@ -10,6 +10,7 @@ interface ComposeInput {
   appDir?: string;
   prefix: string;
   systemSteps?: SystemStep[];
+  baselines?: boolean;
 }
 
 interface ComposedWorkflows {

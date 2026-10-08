@@ -11,6 +11,11 @@ interface BrockWebOptions {
   manifest?: boolean;
 }
 
+interface BrockReviewOptions {
+  /** true makes the CI review job compare its captures with tests/baselines/linux, and adds the bless input. */
+  baselines?: boolean;
+}
+
 interface BrockConfig {
   /** Identity fields; defaults fill the rest at boot. */
   product: ProductInput;
@@ -20,10 +25,12 @@ interface BrockConfig {
   modules: string[];
   /** The web build, for the web target. */
   web?: BrockWebOptions;
+  /** The headless review in CI. */
+  review?: BrockReviewOptions;
 }
 
 declare const CONFIG_FILE: 'brock.config.ts';
 declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
-export type { BrockConfig, BrockPlatform, BrockTarget, BrockWebOptions };
+export type { BrockConfig, BrockPlatform, BrockReviewOptions, BrockTarget, BrockWebOptions };

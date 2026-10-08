@@ -1,9 +1,10 @@
 /* @layer core @kind logic */
+import { baselineChecks } from './baseline-checks';
 import { globalReviewChecks } from './global-review-checks';
 import type { ReviewEnding, ReviewReport, ReviewRun } from './review.type';
 
 const buildReviewReport = (run: ReviewRun, ending: ReviewEnding): ReviewReport => {
-  const checks = [...run.checks, ...globalReviewChecks(run, ending)];
+  const checks = [...run.checks, ...globalReviewChecks(run, ending), ...(run.baselines ? baselineChecks(run.baselines) : [])];
   return {
     name: run.name,
     app: run.app,
@@ -17,6 +18,7 @@ const buildReviewReport = (run: ReviewRun, ending: ReviewEnding): ReviewReport =
     consoleErrors: run.consoleErrors,
     failedLoads: run.failedLoads,
     mainLog: run.mainLog,
+    ...(run.baselines ? { baselines: run.baselines } : {}),
   };
 };
 

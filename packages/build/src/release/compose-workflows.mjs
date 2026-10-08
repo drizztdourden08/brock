@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { resolvePlatforms } from '../platforms/resolve-platforms.mjs';
 import { fillTemplate } from './fill-template.mjs';
+import { BASELINE_REVIEW, PLAIN_REVIEW } from './review-job.constants.mjs';
 import { setupSteps } from './setup-steps.mjs';
 import { RELEASE_DIR } from './workflows.constants.mjs';
 
@@ -25,15 +26,20 @@ const releaseText = (jobs, appDir) => fillTemplate(RELEASE_DIR, 'release-workflo
 });
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[] }} input
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], baselines?: boolean }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [] }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], baselines = false }) => {
   const { platforms } = resolvePlatforms(targets);
   const ctx = { appDir, prefix, setup: (os, opts = {}) => setupSteps({ os, release: opts.release, systemSteps }) };
   const ciJobs = platforms.flatMap((platform) => (platform.ciJob ? [platform.ciJob(ctx)] : []));
   const releaseJobs = platforms.flatMap((platform) => (platform.releaseJob ? [platform.releaseJob(ctx)] : []));
-  const ci = fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', { APP_DIR: appDir, SETUP: ctx.setup('linux'), PLATFORM_JOBS: ciJobs.map(jobBlock).join('') });
+  const ci = fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', {
+    APP_DIR: appDir,
+    SETUP: ctx.setup('linux'),
+    PLATFORM_JOBS: ciJobs.map(jobBlock).join(''),
+    ...(baselines ? BASELINE_REVIEW : PLAIN_REVIEW),
+  });
   return {
     ci: `${ci.trimEnd()}\n`,
     release: `${releaseText(releaseJobs, appDir).trimEnd()}\n`,

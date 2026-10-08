@@ -6,7 +6,7 @@ run-name: CI ${{ github.head_ref || github.ref_name }}
 # under xvfb and fails the run when a check in its report fails.
 on:
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch:__DISPATCH_INPUTS__
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -44,7 +44,7 @@ __SETUP__
         run: pnpm --dir "$APP_DIR" run --if-present test
 
   review:
-    runs-on: ubuntu-latest
+    runs-on: __REVIEW_RUNNER__
     steps:
 __SETUP__
 
@@ -58,7 +58,7 @@ __SETUP__
         run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }
 
       - name: Headless review
-        run: xvfb-run -a pnpm --dir "$APP_DIR" exec brock launch main none --prod --review
+        run: __REVIEW_RUN____BASELINE_STEPS__
 
       - name: Keep the review report
         if: always()

@@ -14,6 +14,7 @@ const renderWorkflows = (config, modules) => {
     targets: config.targets ?? DEFAULT_TARGETS,
     prefix: artifactPrefixOf(config.product),
     systemSteps: modules.flatMap((m) => m.manifest.ci ?? []),
+    baselines: config.review?.baselines === true,
   });
   return [{ path: CI_WORKFLOW_FILE, content: ci }, { path: RELEASE_WORKFLOW_FILE, content: release }];
 };

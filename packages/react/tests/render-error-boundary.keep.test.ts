@@ -3,8 +3,8 @@ import { createElement } from 'react';
 import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { ErrorBoundary } from '@drizztdourden08/tessera/primitives';
-import type { ErrorBoundaryProps } from '@drizztdourden08/tessera/primitives';
+import { ErrorBoundary } from '@drizztdourden08/tessera/composites';
+import type { ErrorBoundaryProps } from '@drizztdourden08/tessera/composites';
 import { RenderErrorBoundary } from '../src/errors/RenderErrorBoundary';
 import { getAppLog } from '../src/log/get-app-log';
 
@@ -22,13 +22,24 @@ describe('RenderErrorBoundary', () => {
     expect(new ErrorBoundary(element.props).render()).toBe('Rooms');
   });
 
-  it('shows "This page hit an error" with Reload page, Go home and Report a bug', () => {
+  it('shows "This page hit an error" as a LoadError box with Retry and the error behind Details, then Reload page, Go home and Report a bug', () => {
     const onHome = vi.fn();
     const element = RenderErrorBoundary({ scope: 'Screen rooms', onHome, children: 'Rooms' }) as ReactElement<ErrorBoundaryProps>;
     const html = renderToStaticMarkup(createElement(() => caughtBy(element, new Error('boom')).render()));
     expect(html).toContain('This page hit an error');
     expect(html).toContain('boom');
-    for (const label of ['Reload page', 'Go home', 'Report a bug']) expect(html).toContain(label);
+    expect(html).toContain('load-error--box');
+    expect(html).toContain('Details');
+    for (const label of ['Retry', 'Reload page', 'Go home', 'Report a bug']) expect(html).toContain(label);
+  });
+
+  it('draws the part again on Retry, and logs it', () => {
+    const element = RenderErrorBoundary({ scope: 'Screen rooms', children: 'Rooms' }) as ReactElement<ErrorBoundaryProps>;
+    const boundary = caughtBy(element, new Error('boom'));
+    boundary.setState = (next) => { boundary.state = { ...boundary.state, ...(next as object) }; };
+    boundary.retry();
+    expect(boundary.render()).toBe('Rooms');
+    expect(getAppLog().getEntries().at(-1)).toMatchObject({ level: 'info', message: 'Screen rooms drawn again after its error' });
   });
 
   it('leaves Go home out when there is no home to go to, and names a widget in its label', () => {

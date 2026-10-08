@@ -1,0 +1,6 @@
+---
+'@drizztdourden08/brock-react': minor
+'@drizztdourden08/brock-updater': patch
+---
+
+Brock moves to Tessera ^0.29.0 (the catalog and the `brock-react` peer range). Escape follows Tessera's escape stack: dialogs, menus, popovers, confirm asks, the tour and the search palette close there, one layer per press, and the shell takes Escape only while nothing above a screen is on the stack and no control consumed the key, so a hub still goes up a level before it closes and the `ScreenWindow` frame, which now closes on Escape itself, never closes a screen twice. The shell listens on the root element, ahead of Tessera's document listener; the palette registers at `dialog` and keeps a capture listener only to cancel its confirm ask. The built-in escape layers for the palette, the bug report, the shortcuts help and the update dialog are gone, since their Tessera dialogs register themselves. A failed load has one look, Tessera's `LoadError`: the render error boundary of every screen and widget shows it as a box with the raw error behind Details and Retry, which draws the part again, ahead of Reload page, Go home and Report a bug, and the Storage page shows one with Retry when the data folder cannot be read. `ErrorBoundary` is imported from `@drizztdourden08/tessera/composites`.

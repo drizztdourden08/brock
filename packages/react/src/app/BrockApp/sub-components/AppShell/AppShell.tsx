@@ -26,7 +26,6 @@ import { useSaveFailureToast } from '../../behavior/useSaveFailureToast';
 import { useScreenPersistence } from '../../behavior/useScreenPersistence';
 import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
-import { useStandardEscapeLayers } from '../../behavior/useStandardEscapeLayers';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { AppRail } from '../AppRail';
@@ -52,7 +51,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useKeyboardShortcuts();
   useMouseBack();
   useScreenPersistence();
-  useStandardEscapeLayers();
   useIpcLogBridge(log);
 
   const fullMenu = useShellMenu(moduleMenu, railed);

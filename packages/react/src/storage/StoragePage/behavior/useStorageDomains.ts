@@ -2,39 +2,39 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { DataDomainDef, DataLocation, DomainUsage } from '@drizztdourden08/brock-core';
 import { hostApi } from '../../../host/host-api';
-import type { StorageDomainsState } from '../StoragePage.type';
-
-const messageOf = (err: unknown): string => (err instanceof Error ? err.message : String(err));
+import type { StorageDomainsState, StorageFailure } from '../StoragePage.type';
 
 const useStorageDomains = (only?: readonly string[]): StorageDomainsState => {
   const api = hostApi();
   const [domains, setDomains] = useState<DataDomainDef[]>([]);
   const [location, setLocation] = useState<DataLocation | null>(null);
   const [usage, setUsage] = useState<Partial<Record<string, DomainUsage>>>({});
-  const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<StorageFailure | null>(null);
+  const [loading, setLoading] = useState(false);
   const filter = only?.join('\n');
 
   const measure = useCallback((domain: string) => {
     if (!api) return;
     setUsage((prev) => ({ ...prev, [domain]: undefined }));
-    api.getDomainUsage(domain).then((next) => setUsage((prev) => ({ ...prev, [domain]: next })), (err: unknown) => setError(messageOf(err)));
+    api.getDomainUsage(domain).then((next) => setUsage((prev) => ({ ...prev, [domain]: next })), (error: unknown) => setFailure({ error }));
   }, [api]);
 
   const load = useCallback(() => {
     if (!api) return;
-    setError(null);
+    setFailure(null);
+    setLoading(true);
     Promise.all([api.listDataDomains(), api.getDataLocation()]).then(([list, where]) => {
       const keep = filter === undefined ? list : list.filter((def) => filter.split('\n').includes(def.domain));
       setDomains(keep);
       setLocation(where);
       for (const def of keep) measure(def.domain);
-    }, (err: unknown) => setError(messageOf(err)));
+    }, (error: unknown) => setFailure({ error })).finally(() => setLoading(false));
   }, [api, filter, measure]);
 
   useEffect(load, [load]);
 
   const refresh = useCallback((domain?: string) => (domain === undefined ? load() : measure(domain)), [load, measure]);
-  return { available: api !== null, location, domains, usage, error, refresh };
+  return { available: api !== null, location, domains, usage, failure, loading, refresh };
 };
 
 export { useStorageDomains };

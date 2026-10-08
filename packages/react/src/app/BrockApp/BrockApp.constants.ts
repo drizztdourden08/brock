@@ -2,14 +2,10 @@
 import type { LogLevel } from '@drizztdourden08/brock-core';
 import type { TesseraOverrides } from '@drizztdourden08/tessera/primitives';
 import { clipboardWriter } from '../../host/clipboard-writer';
-import { bugReport } from '../../bug-report/bug-report';
-import type { EscapeLayer } from '../../escape/escape.type';
 import type { MenuItem } from '../../menu/menu.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { TabDef } from '../../settings/settings.type';
-import { palette } from '../../palette/palette';
-import { shortcutsHelp } from '../../shortcuts-help/shortcuts-help';
 
 const NO_MODULES: never[] = [];
 const NO_MENU: never[] = [];
@@ -40,13 +36,7 @@ const DEV_CONSOLE_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'dev-console', label
 
 const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
-const STANDARD_ESCAPE_LAYERS: readonly EscapeLayer[] = [
-  { isOpen: palette.isOpen, close: palette.close },
-  { isOpen: bugReport.isOpen, close: bugReport.close },
-  { isOpen: shortcutsHelp.isOpen, close: shortcutsHelp.close },
-];
-
 export {
   ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
-  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, STANDARD_ESCAPE_LAYERS, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
+  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
 };

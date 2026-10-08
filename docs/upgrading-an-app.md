@@ -59,6 +59,31 @@ brock migrate --tessera-from-copy apps/web/src/ui/design-system --alias @ds --re
 
 Tests of the copy's own internals (RotP's `tests/design-system`) come out as to-dos; they test code Tessera now owns, so they go with the copy.
 
+### Main and renderer in two folders
+
+A Brock app keeps its main process in `electron/` and its renderer in `src/`, side by side in the folder that holds `brock.config.ts`. There is no setting that points either one elsewhere: `brock sync` scans `electron/boot`, `electron/handlers`, `src/screens`, `src/widgets` and the other convention folders beside `brock.config.ts`, and the managed Vite, TypeScript, ESLint and knip configs, `brock structure`, the stale checks and the review all read the same two folders. An app that splits them moves them together once.
+
+RotP keeps its main process in `apps/desktop/electron` and its renderer in `apps/web/src`; its root `electron.vite.config.ts` already builds the two as one app. The Brock app folder is `apps/desktop`, where `electron/` already is:
+
+1. Before the move, take every import alias other than `@app` out of the code, since Brock's managed configs resolve only `@app` (the app's `src`, for main and renderer alike, as RotP's `@app` is today):
+   - `@domains/<path>` becomes `@app/ui/domains/<path>`, a plain text replacement.
+   - `@ds/<path>` goes with the conversion of the copy (above).
+   - `@shared/<path>` becomes an import of a workspace package (`packages/shared` named `@rotp/shared`), the one-package-per-PR step of the programme.
+2. Move the renderer: `git mv apps/web/src apps/desktop/src`. Merge `apps/web/public` into `apps/desktop/public` (RotP has `public/wasm` in both, so compare before you overwrite), leaving out the `public/logos` files `brock icons` now writes.
+3. Search the repo for `apps/web/src` and `apps/web/public` and fix each hit: relative imports that crossed the two folders (`apps/desktop/electron/window/window-icon.ts` reads from `apps/web`), the tests under `tests/` that import renderer files by path, the root `tsconfig.json` paths, `vitest.config.ts`, and the root `build:web` script.
+4. Add the Brock skeleton. `create-brock` will not write into a folder that is not empty, so create it beside the app and copy across what `apps/desktop` lacks:
+
+   ```
+   npx create-brock apps/brock-skeleton --name "Relic of the Past" --id relic-of-the-past --app-id com.relicofthepast.app --tessera registry --platforms desktop,android,web --yes
+   ```
+
+   - Copy `brock.config.ts` (set `ports: { base: 1991 }`), `src/screens/screens.config.ts` and the other files `apps/desktop` does not have.
+   - Merge the two `package.json` files: keep RotP's name and dependencies, take the skeleton's scripts and Brock dependencies.
+   - Where both have a file (`electron/main.ts`, `electron/preload.ts`, `src/main.tsx`, `src/index.html`), keep the skeleton's, since Brock owns the boot, the preload bridge and the splash, and port what RotP's own file did into `electron/<subject>/`, `electron/handlers/<subject>-handlers.ts`, `src/boot/` and the screens.
+   - Delete `apps/brock-skeleton`, then run `brock sync` in `apps/desktop`: it writes the managed configs and `.brock/`.
+5. Delete what is left of `apps/web` (its `vite.config.ts`) and the root `electron.vite.config.ts`. The web build now comes from `apps/desktop` through the `web` platform (`vite.web.config.ts`, `brock web build`).
+6. Run `<app> structure --check` and `pnpm lint`; both list what still sits in the wrong place.
+
 ## What the gate enforces
 
 ### Files and code

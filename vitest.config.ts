@@ -4,7 +4,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   esbuild: { jsx: 'automatic' },
   test: {
-    include: ['packages/*/tests/**/*.test.ts', 'packages/*/tests/**/*.test.mjs', 'packages/modules/*/tests/**/*.test.ts'],
+    include: [
+      'packages/*/tests/**/*.test.ts', 'packages/*/tests/**/*.test.mjs', 'packages/modules/*/tests/**/*.test.ts',
+      'packages/plugins/*/tests/**/*.test.mjs',
+    ],
     passWithNoTests: true,
   },
 });

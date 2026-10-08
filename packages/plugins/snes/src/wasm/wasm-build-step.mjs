@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
+import { wasmStaleReason } from '@drizztdourden08/brock-port-kit/ensure-wasm';
 import { snesOptions } from '../snes-options.mjs';
 import { buildWasm } from './build-wasm.mjs';
-import { wasmStaleReason } from './wasm-stale.mjs';
 
 /**
  * @param {{ sourceDirs?: string[], output?: string, buildScript?: string, emsdkDir?: string }} [overrides]

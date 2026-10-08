@@ -29,7 +29,7 @@ export { saveSlotPaths } from './saves/save-slot-paths';
 export { quickSlotOf } from './saves/quick-slot-of';
 export { createSaveStore } from './saves/create-save-store';
 export type {
-  NamedSaveKind, SaveSlotRef, SaveSlotMeta, SaveSlotRecord, SaveSlotFailure, SaveSlotDecode, SaveSlotPaths,
-  NamedSaveEntry, QuickSlotInfo,
+  NamedSaveKind, SaveSlotRef, SaveSlotMeta, SaveSlotRecord, SaveSlotFailure, SaveSlotFormat, SaveSlotDecodeOptions,
+  SaveSlotDecode, SaveSlotPaths, NamedSaveEntry, QuickSlotInfo,
 } from './saves/save-slot.type';
 export type { SramStore, SlotWrite, SlotStore, NamedSaveStore, SaveStore } from './saves/save-store.type';

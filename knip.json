@@ -109,6 +109,19 @@
         "node-addon-api"
       ]
     },
+    "packages/modules/display": {
+      "entry": [
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "tests/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "koffi",
+        "koffi-v2"
+      ]
+    },
     "packages/modules/port-kit": {
       "entry": [
         "tests/**/*.test.ts"

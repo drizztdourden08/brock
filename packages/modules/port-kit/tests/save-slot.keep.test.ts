@@ -53,9 +53,34 @@ describe('save slot container', () => {
     expect(decoded.ok ? null : decoded.reason).toBe('port');
   });
 
-  it('refuses raw bytes with no header', () => {
-    const decoded = decodeSaveSlot(state, 'demo');
+  it('reports a container as pksv', () => {
+    const decoded = decodeSaveSlot(encodeSaveSlot({ meta, state }), 'demo');
+    expect(decoded.ok && decoded.format).toBe('pksv');
+  });
+
+  it('reads raw state bytes with no header as a raw state', () => {
+    const raw = new TextEncoder().encode('#!s9xsnp:0011\nNAM:000020:us.sfc\n');
+    const decoded = decodeSaveSlot(raw, 'demo');
+    expect(decoded.ok && decoded.format).toBe('raw');
+    if (decoded.ok) {
+      expect(decoded.record.meta.port).toBe('demo');
+      expect(Array.from(decoded.record.state)).toEqual(Array.from(raw));
+    }
+  });
+
+  it('refuses raw state bytes when raw is turned off', () => {
+    const decoded = decodeSaveSlot(state, 'demo', { acceptRaw: false });
     expect(decoded.ok ? null : decoded.reason).toBe('magic');
+  });
+
+  it('refuses an empty file', () => {
+    const decoded = decodeSaveSlot(new Uint8Array(0), 'demo');
+    expect(decoded.ok ? null : decoded.reason).toBe('magic');
+  });
+
+  it('refuses a container cut inside its header', () => {
+    const decoded = decodeSaveSlot(encodeSaveSlot({ meta, state }).subarray(0, 6), 'demo');
+    expect(decoded.ok ? null : decoded.reason).toBe('corrupt');
   });
 
   it('refuses a header whose metadata runs past the end', () => {

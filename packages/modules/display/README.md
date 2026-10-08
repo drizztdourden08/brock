@@ -66,6 +66,8 @@ Switching needs a native driver:
 
 `koffi` is a peer that `brock add display` adds to the app. It switches rates on Windows and macOS. Without it the status reports why, and the controls stay off. The macOS and Linux drivers have not run on hardware yet.
 
+Both koffi 2 (from 2.9) and koffi 3 work: the peer range is `^2.9.0 || ^3.0.0`, and an app that already has either keeps it. The driver only declares a struct and C prototypes and calls them, which koffi 3 left as they were; its pointers became BigInt values, and the macOS driver only passes them back and checks them for null. The Windows driver is tested against both on every run. koffi 3 ships its native code in per-platform packages (`@koromix/koffi-<platform>-<arch>`), which the package manager installs and the packaged app carries with `node_modules`; its install script is not needed.
+
 ## Window mode
 
 `setWindowMode` moves the window to the chosen screen, then applies the mode. Borderless covers the whole screen without entering fullscreen, and going back to windowed restores the old bounds.

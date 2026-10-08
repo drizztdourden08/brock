@@ -17,8 +17,14 @@ interface SaveSlotRecord {
 
 type SaveSlotFailure = 'magic' | 'version' | 'port' | 'corrupt';
 
+type SaveSlotFormat = 'pksv' | 'raw';
+
+interface SaveSlotDecodeOptions {
+  acceptRaw?: boolean;
+}
+
 type SaveSlotDecode =
-  | { ok: true; record: SaveSlotRecord }
+  | { ok: true; format: SaveSlotFormat; record: SaveSlotRecord }
   | { ok: false; reason: SaveSlotFailure; message: string };
 
 interface SaveSlotPaths {
@@ -40,6 +46,6 @@ interface QuickSlotInfo {
 }
 
 export type {
-  NamedSaveKind, SaveSlotRef, SaveSlotMeta, SaveSlotRecord, SaveSlotFailure, SaveSlotDecode, SaveSlotPaths,
-  NamedSaveEntry, QuickSlotInfo,
+  NamedSaveKind, SaveSlotRef, SaveSlotMeta, SaveSlotRecord, SaveSlotFailure, SaveSlotFormat, SaveSlotDecodeOptions,
+  SaveSlotDecode, SaveSlotPaths, NamedSaveEntry, QuickSlotInfo,
 };

@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': minor
+---
+
+`gate.clangFormat` in `brock.config.ts` names folders or files of C sources, relative to the repo root. While it names any, `brock sync` writes a managed `.clang-format` at that root, in the style of Relic of the Past's `core/game-hooks` (two-space indent, attached braces, short ifs, loops, cases and functions on one line, `int *p`, binary operators leading a broken line, trailing comments and includes left as they are, no column limit), and `brock gate` checks every `.c` and `.h` file under them with `clang-format --dry-run --Werror`, listing the files that differ. `brock clang-format` rewrites them. The clang-format is pinned: the app or the repo adds `clang-format-node` at an exact version (`pnpm add -D -E clang-format-node`), which ships LLVM's binaries for Windows, macOS and Linux, so CI and every machine format alike, and `brock knip` counts it as used; `BROCK_CLANG_FORMAT` names another binary. Without either the C check fails and names the package.

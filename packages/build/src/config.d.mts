@@ -16,6 +16,20 @@ interface BrockReviewOptions {
   baselines?: boolean;
 }
 
+interface BrockBuildOptions {
+  /** Import prefixes beside @app, each a folder relative to the app folder ('@shared': '../../shared'), for main, preload, renderer, workers and the tsconfig paths. */
+  aliases?: Record<string, string>;
+  /** Node polyfills (Buffer, process, ...) in the renderer and its workers through vite-plugin-node-polyfills, which the app installs: true for its defaults, or its options. */
+  nodePolyfills?: boolean | Record<string, unknown>;
+}
+
+interface BrockGateOptions {
+  /** package.json scripts the gate runs, in order: from the app's own package.json, else the workspace root's. */
+  scripts?: string[];
+  /** Folders or files of C sources, relative to the repo root, that clang-format checks against the managed .clang-format there. */
+  clangFormat?: string[];
+}
+
 interface BrockConfig {
   /** Identity fields; defaults fill the rest at boot. */
   product: ProductInput;
@@ -27,10 +41,14 @@ interface BrockConfig {
   web?: BrockWebOptions;
   /** The headless review in CI. */
   review?: BrockReviewOptions;
+  /** Options of the managed Vite configs. */
+  build?: BrockBuildOptions;
+  /** The app's own gate steps: brock gate runs them, and so do the CI quality job and upgrade. */
+  gate?: BrockGateOptions;
 }
 
 declare const CONFIG_FILE: 'brock.config.ts';
 declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
-export type { BrockConfig, BrockPlatform, BrockReviewOptions, BrockTarget, BrockWebOptions };
+export type { BrockBuildOptions, BrockConfig, BrockGateOptions, BrockPlatform, BrockReviewOptions, BrockTarget, BrockWebOptions };

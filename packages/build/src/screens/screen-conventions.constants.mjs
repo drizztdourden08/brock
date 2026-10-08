@@ -42,15 +42,18 @@ const MISPLACED = {
   base: 'the base screen sits at the root of src/screens: src/screens/<id>.base.tsx',
 };
 
-const NAMING_HINT = 'name it <id>.hero.tsx, .page.tsx, .custom.tsx, .settings.ts, .card.tsx, .layer.tsx, .base.tsx, <page>/<tab>.tab.tsx, <page>/<sub>.sub.tsx or <page>.page.ts beside a tab folder; the constants of a screen go beside it in <id>.<kind>.constants.ts, such as library.page.constants.ts, or <name>.constants.ts when several screens share them';
+const NAMING_HINT = 'name it <id>.hero.tsx, .page.tsx, .custom.tsx, .settings.ts, .card.tsx, .layer.tsx, .base.tsx, <page>/<tab>.tab.tsx, <page>/<sub>.sub.tsx or <page>.page.ts beside a tab folder, with .dev before the extension for a dev-only screen (inspector.page.dev.tsx); the constants of a screen go beside it in <id>.<kind>.constants.ts, such as library.page.constants.ts, or <name>.constants.ts when several screens share them';
 const SCREEN_ID = /^[a-z][a-z0-9-]*$/;
-const CONSTANTS_FILE = /^[a-z][a-z0-9-]*(?:\.(?:hero|page|tab|sub|settings|card|custom|layer|base))?\.constants\.ts$/;
+const CONSTANTS_FILE = /^[a-z][a-z0-9-]*(?:\.(?:hero|page|tab|sub|settings|card|custom|layer|base)(?:\.dev)?)?\.constants\.ts$/;
+const SCREENS_DEV_OUTPUT = '.brock/screens.dev.ts';
+const DEV_SCREEN = /\.dev(\.tsx?)$/;
+const DEV_KINDS = ['page', 'tab', 'sub', 'settings', 'card', 'custom', 'layer'];
 const META_EXPORT = /export\s*\{[^}]*\bmeta\b[^}]*\}|export\s+const\s+meta\b/;
 const SEARCH_ENTRIES_EXPORT = /export\s*\{[^}]*\bsearchEntries\b[^}]*\}|export\s+const\s+searchEntries\b/;
 const IMPORT_STATEMENT = /^\s*import\s+(type\s+)?[^;]*?\s+from\s+['"]([^'"]+)['"];?[ \t]*$/gm;
 const WATCH_EVENTS = ['add', 'unlink', 'change', 'addDir', 'unlinkDir'];
 
 export {
-  CONSTANTS_FILE, GENERATED_HEADER, IMPORT_STATEMENT, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, REACT_PACKAGE, SCREEN_ID, SCREENS_CONFIG,
-  SCREENS_DIR, SCREENS_OUTPUT, SEARCH_ENTRIES_EXPORT, SEARCH_OUTPUT, WATCH_EVENTS,
+  CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, GENERATED_HEADER, IMPORT_STATEMENT, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, REACT_PACKAGE, SCREEN_ID,
+  SCREENS_CONFIG, SCREENS_DEV_OUTPUT, SCREENS_DIR, SCREENS_OUTPUT, SEARCH_ENTRIES_EXPORT, SEARCH_OUTPUT, WATCH_EVENTS,
 };

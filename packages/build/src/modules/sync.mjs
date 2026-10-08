@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { renderBootFiles } from '../boot/render-boot-files.mjs';
+import { clangFormatFiles } from '../gate/clang-format-files.mjs';
 import { renderHandlersFiles } from '../handlers/render-handlers.mjs';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
@@ -59,9 +60,11 @@ const assertResolved = (missing) => {
   throw new Error(`Module package not installed for: ${names}. Run pnpm install, or brock add <id>.`);
 };
 
+const upToDate = (path, current, content) => (content === null ? current === null : current !== null && sameContent(path, current, content));
+
 /**
  * @param {string} rootDir
- * @param {{ path: string, content: string }[]} files
+ * @param {{ path: string, content: string | null }[]} files null content removes the file
  * @param {boolean} check
  * @returns {{ written: string[], drifted: string[] }}
  */
@@ -71,11 +74,14 @@ const writeDrifted = (rootDir, files, check) => {
   for (const { path, content } of files) {
     const target = join(rootDir, path);
     const current = existsSync(target) ? readFileSync(target, 'utf8') : null;
-    if (current !== null && sameContent(path, current, content)) continue;
+    if (upToDate(path, current, content)) continue;
     drifted.push(path);
     if (check) continue;
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, content, 'utf8');
+    if (content === null) rmSync(target);
+    else {
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, content, 'utf8');
+    }
     written.push(path);
   }
   return { written, drifted };
@@ -101,9 +107,10 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderWidgetsFiles(rootDir),
     ...renderTitleBarFiles(rootDir),
     ...renderToursFiles(rootDir),
-    ...renderManagedFiles({ inWorkspace }),
+    ...renderManagedFiles({ inWorkspace, aliases: config.build?.aliases }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
+    ...clangFormatFiles(rootDir, config),
     ...renderWorkflows(rootDir, config, modules),
   ];
   const { written, drifted } = writeDrifted(rootDir, files, check);

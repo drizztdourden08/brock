@@ -1,33 +1,39 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { CONSTANTS_FILE, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT } from './screen-conventions.constants.mjs';
+import {
+  CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT,
+} from './screen-conventions.constants.mjs';
 import { baseFindings } from './base-findings.mjs';
+import { devScreenFindings } from './dev-screen-findings.mjs';
 import { layoutFindings } from './layout-findings.mjs';
 import { pageMetaFindings } from './page-meta-findings.mjs';
 import { subPageFindings } from './sub-page-findings.mjs';
 
 /**
- * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
+ * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, dev?: boolean, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
  * @typedef {{ level: 'root' | 'bucket' | 'group' | 'page', bucket?: string, group?: string, page?: string }} Place
  * @typedef {{ rootDir: string, files: ScreenFile[], findings: string[], buckets: string[] }} ScanState
  */
 
 /** @param {string} name */
 const classify = (name) => {
-  const match = KIND_SUFFIXES.find(({ suffix }) => name.endsWith(suffix));
-  return match ? { kind: match.kind, id: name.slice(0, -match.suffix.length) } : null;
+  const dev = DEV_SCREEN.test(name);
+  const plain = dev ? name.replace(DEV_SCREEN, '$1') : name;
+  const match = KIND_SUFFIXES.find(({ suffix }) => plain.endsWith(suffix));
+  return match ? { kind: match.kind, id: plain.slice(0, -match.suffix.length), ...(dev ? { dev } : {}) } : null;
 };
 
 /** @param {string} dir */
 const entriesOf = (dir) => readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
 
 /** @param {string} dir */
-const holdsPageFiles = (dir) => entriesOf(dir).some((entry) => entry.isFile() && (entry.name.endsWith('.tab.tsx') || entry.name.endsWith('.sub.tsx')));
+const holdsPageFiles = (dir) => entriesOf(dir).some((entry) => entry.isFile() && ['tab', 'sub'].includes(classify(entry.name)?.kind ?? ''));
 
-/** @param {{ kind: string, id: string } | null} found @param {Place} place */
+/** @param {{ kind: string, id: string, dev?: boolean } | null} found @param {Place} place */
 const problemWith = (found, place) => {
   if (!found) return `unknown screen file; ${NAMING_HINT}`;
+  if (found.dev && !DEV_KINDS.includes(found.kind)) return `a ${found.kind} cannot be dev-only; .dev goes on a page, tab, sub-page, settings page, custom page, card or layer`;
   if (KINDS_AT[place.level].includes(found.kind)) return SCREEN_ID.test(found.id) ? null : `"${found.id}" is not a kebab-case id`;
   return place.level === 'page' ? 'a page folder holds only <tab>.tab.tsx and <sub>.sub.tsx files and their constants files' : MISPLACED[found.kind];
 };
@@ -84,6 +90,7 @@ const scanScreens = (rootDir) => {
   if (existsSync(join(rootDir, SCREENS_DIR))) scanDir(state, SCREENS_DIR, { level: 'root' });
   const findings = [
     ...state.findings, ...layoutFindings(state.files, state.buckets), ...pageMetaFindings(state.files), ...subPageFindings(state.files), ...baseFindings(state.files, state.buckets),
+    ...devScreenFindings(state.files, state.buckets),
   ];
   return { files: state.files, findings, buckets: state.buckets };
 };

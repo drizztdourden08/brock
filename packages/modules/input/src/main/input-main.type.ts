@@ -1,8 +1,8 @@
 /* @layer electron-main @kind types */
 import type { InputStatus } from '../device.type';
-import type { CalibrationStore } from './calibration-store.type';
+import type { CalibrationStore } from '../calibration/calibration-store.type';
 import type { ControllerSource } from './controller-source.type';
-import type { HapticPlayer } from './haptic-player.type';
+import type { HapticPlayer } from '../haptics/haptic-player.type';
 import type { MappingDb } from './mapping-db.type';
 import type { Sdl3Input } from './sdl3.type';
 

@@ -46,6 +46,7 @@ import { screenTree } from '../.brock/screens';
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
+| Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
@@ -142,6 +143,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 - Startup order: the pinned instance profile (matched by id, then by name; an unknown name logs an error and opens the profiles screen instead of running on the wrong data), else the only profile, else the last one used, else the profiles screen. `settled` turns true in a `finally` block so every exit path, a failed boot included, still ends with a visible window.
 - The `first-frame` task waits for the shell to commit with the boot phase `painting`, then for two animation frames: the first commits the layout, the second proves it painted. The frame request is not cancelled on effect cleanup, because a strict-mode double invoke would cancel the only scheduled signal.
 - Keyboard: Escape follows the order under Escape and home; Alt+Enter toggles fullscreen; a screen's shortcut toggles it, a `requiresProfile` screen waits for a profile, a `devOnly` screen only responds with developer tools on; while an input, textarea or contenteditable is focused, screen shortcuts fire only with Ctrl or Meta held. A shortcut string is tokens joined by `+` (`Mod` matches Ctrl or the platform's command key; aliases `Comma`, `Period`, `Space`, `Esc`, `Return`).
+- Links and files the OS hands the app reach `appOpen`: `BrockApp` takes what main held since launch (`app:takeOpens`) and listens on `app:open`. A request that arrives before any handler is held for the first one; `useAppOpen(handler)` subscribes for the life of a component and always calls the latest handler.
 - When the active profile changes, every session store resets and the settings store loads that profile's config; with no profile the settings return to the defaults. Log entries main sends over IPC are forwarded into the renderer's log bus; an unknown channel lands on `ipc` and an unknown level reads as `info`.
 
 ## Host, log and profiles

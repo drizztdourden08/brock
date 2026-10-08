@@ -13,6 +13,7 @@ import { getMainWindow } from '../window/get-main-window';
 import { createJobRegistry } from '../jobs/create-job-registry';
 import { createDataDomains } from '../storage/create-data-domains';
 import { servicesProxy } from '../services/services-proxy';
+import { openRouter } from '../open/open-router';
 
 const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [] }: ContextInput): MainContext => {
   const files = createNodeFileStore();
@@ -47,6 +48,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     on,
     emit: emitToWindow,
     log,
+    onOpen: openRouter.onOpen,
     services: servicesProxy,
   };
 };

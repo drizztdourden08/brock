@@ -6,6 +6,7 @@ import type { FileStore, DataDomainDef } from '@drizztdourden08/brock-core/platf
 import type { ProfileStore, ProfileStoreHooks } from '@drizztdourden08/brock-core/storage';
 import type { AppServices, EventContract } from '@drizztdourden08/brock-core/augment';
 import type { BootTask } from '@drizztdourden08/brock-core/boot';
+import type { OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
 import type { JobRegistry, StartJob } from '../jobs/job.type';
 import type { DataDomains } from '../storage/domain-files.type';
@@ -40,6 +41,7 @@ interface MainContext {
   on: OnFn;
   emit: EmitToWindow;
   log: (message: string, level?: MainLogLevel) => void;
+  onOpen: (handler: (request: OpenRequest) => void) => () => void;
   readonly services: AppServices;
 }
 
@@ -87,6 +89,8 @@ interface BootstrapOptions {
   onReady?: (ctx: MainContext) => void | Promise<void>;
   onWindow?: (win: BrowserWindow, ctx: MainContext) => void;
   onWillQuit?: (ctx: MainContext) => void;
+  onOpen?: (request: OpenRequest, ctx: MainContext) => void;
+  singleInstance?: boolean;
   paths?: BootstrapPaths;
   security?: SecurityOptions;
 }

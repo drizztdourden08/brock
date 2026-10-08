@@ -166,6 +166,14 @@ void LaunchInstalled(const std::wstring& directory) {
   Launch(exe, std::wstring(), L"open");
 }
 
+void RegisterOsIntegration(const std::wstring& directory) {
+  std::wstring exe = directory;
+  if (!exe.empty() && exe.back() != L'\\') exe.push_back(L'\\');
+  exe += theme::kMainExe;
+  if (GetFileAttributesW(exe.c_str()) == INVALID_FILE_ATTRIBUTES) return;
+  RunToCompletion(Quote(exe) + L" --os-integration=register");
+}
+
 bool Handoff(const std::wstring& exe) { return Launch(exe, L"--handoff", L"open"); }
 
 void OpenLicence() {

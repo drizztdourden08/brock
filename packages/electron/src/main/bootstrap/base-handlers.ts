@@ -18,12 +18,14 @@ import { screenshotHandlers } from '../handlers/screenshot-handlers';
 import { dataDomainHandlers } from '../storage/ipc-handlers';
 import { transferHandlers } from '../storage/transfer-handlers';
 import { jobHandlers } from '../jobs/ipc-handlers';
+import { openHandlers } from '../open/ipc-handlers';
 
 const baseHandlers = (): HandlerGroup[] => [
   bootHandlers,
   windowHandlers,
   aspectRatioHandlers,
   appHandlers,
+  openHandlers,
   dialogHandlers,
   fileHandlers,
   shellHandlers,

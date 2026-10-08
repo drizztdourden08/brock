@@ -6,6 +6,7 @@ import { DATA_EVENT_MAP, DATA_INVOKE_MAP, DATA_SEND_MAP } from './data-maps.cons
 const BASE_INVOKE_MAP = {
   getUserDataPath: 'app:getUserDataPath',
   getAppVersion: 'app:getVersion',
+  takeOpenRequests: 'app:takeOpens',
   getSystemDiagnostics: 'diagnostics:getSystem',
   getProcessDiagnostics: 'diagnostics:getProcesses',
   getLanAddresses: 'network:lanAddresses',
@@ -84,6 +85,7 @@ const BASE_EVENT_MAP = {
   onFullscreenChange: 'window:fullscreen',
   onLogEntry: 'log:entry',
   onImportProgress: 'import:progress',
+  onAppOpen: 'app:open',
   ...WIDGET_EVENT_MAP,
   ...DATA_EVENT_MAP,
 } as const satisfies Record<string, keyof EventContract>;

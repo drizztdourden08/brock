@@ -29,9 +29,9 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 
 `bootstrapApp` runs, in this order:
 
-0. Module `onBoot(product)`, before anything else. The updater module runs the Velopack hooks here, and they may exit or restart the process.
+0. `--os-integration=register` or `=unregister` writes or removes the product's link and file type keys on Windows and exits; the installer stub runs it for a portable copy. Then module `onBoot(product)`. The updater module runs the Velopack hooks here, and they may exit or restart the process.
 1. Portable mode (a `data` folder beside `Update.exe`), then `--user-data=<dir>`, which outranks it.
-2. `app.setName(product.id)`, so dev and production share one userData folder.
+2. `app.setName(product.id)`, so dev and production share one userData folder. Then the open sources: the requests in argv, macOS `open-url` and `open-file`, and the single-instance lock when the product declares a protocol or a file type (or `singleInstance: true`); a second launch hands its argv over and exits before anything is written.
 3. Crash forensics: local crash reporter, process and quit hooks, memory heartbeat, all into `Data/debug/main-console.log`.
 4. App identity: the AppUserModelId (`product.appId`, or `<appId>.instance.<slug>` for `--instance=<slug>`) on Windows, the instance dock icon on macOS.
 5. Privileged schemes: `product.schemes` plus every module's `schemes`.
@@ -62,12 +62,14 @@ The app window is created with `show: false` at its saved geometry and is shown 
 | `profileHooks` | Passed to the core `createProfileStore` |
 | `rendererFlags` | `(argv) => string[]`: extra `--startup-*` arguments; any `--startup-*` already in argv is forwarded as is |
 | `onReady`, `onWindow`, `onWillQuit` | App hooks around the window |
+| `onOpen` | `(request, ctx)`: each link or file the OS hands the app, after the reveal |
+| `singleInstance` | Take the single-instance lock even with nothing to open (`true`), or never (`false`) |
 | `paths` | `{ preload, renderer, splash, splashPreload }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.mjs`, `../renderer/index.html`, `../renderer/splash.html`, `../preload/splash-preload.mjs` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
 
 ## MainContext
 
-Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, profiles, window(), handle, on, emit, log }`. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
+Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, profiles, window(), handle, on, emit, log, onOpen }`. `onOpen(handler)` subscribes to the links and files the OS hands the app and returns the unsubscribe. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
 
 ## Boot details
 
@@ -143,6 +145,9 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 - `handle`, `on` and `emit` constrain the channel to a key of the augmented contract and infer the arguments and return type, so a misspelled channel or a wrong handler signature is a compile error. `emit` is fire and forget: the render frame can be mid-disposal during a reload, which makes `webContents.send` throw, and the renderer re-subscribes on load, so a send dropped in that gap is safe to ignore.
 - Custom schemes must be declared privileged before the app is ready, once, in one call; the product's schemes and every module's are merged and a scheme listed twice keeps the first entry.
+- A product scheme with `dir` is served from `Data/<dir>` by `serveDirectoryScheme` once the app is ready; a module scheme with `dir` too.
+- Open requests are held until the reveal, then go to every `onOpen` handler and to the renderer (`app:takeOpens` once, then `app:open`). `openRequestsOf(argv, targets, { cwd, source })` is the parser: it skips the executable and flags, matches a declared scheme case-insensitively and a declared extension, and ignores an argument over 2048 characters. A second launch's argv carries Chromium's own flags too, which the parser skips.
+- Windows registration writes with `reg.exe` (an argument array, no shell) under `HKCU\Software\Classes`, then tells Explorer through `SHChangeNotify` in a hidden PowerShell child. `registerOsIntegration` stops at the first failed key and returns its error; `unregisterOsIntegration` removes what it can.
 - `serveDirectoryScheme` maps `<scheme>://<host>/<path>` to `<rootDir>/<path>`. The scheme is registered as standard, so Chromium hands the path over percent-encoded with dot segments collapsed; it is decoded and re-encoded as a file URL so a name holding `#` or `%` still resolves. A path that would leave the root answers 403. Call it after the app is ready.
 - `MainPaths.userData` is Electron's userData root and `MainPaths.data` is the `Data/` folder under it. `BootstrapPaths` relative entries resolve against `<appPath>/dist/electron`. `SecurityOptions.externalProtocols` are written with the trailing colon; `permissions` are Chromium permission names the renderer is granted. `InstanceInfo` has both fields null on a normal launch.
 

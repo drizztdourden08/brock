@@ -54,7 +54,9 @@ window.api.updater.onDownloadProgress(({ percent }) => ...)
 
 `onBoot` runs `VelopackApp.build().run()` before anything else in `bootstrapApp`, because an install, update or uninstall hook may exit or restart the process. The first check runs 5 s after the window opens and is skipped on a headless automation launch.
 
-An app that needs the Velopack fast callbacks (a file association written on install, removed on uninstall) builds its own module and passes it in place of the synced one:
+The product's `protocols` and `fileAssociations` are written under `HKCU\Software\Classes` after install and after each update, and removed before uninstall, ahead of any app hook; an app with neither keeps the hooks as given.
+
+An app that needs more of the Velopack fast callbacks builds its own module and passes it in place of the synced one:
 
 ```ts
 import { createUpdaterMain } from '@drizztdourden08/brock-updater/main';

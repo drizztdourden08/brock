@@ -56,6 +56,8 @@ constexpr DWORD kHeaderInk = BROCK_C_HEADER_INK;
 constexpr bool kMachineScope = BROCK_INSTALL_MACHINE != 0;
 constexpr bool kLaunchAfter = BROCK_LAUNCH_AFTER != 0;
 constexpr bool kHasLicence = BROCK_HAS_LICENCE != 0;
+// product.protocols or product.fileAssociations: a portable copy registers them.
+constexpr bool kRegistersOs = BROCK_REGISTERS_OS != 0;
 
 constexpr wchar_t kFontFamily[] = L"Segoe UI";
 constexpr wchar_t kProduct[] = BROCK_PRODUCT;

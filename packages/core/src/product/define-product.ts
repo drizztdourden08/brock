@@ -4,6 +4,7 @@ import {
   BRAND_APP_LOGO, BRAND_ICONS, BRAND_RIMS, DEFAULT_HOME_SCREEN, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WIDGETS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
+import { assertOsIntegration } from './assert-os-integration';
 
 const toEnvPrefix = (id: string): string => id.replace(/[^a-z0-9]+/gi, '_').toUpperCase();
 
@@ -37,6 +38,7 @@ const assertProductInput = (input: ProductInput): void => {
   assertLook(input.look);
   assertPorts(input.ports);
   assertInstaller(input.installer);
+  assertOsIntegration(input);
 };
 
 const resolveWindow = (input: ProductInput): WindowConfig => {
@@ -92,6 +94,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     window: resolveWindow(input),
     dataDirs: input.dataDirs ?? ['profiles', 'config'],
     schemes: input.schemes ?? [],
+    protocols: input.protocols ?? [],
     fileAssociations: input.fileAssociations ?? [],
     icons: resolveIcons(input.icons),
     logos: resolveLogos(input.logos, input.icons),

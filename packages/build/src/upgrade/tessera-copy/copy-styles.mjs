@@ -6,12 +6,12 @@ import { CSS_REFERENCE } from './tessera-copy.constants.mjs';
 
 /**
  * @param {{ path: string, source: string }} input a stylesheet, path absolute
- * @param {{ copyDir: string, aliases: string[] }} copy
+ * @param {{ copyDir: string, aliases: string[], map: { entries: Record<string, string>, stylesheets: Record<string, string> } }} copy
  * @returns {{ line: number, message: string }[]} each @import or url() that reaches into the copy
  */
-const copyStyles = ({ path, source }, { copyDir, aliases }) =>
+const copyStyles = ({ path, source }, { copyDir, aliases, map }) =>
   [...source.matchAll(CSS_REFERENCE)]
-    .map((match) => ({ index: match.index, target: copyTarget(match[2], { fileDir: dirname(path), copyDir, aliases }) }))
+    .map((match) => ({ index: match.index, target: copyTarget(match[2], { fileDir: dirname(path), copyDir, aliases, map }) }))
     .filter(({ target }) => target !== null)
     .map(({ index, target }) => ({
       line: renameTodos.lineAt(source, index),

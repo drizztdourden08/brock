@@ -7,6 +7,7 @@ The renderer layer of Brock: `BrockApp`, the platform provider and its hosts, th
 
 ```tsx
 import '@drizztdourden08/tessera/tokens.css';
+import '../.brock/palette.css';
 import './theme.css';
 import { BrockApp } from '@drizztdourden08/brock-react';
 import { product } from './product';
@@ -138,7 +139,7 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, 
 ## App shell
 
 - `BrockApp` is the composition root: it resolves the modules once, creates the log bus, the settings store and the screen registry, installs the api shim on hosts without a bridge, then wraps the shell in the platform, settings and module providers. Module Providers nest with the first module outermost. The title bar is drawn only where the host reports the `windowChrome` capability.
-- Palette: `BrockApp` imports Tessera's brand palettes (`@drizztdourden08/tessera/palettes/<brand>.css`, in the `ds.palette` layer) and sets `data-palette` on the document root to `product.icons.brand`, in the main window and in every popped widget window, so the app shows its brand's colours. The app's `src/theme.css` is unlayered, so any seed it sets wins; the starter's theme sets none.
+- Palette: the app's entry imports `.brock/palette.css`, which `brock sync` writes with the one Tessera palette of `product.icons.brand` (`@drizztdourden08/tessera/palettes/<brand>.css`, in the `ds.palette` layer; nothing when Tessera has no palette for the brand), and `BrockApp` sets `data-palette` on the document root to `product.icons.brand`, in the main window and in every popped widget window, so the app shows its brand's colours. The shell imports no palette itself, so an app ships only its own brand's. The app's `src/theme.css` is unlayered, so any seed it sets wins; the starter's theme sets none.
 - Props: `home` is the screen id drawn as the base layer once a profile is active; `homeScreen` overrides `product.homeScreen`; `menu` holds the app's title-bar entries, placed as described under Menu (a built-in entry is skipped when the app or a module already names that screen); `credits` is the content of the Credits screen; `settings.effects` run on every patch and receive the patch and both states; `profileHooks` carry the app-specific profile fields and patchable keys; `legalText` is the licence and attribution copy. The title bar and the about screen show `product.logos.app`, and a named instance shows `product.logos.instance`; a Tessera brand draws in the About panel as its app icon, or as its bare mark with `product.icons.rim`.
 - Startup order: the pinned instance profile (matched by id, then by name; an unknown name logs an error and opens the profiles screen instead of running on the wrong data), else the only profile, else the last one used, else the profiles screen. `settled` turns true in a `finally` block so every exit path, a failed boot included, still ends with a visible window.
 - The `first-frame` task waits for the shell to commit with the boot phase `painting`, then for two animation frames: the first commits the layout, the second proves it painted. The frame request is not cancelled on effect cleanup, because a strict-mode double invoke would cancel the only scheduled signal.

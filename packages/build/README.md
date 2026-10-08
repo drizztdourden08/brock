@@ -49,7 +49,7 @@ brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--re
                            then replay Tessera's RENAMES.json and pin brock.tessera;
                            --tessera-from alone replays only the Tessera renames;
                            an app with no brock.version is refused: brock adopt pins it first;
-                           --tessera-from-copy <folder> [--alias <alias>]... converts an app that holds
+                           --tessera-from-copy <folder> --map <file> [--alias <alias>]... converts an app that holds
                            its own copy of the design system (see Tessera renames, A copy of the design system);
                            --report <file> (relative to the current directory) writes the run as JSON
 brock platform list | add <id | bundle>... | remove <id | bundle>...
@@ -69,8 +69,8 @@ brock tessera <args...>    Tessera's own command line, such as tessera new compo
                            tessera reaches it, --help too; Tessera comes from the app's or repo's node_modules
 ```
 
-In a repo you do not type `brock`: you type the repo's own command (`archipelia`,
-`tessera`, `rotp`), which runs everything above and the thread verbs. That command is
+In a repo you do not type `brock`: you type the repo's own command (`my-app`,
+`tessera`), which runs everything above and the thread verbs. That command is
 `bin/<repo>.mjs`, a plain Node file with no dependencies that `brock adopt` and
 `create-brock` write from `src/launcher/launcher.mjs.tmpl`; the root `package.json`
 gets `"bin": { "<repo>": "./bin/<repo>.mjs" }` and a `postinstall` of
@@ -127,7 +127,7 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `modules/prepare-modules.mjs` runs each listed module's manifest `prepare` script before `dev` and `build`, with the module package as its folder; a failing step is reported and the command goes on. `modules/module-packaging.mjs` turns the manifest `extraResources` into electron-builder entries with absolute `from` paths, and each `packExclude` glob into a `!**/node_modules/<package>/<glob>` line under `files`. `loadBuilderConfig` adds both.
 - `commands/add.mjs` edits `brock.config.ts` textually and touches only the `modules: [...]` array literal; a one-entry-per-line array keeps the indentation of its first entry and the trailing comma. A built-in id is looked up in the registry; anything else is an npm spec and the id then comes from the installed package manifest.
 - `brock build` writes `dist/electron`, `dist/preload` and `dist/renderer`; `brock package` is the release step on top of it.
-- `packaging/`: `commands/package.mjs` runs the build, electron-builder with `--config electron-builder.config.cjs` for the current OS, the Setup splash and `vpk pack`. `vpk-args.mjs` builds the pack arguments from the product and `product.installer` (pure, so it is the part to test), `run-vpk.mjs` finds `vpk` in `~/.dotnet/tools` before `PATH`, `name-pack-outputs.mjs` gives the downloads their release names and fails when vpk's own naming moved, `build-installer-stub.mjs` writes `product.h` (`stub-product-header.mjs`), the resource script, the icon, the mark and the licence text into `release/installer-stub` and compiles `installer-stub/` with `cl.exe` through `vcvars64.bat`, `write-install-manifest.mjs` is the port of rotp's `make-install-manifest.mjs`, `ship-installer.mjs` runs both after a Windows pack, and `after-pack.mjs` is the electron-builder hook that prunes the foreign Velopack bindings and unused Electron DLLs and stamps the exe icon with rcedit.
+- `packaging/`: `commands/package.mjs` runs the build, electron-builder with `--config electron-builder.config.cjs` for the current OS, the Setup splash and `vpk pack`. `vpk-args.mjs` builds the pack arguments from the product and `product.installer` (pure, so it is the part to test), `run-vpk.mjs` finds `vpk` in `~/.dotnet/tools` before `PATH`, `name-pack-outputs.mjs` gives the downloads their release names and fails when vpk's own naming moved, `build-installer-stub.mjs` writes `product.h` (`stub-product-header.mjs`), the resource script, the icon, the mark and the licence text into `release/installer-stub` and compiles `installer-stub/` with `cl.exe` through `vcvars64.bat`, `write-install-manifest.mjs` writes the install manifest, `ship-installer.mjs` runs both after a Windows pack, and `after-pack.mjs` is the electron-builder hook that prunes the foreign Velopack bindings and unused Electron DLLs and stamps the exe icon with rcedit.
 - `release/`: the workflow Builder. `composeWorkflows({ targets, appDir, prefix, systemSteps, baselines })` expands the targets, asks each chosen platform for its CI job and its release job, and fills `ci-workflow.yml.tmpl` (the `quality` and `review` jobs every app gets, then the platform CI jobs) and `release-workflow.yml.tmpl` (the `prepare` job, the platform build jobs, then `release` with `needs` and the Downloads list built from each job's downloads). `setup-steps.yml.tmpl` is the checkout, pnpm, Node and install every job starts with; a module's manifest `ci` steps go in before the install on the runners whose `os` matches. `brock sync` writes both files for a standalone app; `brock adopt` writes `release.yml` once for a repo with `apps/<app>`.
 - `platforms/`: one Strategy per platform, `<id>/<id>.platform.mjs`, each built with `definePlatform({ id, label, doctor, scaffold, ciJob, releaseJob, secrets, secretsHint, managed })`, one step per file. See Platforms below.
 
@@ -397,34 +397,36 @@ and `brock upgrade` gets it through the `brock migrate` step of its gate.
 
 #### A copy of the design system
 
-`brock migrate --tessera-from-copy <folder> [--alias <alias>]...` (`src/upgrade/tessera-copy/`)
-is for an app that imports its own copy of what became Tessera instead of the package.
-`<folder>` is relative to `--root`; each `--alias` is an import alias for it (`@ds`).
+`brock migrate --tessera-from-copy <folder> --map <file> [--alias <alias>]...`
+(`src/upgrade/tessera-copy/`) is for an app that imports its own copy of what became
+Tessera instead of the package. `<folder>` is relative to `--root`; each `--alias` is an
+import alias for it (`@ds`). The command holds no table of any one copy: `--map` names a
+JSON file, relative to the current directory, that `readCopyMap` reads (the format is in
+docs/upgrading-an-app.md): `from`, the release the copy matches (0.3.0 when left out),
+`entries`, folder of the copy to Tessera entry point, `stylesheets`, `attributes`, props
+a copy component gains, and `overlay`, rename entries added to a release.
 
-- Refusals: the folder is missing, Tessera is not installed (its `RENAMES.json` drives
-  the run), TypeScript is not installed, or `--tessera-from` is given too.
+- Refusals: no `--map`, a map that is missing, not JSON or names no Tessera entry point,
+  the folder is missing, Tessera is not installed (its `RENAMES.json` drives the run),
+  TypeScript is not installed, or `--tessera-from` is given too.
 - Scope: every owned `.ts`, `.tsx`, `.mts`, `.mjs` and `.css` under `--root` outside the
   copy, generated files skipped.
 - Imports (`tessera-copy` entry): a named import or `export { … } from` whose path
-  resolves into the copy, relative or through an alias, takes the entry of its tier:
-  `composites/field-kits`, `composites/ColorPickerPopover` and `composites/ColorPicker`
-  their own entries, then `composites`, `primitives` and `data`; `tokens/index.css`
-  becomes `tokens.css`. Imports of one entry and kind join into one statement. A tag of
-  the copy's `Stepper` gains `buttons="sides"` (`COPY_ATTRIBUTES`). A namespace or default
-  import, an `export *`, a side-effect import other than the tokens, any other string
-  that names a copy path, a stylesheet `@import` or `url()` into it, and every copy
-  reference in a file that already imports Tessera are to-dos, left as they are.
-- Renames: the Tessera renames step runs from 0.3.0 (so 0.4.0 is the first release) to
-  the installed version over the converted files, and on the first run (no
-  `brock.tessera` yet) over every other file in scope that does not import Tessera. The
-  overlay `COPY_OVERLAY` makes 0.20.0's `NumberStepper` note a plain rename to
-  `NumberInput`, so the copy's `Stepper` ends as `NumberInput` with its `ariaLabel` as
-  `aria-label`; the copy's `Badge` is `Status` from 0.4.0's own entries.
+  resolves into the copy, relative or through an alias, takes the entry the map gives the
+  deepest folder that holds it, and a mapped stylesheet takes its Tessera stylesheet.
+  Imports of one entry and kind join into one statement. A tag of a component the map's
+  `attributes` names gains the props it lacks. A namespace or default import, an
+  `export *`, a side-effect import of an unmapped file, any other string that names a
+  copy path, a stylesheet `@import` or `url()` into it, and every copy reference in a file
+  that already imports Tessera are to-dos, left as they are.
+- Renames: the Tessera renames step runs from the map's `from` to the installed version
+  over the converted files, and on the first run (no `brock.tessera` yet) over every other
+  file in scope that does not import Tessera, with the map's `overlay` over each release.
 - Check (`tessera-copy-check` entry): the TypeScript checker lists what each Tessera
   entry exports. In a converted file, an imported name its entry lacks moves to the entry
   that has it (`importMoves`); a name no entry has is a to-do unless a rename note or a
   removal already flags it; a name some replayed release renamed away and Tessera now
-  exports as another part, with no later rename giving it back (`Badge`), is a to-do.
+  exports as another part, with no later rename giving it back, is a to-do.
   Every config file (`tsconfig*.json`, `*.config.*`) line that names an alias or the
   folder, and the folder itself, end the list.
 - A second run converts only what is left and changes nothing it already changed.
@@ -522,8 +524,8 @@ build: {
 
 ```ts
 gate: {
-  scripts: ['generate:check', 'state-format'],
-  clangFormat: ['core/game-hooks'],
+  scripts: ['codegen:check', 'schema:check'],
+  clangFormat: ['native/src'],
 },
 ```
 
@@ -533,7 +535,7 @@ gate: {
   dot-folders and `node_modules`), relative to the repo root (the workspace root, else the app).
   While it names any, `brock sync` writes the managed `.clang-format` at that root and `brock gate`
   runs `clang-format --dry-run --Werror` against it first; `brock clang-format` rewrites the files.
-  The style is the one of Relic of the Past's `core/game-hooks`: two-space indent, attached braces,
+  The style is the house C style: two-space indent, attached braces,
   short ifs, loops, cases and functions on one line, `int *p`, binary operators leading a broken
   line, trailing comments left where they are, includes not sorted, and no column limit, so the line
   breaks the code already has stay. It needs clang-format 16 or later, pinned so CI and every machine

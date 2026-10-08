@@ -129,8 +129,8 @@ describe('brock adopt on an app that was never on Brock', () => {
   const pinOf = (root) => JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).brock?.version;
 
   it('pins brock.version to the Brock version it adopts', async () => {
-    const root = repo({ 'package.json': { name: 'relic-of-the-past', version: '0.20.7' } });
-    expect(await runAdopt({ rootDir: root, scope: '@rotp' })).toBe(0);
+    const root = repo({ 'package.json': { name: 'sample-app', version: '0.20.7' } });
+    expect(await runAdopt({ rootDir: root, scope: '@sample' })).toBe(0);
     expect(pinOf(root)).toBe(OWN_PACKAGE.version);
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining(`brock.version ${OWN_PACKAGE.version}`));
   });

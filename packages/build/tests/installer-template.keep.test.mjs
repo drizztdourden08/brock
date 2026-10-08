@@ -197,9 +197,9 @@ describe('markSourceOf', () => {
   });
 
   it('reads the rim product.icons.rim names, and the plain set for a brand with no rim', () => {
-    const tesseraRoot = tempDir({ 'brand/dark-rim/brock/mark/mark-256.png': 'png', 'brand/archipelia/mark/mark-256.png': 'png' });
+    const tesseraRoot = tempDir({ 'brand/dark-rim/brock/mark/mark-256.png': 'png', 'brand/atlas/mark/mark-256.png': 'png' });
     expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'brock', rim: 'dark' }), tesseraRoot })).toMatchObject({ from: 'brand/dark-rim/brock/mark/mark-256.png' });
-    expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'archipelia' }), tesseraRoot })).toMatchObject({ from: 'brand/archipelia/mark/mark-256.png' });
+    expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'atlas' }), tesseraRoot })).toMatchObject({ from: 'brand/atlas/mark/mark-256.png' });
   });
 
   it('keeps an app mark that is not the default over the brand', () => {

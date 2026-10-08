@@ -23,19 +23,19 @@ const pin = (dir, real) => {
 const workspace = () => {
   const root = tempDir();
   put(root, 'pnpm-workspace.yaml', 'packages:\n  - apps/*\n');
-  put(root, 'package.json', JSON.stringify({ scripts: { 'state-format': 'node check.mjs', 'generate:check': 'node root.mjs' } }));
-  put(root, 'apps/desktop/package.json', JSON.stringify({ scripts: { 'generate:check': 'node app.mjs' } }));
+  put(root, 'package.json', JSON.stringify({ scripts: { 'schema:check': 'node check.mjs', 'codegen:check': 'node root.mjs' } }));
+  put(root, 'apps/desktop/package.json', JSON.stringify({ scripts: { 'codegen:check': 'node app.mjs' } }));
   return { root, app: join(root, 'apps', 'desktop') };
 };
 
 describe('gate steps from brock.config.ts', () => {
   it('runs the C check first, then each script from the app package, else the workspace root', () => {
     const { root, app } = workspace();
-    const steps = gateSteps(app, { gate: { scripts: ['generate:check', 'state-format'], clangFormat: ['core/game-hooks'] } });
+    const steps = gateSteps(app, { gate: { scripts: ['codegen:check', 'schema:check'], clangFormat: ['native/src'] } });
     expect(steps).toEqual([
-      { kind: 'clang-format', name: 'clang-format --dry-run (core/game-hooks)', entries: ['core/game-hooks'] },
-      { kind: 'script', name: 'pnpm run generate:check', dir: app, script: 'generate:check' },
-      { kind: 'script', name: 'pnpm run state-format (in ../..)', dir: root, script: 'state-format' },
+      { kind: 'clang-format', name: 'clang-format --dry-run (native/src)', entries: ['native/src'] },
+      { kind: 'script', name: 'pnpm run codegen:check', dir: app, script: 'codegen:check' },
+      { kind: 'script', name: 'pnpm run schema:check (in ../..)', dir: root, script: 'schema:check' },
     ]);
     expect(gateSteps(app, {})).toEqual([]);
   });
@@ -51,11 +51,11 @@ describe('gate steps from brock.config.ts', () => {
     const lines = [];
     const run = async (_dir, step) => {
       ran.push(step.name);
-      return step.script === 'generate:check' ? 2 : 0;
+      return step.script === 'codegen:check' ? 2 : 0;
     };
-    const failed = await runGate({ appDir: app, label: 'apps/desktop', config: { gate: { scripts: ['generate:check', 'state-format'] } }, log: (line) => lines.push(line), run });
-    expect(ran).toEqual(['pnpm run generate:check', 'pnpm run state-format (in ../..)']);
-    expect(failed).toEqual(['pnpm run generate:check']);
+    const failed = await runGate({ appDir: app, label: 'apps/desktop', config: { gate: { scripts: ['codegen:check', 'schema:check'] } }, log: (line) => lines.push(line), run });
+    expect(ran).toEqual(['pnpm run codegen:check', 'pnpm run schema:check (in ../..)']);
+    expect(failed).toEqual(['pnpm run codegen:check']);
     expect(await runGate({ appDir: app, label: '.', config: {}, log: (line) => lines.push(line), run })).toEqual([]);
     expect(lines.at(-1)).toMatch(/declares no gate steps/);
   });
@@ -77,7 +77,7 @@ describe('the managed .clang-format', () => {
   it('is written at the repo root while gate.clangFormat names sources', () => {
     const { root, app } = workspace();
     expect(clangFormatFiles(app, {})).toEqual([]);
-    const [file] = clangFormatFiles(app, { gate: { clangFormat: ['core/game-hooks'] } });
+    const [file] = clangFormatFiles(app, { gate: { clangFormat: ['native/src'] } });
     expect(file.path).toBe('../../.clang-format');
     expect(file.content).toContain('ColumnLimit: 0\n');
     expect(file.content).toContain('PointerAlignment: Right\n');
@@ -114,47 +114,47 @@ describe('the managed .clang-format', () => {
   });
 });
 
-const ROTP_STYLE = [
-  '/* @layer core-game-hooks @kind native */',
-  '#include "game_hooks_internal.h"',
+const HOUSE_STYLE = [
+  '/* @layer native-sample @kind native */',
+  '#include "sample_internal.h"',
   '',
-  'static uint8 g_receipt_vanilla_id = 0;',
+  'static uint8 g_last_item_id = 0;',
   '',
-  'static bool IsExitExemptId(uint8 item) {',
+  'static bool IsSpecialId(uint8 item) {',
   '  return item == 0x10 || item == 0x0f || item == 0x26;',
   '}',
   '',
-  'int WasmDevDumpFrameWidth(void) { return g_frame_dump_w; }',
+  'int SampleFrameWidth(void) { return g_frame_width; }',
   '',
-  'bool GameHook_AttractCorrections(void) {',
-  '  return main_module_index == MODULE_ATTRACT',
-  '      && (enhanced_features0 & kFeatures0_WidescreenVisualFixes) != 0;',
+  'bool Sample_TitleScreenFixes(void) {',
+  '  return current_mode == MODE_TITLE',
+  '      && (option_flags & kOption_WideView) != 0;',
   '}',
   '',
-  'bool GameHook_SubstitutedReceiptSkipsBossExit(int *left, int *right) {',
-  '  if (!(enhanced_features3 & kFeatures3_NpcOverrides)) return false;',
+  'bool Sample_SwapPanels(int *left, int *right) {',
+  '  if (!(option_flags & kOption_Swap)) return false;',
   '  switch (kind) {',
-  '    case kCheatDungeonItem_BigKey: word = &link_bigkey; break;',
+  '    case kPanel_Left: word = &left_panel; break;',
   '    default:',
   '      break;',
   '  }',
-  '  printf("[Randomizer] keeping 0x%02x\\n",',
-  '         g_receipt_vanilla_id);',
+  '  printf("[Sample] keeping 0x%02x\\n",',
+  '         g_last_item_id);',
   '  return true;',
   '}',
   '',
-  '#endif  // GAME_HOOKS_ATTRACT_VIEW_H',
+  '#endif  // SAMPLE_VIEW_H',
   '',
 ].join('\n');
 
 const bin = systemClangFormat();
 
 describe.skipIf(!bin)('clang-format with the managed style', () => {
-  it('keeps the style of the C sources it was tuned on', () => {
+  it('leaves code written in the house style as it is', () => {
     const { root, app } = workspace();
     put(root, '.clang-format', clangFormatFiles(app, { gate: { clangFormat: ['core'] } })[0].content);
     pin(app, bin);
-    put(root, 'core/hooks/style.c', ROTP_STYLE);
+    put(root, 'core/hooks/style.c', HOUSE_STYLE);
     expect(runClangFormat({ appDir: app, entries: ['core'], check: true, log: () => undefined })).toBe(0);
   });
 

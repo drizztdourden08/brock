@@ -11,11 +11,11 @@ describe('product.icons.rim', () => {
 
   it('keeps the rim an app sets', () => {
     expect(defineProduct({ ...BASE, icons: { brand: 'brock', rim: 'dark' } }).icons.rim).toBe('dark');
-    expect(defineProduct({ ...BASE, icons: { brand: 'archipelia', rim: 'light' } }).icons.rim).toBe('light');
+    expect(defineProduct({ ...BASE, icons: { brand: 'tessera', rim: 'light' } }).icons.rim).toBe('light');
   });
 
   it('sets no rim on another brand or without a brand', () => {
-    expect(defineProduct({ ...BASE, icons: { brand: 'archipelia' } }).icons).not.toHaveProperty('rim');
+    expect(defineProduct({ ...BASE, icons: { brand: 'tessera' } }).icons).not.toHaveProperty('rim');
     expect(defineProduct(BASE).icons).toEqual({});
   });
 });

@@ -55,9 +55,8 @@ const open = (reset: () => void, onCancel?: () => void): void => {
   });
 };
 
-const press = (key: string): void => {
-  const input = document.querySelector('input');
-  act(() => { input?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); });
+const press = (key: string, target: Element | null = document.querySelector('input')): void => {
+  act(() => { target?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); });
 };
 
 const button = (label: string): HTMLButtonElement | null => document.querySelector(`button[aria-label="${label}"]`);
@@ -71,22 +70,22 @@ describe('Reset layout in the search palette', () => {
     expect(button('Reset layout')).not.toBeNull();
   });
 
-  it('asks on Enter, cancels on Escape with the palette left open, and resets on the check', () => {
+  it('asks on Enter, cancels on Escape from outside the search box with the palette and its text left, and resets on the check', () => {
     const reset = vi.fn();
     open(reset);
     press('Enter');
     expect(reset).not.toHaveBeenCalled();
     expect(button('Cancel')).not.toBeNull();
-    press('Escape');
+    press('Escape', document.body);
     expect(button('Cancel')).toBeNull();
-    expect(usePaletteStore.getState().open).toBe(true);
+    expect(usePaletteStore.getState()).toMatchObject({ open: true, query: 'reset', asking: null });
     press('Enter');
     act(() => button('Reset layout')?.click());
     expect(reset).toHaveBeenCalledTimes(1);
     expect(usePaletteStore.getState().open).toBe(false);
   });
 
-  it('asks on a press of the button, and the X cancels', () => {
+  it('asks on a press of the button, the X cancels, then Escape clears the text and closes', () => {
     const reset = vi.fn();
     open(reset);
     act(() => button('Reset layout')?.click());
@@ -94,6 +93,8 @@ describe('Reset layout in the search palette', () => {
     act(() => button('Cancel')?.click());
     expect(button('Cancel')).toBeNull();
     expect(reset).not.toHaveBeenCalled();
+    press('Escape');
+    expect(usePaletteStore.getState()).toMatchObject({ open: true, query: '' });
     press('Escape');
     expect(usePaletteStore.getState().open).toBe(false);
   });

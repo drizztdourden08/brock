@@ -15,10 +15,10 @@ beforeEach(() => {
 
 describe('openExternal', () => {
   it('opens an allowed link and refuses other protocols and broken links', async () => {
-    expect(await openExternal('https://archipelago.gg/rooms')).toBe(true);
+    expect(await openExternal('https://example.org/rooms')).toBe(true);
     expect(await openExternal('file:///C:/Windows/system32/calc.exe')).toBe(false);
     expect(await openExternal('not a url')).toBe(false);
-    expect(opened).toEqual(['https://archipelago.gg/rooms']);
+    expect(opened).toEqual(['https://example.org/rooms']);
   });
 
   it('follows the app allow list', async () => {

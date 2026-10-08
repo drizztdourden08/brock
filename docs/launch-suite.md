@@ -39,7 +39,7 @@ A case that the tooling refuses outright never reaches the owner, so it is `auto
 
 ## Writing the suite
 
-`tests/launch-suite.md` opens with one paragraph on what the suite protects, then one section per group of cases. Each section is a table with four columns: the case number, the command, what to expect, and who confirms it. Numbers are never reused: a new case takes the next free number wherever it sits, so a report that names a case means one case. Commands use the app's own command (`archipelia`, `rotp`), never `brock`.
+`tests/launch-suite.md` opens with one paragraph on what the suite protects, then one section per group of cases. Each section is a table with four columns: the case number, the command, what to expect, and who confirms it. Numbers are never reused: a new case takes the next free number wherever it sits, so a report that names a case means one case. Commands use the app's own command (`my-app`), never `brock`.
 
 The groups every Brock app has, with a starting set of cases:
 

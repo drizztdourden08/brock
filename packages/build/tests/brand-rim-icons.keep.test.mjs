@@ -30,12 +30,12 @@ const sampleApp = () => {
   write(join(tessera, 'package.json'), '{"name":"@drizztdourden08/tessera","version":"0.8.0"}');
   for (const [folder, tag] of [['brand', 'plain'], ['brand/light-rim', 'light'], ['brand/dark-rim', 'dark']]) {
     brandSet(join(tessera, folder, 'brock'), tag);
-    brandSet(join(tessera, folder, 'archipelia'), tag);
+    brandSet(join(tessera, folder, 'atlas'), tag);
     write(join(tessera, folder, 'brock.svg'), `${tag}:mark`);
-    write(join(tessera, folder, 'archipelia.svg'), `${tag}:mark`);
+    write(join(tessera, folder, 'atlas.svg'), `${tag}:mark`);
   }
   write(join(tessera, 'brand', 'dark-ground', 'brock.svg'), 'ground:brock');
-  write(join(tessera, 'brand', 'dark-ground', 'archipelia.svg'), 'ground:archipelia');
+  write(join(tessera, 'brand', 'dark-ground', 'atlas.svg'), 'ground:atlas');
   return root;
 };
 
@@ -58,14 +58,14 @@ describe('copyBrandIcons with a rim', () => {
     copyBrandIcons(dark, { product: { icons: { brand: 'brock', rim: 'dark' } } });
     expect(read(dark, 'public/logos/icon-256.png')).toBe('dark:icon/png/icon-256.png');
     const plain = sampleApp();
-    copyBrandIcons(plain, { product: { icons: { brand: 'archipelia' } } });
-    expect(read(plain, 'public/logos/mark.svg')).toBe('ground:archipelia');
+    copyBrandIcons(plain, { product: { icons: { brand: 'atlas' } } });
+    expect(read(plain, 'public/logos/mark.svg')).toBe('ground:atlas');
   });
 
   it('recopies a set whose files differ from the copies, even when the copies are newer', () => {
     const root = sampleApp();
-    copyBrandIcons(root, { product: { icons: { brand: 'archipelia' } } });
-    const again = copyBrandIcons(root, { product: { icons: { brand: 'archipelia', rim: 'light' } } });
+    copyBrandIcons(root, { product: { icons: { brand: 'atlas' } } });
+    const again = copyBrandIcons(root, { product: { icons: { brand: 'atlas', rim: 'light' } } });
     expect(read(root, 'public/logos/icon-32.png')).toBe('light:icon/png/icon-32.png');
     expect(again?.written).toContain('public/logos/icon-32.png');
   });

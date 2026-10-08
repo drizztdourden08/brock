@@ -20,15 +20,9 @@ const usePaletteShortcut = (): void => {
 
   useEffect(() => {
     const handler = (event: KeyboardEvent): void => {
-      const state = usePaletteStore.getState();
-      if (isPaletteChord(event)) {
-        claim(event);
-        state.toggle();
-        return;
-      }
-      if (event.key !== 'Escape' || !state.open || state.asking === null) return;
+      if (!isPaletteChord(event)) return;
       claim(event);
-      state.settle();
+      usePaletteStore.getState().toggle();
     };
     window.addEventListener('keydown', handler, true);
     return () => window.removeEventListener('keydown', handler, true);

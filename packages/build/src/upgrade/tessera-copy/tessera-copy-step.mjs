@@ -17,7 +17,7 @@ import { copyNames } from './copy-names.mjs';
 import { copyStyles } from './copy-styles.mjs';
 import { entryCheck } from './entry-check.mjs';
 import { entryExports } from './entry-exports.mjs';
-import { COPY_CHECK_ID, COPY_FIRST_RELEASE_AFTER, COPY_OVERLAY, COPY_SCRIPT, COPY_SOURCE, COPY_STEP_ID, COPY_STYLE, TESSERA_MENTION } from './tessera-copy.constants.mjs';
+import { COPY_CHECK_ID, COPY_SCRIPT, COPY_SOURCE, COPY_STEP_ID, COPY_STYLE, TESSERA_MENTION } from './tessera-copy.constants.mjs';
 
 const refusalOf = ({ copyDir, tessera, ts }) => {
   if (!existsSync(copyDir) || !statSync(copyDir).isDirectory()) return `the copy folder ${copyDir} does not exist`;
@@ -39,7 +39,7 @@ const convertOne = (ts, { file, source }, copy) => {
   if (!copy.needles.some((needle) => source.includes(needle))) return { source, converted: false, todos: [] };
   if (COPY_STYLE.test(file)) return { source, converted: false, todos: copyStyles(input, copy) };
   const result = copyImports(ts, input, copy);
-  return result.converted ? { ...result, source: copyAttributes(ts, { path: file, source: result.source }) } : result;
+  return result.converted ? { ...result, source: copyAttributes(ts, { path: file, source: result.source }, copy.map.attributes) } : result;
 };
 
 const convertAll = (ts, scope, copy) => {
@@ -75,8 +75,8 @@ const checkAll = (ts, converted, known) => {
   return { touched, todos };
 };
 
-const knownOf = (ts, tessera) => {
-  const releases = selectReleases(tessera.releases, { from: COPY_FIRST_RELEASE_AFTER, to: tessera.version }).map((release) => releaseOverlay(release, COPY_OVERLAY));
+const knownOf = (ts, tessera, map) => {
+  const releases = selectReleases(tessera.releases, { from: map.from, to: tessera.version }).map((release) => releaseOverlay(release, map.overlay));
   const exports = entryExports(ts, tessera.dir);
   return { exports, ...copyNames(releases, exports), version: tessera.version };
 };
@@ -84,10 +84,10 @@ const knownOf = (ts, tessera) => {
 const entry = (id, version, { summary, touched, todos }) => ({ id, version, source: TESSERA_PACKAGE, summary, touched, todos });
 
 /**
- * @param {{ rootDir: string, copy: string, aliases?: string[] }} ctx copy: a folder, from rootDir
+ * @param {{ rootDir: string, copy: string, aliases?: string[], map: { from: string, entries: Record<string, string>, stylesheets: Record<string, string>, attributes: Record<string, Record<string, string>>, overlay: Record<string, Record<string, any>> } }} ctx copy: a folder, from rootDir; map: from readCopyMap
  * @returns {{ refused: string } | ReturnType<typeof tesseraRenamesStep>} rewrite, renames, check
  */
-const tesseraCopyStep = ({ rootDir, copy, aliases = [] }) => {
+const tesseraCopyStep = ({ rootDir, copy, aliases = [], map }) => {
   const copyDir = resolve(rootDir, copy);
   const tessera = installedTessera(rootDir);
   const ts = loadTypescript(rootDir);
@@ -95,10 +95,10 @@ const tesseraCopyStep = ({ rootDir, copy, aliases = [] }) => {
   if (refused) return { refused };
   const first = tesseraPin.read(rootDir) === null;
   const scope = scopeOf(rootDir, copyDir);
-  const place = { copyDir, aliases, needles: [...aliases, basename(copyDir)] };
+  const place = { copyDir, aliases, map, needles: [...aliases, basename(copyDir)] };
   const conversion = convertAll(ts, scope, place);
-  const replay = tesseraRenamesStep({ rootDir, from: COPY_FIRST_RELEASE_AFTER, files: replayScope(scope, conversion.converted, first), overlay: COPY_OVERLAY });
-  const check = checkAll(ts, conversion.converted, knownOf(ts, tessera));
+  const replay = tesseraRenamesStep({ rootDir, from: map.from, files: replayScope(scope, conversion.converted, first), overlay: map.overlay });
+  const check = checkAll(ts, conversion.converted, knownOf(ts, tessera, map));
   const folder = relative(rootDir, copyDir).replace(/\\/g, '/');
   return {
     ...replay,

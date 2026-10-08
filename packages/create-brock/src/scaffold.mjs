@@ -12,6 +12,7 @@ import { writePnpmFiles } from './pnpm-files.mjs';
 import { writePortBase } from './port-base.mjs';
 import { preparePlatforms } from './prepare-platforms.mjs';
 import { applyIdentity } from './substitute.mjs';
+import { templateIcons } from './template-brand.mjs';
 import { templateModules } from './template-modules.mjs';
 import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
 
@@ -142,11 +143,12 @@ const scaffold = async (plan) => {
 
   const config = { product: { id: identity.id, name: identity.name, appId: identity.appId, author: { name: identity.authorName } }, targets: plan.targets, modules };
   await preparePlatforms(targetDir, config);
-  const sync = syncApp(targetDir, config, { onMissing: 'skip' });
+  const synced = { ...config, product: { ...config.product, icons: templateIcons(templateDir) } };
+  const sync = syncApp(targetDir, synced, { onMissing: 'skip' });
   console.log(`create-brock: wrote ${sync.written.length} managed file(s)${workspaceRoot ? '' : ', the CI and release workflows among them'}`);
   const command = writeLauncher(targetDir, identity.id, workspaceRoot);
 
-  const installed = install ? await installThenResync(targetDir, workspaceRoot, config, pending) : { code: 0, sync: null };
+  const installed = install ? await installThenResync(targetDir, workspaceRoot, synced, pending) : { code: 0, sync: null };
   if (installed.code !== 0) return installed.code;
   const later = await finishPlatforms(targetDir, config, install);
   const repository = initRepository(targetDir, identity);

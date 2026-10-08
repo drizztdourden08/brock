@@ -7,14 +7,14 @@ import { createBuilderConfig } from '../src/builder-config.mjs';
 import { debPostinst } from '../src/platforms/linux/deb-postinst.mjs';
 
 const PRODUCT = {
-  id: 'relic-of-the-past',
-  name: 'Relic of the Past',
-  appId: 'com.relicofthepast.app',
+  id: 'my-app',
+  name: 'My App',
+  appId: 'com.example.myapp',
   author: { name: 'someone' },
-  protocols: [{ scheme: 'relic-of-the-past' }],
+  protocols: [{ scheme: 'my-app' }],
   fileAssociations: [
-    { ext: 'msul', name: 'Music Pack', progId: 'RelicOfThePast.MusicPack', mimeType: 'application/x-msul', icon: 'file-icons/msul' },
-    { ext: 'RSP', name: 'Character Sprite', progId: 'RelicOfThePast.SpritePack' },
+    { ext: 'mypack', name: 'Music Pack', progId: 'MyApp.Pack', mimeType: 'application/x-mypack', icon: 'file-icons/mypack' },
+    { ext: 'MYSKIN', name: 'Character Sprite', progId: 'MyApp.Skin' },
   ],
 };
 
@@ -32,20 +32,20 @@ afterEach(() => {
 describe('createBuilderConfig OS integration', () => {
   it('passes the deep link schemes to electron-builder for Info.plist and the .desktop file', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
-    expect(config.protocols).toEqual([{ name: 'Relic of the Past', schemes: ['relic-of-the-past'] }]);
+    expect(config.protocols).toEqual([{ name: 'My App', schemes: ['my-app'] }]);
   });
 
   it('gives every file type a mime type, since Linux needs one', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
     expect(config.fileAssociations).toEqual([
-      { ext: 'msul', name: 'Music Pack', mimeType: 'application/x-msul', icon: 'file-icons/msul' },
-      { ext: 'RSP', name: 'Character Sprite', mimeType: 'application/x-rsp' },
+      { ext: 'mypack', name: 'Music Pack', mimeType: 'application/x-mypack', icon: 'file-icons/mypack' },
+      { ext: 'MYSKIN', name: 'Character Sprite', mimeType: 'application/x-myskin' },
     ]);
   });
 
   it('ships a Windows document icon where the registry entry looks for it', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
-    expect(config.win.extraResources).toEqual([{ from: 'build/file-icons/msul.ico', to: 'file-icons/msul.ico' }]);
+    expect(config.win.extraResources).toEqual([{ from: 'build/file-icons/mypack.ico', to: 'file-icons/mypack.ico' }]);
     const plain = createBuilderConfig({ ...PRODUCT, fileAssociations: [], protocols: [] }, { rootDir: tempRoot() });
     expect(plain.win.extraResources).toBeUndefined();
     expect(plain.protocols).toEqual([]);

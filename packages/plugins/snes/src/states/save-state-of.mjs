@@ -1,10 +1,12 @@
 /* @layer tooling-scripts @kind logic */
+import { snesOptions } from '../snes-options.mjs';
 import { checkState } from './check-state.mjs';
 
-const flagsFor = (state) => {
+const flagsFor = (worktree, state) => {
   if (state === 'none') return [];
-  if (state === 'game') return ['--auto-start'];
-  return [`--auto-state=${state}`];
+  const { launchFlags } = snesOptions('states', worktree.workspace);
+  if (state === 'game') return [...launchFlags.game];
+  return launchFlags.save.map((flag) => flag.replaceAll('{state}', state));
 };
 
 /**
@@ -12,6 +14,6 @@ const flagsFor = (state) => {
  * @param {string} state
  * @returns {string[] | string} the app flags, or the refusal when the state does not exist
  */
-const saveStateOf = (worktree, state) => checkState(worktree, state) ?? flagsFor(state);
+const saveStateOf = (worktree, state) => checkState(worktree, state) ?? flagsFor(worktree, state);
 
 export { saveStateOf };

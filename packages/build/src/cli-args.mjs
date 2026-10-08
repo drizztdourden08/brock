@@ -16,6 +16,7 @@ const OPTIONS = {
   'tessera-from': { type: 'string' },
   'tessera-from-copy': { type: 'string' },
   alias: { type: 'string', multiple: true },
+  map: { type: 'string' },
   report: { type: 'string' },
   brand: { type: 'string' },
   api: { type: 'string' },

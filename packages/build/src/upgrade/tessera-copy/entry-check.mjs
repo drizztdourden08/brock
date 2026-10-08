@@ -10,7 +10,7 @@ const subpathOf = (module) => (module.startsWith(`${TESSERA_PACKAGE}/`) ? module
 const otherEntry = (name, entry, exports) => TESSERA_ENTRIES.find((other) => other !== entry && exports.get(other)?.has(name)) ?? null;
 
 const reusedNote = (name, version) =>
-  `${name} here is still the copy's part, and Tessera ${version} has a different part by that name. Check what the copy's ${name} became in Tessera's RENAMES.json (the copy's Badge is Status, its Stepper is NumberInput with buttons="sides") and write that.`;
+  `${name} here is still the copy's part, and Tessera ${version} has a different part by that name. Check what the copy's ${name} became in Tessera's RENAMES.json and write that.`;
 
 const missingNote = (name, entry, version) =>
   `Tessera ${version} exports no ${name} from ${entry} or any other entry point. It came from inside the copy: find the Tessera part that replaces it (Tessera's MIGRATION.md), or keep that code in the app.`;

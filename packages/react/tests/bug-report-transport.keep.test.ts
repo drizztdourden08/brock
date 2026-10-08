@@ -11,13 +11,13 @@ const opened = vi.hoisted(() => [] as string[]);
 vi.mock('../src/toast/toast', () => ({ toast: (message: string, options = {}) => { toasts.push({ message, options }); return 'id'; } }));
 vi.mock('../src/host/open-external', () => ({ openExternal: (url: string) => { opened.push(url); } }));
 
-const PRODUCT = { id: 'relic', name: 'Relic' };
-const REPO = { owner: 'someone', name: 'relic' };
+const PRODUCT = { id: 'my-app', name: 'My App' };
+const REPO = { owner: 'someone', name: 'my-app' };
 
 const entry = (id: number, message: string): LogEntry => ({ id, timestamp: 1000 + id, channel: 'app', level: 'info', message });
 
 const payload = (extra: Partial<BugReportPayload> = {}): BugReportPayload => ({
-  title: 'Crash', description: 'It closed.', app: { id: 'relic', name: 'Relic', version: '1.0.0' }, diagnostics: null, createdAt: '2026-10-07T00:00:00.000Z', ...extra,
+  title: 'Crash', description: 'It closed.', app: { id: 'my-app', name: 'My App', version: '1.0.0' }, diagnostics: null, createdAt: '2026-10-07T00:00:00.000Z', ...extra,
 });
 
 beforeEach(() => {
@@ -31,7 +31,7 @@ describe('buildBugReportPayload', () => {
     const built = buildBugReportPayload({
       title: '  Crash  ', description: ' It closed. ', product: PRODUCT, version: '1.2.3', diagnostics: 'Version: 1.2.3', system: null, logs, now: new Date(0),
     });
-    expect(built).toMatchObject({ title: 'Crash', description: 'It closed.', app: { id: 'relic', name: 'Relic', version: '1.2.3' }, createdAt: '1970-01-01T00:00:00.000Z' });
+    expect(built).toMatchObject({ title: 'Crash', description: 'It closed.', app: { id: 'my-app', name: 'My App', version: '1.2.3' }, createdAt: '1970-01-01T00:00:00.000Z' });
     expect(built.diagnostics?.text).toBe('Version: 1.2.3');
     expect(built.diagnostics?.logs).toHaveLength(200);
     expect(built.diagnostics?.logs[0]).toEqual({ at: 1050, channel: 'app', level: 'info', message: 'line 50' });
@@ -48,8 +48,8 @@ describe('resolveBugReportTarget', () => {
   const send = vi.fn();
 
   it('prefers the app transport, then the main one, then the GitHub issue, then the clipboard', () => {
-    expect(resolveBugReportTarget({ app: { transport: send, label: 'Send to the Sanctuary' }, main: { label: 'Main' }, sendToMain: send, repo: REPO }))
-      .toMatchObject({ kind: 'transport', label: 'Send to the Sanctuary' });
+    expect(resolveBugReportTarget({ app: { transport: send, label: 'Send to the server' }, main: { label: 'Main' }, sendToMain: send, repo: REPO }))
+      .toMatchObject({ kind: 'transport', label: 'Send to the server' });
     expect(resolveBugReportTarget({ app: { transport: send }, main: null, sendToMain: null, repo: REPO })).toMatchObject({ kind: 'transport', label: 'Send report' });
     expect(resolveBugReportTarget({ app: null, main: { label: 'Upload' }, sendToMain: send, repo: REPO })).toMatchObject({ kind: 'transport', label: 'Upload' });
     expect(resolveBugReportTarget({ app: null, main: null, sendToMain: send, repo: REPO })).toEqual({ kind: 'github', label: 'Open GitHub issue', repo: REPO });
@@ -78,7 +78,7 @@ describe('deliverReport', () => {
   it('keeps the GitHub issue as the default', async () => {
     const diagnostics = { text: 'Version: 1.0.0', system: null, logs: [] };
     expect(await deliverReport({ kind: 'github', label: 'Open GitHub issue', repo: REPO }, payload({ diagnostics }))).toBeNull();
-    expect(opened[0]).toMatch(/^https:\/\/github\.com\/someone\/relic\/issues\/new\?/);
+    expect(opened[0]).toMatch(/^https:\/\/github\.com\/someone\/my-app\/issues\/new\?/);
     expect(new URL(opened[0] ?? '').searchParams.get('body')).toContain('Version: 1.0.0');
   });
 });

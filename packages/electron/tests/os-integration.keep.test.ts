@@ -16,16 +16,16 @@ const refreshed = vi.hoisted(() => [] as string[]);
 vi.mock('child_process', () => ({ execFile: (tool: string) => { refreshed.push(tool); } }));
 
 const PRODUCT: OsIntegrationProduct = {
-  id: 'relic-of-the-past',
-  name: 'Relic of the Past',
-  protocols: [{ scheme: 'relic-of-the-past' }],
+  id: 'my-app',
+  name: 'My App',
+  protocols: [{ scheme: 'my-app' }],
   fileAssociations: [
-    { ext: 'msul', name: 'Music Pack', progId: 'RelicOfThePast.MusicPack', mimeType: 'application/x-msul' },
-    { ext: 'RSP', name: 'Character <Sprite>', progId: 'RelicOfThePast.SpritePack' },
+    { ext: 'mypack', name: 'Music Pack', progId: 'MyApp.Pack', mimeType: 'application/x-mypack' },
+    { ext: 'MYSKIN', name: 'Character <Sprite>', progId: 'MyApp.Skin' },
   ],
 };
 
-const EXE = 'C:\\Users\\me\\AppData\\Local\\relic-of-the-past\\current\\Relic of the Past.exe';
+const EXE = 'C:\\Users\\me\\AppData\\Local\\my-app\\current\\My App.exe';
 const CLASSES = 'HKCU\\Software\\Classes';
 
 const homes: string[] = [];
@@ -37,23 +37,23 @@ afterEach(() => {
 describe('Windows registry', () => {
   it('writes the deep link scheme and each file type under the user classes', () => {
     const entries = windowsRegistryEntries(PRODUCT, EXE, (ext) => `icon:${ext}`);
-    expect(entries).toContainEqual({ key: `${CLASSES}\\relic-of-the-past`, name: 'URL Protocol', value: '' });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\relic-of-the-past`, name: null, value: 'URL:Relic of the Past' });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\relic-of-the-past\\shell\\open\\command`, name: null, value: `"${EXE}" "%1"` });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\.msul`, name: null, value: 'RelicOfThePast.MusicPack' });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\.msul`, name: 'Content Type', value: 'application/x-msul' });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\.rsp\\OpenWithProgids`, name: 'RelicOfThePast.SpritePack', value: '' });
-    expect(entries).toContainEqual({ key: `${CLASSES}\\RelicOfThePast.SpritePack\\DefaultIcon`, name: null, value: 'icon:rsp' });
-    expect(entries.some((entry) => entry.key === `${CLASSES}\\.rsp` && entry.name === 'Content Type')).toBe(false);
+    expect(entries).toContainEqual({ key: `${CLASSES}\\my-app`, name: 'URL Protocol', value: '' });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\my-app`, name: null, value: 'URL:My App' });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\my-app\\shell\\open\\command`, name: null, value: `"${EXE}" "%1"` });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\.mypack`, name: null, value: 'MyApp.Pack' });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\.mypack`, name: 'Content Type', value: 'application/x-mypack' });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\.myskin\\OpenWithProgids`, name: 'MyApp.Skin', value: '' });
+    expect(entries).toContainEqual({ key: `${CLASSES}\\MyApp.Skin\\DefaultIcon`, name: null, value: 'icon:myskin' });
+    expect(entries.some((entry) => entry.key === `${CLASSES}\\.myskin` && entry.name === 'Content Type')).toBe(false);
   });
 
   it('removes only what it wrote, leaving other programs on the same extension', () => {
     expect(windowsRegistryRemovals(PRODUCT)).toEqual([
-      { key: `${CLASSES}\\relic-of-the-past`, name: null },
-      { key: `${CLASSES}\\.msul\\OpenWithProgids`, name: 'RelicOfThePast.MusicPack' },
-      { key: `${CLASSES}\\RelicOfThePast.MusicPack`, name: null },
-      { key: `${CLASSES}\\.rsp\\OpenWithProgids`, name: 'RelicOfThePast.SpritePack' },
-      { key: `${CLASSES}\\RelicOfThePast.SpritePack`, name: null },
+      { key: `${CLASSES}\\my-app`, name: null },
+      { key: `${CLASSES}\\.mypack\\OpenWithProgids`, name: 'MyApp.Pack' },
+      { key: `${CLASSES}\\MyApp.Pack`, name: null },
+      { key: `${CLASSES}\\.myskin\\OpenWithProgids`, name: 'MyApp.Skin' },
+      { key: `${CLASSES}\\MyApp.Skin`, name: null },
     ]);
   });
 
@@ -68,37 +68,37 @@ describe('Windows registry', () => {
     const resources = mkdtempSync(join(tmpdir(), 'brock-icons-'));
     homes.push(resources);
     mkdirSync(join(resources, 'file-icons'));
-    writeFileSync(join(resources, 'file-icons', 'msul.ico'), '');
+    writeFileSync(join(resources, 'file-icons', 'mypack.ico'), '');
     const iconOf = fileIconOf(EXE, resources);
-    expect(iconOf('msul')).toBe(join(resources, 'file-icons', 'msul.ico'));
-    expect(iconOf('rsp')).toBe(`"${EXE}",0`);
+    expect(iconOf('mypack')).toBe(join(resources, 'file-icons', 'mypack.ico'));
+    expect(iconOf('myskin')).toBe(`"${EXE}",0`);
   });
 });
 
 describe('Linux desktop entry', () => {
   it('lists the file types and the scheme handler, with a quoted Exec', () => {
-    const entry = linuxDesktopEntry(PRODUCT, '/home/me/Relic "1".AppImage');
-    expect(entry).toContain('Exec="/home/me/Relic \\"1\\".AppImage" %U');
-    expect(entry).toContain('MimeType=application/x-msul;application/x-rsp;x-scheme-handler/relic-of-the-past;');
+    const entry = linuxDesktopEntry(PRODUCT, '/home/me/MyApp "1".AppImage');
+    expect(entry).toContain('Exec="/home/me/MyApp \\"1\\".AppImage" %U');
+    expect(entry).toContain('MimeType=application/x-mypack;application/x-myskin;x-scheme-handler/my-app;');
   });
 
   it('describes each file type with an escaped comment and a glob', () => {
     const xml = linuxMimeXml(PRODUCT) ?? '';
-    expect(xml).toContain('<mime-type type="application/x-rsp">');
+    expect(xml).toContain('<mime-type type="application/x-myskin">');
     expect(xml).toContain('<comment>Character &lt;Sprite&gt;</comment>');
-    expect(xml).toContain('<glob pattern="*.rsp"/>');
+    expect(xml).toContain('<glob pattern="*.myskin"/>');
     expect(linuxMimeXml({ ...PRODUCT, fileAssociations: [] })).toBeNull();
   });
 
   it('writes both files under the home folder and refreshes the databases only when they change', async () => {
     const home = mkdtempSync(join(tmpdir(), 'brock-home-'));
     homes.push(home);
-    await installLinuxIntegration(PRODUCT, '/opt/relic.AppImage', home);
-    const desktop = join(home, '.local', 'share', 'applications', 'relic-of-the-past.desktop');
-    expect(readFileSync(desktop, 'utf8')).toContain('x-scheme-handler/relic-of-the-past');
-    expect(readFileSync(join(home, '.local', 'share', 'mime', 'packages', 'relic-of-the-past.xml'), 'utf8')).toContain('*.msul');
+    await installLinuxIntegration(PRODUCT, '/opt/my-app.AppImage', home);
+    const desktop = join(home, '.local', 'share', 'applications', 'my-app.desktop');
+    expect(readFileSync(desktop, 'utf8')).toContain('x-scheme-handler/my-app');
+    expect(readFileSync(join(home, '.local', 'share', 'mime', 'packages', 'my-app.xml'), 'utf8')).toContain('*.mypack');
     expect(refreshed).toEqual(['update-desktop-database', 'update-mime-database']);
-    await installLinuxIntegration(PRODUCT, '/opt/relic.AppImage', home);
+    await installLinuxIntegration(PRODUCT, '/opt/my-app.AppImage', home);
     expect(refreshed).toHaveLength(2);
   });
 });

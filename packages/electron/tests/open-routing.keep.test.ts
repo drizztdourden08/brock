@@ -8,24 +8,24 @@ import { openTargets } from '../src/main/open/open-targets';
 import { shouldLockInstance } from '../src/main/open/should-lock-instance';
 
 const TARGETS = openTargets({
-  protocols: [{ scheme: 'relic-of-the-past' }],
-  fileAssociations: [{ ext: 'MSUL', name: 'Music Pack', progId: 'Relic.MusicPack' }],
+  protocols: [{ scheme: 'my-app' }],
+  fileAssociations: [{ ext: 'MYPACK', name: 'Music Pack', progId: 'MyApp.Pack' }],
 });
 
-const LINK: OpenRequest = { kind: 'url', url: 'relic-of-the-past://install/abc', scheme: 'relic-of-the-past', source: 'launch' };
+const LINK: OpenRequest = { kind: 'url', url: 'my-app://install/abc', scheme: 'my-app', source: 'launch' };
 
 describe('openRequestsOf', () => {
   it('finds deep links and declared file types, skipping the executable, flags and anything else', () => {
     const cwd = resolve('/work');
-    const argv = ['C:\\Apps\\Relic.exe', '--allow-file-access-from-files', 'RELIC-OF-THE-PAST://install/abc', 'packs/theme.msul', 'notes.txt', 'https://example.com'];
+    const argv = ['C:\\Apps\\MyApp.exe', '--allow-file-access-from-files', 'MY-APP://install/abc', 'packs/theme.mypack', 'notes.txt', 'https://example.com'];
     expect(openRequestsOf(argv, TARGETS, { cwd, source: 'running' })).toEqual([
-      { kind: 'url', url: 'RELIC-OF-THE-PAST://install/abc', scheme: 'relic-of-the-past', source: 'running' },
-      { kind: 'file', path: resolve(cwd, 'packs/theme.msul'), ext: 'msul', source: 'running' },
+      { kind: 'url', url: 'MY-APP://install/abc', scheme: 'my-app', source: 'running' },
+      { kind: 'file', path: resolve(cwd, 'packs/theme.mypack'), ext: 'mypack', source: 'running' },
     ]);
   });
 
   it('ignores an argument longer than any real link', () => {
-    const long = `relic-of-the-past://${'a'.repeat(3000)}`;
+    const long = `my-app://${'a'.repeat(3000)}`;
     expect(openRequestsOf(['exe', long], TARGETS, { cwd: '/', source: 'launch' })).toEqual([]);
   });
 });

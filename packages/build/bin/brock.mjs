@@ -62,7 +62,7 @@ Usage:
   brock structure [--check] [--scope @x]
                              verify the folder standard: package names, barrels, folder names, depth
   brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--report <file>]
-  brock migrate --tessera-from-copy <folder> [--alias <alias>]... [--report <file>]
+  brock migrate --tessera-from-copy <folder> --map <file> [--alias <alias>]... [--report <file>]
                              run the Brock migrations after --from, up to --to (open when left off), over the
                              files the app owns, then replay Tessera's RENAMES.json from --tessera-from (else
                              package.json brock.tessera, else 0.3.0) to the installed Tessera, its next release
@@ -72,7 +72,8 @@ Usage:
                              An app with no brock.version is refused: run brock adopt first.
                              --tessera-from-copy converts an app that holds its own copy of the design system
                              (<folder>, from --root, imported through each --alias and relative paths): its imports
-                             name Tessera entry points, then every release from 0.4.0 replays over them
+                             name the Tessera entry points the --map JSON gives each folder (relative to the current
+                             directory), then every release after the map's "from" replays over them
   brock release-notes check [version]
                              the release note of that version (else the app's own once the repo has notes):
                              release-notes/v<version>.md at the repo root, its title, summary, sections and
@@ -190,7 +191,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, report: values.report, brand: values.brand, api: values.api, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
 };
 
 main().then(

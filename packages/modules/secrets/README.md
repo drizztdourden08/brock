@@ -38,7 +38,7 @@ Other main code reads the clear value through the context, never over IPC:
 ```ts
 import { getSecrets } from '@drizztdourden08/brock-secrets/main';
 
-const token = await getSecrets(ctx).get('sanctuary-token');
+const token = await getSecrets(ctx).get('api-token');
 ```
 
 `getSecrets(ctx)` returns the store (`canStore`, `set`, `get`, `has`, `list`, `delete`) plus `registerSignInProvider`. `createSecretStore(ctx)` builds a store on its own for code that does not want the shared one.
@@ -51,7 +51,7 @@ const token = await getSecrets(ctx).get('sanctuary-token');
 const signIn = createDeviceSignIn({
   begin: () => api.post('device/begin'),                 // { id, userCode, verifyUrl, pollSecret }
   poll: (id, pollSecret) => api.post('device/poll', { id, pollSecret }),   // { status, token? }
-  onToken: (token) => getSecrets(ctx).set('sanctuary-token', token),
+  onToken: (token) => getSecrets(ctx).set('api-token', token),
   pollMs: 3000,
   ttlMs: 10 * 60 * 1000,
 });
@@ -70,10 +70,10 @@ bootstrapApp(product, {
   modules: mainModules,
   onReady: (ctx) => {
     getSecrets(ctx).registerSignInProvider({
-      id: 'sanctuary',
+      id: 'account',
       begin: () => ...,
       poll: (id, pollSecret) => ...,
-      onToken: (token) => getSecrets(ctx).set('sanctuary-token', token),
+      onToken: (token) => getSecrets(ctx).set('api-token', token),
     });
   },
 });
@@ -82,7 +82,7 @@ bootstrapApp(product, {
 The renderer then drives it by id:
 
 ```tsx
-const { state, userCode, lastError, begin, cancel } = useSignIn('sanctuary');
+const { state, userCode, lastError, begin, cancel } = useSignIn('account');
 ```
 
 `state` is `signed-out`, `waiting` or `signed-in`. `useSecretsStore` holds `metas`, `canStore`, `refresh`, `set` and `remove` for a settings tab; the module ships no screen of its own.

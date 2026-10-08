@@ -1,0 +1,61 @@
+{
+  "name": "@drizztdourden08/brock-catalog",
+  "version": "0.35.0",
+  "description": "Brock catalog module: a content catalogue client behind the app's endpoint and schema, install jobs with download checks, uninstall, the installed record and guard, and install links.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/catalog"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "brock": {
+    "id": "catalog",
+    "description": "A content catalogue client: browse the app's catalogue API, install with a job, verify, uninstall, the installed guard and install links.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "dataDirs": [
+      "catalog"
+    ]
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
+  },
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "@types/node": "catalog:",
+    "electron": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": ">=0.27.0",
+    "electron": ">=38",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

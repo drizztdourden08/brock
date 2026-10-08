@@ -12,6 +12,7 @@ import { renderWorkflows } from '../release/render-workflows.mjs';
 import { renderReviewFiles } from '../review/render-review.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
+import { renderTesseraEntryFiles } from '../tessera/render-tessera-entry.mjs';
 import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
 import { renderPaletteFile } from '../tessera/render-palette.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
@@ -109,6 +110,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderTitleBarFiles(rootDir),
     ...renderToursFiles(rootDir),
     ...renderPaletteFile(rootDir, config),
+    ...renderTesseraEntryFiles(rootDir),
     ...renderManagedFiles({ inWorkspace, aliases: config.build?.aliases }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
@@ -125,4 +127,4 @@ const syncApp = (rootDir, config, opts = {}) => {
   };
 };
 
-export { syncApp, OWN_PACKAGE, BROCK_VERSION };
+export { syncApp, writeDrifted, OWN_PACKAGE, BROCK_VERSION };

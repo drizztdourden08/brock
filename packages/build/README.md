@@ -58,6 +58,12 @@ brock platform list | add <id | bundle>... | remove <id | bundle>...
 brock doctor [id | bundle...]
                            check this machine for what the targets need; prints install commands only
 brock web build | dev      the renderer alone into dist/web, from vite.web.config.ts
+brock site add <name> [--brand <brand>] [--api <url | port offset>]
+                           a site at apps/<name>: a Vite single-page app on Tessera beside the Brock app,
+                           on a tool port of the app's block, with its own ci-<name>.yml (docs/app-structure.md, A site)
+brock site dev | build | preview [-- vite args]
+                           in a site folder: Vite with the site's port and /api proxy, its build into dist, a preview
+brock site list            every site of the repo with its port and /api target
 brock tessera <args...>    Tessera's own command line, such as tessera new compound SaveSlot, run in the
                            current folder so it finds tessera.config.json from there; every word after
                            tessera reaches it, --help too; Tessera comes from the app's or repo's node_modules

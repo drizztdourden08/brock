@@ -36,6 +36,14 @@
       "types": "./src/vite-web-config.d.mts",
       "default": "./src/vite-web-config.mjs"
     },
+    "./vite-site": {
+      "types": "./src/vite-site-config.d.mts",
+      "default": "./src/vite-site-config.mjs"
+    },
+    "./site": {
+      "types": "./src/site/define-brock-site.d.mts",
+      "default": "./src/site/define-brock-site.mjs"
+    },
     "./builder": "./src/builder-config.mjs",
     "./testing": {
       "types": "./src/testing/index.d.mts",
@@ -70,7 +78,8 @@
   "devDependencies": {
     "electron": "catalog:",
     "electron-builder": "catalog:",
-    "electron-vite": "catalog:"
+    "electron-vite": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": ">=5",

@@ -55,6 +55,26 @@ describe('brock adopt and tessera.config.json', () => {
     });
   });
 
+  it('lists the design package\'s shared views beside each app\'s own, sites included', async () => {
+    const root = repo({
+      'package.json': { name: 'acme' },
+      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n  - 'packages/*'\n",
+      'packages/design/package.json': { name: '@acme/design' },
+      'packages/design/src/views/SignIn/SignIn.tsx': 'export {};\n',
+      'apps/desktop/package.json': { name: '@acme/desktop' },
+      'apps/desktop/brock.config.ts': 'export default {};\n',
+      'apps/store/package.json': { name: '@acme/store' },
+      'apps/store/brock.site.ts': 'export default {};\n',
+    });
+    await runAdopt({ rootDir: root });
+    const written = config(root);
+    expect(written.parts.views).toBe('packages/design/src/views');
+    expect(written.apps).toEqual({
+      'apps/desktop': { parts: { views: ['apps/desktop/src/views', 'packages/design/src/views'] } },
+      'apps/store': { parts: { views: ['apps/store/src/views', 'packages/design/src/views'] } },
+    });
+  });
+
   it('keeps each app\'s views in its own src for a monorepo with no design package yet', async () => {
     const root = repo({
       'package.json': { name: 'acme' },

@@ -18,6 +18,8 @@ const OPTIONS = {
   alias: { type: 'string', multiple: true },
   map: { type: 'string' },
   report: { type: 'string' },
+  brand: { type: 'string' },
+  api: { type: 'string' },
   help: { type: 'boolean', short: 'h', default: false },
   version: { type: 'boolean', short: 'v', default: false },
 };

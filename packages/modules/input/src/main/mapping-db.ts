@@ -2,8 +2,8 @@
 import { existsSync } from 'node:fs';
 import type { MappingDb, MappingDbInput } from './mapping-db.type';
 import { bundledDbCandidates } from './bundled-db-candidates';
-import { isMappingLine } from './is-mapping-line';
-import { USER_DB_PATH } from './mapping-db.constants';
+import { isMappingLine } from '../mapping/is-mapping-line';
+import { USER_DB_PATH } from '../mapping/mapping-db.constants';
 
 const createMappingDb = ({ addon, files, paths, log, bundledPath }: MappingDbInput): MappingDb => {
   const load = async (): Promise<void> => {

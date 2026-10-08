@@ -34,6 +34,8 @@
     "native/src",
     "native/CMakeLists.txt",
     "native/package.json",
+    "android/build.gradle",
+    "android/src",
     "src",
     "resources",
     "README.md",
@@ -63,7 +65,8 @@
       }
     ],
     "packExclude": [
-      "native/**"
+      "native/**",
+      "android/**"
     ],
     "ci": [
       {
@@ -99,7 +102,13 @@
         "install": "brew install libusb pkg-config"
       }
     ],
-    "udevRules": "./resources/controllers.rules"
+    "udevRules": "./resources/controllers.rules",
+    "android": {
+      "sdkPackages": [
+        "ndk;27.2.12479018",
+        "cmake;3.22.1"
+      ]
+    }
   },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
@@ -119,5 +128,10 @@
     "electron": ">=38",
     "react": "^19.0.0",
     "zustand": "^5.0.0"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    }
   }
 }

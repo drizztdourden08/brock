@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { InputMain, InputOptions, InputRuntime } from './input-main.type';
-import { createCalibrationStore } from './calibration-store';
+import { createCalibrationStore } from '../calibration/calibration-store';
 import { createInputRuntime } from './create-input-runtime';
 
 const instances = new WeakMap<MainContext, InputMain>();

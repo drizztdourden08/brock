@@ -14,6 +14,7 @@ import { capacitorPackages } from './capacitor-packages.mjs';
 import { gradlePatch } from './gradle-patch.mjs';
 import { SIGNING_MARKER, VERSION_MARKER } from './gradle.constants.mjs';
 import { mobileIgnores } from './mobile-ignores.mjs';
+import { modulePlugins } from './module-plugins.mjs';
 import { patchGradleSigning } from './patch-gradle-signing.mjs';
 import { patchVersionCode } from './patch-version-code.mjs';
 
@@ -27,6 +28,7 @@ const androidPlatform = definePlatform({
     mobileIgnores(),
     capAddAndroid(),
     capacitorAssets(),
+    modulePlugins(),
     gradlePatch({ name: 'Gradle signing from the environment', marker: SIGNING_MARKER, patch: patchGradleSigning }),
     gradlePatch({ name: 'versionCode from package.json', marker: VERSION_MARKER, patch: patchVersionCode }),
   ],

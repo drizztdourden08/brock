@@ -20,6 +20,10 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 
+Without `--target`, `launch` picks the target whose app folder holds the folder it runs from (`pnpm --dir apps/desktop exec brock launch main none` launches `apps/desktop`), else the first target of `brock.workspace.mjs`.
+
+A review with screenshot baselines (`--review --review-baselines` or `--review --review-bless`) runs on an emptied `<userData>-review` folder beside the target's data folder (`.user-data-review`), every launch, with no provisioning, so two runs start from the same state.
+
 `<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
 
 `mobile` drives the Capacitor Android project. It reads `mobile` from `brock.workspace.mjs`

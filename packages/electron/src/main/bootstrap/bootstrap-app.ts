@@ -28,6 +28,7 @@ import { resolvePaths } from './resolve-paths';
 import { armScreenshotFlag } from './screenshot-flag';
 import { armSplashScreenshotFlag } from './splash-screenshot-flag';
 import { armReviewFlag } from './review-flag';
+import { pinReviewRendering } from '../review/baselines/pin-review-rendering';
 import { installAppLifecycle } from './app-lifecycle';
 import { registerHandlerGroups } from './register-handlers';
 import { widgetHandlers } from '../widgets/widget-handlers';
@@ -92,6 +93,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   const schemes = [...product.schemes, ...modules.flatMap((m) => m.schemes ?? [])];
   registerPrivilegedSchemes(schemes);
   app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+  pinReviewRendering(flags);
 
   const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains });
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];

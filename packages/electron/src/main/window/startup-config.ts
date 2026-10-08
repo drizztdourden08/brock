@@ -1,4 +1,6 @@
 /* @layer electron-main @kind logic */
+import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
+import { wantsBaselines } from '../review/baselines/wants-baselines';
 import type { StartupConfig, WindowSize } from './startup-config.type';
 
 const parseWindowSize = (arg: string): WindowSize | null => {
@@ -17,6 +19,7 @@ const parseStartupConfig = (defaultSize: WindowSize, argv: readonly string[] = p
     if (size) { windowSize = size; continue; }
     if (arg === '--fresh') fresh = true;
   }
+  if (windowSize === null && wantsBaselines(createAutomationFlags(), argv)) windowSize = defaultSize;
 
   return { windowSize, fresh };
 };

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { flag } from '../cli/thread-args.mjs';
 import { launchContext } from './launch-context.mjs';
+import { targetForCwd } from './target-for-cwd.mjs';
 
 const OWN_OPTIONS = new Set(['target', 'visible', 'sound', 'prod']);
 const USAGE = 'launch <name|main> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]';
@@ -17,7 +18,9 @@ const pickTarget = (ctx, requested) => {
   if (keys.length === 0) {
     throw new Error(`"${ctx.workspace.name}" declares no launch target. Add targets: { app: electronTarget() } to brock.workspace.mjs.`);
   }
-  const key = typeof requested === 'string' ? requested : (Object.keys(ctx.workspace.targets)[0] ?? keys[0]);
+  const key = typeof requested === 'string'
+    ? requested
+    : (targetForCwd(ctx.targets, ctx.rootDir, process.cwd()) ?? Object.keys(ctx.workspace.targets)[0] ?? keys[0]);
   const target = ctx.targets[key];
   if (!target) throw new Error(`Unknown target "${key}". Targets: ${keys.join(', ')}.`);
   return target;

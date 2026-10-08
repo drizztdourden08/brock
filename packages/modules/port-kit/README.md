@@ -53,7 +53,9 @@ const port = definePort<GameSettings>({
 });
 ```
 
-`known` maps an upper-case SHA-1 to `{ id, label }`. The id names the stored ROM (`roms/<id>.sfc`) and its asset blob (`assets/<id>.dat`). A core that renders to a framebuffer and hands out samples says so instead: `video: { mode: 'framebuffer', width, height, frame: 'WasmFramePtr' }` and `audio: { mode: 'samples', sampleRate, channels, samples: 'WasmAudioPtr', count: 'WasmAudioFrames' }`, with `exports.runFrame`; the kit then drives the frame loop itself.
+`known` maps an upper-case SHA-1 to `{ id, label }`. The id names the stored ROM (`roms/<id>.sfc`, the first of `extensions`) and its asset blob (`assets/<id>.dat`).
+
+`rom.keepFileName: true` keeps the name the file was imported under instead: `Game (USA).smc` is stored as `roms/Game (USA).smc` and its blob as `assets/Game (USA).dat`, for a port whose ROM-to-asset naming or existing data already depends on the original name. The store then lists a ROM by hashing it rather than by its name, and skips files that are not a known dump. The name only loses its folder; one a disk would refuse (a reserved device name, `<>:"/\|?*`, a leading dot, a trailing dot or space) is refused. The default, `false`, is the id naming above. Either way the stored bytes are the `normalize`d dump, so a copier header is stripped. A core that renders to a framebuffer and hands out samples says so instead: `video: { mode: 'framebuffer', width, height, frame: 'WasmFramePtr' }` and `audio: { mode: 'samples', sampleRate, channels, samples: 'WasmAudioPtr', count: 'WasmAudioFrames' }`, with `exports.runFrame`; the kit then drives the frame loop itself.
 
 ## Running it
 
@@ -76,7 +78,9 @@ await session.stop();
 | `quick/save<N>.sav`, `quick/save<N>.png` | Quick slots and their screenshots. |
 | `normal/`, `auto/` | Named saves, listed in `manifest.json`. |
 
-A `.sav` is a container: a `PKSV` header, the metadata as JSON (`port`, `savedAt`, `rom`), then the core's state bytes. A save from another port is refused.
+A `.sav` is a container: a `PKSV` header, the metadata as JSON (`port`, `savedAt`, `rom`), then the core's state bytes. A save from another port is refused. Saving always writes the container.
+
+Loading also takes a raw state: a file that does not start with `PKSV` is handed to the core as it is, so states and fixtures written before the kit (or by the core itself) still load. `decodeSaveSlot(bytes, port)` says which it read in `format` (`'pksv'` or `'raw'`); a raw state carries no metadata, so its `meta` is `{ port, savedAt: 0 }`. Pass `{ acceptRaw: false }` to refuse anything but a container (`reason: 'magic'`). An empty file is always refused.
 
 ## ensure-wasm
 

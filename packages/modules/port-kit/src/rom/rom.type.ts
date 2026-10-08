@@ -8,6 +8,7 @@ interface RomDefinition {
   extensions: string[];
   known: Record<string, RomIdentity>;
   normalize?: (bytes: Uint8Array) => Uint8Array;
+  keepFileName?: boolean;
 }
 
 interface RomImage {

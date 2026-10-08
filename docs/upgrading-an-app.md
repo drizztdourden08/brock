@@ -84,6 +84,23 @@ RotP keeps its main process in `apps/desktop/electron` and its renderer in `apps
 5. Delete what is left of `apps/web` (its `vite.config.ts`) and the root `electron.vite.config.ts`. The web build now comes from `apps/desktop` through the `web` platform (`vite.web.config.ts`, `brock web build`).
 6. Run `<app> structure --check` and `pnpm lint`; both list what still sits in the wrong place.
 
+### Android
+
+A Brock app keeps its Android project in `mobile/android` inside the app folder, with a managed `capacitor.config.json` at the app root: `brock sync` writes it from `brock.config.ts` (`appId` from `product.appId`, `appName` from `product.name`, `webDir: dist/web`, `android.path: mobile/android`, `allowMixedContent: false`). Brock reads no `capacitor.config.ts`: the Capacitor CLI loads a `.ts` or `.js` config before the JSON, so one left at the app root would silently replace the managed file, and `<app> platform add android` fails on it until it is gone.
+
+RotP has `apps/mobile` with `capacitor.config.ts`, `android/`, `assets/` and its own `package.json`. Move it into the app folder after the main and renderer move:
+
+1. `git mv apps/mobile/android apps/desktop/mobile/android`.
+2. Delete `apps/mobile/capacitor.config.ts`. Everything it sets is in the managed file: `com.relicofthepast.app` is `product.appId`, "Relic of the Past" is `product.name`, and `webDir` becomes the app's own `dist/web` instead of `../../dist/web`. A Capacitor setting the managed file does not write is a Brock request, not a second config.
+3. Move the Capacitor plugins from `apps/mobile/package.json` into `apps/desktop/package.json` (`@capacitor/app`, `@capacitor/filesystem`, `@capacitor/haptics`, `@capacitor-community/keep-awake`, `@capawesome/capacitor-file-picker`): `cap` runs from the app's `package.json` and finds the plugins there. `platform add android` adds `@capacitor/core`, `@capacitor/android`, `@capacitor/cli` and `@capacitor/assets`.
+4. Fix `mobile/android/app/build.gradle`, which is one folder deeper now:
+   - The version block reads `../../../../package.json`, the repo root. Point it at `../../../package.json`, the app's own `package.json`, which is the version Brock releases. Brock's `versionCode` patch sees `appVersionCode` and leaves the block alone.
+   - The paths into the app lose `desktop/` (`../../../desktop/electron/input/...` becomes `../../../electron/input/...`), and the paths to the repo root gain one `../` (`third_party`).
+   - Rename the signing variables `RELIC_KEYSTORE_FILE`, `RELIC_KEYSTORE_PASSWORD`, `RELIC_KEY_ALIAS` and `RELIC_KEY_PASSWORD` to their `BROCK_` names, and let the key password fall back to the store password, since Brock's release job sets only `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD` and `BROCK_KEY_ALIAS` (from the `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS` secrets). Brock's signing patch then sees `BROCK_KEYSTORE_FILE` and leaves RotP's block alone. Left as it is, the patch cannot apply, because RotP's `buildTypes` opens with `debug`, and it fails with a message.
+5. Run `<app> platform add android` in `apps/desktop`. It writes `capacitor.config.json` and the ignore lines, skips `cap add android` because `mobile/android` exists, and runs the Gradle patches. Then `npx cap sync android` rewrites `capacitor.settings.gradle` and `capacitor.build.gradle` for the plugins' new place.
+6. `apps/mobile/assets` gives way to `mobile/assets`, which `brock icons` and `@capacitor/assets` draw from the Tessera brand set and git ignores. Compare the two before you delete the old one.
+7. Delete `apps/mobile` and the root scripts `assets:android`, `cap:sync`, `android:open` and `android:run`. `<app> mobile push` installs a debug build on a device and `<app> mobile build [--release]` builds the APK.
+
 ## What the gate enforces
 
 ### Files and code

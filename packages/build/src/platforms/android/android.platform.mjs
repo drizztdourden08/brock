@@ -9,6 +9,7 @@ import { ANDROID_SECRETS } from './android.constants.mjs';
 import { capAddAndroid } from './cap-add-android.mjs';
 import { capacitorAssets } from './capacitor-assets.mjs';
 import { capacitorConfig } from './capacitor-config.mjs';
+import { capacitorConfigScripts } from './capacitor-config-scripts.mjs';
 import { capacitorPackages } from './capacitor-packages.mjs';
 import { gradlePatch } from './gradle-patch.mjs';
 import { SIGNING_MARKER, VERSION_MARKER } from './gradle.constants.mjs';
@@ -21,6 +22,7 @@ const androidPlatform = definePlatform({
   label: 'Android',
   doctor: [jdkCheck(), androidHomeCheck(), sdkPackagesCheck()],
   scaffold: [
+    capacitorConfigScripts(),
     capacitorPackages(),
     mobileIgnores(),
     capAddAndroid(),

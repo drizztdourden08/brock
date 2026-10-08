@@ -88,16 +88,27 @@ describe('the review PNG codec', () => {
   });
 });
 
+const STEPS: ReviewStepRecord[] = [
+  { index: 0, name: 'splash', file: '00-splash.png' },
+  { index: 1, name: 'menu', file: '01-menu.png' },
+  { index: 2, name: 'menu', file: '02-menu.png' },
+];
+
+const optionsIn = (root: string): BaselineOptions => ({
+  mode: 'compare',
+  root: join(root, 'tests', 'baselines'),
+  setDir: join(root, 'tests', 'baselines', 'linux'),
+  setLabel: 'tests/baselines/linux',
+  platform: 'linux',
+  config: parseBaselineConfig(undefined),
+});
+
 describe('bless and compare', () => {
   let root = '';
   let reviewDir = '';
   let options: BaselineOptions;
   const masks = new Map<string, MaskRect[]>();
-  const steps: ReviewStepRecord[] = [
-    { index: 0, name: 'splash', file: '00-splash.png' },
-    { index: 1, name: 'menu', file: '01-menu.png' },
-    { index: 2, name: 'menu', file: '02-menu.png' },
-  ];
+  const steps = STEPS;
   const input = (finished = true, list = steps): Parameters<typeof compareBaselines>[1] =>
     ({ steps: list, reviewDir, finished, masksOf: (file) => masks.get(file) ?? [], settled: (file) => file !== '02-menu.png' });
   const capture = (file: string, bitmap: ReviewBitmap): Promise<void> => writeFile(join(reviewDir, file), encodePng(bitmap));
@@ -106,7 +117,7 @@ describe('bless and compare', () => {
     root = await mkdtemp(join(tmpdir(), 'brock-baselines-'));
     reviewDir = join(root, 'Data', 'review', 'review');
     await mkdir(reviewDir, { recursive: true });
-    options = { mode: 'compare', root: join(root, 'tests', 'baselines'), setDir: join(root, 'tests', 'baselines', 'linux'), setLabel: 'tests/baselines/linux', platform: 'linux', config: parseBaselineConfig(undefined) };
+    options = optionsIn(root);
     masks.clear();
     await Promise.all(steps.map((step, index) => capture(step.file, image(8, 6, index))));
   });

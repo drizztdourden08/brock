@@ -4,14 +4,14 @@ import { join, relative, resolve, sep } from 'path';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import { BASELINE_CONFIG_FILE, BASELINE_DIR, parseBaselineConfig } from '@drizztdourden08/brock-core/review';
 import type { BaselineOptions } from './baseline-options.type';
-import { BASELINES_FLAG, BLESS_FLAG, PLATFORM_NAMES } from './review-baselines.constants';
+import { BASELINES_FLAG, BLESS_FLAG, BYTE_ORDER_MARK, PLATFORM_NAMES } from './review-baselines.constants';
 import { wantsBaselines } from './wants-baselines';
 
 const readConfig = (root: string): unknown => {
   const file = join(root, BASELINE_CONFIG_FILE);
   if (!existsSync(file)) return undefined;
   try {
-    return JSON.parse(readFileSync(file, 'utf-8').replace(/^﻿/, ''));
+    return JSON.parse(readFileSync(file, 'utf-8').replace(BYTE_ORDER_MARK, ''));
   } catch (err) {
     throw new Error(`${file}: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
   }

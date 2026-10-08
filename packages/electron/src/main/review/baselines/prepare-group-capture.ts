@@ -13,7 +13,7 @@ const prepareGroupCapture = async (selectors: readonly string[]): Promise<() => 
     return key === null ? null : { win, key };
   }));
   return async () => {
-    await Promise.all(inserted.map((entry) => (entry && !entry.win.isDestroyed() ? withinTime(entry.win.webContents.removeInsertedCSS(entry.key)) : null)));
+    await Promise.all(inserted.map((entry) => (entry && !entry.win.isDestroyed() ? withinTime(entry.win.webContents.removeInsertedCSS(entry.key)) : Promise.resolve(null))));
   };
 };
 

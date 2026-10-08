@@ -12,6 +12,7 @@ import { renderWorkflows } from '../release/render-workflows.mjs';
 import { renderReviewFiles } from '../review/render-review.mjs';
 import { renderScreensFiles } from '../screens/render-screens.mjs';
 import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
+import { renderTesseraEntryFiles } from '../tessera/render-tessera-entry.mjs';
 import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
@@ -107,6 +108,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderWidgetsFiles(rootDir),
     ...renderTitleBarFiles(rootDir),
     ...renderToursFiles(rootDir),
+    ...renderTesseraEntryFiles(rootDir),
     ...renderManagedFiles({ inWorkspace, aliases: config.build?.aliases }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),

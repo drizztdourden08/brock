@@ -1,7 +1,12 @@
 /* @layer core @kind constants */
 const BASELINE_MASK_ATTRIBUTE = 'data-review-mask';
 const BASELINE_MASK_SELECTOR = `[${BASELINE_MASK_ATTRIBUTE}]`;
-const BUILT_IN_MASKS = [BASELINE_MASK_SELECTOR, '.logs-widget .log-panel__gutter'];
+const BUILT_IN_MASKS = [
+  BASELINE_MASK_SELECTOR,
+  '.logs-widget .log-panel__gutter',
+  '.window-title-bar [data-bar-item="action:brock-jobs"]',
+  '[data-storage-page] :is([data-section="storage-overview"], [data-section="storage-domains"]) .settings-row__description',
+];
 const REVIEW_MASK = { 'data-review-mask': '' } as const;
 const BASELINE_DIR = 'tests/baselines';
 const BASELINE_CONFIG_FILE = 'baselines.json';

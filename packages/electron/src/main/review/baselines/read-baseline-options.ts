@@ -4,7 +4,7 @@ import { join, relative, resolve, sep } from 'path';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import { BASELINE_CONFIG_FILE, BASELINE_DIR, parseBaselineConfig } from '@drizztdourden08/brock-core/review';
 import type { BaselineOptions } from './baseline-options.type';
-import { BASELINES_FLAG, BLESS_FLAG, BYTE_ORDER_MARK, PLATFORM_NAMES } from './review-baselines.constants';
+import { BASELINES_FLAG, BLESS_FLAG, BYTE_ORDER_MARK, FORCE_FLAG, PLATFORM_NAMES } from './review-baselines.constants';
 import { wantsBaselines } from './wants-baselines';
 
 const readConfig = (root: string): unknown => {
@@ -27,6 +27,7 @@ const readBaselineOptions = (flags: AutomationFlags, cwd = process.cwd(), argv?:
     root,
     setDir,
     setLabel: relative(cwd, setDir).split(sep).join('/') || '.',
+    force: flags.hasFlag(FORCE_FLAG, argv),
     platform,
     config: parseBaselineConfig(readConfig(root)),
   };

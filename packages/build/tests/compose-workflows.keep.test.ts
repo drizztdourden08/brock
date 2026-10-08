@@ -23,6 +23,28 @@ describe('composeWorkflows', () => {
     expect(ci).toContain('pull_request:');
   });
 
+  it('drops the jobs of platforms that are not chosen', () => {
+    const { release, jobs } = composeWorkflows({ targets: ['windows'], prefix: 'a-' });
+    expect(jobs.release).toEqual(['prepare', 'build-windows', 'release']);
+    expect(release).not.toContain('release-macos');
+    expect(release).not.toContain('setup-java');
+  });
+
+  it('puts a module system step before install on the matching runners only', () => {
+    const { ci, release } = composeWorkflows({ targets: ['windows', 'linux'], prefix: 'a-', systemSteps: [LIBUSB] });
+    expect(ci.split(LIBUSB.name).length - 1).toBe(2);
+    const windowsJob = release.slice(release.indexOf('build-windows:'), release.indexOf('build-linux:'));
+    expect(windowsJob).not.toContain(LIBUSB.name);
+    expect(release.slice(release.indexOf('build-linux:'))).toContain(LIBUSB.name);
+  });
+
+  it('checks out the release tag in every build job', () => {
+    const { release } = composeWorkflows({ targets: ['desktop'], prefix: 'a-' });
+    expect(release.split('ref: ${{ needs.prepare.outputs.tag }}').length - 1).toBe(4);
+  });
+});
+
+describe('composeWorkflows with screenshot baselines', () => {
   it('compares the review with the linux baselines when the app turns them on, with a bless input', () => {
     const plain = composeWorkflows({ targets: ['desktop'], prefix: 'a-' }).ci;
     expect(plain).toContain('  workflow_dispatch:\n\nconcurrency:');
@@ -50,25 +72,5 @@ describe('composeWorkflows', () => {
     expect(ci).toContain('name: review-baselines-desktop\n          path: ${{ env.APP_DIR }}/tests/baselines/linux/');
     expect(ci).toContain('APP_DIR: apps/desktop');
     expect(ci).not.toMatch(/__[A-Z_]+__/);
-  });
-
-  it('drops the jobs of platforms that are not chosen', () => {
-    const { release, jobs } = composeWorkflows({ targets: ['windows'], prefix: 'a-' });
-    expect(jobs.release).toEqual(['prepare', 'build-windows', 'release']);
-    expect(release).not.toContain('release-macos');
-    expect(release).not.toContain('setup-java');
-  });
-
-  it('puts a module system step before install on the matching runners only', () => {
-    const { ci, release } = composeWorkflows({ targets: ['windows', 'linux'], prefix: 'a-', systemSteps: [LIBUSB] });
-    expect(ci.split(LIBUSB.name).length - 1).toBe(2);
-    const windowsJob = release.slice(release.indexOf('build-windows:'), release.indexOf('build-linux:'));
-    expect(windowsJob).not.toContain(LIBUSB.name);
-    expect(release.slice(release.indexOf('build-linux:'))).toContain(LIBUSB.name);
-  });
-
-  it('checks out the release tag in every build job', () => {
-    const { release } = composeWorkflows({ targets: ['desktop'], prefix: 'a-' });
-    expect(release.split('ref: ${{ needs.prepare.outputs.tag }}').length - 1).toBe(4);
   });
 });

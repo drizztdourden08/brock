@@ -9,6 +9,9 @@ const row = (result: BaselineResult): string =>
   `| ${cell(result.capture)} | ${cell(result.step)} | ${result.status} | ${result.diffPixels} | ${baselineShare(result.ratio)} | ${result.diff ?? cell(result.detail ?? '')} |`;
 
 const blessLines = (report: BaselineReport): string[] => {
+  if (report.refused && report.refused.length > 0) {
+    return [`Did not bless the ${report.platform} set in ${report.dir}: these checks failed. Fix them, or bless anyway with \`--review-bless --force\`.`, '', ...report.refused.map((check) => `- ${cell(check)}`)];
+  }
   const removed = report.results.filter((result) => result.status === 'unused');
   return [
     `Blessed ${report.results.length - removed.length} captures as the ${report.platform} set in ${report.dir}.`,

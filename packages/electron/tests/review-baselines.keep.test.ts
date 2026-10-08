@@ -10,7 +10,7 @@ import type { MaskRect, ReviewBitmap, ReviewStepRecord } from '@drizztdourden08/
 import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
 import { blessBaselines } from '../src/main/review/baselines/bless-baselines';
 import { compareBaselines } from '../src/main/review/baselines/compare-baselines';
-import type { BaselineOptions } from '../src/main/review/baselines/baseline-options.type';
+import type { BaselineOptions, BaselineRunInput } from '../src/main/review/baselines/baseline-options.type';
 import { readBaselineOptions } from '../src/main/review/baselines/read-baseline-options';
 import { decodePng } from '../src/main/review/png/decode-png';
 import { encodePng } from '../src/main/review/png/encode-png';
@@ -99,6 +99,7 @@ const optionsIn = (root: string): BaselineOptions => ({
   root: join(root, 'tests', 'baselines'),
   setDir: join(root, 'tests', 'baselines', 'linux'),
   setLabel: 'tests/baselines/linux',
+  force: false,
   platform: 'linux',
   config: parseBaselineConfig(undefined),
 });
@@ -109,8 +110,8 @@ describe('bless and compare', () => {
   let options: BaselineOptions;
   const masks = new Map<string, MaskRect[]>();
   const steps = STEPS;
-  const input = (finished = true, list = steps): Parameters<typeof compareBaselines>[1] =>
-    ({ steps: list, reviewDir, finished, masksOf: (file) => masks.get(file) ?? [], settled: (file) => file !== '02-menu.png' });
+  const input = (finished = true, list = steps): BaselineRunInput =>
+    ({ steps: list, reviewDir, finished, masksOf: (file) => masks.get(file) ?? [], settled: (file) => file !== '02-menu.png', failedChecks: [] });
   const capture = (file: string, bitmap: ReviewBitmap): Promise<void> => writeFile(join(reviewDir, file), encodePng(bitmap));
 
   beforeEach(async () => {
@@ -171,6 +172,24 @@ describe('bless and compare', () => {
   });
 });
 
+describe('a bless after a failed check', () => {
+  it('writes nothing and names the failed checks, unless forced', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'brock-bless-'));
+    const reviewDir = join(root, 'review');
+    await mkdir(reviewDir, { recursive: true });
+    await writeFile(join(reviewDir, '01-menu.png'), encodePng(image(4, 4)));
+    const options = { ...optionsIn(root), mode: 'bless' as const };
+    const input: BaselineRunInput = { steps: STEPS.slice(1, 2), reviewDir, finished: true, masksOf: () => [], settled: () => true, failedChecks: ['fonts-loaded (fonts)'] };
+    const refused = await blessBaselines(options, input);
+    expect(refused).toMatchObject({ results: [], refused: ['fonts-loaded (fonts)'] });
+    expect(existsSync(options.setDir)).toBe(false);
+    const forced = await blessBaselines({ ...options, force: true }, input);
+    expect(forced.results.map((result) => result.status)).toEqual(['blessed']);
+    expect(forced.refused).toBeUndefined();
+    await rm(root, { recursive: true, force: true });
+  });
+});
+
 describe('readBaselineOptions', () => {
   const flags = createAutomationFlags();
 
@@ -187,5 +206,7 @@ describe('readBaselineOptions', () => {
     const bless = readBaselineOptions(flags, '/app', ['--review', '--review-bless=shots']);
     expect(bless?.mode).toBe('bless');
     expect(bless?.setDir.replace(/\\/g, '/')).toMatch(/\/app\/shots\/[a-z0-9]+$/);
+    expect(bless?.force).toBe(false);
+    expect(readBaselineOptions(flags, '/app', ['--review', '--review-bless', '--force'])?.force).toBe(true);
   });
 });

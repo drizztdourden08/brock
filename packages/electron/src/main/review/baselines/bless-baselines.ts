@@ -8,6 +8,9 @@ import { PNG_EXTENSION } from './review-baselines.constants';
 import { unusedBaselines } from './unused-baselines';
 
 const blessBaselines = async (options: BaselineOptions, input: BaselineRunInput): Promise<BaselineReport> => {
+  if (input.failedChecks.length > 0 && !options.force) {
+    return { mode: 'bless', platform: options.platform, dir: options.setLabel, results: [], refused: [...input.failedChecks] };
+  }
   const captured = capturedSteps(input.steps, input.reviewDir);
   await mkdir(options.setDir, { recursive: true });
   const results: BaselineResult[] = [];

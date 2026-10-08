@@ -85,7 +85,9 @@ describe('maskGrid', () => {
 describe('parseBaselineConfig and resolveBaselineRule', () => {
   it('defaults to zero tolerance and the mask attribute', () => {
     const rule = resolveBaselineRule(parseBaselineConfig(undefined), 'screen-home');
-    expect(rule).toEqual({ tolerance: 0, threshold: 0, rects: [], selectors: ['[data-review-mask]', '.logs-widget .log-panel__gutter'] });
+    expect(rule).toMatchObject({ tolerance: 0, threshold: 0, rects: [] });
+    expect(rule.selectors.slice(0, 2)).toEqual(['[data-review-mask]', '.logs-widget .log-panel__gutter']);
+    expect(rule.selectors.some((selector) => selector.includes('[data-storage-page]'))).toBe(true);
   });
 
   it('merges the global masks with the capture rule and keeps its tolerance and threshold', () => {
@@ -94,12 +96,9 @@ describe('parseBaselineConfig and resolveBaselineRule', () => {
       masks: [{ selector: '.clock' }],
       captures: { 'screen-home': { tolerance: 0.01, threshold: 3, masks: [{ x: 1, y: 2, width: 3, height: 4 }] } },
     });
-    expect(resolveBaselineRule(config, 'screen-home')).toEqual({
-      tolerance: 0.01,
-      threshold: 3,
-      rects: [{ x: 1, y: 2, width: 3, height: 4 }],
-      selectors: ['[data-review-mask]', '.logs-widget .log-panel__gutter', '.clock'],
-    });
+    const rule = resolveBaselineRule(config, 'screen-home');
+    expect(rule).toMatchObject({ tolerance: 0.01, threshold: 3, rects: [{ x: 1, y: 2, width: 3, height: 4 }] });
+    expect(rule.selectors.at(-1)).toBe('.clock');
     expect(resolveBaselineRule(config, 'about')).toMatchObject({ tolerance: 0, threshold: 1 });
   });
 
@@ -157,6 +156,18 @@ describe('baselineChecks and the report', () => {
     expect(checks[0]).toMatchObject({ id: 'baselines', pass: true });
     expect(checks[0]?.reason).toContain('blessed 1 captures');
     expect(checks[0]?.reason).toContain('removed 1');
+  });
+
+  it('fails a refused bless, naming the checks that failed, in both reports', () => {
+    const baselines = { ...report([], 'bless'), refused: ['fonts-loaded (fonts)', 'tour-finished (global)'] };
+    const checks = baselineChecks(baselines);
+    expect(checks).toHaveLength(1);
+    expect(checks[0]).toMatchObject({ id: 'baselines', pass: false });
+    expect(checks[0]?.reason).toContain('2 other checks failed (fonts-loaded (fonts), tour-finished (global))');
+    expect(checks[0]?.reason).toContain('--review-bless --force');
+    const markdown = renderReviewMarkdown(buildReviewReport({ ...RUN, baselines }, { finished: true, finishedAt: 2_000 }));
+    expect(markdown).toContain('Did not bless the windows set');
+    expect(markdown).toContain('- tour-finished (global)');
   });
 
   it('fails a compare that found no capture at all', () => {

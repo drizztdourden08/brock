@@ -1,6 +1,7 @@
 /* @layer electron-main @kind constants */
 const BASELINES_FLAG = '--review-baselines';
 const BLESS_FLAG = '--review-bless';
+const FORCE_FLAG = '--force';
 const PLATFORM_NAMES: Readonly<Partial<Record<NodeJS.Platform, string>>> = { win32: 'windows', darwin: 'macos', linux: 'linux' };
 const PINNED_SWITCHES: readonly (readonly [string, string?])[] = [
   ['force-device-scale-factor', '1'],
@@ -16,8 +17,10 @@ const SETTLE_FRAME_MS = 150;
 const PREPARE_TIMEOUT_MS = 1000;
 const STABLE_TRIES = 8;
 const STABLE_GAP_MS = 120;
+const PINNED_AREA = { width: 1920, height: 1080 } as const;
 const BYTE_ORDER_MARK = new RegExp(`^${String.fromCharCode(0xfeff)}`);
 
 export {
-  BASELINES_FLAG, BLESS_FLAG, BYTE_ORDER_MARK, PINNED_CSS, PINNED_SWITCHES, PLATFORM_NAMES, PNG_EXTENSION, PREPARE_TIMEOUT_MS, SETTLE_FRAME_MS, STABLE_GAP_MS, STABLE_TRIES,
+  BASELINES_FLAG, BLESS_FLAG, BYTE_ORDER_MARK, FORCE_FLAG, PINNED_AREA, PINNED_CSS, PINNED_SWITCHES, PLATFORM_NAMES, PNG_EXTENSION, PREPARE_TIMEOUT_MS,
+  SETTLE_FRAME_MS, STABLE_GAP_MS, STABLE_TRIES,
 };

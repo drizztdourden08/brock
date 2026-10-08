@@ -68,6 +68,7 @@ interface BaselineReport {
   platform: string;
   dir: string;
   results: BaselineResult[];
+  refused?: string[];
 }
 
 export type {

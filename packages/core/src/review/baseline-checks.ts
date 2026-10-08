@@ -23,8 +23,16 @@ const failureReason = (result: BaselineResult, platform: string): string => {
   }
 };
 
+const refusal = (report: BaselineReport, refused: readonly string[]): ReviewCheck => ({
+  id: BASELINES_CHECK,
+  step: GLOBAL_STEP,
+  pass: false,
+  reason: `did not bless the ${report.platform} baselines: ${refused.length} other ${refused.length === 1 ? 'check' : 'checks'} failed (${refused.join(', ')}); fix them, or bless anyway with --review-bless --force`,
+});
+
 const summary = (report: BaselineReport, failures: number): ReviewCheck => {
   const total = report.results.length;
+  if (report.refused && report.refused.length > 0) return refusal(report, report.refused);
   if (report.mode === 'bless') {
     const removed = report.results.filter((result) => result.status === 'unused').length;
     return { id: BASELINES_CHECK, step: GLOBAL_STEP, pass: true, reason: `blessed ${total - removed} captures as the ${report.platform} baselines in ${report.dir}, removed ${removed}` };

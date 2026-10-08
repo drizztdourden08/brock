@@ -6,7 +6,7 @@ import { MANAGED_FILES } from '../../managed/templates.mjs';
 import { ownedFiles } from '../owned-files.mjs';
 import { ALIAS_CONFIG } from './tessera-copy.constants.mjs';
 
-const FOLDER_NOTE = 'the copy of the design system. Once nothing imports it, delete its primitives, composites and data. Move what the app keeps from it first (tokens only this app uses, such as game text styles, and its own fonts) into the app theme, as Tessera\'s MIGRATION.md says, then remove the alias.';
+const FOLDER_NOTE = 'the copy of the design system. Once nothing imports it, delete its primitives, composites and data. Move what the app keeps from it first (tokens only this app uses, such as its own text styles, and its own fonts) into the app theme, as Tessera\'s MIGRATION.md says, then remove the alias.';
 
 const mentionsOf = (text, needles) =>
   text.split('\n').flatMap((line, index) => (needles.some((needle) => line.includes(needle)) ? [index + 1] : []));

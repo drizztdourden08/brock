@@ -8,8 +8,8 @@ npm config set @drizztdourden08:registry https://npm.pkg.github.com
 npm install -g @drizztdourden08/brock
 ```
 
-You rarely type `brock` yourself. Every Brock repo carries its own command (`archipelia`,
-`tessera`, `rotp`), and that command reaches this one. The first run of a repo's command
+You rarely type `brock` yourself. Every Brock repo carries its own command (`my-app`,
+`tessera`), and that command reaches this one. The first run of a repo's command
 on a machine without Brock offers to install it.
 
 ## What it runs

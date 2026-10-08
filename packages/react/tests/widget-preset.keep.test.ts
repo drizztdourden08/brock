@@ -15,7 +15,7 @@ const SESSION = ['players', 'hints', 'room', 'log', 'console', 'spoiler'].map(se
 const NOTES = defineWidget({ id: 'notes', label: 'Notes', render: () => null, defaultSide: 'right', defaultOpen: true });
 const DEFINITIONS = [...SESSION, NOTES];
 
-const ARCHIPELIA = defineLayoutPreset({
+const THREE_ROWS = defineLayoutPreset({
   rows: [['players', 'hints', 'room'], ['main'], ['log', 'console']],
   sizes: [0.34, 0.32, 0.34],
 });
@@ -29,8 +29,8 @@ const shape = (node: LayoutNode): unknown => {
 const store = () => useWidgetLayoutStore.getState();
 
 describe('presetLayout', () => {
-  it('builds Archipelia three rows around the main view', () => {
-    const layout = presetLayout(ARCHIPELIA, SESSION);
+  it('builds three rows around the main view', () => {
+    const layout = presetLayout(THREE_ROWS, SESSION);
     expect(shape(layout.dock)).toEqual({
       column: [
         { row: [['players'], ['hints'], ['room']], sizes: [0.33, 0.33, 0.33] },
@@ -55,7 +55,7 @@ describe('presetLayout', () => {
   });
 
   it('opens a defaultOpen widget the preset does not place on its default side', () => {
-    const layout = presetLayout(ARCHIPELIA, DEFINITIONS);
+    const layout = presetLayout(THREE_ROWS, DEFINITIONS);
     expect(placementOf(layout, 'notes')).toBe('docked');
     expect(widgetsIn(layout.dock)).toContain('notes');
     expect(placementOf(presetLayout(null, DEFINITIONS), 'notes')).toBe('docked');
@@ -70,7 +70,7 @@ describe('the layout store with a preset', () => {
   });
 
   it('applies the preset to a profile with no saved layout and keeps a saved one', () => {
-    store().setPreset(ARCHIPELIA);
+    store().setPreset(THREE_ROWS);
     store().replace(undefined);
     expect(widgetsIn(store().layout.dock)).toEqual(['players', 'hints', 'room', 'log', 'console', 'notes']);
     const saved = presetLayout(null, SESSION);
@@ -79,7 +79,7 @@ describe('the layout store with a preset', () => {
   });
 
   it('resets every placement to the preset, closing floating and popped widgets', () => {
-    store().setPreset(ARCHIPELIA);
+    store().setPreset(THREE_ROWS);
     store().replace(undefined);
     widgets.close('players');
     widgets.popOut('spoiler');

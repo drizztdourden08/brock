@@ -66,7 +66,7 @@ const appWith = (files: Record<string, string>): string => {
   return root;
 };
 
-const ARCHIPELIA = {
+const SESSION_APP = {
   'apps/desktop/src/main.tsx': MAIN,
   'apps/desktop/src/main.constants.ts': CONSTANTS,
   'apps/desktop/src/hooks/app-navigation.constants.ts': NAV,
@@ -82,7 +82,7 @@ afterEach(() => {
 
 describe('base-screen-file', () => {
   it('moves the Session dashboard to src/screens/session.base.tsx and drops screens and home, once', async () => {
-    const root = appWith(ARCHIPELIA);
+    const root = appWith(SESSION_APP);
     const run = await runMigrations(root, baseStep());
     expect(run.todos).toEqual([]);
     expect(run.applied[0]?.touched).toEqual(['apps/desktop/src/screens/session.base.tsx', 'apps/desktop/src/main.constants.ts', 'apps/desktop/src/main.tsx']);
@@ -112,7 +112,7 @@ describe('base-screen-file', () => {
   });
 
   it('leaves a precise to-do when the screen is more than a title, an icon and a component', async () => {
-    const root = appWith({ ...ARCHIPELIA, 'apps/desktop/src/main.constants.ts': CONSTANTS.replace("    header: 'own',", '    keepMounted: true,') });
+    const root = appWith({ ...SESSION_APP, 'apps/desktop/src/main.constants.ts': CONSTANTS.replace("    header: 'own',", '    keepMounted: true,') });
     const run = await runMigrations(root, baseStep());
     expect(run.applied[0]?.touched).toEqual([]);
     expect(run.todos).toHaveLength(1);

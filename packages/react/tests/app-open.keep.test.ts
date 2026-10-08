@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { OpenRequest } from '@drizztdourden08/brock-core';
 import { createAppOpenRegistry } from '../src/open/create-app-open-registry';
 
-const FILE: OpenRequest = { kind: 'file', path: '/packs/theme.msul', ext: 'msul', source: 'launch' };
+const FILE: OpenRequest = { kind: 'file', path: '/packs/theme.mypack', ext: 'mypack', source: 'launch' };
 
 describe('createAppOpenRegistry', () => {
   it('holds a request that arrives before any handler and hands it to the first one', () => {

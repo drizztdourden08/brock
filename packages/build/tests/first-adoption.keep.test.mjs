@@ -42,7 +42,7 @@ describe('brockPinOf', () => {
 describe('brock migrate without brock.version', () => {
   it('refuses --from and points to brock adopt', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    const root = withPackages({ '.': { name: 'relic-of-the-past' } }, { 'main.ts': 'export const a = 1;\n' });
+    const root = withPackages({ '.': { name: 'sample-app' } }, { 'main.ts': 'export const a = 1;\n' });
     expect(await runMigrate({ rootDir: root, from: '0.1.0' })).toBe(1);
     expect(error).toHaveBeenCalledWith(expect.stringContaining('never on Brock'));
     expect(error).toHaveBeenCalledWith(expect.stringContaining('brock adopt'));

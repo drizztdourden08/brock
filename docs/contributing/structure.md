@@ -53,7 +53,7 @@ A workspace package is bundled into the app's main and preload from source; its 
 
 `brock adopt` writes `brock.workspace.mjs`, the one file that tells the thread CLI what the repo is: its name (the repo's command), its base branch, its launch targets (`electronTarget` for an app, `serveTarget` for a dev server), the provision steps every worktree gets, and the plugins.
 
-Every repo carries its own command, named after the workspace: `archipelia`, `tessera`, `rotp`. `brock adopt` and `create-brock` write it to `bin/<repo>.mjs`, a plain Node file with no dependencies, and add `"bin"` and a `postinstall` of `node bin/<repo>.mjs --link` to the root `package.json`. That command is how you run everything in the repo, and the docs and hints of a repo name it, never `brock`. It reaches the global `brock` (`@drizztdourden08/brock`, from GitHub Packages), which then runs the `brock-build` version the repo pinned in its own `node_modules`.
+Every repo carries its own command, named after the workspace: `my-app`, `tessera`. `brock adopt` and `create-brock` write it to `bin/<repo>.mjs`, a plain Node file with no dependencies, and add `"bin"` and a `postinstall` of `node bin/<repo>.mjs --link` to the root `package.json`. That command is how you run everything in the repo, and the docs and hints of a repo name it, never `brock`. It reaches the global `brock` (`@drizztdourden08/brock`, from GitHub Packages), which then runs the `brock-build` version the repo pinned in its own `node_modules`.
 
 First time on a machine:
 

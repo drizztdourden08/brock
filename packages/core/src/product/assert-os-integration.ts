@@ -28,7 +28,7 @@ const assertOsIntegration = (input: ProductInput): void => {
   }
   for (const { scheme } of protocols) assertScheme('protocols', scheme);
   for (const { ext, progId } of fileAssociations) {
-    if (!FILE_EXTENSION.test(ext)) throw new Error(`product.fileAssociations ext "${ext}" must be an extension with no dot, like "msul"`);
+    if (!FILE_EXTENSION.test(ext)) throw new Error(`product.fileAssociations ext "${ext}" must be an extension with no dot, like "mypack"`);
     if (!PROG_ID.test(progId)) throw new Error(`product.fileAssociations progId "${progId}" must look like "MyApp.Document"`);
   }
   assertUnique('schemes', schemes.map(({ scheme }) => scheme));

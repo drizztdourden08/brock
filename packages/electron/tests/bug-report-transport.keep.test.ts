@@ -11,7 +11,7 @@ import { openZipReader } from '../src/main/storage/zip/open-zip-reader';
 import type { MainContext } from '../src/main/types/main-context.type';
 
 const PAYLOAD: BugReportPayload = {
-  title: 'Crash', description: 'It closed.', app: { id: 'relic', name: 'Relic', version: '1.0.0' }, diagnostics: null, createdAt: '2026-10-07T00:00:00.000Z',
+  title: 'Crash', description: 'It closed.', app: { id: 'my-app', name: 'My App', version: '1.0.0' }, diagnostics: null, createdAt: '2026-10-07T00:00:00.000Z',
 };
 
 const roots: string[] = [];

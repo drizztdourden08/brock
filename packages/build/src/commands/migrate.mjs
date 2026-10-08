@@ -8,6 +8,7 @@ import { collectMigrations } from '../upgrade/collect-migrations.mjs';
 import { runMigrations } from '../upgrade/run-migrations.mjs';
 import { selectMigrations } from '../upgrade/select-migrations.mjs';
 import { tesseraRenamesStep } from '../upgrade/tessera/tessera-renames-step.mjs';
+import { readCopyMap } from '../upgrade/tessera-copy/copy-map.mjs';
 import { tesseraCopyStep } from '../upgrade/tessera-copy/tessera-copy-step.mjs';
 import { runSync } from './sync.mjs';
 
@@ -19,11 +20,17 @@ const neverOnBrock = (rootDir) => [
   'To replay only the Tessera renames, pass --tessera-from <version> without --from.',
 ].join('\n');
 
-const copyRefusal = ({ rootDir, tesseraFrom, tesseraFromCopy }) => {
+const copyRefusal = ({ rootDir, tesseraFrom, tesseraFromCopy, map }) => {
   if (!tesseraFromCopy) return null;
   if (tesseraFrom) return 'brock migrate: --tessera-from and --tessera-from-copy both set where the Tessera replay starts; pass one.';
+  if (!map) return 'brock migrate: --tessera-from-copy needs --map <file>, the JSON that maps the folders of the copy to Tessera entry points (docs/upgrading-an-app.md).';
   const copyDir = resolve(rootDir, tesseraFromCopy);
   return existsSync(copyDir) ? null : `brock migrate: the copy folder ${copyDir} does not exist (--tessera-from-copy is relative to --root).`;
+};
+
+const copyStepOf = ({ rootDir, tesseraFromCopy, aliases, map }) => {
+  const read = readCopyMap(resolve(process.cwd(), map));
+  return read.refused ? read : tesseraCopyStep({ rootDir, copy: tesseraFromCopy, aliases: aliases ?? [], map: read.map });
 };
 
 const refusal = (ctx) => {
@@ -34,8 +41,7 @@ const refusal = (ctx) => {
   return pinned ? MISSING_FROM : neverOnBrock(ctx.rootDir);
 };
 
-const tesseraStep = ({ rootDir, tesseraFrom, tesseraFromCopy, aliases }) =>
-  (tesseraFromCopy ? tesseraCopyStep({ rootDir, copy: tesseraFromCopy, aliases: aliases ?? [] }) : tesseraRenamesStep({ rootDir, from: tesseraFrom ?? null }));
+const tesseraStep = (ctx) => (ctx.tesseraFromCopy ? copyStepOf(ctx) : tesseraRenamesStep({ rootDir: ctx.rootDir, from: ctx.tesseraFrom ?? null }));
 
 const printTodos = (todos) => {
   if (todos.length === 0) return;
@@ -87,7 +93,7 @@ const writeReport = (report, run) => {
 };
 
 /**
- * @param {{ rootDir: string, from?: string, to?: string, tesseraFrom?: string, tesseraFromCopy?: string, aliases?: string[], report?: string }} ctx
+ * @param {{ rootDir: string, from?: string, to?: string, tesseraFrom?: string, tesseraFromCopy?: string, aliases?: string[], map?: string, report?: string }} ctx
  * @returns {Promise<number>} exit code; Brock migrations, then the Tessera renames
  */
 const runMigrate = async (ctx) => {

@@ -24,7 +24,7 @@ Without `--target`, `launch` picks the target whose app folder holds the folder 
 
 A review with screenshot baselines (`--review --review-baselines` or `--review --review-bless`) runs on an emptied `<userData>-review` folder beside the target's data folder (`.user-data-review`), every launch, with no provisioning, so two runs start from the same state.
 
-`<repo>` is the repository's own command (`archipelia`, `tessera`, `rotp`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
+`<repo>` is the repository's own command (`my-app`, `tessera`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
 
 `mobile` drives the Capacitor Android project. It reads `mobile` from `brock.workspace.mjs`
 when there is one, else the `capacitor.config.json` that `platform add android` writes at the app

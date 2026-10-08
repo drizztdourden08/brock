@@ -16,7 +16,7 @@ const context = (settings: Record<string, unknown> = {}) => ({ settings, onChang
 const OWNER: SettingItem = {
   key: 'owner',
   label: 'Owner id',
-  description: 'Identifies you to archipelago.gg.',
+  description: 'Identifies you to example.org.',
   hint: 'Copy it to share, or reset it to get a new one.',
   actions: [
     { id: 'copy', label: 'Copy', icon: 'copy', onSelect: () => undefined },
@@ -40,9 +40,9 @@ describe('settings row actions', () => {
 
   it('keeps the control of an item that has one and puts the actions in the same row', () => {
     const item: SettingItem = { ...OWNER, key: 'site', control: { kind: 'text', placeholder: 'https://' } };
-    const rows = settingRows(item, context({ site: 'https://archipelago.gg' }));
+    const rows = settingRows(item, context({ site: 'https://example.org' }));
     expect(rows.map((row) => row.id)).toEqual(['site']);
-    expect(rows[0]).toMatchObject({ input: { kind: 'text', value: 'https://archipelago.gg' }, actions: [{ id: 'copy' }, { id: 'reset' }] });
+    expect(rows[0]).toMatchObject({ input: { kind: 'text', value: 'https://example.org' }, actions: [{ id: 'copy' }, { id: 'reset' }] });
   });
 
   it('asks a string confirm in the row, and a dialog confirm through confirmAction before it runs', async () => {

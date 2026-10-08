@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { withOsIntegration } from '../src/main/with-os-integration';
 
 const PRODUCT = {
-  id: 'relic', name: 'Relic', protocols: [{ scheme: 'relic' }], fileAssociations: [],
+  id: 'my-app', name: 'My App', protocols: [{ scheme: 'my-app' }], fileAssociations: [],
 };
 
 describe('withOsIntegration', () => {

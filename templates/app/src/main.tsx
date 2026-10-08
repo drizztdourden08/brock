@@ -1,5 +1,6 @@
 /* @layer renderer-app @kind entry */
 import '@drizztdourden08/tessera/tokens.css';
+import '../.brock/palette.css';
 import './theme.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

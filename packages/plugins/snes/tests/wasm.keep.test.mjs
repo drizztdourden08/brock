@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { snes } from '../src/snes-verb.mjs';
 
-const OUTPUT = 'apps/web/public/wasm';
+const OUTPUT = 'public/wasm';
 
 const BUILD_SCRIPT = `
 import { mkdirSync, writeFileSync } from 'node:fs';

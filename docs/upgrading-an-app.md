@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # Upgrading an app to the current Brock
 
-This guide is for the thread that owns an app built on Brock (Archipelia today, RotP later). It covers how to move the app to the current releases, which rules the gate now enforces, and how to report what you find.
+This guide is for the thread that owns an app built on Brock. It covers how to move the app to the current releases, which rules the gate now enforces, and how to report what you find.
 
 ## Versions
 
@@ -31,7 +31,7 @@ Brock 0.19 and 0.23 shipped the 0.17 and 0.20 moves as the migrations `tessera-p
 
 ## Adopting an app that was never on Brock
 
-An app built before Brock, such as Relic of the Past, has no `brock.version` in its `package.json`. No Brock migration applies to it: the migrations from 0.1.1 on rewrite code that Brock itself once generated, and an app that never had that code would only collect noise from them.
+An app built before Brock has no `brock.version` in its `package.json`. No Brock migration applies to it: the migrations from 0.1.1 on rewrite code that Brock itself once generated, and an app that never had that code would only collect noise from them.
 
 ### First adoption
 
@@ -43,65 +43,77 @@ Never pass an old `--from` to bring a non-Brock app "up to date": the app starts
 
 ### An app with its own copy of the design system
 
-Tessera began as a copy of Relic of the Past's design system (RotP master `b2a089bd1`), and RotP still imports that copy from `apps/web/src/ui/design-system`, through the `@ds` alias and relative paths. Tessera's `RENAMES.json`, from its first release with entries (0.4.0), is the conversion path from that copy, and `brock migrate` runs it:
+Tessera began as a copy of an app's design system. An app that still imports such a copy (a folder of its own, reached through an alias and relative paths) converts with `brock migrate`, which points the imports at Tessera and replays Tessera's `RENAMES.json` over them:
 
 ```
 pnpm add @drizztdourden08/tessera            # in the package that holds the code
-brock migrate --tessera-from-copy apps/web/src/ui/design-system --alias @ds --report copy-report.json
+brock migrate --tessera-from-copy src/ui/design-system --alias @ds --map copy-map.json --report copy-report.json
 ```
 
-1. The copy folder is relative to `--root` (the current directory by default). `--alias` names an import alias that stands for it, and can be given more than once. Every script and stylesheet under `--root` outside the copy is covered, so run it where all the importing code sits (RotP: the repo root, which reaches `apps/web`, `apps/sanctuary` and `tests`). It needs Tessera installed and does not need `brock.version`.
-2. Each named import or `export { … } from` of the copy takes the Tessera entry for its tier: `primitives/…` from `@drizztdourden08/tessera/primitives`, `composites/…` from `/composites` (the field kits and the colour pickers from their own entries), `data/…` from `/data`, and `tokens/index.css` becomes `@drizztdourden08/tessera/tokens.css`. Imports from the same entry join into one.
-3. Every release of `RENAMES.json` from 0.4.0 to the installed Tessera then replays over the converted files, oldest first, with the moves. The first run replays over every other script and stylesheet in scope too (the custom properties and classes they name), except a script that already imported Tessera; `brock.tessera` is pinned after it. A second run converts only what is left and changes nothing it already changed.
-4. Two copy parts share a name with a different Tessera part. The copy's `Badge` (a status word) becomes `Status`, with `variant` as `tone`, and its `Stepper` (a number with plus and minus) becomes `NumberInput` with `buttons="sides"` and `ariaLabel` as `aria-label`. Neither ever becomes Tessera's own `Badge` (a count or a dot) or `Stepper` (the wizard steps): the replay renames them at 0.4.0 and 0.6.0, before Tessera reused the names. Afterwards a converted file that still imports a copy name Tessera now uses for another part, and that no later rename gave back (`Badge`), is a to-do.
-5. Each converted import is then checked against the installed Tessera: a name another entry exports moves there, and a name no entry exports (a helper from inside the copy, such as `useAnchorMenu`) is a to-do.
+The command knows nothing about any one copy. `--map` names a JSON file, relative to the current directory, that says how this copy maps onto Tessera:
+
+```json
+{
+  "from": "0.3.0",
+  "entries": { "primitives": "primitives", "composites": "composites", "composites/field-kits": "field-kits", "data": "data" },
+  "stylesheets": { "tokens/index.css": "tokens.css" },
+  "attributes": { "Counter": { "size": "small" } },
+  "overlay": { "0.20.0": { "components": { "OldCounter": "NumberInput" } } }
+}
+```
+
+- `from` is the Tessera release the copy matches; every release after it replays. It defaults to `0.3.0`, the release before `RENAMES.json` has entries.
+- `entries` maps a folder of the copy to the Tessera entry point its parts come from (`primitives`, `composites`, `data`, `brand`, `field-kits`, `color-picker`, `color-picker-popover`). The deepest folder that holds a file wins. It needs at least one.
+- `stylesheets` maps a stylesheet of the copy to a Tessera stylesheet.
+- `attributes` gives the props each tag of a copy component gains when the conversion takes it, before the renames, for a copy part whose Tessera successor needs a prop to look the same.
+- `overlay` adds rename entries to a release's own, by version, for names only the copy had.
+
+1. The copy folder is relative to `--root` (the current directory by default). `--alias` names an import alias that stands for it, and can be given more than once. Every script and stylesheet under `--root` outside the copy is covered, so run it where all the importing code sits. It needs Tessera installed and does not need `brock.version`.
+2. Each named import or `export { … } from` of the copy takes the Tessera entry the map gives its folder, and each mapped stylesheet import takes its Tessera stylesheet. Imports from the same entry join into one.
+3. Every release of `RENAMES.json` after `from` up to the installed Tessera then replays over the converted files, oldest first, with the moves. The first run replays over every other script and stylesheet in scope too (the custom properties and classes they name), except a script that already imported Tessera; `brock.tessera` is pinned after it. A second run converts only what is left and changes nothing it already changed.
+4. A copy part that shares a name with a different Tessera part takes the name `RENAMES.json` gave it, never Tessera's own part: the replay renames it in the release that retired it, before Tessera reused the name. Afterwards a converted file that still imports a copy name Tessera now uses for another part, and that no later rename gave back, is a to-do.
+5. Each converted import is then checked against the installed Tessera: a name another entry exports moves there, and a name no entry exports (a helper from inside the copy) is a to-do.
 6. What cannot be rewritten safely is a to-do in the report: a namespace or default import of the copy, a string that names a copy path (a dynamic import, a `vi.mock`), a stylesheet `@import` of the copy, a file that imports both the copy and Tessera, every rename note of `RENAMES.json` (Tessera's `MIGRATION.md` explains each), each config line that maps the alias (`tsconfig.json` paths, the Vite aliases), and the copy folder itself, to delete once nothing imports it.
 
-Tests of the copy's own internals (RotP's `tests/design-system`) come out as to-dos; they test code Tessera now owns, so they go with the copy.
+Tests of the copy's own internals come out as to-dos; they test code Tessera now owns, so they go with the copy.
 
 ### Main and renderer in two folders
 
-A Brock app keeps its main process in `electron/` and its renderer in `src/`, side by side in the folder that holds `brock.config.ts`. There is no setting that points either one elsewhere: `brock sync` scans `electron/boot`, `electron/handlers`, `src/screens`, `src/widgets` and the other convention folders beside `brock.config.ts`, and the managed Vite, TypeScript, ESLint and knip configs, `brock structure`, the stale checks and the review all read the same two folders. An app that splits them moves them together once.
+A Brock app keeps its main process in `electron/` and its renderer in `src/`, side by side in the folder that holds `brock.config.ts`. There is no setting that points either one elsewhere: `brock sync` scans `electron/boot`, `electron/handlers`, `src/screens`, `src/widgets` and the other convention folders beside `brock.config.ts`, and the managed Vite, TypeScript, ESLint and knip configs, `brock structure`, the stale checks and the review all read the same two folders. An app that splits them moves them together once, into the folder that already holds `electron/`:
 
-RotP keeps its main process in `apps/desktop/electron` and its renderer in `apps/web/src`; its root `electron.vite.config.ts` already builds the two as one app. The Brock app folder is `apps/desktop`, where `electron/` already is:
-
-1. Brock's managed configs resolve `@app` (the app's `src`, for main and renderer alike, as RotP's `@app` is today) and the aliases `build.aliases` of `brock.config.ts` names. Keep the others there while the code moves, relative to the app folder: `build: { aliases: { '@shared': '../../shared', '@ds': 'src/ui/design-system', '@domains': 'src/ui/domains', '@site-kit': '../site-kit' } }`. `brock sync` adds them to the managed `tsconfig.json` paths, and every Vite side, the workers and the web build resolve them. Take each one out as its code finds its place, and delete the entry with the last import:
-   - `@domains/<path>` becomes `@app/ui/domains/<path>`, a plain text replacement.
-   - `@ds/<path>` goes with the conversion of the copy (above).
-   - `@shared/<path>` becomes an import of a workspace package (`packages/shared` named `@rotp/shared`), the one-package-per-PR step of the programme.
-   - RotP's renderer also sets `vite-plugin-node-polyfills` on the renderer and on the extraction worker; that is `build: { nodePolyfills: { globals: { Buffer: true, process: true } } }`, with the package in the app's dev dependencies. The worker builds as an ES module with no setting.
-2. Move the renderer: `git mv apps/web/src apps/desktop/src`. Merge `apps/web/public` into `apps/desktop/public` (RotP has `public/wasm` in both, so compare before you overwrite), leaving out the `public/logos` files `brock icons` now writes.
-3. Search the repo for `apps/web/src` and `apps/web/public` and fix each hit: relative imports that crossed the two folders (`apps/desktop/electron/window/window-icon.ts` reads from `apps/web`), the tests under `tests/` that import renderer files by path, the root `tsconfig.json` paths, `vitest.config.ts`, and the root `build:web` script.
-4. Add the Brock skeleton. `create-brock` will not write into a folder that is not empty, so create it beside the app and copy across what `apps/desktop` lacks:
+1. Brock's managed configs resolve `@app` (the app's `src`, for main and renderer alike) and the aliases `build.aliases` of `brock.config.ts` names. Keep the app's other aliases there while the code moves, relative to the app folder (`build: { aliases: { '@shared': '../../shared', '@ds': 'src/ui/design-system' } }`). `brock sync` adds them to the managed `tsconfig.json` paths, and every Vite side, the workers and the web build resolve them. Take each one out as its code finds its place, and delete the entry with the last import. A renderer that needs Node polyfills sets `build: { nodePolyfills: { globals: { Buffer: true, process: true } } }`, with `vite-plugin-node-polyfills` in the app's dev dependencies; a worker builds as an ES module with no setting.
+2. Move the renderer into the app folder with `git mv`, and merge its `public` folder into the app's, leaving out the `public/logos` files `brock icons` now writes. Compare a file both hold before you overwrite it.
+3. Search the repo for the old renderer and public paths and fix each hit: relative imports that crossed the two folders, tests that import renderer files by path, the root `tsconfig.json` paths, `vitest.config.ts`, and root build scripts.
+4. Add the Brock skeleton. `create-brock` will not write into a folder that is not empty, so create it beside the app and copy across what the app folder lacks:
 
    ```
-   npx create-brock apps/brock-skeleton --name "Relic of the Past" --id relic-of-the-past --app-id com.relicofthepast.app --tessera registry --platforms desktop,android,web --yes
+   npx create-brock apps/brock-skeleton --name "My App" --id my-app --app-id com.example.myapp --tessera registry --platforms desktop,android,web --yes
    ```
 
-   - Copy `brock.config.ts` (set `ports: { base: 1991 }`), `src/screens/screens.config.ts` and the other files `apps/desktop` does not have.
-   - Merge the two `package.json` files: keep RotP's name and dependencies, take the skeleton's scripts and Brock dependencies.
-   - Where both have a file (`electron/main.ts`, `electron/preload.ts`, `src/main.tsx`, `src/index.html`), keep the skeleton's, since Brock owns the boot, the preload bridge and the splash, and port what RotP's own file did into `electron/<subject>/`, `electron/handlers/<subject>-handlers.ts`, `src/boot/` and the screens.
-   - Delete `apps/brock-skeleton`, then run `brock sync` in `apps/desktop`: it writes the managed configs and `.brock/`.
-5. Delete what is left of `apps/web` (its `vite.config.ts`) and the root `electron.vite.config.ts`. The web build now comes from `apps/desktop` through the `web` platform (`vite.web.config.ts`, `brock web build`).
+   - Copy `brock.config.ts` (with the app's own `ports`), `src/screens/screens.config.ts` and the other files the app folder does not have.
+   - Merge the two `package.json` files: keep the app's name and dependencies, take the skeleton's scripts and Brock dependencies.
+   - Where both have a file (`electron/main.ts`, `electron/preload.ts`, `src/main.tsx`, `src/index.html`), keep the skeleton's, since Brock owns the boot, the preload bridge and the splash, and port what the app's own file did into `electron/<subject>/`, `electron/handlers/<subject>-handlers.ts`, `src/boot/` and the screens.
+   - Delete `apps/brock-skeleton`, then run `brock sync` in the app folder: it writes the managed configs and `.brock/`.
+5. Delete what is left of the old renderer folder and any root `electron.vite.config.ts`. The web build now comes from the app folder through the `web` platform (`vite.web.config.ts`, `brock web build`).
 6. Run `<app> structure --check` and `pnpm lint`; both list what still sits in the wrong place.
 
 ### Android
 
 A Brock app keeps its Android project in `mobile/android` inside the app folder, with a managed `capacitor.config.json` at the app root: `brock sync` writes it from `brock.config.ts` (`appId` from `product.appId`, `appName` from `product.name`, `webDir: dist/web`, `android.path: mobile/android`, `allowMixedContent: false`). Brock reads no `capacitor.config.ts`: the Capacitor CLI loads a `.ts` or `.js` config before the JSON, so one left at the app root would silently replace the managed file, and `<app> platform add android` fails on it until it is gone.
 
-RotP has `apps/mobile` with `capacitor.config.ts`, `android/`, `assets/` and its own `package.json`. Move it into the app folder after the main and renderer move:
+An app with its own Capacitor folder (`apps/mobile` with `capacitor.config.ts`, `android/`, `assets/` and a `package.json`) moves it into the app folder after the main and renderer move:
 
-1. `git mv apps/mobile/android apps/desktop/mobile/android`.
-2. Delete `apps/mobile/capacitor.config.ts`. Everything it sets is in the managed file: `com.relicofthepast.app` is `product.appId`, "Relic of the Past" is `product.name`, and `webDir` becomes the app's own `dist/web` instead of `../../dist/web`. A Capacitor setting the managed file does not write is a Brock request, not a second config.
-3. Move the Capacitor plugins from `apps/mobile/package.json` into `apps/desktop/package.json` (`@capacitor/app`, `@capacitor/filesystem`, `@capacitor/haptics`, `@capacitor-community/keep-awake`, `@capawesome/capacitor-file-picker`): `cap` runs from the app's `package.json` and finds the plugins there. `platform add android` adds `@capacitor/core`, `@capacitor/android`, `@capacitor/cli` and `@capacitor/assets`.
-4. Fix `mobile/android/app/build.gradle`, which is one folder deeper now:
-   - The version block reads `../../../../package.json`, the repo root. Point it at `../../../package.json`, the app's own `package.json`, which is the version Brock releases. Brock's `versionCode` patch sees `appVersionCode` and leaves the block alone.
-   - The paths into the app lose `desktop/` (`../../../desktop/electron/input/...` becomes `../../../electron/input/...`), and the paths to the repo root gain one `../` (`third_party`).
-   - Rename the signing variables `RELIC_KEYSTORE_FILE`, `RELIC_KEYSTORE_PASSWORD`, `RELIC_KEY_ALIAS` and `RELIC_KEY_PASSWORD` to their `BROCK_` names, and let the key password fall back to the store password, since Brock's release job sets only `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD` and `BROCK_KEY_ALIAS` (from the `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS` secrets). Brock's signing patch then sees `BROCK_KEYSTORE_FILE` and leaves RotP's block alone. Left as it is, the patch cannot apply, because RotP's `buildTypes` opens with `debug`, and it fails with a message.
-5. Run `<app> platform add android` in `apps/desktop`. It writes `capacitor.config.json` and the ignore lines, skips `cap add android` because `mobile/android` exists, and runs the Gradle patches. Then `npx cap sync android` rewrites `capacitor.settings.gradle` and `capacitor.build.gradle` for the plugins' new place.
-6. `apps/mobile/assets` gives way to `mobile/assets`, which `brock icons` and `@capacitor/assets` draw from the Tessera brand set and git ignores. Compare the two before you delete the old one.
-7. Delete `apps/mobile` and the root scripts `assets:android`, `cap:sync`, `android:open` and `android:run`. `<app> mobile push` installs a debug build on a device and `<app> mobile build [--release]` builds the APK.
-8. Once `input` and `display` are in `modules`, their Android plugins replace RotP's own. Delete `app/src/main/java/com/relicofthepast/app/controllersdl3/`, `app/src/main/java/com/relicofthepast/app/framerate/` and `app/src/main/cpp/controllersdl3/`; in `MainActivity` drop the two `registerPlugin` lines and the `dispatchKeyEvent` and `dispatchGenericMotionEvent` overrides (the input plugin routes controller events itself); in `app/build.gradle` drop the SDL3 block (`sdl3Pkg`, `sdl3SourceDir`, `controllerAbis`, `stageSdlJava`, `externalNativeBuild`, the `sdl3-java` source folder) and the `ndkVersion`. The renderer hosts `controller-sdl3-*`, `controller-host.ts` and `frame-rate-plugin.ts` give way to `inputApi()` and `displayApi()`, which answer on Android the same way as on the desktop; what a button means stays in RotP's input-mapping package. The game's 60 Hz request becomes the display module's synced rate setting (`syncedRateInFullscreen` on, `syncedRateTargetHz` 0).
+1. Move `apps/mobile/android` to `mobile/android` in the app folder with `git mv`.
+2. Delete `capacitor.config.ts`. Everything it sets is in the managed file: its `appId` is `product.appId`, its `appName` is `product.name`, and `webDir` becomes the app's own `dist/web`. A Capacitor setting the managed file does not write is a Brock request, not a second config.
+3. Move the Capacitor plugins from the old `package.json` into the app's: `cap` runs from the app's `package.json` and finds the plugins there. `platform add android` adds `@capacitor/core`, `@capacitor/android`, `@capacitor/cli` and `@capacitor/assets`.
+4. Fix `mobile/android/app/build.gradle` for its new depth:
+   - A version block that reads a `package.json` points at the app's own (`../../../package.json`), which is the version Brock releases. Brock's `versionCode` patch sees `appVersionCode` and leaves the block alone.
+   - Paths into the app and to the repo root change by the folders the project moved.
+   - The app's own signing variables take their `BROCK_` names, with the key password falling back to the store password, since Brock's release job sets only `BROCK_KEYSTORE_FILE`, `BROCK_KEYSTORE_PASSWORD` and `BROCK_KEY_ALIAS` (from the `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS` secrets). Brock's signing patch then sees `BROCK_KEYSTORE_FILE` and leaves the block alone. A signing block it cannot patch (a `buildTypes` that opens with `debug`) fails with a message.
+5. Run `<app> platform add android` in the app folder. It writes `capacitor.config.json` and the ignore lines, skips `cap add android` because `mobile/android` exists, and runs the Gradle patches. Then `npx cap sync android` rewrites `capacitor.settings.gradle` and `capacitor.build.gradle` for the plugins' new place.
+6. The old `assets` folder gives way to `mobile/assets`, which `brock icons` and `@capacitor/assets` draw from the Tessera brand set and git ignores. Compare the two before you delete the old one.
+7. Delete the old folder and its root scripts. `<app> mobile push` installs a debug build on a device and `<app> mobile build [--release]` builds the APK.
+8. Once `input` and `display` are in `modules`, their Android plugins replace an app's own controller and frame-rate plugins: delete those Java and native folders, their `registerPlugin` lines and the key and motion event overrides in `MainActivity`, and the SDL build block in `app/build.gradle`. The renderer's own controller and frame-rate hosts give way to `inputApi()` and `displayApi()`, which answer on Android the same way as on the desktop; what a button means stays in the app. A fixed refresh-rate request becomes the display module's synced rate setting (`syncedRateInFullscreen`, `syncedRateTargetHz`).
 
 ## What the gate enforces
 
@@ -117,13 +129,13 @@ RotP has `apps/mobile` with `capacitor.config.ts`, `android/`, `assets/` and its
 
 ### The app's own checks
 
-`gate` in `brock.config.ts` adds the app's checks to the gate: `scripts` names `package.json` scripts (the app's own, else the workspace root's), and `clangFormat` names C source folders, relative to the repo root, which `brock sync` gives a managed `.clang-format`. `brock gate` runs them, and so do the CI `quality` job and `upgrade`. For RotP:
+`gate` in `brock.config.ts` adds the app's checks to the gate: `scripts` names `package.json` scripts (the app's own, else the workspace root's), and `clangFormat` names C source folders, relative to the repo root, which `brock sync` gives a managed `.clang-format`. `brock gate` runs them, and so do the CI `quality` job and `upgrade`. For example:
 
 ```ts
-gate: { scripts: ['generate:check', 'state-format', 'generate:gba-asset-index:check'], clangFormat: ['core/game-hooks'] },
+gate: { scripts: ['codegen:check', 'schema:check'], clangFormat: ['native/src'] },
 ```
 
-`generate:gba-asset-index:check` is a script RotP still has to add: `generate:gba-asset-index` writes the index and has no check mode. The managed style is tuned on `core/game-hooks`, yet clang-format still changes about 360 of its 21,000 lines in 80 of its 188 files (a case label that holds an `if` and a `break`, several statements on one line, a short `enum` of two values, one-line structs, hand-aligned initialisers), so pin the formatter (`pnpm add -D -E clang-format-node` in `apps/desktop` or the root), then run `<app> clang-format` once in its own commit before adding `clangFormat` to the gate.
+Each script needs a check mode: a script that only writes its output belongs in the build, not the gate. C code written before the managed style can change in many places on its first format, so pin the formatter (`pnpm add -D -E clang-format-node` in the app or the root), then run `<app> clang-format` once in its own commit before adding `clangFormat` to the gate.
 
 ### Wording
 

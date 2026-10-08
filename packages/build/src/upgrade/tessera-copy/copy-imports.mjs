@@ -28,7 +28,7 @@ const noteFor = (shape, { inner, stylesheet }) => {
   if (shape === 'named') return `${inner} in the copy has no Tessera entry point. Find the Tessera part that replaces it (Tessera's MIGRATION.md), or move the code into the app.`;
   if (shape === 'bare' && stylesheet) return `now imports Tessera's ${stylesheet} in place of the copy's ${inner}. Import the brand palette (palettes/<brand>.css) beside it, and keep what the copy's tokens held for this app alone (its own text styles and fonts) in the app theme.`;
   if (shape === 'bare') return `imports ${inner} of the copy for its side effect. Tessera parts bring their own styles: drop it, or move what the app keeps into its theme.`;
-  return `${WHOLE_MODULE[shape]} of the copy (${inner}) is left alone: a part the copy and Tessera both name, such as Badge or Stepper, would point at Tessera's own part. Import the names it uses one by one, then run --tessera-from-copy again.`;
+  return `${WHOLE_MODULE[shape]} of the copy (${inner}) is left alone: a part the copy and Tessera both name would point at Tessera's own part. Import the names it uses one by one, then run --tessera-from-copy again.`;
 };
 
 const changeOf = (ts, file, statement, place) => {
@@ -58,11 +58,11 @@ const blocked = (changes, strings) => [...new Set([...changes, ...strings].map((
 /**
  * @param {typeof import('typescript')} ts
  * @param {{ path: string, source: string }} input path absolute
- * @param {{ copyDir: string, aliases: string[] }} copy
+ * @param {{ copyDir: string, aliases: string[], map: { entries: Record<string, string>, stylesheets: Record<string, string> } }} copy
  * @returns {{ source: string, converted: boolean, todos: { line: number, message: string }[] }} named imports on Tessera
  */
-const copyImports = (ts, { path, source }, { copyDir, aliases }) => {
-  const place = { fileDir: dirname(path), copyDir, aliases };
+const copyImports = (ts, { path, source }, { copyDir, aliases, map }) => {
+  const place = { fileDir: dirname(path), copyDir, aliases, map };
   const file = tsSource.parse(ts, path, source);
   const changes = file.statements.map((statement) => changeOf(ts, file, statement, place)).filter((change) => change !== null);
   const strings = stringTodos(ts, file, new Set(changes.map(({ node }) => node)), place);

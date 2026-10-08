@@ -4,7 +4,7 @@
 The thread lifecycle every Brock repo runs: one git worktree per piece of work, launched in isolation, committed through the repo hooks and published through two verbs that ask.
 
 ```
-<repo> worktree create <name> [--from <ref>] [--base <branch>]
+<repo> worktree create <name> [--from <ref>] [--base <branch>] [--skip-install]
 <repo> worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]]
 <repo> launch main <state|none> [--visible] [--review]
 <repo> worktree refresh <name> [--reset] [--rebase [ref]]
@@ -16,7 +16,7 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> mobile push | build [--release] [--out <file>] | keystore
 ```
 
-`worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
+`worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `worktree create --skip-install` adds the worktree and runs its provision steps with no `pnpm install`, at the root or in a target app, for a thread that only writes a file, such as a release note. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 

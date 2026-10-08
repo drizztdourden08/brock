@@ -1,5 +1,0 @@
----
-'@drizztdourden08/brock-build': minor
----
-
-Dev-only screens and handler groups: a file with `.dev` before its extension (`src/screens/tools/inspector.page.dev.tsx`, `src/screens/editor.card.dev.tsx`, `electron/handlers/dataset-handlers.dev.ts`) is the screen or handler group of its kind in a development build and absent from a production one. `brock sync` lists them in `.brock/screens.dev.ts` and `.brock/handlers.main.dev.ts`, which `.brock/screens.ts`, `.brock/search.ts` and `.brock/handlers.main.ts` spread, and writes those files only while a dev-only file exists. In a production build (`brock build`, the web build) the Vite configs load each `.brock/*.dev.ts` as empty lists, so neither the code nor the search entries ship, and the build stops when another file imports a `.dev` file. `brock structure` reports a hero, base or page meta file marked `.dev`, a bucket whose every screen is dev-only and a shipped tab or sub-page whose page is dev-only. An app without dev-only files gets the same generated files as before.

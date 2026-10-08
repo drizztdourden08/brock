@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-react",
-  "version": "0.35.0",
+  "version": "0.36.0",
   "description": "Brock renderer layer: BrockApp shell, platform provider and hosts, stores kit, screen registry, settings engine, shell views.",
   "type": "module",
   "license": "UNLICENSED",

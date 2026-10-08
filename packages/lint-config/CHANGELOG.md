@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.36.0
+
+### Minor Changes
+
+- 5a819b6: A file whose header says `@kind data` is a data file: `brockEslint` finds these files by their header and turns `max-lines`, `local/one-export-per-file` and `local/constants-in-constants-file` off for them, so a record file or a generated table can run past 200 lines, export several lists and keep its `UPPER_SNAKE` consts. The new `brock/data-only` rule holds such a file to data: imports, types, export lists and `const` declarations of literals, arrays, objects, spreads, references, constant arithmetic, `as`, `satisfies` and `Object.freeze`. A function, a call, a conditional, a getter, `let` or any other statement there is an error, so the kind cannot be claimed to dodge the rules.
+- 0aaabeb: Brock depends on `@drizztdourden08/standards` ^0.8.0, and `brock-thread` drops its copy of the release note checker for `@drizztdourden08/standards/release-notes`: `checkReleaseNote` is the standards function, and `checkNoteFile` runs its `checkRepoNotes` for the version named, so `brock release` and `brock release-notes check` also hold every newer note in the repo to the standard.
+- e344df6: `brock site add <name>` adds a site beside the Brock app: a separate single-page web app at `apps/<name>` of the same pnpm workspace, drawn with Tessera (`TesseraProvider`, the brand palette, the tokens and its own `theme.css`), framed by Tessera's `SiteHeader` (brand, links, the profile menu as the title bar's dropdown action) and `SiteFooter`, with a sign-in page on the brand gradient. `brock.site.ts` (`defineBrockSite` from `@drizztdourden08/brock-build/site`) gives it a tool port of the app's port block in the checkout's slot, an optional `/api` dev proxy to a URL or to a port offset of the same slot, node polyfills and aliases; `brock site dev`, `build`, `preview` and `list` run it. `brock sync` writes its managed `vite.config.ts` (`defineBrockSiteConfig` from `@drizztdourden08/brock-build/vite-site`), `tsconfig.json` and its own `ci-<name>.yml`, gated by `brock affected`, and `brock check` reports their drift. The site joins `tessera.config.json`, `knip.json` and the Tessera guide, and the lint preset takes `brock.site.ts` as a default-export file. Brock adds no server kit, functions, hosting deploy or sign-in layer for it. `brock adopt` lists a design package's `src/views`, the views two or more apps share, beside each app's own views.
+
 ## 0.35.0
 
 ## 0.34.0

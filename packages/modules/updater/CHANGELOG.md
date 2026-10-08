@@ -1,5 +1,39 @@
 # @drizztdourden08/brock-updater
 
+## 0.36.0
+
+### Minor Changes
+
+- 6f6977d: OS integration in the product config. `product.protocols` declares deep link schemes (`my-app://install/abc`), `product.fileAssociations` gains a default mime type and a shipped Windows icon, and a `product.schemes` entry with `dir` is served from `Data/<dir>` through `protocol.handle` (`app-media://` over `Data/media`). `defineProduct` checks all three lists.
+
+  The installer registers them: on Windows the updater's Velopack hooks write and remove the `HKCU\Software\Classes` keys, and the installer stub runs `--os-integration=register` after a portable install; on macOS electron-builder writes Info.plist; on Linux the deb's `.desktop` file and mime XML come from electron-builder, the managed post-install refreshes both databases, and an AppImage writes its own entry under `~/.local/share`.
+
+  The running app receives each link or file from argv at launch, from a second launch through the single-instance lock (taken when the product declares a protocol or a file type, never for a named instance or an automation launch; `bootstrapApp({ singleInstance })` overrides it) and from macOS `open-url` and `open-file`. After the reveal, main hands each `OpenRequest` to `ctx.onOpen` and `bootstrapApp({ onOpen })`, and the renderer gets it through `useAppOpen` or `appOpen.on` (`app:takeOpens`, then `app:open`).
+
+- 3063895: `ReleaseNotesPanel` with `markdown` draws the note with Tessera's `Markdown` composite (Tessera 0.28): `size="sm"`, `headingOffset={2}` and `hideTitle`, so the `#` title is left out, the `##` sections are h4 under the panel title, now an h3, and lists and links keep their look. A link calls `onOpenLink`, `openExternal` by default, which opens it in the system browser; the update dialog passes `openExternal`. The run-time check for a Markdown primitive, the plain-text fallback for a markdown note and the `MarkdownPartProps` type are gone.
+- b42b735: `ReleaseNotesPanel` takes `markdown` and `onOpenLink`. With `markdown` on, a string note is drawn as formatted text. Links go through `onOpenLink`, `openExternal` by default. The update dialog turns `markdown` on for the release note of the chosen version.
+- b42b735: A Brock workspace with several apps gets workflows per app. Each app gets `ci-<app>.yml` and `release-<app>.yml` at the repo root, and the first app also writes `ci.yml` with one `workspace` job for the repo-wide checks. A pull request builds and reviews an app only when it touches it: the new `brock affected <app folder> [base ref]` prints true for the app's own files, a workspace package it depends on, or a file outside every package. Releases tag with the new `product.releaseTagPrefix` (`'desktop-v'`, required once a repo has several apps, `v` otherwise) and read the notes from the app's own `release-notes/`; `brock release --app <name>` dispatches the app's workflow. The updater keeps to the releases whose tag starts with the prefix, so the other apps and any other tags of the repo stay out of its list. A workspace with one app keeps `ci.yml`, `release.yml` and plain `v<version>` tags.
+- 0f4133a: Brock moves to Tessera ^0.30.0 (the catalog and the `brock-react` peer range). Escape follows Tessera's escape stack: dialogs, menus, popovers, confirm asks, the tour and the search palette close there, one layer per press, and the shell takes Escape only while nothing above a screen is on the stack and no control consumed the key, so a hub still goes up a level before it closes and the `ScreenWindow` frame, which now closes on Escape itself, never closes a screen twice. The shell listens on the root element, ahead of Tessera's document listener; the palette registers at `dialog` and keeps a capture listener only to cancel its confirm ask. The built-in escape layers for the palette, the bug report, the shortcuts help and the update dialog are gone, since their Tessera dialogs register themselves. A failed load has one look, Tessera's `LoadError`: the render error boundary of every screen and widget shows it as a box with the raw error behind Details and Retry, which draws the part again, ahead of Reload page, Go home and Report a bug, and the Storage page shows one with Retry when the data folder cannot be read. `ErrorBoundary` is imported from `@drizztdourden08/tessera/composites`. The lines between dock panes are Tab stops since Tessera 0.30; the widget focus guard counts them as part of the dock, so dragging one leaves the focus with the app while a keyboard user can still tab to it and resize with the arrow keys.
+
+### Patch Changes
+
+- Updated dependencies [273846f]
+- Updated dependencies [e40fe59]
+- Updated dependencies [aa74a6d]
+- Updated dependencies [5289e5d]
+- Updated dependencies [e40fe59]
+- Updated dependencies [6f6977d]
+- Updated dependencies [3063895]
+- Updated dependencies [b42b735]
+- Updated dependencies [b42b735]
+- Updated dependencies [1ba51ae]
+- Updated dependencies [0f4133a]
+- Updated dependencies [cbbb865]
+- Updated dependencies [524dcf3]
+  - @drizztdourden08/brock-core@0.36.0
+  - @drizztdourden08/brock-react@0.36.0
+  - @drizztdourden08/brock-electron@0.36.0
+
 ## 0.35.0
 
 ### Patch Changes

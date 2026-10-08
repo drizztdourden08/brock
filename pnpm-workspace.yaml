@@ -39,3 +39,6 @@ catalog:
 onlyBuiltDependencies:
   - electron
   - esbuild
+
+ignoredBuiltDependencies:
+  - koffi

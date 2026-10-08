@@ -48,13 +48,15 @@
   "devDependencies": {
     "@drizztdourden08/tessera": "catalog:",
     "electron": "catalog:",
+    "koffi": "^3.1.2",
+    "koffi-v2": "npm:koffi@^2.16.3",
     "react": "catalog:",
     "zustand": "catalog:"
   },
   "peerDependencies": {
     "@drizztdourden08/tessera": "*",
     "electron": ">=38",
-    "koffi": "^2.9.0",
+    "koffi": "^2.9.0 || ^3.0.0",
     "react": "^19.0.0",
     "zustand": "^5.0.0"
   },

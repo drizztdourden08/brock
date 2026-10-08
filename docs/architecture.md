@@ -11,7 +11,7 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-core` | everywhere | product config, the open IPC contract, platform ports, storage and profiles, settings and feature gating, log bus, module manifest type, automation flags, registry |
 | `@drizztdourden08/brock-electron` | main, preload | `/main`: `bootstrapApp`, paths, portable mode, window, splash, window state, IPC handlers, diagnostics, crash forensics, session log. `/preload`: `createPreloadBridge` |
 | `@drizztdourden08/brock-react` | renderer | `BrockApp`, platform provider and hosts, stores kit, screen registry, shell views, settings engine |
-| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories, ensure-electron, the platform strategies and the workflow Builder, the `brock` CLI (sync, check, add, dev, build, package, start, platform, doctor, web) |
+| `@drizztdourden08/brock-build` | tooling | Vite and electron-builder config factories (and the site Vite config), ensure-electron, the platform strategies and the workflow Builder, the `brock` CLI (sync, check, add, dev, build, package, start, platform, doctor, web, site) |
 | `@drizztdourden08/create-brock` | tooling | the scaffolder: `pnpm create @drizztdourden08/brock` |
 | `@drizztdourden08/brock-updater` | module | Velopack updater, the title bar update action, UpdateDialog |
 | `@drizztdourden08/brock-secrets` | module | safeStorage secret store, device-code sign-in |
@@ -461,6 +461,24 @@ The main checkout is slot 0. `<repo> worktree create` gives each thread worktree
 
 Without `ports`, the base comes from the app id: an FNV-1a hash of the id picks one of 140 bases from 20000 to 47800 in steps of 200, below the Windows dynamic range. `create-brock` writes that base into `brock.config.ts`, so it is visible and can be changed.
 
+## Sites
+
+Brock supports desktop, mobile and web versions of an app, and a mix of them in one repo; every one of them draws with Tessera. The default setup is the app alone. `brock site add <name>` adds a site: a separate single-page web app at `apps/<name>` in the same pnpm workspace, the shape of Relic of the Past's Sanctuary and Hookshop. The layout, the config and each step are in [app-structure.md](app-structure.md), A site.
+
+```ts
+// apps/store/brock.site.ts
+export default defineBrockSite({
+  site: { id: 'store', name: 'Hookshop', brand: 'rotp' },
+  ports: { offset: 3 },                       // a tool port of the repo's block, in this checkout's slot
+  api: { portOffset: 4 },                     // /api -> http://localhost:<same block and slot + 4>; or api: 'https://...'
+  build: { nodePolyfills: true, aliases: {} },
+});
+```
+
+- `defineBrockSiteConfig(siteDir)` (`@drizztdourden08/brock-build/vite-site`, the managed `vite.config.ts`) builds `src/index.html` into `dist` with a `/` base, React, the `brock-site` plugin (`data-palette` and the title from the config, the Tessera brand icon as favicon), the node polyfills when asked, `@app` and `build.aliases`, the shared singletons deduplicated, the port with `strictPort` and the `/api` proxy, and `server.fs.allow` over the workspace and every linked package.
+- A site is not a Brock app: no `brock.config.ts`, so `brock sync` never writes Electron files there, the release layout does not count it (a repo with one app and two sites keeps `ci.yml`, `release.yml` and `v<version>` tags), and it has no release workflow. Its managed files are `vite.config.ts`, `tsconfig.json` and `.github/workflows/ci-<name>.yml`, written by `brock sync` from the repo root, any app or the site, and checked by `brock check`.
+- Brock provides no server kit, no cloud functions, no hosting deploy and no sign-in or session layer for a site, and will not: those stay the app's own packages. The proxy target is any process the app runs on that port or URL.
+
 ## Packaging and releases
 
 Apps ship the way Relic of the Past does: Velopack installs and updates them, GitHub Releases hosts the feed.
@@ -549,6 +567,7 @@ App-specific end-to-end tests use `launchAppForTest` from `@drizztdourden08/broc
 - The release note standard: `release-notes/v<version>.md`, `brock release-notes check`, and the managed `ci.yml` and `release.yml` that check it, publish it as the release body and pack it for the updater, for a standalone app and every app of a Brock workspace.
 - The automated review, `--review`, with a report and screenshots.
 - A port block per app and per thread worktree, with `strictPort` (see Ports).
+- Sites on request: `brock site add` for a Tessera web app beside the desktop app, on the same port block, with its own CI (see Sites).
 - `brock check` and `brock sync` at an app root or a workspace root.
 - `brock adopt` for a repo: lint configs, knip entries (`brock.workspace.mjs`, `brock-thread` ignored when linked), `.gitignore` lines for the dot-folder rule (`.*/` plus a `!` line per tracked dot-folder) and every generated output (`build/icons`, `build/splash`, `build/installer-splash.png`, the generated `public/logos` files, `.brock/profile-config.json`, `.brock-port-slot`), and the repo command. It writes no splash or logo markup and names any app page that carries a hand-written one.
 - `launchAppForTest`, `readDockLayout` and `widgetWindows` for app-specific e2e tests.

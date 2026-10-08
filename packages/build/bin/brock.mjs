@@ -18,6 +18,7 @@ import { runProse } from '../src/commands/prose.mjs';
 import { runStructure } from '../src/commands/structure.mjs';
 import { runSync } from '../src/commands/sync.mjs';
 import { runWeb } from '../src/commands/web.mjs';
+import { runSite } from '../src/commands/site.mjs';
 import { OWN_PACKAGE } from '../src/modules/sync.mjs';
 import { runThread, threadVerbNames } from '@drizztdourden08/brock-thread/cli';
 
@@ -85,6 +86,14 @@ Usage:
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
+  brock site add <name> [--brand <brand>] [--api <url | port offset>]
+                             add a web app at apps/<name>: a Vite single-page app on Tessera (TesseraProvider, the
+                             brand palette, tokens, theme.css), Vite dev on a tool port of the app's block, its
+                             build into dist, lint and structure coverage, its own ci-<name>.yml, and a dev
+                             proxy for /api to a URL or a port offset; no server, functions, hosting or auth
+  brock site dev | build | preview [args]
+                             in a site folder: Vite on its port with the /api proxy, the build, or a preview
+  brock site list            the sites of the repo, their ports and their /api target
   brock tessera <args...>    Tessera's own command line (new, ...), run in the current folder so it finds
                              tessera.config.json from there; every word after tessera reaches it, --help too
 
@@ -139,6 +148,7 @@ const COMMANDS = {
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
   web: (ctx) => runWeb(ctx),
+  site: (ctx) => runSite(ctx),
   'release-notes': (ctx) => runReleaseNotes(ctx),
   affected: (ctx) => runAffected(ctx),
 };
@@ -169,7 +179,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, report: values.report, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, report: values.report, brand: values.brand, api: values.api, passthrough });
 };
 
 main().then(

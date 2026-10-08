@@ -116,4 +116,4 @@ const syncApp = (rootDir, config, opts = {}) => {
   };
 };
 
-export { syncApp, OWN_PACKAGE, BROCK_VERSION };
+export { syncApp, writeDrifted, OWN_PACKAGE, BROCK_VERSION };

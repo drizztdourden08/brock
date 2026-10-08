@@ -58,7 +58,7 @@ my-app/
 
 ## A workspace
 
-An app with packages of its own is a pnpm workspace. Each app keeps its screens, widgets, views and boot tasks in its own `src`; the parts every app shares sit in one design package.
+An app with packages of its own is a pnpm workspace. Each app keeps its screens, widgets, views and boot tasks in its own `src`; the parts every app shares sit in one design package, and so do the views two or more apps use (a sign-in or an account page that a desktop app and a site both show, or that two sites show).
 
 ```
 my-repo/
@@ -66,7 +66,9 @@ my-repo/
   release-notes/v<version>.md      the release notes, at the repo root
   .github/workflows/               managed by brock sync: ci.yml and release.yml for one app, ci-<app>.yml and release-<app>.yml each beside a workspace ci.yml for several
   apps/<app>/                      the layout above, without the root configs
+  apps/<site>/                     a site, when one was added: see A site below
   packages/design/src/primitives, composites, compounds    shared Tessera parts
+  packages/design/src/views        views two or more apps or sites use
   packages/design/stories          their gallery stories
   packages/<subject>/              domain packages: no React parts, no Electron
   tooling/<name>/                  repo scripts that are not part of an app
@@ -74,7 +76,36 @@ my-repo/
 
 In a repo with `brock.workspace.mjs`, `brock sync` writes the workflows at the repo root, with `APP_DIR` set to the app, and `brock check` fails when they drift. One Brock app keeps `ci.yml` and `release.yml`, `v<version>` tags and `release-notes/` at the repo root. Several Brock apps get `ci-<app>.yml` and `release-<app>.yml` each, plus a workspace `ci.yml`; each sets `product.releaseTagPrefix` and keeps its notes in its own `release-notes/`, and a pull request builds and reviews only the apps it touches. A pnpm workspace without `brock.workspace.mjs` (Brock's own repo, whose `templates/app` is in its workspace) gets none.
 
-`tessera.config.json` names the design package and its part folders, and gives each app its own `views`: `brock adopt` writes it that way (`apps.<app>.parts.views` is `<app>/src/views`), and prints the layout it found.
+`tessera.config.json` names the design package and its part folders, and gives each app its own `views`: `brock adopt` writes it that way (`apps.<app>.parts.views` is `<app>/src/views`), and prints the layout it found. When the design package has `src/views`, adopt also sets the root `parts.views` to it and lists it after each app's own folder (`["apps/desktop/src/views", "packages/design/src/views"]`), sites included, so every app reaches the shared views and `tessera new view` still writes into the app's own folder first. A view goes to the design package only once a second app uses it; until then it stays in the app.
+
+## A site
+
+Brock covers desktop, mobile and web versions of an app, and a mix of them in one repo, all drawn with Tessera. A fresh app is the app alone. `brock site add <name>` adds a site beside it: a separate web app, a single-page Vite app, at `apps/<name>` of the same repo (Relic of the Past's `apps/sanctuary` and `apps/store`). It is not the `web` platform, which builds the Electron renderer for a browser; a site has its own pages and its own build.
+
+```
+apps/<name>/
+  brock.site.ts                    OWNED       defineBrockSite({ site: { id, name, brand }, ports: { offset }, api?, build? })
+  package.json                     OWNED ONCE  dev, build, preview (brock site ...), typecheck, lint
+  vite.config.ts, tsconfig.json    MANAGED     brock sync writes them; brock check fails on drift
+  src/index.html, src/main.tsx     OWNED ONCE  Tessera tokens, the brand palette, theme.css, TesseraProvider
+  src/main.constants.ts            OWNED       the TesseraOverrides
+  src/theme.css                    OWNED       the site's palette seeds
+  src/views/<Name>/                OWNED       the pages; views shared with another app sit in packages/design/src/views
+  public/                          OWNED       served at the page root
+.github/workflows/ci-<name>.yml    MANAGED     the site's CI, at the repo root
+```
+
+What `site add` does: it writes the files above, adds `apps/*` to `pnpm-workspace.yaml` when no glob covers the folder (a fresh app has `packages: []`), names the package `<scope>/<name>` from `brock.scope`, takes each dependency's spec from the root `package.json` (a relative `link:` moved to the site folder), else the catalog, adds the site to `tessera.config.json` (`apps.<dir>`, its views and theme) and to `knip.json` (`workspaces.<dir>`, moving the root entries to `workspaces["."]` the first time), and runs the site's sync. Run `pnpm install` after it.
+
+- Port: `ports.offset` is a tool port (1 to 9) of the repo's port block: the first Brock app's `product.ports.base` (or the base its id derives), moved by the checkout's slot like the app's own ports, so each worktree's site has its own port. `site add` takes the lowest offset no other site or site API uses. `ports.base` sets a base of the site's own. `strictPort` is always on.
+- API: `api` is a dev proxy for `/api` (or `api.path`), to a URL (`api: 'https://staging.example.com'`) or to a tool port of the same block and slot (`api: { portOffset: 2 }`), so a worktree's site talks to that worktree's API. The API can be anything listening there: Brock does not make or start it. `changeOrigin` and `stripPath` (drop the path before forwarding) are off by default. The same table serves `brock site preview`.
+- Build options: `build.nodePolyfills` (`true` or the options of `vite-plugin-node-polyfills`, which the site installs) for code that needs `Buffer` or `process`; `build.aliases` (import prefixes to folders, relative to the site), added to the managed `tsconfig.json` paths too. Workspace packages need no alias: a site that lists `"@<scope>/<pkg>": "workspace:*"` imports it by name, and Vite serves files from every linked package.
+- Tessera: `main.tsx` imports `tokens.css`, `palettes/<brand>.css` and `theme.css` and renders inside `TesseraProvider`; the build sets `data-palette` on `<html>` from `site.brand`, the page title from `site.name`, and serves the brand's `icon.svg` from the installed Tessera as the favicon.
+- Commands: `brock site dev`, `build` and `preview` in the site folder (the `dev`, `build` and `preview` scripts); `brock site list` prints every site with its port and API target. `brock sync` and `brock check` at the repo root, in the app or in the site cover the site's managed files.
+- Lint and structure: the root `eslint .`, `brock prose`, `brock knip`, `jscpd .` and `brock structure` reach the site, which the site's own `lint` script completes with its typecheck and stylelint.
+- CI: `ci-<name>.yml` runs on pull requests and from the Actions tab: a `changes` job (`brock affected apps/<name>`) and, only when the change touches the site, a `site` job that runs the site's `lint` and `brock site build` and keeps `dist` as an artifact.
+
+What Brock does not provide for a site, by decision: no server kit, no cloud functions, no hosting or deploy workflow, no sign-in, session or account layer. Those stay the app's own packages (Relic of the Past keeps them in its packages), and a site reaches them only through its `/api` proxy in development and through whatever host the app deploys `dist` to.
 
 ## Release notes
 
@@ -98,7 +129,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | App services | `electron/services/` | `app-services.ts` (`createAppServices(ctx)`), `AppServices` augmented | `bootstrapApp({ services })`, read as `ctx.services` |
 | Review seed and steps | `src/review/` | `seed.ts`, `<id>.step.ts` (default export: `defineReviewSeed`, `defineReviewStep`), `fixtures/` (any files, at the paths they take in the data folder) | `brock sync` into `.brock/review.ts`, passed as `review` in `src/main.tsx` ([review-steps.md](review-steps.md)) |
 | Settings | `src/` and `src/screens/` | `settings.type.ts`, `settings.constants.ts`, `<id>.settings.ts` pages | `BrockApp settings`, the screen sync |
-| Tessera view | `src/views/` | `<Name>/<Name>.tsx` component folder | imported by screens and widgets |
+| Tessera view | `src/views/`, or `packages/design/src/views/` once two apps or sites use it | `<Name>/<Name>.tsx` component folder | imported by screens, widgets and site pages |
 | Tessera compound | `src/compounds/` (one app) or `packages/design/src/compounds/` | `<Name>/<Name>.tsx`, `<Name>.usage.ts` | `brock tessera new compound`, `brock tessera check` |
 | Tessera composite, primitive | `src/composites/`, `src/primitives/` (or the design package) | `<Name>/<Name>.tsx` | `brock tessera new` |
 | Store | `src/stores/` | `use<Thing>Store.ts`, `<thing>-store.type.ts` | imported |
@@ -111,6 +142,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Installer | `build/installer/` | `header.png`, `splash.png` | `brock package` |
 | Tests | `tests/<area>/`, `tests/e2e/` | `<name>.keep.test.ts`, `<name>.e2e.ts` | `vitest` |
 | Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `title-bar.ts`, `tours.ts`, `manifest.json`, and `tessera-parts.ts` (the part names `tessera guide` writes when `guide.parts` names it) | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
+| Site | `apps/<name>/` | `brock.site.ts`, `src/views/<Name>/`, `src/main.tsx` (see A site) | `brock site add`; `brock sync` writes its `vite.config.ts`, `tsconfig.json` and `ci-<name>.yml` |
 | Config | the app root | `brock.config.ts`, `tessera.config.json`, the managed configs | `brock sync` rewrites the managed ones |
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@archipelia/hosts/archipelago-gg`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.

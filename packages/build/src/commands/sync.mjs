@@ -1,6 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { relative } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
+import { isSiteDir } from '../site/load-site.mjs';
+import { repoRootOf, siteDirs } from '../site/site-dirs.mjs';
+import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
@@ -46,12 +49,22 @@ const syncIfStale = async (appDir) => {
  * @param {{ rootDir: string, check?: boolean, ifStale?: boolean }} ctx
  * @returns {Promise<number>} exit code
  */
-const runSync = async ({ rootDir, check = false, ifStale = false }) => {
-  const apps = await syncTargets(rootDir);
-  if (!apps.length) throw new Error(`No ${CONFIG_FILE} in ${rootDir}, and no electron target in brock.workspace.mjs points at an app.`);
+const syncApps = async (apps, staleOnly, check) => {
   let code = 0;
-  for (const appDir of apps) code = Math.max(code, await (ifStale && !check ? syncIfStale(appDir) : syncOne(appDir, check)));
-  if (!check && !ifStale) await writeGuide(rootDir);
+  for (const appDir of apps) code = Math.max(code, await (staleOnly ? syncIfStale(appDir) : syncOne(appDir, check)));
+  return code;
+};
+
+const runSync = async ({ rootDir, check = false, ifStale = false }) => {
+  const repoRoot = repoRootOf(rootDir);
+  if (isSiteDir(rootDir)) return syncSites(repoRoot, { check, only: [relative(repoRoot, rootDir).replace(/\\/g, '/')] });
+  const apps = await syncTargets(rootDir);
+  if (!apps.length && !siteDirs(repoRoot).length) throw new Error(`No ${CONFIG_FILE} in ${rootDir}, and no electron target in brock.workspace.mjs points at an app.`);
+  const staleOnly = ifStale && !check;
+  let code = await syncApps(apps, staleOnly, check);
+  if (staleOnly) return code;
+  code = Math.max(code, await syncSites(repoRoot, { check }));
+  if (!check) await writeGuide(rootDir);
   return code;
 };
 

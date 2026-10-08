@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': minor
+---
+
+`brock site add <name>` adds a site beside the Brock app: a separate single-page web app at `apps/<name>` of the same pnpm workspace, drawn with Tessera (`TesseraProvider`, the brand palette, the tokens and its own `theme.css`). `brock.site.ts` (`defineBrockSite` from `@drizztdourden08/brock-build/site`) gives it a tool port of the app's port block in the checkout's slot, an optional `/api` dev proxy to a URL or to a port offset of the same slot, node polyfills and aliases; `brock site dev`, `build`, `preview` and `list` run it. `brock sync` writes its managed `vite.config.ts` (`defineBrockSiteConfig` from `@drizztdourden08/brock-build/vite-site`), `tsconfig.json` and its own `ci-<name>.yml`, gated by `brock affected`, and `brock check` reports their drift. The site joins `tessera.config.json` and `knip.json`. Brock adds no server kit, functions, hosting deploy or sign-in layer for it. `brock adopt` lists a design package's `src/views`, the views two or more apps share, beside each app's own views.

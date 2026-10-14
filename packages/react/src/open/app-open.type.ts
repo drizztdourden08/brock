@@ -3,9 +3,11 @@ import type { OpenRequest } from '@drizztdourden08/brock-core';
 
 type AppOpenHandler = (request: OpenRequest) => void;
 
+type HoldRelease = (flush: () => void) => void;
+
 interface AppOpenRegistry {
   on: (handler: AppOpenHandler) => () => void;
   dispatch: (request: OpenRequest) => void;
 }
 
-export type { AppOpenHandler, AppOpenRegistry };
+export type { AppOpenHandler, AppOpenRegistry, HoldRelease };

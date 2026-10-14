@@ -17,6 +17,13 @@ const API_ORIGIN_SUFFIX = '_UPDATE_API_ORIGIN';
 const UPDATE_SOURCE_FLAG = '--update-source';
 const RELEASE_TAG_PREFIX = 'v';
 
+const UNINSTALL_KEY_ROOT = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall';
+const ESTIMATED_SIZE = 'EstimatedSize';
+const VELOPACK_UPDATE_EXE = 'Update.exe';
+const VELOPACK_CURRENT_DIR = 'current';
+const MAC_BUNDLE_SUFFIX = '.app';
+const KIB = 1024;
+
 const CHANNEL_BY_PLATFORM: Partial<Record<NodeJS.Platform, string>> = {
   win32: 'win',
   darwin: 'osx',
@@ -26,5 +33,5 @@ const CHANNEL_BY_PLATFORM: Partial<Record<NodeJS.Platform, string>> = {
 export {
   MODULE_ID, DATA_DIR, PREFS_FILE, DEFAULT_PREFS, FIRST_CHECK_DELAY_MS, MAX_DELTAS, RELEASE_PAGE_SIZE,
   GITHUB_WEB, GITHUB_API, GITHUB_JSON, API_ORIGIN_SUFFIX, UPDATE_SOURCE_FLAG, RELEASE_TAG_PREFIX,
-  CHANNEL_BY_PLATFORM,
+  CHANNEL_BY_PLATFORM, UNINSTALL_KEY_ROOT, ESTIMATED_SIZE, VELOPACK_UPDATE_EXE, VELOPACK_CURRENT_DIR, MAC_BUNDLE_SUFFIX, KIB,
 };

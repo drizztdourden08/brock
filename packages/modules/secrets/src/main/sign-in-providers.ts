@@ -4,16 +4,20 @@ import type { SignInProvider, SignInResult } from '../secrets.type';
 import type { DeviceSignIn } from './device-sign-in.type';
 import type { SignInProviders } from './sign-in-providers.type';
 import { createDeviceSignIn } from './device-sign-in';
+import { signInStatus } from './sign-in-status';
 
-const createSignInProviders = ({ emit }: Pick<MainContext, 'emit'>): SignInProviders => {
+const createSignInProviders = ({ emit }: Pick<MainContext, 'emit'>, has: (name: string) => Promise<boolean>): SignInProviders => {
   const drivers = new Map<string, DeviceSignIn>();
+  const providers = new Map<string, SignInProvider>();
 
   const register = (provider: SignInProvider): (() => void) => {
     drivers.get(provider.id)?.cancel();
     drivers.set(provider.id, createDeviceSignIn(provider));
+    providers.set(provider.id, provider);
     return () => {
       drivers.get(provider.id)?.cancel();
       drivers.delete(provider.id);
+      providers.delete(provider.id);
     };
   };
 
@@ -33,7 +37,12 @@ const createSignInProviders = ({ emit }: Pick<MainContext, 'emit'>): SignInProvi
     for (const driver of drivers.values()) driver.cancel();
   };
 
-  return { register, begin, cancel, cancelAll };
+  const signedIn = async (): Promise<Record<string, boolean>> => {
+    const known = await Promise.all([...providers.values()].map(async (provider) => [provider.id, await signInStatus(provider, has)] as const));
+    return Object.fromEntries(known.filter((entry): entry is readonly [string, boolean] => entry[1] !== null));
+  };
+
+  return { register, begin, cancel, cancelAll, signedIn };
 };
 
 export { createSignInProviders };

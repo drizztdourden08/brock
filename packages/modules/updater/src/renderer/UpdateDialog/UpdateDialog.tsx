@@ -8,10 +8,11 @@ import { DialogActions } from './sub-components/DialogActions';
 import { DownloadStatus } from './sub-components/DownloadStatus';
 import { UpdateSummary } from './sub-components/UpdateSummary';
 import { VersionPicker } from './sub-components/VersionPicker';
+import { UpdateNoticeSlot } from './sub-components/UpdateNoticeSlot';
 import './UpdateDialog.css';
 
 const UpdateDialog = () => {
-  const { store, choice, confirmRef, onAllowPrerelease, busy, notes, showPicker, showPrereleaseNote, showFootnote } = useUpdateDialog();
+  const { store, choice, confirmRef, onAllowPrerelease, busy, notes, notice, showPicker, showPrereleaseNote, showFootnote } = useUpdateDialog();
   const { dialogOpen, status, info, prefs, capabilities, closeDialog } = store;
 
   const actions = (
@@ -57,6 +58,7 @@ const UpdateDialog = () => {
             This is a pre-release. It ships before the usual testing, so expect rough edges and bugs the stable builds do not have.
           </Callout>
         )}
+        {notice !== null && <UpdateNoticeSlot>{notice}</UpdateNoticeSlot>}
         {notes.length > 0 && <ReleaseNotesPanel markdown onOpenLink={openExternal}>{notes}</ReleaseNotesPanel>}
         <DownloadStatus status={status} percent={store.percent} error={store.error} canInstall={capabilities.canInstall} info={info} />
         {showFootnote && (

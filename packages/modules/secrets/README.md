@@ -28,6 +28,7 @@ window.api.secrets.delete(name)
 window.api.secrets.canStore()
 window.api.secrets.signIn.begin(providerId)   // SignInResult
 window.api.secrets.signIn.cancel(providerId)
+window.api.secrets.signIn.signedIn()          // { [providerId]: boolean } for providers that can tell
 window.api.secrets.signIn.onCode((providerId, userCode) => ...)
 ```
 
@@ -74,10 +75,13 @@ bootstrapApp(product, {
       begin: () => ...,
       poll: (id, pollSecret) => ...,
       onToken: (token) => getSecrets(ctx).set('api-token', token),
+      tokenSecret: 'api-token',
     });
   },
 });
 ```
+
+`tokenSecret` names the secret `onToken` writes, so the module can tell a stored sign-in from none. A provider that keeps its token elsewhere passes `isSignedIn: () => boolean | Promise<boolean>` instead, which wins over `tokenSecret`. A provider with neither is left out of `signIn.signedIn()`.
 
 The renderer then drives it by id:
 
@@ -85,4 +89,4 @@ The renderer then drives it by id:
 const { state, userCode, lastError, begin, cancel } = useSignIn('account');
 ```
 
-`state` is `signed-out`, `waiting` or `signed-in`. `useSecretsStore` holds `metas`, `canStore`, `refresh`, `set` and `remove` for a settings tab; the module ships no screen of its own.
+`state` is `signed-out`, `waiting` or `signed-in`. The module's renderer boot task (`secrets-sign-in`) reads `signIn.signedIn()` before the window shows, so a provider with a stored token starts `signed-in` and the screen never draws the signed-out state first. `useSignIn` reads it too when the boot task did not run, and `useSignInStore` keeps `loaded` and `loadSignedIn()` for a refresh after the app removed a token. `useSecretsStore` holds `metas`, `canStore`, `refresh`, `set` and `remove` for a settings tab; the module ships no screen of its own.

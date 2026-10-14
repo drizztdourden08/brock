@@ -4,6 +4,8 @@ import type { UpdateDialogModel } from '../UpdateDialog.type';
 import { useUpdaterStore } from '../../useUpdaterStore';
 import { isBusy } from './is-busy';
 import { useVersionChoice } from './useVersionChoice';
+import { noticeContext } from './notice-context';
+import { resolveUpdateNotice } from '../../resolve-update-notice';
 
 const useUpdateDialog = (): UpdateDialogModel => {
   const store = useUpdaterStore();
@@ -22,6 +24,7 @@ const useUpdateDialog = (): UpdateDialogModel => {
     onAllowPrerelease,
     busy: isBusy(store.status),
     notes: choice.chosen?.releaseNotes ?? info?.releaseNotes ?? '',
+    notice: resolveUpdateNotice(store.notice, noticeContext(choice, info, store.currentVersion)),
     showPicker: capabilities.canInstall && choice.groups.length > 0,
     showPrereleaseNote: choice.chosen?.prerelease === true,
     showFootnote: capabilities.canCheck,

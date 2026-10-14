@@ -14,3 +14,9 @@
 .update-dialog__version {
   text-align: center;
 }
+
+.update-dialog__notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}

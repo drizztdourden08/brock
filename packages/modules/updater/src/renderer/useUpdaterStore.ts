@@ -53,6 +53,8 @@ const useUpdaterStore = create<UpdaterStoreState>()((set, get) => ({
     set({ dialogOpen: true });
     void get().check();
   },
+
+  setNotice: (notice) => set({ notice }),
 }));
 
 export { useUpdaterStore };

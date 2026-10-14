@@ -44,6 +44,7 @@ window.api.updater.apply(version | null)    // null takes the newest
 window.api.updater.openReleasePage(version | null)
 window.api.updater.getPrefs()
 window.api.updater.setPrefs({ allowPrerelease })
+window.api.updater.installSize()            // bytes on disk, or null outside an install
 window.api.updater.onUpdateAvailable((info) => ...)
 window.api.updater.onDownloadProgress(({ percent }) => ...)
 ```
@@ -70,6 +71,12 @@ const updater = createUpdaterMain({
 
 `hooks` also takes `beforeUpdate`, `firstRun` and `restarted`. `channel` sets Velopack's `ExplicitChannel` and wins over `product.updateChannel`.
 
+## Install size
+
+The module measures the installed app on disk, so the app never computes it: the Velopack install folder on Windows (the one holding `Update.exe` and `current/`), the `.app` bundle on macOS, the AppImage file on Linux. `installSize()` returns it in bytes, measured once per run, and `null` for a dev run or any copy outside those places.
+
+On Windows it also writes the size to the app's uninstall entry, `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\<product.id>`, as `EstimatedSize` in kilobytes. Windows Settings only reads a `REG_DWORD` there, and Velopack writes another type, so Installed apps showed no size. The write runs once per launch after the first check delay, only when the key already exists and its value differs; it never creates the key. `createUpdaterMain({ installSize: false })` turns it off.
+
 ## Versions and deltas
 
 Every row in the picker carries a plan: the base release and the ordered deltas that walk from the installed version to the target. The size shown and the bytes fetched both come from that plan. A downgrade, a reinstall, a missing delta or a chain longer than 10 falls back to the full package.
@@ -77,6 +84,8 @@ Every row in the picker carries a plan: the base release and the ordered deltas 
 ## Renderer side
 
 The module's `Provider` connects the store and mounts the UpdateDialog.
+
+A host that cannot update itself shows no updater at all: no menu entry, no title bar action and no dialog. That is a host whose platform reports `capabilities.selfUpdate: false` (the web build and Android) or one without the module's preload bridge. `useSelfUpdateHost()` and `selfUpdateHost(capabilities?)` give the same answer to app code. A desktop dev run or portable copy is still a self-update host: it checks, and its dialog sends the user to the release page.
 
 The updater never interrupts. The startup check is silent, and the dialog opens only when the user asks for it:
 
@@ -86,11 +95,24 @@ The updater never interrupts. The startup check is silent, and the dialog opens 
 | Title bar action | `useUpdateAction`, contributed through `RendererModule.titleBarActions`: Check for updates as a `status` action. The bar shows an "Update available" pill only while a found update waits; it pulses and opens the dialog. The hamburger always lists Check for updates, with "Update available" as its subtitle while an update waits, in place of the menu entry of the same key. The title bar carries no version tag. |
 | Dialog | The found version or "is the latest", the pre-release toggle and version picker, the release notes of the chosen version, the download progress, and a footnote with the bug report button. Escape closes it. |
 
-`useUpdateAction` is exported too, for an app that draws its own title bar. `UpdateBadge` is gone (0.16.0): the title bar status action replaced it, and the `update-badge-removed` migration turns an import of it into a to-do. `useUpdaterStore` holds the state for an app that wants its own badge or button:
+`useUpdateAction` is exported too, for an app that draws its own title bar; it returns `null` on a host without self-update. `UpdateBadge` is gone (0.16.0): the title bar status action replaced it, and the `update-badge-removed` migration turns an import of it into a to-do. `useUpdaterStore` holds the state for an app that wants its own badge or button:
 
 ```tsx
 const status = useUpdaterStore((s) => s.status);            // idle, checking, available, downloading, ready, error
 const checkAndOpen = useUpdaterStore((s) => s.checkAndOpen);
+```
+
+### A notice for a version
+
+`setUpdateNotice(notice)` puts the app's own content in the dialog for the version the user is about to install, above its release notes: a warning that an update resets some data, a note on what to do after a downgrade. `notice` is either a map from version to content, or a function that gets `{ version, currentVersion, action, prerelease }` (`action` is `update`, `reinstall` or `downgrade`) and returns content or nothing. A string shows as a warning callout; any other node is drawn as given. It returns the undo, and `setUpdateNotice(null)` clears it.
+
+```tsx
+import { setUpdateNotice } from '@drizztdourden08/brock-updater/renderer';
+
+setUpdateNotice({ '2.0.0': 'This update resets your layout to the default.' });
+
+setUpdateNotice(({ version, currentVersion }) =>
+  version.startsWith('3.') && !currentVersion.startsWith('3.') ? <Callout tone="info">Version 3 moves your data to a new folder.</Callout> : null);
 ```
 
 Release notes show in brock-react's `ReleaseNotesPanel` with `markdown` on: drawn as formatted markdown by Tessera's `Markdown` primitive once the installed Tessera exports it, as text that keeps its line breaks until then. Links open in the browser.

@@ -25,6 +25,27 @@ interface UpdaterOptions {
   hooks?: VelopackHooks;
   channel?: string;
   firstCheckDelayMs?: number;
+  installSize?: boolean;
+}
+
+type RunCommand = (file: string, args: readonly string[]) => Promise<{ stdout: string }>;
+
+interface InstallLocation {
+  path: string;
+  uninstallKey: string | null;
+}
+
+interface InstallFacts {
+  platform: NodeJS.Platform;
+  execPath: string;
+  appId: string;
+  appImage?: string;
+  exists: (path: string) => boolean;
+}
+
+interface InstallSize {
+  measure: () => Promise<number | null>;
+  publish: () => Promise<void>;
 }
 
 interface PrefsStore {
@@ -45,15 +66,17 @@ interface UpdaterRuntime {
   manager: () => UpdateManager | null;
 }
 
-interface UpdaterMain extends Pick<UpdaterApi, 'check' | 'listVersions' | 'apply' | 'openReleasePage' | 'setPrefs'> {
+interface UpdaterMain extends Pick<UpdaterApi, 'check' | 'listVersions' | 'apply' | 'openReleasePage' | 'setPrefs' | 'installSize'> {
   capabilities: () => UpdaterCapabilities;
   currentVersion: () => string;
   available: () => UpdateInfo | null;
   getPrefs: () => UpdaterPrefs;
   scheduleFirstCheck: (delayMs: number) => void;
+  publishInstallSize: () => Promise<void>;
   dispose: () => void;
 }
 
 export type {
   VelopackHook, VelopackHooks, OsIntegrationSteps, UpdaterOptions, PrefsStore, UpdaterRuntime, UpdaterMain,
+  RunCommand, InstallFacts, InstallLocation, InstallSize,
 };

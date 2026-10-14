@@ -11,6 +11,7 @@ const UPDATER_IDLE: UpdaterData = {
   currentVersion: '',
   capabilities: { hasSource: false, canCheck: false, canInstall: false },
   dialogOpen: false,
+  notice: null,
 };
 
 export { UPDATER_IDLE };

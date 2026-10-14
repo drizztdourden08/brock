@@ -8,7 +8,7 @@ const instances = new WeakMap<MainContext, SecretsMain>();
 
 const createSecretsMain = (ctx: MainContext): SecretsMain => {
   const store = createSecretStore(ctx);
-  const signIn = createSignInProviders(ctx);
+  const signIn = createSignInProviders(ctx, store.has);
   return { ...store, signIn, registerSignInProvider: signIn.register };
 };
 

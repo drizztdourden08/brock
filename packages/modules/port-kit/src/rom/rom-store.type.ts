@@ -1,14 +1,29 @@
 /* @layer core @kind types */
-import type { RomCheck, StoredRom } from './rom.type';
+import type { RomCheck, RomRefusal, RomRules, StoredRom } from './rom.type';
 
-type RomImport = RomCheck & { file?: string };
+type RomImport = RomCheck & { file?: string; existed?: boolean };
 
-interface RomStore {
+type RomCandidate = { ok: true; name: string; bytes: Uint8Array } | { ok: false; reason: RomRefusal };
+
+interface RomKindStore {
+  kind: string;
   importRom: (fileName: string, bytes: Uint8Array) => Promise<RomImport>;
   list: () => Promise<StoredRom[]>;
   read: (file: string) => Promise<RomCheck | null>;
-  remove: (file: string) => Promise<void>;
+  remove: (file: string) => Promise<string[]>;
   assetFileOf: (file: string) => string | null;
 }
 
-export type { RomImport, RomStore };
+interface RomStore extends RomKindStore {
+  kinds: () => string[];
+  of: (kind: string) => RomKindStore;
+}
+
+interface RomKindSetup {
+  kind: string;
+  rules: RomRules;
+  dir: string;
+  assetExtension: string | null;
+}
+
+export type { RomImport, RomCandidate, RomKindStore, RomStore, RomKindSetup };

@@ -57,6 +57,16 @@ const port = definePort<GameSettings>({
 
 `rom.keepFileName: true` keeps the name the file was imported under instead: `Game (USA).smc` is stored as `roms/Game (USA).smc` and its blob as `assets/Game (USA).dat`, for a port whose ROM-to-asset naming or existing data already depends on the original name. The store then lists a ROM by its hash, not its name, and skips files that are not a known dump. The name only loses its folder; one a disk would refuse (a reserved device name, `<>:"/\|?*`, a leading dot, a trailing dot or space) is refused. The default, `false`, is the id naming above. Either way the stored bytes are the `normalize`d dump, so a copier header is stripped.
 
+### Unknown dumps, zips and several kinds
+
+`rom.acceptUnknown: true` stores a dump that is not in `known` instead of refusing it. Its identity id is its lower-case SHA-1, so with the id naming it is stored as `roms/<sha1>.sfc`; `importRom` and `read` flag it with `rom.unknown: true`, and `list` returns it with `unknown: true` and its `hash`. Its label is the stem of the file it was imported or stored under. `rom.maxBytes` refuses a larger dump (`reason: 'size'`).
+
+`importRom` also takes a zip: a file whose name has none of `extensions` and whose bytes start a zip archive is opened (stored or deflated entries, through the platform's `DecompressionStream`) and the one entry with a ROM extension inside is imported under its own name. Among several, the one that is a known dump wins; a zip with none, with several and no single known one, or that cannot be read is refused with `reason: 'archive'`. `readZipEntries(bytes)` is exported for an app that reads other archives.
+
+`rom.kinds` declares more ROM kinds beside the port's own one, each with its own `extensions`, `known`, `normalize`, `keepFileName`, `acceptUnknown`, `maxBytes`, an optional `label` and a `dir` (default `roms`, so kinds told apart by extension can share it). `createRomStore(files, port)` is the store of the port's own kind (`main`, `MAIN_ROM_KIND`); `store.kinds()` lists every kind and `store.of(kind)` returns the store of one, with the same calls. Only the `main` kind has the asset blob.
+
+`remove(file)` deletes the ROM, its asset blob and every path `derived(file, files)` of its kind returns (files built from it, such as a second asset blob or a cache), and resolves the paths it removed.
+
 A core that renders to a framebuffer and hands out samples says so instead: `video: { mode: 'framebuffer', width, height, frame: 'WasmFramePtr' }` and `audio: { mode: 'samples', sampleRate, channels, samples: 'WasmAudioPtr', count: 'WasmAudioFrames' }`, with `exports.runFrame`; the kit then drives the frame loop itself.
 
 ## Running it
@@ -82,7 +92,47 @@ await session.stop();
 
 A `.sav` is a container: a `PKSV` header, the metadata as JSON (`port`, `savedAt`, `rom`), then the core's state bytes. A save from another port is refused. Saving always writes the container.
 
+Named saves (`store.named`) are listed in each folder's `manifest.json`. Beside `create`, `list`, `find` and `remove`:
+
+- `rename(profileId, kind, id, name)` changes the name and keeps the files; `overwrite(profileId, kind, id, { bytes, screenshot?, meta? })` writes new bytes under the same id and moves `savedAt`. Both resolve `null` for an unknown id, and an empty name is refused.
+- `prune(profileId, kind, { keep?, maxAgeMs?, now? })` removes every save past the newest `keep` and every save older than `maxAgeMs`, and resolves the removed entries.
+- `details(profileId, kind)` lists the entries newest first with `bytes` (the state and its screenshot), leaving out an entry whose state file is gone; `size(profileId, kind)` sums them.
+- `create` and `overwrite` take an optional `meta` object, kept on the entry for the app (what made an auto save, for example).
+
+`createSaveStore(files, { companions })` names files that belong to a slot (`companions(profileId, ref)` returns their paths): they are removed whenever that slot is written or removed, so a sidecar never outlives or misdescribes its save.
+
 Loading also takes a raw state: a file that does not start with `PKSV` is handed to the core as it is, so states and fixtures written before the kit (or by the core itself) still load. `decodeSaveSlot(bytes, port)` says which it read in `format` (`'pksv'` or `'raw'`); a raw state carries no metadata, so its `meta` is `{ port, savedAt: 0 }`. Pass `{ acceptRaw: false }` to refuse anything but a container (`reason: 'magic'`). An empty file is always refused.
+
+## Asset extraction in a worker thread
+
+`runAssetWorkerJob(ctx, options)` from `@drizztdourden08/brock-port-kit/main` runs an app's extraction steps in a Node worker thread, as a `ctx.job` the job dialog shows:
+
+```ts
+import extractWorker from './extract.worker?modulePath';
+
+const results = await runAssetWorkerJob(ctx, {
+  id: `assets:${romFile}`,
+  title: 'Building the game assets',
+  worker: extractWorker,
+  workerData: { romBytes },
+  steps: [{ id: 'graphics', label: 'Graphics', weight: 3 }, { id: 'text', label: 'Text', input: { language: 'en' } }],
+  onResult: (step, result) => writeAsset(step, result),
+});
+```
+
+The worker module serves the steps by id with `serveAssetSteps` from `@drizztdourden08/brock-port-kit/worker`; each step gets its `input` and a report (`progress(fraction, line?)`, `line(text)`, `log(message, level?)`) that lands on the job:
+
+```ts
+import { workerData } from 'node:worker_threads';
+import { serveAssetSteps } from '@drizztdourden08/brock-port-kit/worker';
+
+serveAssetSteps({
+  graphics: (_input, report) => { report.progress(0.5); return extractGraphics(workerData.romBytes); },
+  text: (input) => extractText(workerData.romBytes, input),
+});
+```
+
+The steps run one after another in one thread, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to main without a copy. A step that throws, a step the worker lacks or a worker that exits fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the thread. electron-vite builds the worker as its own file from the `?modulePath` import.
 
 ## ensure-wasm
 

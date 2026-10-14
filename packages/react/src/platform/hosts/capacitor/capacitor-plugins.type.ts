@@ -47,4 +47,4 @@ interface CapacitorCore {
   getPlatform?: () => string;
 }
 
-export type { AppPlugin, CapacitorCore, FilesystemPlugin, FsEntry, FsTarget, HapticsPlugin, KeepAwakePlugin };
+export type { AppPlugin, CapacitorCore, FilesystemPlugin, FsTarget, HapticsPlugin, KeepAwakePlugin };

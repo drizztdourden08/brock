@@ -88,3 +88,37 @@ describe('buildMenu', () => {
     expect(keys(item(help, 'section:help')?.children ?? [])).toEqual(['docs', 'take-the-tour']);
   });
 });
+
+describe('an app submenu named like a Brock section', () => {
+  it('joins the section instead of making a second Advanced', () => {
+    const appAdvanced: MenuItem = {
+      key: 'menu:/advanced', label: 'Advanced', icon: 'folder',
+      children: [{ key: 'screen:hud-layout', label: 'HUD layout', screen: 'hud-layout' }, 'separator', { key: 'screen:calibration', label: 'Calibration', screen: 'calibration' }],
+    };
+    const menu = buildMenu({ ...BASE, appMenu: [appAdvanced], moduleMenu: [{ key: 'pads', label: 'Controllers', section: 'advanced', screen: 'pads' }] });
+    expect(keys(menu)).toEqual(['home', 'profiles', '|', 'section:advanced', '|', 'about', 'quit']);
+    expect(keys(item(menu, 'section:advanced')?.children ?? [])).toEqual(['screen:hud-layout', 'screen:calibration', 'pads', 'keyboard-shortcuts', 'report-bug']);
+  });
+
+  it('matches the section label in any case, and leaves a submenu with another name alone', () => {
+    const menu = buildMenu({
+      ...BASE,
+      appMenu: [
+        { key: 'menu:/advanced', label: 'ADVANCED', children: [{ key: 'tools', label: 'Tools', onClick: noop }] },
+        { key: 'menu:/hosting', label: 'Hosting', children: [{ key: 'host', label: 'Host a game', onClick: noop }] },
+      ],
+    });
+    expect(keys(menu)).toEqual(['home', 'profiles', 'menu:/hosting', '|', 'section:advanced', '|', 'about', 'quit']);
+    expect(keys(item(menu, 'section:advanced')?.children ?? [])[0]).toBe('tools');
+  });
+
+  it('joins a section a module or the app files entries under, such as Help', () => {
+    const menu = buildMenu({
+      ...BASE,
+      appMenu: [{ key: 'menu:/help', label: 'Help', children: [{ key: 'manual', label: 'Manual', onClick: noop }] }],
+      moduleMenu: [{ key: 'docs', label: 'Docs', section: 'help', onClick: noop }],
+    });
+    expect(keys(item(menu, 'section:help')?.children ?? [])).toEqual(['manual', 'docs']);
+    expect(item(menu, 'menu:/help')).toBeUndefined();
+  });
+});

@@ -8,5 +8,7 @@ export { resolveBugReportTarget } from './resolve-bug-report-target';
 export { BugReportDialog } from './BugReportDialog';
 export { BugReportButton } from './BugReportButton';
 export type { BugReportButtonProps } from './BugReportButton';
-export type { BrockAppBugReport, BugReportState, BugReportTarget, IssueDraft } from './bug-report.type';
+export type {
+  BrockAppBugReport, BugReportAfterSend, BugReportAttachmentOptions, BugReportContactOptions, BugReportState, BugReportTarget, IssueDraft,
+} from './bug-report.type';
 export type { PayloadInput, TargetSources } from './bug-report-payload.type';

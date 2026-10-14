@@ -9,13 +9,13 @@ const memoryFiles = (initial: Record<string, string>) => {
     readText: (path: string) => new Promise<string | null>((resolve) => { setTimeout(() => resolve(texts.get(path) ?? null), 1); }),
     writeText: (path: string, data: string) => new Promise<void>((resolve) => { setTimeout(() => { texts.set(path, data); resolve(); }, 2); }),
   };
-  return { files, read: () => JSON.parse(texts.get('ui-views.json') ?? '{}') as Record<string, unknown> };
+  return { files: files as FileStore, read: () => JSON.parse(texts.get('ui-views.json') ?? '{}') as Record<string, unknown> };
 };
 
 describe('the ui-views file in main', () => {
   it('merges each patch into the file on disk, one after another, and removes a key patched to null', async () => {
     const disk = memoryFiles({ 'ui-views.json': JSON.stringify({ 'profile:p1': { a: 1 }, 'app:editor': { zoom: 2 } }) });
-    const views = createUiViewsStore(disk.files as FileStore);
+    const views = createUiViewsStore(disk.files);
     await Promise.all([
       views.patch({ 'profile:p1': { a: 2 } }),
       views.patch({ 'app:panel': { open: true } }),

@@ -20,6 +20,8 @@ import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useLegacyWidgetContext } from './behavior/useLegacyWidgetContext';
 import { useWidgetGates } from './behavior/useWidgetGates';
+import { useDisabledWidgets } from './behavior/useDisabledWidgets';
+import { openSettingTarget } from '../../search/open-setting-target';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
@@ -34,7 +36,7 @@ const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
   (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
 const WidgetHost = (props: WidgetHostProps) => {
-  const { widgets = NO_WIDGETS, main, mainLabel, widgetContext, layout: preset = null, keepFocusWithApp = true } = props;
+  const { widgets = NO_WIDGETS, main, mainLabel, widgetContext, layout: preset = null, keepFocusWithApp = true, widgetDisabled } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definitions = useMemo(() => uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), [widgets, registered]);
   const profileId = useProfilesStore((s) => s.active?.id ?? null);
@@ -44,6 +46,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   const settingsStore = useContext(SettingsStoreContext);
   const legacy = useLegacyWidgetContext(widgetContext);
   const gates = useWidgetGates(definitions, legacy);
+  const resolveDisabled = useDisabledWidgets(widgetDisabled);
   const shown = useMemo(() => poppedShown(layout, gates), [layout, gates]);
   const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
 
@@ -90,6 +93,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       pageOpen={gates.pageOpen}
       settingsContent={settingsContent}
       developerToolsEnabled={gates.developerToolsEnabled}
+      resolveDisabled={resolveDisabled} onOpenSettings={openSettingTarget}
     >
       {content}
     </WidgetManager>

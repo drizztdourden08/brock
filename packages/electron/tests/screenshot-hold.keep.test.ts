@@ -1,6 +1,7 @@
 /* @layer electron-main @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { WebContents } from 'electron';
+import type { BrowserWindow, WebContents } from 'electron';
+import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 
 const shots = vi.hoisted(() => ({ taken: [] as string[], quits: 0 }));
@@ -15,8 +16,8 @@ const settle = async (): Promise<void> => {
 };
 
 const contextFor = (name: string | null): MainContext => ({
-  flags: { flagValue: (flag: string) => (flag === '--screenshot' ? name : null) },
-  window: () => ({}),
+  flags: { flagValue: (flag: string) => (flag === '--screenshot' ? name : null) } as Partial<AutomationFlags> as AutomationFlags,
+  window: () => ({}) as BrowserWindow,
   log: () => undefined,
 }) as Partial<MainContext> as MainContext;
 

@@ -32,7 +32,7 @@ import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
-    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, layout = 'menu',
+    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
     screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog,
   } = props;
 
@@ -82,6 +82,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     widgets={allWidgets}
                     widgetLayout={widgetLayout}
                     widgetContext={widgetContext}
+                    widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
                     review={review}

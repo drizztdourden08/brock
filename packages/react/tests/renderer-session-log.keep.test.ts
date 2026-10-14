@@ -14,7 +14,7 @@ const fakeTarget = () => {
   };
 };
 
-const quietBus = () => createLogBus({ channels: ['game'], mirrorToConsole: false });
+const quietBus = () => createLogBus<string>({ channels: ['game'], mirrorToConsole: false });
 
 beforeEach(() => {
   vi.useFakeTimers();

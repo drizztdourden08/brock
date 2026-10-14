@@ -6,7 +6,7 @@ import type { SearchAction } from '../../../../search/search.type';
 import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.type';
 import type { SettingsStore } from '../../../../stores/settings-store.type';
 import type { LayoutPreset } from '../../../../widgets/layout-preset.type';
-import type { WidgetContextSource } from '../../../../widgets/WidgetHost/WidgetHost.type';
+import type { WidgetContextSource, WidgetDisabledHook } from '../../../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
 import type { AppReview } from '../../../../review/app-review.type';
@@ -23,6 +23,7 @@ interface AppShellProps<S extends object> {
   widgets?: readonly WidgetDef[];
   widgetLayout?: LayoutPreset;
   widgetContext?: WidgetContextSource;
+  widgetDisabled?: WidgetDisabledHook;
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
   review?: AppReview;

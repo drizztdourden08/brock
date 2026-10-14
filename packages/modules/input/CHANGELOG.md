@@ -1,5 +1,28 @@
 # @drizztdourden08/brock-input
 
+## 0.39.0
+
+### Minor Changes
+
+- 8397e03: `BROCK_INPUT_CMAKE_DIR` puts the CMake build folders of an addon source build at a short path (a folder, or `temp` for the system temp folder), one subfolder per package copy, so a build deep in a worktree stays under the Windows path length limit. The Android library build reads the same variable, or `brockInputCmakeDir` in `mobile/android/gradle.properties`, for its CMake staging folder.
+- 8397e03: Apps can add their own buttons to the input module's device cards. `registerDeviceCardActions(actions)` (or the `useDeviceCardActions` hook) adds them to every card, the module's Controllers screen included, and `InputTester` (`deviceActions`) and `DeviceCard` (`actions`, now exported) take them as a prop too. Each `DeviceCardAction` has an `id`, a `label`, an optional `icon` and `variant`, `disabled` and `visible` checks on the `DeviceEntry`, and `onSelect(entry)`.
+- 8397e03: `inputApi()` no longer returns null. On a host with no input side it returns `noopInputApi`, which reports controllers off, lists nothing, refuses every action and hands back an unsubscribe for every subscription, so app code needs no null check. `isInputAvailable()` tells whether a real input host is there. Existing `inputApi()?.` calls keep working; they can drop the `?.`.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

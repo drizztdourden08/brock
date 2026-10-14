@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind hook */
 import { useState } from 'react';
-import { inputApi } from '../../input-api';
+import { hostInputApi } from '../../host-input-api';
 
 const useInputHost = (): void => {
-  useState(inputApi);
+  useState(hostInputApi);
 };
 
 export { useInputHost };

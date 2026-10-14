@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
-import { hostApi } from '@drizztdourden08/brock-react';
 import type { InputApi } from '../input-api.type';
-import { androidInputApi } from './android/android-input-api';
+import { noopInputApi } from '../noop-input-api';
+import { hostInputApi } from './host-input-api';
 
-const inputApi = (): InputApi | null => hostApi()?.input ?? androidInputApi();
+const inputApi = (): InputApi => hostInputApi() ?? noopInputApi;
 
 export { inputApi };

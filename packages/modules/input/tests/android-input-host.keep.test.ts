@@ -33,7 +33,7 @@ describe('inputApi() on each host', () => {
     const api = (await loadInputApi())();
     expect(api).not.toBeNull();
     expect(host.api.input).toBe(api);
-    expect(await api?.status()).toEqual({ available: true, sdlVersion: '3.4.14' });
+    expect(await api.status()).toEqual({ available: true, sdlVersion: '3.4.14' });
   });
 
   it('keeps the preload namespace on the desktop', async () => {
@@ -42,11 +42,18 @@ describe('inputApi() on each host', () => {
     expect((await loadInputApi())()).toBe(preload);
   });
 
-  it('is null in a browser and in an Android build without the plugin', async () => {
+  it('is the no-op API in a browser and in an Android build without the plugin', async () => {
+    const { noopInputApi } = await import('../src/noop-input-api');
     vi.stubGlobal('window', { api: {} });
-    expect((await loadInputApi())()).toBeNull();
+    expect((await loadInputApi())()).toBe(noopInputApi);
+    expect((await import('../src/renderer/is-input-available')).isInputAvailable()).toBe(false);
     vi.resetModules();
     vi.stubGlobal('window', nativeWindow({}));
-    expect((await loadInputApi())()).toBeNull();
+    expect(await (await loadInputApi())().status()).toEqual({ available: false, sdlVersion: null });
+  });
+
+  it('reports the input host as available on the desktop', async () => {
+    vi.stubGlobal('window', { api: { input: { status: vi.fn() } } });
+    expect((await import('../src/renderer/is-input-available')).isInputAvailable()).toBe(true);
   });
 });

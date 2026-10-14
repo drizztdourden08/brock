@@ -5,7 +5,7 @@ import { UnavailableDevice } from './UnavailableDevice';
 import type { DeviceListProps } from './DeviceList.type';
 
 const DeviceList = (props: DeviceListProps) => {
-  const { entries, available, loaded } = props;
+  const { entries, available, loaded, deviceActions } = props;
   if (!loaded) return null;
   if (!available) return <EmptyState message="The SDL3 addon is not loaded, so no controller can be read." />;
   if (entries.length === 0) return <EmptyState message="No controller found. Plug one in, then rescan." />;
@@ -13,7 +13,7 @@ const DeviceList = (props: DeviceListProps) => {
   return (
     <Flex direction="column" gap="md">
       {entries.map((entry) => (entry.status === 'ready'
-        ? <DeviceCard key={entry.deviceKey} entry={entry} />
+        ? <DeviceCard key={entry.deviceKey} entry={entry} actions={deviceActions} />
         : <UnavailableDevice key={entry.deviceKey} entry={entry} />))}
     </Flex>
   );

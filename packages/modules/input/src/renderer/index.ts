@@ -15,7 +15,15 @@ const inputRenderer: RendererModule = {
 export default inputRenderer;
 export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID, InputProvider };
 export { inputApi } from './input-api';
+export { isInputAvailable } from './is-input-available';
+export { noopInputApi } from '../noop-input-api';
 export { InputTester } from './InputTester';
+export type { InputTesterProps } from './InputTester';
+export { DeviceCard } from './DeviceCard';
+export type { DeviceCardProps } from './DeviceCard';
+export { registerDeviceCardActions } from './register-device-card-actions';
+export { useDeviceCardActions } from './useDeviceCardActions';
+export type { DeviceCardAction } from './device-card-action.type';
 export { CalibrationPanel, inputFamilyOf } from '../compounds/CalibrationPanel';
 export type {
   CalibrationButtons, CalibrationControl, CalibrationPanelAction, CalibrationPanelProps, CalibrationReading, CalibrationStickReading,

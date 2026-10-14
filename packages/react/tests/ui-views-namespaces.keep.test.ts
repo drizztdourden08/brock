@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind test */
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 const fakeMain = (initial: Record<string, unknown>) => {
   const disk = { file: structuredClone(initial), patches: [] as Record<string, unknown>[], wholeWrites: 0 };
@@ -26,7 +26,12 @@ const freshModules = async () => {
   return { profileViews, uiViews };
 };
 
+beforeAll(async () => {
+  await import('../src/widgets/profile-views');
+}, 60_000);
+
 afterEach(() => {
+  vi.doUnmock('../src/platform/get-platform');
   vi.unstubAllGlobals();
 });
 
@@ -75,6 +80,5 @@ describe('ui-views on Capacitor', () => {
     vi.resetModules();
     const again = await import('../src/stores/ui-views');
     expect(await again.uiViews.read('app:panel', null)).toEqual({ open: true });
-    vi.doUnmock('../src/platform/get-platform');
   });
 });

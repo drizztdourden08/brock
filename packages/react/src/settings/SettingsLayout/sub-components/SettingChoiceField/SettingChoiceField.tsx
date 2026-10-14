@@ -9,7 +9,7 @@ const SettingChoiceField = (props: SettingChoiceFieldProps) => {
   const off = new Set(rows.filter((row) => row.disabled).map((row) => row.value));
 
   if (props.look === 'multi') {
-    return <ToggleGroup value={[...props.value]} options={rows} onChange={props.onChange} disabled={disabled} label={label} />;
+    return <ToggleGroup value={[...props.value]} options={rows} onChange={props.onChange} disabled={disabled} />;
   }
   const { value, onChange } = props;
   const pick = (next: string): void => { if (!off.has(next)) onChange(next); };

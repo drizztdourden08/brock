@@ -19,7 +19,7 @@ Brock is the base-app foundation for Electron + React desktop apps that share th
 | `@drizztdourden08/brock-display` | module | refresh rate, synced rate, display mode switch (koffi 2 or 3); on Android the `BrockDisplay` Capacitor plugin (`android/`) |
 | `@drizztdourden08/brock-tools` | module | external binaries the app declares: locate in `Data/tools` or on `PATH`, download, SHA-256 check and unpack as a `ctx.job`, run with an argument array |
 | `@drizztdourden08/brock-catalog` | module | a content catalogue client behind the app's endpoint and schema: install jobs (`ctx.job`), download checks, uninstall, the installed record and guard, install links, `CatalogInstallBar` |
-| `@drizztdourden08/brock-port-kit` | module | WASM game core lifecycle, save slots (PKSV or raw states), SRAM, presenter, audio adapter, live settings, ROM source (id or original file names), asset pipeline framework, ensure-wasm (the one copy; `brock-plugin-snes` imports it) |
+| `@drizztdourden08/brock-port-kit` | module | WASM game core lifecycle, save slots (PKSV or raw states) and named saves, SRAM, presenter, audio adapter, live settings, ROM source (id or original file names, unknown dumps, zips, several kinds), asset pipeline framework and worker-thread asset jobs, ensure-wasm (the one copy; `brock-plugin-snes` imports it) |
 
 Dependency direction: `lint-config` (dev) <- everything. `core` <- `electron`, `react`, `build`. `react` peer-depends on Tessera, React and zustand. Modules depend on `core`, and on `electron` or `react` for the side they touch. Tessera never depends on Brock.
 

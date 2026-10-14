@@ -80,6 +80,16 @@ await session.saves()?.save({ kind: 'quick', slot: 0 });
 await session.stop();
 ```
 
+`createGameCore(port, options)` takes:
+
+- `precompiled`: a `WebAssembly.Module`, or a function that resolves one (or `null`), instantiated instead of fetching and compiling the core at each start. `compileCore(port)` loads and compiles the core, so an app can warm it up at boot and hand the module over.
+- `crashArmDelayMs`: a WebAssembly runtime error in the first milliseconds after a start is swallowed and does not stop the core (default 0). After it, the first one sets the core's state to `error`, later ones are swallowed.
+- `onCrash({ message, error, event })`: called once for that crash, to log it or write a crash dump.
+
+`createPortSession({ ..., saveTransform })` and `createSaveSlots({ ..., transform })` take save transform hooks: `save(state, kind)` changes the core's state bytes before they go into the container (it may be async, to stamp the app version for example), and `load(state)` changes them back before the core loads them. `captureState` and SRAM are left as they are.
+
+`createLiveSettings` and `createSramSync` also run without `createGameCore`, for an app that loads its core itself: `createLiveSettings({ calls, apply })` takes a `calls()` accessor and the apply function, and `createSramSync({ read, store, profileId })` a `read()` that returns the SRAM bytes or `null`. `createCoreCalls(module)` builds the `CoreCalls` of an Emscripten module.
+
 `useCoreState(core)` gives `{ status, error }` to a component. `GameCanvas` and `RomPicker` are the two Tessera-built pieces of UI. Every part also stands alone: `createGameCore`, `createFramePresenter`, `createFrameLoop`, `createAudioAdapter`, `createLiveSettings`, `createSramSync`, `createSaveSlots`, `createRomStore`, `createAssetCache`, `runAssetPipeline`.
 
 ## Saves
@@ -137,5 +147,7 @@ The steps run one after another in one thread, each made the job's current step;
 ## ensure-wasm
 
 The app runs `port-kit-ensure-wasm` before `dev` and `build`. It rebuilds the core when an output is missing or a C source is newer than it. Options come from `package.json#portKit.wasm` and use the names of the SNES thread plugin: `sourceDirs`, `skipDirs`, `sourceExtensions`, `buildScript`, `output`, `outputExtensions`, `emsdkDir`. The build script runs with `$EMSDK` on the path when the SDK is found. `emsdkDir` is relative to the app folder or absolute, and `$EMSDK` wins over it.
+
+On Windows, when the SDK folder holds `emsdk_env.bat`, the build script runs after it in one `cmd` session, so the SDK's own Node, Python and paths are active; otherwise the SDK's `upstream/emscripten` goes on the path as before. `skipWithoutSdk: true` (or `port-kit-ensure-wasm --skip-without-sdk`) skips a stale build with a message, and resolves `'skipped'`, when no SDK is found: none at `$EMSDK` or `emsdkDir`, and no `emcc` on the path. A machine that only fetches a prebuilt core uses it. `emsdkOf(root, wasm)` tells what was found.
 
 This is the only copy of the stale check. `@drizztdourden08/brock-plugin-snes` imports it from `@drizztdourden08/brock-port-kit/ensure-wasm`: its `wasmBuild()` step and `snes wasm build` ask `wasmStaleReason`, and build through `ensureWasm({ ..., force: true })` with the SDK of the main checkout. `force` builds even when the core is current.

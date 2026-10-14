@@ -5,7 +5,7 @@ import type { SramStore } from '../../saves/save-store.type';
 import type { AudioAdapter } from '../audio/audio.type';
 import type { CoreLog, GameCore } from '../core/game-core.type';
 import type { FrameLoop, FramePresenter } from '../frame/frame.type';
-import type { SaveSlots, SramSync } from '../saves/save-session.type';
+import type { SaveSlots, SaveTransform, SramSync } from '../saves/save-session.type';
 import type { LiveSettings } from '../settings/live-settings.type';
 
 interface PortSessionOptions<S> {
@@ -20,6 +20,7 @@ interface PortSessionOptions<S> {
   extraFiles?: Record<string, Uint8Array | string>;
   log?: CoreLog;
   onAssetProgress?: AssetProgress;
+  saveTransform?: SaveTransform;
 }
 
 interface AttachRequest {

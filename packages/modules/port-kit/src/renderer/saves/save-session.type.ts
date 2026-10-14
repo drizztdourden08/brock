@@ -3,12 +3,15 @@ import type { SaveStore, SramStore } from '../../saves/save-store.type';
 import type { NamedSaveEntry, NamedSaveKind, SaveSlotRef } from '../../saves/save-slot.type';
 import type { GameCore } from '../core/game-core.type';
 
-interface SramSyncOptions {
-  core: GameCore;
+type SramSource = Pick<GameCore, 'definition' | 'calls' | 'fs'>;
+
+interface SramSyncBase {
   store: SramStore;
   profileId: string;
   intervalMs?: number;
 }
+
+type SramSyncOptions = SramSyncBase & ({ core: SramSource } | { read: () => Uint8Array | null });
 
 interface SramSync {
   start: () => void;
@@ -18,6 +21,11 @@ interface SramSync {
   flush: () => Promise<boolean>;
 }
 
+interface SaveTransform {
+  save?: (state: Uint8Array, kind: SaveSlotRef['kind']) => Uint8Array | Promise<Uint8Array>;
+  load?: (state: Uint8Array) => Uint8Array;
+}
+
 interface SaveSlotsOptions {
   core: GameCore;
   store: SaveStore;
@@ -25,6 +33,7 @@ interface SaveSlotsOptions {
   rom?: string;
   capture?: () => Promise<Blob | null>;
   onLoaded?: () => void;
+  transform?: SaveTransform;
 }
 
 interface SaveSlots {
@@ -36,4 +45,4 @@ interface SaveSlots {
   loadNamed: (kind: NamedSaveKind, name: string) => Promise<boolean>;
 }
 
-export type { SramSyncOptions, SramSync, SaveSlotsOptions, SaveSlots };
+export type { SramSource, SramSyncOptions, SramSync, SaveTransform, SaveSlotsOptions, SaveSlots };

@@ -113,6 +113,7 @@ interface TabDef<S extends object> {
   sections?: (settings: S) => Section[];
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;
+  moduleId?: string;
 }
 
 export type {

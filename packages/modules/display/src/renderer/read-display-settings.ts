@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import { DEFAULT_DISPLAY_SETTINGS } from '../display.constants';
+import { detectHost } from '@drizztdourden08/brock-core';
+import type { HostShell } from '@drizztdourden08/brock-core';
+import { displayDefaultsFor } from '../display-defaults-for';
 import type { DisplaySettings, WindowMode } from '../display.type';
 
 const isWindowMode = (value: unknown): value is WindowMode =>
@@ -12,9 +14,9 @@ const isString = (value: unknown): value is string => typeof value === 'string';
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
 const isRate = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
-const readDisplaySettings = (settings: object): DisplaySettings => {
+const readDisplaySettings = (settings: object, host: HostShell = detectHost()): DisplaySettings => {
   const record: Partial<Record<keyof DisplaySettings, unknown>> = settings;
-  const defaults = DEFAULT_DISPLAY_SETTINGS;
+  const defaults = displayDefaultsFor(host);
   return {
     windowMode: pick(record.windowMode, defaults.windowMode, isWindowMode),
     displayMonitor: pick(record.displayMonitor, defaults.displayMonitor, isString),

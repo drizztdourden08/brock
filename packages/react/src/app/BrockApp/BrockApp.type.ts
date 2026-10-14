@@ -12,7 +12,7 @@ import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/s
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
-import type { SettingsEffect } from '../../stores/settings-store.type';
+import type { SettingsEffect, SettingsNormalise, SettingsPatchTransform } from '../../stores/settings-store.type';
 import type { SettingsControlProps, TabDef } from '../../settings/settings.type';
 import type { LayoutPreset } from '../../widgets/layout-preset.type';
 import type { WidgetContextSource, WidgetDisabledHook } from '../../widgets/WidgetHost/WidgetHost.type';
@@ -30,6 +30,8 @@ interface BrockAppSettings<S extends object> extends SettingsControls<S> {
   defaults: S;
   tabs?: TabDef<S>[];
   effects?: SettingsEffect<S>[];
+  normalise?: SettingsNormalise<S>;
+  transformPatch?: SettingsPatchTransform<S>;
 }
 
 interface BrockAppProps<S extends object> {

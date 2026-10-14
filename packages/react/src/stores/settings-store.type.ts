@@ -3,6 +3,10 @@ import type { StoreApi, UseBoundStore } from 'zustand';
 
 type SettingsEffect<S> = (patch: Partial<S>, next: S, prev: S) => void;
 
+type SettingsNormalise<S> = (settings: S, stored: Partial<S> | null) => S;
+
+type SettingsPatchTransform<S> = (patch: Partial<S>, settings: S) => Partial<S>;
+
 type SettingsSaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
 
 interface SettingsWrite<S> {
@@ -40,6 +44,8 @@ interface CreateSettingsStoreOptions<S extends object> {
   load: (profileId: string) => Promise<Partial<S> | null>;
   save: (profileId: string, settings: S) => Promise<void>;
   effects?: readonly SettingsEffect<S>[];
+  normalise?: SettingsNormalise<S>;
+  transformPatch?: SettingsPatchTransform<S>;
   saveDelayMs?: number;
 }
 
@@ -55,6 +61,6 @@ interface UseSettingsResult<S extends object> {
 }
 
 export type {
-  CreateSettingsStoreOptions, SettingsEffect, SettingsSaveReport, SettingsSaver, SettingsSaveState, SettingsSaveStatus, SettingsState, SettingsStore, SettingsWrite,
+  CreateSettingsStoreOptions, SettingsEffect, SettingsNormalise, SettingsPatchTransform, SettingsSaveReport, SettingsSaver, SettingsSaveState, SettingsSaveStatus, SettingsState, SettingsStore, SettingsWrite,
   UseSettingsResult,
 };

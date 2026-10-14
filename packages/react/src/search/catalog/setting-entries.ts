@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { Section, SettingItem, TabDef } from '../../settings/settings.type';
+import type { Section, SettingItem, SettingValues, TabDef } from '../../settings/settings.type';
 import { normaliseKeywords } from '../normalise-keywords';
 import { SETTING_ID_PREFIX } from '../search.constants';
 import type { CatalogInput, SearchEntry } from '../search.type';
@@ -28,7 +28,9 @@ const itemEntry = (tab: TabDef<object>, trail: readonly string[], item: SettingI
 
 const tabSettings = (tab: TabDef<object>, input: CatalogInput, settings: object): SearchEntry[] =>
   (tab.sections?.(settings) ?? []).flatMap((section) =>
-    groupsOf(section).flatMap((group) => group.items.map((item) => itemEntry(tab, group.trail, item, input))));
+    groupsOf(section).flatMap((group) => group.items
+      .filter((item) => item.visible === undefined || item.visible(settings as SettingValues))
+      .map((item) => itemEntry(tab, group.trail, item, input))));
 
 const settingEntries = (input: CatalogInput): SearchEntry[] => {
   const { settings } = input;

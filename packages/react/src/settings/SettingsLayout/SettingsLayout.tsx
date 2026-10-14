@@ -18,7 +18,7 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
 
   const runner = useActionRunner();
   const lockOf = useCallback((key: string) => lockCauseOf?.(key, settings) ?? null, [lockCauseOf, settings]);
-  const resolved = useMemo(() => resolveSections(sections, query), [sections, query]);
+  const resolved = useMemo(() => resolveSections(sections, query, settings), [sections, query, settings]);
   const anchors = useMemo(() => resolved.map((s) => ({ id: s.id, label: s.title })), [resolved]);
 
   const rowsOf = (item: SettingItem): SettingsSectionRow[] =>

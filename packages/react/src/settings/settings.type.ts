@@ -8,6 +8,7 @@ interface SettingChoice {
   value: string;
   label: string;
   hint?: string;
+  disabled?: boolean | string;
 }
 
 type SettingChoiceLook = 'segmented' | 'select' | 'radio';
@@ -24,7 +25,9 @@ type SettingControl =
   | { kind: 'password'; placeholder?: string }
   | { kind: 'tags'; suggestions?: readonly string[]; placeholder?: string }
   | { kind: 'path'; pick?: PathKind; accept?: readonly string[]; placeholder?: string }
-  | { kind: 'json'; shape?: SettingJsonShape };
+  | { kind: 'json'; shape?: SettingJsonShape }
+  | { kind: 'color' }
+  | { kind: 'multi'; options: SettingChoice[] };
 
 type SettingControlKind = SettingControl['kind'];
 
@@ -57,6 +60,7 @@ interface SettingItemFields {
   link?: string;
   control?: SettingControl;
   actions?: readonly SettingAction[];
+  visible?: (settings: SettingValues) => boolean;
 }
 
 type SettingItem = SettingItemFields & SettingDescription;

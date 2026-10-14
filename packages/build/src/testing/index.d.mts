@@ -6,7 +6,11 @@ interface LaunchAppForTestOptions {
   args?: string[];
   env?: Record<string, string>;
   timeoutMs?: number;
+  /** The app's own profile folder; launchAppForTest leaves it in place on close. */
+  userData?: string;
 }
+
+type AppPageKind = 'splash' | 'widget' | 'app';
 
 interface LaunchedTestApp {
   app: ElectronApplication;
@@ -44,11 +48,13 @@ interface WidgetWindowReading {
 }
 
 declare const launchAppForTest: (options: LaunchAppForTestOptions) => Promise<LaunchedTestApp>;
+declare const waitForAppPage: (app: ElectronApplication, timeoutMs?: number) => Promise<Page>;
+declare const pageKindOf: (url: string) => AppPageKind | null;
 declare const assertLaunchable: (appDir: string) => string;
 declare const unresolvableImports: (outDir: string) => { file: string; spec: string }[];
 declare const readDockLayout: (page: Page, options?: { timeoutMs?: number }) => Promise<DockLayoutReading>;
 declare const widgetWindows: (app: ElectronApplication) => Promise<WidgetWindowReading[]>;
 declare const HEADLESS_ARGS: readonly string[];
 
-export { launchAppForTest, assertLaunchable, unresolvableImports, readDockLayout, widgetWindows, HEADLESS_ARGS };
-export type { DockLayoutReading, LaunchAppForTestOptions, LaunchedTestApp, TestRect, WidgetWindowReading };
+export { launchAppForTest, waitForAppPage, pageKindOf, assertLaunchable, unresolvableImports, readDockLayout, widgetWindows, HEADLESS_ARGS };
+export type { AppPageKind, DockLayoutReading, LaunchAppForTestOptions, LaunchedTestApp, TestRect, WidgetWindowReading };

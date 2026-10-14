@@ -33,15 +33,21 @@ const appPage = async (app, timeout, outputOf) => {
   }
 };
 
+const profileOf = (userData) => {
+  if (userData !== undefined) return { userData: resolve(userData), drop: () => undefined };
+  const made = mkdtempSync(join(tmpdir(), 'brock-e2e-'));
+  return { userData: made, drop: () => rmSync(made, { recursive: true, force: true }) };
+};
+
 /**
- * @param {{ appDir: string, args?: string[], env?: Record<string, string>, timeoutMs?: number }} options
+ * @param {{ appDir: string, args?: string[], env?: Record<string, string>, timeoutMs?: number, userData?: string }} options
  * @returns {Promise<{ app: any, page: any, userData: string, close: () => Promise<void> }>}
  */
-const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST_WINDOW_TIMEOUT_MS }) => {
+const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST_WINDOW_TIMEOUT_MS, userData: ownProfile }) => {
   const root = resolve(appDir);
   const main = assertLaunchable(root);
   const driver = await loadElectronDriver(root);
-  const userData = mkdtempSync(join(tmpdir(), 'brock-e2e-'));
+  const { userData, drop } = profileOf(ownProfile);
   const app = await driver.launch({
     executablePath: resolveElectronBinary(root),
     args: [main, ...HEADLESS_ARGS, `--user-data=${userData}`, ...args],
@@ -49,12 +55,12 @@ const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST
     env: cleanEnv(env),
   });
   const page = await appPage(app, timeoutMs, captureOutput(app)).catch((error) => {
-    rmSync(userData, { recursive: true, force: true });
+    drop();
     throw error;
   });
   const close = async () => {
     await app.close();
-    rmSync(userData, { recursive: true, force: true });
+    drop();
   };
   return { app, page, userData, close };
 };

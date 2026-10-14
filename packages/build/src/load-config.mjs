@@ -10,12 +10,13 @@ import { CONFIG_FILE } from './config.mjs';
 
 /**
  * @param {string} rootDir
+ * @param {{ version?: string }} [options] version reads the file again instead of the copy Node holds
  * @returns {Promise<BrockConfig>}
  */
-const loadBrockConfig = async (rootDir) => {
+const loadBrockConfig = async (rootDir, { version } = {}) => {
   const file = join(rootDir, CONFIG_FILE);
   if (!existsSync(file)) throw new Error(`No ${CONFIG_FILE} in ${rootDir}`);
-  const loaded = await import(pathToFileURL(file).href);
+  const loaded = await import(`${pathToFileURL(file).href}${version ? `?v=${encodeURIComponent(version)}` : ''}`);
   const cfg = loaded.default;
   if (!cfg || typeof cfg !== 'object') throw new Error(`${CONFIG_FILE} must default-export defineBrockConfig({ ... })`);
   if (!cfg.product?.id) throw new Error(`${CONFIG_FILE}: product.id is missing`);

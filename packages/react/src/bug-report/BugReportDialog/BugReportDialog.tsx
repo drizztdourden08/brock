@@ -1,37 +1,38 @@
 /* @layer renderer-shell @kind component */
-import { Button } from '@drizztdourden08/tessera/primitives';
+import { Box, Checkbox, Field, Small, TextInput, Textarea } from '@drizztdourden08/tessera/primitives';
 import { DialogShell } from '@drizztdourden08/tessera/composites';
-import { openExternal } from '../../host/open-external';
 import { useBugReportForm } from './behavior/useBugReportForm';
-import { BugReportFormBody } from './sub-components/BugReportFormBody';
+import { AttachmentField } from './sub-components/AttachmentField';
+import { BugReportActions } from './sub-components/BugReportActions';
+import { ContactField } from './sub-components/ContactField';
+import { DiagnosticsPreview } from './sub-components/DiagnosticsPreview';
+import { SendError } from './sub-components/SendError';
 import { SentView } from './sub-components/SentView';
-import { CLOSE_LABEL, OPEN_RECEIPT_LABEL, SENDING_LABEL, SENT_TITLE } from './BugReportDialog.constants';
+import { CLIPBOARD_NOTE, DESCRIPTION_ROWS, REPORT_TITLE, SENT_TITLE } from './BugReportDialog.constants';
 import './BugReportDialog.css';
 
 const BugReportDialog = () => {
   const form = useBugReportForm();
   const { sent } = form;
-  const receiptUrl = sent?.url;
-
-  const actions = sent
-    ? (
-      <>
-        {receiptUrl !== undefined && <Button variant="tertiary" onClick={() => openExternal(receiptUrl)}>{OPEN_RECEIPT_LABEL}</Button>}
-        <Button variant="primary" onClick={form.close}>{CLOSE_LABEL}</Button>
-      </>
-    )
-    : (
-      <>
-        <Button variant="tertiary" onClick={form.close} disabled={form.sending}>Cancel</Button>
-        <Button variant="primary" onClick={form.send} disabled={!form.canSend} loading={form.sending}>
-          {form.sending ? SENDING_LABEL : form.target?.label ?? SENDING_LABEL}
-        </Button>
-      </>
-    );
 
   return (
-    <DialogShell open={form.open} onClose={form.close} title={sent ? SENT_TITLE : 'Report a bug'} className="bug-report" actions={actions}>
-      {sent ? <SentView receipt={sent} /> : <BugReportFormBody form={form} />}
+    <DialogShell open={form.open} onClose={form.close} title={sent ? SENT_TITLE : REPORT_TITLE} className="bug-report" actions={<BugReportActions form={form} />}>
+      {sent ? <SentView receipt={sent} /> : (
+        <Box className="bug-report__form">
+          <Field label="Title" required width="full">
+            <TextInput value={form.title} placeholder="A short summary" onChange={(e) => form.setTitle(e.target.value)} />
+          </Field>
+          <Field label="What happened" required width="full" hint="What you did, what you expected, and what you saw instead.">
+            <Textarea rows={DESCRIPTION_ROWS} value={form.description} onChange={(e) => form.setDescription(e.target.value)} />
+          </Field>
+          <ContactField shown={form.fields?.contact === true} value={form.contact} onChange={form.setContact} />
+          <AttachmentField model={form.attachments} disabled={form.sending} />
+          <Checkbox checked={form.attach} onChange={form.setAttach} label="Attach diagnostics (system info, versions, recent log)" />
+          {form.attach && <DiagnosticsPreview text={form.diagnostics} />}
+          <SendError error={form.error} fallback={form.fallback} />
+          {form.target?.kind === 'clipboard' && <Small tone="muted">{CLIPBOARD_NOTE}</Small>}
+        </Box>
+      )}
     </DialogShell>
   );
 };

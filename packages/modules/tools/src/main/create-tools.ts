@@ -1,33 +1,41 @@
 /* @layer electron-main @kind logic */
 import { join } from 'path';
 import type { Result } from '@drizztdourden08/brock-core/result';
-import type { ToolDef, ToolLocation, ToolState } from '../tools.type';
-import type { ToolsEnv, ToolsMain } from './tools-main.type';
+import type { ToolLocation, ToolState } from '../tools.type';
+import type { ToolSpec, ToolsEnv, ToolsMain } from './tools-main.type';
 import { DEFAULT_VERSION } from './tools-main.constants';
+import { createToolChecker } from './create-tool-checker';
 import { defineTool } from './define-tool';
 import { installTool } from './install-tool';
 import { locateTool } from './locate-tool';
-import { runBinary } from './run-binary';
+import { runToolCall } from './run-tool-call';
 import { toolState } from './tool-state';
 
+const readPathEnv = ({ pathEnv }: ToolsEnv): Promise<string> => Promise.resolve(typeof pathEnv === 'string' ? pathEnv : pathEnv());
+
 const createTools = (env: ToolsEnv): ToolsMain => {
-  const defs = new Map<string, ToolDef>();
+  const defs = new Map<string, ToolSpec>();
   const pending = new Map<string, Promise<Result<ToolState>>>();
-  const cacheDirOf = (def: ToolDef): string => join(env.cacheRoot, def.id, def.version ?? DEFAULT_VERSION);
-  const need = (id: string): ToolDef => {
+  const check = createToolChecker();
+  const cacheDirOf = (def: ToolSpec): string => join(env.cacheRoot, def.id, def.version ?? DEFAULT_VERSION);
+  const need = (id: string): ToolSpec => {
     const def = defs.get(id);
     if (!def) throw new Error(`no tool "${id}" is registered`);
     return def;
   };
-  const locateDef = (def: ToolDef): Promise<ToolLocation | null> => locateTool(def, { cacheDir: cacheDirOf(def), platform: env.os, pathEnv: env.pathEnv });
-  const canInstall = (def: ToolDef): boolean =>
+  const locateDef = async (def: ToolSpec): Promise<ToolLocation | null> => locateTool(def, {
+    cacheDir: cacheDirOf(def), platform: env.os, pathEnv: await readPathEnv(env), check: def.probe ? (paths) => check(def, paths) : undefined,
+  });
+  const canInstall = (def: ToolSpec): boolean =>
     env.platform !== null && (def.downloads?.[env.platform] !== undefined || def.resolveDownload !== undefined);
-  const stateOf = async (def: ToolDef): Promise<ToolState> => toolState(def, await locateDef(def), canInstall(def));
+  const stateOf = async (def: ToolSpec): Promise<ToolState> => toolState(def, await locateDef(def), canInstall(def));
 
-  const install = async (def: ToolDef): Promise<Result<ToolState>> => {
+  const install = async (def: ToolSpec): Promise<Result<ToolState>> => {
     try {
       await installTool(def, cacheDirOf(def), env);
-      return { success: true, value: await stateOf(def) };
+      const value = await stateOf(def);
+      env.onChanged?.(def.id);
+      return { success: true, value };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : String(err) };
     } finally {
@@ -49,11 +57,11 @@ const createTools = (env: ToolsEnv): ToolsMain => {
       pending.set(id, running);
       return running;
     },
-    run: async (id, binary, args, options) => {
+    run: async (id, binary, args, options = {}) => {
       const def = need(id);
       const file = (await locateDef(def))?.paths[binary];
       if (!def.binaries.includes(binary) || file === undefined) throw new Error(`${def.label} has no ${binary} installed`);
-      return runBinary(file, args, options);
+      return runToolCall(def, { binary, file, args, options });
     },
   };
 };

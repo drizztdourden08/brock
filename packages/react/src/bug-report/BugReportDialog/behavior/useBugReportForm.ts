@@ -2,65 +2,56 @@
 import { useCallback, useState } from 'react';
 import type { BugReportReceipt } from '@drizztdourden08/brock-core';
 import { useProduct } from '../../../app/useProduct';
-import { useDebugText } from '../../../diagnostics/useDebugText';
-import { getAppLog } from '../../../log/get-app-log';
-import { buildBugReportPayload } from '../../build-bug-report-payload';
+import type { BugReportTarget } from '../../bug-report.type';
+import { fallbackTarget } from '../../fallback-target';
+import { fieldsOf } from '../../fields-of';
 import { useBugReportStore } from '../../useBugReportStore';
 import { useBugReportTarget } from '../../useBugReportTarget';
 import type { BugReportForm } from '../BugReportDialog.type';
 import { announceReceipt } from './announce-receipt';
 import { deliverReport } from './deliver-report';
-import { useBugReportExtras } from './useBugReportExtras';
+import { useReportPayload } from './useReportPayload';
 
 const useBugReportForm = (): BugReportForm => {
   const open = useBugReportStore((s) => s.open);
   const hide = useBugReportStore((s) => s.hide);
-  const product = useProduct();
-  const { text, system, version } = useDebugText(open);
+  const { repo } = useProduct();
   const target = useBugReportTarget(open);
-  const extras = useBugReportExtras();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [attach, setAttach] = useState(true);
+  const fields = fieldsOf(target);
+  const draft = useReportPayload(open, fields);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<BugReportReceipt | null>(null);
+  const { build, reset } = draft;
 
-  const diagnostics = attach ? text : null;
-  const canSend = target !== null && !sending && title.trim().length > 0 && description.trim().length > 0 && (!attach || text !== null) && extras.valid;
-  const { reset, contact, attachments, fields } = extras;
-  const viaTransport = target?.kind === 'transport';
+  const canSend = target !== null && !sending && draft.filled;
 
   const close = useCallback(() => {
     hide();
-    setTitle('');
-    setDescription('');
-    setAttach(true);
+    reset();
     setError(null);
     setSent(null);
-    reset();
   }, [hide, reset]);
 
-  const send = useCallback(() => {
-    if (!canSend) return;
-    const payload = buildBugReportPayload({
-      title, description, product, version, diagnostics, system: attach ? system : null, logs: attach ? getAppLog().getEntries() : [],
-      ...(viaTransport ? { contact, attachments } : {}),
-    });
+  const deliverTo = useCallback((to: BugReportTarget) => {
+    const view = fieldsOf(to)?.afterSend === 'view';
     setSending(true);
     setError(null);
-    void deliverReport(target, payload).then((result) => {
+    void build().then((payload) => deliverReport(to, payload, view ? setSent : announceReceipt)).then((failure) => {
       setSending(false);
-      if (!result.sent) setError(result.error);
-      else if (fields.afterSend === 'view') setSent(result.receipt);
-      else {
-        announceReceipt(result.receipt);
-        close();
-      }
+      if (failure !== null) setError(failure);
+      else if (!view) close();
     });
-  }, [canSend, target, title, description, product, version, diagnostics, attach, system, viaTransport, contact, attachments, fields.afterSend, close]);
+  }, [build, close]);
 
-  return { open, title, setTitle, description, setDescription, attach, setAttach, diagnostics, target, extras, sending, error, sent, canSend, send, close };
+  const send = useCallback(() => {
+    if (canSend) deliverTo(target);
+  }, [canSend, target, deliverTo]);
+
+  const fallbackTo = sending ? null : fallbackTarget(error, target, repo);
+  const fallback = fallbackTo ? () => deliverTo(fallbackTo) : null;
+
+  return { ...draft, open, target, fields, sending, error, sent, canSend, send, fallback, close };
 };
 
 export { useBugReportForm };

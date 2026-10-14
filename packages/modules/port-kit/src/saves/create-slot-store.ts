@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { QuickSlotInfo, SaveSlotRef } from './save-slot.type';
-import type { SlotStore, SlotWrite } from './save-store.type';
+import type { SaveStoreOptions, SlotStore, SlotWrite } from './save-store.type';
 import { QUICK_DIR } from './save-slot.constants';
 import { quickSlotOf } from './quick-slot-of';
 import { saveSlotPaths } from './save-slot-paths';
@@ -9,13 +9,18 @@ import { savesDirOf } from './saves-dir-of';
 
 const dirOf = (path: string): string => path.slice(0, path.lastIndexOf('/'));
 
-const createSlotStore = (files: FileStore): SlotStore => {
+const createSlotStore = (files: FileStore, { companions }: SaveStoreOptions = {}): SlotStore => {
+  const dropCompanions = async (profileId: string, ref: SaveSlotRef): Promise<void> => {
+    for (const path of companions?.(profileId, ref) ?? []) await files.remove(path);
+  };
+
   const write = async (profileId: string, ref: SaveSlotRef, { bytes, screenshot }: SlotWrite): Promise<void> => {
     const paths = saveSlotPaths(profileId, ref);
     await files.mkdir(dirOf(paths.state));
     await files.writeBytes(paths.state, bytes);
     if (screenshot) await files.writeBytes(paths.screenshot, screenshot);
     else await files.remove(paths.screenshot);
+    await dropCompanions(profileId, ref);
   };
 
   const read = (profileId: string, ref: SaveSlotRef): Promise<Uint8Array | null> =>
@@ -28,6 +33,14 @@ const createSlotStore = (files: FileStore): SlotStore => {
     const paths = saveSlotPaths(profileId, ref);
     await files.remove(paths.state);
     await files.remove(paths.screenshot);
+    await dropCompanions(profileId, ref);
+  };
+
+  const bytesOf = async (profileId: string, ref: SaveSlotRef): Promise<number | null> => {
+    const paths = saveSlotPaths(profileId, ref);
+    const state = await files.stat(paths.state);
+    if (!state) return null;
+    return state.bytes + ((await files.stat(paths.screenshot))?.bytes ?? 0);
   };
 
   const infoOf = async (profileId: string, slot: number): Promise<QuickSlotInfo | null> => {
@@ -44,7 +57,7 @@ const createSlotStore = (files: FileStore): SlotStore => {
     return infos.filter((info): info is QuickSlotInfo => info !== null);
   };
 
-  return { write, read, readScreenshot, remove, listQuick };
+  return { write, read, readScreenshot, remove, bytesOf, listQuick };
 };
 
 export { createSlotStore };

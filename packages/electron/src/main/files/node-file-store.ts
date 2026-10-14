@@ -4,12 +4,7 @@ import { dirname } from 'path';
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { NodeFileStoreOptions } from './node-file-store.type';
 import { resolveDataPath } from './resolve-data-path';
-
-const trashWith = (trashItem: (fullPath: string) => Promise<void>) => async (path: string): Promise<void> => {
-  const full = resolveDataPath(path);
-  try { await stat(full); } catch { return; }
-  await trashItem(full);
-};
+import { trashDataPath } from './trash-data-path';
 
 const ensureParent = (full: string): Promise<void> => mkdir(dirname(full), { recursive: true }).then(() => undefined);
 
@@ -48,7 +43,7 @@ const createNodeFileStore = (options: NodeFileStoreOptions = {}): FileStore => (
       return { bytes: s.size, isDirectory: s.isDirectory(), mtimeMs: s.mtimeMs };
     } catch { return null; }
   },
-  ...(options.trashItem ? { trash: trashWith(options.trashItem) } : {}),
+  ...(options.trashItem ? { trash: trashDataPath(options.trashItem) } : {}),
 });
 
 export { createNodeFileStore };

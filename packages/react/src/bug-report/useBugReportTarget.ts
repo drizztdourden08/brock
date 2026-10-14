@@ -21,7 +21,7 @@ const useBugReportTarget = (open: boolean): BugReportTarget | null => {
   useEffect(() => {
     if (!open) return undefined;
     let live = true;
-    void (app?.transport ? Promise.resolve(null) : askMain()).then((main) => {
+    void (app ? Promise.resolve(null) : askMain()).then((main) => {
       if (!live) return;
       const api = hostApi();
       setTarget(resolveBugReportTarget({ app, main, sendToMain: api ? (payload) => api.sendBugReport(payload) : null, repo }));

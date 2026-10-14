@@ -51,6 +51,8 @@ export default defineBootTask({
 | `resolveDownload` | `(platform) => Promise<ToolDownload \| null>`, for a download found at run time, such as a GitHub release asset whose API digest carries the checksum. A fixed entry for the platform wins. |
 | `usePath` | Look on `PATH` when there is no cached copy. On by default; a copy found there is used as it is, with no checksum. |
 | `installHint` | Shown when the platform has no download and nothing was found. |
+| `probe` | Optional. Checks a found copy works before it counts, and reads its version (see below). |
+| `aroundRun` | Optional. `(call, next) => Promise<ToolRunResult>` around every run of the tool (see below). |
 
 `ToolDownload` is `{ url, sha256, size?, archive? }`. The URL must be http or https. `archive` is `zip` (the default, read with Brock's zip reader), `tar` (any tar the system `tar` reads, `.tar.xz` included; on Windows the one in `System32`) or `none` (the download is the one binary). `defineTool` refuses a bad id, a binary name with a folder or `.exe`, a checksum that is not 64 hex digits and a URL that is not http or https; a resolved download is checked the same way before it is fetched.
 
@@ -63,13 +65,28 @@ await tools.install('ffmpeg');        // Result<ToolState>
 await tools.run('ffmpeg', 'ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_format', file], { timeoutMs: 30_000 });
 ```
 
-- `locate` reads the cached copy first, then each `PATH` folder in order. `missing` means a download exists for this platform; `unavailable` means none does, and `hint` says what to do.
-- `install` runs one job, `tool:<id>`, with the steps Download (progress in bytes), Verify and Unpack. The download streams to the temp folder through Electron's `net.fetch`; its size (when given) and SHA-256 must match before anything is unpacked, and a mismatch deletes it. The binaries are found by file name anywhere in the archive and moved into the cache folder in one rename, so a failed install leaves the previous copy alone. Two calls for one tool share the same install. The job can be cancelled from the job dialog.
+- `locate` reads the cached copy first, then each `PATH` folder in order. The PATH is read again on each lookup, at most every 2 s: on Windows the process PATH merged with the saved machine and user PATH from the registry (`systemPath()`), so a tool the user installs while the app runs is found; elsewhere the process PATH. `createTools` takes `pathEnv` as a string or a function. `missing` means a download exists for this platform; `unavailable` means none does, and `hint` says what to do.
+- `install` runs one job, `tool:<id>`, with the steps Download (progress in bytes), Verify and Unpack; cancel is turned off once the download is in. The download streams to the temp folder through Electron's `net.fetch`; its size (when given) and SHA-256 must match before anything is unpacked, and a mismatch deletes it. The binaries are found by file name anywhere in the archive and moved into the cache folder in one rename, so a failed install leaves the previous copy alone. Two calls for one tool share the same install. The job can be cancelled from the job dialog.
 - `run` spawns the binary with no shell, `windowsHide`, and a timeout (10 minutes by default) that kills it and sets `timedOut`. `onLine(line, stream)` receives each line of stdout and stderr as it arrives, which is where an app reads ffmpeg's `time=` progress and moves its own job. It resolves `{ code, stdout, stderr, timedOut }` and rejects only when the program cannot start.
+
+## Probe and run hook
+
+```ts
+getTools(ctx).register({
+  id: 'converter',
+  label: 'Converter',
+  binaries: ['convert'],
+  probe: { args: ['-version'] },                              // or (paths) => Promise<{ ok, version?, error? }>
+  aroundRun: (call, next) => next({ ...call, options: { ...call.options, env: { ...process.env, LANG: 'C' } } }),
+});
+```
+
+- `probe: { binary?, args?, timeoutMs?, read? }` runs `binary` (the first one by default) with `args` (`--version` by default, 15 s at most) on each copy `locate` finds. `read(output)` returns `{ ok, version?, error? }`; the default (`readVersion`) passes on exit code 0 and takes the first dotted number of the output as the version. A function in its place gets the found paths and answers the same. A copy that fails counts as not found, so the lookup moves on to the next folder; a passing one puts `version` on `ToolLocation` and `ToolState`. A result is kept until a binary's size or modified time changes. `defineTool` refuses a probe of a binary the tool does not list.
+- `aroundRun(call, next)` gets `{ binary, file, args, options }` for every run of the tool, the probe included, and calls `next` with the same call or a changed one; it can log, set the environment, retry or rewrite the result.
 
 ## Renderer
 
-`window.api.tools` has `list()`, `state(id)` and `install(id)`. `useTool(id)` returns `{ state, installing, error, install, refresh }`; `install` opens the job dialog on `tool:<id>` and resolves `true` once the tool is ready.
+`window.api.tools` has `list()`, `state(id)`, `install(id)` and `onChanged(listener)`, which hears `tools:changed` with the tool id after an install. `useTool(id, { refreshOnFocus? })` returns `{ state, installing, error, install, refresh }`; `install` opens the job dialog on `tool:<id>` and resolves `true` once the tool is ready. It locates the tool again on `tools:changed` for its id and, unless `refreshOnFocus: false`, each time the window gets focus, so a tool installed outside the app shows once the user comes back.
 
 ## What it stores
 

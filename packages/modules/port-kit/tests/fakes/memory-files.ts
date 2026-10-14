@@ -14,7 +14,10 @@ const memoryFiles = (): { files: FileStore; disk: Map<string, Uint8Array> } => {
     remove: (path) => Promise.resolve(void disk.delete(path)),
     exists: (path) => Promise.resolve(disk.has(path)),
     mkdir: () => Promise.resolve(),
-    stat: () => Promise.resolve(null),
+    stat: (path) => {
+      const data = disk.get(path);
+      return Promise.resolve(data ? { bytes: data.length, isDirectory: false, mtimeMs: 0 } : null);
+    },
   };
   return { files, disk };
 };

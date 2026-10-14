@@ -18,17 +18,34 @@ interface BugReportDiagnostics {
 interface BugReportAttachment {
   name: string;
   type: string;
-  bytes: Uint8Array;
+  size: number;
+  data: Uint8Array;
 }
+
+type BugReportExtras = Record<string, unknown>;
 
 interface BugReportPayload {
   title: string;
   description: string;
-  contact?: string;
-  attachments?: BugReportAttachment[];
   app: { id: string; name: string; version: string };
   diagnostics: BugReportDiagnostics | null;
   createdAt: string;
+  contact?: string;
+  attachments?: BugReportAttachment[];
+  extras?: BugReportExtras;
+}
+
+interface BugReportAttachmentLimits {
+  maxFiles: number;
+  maxBytes: number;
+}
+
+type BugReportAfterSend = 'toast' | 'view';
+
+interface BugReportFields {
+  contact?: boolean;
+  attachments?: boolean | Partial<BugReportAttachmentLimits>;
+  afterSend?: BugReportAfterSend;
 }
 
 interface BugReportReceipt {
@@ -39,8 +56,11 @@ interface BugReportReceipt {
 
 type BugReportTransport = (payload: BugReportPayload) => Promise<Result<BugReportReceipt>>;
 
-interface BugReportTransportInfo {
+interface BugReportTransportInfo extends BugReportFields {
   label: string;
 }
 
-export type { BugReportAttachment, BugReportDiagnostics, BugReportLogLine, BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo };
+export type {
+  BugReportAfterSend, BugReportAttachment, BugReportAttachmentLimits, BugReportDiagnostics, BugReportExtras, BugReportFields, BugReportLogLine,
+  BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo,
+};

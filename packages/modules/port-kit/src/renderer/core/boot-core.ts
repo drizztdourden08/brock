@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { PortDefinition, VideoDefinition } from '../../port/port-definition.type';
 import type { EmscriptenModule } from './emscripten.type';
-import type { CoreBoot } from './game-core.type';
+import type { BootSetup, CoreBoot } from './game-core.type';
 import { createInstantiateWasm } from './create-instantiate-wasm';
 import { loadCoreBytes } from './load-core-bytes';
 import { loadGlueScript } from './load-glue-script';
@@ -14,10 +14,10 @@ const emscriptenCanvas = (video: VideoDefinition, canvas: HTMLCanvasElement | nu
   return canvas;
 };
 
-const bootCore = async (definition: PortDefinition, boot: CoreBoot, headless: boolean): Promise<EmscriptenModule> => {
+const bootCore = async (definition: PortDefinition, boot: CoreBoot, { headless, compiled }: BootSetup): Promise<EmscriptenModule> => {
   const { core, video } = definition;
   const factory = await loadGlueScript(core.glue, core.factory);
-  const bytes = await loadCoreBytes(core.wasm);
+  const source = compiled ?? await loadCoreBytes(core.wasm);
   const log = boot.log ?? (() => undefined);
   let fail: (error: unknown) => void = () => undefined;
   const failed = new Promise<never>((_resolve, reject) => {
@@ -26,7 +26,7 @@ const bootCore = async (definition: PortDefinition, boot: CoreBoot, headless: bo
   const booting = factory({
     canvas: headless ? undefined : emscriptenCanvas(video, boot.canvas),
     noInitialRun: headless,
-    instantiateWasm: createInstantiateWasm(bytes, (error) => fail(error)),
+    instantiateWasm: createInstantiateWasm(source, (error) => fail(error)),
     preRun: [(mod) => writeBootFiles(mod.FS, core.files, boot)],
     print: (text) => log(text, 'info'),
     printErr: (text) => log(text, 'error'),

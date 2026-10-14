@@ -1,5 +1,44 @@
 # @drizztdourden08/brock-secrets
 
+## 0.39.0
+
+### Minor Changes
+
+- 6d7da6d: `useSignIn` starts signed in when a token is stored. A sign-in provider names the secret its token goes to with `tokenSecret`, or answers itself with `isSignedIn()`; `window.api.secrets.signIn.signedIn()` returns each provider's state, and the module's renderer boot task reads it before the window shows, so a screen no longer draws the signed-out state first. `useSignInStore` adds `loaded` and `loadSignedIn()`.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.38.0
+- @drizztdourden08/brock-electron@0.38.0
+- @drizztdourden08/brock-react@0.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- Updated dependencies [12d3780]
+- Updated dependencies [8eff741]
+  - @drizztdourden08/brock-react@0.37.0
+  - @drizztdourden08/brock-core@0.37.0
+  - @drizztdourden08/brock-electron@0.37.0
+
 ## 0.36.0
 
 ### Patch Changes

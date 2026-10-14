@@ -6,7 +6,10 @@ const ADDON_FILE = 'sdl3_input.node';
 const LOG_TAG = '[brock-input addon]';
 const SOURCE_EXTENSIONS = ['.cc', '.h'];
 const RUNTIME_FILE = /\.(node|dll|dylib|so(\.\d+)*)$/i;
-const BUILD_HINT = 'Build it from source in the brock checkout: pnpm --filter @drizztdourden08/brock-input addon:build';
+const CMAKE_DIR_ENV = 'BROCK_INPUT_CMAKE_DIR';
+const CMAKE_DIR_TEMP = 'temp';
+const CMAKE_DIR_FOLDER = 'brock-input';
+const BUILD_HINT ='Build it from source in the brock checkout: pnpm --filter @drizztdourden08/brock-input addon:build';
 
 const SDL3_CHECKSUMS = Object.freeze({
   'SDL3-3.4.14.tar.gz': '30d4aa2b3037718142b32dffd4e72f917ebb6cc5227150e7bb9c45efb2153aeb',
@@ -25,5 +28,5 @@ const LIBUSB_RUNTIME_NAME = Object.freeze({ linux: 'libusb-1.0.so.0', darwin: 'l
 
 export {
   RELEASE_REPO, RELEASE_TAG_PREFIX, ASSET_PREFIX, ADDON_FILE, LOG_TAG, SOURCE_EXTENSIONS, RUNTIME_FILE, BUILD_HINT,
-  SDL3_CHECKSUMS, WIN_ARCH, LIBUSB_HINT, LIBUSB_RUNTIME_NAME,
+  SDL3_CHECKSUMS, WIN_ARCH, LIBUSB_HINT, LIBUSB_RUNTIME_NAME, CMAKE_DIR_ENV, CMAKE_DIR_TEMP, CMAKE_DIR_FOLDER,
 };

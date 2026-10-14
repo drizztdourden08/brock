@@ -25,7 +25,7 @@
 
 .bug-report__attachments {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--space-xs);
-  min-width: 0;
+  align-items: center;
 }

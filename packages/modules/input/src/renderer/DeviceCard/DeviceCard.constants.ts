@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import { SDL_AXIS } from '../../input.constants';
 import type { StickSlot, TriggerSlot } from '../axis-slot.type';
+import type { DeviceCardAction } from '../device-card-action.type';
 import type { RumblePreset } from './DeviceCard.type';
 
 const STICK_SLOTS: StickSlot[] = [
@@ -25,4 +26,6 @@ const RUMBLE_PRESETS: RumblePreset[] = [
   },
 ];
 
-export { STICK_SLOTS, TRIGGER_SLOTS, RUMBLE_PRESETS };
+const NO_DEVICE_ACTIONS: readonly DeviceCardAction[] = [];
+
+export { STICK_SLOTS, TRIGGER_SLOTS, RUMBLE_PRESETS, NO_DEVICE_ACTIONS };

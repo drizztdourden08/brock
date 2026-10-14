@@ -53,10 +53,10 @@ describe('createBuilderConfig OS integration', () => {
 
   it('gives the .deb its homepage from product.repo and its maintainer from the author', () => {
     const config = createBuilderConfig({ ...PRODUCT, description: 'Plays packs.', author: { name: 'Someone', email: 'someone@example.com' }, repo: { owner: 'someone', name: 'my-app' } }, { rootDir: tempRoot() });
-    expect(config.extraMetadata).toEqual({ homepage: 'https://github.com/someone/my-app' });
+    expect(config.extraMetadata).toEqual({ author: { name: 'Someone', email: 'someone@example.com' }, homepage: 'https://github.com/someone/my-app' });
     expect(config.linux).toMatchObject({ maintainer: 'Someone <someone@example.com>', vendor: 'Someone', synopsis: 'Plays packs.', description: 'Plays packs.' });
     const bare = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
-    expect(bare.extraMetadata).toBeUndefined();
+    expect(bare.extraMetadata).toEqual({ author: { name: 'someone' } });
     expect(bare.linux.maintainer).toBe('someone');
   });
 });

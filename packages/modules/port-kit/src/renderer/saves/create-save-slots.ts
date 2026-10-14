@@ -11,23 +11,26 @@ const pngOf = async (capture: SaveSlotsOptions['capture']): Promise<Uint8Array |
 };
 
 const createSaveSlots = (options: SaveSlotsOptions): SaveSlots => {
-  const { core, store, profileId, rom, capture, onLoaded } = options;
+  const { core, store, profileId, rom, capture, onLoaded, transform } = options;
   const port = core.definition.id;
 
-  const encodeCurrent = (): Uint8Array | null => {
-    const state = coreStateIo.read(core);
+  const encodeCurrent = async (kind: SaveSlotRef['kind']): Promise<Uint8Array | null> => {
+    const raw = coreStateIo.read(core);
+    const state = raw && transform?.save ? await transform.save(raw, kind) : raw;
     return state ? encodeSaveSlot({ meta: { port, savedAt: Date.now(), ...(rom ? { rom } : {}) }, state }) : null;
   };
 
   const loadStateBytes = (bytes: Uint8Array): boolean => {
     const decoded = decodeSaveSlot(bytes, port);
-    if (!decoded.ok || !coreStateIo.write(core, decoded.record.state)) return false;
+    if (!decoded.ok) return false;
+    const state = transform?.load ? transform.load(decoded.record.state) : decoded.record.state;
+    if (!coreStateIo.write(core, state)) return false;
     onLoaded?.();
     return true;
   };
 
   const save = async (ref: SaveSlotRef): Promise<boolean> => {
-    const bytes = encodeCurrent();
+    const bytes = await encodeCurrent(ref.kind);
     if (!bytes) return false;
     await store.slots.write(profileId, ref, { bytes, screenshot: await pngOf(capture) });
     return true;
@@ -39,7 +42,7 @@ const createSaveSlots = (options: SaveSlotsOptions): SaveSlots => {
   };
 
   const saveNamed = async (kind: NamedSaveKind, name: string): Promise<NamedSaveEntry | null> => {
-    const bytes = encodeCurrent();
+    const bytes = await encodeCurrent(kind);
     return bytes ? store.named.create(profileId, kind, name, { bytes, screenshot: await pngOf(capture) }) : null;
   };
 

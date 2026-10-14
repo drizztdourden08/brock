@@ -14,6 +14,7 @@ declare module '@drizztdourden08/brock-core/augment' {
     'updater:openReleasePage': (version: string | null) => Promise<void>;
     'updater:getPrefs': () => Promise<UpdaterPrefs>;
     'updater:setPrefs': (prefs: UpdaterPrefs) => Promise<void>;
+    'updater:installSize': () => Promise<number | null>;
   }
 
   interface EventContract {

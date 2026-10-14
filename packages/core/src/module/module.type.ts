@@ -5,6 +5,39 @@ interface ModuleCiStep {
   os?: 'windows' | 'linux' | 'macos';
 }
 
+type WorkflowRunnerOs = 'windows' | 'linux' | 'macos';
+
+interface WorkflowStep {
+  name: string;
+  run?: string;
+  uses?: string;
+  with?: Record<string, string | number | boolean>;
+  env?: Record<string, string>;
+  shell?: string;
+  if?: string;
+  secrets?: string[];
+  os?: WorkflowRunnerOs | WorkflowRunnerOs[];
+  platforms?: string[];
+}
+
+interface CiWorkflowSteps {
+  beforeInstall?: WorkflowStep[];
+  beforeBuild?: WorkflowStep[];
+  afterBuild?: WorkflowStep[];
+  beforeTest?: WorkflowStep[];
+}
+
+interface ReleaseWorkflowSteps {
+  beforeInstall?: WorkflowStep[];
+  beforePackage?: WorkflowStep[];
+  afterPackage?: WorkflowStep[];
+}
+
+interface WorkflowSteps {
+  ci?: CiWorkflowSteps;
+  release?: ReleaseWorkflowSteps;
+}
+
 interface ModuleMigration {
   version: string;
   entry: string;
@@ -37,6 +70,7 @@ interface BrockModuleManifest {
   dataDirs?: string[];
   peers?: string[];
   ci?: ModuleCiStep[];
+  workflows?: WorkflowSteps;
   migrations?: ModuleMigration[];
   prepare?: string;
   extraResources?: ModuleExtraResource[];
@@ -52,4 +86,7 @@ interface ResolvedModule {
   manifest: BrockModuleManifest;
 }
 
-export type { BrockModuleManifest, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ResolvedModule };
+export type {
+  BrockModuleManifest, CiWorkflowSteps, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ReleaseWorkflowSteps, ResolvedModule,
+  WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
+};

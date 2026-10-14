@@ -32,6 +32,7 @@ configureCatalog(ctx, {
   linkScheme: 'my-app',                                      // install links: my-app://install/<id>?v=<n>
   onRelease: (record, replacement, ctx) => repointSelections(record, replacement),  // returns how many things let go
   onInstalled: (record) => refreshLibrary(record),
+  removeTo: 'trash',                                         // what an installer removes on uninstall or update: 'trash' (the default) or 'delete'
 });
 ```
 
@@ -41,17 +42,24 @@ configureCatalog(ctx, {
 
 ## Installing
 
-`catalog:install` (`window.api.catalog.install({ itemId, version })`) runs a Brock job, `catalog-install:<itemId>`, with the steps `grant`, `download`, `verify` and `unpack`, so the job dialog and the title bar status show it and `jobs.cancel` stops it while the download runs. The download streams to a temp file and is hashed as it arrives; its size and sha256 must match the grant exactly, or nothing is unpacked. An item already installing is refused. An update installs the new copy first, then hands the old one to `onRelease` with the new name and removes it, then lets `settleName` move the new copy to its own name. The record goes to `Data/catalog/installed.json` (read-modify-write in one queue; a damaged file reads as empty) and the window hears `catalog:changed`. The answer is `{ ok: true, record }` or `{ ok: false, error, signedOut, cancelled }`.
+`catalog:install` (`window.api.catalog.install({ itemId, version })`) runs a Brock job, `catalog-install:<itemId>`, with the steps `grant`, `download`, `verify` and `unpack`, so the job dialog and the title bar status show it and `jobs.cancel` stops it while the download runs. Once the download is in, the job turns cancel off (`setCancellable(false)`), so the job dialog and `CatalogInstallBar` no longer show Cancel during the checks and the unpack. The download streams to a temp file and is hashed as it arrives; its size and sha256 must match the grant exactly, or nothing is unpacked. An item already installing is refused. An update installs the new copy first, then hands the old one to `onRelease` with the new name and removes it, then lets `settleName` move the new copy to its own name. The record goes to `Data/catalog/installed.json` (read-modify-write in one queue; a damaged file reads as empty) and the window hears `catalog:changed`. The answer is `{ ok: true, record }` or `{ ok: false, error, signedOut, cancelled }`.
 
 `catalog:uninstall` refuses while the item installs, calls `onRelease(record, null)`, the installer's `uninstall`, removes the record and answers `{ ok: true, released }`.
 
+On uninstall and on an update's old copy, the installer's `uninstall` gets a store whose `remove` moves the path to the system trash when `ctx.files` has `trash` (the Node store does), and deletes it when the trash refuses (some Linux desktops have none). `removeTo: 'delete'` hands it `ctx.files` as it is.
+
 The reads answer `{ ok: true, data }` or `{ ok: false, error, signedOut }`; `signedOut` is a 401.
+
+## From app code
+
+- `isCatalogInstalling(itemId, jobs)` answers whether the install job of the item runs. `jobs` is a list of job snapshots (`ctx.jobs.list()`, the renderer's job store) or anything with `list()`, such as `ctx.jobs`. `catalogJobId(itemId)` and `CATALOG_JOB_PREFIX` give the job id, for `useJob` or `jobs.open`. All three come from every entry of the module.
+- `readInstalledRecords(source)` from `@drizztdourden08/brock-catalog/main` reads the installed records with no main context, for a boot task, a test or another process. `source` is a `FileStore` rooted at `Data/`, the `Data/` folder, or the path of `installed.json`; a missing or damaged file reads as `[]`. It imports nothing from Electron.
 
 ## The installed guard
 
 `useCatalogInstalled` is one store of the installed records for every screen; `watch()` loads it and reloads it on `catalog:changed`. `installedRecordOf(itemId)` and `installedByName(kind, name)` select one record, so an editor can lock an item the catalogue installed. `useCatalogItem(itemId, liveVersion?)` joins the record, the running job, `hasUpdate`, the last error and `install`, `uninstall` and `cancel`.
 
-`CatalogInstallBar`, a compound on Tessera's `Button`, `ButtonRow`, `ProgressBar` and `Text`, draws it: Install, or Installed with Update and Uninstall, and the live bar with Cancel while the job runs. `installBarProps(useCatalogItem(id))` feeds it.
+`CatalogInstallBar`, a compound on Tessera's `Button`, `ButtonRow`, `ProgressBar` and `Text`, draws it: Install, or Installed with Update and Uninstall, and the live bar with Cancel while the job runs and can still be cancelled. `installBarProps(useCatalogItem(id))` feeds it.
 
 ## Install links
 

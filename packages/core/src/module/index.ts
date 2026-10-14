@@ -1,2 +1,5 @@
 /* @layer core @kind barrel */
-export type { BrockModuleManifest, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ResolvedModule } from './module.type';
+export type {
+  BrockModuleManifest, CiWorkflowSteps, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ReleaseWorkflowSteps, ResolvedModule,
+  WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
+} from './module.type';

@@ -27,6 +27,7 @@ const buildAddon = async (job) => {
   if (!env || !cmakeJs) return 'no-toolchain';
   try {
     log('Building the addon from source. This needs CMake and a C/C++ toolchain.');
+    if (paths.cmakeDir) log(`CMake build folders: ${paths.cmakeDir}`);
     await fetchSdl3(job);
     const configDir = buildSdl3(job, env);
     execFileSync(process.execPath, [cmakeJs, ...cmakeJsArgs(paths, configDir)], { stdio: 'inherit', cwd: paths.nativeDir, env });

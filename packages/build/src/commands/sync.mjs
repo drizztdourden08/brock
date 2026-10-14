@@ -6,16 +6,23 @@ import { repoRootOf, siteDirs } from '../site/site-dirs.mjs';
 import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
+import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
 import { syncApp } from '../modules/sync.mjs';
+import { workflowInputs } from '../release/workspace-workflow-inputs.mjs';
 import { workflowProblems } from '../release/workflow-problems.mjs';
 import { writeGuide } from '../tessera/write-guide.mjs';
 import { syncTargets } from './sync-targets.mjs';
 
-const reportProblems = (problems, label, prefix) => {
+const reportProblems = (problems, header) => {
   if (!problems.length) return 0;
-  console.error(`${prefix}: the managed workflows of ${label} would not run as written:`);
+  console.error(header);
   for (const problem of problems) console.error(`  ${problem}`);
   return 1;
+};
+
+const managedConfigProblems = (appDir) => {
+  const problem = moduleTypeProblem(appDir);
+  return problem ? [problem] : [];
 };
 
 const reportCheck = (result, label) => {
@@ -41,10 +48,14 @@ const reportSync = (result, label) => {
 
 const syncOne = async (appDir, check) => {
   const config = await loadBrockConfig(appDir);
-  const result = syncApp(appDir, config, { check });
+  const result = syncApp(appDir, config, { check, ...(await workflowInputs(appDir)) });
   const label = relative(process.cwd(), appDir) || '.';
   const code = check ? reportCheck(result, label) : reportSync(result, label);
-  const problems = reportProblems(workflowProblems(appDir, result.workflows), label, check ? 'brock check' : 'brock sync');
+  const prefix = check ? 'brock check' : 'brock sync';
+  const problems = Math.max(
+    reportProblems(workflowProblems(appDir, result.workflows), `${prefix}: the managed workflows of ${label} would not run as written:`),
+    reportProblems(managedConfigProblems(appDir), `${prefix}: the managed configs of ${label} would not load:`),
+  );
   return check ? Math.max(code, problems) : code;
 };
 

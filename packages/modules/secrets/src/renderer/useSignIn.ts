@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind hook */
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { UseSignInResult } from './use-sign-in.type';
 import { SIGN_IN_IDLE } from './sign-in-store.constants';
 import { useSignInStore } from './useSignInStore';
@@ -10,6 +10,12 @@ const useSignIn = (providerId: string): UseSignInResult => {
   const cancelFor = useSignInStore((s) => s.cancel);
   const signedInFor = useSignInStore((s) => s.markSignedIn);
   const signedOutFor = useSignInStore((s) => s.markSignedOut);
+  const loaded = useSignInStore((s) => s.loaded);
+  const loadSignedIn = useSignInStore((s) => s.loadSignedIn);
+
+  useEffect(() => {
+    if (!loaded) void loadSignedIn();
+  }, [loaded, loadSignedIn]);
 
   const begin = useCallback(() => beginFor(providerId), [beginFor, providerId]);
   const cancel = useCallback(() => cancelFor(providerId), [cancelFor, providerId]);

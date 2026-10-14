@@ -58,7 +58,7 @@ const refresh = async (job, state, allowBuild) => {
  * @returns {Promise<import('./index.d.mts').EnsureResult>}
  */
 const ensureAddon = async ({ packageDir, mode, env, log }) => {
-  const paths = addonPathsOf(packageDir);
+  const paths = addonPathsOf(packageDir, undefined, env);
   const job = { paths, pins: readPins(paths.nativeDir), force: mode === 'force', log };
   if (mode === 'force') return forceBuild(job);
   if (mode === 'postinstall' && (env.CI || hasLocalBuild(paths))) return 'skipped';

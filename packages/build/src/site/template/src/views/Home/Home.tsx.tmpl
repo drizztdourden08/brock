@@ -1,11 +1,11 @@
 /* @layer renderer-app @kind component */
 import { Card, Center, Stack, Text } from '@drizztdourden08/tessera/primitives';
-import { HOME_TEXT } from './Home.constants';
-import './Home.css';
+import { HOME_TEXT } from './__HOME__.constants';
+import './__HOME__.css';
 
-const Home = () => (
-  <Center className="home">
-    <Stack gap="md" className="home__body">
+const __HOME__ = () => (
+  <Center className="__HOME_CLASS__">
+    <Stack gap="md" className="__HOME_CLASS____body">
       <Text as="h1" variant="title">{HOME_TEXT.title}</Text>
       <Text tone="muted">{HOME_TEXT.lead}</Text>
       <Card title={HOME_TEXT.nextTitle}>
@@ -15,4 +15,4 @@ const Home = () => (
   </Center>
 );
 
-export { Home };
+export { __HOME__ };

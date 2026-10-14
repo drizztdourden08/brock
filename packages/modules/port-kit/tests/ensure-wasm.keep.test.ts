@@ -1,9 +1,9 @@
 /* @layer core @kind test */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { WASM_DEFAULTS, ensureWasm } from '../ensure-wasm/index.mjs';
+import { scratchDirs } from './fakes/scratch-dirs';
 
 const BUILD_SCRIPT = `
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -14,17 +14,10 @@ writeFileSync('built-with.txt', process.env.EMSDK ?? '');
 `;
 
 describe('ensureWasm', () => {
-  const dirs: string[] = [];
+  const scratch = scratchDirs('port-kit-ensure-');
+  const scratchDir = scratch.make;
   const log = (): void => undefined;
-  afterEach(() => {
-    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
-  });
-
-  const scratchDir = (): string => {
-    const dir = mkdtempSync(join(tmpdir(), 'port-kit-ensure-'));
-    dirs.push(dir);
-    return dir;
-  };
+  afterEach(scratch.clean);
 
   const project = (): string => {
     const root = scratchDir();

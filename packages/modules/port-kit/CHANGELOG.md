@@ -1,5 +1,51 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.39.0
+
+### Minor Changes
+
+- 747028d: `runAssetWorkerJob(ctx, options)` (port-kit `/main`) runs an app's asset extraction steps in a worker thread as a `ctx.job`, with each step's progress, lines and log on the job and cancel ending the thread; the worker module serves its steps with `serveAssetSteps` from the new `/worker` entry.
+- 7061680: The core's crash watch takes `crashArmDelayMs` (a runtime error that soon after a start is swallowed) and `onCrash({ message, error, event })` in `createGameCore` options, and reports only the first crash of a run.
+- 7061680: ensure-wasm activates the Emscripten SDK on Windows through its `emsdk_env.bat` before the build script, and `skipWithoutSdk` (or `--skip-without-sdk`) skips a stale build when no SDK is found, resolving `'skipped'`; `emsdkOf` reports what it found.
+- 747028d: Named saves rename, overwrite, prune and size: `rename` and `overwrite` keep the id, `prune` removes past the newest `keep` or older than `maxAgeMs`, `details` and `size` count each save's bytes, an entry carries an optional `meta`, and `createSaveStore(files, { companions })` removes a slot's companion files whenever it is written or removed.
+- 7061680: `createLiveSettings({ calls, apply })` and `createSramSync({ read, store, profileId })` run without `createGameCore`, for an app that loads its core itself; `createCoreCalls(module)` is exported to build the calls of an Emscripten module.
+- 7061680: `createGameCore(port, { precompiled })` instantiates a `WebAssembly.Module` the app compiled ahead (or a function resolving one) instead of fetching and compiling the core at each start; `compileCore(port)` compiles the core for such a warm-up.
+- 747028d: The ROM store takes unknown dumps (`acceptUnknown`: stored under their SHA-1 and flagged `unknown` with their `hash`), zips (the single known dump inside, or with `acceptUnknown` a lone ROM file; any other zip is refused with a `message` listing what it held), a `maxBytes` limit and several ROM kinds (`rom.kinds`, each with its own known list, file rules and folder, through `store.of(kind)`); `remove` also deletes what the kind's `derived(file, files)` names and resolves the removed paths.
+- 7061680: Save transform hooks: `createSaveSlots({ transform })` and `createPortSession({ saveTransform })` take `save(state, kind)`, which may be async, to change the core's state bytes before they are stored, and `load(state)` to change them back before the core loads them.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.38.0
+- @drizztdourden08/brock-electron@0.38.0
+- @drizztdourden08/brock-react@0.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- Updated dependencies [12d3780]
+- Updated dependencies [8eff741]
+  - @drizztdourden08/brock-react@0.37.0
+  - @drizztdourden08/brock-core@0.37.0
+  - @drizztdourden08/brock-electron@0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

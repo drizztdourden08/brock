@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { signInBootTask } from './sign-in-boot-task';
 
 const secretsRenderer: RendererModule = {
   id: 'secrets',
+  bootTasks: [signInBootTask],
 };
 
 export default secretsRenderer;

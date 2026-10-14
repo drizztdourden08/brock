@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
+import type { BugReportAfterSend, BugReportAttachmentLimits, BugReportExtras, BugReportFields, BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
 
 interface IssueDraft {
   repo: ProductRepo;
@@ -8,59 +8,42 @@ interface IssueDraft {
   diagnostics: string | null;
 }
 
-interface BugReportContactOptions {
-  required?: boolean;
+interface BrockAppBugReport extends BugReportFields {
+  transport: BugReportTransport;
   label?: string;
-  hint?: string;
 }
 
-interface BugReportAttachmentOptions {
-  accept?: readonly string[];
-  maxFiles?: number;
-  maxBytes?: number;
-}
+type BugReportExtrasSource = () => BugReportExtras | Promise<BugReportExtras>;
 
-type BugReportAfterSend = 'toast' | 'view';
-
-interface BrockAppBugReport {
-  transport?: BugReportTransport;
-  label?: string;
-  contact?: boolean | BugReportContactOptions;
-  attachments?: boolean | BugReportAttachmentOptions;
-  afterSend?: BugReportAfterSend;
-}
-
-interface BugReportContactField {
-  required: boolean;
-  label: string;
-  hint: string;
-}
-
-interface BugReportAttachmentField {
-  accept: readonly string[];
-  maxFiles: number;
-  maxBytes: number;
-}
-
-interface BugReportFields {
-  contact: BugReportContactField | null;
-  attachments: BugReportAttachmentField | null;
+interface BugReportTargetFields {
+  contact: boolean;
+  attachments: BugReportAttachmentLimits | null;
   afterSend: BugReportAfterSend;
 }
 
 type BugReportTarget =
-  | { kind: 'transport'; label: string; send: BugReportTransport }
+  | { kind: 'transport'; label: string; send: BugReportTransport; fields?: BugReportTargetFields }
   | { kind: 'github'; label: string; repo: ProductRepo }
   | { kind: 'clipboard'; label: string };
+
+interface SizedFile {
+  name: string;
+  size: number;
+}
+
+interface AttachmentAdmission<F extends SizedFile> {
+  admitted: F[];
+  refused: string | null;
+}
 
 interface BugReportState {
   open: boolean;
   appTransport: BrockAppBugReport | null;
+  extras: BugReportExtrasSource | null;
   show: () => void;
   hide: () => void;
   setAppTransport: (transport: BrockAppBugReport | null) => void;
+  setExtras: (extras: BugReportExtrasSource | null) => void;
 }
 
-export type {
-  BrockAppBugReport, BugReportAfterSend, BugReportAttachmentField, BugReportAttachmentOptions, BugReportContactField, BugReportContactOptions, BugReportFields, BugReportState, BugReportTarget, IssueDraft,
-};
+export type { AttachmentAdmission, SizedFile, BrockAppBugReport, BugReportExtrasSource, BugReportState, BugReportTarget, BugReportTargetFields, IssueDraft };

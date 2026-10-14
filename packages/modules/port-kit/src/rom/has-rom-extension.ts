@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
-import type { RomDefinition } from './rom.type';
+import type { RomRules } from './rom.type';
 
-const hasRomExtension = (fileName: string, { extensions }: RomDefinition): boolean => {
+const hasRomExtension = (fileName: string, { extensions }: Pick<RomRules, 'extensions'>): boolean => {
   const lower = fileName.toLowerCase();
   return extensions.some((ext) => lower.endsWith(ext.toLowerCase()));
 };

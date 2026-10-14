@@ -4,13 +4,13 @@ import { BrandMark, Logo } from '@drizztdourden08/tessera/brand';
 import { SiteFooter, SiteHeader } from '@drizztdourden08/tessera/composites';
 import { Box, Button } from '@drizztdourden08/tessera/primitives';
 import { useSitePath } from '../../hooks/useSitePath';
-import { Home } from '../Home';
-import { SignIn } from '../SignIn';
+import { __HOME__ } from '../__HOME__';
+import { __SIGN_IN__ } from '../__SIGN_IN__';
 import { profileAction } from '../../account/profile-action';
-import { FOOTER_LINKS, SHELL_TEXT, SITE_LINKS, SITE_PATHS } from './SiteShell.constants';
-import './SiteShell.css';
+import { FOOTER_LINKS, SHELL_TEXT, SITE_LINKS, SITE_PATHS } from './__SHELL__.constants';
+import './__SHELL__.css';
 
-const SiteShell = () => {
+const __SHELL__ = () => {
   const { path, go } = useSitePath();
   const [person, setPerson] = useState<string | null>(null);
 
@@ -23,7 +23,7 @@ const SiteShell = () => {
   const page = path === SITE_PATHS.signIn ? 'sign-in' : 'home';
 
   return (
-    <Box className="site-shell">
+    <Box className="__SHELL_CLASS__">
       <SiteHeader
         brand={{ logo: <BrandMark app="__BRAND__" size="md" />, title: SHELL_TEXT.title, label: SHELL_TEXT.homeLabel, href: SITE_PATHS.home }}
         links={SITE_LINKS}
@@ -32,12 +32,12 @@ const SiteShell = () => {
         profile={person === null ? undefined : profileAction(person, { label: SHELL_TEXT.signOut, onSelect: signOut })}
         actions={person === null && page !== 'sign-in' ? <Button variant="primary" size="sm" onClick={() => go(SITE_PATHS.signIn)}>{SHELL_TEXT.signIn}</Button> : undefined}
       />
-      <Box as="main" className="site-shell__page">
-        {page === 'sign-in' ? <SignIn onSignIn={signIn} /> : <Home />}
+      <Box as="main" className="__SHELL_CLASS____page">
+        {page === 'sign-in' ? <__SIGN_IN__ onSignIn={signIn} /> : <__HOME__ />}
       </Box>
       <SiteFooter logo={<Logo brand="__BRAND__" size="sm" />} note={SHELL_TEXT.footer} links={FOOTER_LINKS} navigate={go} />
     </Box>
   );
 };
 
-export { SiteShell };
+export { __SHELL__ };

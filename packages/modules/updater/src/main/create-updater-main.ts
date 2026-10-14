@@ -9,8 +9,9 @@ import { withOsIntegration } from './with-os-integration';
 import { DATA_DIR, FIRST_CHECK_DELAY_MS, MODULE_ID } from './updater-main.constants';
 
 const createUpdaterMain = (options: UpdaterOptions = {}): MainModule => {
-  const { hooks = {}, firstCheckDelayMs = FIRST_CHECK_DELAY_MS } = options;
+  const { hooks = {}, firstCheckDelayMs = FIRST_CHECK_DELAY_MS, installSize = true } = options;
   let updater: UpdaterMain | null = null;
+  let sizeTimer: ReturnType<typeof setTimeout> | null = null;
 
   return {
     id: MODULE_ID,
@@ -21,9 +22,14 @@ const createUpdaterMain = (options: UpdaterOptions = {}): MainModule => {
       registerUpdaterHandlers(ctx, updater);
     },
     onWindow: (_win, ctx) => {
-      if (!ctx.flags.isHeadlessLaunch()) updater?.scheduleFirstCheck(firstCheckDelayMs);
+      if (ctx.flags.isHeadlessLaunch()) return;
+      updater?.scheduleFirstCheck(firstCheckDelayMs);
+      if (installSize && !sizeTimer) sizeTimer = setTimeout(() => { void updater?.publishInstallSize().catch(() => undefined); }, firstCheckDelayMs);
     },
-    onWillQuit: () => updater?.dispose(),
+    onWillQuit: () => {
+      if (sizeTimer) clearTimeout(sizeTimer);
+      updater?.dispose();
+    },
   };
 };
 

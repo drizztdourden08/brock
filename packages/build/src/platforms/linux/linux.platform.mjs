@@ -15,7 +15,7 @@ const linuxPlatform = definePlatform({
   managed: debPostinst,
   releaseJob: desktopReleaseJob({
     platform: 'linux',
-    runsOn: 'ubuntu-latest',
+    runsOn: 'ubuntu-24.04',
     vpk: true,
     collect: ['release/velopack/*', 'release/*.deb'],
     downloads: [

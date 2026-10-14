@@ -13,3 +13,6 @@ const portKitMain: MainModule = {
 
 export default portKitMain;
 export { portKitMain };
+export { runAssetWorkerJob } from './assets/run-asset-worker-job';
+export type { AssetWorkerJobOptions } from './assets/asset-worker-job.type';
+export type { AssetWorkerStepDef } from '../assets/worker/asset-worker.type';

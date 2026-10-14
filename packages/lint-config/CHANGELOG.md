@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.39.0
+
+### Patch Changes
+
+- 472754d: Dev-only screen files (`inspector.page.dev.tsx`, `state.tab.dev.tsx`, `tools.settings.dev.ts` and the other dev-only kinds) lint as screen files: their default export and their `meta` export pass, as in the shipped screen files.
+
+## 0.38.0
+
+### Minor Changes
+
+- 3387134: Standards 0.9: list names that must keep their exact spelling in the prose allow list (they now pass the identifier rule too), and a test may assert the real text its app shows.
+
+## 0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

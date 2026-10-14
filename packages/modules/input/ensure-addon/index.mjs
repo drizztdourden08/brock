@@ -2,6 +2,7 @@
 export { ensureAddon } from './ensure-addon.mjs';
 export { addonStateOf } from './addon-state-of.mjs';
 export { addonPathsOf } from './addon-paths-of.mjs';
+export { cmakeDirOf } from './cmake-dir-of.mjs';
 export { prebuiltAssetOf } from './prebuilt-asset-of.mjs';
 export { buildKeyOf } from './build-key-of.mjs';
 export { readPins } from './read-pins.mjs';

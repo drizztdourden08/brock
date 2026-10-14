@@ -8,6 +8,7 @@ import { useTourRegistry } from '../../tours/useTourRegistry';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
+import { separateModuleTabs } from '../../settings/separate-module-tabs';
 import { SettingsStoreContext } from '../../stores/settings-context';
 import { BrockContext } from '../brock-context';
 import type { BrockContextValue } from '../brock-context.type';
@@ -50,7 +51,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const settingsStore = useProfileSettingsStore(settings);
   const appTabs = settings.tabs ?? NO_TABS;
 
-  const builtInTabs = useMemo(() => [...appTabs, ...merged.settingsTabs] as TabDef<object>[], [appTabs, merged.settingsTabs]);
+  const builtInTabs = useMemo(() => separateModuleTabs([...appTabs, ...merged.settingsTabs] as TabDef<object>[]), [appTabs, merged.settingsTabs]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
 
   const settingsControls = useSettingsControls(settings);

@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind types */
-import type { RefObject } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import type { SelectGroup } from '@drizztdourden08/tessera/primitives';
 import type { UpdateInfo, UpdaterCapabilities, VersionOption } from '../../updater.type';
 import type { UpdateStatus, UpdaterStoreState } from '../updater-store.type';
+import type { UpdateNoticeAction } from '../update-notice.type';
 
-type UpdateAction = 'update' | 'reinstall' | 'downgrade';
+type UpdateAction = UpdateNoticeAction;
 
 interface VersionChoiceInput {
   open: boolean;
@@ -61,6 +62,10 @@ interface DialogActionsProps {
   onClose: () => void;
 }
 
+interface UpdateNoticeSlotProps {
+  children: ReactNode;
+}
+
 interface UpdateDialogModel {
   store: UpdaterStoreState;
   choice: VersionChoice;
@@ -68,6 +73,7 @@ interface UpdateDialogModel {
   onAllowPrerelease: (allow: boolean) => void;
   busy: boolean;
   notes: string;
+  notice: ReactNode;
   showPicker: boolean;
   showPrereleaseNote: boolean;
   showFootnote: boolean;
@@ -75,5 +81,5 @@ interface UpdateDialogModel {
 
 export type {
   UpdateAction, UpdateDialogModel, VersionChoiceInput, VersionChoice, UpdateSummaryProps, VersionPickerProps,
-  DownloadStatusProps, DialogActionsProps,
+  DownloadStatusProps, DialogActionsProps, UpdateNoticeSlotProps,
 };

@@ -10,6 +10,7 @@ import { preparePackageIcons } from '../packaging/package-icons.mjs';
 import {
   BUILDER_CONFIG_FILE, BUILDER_TARGETS, COMMENT_LINE, NOTES_DIR, PACKED_NOTES, RELEASE_DIR, UNPACKED_DIRS, VELOPACK_OUT,
 } from '../packaging/packaging.constants.mjs';
+import { velopackIconOf } from '../packaging/app-packaging.mjs';
 import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { runVpk } from '../packaging/run-vpk.mjs';
 import { shipInstaller } from '../packaging/ship-installer.mjs';
@@ -61,13 +62,14 @@ const windowsExtras = (rootDir, inputs) =>
   (inputs ? { splash: writeSetupSplash(rootDir, inputs), accent: inputs.colours.accent, installer: inputs.config.installer } : {});
 
 /**
- * @param {{ rootDir: string, platform: string, product: object, version: string }} app
+ * @param {{ rootDir: string, platform: string, product: object, version: string, packaging?: object }} app
  * @param {{ full: boolean, channel: string | null }} opts
  * @returns {Promise<number>}
  */
-const packVelopack = async ({ rootDir, platform, product, version }, { full, channel }) => {
+const packVelopack = async ({ rootDir, platform, product, version, packaging }, { full, channel }) => {
   const inputs = platform === 'win32' ? await installerInputs(rootDir, product) : null;
-  const extras = { ...windowsExtras(rootDir, inputs), notes: releaseNotesFor(rootDir, version), channel, full };
+  const icon = velopackIconOf(packaging?.velopackIcons, platform);
+  const extras = { ...windowsExtras(rootDir, inputs), notes: releaseNotesFor(rootDir, version), channel, full, icon };
   const packDir = join(RELEASE_DIR, UNPACKED_DIRS[platform]);
   const code = await runVpk(rootDir, vpkPackArgs({ product, version, platform, packDir, outputDir: VELOPACK_OUT, extras }));
   if (code !== 0) return code;
@@ -93,7 +95,7 @@ const runPackage = async ({ rootDir, full = false, channel, renderInstaller, pas
   if (built !== 0) return built;
   const packaged = await runBuilderWithIcons(rootDir, config, platform);
   if (packaged !== 0 || !UNPACKED_DIRS[platform]) return packaged;
-  return packVelopack({ rootDir, platform, product, version }, { full, channel: channel ?? product.updateChannel ?? null });
+  return packVelopack({ rootDir, platform, product, version, packaging: config.packaging }, { full, channel: channel ?? product.updateChannel ?? null });
 };
 
 export { runPackage };

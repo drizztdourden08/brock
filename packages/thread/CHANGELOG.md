@@ -1,5 +1,32 @@
 # @drizztdourden08/brock-thread
 
+## 0.39.0
+
+### Minor Changes
+
+- 472754d: An app adds its own steps to the managed CI and release workflows in `brock.config.ts`, `workflows.steps`, so `brock sync`, `brock build` and `platform add` keep them. Steps go in at fixed points: `ci.beforeInstall`, `ci.beforeBuild`, `ci.afterBuild` and `ci.beforeTest`, and `release.beforeInstall`, `release.beforePackage` and `release.afterPackage` (a file copied into `upload/` there ships with the release). A step takes `run` or `uses` (with `with`), `env`, `if`, `shell`, the repository `secrets` it reads (each set as an environment variable of the step), and `os` and `platforms` to keep it to some runners or platform jobs. Modules (`brock.workflows` in their manifest) and the repo command's plugins (`definePlugin({ workflows })`) add steps the same way, before the app's. `workflows: { ci: 'own' }` or `{ release: 'own' }` leaves that file to the app: `brock sync` stops writing it and `brock check` stops comparing it.
+- bcd0321: In a repo of several apps the shared workspace `ci.yml` runs the steps of every app, in workspace order, each named `<app>: <step>`, a shell step with `working-directory` and `APP_DIR` set to its app, and the plugins' steps once. `workflows: { ci: 'own' }` in `brock.workspace.mjs` leaves that shared file to the repo; an app's own `workflows` setting covers only its own files. A `uses` step of the same action, version and inputs runs once per job, however many apps or modules declare it.
+
+### Patch Changes
+
+- cbe389d: The step table of `.brock/upgrade-report.md` lists every gate step the upgrade runs, `brock check` and `lint:md` included: a step after a failed one shows as not run, where the table stopped at the failure before.
+
+## 0.38.0
+
+### Patch Changes
+
+- 3387134: Standards 0.9: list names that must keep their exact spelling in the prose allow list (they now pass the identifier rule too), and a test may assert the real text its app shows.
+
+## 0.37.0
+
+### Minor Changes
+
+- 38244b2: A production launch reviews the current sources. `brock build --if-stale` builds only when `dist` is missing, half built or older than the app's sources (its own and those of the workspace packages it depends on), and `launch --prod` (with `--review` too) runs it first instead of reusing whatever `dist` holds.
+
+### Patch Changes
+
+- 38244b2: `<repo> upgrade` runs the documented gate in full, as CI does: `pnpm install --frozen-lockfile` and `brock check` in each app after the sync and the migrations, then `lint`, `typecheck`, `lint:md`, `structure` and `test` at the root and in each app, then `brock gate` in each app.
+
 ## 0.36.0
 
 ### Minor Changes

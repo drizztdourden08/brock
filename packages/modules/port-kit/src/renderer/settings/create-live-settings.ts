@@ -1,15 +1,18 @@
 /* @layer renderer-shell @kind logic */
-import type { GameCore } from '../core/game-core.type';
-import type { LiveSettings } from './live-settings.type';
+import type { CoreCalls } from '../../port/port-definition.type';
+import type { LiveSettings, LiveSettingsTarget } from './live-settings.type';
 
-const createLiveSettings = <S>(core: GameCore<S>): LiveSettings<S> => {
+const applierOf = <S>(target: LiveSettingsTarget<S>): ((settings: S, calls: CoreCalls) => void) | null =>
+  ('apply' in target ? target.apply : target.definition.settings?.apply) ?? null;
+
+const createLiveSettings = <S>(target: LiveSettingsTarget<S>): LiveSettings<S> => {
   let latest: S | null = null;
 
   const apply = (settings: S): boolean => {
-    const calls = core.calls();
-    const definition = core.definition.settings;
-    if (!calls || !definition) return false;
-    definition.apply(settings, calls);
+    const calls = target.calls();
+    const applier = applierOf(target);
+    if (!calls || !applier) return false;
+    applier(settings, calls);
     return true;
   };
 

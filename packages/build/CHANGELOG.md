@@ -1,5 +1,63 @@
 # @drizztdourden08/brock-build
 
+## 0.39.0
+
+### Minor Changes
+
+- 472754d: An app adds its own steps to the managed CI and release workflows in `brock.config.ts`, `workflows.steps`, so `brock sync`, `brock build` and `platform add` keep them. Steps go in at fixed points: `ci.beforeInstall`, `ci.beforeBuild`, `ci.afterBuild` and `ci.beforeTest`, and `release.beforeInstall`, `release.beforePackage` and `release.afterPackage` (a file copied into `upload/` there ships with the release). A step takes `run` or `uses` (with `with`), `env`, `if`, `shell`, the repository `secrets` it reads (each set as an environment variable of the step), and `os` and `platforms` to keep it to some runners or platform jobs. Modules (`brock.workflows` in their manifest) and the repo command's plugins (`definePlugin({ workflows })`) add steps the same way, before the app's. `workflows: { ci: 'own' }` or `{ release: 'own' }` leaves that file to the app: `brock sync` stops writing it and `brock check` stops comparing it.
+- 472754d: `build.define` in `brock.config.ts` replaces globals at build time in main, preload, the renderer, its workers and the web build. Each value is a JSON value, written into the code as it is in the config.
+- 472754d: `packaging` in `brock.config.ts` adds to the managed electron-builder config and to `vpk pack`: `extraResources` from the app folder, an `afterPack` module of the app that runs after Brock's own hook, a macOS `role` and an `icon` per file association, and `velopackIcons` for the icon `vpk pack` takes on Windows and Linux.
+- bcd0321: In a repo of several apps the shared workspace `ci.yml` runs the steps of every app, in workspace order, each named `<app>: <step>`, a shell step with `working-directory` and `APP_DIR` set to its app, and the plugins' steps once. `workflows: { ci: 'own' }` in `brock.workspace.mjs` leaves that shared file to the repo; an app's own `workflows` setting covers only its own files. A `uses` step of the same action, version and inputs runs once per job, however many apps or modules declare it.
+- 472754d: `brock.site.ts` takes `tsconfig.compilerOptions`, merged over the managed site `tsconfig.json`, and `build.define`. The managed site tsconfig allows `.ts` imports, so `brock.site.ts` can read its port offsets from a constant the repo shares, such as `import { TOOL_PORTS } from '../../ports.constants.ts'`.
+- 472754d: `tsconfig.compilerOptions` in `brock.config.ts` merges over the managed `tsconfig.json`, key by key, with `paths` merged entry by entry, so an app can turn an option off while it fixes its errors without a hand edit that `brock check` would flag. Without it the managed file is unchanged.
+
+### Patch Changes
+
+- cbe389d: The managed electron-builder config puts `author` (`{ name, email }` from `product.author`) into `extraMetadata` beside `homepage`, so an app's `package.json` need not repeat it.
+- 472754d: A main or preload chunk with an import line inside a template literal builds as written: electron-vite put its CommonJS shim inside the literal, and Brock now moves it after the last import statement. `brock check` fails, and `brock sync` warns, while the app's `package.json` lacks `"type": "module"`, which the managed configs need for `import.meta.dirname`.
+- cbe389d: Every Linux job of the managed workflows runs on `ubuntu-24.04`, never `ubuntu-latest`, which moves to Ubuntu 26 on 19 October 2026: the CI `changes`, `quality` and `web` jobs, the workspace and site CI jobs, and the release `prepare`, `build-linux` (the `.deb` and the AppImage), `build-android`, `build-web` and `release` jobs, as the review job already did.
+- 472754d: The managed release workflow moves the repo's `base` branch (from `brock.workspace.mjs`, else `main`) to the release commit, where it moved GitHub's default branch before, so a repo that releases from an integration branch keeps its version bump there.
+- 472754d: `brock site add`, `brock sync` and `brock check` warn when a site's `src` or `public` holds a folder named like its dev proxy path (`src/api` under `/api`), whose files the proxy would send to the API and leave the page blank.
+- 472754d: `brock site add` names a site's views after the site (`StoreShell`, `StoreHome` and `StoreSignIn` for `apps/store`), so two sites in one repo pass Tessera's duplicate-part check. Existing sites keep their views.
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bcd0321]
+- Updated dependencies [cbe389d]
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-thread@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- 3387134: Standards 0.9: list names that must keep their exact spelling in the prose allow list (they now pass the identifier rule too), and a test may assert the real text its app shows.
+- Updated dependencies [3387134]
+  - @drizztdourden08/brock-thread@0.38.0
+  - @drizztdourden08/brock-core@0.38.0
+
+## 0.37.0
+
+### Minor Changes
+
+- 38244b2: A production launch reviews the current sources. `brock build --if-stale` builds only when `dist` is missing, half built or older than the app's sources (its own and those of the workspace packages it depends on), and `launch --prod` (with `--review` too) runs it first instead of reusing whatever `dist` holds.
+
+### Patch Changes
+
+- 38244b2: The managed CI workflows (the app's, the workspace's and a site's) also run on a push to the default branch, `base` of `brock.workspace.mjs` else `main`, where releases and release notes land straight; a newer run cancels an older one of the same pull request only.
+- 38244b2: The `.deb` builds without an app's own metadata: the builder config sets `homepage` from `product.repo` (`https://github.com/<owner>/<name>`), the maintainer as `Name <email>` from `product.author`, the vendor, and the synopsis and description from `product.description`.
+- 38244b2: The managed workflows run every action on its Node 24 major: `actions/checkout@v7`, `actions/setup-node@v7`, `actions/upload-artifact@v7`, `actions/download-artifact@v8`, `actions/setup-java@v6`, `actions/setup-dotnet@v6`, `pnpm/action-setup@v6`, `android-actions/setup-android@v4` and `softprops/action-gh-release@v3`. Run `brock sync` to take them; `brock check` reports the workflows as drifted until then.
+- 38244b2: `brock package` never ships Electron's icon. It copies the brand icons before electron-builder on every platform and stops when the icon of this platform is missing. Linux takes `build/icons/linux/`, `<size>x<size>.png` files that electron-builder reads; it ignored the `icon-<size>.png` names of `build/icons/png/`, fell back to Electron's icon and crashed building the `.deb`.
+- 38244b2: The managed setup steps no longer pin `version: 10` in `pnpm/action-setup`, which failed next to a `packageManager` field: pnpm's version comes from `packageManager` in the root `package.json` alone. `brock adopt` and `create-brock` write it from the pnpm in use, the `pnpm-package-manager` migration (0.37.0) adds it to an existing repo, and `brock check` fails while it is missing.
+- 38244b2: A failed release build leaves no tag behind. The managed release workflow's `prepare` job no longer commits or tags: every build runs from the commit it checked with the version set, and the `release` job commits the version, tags it and moves the default branch only once every build succeeded, so the same version can run again. The builds still fetch the previous release for the Velopack delta.
+- 38244b2: The CI review job runs on `ubuntu-24.04` with or without baselines, never `ubuntu-latest`, which moves to Ubuntu 26 from 19 October 2026: its apparmor step and the linux baselines depend on the image.
+- 38244b2: The managed workflows reach git. The `.*/` rule of the standard `.gitignore` hid `.github`, so an upgrade committed green without its workflows. `brock adopt` and `brock sync` keep `!.github/` right after the rule that hides it in the repo's `.gitignore`, the `workflows-tracked` migration (0.37.0) adds it to an existing repo, and `brock check` (which the upgrade now runs) fails while git ignores a managed workflow it does not track.
+- Updated dependencies [38244b2]
+- Updated dependencies [38244b2]
+  - @drizztdourden08/brock-thread@0.37.0
+  - @drizztdourden08/brock-core@0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

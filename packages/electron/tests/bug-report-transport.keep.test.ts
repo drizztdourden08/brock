@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BugReportPayload } from '@drizztdourden08/brock-core/types';
 import { collectDebugFiles } from '../src/main/bug-report/collect-debug-files';
 import { sendBugReport } from '../src/main/bug-report/send-bug-report';
+import { transportInfo } from '../src/main/bug-report/transport-info';
 import { writeDebugZip } from '../src/main/bug-report/write-debug-zip';
 import { openZipReader } from '../src/main/storage/zip/open-zip-reader';
 import type { MainContext } from '../src/main/types/main-context.type';
@@ -68,20 +69,48 @@ describe('writeDebugZip', () => {
       await zip.close();
     }
   });
+});
 
-  it('puts the attachments of the report under attachments/ and lists them in report.json without their bytes', async () => {
-    const target = join(folder(), 'report.zip');
-    const shot = { name: '../screens/shot one.png', type: 'image/png', bytes: new Uint8Array([9, 8, 7]) };
-    await writeDebugZip(target, folder(), { ...PAYLOAD, contact: 'me@example.com', attachments: [shot] });
+describe('transportInfo', () => {
+  const transport = vi.fn();
+
+  it('tells the renderer the label and the fields the transport takes', async () => {
+    expect(await transportInfo(null, contextWith([]))).toBeNull();
+    expect(await transportInfo({ transport }, contextWith([]))).toEqual({ label: 'Send report' });
+    expect(await transportInfo({ transport, label: 'Upload', contact: true, attachments: { maxFiles: 3 } }, contextWith([])))
+      .toEqual({ label: 'Upload', contact: true, attachments: { maxFiles: 3 } });
+    expect(await transportInfo({ transport, afterSend: 'view' }, contextWith([]))).toEqual({ label: 'Send report', afterSend: 'view' });
+  });
+
+  it('hides a transport that cannot send now, so the renderer falls back to the GitHub issue', async () => {
+    const lines: string[] = [];
+    expect(await transportInfo({ transport, available: () => false }, contextWith(lines))).toBeNull();
+    expect(await transportInfo({ transport, available: () => Promise.resolve(true) }, contextWith(lines))).toEqual({ label: 'Send report' });
+    expect(await transportInfo({ transport, available: () => { throw new Error('offline'); } }, contextWith(lines))).toBeNull();
+    expect(lines).toEqual(['bug report availability check threw: offline']);
+  });
+});
+
+describe('writeDebugZip attachments', () => {
+  it('stores each attachment under attachments/ and keeps only its name, type and size in report.json', async () => {
+    const dir = folder();
+    const data = new Uint8Array([7, 8, 9]);
+    const payload: BugReportPayload = {
+      ...PAYLOAD, contact: 'me@example.com', extras: { screen: 'home' },
+      attachments: [{ name: 'shot.png', type: 'image/png', size: 3, data }, { name: 'C:\\temp\\shot.png', type: 'image/png', size: 3, data }],
+    };
+    const target = join(dir, 'report.zip');
+    await writeDebugZip(target, join(dir, 'missing'), payload);
     const zip = await openZipReader(target);
     try {
-      expect(zip.records.map((record) => record.name)).toEqual(['report.json', 'attachments/01-shot one.png']);
-      const [report, file] = zip.records;
-      if (!report || !file) throw new Error('missing entries');
-      expect(JSON.parse((await zip.read(report)).toString('utf8'))).toEqual({
-        ...PAYLOAD, contact: 'me@example.com', attachments: [{ name: '../screens/shot one.png', type: 'image/png', bytes: 3, file: 'attachments/01-shot one.png' }],
-      });
-      expect([...(await zip.read(file))]).toEqual([9, 8, 7]);
+      expect(zip.records.map((record) => record.name)).toEqual(['report.json', 'attachments/shot.png', 'attachments/2-shot.png']);
+      const [report, first] = zip.records;
+      if (!report || !first) throw new Error('missing entries');
+      const written = JSON.parse((await zip.read(report)).toString('utf8')) as BugReportPayload;
+      expect(written.attachments).toEqual([{ name: 'shot.png', type: 'image/png', size: 3 }, { name: 'C:\\temp\\shot.png', type: 'image/png', size: 3 }]);
+      expect(written.contact).toBe('me@example.com');
+      expect(written.extras).toEqual({ screen: 'home' });
+      expect([...(await zip.read(first))]).toEqual([7, 8, 9]);
     } finally {
       await zip.close();
     }

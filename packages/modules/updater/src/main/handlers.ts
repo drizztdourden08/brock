@@ -12,6 +12,7 @@ const registerUpdaterHandlers = ({ handle }: Pick<MainContext, 'handle'>, update
   handle('updater:openReleasePage', (_event, version) => updater.openReleasePage(version));
   handle('updater:getPrefs', () => updater.getPrefs());
   handle('updater:setPrefs', (_event, prefs) => updater.setPrefs(prefs));
+  handle('updater:installSize', () => updater.installSize());
 };
 
 export { registerUpdaterHandlers };

@@ -9,7 +9,7 @@ const installBarProps = (state: CatalogItemState): CatalogInstallBarProps => ({
   error: state.error,
   onInstall: () => { void state.install(); },
   onUninstall: () => { void state.uninstall(); },
-  onCancel: state.cancel,
+  onCancel: state.job?.cancellable === false ? undefined : state.cancel,
 });
 
 export { installBarProps };

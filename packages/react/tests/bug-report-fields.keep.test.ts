@@ -1,38 +1,71 @@
 /* @layer renderer-shell @kind test */
-import { describe, expect, it } from 'vitest';
-import { bugReportFields } from '../src/bug-report/bug-report-fields';
-import { isEmail } from '../src/bug-report/is-email';
-import { readAttachments } from '../src/bug-report/read-attachments';
+import { describe, expect, it, vi } from 'vitest';
+import { admitAttachments } from '../src/bug-report/admit-attachments';
+import { buildBugReportPayload } from '../src/bug-report/build-bug-report-payload';
+import { captureExtras } from '../src/bug-report/capture-extras';
+import { resolveBugReportTarget } from '../src/bug-report/resolve-bug-report-target';
+import { targetFields } from '../src/bug-report/target-fields';
 
-const fileOf = (name: string, size: number, type = 'text/plain'): File => new File([new Uint8Array(size)], name, { type });
+const PRODUCT = { id: 'my-app', name: 'My App' };
+const LIMITS = { maxFiles: 2, maxBytes: 100 };
+const file = (name: string, size: number) => ({ name, size });
 
-describe('the bug report fields', () => {
-  it('are off unless the app asks for them, and fill their defaults when it does', () => {
-    expect(bugReportFields(null)).toEqual({ contact: null, attachments: null, afterSend: 'toast' });
-    expect(bugReportFields({ contact: true, attachments: true, afterSend: 'view' })).toEqual({
-      contact: { required: false, label: 'Contact email', hint: 'Only used to answer this report.' },
-      attachments: { accept: [], maxFiles: 5, maxBytes: 10 * 1024 * 1024 },
-      afterSend: 'view',
-    });
-    expect(bugReportFields({ contact: { required: true, label: 'Your email' }, attachments: { accept: ['.png'], maxFiles: 2 } })).toMatchObject({
-      contact: { required: true, label: 'Your email' },
-      attachments: { accept: ['.png'], maxFiles: 2 },
-    });
+describe('targetFields', () => {
+  it('turns the transport fields into limits, with defaults', () => {
+    expect(targetFields({})).toEqual({ contact: false, attachments: null, afterSend: 'toast' });
+    expect(targetFields({ contact: true, attachments: true, afterSend: 'view' }))
+      .toEqual({ contact: true, attachments: { maxFiles: 5, maxBytes: 10 * 1024 * 1024 }, afterSend: 'view' });
+    expect(targetFields({ attachments: { maxBytes: 1024 } }).attachments).toEqual({ maxFiles: 5, maxBytes: 1024 });
   });
 
-  it('take an email address and refuse anything else', () => {
-    expect(isEmail('me@example.com')).toBe(true);
-    expect(isEmail(' me@example.com ')).toBe(true);
-    expect(isEmail('me@example')).toBe(false);
-    expect(isEmail('not an email')).toBe(false);
+  it('reaches the target of an app or a main transport, never the GitHub issue', () => {
+    const send = vi.fn();
+    const repo = { owner: 'someone', name: 'my-app' };
+    expect(resolveBugReportTarget({ app: null, main: { label: 'Upload', contact: true }, sendToMain: send, repo })).toMatchObject({ fields: { contact: true, attachments: null } });
+    expect(resolveBugReportTarget({ app: { transport: send, attachments: true }, main: null, sendToMain: null, repo })).toMatchObject({ fields: { contact: false } });
+    expect(resolveBugReportTarget({ app: null, main: null, sendToMain: send, repo })).not.toHaveProperty('fields');
+  });
+});
+
+describe('admitAttachments', () => {
+  it('takes files while the count and the total size fit', () => {
+    expect(admitAttachments([], [file('a.png', 40), file('b.png', 50)], LIMITS)).toEqual({ admitted: [file('a.png', 40), file('b.png', 50)], refused: null });
   });
 
-  it('read the files that fit and say why the others are left out', async () => {
-    const field = { accept: [], maxFiles: 2, maxBytes: 8 };
-    const first = await readAttachments([fileOf('a.txt', 4), fileOf('big.bin', 9), fileOf('b.png', 2, 'image/png'), fileOf('c.txt', 1)], [], field);
-    expect(first.added.map((file) => [file.name, file.type, file.bytes.byteLength])).toEqual([['a.txt', 'text/plain', 4], ['b.png', 'image/png', 2]]);
-    expect(first.refused).toEqual(['big.bin: larger than 8 B', 'c.txt: at most 2 files']);
-    const later = await readAttachments([fileOf('d.txt', 1)], first.added, field);
-    expect(later).toEqual({ added: [], refused: ['d.txt: at most 2 files'] });
+  it('refuses a file that would pass the size cap and keeps going', () => {
+    const { admitted, refused } = admitAttachments([file('a.png', 40)], [file('big.zip', 80), file('c.txt', 10)], LIMITS);
+    expect(admitted).toEqual([file('c.txt', 10)]);
+    expect(refused).toMatch(/^big\.zip is too large/);
+  });
+
+  it('stops at the file count', () => {
+    const { admitted, refused } = admitAttachments([file('a.png', 1), file('b.png', 1)], [file('c.png', 1)], LIMITS);
+    expect(admitted).toEqual([]);
+    expect(refused).toBe('Up to 2 files can be attached.');
+  });
+});
+
+describe('buildBugReportPayload extras', () => {
+  const base = { title: 'a', description: 'b', product: PRODUCT, version: '1', diagnostics: null, system: null, logs: [] };
+
+  it('carries the contact, the attachments and the renderer extras only when given', () => {
+    const data = new Uint8Array([1, 2]);
+    const built = buildBugReportPayload({ ...base, contact: ' me@example.com ', attachments: [{ name: 'shot.png', type: 'image/png', size: 2, data }], extras: { screen: 'home' } });
+    expect(built.contact).toBe('me@example.com');
+    expect(built.attachments).toEqual([{ name: 'shot.png', type: 'image/png', size: 2, data }]);
+    expect(built.extras).toEqual({ screen: 'home' });
+    const bare = buildBugReportPayload({ ...base, contact: '  ', attachments: [] });
+    expect(bare).not.toHaveProperty('contact');
+    expect(bare).not.toHaveProperty('attachments');
+    expect(bare).not.toHaveProperty('extras');
+  });
+});
+
+describe('captureExtras', () => {
+  it('reads the app source and never lets it fail the report', async () => {
+    expect(await captureExtras(() => ({ screen: 'home' }))).toEqual({ screen: 'home' });
+    expect(await captureExtras(() => Promise.resolve({ count: 2 }))).toEqual({ count: 2 });
+    expect(await captureExtras(() => { throw new Error('busy'); })).toBeUndefined();
+    expect(await captureExtras(null)).toBeUndefined();
   });
 });

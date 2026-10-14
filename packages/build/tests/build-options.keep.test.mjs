@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
 import { appAliases } from '../src/build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from '../src/build-options/build-options.constants.mjs';
+import { defineValues } from '../src/build-options/define-values.mjs';
 import { nodePolyfillPlugins } from '../src/build-options/node-polyfills.mjs';
 import { renderManagedFiles } from '../src/managed/templates.mjs';
 import { defineBrockViteConfig } from '../src/vite-config.mjs';
@@ -62,6 +63,20 @@ describe('build.aliases', () => {
   });
 });
 
+describe('build.define', () => {
+  it('turns each value into the JSON expression Vite replaces it with', () => {
+    expect(defineValues(undefined, 'brock.config.ts')).toEqual({});
+    expect(defineValues({ __A__: 'x', __B__: null, __C__: [1, 'two'] }, 'brock.config.ts')).toEqual({ __A__: '"x"', __B__: 'null', __C__: '[1,"two"]' });
+  });
+
+  it('refuses a name that is not a global and a value that is not JSON', () => {
+    expect(() => defineValues({ 'two words': 1 }, 'brock.config.ts')).toThrow(/not a global name/);
+    expect(() => defineValues({ __F__: () => 1 }, 'brock.site.ts')).toThrow(/brock\.site\.ts build\.define: __F__ must be a JSON value/);
+    expect(() => defineValues({ __N__: Number.NaN }, 'brock.config.ts')).toThrow(/JSON value/);
+    expect(() => defineValues(['x'], 'brock.config.ts')).toThrow(/maps a global name/);
+  });
+});
+
 describe('build.nodePolyfills', () => {
   it('gives no plugin when off, and a fresh one per call with the options when on', async () => {
     const root = fixtureApp({});
@@ -86,10 +101,18 @@ describe('defineBrockViteConfig', () => {
     const config = await defineBrockViteConfig(root);
     for (const side of ['main', 'preload', 'renderer']) expect(config[side].resolve.alias).toMatchObject({ '@app': resolve(root, 'src'), '@shared': resolve(root, '../shared') });
     expect(pluginNames(config.renderer.plugins)).toEqual(expect.arrayContaining(['brock-dev-only', 'react-stub', 'node-polyfills-stub']));
-    expect(pluginNames(config.main.plugins)).toEqual(['brock-dev-only']);
+    expect(pluginNames(config.main.plugins)).toEqual(['brock-dev-only', 'brock-esm-shim-placement']);
+    expect(pluginNames(config.preload.plugins)).toEqual(['brock-esm-shim-placement']);
     expect(config.renderer.worker.format).toBe(WORKER_FORMAT);
     expect(pluginNames(config.renderer.worker.plugins())).toEqual(['brock-dev-only', 'node-polyfills-stub']);
     expect(config.renderer.publicDir).toBe(resolve(root, 'public'));
+  });
+
+  it('defines build.define on main, preload and the renderer, each value as JSON', async () => {
+    const config = await defineBrockViteConfig(fixtureApp({ build: { define: { __APP_BUILD__: '1.2.3', __FLAGS__: { beta: true }, 'globalThis.LIMIT': 4 } } }));
+    const expected = { __APP_BUILD__: '"1.2.3"', __FLAGS__: '{"beta":true}', 'globalThis.LIMIT': '4' };
+    for (const side of ['main', 'preload', 'renderer']) expect(config[side].define).toEqual(expected);
+    expect((await defineBrockViteConfig(fixtureApp({}))).renderer.define).toEqual({});
   });
 
   it('leaves the polyfills out by default', async () => {

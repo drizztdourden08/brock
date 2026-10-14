@@ -1,6 +1,6 @@
   build-android:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
 __SETUP__
 
@@ -18,7 +18,7 @@ __SETUP__
 
       - name: Decode the signing keystore
         shell: bash
-        run: echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+        run: echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"__BEFORE_PACKAGE__
 
       - name: Build the signed APK
         shell: bash
@@ -28,7 +28,7 @@ __SETUP__
           BROCK_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           mkdir -p upload
-          pnpm --dir "$APP_DIR" exec brock mobile build --release --out "$GITHUB_WORKSPACE/upload/__APK__"
+          pnpm --dir "$APP_DIR" exec brock mobile build --release --out "$GITHUB_WORKSPACE/upload/__APK__"__AFTER_PACKAGE__
 
       - uses: actions/upload-artifact@v7
         with:

@@ -37,6 +37,17 @@ interface NamedSaveEntry {
   name: string;
   savedAt: number;
   hasScreenshot: boolean;
+  meta?: Record<string, unknown>;
+}
+
+interface NamedSaveInfo extends NamedSaveEntry {
+  bytes: number;
+}
+
+interface NamedSavePrune {
+  keep?: number;
+  maxAgeMs?: number;
+  now?: number;
 }
 
 interface QuickSlotInfo {
@@ -47,5 +58,5 @@ interface QuickSlotInfo {
 
 export type {
   NamedSaveKind, SaveSlotRef, SaveSlotMeta, SaveSlotRecord, SaveSlotFailure, SaveSlotFormat, SaveSlotDecodeOptions,
-  SaveSlotDecode, SaveSlotPaths, NamedSaveEntry, QuickSlotInfo,
+  SaveSlotDecode, SaveSlotPaths, NamedSaveEntry, NamedSaveInfo, NamedSavePrune, QuickSlotInfo,
 };

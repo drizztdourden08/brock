@@ -3,6 +3,7 @@ import { existsSync, utimesSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncApp } from '../modules/sync.mjs';
+import { workflowInputs } from '../release/workspace-workflow-inputs.mjs';
 import { writeGuide } from '../tessera/write-guide.mjs';
 import { MANIFEST_FILE } from './freshness.constants.mjs';
 import { rendererEntryProblem } from './renderer-entry-problem.mjs';
@@ -17,7 +18,7 @@ const ensureSynced = async (appDir, label) => {
   const reason = syncStaleReason(appDir);
   if (reason) {
     console.log(`${label}: running brock sync first, since ${reason}.`);
-    const result = syncApp(appDir, await loadBrockConfig(appDir));
+    const result = syncApp(appDir, await loadBrockConfig(appDir), await workflowInputs(appDir));
     for (const path of result.written) console.log(`  ${path}`);
     const manifest = join(appDir, MANIFEST_FILE);
     const now = new Date();

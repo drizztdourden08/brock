@@ -19,8 +19,11 @@ export { defineTool } from './define-tool';
 export { createTools } from './create-tools';
 export { toolPlatform } from './tool-platform';
 export { runBinary } from './run-binary';
+export { systemPath } from './system-path';
+export { readVersion } from './read-version';
 export type {
   DownloadProgress, FetchFn, ToolRunOptions, ToolRunResult, ToolStream, ToolsEnv, ToolsMain,
+  ToolProbeResult, ToolProbe, ToolCheck, ToolRunCall, ToolRunNext, ToolRunHook, ToolHooks, ToolSpec, PathSource,
 } from './tools-main.type';
 export type {
   ToolArchive, ToolDef, ToolDownload, ToolLocation, ToolPlatform, ToolSource, ToolState, ToolStatus, ToolsApi,

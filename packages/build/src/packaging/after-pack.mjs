@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { ARCH_NAMES, MIB, UNUSED_ELECTRON_FILES, VELOPACK_BINDINGS, VELOPACK_NATIVE_DIR } from './packaging.constants.mjs';
 
 const removeAll = (paths) => {
@@ -56,11 +57,23 @@ const stampIcon = async (exePath, icoPath) => {
 
 /**
  * @param {string} rootDir
- * @param {string | undefined} ico the Windows icon, relative to rootDir
- * @returns {(context: import('electron-builder').AfterPackContext) => Promise<void>}
+ * @param {string} hook the app's afterPack module, from rootDir
+ * @param {import('electron-builder').AfterPackContext} context
  */
-const createAfterPack = (rootDir, ico) => async (context) => {
-  const icoPath = ico ? resolve(rootDir, ico) : null;
+const runAppAfterPack = async (rootDir, hook, context) => {
+  const file = resolve(rootDir, hook);
+  if (!existsSync(file)) throw new Error(`brock.config.ts packaging.afterPack: ${hook} does not exist in the app folder`);
+  const loaded = await import(pathToFileURL(file).href);
+  const run = loaded.default ?? loaded.afterPack;
+  if (typeof run !== 'function') throw new Error(`brock.config.ts packaging.afterPack: ${hook} exports no default function (or afterPack) to run`);
+  await run(context);
+};
+
+/**
+ * @param {import('electron-builder').AfterPackContext} context
+ * @param {string | null} icoPath
+ */
+const brockAfterPack = async (context, icoPath) => {
   const { appOutDir, electronPlatformName: platform, packager } = context;
   const { productFilename } = packager.appInfo;
   const arch = ARCH_NAMES[context.arch] ?? String(context.arch);
@@ -68,6 +81,17 @@ const createAfterPack = (rootDir, ico) => async (context) => {
   if (platform !== 'win32') return;
   pruneElectronFiles(appOutDir);
   if (icoPath && existsSync(icoPath)) await stampIcon(join(appOutDir, `${productFilename}.exe`), icoPath);
+};
+
+/**
+ * @param {string} rootDir
+ * @param {string | undefined} ico the Windows icon, relative to rootDir
+ * @param {string | null} [hook] the app's afterPack, run after Brock's
+ * @returns {(context: import('electron-builder').AfterPackContext) => Promise<void>}
+ */
+const createAfterPack = (rootDir, ico, hook = null) => async (context) => {
+  await brockAfterPack(context, ico ? resolve(rootDir, ico) : null);
+  if (hook) await runAppAfterPack(rootDir, hook, context);
 };
 
 export { createAfterPack };

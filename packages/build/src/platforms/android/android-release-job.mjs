@@ -10,7 +10,9 @@ const androidReleaseJob = (ctx) => ({
   id: 'build-android',
   downloads: [{ glob: 'artifacts/release-android/*.apk', label: 'Android APK, to sideload (allow installs from this source)' }],
   text: fillTemplate(ANDROID_TEMPLATES, 'android-release-job.yml.tmpl', {
-    SETUP: ctx.setup('linux', { release: true }),
+    SETUP: ctx.setup('linux', { release: true, platform: 'android' }),
+    BEFORE_PACKAGE: ctx.stepsAt('beforePackage', 'linux', 'android'),
+    AFTER_PACKAGE: ctx.stepsAt('afterPackage', 'linux', 'android'),
     APK: `${ctx.prefix}android.apk`,
   }),
 });

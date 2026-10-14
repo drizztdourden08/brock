@@ -1,22 +1,20 @@
 /* @layer renderer-shell @kind logic */
-import { isRecord } from '../collections/is-record';
-import { hostApi } from '../host/host-api';
 import { UI_VIEWS_SAVE_DELAY_MS } from './ui-views.constants';
+import { uiViewsSource } from './ui-views-source';
+import type { UiViewsSource } from './ui-views.type';
 
 let cache: Record<string, unknown> | null = null;
 let loading: Promise<Record<string, unknown>> | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
+let picked: UiViewsSource | null = null;
 const dirty = new Set<string>();
 
-const fetchAll = async (): Promise<Record<string, unknown>> => {
-  const api = hostApi();
-  try {
-    const data = api ? await api.loadUiViews() : {};
-    return isRecord(data) ? data : {};
-  } catch {
-    return {};
-  }
+const source = (): UiViewsSource => {
+  picked ??= uiViewsSource();
+  return picked;
 };
+
+const fetchAll = (): Promise<Record<string, unknown>> => source().load().catch(() => ({}));
 
 const load = (): Promise<Record<string, unknown>> => {
   if (cache) return Promise.resolve(cache);
@@ -34,10 +32,9 @@ const flush = (): void => {
   if (timer !== null) clearTimeout(timer);
   timer = null;
   if (dirty.size === 0 || !cache) return;
-  const api = hostApi();
-  const write = api?.patchUiViews ? api.patchUiViews(changedEntries(cache)) : api?.saveUiViews(cache);
+  const changed = changedEntries(cache);
   dirty.clear();
-  write?.catch(() => undefined);
+  source().save({ ...cache }, changed).catch(() => undefined);
 };
 
 const touch = (key: string): void => {

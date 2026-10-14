@@ -1,6 +1,8 @@
 /* @layer tooling-scripts @kind barrel */
 export { defineWorkspace } from './workspace/define-workspace.mjs';
 export { definePlugin } from './plugins/define-plugin.mjs';
+export { loadPlugins } from './plugins/load-plugins.mjs';
+export { loadWorkspace } from './workspace/load-workspace.mjs';
 export { electronTarget } from './launch/electron-target.mjs';
 export { serveTarget } from './launch/serve-target.mjs';
 export { brockProfile } from './provision/brock-profile.mjs';

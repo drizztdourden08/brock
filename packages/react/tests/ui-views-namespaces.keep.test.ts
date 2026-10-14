@@ -56,3 +56,25 @@ describe('ui-views writes', () => {
     await expect(uiViews.write('profile:p1', {})).rejects.toThrow(/Brock's/);
   });
 });
+
+describe('ui-views on Capacitor', () => {
+  it('live in ui-views.json of the file store, so they outlast a restart', async () => {
+    const disk = new Map<string, string>([['ui-views.json', JSON.stringify({ 'app:editor': { zoom: 2 } })]]);
+    const files = {
+      readText: (path: string) => Promise.resolve(disk.get(path) ?? null),
+      writeText: (path: string, text: string) => { disk.set(path, text); return Promise.resolve(); },
+    };
+    vi.stubGlobal('window', { Capacitor: { isNativePlatform: () => true }, location: { search: '' } });
+    vi.resetModules();
+    vi.doMock('../src/platform/get-platform', () => ({ getPlatform: () => ({ files }) }));
+    const { uiViews } = await import('../src/stores/ui-views');
+    expect(await uiViews.read('app:editor', null)).toEqual({ zoom: 2 });
+    await uiViews.write('app:panel', { open: true });
+    uiViews.flush();
+    await vi.waitFor(() => expect(JSON.parse(disk.get('ui-views.json') ?? '{}')).toEqual({ 'app:editor': { zoom: 2 }, 'app:panel': { open: true } }));
+    vi.resetModules();
+    const again = await import('../src/stores/ui-views');
+    expect(await again.uiViews.read('app:panel', null)).toEqual({ open: true });
+    vi.doUnmock('../src/platform/get-platform');
+  });
+});

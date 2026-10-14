@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { access, constants } from 'fs/promises';
 import { delimiter, join } from 'path';
-import type { ToolDef, ToolLocation } from '../tools.type';
+import type { ToolDef, ToolLocation, ToolSource } from '../tools.type';
 import type { LocateInput } from './tools-main.type';
 import { exeName } from './exe-name';
 
@@ -14,20 +14,20 @@ const allIn = async (dir: string, def: ToolDef, platform: NodeJS.Platform): Prom
   return found.every(Boolean) ? paths : null;
 };
 
-const onPath = async (def: ToolDef, { pathEnv, platform }: LocateInput): Promise<Record<string, string> | null> => {
-  for (const dir of pathEnv.split(delimiter).filter(Boolean)) {
-    const paths = await allIn(dir, def, platform);
-    if (paths) return paths;
-  }
-  return null;
-};
+const candidates = (def: ToolDef, { cacheDir, pathEnv }: LocateInput): { source: ToolSource; dir: string }[] => [
+  { source: 'cache', dir: cacheDir },
+  ...(def.usePath === false ? [] : pathEnv.split(delimiter).filter(Boolean).map((dir) => ({ source: 'path' as const, dir }))),
+];
 
 const locateTool = async (def: ToolDef, input: LocateInput): Promise<ToolLocation | null> => {
-  const cached = await allIn(input.cacheDir, def, input.platform);
-  if (cached) return { source: 'cache', paths: cached };
-  if (def.usePath === false) return null;
-  const found = await onPath(def, input);
-  return found ? { source: 'path', paths: found } : null;
+  for (const { source, dir } of candidates(def, input)) {
+    const paths = await allIn(dir, def, input.platform);
+    if (!paths) continue;
+    if (!input.check) return { source, paths };
+    const verdict = await input.check(paths);
+    if (verdict.ok) return { source, paths, version: verdict.version ?? null };
+  }
+  return null;
 };
 
 export { locateTool };

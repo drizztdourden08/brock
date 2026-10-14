@@ -62,6 +62,7 @@
  * @property {Record<string, LaunchTarget>} targets
  * @property {{ provision: ProvisionStep[], build: BuildStep[] }} steps
  * @property {GuardRule[]} guards
+ * @property {{ ci?: Record<string, object[]>, release?: Record<string, object[]> }} [workflows] steps for the managed workflows
  */
 
 /**
@@ -80,6 +81,7 @@
  * @property {ProvisionStep[]} provision
  * @property {{ staleDirs: string[], steps: BuildStep[] }} build
  * @property {(string | Plugin)[]} plugins
+ * @property {{ ci?: 'managed' | 'own', release?: 'managed' | 'own' }} [workflows] the shared ci.yml
  */
 
 /** @typedef {WorkspaceGit & WorkspaceSlots} Workspace */

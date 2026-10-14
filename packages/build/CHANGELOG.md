@@ -1,5 +1,33 @@
 # @drizztdourden08/brock-build
 
+## 0.39.0
+
+### Minor Changes
+
+- 472754d: An app adds its own steps to the managed CI and release workflows in `brock.config.ts`, `workflows.steps`, so `brock sync`, `brock build` and `platform add` keep them. Steps go in at fixed points: `ci.beforeInstall`, `ci.beforeBuild`, `ci.afterBuild` and `ci.beforeTest`, and `release.beforeInstall`, `release.beforePackage` and `release.afterPackage` (a file copied into `upload/` there ships with the release). A step takes `run` or `uses` (with `with`), `env`, `if`, `shell`, the repository `secrets` it reads (each set as an environment variable of the step), and `os` and `platforms` to keep it to some runners or platform jobs. Modules (`brock.workflows` in their manifest) and the repo command's plugins (`definePlugin({ workflows })`) add steps the same way, before the app's. `workflows: { ci: 'own' }` or `{ release: 'own' }` leaves that file to the app: `brock sync` stops writing it and `brock check` stops comparing it.
+- 472754d: `build.define` in `brock.config.ts` replaces globals at build time in main, preload, the renderer, its workers and the web build. Each value is a JSON value, written into the code as it is in the config.
+- 472754d: `packaging` in `brock.config.ts` adds to the managed electron-builder config and to `vpk pack`: `extraResources` from the app folder, an `afterPack` module of the app that runs after Brock's own hook, a macOS `role` and an `icon` per file association, and `velopackIcons` for the icon `vpk pack` takes on Windows and Linux.
+- bcd0321: In a repo of several apps the shared workspace `ci.yml` runs the steps of every app, in workspace order, each named `<app>: <step>`, a shell step with `working-directory` and `APP_DIR` set to its app, and the plugins' steps once. `workflows: { ci: 'own' }` in `brock.workspace.mjs` leaves that shared file to the repo; an app's own `workflows` setting covers only its own files. A `uses` step of the same action, version and inputs runs once per job, however many apps or modules declare it.
+- 472754d: `brock.site.ts` takes `tsconfig.compilerOptions`, merged over the managed site `tsconfig.json`, and `build.define`. The managed site tsconfig allows `.ts` imports, so `brock.site.ts` can read its port offsets from a constant the repo shares, such as `import { TOOL_PORTS } from '../../ports.constants.ts'`.
+- 472754d: `tsconfig.compilerOptions` in `brock.config.ts` merges over the managed `tsconfig.json`, key by key, with `paths` merged entry by entry, so an app can turn an option off while it fixes its errors without a hand edit that `brock check` would flag. Without it the managed file is unchanged.
+
+### Patch Changes
+
+- cbe389d: The managed electron-builder config puts `author` (`{ name, email }` from `product.author`) into `extraMetadata` beside `homepage`, so an app's `package.json` need not repeat it.
+- 472754d: A main or preload chunk with an import line inside a template literal builds as written: electron-vite put its CommonJS shim inside the literal, and Brock now moves it after the last import statement. `brock check` fails, and `brock sync` warns, while the app's `package.json` lacks `"type": "module"`, which the managed configs need for `import.meta.dirname`.
+- cbe389d: Every Linux job of the managed workflows runs on `ubuntu-24.04`, never `ubuntu-latest`, which moves to Ubuntu 26 on 19 October 2026: the CI `changes`, `quality` and `web` jobs, the workspace and site CI jobs, and the release `prepare`, `build-linux` (the `.deb` and the AppImage), `build-android`, `build-web` and `release` jobs, as the review job already did.
+- 472754d: The managed release workflow moves the repo's `base` branch (from `brock.workspace.mjs`, else `main`) to the release commit, where it moved GitHub's default branch before, so a repo that releases from an integration branch keeps its version bump there.
+- 472754d: `brock site add`, `brock sync` and `brock check` warn when a site's `src` or `public` holds a folder named like its dev proxy path (`src/api` under `/api`), whose files the proxy would send to the API and leave the page blank.
+- 472754d: `brock site add` names a site's views after the site (`StoreShell`, `StoreHome` and `StoreSignIn` for `apps/store`), so two sites in one repo pass Tessera's duplicate-part check. Existing sites keep their views.
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bcd0321]
+- Updated dependencies [cbe389d]
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-thread@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

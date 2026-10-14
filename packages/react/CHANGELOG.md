@@ -1,5 +1,24 @@
 # @drizztdourden08/brock-react
 
+## 0.39.0
+
+### Minor Changes
+
+- 6d7da6d: The bug report takes a contact email and attachments. A renderer or main transport opts in with `contact: true` and `attachments: true | { maxFiles?, maxBytes? }`; the dialog then shows a Contact email field and a drop zone for files, capped at 5 files and 10 MB in all by default. The payload carries `contact` and `attachments` (`{ name, type, size, data }`), never into a public GitHub issue, and `writeDebugZip` stores each attachment under `attachments/` with only its name, type and size in `report.json`.
+- 6d7da6d: The bug report falls back to a GitHub issue when the main transport cannot send. A main transport can declare `available(ctx)`; while it answers false, the dialog targets the prefilled issue on `product.repo` (else the clipboard) from the start. When a transport fails on send and the product has a `repo`, the error offers Open a GitHub issue instead, which opens the issue with the same title, text and diagnostics.
+- 6d7da6d: Renderer extras reach the bug report transport. `useBugReportExtras(source)` or `bugReport.setExtras(source)` registers a function that returns a JSON-safe object; the dialog calls it when it opens and the payload carries the answer as `extras`, so a main transport (`bootstrapApp({ bugReport })`) gets what only the renderer knows, such as the open screen. A source that throws leaves `extras` out and the report still goes.
+- c5fc205: A module settings tab no longer clashes with an app settings page or tab of the same id. The app keeps the plain id and the module tab moves to `<moduleId>.<tabId>` (`moduleTabId`), as does a module tab whose id an earlier module tab took. A module tab nothing else claims keeps its id, so existing links to it still open it. `mergeModules` now records `moduleId` on each module tab.
+- 0a63f1f: Tessera 0.32: an outside press and Escape dismiss anchored parts, a hint that follows the pointer, disabled tabs with a reason, a held Disclosure, ListDetailLayout by share with a detail side that folds, and LogPanel row selection.
+
+### Patch Changes
+
+- 6d7da6d: `appOpen` hands a held launch request to every handler that subscribes before the next task, not only the first. A file or link the app was launched with used to reach one screen when two screens subscribed in the same render; now each gets it, and a handler that subscribes later does not see it again.
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+  - @drizztdourden08/brock-core@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

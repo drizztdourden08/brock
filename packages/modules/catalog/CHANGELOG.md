@@ -1,5 +1,29 @@
 # @drizztdourden08/brock-catalog
 
+## 0.39.0
+
+### Minor Changes
+
+- bdfc457: App code can tell an item is installing without its own copy of the job id: `CATALOG_JOB_PREFIX`, `catalogJobId(itemId)` and `isCatalogInstalling(itemId, jobs)` come from every entry of the catalog module. `jobs` is a job list (the renderer's job store, `ctx.jobs.list()`) or anything with a `list()`, such as `ctx.jobs`.
+- bdfc457: `readInstalledRecords(source)` from `@drizztdourden08/brock-catalog/main` reads `catalog/installed.json` with no main context, for a boot task, a test or another process. `source` is a `FileStore` rooted at `Data/`, the `Data/` folder itself, or the path of the JSON file; a missing or damaged file reads as no records.
+- bdfc457: `FileStore` has an optional `trash(path)`. The Node store behind `ctx.files` moves the path to the system trash (`shell.trashItem`) and skips one that is not there. A catalog uninstall or update hands its installer a store whose `remove` goes to the trash when the store has one, falling back to deleting when the trash refuses; `removeTo: 'delete'` in the catalog config deletes as before.
+- bdfc457: `JobHandle.setCancellable(on)` turns cancel off (or back on) while a job runs; the snapshot's `cancellable` follows, so the job dialog hides Cancel and `jobs.cancel` is ignored. A catalog install and a tool install turn it off once the download is in, before the checks and the unpack, and `installBarProps` leaves out `onCancel` then, so `CatalogInstallBar` shows no Cancel past the download.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

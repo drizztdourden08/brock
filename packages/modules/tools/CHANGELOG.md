@@ -1,5 +1,28 @@
 # @drizztdourden08/brock-tools
 
+## 0.39.0
+
+### Minor Changes
+
+- bdfc457: A tool installed while the app runs is found. `getTools` reads the PATH on each lookup (at most every 2 s): on Windows the process PATH merged with the saved machine and user PATH from the registry, elsewhere the process PATH. `ToolsEnv.pathEnv` takes a string or a function. Main sends `tools:changed` after an install (`window.api.tools.onChanged`), and `useTool(id, { refreshOnFocus? })` locates the tool again on that event and whenever the window gets focus (on by default), beside its `refresh()`.
+- bdfc457: A registered tool can carry a `probe` and an `aroundRun` hook. `probe: { binary?, args?, timeoutMs?, read? }` runs the found binary (`--version` by default) and reads the result; the default reader passes on exit code 0 and takes the first dotted number as the version. `probe` can also be a function of the found paths. A copy that fails its probe counts as not found, so the lookup moves on to the next folder, and a passing one puts its `version` on `ToolState` and `ToolLocation`. A result is kept until the binary's size or time changes. `aroundRun(call, next)` wraps every run of the tool, the probe included, and may change the call or the result. `systemPath()` and `readVersion` are exported.
+
+### Patch Changes
+
+- bdfc457: `JobHandle.setCancellable(on)` turns cancel off (or back on) while a job runs; the snapshot's `cancellable` follows, so the job dialog hides Cancel and `jobs.cancel` is ignored. A catalog install and a tool install turn it off once the download is in, before the checks and the unpack, and `installBarProps` leaves out `onCancel` then, so `CatalogInstallBar` shows no Cancel past the download.
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

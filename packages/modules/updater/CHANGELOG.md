@@ -1,5 +1,28 @@
 # @drizztdourden08/brock-updater
 
+## 0.39.0
+
+### Minor Changes
+
+- 6d7da6d: The updater measures the installed app. `window.api.updater.installSize()` returns its size on disk in bytes (the Velopack install folder on Windows, the `.app` bundle on macOS, the AppImage on Linux), or `null` outside an install. On Windows the module also writes it to the app's uninstall entry as a `REG_DWORD` `EstimatedSize`, the only type Windows Settings reads, so Installed apps shows the app's size; it never creates the key. `createUpdaterMain({ installSize: false })` turns the write off.
+- 6d7da6d: The updater hides itself on a host that cannot update itself. On a platform whose `capabilities.selfUpdate` is false (the web build, Android), or without the module's preload bridge, there is no Check for updates menu entry, no title bar action and no update dialog. `useUpdateAction` returns `null` there, and `useSelfUpdateHost()` and `selfUpdateHost(capabilities?)` are exported for app code.
+- 6d7da6d: The update dialog has a notice slot for the app. `setUpdateNotice(notice)` from `@drizztdourden08/brock-updater/renderer` takes a map from version to content, or a function that gets `{ version, currentVersion, action, prerelease }` for the version the user picked and returns content or nothing. The dialog shows it above the release notes, a string as a warning callout. It returns the undo.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

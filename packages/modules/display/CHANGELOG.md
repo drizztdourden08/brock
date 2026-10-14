@@ -1,5 +1,26 @@
 # @drizztdourden08/brock-display
 
+## 0.39.0
+
+### Minor Changes
+
+- c5fc205: The display settings defaults now depend on the host. `displayDefaultsFor(host)` merges `DEFAULT_DISPLAY_SETTINGS` with `HOST_DISPLAY_DEFAULTS`, which turns `syncedRateInFullscreen` on for Android, where the app is always full screen; the desktop and the web keep it off. `readDisplaySettings(settings, host?)` reads a missing key as the host default. Spread `displayDefaultsFor(detectHost())` into the app's defaults to store the same value.
+
+### Patch Changes
+
+- Updated dependencies [6d7da6d]
+- Updated dependencies [472754d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [6d7da6d]
+- Updated dependencies [bdfc457]
+- Updated dependencies [bdfc457]
+- Updated dependencies [c5fc205]
+- Updated dependencies [0a63f1f]
+  - @drizztdourden08/brock-react@0.39.0
+  - @drizztdourden08/brock-core@0.39.0
+  - @drizztdourden08/brock-electron@0.39.0
+
 ## 0.38.0
 
 ### Patch Changes

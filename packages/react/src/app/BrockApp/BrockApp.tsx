@@ -71,7 +71,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
           <ScreenRegistryContext.Provider value={registry}>
             <SettingsStoreContext.Provider value={settingsStore}>
               <ModuleProviders providers={merged.providers}>
-                {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} /> : (
+                {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} widgetDisabled={widgetDisabled} /> : (
                   <AppShell
                     settingsStore={settingsStore}
                     bootTasks={allBootTasks}

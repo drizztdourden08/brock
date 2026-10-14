@@ -3,6 +3,7 @@ import type { HandlerGroup } from '../types/main-context.type';
 import { bootEvents } from '../boot/boot-events';
 import { closeWidgetWindow } from './close-widget-window';
 import { dropStaleGroupFile } from './drop-stale-group-file';
+import { focusForOpen } from '../open/focus-for-open';
 import { followMainWindow } from './follow-main-window';
 import { holdQuitForBounds } from './hold-quit-for-bounds';
 import { openWidgetWindow } from './open-widget-window';
@@ -38,6 +39,10 @@ const widgetHandlers = (setup: WidgetWindowSetup): HandlerGroup => ({
     on('widget:setPrefs', (_event, id, prefs) => emit('widget:prefs', id, prefs));
     on('widget:patchSettings', (_event, patch) => emit('widget:settingsPatch', patch));
     on('widget:tourAdvance', (_event, step) => emit('widget:tourAdvanced', step));
+    on('widget:openSetting', (_event, target) => {
+      focusForOpen();
+      emit('widget:settingTarget', target);
+    });
   },
 });
 

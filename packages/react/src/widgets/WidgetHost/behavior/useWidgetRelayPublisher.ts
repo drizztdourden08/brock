@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useContextsStore } from '../../../contexts/useContextsStore';
 import { hostApi } from '../../../host/host-api';
+import { openSettingTarget } from '../../../search/open-setting-target';
 import type { SettingsStore } from '../../../stores/settings-store.type';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useWidgetPrefStore } from '../../../stores/useWidgetPrefStore';
@@ -31,6 +32,7 @@ const relay = (settingsStore: SettingsStore<object> | null): (() => void) => {
     log.stop,
     api.onWidgetSnapshotRequest(snapshot),
     api.onWidgetSettingsPatch((patch) => settingsStore?.getState().patch(patch)),
+    api.onWidgetSettingTarget(openSettingTarget),
     useProfilesStore.subscribe((state, prev) => {
       if (state.active !== prev.active) sendSettings();
     }),

@@ -12,6 +12,7 @@ import { WidgetBody } from '../WidgetBody';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { WindowGuide } from '../WindowGuide';
+import { usePoppedDisabled } from './behavior/usePoppedDisabled';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
@@ -25,12 +26,13 @@ import './WidgetWindow.css';
 const noop = (): void => undefined;
 
 const WidgetWindow = (props: WidgetWindowProps) => {
-  const { id, widgets = NO_WIDGETS } = props;
+  const { id, widgets = NO_WIDGETS, widgetDisabled } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definition = useMemo(() => getWidgetDefinition(uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), id), [widgets, registered, id]);
   const frames = useWidgetRelayStore((s) => s.slices[RELAY_SLICES.frames]) as WidgetLayout['frame'] | undefined;
   const own = usePoppedWindowState(id);
   const reviewOpen = useReviewOptions(id);
+  const off = usePoppedDisabled(definition, widgetDisabled);
   useWidgetRelay(id);
   useWidgetWindowEscape();
   useWidgetTourClick(id);
@@ -64,6 +66,8 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         onPopOut={popIn}
         canPopOut
         onClose={close}
+        disabled={off.disabled}
+        onOpenSettings={off.onOpenSettings}
       >
         <WidgetBody id={id} label={label}>{definition?.render()}</WidgetBody>
       </Widget>

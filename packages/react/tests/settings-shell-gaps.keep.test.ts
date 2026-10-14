@@ -1,14 +1,14 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
-import { act, createElement, isValidElement } from 'react';
+import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { SettingsRow } from '@drizztdourden08/tessera/composites';
+import type { SettingsRowProps } from '@drizztdourden08/tessera/composites';
 import { createSettingsStore } from '../src/stores/create-settings-store';
 import { resolveSections } from '../src/settings/SettingsLayout/behavior/resolve-sections';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
-import { SettingChoiceField } from '../src/settings/SettingsLayout/sub-components/SettingChoiceField';
-import type { SettingChoiceFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingChoiceField';
 import { settingEntries } from '../src/search/catalog/setting-entries';
 import type { CatalogInput } from '../src/search/search.type';
 import type { Section, SettingItem, TabDef } from '../src/settings/settings.type';
@@ -73,12 +73,11 @@ describe('settings rows: colour, multi-choice, an option with a reason, and a ro
     expect(multi).toMatchObject({ input: { kind: 'multi', value: ['hud'] } });
   });
 
-  it('draws a choice with a disabled option as its own field, which tells the reason and refuses the value', () => {
-    const onChange = vi.fn();
-    const row = settingRow(SCHEME, context({ onChange }));
-    expect(row).toMatchObject({ input: { kind: 'custom', text: 'Classic' } });
-    const control = row && 'input' in row && row.input?.kind === 'custom' ? row.input.control : null;
-    expect(isValidElement(control)).toBe(true);
+  it('hands an option with a reason to Tessera as it is, for every choice look', () => {
+    const row = settingRow(SCHEME, context());
+    expect(row).toMatchObject({ input: { kind: 'segmented', value: 'classic', options: SCHEME.control?.kind === 'choice' ? SCHEME.control.options : [] } });
+    const radio = settingRow({ ...SCHEME, control: { kind: 'radio', options: [{ value: 'classic', label: 'Classic' }, { value: 'pro', label: 'Pro', disabled: true }] } }, context());
+    expect(radio).toMatchObject({ input: { kind: 'radio', options: [{ value: 'classic' }, { value: 'pro', disabled: true }] } });
   });
 
   it('leaves a row out while its predicate says so, on the page and in search', () => {
@@ -94,10 +93,10 @@ describe('settings rows: colour, multi-choice, an option with a reason, and a ro
 
 let root: Root | null = null;
 
-const draw = (props: SettingChoiceFieldProps): void => {
+const draw = (props: SettingsRowProps): void => {
   document.body.innerHTML = '<div id="host"></div>';
   root = createRoot(document.getElementById('host') as HTMLElement);
-  act(() => root?.render(createElement(SettingChoiceField, props)));
+  act(() => root?.render(createElement(SettingsRow, props)));
 };
 
 afterEach(() => {
@@ -106,19 +105,21 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('SettingChoiceField', () => {
+const rowOf = (item: SettingItem, onChange = vi.fn()): SettingsRowProps => settingRow(item, context({ onChange })) as SettingsRowProps;
+
+describe('a settings option off with a reason, drawn by Tessera', () => {
   it('draws a disabled segment with its reason and never sets its value', () => {
     const onChange = vi.fn();
-    draw({ look: 'segmented', options: [{ value: 'classic', label: 'Classic' }, { value: 'pro', label: 'Pro', disabled: 'Needs a pad with two sticks' }], value: 'classic', onChange, label: 'Control scheme', disabled: false });
+    draw(rowOf(SCHEME, onChange));
     const pro = [...document.querySelectorAll('button')].find((button) => button.textContent.includes('Pro'));
     expect(pro?.disabled).toBe(true);
-    expect(pro?.getAttribute('title')).toBe('Needs a pad with two sticks');
+    expect(pro?.getAttribute('aria-description')).toBe('Needs a pad with two sticks');
     act(() => pro?.click());
     expect(onChange).not.toHaveBeenCalled();
   });
 
   it('draws a multi-choice with a disabled option', () => {
-    draw({ look: 'multi', options: [{ value: 'hud', label: 'HUD' }, { value: 'map', label: 'Map', disabled: true }], value: ['hud'], onChange: vi.fn(), label: 'Layers', disabled: false });
+    draw(rowOf({ key: 'layers', label: 'Layers', hint: 'What draws.', noDescription: true, control: { kind: 'multi', options: [{ value: 'hud', label: 'HUD' }, { value: 'map', label: 'Map', disabled: true }] } }));
     const map = [...document.querySelectorAll('button, input')].find((element) => element.closest('label, button')?.textContent.includes('Map'));
     expect(map?.hasAttribute('disabled')).toBe(true);
   });

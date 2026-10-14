@@ -4,8 +4,6 @@ import type { SettingChoiceLook, SettingControl, SettingControlKind } from '../.
 import { NO_ROW, SEGMENTED_MOST } from './setting-input.constants';
 import { jsonInput } from './json-setting-input';
 import { pathInput } from './path-setting-input';
-import { choiceOptions } from './choice-options';
-import { choiceSettingInput } from './choice-setting-input';
 import type { SettingChange, SettingInputOf, SettingInputRow } from './setting-input.type';
 
 const isText = (value: unknown): value is string => typeof value === 'string';
@@ -15,30 +13,14 @@ const isList = (value: unknown): value is readonly string[] => Array.isArray(val
 const lookOf = (control: Extract<SettingControl, { kind: 'choice' }>): SettingChoiceLook =>
   control.look ?? (control.options.length > SEGMENTED_MOST ? 'select' : 'segmented');
 
-const choice: SettingInputOf<'choice'> = (control, value, onChange, row) => {
-  if (!isText(value)) return null;
-  const look = lookOf(control);
-  if (choiceOptions.anyOff(control.options)) return choiceSettingInput.oneOf(look === 'segmented' ? 'segmented' : 'select', control.options, value, { ...row, onChange });
-  return { kind: look, value, options: control.options, onChange };
-};
+const choice: SettingInputOf<'choice'> = (control, value, onChange) => (isText(value) ? { kind: lookOf(control), value, options: control.options, onChange } : null);
 
-const select: SettingInputOf<'select'> = (control, value, onChange, row) => {
-  if (!isText(value)) return null;
-  if (choiceOptions.anyOff(control.options)) return choiceSettingInput.oneOf('select', control.options, value, { ...row, onChange });
-  return { kind: 'select', value, options: control.options, searchable: control.searchable, onChange };
-};
+const select: SettingInputOf<'select'> = (control, value, onChange) =>
+  (isText(value) ? { kind: 'select', value, options: control.options, searchable: control.searchable, onChange } : null);
 
-const radio: SettingInputOf<'radio'> = (control, value, onChange, row) => {
-  if (!isText(value)) return null;
-  if (choiceOptions.anyOff(control.options)) return choiceSettingInput.oneOf('select', control.options, value, { ...row, onChange });
-  return { kind: 'radio', value, options: control.options, onChange };
-};
+const radio: SettingInputOf<'radio'> = (control, value, onChange) => (isText(value) ? { kind: 'radio', value, options: control.options, onChange } : null);
 
-const multi: SettingInputOf<'multi'> = (control, value, onChange, row) => {
-  if (!isList(value)) return null;
-  if (choiceOptions.anyOff(control.options)) return choiceSettingInput.manyOf(control.options, value, { ...row, onChange });
-  return { kind: 'multi', value, options: control.options, onChange };
-};
+const multi: SettingInputOf<'multi'> = (control, value, onChange) => (isList(value) ? { kind: 'multi', value, options: control.options, onChange } : null);
 
 const color: SettingInputOf<'color'> = (_control, value, onChange) => (isText(value) ? { kind: 'color', value, onChange } : null);
 

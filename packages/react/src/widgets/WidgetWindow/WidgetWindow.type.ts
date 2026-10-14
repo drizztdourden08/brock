@@ -1,12 +1,16 @@
 /* @layer renderer-shell @kind types */
 import type { WidgetPinMode } from '@drizztdourden08/brock-core';
-import type { WidgetFrame } from '@drizztdourden08/tessera/composites';
+import type { WidgetFrame, WidgetProps } from '@drizztdourden08/tessera/composites';
+import type { WidgetDisabledHook } from '../WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../widget.type';
 
 interface WidgetWindowProps {
   id: string;
   widgets?: readonly WidgetDef[];
+  widgetDisabled?: WidgetDisabledHook;
 }
+
+type PoppedDisabled = Pick<WidgetProps, 'disabled' | 'onOpenSettings'>;
 
 interface PoppedWindowControls {
   pin: WidgetPinMode;
@@ -34,4 +38,4 @@ interface ReviewOptionsRequest {
   open: boolean;
 }
 
-export type { ReviewOptionsRequest, WidgetTourSpotProps, WidgetWindowOptionsProps, WidgetWindowProps };
+export type { PoppedDisabled, ReviewOptionsRequest, WidgetTourSpotProps, WidgetWindowOptionsProps, WidgetWindowProps };

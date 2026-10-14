@@ -2,7 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { closeSync, openSync, readSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { DATA_HEADER_TEXT, DATA_SOURCE, HEADER_BYTES, SKIPPED_DIRS } from './data-kind.constants.mjs';
+import { DATA_KINDS, DATA_SOURCE, HEADER_BYTES, KIND_HEADER_TEXT, SKIPPED_DIRS } from './data-kind.constants.mjs';
 
 const fromGit = (rootDir) => {
   try {
@@ -34,13 +34,19 @@ const headOf = (file) => {
   }
 };
 
+const kindOf = (rootDir, file) => {
+  const [, kind, source] = KIND_HEADER_TEXT.exec(headOf(join(rootDir, file))) ?? [];
+  return { file, kind, source };
+};
+
 /**
  * @param {string} rootDir the folder the ESLint config lints from
- * @returns {string[]} the files whose header says @kind data
+ * @returns {{ file: string, kind: string, source?: string }[]} data and verbatim files
  */
 const dataFiles = (rootDir) => (fromGit(rootDir) ?? walk(rootDir, rootDir))
   .filter((file) => DATA_SOURCE.test(file))
-  .filter((file) => DATA_HEADER_TEXT.test(headOf(join(rootDir, file))))
-  .sort();
+  .sort()
+  .map((file) => kindOf(rootDir, file))
+  .filter((entry) => DATA_KINDS.includes(entry.kind));
 
 export { dataFiles };

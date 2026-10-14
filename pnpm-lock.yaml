@@ -194,6 +194,9 @@ importers:
       '@drizztdourden08/brock-core':
         specifier: workspace:*
         version: link:../core
+      '@drizztdourden08/brock-lint-config':
+        specifier: workspace:*
+        version: link:../lint-config
       '@drizztdourden08/brock-thread':
         specifier: workspace:*
         version: link:../thread

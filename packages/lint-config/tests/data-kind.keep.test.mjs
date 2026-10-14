@@ -1,31 +1,10 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { ESLint } from 'eslint';
 import { afterEach, describe, expect, it } from 'vitest';
 import { dataBlocks } from '../data-blocks.mjs';
 import { dataFiles } from '../data-files.mjs';
-import { brockEslint } from '../eslint.mjs';
+import { LINT_TIMEOUT_MS, app, header, lintRules, put, removeRoots, tempDir } from './lint-fixture.mjs';
 
-const roots = new Set();
-
-const tempDir = () => roots.add(mkdtempSync(join(tmpdir(), 'brock-data-kind-'))) && [...roots].at(-1);
-
-const put = (root, path, content) => {
-  const file = join(root, ...path.split('/'));
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, content, 'utf8');
-};
-
-afterEach(() => {
-  roots.forEach((root) => rmSync(root, { recursive: true, force: true }));
-  roots.clear();
-});
-
-const LINT_TIMEOUT_MS = 60000;
-
-const header = (kind) => `/* @layer shared-game @kind ${kind} */\n`;
+afterEach(removeRoots);
 
 const records = (count) => [
   "import type { TagRecord } from './tag-record.type';",
@@ -42,20 +21,6 @@ const records = (count) => [
   '',
 ].join('\n');
 
-const lintRules = async (root, file) => {
-  const eslint = new ESLint({ cwd: root, overrideConfigFile: true, overrideConfig: brockEslint({ rootDir: root, typed: false }) });
-  const [result] = await eslint.lintFiles([join(root, file)]);
-  return result.messages.map((message) => message.ruleId);
-};
-
-const app = () => {
-  const root = tempDir();
-  put(root, 'package.json', JSON.stringify({ name: 'data-kind-fixture', private: true, type: 'module' }));
-  put(root, 'records/tag-record.type.ts', `${header('types')}interface TagRecord { id: string }\n\nexport type { TagRecord };\n`);
-  put(root, 'records/base-tags.constants.ts', `${header('constants')}const BASE_TAGS = [] as const;\n\nexport { BASE_TAGS };\n`);
-  return root;
-};
-
 describe('the data file kind', () => {
   it('finds the files whose header says @kind data, and nothing in dot-folders or node_modules', () => {
     const root = app();
@@ -63,7 +28,7 @@ describe('the data file kind', () => {
     put(root, 'records/logic.ts', `${header('logic')}const x = 1;\nexport { x };\n`);
     put(root, '.cache/old.ts', `${header('data')}const x = 1;\n`);
     put(root, 'node_modules/pkg/index.ts', `${header('data')}const x = 1;\n`);
-    expect(dataFiles(root)).toEqual(['records/tags.ts']);
+    expect(dataFiles(root)).toEqual([{ file: 'records/tags.ts', kind: 'data' }]);
     expect(dataBlocks(root)).toEqual([{ name: 'brock/data-files', basePath: root, files: ['records/tags.ts'], rules: { 'max-lines': 'off', 'local/one-export-per-file': 'off', 'local/constants-in-constants-file': 'off' } }]);
     expect(dataBlocks(tempDir())).toEqual([]);
   });

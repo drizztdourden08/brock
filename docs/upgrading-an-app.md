@@ -125,6 +125,7 @@ An app with its own Capacitor folder (`apps/mobile` with `capacitor.config.ts`, 
 - No placeholder or qualifier names (`temp`, `data2`, `EnhancedX`, `xHelper`, `xUtils`).
 - Component folders hold `Name.tsx`, `index.ts` and optionally `Name.css`, `Name.type.ts`, `Name.constants.ts`, `Name.usage.ts`, `behavior/` and `sub-components/`.
 - A record file or a generated table takes `@kind data` in its header: no 200-line cap, several exports, `UPPER_SNAKE` consts in place, and data only (`brock/data-only` fails on a function, a call, a conditional or a statement there). See [app-structure.md](app-structure.md).
+- A file of text reproduced word for word from an outside source (a licence text, a quoted dialogue table) takes `@kind verbatim @source <short text>` in its header: a data file whose string values the dash, punctuation and prose rules skip. UI strings stay out of it. See [app-structure.md](app-structure.md).
 - A screen or a handler group that must never ship (a dataset editor, an inspector) has `.dev` before its extension (`inspector.page.dev.tsx`, `dataset-handlers.dev.ts`); a production build has none of them.
 
 ### The app's own checks

@@ -138,6 +138,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | IPC handler | `electron/handlers/` | `<subject>-handlers.ts`, exporting `<subject>Handlers` | `brock sync` into `.brock/handlers.main.ts`, passed as `handlers` in `electron/main.ts` |
 | Dev-only screen or handler group | where its kind goes | `.dev` before the extension: `inspector.page.dev.tsx`, `editor.card.dev.tsx`, `dataset-handlers.dev.ts` | `brock sync` into `.brock/screens.dev.ts` and `.brock/handlers.main.dev.ts`; a production build has none of them |
 | Data records, generated data | beside the code that reads them | `/* @layer <layer> @kind data */` header | exempt from the 200-line, one-export and constants-file rules; `brock/data-only` keeps the file to data |
+| Text reproduced from an outside source | beside the code that shows it | `/* @layer <layer> @kind verbatim @source <short text> */` header | everything `@kind data` gets, and the dash, punctuation and prose rules skip its string values; `brock structure` lists it with its source |
 | C sources | the folders `gate.clangFormat` names | `.c`, `.h` | `brock gate` checks them against the managed `.clang-format`, `brock clang-format` rewrites them |
 | App gate step | `package.json` scripts | named in `gate.scripts` of `brock.config.ts` | `brock gate`, the CI `quality` job, `<repo> upgrade` |
 | App services | `electron/services/` | `app-services.ts` (`createAppServices(ctx)`), `AppServices` augmented | `bootstrapApp({ services })`, read as `ctx.services` |
@@ -165,6 +166,25 @@ A renderer file (anything in `src/`) imports a package that also holds Node code
 `brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
 
 A file whose header says `@kind data` holds data and nothing else: imports, types, and `const` declarations made of literals, arrays, objects, spreads, references to other values, constant arithmetic and `Object.freeze`, with `as const` and `satisfies` allowed. It may run past 200 lines, export several lists and name `UPPER_SNAKE` consts outside a `.constants.ts` file, which suits record files and generated tables. A function, an arrow, a call other than `Object.freeze`, a conditional, a getter, `let` or a statement in such a file is a `brock/data-only` error, so the kind exempts no code; a generated file that holds code keeps its own kind. Brock's ESLint config finds the data files by their header when it loads, so an editor picks a newly marked file up after an ESLint restart.
+
+A file whose header says `@kind verbatim` is a data file whose string values are text reproduced word for word from an outside source, text the app must show exactly as it is: a licence text, a game's own dialogue table, the strings a protocol defines. The prose rules would flag that text (an exclamation mark, a stock phrase, a dash), and rewording it would change what the app shows. The kind is the exemption, and it is narrow and written down:
+
+- The header names the source after the kind, `@source <short text>`; `brock/verbatim-source` fails a `@kind verbatim` header without one, and the exemption stays off until it has one.
+- The file gets everything `@kind data` gets, `brock/data-only` included, so it holds no logic.
+- `local/no-em-dash`, `local/no-smart-punctuation` and `local/no-slop-prose` skip its string values (string literals and the text of template literals). Identifiers, comments and the header are still read, and so is `local/no-tool-brand-words`. Brock's ESLint config passes each such file to the standards factory as a `verbatimText` entry whose `why` is the source.
+- `brock structure` lists every `@kind verbatim` file with its source, so a review sees what is exempt.
+
+A UI string is never verbatim: it stays in an ordinary `@kind data` or `@kind constants` file and passes the prose rules. Keep a verbatim file to the reproduced text, and put the app's own labels for it elsewhere.
+
+```ts
+/* @layer shared-game @kind verbatim @source the town dialogue table of the original game, text bank 2 */
+const TOWN_DIALOGUE = [
+  { id: 0x10, text: 'Welcome, traveller! Rest by the fire.' },
+  { id: 0x11, text: 'The bridge is out... take the ferry.' },
+];
+
+export { TOWN_DIALOGUE };
+```
 
 Each of these folders takes the constants file the constants lint rule names for a file in it, the file name with `.constants.ts` in place of its last extension: `<id>.widget.constants.ts` and `layout.constants.ts` in `src/widgets`, `<id>.action.constants.ts` in `src/title-bar`, `<id>.tour.constants.ts` in `src/tours` and `<id>.<kind>.constants.ts` (`home.hero.constants.ts`, `items.tab.constants.ts`) at any level of `src/screens`, plus `<name>.constants.ts` for constants several files there share. `brock sync` leaves them out of `.brock`. The module folders take `<id>.task.constants.ts` beside a boot task and `<id>.step.constants.ts` beside a review step (and the same for widget, title bar and tour files outside an app); `brock structure` reports any other doubled suffix, such as `<id>.page.constants.ts` in `src/review`.
 

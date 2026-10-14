@@ -22,10 +22,10 @@ const desktopReleaseJob = (job) => (ctx) => ({
     JOB: `build-${job.platform}`,
     RUNS_ON: job.runsOn,
     PLATFORM: job.platform,
-    SETUP: ctx.setup(HOST_OS[job.runsOn], { release: true, platform: job.platform }),
+    SETUP: ctx.setup(HOST_OS[job.runsOn], { release: true, platform: job.platform, job: `build-${job.platform}` }),
     VPK: job.vpk ? `\n${fillTemplate(RELEASE_DIR, 'vpk-steps.yml.tmpl', {}).trimEnd()}` : '',
-    BEFORE_PACKAGE: ctx.stepsAt('beforePackage', HOST_OS[job.runsOn], job.platform),
-    AFTER_PACKAGE: ctx.stepsAt('afterPackage', HOST_OS[job.runsOn], job.platform),
+    BEFORE_PACKAGE: ctx.stepsAt('beforePackage', HOST_OS[job.runsOn], job.platform, `build-${job.platform}`),
+    AFTER_PACKAGE: ctx.stepsAt('afterPackage', HOST_OS[job.runsOn], job.platform, `build-${job.platform}`),
     COLLECT: job.collect.map((glob) => `          cp "$APP_DIR"/${glob} upload/`).join('\n'),
   }),
 });

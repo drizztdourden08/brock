@@ -43,7 +43,7 @@ const addSource = (collected, { label, workflows }) => {
   if (!isObject(workflows)) throw new Error(`${label} maps ci and release to their step points.`);
   for (const [workflow, points] of Object.entries(workflows)) {
     for (const [point, steps] of pointsOf(label, workflow, points)) {
-      collected[workflow][point].push(...steps.map((step, at) => checkWorkflowStep(step, `${label}.${workflow}.${point}[${at}]`)));
+      collected[workflow][point].push(...steps.map((step, at) => checkWorkflowStep(step, `${label}.${workflow}.${point}[${at}]`, workflow)));
     }
   }
 };

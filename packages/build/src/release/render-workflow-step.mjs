@@ -64,11 +64,13 @@ const withoutRepeatedSetup = (steps) => {
 
 /**
  * @param {CheckedStep[]} steps
- * @param {{ os: string, platform?: string | null }} job the runner and the platform of the job
+ * @param {{ os: string, platform?: string | null, job?: string | null }} job the runner, the platform and the id of the job
  * @returns {CheckedStep[]} the steps that run in that job
  */
-const stepsForJob = (steps, { os, platform = null }) => withoutRepeatedSetup(steps.filter((step) =>
-  (!step.os || step.os.includes(os)) && (!step.platforms || (platform !== null && step.platforms.includes(platform)))));
+const stepsForJob = (steps, { os, platform = null, job = null }) => withoutRepeatedSetup(steps.filter((step) =>
+  (!step.os || step.os.includes(os))
+  && (!step.platforms || (platform !== null && step.platforms.includes(platform)))
+  && (!step.jobs || (job !== null && step.jobs.includes(job)))));
 
 /**
  * @param {CheckedStep[]} steps

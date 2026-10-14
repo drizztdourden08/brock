@@ -76,6 +76,51 @@ describe('app workflow steps in the release workflow', () => {
   });
 });
 
+describe('steps for one job and the prepare job', () => {
+  const steps = app({
+    ci: {
+      beforeInstall: [{ name: 'Review fonts', run: 'sudo apt-get install -y fonts-noto', jobs: 'review' }],
+      beforeBuild: [{ name: 'Quality only', run: 'echo q', jobs: ['quality'] }, { name: 'Web and review', run: 'echo w', jobs: ['web', 'review'] }],
+      afterBuild: [{ name: 'Everywhere', run: 'echo all' }],
+    },
+    release: {
+      prepare: [{ name: 'Check the save format', run: 'pnpm run saves:check' }],
+      beforePackage: [{ name: 'Linux job only', run: 'echo l', jobs: 'build-linux' }],
+    },
+  });
+  const { ci, release } = composeWorkflows({ targets: ['desktop', 'web'], prefix: 'a-', steps });
+  const ciJobs = parse(ci).jobs;
+  const releaseJobs = parse(release).jobs;
+
+  it('runs a CI step only in the jobs it names', () => {
+    expect(stepNames(ciJobs.quality)).toEqual(expect.arrayContaining(['Quality only', 'Everywhere']));
+    expect(stepNames(ciJobs.quality)).not.toContain('Web and review');
+    expect(stepNames(ciJobs.quality)).not.toContain('Review fonts');
+    expect(between(stepNames(ciJobs.review), 'actions/checkout@v7', 'pnpm/action-setup@v6')).toEqual(['Review fonts']);
+    expect(between(stepNames(ciJobs.review), 'Install', 'Build')).toEqual(['Web and review']);
+    expect(between(stepNames(ciJobs.web), 'Install', 'Build the web app')).toEqual(['Web and review']);
+  });
+
+  it('runs release.prepare in the prepare job after the install and before its checks', () => {
+    expect(between(stepNames(releaseJobs.prepare), 'Install', 'Release note')).toEqual(['Check the save format']);
+    expect(stepNames(releaseJobs['build-windows'])).not.toContain('Check the save format');
+    expect(stepNames(releaseJobs['build-linux'])).toContain('Linux job only');
+    expect(stepNames(releaseJobs['build-windows'])).not.toContain('Linux job only');
+  });
+
+  it('runs a workspace step only when it names the workspace job, or no job', () => {
+    const shared = app({ ci: { beforeTest: [{ name: 'Shared', run: 'echo s' }, { name: 'App job only', run: 'echo a', jobs: 'quality' }, { name: 'Workspace', run: 'echo w', jobs: 'workspace' }] } });
+    const names = stepNames(parse(workspaceCi([], 'main', shared)).jobs.workspace);
+    expect(names).toEqual(expect.arrayContaining(['Shared', 'Workspace']));
+    expect(names).not.toContain('App job only');
+  });
+
+  it('refuses a job its workflow does not have', () => {
+    expect(() => app({ ci: { beforeBuild: [{ name: 'x', run: 'a', jobs: 'build-windows' }] } })).toThrow(/jobs takes changes, quality, review, web, workspace/);
+    expect(() => app({ release: { prepare: [{ name: 'x', run: 'a', jobs: ['review'] }] } })).toThrow(/jobs takes prepare, build-windows/);
+  });
+});
+
 describe('a uses step that several sources declare', () => {
   it('runs once per job, while one with other inputs still runs', () => {
     const java = (version) => ({ name: `Java ${version}`, uses: 'actions/setup-java@v6', with: { 'java-version': version } });
@@ -109,6 +154,7 @@ describe('collectWorkflowSteps', () => {
 
   it('names the source and the step of every mistake', () => {
     expect(() => app({ ci: { beforeDeploy: [] } })).toThrow('brock.config.ts workflows.steps.ci: unknown step point "beforeDeploy"; it takes beforeInstall, beforeBuild, afterBuild, beforeTest.');
+    expect(() => app({ release: { afterRelease: [] } })).toThrow('brock.config.ts workflows.steps.release: unknown step point "afterRelease"; it takes beforeInstall, prepare, beforePackage, afterPackage.');
     expect(() => app({ deploy: {} })).toThrow(/unknown workflow "deploy"/);
     expect(() => app({ ci: { beforeBuild: [{ name: 'x', run: 'a', uses: 'b@v1' }] } })).toThrow('brock.config.ts workflows.steps.ci.beforeBuild[0]: a step takes run (a shell command) or uses (an action), one of the two.');
     expect(() => app({ ci: { beforeBuild: [{ name: 'x', run: 'a', with: { a: 1 } }] } })).toThrow(/with goes with uses/);

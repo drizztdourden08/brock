@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { PLATFORM_ORDER } from '../platforms/platforms.constants.mjs';
-import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS } from './workflow-steps.constants.mjs';
+import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS, WORKFLOW_JOBS } from './workflow-steps.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/module').WorkflowStep} WorkflowStep
@@ -24,6 +24,7 @@ import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS } from '
  * @property {string[]} secrets
  * @property {string[] | null} os null runs on every runner
  * @property {string[] | null} platforms null runs in every job
+ * @property {string[] | null} jobs null runs in every job of the point
  */
 
 const listOf = (value) => (Array.isArray(value) ? value : [value]);
@@ -85,9 +86,10 @@ const checkWith = (where) => (name, value) => {
 /**
  * @param {WorkflowStep} step
  * @param {string} where the source and position, for the message
+ * @param {'ci' | 'release'} workflow the workflow whose jobs it may name
  * @returns {CheckedStep}
  */
-const checkWorkflowStep = (step, where) => {
+const checkWorkflowStep = (step, where, workflow) => {
   if (typeof step !== 'object' || step === null || Array.isArray(step)) fail(where, 'a step is an object with a name and run or uses.');
   assertKeys(where, step);
   assertAction(where, step);
@@ -102,6 +104,7 @@ const checkWorkflowStep = (step, where) => {
     secrets: secretsOf(where, step.secrets),
     os: choicesOf(where, step.os, 'os', RUNNER_OSES),
     platforms: choicesOf(where, step.platforms, 'platforms', PLATFORM_ORDER),
+    jobs: choicesOf(where, step.jobs, 'jobs', WORKFLOW_JOBS[workflow]),
   };
 };
 

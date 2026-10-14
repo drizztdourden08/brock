@@ -1,10 +1,10 @@
   quality:
     runs-on: ubuntu-24.04
     steps:
-__SETUP____BEFORE_BUILD__
+__QUALITY_SETUP____QUALITY_BEFORE_BUILD__
 
       - name: Build
-        run: pnpm --dir "$APP_DIR" exec brock build__AFTER_BUILD____BEFORE_TEST__
+        run: pnpm --dir "$APP_DIR" exec brock build__QUALITY_AFTER_BUILD____BEFORE_TEST__
 
       - name: Release note
         run: pnpm --dir "$APP_DIR" exec brock release-notes check
@@ -17,10 +17,10 @@ __ROOT_STEPS__
   review:
     runs-on: __REVIEW_RUNNER__
     steps:
-__SETUP____BEFORE_BUILD__
+__REVIEW_SETUP____REVIEW_BEFORE_BUILD__
 
       - name: Build
-        run: pnpm --dir "$APP_DIR" exec brock build__AFTER_BUILD__
+        run: pnpm --dir "$APP_DIR" exec brock build__REVIEW_AFTER_BUILD__
 
       - name: Let Electron start its sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0

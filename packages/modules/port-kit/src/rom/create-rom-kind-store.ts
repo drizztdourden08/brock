@@ -23,7 +23,7 @@ const createRomKindStore = (files: FileStore, { kind, rules, dir, assetExtension
 
   const importRom = async (fileName: string, bytes: Uint8Array): Promise<RomImport> => {
     const candidate = await romCandidate(fileName, bytes, rules);
-    if (!candidate.ok) return { ok: false, hash: '', reason: candidate.reason };
+    if (!candidate.ok) return { ok: false, hash: '', reason: candidate.reason, ...(candidate.message ? { message: candidate.message } : {}) };
     const check = await identifyRom(candidate.bytes, rules);
     if (!check.ok) return check;
     const file = keepName ? romFileNameOf(candidate.name) : assertSafeName(`${check.rom.identity.id}${rules.extensions[0] ?? '.rom'}`, 'ROM file');

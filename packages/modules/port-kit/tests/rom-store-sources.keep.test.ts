@@ -71,6 +71,19 @@ describe('createRomStore zip input', () => {
     expect(await store.importRom('c.zip', zipOf([{ name: 'notes.txt', data: dump }]))).toMatchObject({ ok: false, reason: 'archive' });
     expect(await store.importRom('d.zip', new Uint8Array([0x50, 0x4b, 3, 4, 0, 0]))).toMatchObject({ ok: false, reason: 'archive' });
   });
+
+  it('takes a lone unknown dump only with acceptUnknown, and lists what a refused zip held', async () => {
+    const zipped = zipOf([{ name: 'readme.txt', data: dump }, { name: 'Hack.sfc', data: other }]);
+    const strict = createRomStore(memoryFiles().files, portWith());
+    expect(await strict.importRom('h.zip', zipped)).toEqual({
+      ok: false, hash: '', reason: 'archive', message: 'The zip holds no single dump to import: readme.txt (not a ROM file), Hack.sfc (unknown dump).',
+    });
+    const open = createRomStore(memoryFiles().files, portWith({ acceptUnknown: true }));
+    expect(await open.importRom('h.zip', zipped)).toMatchObject({ ok: true, rom: { unknown: true, identity: { label: 'Hack' } } });
+    expect(await strict.importRom('e.zip', zipOf([]))).toMatchObject({ reason: 'archive', message: 'The zip holds no files.' });
+    const small = createRomStore(memoryFiles().files, portWith({ maxBytes: 4 }));
+    expect(await small.importRom('s.zip', zipOf([{ name: 'a.sfc', data: dump }]))).toMatchObject({ message: 'The zip holds no single dump to import: a.sfc (too large).' });
+  });
 });
 
 describe('createRomStore kinds and removal', () => {

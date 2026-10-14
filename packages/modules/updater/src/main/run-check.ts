@@ -10,7 +10,7 @@ import { findNewerRelease } from './find-newer-release';
 import { refreshVersions } from './refresh-versions';
 import { updaterCapabilities } from './updater-capabilities';
 
-const infoOf = ({ version, releaseNotes, releaseDate }: VersionCandidate): UpdateInfo => ({ version, releaseNotes, releaseDate });
+const infoOf = ({ version, releaseNotes, releaseDate, release }: VersionCandidate): UpdateInfo => ({ version, releaseNotes, releaseDate, release });
 
 const checkWithManager = async (rt: UpdaterRuntime, manager: UpdateManager): Promise<UpdateInfo | null> => {
   const found = await manager.checkForUpdatesAsync();

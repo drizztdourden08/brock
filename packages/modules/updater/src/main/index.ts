@@ -9,5 +9,5 @@ export default updaterMain;
 export { updaterMain, createUpdaterMain };
 export type { VelopackHook, VelopackHooks, UpdaterOptions, UpdaterMain } from './updater-main.type';
 export type {
-  UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress,
+  ReleaseAsset, ReleaseMeta, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress,
 } from '../updater.type';

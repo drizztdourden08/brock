@@ -3,6 +3,7 @@ import type { UpdateInfo } from '../updater.type';
 import type { UpdateFeed } from './update-feed.type';
 import { compareVersions } from './compare-versions';
 import { fetchReleases } from './fetch-releases';
+import { releaseMetaOf } from './release-meta-of';
 import { versionOfTag } from './version-of-tag';
 
 const findNewerRelease = async (feed: UpdateFeed, current: string, allowPrerelease: boolean): Promise<UpdateInfo | null> => {
@@ -14,6 +15,7 @@ const findNewerRelease = async (feed: UpdateFeed, current: string, allowPrerelea
     version: newest.version,
     releaseNotes: newest.release.body ?? '',
     releaseDate: newest.release.published_at ?? '',
+    release: releaseMetaOf(newest.release),
   };
 };
 

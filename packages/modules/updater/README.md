@@ -104,7 +104,7 @@ const checkAndOpen = useUpdaterStore((s) => s.checkAndOpen);
 
 ### A notice for a version
 
-`setUpdateNotice(notice)` puts the app's own content in the dialog for the version the user is about to install, above its release notes: a warning that an update resets some data, a note on what to do after a downgrade. `notice` is either a map from version to content, or a function that gets `{ version, currentVersion, action, prerelease }` (`action` is `update`, `reinstall` or `downgrade`) and returns content or nothing. A string shows as a warning callout; any other node is drawn as given. It returns the undo, and `setUpdateNotice(null)` clears it.
+`setUpdateNotice(notice)` puts the app's own content in the dialog for the version the user is about to install, above its release notes: a warning that an update resets some data, a note on what to do after a downgrade. `notice` is either a map from version to content, or a function that gets `{ version, currentVersion, action, prerelease, releaseNotes, release }` (`action` is `update`, `reinstall` or `downgrade`) and returns content or nothing. `release` is the GitHub release of that version, or `null` when the updater could not read it: `{ tag, name, url, publishedAt, prerelease, assets }`, each asset `{ name, url, size, contentType }`, so a notice can depend on a file the release carries (a migration guide, a format manifest) as well as on the version. `UpdateInfo` and `VersionOption` carry the same `release`. A string shows as a warning callout; any other node is drawn as given. It returns the undo, and `setUpdateNotice(null)` clears it.
 
 ```tsx
 import { setUpdateNotice } from '@drizztdourden08/brock-updater/renderer';
@@ -113,6 +113,9 @@ setUpdateNotice({ '2.0.0': 'This update resets your layout to the default.' });
 
 setUpdateNotice(({ version, currentVersion }) =>
   version.startsWith('3.') && !currentVersion.startsWith('3.') ? <Callout tone="info">Version 3 moves your data to a new folder.</Callout> : null);
+
+setUpdateNotice(({ release }) =>
+  release?.assets.some((asset) => asset.name === 'data-format-change.md') ? 'This version changes the format of your saved files. Back them up first.' : null);
 ```
 
 Release notes show in brock-react's `ReleaseNotesPanel` with `markdown` on: drawn as formatted markdown by Tessera's `Markdown` primitive once the installed Tessera exports it, as text that keeps its line breaks until then. Links open in the browser.

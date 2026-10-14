@@ -28,6 +28,7 @@ import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
+import { useBarControls } from '../../behavior/useBarControls';
 import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
@@ -38,7 +39,8 @@ import type { AppShellProps } from './AppShell.type';
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review } = props;
   const { product, home, logoSrc } = useBrock();
-  const windowChrome = useCapability('windowChrome');
+  const titleBar = useCapability('titleBar');
+  const controls = useBarControls(product.window.titleBar.controls);
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
 
@@ -70,11 +72,11 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   return (
     <>
       <Box className="brock-app" inert={failure !== null}>
-        {windowChrome && (
+        {titleBar && (
           <AppTitleBar
             title={product.window.title ?? product.name}
             menu={barMenu}
-            controls={product.window.titleBar.controls}
+            controls={controls}
             instanceName={instanceName()}
             logoSrc={logoSrc}
             actions={actions}

@@ -124,6 +124,7 @@ interface AppServices {}
 
 interface Capabilities {
   windowChrome: boolean;
+  titleBar: boolean;
   selfUpdate: boolean;
   nativeFileDialog: boolean;
   revealDataFolder: boolean;

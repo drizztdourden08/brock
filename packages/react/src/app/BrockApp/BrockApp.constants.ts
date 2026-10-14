@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind constants */
-import type { LogLevel } from '@drizztdourden08/brock-core';
+import type { LogLevel, TitleBarControls } from '@drizztdourden08/brock-core';
 import type { TesseraOverrides } from '@drizztdourden08/tessera/primitives';
 import { clipboardWriter } from '../../host/clipboard-writer';
 import type { MenuItem } from '../../menu/menu.type';
@@ -36,7 +36,9 @@ const DEV_CONSOLE_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'dev-console', label
 
 const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
+const NO_WINDOW_CONTROLS: TitleBarControls = { fullscreen: false, pin: false, minimize: false, maximize: false };
+
 export {
-  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
+  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS, NO_WINDOW_CONTROLS,
   PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
 };

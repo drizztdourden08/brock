@@ -95,6 +95,7 @@ const createElectronFactory = (): PlatformFactory => {
     },
     capabilities: {
       windowChrome: true,
+      titleBar: true,
       selfUpdate: true,
       nativeFileDialog: true,
       revealDataFolder: true,

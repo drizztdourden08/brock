@@ -3,6 +3,7 @@ import type {
   DevicePort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
 } from '@drizztdourden08/brock-core';
 import { EMPTY_SUMMARY } from './web-factory.constants';
+import { pickBrowserFile } from './pick-browser-file';
 
 const noopUnsub = () => () => {};
 const resolveFalse = () => Promise.resolve(false);
@@ -70,16 +71,7 @@ const createFileStore = (): FileStore => ({
 });
 
 const createFilePicker = (): FilePickerPort => ({
-  pickFile: (opts) => new Promise((resolve) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    if (opts?.extensions?.length) input.accept = opts.extensions.map((e) => `.${e}`).join(',');
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      resolve(file ? { name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) } : null);
-    };
-    input.click();
-  }),
+  pickFile: pickBrowserFile,
   saveFile: ({ name, bytes }) => {
     const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/octet-stream' }));
     const link = document.createElement('a');
@@ -95,6 +87,7 @@ const createWebFactory = (): PlatformFactory => ({
   info: { host: 'web', os: 'unknown', formFactor: 'desktop', input: 'pointer', isDev: false },
   capabilities: {
     windowChrome: false,
+    titleBar: false,
     selfUpdate: false,
     nativeFileDialog: false,
     revealDataFolder: false,

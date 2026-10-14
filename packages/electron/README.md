@@ -44,7 +44,7 @@ Base handlers: boot, window, aspectRatio, app, dialog, file, storage, profiles (
 
 The app window is created with `show: false` at its saved geometry and is shown only at the reveal. An automation launch (`flags.isHeadlessLaunch()`) places the splash and the app window off every monitor, `focusable: false`, shown inactive and kept in the background. `--muted` and `--sound` reach the renderer as `--startup-muted` and `--startup-sound`; nothing touches the webContents audio.
 
-`--screenshot=<name>` captures the window to `Data/screenshots/<name>.png` once it is revealed (or after 20 s) and quits. `--screenshot-splash=<name>` captures the splash at the first renderer progress, holds the reveal until the file is written, writes `<name>-failed.png` if the boot stops, and quits unless `--review` or `--screenshot` also runs. `--review` captures the splash the same way by itself, as `00-splash.png` in the report folder (`00-splash-failed.png` when the boot stops first).
+`--screenshot=<name>` captures the window to `Data/screenshots/<name>.png` once it is revealed and the renderer's screenshot holds are released (or after 20 s), and quits. `--screenshot-splash=<name>` captures the splash at the first renderer progress, holds the reveal until the file is written, writes `<name>-failed.png` if the boot stops, and quits unless `--review` or `--screenshot` also runs. `--review` captures the splash the same way by itself, as `00-splash.png` in the report folder (`00-splash-failed.png` when the boot stops first).
 
 ## Automated review
 
@@ -84,7 +84,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 - The splash is a top-level window: `frame: false`, `roundedCorners: false`, `hasShadow: false`, `thickFrame: false`, not resizable or movable, centred on the display the app will open on. Its preload (`/splash-preload`) exposes `window.brockSplash` with `onProgress`, `onFailure`, `retry`, `quit` and `openLogs`; main sends `splash:progress` and `splash:failure` and replays the last state when the page finishes loading. Closing the splash before the reveal quits the app.
 - The reveal waits for the main tasks, the renderer's `boot:ready` (sent after its `first-frame` task) and any hold such as the splash capture. It sets the app window to opacity 0, shows it, fades it to 1 while the splash fades to 0 over 220 ms, then destroys the splash. `setOpacity` is a no-op without a compositing window manager, so nothing depends on the fade running.
 - Main joins the two progress streams: its own weighted tasks plus the renderer's, with a reserve of 4 weight units for the renderer until its first report. The bar never moves back. A failure (`boot:failed`, a main task, `render-process-gone`, a failed main frame load, or 8 s without a renderer message) shows the error screen. Retry reloads the app window after a renderer failure and relaunches the app after a main one.
-- `--screenshot=<name>` captures at the reveal, then quits; a 20 s watchdog fires the same capture when the reveal never comes so an automated boot always ends. A boot failure exits 1.
+- `--screenshot=<name>` captures at the reveal, after the renderer's screenshot holds (`holdScreenshot`), then quits; a 20 s watchdog fires the same capture when the reveal never comes so an automated boot always ends. A boot failure exits 1.
 
 ## Window details
 

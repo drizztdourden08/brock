@@ -14,6 +14,8 @@ interface WindowControlsPort {
   isFullscreen: () => Promise<boolean>;
   onMaximizedChange: (cb: (value: boolean) => void) => Unsub;
   onFullscreenChange: (cb: (value: boolean) => void) => Unsub;
+  setAudioMuted?: (muted: boolean) => Promise<boolean>;
+  isAudioMuted?: () => Promise<boolean>;
 }
 
 export type { WindowControlsPort, Unsub };

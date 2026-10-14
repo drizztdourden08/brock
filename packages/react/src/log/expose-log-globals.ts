@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind logic */
-import type { AppLogBus, LogGlobals } from './app-log.type';
+import { windowGlobal } from '../host/window-global';
+import type { AppLogBus } from './app-log.type';
 
 const exposeLogGlobals = (target: AppLogBus): void => {
-  const globals = window as LogGlobals;
-  globals.__logEntries = () => target.getEntries();
-  globals.__logSubscribe = target.subscribe;
+  windowGlobal.write('__logEntries', () => target.getEntries());
+  windowGlobal.write('__logSubscribe', target.subscribe);
 };
 
 export { exposeLogGlobals };

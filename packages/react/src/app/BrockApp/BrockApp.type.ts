@@ -54,6 +54,7 @@ interface BrockAppProps<S extends object> {
   review?: AppReview;
   tours?: readonly TourDef[];
   bugReport?: BrockAppBugReport;
+  sessionLog?: boolean;
 }
 
 interface MenuBuildInput {

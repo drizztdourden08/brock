@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind logic */
 import type { AppIpcApi, AppIpcMaps } from '@drizztdourden08/brock-core';
-import type { ApiWindow } from './host-api.type';
+import { HOST_API_GLOBAL } from './host.constants';
+import { windowGlobal } from './window-global';
 
 const hostApi = <M extends AppIpcMaps = Record<never, never>>(): AppIpcApi<M> | null =>
-  typeof window === 'undefined' ? null : (((window as ApiWindow).api ?? null) as AppIpcApi<M> | null);
+  (windowGlobal.read(HOST_API_GLOBAL) ?? null) as AppIpcApi<M> | null;
 
 export { hostApi };

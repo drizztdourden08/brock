@@ -21,3 +21,4 @@ export { useScreenStateStore } from './useScreenStateStore';
 export type { ScreenStates, ScreenStateSetter, ScreenStateState, ScreenViews } from './screen-state.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';
+export { uiViews } from './ui-views';

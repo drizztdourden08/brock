@@ -11,6 +11,7 @@ interface FileStore {
   exists: (path: string) => Promise<boolean>;
   mkdir: (dir: string) => Promise<void>;
   stat: (path: string) => Promise<FileStat | null>;
+  trash?: (path: string) => Promise<void>;
 }
 
 export type { FileStore };

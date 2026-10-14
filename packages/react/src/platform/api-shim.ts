@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { BASE_LIST_METHODS, BASE_RETURNS } from './api-shim.constants';
-import type { AnyFn, ApiShimMaps, ApiShimOptions, Returns, ShimWindow } from './api-shim.type';
+import { HOST_API_GLOBAL } from '../host/host.constants';
+import { windowGlobal } from '../host/window-global';
+import type { AnyFn, ApiShimMaps, ApiShimOptions, Returns } from './api-shim.type';
 
 const eventStub = (): (() => void) => () => {};
 const emptyList = (): unknown[] => [];
@@ -19,8 +21,7 @@ const osFromUserAgent = (): NodeJS.Platform => {
 };
 
 const installApiShim = (maps: ApiShimMaps, options: ApiShimOptions = {}): void => {
-  const target = window as ShimWindow;
-  if (target.api) return;
+  if (windowGlobal.read(HOST_API_GLOBAL)) return;
 
   const lists = new Set([...BASE_LIST_METHODS, ...(options.listMethods ?? [])]);
   const returns = { ...BASE_RETURNS, ...(options.returns ?? {}) };
@@ -38,7 +39,7 @@ const installApiShim = (maps: ApiShimMaps, options: ApiShimOptions = {}): void =
   for (const method of Object.keys(maps.send)) api[method] = () => {};
   for (const method of Object.keys(maps.events)) api[method] = eventStub;
 
-  target.api = api;
+  windowGlobal.write(HOST_API_GLOBAL, api);
 };
 
 export { installApiShim };

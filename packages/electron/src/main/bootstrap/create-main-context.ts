@@ -1,4 +1,5 @@
 /* @layer electron-main @kind logic */
+import { shell } from 'electron';
 import { is } from '@electron-toolkit/utils';
 import { createProfileStore } from '@drizztdourden08/brock-core/storage';
 import type { EmitToWindow, MainContext, MainLogLevel } from '../types/main-context.type';
@@ -16,7 +17,7 @@ import { servicesProxy } from '../services/services-proxy';
 import { openRouter } from '../open/open-router';
 
 const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [] }: ContextInput): MainContext => {
-  const files = createNodeFileStore();
+  const files = createNodeFileStore({ trashItem: (full) => shell.trashItem(full) });
   const profiles = createProfileStore(files, profileHooks);
   const storage = createDataDomains(dataDomains, (dir) => getUserDataPath(dir));
 

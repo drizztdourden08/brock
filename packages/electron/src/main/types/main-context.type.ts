@@ -11,6 +11,7 @@ import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
 import type { JobRegistry, StartJob } from '../jobs/job.type';
 import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
+import type { FileWriteGuard } from '../files/file-guard.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -93,6 +94,7 @@ interface BootstrapOptions {
   onOpen?: (request: OpenRequest, ctx: MainContext) => void;
   singleInstance?: boolean;
   bugReport?: BugReportOptions;
+  fileGuard?: FileWriteGuard;
   paths?: BootstrapPaths;
   security?: SecurityOptions;
 }

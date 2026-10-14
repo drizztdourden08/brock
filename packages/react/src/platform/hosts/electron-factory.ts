@@ -33,6 +33,8 @@ const createWindowControls = (): WindowControlsPort => {
     isFullscreen: () => api.isFullscreen(),
     onMaximizedChange: (cb) => api.onMaximizedChange(cb),
     onFullscreenChange: (cb) => api.onFullscreenChange(cb),
+    setAudioMuted: (muted) => api.setAudioMuted(muted),
+    isAudioMuted: () => api.isAudioMuted(),
   };
 };
 
@@ -62,6 +64,7 @@ const createFileStore = (): FileStore => {
     exists: (path) => api.fileExists(path),
     mkdir: (dir) => api.fileMkdir(dir),
     stat: (path) => api.fileStat(path),
+    trash: (path) => api.fileTrash(path),
   };
 };
 

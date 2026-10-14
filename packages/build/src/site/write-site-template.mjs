@@ -3,6 +3,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SITE_TEMPLATE_DIR } from './site.constants.mjs';
+import { siteViewPath } from './site-view-names.mjs';
 
 const TEMPLATE_ROOT = fileURLToPath(SITE_TEMPLATE_DIR);
 
@@ -19,10 +20,10 @@ const fill = (text, values) => Object.entries(values).reduce((out, [key, value])
  * @returns {string[]} the files written, from the site folder
  */
 const writeSiteTemplate = (siteRoot, values) => templateFiles().map((file) => {
-  const target = relative(TEMPLATE_ROOT, file).replace(/\.tmpl$/, '');
+  const target = siteViewPath(relative(TEMPLATE_ROOT, file).replace(/\.tmpl$/, '').replace(/\\/g, '/'), values);
   mkdirSync(dirname(join(siteRoot, target)), { recursive: true });
   writeFileSync(join(siteRoot, target), fill(readFileSync(file, 'utf8'), values), 'utf8');
-  return target.replace(/\\/g, '/');
+  return target;
 });
 
 export { writeSiteTemplate };

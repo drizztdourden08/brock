@@ -1,7 +1,7 @@
   web:
     runs-on: ubuntu-latest
     steps:
-__SETUP__
+__SETUP____BEFORE_BUILD__
 
       - name: Build the web app
-        run: pnpm --dir "$APP_DIR" exec brock web build
+        run: pnpm --dir "$APP_DIR" exec brock web build__AFTER_BUILD__

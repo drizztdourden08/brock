@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 const roots = [];
 
@@ -39,4 +39,16 @@ const removeTempRepos = () => {
   roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true }));
 };
 
-export { tempRepo, brockWorkspace, removeTempRepos };
+const BUILD_PACKAGE = resolve(import.meta.dirname, '..');
+
+/**
+ * @param {string} root
+ * @returns {string} the folder, with this brock-build linked in
+ */
+const linkBuildPackage = (root) => {
+  mkdirSync(join(root, 'node_modules', '@drizztdourden08'), { recursive: true });
+  symlinkSync(BUILD_PACKAGE, join(root, 'node_modules', '@drizztdourden08', 'brock-build'), 'junction');
+  return root;
+};
+
+export { tempRepo, brockWorkspace, removeTempRepos, linkBuildPackage, BUILD_PACKAGE };

@@ -8,9 +8,9 @@ const usage = {
   rules: ['Replace it with the site\'s own first page; keep the page in src/views and its words in Home.constants.ts.'],
   a11y: ['The site name is the page heading.'],
   buildingBlock: true,
-  example: `import { Home } from '@app/views/Home';
+  example: `import { __HOME__ } from '@app/views/__HOME__';
 
-const HomeSample = () => <Home />;
+const HomeSample = () => <__HOME__ />;
 `,
   propsHash: '69a6789bb8733db8',
 } satisfies ComponentUsage;

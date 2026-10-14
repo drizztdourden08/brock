@@ -8,6 +8,7 @@ import { loadSite } from './load-site.mjs';
 import { DEFAULT_SITE_BRAND, SITE_NAME_RULE, SITES_DIR } from './site.constants.mjs';
 import { repoRootOf, siteDirs } from './site-dirs.mjs';
 import { sitePackageJson } from './site-package.mjs';
+import { siteViewValues } from './site-view-names.mjs';
 import { registerSite } from './site-registrations.mjs';
 import { ensureSitesGlob } from './sites-glob.mjs';
 import { syncSites } from './sync-sites.mjs';
@@ -76,13 +77,15 @@ const addSite = async ({ rootDir, name, brand, api }) => {
   const offset = freeOffset(taken);
   const siteDir = `${SITES_DIR}/${name}`;
   const siteRoot = join(repoRoot, siteDir);
-  const values = { NAME: name, TITLE: titleOf(name), BRAND: brand ?? (await defaultBrand(repoRoot)), PORT_OFFSET: String(offset), API: apiLine(apiValue) };
+  const values = {
+    NAME: name, TITLE: titleOf(name), BRAND: brand ?? (await defaultBrand(repoRoot)), PORT_OFFSET: String(offset), API: apiLine(apiValue), ...siteViewValues(name),
+  };
   writeSiteTemplate(siteRoot, values);
   const scope = scopeOf(repoRoot);
   const pkg = sitePackageJson({ repoRoot, siteRoot, packageName: scope ? `${scope}/${name}` : name });
   writeFileSync(join(siteRoot, 'package.json'), `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
   const changed = [...(ensureSitesGlob(repoRoot, siteDir) ? [WORKSPACE_FILE] : []), ...registerSite(repoRoot, siteDir)];
-  await syncSites(repoRoot, { check: false, only: [siteDir] });
+  await syncSites(repoRoot, { check: false, only: [siteDir], command: 'brock site add' });
   await writeGuide(repoRoot, { label: 'brock site add' });
   return { siteDir, port: offset, changed };
 };

@@ -62,6 +62,7 @@
  * @property {Record<string, LaunchTarget>} targets
  * @property {{ provision: ProvisionStep[], build: BuildStep[] }} steps
  * @property {GuardRule[]} guards
+ * @property {{ ci?: Record<string, object[]>, release?: Record<string, object[]> }} [workflows] steps for the managed workflows
  */
 
 /**

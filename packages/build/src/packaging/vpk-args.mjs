@@ -41,6 +41,7 @@ const packIconOf = (product, platform) => {
  * @property {string | null} [splash] @property {string | null} [accent]
  * @property {string | null} [notes] @property {string | null} [channel]
  * @property {boolean} [full]
+ * @property {string | null} [icon] the app's own vpk icon, from packaging.velopackIcons
  * @property {import('@drizztdourden08/brock-core/product').InstallerConfig} [installer]
  */
 
@@ -79,7 +80,7 @@ const vpkPackArgs = ({ product, version, platform, packDir, outputDir, extras = 
   'pack', '--packId', product.id, '--packVersion', version, '--packTitle', product.name,
   '--packAuthors', product.author.name, '--packDir', packDir, '--mainExe', mainExeOf(product, platform),
   '--outputDir', outputDir,
-  ...optional('--icon', packIconOf(product, platform)),
+  ...optional('--icon', extras.icon ?? packIconOf(product, platform)),
   ...(platform === 'win32' ? windowsArgs(extras) : []),
   ...optional('--releaseNotes', extras.notes),
   ...optional('--channel', extras.channel),

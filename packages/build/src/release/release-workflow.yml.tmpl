@@ -79,7 +79,7 @@ jobs:
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "full=$FULL" >> "$GITHUB_OUTPUT"
+          echo "full=$FULL" >> "$GITHUB_OUTPUT"__PREPARE_STEPS__
 
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
@@ -149,7 +149,7 @@ __DOWNLOADS__
       - name: Commit the version and tag it
         shell: bash
         env:
-          BRANCH: ${{ github.event.repository.default_branch }}
+          BRANCH: __BRANCH__
         run: |
           TAG="${{ needs.prepare.outputs.tag }}"
           __SET_VERSION__

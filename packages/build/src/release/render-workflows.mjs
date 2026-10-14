@@ -3,10 +3,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { DEFAULT_TARGETS } from '../platforms/platforms.constants.mjs';
+import { collectWorkflowSteps } from './collect-workflow-steps.mjs';
 import { composeWorkflows, workspaceCi } from './compose-workflows.mjs';
 import { defaultBranchOf } from './default-branch.mjs';
 import { keepGithubTracked } from './keep-github-tracked.mjs';
 import { releaseLayout } from './release-layout.mjs';
+import { managedWorkflows, stepSources } from './workflow-modes.mjs';
 import { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, WORKFLOWS_DIR } from './workflows.constants.mjs';
 
 const slashed = (path) => path.replace(/\\/g, '/');
@@ -29,33 +31,46 @@ const trackedIgnore = (repoDir) => {
 };
 
 /**
+ * @param {import('../config.mjs').BrockConfig} config
+ * @param {import('./release-layout.mjs').ReleaseLayout} layout
+ */
+const composeInputOf = (config, layout) => ({
+  targets: config.targets ?? DEFAULT_TARGETS,
+  appDir: layout.appDir,
+  prefix: artifactPrefixOf(config.product),
+  app: layout.app,
+  baselines: config.review?.baselines === true,
+});
+
+/**
+ * @param {import('./release-layout.mjs').ReleaseLayout} layout
+ * @returns {boolean} the first of several apps writes the workspace ci.yml
+ */
+const writesSharedCi = (layout) => layout.app !== null && layout.apps[0] === layout.appDir;
+
+/**
  * @param {string} rootDir the app root
  * @param {import('../config.mjs').BrockConfig} config
  * @param {{ manifest: Record<string, any> }[]} modules
- * @returns {{ path: string, content: string }[]} workflows and .gitignore, from the app
+ * @param {{ pluginSteps?: import('./collect-workflow-steps.mjs').StepSource[] }} [opts] the repo plugins' steps
+ * @returns {{ path: string, content: string }[]} the managed workflows and .gitignore
  */
-const renderWorkflows = (rootDir, config, modules) => {
+const renderWorkflows = (rootDir, config, modules, { pluginSteps = [] } = {}) => {
   const layout = releaseLayout(rootDir, config.product);
   if (!layout) return [];
+  const managed = managedWorkflows(config.workflows);
   const systemSteps = modules.flatMap((m) => m.manifest.ci ?? []);
+  const steps = collectWorkflowSteps(stepSources(config, modules, pluginSteps));
   const branch = defaultBranchOf(layout.repoDir);
-  const { ci, release } = composeWorkflows({
-    targets: config.targets ?? DEFAULT_TARGETS,
-    appDir: layout.appDir,
-    prefix: artifactPrefixOf(config.product),
-    systemSteps,
-    app: layout.app,
-    baselines: config.review?.baselines === true,
-    branch,
-  });
+  const { ci, release } = composeWorkflows({ ...composeInputOf(config, layout), systemSteps, steps, branch });
   const at = (file) => slashed(relative(rootDir, join(layout.repoDir, file)));
   const files = workflowFilesOf(layout);
-  const shared = layout.app && layout.apps[0] === layout.appDir ? [{ path: at(CI_WORKFLOW_FILE), content: workspaceCi(systemSteps, branch) }] : [];
+  const sharedCi = () => workspaceCi(systemSteps, branch, { steps, appDir: layout.appDir });
   const ignore = trackedIgnore(layout.repoDir);
   return [
-    ...shared,
-    { path: at(files.ci), content: ci },
-    { path: at(files.release), content: release },
+    ...(managed.ci && writesSharedCi(layout) ? [{ path: at(CI_WORKFLOW_FILE), content: sharedCi() }] : []),
+    ...(managed.ci ? [{ path: at(files.ci), content: ci }] : []),
+    ...(managed.release ? [{ path: at(files.release), content: release }] : []),
     ...(ignore === null ? [] : [{ path: at('.gitignore'), content: ignore }]),
   ];
 };

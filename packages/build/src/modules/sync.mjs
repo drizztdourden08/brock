@@ -92,9 +92,14 @@ const writeDrifted = (rootDir, files, check) => {
 };
 
 /**
+ * @param {import('../config.mjs').BrockConfig} config
+ */
+const managedFileOptions = (config) => ({ aliases: config.build?.aliases, compilerOptions: config.tsconfig?.compilerOptions });
+
+/**
  * @param {string} rootDir
  * @param {import('../config.mjs').BrockConfig} config
- * @param {{ check?: boolean, onMissing?: 'throw' | 'skip'}} [opts]
+ * @param {{ check?: boolean, onMissing?: 'throw' | 'skip', pluginSteps?: import('../release/collect-workflow-steps.mjs').StepSource[] }} [opts] pluginSteps: of the repo plugins
  * @returns {SyncResult}
  */
 const syncApp = (rootDir, config, opts = {}) => {
@@ -102,7 +107,7 @@ const syncApp = (rootDir, config, opts = {}) => {
   const { modules, missing } = resolveModules(rootDir, config.modules ?? []);
   if (onMissing === 'throw') assertResolved(missing);
   const inWorkspace = findWorkspaceRoot(rootDir) !== null;
-  const workflows = renderWorkflows(rootDir, config, modules);
+  const workflows = renderWorkflows(rootDir, config, modules, opts);
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
     ...renderBootFiles(rootDir),
@@ -114,7 +119,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderToursFiles(rootDir),
     ...renderPaletteFile(rootDir, config),
     ...renderTesseraEntryFiles(rootDir),
-    ...renderManagedFiles({ inWorkspace, aliases: config.build?.aliases }),
+    ...renderManagedFiles({ inWorkspace, ...managedFileOptions(config) }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
     ...clangFormatFiles(rootDir, config),

@@ -2,7 +2,7 @@
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-__SETUP__
+__SETUP____BEFORE_PACKAGE__
 
       - name: Build the web app
         run: pnpm --dir "$APP_DIR" exec brock web build
@@ -11,7 +11,7 @@ __SETUP__
         shell: bash
         run: |
           mkdir -p upload
-          (cd "$APP_DIR/dist/web" && zip -qr "$GITHUB_WORKSPACE/upload/__ZIP__" .)
+          (cd "$APP_DIR/dist/web" && zip -qr "$GITHUB_WORKSPACE/upload/__ZIP__" .)__AFTER_PACKAGE__
 
       - uses: actions/upload-artifact@v7
         with:

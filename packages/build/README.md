@@ -128,7 +128,7 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 - `commands/add.mjs` edits `brock.config.ts` textually and touches only the `modules: [...]` array literal; a one-entry-per-line array keeps the indentation of its first entry and the trailing comma. A built-in id is looked up in the registry; anything else is an npm spec and the id then comes from the installed package manifest.
 - `brock build` writes `dist/electron`, `dist/preload` and `dist/renderer`; `brock package` is the release step on top of it.
 - `packaging/`: `commands/package.mjs` runs the build, electron-builder with `--config electron-builder.config.cjs` for the current OS, the Setup splash and `vpk pack`. `vpk-args.mjs` builds the pack arguments from the product and `product.installer` (pure, so it is the part to test), `run-vpk.mjs` finds `vpk` in `~/.dotnet/tools` before `PATH`, `name-pack-outputs.mjs` gives the downloads their release names and fails when vpk's own naming moved, `build-installer-stub.mjs` writes `product.h` (`stub-product-header.mjs`), the resource script, the icon, the mark and the licence text into `release/installer-stub` and compiles `installer-stub/` with `cl.exe` through `vcvars64.bat`, `write-install-manifest.mjs` writes the install manifest, `ship-installer.mjs` runs both after a Windows pack, and `after-pack.mjs` is the electron-builder hook that prunes the foreign Velopack bindings and unused Electron DLLs and stamps the exe icon with rcedit.
-- `release/`: the workflow Builder. `composeWorkflows({ targets, appDir, prefix, systemSteps, baselines })` expands the targets, asks each chosen platform for its CI job and its release job, and fills `ci-workflow.yml.tmpl` (the `quality` and `review` jobs every app gets, then the platform CI jobs) and `release-workflow.yml.tmpl` (the `prepare` job, the platform build jobs, then `release` with `needs` and the Downloads list built from each job's downloads). `setup-steps.yml.tmpl` is the checkout, pnpm, Node and install every job starts with; a module's manifest `ci` steps go in before the install on the runners whose `os` matches. `brock sync` writes both files for a standalone app; `brock adopt` writes `release.yml` once for a repo with `apps/<app>`.
+- `release/`: the workflow Builder. `composeWorkflows({ targets, appDir, prefix, systemSteps, baselines })` expands the targets, asks each chosen platform for its CI job and its release job, and fills `ci-workflow.yml.tmpl` (the `quality` and `review` jobs every app gets, then the platform CI jobs) and `release-workflow.yml.tmpl` (the `prepare` job, the platform build jobs, then `release` with `needs` and the Downloads list built from each job's downloads). `setup-steps.yml.tmpl` is the checkout, pnpm, Node and install every job starts with; a module's manifest `ci` steps go in before the install on the runners whose `os` matches. `collectWorkflowSteps` checks the step lists of the modules (`brock.workflows`), the repo command's plugins and the app (`workflows.steps`), and each job splices them in at its step points through `ctx.setup` and `ctx.stepsAt`. `brock sync` writes both files for a standalone app; `brock adopt` writes `release.yml` once for a repo with `apps/<app>`.
 - `platforms/`: one Strategy per platform, `<id>/<id>.platform.mjs`, each built with `definePlatform({ id, label, doctor, scaffold, ciJob, releaseJob, secrets, secretsHint, managed })`, one step per file. See Platforms below.
 
 `brock start -- --no-focus --muted --user-data=<dir>` is the headless smoke test: the
@@ -518,6 +518,53 @@ build: {
   './x.worker?worker'` take static and dynamic imports.
 - `public/` is the renderer's public folder in every build, so `public/wasm/core.wasm` is served at
   `/wasm/core.wasm` in dev and copied to `dist/renderer/wasm/` (and `dist/web/wasm/`) as it is.
+- `define`: globals replaced at build time in main, preload, the renderer, its workers and the web
+  build, `{ __APP_BUILD__: '2026.10', __FLAGS__: { beta: true } }`. Each value is a JSON value; Brock
+  turns it into the expression Vite's `define` takes, so the code reads it as written. Declare each
+  name in a `.d.ts` of the app (`declare const __APP_BUILD__: string;`).
+
+`tsconfig.compilerOptions` merges over the managed `tsconfig.json`: key by key, and `paths` entry by
+entry beside `@app` and the aliases. `brock sync` writes the merged file and `brock check` compares it,
+so the options stay in the config:
+
+```ts
+tsconfig: { compilerOptions: { noUncheckedIndexedAccess: false } },
+```
+
+`workflows` adds the app's own steps to the managed CI and release workflows, and can leave a
+workflow to the app (`ci: 'own'`, `release: 'own'`); the step points, the step keys and what an owned
+workflow gives up are in docs/architecture.md, Workflows, App steps.
+
+```ts
+workflows: {
+  steps: {
+    ci: { beforeBuild: [{ name: 'Build the core', run: 'pnpm run core:build' }] },
+    release: { afterPackage: [{ name: 'Ship the data file', run: 'cp "$APP_DIR/out/data.bin" upload/' }] },
+  },
+},
+```
+
+`packaging` adds to the managed electron-builder config and to `vpk pack`:
+
+```ts
+packaging: {
+  extraResources: [{ from: 'native/build/addon.node', to: 'native/addon.node' }],
+  afterPack: 'build/after-pack.mjs',
+  fileAssociations: { mypack: { role: 'Editor', icon: 'mypack' } },
+  velopackIcons: { windows: 'build/setup.ico', linux: 'build/setup.png' },
+},
+```
+
+- `extraResources`: copied into the resources folder after the module resources, `from` relative to the app.
+- `afterPack`: a module of the app; its default export (or `afterPack`) gets electron-builder's
+  `AfterPackContext` after Brock's own hook (the Velopack bindings, the unused Electron files, the exe icon).
+- `fileAssociations`: per extension of `product.fileAssociations`, the macOS `role` (`Editor`, `Viewer`,
+  `Shell`, `None`) and an `icon` in place of the product's; the Windows file icon follows it.
+- `velopackIcons`: the icon `vpk pack` takes, an `.ico` on Windows and a `.png` on Linux, in place of the app icon.
+
+The app's `package.json` must say `"type": "module"`: the managed `electron.vite.config.ts` and
+`vite.web.config.ts` pass `import.meta.dirname`, which a CommonJS package leaves empty, and
+`brock check` fails while it is missing.
 
 `gate` declares the app's own gate steps, which `brock gate` runs, and with it the managed CI
 `quality` job and `<repo> upgrade`:

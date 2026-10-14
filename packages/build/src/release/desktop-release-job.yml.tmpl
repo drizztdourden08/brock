@@ -2,8 +2,8 @@
     needs: prepare
     runs-on: __RUNS_ON__
     steps:
-__SETUP__
-__VPK__
+__SETUP____VPK____BEFORE_PACKAGE__
+
       - name: Package
         shell: bash
         env:
@@ -18,7 +18,7 @@ __VPK__
         run: |
           mkdir -p upload
 __COLLECT__
-          ls -l upload
+          ls -l upload__AFTER_PACKAGE__
 
       - uses: actions/upload-artifact@v7
         with:

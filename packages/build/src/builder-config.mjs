@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { loadBrockConfig } from './load-config.mjs';
 import { modulePackaging } from './modules/module-packaging.mjs';
 import { createAfterPack } from './packaging/after-pack.mjs';
+import { appAfterPack, appExtraResources, withAssociationOptions } from './packaging/app-packaging.mjs';
 import { builderIcons } from './packaging/builder-icons.mjs';
 import { linuxMetadata } from './packaging/linux-metadata.mjs';
 import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
@@ -24,6 +25,7 @@ const toBuilderAssociations = (list = []) =>
     name: fa.name,
     mimeType: fa.mimeType ?? `application/x-${fa.ext.toLowerCase()}`,
     ...(fa.icon ? { icon: fa.icon } : {}),
+    ...(fa.role ? { role: fa.role } : {}),
   }));
 
 /**
@@ -50,10 +52,11 @@ const debOptions = (rootDir) => (existsSync(join(rootDir, DEB_POSTINST_FILE)) ? 
 
 /**
  * @param {ProductInput} product
- * @param {{ rootDir: string}} opts
+ * @param {{ rootDir: string, packaging?: import('./config.mjs').BrockPackagingOptions }} opts packaging: the options of brock.config.ts
  * @returns {Record<string, unknown>}  An electron-builder Configuration
  */
-const createBuilderConfig = (product, { rootDir }) => {
+const createBuilderConfig = (product, { rootDir, packaging = {} }) => {
+  const associations = withAssociationOptions(product.fileAssociations, packaging.fileAssociations);
   const prefix = product.artifactPrefix ?? `${product.id}-`;
   const icons = builderIcons(product.icons);
   const artifact = (os) => `${prefix}${os}-\${arch}.\${ext}`;
@@ -66,8 +69,8 @@ const createBuilderConfig = (product, { rootDir }) => {
     electronLanguages: ['en-US'],
     files: APP_FILES,
     asarUnpack: [VELOPACK_ASAR_UNPACK],
-    afterPack: createAfterPack(rootDir, icons.win),
-    fileAssociations: toBuilderAssociations(product.fileAssociations),
+    afterPack: createAfterPack(rootDir, icons.win, appAfterPack(packaging.afterPack)),
+    fileAssociations: toBuilderAssociations(associations),
     protocols: toBuilderProtocols(product),
     ...(Object.keys(linuxMeta.extraMetadata).length ? { extraMetadata: linuxMeta.extraMetadata } : {}),
     ...(product.repo ? { publish: [{ provider: 'github', owner: product.repo.owner, repo: product.repo.name }] } : {}),
@@ -76,7 +79,7 @@ const createBuilderConfig = (product, { rootDir }) => {
       ...(icons.win ? { icon: icons.win } : {}),
       artifactName: artifact('win'),
       signAndEditExecutable: false,
-      ...winFileIcons(product.fileAssociations),
+      ...winFileIcons(associations),
     },
     mac: {
       target: ['dmg', 'zip'],
@@ -100,11 +103,12 @@ const createBuilderConfig = (product, { rootDir }) => {
  */
 const loadBuilderConfig = async (rootDir) => {
   const cfg = await loadBrockConfig(rootDir);
-  const config = createBuilderConfig(cfg.product, { rootDir });
-  const { extraResources, exclude } = modulePackaging(rootDir, cfg.modules);
+  const config = createBuilderConfig(cfg.product, { rootDir, packaging: cfg.packaging });
+  const modules = modulePackaging(rootDir, cfg.modules);
+  const extraResources = [...modules.extraResources, ...appExtraResources(cfg.packaging?.extraResources)];
   return {
     ...config,
-    files: [...APP_FILES, ...exclude],
+    files: [...APP_FILES, ...modules.exclude],
     ...(extraResources.length ? { extraResources } : {}),
   };
 };

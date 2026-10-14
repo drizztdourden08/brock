@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { appTools } from './app-tools.mjs';
 import { appAliases } from './build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
+import { defineValues } from './build-options/define-values.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { loadBrockConfig } from './load-config.mjs';
@@ -26,6 +27,7 @@ const defineBrockWebConfig = async (rootDir, overrides = {}) => {
     root: src,
     base: './',
     publicDir: resolve(rootDir, 'public'),
+    define: defineValues(build?.define, 'brock.config.ts'),
     plugins: [devOnlyPlugin({ rootDir }), react(), ...polyfills(), splashPlugin({ rootDir, product }), ...manifest],
     worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
     resolve: { alias: appAliases(rootDir, build), dedupe: SHARED_SINGLETONS },

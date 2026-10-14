@@ -46,7 +46,8 @@
  * @typedef {object} JobContext
  * @property {string} appDir the app folder, from the repo root
  * @property {string} prefix the release file prefix
- * @property {(os: string, opts?: { release?: boolean }) => string} setup
+ * @property {(os: string, opts?: { release?: boolean, history?: boolean, platform?: string }) => string} setup
+ * @property {(point: string, os: string, platform?: string | null) => string} stepsAt a step point's steps
  */
 
 /**

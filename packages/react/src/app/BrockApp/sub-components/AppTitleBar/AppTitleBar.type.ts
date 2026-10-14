@@ -6,7 +6,7 @@ import type { MenuEntry } from '../../../../menu/menu.type';
 interface AppTitleBarProps {
   title: string;
   menu: readonly MenuEntry[];
-  controls: TitleBarControls;
+  controls: TitleBarControls | false;
   instanceName: string | null;
   logoSrc?: string;
   actions?: readonly WindowTitleBarAction[];

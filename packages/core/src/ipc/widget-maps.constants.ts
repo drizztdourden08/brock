@@ -22,6 +22,7 @@ const WIDGET_SEND_MAP = {
   setWidgetPrefs: 'widget:setPrefs',
   patchWidgetSettings: 'widget:patchSettings',
   advanceWidgetTour: 'widget:tourAdvance',
+  openWidgetSetting: 'widget:openSetting',
 } as const satisfies Record<string, keyof WidgetSendContract>;
 
 const WIDGET_EVENT_MAP = {
@@ -39,6 +40,7 @@ const WIDGET_EVENT_MAP = {
   onWidgetPrefs: 'widget:prefs',
   onWidgetSettingsPatch: 'widget:settingsPatch',
   onWidgetTourAdvance: 'widget:tourAdvanced',
+  onWidgetSettingTarget: 'widget:settingTarget',
   onReviewWidgetPref: 'review:widgetPref',
 } as const satisfies Record<string, keyof WidgetEventContract>;
 

@@ -22,6 +22,7 @@ const fakeJob = (): FakeJob => {
       line: (text) => { events.push(`line ${text}`); },
       log: (message) => { events.push(`log ${message}`); },
       skip: () => undefined,
+      setCancellable: () => undefined,
       done: () => { events.push('done'); },
       fail: (error) => { events.push(`fail ${error instanceof Error ? error.message : String(error)}`); },
       run: async (work) => {

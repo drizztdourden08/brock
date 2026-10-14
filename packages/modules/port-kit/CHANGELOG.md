@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.38.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.38.0
+- @drizztdourden08/brock-electron@0.38.0
+- @drizztdourden08/brock-react@0.38.0
+
 ## 0.37.0
 
 ### Patch Changes

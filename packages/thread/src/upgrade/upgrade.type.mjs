@@ -26,7 +26,7 @@
 /**
  * @typedef {object} StepResult
  * @property {string} name
- * @property {'passed' | 'failed' | 'skipped'} status
+ * @property {'passed' | 'failed' | 'skipped' | 'not run'} status
  * @property {string} [detail]
  */
 

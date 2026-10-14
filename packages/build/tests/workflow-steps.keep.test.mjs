@@ -85,6 +85,18 @@ describe('the workspace ci.yml of several apps', () => {
   });
 });
 
+describe('the Linux runner image', () => {
+  it('is pinned to ubuntu-24.04 in every Linux job, never ubuntu-latest', () => {
+    const app = { name: 'desktop', tagPrefix: 'desktop-v', notesDir: 'apps/desktop/release-notes' };
+    const { ci, release } = composeWorkflows({ targets: ['desktop', 'android', 'web'], prefix: 'a-', appDir: 'apps/desktop', app });
+    const text = `${ci}${release}${workspaceCi()}`;
+    expect(text).not.toMatch(/runs-on: ubuntu-latest/);
+    const linux = [...Object.values(parse(ci).jobs), ...Object.values(parse(release).jobs)].filter((job) => String(job['runs-on']).startsWith('ubuntu'));
+    expect(linux.map((job) => job['runs-on'])).toEqual(Array(linux.length).fill('ubuntu-24.04'));
+    expect(linux.length).toBe(9);
+  });
+});
+
 describe('collectWorkflowSteps', () => {
   it('keeps the order modules, plugins, then the app', () => {
     const step = (name) => ({ ci: { beforeBuild: [{ name, run: 'true' }] } });

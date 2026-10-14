@@ -10,7 +10,7 @@ import { bumpApp } from './bump-app.mjs';
 import { changelogBetween } from './changelog-between.mjs';
 import { gateSteps } from './gate-steps.mjs';
 import { runIn } from './run-in.mjs';
-import { runSteps } from './run-steps.mjs';
+import { notRun, runSteps } from './run-steps.mjs';
 import { upgradeApps } from './upgrade-apps.mjs';
 import { writeReports } from './write-reports.mjs';
 import { MIGRATIONS_FILE, REPORT_FILE, WORKTREE_PREFIX } from './upgrade.constants.mjs';
@@ -41,8 +41,9 @@ const runGate = (worktree, { plan, apps }, { review, log }) => {
   const install = runSteps([installStep(worktree.path)], log);
   const changelog = changelogBetween([worktree.path, ...apps.map((app) => app.dir)], { from: plan.current, to: plan.target, online: plan.mode === 'registry' });
   printChangelog(changelog, plan, log);
-  if (install.failed) return { results: install.results, failed: install.failed, changelog };
-  const gate = runSteps(gateSteps({ ...worktree, plan, review, apps }), log);
+  const steps = gateSteps({ ...worktree, plan, review, apps });
+  if (install.failed) return { results: [...install.results, ...notRun(steps, install.failed)], failed: install.failed, changelog };
+  const gate = runSteps(steps, log);
   return { results: [...install.results, ...gate.results], failed: gate.failed, changelog };
 };
 

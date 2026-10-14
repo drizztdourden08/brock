@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { useCallback, useEffect, useState } from 'react';
 import { useJob } from '@drizztdourden08/brock-react';
-import { CATALOG_JOB_PREFIX } from '../catalog.constants';
+import { catalogJobId } from '../jobs/catalog-job-id';
 import { requireCatalogApi } from './require-catalog-api';
 import type { CatalogItemState } from './catalog-item.type';
 import { installedRecordOf } from './installed-record-of';
@@ -10,7 +10,7 @@ import { useCatalogInstalled } from './useCatalogInstalled';
 const useCatalogItem = (itemId: string, liveVersion: number | null = null): CatalogItemState => {
   const record = useCatalogInstalled(installedRecordOf(itemId));
   const watch = useCatalogInstalled((state) => state.watch);
-  const { job, cancel } = useJob(`${CATALOG_JOB_PREFIX}${itemId}`);
+  const { job, cancel } = useJob(catalogJobId(itemId));
   const [error, setError] = useState<string | null>(null);
   const [signedOut, setSignedOut] = useState(false);
   useEffect(watch, [watch]);

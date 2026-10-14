@@ -17,6 +17,17 @@ const INSTALL_STEPS: JobStepDef[] = [
   { id: 'extract', label: 'Unpack', weight: 1 },
 ];
 
+const PROBE_ARGS: readonly string[] = ['--version'];
+const PROBE_TIMEOUT_MS = 15_000;
+const VERSION_PATTERN = /\d+(?:\.\d+)+/;
+const PATH_TTL_MS = 2_000;
+const REG_TIMEOUT_MS = 5_000;
+const REG_PATH_KEYS: readonly string[] = [
+  'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',
+  'HKCU\\Environment',
+];
+
 export {
   MODULE_ID, DATA_DIR, DEFAULT_VERSION, TOOL_ID, BINARY_NAME, SHA256_HEX, DOWNLOAD_PROTOCOLS, TOOL_OSES, TOOL_ARCHES, RUN_TIMEOUT_MS, INSTALL_STEPS,
+  PROBE_ARGS, PROBE_TIMEOUT_MS, VERSION_PATTERN, PATH_TTL_MS, REG_TIMEOUT_MS, REG_PATH_KEYS,
 };

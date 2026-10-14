@@ -11,6 +11,8 @@ interface SignInEntry {
 
 interface SignInStoreState {
   entries: Record<string, SignInEntry>;
+  loaded: boolean;
+  loadSignedIn: () => Promise<void>;
   begin: (providerId: string) => Promise<SignInResult>;
   cancel: (providerId: string) => Promise<void>;
   markSignedOut: (providerId: string) => void;

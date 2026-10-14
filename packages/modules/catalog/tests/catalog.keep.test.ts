@@ -1,101 +1,18 @@
 /* @layer core @kind test */
-import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { FileStore } from '@drizztdourden08/brock-core/platform';
-import type { JobSnapshot, OpenRequest } from '@drizztdourden08/brock-core/types';
-import type { JobHandle, MainContext } from '@drizztdourden08/brock-electron/main';
+import type { CatalogInstaller } from '../src/main/catalog-config.type';
 import { createCatalogLinks } from '../src/links/catalog-links';
 import { createCatalogClient } from '../src/main/catalog-client';
 import { catalogUrl as urlOf } from '../src/main/catalog-url';
-import type { CatalogConfig, CatalogInstaller } from '../src/main/catalog-config.type';
-import { configureCatalog } from '../src/main/configure-catalog';
 import { parseRegistry } from '../src/main/parse-registry';
 import { checkGrant } from '../src/main/check-grant';
 import { parseGrant } from '../src/main/parse-grant';
 import { verifyDownload } from '../src/main/verify-download';
+import { ITEM, SHA, grantFor, setup } from './catalog-sim/catalog-setup';
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
-
-const memoryFiles = (): FileStore & { data: Map<string, string> } => {
-  const data = new Map<string, string>();
-  return {
-    data,
-    readText: (path) => Promise.resolve(data.get(path) ?? null),
-    writeText: (path, text) => { data.set(path, text); return Promise.resolve(); },
-    readBytes: () => Promise.resolve(null),
-    writeBytes: () => Promise.resolve(),
-    list: () => Promise.resolve([]),
-    remove: (path) => { data.delete(path); return Promise.resolve(); },
-    exists: (path) => Promise.resolve(data.has(path)),
-    mkdir: () => Promise.resolve(),
-    stat: () => Promise.resolve(null),
-  };
-};
-
-const fakeJobs = () => {
-  const running = new Set<string>();
-  const steps: string[] = [];
-  const controller = new AbortController();
-  const job = (id: string): JobHandle => {
-    running.add(id);
-    const handle: JobHandle = {
-      id, signal: controller.signal, step: (step) => { steps.push(step); }, progress: () => undefined, line: () => undefined, log: () => undefined,
-      skip: () => undefined, done: () => undefined, fail: () => undefined,
-      run: async (work) => { try { return await work(handle); } finally { running.delete(id); } },
-    };
-    return handle;
-  };
-  const list = () => [...running].map((id) => ({ id, state: 'running' }) as JobSnapshot);
-  return { job, list, steps, controller };
-};
-
-const ITEM = new TextEncoder().encode('item bytes');
-const SHA = createHash('sha256').update(ITEM).digest('hex');
-
-const grantFor = (version: number, sha256 = SHA) => ({
-  itemId: 'abc', version, label: 'Starter Preset', url: 'https://cdn.example.com/abc.zip', bytes: ITEM.byteLength, sha256, container: 'zip', kind: 'preset',
-});
-
-const fetchStub = (grant: () => object) => vi.fn((url: RequestInfo | URL) => {
-  const href = url instanceof Request ? url.url : String(url);
-  if (href.startsWith('https://api.example.com/items/abc/download')) return Promise.resolve(Response.json(grant()));
-  if (href === 'https://cdn.example.com/abc.zip') return Promise.resolve(new Response(ITEM));
-  if (href.startsWith('https://api.example.com/items')) return Promise.resolve(Response.json({ items: [{ id: 'abc' }], nextCursor: null }));
-  return Promise.resolve(new Response('{}', { status: 401 }));
-});
-
-const setup = (grant: () => object = () => grantFor(1)) => {
-  const files = memoryFiles();
-  const jobs = fakeJobs();
-  const emit = vi.fn();
-  const openHandlers: ((request: OpenRequest) => void)[] = [];
-  const onOpen = (handler: (request: OpenRequest) => void) => {
-    openHandlers.push(handler);
-    return () => undefined;
-  };
-  const context: Partial<MainContext> = { files, job: jobs.job, jobs: { start: jobs.job, list: jobs.list, cancel: () => undefined, dismiss: () => undefined }, emit, onOpen };
-  const ctx = context as MainContext;
-  const installed: string[] = [];
-  const installer: CatalogInstaller = {
-    install: async ({ file, grant: answered }) => {
-      expect(await readFile(file)).toEqual(Buffer.from(ITEM));
-      installed.push(`${answered.label} ${answered.version}`);
-      return { installedName: `starter-${answered.version}` };
-    },
-    uninstall: vi.fn(() => Promise.resolve()),
-  };
-  const onRelease = vi.fn(() => 2);
-  const fetch = fetchStub(grant);
-  vi.stubGlobal('fetch', fetch);
-  const config: CatalogConfig = {
-    label: 'Library', endpoint: { baseUrl: 'https://api.example.com', fetch }, installers: { zip: installer }, onRelease,
-    schema: { item: (value) => value as { id: string }, page: (value) => value as { items: { id: string }[]; nextCursor: null } },
-  };
-  return { catalog: configureCatalog(ctx, config), files, jobs, emit, installer, installed, onRelease, openHandlers };
-};
 
 describe('install links', () => {
   const links = createCatalogLinks('my-app');
@@ -158,7 +75,7 @@ describe('installing and uninstalling', () => {
     expect(await catalog.reads().list()).toEqual([{ id: 'abc' }]);
     const result = await catalog.install({ itemId: 'abc', version: null });
     expect(result).toMatchObject({ ok: true, record: { itemId: 'abc', installedName: 'starter-1', kind: 'preset', container: 'zip' } });
-    expect(jobs.steps).toEqual(['grant', 'download', 'verify', 'unpack']);
+    expect(jobs.steps).toEqual(['grant', 'download', 'locked', 'verify', 'unpack']);
     expect(installed).toEqual(['Starter Preset 1']);
     expect(await catalog.installed()).toHaveLength(1);
     expect(emit).toHaveBeenCalledWith('catalog:changed');

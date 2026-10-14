@@ -11,8 +11,12 @@ export { portKitRenderer };
 export { portKitApi } from './port-kit-api';
 
 export { createGameCore } from './core/create-game-core';
+export { compileCore } from './core/compile-core';
+export { createCoreCalls } from './core/create-core-calls';
 export { useCoreState } from './core/useCoreState';
-export type { CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreControls, GameCore } from './core/game-core.type';
+export type {
+  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, GameCoreOptions, CoreControls, GameCore,
+} from './core/game-core.type';
 export type {
   EmscriptenFS, SdlAudio, EmscriptenModule, EmscriptenConfig, EmscriptenFactory,
 } from './core/emscripten.type';
@@ -28,11 +32,11 @@ export { attachSdlAudio } from './audio/attach-sdl-audio';
 export type { AudioOutput, SampleBlock, AudioAdapter } from './audio/audio.type';
 
 export { createLiveSettings } from './settings/create-live-settings';
-export type { LiveSettings } from './settings/live-settings.type';
+export type { LiveSettings, LiveSettingsCalls, LiveSettingsTarget } from './settings/live-settings.type';
 
 export { createSramSync } from './saves/create-sram-sync';
 export { createSaveSlots } from './saves/create-save-slots';
-export type { SramSyncOptions, SramSync, SaveSlotsOptions, SaveSlots } from './saves/save-session.type';
+export type { SramSource, SramSyncOptions, SramSync, SaveTransform, SaveSlotsOptions, SaveSlots } from './saves/save-session.type';
 
 export { createPortSession } from './session/create-port-session';
 export type { PortSessionOptions, PortSession } from './session/port-session.type';

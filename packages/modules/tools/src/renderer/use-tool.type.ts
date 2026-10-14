@@ -9,4 +9,8 @@ interface UseToolResult {
   refresh: () => Promise<void>;
 }
 
-export type { UseToolResult };
+interface UseToolOptions {
+  refreshOnFocus?: boolean;
+}
+
+export type { UseToolOptions, UseToolResult };

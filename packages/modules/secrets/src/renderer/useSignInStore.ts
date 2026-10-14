@@ -4,6 +4,7 @@ import type { SignInResult } from '../secrets.type';
 import type { SignInEntry, SignInStoreState } from './sign-in-store.type';
 import { FAILURE_TEXT, SIGN_IN_IDLE } from './sign-in-store.constants';
 import { secretsApi } from './secrets-api';
+import { applySignedIn } from './apply-signed-in';
 
 const failureText = (result: Extract<SignInResult, { ok: false }>): string | null => {
   const text = result.message ?? FAILURE_TEXT[result.reason];
@@ -25,6 +26,12 @@ const useSignInStore = create<SignInStoreState>()((set, get) => {
 
   return {
     entries: {},
+    loaded: false,
+
+    loadSignedIn: async () => {
+      const signedIn = await secretsApi()?.signIn.signedIn().catch(() => null);
+      set((s) => ({ loaded: true, entries: signedIn ? applySignedIn(s.entries, signedIn) : s.entries }));
+    },
 
     begin: async (providerId) => {
       if (entryOf(providerId).state === 'waiting') return { ok: false, reason: 'cancelled' };

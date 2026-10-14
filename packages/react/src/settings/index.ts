@@ -4,6 +4,7 @@ export type {
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
 } from './settings.type';
 export { createTabRegistry } from './tab-registry';
+export { moduleTabId } from './module-tab-id';
 export type { TabRegistry } from './tab-registry.type';
 export * from './SettingsLayout';
 export * from './SettingsHub';

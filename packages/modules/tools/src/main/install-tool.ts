@@ -21,6 +21,7 @@ const fetchAndUnpack = async (job: JobHandle, plan: InstallPlan, archive: string
       if (total) job.progress(received / total, `${formatBytes(received)} of ${formatBytes(total)}`);
     },
   });
+  job.setCancellable(false);
   job.step('verify', 'Checking the checksum');
   const verified = await verifyDownload(archive, download);
   if (!verified.success) throw new Error(verified.error);

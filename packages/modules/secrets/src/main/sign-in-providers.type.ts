@@ -6,6 +6,7 @@ interface SignInProviders {
   begin: (providerId: string) => Promise<SignInResult>;
   cancel: (providerId: string) => void;
   cancelAll: () => void;
+  signedIn: () => Promise<Record<string, boolean>>;
 }
 
 export type { SignInProviders };

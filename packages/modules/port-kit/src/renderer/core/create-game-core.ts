@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { CoreCalls, PortDefinition } from '../../port/port-definition.type';
 import type { EmscriptenModule } from './emscripten.type';
-import type { CoreBoot, CoreLog, GameCore } from './game-core.type';
+import type { CoreBoot, CoreLog, GameCore, GameCoreOptions } from './game-core.type';
 import { IDLE_STATE } from './game-core.constants';
 import { bootCore } from './boot-core';
 import { createCoreCalls } from './create-core-calls';
@@ -9,10 +9,11 @@ import { createCoreControls } from './create-core-controls';
 import { createStateHub } from './create-state-hub';
 import { teardownCore } from './teardown-core';
 import { watchCoreCrash } from './watch-core-crash';
+import { resolvePrecompiled } from './resolve-precompiled';
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
-const createGameCore = <S>(definition: PortDefinition<S>): GameCore<S> => {
+const createGameCore = <S>(definition: PortDefinition<S>, options: GameCoreOptions = {}): GameCore<S> => {
   const { exports } = definition.core;
   const hub = createStateHub();
   let mod: EmscriptenModule | null = null;
@@ -29,7 +30,10 @@ const createGameCore = <S>(definition: PortDefinition<S>): GameCore<S> => {
     mod = booted;
     calls = createCoreCalls(booted);
     if (headless && exports.initHeadless) calls.call(exports.initHeadless);
-    unwatch = watchCoreCrash(fail);
+    unwatch = watchCoreCrash((crash) => {
+      fail(crash.message);
+      options.onCrash?.(crash);
+    }, options.crashArmDelayMs);
     hub.set({ status: 'running', error: null });
   };
 
@@ -40,7 +44,8 @@ const createGameCore = <S>(definition: PortDefinition<S>): GameCore<S> => {
     log = boot.log ?? log;
     hub.set({ status: 'loading', error: null });
     try {
-      const booted = await bootCore(definition, boot, headless);
+      const compiled = await resolvePrecompiled(options.precompiled);
+      const booted = await bootCore(definition, boot, { headless, compiled });
       if (mine === generation) adopt(booted, headless);
       else teardownCore(booted, exports, log);
     } catch (error) {

@@ -79,3 +79,18 @@ describe('createJobRegistry', () => {
     expect(last().state).toBe('running');
   });
 });
+
+describe('JobHandle.setCancellable', () => {
+  it('turns cancel off part way, so a job past its point of no return runs to the end', () => {
+    const registry = createJobRegistry((snapshot) => emitted.push(snapshot));
+    const job = registry.start('fetch', STEPS);
+    job.step('download');
+    job.setCancellable(false);
+    expect(last()).toMatchObject({ state: 'running', cancellable: false });
+    registry.cancel('fetch');
+    expect(job.signal.aborted).toBe(false);
+    job.setCancellable(true);
+    registry.cancel('fetch');
+    expect(last().state).toBe('cancelled');
+  });
+});

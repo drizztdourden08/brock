@@ -35,6 +35,8 @@ interface DeviceSignInOptions {
 
 interface SignInProvider extends DeviceSignInOptions {
   id: string;
+  tokenSecret?: string;
+  isSignedIn?: () => boolean | Promise<boolean>;
 }
 
 type SignInCodeListener = (providerId: string, userCode: string) => void;
@@ -42,6 +44,7 @@ type SignInCodeListener = (providerId: string, userCode: string) => void;
 interface SecretsSignInApi {
   begin: (providerId: string) => Promise<SignInResult>;
   cancel: (providerId: string) => Promise<void>;
+  signedIn: () => Promise<Record<string, boolean>>;
   onCode: (listener: SignInCodeListener) => () => void;
 }
 

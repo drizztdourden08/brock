@@ -16,4 +16,6 @@ const SDL_AXIS = {
   RIGHT_TRIGGER: 5,
 } as const;
 
-export { SDL_BUTTON_NAMES, SDL_AXIS_NAMES, SDL_AXIS };
+const OFF_MESSAGE = 'Controllers are off on this host.';
+
+export { SDL_BUTTON_NAMES, SDL_AXIS_NAMES, SDL_AXIS, OFF_MESSAGE };

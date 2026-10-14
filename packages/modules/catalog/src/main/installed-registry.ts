@@ -3,11 +3,11 @@ import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { InstalledRecord } from '../catalog.type';
 import { REGISTRY_PATH } from './catalog-main.constants';
 import type { InstalledRegistry, RegistryFile } from './installed-registry.type';
-import { parseRegistry } from './parse-registry';
+import { readInstalledRecords } from './read-installed-records';
 
 const createInstalledRegistry = (files: FileStore): InstalledRegistry => {
   let queue: Promise<unknown> = Promise.resolve();
-  const read = async (): Promise<InstalledRecord[]> => parseRegistry(await files.readText(REGISTRY_PATH)).records;
+  const read = (): Promise<InstalledRecord[]> => readInstalledRecords(files);
 
   const change = (edit: (records: InstalledRecord[]) => InstalledRecord[]): Promise<void> => {
     const run = queue.then(async () => {

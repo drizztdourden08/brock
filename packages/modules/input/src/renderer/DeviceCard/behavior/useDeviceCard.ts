@@ -18,8 +18,8 @@ const useDeviceCard = (deviceKey: string) => {
   const triggers = useMemo(() => readTriggers(deviceKey, axes, triggerStore), [deviceKey, axes, triggerStore]);
 
   const rumble = useCallback(async (preset: RumblePreset) => {
-    const result = await inputApi()?.vibratePattern(deviceKey, preset.pattern, preset.gapMs);
-    setRumbleError(result && !result.ok ? result.error ?? 'Rumble failed.' : null);
+    const result = await inputApi().vibratePattern(deviceKey, preset.pattern, preset.gapMs);
+    setRumbleError(result.ok ? null : result.error ?? 'Rumble failed.');
   }, [deviceKey]);
 
   const closeCalibration = useCallback(() => setTarget(null), []);

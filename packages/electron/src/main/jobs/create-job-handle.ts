@@ -57,6 +57,7 @@ const createJobHandle = (record: JobRecord, now: () => number = Date.now): JobHa
     line: (text) => change(false, () => { snapshot.line = text; }),
     log: (message, level = 'info') => change(level === 'error', () => appendLog(snapshot, message, level, now())),
     skip: (stepId) => change(true, () => setStep(snapshot, stepId, 'skipped')),
+    setCancellable: (on) => change(true, () => { snapshot.cancellable = on; }),
     done: (line) => change(true, () => {
       if (line !== undefined) snapshot.line = line;
       finish(snapshot, 'done', now());

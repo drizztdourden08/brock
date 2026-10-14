@@ -12,6 +12,7 @@ const buildSecretsApi = ({ invoke, subscribe }: BridgeTools): SecretsApi => ({
   signIn: {
     begin: (providerId) => invoke('secrets:signIn:begin', providerId),
     cancel: (providerId) => invoke('secrets:signIn:cancel', providerId),
+    signedIn: () => invoke('secrets:signIn:signedIn'),
     onCode: (listener) => subscribe('secrets:signIn:code', listener),
   },
 });

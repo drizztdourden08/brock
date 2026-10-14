@@ -19,3 +19,4 @@ export type {
   StickPoint, StickSide,
 } from './calibration.type';
 export type { InputMappingApi, InputCalibrationApi, InputCaptureApi, InputApi } from './input-api.type';
+export { noopInputApi } from './noop-input-api';

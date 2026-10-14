@@ -36,7 +36,7 @@ import { screenTree } from '../.brock/screens';
 | Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useWidgetPrefStore` |
 | Boot | `defineBootTask`, `useBootStore`, `RendererBootTask`, `RendererBootContext` |
 | Platform | `PlatformProvider`, `usePlatform`, `useCapability`, `getPlatform`, `setPlatformPorts`, `installApiShim`, `createElectronFactory`, `createWebFactory` |
-| Settings | `SettingsHub`, `SettingsLayout`, `SettingsPageContext`, `createTabRegistry`, `resolveSections`, `matchTabs` |
+| Settings | `SettingsHub`, `SettingsLayout`, `SettingsPageContext`, `createTabRegistry`, `moduleTabId`, `resolveSections`, `matchTabs` |
 | Shell | `useAboutInfo`, `useRailEntries`, `ConfirmDialog`, `ProfilesScreen`, `WorkspaceSwitch` |
 | Compounds | `AboutPanel`, `ProfilesPanel`, `ReleaseNotesPanel`, with their props types |
 | Modules | `RendererModule`, `mergeModules` |
@@ -134,7 +134,7 @@ The built-in order is Home, Profiles, Settings (left out when it is home), the a
 
 ## Settings
 
-A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, mobileOnly? }`. Sections hold items keyed by settings key (dotted paths allowed). `SettingsHub` wires the tabs into Tessera's `SideNavLayout` and `SearchResults`; `SettingsLayout` feeds one tab's sections, with per-section reset and lock overlays, as one Tessera `SettingsSection` per section inside `SettingsPage`. The settings store hydrates per profile, patches, runs effects `(patch, next, prev)` and saves 300 ms after the last change. The `settings` prop of `BrockApp` also carries the control hooks the hub forwards to every tab: `renderControl` for non-boolean keys, `isDisabled`, `lockCauseOf` and `lockOverlay`; a tab that needs its own layout still uses `TabDef.render`.
+A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), icon?, mobileOnly?, moduleId? }`; `mergeModules` sets `moduleId` on each module tab, and a module tab whose id an app page or tab already holds moves to `moduleTabId(moduleId, id)`. Sections hold items keyed by settings key (dotted paths allowed). `SettingsHub` wires the tabs into Tessera's `SideNavLayout` and `SearchResults`; `SettingsLayout` feeds one tab's sections, with per-section reset and lock overlays, as one Tessera `SettingsSection` per section inside `SettingsPage`. The settings store hydrates per profile, patches, runs effects `(patch, next, prev)` and saves 300 ms after the last change. The `settings` prop of `BrockApp` also carries the control hooks the hub forwards to every tab: `renderControl` for non-boolean keys, `isDisabled`, `lockCauseOf` and `lockOverlay`; a tab that needs its own layout still uses `TabDef.render`.
 
 ## App shell
 

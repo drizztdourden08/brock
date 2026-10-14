@@ -30,6 +30,7 @@ type ToolSource = 'cache' | 'path';
 interface ToolLocation {
   source: ToolSource;
   paths: Record<string, string>;
+  version?: string | null;
 }
 
 interface ToolState {
@@ -40,12 +41,14 @@ interface ToolState {
   paths: Record<string, string> | null;
   canInstall: boolean;
   hint: string | null;
+  version?: string | null;
 }
 
 interface ToolsApi {
   list: () => Promise<ToolState[]>;
   state: (id: string) => Promise<ToolState | null>;
   install: (id: string) => Promise<Result<ToolState>>;
+  onChanged: (listener: (id: string) => void) => () => void;
 }
 
 export type {

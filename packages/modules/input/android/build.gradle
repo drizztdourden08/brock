@@ -22,6 +22,9 @@ def sdl3SourceDir = file("../native/third_party/SDL3-${pins.sdl3}").absolutePath
 def sdlJavaUpstream = file("${sdl3SourceDir}/android-project/app/src/main/java/org/libsdl/app")
 def sdlJavaDir = layout.buildDirectory.dir('generated/sdl3-java').get().asFile
 def inputAbis = (findProperty('brockInputAbis') ?: 'arm64-v8a').toString().split(',').collect { it.trim() }.findAll { it }
+def cmakeDirSetting = (findProperty('brockInputCmakeDir') ?: System.getenv('BROCK_INPUT_CMAKE_DIR') ?: '').toString().trim()
+def cmakeDirBase = cmakeDirSetting == 'temp' ? new File(System.getProperty('java.io.tmpdir'), 'brock-input') : rootProject.file(cmakeDirSetting ?: '.')
+def cmakeStagingDir = cmakeDirSetting ? new File(cmakeDirBase, "android-${Integer.toHexString(projectDir.absolutePath.hashCode())}") : null
 
 tasks.register('fetchSdl3Source', Exec) {
     onlyIf { !file("${sdl3SourceDir}/CMakeLists.txt").exists() }
@@ -63,6 +66,7 @@ android {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
             version '3.22.1'
+            if (cmakeStagingDir) buildStagingDirectory = cmakeStagingDir
         }
     }
     sourceSets {

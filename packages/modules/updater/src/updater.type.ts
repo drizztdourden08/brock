@@ -39,6 +39,7 @@ interface UpdaterApi {
   openReleasePage: (version: string | null) => Promise<void>;
   getPrefs: () => Promise<UpdaterPrefs>;
   setPrefs: (prefs: UpdaterPrefs) => Promise<void>;
+  installSize: () => Promise<number | null>;
   onUpdateAvailable: (listener: (info: UpdateInfo) => void) => Unsubscribe;
   onUpToDate: (listener: () => void) => Unsubscribe;
   onDownloadProgress: (listener: (progress: DownloadProgress) => void) => Unsubscribe;

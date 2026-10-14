@@ -10,6 +10,7 @@ declare module '@drizztdourden08/brock-core/augment' {
     'secrets:canStore': () => Promise<boolean>;
     'secrets:signIn:begin': (providerId: string) => Promise<SignInResult>;
     'secrets:signIn:cancel': (providerId: string) => Promise<void>;
+    'secrets:signIn:signedIn': () => Promise<Record<string, boolean>>;
   }
 
   interface EventContract {

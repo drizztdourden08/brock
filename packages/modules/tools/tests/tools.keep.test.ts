@@ -68,7 +68,7 @@ const fakeJobs = (): { start: StartJob; steps: string[] } => {
     const job: JobHandle = {
       id, signal: new AbortController().signal,
       step: (step) => { steps.push(step); }, progress: () => undefined, line: () => undefined, log: () => undefined,
-      skip: () => undefined, done: () => { steps.push('done'); }, fail: () => { steps.push('failed'); },
+      skip: () => undefined, done: () => { steps.push('done'); }, fail: () => { steps.push('failed'); }, setCancellable: () => undefined,
       run: async (work) => {
         try {
           const value = await work(job);
@@ -135,7 +135,8 @@ describe('createTools install', () => {
     const zip = await zipOf({ 'ffmpeg-9/bin/ffmpeg.exe': 'encoder', 'ffmpeg-9/bin/ffprobe.exe': 'prober', 'ffmpeg-9/README.txt': 'x' });
     files.set('/ffmpeg.zip', zip);
     const jobs = fakeJobs();
-    const tools = createTools(envOf(jobs.start));
+    const changed: string[] = [];
+    const tools = createTools({ ...envOf(jobs.start), onChanged: (id) => changed.push(id) });
     tools.register(ffmpegAt(`${origin}/ffmpeg.zip`, sha256(zip)));
     expect((await tools.state('ffmpeg'))?.status).toBe('missing');
 
@@ -146,6 +147,7 @@ describe('createTools install', () => {
     expect(first.value).toMatchObject({ status: 'ready', source: 'cache' });
     expect(readFileSync(first.value.paths?.ffprobe ?? '', 'utf8')).toBe('prober');
     expect(jobs.steps).toEqual(['download', 'verify', 'extract', 'done']);
+    expect(changed).toEqual(['ffmpeg']);
   });
 
   it('refuses a download whose checksum does not match and keeps nothing', async () => {

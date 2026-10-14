@@ -3,9 +3,11 @@ import type { PressedGridItem } from '@drizztdourden08/tessera/composites';
 import type { DeviceEntry, VibrateSegment } from '../../device.type';
 import type { StickPoint } from '../../calibration.type';
 import type { StickSlot, TriggerSlot } from '../axis-slot.type';
+import type { DeviceCardAction } from '../device-card-action.type';
 
 interface DeviceCardProps {
   entry: DeviceEntry;
+  actions?: readonly DeviceCardAction[];
 }
 
 interface RumblePreset {

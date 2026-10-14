@@ -13,6 +13,7 @@ const buildUpdaterApi = ({ invoke, subscribe }: BridgeTools): UpdaterApi => ({
   openReleasePage: (version) => invoke('updater:openReleasePage', version),
   getPrefs: () => invoke('updater:getPrefs'),
   setPrefs: (prefs) => invoke('updater:setPrefs', prefs),
+  installSize: () => invoke('updater:installSize'),
   onUpdateAvailable: (listener) => subscribe('updater:updateAvailable', listener),
   onUpToDate: (listener) => subscribe('updater:upToDate', listener),
   onDownloadProgress: (listener) => subscribe('updater:downloadProgress', listener),

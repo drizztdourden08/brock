@@ -23,8 +23,12 @@ export { parseGrant } from './parse-grant';
 export { DEFAULT_ROUTES } from './catalog-main.constants';
 export { createCatalogLinks } from '../links/catalog-links';
 export { isCatalogItemId } from '../links/is-catalog-item-id';
+export { CATALOG_JOB_PREFIX } from '../catalog.constants';
+export { catalogJobId } from '../jobs/catalog-job-id';
+export { isCatalogInstalling } from '../jobs/is-catalog-installing';
+export { readInstalledRecords } from './read-installed-records';
 export type {
-  CatalogConfig, CatalogEndpoint, CatalogSchema, CatalogRoute, CatalogRoutes, CatalogMethod, CatalogParse, CatalogInstaller, InstallInput, InstallOutcome,
+  CatalogRemoval, CatalogConfig, CatalogEndpoint, CatalogSchema, CatalogRoute, CatalogRoutes, CatalogMethod, CatalogParse, CatalogInstaller, InstallInput, InstallOutcome,
   CatalogHooks,
 } from './catalog-config.type';
-export type { CatalogGrant, CatalogItem, CatalogLink, CatalogPage, InstalledRecord } from '../catalog.type';
+export type { CatalogGrant, CatalogItem, CatalogJobLike, CatalogJobSource, CatalogLink, CatalogPage, InstalledRecord } from '../catalog.type';

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { UpdateInfo, UpdaterCapabilities, UpdaterPrefs, VersionOption } from '../updater.type';
+import type { UpdateNotice } from './update-notice.type';
 
 type UpdateStatus = 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error';
 
@@ -13,6 +14,7 @@ interface UpdaterData {
   currentVersion: string;
   capabilities: UpdaterCapabilities;
   dialogOpen: boolean;
+  notice: UpdateNotice | null;
 }
 
 interface UpdaterActions {
@@ -25,6 +27,7 @@ interface UpdaterActions {
   openDialog: () => void;
   closeDialog: () => void;
   checkAndOpen: () => void;
+  setNotice: (notice: UpdateNotice | null) => void;
 }
 
 type UpdaterStoreState = UpdaterData & UpdaterActions;

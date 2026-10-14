@@ -9,6 +9,7 @@ interface JobHandle {
   line: (text: string) => void;
   log: (message: string, level?: JobLogLevel) => void;
   skip: (stepId: string) => void;
+  setCancellable: (on: boolean) => void;
   done: (line?: string) => void;
   fail: (error: unknown) => void;
   run: <T>(work: (job: JobHandle) => Promise<T>) => Promise<T>;

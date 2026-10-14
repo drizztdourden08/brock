@@ -1,8 +1,11 @@
 /* @layer renderer-shell @kind component */
-import { Box, Button, Callout, Checkbox, Field, Small, TextInput, Textarea } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, Checkbox, Field, Small, TextInput, Textarea } from '@drizztdourden08/tessera/primitives';
 import { DialogShell } from '@drizztdourden08/tessera/composites';
 import { useBugReportForm } from './behavior/useBugReportForm';
+import { AttachmentField } from './sub-components/AttachmentField';
+import { ContactField } from './sub-components/ContactField';
 import { DiagnosticsPreview } from './sub-components/DiagnosticsPreview';
+import { SendError } from './sub-components/SendError';
 import { CLIPBOARD_NOTE, DESCRIPTION_ROWS, SENDING_LABEL } from './BugReportDialog.constants';
 import './BugReportDialog.css';
 
@@ -27,9 +30,11 @@ const BugReportDialog = () => {
         <Field label="What happened" required width="full" hint="What you did, what you expected, and what you saw instead.">
           <Textarea rows={DESCRIPTION_ROWS} value={form.description} onChange={(e) => form.setDescription(e.target.value)} />
         </Field>
+        <ContactField shown={form.fields?.contact === true} value={form.contact} onChange={form.setContact} />
+        <AttachmentField model={form.attachments} disabled={form.sending} />
         <Checkbox checked={form.attach} onChange={form.setAttach} label="Attach diagnostics (system info, versions, recent log)" />
         {form.attach && <DiagnosticsPreview text={form.diagnostics} />}
-        {form.error !== null && <Callout tone="danger">The report was not sent: {form.error}</Callout>}
+        <SendError error={form.error} fallback={form.fallback} />
         {form.target?.kind === 'clipboard' && <Small tone="muted">{CLIPBOARD_NOTE}</Small>}
       </Box>
     </DialogShell>

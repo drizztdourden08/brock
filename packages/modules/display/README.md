@@ -24,6 +24,8 @@ window.api.display.onChanged(() => ...)
 
 ## Settings
 
+The Display tab has the id `display`, so `open('settings', { tab: 'display' })` opens it. When an app settings page or tab already uses that id, the app keeps it and the Display tab moves to `display.display` (`moduleTabId('display', 'display')` from brock-react).
+
 The Display tab reads and writes four keys of the profile settings. `windowMode` is already part of `BaseSettings`; add the other three to the app's defaults:
 
 ```ts
@@ -39,7 +41,25 @@ const DEFAULT_SETTINGS: AppSettings = { ...DEFAULT_BASE_SETTINGS, ...DEFAULT_DIS
 | `syncedRateInFullscreen` | Switch to the target rate while in fullscreen |
 | `syncedRateTargetHz` | The target rate, or 0 for the highest multiple of 60 |
 
-The module's provider pushes these to main once the profile settings load, and again on every change. A missing key reads as its default.
+The module's provider pushes these to main once the profile settings load, and again on every change. A missing key reads as the default for the host the app runs on.
+
+The defaults differ by host. `HOST_DISPLAY_DEFAULTS` holds what each host changes from `DEFAULT_DISPLAY_SETTINGS`, and `displayDefaultsFor(host)` merges the two:
+
+| Host | `syncedRateInFullscreen` |
+|---|---|
+| `electron`, `web` | `false`: switching changes the screen's mode for every app on it, so the user turns it on |
+| `capacitor` (Android) | `true`: the app is always full screen, and the rate is a request the OS may turn down |
+
+An app that wants the per-host defaults in its own settings spreads them in place of the constant:
+
+```ts
+import { detectHost } from '@drizztdourden08/brock-core';
+import { displayDefaultsFor } from '@drizztdourden08/brock-display';
+
+const DEFAULT_SETTINGS: AppSettings = { ...DEFAULT_BASE_SETTINGS, ...displayDefaultsFor(detectHost()) };
+```
+
+`readDisplaySettings(settings, host)` takes the host too, and detects it when none is given.
 
 ## Refresh rate
 

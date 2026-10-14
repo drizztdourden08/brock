@@ -10,6 +10,7 @@ const registerSecretsHandlers = ({ handle }: Pick<MainContext, 'handle'>, secret
   handle('secrets:canStore', () => secrets.canStore());
   handle('secrets:signIn:begin', (_event, providerId) => secrets.signIn.begin(providerId));
   handle('secrets:signIn:cancel', (_event, providerId) => { secrets.signIn.cancel(providerId); });
+  handle('secrets:signIn:signedIn', () => secrets.signIn.signedIn());
 };
 
 export { registerSecretsHandlers };

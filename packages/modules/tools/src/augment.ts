@@ -9,6 +9,10 @@ declare module '@drizztdourden08/brock-core/augment' {
     'tools:install': (id: string) => Promise<Result<ToolState>>;
   }
 
+  interface EventContract {
+    'tools:changed': (id: string) => void;
+  }
+
   interface IpcNamespaces {
     tools: ToolsApi;
   }

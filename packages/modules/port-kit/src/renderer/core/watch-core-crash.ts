@@ -1,12 +1,23 @@
 /* @layer renderer-shell @kind logic */
-const watchCoreCrash = (onCrash: (message: string) => void): (() => void) => {
+import type { CoreCrash } from './game-core.type';
+
+const watchCoreCrash = (onCrash: (crash: CoreCrash) => void, armDelayMs = 0): (() => void) => {
+  let armed = armDelayMs <= 0;
+  let crashed = false;
+  const timer = armed ? null : setTimeout(() => { armed = true; }, armDelayMs);
   const handleError = (event: ErrorEvent): void => {
-    if (!(event.error instanceof WebAssembly.RuntimeError)) return;
+    const error: unknown = event.error;
+    if (!(error instanceof WebAssembly.RuntimeError)) return;
     event.preventDefault();
-    onCrash(`The core crashed: ${event.error.message}`);
+    if (!armed || crashed) return;
+    crashed = true;
+    onCrash({ message: `The core crashed: ${error.message}`, error, event });
   };
   window.addEventListener('error', handleError);
-  return () => window.removeEventListener('error', handleError);
+  return () => {
+    if (timer !== null) clearTimeout(timer);
+    window.removeEventListener('error', handleError);
+  };
 };
 
 export { watchCoreCrash };

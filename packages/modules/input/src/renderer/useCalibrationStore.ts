@@ -9,22 +9,18 @@ const useCalibrationStore = create<CalibrationState>()((set) => ({
   loaded: false,
 
   refresh: async () => {
-    const api = inputApi();
-    if (!api) {
-      set({ loaded: true });
-      return;
-    }
-    const [sticks, triggers] = await Promise.all([api.calibration.readSticks(), api.calibration.readTriggers()]);
+    const { calibration } = inputApi();
+    const [sticks, triggers] = await Promise.all([calibration.readSticks(), calibration.readTriggers()]);
     set({ sticks, triggers, loaded: true });
   },
 
   saveStick: async (deviceKey, calibration) => {
-    await inputApi()?.calibration.writeStick(deviceKey, calibration);
+    await inputApi().calibration.writeStick(deviceKey, calibration);
     set((s) => ({ sticks: { ...s.sticks, [deviceKey]: calibration } }));
   },
 
   saveTrigger: async (deviceKey, axisIndex, calibration) => {
-    await inputApi()?.calibration.writeTrigger(deviceKey, axisIndex, calibration);
+    await inputApi().calibration.writeTrigger(deviceKey, axisIndex, calibration);
     set((s) => ({ triggers: { ...s.triggers, [`${deviceKey}:${axisIndex}`]: calibration } }));
   },
 }));

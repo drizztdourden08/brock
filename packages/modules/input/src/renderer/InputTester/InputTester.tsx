@@ -3,9 +3,11 @@ import { Button, Flex, SectionHeader } from '@drizztdourden08/tessera/primitives
 import { useInputTester } from './behavior/useInputTester';
 import { DeviceList } from './sub-components/DeviceList';
 import { MappingForm } from './sub-components/MappingForm';
+import type { InputTesterProps } from './InputTester.type';
 import './InputTester.css';
 
-const InputTester = () => {
+const InputTester = (props: InputTesterProps) => {
+  const { deviceActions } = props;
   const { entries, available, loaded, rescanPending, handleRescan, subtitle } = useInputTester();
 
   return (
@@ -19,7 +21,7 @@ const InputTester = () => {
           </Button>
         )}
       />
-      <DeviceList entries={entries} available={available} loaded={loaded} />
+      <DeviceList entries={entries} available={available} loaded={loaded} deviceActions={deviceActions} />
       {available && <MappingForm />}
     </Flex>
   );

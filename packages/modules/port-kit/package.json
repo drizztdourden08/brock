@@ -23,6 +23,7 @@
     "./main": "./src/main/index.ts",
     "./preload": "./src/preload/index.ts",
     "./renderer": "./src/renderer/index.ts",
+    "./worker": "./src/worker/index.ts",
     "./ensure-wasm": {
       "types": "./ensure-wasm/index.d.mts",
       "default": "./ensure-wasm/index.mjs"

@@ -1,4 +1,5 @@
 /* @layer core @kind constants */
+import type { HostShell } from '@drizztdourden08/brock-core';
 import type { DisplaySettings, SyncedRateStatus } from './display.type';
 
 const DEFAULT_DISPLAY_SETTINGS: DisplaySettings = {
@@ -6,6 +7,12 @@ const DEFAULT_DISPLAY_SETTINGS: DisplaySettings = {
   displayMonitor: '',
   syncedRateInFullscreen: false,
   syncedRateTargetHz: 0,
+};
+
+const HOST_DISPLAY_DEFAULTS: Readonly<Record<HostShell, Partial<DisplaySettings>>> = {
+  electron: {},
+  web: {},
+  capacitor: { syncedRateInFullscreen: true },
 };
 
 const UNSUPPORTED_SYNCED_RATE: SyncedRateStatus = {
@@ -18,4 +25,4 @@ const UNSUPPORTED_SYNCED_RATE: SyncedRateStatus = {
   lastError: '',
 };
 
-export { DEFAULT_DISPLAY_SETTINGS, UNSUPPORTED_SYNCED_RATE };
+export { DEFAULT_DISPLAY_SETTINGS, HOST_DISPLAY_DEFAULTS, UNSUPPORTED_SYNCED_RATE };

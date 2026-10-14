@@ -22,6 +22,25 @@ interface CoreBoot {
   log?: CoreLog;
 }
 
+interface CoreCrash {
+  message: string;
+  error: WebAssembly.RuntimeError;
+  event: ErrorEvent;
+}
+
+type PrecompiledCore = WebAssembly.Module | (() => WebAssembly.Module | null | Promise<WebAssembly.Module | null>);
+
+interface GameCoreOptions {
+  precompiled?: PrecompiledCore;
+  crashArmDelayMs?: number;
+  onCrash?: (crash: CoreCrash) => void;
+}
+
+interface BootSetup {
+  headless: boolean;
+  compiled: WebAssembly.Module | null;
+}
+
 interface StateHub {
   get: () => CoreState;
   set: (next: CoreState) => void;
@@ -45,4 +64,7 @@ interface GameCore<S = never> extends CoreControls {
   subscribe: (listener: CoreListener) => () => void;
 }
 
-export type { CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, StateHub, CoreControls, GameCore };
+export type {
+  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, GameCoreOptions, BootSetup, StateHub,
+  CoreControls, GameCore,
+};

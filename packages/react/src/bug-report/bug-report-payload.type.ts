@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind types */
-import type { BugReportTransport, BugReportTransportInfo, LogEntry, ProductConfig, ProductRepo, SystemDiagnostics } from '@drizztdourden08/brock-core';
+import type {
+  BugReportAttachment, BugReportExtras, BugReportTransport, BugReportTransportInfo, LogEntry, ProductConfig, ProductRepo, SystemDiagnostics,
+} from '@drizztdourden08/brock-core';
 import type { BrockAppBugReport } from './bug-report.type';
 
 interface PayloadInput {
@@ -11,6 +13,9 @@ interface PayloadInput {
   system: SystemDiagnostics | null;
   logs: readonly LogEntry[];
   now?: Date;
+  contact?: string;
+  attachments?: readonly BugReportAttachment[];
+  extras?: BugReportExtras;
 }
 
 interface TargetSources {

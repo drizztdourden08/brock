@@ -81,6 +81,7 @@
  * @property {ProvisionStep[]} provision
  * @property {{ staleDirs: string[], steps: BuildStep[] }} build
  * @property {(string | Plugin)[]} plugins
+ * @property {{ ci?: 'managed' | 'own', release?: 'managed' | 'own' }} [workflows] the shared ci.yml
  */
 
 /** @typedef {WorkspaceGit & WorkspaceSlots} Workspace */

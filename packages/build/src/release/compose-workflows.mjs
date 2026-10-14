@@ -110,17 +110,14 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
 /**
  * @param {ModuleCiStep[]} systemSteps
  * @param {string} [branch] the default branch, where a push runs it
- * @param {{ steps?: CollectedSteps, appDir?: string }} [first] the first app and its steps
+ * @param {CollectedSteps} [steps] the shared steps
  * @returns {string} the workspace ci.yml of a repo of apps
  */
-const workspaceCi = (systemSteps = [], branch = DEFAULT_BRANCH, { steps = noWorkflowSteps(), appDir = '.' } = {}) => {
-  const ctx = jobContext({ appDir, prefix: '', systemSteps, steps }, 'ci');
-  const beforeInstall = stepsForJob(steps.ci.beforeInstall, { os: 'linux' });
-  const beforeTest = ctx.stepsAt('beforeTest', 'linux');
+const workspaceCi = (systemSteps = [], branch = DEFAULT_BRANCH, steps = noWorkflowSteps()) => {
+  const ctx = jobContext({ appDir: '.', prefix: '', systemSteps, steps }, 'ci');
   return `${fillTemplate(RELEASE_DIR, 'ci-workspace-workflow.yml.tmpl', {
     SETUP: ctx.setup('linux'),
-    BEFORE_TEST: beforeTest,
-    APP_ENV: beforeInstall.length || beforeTest ? `\n    env:\n      APP_DIR: ${appDir}` : '',
+    BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux'),
     ROOT_STEPS: rootSteps(),
     BRANCH: branch,
   }).trimEnd()}\n`;

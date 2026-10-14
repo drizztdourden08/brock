@@ -22,6 +22,7 @@ interface CheckedStep {
   secrets: string[];
   os: string[] | null;
   platforms: string[] | null;
+  workingDirectory?: string;
 }
 
 interface CollectedSteps {
@@ -47,7 +48,7 @@ interface ComposedWorkflows {
 }
 
 declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
-declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string, first?: { steps?: CollectedSteps; appDir?: string }) => string;
+declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string, steps?: CollectedSteps) => string;
 
 export { composeWorkflows, workspaceCi };
 export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, SystemStep };

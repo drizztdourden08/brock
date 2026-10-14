@@ -41,7 +41,7 @@ const tagRun = (work) => {
 
 const versionAt = (origin, ref) => JSON.parse(git(origin, 'show', `${ref}:apps/desktop/package.json`)).version;
 
-describe('the tag step of the release job, run by bash', { timeout: 30000 }, () => {
+describe('the tag step of the release job, run by bash', () => {
   it('commits the version on the built commit, tags it and moves the default branch to it', () => {
     const { origin, work } = repoWithOrigin();
     const result = tagRun(work);

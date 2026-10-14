@@ -8,7 +8,7 @@ import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
 import { syncApp } from '../modules/sync.mjs';
-import { pluginWorkflowSteps } from '../release/plugin-workflow-steps.mjs';
+import { workflowInputs } from '../release/workspace-workflow-inputs.mjs';
 import { workflowProblems } from '../release/workflow-problems.mjs';
 import { writeGuide } from '../tessera/write-guide.mjs';
 import { syncTargets } from './sync-targets.mjs';
@@ -48,7 +48,7 @@ const reportSync = (result, label) => {
 
 const syncOne = async (appDir, check) => {
   const config = await loadBrockConfig(appDir);
-  const result = syncApp(appDir, config, { check, pluginSteps: await pluginWorkflowSteps(appDir) });
+  const result = syncApp(appDir, config, { check, ...(await workflowInputs(appDir)) });
   const label = relative(process.cwd(), appDir) || '.';
   const code = check ? reportCheck(result, label) : reportSync(result, label);
   const prefix = check ? 'brock check' : 'brock sync';

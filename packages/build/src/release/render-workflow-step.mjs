@@ -41,17 +41,34 @@ const stepLines = (step) => [
   ...(step.uses ? [`${KEY_INDENT}uses: ${PLAIN_REF.test(step.uses) ? step.uses : JSON.stringify(step.uses)}`] : []),
   ...mapLines('with', Object.entries(step.with).map(([name, value]) => [name, scalar(value)])),
   ...(step.shell ? [`${KEY_INDENT}shell: ${step.shell}`] : []),
+  ...(step.workingDirectory ? [`${KEY_INDENT}working-directory: ${JSON.stringify(step.workingDirectory)}`] : []),
   ...mapLines('env', envEntries(step)),
   ...(step.run ? runLines(step.run) : []),
 ];
+
+const setupKey = (step) => `${step.uses}|${JSON.stringify(step.with)}`;
+
+/**
+ * @param {CheckedStep[]} steps
+ * @returns {CheckedStep[]} each uses step of the same action, version and inputs once
+ */
+const withoutRepeatedSetup = (steps) => {
+  const seen = new Set();
+  return steps.filter((step) => {
+    if (!step.uses) return true;
+    if (seen.has(setupKey(step))) return false;
+    seen.add(setupKey(step));
+    return true;
+  });
+};
 
 /**
  * @param {CheckedStep[]} steps
  * @param {{ os: string, platform?: string | null }} job the runner and the platform of the job
  * @returns {CheckedStep[]} the steps that run in that job
  */
-const stepsForJob = (steps, { os, platform = null }) => steps.filter((step) =>
-  (!step.os || step.os.includes(os)) && (!step.platforms || (platform !== null && step.platforms.includes(platform))));
+const stepsForJob = (steps, { os, platform = null }) => withoutRepeatedSetup(steps.filter((step) =>
+  (!step.os || step.os.includes(os)) && (!step.platforms || (platform !== null && step.platforms.includes(platform)))));
 
 /**
  * @param {CheckedStep[]} steps

@@ -15,6 +15,7 @@ import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS } from '
  * @property {Record<string, string | number | boolean>} with
  * @property {Record<string, string>} env
  * @property {string | null} shell
+ * @property {string | null} [workingDirectory] set in the shared ci.yml
  */
 
 /**

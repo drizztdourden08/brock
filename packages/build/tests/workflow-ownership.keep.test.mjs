@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { definePlugin } from '@drizztdourden08/brock-thread';
 import { syncApp } from '../src/modules/sync.mjs';
-import { pluginWorkflowSteps } from '../src/release/plugin-workflow-steps.mjs';
+import { workflowInputs } from '../src/release/workspace-workflow-inputs.mjs';
 import { renderWorkflows } from '../src/release/render-workflows.mjs';
 import { brockWorkspace, removeTempRepos, tempRepo } from './temp-repo.mjs';
 
@@ -32,11 +32,14 @@ describe('workflows.ci and workflows.release of brock.config.ts', () => {
     expect(syncApp(root, CONFIG, { check: true, onMissing: 'skip' }).drifted).toContain('.github/workflows/release.yml');
   });
 
-  it('keeps the workspace ci.yml with the first app ci', () => {
+  it('leaves the shared ci.yml to brock.workspace.mjs, and an app own ci to its own file', () => {
     const twoApps = brockWorkspace({ 'apps/tools/brock.config.ts': '', 'apps/tools/package.json': '{ "name": "@atlas/tools", "version": "0.1.0" }\n' });
     const config = { ...CONFIG, product: { ...CONFIG.product, releaseTagPrefix: 'desktop-v' } };
-    expect(paths(renderWorkflows(join(twoApps, 'apps/desktop'), config, []))).toContain('../../.github/workflows/ci.yml');
-    expect(paths(renderWorkflows(join(twoApps, 'apps/desktop'), { ...config, workflows: { ci: 'own' } }, []))).toEqual(['../../.github/workflows/release-desktop.yml']);
+    const desktop = join(twoApps, 'apps/desktop');
+    expect(paths(renderWorkflows(desktop, config, []))).toContain('../../.github/workflows/ci.yml');
+    expect(paths(renderWorkflows(desktop, { ...config, workflows: { ci: 'own' } }, []))).toEqual(['../../.github/workflows/ci.yml', '../../.github/workflows/release-desktop.yml']);
+    expect(paths(renderWorkflows(desktop, config, [], { sharedWorkflows: { ci: 'own' } }))).toEqual(['../../.github/workflows/ci-desktop.yml', '../../.github/workflows/release-desktop.yml']);
+    expect(() => renderWorkflows(desktop, config, [], { sharedWorkflows: { ci: 'mine' } })).toThrow("brock.workspace.mjs workflows.ci is 'mine'");
   });
 
   it('refuses a mode it does not know', () => {
@@ -77,7 +80,8 @@ describe('workflow steps from the plugins of the repo command', () => {
       'brock.config.ts': '',
       '.tools/tools/brock-plugin-cores/index.mjs': "export default { name: 'cores', verbs: {}, workflows: { ci: { beforeBuild: [{ name: 'Build the cores', run: 'make cores' }] } } };\n",
     });
-    const pluginSteps = await pluginWorkflowSteps(root);
+    const { pluginSteps, workspaceApps } = await workflowInputs(root);
+    expect(workspaceApps).toBeUndefined();
     expect(pluginSteps).toEqual([{ label: 'plugin cores workflows', workflows: { ci: { beforeBuild: [{ name: 'Build the cores', run: 'make cores' }] } } }]);
     const config = { ...CONFIG, workflows: { steps: { ci: { beforeBuild: [{ name: 'App step', run: 'true' }] } } } };
     const quality = parse(renderWorkflows(root, config, [], { pluginSteps })[0].content).jobs.quality.steps.map((step) => step.name);

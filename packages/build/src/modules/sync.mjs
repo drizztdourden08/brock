@@ -99,7 +99,7 @@ const managedFileOptions = (config) => ({ aliases: config.build?.aliases, compil
 /**
  * @param {string} rootDir
  * @param {import('../config.mjs').BrockConfig} config
- * @param {{ check?: boolean, onMissing?: 'throw' | 'skip', pluginSteps?: import('../release/collect-workflow-steps.mjs').StepSource[] }} [opts] pluginSteps: of the repo plugins
+ * @param {{ check?: boolean, onMissing?: 'throw' | 'skip' } & Partial<import('../release/workspace-workflow-inputs.mjs').WorkflowInputs>} [opts]
  * @returns {SyncResult}
  */
 const syncApp = (rootDir, config, opts = {}) => {

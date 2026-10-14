@@ -66,7 +66,7 @@ linux: {
 
 `setup-vm.sh` (its path is printed by `linux init`) sets a VM or a WSL distro up once: the build tools, rsync, Node 24 with pnpm, .NET 8 with vpk, the Electron runtime libraries and sshd. You run it in the VM yourself, and you authorize your key once with the line `linux init` prints; that is the only time the VM password is typed, by you, into ssh.
 
-A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. A plugin adds verbs, targets and steps through `definePlugin`, and `workflows`: steps `brock sync` splices into the managed CI and release workflows of the repo's apps, in the shape of `workflows.steps` of `brock.config.ts` (docs/architecture.md, Workflows, App steps).
+A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. `workflows: { ci: 'own' }` there leaves the shared workspace `ci.yml` of a repo of several apps to the repo (docs/architecture.md, Workflows, App steps). A plugin adds verbs, targets and steps through `definePlugin`, and `workflows`: steps `brock sync` splices into the managed CI and release workflows of the repo's apps, in the shape of `workflows.steps` of `brock.config.ts` (docs/architecture.md, Workflows, App steps).
 
 ## Thread bases
 

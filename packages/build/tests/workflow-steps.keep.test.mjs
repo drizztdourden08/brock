@@ -76,12 +76,15 @@ describe('app workflow steps in the release workflow', () => {
   });
 });
 
-describe('the workspace ci.yml of several apps', () => {
-  it('runs the first app beforeInstall and beforeTest steps with its folder', () => {
-    const job = parse(workspaceCi([], 'main', { steps: STEPS, appDir: 'apps/desktop' })).jobs.workspace;
-    expect(job.env).toEqual({ APP_DIR: 'apps/desktop' });
-    expect(between(stepNames(job), 'Install', 'Managed files match brock sync')).toEqual(['Fetch the dataset']);
-    expect(parse(workspaceCi([], 'main')).jobs.workspace.env).toBeUndefined();
+describe('a uses step that several sources declare', () => {
+  it('runs once per job, while one with other inputs still runs', () => {
+    const java = (version) => ({ name: `Java ${version}`, uses: 'actions/setup-java@v6', with: { 'java-version': version } });
+    const steps = collectWorkflowSteps([
+      { label: 'module a', workflows: { ci: { beforeInstall: [java('21')] } } },
+      { label: 'app', workflows: { ci: { beforeInstall: [java('21'), java('17')] } } },
+    ]);
+    const names = stepNames(parse(composeWorkflows({ targets: ['desktop'], prefix: 'a-', steps }).ci).jobs.quality);
+    expect(names.filter((name) => name.startsWith('Java'))).toEqual(['Java 21', 'Java 17']);
   });
 });
 

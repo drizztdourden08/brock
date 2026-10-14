@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-core
 
+## 0.42.0
+
 ## 0.41.0
 
 ### Minor Changes

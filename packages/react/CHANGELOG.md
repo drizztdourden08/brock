@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.42.0
+
+### Minor Changes
+
+- 67c7a66: Tessera 0.34: Rating, Carousel and MediaViewer are available to apps.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.42.0
+
 ## 0.41.0
 
 ### Minor Changes

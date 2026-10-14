@@ -4,4 +4,6 @@ const DEBUG_FILE = /\.(?:log|txt|json)$/i;
 const REPORT_ENTRY = 'report.json';
 const LOGS_FOLDER = 'logs';
 
-export { DEFAULT_SEND_LABEL, DEBUG_FILE, REPORT_ENTRY, LOGS_FOLDER };
+const ATTACHMENTS_FOLDER = 'attachments';
+
+export { ATTACHMENTS_FOLDER, DEFAULT_SEND_LABEL, DEBUG_FILE, REPORT_ENTRY, LOGS_FOLDER };

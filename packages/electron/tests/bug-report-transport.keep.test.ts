@@ -68,4 +68,22 @@ describe('writeDebugZip', () => {
       await zip.close();
     }
   });
+
+  it('puts the attachments of the report under attachments/ and lists them in report.json without their bytes', async () => {
+    const target = join(folder(), 'report.zip');
+    const shot = { name: '../screens/shot one.png', type: 'image/png', bytes: new Uint8Array([9, 8, 7]) };
+    await writeDebugZip(target, folder(), { ...PAYLOAD, contact: 'me@example.com', attachments: [shot] });
+    const zip = await openZipReader(target);
+    try {
+      expect(zip.records.map((record) => record.name)).toEqual(['report.json', 'attachments/01-shot one.png']);
+      const [report, file] = zip.records;
+      if (!report || !file) throw new Error('missing entries');
+      expect(JSON.parse((await zip.read(report)).toString('utf8'))).toEqual({
+        ...PAYLOAD, contact: 'me@example.com', attachments: [{ name: '../screens/shot one.png', type: 'image/png', bytes: 3, file: 'attachments/01-shot one.png' }],
+      });
+      expect([...(await zip.read(file))]).toEqual([9, 8, 7]);
+    } finally {
+      await zip.close();
+    }
+  });
 });

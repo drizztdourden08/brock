@@ -8,9 +8,44 @@ interface IssueDraft {
   diagnostics: string | null;
 }
 
-interface BrockAppBugReport {
-  transport: BugReportTransport;
+interface BugReportContactOptions {
+  required?: boolean;
   label?: string;
+  hint?: string;
+}
+
+interface BugReportAttachmentOptions {
+  accept?: readonly string[];
+  maxFiles?: number;
+  maxBytes?: number;
+}
+
+type BugReportAfterSend = 'toast' | 'view';
+
+interface BrockAppBugReport {
+  transport?: BugReportTransport;
+  label?: string;
+  contact?: boolean | BugReportContactOptions;
+  attachments?: boolean | BugReportAttachmentOptions;
+  afterSend?: BugReportAfterSend;
+}
+
+interface BugReportContactField {
+  required: boolean;
+  label: string;
+  hint: string;
+}
+
+interface BugReportAttachmentField {
+  accept: readonly string[];
+  maxFiles: number;
+  maxBytes: number;
+}
+
+interface BugReportFields {
+  contact: BugReportContactField | null;
+  attachments: BugReportAttachmentField | null;
+  afterSend: BugReportAfterSend;
 }
 
 type BugReportTarget =
@@ -26,4 +61,6 @@ interface BugReportState {
   setAppTransport: (transport: BrockAppBugReport | null) => void;
 }
 
-export type { BrockAppBugReport, BugReportState, BugReportTarget, IssueDraft };
+export type {
+  BrockAppBugReport, BugReportAfterSend, BugReportAttachmentField, BugReportAttachmentOptions, BugReportContactField, BugReportContactOptions, BugReportFields, BugReportState, BugReportTarget, IssueDraft,
+};

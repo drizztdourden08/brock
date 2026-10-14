@@ -22,3 +22,10 @@
 .bug-report__diagnostics-text {
   align-self: stretch;
 }
+
+.bug-report__attachments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}

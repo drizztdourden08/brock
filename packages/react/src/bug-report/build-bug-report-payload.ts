@@ -15,6 +15,8 @@ const buildBugReportPayload = (input: PayloadInput): BugReportPayload => ({
   description: input.description.trim(),
   app: { id: input.product.id, name: input.product.name, version: input.version },
   diagnostics: diagnosticsOf(input.diagnostics, input.system, input.logs),
+  ...(input.contact === undefined || input.contact.trim() === '' ? {} : { contact: input.contact.trim() }),
+  ...(input.attachments === undefined || input.attachments.length === 0 ? {} : { attachments: [...input.attachments] }),
   createdAt: (input.now ?? new Date()).toISOString(),
 });
 

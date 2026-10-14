@@ -20,4 +20,9 @@ interface DebugZipEntry {
   data: Buffer | string;
 }
 
-export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport };
+interface ZippedReport {
+  report: Record<string, unknown>;
+  files: DebugZipEntry[];
+}
+
+export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport, ZippedReport };

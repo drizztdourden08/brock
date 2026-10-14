@@ -15,9 +15,17 @@ interface BugReportDiagnostics {
   logs: BugReportLogLine[];
 }
 
+interface BugReportAttachment {
+  name: string;
+  type: string;
+  bytes: Uint8Array;
+}
+
 interface BugReportPayload {
   title: string;
   description: string;
+  contact?: string;
+  attachments?: BugReportAttachment[];
   app: { id: string; name: string; version: string };
   diagnostics: BugReportDiagnostics | null;
   createdAt: string;
@@ -35,4 +43,4 @@ interface BugReportTransportInfo {
   label: string;
 }
 
-export type { BugReportDiagnostics, BugReportLogLine, BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo };
+export type { BugReportAttachment, BugReportDiagnostics, BugReportLogLine, BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo };

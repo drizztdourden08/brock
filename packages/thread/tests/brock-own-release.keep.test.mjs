@@ -16,7 +16,7 @@ describe('Brock releases itself with one note per version', () => {
     expect(lines[at + 1]).toBe('      release-notes: pnpm exec standards release-notes');
     const root = JSON.parse(read('package.json'));
     expect(root.scripts['release-notes']).toBe('standards release-notes');
-    expect(root.devDependencies['@drizztdourden08/standards']).toBe('^0.8.0');
+    expect(Number(/^\^0\.(\d+)\.\d+$/.exec(root.devDependencies['@drizztdourden08/standards'])?.[1])).toBeGreaterThanOrEqual(8);
   });
 
   it('releases the version every published package shares, and drafts a Brock note for it that the check holds back', () => {

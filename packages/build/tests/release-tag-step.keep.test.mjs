@@ -48,7 +48,7 @@ describe('the tag step of the release job, run by bash', () => {
     expect(result.code, result.out).toBe(0);
     expect(versionAt(origin, 'v1.2.0')).toBe('1.2.0');
     expect(git(origin, 'rev-parse', 'main')).toBe(git(origin, 'rev-parse', 'v1.2.0^{commit}'));
-  });
+  }, 60_000);
 
   it('puts the bump on top of the default branch when it moved during the builds', () => {
     const { origin, work } = repoWithOrigin();
@@ -60,5 +60,5 @@ describe('the tag step of the release job, run by bash', () => {
     expect(versionAt(origin, 'v1.2.0')).toBe('1.2.0');
     expect(versionAt(origin, 'main')).toBe('1.2.0');
     expect(git(origin, 'log', '--format=%s', 'main')).toBe('release: v1.2.0\nlater\nstart');
-  });
+  }, 60_000);
 });

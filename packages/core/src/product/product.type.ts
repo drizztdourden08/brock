@@ -26,6 +26,7 @@ interface TitleBarControls {
 
 interface TitleBarConfig {
   controls: TitleBarControls;
+  mobile: boolean;
 }
 
 interface WindowConfig {
@@ -37,7 +38,7 @@ interface WindowConfig {
   titleBar: TitleBarConfig;
 }
 
-type WindowInput = Partial<Omit<WindowConfig, 'titleBar'>> & { titleBar?: { controls?: Partial<TitleBarControls> } };
+type WindowInput = Partial<Omit<WindowConfig, 'titleBar'>> & { titleBar?: { controls?: Partial<TitleBarControls>; mobile?: boolean } };
 
 interface PrivilegedScheme {
   scheme: string;

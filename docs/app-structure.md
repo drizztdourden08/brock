@@ -131,7 +131,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
 | Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
 | Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
-| Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp`; the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
+| Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp` (and of `<BrockApp>` on a phone, for the Storage page summary); the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
 | Renderer boot task | `src/boot/` | `<id>.task.ts`, `<id>.task.constants.ts` for its constants | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
 | IPC channel | `src/ipc/` | `contract.constants.ts` (`defineChannels`, the maps), `contract.type.ts` (augmentation) | `electron/preload.ts`, main's `handle`, the renderer's `channelApi` ([ipc.md](ipc.md)) |

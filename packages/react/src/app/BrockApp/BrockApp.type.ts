@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
+import type { DataDomainDef, ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
@@ -50,6 +50,7 @@ interface BrockAppProps<S extends object> {
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
   profileHooks?: ProfileStoreHooks;
+  dataDomains?: readonly DataDomainDef[];
   homeScreen?: string;
   credits?: ReactNode;
   legalText?: string;

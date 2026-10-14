@@ -34,13 +34,13 @@ import './BrockApp.css';
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
-    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog,
+    screenGroups, profileHooks, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   useBrandPalette(product.icons.brand);
-  const log = useHostBoot(merged.logChannels, profileHooks);
+  const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
   useQuitGuards(merged.beforeQuit, beforeQuit);
   useTourRegistry(tours, merged.tours);

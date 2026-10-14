@@ -5,6 +5,7 @@ import { jdkCheck } from '../doctor/jdk-check.mjs';
 import { sdkPackagesCheck } from '../doctor/sdk-packages-check.mjs';
 import { webViteConfigFile } from '../web/web-vite-config-file.mjs';
 import { androidReleaseJob } from './android-release-job.mjs';
+import { backEdgeActivity } from './back-edge-activity.mjs';
 import { ANDROID_SECRETS } from './android.constants.mjs';
 import { capAddAndroid } from './cap-add-android.mjs';
 import { capacitorAssets } from './capacitor-assets.mjs';
@@ -28,6 +29,7 @@ const androidPlatform = definePlatform({
     mobileIgnores(),
     capAddAndroid(),
     capacitorAssets(),
+    backEdgeActivity(),
     modulePlugins(),
     gradlePatch({ name: 'Gradle signing from the environment', marker: SIGNING_MARKER, patch: patchGradleSigning }),
     gradlePatch({ name: 'versionCode from package.json', marker: VERSION_MARKER, patch: patchVersionCode }),

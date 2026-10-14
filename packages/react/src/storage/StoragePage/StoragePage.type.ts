@@ -13,12 +13,19 @@ interface StorageFailure {
 
 interface StorageDomainsState {
   available: boolean;
+  manage: boolean;
   location: DataLocation | null;
   domains: DataDomainDef[];
   usage: Partial<Record<string, DomainUsage>>;
   failure: StorageFailure | null;
   loading: boolean;
   refresh: (domain?: string) => void;
+}
+
+interface StorageSummaryView {
+  domains: DataDomainDef[];
+  location: DataLocation;
+  usage: Partial<Record<string, DomainUsage>>;
 }
 
 interface StorageActions {
@@ -46,4 +53,4 @@ interface ActionRowInput {
   runner?: ActionRunner;
 }
 
-export type { ActionRowInput, StorageActions, StorageDomainsState, StorageFailure, StoragePageProps, StorageSectionsInput };
+export type { ActionRowInput, StorageActions, StorageDomainsState, StorageFailure, StoragePageProps, StorageSectionsInput, StorageSummaryView };

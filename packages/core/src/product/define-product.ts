@@ -47,7 +47,7 @@ const resolveWindow = (input: ProductInput): WindowConfig => {
     ...DEFAULT_WINDOW,
     ...rest,
     title: rest.title ?? input.name,
-    titleBar: { controls: { ...DEFAULT_WINDOW.titleBar.controls, ...titleBar?.controls } },
+    titleBar: { controls: { ...DEFAULT_WINDOW.titleBar.controls, ...titleBar?.controls }, mobile: titleBar?.mobile ?? DEFAULT_WINDOW.titleBar.mobile },
   };
 };
 

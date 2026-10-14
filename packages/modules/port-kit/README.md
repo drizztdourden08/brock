@@ -142,7 +142,7 @@ serveAssetSteps({
 });
 ```
 
-The steps run one after another in one thread, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to main without a copy. A step that throws, a step the worker lacks or a worker that exits fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the thread. electron-vite builds the worker as its own file from the `?modulePath` import.
+The steps run one after another in one thread, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to main without a copy. A step that throws, a step the worker lacks or a worker that exits fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the thread. electron-vite builds the worker as its own file from the `?modulePath` import; the managed main config names `electron/main.ts` as a build input rather than a library entry, since a library entry gave the worker bundle one output per format and stopped the build (Brock 0.43).
 
 ## ensure-wasm
 

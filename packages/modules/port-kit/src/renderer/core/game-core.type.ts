@@ -30,10 +30,18 @@ interface CoreCrash {
 
 type PrecompiledCore = WebAssembly.Module | (() => WebAssembly.Module | null | Promise<WebAssembly.Module | null>);
 
+type CrashWatchFrom = 'start' | 'running';
+
 interface GameCoreOptions {
   precompiled?: PrecompiledCore;
+  watchCrashFrom?: CrashWatchFrom;
   crashArmDelayMs?: number;
   onCrash?: (crash: CoreCrash) => void;
+}
+
+interface CrashWatch {
+  arm: () => void;
+  disarm: () => void;
 }
 
 interface BootSetup {
@@ -65,6 +73,6 @@ interface GameCore<S = never> extends CoreControls {
 }
 
 export type {
-  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, GameCoreOptions, BootSetup, StateHub,
+  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, CrashWatchFrom, GameCoreOptions, CrashWatch, BootSetup, StateHub,
   CoreControls, GameCore,
 };

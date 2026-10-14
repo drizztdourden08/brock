@@ -73,6 +73,53 @@ describe('createGameCore options', () => {
   });
 });
 
+describe('a crash watch armed at start', () => {
+  const crashingFactory = (crashWhileBooting: boolean) => (): Promise<EmscriptenModule> => {
+    if (crashWhileBooting) window.dispatchEvent(crashEvent());
+    return Promise.resolve(fakeModule());
+  };
+  const portOf = () => ({ ...testPort({ extensions: ['.sfc'], known: {} }), core: { ...testPort({ extensions: [], known: {} }).core, factory: 'TestCore' } });
+
+  it('catches a crash while the core boots and never reports it running', async () => {
+    const compiled = await WebAssembly.compile(EMPTY_WASM);
+    Reflect.set(globalThis, 'TestCore', crashingFactory(true));
+    const onCrash = vi.fn();
+    const core = createGameCore(portOf(), { precompiled: compiled, watchCrashFrom: 'start', onCrash });
+    await core.initHeadless({ assets: new Uint8Array(0) });
+    expect(core.state()).toEqual({ status: 'error', error: 'The core crashed: unreachable' });
+    expect(core.module()).toBeNull();
+    expect(onCrash).toHaveBeenCalledOnce();
+    core.stop();
+  });
+
+  it('leaves a crash while booting to the default watch, which arms once the core runs', async () => {
+    const compiled = await WebAssembly.compile(EMPTY_WASM);
+    Reflect.set(globalThis, 'TestCore', crashingFactory(true));
+    const onCrash = vi.fn();
+    const core = createGameCore(portOf(), { precompiled: compiled, onCrash });
+    await core.initHeadless({ assets: new Uint8Array(0) });
+    expect(core.state().status).toBe('running');
+    expect(onCrash).not.toHaveBeenCalled();
+    window.dispatchEvent(crashEvent());
+    expect(onCrash).toHaveBeenCalledOnce();
+    core.stop();
+  });
+
+  it('arms again on the next start after a crash', async () => {
+    const compiled = await WebAssembly.compile(EMPTY_WASM);
+    Reflect.set(globalThis, 'TestCore', crashingFactory(false));
+    const onCrash = vi.fn();
+    const core = createGameCore(portOf(), { precompiled: compiled, watchCrashFrom: 'start', onCrash });
+    await core.initHeadless({ assets: new Uint8Array(0) });
+    window.dispatchEvent(crashEvent());
+    await core.initHeadless({ assets: new Uint8Array(0) });
+    expect(core.state().status).toBe('running');
+    window.dispatchEvent(crashEvent());
+    expect(onCrash).toHaveBeenCalledTimes(2);
+    core.stop();
+  });
+});
+
 describe('parts without createGameCore', () => {
   it('pushes live settings through plain calls', () => {
     const log: string[] = [];

@@ -17,7 +17,7 @@ export { ROMS_DIR, ASSETS_DIR, MAIN_ROM_KIND } from './rom/rom-files.constants';
 export { readZipEntries } from './rom/zip/read-zip-entries';
 export type { ZipEntry } from './rom/zip/zip-read.type';
 export type {
-  RomIdentity, RomDerived, RomRules, RomKindDefinition, RomDefinition, RomImage, RomRefusal, RomCheck, StoredRom,
+  RomFileName, RomIdentity, RomDerived, RomRules, RomKindDefinition, RomDefinition, RomImage, RomRefusal, RomCheck, StoredRom,
 } from './rom/rom.type';
 export type { RomImport, RomKindStore, RomStore } from './rom/rom-store.type';
 

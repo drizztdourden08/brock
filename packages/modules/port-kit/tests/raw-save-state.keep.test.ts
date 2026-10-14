@@ -50,4 +50,17 @@ describe('raw save states', () => {
     expect(decoded.ok && decoded.format).toBe('pksv');
     if (decoded.ok) expect(Array.from(decoded.record.state)).toEqual(Array.from(CORE_STATE));
   });
+
+  it('writes the bare core state with format raw, transformed, and loads it back', async () => {
+    const { core, loaded } = fakeCore(testPort({ extensions: ['.sfc'], known: {} }), CORE_STATE);
+    const { files, disk } = memoryFiles();
+    const transform = { save: (state: Uint8Array) => new Uint8Array([...state, 1]) };
+    const saves = createSaveSlots({ core, store: createSaveStore(files), profileId: 'p1', format: 'raw', transform });
+    expect(await saves.save({ kind: 'quick', slot: 0 })).toBe(true);
+    expect(Array.from(disk.get(QUICK) ?? [])).toEqual([7, 7, 7, 7, 1]);
+    const named = await saves.saveNamed('normal', 'Before the door');
+    expect(Array.from(disk.get(`profiles/p1/saves/normal/${named?.id ?? ''}.sav`) ?? [])).toEqual([7, 7, 7, 7, 1]);
+    expect(await saves.load({ kind: 'quick', slot: 0 })).toBe(true);
+    expect(Array.from(loaded[0] ?? [])).toEqual([7, 7, 7, 7, 1]);
+  });
 });

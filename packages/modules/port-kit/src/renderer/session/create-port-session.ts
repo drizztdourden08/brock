@@ -45,7 +45,7 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
     const current = parts;
     if (!current || !profileId) return null;
     return createSaveSlots({
-      core, store, profileId, rom: romFile, capture: current.presenter.capture, onLoaded: () => settings.reassert(), transform: options.saveTransform,
+      core, store, profileId, rom: romFile, capture: current.presenter.capture, onLoaded: () => settings.reassert(), transform: options.saveTransform, format: options.saveFormat,
     });
   };
 

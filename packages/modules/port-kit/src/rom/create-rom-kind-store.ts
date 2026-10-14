@@ -1,11 +1,12 @@
 /* @layer core @kind logic */
 import { assertSafeName } from '@drizztdourden08/brock-core/storage';
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
-import type { RomCheck, RomIdentity, StoredRom } from './rom.type';
+import type { RomCheck, RomFileName, RomIdentity, StoredRom } from './rom.type';
 import type { RomImport, RomKindSetup, RomKindStore } from './rom-store.type';
 import { ASSETS_DIR, UNKNOWN_ROM_STEM } from './rom-files.constants';
 import { hasRomExtension } from './has-rom-extension';
 import { identifyRom } from './identify-rom';
+import { listRomNames } from './list-rom-names';
 import { assertRomFileName } from './assert-rom-file-name';
 import { romCandidate } from './rom-candidate';
 import { romFileNameOf } from './rom-file-name-of';
@@ -70,7 +71,10 @@ const createRomKindStore = (files: FileStore, { kind, rules, dir, assetExtension
     return [pathOf(file), ...derived];
   };
 
-  return { kind, importRom, list, read, remove, assetFileOf };
+  const listNames = (): Promise<RomFileName[]> =>
+    listRomNames(files, { dir, rules, assetFileOf, labelOf: (file) => (keepName ? null : knownById(file)?.label ?? null) });
+
+  return { kind, importRom, list, listNames, read, remove, assetFileOf };
 };
 
 export { createRomKindStore };

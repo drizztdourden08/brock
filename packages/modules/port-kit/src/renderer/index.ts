@@ -13,9 +13,10 @@ export { portKitApi } from './port-kit-api';
 export { createGameCore } from './core/create-game-core';
 export { compileCore } from './core/compile-core';
 export { createCoreCalls } from './core/create-core-calls';
+export { watchCoreCrash } from './core/watch-core-crash';
 export { useCoreState } from './core/useCoreState';
 export type {
-  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, GameCoreOptions, CoreControls, GameCore,
+  CoreStatus, CoreState, CoreListener, CoreLog, CoreBoot, CoreCrash, PrecompiledCore, CrashWatchFrom, GameCoreOptions, CoreControls, GameCore,
 } from './core/game-core.type';
 export type {
   EmscriptenFS, SdlAudio, EmscriptenModule, EmscriptenConfig, EmscriptenFactory,

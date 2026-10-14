@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { appDirs } from '../src/commands/app-dirs.mjs';
 import { addSite, parseApi } from '../src/site/add-site.mjs';
@@ -12,9 +12,8 @@ import { siteProxy, siteServer } from '../src/site/site-server.mjs';
 import { withSitesGlob } from '../src/site/sites-glob.mjs';
 import { syncSites } from '../src/site/sync-sites.mjs';
 import { renderWorkflows } from '../src/release/render-workflows.mjs';
-import { brockWorkspace, removeTempRepos, tempRepo } from './temp-repo.mjs';
+import { brockWorkspace, linkBuildPackage, removeTempRepos, tempRepo } from './temp-repo.mjs';
 
-const BUILD_PACKAGE = resolve(import.meta.dirname, '..');
 
 const appRepo = () => {
   const root = tempRepo({
@@ -27,9 +26,7 @@ const appRepo = () => {
     'tessera.config.json': '{ "$schema": "./node_modules/@drizztdourden08/tessera/tessera.config.schema.json" }\n',
     'knip.json': JSON.stringify({ entry: ['src/main.tsx'], project: ['src/**/*.ts'], ignoreDependencies: ['x'] }),
   });
-  mkdirSync(join(root, 'node_modules', '@drizztdourden08'), { recursive: true });
-  symlinkSync(BUILD_PACKAGE, join(root, 'node_modules', '@drizztdourden08', 'brock-build'), 'junction');
-  return root;
+  return linkBuildPackage(root);
 };
 
 const read = (root, path) => readFileSync(join(root, path), 'utf8');
@@ -49,7 +46,8 @@ describe('defineBrockSite', () => {
 
   it('fills the defaults and reads the api as a URL or a port offset', () => {
     expect(defineBrockSite(site)).toEqual({
-      site: { id: 'docs', name: 'docs', brand: null }, ports: { offset: 1, base: null }, api: null, build: { nodePolyfills: false, aliases: {} },
+      site: { id: 'docs', name: 'docs', brand: null }, ports: { offset: 1, base: null }, api: null, build: { nodePolyfills: false, aliases: {}, define: {} },
+      tsconfig: { compilerOptions: {} },
     });
     expect(defineBrockSite({ ...site, api: 'https://api.example.com' }).api).toEqual({ path: '/api', target: { url: 'https://api.example.com' }, changeOrigin: false, stripPath: false });
     expect(defineBrockSite({ ...site, api: { portOffset: 2, path: '/v1', stripPath: true } }).api).toMatchObject({ path: '/v1', target: { portOffset: 2 }, stripPath: true });
@@ -98,9 +96,9 @@ describe('brock site add', () => {
     expect(site).toMatchObject({ site: { id: 'store-front', name: 'Store Front', brand: 'tessera' }, ports: { offset: 1 }, api: { target: { portOffset: 2 } } });
     expect(read(root, 'apps/store-front/src/main.tsx')).toContain("import '@drizztdourden08/tessera/palettes/tessera.css';");
     expect(read(root, 'apps/store-front/src/main.tsx')).toContain('<TesseraProvider overrides={TESSERA_OVERRIDES}>');
-    const shell = read(root, 'apps/store-front/src/views/SiteShell/SiteShell.tsx');
+    const shell = read(root, 'apps/store-front/src/views/StoreFrontShell/StoreFrontShell.tsx');
     for (const part of ['<SiteHeader', '<SiteFooter', '<BrandMark app="tessera"', '<Logo brand="tessera"', 'profileAction(person, ']) expect(shell).toContain(part);
-    expect(read(root, 'apps/store-front/src/views/SignIn/SignIn.css')).toContain('var(--c-gradient-dark-from)');
+    expect(read(root, 'apps/store-front/src/views/StoreFrontSignIn/StoreFrontSignIn.css')).toContain('var(--c-gradient-dark-from)');
     const pkg = JSON.parse(read(root, 'apps/store-front/package.json'));
     expect(pkg.name).toBe('@atlas/store-front');
     expect(pkg.devDependencies).toMatchObject({ '@drizztdourden08/brock-build': 'link:X:/brock/packages/build', typescript: 'catalog:', vite: 'catalog:', '@types/react': 'link:../../vendor/types-react' });

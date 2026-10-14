@@ -11,7 +11,8 @@ interface BrockSiteInput {
   site: { id: string; name?: string; brand?: string };
   ports: { offset: number; base?: number };
   api?: string | SiteApiInput;
-  build?: { nodePolyfills?: boolean | Record<string, unknown>; aliases?: Record<string, string> };
+  build?: { nodePolyfills?: boolean | Record<string, unknown>; aliases?: Record<string, string>; define?: Record<string, unknown> };
+  tsconfig?: { compilerOptions?: Record<string, unknown> };
 }
 
 type SiteApiTarget = { url: string } | { portOffset: number };
@@ -20,7 +21,8 @@ interface BrockSite {
   site: { id: string; name: string; brand: string | null };
   ports: { offset: number; base: number | null };
   api: { path: string; target: SiteApiTarget; changeOrigin: boolean; stripPath: boolean } | null;
-  build: { nodePolyfills: boolean | Record<string, unknown>; aliases: Record<string, string> };
+  build: { nodePolyfills: boolean | Record<string, unknown>; aliases: Record<string, string>; define: Record<string, string> };
+  tsconfig: { compilerOptions: Record<string, unknown> };
 }
 
 declare const defineBrockSite: (input: BrockSiteInput) => BrockSite;

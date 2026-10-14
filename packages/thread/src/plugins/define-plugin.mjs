@@ -21,9 +21,9 @@ const stepsOf = (steps = {}) => ({ provision: steps.provision ?? [], build: step
 
 const definePlugin = (plugin) => {
   assertPluginName(plugin?.name);
-  const { name, verbs = {}, targets = {}, guards = [], steps } = plugin;
+  const { name, verbs = {}, targets = {}, guards = [], steps, workflows } = plugin;
   assertVerbs(name, verbs);
-  return Object.freeze({ name, verbs, targets, steps: stepsOf(steps), guards });
+  return Object.freeze({ name, verbs, targets, steps: stepsOf(steps), guards, ...(workflows ? { workflows } : {}) });
 };
 
 export { definePlugin };

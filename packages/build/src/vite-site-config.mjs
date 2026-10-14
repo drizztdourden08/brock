@@ -28,6 +28,7 @@ const defineBrockSiteConfig = async (siteDir, overrides = {}) => {
     base: '/',
     publicDir: resolve(siteDir, 'public'),
     envDir: siteDir,
+    define: site.build.define ?? {},
     plugins: [react(), sitePlugin({ siteDir, site: site.site }), ...(await sitePolyfills(siteDir, site.build.nodePolyfills))],
     resolve: { alias: { '@app': src, ...aliasesOf(siteDir, site.build.aliases) }, dedupe: SHARED_SINGLETONS },
     server: { port, strictPort, proxy, fs },

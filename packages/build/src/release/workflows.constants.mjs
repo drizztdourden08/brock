@@ -21,7 +21,7 @@ const CHECKOUT_RELEASE = [
 
 const CHECKOUT_HISTORY = '\n        with:\n          fetch-depth: 0';
 
-const HOST_OS = Object.freeze({ 'ubuntu-latest': 'linux', 'windows-latest': 'windows', 'macos-latest': 'macos' });
+const HOST_OS = Object.freeze({ 'ubuntu-24.04': 'linux', 'windows-latest': 'windows', 'macos-latest': 'macos' });
 
 const WORKFLOWS_DIR = '.github/workflows';
 

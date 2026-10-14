@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
 import { writeDrifted } from '../modules/sync.mjs';
+import { warnProxyCollisions } from './proxy-collisions.mjs';
 import { renderSiteFiles } from './site-files.mjs';
 import { siteDirs } from './site-dirs.mjs';
 
@@ -16,14 +17,15 @@ const keepsWorkflows = (repoRoot) => existsSync(join(repoRoot, WORKSPACE_FILE)) 
 
 /**
  * @param {string} repoRoot
- * @param {{ check: boolean, only?: string[] }} opts only: the site folders to sync, from the repo root
+ * @param {{ check: boolean, only?: string[], command?: string }} opts only: site folders
  * @returns {Promise<number>} exit code; prints what it wrote or what drifted
  */
-const syncSites = async (repoRoot, { check, only }) => {
+const syncSites = async (repoRoot, { check, only, command }) => {
   const sites = only ?? siteDirs(repoRoot);
   if (!sites.length) return 0;
   const workflows = keepsWorkflows(repoRoot);
   const files = (await Promise.all(sites.map((dir) => renderSiteFiles(repoRoot, dir, { workflows })))).flat();
+  await warnProxyCollisions(repoRoot, sites, command ?? (check ? 'brock check' : 'brock sync'));
   const { written, drifted } = writeDrifted(repoRoot, files, check);
   const label = `${sites.length} site(s): ${sites.join(', ')}`;
   if (check && drifted.length) {

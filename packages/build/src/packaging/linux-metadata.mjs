@@ -18,12 +18,13 @@ const maintainerOf = (author) => (author.email ? `${author.name} <${author.email
 
 /**
  * @param {ProductInput} product
- * @returns {{ extraMetadata: Record<string, string>, linux: Record<string, string> }}
+ * @returns {{ extraMetadata: Record<string, unknown>, linux: Record<string, string> }}
  */
 const linuxMetadata = (product) => {
   const homepage = homepageOf(product);
+  const author = product.author.email ? { name: product.author.name, email: product.author.email } : { name: product.author.name };
   return {
-    extraMetadata: homepage ? { homepage } : {},
+    extraMetadata: { author, ...(homepage ? { homepage } : {}) },
     linux: {
       maintainer: maintainerOf(product.author),
       vendor: product.author.name,

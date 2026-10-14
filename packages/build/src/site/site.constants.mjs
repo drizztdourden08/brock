@@ -3,11 +3,17 @@ const SITE_CONFIG_FILE = 'brock.site.ts';
 const SITE_VITE_CONFIG_FILE = 'vite.config.ts';
 const SITE_TSCONFIG_FILE = 'tsconfig.json';
 const SITE_OUT_DIR = 'dist';
+const SITE_SERVED_DIRS = Object.freeze(['src', 'public']);
 const SITES_DIR = 'apps';
 const SITES_GLOB = 'apps/*';
 const DEFAULT_API_PATH = '/api';
 const DEFAULT_SITE_BRAND = 'brock';
 const SITE_NAME_RULE = /^[a-z][a-z0-9-]{0,30}$/;
+const TEMPLATE_VIEWS = Object.freeze({
+  SHELL: Object.freeze({ folder: 'SiteShell', part: 'Shell', block: 'shell' }),
+  HOME: Object.freeze({ folder: 'Home', part: 'Home', block: 'home' }),
+  SIGN_IN: Object.freeze({ folder: 'SignIn', part: 'SignIn', block: 'sign-in' }),
+});
 const SITE_TEMPLATE_DIR = new URL('./template/', import.meta.url);
 const SITE_FAVICON_PATH = '/brock-site/icon.svg';
 const SITE_MODES = new Set(['dev', 'build', 'preview']);
@@ -35,6 +41,6 @@ const SITE_USAGE = [
 ].join('\n');
 
 export {
-  SITE_CONFIG_FILE, SITE_VITE_CONFIG_FILE, SITE_TSCONFIG_FILE, SITE_OUT_DIR, SITES_DIR, SITES_GLOB, DEFAULT_API_PATH, DEFAULT_SITE_BRAND,
-  SITE_NAME_RULE, SITE_TEMPLATE_DIR, SITE_FAVICON_PATH, SITE_MODES, NODE_POLYFILLS_PACKAGE, SITE_PACKAGES, SITE_SCRIPTS, SITE_USAGE,
+  SITE_CONFIG_FILE, SITE_VITE_CONFIG_FILE, SITE_TSCONFIG_FILE, SITE_OUT_DIR, SITE_SERVED_DIRS, SITES_DIR, SITES_GLOB, DEFAULT_API_PATH, DEFAULT_SITE_BRAND,
+  SITE_NAME_RULE, TEMPLATE_VIEWS, SITE_TEMPLATE_DIR, SITE_FAVICON_PATH, SITE_MODES, NODE_POLYFILLS_PACKAGE, SITE_PACKAGES, SITE_SCRIPTS, SITE_USAGE,
 };

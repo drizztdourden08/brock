@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind types */
+import type { WorkflowSteps } from '@drizztdourden08/brock-core/module';
 import type { ProductInput } from '@drizztdourden08/brock-core/product';
 
 type BrockPlatform = 'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web';
@@ -21,6 +22,52 @@ interface BrockBuildOptions {
   aliases?: Record<string, string>;
   /** Node polyfills (Buffer, process, ...) in the renderer and its workers through vite-plugin-node-polyfills, which the app installs: true for its defaults, or its options. */
   nodePolyfills?: boolean | Record<string, unknown>;
+  /** Globals replaced at build time in main, preload, the renderer, its workers and the web build: each value is JSON-stringified, so the code reads it as written here. Declare each name in a .d.ts of the app. */
+  define?: Record<string, BrockDefineValue>;
+}
+
+type BrockDefineValue = string | number | boolean | null | BrockDefineValue[] | { [key: string]: BrockDefineValue };
+
+type BrockWorkflowMode = 'managed' | 'own';
+
+interface BrockWorkflowOptions {
+  /** 'own' leaves the CI workflow to the app: brock sync stops writing it and brock check stops comparing it. Default 'managed'. */
+  ci?: BrockWorkflowMode;
+  /** 'own' leaves the release workflow to the app, the same way. Default 'managed'. */
+  release?: BrockWorkflowMode;
+  /** The app's own steps, spliced into the managed workflows at fixed points, after the steps of the modules and plugins. */
+  steps?: WorkflowSteps;
+}
+
+interface BrockTsconfigOptions {
+  /** Merged key by key over the compilerOptions of the managed tsconfig.json; paths merges entry by entry. */
+  compilerOptions?: Record<string, unknown>;
+}
+
+interface BrockExtraResource {
+  /** A file or folder, relative to the app folder. */
+  from: string;
+  /** Where it lands, relative to the resources folder of the packaged app. */
+  to: string;
+  filter?: string[];
+}
+
+interface BrockFileAssociationOptions {
+  /** macOS CFBundleTypeRole. */
+  role?: 'Editor' | 'Viewer' | 'Shell' | 'None';
+  /** The icon name, as product.fileAssociations takes it; replaces the product's for this extension. */
+  icon?: string;
+}
+
+interface BrockPackagingOptions {
+  /** Files copied beside the app, after the module resources. */
+  extraResources?: BrockExtraResource[];
+  /** A module, relative to the app folder, whose default export (the electron-builder AfterPackContext) runs after Brock's own afterPack. */
+  afterPack?: string;
+  /** Per extension of product.fileAssociations: the role and the icon. */
+  fileAssociations?: Record<string, BrockFileAssociationOptions>;
+  /** The icon vpk pack takes, relative to the app folder: an .ico on Windows, a .png on Linux. Default: the app icon. */
+  velopackIcons?: { windows?: string; linux?: string };
 }
 
 interface BrockGateOptions {
@@ -45,10 +92,20 @@ interface BrockConfig {
   build?: BrockBuildOptions;
   /** The app's own gate steps: brock gate runs them, and so do the CI quality job and upgrade. */
   gate?: BrockGateOptions;
+  /** The managed CI and release workflows: which files Brock keeps, and the app's own steps in them. */
+  workflows?: BrockWorkflowOptions;
+  /** Merged over the managed tsconfig.json. */
+  tsconfig?: BrockTsconfigOptions;
+  /** What the managed electron-builder config and vpk take beside the product. */
+  packaging?: BrockPackagingOptions;
 }
 
 declare const CONFIG_FILE: 'brock.config.ts';
 declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
-export type { BrockBuildOptions, BrockConfig, BrockGateOptions, BrockPlatform, BrockReviewOptions, BrockTarget, BrockWebOptions };
+export type {
+  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockGateOptions, BrockPackagingOptions, BrockPlatform,
+  BrockReviewOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
+};
+export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

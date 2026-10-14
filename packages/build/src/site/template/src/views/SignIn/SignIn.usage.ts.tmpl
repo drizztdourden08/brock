@@ -11,9 +11,9 @@ const usage = {
   ],
   a11y: ['The card title is the page heading and the button is the primary action.'],
   buildingBlock: true,
-  example: `import { SignIn } from '@app/views/SignIn';
+  example: `import { __SIGN_IN__ } from '@app/views/__SIGN_IN__';
 
-const SignInSample = ({ onSignIn }: { onSignIn: () => void }) => <SignIn onSignIn={onSignIn} />;
+const SignInSample = ({ onSignIn }: { onSignIn: () => void }) => <__SIGN_IN__ onSignIn={onSignIn} />;
 `,
   propsHash: '6a7e332b0d07f706',
 } satisfies ComponentUsage;

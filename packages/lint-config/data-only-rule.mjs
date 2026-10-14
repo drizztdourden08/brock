@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { DATA_HEADER, DATA_ONLY_MESSAGE, NUMBER_OPERATORS, UNARY_OPERATORS } from './data-kind.constants.mjs';
+import { DATA_KINDS, DATA_ONLY_MESSAGE, KIND_HEADER, NUMBER_OPERATORS, UNARY_OPERATORS } from './data-kind.constants.mjs';
 
 const TYPE_WRAPPERS = ['TSAsExpression', 'TSSatisfiesExpression', 'TSTypeAssertion'];
 const DECLARATIONS = ['ImportDeclaration', 'TSTypeAliasDeclaration', 'TSInterfaceDeclaration', 'TSEnumDeclaration', 'ExportAllDeclaration', 'EmptyStatement'];
@@ -53,7 +53,7 @@ const words = (type) => type.replace(/^TS/, '').replace(/([a-z])([A-Z])/g, '$1 $
 const dataOnly = {
   meta: {
     type: 'problem',
-    docs: { description: 'A file whose header says @kind data holds data only, so the size and one-export exemptions of the kind cover no logic' },
+    docs: { description: 'A file whose header says @kind data or @kind verbatim holds data only, so the size and one-export exemptions of the kind cover no logic' },
     schema: [],
     messages: { logic: DATA_ONLY_MESSAGE },
   },
@@ -62,10 +62,11 @@ const dataOnly = {
     return {
       Program(program) {
         const header = sourceCode.getAllComments().find((comment) => comment.type !== 'Shebang');
-        if (!header || !DATA_HEADER.test(header.value)) return;
+        const [, kind] = (header && KIND_HEADER.exec(header.value)) ?? [];
+        if (!DATA_KINDS.includes(kind)) return;
         for (const statement of program.body) {
           const found = statementOffender(statement);
-          if (found) context.report({ node: found, messageId: 'logic', data: { what: words(found.type) } });
+          if (found) context.report({ node: found, messageId: 'logic', data: { kind, what: words(found.type) } });
         }
       },
     };

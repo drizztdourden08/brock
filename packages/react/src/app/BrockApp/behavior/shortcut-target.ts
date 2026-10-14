@@ -5,6 +5,7 @@ import { routeAliases } from '../../../navigation/route-aliases';
 import { matchesShortcut } from '../../../screens/matches-shortcut';
 import type { ScreenRegistry } from '../../../screens/screen-registry.type';
 import type { ScreenDef } from '../../../screens/screen.type';
+import { routeHiddenNow } from '../../../screens/show/route-hidden-now';
 
 const shortcutTarget = (
   e: KeyboardEvent,
@@ -14,7 +15,7 @@ const shortcutTarget = (
 ): string | undefined => {
   const screen = registry.list().find((def) => def.shortcut !== undefined && matchesShortcut(e, def.shortcut) && allowed(def));
   if (screen) return screen.id;
-  const opens = (entry: RouteShortcut): boolean => allowed(registry.get(resolveRoute(entry.target, {}, routeAliases.get).active));
+  const opens = (entry: RouteShortcut): boolean => allowed(registry.get(resolveRoute(entry.target, {}, routeAliases.get).active)) && !routeHiddenNow(entry.target, registry);
   return shortcuts.find((entry) => matchesShortcut(e, entry.shortcut) && opens(entry))?.target;
 };
 

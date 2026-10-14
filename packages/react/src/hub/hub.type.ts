@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ScreenParams } from '../navigation/navigation.type';
 import type { ScreenMenu } from '../screens/conventions/screens-config.type';
+import type { ShowRule } from '../screens/show/show.type';
 
 interface HubTarget {
   hub?: string;
@@ -65,6 +66,8 @@ interface HubPage {
   menu?: ScreenMenu;
   order?: number;
   menuOrder?: number;
+  show?: ShowRule;
+  keepMounted?: boolean;
 }
 
 interface HubGroup {
@@ -94,6 +97,7 @@ interface HubDef {
   search?: HubSearch;
   icon: ReactNode;
   shortcut?: string;
+  show?: ShowRule;
 }
 
 export type { HubDef, HubGroup, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget };

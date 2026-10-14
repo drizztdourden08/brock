@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { Section, SettingItem } from '../../settings.type';
+import type { Section, SettingItem, SettingValues } from '../../settings.type';
 import type { ItemGroup, ResolvedSection } from '../SettingsLayout.type';
 
 const groupsOf = (section: Section): ItemGroup[] =>
@@ -13,13 +13,16 @@ const choiceWords = (item: SettingItem): string[] =>
 const matches = (item: SettingItem, query: string): boolean =>
   [item.label, item.description ?? '', item.hint, item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));
 
-const resolveSections = (sections: readonly Section[], query: string): ResolvedSection[] =>
+const shownWith = (settings: object | undefined) => (item: SettingItem): boolean =>
+  settings === undefined || item.visible === undefined || item.visible(settings as SettingValues);
+
+const resolveSections = (sections: readonly Section[], query: string, settings?: object): ResolvedSection[] =>
   sections
     .map((section) => ({
       id: section.id,
       title: section.title,
       groups: groupsOf(section)
-        .map((group) => ({ ...group, items: query ? group.items.filter((i) => matches(i, query)) : group.items }))
+        .map((group) => ({ ...group, items: group.items.filter(shownWith(settings)).filter((i) => query === '' || matches(i, query)) }))
         .filter((group) => group.items.length > 0),
     }))
     .filter((section) => section.groups.length > 0);

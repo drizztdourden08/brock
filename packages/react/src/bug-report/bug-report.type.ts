@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { BugReportAttachmentLimits, BugReportExtras, BugReportFields, BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
+import type { BugReportAfterSend, BugReportAttachmentLimits, BugReportExtras, BugReportFields, BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
 
 interface IssueDraft {
   repo: ProductRepo;
@@ -18,6 +18,7 @@ type BugReportExtrasSource = () => BugReportExtras | Promise<BugReportExtras>;
 interface BugReportTargetFields {
   contact: boolean;
   attachments: BugReportAttachmentLimits | null;
+  afterSend: BugReportAfterSend;
 }
 
 type BugReportTarget =

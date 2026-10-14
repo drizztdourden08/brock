@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { BugReportAttachment, BugReportAttachmentLimits, BugReportPayload } from '@drizztdourden08/brock-core';
+import type { BugReportAttachment, BugReportAttachmentLimits, BugReportPayload, BugReportReceipt } from '@drizztdourden08/brock-core';
 import type { BugReportTarget, BugReportTargetFields } from '../bug-report.type';
 
 interface AttachmentsModel {
@@ -27,6 +27,7 @@ interface BugReportForm {
   attachments: AttachmentsModel;
   sending: boolean;
   error: string | null;
+  sent: BugReportReceipt | null;
   canSend: boolean;
   send: () => void;
   fallback: (() => void) | null;
@@ -49,4 +50,6 @@ interface ReportPayloadModel {
   reset: () => void;
 }
 
-export type { AttachmentsModel, BugReportForm, ReportPayloadModel };
+type ReceiptHandler = (receipt: BugReportReceipt) => void;
+
+export type { AttachmentsModel, BugReportForm, ReceiptHandler, ReportPayloadModel };

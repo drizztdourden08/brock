@@ -12,14 +12,15 @@ import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/s
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { ScreenRailGroup } from '../../shell/ScreenRail/ScreenRail.type';
-import type { SettingsEffect } from '../../stores/settings-store.type';
+import type { SettingsEffect, SettingsNormalise, SettingsPatchTransform } from '../../stores/settings-store.type';
 import type { SettingsControlProps, TabDef } from '../../settings/settings.type';
 import type { LayoutPreset } from '../../widgets/layout-preset.type';
-import type { WidgetContextSource } from '../../widgets/WidgetHost/WidgetHost.type';
+import type { WidgetContextSource, WidgetDisabledHook } from '../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../widgets/widget.type';
 import type { AppReview } from '../../review/app-review.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
+import type { ShowContext } from '../../screens/show/show.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -29,6 +30,8 @@ interface BrockAppSettings<S extends object> extends SettingsControls<S> {
   defaults: S;
   tabs?: TabDef<S>[];
   effects?: SettingsEffect<S>[];
+  normalise?: SettingsNormalise<S>;
+  transformPatch?: SettingsPatchTransform<S>;
 }
 
 interface BrockAppProps<S extends object> {
@@ -41,6 +44,7 @@ interface BrockAppProps<S extends object> {
   widgets?: readonly WidgetDef[];
   widgetLayout?: LayoutPreset;
   widgetContext?: WidgetContextSource;
+  widgetDisabled?: WidgetDisabledHook;
   home?: string;
   menu?: MenuEntry[];
   layout?: BrockAppLayout;
@@ -54,6 +58,7 @@ interface BrockAppProps<S extends object> {
   review?: AppReview;
   tours?: readonly TourDef[];
   bugReport?: BrockAppBugReport;
+  sessionLog?: boolean;
 }
 
 interface MenuBuildInput {
@@ -63,6 +68,7 @@ interface MenuBuildInput {
   homeScreen: string;
   hasCredits: boolean;
   developerTools: boolean;
+  show?: ShowContext;
   onQuit: () => void;
   onDevConsole: () => void;
   onReportBug: () => void;

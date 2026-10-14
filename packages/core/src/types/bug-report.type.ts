@@ -40,9 +40,12 @@ interface BugReportAttachmentLimits {
   maxBytes: number;
 }
 
+type BugReportAfterSend = 'toast' | 'view';
+
 interface BugReportFields {
   contact?: boolean;
   attachments?: boolean | Partial<BugReportAttachmentLimits>;
+  afterSend?: BugReportAfterSend;
 }
 
 interface BugReportReceipt {
@@ -58,6 +61,6 @@ interface BugReportTransportInfo extends BugReportFields {
 }
 
 export type {
-  BugReportAttachment, BugReportAttachmentLimits, BugReportDiagnostics, BugReportExtras, BugReportFields, BugReportLogLine, BugReportPayload,
-  BugReportReceipt, BugReportTransport, BugReportTransportInfo,
+  BugReportAfterSend, BugReportAttachment, BugReportAttachmentLimits, BugReportDiagnostics, BugReportExtras, BugReportFields, BugReportLogLine,
+  BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo,
 };

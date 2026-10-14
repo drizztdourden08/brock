@@ -1,10 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import { MENU_SECTIONS, UNKNOWN_SECTION_ICON } from '../../../menu/menu.constants';
-import type { MenuEntry, MenuItem, MenuSection } from '../../../menu/menu.type';
-
-const sectionOf = (id: string): MenuSection =>
-  MENU_SECTIONS.find((section) => section.id === id)
-  ?? { id, label: id.charAt(0).toUpperCase() + id.slice(1), icon: UNKNOWN_SECTION_ICON };
+import { MENU_SECTIONS } from '../../../menu/menu.constants';
+import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
+import { sectionOf } from './section-of';
 
 const sectionOrder = (ids: readonly string[]): string[] => [
   ...MENU_SECTIONS.map((section) => section.id).filter((id) => ids.includes(id)),

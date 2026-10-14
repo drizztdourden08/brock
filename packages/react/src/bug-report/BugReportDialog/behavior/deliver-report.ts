@@ -6,19 +6,20 @@ import { toast } from '../../../toast/toast';
 import { buildIssueBody } from '../../build-issue-body';
 import { buildIssueUrl } from '../../build-issue-url';
 import type { BugReportTarget } from '../../bug-report.type';
-import { COPIED_MESSAGE, COPY_FAILED_MESSAGE, OPEN_RECEIPT_LABEL, OPENED_MESSAGE, SENT_MESSAGE } from '../BugReportDialog.constants';
+import type { ReceiptHandler } from '../BugReportDialog.type';
+import { COPIED_MESSAGE, COPY_FAILED_MESSAGE, OPENED_MESSAGE } from '../BugReportDialog.constants';
+import { announceReceipt } from './announce-receipt';
 
-const sendThrough = async (send: BugReportTransport, payload: BugReportPayload): Promise<string | null> => {
+const sendThrough = async (send: BugReportTransport, payload: BugReportPayload, onReceipt: ReceiptHandler): Promise<string | null> => {
   const result = await send(payload).catch((err: unknown) => ({ success: false as const, error: err instanceof Error ? err.message : String(err) }));
   if (!result.success) return result.error;
-  const { message, url } = result.value;
-  toast(message ?? SENT_MESSAGE, { variant: 'success', ...(url ? { action: { label: OPEN_RECEIPT_LABEL, onSelect: () => openExternal(url) } } : {}) });
+  onReceipt(result.value);
   return null;
 };
 
-const deliverReport = async (target: BugReportTarget, payload: BugReportPayload): Promise<string | null> => {
+const deliverReport = async (target: BugReportTarget, payload: BugReportPayload, onReceipt: ReceiptHandler = announceReceipt): Promise<string | null> => {
   const diagnostics = payload.diagnostics?.text ?? null;
-  if (target.kind === 'transport') return sendThrough(target.send, payload);
+  if (target.kind === 'transport') return sendThrough(target.send, payload, onReceipt);
   if (target.kind === 'github') {
     openExternal(buildIssueUrl({ repo: target.repo, title: payload.title, description: payload.description, diagnostics }));
     toast(OPENED_MESSAGE, { variant: 'success' });

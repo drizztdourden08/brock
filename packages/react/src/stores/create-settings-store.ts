@@ -6,7 +6,7 @@ import { DEFAULT_SAVE_DELAY_MS, NO_SAVE } from './settings-store.constants';
 import type { CreateSettingsStoreOptions, SettingsEffect, SettingsState, SettingsStore } from './settings-store.type';
 
 const createSettingsStore = <S extends object>(options: CreateSettingsStoreOptions<S>): SettingsStore<S> => {
-  const { defaults, load, save, saveDelayMs = DEFAULT_SAVE_DELAY_MS } = options;
+  const { defaults, load, save, normalise, transformPatch, saveDelayMs = DEFAULT_SAVE_DELAY_MS } = options;
   const effects = new Set<SettingsEffect<S>>(options.effects ?? []);
   const saver = createSettingsSaver(save, saveDelayMs, (report) => store.setState(report));
   let hydration = 0;
@@ -23,11 +23,13 @@ const createSettingsStore = <S extends object>(options: CreateSettingsStoreOptio
       set({ hydrated: false, profileId });
       const stored = await load(profileId);
       if (token !== hydration) return;
-      set({ settings: mergeSettings(defaults, stored), hydrated: true });
+      const merged = mergeSettings(defaults, stored);
+      set({ settings: normalise ? normalise(merged, stored) : merged, hydrated: true });
     },
 
-    patch: (patch) => {
+    patch: (given) => {
       const prev = get().settings;
+      const patch = transformPatch ? transformPatch(given, prev) : given;
       const next = { ...prev, ...patch };
       set({ settings: next });
       for (const effect of effects) effect(patch, next, prev);

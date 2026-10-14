@@ -4,6 +4,8 @@ import { bugReport } from '../../../bug-report/bug-report';
 import { requestQuit } from '../../../quit/request-quit';
 import { shortcutsHelp } from '../../../shortcuts-help/shortcuts-help';
 import type { MenuEntry } from '../../../menu/menu.type';
+import { useMenuHooks } from '../../../menu/useMenuHooks';
+import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { tours } from '../../../tours/tours';
@@ -15,8 +17,11 @@ import { CREDITS_SCREEN } from '../BrockApp.constants';
 import { buildMenu } from './build-menu';
 import { stripScreenEntries } from './strip-screen-entries';
 
-const useShellMenu = (moduleMenu: readonly MenuEntry[], railed: boolean): MenuEntry[] => {
-  const { menu, homeScreen } = useBrock();
+const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): MenuEntry[] => {
+  const { menu: givenMenu, homeScreen } = useBrock();
+  const menu = useMenuHooks(givenMenu);
+  const moduleMenu = useMenuHooks(givenModuleMenu);
+  const show = useShowContext();
   const { window: win } = usePlatform();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
@@ -32,6 +37,7 @@ const useShellMenu = (moduleMenu: readonly MenuEntry[], railed: boolean): MenuEn
       homeScreen,
       hasCredits,
       developerTools,
+      show,
       onQuit: () => void requestQuit(() => win.close()),
       onDevConsole: () => win.openDevTools(),
       onReportBug: bugReport.open,
@@ -39,7 +45,7 @@ const useShellMenu = (moduleMenu: readonly MenuEntry[], railed: boolean): MenuEn
       tours: { list: tourList, start: tours.start },
     });
     return railed ? stripScreenEntries(built) : built;
-  }, [menu, moduleMenu, widgets, tourList, homeScreen, hasCredits, developerTools, win, railed]);
+  }, [menu, moduleMenu, widgets, tourList, homeScreen, hasCredits, developerTools, show, win, railed]);
 };
 
 export { useShellMenu };

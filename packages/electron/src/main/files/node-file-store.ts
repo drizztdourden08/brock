@@ -2,12 +2,13 @@
 import { readFile, writeFile, readdir, rm, mkdir, stat } from 'fs/promises';
 import { dirname } from 'path';
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
+import type { NodeFileStoreOptions } from './node-file-store.type';
 import { resolveDataPath } from './resolve-data-path';
 import { trashDataPath } from './trash-data-path';
 
 const ensureParent = (full: string): Promise<void> => mkdir(dirname(full), { recursive: true }).then(() => undefined);
 
-const createNodeFileStore = (): FileStore => ({
+const createNodeFileStore = (options: NodeFileStoreOptions = {}): FileStore => ({
   readBytes: async (path) => {
     try { return new Uint8Array(await readFile(resolveDataPath(path))); } catch { return null; }
   },
@@ -42,7 +43,7 @@ const createNodeFileStore = (): FileStore => ({
       return { bytes: s.size, isDirectory: s.isDirectory(), mtimeMs: s.mtimeMs };
     } catch { return null; }
   },
-  trash: trashDataPath,
+  ...(options.trashItem ? { trash: trashDataPath(options.trashItem) } : {}),
 });
 
 export { createNodeFileStore };

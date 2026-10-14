@@ -1,0 +1,9 @@
+/* @layer renderer-shell @kind style */
+
+.hub__kept {
+  display: contents;
+}
+
+.hub__kept[hidden] {
+  display: none;
+}

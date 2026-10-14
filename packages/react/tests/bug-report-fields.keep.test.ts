@@ -12,8 +12,9 @@ const file = (name: string, size: number) => ({ name, size });
 
 describe('targetFields', () => {
   it('turns the transport fields into limits, with defaults', () => {
-    expect(targetFields({})).toEqual({ contact: false, attachments: null });
-    expect(targetFields({ contact: true, attachments: true })).toEqual({ contact: true, attachments: { maxFiles: 5, maxBytes: 10 * 1024 * 1024 } });
+    expect(targetFields({})).toEqual({ contact: false, attachments: null, afterSend: 'toast' });
+    expect(targetFields({ contact: true, attachments: true, afterSend: 'view' }))
+      .toEqual({ contact: true, attachments: { maxFiles: 5, maxBytes: 10 * 1024 * 1024 }, afterSend: 'view' });
     expect(targetFields({ attachments: { maxBytes: 1024 } }).attachments).toEqual({ maxFiles: 5, maxBytes: 1024 });
   });
 

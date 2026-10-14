@@ -16,8 +16,13 @@ const isAvailable = async (options: BugReportOptions, ctx: MainContext): Promise
 
 const transportInfo = async (options: BugReportOptions | null, ctx: MainContext): Promise<BugReportTransportInfo | null> => {
   if (!options || !(await isAvailable(options, ctx))) return null;
-  const { label = DEFAULT_SEND_LABEL, contact, attachments } = options;
-  return { label, ...(contact === undefined ? {} : { contact }), ...(attachments === undefined ? {} : { attachments }) };
+  const { label = DEFAULT_SEND_LABEL, contact, attachments, afterSend } = options;
+  return {
+    label,
+    ...(contact === undefined ? {} : { contact }),
+    ...(attachments === undefined ? {} : { attachments }),
+    ...(afterSend === undefined ? {} : { afterSend }),
+  };
 };
 
 export { transportInfo };

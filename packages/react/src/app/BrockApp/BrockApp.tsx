@@ -27,19 +27,21 @@ import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import { useBugReportTransport } from '../../bug-report/useBugReportTransport';
+import { useRendererLogging } from '../../log/useRendererLogging';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
-    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, layout = 'menu',
-    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport,
+    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
+    screenGroups, profileHooks, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks);
+  useRendererLogging(log, { sessionLog, popped: poppedId !== null });
   useQuitGuards(merged.beforeQuit, beforeQuit);
   useTourRegistry(tours, merged.tours);
   useBugReportTransport(bugReport);
@@ -80,7 +82,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     searchActions={merged.searchActions}
                     widgets={allWidgets}
                     widgetLayout={widgetLayout}
-                    widgetContext={widgetContext}
+                    widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
                     review={review}

@@ -54,10 +54,13 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'file:exists': (path: string) => Promise<boolean>;
   'file:mkdir': (dir: string) => Promise<void>;
   'file:stat': (path: string) => Promise<FileStat | null>;
+  'file:trash': (path: string) => Promise<void>;
 
   'window:isMaximized': () => Promise<boolean>;
   'window:setAlwaysOnTop': (value: boolean) => Promise<boolean>;
   'window:isFullscreen': () => Promise<boolean>;
+  'window:setAudioMuted': (muted: boolean) => Promise<boolean>;
+  'window:isAudioMuted': () => Promise<boolean>;
 
   'dialog:pickFile': (extensions: string[]) => Promise<PickedFileWire | null>;
   'dialog:pickPath': (folder: boolean, extensions: string[]) => Promise<string | null>;
@@ -82,6 +85,7 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
 
   'uiViews:load': () => Promise<Record<string, unknown>>;
   'uiViews:save': (data: Record<string, unknown>) => Promise<void>;
+  'uiViews:patch': (entries: Record<string, unknown>) => Promise<void>;
 
   'debug:revealLogs': () => Promise<void>;
 
@@ -101,6 +105,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'boot:failed': (failure: BootFailure) => void;
   'boot:ready': () => void;
   'debug:appendSessionLog': (lines: string[]) => void;
+  'capture:holds': (count: number) => void;
   'review:check': (check: ReviewCheck) => void;
   'review:finish': () => void;
 }
@@ -119,6 +124,7 @@ interface AppServices {}
 
 interface Capabilities {
   windowChrome: boolean;
+  titleBar?: boolean;
   selfUpdate: boolean;
   nativeFileDialog: boolean;
   revealDataFolder: boolean;

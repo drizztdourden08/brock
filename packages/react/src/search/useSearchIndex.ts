@@ -8,6 +8,8 @@ import { useScreenRegistry } from '../screens/useScreenRegistry';
 import { useProfilesStore } from '../stores/useProfilesStore';
 import { useSettings } from '../stores/useSettings';
 import { useWidgetMenuEntries } from '../widgets/useWidgetMenuEntries';
+import { hiddenRoutes } from '../screens/show/hidden-routes';
+import { useShowContext } from '../screens/show/useShowContext';
 import { buildCatalog } from './catalog/build-catalog';
 import { settingsPlaceOf } from './catalog/settings-place-of';
 import type { SearchAction, SearchEntry } from './search.type';
@@ -24,6 +26,7 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
   const registered = useSearchActionStore((s) => s.actions);
   const live = useLiveSearchStore((s) => s.entries);
   const widgets = useWidgetMenuEntries();
+  const show = useShowContext();
 
   return useMemo(() => (enabled ? buildCatalog({
     index: screenTree?.search ?? [],
@@ -40,7 +43,9 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
     isDev: developerTools,
     isMobile: info.formFactor === 'mobile',
     hasProfile,
-  }) : []), [enabled, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile]);
+    show,
+    hidden: hiddenRoutes(screenTree?.hubs ?? [], registry.list(), show),
+  }) : []), [enabled, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile, show]);
 };
 
 export { useSearchIndex };

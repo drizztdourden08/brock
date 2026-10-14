@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { ShowRule } from '../screens/show/show.type';
 
 interface MenuItem {
   key: string;
@@ -20,6 +21,8 @@ interface MenuItem {
   children?: MenuEntry[];
   section?: string;
   devOnly?: boolean;
+  show?: ShowRule;
+  useDisabled?: () => boolean;
 }
 
 type MenuEntry = MenuItem | 'separator';

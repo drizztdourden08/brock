@@ -2,6 +2,7 @@
 import { app } from 'electron';
 import type { MainContext } from '../types/main-context.type';
 import { captureWindow } from '../handlers/capture-window';
+import { captureHolds } from '../handlers/capture-holds';
 import { bootEvents } from '../boot/boot-events';
 import { whenRevealed } from '../boot/when-revealed';
 import { SCREENSHOT_WATCHDOG_MS } from './screenshot-flag.constants';
@@ -24,7 +25,7 @@ const armScreenshotFlag = (ctx: MainContext): void => {
     app.quit();
   };
 
-  void whenRevealed().then(shoot);
+  void whenRevealed().then(captureHolds.settled).then(shoot);
   bootEvents.once('failed', () => {
     done = true;
     app.exit(1);

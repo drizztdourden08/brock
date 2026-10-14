@@ -79,6 +79,7 @@ describe('transportInfo', () => {
     expect(await transportInfo({ transport }, contextWith([]))).toEqual({ label: 'Send report' });
     expect(await transportInfo({ transport, label: 'Upload', contact: true, attachments: { maxFiles: 3 } }, contextWith([])))
       .toEqual({ label: 'Upload', contact: true, attachments: { maxFiles: 3 } });
+    expect(await transportInfo({ transport, afterSend: 'view' }, contextWith([]))).toEqual({ label: 'Send report', afterSend: 'view' });
   });
 
   it('hides a transport that cannot send now, so the renderer falls back to the GitHub issue', async () => {

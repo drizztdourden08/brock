@@ -2,7 +2,6 @@
 import type { EventMap, InvokeMap, SendMap } from '@drizztdourden08/brock-core';
 
 type AnyFn = (...args: unknown[]) => unknown;
-type ShimWindow = Window & { api?: Record<string, unknown> };
 type Returns = Record<string, () => unknown>;
 
 interface ApiShimMaps {
@@ -17,4 +16,4 @@ interface ApiShimOptions {
   helpers?: Record<string, unknown>;
 }
 
-export type { AnyFn, ApiShimMaps, ApiShimOptions, Returns, ShimWindow };
+export type { AnyFn, ApiShimMaps, ApiShimOptions, Returns };

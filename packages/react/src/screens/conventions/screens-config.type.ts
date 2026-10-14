@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { IconName } from '@drizztdourden08/tessera/primitives';
+import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
 
@@ -21,7 +22,7 @@ interface BucketGroupDef {
   label: string;
 }
 
-interface BucketDef {
+interface BucketDef extends ShowRule {
   id: string;
   title: string;
   icon: IconName;
@@ -41,7 +42,7 @@ interface ScreensConfig {
   settings?: SettingsPlacement;
 }
 
-interface ScreenMeta {
+interface ScreenMeta extends ShowRule {
   title?: string;
   icon?: IconName;
   order?: number;
@@ -54,6 +55,7 @@ interface ScreenMeta {
   header?: PageHeaderMeta;
   path?: string;
   fill?: boolean;
+  keepMounted?: boolean;
 }
 
 export type { BucketDef, BucketGroupDef, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };

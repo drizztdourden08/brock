@@ -13,6 +13,4 @@ interface AppLogState {
   counts: LogLevelCounts;
 }
 
-type LogGlobals = Window & { __logEntries?: () => unknown; __logSubscribe?: unknown };
-
-export type { AppLogBus, AppLogState, LogGlobals, LogLevelCounts };
+export type { AppLogBus, AppLogState, LogLevelCounts };

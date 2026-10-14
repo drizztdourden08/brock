@@ -27,10 +27,13 @@ const BASE_INVOKE_MAP = {
   fileExists: 'file:exists',
   fileMkdir: 'file:mkdir',
   fileStat: 'file:stat',
+  fileTrash: 'file:trash',
 
   isMaximized: 'window:isMaximized',
   setAlwaysOnTop: 'window:setAlwaysOnTop',
   isFullscreen: 'window:isFullscreen',
+  setAudioMuted: 'window:setAudioMuted',
+  isAudioMuted: 'window:isAudioMuted',
 
   pickFile: 'dialog:pickFile',
   pickPath: 'dialog:pickPath',
@@ -55,6 +58,7 @@ const BASE_INVOKE_MAP = {
 
   loadUiViews: 'uiViews:load',
   saveUiViews: 'uiViews:save',
+  patchUiViews: 'uiViews:patch',
 
   revealLogsFolder: 'debug:revealLogs',
 
@@ -76,6 +80,7 @@ const BASE_SEND_MAP = {
   bootFailed: 'boot:failed',
   bootReady: 'boot:ready',
   appendSessionLog: 'debug:appendSessionLog',
+  captureHolds: 'capture:holds',
   reviewCheck: 'review:check',
   reviewFinish: 'review:finish',
   ...WIDGET_SEND_MAP,

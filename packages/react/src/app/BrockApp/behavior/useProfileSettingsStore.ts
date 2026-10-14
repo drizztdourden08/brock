@@ -10,6 +10,8 @@ const useProfileSettingsStore = <S extends object>(settings: BrockAppSettings<S>
   useMemo(() => createSettingsStore<S>({
     defaults: settings.defaults,
     effects: settings.effects,
+    normalise: settings.normalise,
+    transformPatch: settings.transformPatch,
     load: async (profileId) => (await readConfig(profileId)) as Partial<S> | null,
     save: (profileId, next) => writeConfig(profileId, next as Record<string, unknown>),
   }), []);

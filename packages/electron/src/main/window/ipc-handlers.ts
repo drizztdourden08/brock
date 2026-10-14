@@ -30,6 +30,12 @@ const windowHandlers: HandlerGroup = {
     });
 
     handle('window:isMaximized', () => mainClusterControl.isMaximized() ?? window()?.isMaximized() ?? false);
+    handle('window:setAudioMuted', (_event, muted) => {
+      const contents = window()?.webContents;
+      contents?.setAudioMuted(muted);
+      return contents?.isAudioMuted() ?? false;
+    });
+    handle('window:isAudioMuted', () => window()?.webContents.isAudioMuted() ?? false);
     handle('window:isFullscreen', () => mainClusterControl.isFullscreen() ?? window()?.isFullScreen() ?? false);
     handle('window:setAlwaysOnTop', (_event, value) => {
       const win = window();

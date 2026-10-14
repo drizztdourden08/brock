@@ -17,6 +17,7 @@ const pageItem = (bucket: BucketDef, page: HubPage, home: boolean): MenuItem => 
   bucket: bucket.id,
   page: page.id,
   devOnly: page.devOnly,
+  show: page.show,
 });
 
 const pagesOf = (hub: HubDef): HubPage[] => [hub.home, ...hub.groups.flatMap((group) => group.pages)];
@@ -30,9 +31,9 @@ const menuSorted = (pages: readonly HubPage[], home: HubPage): HubPage[] => {
 const bucketEntries = (bucket: BucketDef, hub: HubDef | undefined, home: string): MenuItem[] => {
   const key = `${BUCKET_KEY_PREFIX}${bucket.id}`;
   if (bucket.menu === 'hidden' || hub === undefined) return [];
-  if (bucket.menu === 'entry') return bucket.id === home ? [] : [{ key, label: bucket.title, icon: bucket.icon, shortcut: bucket.shortcut, screen: bucket.id }];
+  if (bucket.menu === 'entry') return bucket.id === home ? [] : [{ key, label: bucket.title, icon: bucket.icon, shortcut: bucket.shortcut, screen: bucket.id, show: hub.show }];
   const pages = menuSorted(pagesOf(hub).filter((page) => page.menu === undefined), hub.home);
-  return [{ key, label: bucket.title, icon: bucket.icon, children: pages.map((page) => pageItem(bucket, page, page === hub.home)) }];
+  return [{ key, label: bucket.title, icon: bucket.icon, show: hub.show, children: pages.map((page) => pageItem(bucket, page, page === hub.home)) }];
 };
 
 const screenItem = (screen: ScreenDef): MenuItem => ({
@@ -42,6 +43,7 @@ const screenItem = (screen: ScreenDef): MenuItem => ({
   shortcut: screen.shortcut,
   screen: screen.id,
   devOnly: screen.devOnly,
+  show: screen.show,
 });
 
 const pagePlacements = (config: ScreensConfig, hubs: readonly HubDef[]): PlacedMenuItem[] => config.buckets.flatMap((bucket) => {

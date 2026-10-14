@@ -81,8 +81,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     searchActions={merged.searchActions}
                     widgets={allWidgets}
                     widgetLayout={widgetLayout}
-                    widgetContext={widgetContext}
-                    widgetDisabled={widgetDisabled}
+                    widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
                     review={review}

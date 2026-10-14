@@ -20,6 +20,7 @@ import type { WidgetDef } from '../../widgets/widget.type';
 import type { AppReview } from '../../review/app-review.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
+import type { ShowContext } from '../../screens/show/show.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -65,6 +66,7 @@ interface MenuBuildInput {
   homeScreen: string;
   hasCredits: boolean;
   developerTools: boolean;
+  show?: ShowContext;
   onQuit: () => void;
   onDevConsole: () => void;
   onReportBug: () => void;

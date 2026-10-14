@@ -5,6 +5,7 @@ import { heroPage } from './hero-page';
 import { attachSubs } from './attach-subs';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
+import { showRuleOf } from '../show/show-rule-of';
 import type { BucketDef } from './screens-config.type';
 import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, PageMetaEntry, SettingsEntry, SubEntry, TabEntry } from './screen-tree.type';
 import { tabPages } from './tab-pages';
@@ -26,6 +27,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     title: bucket.title,
     icon: iconNode(bucket.icon),
     shortcut: bucket.shortcut,
+    show: showRuleOf(bucket),
     home,
     groups: hero ? groups : withoutPage(groups, home),
     search: { placeholder: `Search ${bucket.title}` },

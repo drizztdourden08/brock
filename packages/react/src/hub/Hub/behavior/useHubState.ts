@@ -11,11 +11,13 @@ import { tabStateKey } from './tab-state-key';
 import { useEscapeTarget } from './useEscapeTarget';
 import { useSubParent } from './useSubParent';
 import { visibleHubPages } from './visible-hub-pages';
+import { useShowContext } from '../../../screens/show/useShowContext';
 
 const useHubState = (def: HubDef, ctx: ScreenRenderContext): HubState => {
   const { params, profile, open, close } = ctx;
   const developerTools = useDeveloperTools();
-  const { groups, pages } = useMemo(() => visibleHubPages(def, developerTools), [def, developerTools]);
+  const show = useShowContext();
+  const { groups, pages } = useMemo(() => visibleHubPages(def, developerTools, show), [def, developerTools, show]);
   const lastTabs = useScreenStateStore((s) => s.byScope[def.id]);
   const { page, tab, sub, subParams } = useMemo(() => resolveHubPage(pages, def.home, params, lastTabs), [pages, def.home, params, lastTabs]);
   useEffect(() => {

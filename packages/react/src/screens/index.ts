@@ -18,6 +18,9 @@ export { defineScreens } from './conventions/define-screens';
 export { buildScreenTree } from './conventions/build-screen-tree';
 export { resolveScreenTree } from './conventions/resolve-screen-tree';
 export { deriveMenu } from './conventions/derive-menu';
+export { isShown } from './show/is-shown';
+export { currentShowContext } from './show/current-show-context';
+export type { ShowContext, ShowRule } from './show/show.type';
 export type {
   BucketDef, BucketGroupDef, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement,
 } from './conventions/screens-config.type';

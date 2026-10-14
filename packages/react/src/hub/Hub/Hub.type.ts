@@ -19,6 +19,12 @@ interface HubSelection {
   subParams: Record<string, string>;
 }
 
+interface KeptPage {
+  id: string;
+  context: HubRenderContext;
+  shown: boolean;
+}
+
 interface HubState extends HubPageList, HubSelection {
   context: HubRenderContext;
   selectPage: (id: string) => void;
@@ -26,4 +32,4 @@ interface HubState extends HubPageList, HubSelection {
   up: () => void;
 }
 
-export type { HubPageList, HubProps, HubSelection, HubState };
+export type { HubPageList, HubProps, HubSelection, HubState, KeptPage };

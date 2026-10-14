@@ -2,6 +2,7 @@
 import { uniqueById } from '../../collections/unique-by-id';
 import type { CatalogInput, SearchEntry } from '../search.type';
 import { uniqueByTarget } from '../unique-by-target';
+import { routeHidden } from '../../screens/show/route-hidden';
 import { actionEntries } from './action-entries';
 import { indexEntries } from './index-entries';
 import { liveEntries } from './live-entries';
@@ -14,9 +15,12 @@ import { tabEntries } from './tab-entries';
 const blockedScreens = (input: CatalogInput): Set<string> =>
   new Set(input.screens.filter((screen) => !screenAllowed(screen, input)).map((screen) => screen.id));
 
+const shownOnly = (entries: SearchEntry[], hidden: ReadonlySet<string> | undefined): SearchEntry[] =>
+  (hidden === undefined || hidden.size === 0 ? entries : entries.filter((entry) => entry.target === undefined || !routeHidden(entry.target.route, hidden)));
+
 const buildCatalog = (input: CatalogInput): SearchEntry[] => {
   const blocked = blockedScreens(input);
-  return uniqueByTarget(uniqueById([
+  return shownOnly(uniqueByTarget(uniqueById([
     ...indexEntries(input, blocked),
     ...menuEntries(input.menu, blocked),
     ...screenEntries(input),
@@ -25,7 +29,7 @@ const buildCatalog = (input: CatalogInput): SearchEntry[] => {
     ...menuEntries(input.widgets, blocked),
     ...actionEntries(input.actions),
     ...liveEntries(input.live, input.index),
-  ]));
+  ])), input.hidden);
 };
 
 export { buildCatalog };

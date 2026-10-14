@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
 import { SideNavLayout } from '@drizztdourden08/tessera/composites';
+import { Box } from '@drizztdourden08/tessera/primitives';
 import { activateEntry } from '../../search/activate-entry';
 import type { SearchEntry } from '../../search/search.type';
 import { useHubSearch } from '../../settings/SettingsHub/behavior/useHubSearch';
@@ -10,17 +11,16 @@ import { buildHubNav } from './behavior/build-hub-nav';
 import { hubNavKey } from './behavior/hub-nav-key';
 import { useHubState } from './behavior/useHubState';
 import { HubIndexResults } from './sub-components/HubIndexResults';
-import { HubPageFrame } from './sub-components/HubPageFrame';
+import { HubPageSlot } from './sub-components/HubPageSlot';
 import { HubSearchHits } from './sub-components/HubSearchHits';
-import { hubContent } from './behavior/hub-content';
-import { hubScope } from './behavior/hub-scope';
-import { joinRoute } from '../../navigation/join-route';
-import { ScreenStateScope } from '../../screens/screen-state-scope';
+import { useKeptPages } from './behavior/useKeptPages';
 import type { HubProps } from './Hub.type';
+import './Hub.css';
 
 const Hub = (props: HubProps) => {
   const { def, ctx } = props;
-  const { groups, pages, page, tab, sub, context, selectPage, selectTab, up } = useHubState(def, ctx);
+  const { groups, pages, page, context, selectPage, selectTab, up } = useHubState(def, ctx);
+  const kept = useKeptPages(page, context);
   const { query, setQuery, clear } = useHubSearch();
 
   const navConfig = useMemo(() => buildHubNav(def.home, groups), [def.home, groups]);
@@ -38,11 +38,12 @@ const Hub = (props: HubProps) => {
 
   return (
     <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
-      <ScreenStateScope.Provider value={hubScope(context)}>
-        <HubPageFrame key={`${page.id}/${sub?.id ?? ''}`} page={page} tab={tab} sub={sub} route={joinRoute(def.id, page.id)} onSelectTab={selectTab} onUp={up}>
-          {hubContent(context)}
-        </HubPageFrame>
-      </ScreenStateScope.Provider>
+      {page.keepMounted !== true && <HubPageSlot context={context} onSelectTab={selectTab} onUp={up} />}
+      {kept.map((entry) => (
+        <Box key={`kept:${entry.id}`} className="hub__kept" hidden={!entry.shown}>
+          <HubPageSlot context={entry.context} onSelectTab={selectTab} onUp={up} />
+        </Box>
+      ))}
     </SideNavLayout>
   );
 };

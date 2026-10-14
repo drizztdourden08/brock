@@ -4,6 +4,7 @@ import { find } from '../dom/find';
 import { hover } from '../dom/hover';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
+import { closeMenu } from './close-menu';
 import { labelOf } from './label-of';
 import { menuItemsOf } from './menu-items-of';
 import { openMenu } from './open-menu';
@@ -11,7 +12,7 @@ import { openMenu } from './open-menu';
 const itemIn = (panel: HTMLElement, label: string): HTMLElement | undefined =>
   menuItemsOf(panel).find((item) => labelOf(item) === label);
 
-const pickMenuPath = async (path: readonly string[]): Promise<boolean> => {
+const walk = async (path: readonly string[]): Promise<boolean> => {
   let panel = await openMenu();
   for (const [index, label] of path.entries()) {
     const item = panel ? itemIn(panel, label) : undefined;
@@ -23,6 +24,12 @@ const pickMenuPath = async (path: readonly string[]): Promise<boolean> => {
     hover(item);
     panel = await waitFor(() => find(SELECTORS.subMenu, item));
   }
+  return false;
+};
+
+const pickMenuPath = async (path: readonly string[]): Promise<boolean> => {
+  if (await walk(path)) return true;
+  await closeMenu();
   return false;
 };
 

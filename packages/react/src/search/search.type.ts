@@ -4,6 +4,7 @@ import type { MenuEntry, MenuItem } from '../menu/menu.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';
+import type { ShowContext } from '../screens/show/show.type';
 
 type SearchKind = 'screen' | 'page' | 'tab' | 'section' | 'setting' | 'entry' | 'widget' | 'action';
 
@@ -115,6 +116,8 @@ interface CatalogInput {
   isDev: boolean;
   isMobile: boolean;
   hasProfile: boolean;
+  hidden?: ReadonlySet<string>;
+  show?: ShowContext;
 }
 
 interface FieldWeights {

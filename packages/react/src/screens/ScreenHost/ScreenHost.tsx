@@ -10,6 +10,7 @@ import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { useScreenRegistry } from '../useScreenRegistry';
 import { isScreenAllowed } from '../is-screen-allowed';
+import { useShowContext } from '../show/useShowContext';
 import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
@@ -26,11 +27,12 @@ const ScreenHost = (props: ScreenHostProps) => {
   const backTarget = useBackTarget();
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
+  const show = useShowContext();
 
   const ctx = useMemo<ScreenRenderContext>(() => ({ params, profile, open, close }), [params, profile, open, close]);
 
   const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>
-    screen !== undefined && isScreenAllowed(screen, developerTools, profile !== null);
+    screen !== undefined && isScreenAllowed(screen, developerTools, profile !== null, show);
 
   const homeScreen = registry.get(home);
   const active = registry.get(activeId ?? '');

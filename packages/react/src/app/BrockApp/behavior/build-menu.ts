@@ -10,6 +10,7 @@ import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.con
 import { tourMenu } from '../../../tours/tour-menu-entry';
 import type { MenuBuildInput } from '../BrockApp.type';
 import { filterDevEntries } from './filter-dev-entries';
+import { foldSectionMenus } from './fold-section-menus';
 import { groupSections } from './group-sections';
 
 const screensNamed = (entries: readonly MenuEntry[]): Set<string> => {
@@ -29,7 +30,7 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
   entries.filter((entry) => entry === 'separator' || entry.section === undefined);
 
 const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
-  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
+  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
   const tourEntry = input.tours ? tourMenu.entry(input.tours.list, tourMenu.section([...appMenu, ...moduleMenu]), input.tours.start) : null;
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
@@ -38,8 +39,8 @@ const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
     { ...REPORT_BUG_ENTRY, onClick: onReportBug },
     { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },
   ];
-  const app = filterDevEntries(withRoutes(appMenu), developerTools);
-  const modules = filterDevEntries(withRoutes([...moduleMenu, ...standard]), developerTools);
+  const app = filterDevEntries(withRoutes(foldSectionMenus(appMenu, [...moduleMenu, ...standard])), developerTools, show);
+  const modules = filterDevEntries(withRoutes([...moduleMenu, ...standard]), developerTools, show);
   const named = screensNamed([...app, ...modules]);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
   const top = TOP_ENTRIES.filter(unnamed);

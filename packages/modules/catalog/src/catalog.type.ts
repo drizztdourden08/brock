@@ -45,6 +45,13 @@ type CatalogInstallResult = { ok: true; record: InstalledRecord } | (CatalogFail
 
 type CatalogUninstallResult = { ok: true; released: number } | { ok: false; error: string };
 
+interface CatalogJobLike {
+  id: string;
+  state: string;
+}
+
+type CatalogJobSource = readonly CatalogJobLike[] | { list: () => readonly CatalogJobLike[] };
+
 interface CatalogListQuery {
   kind?: string | null;
   [field: string]: string | number | boolean | null | undefined;
@@ -64,5 +71,5 @@ interface CatalogApi {
 
 export type {
   CatalogItem, CatalogPage, CatalogGrant, InstalledRecord, CatalogLink, CatalogFailure, CatalogResult, CatalogInstallResult, CatalogUninstallResult,
-  CatalogListQuery, CatalogApi,
+  CatalogListQuery, CatalogApi, CatalogJobLike, CatalogJobSource,
 };

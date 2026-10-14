@@ -19,6 +19,7 @@ const toolState = (def: ToolDef, location: ToolLocation | null, canInstall: bool
   paths: location?.paths ?? null,
   canInstall,
   hint: hintFor(def, location, canInstall),
+  version: location?.version ?? null,
 });
 
 export { toolState };

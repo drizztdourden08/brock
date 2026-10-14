@@ -57,6 +57,8 @@ interface CatalogHooks {
   onUninstalled?: (record: InstalledRecord, ctx: MainContext) => void | Promise<void>;
 }
 
+type CatalogRemoval = 'trash' | 'delete';
+
 interface CatalogConfig<Item = CatalogItem, Home = unknown> extends CatalogHooks {
   label: string;
   endpoint: CatalogEndpoint;
@@ -66,11 +68,12 @@ interface CatalogConfig<Item = CatalogItem, Home = unknown> extends CatalogHooks
   maxBytes?: number | ((grant: CatalogGrant) => number);
   linkScheme?: string;
   maxPages?: number;
+  removeTo?: CatalogRemoval;
 }
 
 type CatalogGrantRules = Pick<CatalogConfig, 'maxBytes' | 'installers' | 'label'>;
 
 export type {
   CatalogGrantRules, CatalogParse, CatalogMethod, CatalogRoute, CatalogRoutes, CatalogEndpoint, CatalogSchema, InstallInput, InstallOutcome, CatalogInstaller, CatalogHooks,
-  CatalogConfig,
+  CatalogConfig, CatalogRemoval,
 };

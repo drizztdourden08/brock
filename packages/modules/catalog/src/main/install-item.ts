@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { JobHandle } from '@drizztdourden08/brock-electron/main';
-import { CATALOG_JOB_PREFIX } from '../catalog.constants';
 import type { CatalogGrant, CatalogLink, InstalledRecord } from '../catalog.type';
+import { catalogJobId } from '../jobs/catalog-job-id';
 import { checkGrant } from './check-grant';
 import type { CatalogInstaller, InstallOutcome } from './catalog-config.type';
 import { INSTALL_STEPS } from './catalog-main.constants';
@@ -25,6 +25,7 @@ const recordOf = (grant: CatalogGrant, installedName: string): InstalledRecord =
 const fetchVerified = async (grant: CatalogGrant, job: JobHandle) => {
   job.step('download');
   const downloaded = await downloadToFile(grant.url, { signal: job.signal, onProgress: (done) => job.progress(done / grant.bytes) });
+  job.setCancellable(false);
   job.step('verify');
   try {
     verifyDownload(grant, downloaded);
@@ -73,7 +74,7 @@ const installWork = (deps: InstallDeps, link: CatalogLink) => async (job: JobHan
 
 const installItem = (deps: InstallDeps, link: CatalogLink): Promise<InstalledRecord> => {
   if (isInstalling(deps.ctx, link.itemId)) throw new Error('This item is already installing.');
-  const job = deps.ctx.job(`${CATALOG_JOB_PREFIX}${link.itemId}`, INSTALL_STEPS, { title: `${deps.config.label}: installing`, cancellable: true });
+  const job = deps.ctx.job(catalogJobId(link.itemId), INSTALL_STEPS, { title: `${deps.config.label}: installing`, cancellable: true });
   return job.run(installWork(deps, link));
 };
 

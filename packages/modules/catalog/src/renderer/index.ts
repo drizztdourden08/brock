@@ -22,6 +22,8 @@ export type { CatalogInstallBarProps, CatalogInstallBarText, CatalogInstallProgr
 export { createCatalogLinks } from '../links/catalog-links';
 export { isCatalogItemId } from '../links/is-catalog-item-id';
 export { CATALOG_JOB_PREFIX } from '../catalog.constants';
+export { catalogJobId } from '../jobs/catalog-job-id';
+export { isCatalogInstalling } from '../jobs/is-catalog-installing';
 export type {
-  CatalogApi, CatalogInstallResult, CatalogItem, CatalogLink, CatalogListQuery, CatalogResult, CatalogUninstallResult, InstalledRecord,
+  CatalogJobLike, CatalogJobSource, CatalogApi, CatalogInstallResult, CatalogItem, CatalogLink, CatalogListQuery, CatalogResult, CatalogUninstallResult, InstalledRecord,
 } from '../catalog.type';

@@ -30,20 +30,57 @@ interface DownloadOptions {
   onProgress?: DownloadProgress;
 }
 
+interface ToolProbeResult {
+  ok: boolean;
+  version?: string | null;
+  error?: string | null;
+}
+
+interface ToolProbe {
+  binary?: string;
+  args?: readonly string[];
+  timeoutMs?: number;
+  read?: (output: ToolRunResult) => ToolProbeResult;
+}
+
+type ToolCheck = (paths: Record<string, string>) => Promise<ToolProbeResult>;
+
+interface ToolRunCall {
+  binary: string;
+  file: string;
+  args: readonly string[];
+  options: ToolRunOptions;
+}
+
+type ToolRunNext = (call: ToolRunCall) => Promise<ToolRunResult>;
+
+type ToolRunHook = (call: ToolRunCall, next: ToolRunNext) => Promise<ToolRunResult>;
+
+interface ToolHooks {
+  probe?: ToolProbe | ToolCheck;
+  aroundRun?: ToolRunHook;
+}
+
+type ToolSpec = ToolDef & ToolHooks;
+
+type PathSource = string | (() => string | Promise<string>);
+
 interface ToolsEnv {
   cacheRoot: string;
   tempDir: string;
   platform: ToolPlatform | null;
   os: NodeJS.Platform;
-  pathEnv: string;
+  pathEnv: PathSource;
   fetch: FetchFn;
   job: StartJob;
+  onChanged?: (id: string) => void;
 }
 
 interface LocateInput {
   cacheDir: string;
   platform: NodeJS.Platform;
   pathEnv: string;
+  check?: ToolCheck;
 }
 
 interface InstallPlan {
@@ -54,7 +91,7 @@ interface InstallPlan {
 }
 
 interface ToolsMain {
-  register: (def: ToolDef) => () => void;
+  register: (def: ToolSpec) => () => void;
   list: () => Promise<ToolState[]>;
   state: (id: string) => Promise<ToolState | null>;
   locate: (id: string) => Promise<ToolLocation | null>;
@@ -64,4 +101,5 @@ interface ToolsMain {
 
 export type {
   DownloadOptions, DownloadProgress, FetchFn, InstallPlan, LocateInput, ToolRunOptions, ToolRunResult, ToolStream, ToolsEnv, ToolsMain,
+  ToolProbeResult, ToolProbe, ToolCheck, ToolRunCall, ToolRunNext, ToolRunHook, ToolHooks, ToolSpec, PathSource,
 };

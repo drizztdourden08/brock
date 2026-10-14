@@ -2,10 +2,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { jobs } from '@drizztdourden08/brock-react';
 import type { ToolState } from '../tools.type';
-import type { UseToolResult } from './use-tool.type';
+import type { UseToolOptions, UseToolResult } from './use-tool.type';
 import { toolsApi } from './tools-api';
 
-const useTool = (id: string): UseToolResult => {
+const useTool = (id: string, { refreshOnFocus = true }: UseToolOptions = {}): UseToolResult => {
   const [state, setState] = useState<ToolState | null>(null);
   const [installing, setInstalling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,15 @@ const useTool = (id: string): UseToolResult => {
 
   useEffect(() => {
     void refresh();
-  }, [refresh]);
+    return toolsApi()?.onChanged((changed) => { if (changed === id) void refresh(); });
+  }, [id, refresh]);
+
+  useEffect(() => {
+    if (!refreshOnFocus) return undefined;
+    const onFocus = (): void => { void refresh(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [refresh, refreshOnFocus]);
 
   const install = useCallback(async () => {
     const api = toolsApi();

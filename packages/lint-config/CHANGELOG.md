@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.38.0
+
+### Minor Changes
+
+- 3387134: Standards 0.9: list names that must keep their exact spelling in the prose allow list (they now pass the identifier rule too), and a test may assert the real text its app shows.
+
 ## 0.37.0
 
 ## 0.36.0

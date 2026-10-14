@@ -1,5 +1,13 @@
 # @drizztdourden08/create-brock
 
+## 0.38.0
+
+### Patch Changes
+
+- 3387134: Standards 0.9: list names that must keep their exact spelling in the prose allow list (they now pass the identifier rule too), and a test may assert the real text its app shows.
+- Updated dependencies [3387134]
+  - @drizztdourden08/brock-build@0.38.0
+
 ## 0.37.0
 
 ### Patch Changes

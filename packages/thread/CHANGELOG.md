@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-thread
 
+## 0.37.0
+
+### Minor Changes
+
+- 38244b2: A production launch reviews the current sources. `brock build --if-stale` builds only when `dist` is missing, half built or older than the app's sources (its own and those of the workspace packages it depends on), and `launch --prod` (with `--review` too) runs it first instead of reusing whatever `dist` holds.
+
+### Patch Changes
+
+- 38244b2: `<repo> upgrade` runs the documented gate in full, as CI does: `pnpm install --frozen-lockfile` and `brock check` in each app after the sync and the migrations, then `lint`, `typecheck`, `lint:md`, `structure` and `test` at the root and in each app, then `brock gate` in each app.
+
 ## 0.36.0
 
 ### Minor Changes

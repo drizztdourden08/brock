@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-catalog",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Brock catalog module: a content catalogue client behind the app's endpoint and schema, install jobs with download checks, uninstall, the installed record and guard, and install links.",
   "type": "module",
   "license": "UNLICENSED",

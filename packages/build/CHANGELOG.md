@@ -1,5 +1,26 @@
 # @drizztdourden08/brock-build
 
+## 0.37.0
+
+### Minor Changes
+
+- 38244b2: A production launch reviews the current sources. `brock build --if-stale` builds only when `dist` is missing, half built or older than the app's sources (its own and those of the workspace packages it depends on), and `launch --prod` (with `--review` too) runs it first instead of reusing whatever `dist` holds.
+
+### Patch Changes
+
+- 38244b2: The managed CI workflows (the app's, the workspace's and a site's) also run on a push to the default branch, `base` of `brock.workspace.mjs` else `main`, where releases and release notes land straight; a newer run cancels an older one of the same pull request only.
+- 38244b2: The `.deb` builds without an app's own metadata: the builder config sets `homepage` from `product.repo` (`https://github.com/<owner>/<name>`), the maintainer as `Name <email>` from `product.author`, the vendor, and the synopsis and description from `product.description`.
+- 38244b2: The managed workflows run every action on its Node 24 major: `actions/checkout@v7`, `actions/setup-node@v7`, `actions/upload-artifact@v7`, `actions/download-artifact@v8`, `actions/setup-java@v6`, `actions/setup-dotnet@v6`, `pnpm/action-setup@v6`, `android-actions/setup-android@v4` and `softprops/action-gh-release@v3`. Run `brock sync` to take them; `brock check` reports the workflows as drifted until then.
+- 38244b2: `brock package` never ships Electron's icon. It copies the brand icons before electron-builder on every platform and stops when the icon of this platform is missing. Linux takes `build/icons/linux/`, `<size>x<size>.png` files that electron-builder reads; it ignored the `icon-<size>.png` names of `build/icons/png/`, fell back to Electron's icon and crashed building the `.deb`.
+- 38244b2: The managed setup steps no longer pin `version: 10` in `pnpm/action-setup`, which failed next to a `packageManager` field: pnpm's version comes from `packageManager` in the root `package.json` alone. `brock adopt` and `create-brock` write it from the pnpm in use, the `pnpm-package-manager` migration (0.37.0) adds it to an existing repo, and `brock check` fails while it is missing.
+- 38244b2: A failed release build leaves no tag behind. The managed release workflow's `prepare` job no longer commits or tags: every build runs from the commit it checked with the version set, and the `release` job commits the version, tags it and moves the default branch only once every build succeeded, so the same version can run again. The builds still fetch the previous release for the Velopack delta.
+- 38244b2: The CI review job runs on `ubuntu-24.04` with or without baselines, never `ubuntu-latest`, which moves to Ubuntu 26 from 19 October 2026: its apparmor step and the linux baselines depend on the image.
+- 38244b2: The managed workflows reach git. The `.*/` rule of the standard `.gitignore` hid `.github`, so an upgrade committed green without its workflows. `brock adopt` and `brock sync` keep `!.github/` right after the rule that hides it in the repo's `.gitignore`, the `workflows-tracked` migration (0.37.0) adds it to an existing repo, and `brock check` (which the upgrade now runs) fails while git ignores a managed workflow it does not track.
+- Updated dependencies [38244b2]
+- Updated dependencies [38244b2]
+  - @drizztdourden08/brock-thread@0.37.0
+  - @drizztdourden08/brock-core@0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

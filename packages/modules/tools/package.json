@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-tools",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Brock tools module: external binaries an app declares, downloaded and checksum-verified into Data/tools or found on PATH, installed as a job and run with an argument array.",
   "type": "module",
   "license": "UNLICENSED",

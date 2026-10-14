@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-plugin-snes
 
+## 0.37.0
+
+### Patch Changes
+
+- Updated dependencies [38244b2]
+- Updated dependencies [38244b2]
+  - @drizztdourden08/brock-thread@0.37.0
+  - @drizztdourden08/brock-port-kit@0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.37.0
+
+### Minor Changes
+
+- 8eff741: Tessera 0.31: every menu with a button opens toward the side with room (TX-56), including the title bar and row menus.
+
+### Patch Changes
+
+- 12d3780: A production review copies its fixtures. Vite inlines a small file of `src/review/fixtures` as a `data:` URL in a production build, and the renderer's Content Security Policy refused to fetch it, so `launch --prod --review` (the CI review job) failed `fixtures-copied` with a console error. The review now decodes an inlined fixture itself.
+  - @drizztdourden08/brock-core@0.37.0
+
 ## 0.36.0
 
 ### Minor Changes

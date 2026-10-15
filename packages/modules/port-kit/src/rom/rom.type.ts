@@ -52,6 +52,7 @@ interface RomFileName {
   file: string;
   label: string;
   hasAssets: boolean;
+  assetBytes: number | null;
 }
 
 export type {

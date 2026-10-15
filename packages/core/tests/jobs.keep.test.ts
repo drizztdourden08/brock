@@ -1,7 +1,7 @@
-/* @layer electron-main @kind test */
+/* @layer core @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
-import { createJobRegistry } from '../src/main/jobs/create-job-registry';
+import { createJobRegistry } from '../src/jobs/create-job-registry';
 
 const STEPS = [{ id: 'download', label: 'Download', weight: 3 }, { id: 'unpack', label: 'Unpack' }];
 

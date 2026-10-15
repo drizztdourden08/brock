@@ -65,7 +65,7 @@ const port = definePort<GameSettings>({
 
 `rom.kinds` declares more ROM kinds beside the port's own one, each with its own `extensions`, `known`, `normalize`, `keepFileName`, `acceptUnknown`, `maxBytes`, an optional `label` and a `dir` (default `roms`, so kinds told apart by extension can share it). `createRomStore(files, port)` is the store of the port's own kind (`main`, `MAIN_ROM_KIND`); `store.kinds()` lists every kind and `store.of(kind)` returns the store of one, with the same calls. Only the `main` kind has the asset blob.
 
-`listNames()` lists the stored files of a kind by name only, sorted, with no read and no hash: `{ file, label, hasAssets }`, the label being the known dump's label for an id-named file, else the file name without its extension. It is for a quick listing (a picker that opens at once); `list` stays the call that checks every dump.
+`listNames()` lists the stored files of a kind by name only, sorted, with no read and no hash: `{ file, label, hasAssets, assetBytes }`, the label being the known dump's label for an id-named file, else the file name without its extension, and `assetBytes` the size of its asset blob from the file store's `stat` (`null` when there is none, or the stat fails), for a Data Manager line such as "Extracted (12 MB)". It is for a quick listing (a picker that opens at once); `list` stays the call that checks every dump.
 
 `remove(file)` deletes the ROM, its asset blob and every path `derived(file, files)` of its kind returns (files built from it, such as a second asset blob or a cache), and resolves the paths it removed.
 
@@ -118,9 +118,26 @@ Named saves (`store.named`) are listed in each folder's `manifest.json`. Beside 
 
 Loading also takes a raw state: a file that does not start with `PKSV` is handed to the core as it is, so states and fixtures written before the kit (or by the core itself) still load. `decodeSaveSlot(bytes, port)` says which it read in `format` (`'pksv'` or `'raw'`); a raw state carries no metadata, so its `meta` is `{ port, savedAt: 0 }`. Pass `{ acceptRaw: false }` to refuse anything but a container (`reason: 'magic'`). An empty file is always refused.
 
-## Asset extraction in a worker thread
+## Asset extraction in a worker
 
-`runAssetWorkerJob(ctx, options)` from `@drizztdourden08/brock-port-kit/main` runs an app's extraction steps in a Node worker thread, as a `ctx.job` the job dialog shows:
+The app defines its extraction steps once, as an `AssetWorkerSteps` object keyed by step id. Each step gets its `input`, a report (`progress(fraction, line?)`, `line(text)`, `log(message, level?)`) that lands on the job, and the job's `workerData`:
+
+```ts
+import type { AssetWorkerSteps } from '@drizztdourden08/brock-port-kit';
+
+const EXTRACT_STEPS: AssetWorkerSteps = {
+  graphics: (_input, report, data) => { report.progress(0.5); return extractGraphics(romOf(data)); },
+  text: (input, _report, data) => extractText(romOf(data), input),
+};
+
+export { EXTRACT_STEPS };
+```
+
+The same steps then run on either side, with the same step list, results and progress.
+
+### In a main process worker thread
+
+`runAssetWorkerJob(ctx, options)` from `@drizztdourden08/brock-port-kit/main` runs the steps in a Node worker thread, as a `ctx.job` the job dialog shows:
 
 ```ts
 import extractWorker from './extract.worker?modulePath';
@@ -135,19 +152,52 @@ const results = await runAssetWorkerJob(ctx, {
 });
 ```
 
-The worker module serves the steps by id with `serveAssetSteps` from `@drizztdourden08/brock-port-kit/worker`; each step gets its `input` and a report (`progress(fraction, line?)`, `line(text)`, `log(message, level?)`) that lands on the job:
+The worker module serves the steps with `serveAssetSteps` from `@drizztdourden08/brock-port-kit/worker`, which hands each step the thread's `workerData`:
 
 ```ts
-import { workerData } from 'node:worker_threads';
 import { serveAssetSteps } from '@drizztdourden08/brock-port-kit/worker';
+import { EXTRACT_STEPS } from './extract-steps';
 
-serveAssetSteps({
-  graphics: (_input, report) => { report.progress(0.5); return extractGraphics(workerData.romBytes); },
-  text: (input) => extractText(workerData.romBytes, input),
+serveAssetSteps(EXTRACT_STEPS);
+```
+
+electron-vite builds the worker as its own file from the `?modulePath` import; the managed main config names `electron/main.ts` as a build input, not a library entry: a library entry gave the worker bundle one output per format and stopped the build. Cancelling the job ends the thread.
+
+### In a renderer Web Worker
+
+An app that runs the same extraction on the desktop, on a phone and in a browser does it in the renderer, through the platform `FileStore`. `runAssetWebWorkerJob(options)` from `@drizztdourden08/brock-port-kit/renderer` takes the same options, with the worker constructor of a `?worker` import:
+
+```ts
+import { getPlatform } from '@drizztdourden08/brock-react';
+import { runAssetWebWorkerJob } from '@drizztdourden08/brock-port-kit/renderer';
+import ExtractWorker from './extract.web-worker?worker';
+
+const files = getPlatform().files;
+const romBytes = await files.readBytes(`roms/${romFile}`);
+const results = await runAssetWebWorkerJob({
+  id: `assets:${romFile}`,
+  title: 'Building the game assets',
+  worker: ExtractWorker,
+  workerData: { romBytes },
+  steps: [{ id: 'graphics', label: 'Graphics', weight: 3 }, { id: 'text', label: 'Text', input: { language: 'en' } }],
+  onResult: (step, result) => files.writeBytes(`assets/${step}.bin`, result as Uint8Array),
 });
 ```
 
-The steps run one after another in one thread, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to main without a copy. A step that throws, a step the worker lacks or a worker that exits fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the thread. electron-vite builds the worker as its own file from the `?modulePath` import; the managed main config names `electron/main.ts` as a build input, not a library entry: a library entry gave the worker bundle one output per format and stopped the build.
+The Web Worker serves the steps with `serveAssetSteps` from `@drizztdourden08/brock-port-kit/web-worker`, which has no Node import:
+
+```ts
+import { serveAssetSteps } from '@drizztdourden08/brock-port-kit/web-worker';
+import { EXTRACT_STEPS } from './extract-steps';
+
+serveAssetSteps(EXTRACT_STEPS);
+```
+
+The job is a renderer job (`jobs.start` from brock-react), so it needs no main process: the job dialog and the title bar item show it on every host, and its Cancel ends the worker. `options.start` takes another `StartJob` (the `job` of a test, or an app's own job store). `workerData` is posted to the worker once, before the first step. Called outside a Web Worker, this `serveAssetSteps` throws.
+
+### Both sides
+
+The steps run one after another in one worker, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to the caller without a copy. A step that throws, a step the worker lacks or a worker that stops fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the worker.
 
 ## ensure-wasm
 

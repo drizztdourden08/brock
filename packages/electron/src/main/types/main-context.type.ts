@@ -8,7 +8,7 @@ import type { AppServices, EventContract } from '@drizztdourden08/brock-core/aug
 import type { BootTask } from '@drizztdourden08/brock-core/boot';
 import type { OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
-import type { JobRegistry, StartJob } from '../jobs/job.type';
+import type { JobRegistry, StartJob } from '@drizztdourden08/brock-core/jobs';
 import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';

@@ -1,5 +1,5 @@
-/* @layer electron-main @kind types */
-import type { JobLogLevel, JobOptions, JobSnapshot, JobStepDef } from '@drizztdourden08/brock-core/types';
+/* @layer core @kind types */
+import type { JobLogLevel, JobOptions, JobSnapshot, JobStepDef } from '../types/job.type';
 
 interface JobHandle {
   id: string;

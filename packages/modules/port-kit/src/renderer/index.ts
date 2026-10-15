@@ -10,6 +10,10 @@ export default portKitRenderer;
 export { portKitRenderer };
 export { portKitApi } from './port-kit-api';
 
+export { runAssetWebWorkerJob } from './assets/run-asset-web-worker-job';
+export type { AssetWebWorkerJobOptions, AssetWebWorkerSource } from './assets/asset-web-worker-job.type';
+export type { AssetWorkerStepDef } from '../assets/worker/asset-worker.type';
+
 export { createGameCore } from './core/create-game-core';
 export { compileCore } from './core/compile-core';
 export { createCoreCalls } from './core/create-core-calls';

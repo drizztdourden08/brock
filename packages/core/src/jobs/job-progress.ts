@@ -1,5 +1,5 @@
-/* @layer electron-main @kind logic */
-import type { JobStepWire } from '@drizztdourden08/brock-core/types';
+/* @layer core @kind logic */
+import type { JobStepWire } from '../types/job.type';
 
 const jobProgress = (steps: readonly JobStepWire[], stepProgress: number): number => {
   const total = steps.reduce((sum, step) => sum + step.weight, 0);

@@ -6,7 +6,7 @@ import { capacitorPlugins } from './capacitor-plugins';
 import { DOCUMENTS_DIRECTORY } from './capacitor.constants';
 
 const createCapacitorFilePicker = (): FilePickerPort => ({
-  pickFile: pickBrowserFile,
+  pickFile: (opts) => pickBrowserFile(opts, { host: 'capacitor', formFactor: 'mobile' }),
   saveFile: async ({ name, bytes }) => {
     const files = capacitorPlugins.files();
     if (!files) return { saved: false, error: 'The Filesystem plugin is not installed' };

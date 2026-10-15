@@ -71,7 +71,7 @@ const createFileStore = (): FileStore => ({
 });
 
 const createFilePicker = (): FilePickerPort => ({
-  pickFile: pickBrowserFile,
+  pickFile: (opts) => pickBrowserFile(opts, { host: 'web', formFactor: 'desktop' }),
   saveFile: ({ name, bytes }) => {
     const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/octet-stream' }));
     const link = document.createElement('a');

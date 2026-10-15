@@ -60,17 +60,19 @@ describe('--screenshot', () => {
   });
 });
 
-describe('the --screenshot watchdog', () => {
-  const armed = async (timeout: string | null, defaultMs?: number) => {
-    vi.resetModules();
-    vi.useFakeTimers();
-    const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
-    const { captureHolds } = await import('../src/main/handlers/capture-holds');
-    const { bootEvents } = await import('../src/main/boot/boot-events');
-    armScreenshotFlag(contextFor('boot', timeout), defaultMs);
-    return { captureHolds, bootEvents };
-  };
+const armed = async (timeout: string | null, defaultMs?: number, bootWatchdogMs?: number) => {
+  vi.resetModules();
+  vi.useFakeTimers();
+  const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
+  const { captureHolds } = await import('../src/main/handlers/capture-holds');
+  const { bootEvents } = await import('../src/main/boot/boot-events');
+  const { bootState } = await import('../src/main/boot/boot-state');
+  if (bootWatchdogMs !== undefined) bootState.watchdogMs = bootWatchdogMs;
+  armScreenshotFlag(contextFor('boot', timeout), defaultMs);
+  return { captureHolds, bootEvents };
+};
 
+describe('the --screenshot watchdog', () => {
   it('captures what there is and exits 2 when the window is never revealed in time', async () => {
     await armed(null);
     await vi.advanceTimersByTimeAsync(19_999);
@@ -108,6 +110,29 @@ describe('the --screenshot watchdog', () => {
     expect(shots.quits).toBe(1);
     await vi.advanceTimersByTimeAsync(5_000);
     expect(shots.exits).toEqual([]);
+  });
+});
+
+describe('the --screenshot watchdog default', () => {
+  it('waits as long as the boot watchdog when that is longer, such as the 120 s of a dev launch', async () => {
+    await armed(null, undefined, 120_000);
+    await vi.advanceTimersByTimeAsync(119_999);
+    expect(shots.taken).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(shots.exits).toEqual([2]);
+    expect(shots.logs.at(-1)).toContain('fired after 120 s (the window was never revealed)');
+  });
+
+  it('keeps 20 s over a shorter production boot watchdog, and --screenshot-timeout still wins over a dev one', async () => {
+    await armed(null, undefined, 8_000);
+    await vi.advanceTimersByTimeAsync(19_999);
+    expect(shots.exits).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(shots.exits).toEqual([2]);
+    shots.exits.length = 0;
+    await armed('30', undefined, 120_000);
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(shots.exits).toEqual([2]);
   });
 });
 

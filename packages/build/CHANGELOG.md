@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-build
 
+## 0.45.1
+
+### Patch Changes
+
+- 4ec937c: `launchAppForTest` and `assertLaunchable` no longer refuse a built main over a specifier that sits in text. The import check now tokenizes each built file and reads `import`, `export ... from`, `import()` and `require()` from the code only, so a `require('./package.json')` inside a string, template text, a comment or a regular expression (such as a workflow template bundled into main) is ignored.
+  - @drizztdourden08/brock-core@0.45.1
+  - @drizztdourden08/brock-lint-config@0.45.1
+  - @drizztdourden08/brock-thread@0.45.1
+
 ## 0.45.0
 
 ### Minor Changes

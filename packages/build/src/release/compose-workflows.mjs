@@ -41,9 +41,9 @@ const jobContext = ({ appDir, prefix, systemSteps, steps }, workflow) => ({
   prefix,
   setup: (os, opts = {}) => setupSteps({
     os, release: opts.release, history: opts.history, systemSteps,
-    appSteps: stepsForJob(steps[workflow].beforeInstall, { os, platform: opts.platform }),
+    appSteps: stepsForJob(steps[workflow].beforeInstall, { os, platform: opts.platform, job: opts.job }),
   }),
-  stepsAt: (point, os, platform = null) => stepsAfter(stepsForJob(steps[workflow][point] ?? [], { os, platform })),
+  stepsAt: (point, os, platform = null, job = null) => stepsAfter(stepsForJob(steps[workflow][point] ?? [], { os, platform, job })),
 });
 
 /**
@@ -58,11 +58,24 @@ const releaseText = (jobs, { appDir, app, branch, ctx }) => fillTemplate(RELEASE
   NOTES_DIR: app?.notesDir ?? 'release-notes',
   APP_DIR: appDir,
   BRANCH: branch,
-  PREPARE_STEPS: ctx.stepsAt('beforeInstall', 'linux'),
+  PREPARE_STEPS: ctx.stepsAt('beforeInstall', 'linux', null, 'prepare'),
+  PREPARE_AFTER_INSTALL: ctx.stepsAt('prepare', 'linux', null, 'prepare'),
   SET_VERSION,
   JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
   NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
   DOWNLOADS: jobs.flatMap((job) => job.downloads ?? []).map(downloadLine).join('\n') || '            echo "No platform builds a download."',
+});
+
+/**
+ * @param {JobContext} ctx
+ * @param {string} key the template key prefix
+ * @param {string} job the job id
+ * @returns {Record<string, string>} the setup and the build step points of one CI job
+ */
+const jobSteps = (ctx, key, job) => ({
+  [`${key}_SETUP`]: ctx.setup('linux', { job }),
+  [`${key}_BEFORE_BUILD`]: ctx.stepsAt('beforeBuild', 'linux', null, job),
+  [`${key}_AFTER_BUILD`]: ctx.stepsAt('afterBuild', 'linux', null, job),
 });
 
 /**
@@ -72,11 +85,11 @@ const releaseText = (jobs, { appDir, app, branch, ctx }) => fillTemplate(RELEASE
 const ciText = (platformJobs, { appDir, app, baselines, branch, ctx }) => {
   const review = reviewJobValues({ baselines, app });
   const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', {
-    SETUP: ctx.setup('linux'), ROOT_STEPS: app ? '' : rootSteps(), ARTIFACT: app ? `-${app.name}` : '', REVIEW_RUNNER, ...review,
-    BEFORE_BUILD: ctx.stepsAt('beforeBuild', 'linux'), AFTER_BUILD: ctx.stepsAt('afterBuild', 'linux'), BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux'),
+    ROOT_STEPS: app ? '' : rootSteps(), ARTIFACT: app ? `-${app.name}` : '', REVIEW_RUNNER, ...review,
+    ...jobSteps(ctx, 'QUALITY', 'quality'), ...jobSteps(ctx, 'REVIEW', 'review'), BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux', null, 'quality'),
   });
   const own = `${appJobs.trimEnd()}\n${platformJobs.map(jobBlock).join('')}`;
-  const changes = app ? `${fillTemplate(RELEASE_DIR, 'ci-changes-job.yml.tmpl', { SETUP: ctx.setup('linux', { history: true }) }).trimEnd()}\n\n` : '';
+  const changes = app ? `${fillTemplate(RELEASE_DIR, 'ci-changes-job.yml.tmpl', { SETUP: ctx.setup('linux', { history: true, job: 'changes' }) }).trimEnd()}\n\n` : '';
   return fillTemplate(RELEASE_DIR, 'ci-workflow.yml.tmpl', {
     TITLE: app ? ` ${app.name}` : '',
     GROUP: app ? `-${app.name}` : '',
@@ -116,8 +129,8 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
 const workspaceCi = (systemSteps = [], branch = DEFAULT_BRANCH, steps = noWorkflowSteps()) => {
   const ctx = jobContext({ appDir: '.', prefix: '', systemSteps, steps }, 'ci');
   return `${fillTemplate(RELEASE_DIR, 'ci-workspace-workflow.yml.tmpl', {
-    SETUP: ctx.setup('linux'),
-    BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux'),
+    SETUP: ctx.setup('linux', { job: 'workspace' }),
+    BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux', null, 'workspace'),
     ROOT_STEPS: rootSteps(),
     BRANCH: branch,
   }).trimEnd()}\n`;

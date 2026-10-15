@@ -29,4 +29,4 @@ export { resolveUpdateNotice } from './resolve-update-notice';
 export type { UpdateNotice, UpdateNoticeAction, UpdateNoticeContext, UpdateNoticeRender } from './update-notice.type';
 export { UpdaterProvider } from './UpdaterProvider';
 export type { UpdaterProviderProps } from './UpdaterProvider';
-export type { UpdaterApi, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs } from '../updater.type';
+export type { ReleaseAsset, ReleaseMeta, UpdaterApi, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs } from '../updater.type';

@@ -2,6 +2,8 @@
 import type { OsIntegrationProduct } from './os-integration.type';
 import { mimeTypeOf } from './mime-type-of';
 
+const oneLine = (text: string): string => text.replace(/[\r\n]/g, ' ');
+
 const quoteExec = (path: string): string => `"${path.replace(/(["`$\\])/g, '\\$1')}"`;
 
 const linuxDesktopEntry = (product: OsIntegrationProduct, exec: string): string => {
@@ -12,10 +14,12 @@ const linuxDesktopEntry = (product: OsIntegrationProduct, exec: string): string 
   return [
     '[Desktop Entry]',
     'Type=Application',
-    `Name=${product.name.replace(/[\r\n]/g, ' ')}`,
+    `Name=${oneLine(product.name)}`,
+    ...(product.description ? [`Comment=${oneLine(product.description)}`] : []),
     `Exec=${quoteExec(exec)} %U`,
     'Terminal=false',
     `MimeType=${mimeTypes.join(';')};`,
+    ...(product.linuxCategory ? [`Categories=${product.linuxCategory};`] : []),
     `StartupWMClass=${product.id}`,
     '',
   ].join('\n');

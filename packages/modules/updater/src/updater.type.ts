@@ -1,8 +1,25 @@
 /* @layer core @kind types */
+interface ReleaseAsset {
+  name: string;
+  url: string;
+  size: number;
+  contentType: string;
+}
+
+interface ReleaseMeta {
+  tag: string;
+  name: string;
+  url: string;
+  publishedAt: string;
+  prerelease: boolean;
+  assets: ReleaseAsset[];
+}
+
 interface UpdateInfo {
   version: string;
   releaseNotes: string;
   releaseDate: string;
+  release?: ReleaseMeta;
 }
 
 interface VersionOption extends UpdateInfo {
@@ -48,5 +65,5 @@ interface UpdaterApi {
 }
 
 export type {
-  UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress, Unsubscribe, UpdaterApi,
+  ReleaseAsset, ReleaseMeta, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress, Unsubscribe, UpdaterApi,
 };

@@ -1,0 +1,29 @@
+package __PACKAGE__;
+
+import android.os.Bundle;
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {
+
+    private String backEdge = "left";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackStarted(BackEventCompat event) {
+                backEdge = event.getSwipeEdge() == BackEventCompat.EDGE_RIGHT ? "right" : "left";
+            }
+
+            @Override
+            public void handleOnBackPressed() {
+                String edge = backEdge;
+                backEdge = "left";
+                if (bridge != null) bridge.eval("window.dispatchEvent(new CustomEvent('__EVENT__', { detail: '" + edge + "' }))", null);
+            }
+        });
+    }
+}

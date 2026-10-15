@@ -18,6 +18,7 @@ interface WorkflowStep {
   secrets?: string[];
   os?: WorkflowRunnerOs | WorkflowRunnerOs[];
   platforms?: string[];
+  jobs?: string | string[];
 }
 
 interface CiWorkflowSteps {
@@ -29,6 +30,7 @@ interface CiWorkflowSteps {
 
 interface ReleaseWorkflowSteps {
   beforeInstall?: WorkflowStep[];
+  prepare?: WorkflowStep[];
   beforePackage?: WorkflowStep[];
   afterPackage?: WorkflowStep[];
 }

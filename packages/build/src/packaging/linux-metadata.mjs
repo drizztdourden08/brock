@@ -29,6 +29,7 @@ const linuxMetadata = (product) => {
       maintainer: maintainerOf(product.author),
       vendor: product.author.name,
       ...(product.description ? { synopsis: product.description, description: product.description } : {}),
+      ...(product.linuxCategory ? { category: product.linuxCategory } : {}),
     },
   };
 };

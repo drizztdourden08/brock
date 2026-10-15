@@ -124,8 +124,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       build: {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/electron'),
-        rollupOptions,
-        lib: { entry: { main: resolve(rootDir, 'electron/main.ts') } },
+        rollupOptions: { ...rollupOptions, input: { main: resolve(rootDir, 'electron/main.ts') } },
       },
     },
     preload: {

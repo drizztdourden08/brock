@@ -8,7 +8,7 @@ import { createCoreCalls } from './create-core-calls';
 import { createCoreControls } from './create-core-controls';
 import { createStateHub } from './create-state-hub';
 import { teardownCore } from './teardown-core';
-import { watchCoreCrash } from './watch-core-crash';
+import { createCrashWatch } from './create-crash-watch';
 import { resolvePrecompiled } from './resolve-precompiled';
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
@@ -19,10 +19,10 @@ const createGameCore = <S>(definition: PortDefinition<S>, options: GameCoreOptio
   let mod: EmscriptenModule | null = null;
   let calls: CoreCalls | null = null;
   let generation = 0;
-  let unwatch: (() => void) | null = null;
   let log: CoreLog = () => undefined;
 
   const fail = (message: string): void => hub.set({ status: 'error', error: message });
+  const crashWatch = createCrashWatch(options, fail);
 
   const isLive = (): boolean => ['loading', 'running', 'paused'].includes(hub.get().status);
 
@@ -30,10 +30,7 @@ const createGameCore = <S>(definition: PortDefinition<S>, options: GameCoreOptio
     mod = booted;
     calls = createCoreCalls(booted);
     if (headless && exports.initHeadless) calls.call(exports.initHeadless);
-    unwatch = watchCoreCrash((crash) => {
-      fail(crash.message);
-      options.onCrash?.(crash);
-    }, options.crashArmDelayMs);
+    crashWatch.arm();
     hub.set({ status: 'running', error: null });
   };
 
@@ -42,11 +39,14 @@ const createGameCore = <S>(definition: PortDefinition<S>, options: GameCoreOptio
     generation += 1;
     const mine = generation;
     log = boot.log ?? log;
+    crashWatch.disarm();
     hub.set({ status: 'loading', error: null });
+    if (options.watchCrashFrom === 'start') crashWatch.arm();
     try {
       const compiled = await resolvePrecompiled(options.precompiled);
       const booted = await bootCore(definition, boot, { headless, compiled });
-      if (mine === generation) adopt(booted, headless);
+      const crashedWhileBooting = hub.get().status === 'error';
+      if (mine === generation && !crashedWhileBooting) adopt(booted, headless);
       else teardownCore(booted, exports, log);
     } catch (error) {
       if (mine === generation) fail(messageOf(error));
@@ -55,8 +55,7 @@ const createGameCore = <S>(definition: PortDefinition<S>, options: GameCoreOptio
 
   const stop = (): void => {
     generation += 1;
-    unwatch?.();
-    unwatch = null;
+    crashWatch.disarm();
     if (mod) teardownCore(mod, exports, log);
     mod = null;
     calls = null;

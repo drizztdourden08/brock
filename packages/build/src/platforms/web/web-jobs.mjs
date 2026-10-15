@@ -14,15 +14,15 @@ const webJobs = {
   ci: (ctx) => ({
     id: 'web',
     text: fillTemplate(WEB_TEMPLATES, 'web-ci-job.yml.tmpl', {
-      SETUP: ctx.setup('linux', { platform: 'web' }), BEFORE_BUILD: ctx.stepsAt('beforeBuild', 'linux', 'web'), AFTER_BUILD: ctx.stepsAt('afterBuild', 'linux', 'web'),
+      SETUP: ctx.setup('linux', { platform: 'web', job: 'web' }), BEFORE_BUILD: ctx.stepsAt('beforeBuild', 'linux', 'web', 'web'), AFTER_BUILD: ctx.stepsAt('afterBuild', 'linux', 'web', 'web'),
     }),
   }),
   release: (ctx) => ({
     id: 'build-web',
     downloads: [{ glob: 'artifacts/release-web/*.zip', label: 'Web build (.zip), static files to host on any web server' }],
     text: fillTemplate(WEB_TEMPLATES, 'web-release-job.yml.tmpl', {
-      SETUP: ctx.setup('linux', { release: true, platform: 'web' }), ZIP: `${ctx.prefix}web.zip`,
-      BEFORE_PACKAGE: ctx.stepsAt('beforePackage', 'linux', 'web'), AFTER_PACKAGE: ctx.stepsAt('afterPackage', 'linux', 'web'),
+      SETUP: ctx.setup('linux', { release: true, platform: 'web', job: 'build-web' }), ZIP: `${ctx.prefix}web.zip`,
+      BEFORE_PACKAGE: ctx.stepsAt('beforePackage', 'linux', 'web', 'build-web'), AFTER_PACKAGE: ctx.stepsAt('afterPackage', 'linux', 'web', 'build-web'),
     }),
   }),
 };

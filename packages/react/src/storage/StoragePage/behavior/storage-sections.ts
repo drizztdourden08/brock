@@ -17,7 +17,7 @@ const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSec
     title: def.label,
     description: usage ? `${formatBytes(usage.bytes)} · ${usage.count} item${usage.count === 1 ? '' : 's'}` : 'Measuring the folder',
     hint: def.description ?? `Data/${def.dir}`,
-    actions: domainActions(def, usage, input.actions),
+    actions: input.state.manage ? domainActions(def, usage, input.actions) : [],
     runner: input.runner,
   });
 };
@@ -66,7 +66,7 @@ const locationRow = ({ state, actions, runner }: StorageSectionsInput): Settings
     title: 'Data folder',
     description: state.location ? `${state.location.path} · ${formatBytes(total)}` : 'Finding the data folder',
     hint: state.location?.osLabel ?? 'Where this app keeps its files.',
-    actions: [{ id: 'open-root', label: 'Open folder', icon: 'folder-open', disabled: state.location?.canReveal !== true, onSelect: actions.revealRoot }],
+    actions: state.manage ? [{ id: 'open-root', label: 'Open folder', icon: 'folder-open', disabled: state.location?.canReveal !== true, onSelect: actions.revealRoot }] : [],
     runner,
   });
 };
@@ -76,7 +76,7 @@ const storageSections = (input: StorageSectionsInput): SettingsSectionData[] => 
   return [
     { id: 'storage-overview', title: 'Overview', rows: [locationRow(input)] },
     { id: 'storage-domains', title: 'Folders', rows: domains.map((def) => domainRow(def, input)) },
-    ...(domains.some((def) => def.portable !== false) ? [{ id: 'storage-transfer', title: 'Export and import', rows: transferRows(input) }] : []),
+    ...(input.state.manage && domains.some((def) => def.portable !== false) ? [{ id: 'storage-transfer', title: 'Export and import', rows: transferRows(input) }] : []),
   ];
 };
 

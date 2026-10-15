@@ -65,7 +65,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
     preloadPath: setup.paths.splashPreload,
   });
   logBoot('splash opened');
-  armScreenshotFlag(ctx);
+  armScreenshotFlag(ctx, options.screenshotTimeoutMs);
   armSplashScreenshotFlag(ctx);
   armReviewFlag(ctx, setup.icon);
   registerHandlerGroups([widgetHandlers(widgetWindowSetup(setup, plan))], ctx);

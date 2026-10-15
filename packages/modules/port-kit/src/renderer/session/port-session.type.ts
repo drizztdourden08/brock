@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { AssetProgress } from '../../assets/asset-pipeline.type';
+import type { SaveSlotFormat } from '../../saves/save-slot.type';
 import type { SramStore } from '../../saves/save-store.type';
 import type { AudioAdapter } from '../audio/audio.type';
 import type { CoreLog, GameCore } from '../core/game-core.type';
@@ -21,6 +22,7 @@ interface PortSessionOptions<S> {
   log?: CoreLog;
   onAssetProgress?: AssetProgress;
   saveTransform?: SaveTransform;
+  saveFormat?: SaveSlotFormat;
 }
 
 interface AttachRequest {

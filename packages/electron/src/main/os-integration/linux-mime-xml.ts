@@ -9,7 +9,7 @@ const linuxMimeXml = (product: OsIntegrationProduct): string | null => {
   if (product.fileAssociations.length === 0) return null;
   const types = product.fileAssociations.map((association) => [
     `  <mime-type type="${escapeXml(mimeTypeOf(association))}">`,
-    `    <comment>${escapeXml(association.name)}</comment>`,
+    `    <comment>${escapeXml(association.description ?? association.name)}</comment>`,
     `    <glob pattern="*.${escapeXml(association.ext.toLowerCase())}"/>`,
     '  </mime-type>',
   ].join('\n'));

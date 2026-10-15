@@ -46,6 +46,24 @@ describe('loadPlugins', () => {
     });
     expect((await loadPlugins(root, { plugins: [] })).plugins).toHaveLength(1);
   });
+
+  it('loads a plugin listed as an object once when its package is also declared', async () => {
+    const root = tree({
+      'package.json': JSON.stringify({ devDependencies: { 'brock-plugin-a': '1.0.0' } }),
+      'node_modules/brock-plugin-a/package.json': JSON.stringify({ name: 'brock-plugin-a', type: 'module', main: 'index.mjs' }),
+      'node_modules/brock-plugin-a/index.mjs': plugin('a', 'alpha'),
+      '.one/tools/brock-plugin-a/index.mjs': plugin('a', 'alpha'),
+    });
+    const listed = { name: 'a', verbs: { alpha: { run: () => 0 } } };
+    const { plugins, verbs } = await loadPlugins(root, { plugins: [listed] });
+    expect(plugins).toEqual([listed]);
+    expect(Object.keys(verbs)).toEqual(['alpha']);
+  });
+
+  it('still refuses two different plugins that define one verb', async () => {
+    const root = tree({ 'package.json': '{}', '.one/tools/brock-plugin-b/index.mjs': plugin('b', 'alpha') });
+    await expect(loadPlugins(root, { plugins: [{ name: 'a', verbs: { alpha: { run: () => 0 } } }] })).rejects.toThrow(/defined by two plugins/);
+  });
 });
 
 describe('checkPublishStyle', () => {

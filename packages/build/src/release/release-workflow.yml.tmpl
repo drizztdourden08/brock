@@ -92,7 +92,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}__PREPARE_AFTER_INSTALL__
 
       - name: Release note
         run: pnpm --dir "$APP_DIR" exec brock release-notes check "${{ steps.resolve.outputs.version }}"

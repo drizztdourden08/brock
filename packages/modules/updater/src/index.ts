@@ -2,5 +2,5 @@
 import './augment';
 
 export type {
-  UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress, Unsubscribe, UpdaterApi,
+  ReleaseAsset, ReleaseMeta, UpdateInfo, VersionOption, UpdaterCapabilities, UpdaterPrefs, DownloadProgress, Unsubscribe, UpdaterApi,
 } from './updater.type';

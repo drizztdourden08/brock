@@ -4,9 +4,9 @@ import type { BrowserWindow, WebContents } from 'electron';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 
-const shots = vi.hoisted(() => ({ taken: [] as string[], quits: 0 }));
+const shots = vi.hoisted(() => ({ taken: [] as string[], quits: 0, exits: [] as number[], logs: [] as string[] }));
 
-vi.mock('electron', () => ({ app: { quit: () => { shots.quits += 1; }, exit: () => undefined } }));
+vi.mock('electron', () => ({ app: { quit: () => { shots.quits += 1; }, exit: (code: number) => { shots.exits.push(code); } } }));
 vi.mock('../src/main/handlers/capture-window', () => ({
   captureWindow: (_win: unknown, name: string) => { shots.taken.push(name); return Promise.resolve(`/data/screenshots/${name}.png`); },
 }));
@@ -15,15 +15,18 @@ const settle = async (): Promise<void> => {
   for (let i = 0; i < 10; i += 1) await Promise.resolve();
 };
 
-const contextFor = (name: string | null): MainContext => ({
-  flags: { flagValue: (flag: string) => (flag === '--screenshot' ? name : null) } as Partial<AutomationFlags> as AutomationFlags,
+const contextFor = (name: string | null, timeout: string | null = null): MainContext => ({
+  flags: { flagValue: (flag: string) => ({ '--screenshot': name, '--screenshot-timeout': timeout }[flag] ?? null) } as Partial<AutomationFlags> as AutomationFlags,
   window: () => ({}) as BrowserWindow,
-  log: () => undefined,
+  log: (line: string) => { shots.logs.push(line); },
 }) as Partial<MainContext> as MainContext;
 
 afterEach(() => {
+  vi.useRealTimers();
   shots.taken.length = 0;
   shots.quits = 0;
+  shots.exits.length = 0;
+  shots.logs.length = 0;
 });
 
 describe('--screenshot', () => {
@@ -54,6 +57,57 @@ describe('--screenshot', () => {
     bootEvents.emit('revealed');
     await settle();
     expect(shots.taken).toEqual(['boot']);
+  });
+});
+
+describe('the --screenshot watchdog', () => {
+  const armed = async (timeout: string | null, defaultMs?: number) => {
+    vi.resetModules();
+    vi.useFakeTimers();
+    const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
+    const { captureHolds } = await import('../src/main/handlers/capture-holds');
+    const { bootEvents } = await import('../src/main/boot/boot-events');
+    armScreenshotFlag(contextFor('boot', timeout), defaultMs);
+    return { captureHolds, bootEvents };
+  };
+
+  it('captures what there is and exits 2 when the window is never revealed in time', async () => {
+    await armed(null);
+    await vi.advanceTimersByTimeAsync(19_999);
+    expect(shots.taken).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(shots.taken).toEqual(['boot']);
+    expect(shots.exits).toEqual([2]);
+    expect(shots.quits).toBe(0);
+    expect(shots.logs.at(-1)).toContain('fired after 20 s (the window was never revealed)');
+  });
+
+  it('waits as long as --screenshot-timeout says, then names the holds still open', async () => {
+    const { captureHolds, bootEvents } = await armed('45');
+    captureHolds.set(1);
+    bootEvents.emit('revealed');
+    await vi.advanceTimersByTimeAsync(44_000);
+    expect(shots.taken).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(shots.exits).toEqual([2]);
+    expect(shots.logs.at(-1)).toContain('fired after 45 s (1 screenshot hold(s) still open)');
+    captureHolds.set(0);
+  });
+
+  it('takes the app default from bootstrapApp, and warns about a value that is not seconds', async () => {
+    await armed('soon', 5_000);
+    expect(shots.logs[0]).toContain('--screenshot-timeout=soon is not a count of seconds above 0; waiting 5 s');
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(shots.exits).toEqual([2]);
+  });
+
+  it('quits with no error code when the capture beats it', async () => {
+    const { bootEvents } = await armed('1');
+    bootEvents.emit('revealed');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(shots.quits).toBe(1);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(shots.exits).toEqual([]);
   });
 });
 

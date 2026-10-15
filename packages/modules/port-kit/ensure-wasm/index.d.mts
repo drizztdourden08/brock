@@ -14,6 +14,7 @@ interface EmsdkInfo {
   dir: string;
   activate: string | null;
   emscripten: string | null;
+  mainCheckout: boolean;
   found: boolean;
 }
 
@@ -42,6 +43,7 @@ declare const emsdkOf: (root: string, wasm: WasmOptions, host?: EmsdkHost) => Em
 declare const wasmStaleReason: (root: string, wasm: WasmOptions) => string | null;
 declare const staleReasonOf: (times: StaleTimes) => string | null;
 declare const wasmOptionsOf: (root: string) => WasmOptions;
+declare const mainCheckoutOf: (dir: string) => { top: string; main: string } | null;
 
-export { WASM_DEFAULTS, SKIP_WITHOUT_SDK_FLAG, ensureWasm, emsdkOf, wasmStaleReason, staleReasonOf, wasmOptionsOf };
+export { WASM_DEFAULTS, SKIP_WITHOUT_SDK_FLAG, ensureWasm, emsdkOf, wasmStaleReason, staleReasonOf, wasmOptionsOf, mainCheckoutOf };
 export type { WasmOptions, EmsdkInfo, EmsdkHost, StaleTimes, EnsureWasmRequest };

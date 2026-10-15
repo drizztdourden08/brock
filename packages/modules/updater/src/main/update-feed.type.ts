@@ -13,10 +13,14 @@ interface UpdateFeed {
 interface GithubAsset {
   name: string;
   browser_download_url: string;
+  size?: number;
+  content_type?: string;
 }
 
 interface GithubRelease {
   tag_name: string;
+  name?: string | null;
+  html_url?: string;
   body?: string;
   draft: boolean;
   prerelease: boolean;

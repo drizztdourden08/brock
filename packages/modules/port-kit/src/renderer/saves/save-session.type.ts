@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { SaveStore, SramStore } from '../../saves/save-store.type';
-import type { NamedSaveEntry, NamedSaveKind, SaveSlotRef } from '../../saves/save-slot.type';
+import type { NamedSaveEntry, NamedSaveKind, SaveSlotFormat, SaveSlotRef } from '../../saves/save-slot.type';
 import type { GameCore } from '../core/game-core.type';
 
 type SramSource = Pick<GameCore, 'definition' | 'calls' | 'fs'>;
@@ -28,6 +28,7 @@ interface SaveTransform {
 
 interface SaveSlotsOptions {
   core: GameCore;
+  format?: SaveSlotFormat;
   store: SaveStore;
   profileId: string;
   rom?: string;

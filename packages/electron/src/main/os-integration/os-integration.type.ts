@@ -1,7 +1,7 @@
 /* @layer electron-main @kind types */
 import type { ProductConfig } from '@drizztdourden08/brock-core/product';
 
-type OsIntegrationProduct = Pick<ProductConfig, 'id' | 'name' | 'protocols' | 'fileAssociations'>;
+type OsIntegrationProduct = Pick<ProductConfig, 'id' | 'name' | 'protocols' | 'fileAssociations'> & Partial<Pick<ProductConfig, 'description' | 'linuxCategory'>>;
 
 interface RegistryValue {
   key: string;

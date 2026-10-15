@@ -69,9 +69,12 @@ const mergeVerbs = (plugins) => {
  */
 const loadPlugins = async (rootDir, workspace) => {
   const listed = workspace.plugins.filter((entry) => typeof entry === 'string');
-  const entries = [...workspace.plugins, ...discoveredEntries(rootDir, listed)];
   const plugins = [];
-  for (const entry of entries) plugins.push(await importPlugin(rootDir, entry));
+  for (const entry of workspace.plugins) plugins.push(await importPlugin(rootDir, entry));
+  for (const entry of discoveredEntries(rootDir, listed)) {
+    const found = await importPlugin(rootDir, entry);
+    if (!plugins.some((plugin) => plugin === found || plugin.name === found.name)) plugins.push(found);
+  }
   return { plugins, verbs: mergeVerbs(plugins) };
 };
 

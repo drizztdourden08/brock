@@ -48,6 +48,12 @@ interface StoredRom {
   hash?: string;
 }
 
+interface RomFileName {
+  file: string;
+  label: string;
+  hasAssets: boolean;
+}
+
 export type {
-  RomIdentity, RomDerived, RomRules, RomKindDefinition, RomDefinition, RomImage, RomRefusal, RomCheck, StoredRom,
+  RomFileName, RomIdentity, RomDerived, RomRules, RomKindDefinition, RomDefinition, RomImage, RomRefusal, RomCheck, StoredRom,
 };

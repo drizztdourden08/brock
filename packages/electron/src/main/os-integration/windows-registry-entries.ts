@@ -16,7 +16,7 @@ const protocolEntries = (product: OsIntegrationProduct, exe: string): RegistryVa
   });
 
 const fileEntries = (product: OsIntegrationProduct, exe: string, iconOf: FileIconOf): RegistryValue[] =>
-  product.fileAssociations.flatMap(({ ext, name, progId, mimeType }) => {
+  product.fileAssociations.flatMap(({ ext, name, description, progId, mimeType }) => {
     const extKey = `${CLASSES_KEY}\\.${ext.toLowerCase()}`;
     const progKey = `${CLASSES_KEY}\\${progId}`;
     return [
@@ -24,6 +24,7 @@ const fileEntries = (product: OsIntegrationProduct, exe: string, iconOf: FileIco
       ...(mimeType ? [{ key: extKey, name: 'Content Type', value: mimeType }] : []),
       { key: `${extKey}\\OpenWithProgids`, name: progId, value: '' },
       { key: progKey, name: null, value: name },
+      ...(description ? [{ key: progKey, name: 'InfoTip', value: description }] : []),
       { key: `${progKey}\\DefaultIcon`, name: null, value: iconOf(ext.toLowerCase()) },
       { key: `${progKey}\\shell\\open\\command`, name: null, value: openCommand(exe) },
     ];

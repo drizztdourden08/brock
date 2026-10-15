@@ -3,6 +3,7 @@ import { existsSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ARCH_NAMES, MIB, UNUSED_ELECTRON_FILES, VELOPACK_BINDINGS, VELOPACK_NATIVE_DIR } from './packaging.constants.mjs';
+import { rceditOptions } from './windows-version-info.mjs';
 
 const removeAll = (paths) => {
   let freed = 0;
@@ -47,12 +48,12 @@ const pruneElectronFiles = (appOutDir) => {
 
 /**
  * @param {string} exePath
- * @param {string} icoPath
+ * @param {Parameters<typeof rceditOptions>[0]} stamp
  */
-const stampIcon = async (exePath, icoPath) => {
+const stampExe = async (exePath, stamp) => {
   const { rcedit } = await import('rcedit');
-  await rcedit(exePath, { icon: icoPath });
-  console.log(`  brock package: icon stamped on ${exePath}`);
+  await rcedit(exePath, rceditOptions(stamp));
+  console.log(`  brock package: ${stamp.icoPath ? 'icon and ' : ''}version info stamped on ${exePath}`);
 };
 
 /**
@@ -71,26 +72,28 @@ const runAppAfterPack = async (rootDir, hook, context) => {
 
 /**
  * @param {import('electron-builder').AfterPackContext} context
- * @param {string | null} icoPath
+ * @param {{ icoPath: string | null, versionStrings: Record<string, string> }} exe
  */
-const brockAfterPack = async (context, icoPath) => {
+const brockAfterPack = async (context, { icoPath, versionStrings }) => {
   const { appOutDir, electronPlatformName: platform, packager } = context;
   const { productFilename } = packager.appInfo;
   const arch = ARCH_NAMES[context.arch] ?? String(context.arch);
   pruneVelopackBindings({ appOutDir, platform, arch, resources: resourcesDirOf(platform, productFilename) });
   if (platform !== 'win32') return;
   pruneElectronFiles(appOutDir);
-  if (icoPath && existsSync(icoPath)) await stampIcon(join(appOutDir, `${productFilename}.exe`), icoPath);
+  const exeName = `${productFilename}.exe`;
+  const icon = icoPath && existsSync(icoPath) ? icoPath : null;
+  await stampExe(join(appOutDir, exeName), { icoPath: icon, versionStrings, version: packager.appInfo.version, exeName });
 };
 
 /**
  * @param {string} rootDir
- * @param {string | undefined} ico the Windows icon, relative to rootDir
+ * @param {{ ico?: string, versionStrings?: Record<string, string> }} exe icon (from rootDir), version strings
  * @param {string | null} [hook] the app's afterPack, run after Brock's
  * @returns {(context: import('electron-builder').AfterPackContext) => Promise<void>}
  */
-const createAfterPack = (rootDir, ico, hook = null) => async (context) => {
-  await brockAfterPack(context, ico ? resolve(rootDir, ico) : null);
+const createAfterPack = (rootDir, { ico, versionStrings = {} }, hook = null) => async (context) => {
+  await brockAfterPack(context, { icoPath: ico ? resolve(rootDir, ico) : null, versionStrings });
   if (hook) await runAppAfterPack(rootDir, hook, context);
 };
 

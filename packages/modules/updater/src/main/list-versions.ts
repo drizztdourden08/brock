@@ -6,6 +6,7 @@ import { compareVersions } from './compare-versions';
 import { fetchReleases } from './fetch-releases';
 import { parseFeed } from './parse-feed';
 import { planUpdate } from './plan-update';
+import { releaseMetaOf } from './release-meta-of';
 import { versionOfTag } from './version-of-tag';
 
 const notesOf = (asset: VelopackAsset, release: GithubRelease): string =>
@@ -38,6 +39,7 @@ const candidateOf = (asset: VelopackAsset, release: GithubRelease, current: stri
     version: asset.Version,
     releaseNotes: notesOf(asset, release),
     releaseDate: release.published_at ?? '',
+    release: releaseMetaOf(release),
     size: asset.Size,
     downloadSize: plan.downloadSize,
     prerelease: release.prerelease,

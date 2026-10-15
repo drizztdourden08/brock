@@ -64,3 +64,24 @@ describe('createRomStore file names', () => {
     await expect(store.read('.hidden.sfc')).rejects.toThrow();
   });
 });
+
+describe('createRomStore name list', () => {
+  it('lists the stored ROM names without reading a byte', async () => {
+    const { files, disk } = memoryFiles();
+    const reads: string[] = [];
+    const counted = { ...files, readBytes: (path: string) => { reads.push(path); return files.readBytes(path); } };
+    disk.set('roms/us.sfc', dump);
+    disk.set('roms/Other (EU).smc', new Uint8Array([9]));
+    disk.set('roms/notes.txt', new Uint8Array([1]));
+    disk.set('assets/us.dat', new Uint8Array([1]));
+    expect(await createRomStore(counted, portWith()).listNames()).toEqual([
+      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false },
+      { file: 'us.sfc', label: 'US', hasAssets: true },
+    ]);
+    expect(await createRomStore(counted, portWith(true)).listNames()).toEqual([
+      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false },
+      { file: 'us.sfc', label: 'us', hasAssets: true },
+    ]);
+    expect(reads).toEqual([]);
+  });
+});

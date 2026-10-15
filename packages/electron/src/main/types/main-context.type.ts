@@ -97,6 +97,7 @@ interface BootstrapOptions {
   fileGuard?: FileWriteGuard;
   paths?: BootstrapPaths;
   security?: SecurityOptions;
+  screenshotTimeoutMs?: number;
 }
 
 export type {

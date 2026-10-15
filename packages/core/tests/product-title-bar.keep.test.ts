@@ -6,7 +6,7 @@ const BASE = { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author
 
 describe('product.window.titleBar', () => {
   it('shows every title bar control by default', () => {
-    expect(defineProduct(BASE).window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true } });
+    expect(defineProduct(BASE).window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true }, mobile: true });
   });
 
   it('merges the controls an app turns off over the defaults and keeps the rest of the window', () => {
@@ -14,5 +14,19 @@ describe('product.window.titleBar', () => {
     expect(window.titleBar.controls).toEqual({ fullscreen: false, pin: false, minimize: true, maximize: true });
     expect(window.minSize).toEqual({ width: 400, height: 300 });
     expect(window.title).toBe('My App');
+  });
+
+  it('takes the mobile opt-out and keeps the controls', () => {
+    const { window } = defineProduct({ ...BASE, window: { titleBar: { mobile: false } } });
+    expect(window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true }, mobile: false });
+  });
+});
+
+describe('product packaging facts', () => {
+  it('keeps the copyright and the Linux category, and refuses a category the desktop does not know', () => {
+    const product = defineProduct({ ...BASE, copyright: 'Copyright (C) Example Studio', linuxCategory: 'Game' });
+    expect(product.copyright).toBe('Copyright (C) Example Studio');
+    expect(product.linuxCategory).toBe('Game');
+    expect(() => defineProduct({ ...BASE, linuxCategory: 'Games' as 'Game' })).toThrow(/product.linuxCategory "Games" must be a main desktop category/);
   });
 });

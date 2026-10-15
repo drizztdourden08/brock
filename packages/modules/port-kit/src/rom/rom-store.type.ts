@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { RomCheck, RomRefusal, RomRules, StoredRom } from './rom.type';
+import type { RomCheck, RomFileName, RomRefusal, RomRules, StoredRom } from './rom.type';
 import type { ZipEntry } from './zip/zip-read.type';
 
 type RomImport = RomCheck & { file?: string; existed?: boolean; message?: string };
@@ -17,6 +17,7 @@ interface RomKindStore {
   kind: string;
   importRom: (fileName: string, bytes: Uint8Array) => Promise<RomImport>;
   list: () => Promise<StoredRom[]>;
+  listNames: () => Promise<RomFileName[]>;
   read: (file: string) => Promise<RomCheck | null>;
   remove: (file: string) => Promise<string[]>;
   assetFileOf: (file: string) => string | null;
@@ -27,6 +28,13 @@ interface RomStore extends RomKindStore {
   of: (kind: string) => RomKindStore;
 }
 
+interface RomNameSource {
+  dir: string;
+  rules: Pick<RomRules, 'extensions'>;
+  assetFileOf: (file: string) => string | null;
+  labelOf: (file: string) => string | null;
+}
+
 interface RomKindSetup {
   kind: string;
   rules: RomRules;
@@ -34,4 +42,4 @@ interface RomKindSetup {
   assetExtension: string | null;
 }
 
-export type { RomImport, RomCandidate, ZipEntryCheck, RomKindStore, RomStore, RomKindSetup };
+export type { RomImport, RomCandidate, ZipEntryCheck, RomKindStore, RomStore, RomKindSetup, RomNameSource };

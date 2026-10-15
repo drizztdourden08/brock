@@ -11,13 +11,14 @@ const pngOf = async (capture: SaveSlotsOptions['capture']): Promise<Uint8Array |
 };
 
 const createSaveSlots = (options: SaveSlotsOptions): SaveSlots => {
-  const { core, store, profileId, rom, capture, onLoaded, transform } = options;
+  const { core, store, profileId, rom, capture, onLoaded, transform, format = 'pksv' } = options;
   const port = core.definition.id;
 
   const encodeCurrent = async (kind: SaveSlotRef['kind']): Promise<Uint8Array | null> => {
     const raw = coreStateIo.read(core);
     const state = raw && transform?.save ? await transform.save(raw, kind) : raw;
-    return state ? encodeSaveSlot({ meta: { port, savedAt: Date.now(), ...(rom ? { rom } : {}) }, state }) : null;
+    if (!state) return null;
+    return format === 'raw' ? state : encodeSaveSlot({ meta: { port, savedAt: Date.now(), ...(rom ? { rom } : {}) }, state });
   };
 
   const loadStateBytes = (bytes: Uint8Array): boolean => {

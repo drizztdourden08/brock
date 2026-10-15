@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import type { JobHandle } from '../jobs/job.type';
+import type { JobHandle } from '@drizztdourden08/brock-core/jobs';
 import type { DataDomains } from './domain-files.type';
 import type { TransferReport } from './transfer.type';
 

@@ -5,13 +5,14 @@ import type { AssetWorkerMessage, AssetWorkerSteps } from '../src/assets/worker/
 import type { SpawnAssetWorker } from '../src/main/assets/asset-worker-job.type';
 import { runAssetWorkerJob } from '../src/main/assets/run-asset-worker-job';
 import { serveAssetSteps } from '../src/worker/serve-asset-steps';
+import { ASSET_STEPS as STEPS } from './fakes/asset-steps';
 import { fakeJob } from './fakes/fake-job';
 
 const channelWorker = (steps: AssetWorkerSteps): { spawn: SpawnAssetWorker; terminated: () => boolean } => {
   let terminated = false;
-  const spawn: SpawnAssetWorker = () => {
+  const spawn: SpawnAssetWorker = (_worker, workerData) => {
     const { port1, port2 } = new MessageChannel();
-    serveAssetSteps(steps, port1);
+    serveAssetSteps(steps, port1, workerData);
     return {
       run: (request) => port2.postMessage(request),
       listen: (onMessage) => {
@@ -28,21 +29,6 @@ const channelWorker = (steps: AssetWorkerSteps): { spawn: SpawnAssetWorker; term
     };
   };
   return { spawn, terminated: () => terminated };
-};
-
-const STEPS: AssetWorkerSteps = {
-  tiles: (input, report) => {
-    report.progress(0.5, 'half');
-    report.log('tiles ready');
-    return new Uint8Array([Number(input), 2]);
-  },
-  sounds: async (_input, report) => {
-    report.line('mixing');
-    return Promise.resolve({ count: 3 });
-  },
-  broken: () => {
-    throw new Error('bad chunk');
-  },
 };
 
 describe('runAssetWorkerJob', () => {
@@ -71,6 +57,12 @@ describe('runAssetWorkerJob', () => {
     expect(worker.terminated()).toBe(true);
   });
 
+  it('hands each step the worker data', async () => {
+    const jobs = fakeJob();
+    const results = await runAssetWorkerJob(jobs.ctx, { id: 'a', worker: 'x', workerData: { rom: 'r' }, steps: [{ id: 'source', label: 'S', input: 2 }] }, channelWorker(STEPS).spawn);
+    expect(results.source).toEqual({ input: 2, data: { rom: 'r' } });
+  });
+
   it('fails a step the worker does not have', async () => {
     const jobs = fakeJob();
     await expect(runAssetWorkerJob(jobs.ctx, { id: 'a', worker: 'x', steps: [{ id: 'nope', label: 'N' }] }, channelWorker(STEPS).spawn))
@@ -79,7 +71,7 @@ describe('runAssetWorkerJob', () => {
 
   it('stops the worker when the job is cancelled', async () => {
     const jobs = fakeJob();
-    const worker = channelWorker({ slow: () => new Promise(() => undefined) });
+    const worker = channelWorker(STEPS);
     const running = runAssetWorkerJob(jobs.ctx, { id: 'a', worker: 'x', steps: [{ id: 'slow', label: 'S' }] }, worker.spawn);
     jobs.controller.abort();
     await expect(running).rejects.toThrow('Cancelled.');

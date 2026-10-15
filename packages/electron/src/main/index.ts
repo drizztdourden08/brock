@@ -43,7 +43,7 @@ export { openExternal } from './window/open-external';
 export { openFolder } from './files/open-folder';
 export { revealPath } from './files/reveal-path';
 export type { DataDomains, DomainFiles } from './storage/domain-files.type';
-export type { JobHandle, JobRegistry, StartJob } from './jobs/job.type';
+export type { JobHandle, JobRegistry, StartJob } from '@drizztdourden08/brock-core/jobs';
 export { captureWindow } from './handlers/capture-window';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';
 export { writeDebugZip } from './bug-report/write-debug-zip';

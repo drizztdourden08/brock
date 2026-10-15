@@ -1,7 +1,7 @@
-/* @layer electron-main @kind logic */
-import type { JobLogLevel, JobSnapshot, JobStepState } from '@drizztdourden08/brock-core/types';
+/* @layer core @kind logic */
+import type { JobLogLevel, JobSnapshot, JobStepState } from '../types/job.type';
 import { jobProgress } from './job-progress';
-import type { JobHandle, JobRecord } from './job.type';
+import type { JobHandle, JobRecord } from './job-handle.type';
 import { JOB_LOG_LIMIT } from './jobs.constants';
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));

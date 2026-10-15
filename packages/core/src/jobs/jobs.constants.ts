@@ -1,4 +1,4 @@
-/* @layer electron-main @kind constants */
+/* @layer core @kind constants */
 const JOB_LOG_LIMIT = 1000;
 
 const JOB_EMIT_MS = 100;

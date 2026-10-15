@@ -2,7 +2,7 @@
 import type {
   DevicePort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
 } from '@drizztdourden08/brock-core';
-import { osFromProcess } from '@drizztdourden08/brock-core';
+import { anyTypeFor, osFromProcess } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../host/require-host-api';
 
 const toArrayBuffer = (data: Uint8Array): ArrayBuffer =>
@@ -72,7 +72,7 @@ const createFilePicker = (): FilePickerPort => {
   const api = requireHostApi();
   return {
     pickFile: async (opts) => {
-      const picked = await api.pickFile(opts?.anyType === true ? [] : opts?.extensions ?? []);
+      const picked = await api.pickFile(anyTypeFor(opts?.anyType, { host: 'electron', formFactor: 'desktop' }) ? [] : opts?.extensions ?? []);
       return picked ? { name: picked.name, bytes: new Uint8Array(picked.data) } : null;
     },
     saveFile: ({ name, bytes, extensions }) => api.saveFile(name, toArrayBuffer(bytes), extensions ?? []),

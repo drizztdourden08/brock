@@ -1,7 +1,7 @@
-/* @layer electron-main @kind logic */
-import type { JobOptions, JobSnapshot, JobStepDef } from '@drizztdourden08/brock-core/types';
+/* @layer core @kind logic */
+import type { JobOptions, JobSnapshot, JobStepDef } from '../types/job.type';
 import { createJobHandle } from './create-job-handle';
-import type { EmitJob, JobRecord, JobRegistry } from './job.type';
+import type { EmitJob, JobRecord, JobRegistry } from './job-handle.type';
 import { JOB_EMIT_MS } from './jobs.constants';
 
 const initialSnapshot = (id: string, steps: readonly JobStepDef[], options: JobOptions, at: number): JobSnapshot => ({

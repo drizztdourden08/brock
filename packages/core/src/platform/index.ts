@@ -16,6 +16,7 @@ export type {
   DataExportFormat, DataExportManifest, DataExportResult, DataImportDomain, DataImportMode, DataImportPlan, DataImportResult, DataManifestDomain, DomainCleanResult, DomainEntry,
 } from './ports/data-domain.type';
 export type { WindowControlsPort, Unsub } from './ports/window-controls.type';
-export type { PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
+export { anyTypeFor } from './any-type-for';
+export type { AnyTypeScope, AnyTypeOption, PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
 export type { DevicePort, BackEdge } from './ports/device.type';
 export type { Capabilities, PlatformPorts } from '../augment';

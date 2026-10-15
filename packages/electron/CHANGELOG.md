@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-electron
 
+## 0.44.0
+
+### Minor Changes
+
+- 716553d: The boot watchdog is configurable: `product.boot.devWatchdogMs` (default 120000) and `product.boot.watchdogMs` (default 8000) in `brock.config.ts`, and the `BROCK_BOOT_WATCHDOG_MS` environment variable, which overrides whichever applies.
+
+### Patch Changes
+
+- 716553d: A dev launch no longer gets stuck on the splash. The splash plugin loaded brock-core through `vite.runnerImport` on every `index.html` and `splash.html` request, which took over 20 s inside a busy dev server; it now works the look out once per dev server, starting when the server starts, and again only when `brock.config.ts` or a file it reads changes. When the renderer answers after the boot watchdog fired (a heartbeat, progress, or a late `boot:ready`), main clears the watchdog's failure, the splash goes back to the progress and the app is revealed as usual; the app window's `did-finish-load` now counts as a sign of life too. The development watchdog waits 120 s instead of 30 s.
+- Updated dependencies [716553d]
+  - @drizztdourden08/brock-core@0.44.0
+
 ## 0.43.0
 
 ### Patch Changes

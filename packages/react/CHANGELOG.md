@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.44.0
+
+### Minor Changes
+
+- 126c8e8: Tessera 0.35: DensityScope and the parts that replace the last app-side styles of a part.
+
+### Patch Changes
+
+- Updated dependencies [716553d]
+  - @drizztdourden08/brock-core@0.44.0
+
 ## 0.43.0
 
 ### Patch Changes

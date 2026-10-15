@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-core
 
+## 0.44.0
+
+### Minor Changes
+
+- 716553d: The boot watchdog is configurable: `product.boot.devWatchdogMs` (default 120000) and `product.boot.watchdogMs` (default 8000) in `brock.config.ts`, and the `BROCK_BOOT_WATCHDOG_MS` environment variable, which overrides whichever applies.
+
 ## 0.43.0
 
 ## 0.42.0

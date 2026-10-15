@@ -72,7 +72,7 @@ const createFilePicker = (): FilePickerPort => {
   const api = requireHostApi();
   return {
     pickFile: async (opts) => {
-      const picked = await api.pickFile(opts?.extensions ?? []);
+      const picked = await api.pickFile(opts?.anyType === true ? [] : opts?.extensions ?? []);
       return picked ? { name: picked.name, bytes: new Uint8Array(picked.data) } : null;
     },
     saveFile: ({ name, bytes, extensions }) => api.saveFile(name, toArrayBuffer(bytes), extensions ?? []),

@@ -127,11 +127,14 @@ describe('the Capacitor host on a phone', () => {
     expect(back).toHaveBeenCalledTimes(3);
   });
 
-  it('opens the file picker with no type filter, so an extension Android has no type for can be picked', async () => {
+  it('filters the file picker by extension, and opens it unfiltered with anyType for an extension Android has no type for', async () => {
     onAndroid();
     const input = { type: '', accept: '', files: null as File[] | null, onchange: null as (() => void) | null, click: vi.fn() };
     vi.stubGlobal('document', { createElement: () => input });
-    const picked = getPlatform().filePicker.pickFile({ extensions: ['sav', 'zip'] });
+    void getPlatform().filePicker.pickFile({ extensions: ['sav', 'zip'] });
+    expect(input.accept).toBe('.sav,.zip');
+    input.accept = '';
+    const picked = getPlatform().filePicker.pickFile({ extensions: ['sav', 'zip'], anyType: true });
     expect(input.accept).toBe('');
     expect(input.click).toHaveBeenCalled();
     input.files = [new File([new Uint8Array([1, 2])], 'slot.sav')];

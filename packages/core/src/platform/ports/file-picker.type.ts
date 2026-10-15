@@ -18,13 +18,18 @@ interface SaveFileResult {
   error?: string;
 }
 
+interface PickFileOptions {
+  extensions?: string[];
+  anyType?: boolean;
+}
+
 interface PickPathOptions {
   folder?: boolean;
   extensions?: string[];
 }
 
 interface FilePickerPort {
-  pickFile: (opts?: { extensions?: string[] }) => Promise<PickedFile | null>;
+  pickFile: (opts?: PickFileOptions) => Promise<PickedFile | null>;
   saveFile: (request: SaveFileRequest) => Promise<SaveFileResult>;
   pickPath?: (opts?: PickPathOptions) => Promise<string | null>;
   pathOf?: (file: File) => string | null;
@@ -32,4 +37,4 @@ interface FilePickerPort {
   revealPath?: (path: string) => Promise<Result>;
 }
 
-export type { PickedFile, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort };
+export type { PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort };

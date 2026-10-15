@@ -30,18 +30,24 @@ const MAIN = [
   '',
 ].join('\n');
 
+const packageJson = (name, main) => JSON.stringify(main ? { name, type: 'module', main } : { name, type: 'module' });
+
+const fixtureFiles = () => ({
+  'package.json': packageJson('fixture-app'),
+  'brock.config.ts': `export default ${JSON.stringify({ product: { id: 'fixture-app', name: 'Fixture', ports: { base: 41000 } } })};\n`,
+  'node_modules/vite/package.json': packageJson('vite', 'index.mjs'),
+  'node_modules/vite/index.mjs': `export { mergeConfig, searchForWorkspaceRoot } from '${realVite}';\n`,
+  'node_modules/@vitejs/plugin-react/package.json': packageJson('@vitejs/plugin-react', 'index.mjs'),
+  'node_modules/@vitejs/plugin-react/index.mjs': 'export default () => ({ name: "react-stub" });\n',
+  'electron/scale.ts': 'export const scale = (n: number): number => n * 6;\n',
+  'electron/job.worker.ts': WORKER,
+  'electron/main.ts': MAIN,
+  'electron.vite.config.mjs': `import { defineBrockViteConfig } from '${configModule}';\nexport default async () => ({ main: (await defineBrockViteConfig(import.meta.dirname)).main });\n`,
+});
+
 const fixtureApp = () => {
   const root = tempDir();
-  put(root, 'package.json', JSON.stringify({ name: 'fixture-app', type: 'module' }));
-  put(root, 'brock.config.ts', `export default ${JSON.stringify({ product: { id: 'fixture-app', name: 'Fixture', ports: { base: 41000 } } })};\n`);
-  put(root, 'node_modules/vite/package.json', JSON.stringify({ name: 'vite', type: 'module', main: 'index.mjs' }));
-  put(root, 'node_modules/vite/index.mjs', `export { mergeConfig, searchForWorkspaceRoot } from '${realVite}';\n`);
-  put(root, 'node_modules/@vitejs/plugin-react/package.json', JSON.stringify({ name: '@vitejs/plugin-react', type: 'module', main: 'index.mjs' }));
-  put(root, 'node_modules/@vitejs/plugin-react/index.mjs', 'export default () => ({ name: "react-stub" });\n');
-  put(root, 'electron/scale.ts', 'export const scale = (n: number): number => n * 6;\n');
-  put(root, 'electron/job.worker.ts', WORKER);
-  put(root, 'electron/main.ts', MAIN);
-  put(root, 'electron.vite.config.mjs', `import { defineBrockViteConfig } from '${configModule}';\nexport default async () => ({ main: (await defineBrockViteConfig(import.meta.dirname)).main });\n`);
+  for (const [file, text] of Object.entries(fixtureFiles())) put(root, file, text);
   return root;
 };
 

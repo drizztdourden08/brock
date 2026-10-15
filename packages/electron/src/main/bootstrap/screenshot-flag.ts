@@ -5,6 +5,7 @@ import { captureWindow } from '../handlers/capture-window';
 import { captureHolds } from '../handlers/capture-holds';
 import { bootEvents } from '../boot/boot-events';
 import { whenRevealed } from '../boot/when-revealed';
+import { bootState } from '../boot/boot-state';
 import { SCREENSHOT_TIMEOUT_EXIT_CODE, SCREENSHOT_TIMEOUT_FLAG, SCREENSHOT_WATCHDOG_MS } from './screenshot-flag.constants';
 import { screenshotTimeoutMs } from './screenshot-timeout-ms';
 
@@ -13,7 +14,7 @@ const watchdogLine = (timeoutMs: number, revealed: boolean): string => {
   return `the screenshot watchdog fired after ${timeoutMs / 1000} s (${why}); captured what there was and exiting ${SCREENSHOT_TIMEOUT_EXIT_CODE}`;
 };
 
-const armScreenshotFlag = (ctx: MainContext, defaultTimeoutMs = SCREENSHOT_WATCHDOG_MS): void => {
+const armScreenshotFlag = (ctx: MainContext, defaultTimeoutMs = Math.max(SCREENSHOT_WATCHDOG_MS, bootState.watchdogMs)): void => {
   const name = ctx.flags.flagValue('--screenshot');
   if (!name) return;
   const timeout = screenshotTimeoutMs(ctx.flags.flagValue(SCREENSHOT_TIMEOUT_FLAG), defaultTimeoutMs);

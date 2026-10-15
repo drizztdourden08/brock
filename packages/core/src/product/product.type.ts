@@ -101,6 +101,11 @@ interface ProductWidgets {
   keepFocusWithApp: boolean;
 }
 
+interface ProductBoot {
+  watchdogMs?: number;
+  devWatchdogMs?: number;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -125,6 +130,7 @@ interface ProductConfig {
   ports?: ProductPorts;
   widgets: ProductWidgets;
   installer: InstallerConfig;
+  boot?: ProductBoot;
 }
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
@@ -137,6 +143,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
+  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
 };

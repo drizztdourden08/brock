@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { APP_WINDOW_POLL_MS } from './testing.constants.mjs';
+import { APP_WINDOW_POLL_MS, FIRST_WINDOW_TIMEOUT_MS } from './testing.constants.mjs';
 import { pageKindOf } from './page-kind.mjs';
 
 const pause = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
@@ -14,10 +14,10 @@ const stallReason = (windows) => {
 
 /**
  * @param {{ windows: () => { url: () => string }[] }} app Playwright's ElectronApplication
- * @param {number} timeout ms
+ * @param {number} [timeout] ms
  * @returns {Promise<any>} the app window's Page
  */
-const waitForAppPage = async (app, timeout) => {
+const waitForAppPage = async (app, timeout = FIRST_WINDOW_TIMEOUT_MS) => {
   const deadline = Date.now() + timeout;
   for (;;) {
     const windows = kindsOf(app);

@@ -9,6 +9,7 @@ type FailLoadArgs = [event: Electron.Event, code: number, description: string, u
 
 interface BootFailureRecord extends BootFailure {
   side: BootSide;
+  watchdog?: boolean;
 }
 
 interface BootState {

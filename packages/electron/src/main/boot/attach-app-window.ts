@@ -5,6 +5,7 @@ import { armWatchdog } from './arm-watchdog';
 import { bootEvents } from './boot-events';
 import { bootState } from './boot-state';
 import { ABORTED_LOAD, INTERFACE_TASK } from './reveal.constants';
+import { rendererHeartbeat } from './renderer-heartbeat';
 import { reportBootFailure } from './report-boot-failure';
 
 const attachAppWindow = (win: BrowserWindow, present: () => void): void => {
@@ -23,8 +24,9 @@ const attachAppWindow = (win: BrowserWindow, present: () => void): void => {
     if (!isMainFrame || code === ABORTED_LOAD) return;
     reportBootFailure({ ...INTERFACE_TASK, side: 'renderer', message: `${url} did not load: ${description} (${code})`, timedOut: false });
   });
-  webContents.on('did-start-loading', armWatchdog);
-  webContents.on('dom-ready', armWatchdog);
+  webContents.on('did-start-loading', rendererHeartbeat);
+  webContents.on('dom-ready', rendererHeartbeat);
+  webContents.on('did-finish-load', rendererHeartbeat);
   armWatchdog();
   bootEvents.emit('window', win);
 };

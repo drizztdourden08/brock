@@ -3,6 +3,6 @@ export { defineProduct } from './define-product';
 export { DEFAULT_WINDOW } from './define-product.constants';
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
+  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 } from './product.type';

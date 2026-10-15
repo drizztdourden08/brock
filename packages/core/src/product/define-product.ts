@@ -30,6 +30,12 @@ const assertInstaller = (installer: ProductInput['installer']): void => {
   }
 };
 
+const assertBoot = (boot: ProductInput['boot']): void => {
+  for (const [key, ms] of Object.entries(boot ?? {})) {
+    if (ms !== undefined && (!Number.isInteger(ms) || ms <= 0)) throw new Error(`product.boot.${key} ${ms} must be a whole number of milliseconds above 0`);
+  }
+};
+
 const assertProductInput = (input: ProductInput): void => {
   if (!SLUG.test(input.id)) throw new Error(`product.id "${input.id}" must be a slug like "my-app"`);
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
@@ -38,6 +44,7 @@ const assertProductInput = (input: ProductInput): void => {
   assertLook(input.look);
   assertPorts(input.ports);
   assertInstaller(input.installer);
+  assertBoot(input.boot);
   assertOsIntegration(input);
 };
 
@@ -105,6 +112,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     ports: input.ports,
     widgets: resolveWidgets(input.widgets),
     installer: resolveInstaller(input),
+    ...(input.boot ? { boot: input.boot } : {}),
   };
 };
 

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind test */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { describe, expect, it } from 'vitest';
 import { lookProperties } from '../src/splash/look-properties.mjs';
 import { renderSplashPage } from '../src/splash/render-splash-page.mjs';
@@ -32,6 +33,16 @@ describe('the splash page', () => {
     expect(tag).toMatchObject({ tag: 'style', attrs: { 'data-brock-look': '' }, injectTo: 'head' });
     expect(tag.children).toMatch(/--look-from: .+;/);
     expect(tag.children).toMatch(/--look-angle: \d+deg;/);
+  }, 60_000);
+
+  it('loads brock-core once per server, so a second page costs nothing', async () => {
+    const product = { id: 'look-check', name: 'Look check', appId: 'com.example.look-check', author: { name: 'tester' }, icons: { brand: 'brock' } };
+    const plugin = splashPlugin({ rootDir: join(import.meta.dirname, '..', '..', '..', 'templates', 'app'), product });
+    const [first] = await plugin.transformIndexHtml();
+    const started = performance.now();
+    const [second] = await plugin.transformIndexHtml();
+    expect(performance.now() - started).toBeLessThan(100);
+    expect(second).toEqual(first);
   }, 60_000);
 
   it('keeps only the layout and the entrance in its own stylesheet, so Tessera paints the dark ground and its tested text', () => {

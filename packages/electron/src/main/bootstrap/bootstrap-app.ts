@@ -21,7 +21,7 @@ import { rotateSessionLog } from '../handlers/rotate-session-log';
 import { bootState } from '../boot/boot-state';
 import { openSplash } from '../boot/open-splash';
 import { runMainBoot } from '../boot/run-main-boot';
-import { DEV_WATCHDOG_MS, WATCHDOG_MS } from '../boot/reveal.constants';
+import { watchdogMsOf } from '../boot/watchdog-ms';
 import { mainBootTasks } from '../boot/tasks/main-boot-tasks';
 import { createMainContext } from './create-main-context';
 import { resolvePaths } from './resolve-paths';
@@ -53,7 +53,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
 
   const plan = planWindow(setup);
   const { window: config } = setup.product;
-  bootState.watchdogMs = ctx.isDev ? DEV_WATCHDOG_MS : WATCHDOG_MS;
+  bootState.watchdogMs = watchdogMsOf(ctx.isDev, setup.product.boot);
   openSplash({
     plan,
     size: config.splash,

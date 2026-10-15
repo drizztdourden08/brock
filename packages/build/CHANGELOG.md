@@ -1,5 +1,25 @@
 # @drizztdourden08/brock-build
 
+## 0.45.0
+
+### Minor Changes
+
+- a85efb2: The Capacitor host reports the edge of the back gesture: `device.onBackButton` gets `left` or `right` from the `brock:back` event the Android `MainActivity` dispatches, and the app exits when nothing listens. The Android scaffold writes that activity in place of Capacitor's empty one (with `android:enableOnBackInvokedCallback` in the manifest), and leaves an activity with code of its own alone; run `platform add android` again to add it to an existing app.
+- aba2001: Packaging takes more from the product. The Windows exe gets its version info stamped beside the icon: company from `product.author`, product name and file description from `product.name`, `LegalCopyright` from the new `product.copyright` (else the year and the author), comments from `product.description`, and the app version. `product.linuxCategory` (a main freedesktop category such as `Game`) sets the deb's and the AppImage desktop entry's category, and the AppImage entry gets the description as its comment. A file association takes a `description`: the Linux mime comment, the Windows ProgId tooltip and electron-builder's association description.
+- fb41dd1: Workflow steps can target one job: a step's `jobs` (one id or a list) keeps it to those jobs of its point, `quality`, `review`, `web`, `changes` or `workspace` in CI and `prepare` or `build-<platform>` in the release. The new `release.prepare` point runs in the `prepare` job after the install, before its release note check and lint.
+
+### Patch Changes
+
+- 18bd938: A main process worker imported with `?modulePath` now builds. The managed main config named `electron/main.ts` as a library entry, which made electron-vite's worker bundle return one output per library format and stopped the build; it is now a build input, so `import workerPath from './job.worker?modulePath'` gives a file beside `main.js` that `new Worker(workerPath)` and port-kit's `runAssetWorkerJob` start. A test builds such a worker through the managed config and runs it.
+- Updated dependencies [ef96908]
+- Updated dependencies [a85efb2]
+- Updated dependencies [aba2001]
+- Updated dependencies [63cb77f]
+- Updated dependencies [fb41dd1]
+  - @drizztdourden08/brock-core@0.45.0
+  - @drizztdourden08/brock-thread@0.45.0
+  - @drizztdourden08/brock-lint-config@0.45.0
+
 ## 0.44.0
 
 ### Minor Changes

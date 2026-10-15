@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-core
 
+## 0.45.0
+
+### Minor Changes
+
+- ef96908: `filePicker.pickFile({ extensions, anyType: true })` opens the picker with no type filter, for a file whose extension the system has no type for (Android's picker greys such a file out); the app then checks the name it gets. Without `anyType` every host filters by `extensions` as before.
+- a85efb2: `product.window.titleBar.mobile: false` leaves the title bar out on a mobile form factor, for an app that draws its own phone chrome; it stays on the desktop, and the default keeps it everywhere.
+- aba2001: Packaging takes more from the product. The Windows exe gets its version info stamped beside the icon: company from `product.author`, product name and file description from `product.name`, `LegalCopyright` from the new `product.copyright` (else the year and the author), comments from `product.description`, and the app version. `product.linuxCategory` (a main freedesktop category such as `Game`) sets the deb's and the AppImage desktop entry's category, and the AppImage entry gets the description as its comment. A file association takes a `description`: the Linux mime comment, the Windows ProgId tooltip and electron-builder's association description.
+- fb41dd1: Workflow steps can target one job: a step's `jobs` (one id or a list) keeps it to those jobs of its point, `quality`, `review`, `web`, `changes` or `workspace` in CI and `prepare` or `build-<platform>` in the release. The new `release.prepare` point runs in the `prepare` job after the install, before its release note check and lint.
+
 ## 0.44.0
 
 ### Minor Changes

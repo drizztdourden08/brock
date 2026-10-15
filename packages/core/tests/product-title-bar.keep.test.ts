@@ -21,3 +21,12 @@ describe('product.window.titleBar', () => {
     expect(window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true }, mobile: false });
   });
 });
+
+describe('product packaging facts', () => {
+  it('keeps the copyright and the Linux category, and refuses a category the desktop does not know', () => {
+    const product = defineProduct({ ...BASE, copyright: 'Copyright (C) Example Studio', linuxCategory: 'Game' });
+    expect(product.copyright).toBe('Copyright (C) Example Studio');
+    expect(product.linuxCategory).toBe('Game');
+    expect(() => defineProduct({ ...BASE, linuxCategory: 'Games' as 'Game' })).toThrow(/product.linuxCategory "Games" must be a main desktop category/);
+  });
+});

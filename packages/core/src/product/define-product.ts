@@ -85,6 +85,8 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     appId: input.appId,
     description: input.description,
     author: input.author,
+    copyright: input.copyright,
+    linuxCategory: input.linuxCategory,
     repo: input.repo,
     updateChannel: input.updateChannel,
     releaseTagPrefix: input.releaseTagPrefix,

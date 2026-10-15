@@ -7,6 +7,7 @@ import { createAfterPack } from './packaging/after-pack.mjs';
 import { appAfterPack, appExtraResources, withAssociationOptions } from './packaging/app-packaging.mjs';
 import { builderIcons } from './packaging/builder-icons.mjs';
 import { linuxMetadata } from './packaging/linux-metadata.mjs';
+import { copyrightOf, windowsVersionStrings } from './packaging/windows-version-info.mjs';
 import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
 import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 
@@ -23,6 +24,7 @@ const toBuilderAssociations = (list = []) =>
   list.map((fa) => ({
     ext: fa.ext,
     name: fa.name,
+    ...(fa.description ? { description: fa.description } : {}),
     mimeType: fa.mimeType ?? `application/x-${fa.ext.toLowerCase()}`,
     ...(fa.icon ? { icon: fa.icon } : {}),
     ...(fa.role ? { role: fa.role } : {}),
@@ -69,7 +71,8 @@ const createBuilderConfig = (product, { rootDir, packaging = {} }) => {
     electronLanguages: ['en-US'],
     files: APP_FILES,
     asarUnpack: [VELOPACK_ASAR_UNPACK],
-    afterPack: createAfterPack(rootDir, icons.win, appAfterPack(packaging.afterPack)),
+    copyright: copyrightOf(product),
+    afterPack: createAfterPack(rootDir, { ico: icons.win, versionStrings: windowsVersionStrings(product) }, appAfterPack(packaging.afterPack)),
     fileAssociations: toBuilderAssociations(associations),
     protocols: toBuilderProtocols(product),
     ...(Object.keys(linuxMeta.extraMetadata).length ? { extraMetadata: linuxMeta.extraMetadata } : {}),

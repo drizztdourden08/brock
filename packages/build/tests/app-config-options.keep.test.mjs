@@ -85,9 +85,9 @@ describe('packaging of brock.config.ts', () => {
     put(root, 'build/after-pack.mjs', "import { writeFileSync } from 'node:fs';\nimport { join } from 'node:path';\nexport default async (context) => writeFileSync(join(context.appOutDir, 'hook.txt'), context.electronPlatformName);\n");
     const appOutDir = tempDir();
     const context = { appOutDir, electronPlatformName: 'linux', arch: 1, packager: { appInfo: { productFilename: 'Packs' } } };
-    await createAfterPack(root, undefined, 'build/after-pack.mjs')(context);
+    await createAfterPack(root, {}, 'build/after-pack.mjs')(context);
     expect(readFileSync(join(appOutDir, 'hook.txt'), 'utf8')).toBe('linux');
-    await expect(createAfterPack(root, undefined, 'build/missing.mjs')(context)).rejects.toThrow(/does not exist in the app folder/);
+    await expect(createAfterPack(root, {}, 'build/missing.mjs')(context)).rejects.toThrow(/does not exist in the app folder/);
     expect(existsSync(join(root, 'build/missing.mjs'))).toBe(false);
   });
 });

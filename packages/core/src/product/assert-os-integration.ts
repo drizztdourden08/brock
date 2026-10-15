@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import type { ProductInput } from './product.type';
-import { FILE_EXTENSION, PROG_ID, RESERVED_SCHEMES, URL_SCHEME } from './os-integration.constants';
+import { FILE_EXTENSION, LINUX_CATEGORIES, PROG_ID, RESERVED_SCHEMES, URL_SCHEME } from './os-integration.constants';
 
 const assertScheme = (field: string, scheme: string): void => {
   if (!URL_SCHEME.test(scheme)) throw new Error(`product.${field} scheme "${scheme}" must be lower case like "my-app", with no "://"`);
@@ -20,6 +20,12 @@ const assertServedDir = (scheme: string, dir: string | undefined): void => {
   }
 };
 
+const assertLinuxCategory = (category: string | undefined): void => {
+  if (category !== undefined && !LINUX_CATEGORIES.includes(category)) {
+    throw new Error(`product.linuxCategory "${category}" must be a main desktop category: ${LINUX_CATEGORIES.join(', ')}`);
+  }
+};
+
 const assertOsIntegration = (input: ProductInput): void => {
   const { schemes = [], protocols = [], fileAssociations = [] } = input;
   for (const { scheme, dir } of schemes) {
@@ -31,6 +37,7 @@ const assertOsIntegration = (input: ProductInput): void => {
     if (!FILE_EXTENSION.test(ext)) throw new Error(`product.fileAssociations ext "${ext}" must be an extension with no dot, like "mypack"`);
     if (!PROG_ID.test(progId)) throw new Error(`product.fileAssociations progId "${progId}" must look like "MyApp.Document"`);
   }
+  assertLinuxCategory(input.linuxCategory);
   assertUnique('schemes', schemes.map(({ scheme }) => scheme));
   assertUnique('protocols', protocols.map(({ scheme }) => scheme));
   assertUnique('fileAssociations', fileAssociations.map(({ ext }) => ext.toLowerCase()));

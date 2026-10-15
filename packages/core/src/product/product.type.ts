@@ -54,6 +54,7 @@ interface DeepLinkProtocol {
 interface FileAssociation {
   ext: string;
   name: string;
+  description?: string;
   progId: string;
   mimeType?: string;
   icon?: string;
@@ -76,6 +77,8 @@ interface ProductLogos {
 }
 
 type InstallScope = 'user' | 'machine';
+
+type LinuxCategory = 'AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility';
 
 interface InstallerShortcuts {
   desktop: boolean;
@@ -108,6 +111,8 @@ interface ProductConfig {
   appId: string;
   description?: string;
   author: ProductAuthor;
+  copyright?: string;
+  linuxCategory?: LinuxCategory;
   repo?: ProductRepo;
   updateChannel?: string;
   releaseTagPrefix?: string;
@@ -139,5 +144,5 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
   ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductConfig, ProductInput,
-  InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput,
+  InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

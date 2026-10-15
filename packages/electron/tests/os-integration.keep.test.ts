@@ -90,6 +90,16 @@ describe('Linux desktop entry', () => {
     expect(linuxMimeXml({ ...PRODUCT, fileAssociations: [] })).toBeNull();
   });
 
+  it('takes the description of a file type, the app description and its desktop category', () => {
+    const described = { ...PRODUCT, description: 'Plays packs.', linuxCategory: 'Game' as const, fileAssociations: [{ ext: 'mypack', name: 'Music Pack', description: 'A pack of tracks & loops', progId: 'MyApp.Pack' }] };
+    expect(linuxMimeXml(described)).toContain('<comment>A pack of tracks &amp; loops</comment>');
+    const entry = linuxDesktopEntry(described, '/opt/my-app');
+    expect(entry).toContain('Comment=Plays packs.\n');
+    expect(entry).toContain('Categories=Game;\n');
+    expect(linuxDesktopEntry(PRODUCT, '/opt/my-app')).not.toMatch(/Categories=|Comment=/);
+    expect(windowsRegistryEntries(described, EXE, () => 'icon')).toContainEqual({ key: `${CLASSES}\\MyApp.Pack`, name: 'InfoTip', value: 'A pack of tracks & loops' });
+  });
+
   it('writes both files under the home folder and refreshes the databases only when they change', async () => {
     const home = mkdtempSync(join(tmpdir(), 'brock-home-'));
     homes.push(home);

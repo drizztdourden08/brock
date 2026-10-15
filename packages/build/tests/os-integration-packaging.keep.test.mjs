@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createBuilderConfig } from '../src/builder-config.mjs';
+import { rceditOptions, windowsVersionStrings } from '../src/packaging/windows-version-info.mjs';
 import { debPostinst } from '../src/platforms/linux/deb-postinst.mjs';
 
 const PRODUCT = {
@@ -58,6 +59,37 @@ describe('createBuilderConfig OS integration', () => {
     const bare = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
     expect(bare.extraMetadata).toEqual({ author: { name: 'someone' } });
     expect(bare.linux.maintainer).toBe('someone');
+  });
+
+  it('passes each file type description, the desktop category and the copyright', () => {
+    const product = { ...PRODUCT, linuxCategory: 'Game', copyright: 'Copyright (C) 2026 Someone', fileAssociations: [{ ...PRODUCT.fileAssociations[0], description: 'A pack of tracks' }] };
+    const config = createBuilderConfig(product, { rootDir: tempRoot() });
+    expect(config.fileAssociations[0]).toMatchObject({ name: 'Music Pack', description: 'A pack of tracks' });
+    expect(config.linux.category).toBe('Game');
+    expect(config.copyright).toBe('Copyright (C) 2026 Someone');
+    const bare = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
+    expect(bare.linux.category).toBeUndefined();
+    expect(bare.copyright).toMatch(/^Copyright \(C\) \d{4} someone$/);
+  });
+});
+
+describe('Windows version info', () => {
+  it('names the company, the product, the file and the copyright from the product', () => {
+    expect(windowsVersionStrings({ ...PRODUCT, description: 'Plays packs.' }, 2026)).toEqual({
+      CompanyName: 'someone', ProductName: 'My App', FileDescription: 'My App', LegalCopyright: 'Copyright (C) 2026 someone', Comments: 'Plays packs.',
+    });
+    expect(windowsVersionStrings({ ...PRODUCT, copyright: 'Copyright (C) Example Studio' }, 2026).LegalCopyright).toBe('Copyright (C) Example Studio');
+  });
+
+  it('stamps the strings, the versions and the file name, with the icon when there is one', () => {
+    const versionStrings = windowsVersionStrings(PRODUCT, 2026);
+    expect(rceditOptions({ icoPath: 'build/icons/icon.ico', versionStrings, version: '1.4.0', exeName: 'My App.exe' })).toEqual({
+      icon: 'build/icons/icon.ico',
+      'version-string': { ...versionStrings, InternalName: 'My App', OriginalFilename: 'My App.exe' },
+      'file-version': '1.4.0',
+      'product-version': '1.4.0',
+    });
+    expect(rceditOptions({ icoPath: null, versionStrings, version: '1.4.0', exeName: 'My App.exe' }).icon).toBeUndefined();
   });
 });
 

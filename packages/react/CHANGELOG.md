@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-react
 
+## 0.45.0
+
+### Minor Changes
+
+- a85efb2: The Capacitor host reports the edge of the back gesture: `device.onBackButton` gets `left` or `right` from the `brock:back` event the Android `MainActivity` dispatches, and the app exits when nothing listens. The Android scaffold writes that activity in place of Capacitor's empty one (with `android:enableOnBackInvokedCallback` in the manifest), and leaves an activity with code of its own alone; run `platform add android` again to add it to an existing app.
+- a85efb2: The Storage page works on a phone: `<BrockApp dataDomains>` gives the renderer the app's data domains, the Capacitor storage port sums each one through the Filesystem plugin, and the page shows the data folder and each domain's size and item count with no action the phone cannot run. `setDataDomains` and `rendererDataDomains` are exported.
+- ef96908: `filePicker.pickFile({ extensions, anyType: true })` opens the picker with no type filter, for a file whose extension the system has no type for (Android's picker greys such a file out); the app then checks the name it gets. Without `anyType` every host filters by `extensions` as before.
+- a85efb2: `product.window.titleBar.mobile: false` leaves the title bar out on a mobile form factor, for an app that draws its own phone chrome; it stays on the desktop, and the default keeps it everywhere.
+
+### Patch Changes
+
+- Updated dependencies [ef96908]
+- Updated dependencies [a85efb2]
+- Updated dependencies [aba2001]
+- Updated dependencies [fb41dd1]
+  - @drizztdourden08/brock-core@0.45.0
+
 ## 0.44.0
 
 ### Minor Changes

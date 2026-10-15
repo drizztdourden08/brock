@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-electron
 
+## 0.45.0
+
+### Minor Changes
+
+- aba2001: Packaging takes more from the product. The Windows exe gets its version info stamped beside the icon: company from `product.author`, product name and file description from `product.name`, `LegalCopyright` from the new `product.copyright` (else the year and the author), comments from `product.description`, and the app version. `product.linuxCategory` (a main freedesktop category such as `Game`) sets the deb's and the AppImage desktop entry's category, and the AppImage entry gets the description as its comment. A file association takes a `description`: the Linux mime comment, the Windows ProgId tooltip and electron-builder's association description.
+- 4caea84: The `--screenshot` watchdog is configurable and fails loudly: `--screenshot-timeout=<seconds>` or `bootstrapApp({ screenshotTimeoutMs })` sets how long it waits (20 s by default), and when it fires it still captures, logs whether the window never revealed or how many screenshot holds were open, and exits 2 instead of 0.
+
+### Patch Changes
+
+- Updated dependencies [ef96908]
+- Updated dependencies [a85efb2]
+- Updated dependencies [aba2001]
+- Updated dependencies [fb41dd1]
+  - @drizztdourden08/brock-core@0.45.0
+
 ## 0.44.0
 
 ### Minor Changes

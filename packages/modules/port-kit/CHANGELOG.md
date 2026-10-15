@@ -1,5 +1,27 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.45.0
+
+### Minor Changes
+
+- bc553ba: `createGameCore(port, { watchCrashFrom: 'start' })` arms the crash watch when the core starts, before the glue script loads, so a WebAssembly runtime error while the core boots sets the `error` state and reaches `onCrash` instead of going unseen; the default `'running'` keeps today's behaviour. `watchCoreCrash` is exported for an app that loads its core itself.
+- bc553ba: ensure-wasm finds the Emscripten SDK from a git worktree: when the worktree has none at a relative `emsdkDir`, the same folder of the main checkout is used, read from the worktree's `.git` file with no git call. `emsdkOf` reports `mainCheckout`, and `mainCheckoutOf(dir)` is exported. `$EMSDK` and an absolute `emsdkDir` still win.
+- bc553ba: Save slots can write raw states: `createSaveSlots({ format: 'raw' })` and `createPortSession({ saveFormat: 'raw' })` write the core's state bytes as they are (after the save transform) instead of the PKSV container. Loading already took both.
+- bc553ba: `RomStore.listNames()` (and the same call on each kind's store) lists the stored ROM files by name only, with no read and no hash: `{ file, label, hasAssets }`, for a listing that has to show at once.
+
+### Patch Changes
+
+- Updated dependencies [a85efb2]
+- Updated dependencies [a85efb2]
+- Updated dependencies [ef96908]
+- Updated dependencies [a85efb2]
+- Updated dependencies [aba2001]
+- Updated dependencies [4caea84]
+- Updated dependencies [fb41dd1]
+  - @drizztdourden08/brock-react@0.45.0
+  - @drizztdourden08/brock-core@0.45.0
+  - @drizztdourden08/brock-electron@0.45.0
+
 ## 0.44.0
 
 ### Patch Changes

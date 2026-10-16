@@ -75,6 +75,9 @@ describe('the Setup splash', () => {
     expect(svg).not.toMatch(/radialGradient|filter|#ffffff/);
   });
 
+});
+
+describe('the Setup splash wordmark', () => {
   it('draws the wordmark image in place of the name, fitted under the mark', () => {
     const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
     const wordmark = { data: Buffer.from('<svg id="wordmark"/>'), mime: 'image/svg+xml', from: 'public/logos/wordmark.svg' };
@@ -88,9 +91,13 @@ describe('the Setup splash', () => {
   });
 
   it('reads the dark ground wordmark from public/ and stops on a missing file', () => {
-    const rootDir = tempDir({ 'public/logos/wordmark.svg': '<svg/>', 'public/logos/wordmark-dark.png': MARK_PNG });
+    const wordmarkSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 20"><text x="0" y="16" font-size="16" fill="#ffffff">My App</text></svg>';
+    const rootDir = tempDir({ 'public/logos/wordmark.svg': wordmarkSvg, 'public/logos/wordmark-dark.png': MARK_PNG });
     expect(wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.png' } } }))
       .toMatchObject({ mime: 'image/png', from: 'public/logos/wordmark-dark.png' });
+    const svg = wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark.svg' } } });
+    expect(svg).toMatchObject({ mime: 'image/png', from: 'public/logos/wordmark.svg' });
+    expect(PNG.sync.read(svg.data).width).toBe(768);
     expect(wordmarkSourceOf(rootDir, { icons: {} })).toBeNull();
     expect(() => wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/gone.svg', dark: './logos/gone.svg' } } })).toThrow(/not under public/);
   });
@@ -105,7 +112,9 @@ describe('the Setup splash', () => {
     expect(pixel(PNG.sync.read(png), 240, 237)).toBe('#7d7e81');
     expect(setupSplashPng(rootDir, { config: config(), colours: { angle: 160 }, splash: ground, tesseraRoot }).from).toMatch(/name in /);
   });
+});
 
+describe('the Setup splash mark', () => {
   it('reads the mark from brand/dark-ground', () => {
     const tesseraRoot = tempDir({ 'brand/dark-ground/brock/mark/mark-256.png': 'png', 'brand/light-rim/brock/mark/mark-256.png': 'png' });
     expect(markSourceOf(tempDir(), { config: config(), tesseraRoot }, { ground: 'dark' })).toMatchObject({ from: 'brand/dark-ground/brock/mark/mark-256.png' });

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind style */
 .boot-failure-splash--wordmark .ts-title {
   overflow: hidden;
-  inline-size: min(var(--size-384), 100%);
+  inline-size: min(var(--size-384), 100vw - 2 * var(--space-2xl));
   block-size: var(--size-48);
   background: var(--boot-wordmark) center / contain no-repeat;
   color: transparent;

@@ -7,7 +7,7 @@
 
 .splash__wordmark {
   display: block;
-  max-inline-size: min(var(--size-384), 100%);
+  max-inline-size: min(var(--size-384), 100vw - 2 * var(--space-2xl));
   block-size: var(--size-48);
   object-fit: contain;
 }

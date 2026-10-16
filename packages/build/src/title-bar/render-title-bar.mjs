@@ -1,10 +1,10 @@
 /* @layer tooling-scripts @kind logic */
 import { GENERATED_HEADER, REACT_PACKAGE } from '../screens/screen-conventions.constants.mjs';
 import { scanTitleBar } from './scan-title-bar.mjs';
-import { TITLE_BAR_OUTPUT } from './title-bar-conventions.constants.mjs';
+import { LAZY_BUTTON, TITLE_BAR_OUTPUT } from './title-bar-conventions.constants.mjs';
 
 /**
- * @typedef {{ id: string, path: string, hasOrder?: boolean, hasMeta?: boolean }} RenderedFile
+ * @typedef {{ id: string, path: string, hasOrder?: boolean, hasMeta?: boolean, button?: Record<string, unknown> | null }} RenderedFile
  */
 
 /** @param {string} id */
@@ -24,15 +24,20 @@ const orderOf = (file) => {
 };
 
 /** @param {RenderedFile} file */
+const sourceOf = (file) => `../${file.path.replace(/\.ts$/, '')}`;
+
+/** @param {RenderedFile} file @returns {string[]} */
 const importOf = (file) => {
   const { named } = orderOf(file);
-  return `import ${identifierOf(file.id)}${named ? `, { ${named} }` : ''} from '../${file.path.replace(/\.ts$/, '')}';`;
+  if (file.button) return named ? [`import { ${named} } from '${sourceOf(file)}';`] : [];
+  return [`import ${identifierOf(file.id)}${named ? `, { ${named} }` : ''} from '${sourceOf(file)}';`];
 };
 
 /** @param {RenderedFile} file */
 const entryOf = (file) => {
   const { order } = orderOf(file);
-  return `  { id: '${file.id}', source: ${identifierOf(file.id)}${order ? `, order: ${order}` : ''} },`;
+  const source = file.button ? `${LAZY_BUTTON}(${JSON.stringify(file.button)}, () => import('${sourceOf(file)}'))` : identifierOf(file.id);
+  return `  { id: '${file.id}', source: ${source}${order ? `, order: ${order}` : ''} },`;
 };
 
 /**
@@ -40,11 +45,11 @@ const entryOf = (file) => {
  * @returns {string} the content of .brock/title-bar.ts
  */
 const renderTitleBar = (files) => {
-  const imports = files.map(importOf);
+  const imports = files.flatMap(importOf);
   const list = files.length ? ['[', ...files.map(entryOf), ']'].join('\n') : '[]';
   return [
     GENERATED_HEADER,
-    `import { titleBarFromFiles } from '${REACT_PACKAGE}';`,
+    `import { ${[...(files.some((file) => file.button) ? [LAZY_BUTTON] : []), 'titleBarFromFiles'].join(', ')} } from '${REACT_PACKAGE}';`,
     ...imports,
     '',
     `const appTitleBar = titleBarFromFiles(${list});`,

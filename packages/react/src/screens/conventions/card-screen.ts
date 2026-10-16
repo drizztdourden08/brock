@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { preloadOf } from '../../lazy/preload-of';
 import { defineScreen } from '../define-screen';
 import { renderCard } from '../kinds/render-card';
 import type { ScreenDef } from '../screen.type';
@@ -17,6 +18,7 @@ const cardScreen = (entry: CardEntry | BaseEntry): ScreenDef => defineScreen({
   ...(entry.kind === 'card' && entry.meta?.size === 'info' ? INFO_CARD : {}),
   ...(entry.kind === 'base' ? { header: 'none', menu: false } : {}),
   render: renderCard(entry.component),
+  preload: preloadOf(entry.component),
 });
 
 export { cardScreen };

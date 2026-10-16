@@ -15,6 +15,8 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   shortcut?: string;
 }
 
+type TitleBarButtonLook = Omit<TitleBarButtonSpec, 'onSelect'>;
+
 interface TitleBarMenuGroup {
   label?: string;
   items: readonly MenuEntry[];
@@ -50,6 +52,6 @@ interface TitleBarItemMeta {
 }
 
 export type {
-  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
+  TitleBarButtonLook, TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
   TitleBarStatusSpec,
 };

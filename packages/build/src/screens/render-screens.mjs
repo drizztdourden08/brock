@@ -3,8 +3,8 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderDevScreens } from './render-dev-screens.mjs';
 import { scanScreens } from './scan-screens.mjs';
-import { entryLine, importLine } from './screen-entry-lines.mjs';
-import { GENERATED_HEADER, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DEV_OUTPUT, SCREENS_DIR, SCREENS_OUTPUT, SEARCH_OUTPUT } from './screen-conventions.constants.mjs';
+import { entryLine, importLines, isLazy } from './screen-entry-lines.mjs';
+import { GENERATED_HEADER, LAZY_COMPONENT, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DEV_OUTPUT, SCREENS_DIR, SCREENS_OUTPUT, SEARCH_OUTPUT } from './screen-conventions.constants.mjs';
 import { renderSearch } from './search/render-search.mjs';
 
 const DEV_IMPORT = "import { devScreens } from './screens.dev';";
@@ -20,11 +20,11 @@ const renderScreens = (files) => {
   const list = lines.length ? ['[', ...lines, ']'].join('\n') : '[]';
   return [
     GENERATED_HEADER,
-    `import { buildScreenTree } from '${REACT_PACKAGE}';`,
+    `import { ${['buildScreenTree', ...(shipped.some(isLazy) ? [LAZY_COMPONENT] : [])].join(', ')} } from '${REACT_PACKAGE}';`,
     `import config from '../${SCREENS_DIR}/${SCREENS_CONFIG.replace(/\.ts$/, '')}';`,
     "import { searchIndex } from './search';",
     ...(hasDev ? [DEV_IMPORT] : []),
-    ...shipped.map(importLine),
+    ...shipped.flatMap(importLines),
     '',
     `const screenTree = buildScreenTree(config, ${list}, searchIndex);`,
     '',

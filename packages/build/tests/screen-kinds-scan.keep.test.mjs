@@ -59,8 +59,8 @@ describe('base and sub-page files', () => {
 
   it('lists them in .brock/screens.ts', () => {
     const out = renderScreens(scanScreens(appWith(VALID)).files);
-    expect(out).toContain("{ kind: 'sub', bucket: 'multiworld', group: 'library', page: 'sessions', id: 'edit', component: MultiworldLibrarySessionsEditSub, meta: multiworldLibrarySessionsEditSubMeta },");
-    expect(out).toContain("{ kind: 'base', id: 'session', component: SessionBase, meta: sessionBaseMeta },");
+    expect(out).toContain("{ kind: 'sub', bucket: 'multiworld', group: 'library', page: 'sessions', id: 'edit', component: lazyComponent(() => import('../src/screens/multiworld/library/sessions/edit.sub')), meta: multiworldLibrarySessionsEditSubMeta },");
+    expect(out).toContain("{ kind: 'base', id: 'session', component: lazyComponent(() => import('../src/screens/session.base')), meta: sessionBaseMeta },");
   });
 
   it('seeds search with the sub-page path', () => {

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubTab } from '../../hub/hub.type';
+import { preloadOf } from '../../lazy/preload-of';
 import { renderPage } from '../kinds/render-page';
 import { byOrder } from './by-order';
 import { entryLabel } from './entry-label';
@@ -15,9 +16,10 @@ const orderedTab = (bucket: BucketDef, entry: TabEntry): OrderedTab => ({
   label: entryLabel(entry),
   order: entryOrder(entry),
   render: renderPage(entry.component, bucket),
+  preload: preloadOf(entry.component),
 });
 
-const hubTab = (tab: OrderedTab): HubTab => ({ id: tab.id, label: tab.label, render: tab.render });
+const hubTab = (tab: OrderedTab): HubTab => ({ id: tab.id, label: tab.label, render: tab.render, preload: tab.preload });
 
 const folderOf = (entry: { group?: string }, page: string): string => `${entry.group ?? ''}/${page}`;
 
@@ -39,6 +41,7 @@ const tabPages = (bucket: BucketDef, entries: readonly TabEntry[], metas: readon
         ...pageMetaFields(own.meta),
         tabs,
         render: lead.render,
+        preload: lead.preload,
       },
     }];
   });

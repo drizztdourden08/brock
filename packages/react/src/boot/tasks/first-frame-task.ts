@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { BOOT_IDLE_MS } from '../../lazy/lazy.constants';
+import { lazyLoads } from '../../lazy/lazy-loads';
 import { abortable } from '../abortable';
 import { FIRST_FRAME_TASK } from '../boot.constants';
 import { firstFrameSignal } from '../first-frame-signal';
@@ -13,6 +15,7 @@ const firstFrameTask = (after: string[]): RendererBootTask => ({
   run: async ({ signal }) => {
     useBootStore.getState().setPhase('painting');
     await abortable(firstFrameSignal.promise, signal);
+    await abortable(lazyLoads.idle(BOOT_IDLE_MS), signal);
     await abortable(document.fonts.ready, signal);
     await waitFrames(1);
   },

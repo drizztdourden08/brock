@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubSubPage } from '../../hub/hub.type';
+import { preloadOf } from '../../lazy/preload-of';
 import { renderSub } from '../kinds/render-sub';
 import { entryLabel } from './entry-label';
 import { hubHeader } from './hub-header';
@@ -16,6 +17,7 @@ const subPage = (bucket: BucketDef, entry: SubEntry): HubSubPage => ({
   header: hubHeader(entry.meta?.header),
   fill: entry.meta?.fill,
   render: renderSub(entry.component, bucket),
+  preload: preloadOf(entry.component),
 });
 
 export { subPage };

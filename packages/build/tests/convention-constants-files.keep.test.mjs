@@ -46,7 +46,7 @@ describe('constants files in the convention folders', () => {
     expect(pathsOf(findings)).toEqual(['src/widgets/Sizes.constants.ts', 'src/widgets/notes.widget.type.ts']);
     expect(findings.find((finding) => finding.startsWith('src/widgets/Sizes'))).toContain('<id>.widget.constants.ts');
     const written = renderWidgetsFiles(root)[0]?.content ?? '';
-    expect(written).toContain("from '../src/widgets/notes.widget'");
+    expect(written).toContain("import('../src/widgets/notes.widget')");
     expect(written).not.toContain('constants');
   });
 

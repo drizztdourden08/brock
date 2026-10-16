@@ -188,6 +188,10 @@ export { TOWN_DIALOGUE };
 
 Each of these folders takes the constants file the constants lint rule names for a file in it, the file name with `.constants.ts` in place of its last extension: `<id>.widget.constants.ts` and `layout.constants.ts` in `src/widgets`, `<id>.action.constants.ts` in `src/title-bar`, `<id>.tour.constants.ts` in `src/tours` and `<id>.<kind>.constants.ts` (`home.hero.constants.ts`, `items.tab.constants.ts`) at any level of `src/screens`, plus `<name>.constants.ts` for constants several files there share. `brock sync` leaves them out of `.brock`. The module folders take `<id>.task.constants.ts` beside a boot task and `<id>.step.constants.ts` beside a review step (and the same for widget, title bar and tour files outside an app); `brock structure` reports any other doubled suffix, such as `<id>.page.constants.ts` in `src/review`.
 
+## What loads at boot
+
+Screens, widgets, a title bar button's handler and a tour's steps load when they are first used (see Lazy registries and the Suspense host in [architecture.md](architecture.md)); only their `meta` loads at boot. So keep a screen or widget file's `meta` to plain values and what they need (constants, icons, a `when` rule, small helpers), and never read the default-exported component from it, or the whole file loads at boot again. Code at the top level of a screen or widget file runs when that screen or widget first loads; anything that must run at boot belongs in a boot task. A settings page (`.settings.ts`) still loads at boot, since its sections feed the live settings search.
+
 ## A page that fills the window
 
 A page scrolls as a whole by default: its header stays and its body scrolls under it. A page that holds a list beside an editor, such as Tessera's `ListDetail` or `ListDetailLayout`, sets `fill` in its meta instead, so a long editor scrolls on its own and the list stays in view:

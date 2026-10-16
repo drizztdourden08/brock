@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ScreenPage, SettingsPage } from '@drizztdourden08/tessera/composites';
+import { LazyHost } from '../../../../lazy/LazyHost';
 import { SettingsPageContext } from '../../../../settings/SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../../../../settings/SettingsLayout/SettingsLayout.type';
 import { PageActionsContext } from '../../../page-actions-context';
@@ -18,7 +19,7 @@ const HubPageFrame = (props: HubPageFrameProps) => {
   const tabs = useMemo(() => (page.tabs && page.tabs.length > 0
     ? { items: page.tabs.map((entry) => ({ id: entry.id, label: entry.label })), activeId: tab?.id ?? page.tabs[0]?.id ?? '', onSelect: onSelectTab }
     : undefined), [page.tabs, tab, onSelectTab]);
-  const body = <PageActionsContext.Provider value={setSlotted}>{children}</PageActionsContext.Provider>;
+  const body = <PageActionsContext.Provider value={setSlotted}><LazyHost>{children}</LazyHost></PageActionsContext.Provider>;
   const scroll = (sub ?? page).fill !== true;
   if (sub) {
     return <ScreenPage icon={sub.icon} title={sub.label} back={{ label: page.label, onSelect: onUp }} backdrop={backdrop} actions={actions} scroll={scroll}>{body}</ScreenPage>;

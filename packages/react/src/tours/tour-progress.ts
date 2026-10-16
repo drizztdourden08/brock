@@ -38,7 +38,7 @@ const startStep = (progress: TourProgress, tour: TourDef, at?: number): number =
 };
 
 const firstRunTour = (tours: readonly TourDef[], progress: TourProgress): TourDef | null =>
-  tours.find((tour) => tour.trigger === 'first-run' && tour.steps.length > 0 && !progress.started.includes(tour.id)) ?? null;
+  tours.find((tour) => tour.trigger === 'first-run' && (tour.steps.length > 0 || tour.load !== undefined) && !progress.started.includes(tour.id)) ?? null;
 
 const union = (a: readonly string[], b: readonly string[]): readonly string[] => [...new Set([...a, ...b])];
 

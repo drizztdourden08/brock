@@ -1,0 +1,19 @@
+/* @layer renderer-shell @kind style */
+
+.lazy-host {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-48);
+  padding: var(--space-lg);
+  animation: lazy-host-in var(--duration-normal) ease-out var(--duration-slow) both;
+}
+
+@keyframes lazy-host-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lazy-host { animation: none; }
+}

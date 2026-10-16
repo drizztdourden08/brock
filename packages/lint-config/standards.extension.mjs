@@ -10,6 +10,7 @@ const SCREEN_FILE_GLOBS = [
 const SCREEN_FILE = '(^|\\/)src\\/screens\\/.+\\.(?:(?:hero|page|tab|sub|card|custom|layer|base)\\.tsx|(?:settings|page)\\.ts|(?:page|tab|sub|card|custom|layer)\\.dev\\.tsx|(?:settings|page)\\.dev\\.ts)$';
 const WIDGET_FILE_GLOBS = ['**/src/widgets/**/*.widget.tsx', '**/src/widgets/layout.ts'];
 const WIDGET_FILE = '(^|\\/)src\\/widgets\\/(?:.+\\/)?[a-z][a-z0-9-]*\\.widget\\.tsx$';
+const TITLE_BAR_ACTION_FILE = '(^|\\/)src\\/title-bar\\/[a-z][a-z0-9-]*\\.action\\.ts$';
 
 const RAW_CONTROLS = [
   { selector: "JSXOpeningElement[name.name='input']", message: 'No raw <input> outside primitives. Use TextInput / NumberInput / Checkbox / RangeInput.' },
@@ -31,8 +32,8 @@ export default defineExtension({
     options: {
       rawControls: RAW_CONTROLS,
       defaultExportGlobs: BROCK_DEFAULT_EXPORTS,
-      fileKinds: { screen: SCREEN_FILE, widget: WIDGET_FILE },
-      oneExportExempt: ['screen', 'widget'],
+      fileKinds: { screen: SCREEN_FILE, widget: WIDGET_FILE, titleBarAction: TITLE_BAR_ACTION_FILE },
+      oneExportExempt: ['screen', 'widget', 'titleBarAction'],
     },
   },
   stylelint: { options: { tokens: ['@drizztdourden08/tessera/tokens.css'] } },

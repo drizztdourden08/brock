@@ -20,7 +20,7 @@ const listRomNames = async (files: FileStore, { dir, rules, assetFileOf, labelOf
     const asset = assetOrNull(assetFileOf, file);
     const stat = asset ? await files.stat(asset).catch(() => null) : null;
     const assetBytes = stat && !stat.isDirectory ? stat.bytes : null;
-    return { file, label: labelOf(file) ?? stemOf(file), hasAssets: assetBytes !== null, assetBytes };
+    return { file, label: labelOf(file) ?? stemOf(file), hasAssets: assetBytes !== null && assetBytes > 0, assetBytes };
   }));
 };
 

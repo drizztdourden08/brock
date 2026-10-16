@@ -101,7 +101,7 @@ describe('createRomStore name list', () => {
     disk.set('assets/Other (EU).dat', new Uint8Array(4));
     expect(await createRomStore(statted, portWith(true)).listNames()).toEqual([
       { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false, assetBytes: null },
-      { file: 'us.sfc', label: 'us', hasAssets: true, assetBytes: 0 },
+      { file: 'us.sfc', label: 'us', hasAssets: false, assetBytes: 0 },
     ]);
     expect(stats.sort()).toEqual(['assets/Other (EU).dat', 'assets/us.dat']);
   });

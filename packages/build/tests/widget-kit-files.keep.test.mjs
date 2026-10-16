@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { migration } from '../migrations/0.53.0/widget-kits-prop.mjs';
+import { migration } from '../migrations/0.54.0/widget-kits-prop.mjs';
 import { checkWidgets } from '../src/widgets/check-widgets.mjs';
 import { renderWidgetKits } from '../src/widgets/render-widget-kits.mjs';
 import { renderWidgetsFiles } from '../src/widgets/render-widgets.mjs';

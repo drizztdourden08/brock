@@ -7,6 +7,7 @@ const END_GROUP: MenuGroupId = 'end';
 
 const OVERRIDE_CHECKS: Readonly<Record<keyof MenuEntryOverride, (value: unknown) => boolean>> = {
   hidden: (value) => typeof value === 'boolean',
+  inMenu: (value) => typeof value === 'boolean',
   label: (value) => typeof value === 'string' && value.trim() !== '',
   group: (value) => typeof value === 'string' && (MENU_GROUP_IDS as readonly string[]).includes(value),
   order: (value) => typeof value === 'number' && Number.isFinite(value),
@@ -17,6 +18,7 @@ const OVERRIDE_CHECKS: Readonly<Record<keyof MenuEntryOverride, (value: unknown)
 
 const OVERRIDE_WANTS: Readonly<Record<keyof MenuEntryOverride, string>> = {
   hidden: 'true or false',
+  inMenu: 'true or false',
   label: 'a non-empty text',
   group: MENU_GROUP_IDS.map((id) => `'${id}'`).join(', '),
   order: 'a number',

@@ -11,14 +11,15 @@ import type { MenuItem } from './menu.type';
 import { sanitizeOverride } from './sanitize-override';
 
 const ownOverride = (item: MenuItem): MenuEntryOverride => {
-  const { hidden, group, order, before, after, parent } = item;
-  return { hidden, group, order, before, after, parent };
+  const { hidden, inMenu, group, order, before, after, parent } = item;
+  return { hidden, inMenu, group, order, before, after, parent };
 };
 
 const relabel = (item: MenuItem, override: MenuEntryOverride): MenuItem => {
-  const { hidden, ...rest } = item;
-  const shown = override.hidden ?? hidden;
-  return { ...rest, label: override.label ?? item.label, ...(shown === undefined ? {} : { hidden: shown }) };
+  const { hidden, inMenu, ...rest } = item;
+  const gone = override.hidden ?? hidden;
+  const listed = override.inMenu ?? inMenu;
+  return { ...rest, label: override.label ?? item.label, ...(gone === undefined ? {} : { hidden: gone }), ...(listed === undefined ? {} : { inMenu: listed }) };
 };
 
 const routeOf = (item: MenuItem): Pick<MenuOverrideRecord, 'route'> => (item.screen === undefined ? {} : { route: item.screen });

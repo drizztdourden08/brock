@@ -49,6 +49,11 @@ interface MenuOverrideRecord {
   route?: string;
 }
 
+interface MenuHiddenState {
+  routes: ReadonlySet<string>;
+  setRoutes: (routes: ReadonlySet<string>) => void;
+}
+
 interface ResolvedMenu {
   entries: MenuEntry[];
   issues: MenuIssue[];
@@ -62,5 +67,5 @@ interface MenuResolveInput {
 }
 
 export type {
-  MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput, ResolvedMenu,
+  MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuHiddenState, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput, ResolvedMenu,
 };

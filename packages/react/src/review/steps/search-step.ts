@@ -8,6 +8,7 @@ import { hubSearchSample } from '../search/hub-search-sample';
 import { palettePick } from '../search/palette-pick';
 import { reachedTarget } from '../search/reached-target';
 import { searchSamples } from '../search/search-samples';
+import { hiddenSearchChecks } from './hidden-search-checks';
 import { resetUi } from './reset-ui';
 
 const checkId = (sample: SearchSample): string => `search-${sample.source.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
@@ -36,6 +37,7 @@ const searchStep: ReviewStep = {
       await resetUi();
       await checkSample(tour, sample, sample === firstSetting);
     }
+    await hiddenSearchChecks(tour);
     const inHub = hubSearchSample(tour.env, samples);
     if (inHub === undefined) return;
     await resetUi();

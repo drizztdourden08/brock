@@ -122,6 +122,7 @@ type ProductMenuGroup = 'main' | 'sections' | 'modules' | 'end';
 
 interface ProductMenuEntry {
   hidden?: boolean;
+  inMenu?: boolean;
   label?: string;
   group?: ProductMenuGroup;
   order?: number;

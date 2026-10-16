@@ -233,7 +233,8 @@ product: {
       settings: { label: 'Preferences' },
       'bucket:library': { after: 'settings' },
       'keyboard-shortcuts': { parent: null, group: 'end', before: 'about' },
-      'screen:glossary': { hidden: true },
+      'screen:glossary': { inMenu: false },
+      'bucket:tools:notes': { hidden: true },
     },
   },
 },
@@ -248,7 +249,8 @@ Each entry takes these fields:
 
 | Field | What it does |
 | --- | --- |
-| `hidden` | Leaves the entry out of the menu. The search palette, its route, its shortcut and `open` still reach it; `when`, `hosts` or `devOnly` on the screen hide it there too. `hidden: false` shows an entry a screen's meta hid. A submenu all of whose entries are hidden or moved out goes too. |
+| `inMenu` | `inMenu: false` leaves the entry out of the menu only: the search palette, its route, its shortcut and `open` still reach it. `inMenu: true` brings back an entry a screen's meta took out. A submenu all of whose entries are out of the menu or moved away goes too. |
+| `hidden` | `hidden: true` takes the entry out of the menu, the search palette, the keyboard shortcuts and the shortcuts dialog, for its route and every route under it (hiding a bucket hides its pages). Code can still open it with `open(route)`. `hidden: false` undoes a screen's own `hidden`. To hide a screen from everything, routes included, use `when`, `hosts` or `devOnly` on it. |
 | `label` | Renames the entry, in the menu and in the search palette. |
 | `group` | Moves a top-level entry to another group: `'main'` (Home, Profiles, Settings, app entries), `'sections'`, `'modules'` or `'end'` (Credits, About, Quit). On an entry inside a submenu it lifts the entry out into that group. |
 | `order` | Sorts the entry in its list like CSS `order`: every entry counts as 0, a lower number comes first, and ties keep the detected order. `order: -1` puts an entry first, `order: 1` last. |
@@ -275,7 +277,7 @@ The keys:
 
 `brock check` reports a field it does not know or a value of the wrong type, a `bucket:` or `screen:` key no file of `src/screens` gives, an entry that names itself, `before` and `after` together, and a `before` and `after` loop. A development launch reports the rest once each in the log as a warning: a key no entry has (with the keys that look like it), a `parent` that is not a submenu or sits inside the entry, and the loop. Nothing throws: an override that cannot apply is skipped and the entry stays where Brock put it. An entry whose key is also a title bar action's id (Report a bug, Check for updates) leaves the drawn menu while the bar shows that action, and the bar's own part of the menu lists it instead.
 
-With no active profile, an entry that opens a screen needing a profile shows disabled with "Pick or create a profile first", as Home does, wherever an override put it. The review checks the drawn menu against these overrides: each overridden entry gets a `menu-entry-<key>` check (hidden, or drawn at its place between its neighbours), and its built-in, section and last-group checks follow the effective menu.
+With no active profile, an entry that opens a screen needing a profile shows disabled with "Pick or create a profile first", as Home does, wherever an override put it. The review checks the drawn menu against these overrides: each overridden entry gets a `menu-entry-<key>` check (out of the menu, or drawn at its place between its neighbours), each `hidden` entry a `search-hidden-<key>` check that the palette does not list it, and its built-in, section and last-group checks follow the effective menu.
 
 ## Product icons
 

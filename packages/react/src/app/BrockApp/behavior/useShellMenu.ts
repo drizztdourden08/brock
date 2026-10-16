@@ -7,6 +7,8 @@ import type { MenuEntry } from '../../../menu/menu.type';
 import { profileLock } from '../../../menu/profile-lock';
 import { useMenuHooks } from '../../../menu/useMenuHooks';
 import { useMenuIssues } from '../../../menu/useMenuIssues';
+import { searchableMenu } from '../../../menu/searchable-menu';
+import { useMenuHiddenRoutes } from '../../../menu/useMenuHiddenRoutes';
 import { visibleMenu } from '../../../menu/visible-menu';
 import { withPreload } from '../../../menu/with-preload';
 import { routePreloader } from '../../../lazy/route-preloader';
@@ -57,10 +59,11 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       locked: hasProfile ? undefined : profileLock(registry),
     });
     const entries = withPreload(resolved.entries, routePreloader(registry));
-    const searchable = railed ? stripScreenEntries(entries) : entries;
-    return { menu: visibleMenu(searchable), searchable, issues: resolved.issues, overrides: resolved.overrides };
+    const shown = railed ? stripScreenEntries(entries) : entries;
+    return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
   }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry]);
   useMenuIssues(shell.issues);
+  useMenuHiddenRoutes(shell.all);
   return shell;
 };
 

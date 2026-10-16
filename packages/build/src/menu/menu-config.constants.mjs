@@ -4,6 +4,7 @@ const MENU_GROUPS = ['main', 'sections', 'modules', 'end'];
 /** @type {Record<string, { valid: (value: unknown) => boolean, wants: string }>} */
 const MENU_FIELDS = {
   hidden: { valid: (value) => typeof value === 'boolean', wants: 'true or false' },
+  inMenu: { valid: (value) => typeof value === 'boolean', wants: 'true or false' },
   label: { valid: (value) => typeof value === 'string' && value.trim() !== '', wants: 'a non-empty text' },
   group: { valid: (value) => typeof value === 'string' && MENU_GROUPS.includes(value), wants: MENU_GROUPS.map((id) => `'${id}'`).join(', ') },
   order: { valid: (value) => typeof value === 'number' && Number.isFinite(value), wants: 'a number' },

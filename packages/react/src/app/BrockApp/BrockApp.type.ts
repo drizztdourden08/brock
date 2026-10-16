@@ -91,6 +91,7 @@ interface MenuBuildInput {
 interface ShellMenu {
   menu: MenuEntry[];
   searchable: MenuEntry[];
+  all: MenuEntry[];
   issues: MenuIssue[];
   overrides: MenuOverrideRecord[];
 }

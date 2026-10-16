@@ -34,6 +34,7 @@ const ENTRIES: ScreenEntry[] = [
   { kind: 'page', bucket: 'library', id: 'shelves', component: View },
   { kind: 'page', bucket: 'library', id: 'loans', component: View, meta: { menu: { parent: 'bucket:tools' } } },
   { kind: 'card', id: 'glossary', component: View, meta: { menu: { hidden: true } } },
+  { kind: 'card', id: 'index', component: View, meta: { menu: { inMenu: false } } },
 ];
 
 const tree = buildScreenTree(CONFIG, ENTRIES);
@@ -72,6 +73,7 @@ describe('menu overrides from screen meta', () => {
     const resolved = resolveScreenTree(tree, []);
     expect(menuReachIds(resolved)).toContain('glossary');
     expect(menuReachIds(resolved, hiddenRoutes(overrides))).not.toContain('glossary');
+    expect(menuReachIds(resolved, hiddenRoutes(overrides))).not.toContain('index');
   });
 });
 
@@ -87,7 +89,7 @@ describe('the review of the effective menu', () => {
     const outcomes = menuOverrideChecks(overrides, menu, (parents) => drawn[parents.join(' > ')] ?? null);
     expect(outcomes.filter((entry) => !entry.pass)).toEqual([]);
     expect(outcomes.map((entry) => entry.id)).toEqual(expect.arrayContaining([
-      'menu-entry-profiles', 'menu-entry-bucket:library', 'menu-entry-screen:glossary', 'menu-entry-bucket:library:loans',
+      'menu-entry-profiles', 'menu-entry-bucket:library', 'menu-entry-screen:glossary', 'menu-entry-screen:index', 'menu-entry-bucket:library:loans',
     ]));
   });
 

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useBrock } from '../app/useBrock';
 import { useDeveloperTools } from '../app/useDeveloperTools';
 import type { MenuEntry } from '../menu/menu.type';
+import { useMenuHiddenStore } from '../menu/useMenuHiddenStore';
 import { usePlatform } from '../platform/usePlatform';
 import { useScreenRegistry } from '../screens/useScreenRegistry';
 import { useProfilesStore } from '../stores/useProfilesStore';
@@ -27,6 +28,7 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
   const live = useLiveSearchStore((s) => s.entries);
   const widgets = useWidgetMenuEntries();
   const show = useShowContext();
+  const menuHidden = useMenuHiddenStore((s) => s.routes);
 
   return useMemo(() => (enabled ? buildCatalog({
     index: screenTree?.search ?? [],
@@ -44,8 +46,8 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
     isMobile: info.formFactor === 'mobile',
     hasProfile,
     show,
-    hidden: hiddenRoutes(screenTree?.hubs ?? [], registry.list(), show),
-  }) : []), [enabled, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile, show]);
+    hidden: new Set([...hiddenRoutes(screenTree?.hubs ?? [], registry.list(), show), ...menuHidden]),
+  }) : []), [enabled, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile, show, menuHidden]);
 };
 
 export { useSearchIndex };

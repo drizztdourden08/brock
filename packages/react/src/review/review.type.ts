@@ -73,6 +73,11 @@ interface MenuExpectation {
 
 type MenuPanelOf = (parents: readonly string[]) => readonly string[] | null;
 
+interface PaletteSearch {
+  shown: string[];
+  row: HTMLElement | null;
+}
+
 interface TitleBarExpectation {
   actions?: readonly WindowTitleBarAction[];
   controls?: Pick<TitleBarControls, 'pin' | 'fullscreen'>;
@@ -183,6 +188,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuPanelOf, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

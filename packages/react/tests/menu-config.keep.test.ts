@@ -5,6 +5,8 @@ import { resolveShellMenu } from '../src/app/BrockApp/behavior/resolve-shell-men
 import type { MenuBuildInput } from '../src/app/BrockApp/BrockApp.type';
 import type { MenuConfig } from '../src/menu/menu-config.type';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
+import { hiddenMenuRoutes } from '../src/menu/hidden-menu-routes';
+import { searchableMenu } from '../src/menu/searchable-menu';
 import { visibleMenu } from '../src/menu/visible-menu';
 
 const noop = (): void => undefined;
@@ -51,10 +53,18 @@ describe('menu config', () => {
     expect(item(buildMenu(withConfig({ settings: { label: 'Preferences' } })), 'settings')?.label).toBe('Preferences');
   });
 
-  it('hides an entry from the menu but keeps it for search', () => {
-    const resolved = resolveShellMenu(withConfig({ 'bucket:library': { hidden: true } }));
+  it('takes an entry out of the menu with inMenu false and keeps it for search, routes and shortcuts', () => {
+    const resolved = resolveShellMenu(withConfig({ 'bucket:library': { inMenu: false } }));
     expect(keys(visibleMenu(resolved.entries))).not.toContain('bucket:library');
-    expect(item(resolved.entries, 'bucket:library')?.hidden).toBe(true);
+    expect(keys(searchableMenu(resolved.entries))).toContain('bucket:library');
+    expect(hiddenMenuRoutes(resolved.entries).size).toBe(0);
+  });
+
+  it('hides an entry from the menu, the search and the shortcuts with hidden', () => {
+    const resolved = resolveShellMenu(withConfig({ 'bucket:library': { hidden: true }, 'bucket:tools': { hidden: true } }));
+    expect(keys(visibleMenu(resolved.entries))).not.toContain('bucket:library');
+    expect(keys(searchableMenu(resolved.entries))).not.toContain('bucket:library');
+    expect([...hiddenMenuRoutes(resolved.entries)]).toEqual(['library', 'tools/notes', 'tools/clock']);
   });
 
   it('moves an entry before or after another, across groups', () => {
@@ -93,10 +103,10 @@ describe('menu config', () => {
 
 describe('menu config sources, issues and profile locks', () => {
   it('takes the overrides of the entry itself, which the app config overrides field by field', () => {
-    const input: MenuBuildInput = { ...BASE, appMenu: [{ key: 'bucket:library', label: 'Library', screen: 'library', hidden: true, order: -1 }], menuConfig: { entries: { 'bucket:library': { hidden: false } } } };
+    const input: MenuBuildInput = { ...BASE, appMenu: [{ key: 'bucket:library', label: 'Library', screen: 'library', inMenu: false, order: -1 }], menuConfig: { entries: { 'bucket:library': { inMenu: true } } } };
     const menu = buildMenu(input);
     expect(keys(menu)[0]).toBe('bucket:library');
-    expect(item(menu, 'bucket:library')?.hidden).toBe(false);
+    expect(item(menu, 'bucket:library')?.inMenu).toBe(true);
   });
 
   it('reports bad references and never throws', () => {

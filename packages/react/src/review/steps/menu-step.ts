@@ -9,6 +9,7 @@ import { openMenu } from '../menu/open-menu';
 import { readMenu } from '../menu/read-menu';
 import { readViewMenu } from '../menu/read-view-menu';
 import { viewMenuLabels } from '../menu/view-menu-labels';
+import { withoutTuckedRows } from '../menu/without-tucked-rows';
 import { SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
 import { escapeCloses } from './escape-closes';
@@ -20,7 +21,7 @@ const menuStep: ReviewStep = {
     const { menu, menuOverrides, homeScreen, actions, product } = tour.env;
     const { controls } = product.window.titleBar;
     await openMenu();
-    const snapshot = readMenu();
+    const snapshot = withoutTuckedRows(readMenu(), product.menu);
     const titleBar = { actions, controls, viewLabel: product.menu?.entries?.[VIEW_MENU_KEY]?.label, viewHidden: viewHidden(product.menu) };
     const expected = menuExpectation(menu, homeScreen, titleBar, new Set(menuOverrides.map((record) => record.key)));
     tour.report(menuChecks(snapshot, expected));

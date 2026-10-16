@@ -9,6 +9,7 @@ import { searchableMenu } from '../src/menu/searchable-menu';
 import { viewHidden } from '../src/menu/view-hidden';
 import { visibleMenu } from '../src/menu/visible-menu';
 import { menuExpectation } from '../src/review/menu/menu-expectation';
+import { withoutTuckedRows } from '../src/review/menu/without-tucked-rows';
 import { titleBarGroups } from '../src/shell/TitleBar/behavior/title-bar-groups';
 import { tuckedRows } from '../src/shell/TitleBar/behavior/tucked-rows';
 
@@ -131,5 +132,13 @@ describe('the Pin on top and Full screen menu keys', () => {
     expect(messages(withView({ view: { hidden: true }, 'window-fullscreen': { before: 'notes' } })))
       .toEqual(['menu.entries["window-fullscreen"] places Full screen inside a submenu, but Full screen sits at the top level of the menu, so it stays where the title bar puts it']);
     expect(messages(withView({ about: { activeLabel: 'Shown' } }))).toEqual(['the menu entry "about" sets activeLabel "Shown", which only "window-pin" and "window-fullscreen" take']);
+  });
+
+  it('leave the review reading the drawn menu without the tucked rows while View is hidden', () => {
+    const item = (label: string) => ({ label, hasIcon: true, isSection: false });
+    const snapshot = { open: true, items: ['Credits', 'About', 'Keep on top', 'Fullscreen', 'Quit'].map(item) };
+    const config = { entries: { view: { hidden: true }, 'window-pin': { label: 'Keep on top', after: 'about' } } };
+    expect(withoutTuckedRows(snapshot, config).items.map((entry) => entry.label)).toEqual(['Credits', 'About', 'Quit']);
+    expect(withoutTuckedRows(snapshot, { entries: { 'window-pin': { label: 'Keep on top' } } })).toBe(snapshot);
   });
 });

@@ -3,7 +3,7 @@ import { useProduct } from '@drizztdourden08/brock-react';
 import type { ScreenMeta } from '@drizztdourden08/brock-react';
 import { Stack, Text } from '@drizztdourden08/tessera/primitives';
 
-const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresProfile: false };
+const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresProfile: false, size: 'info' };
 
 const CreditsCard = () => {
   const product = useProduct();

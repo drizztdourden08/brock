@@ -53,6 +53,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         title={screen.title}
         icon={screen.icon}
         header={screen.header}
+        size={screen.size}
         square={square}
         subtitle={screen.subtitle?.(ctx)}
         extra={screen.extra?.(ctx)}

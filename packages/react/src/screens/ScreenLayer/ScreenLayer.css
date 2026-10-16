@@ -1,0 +1,6 @@
+/* @layer renderer-shell @kind style */
+
+.brock-info-card {
+  flex: 1;
+  min-height: 0;
+}

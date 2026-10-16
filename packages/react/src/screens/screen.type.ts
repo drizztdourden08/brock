@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
-import type { ScreenMenu } from './conventions/screens-config.type';
+import type { ScreenMenu, ScreenSize } from './conventions/screens-config.type';
 import type { ShowRule } from './show/show.type';
 
 type ScreenLayerKind = 'fullscreen' | 'own';
@@ -24,6 +24,7 @@ interface ScreenDef {
   header?: ScreenHeader;
   render: (ctx: ScreenRenderContext) => ReactNode;
   layer?: ScreenLayerKind;
+  size?: ScreenSize;
   keepMounted?: boolean;
   devOnly?: boolean;
   group?: string;

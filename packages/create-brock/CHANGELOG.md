@@ -1,5 +1,12 @@
 # @drizztdourden08/create-brock
 
+## 0.50.0
+
+### Patch Changes
+
+- Updated dependencies [7230540]
+  - @drizztdourden08/brock-build@0.50.0
+
 ## 0.49.0
 
 ### Patch Changes

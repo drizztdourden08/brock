@@ -11,6 +11,7 @@ import { settle } from '../dom/settle';
 import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
 import type { StepTour } from '../review.type';
+import { floatingFloor } from './floating-floor';
 import { probe } from './probe';
 import { FLOAT_HANDLE, FLOAT_SHRINK, FLOAT_TOLERANCE, GROW, MAIN_LINK, MAIN_VIEW } from './widget-review.constants';
 
@@ -76,11 +77,14 @@ const checkFloor = async (tour: StepTour, id: string): Promise<void> => {
   const from = handlePoint(id);
   if (from) await dragHandle(from, -FLOAT_SHRINK);
   const least = frameOf(id)?.getBoundingClientRect();
+  const main = find(MAIN_VIEW)?.getBoundingClientRect();
+  const floor = floatingFloor(FLOATING_MIN, main);
+  const wanted = `${Math.round(floor.width)}x${Math.round(floor.height)}`;
   tour.check(
     'floating-widget-min',
-    sized(least, FLOATING_MIN.width, FLOATING_MIN.height),
-    `shrinking the floating "${id}" widget stopped at ${FLOATING_MIN.width}x${FLOATING_MIN.height}`,
-    `shrinking the floating "${id}" widget stopped at ${sizeText(least)}, expected ${FLOATING_MIN.width}x${FLOATING_MIN.height}`,
+    sized(least, floor.width, floor.height),
+    `shrinking the floating "${id}" widget stopped at ${wanted}, its ${FLOATING_MIN.width}x${FLOATING_MIN.height} minimum held to the main view`,
+    `shrinking the floating "${id}" widget stopped at ${sizeText(least)}, expected ${wanted} (minimum ${FLOATING_MIN.width}x${FLOATING_MIN.height}, main view ${sizeText(main)})`,
   );
 };
 

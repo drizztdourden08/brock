@@ -24,9 +24,14 @@ interface JobLogLine {
   message: string;
 }
 
+type JobDuplicatePolicy = 'throw' | 'queue' | 'parallel' | 'join';
+
 interface JobOptions {
   title?: string;
   cancellable?: boolean;
+  visible?: boolean;
+  forwardLog?: boolean;
+  onDuplicate?: JobDuplicatePolicy;
 }
 
 interface JobSnapshot {
@@ -43,6 +48,7 @@ interface JobSnapshot {
   startedAt: number;
   endedAt: number | null;
   cancellable: boolean;
+  visible: boolean;
 }
 
-export type { JobLogLevel, JobLogLine, JobOptions, JobSnapshot, JobState, JobStepDef, JobStepState, JobStepWire };
+export type { JobDuplicatePolicy, JobLogLevel, JobLogLine, JobOptions, JobSnapshot, JobState, JobStepDef, JobStepState, JobStepWire };

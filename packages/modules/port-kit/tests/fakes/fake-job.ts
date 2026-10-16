@@ -16,7 +16,7 @@ const fakeJob = (): FakeJob => {
   const job = (id: string, defs: readonly JobStepDef[]): JobHandle => {
     steps.push(...defs);
     const handle: JobHandle = {
-      id, signal: controller.signal,
+      id, signal: controller.signal, started: Promise.resolve(), ended: Promise.resolve('done'),
       step: (step) => { events.push(`step ${step}`); },
       progress: (fraction, line) => { events.push(`progress ${fraction}${line ? ` ${line}` : ''}`); },
       line: (text) => { events.push(`line ${text}`); },

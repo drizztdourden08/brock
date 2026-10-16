@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
+import type { JobSnapshot, JobStepWire } from '@drizztdourden08/brock-core/types';
 
 interface JobStoreState {
   jobs: Record<string, JobSnapshot>;
@@ -11,6 +11,7 @@ interface JobStoreState {
 
 interface UseJobResult {
   job: JobSnapshot | null;
+  step: JobStepWire | null;
   shown: boolean;
   open: () => void;
   hide: () => void;

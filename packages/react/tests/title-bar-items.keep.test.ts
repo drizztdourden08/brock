@@ -95,7 +95,7 @@ describe('appTitleBarSources', () => {
 
 describe('jobStepper', () => {
   const job = (patch: Partial<JobSnapshot>): JobSnapshot => ({
-    id: 'setup', title: 'Setup', state: 'running', currentStep: 'b', progress: 0.5, stepProgress: 0, line: null, error: null, log: [], startedAt: 0, endedAt: null, cancellable: true,
+    id: 'setup', title: 'Setup', state: 'running', currentStep: 'b', progress: 0.5, stepProgress: 0, line: null, error: null, log: [], startedAt: 0, endedAt: null, cancellable: true, visible: true,
     steps: [{ id: 'a', label: 'A', weight: 1, state: 'done' }, { id: 'b', label: 'B', weight: 1, state: 'current' }],
     ...patch,
   });

@@ -66,7 +66,7 @@ const fakeJobs = (): { start: StartJob; steps: string[] } => {
   const steps: string[] = [];
   const handle = (id: string): JobHandle => {
     const job: JobHandle = {
-      id, signal: new AbortController().signal,
+      id, signal: new AbortController().signal, started: Promise.resolve(), ended: Promise.resolve('done'),
       step: (step) => { steps.push(step); }, progress: () => undefined, line: () => undefined, log: () => undefined,
       skip: () => undefined, done: () => { steps.push('done'); }, fail: () => { steps.push('failed'); }, setCancellable: () => undefined,
       run: async (work) => {

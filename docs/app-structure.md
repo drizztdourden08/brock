@@ -216,6 +216,63 @@ export const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresP
 - Under 560 px wide the window fills the screen, as every screen does.
 - `size` works on a card. The built-in Credits screen, from `credits` on `BrockApp`, opens this way too. List entries one per line; an informational window is never wide.
 
+## Menu order and overrides
+
+Brock builds the title bar menu on its own: Home, Profiles, Settings and the app entries the screens give, then the sections (Widgets, Help, Advanced), then module entries, and Credits, About and Quit as the last group. An app changes that menu entry by entry, in two places. They merge in this order: what Brock detects, then the screen's own `meta.menu`, then `product.menu` in `brock.config.ts`, which wins field by field.
+
+```ts
+// brock.config.ts
+product: {
+  // ...
+  menu: {
+    entries: {
+      settings: { label: 'Preferences' },
+      'bucket:library': { after: 'settings' },
+      'keyboard-shortcuts': { parent: null, group: 'end', before: 'about' },
+      'screen:glossary': { hidden: true },
+    },
+  },
+},
+```
+
+```tsx
+// src/screens/tools/ruler.page.tsx: out of the Tools submenu, just before Library
+export const meta: ScreenMeta = { title: 'Ruler', menu: { parent: null, before: 'bucket:library' } };
+```
+
+Each entry takes these fields:
+
+| Field | What it does |
+| --- | --- |
+| `hidden` | Leaves the entry out of the menu. The search palette, its route, its shortcut and `open` still reach it; `when`, `hosts` or `devOnly` on the screen hide it there too. `hidden: false` shows an entry a screen's meta hid. A submenu all of whose entries are hidden or moved out goes too. |
+| `label` | Renames the entry, in the menu and in the search palette. |
+| `group` | Moves a top-level entry to another group: `'main'` (Home, Profiles, Settings, app entries), `'sections'`, `'modules'` or `'end'` (Credits, About, Quit). On an entry inside a submenu it lifts the entry out into that group. |
+| `order` | Sorts the entry in its list like CSS `order`: every entry counts as 0, a lower number comes first, and ties keep the detected order. `order: -1` puts an entry first, `order: 1` last. |
+| `before`, `after` | Puts the entry right before or after the entry with that key, in that entry's list, whatever its group or submenu. They apply after `order`, and win over `parent` and `group`. |
+| `parent` | Files the entry in the submenu with that key. `parent: null` lifts it out to the top level, into `group` or the group of the submenu it left. |
+
+`meta.menu` takes the same object on a page, a tab page's `<page>.page.ts` or a card; the string forms (`false`, `'entry'`, a path) work as before. A `label` in `meta.menu` renames the entry where Brock detects it, which `meta.title` alone would not when the menu needs a shorter name. A page of an `entry` or `hidden` bucket has no menu entry of its own; `meta.menu` with a `parent`, `group`, `before` or `after` gives it one.
+
+The keys:
+
+| Entry | Key |
+| --- | --- |
+| Home, Profiles, Settings | `home`, `profiles`, `settings` |
+| Credits, About, Quit | `credits`, `about`, `quit` |
+| Widgets, Help, Advanced and any other section | `section:widgets`, `section:help`, `section:advanced`, `section:<id>` |
+| A widget, Reset layout | `widget-<id>`, `widgets-reset-layout` |
+| Take the tour, one tour of several | `take-the-tour`, `tour:<id>` |
+| Keyboard shortcuts, Report a bug, Dev Console | `keyboard-shortcuts`, `report-bug`, `dev-console` |
+| A bucket, a page of a bucket | `bucket:<bucket>`, `bucket:<bucket>:<page>` |
+| A card | `screen:<id>` |
+| A submenu made by a `meta.menu` path | `menu:/<label>/<label>`, lower case |
+| A module entry or an app `menu` prop entry | the `key` it gives, such as `input-tester` for the input module |
+| View | `view`: the title bar draws it, so it takes only `label` |
+
+`brock check` reports a field it does not know or a value of the wrong type, a `bucket:` or `screen:` key no file of `src/screens` gives, an entry that names itself, `before` and `after` together, and a `before` and `after` loop. A development launch reports the rest once each in the log as a warning: a key no entry has (with the keys that look like it), a `parent` that is not a submenu or sits inside the entry, and the loop. Nothing throws: an override that cannot apply is skipped and the entry stays where Brock put it. An entry whose key is also a title bar action's id (Report a bug, Check for updates) leaves the drawn menu while the bar shows that action, and the bar's own part of the menu lists it instead.
+
+With no active profile, an entry that opens a screen needing a profile shows disabled with "Pick or create a profile first", as Home does, wherever an override put it. The review checks the drawn menu against these overrides: each overridden entry gets a `menu-entry-<key>` check (hidden, or drawn at its place between its neighbours), and its built-in, section and last-group checks follow the effective menu.
+
 ## Product icons
 
 `product.icons` in `brock.config.ts` names the app's brand art. `brand` picks a Tessera brand, which `brock icons` copies into `public/logos/` and `build/icons/`; `rim` (`'light'` or `'dark'`) picks its rimmed set. `wordmark` is the app's name drawn as an image, an SVG or PNG under `public/`, given as the path the page loads it from, like the logos:

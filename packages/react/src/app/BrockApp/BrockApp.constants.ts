@@ -2,6 +2,8 @@
 import type { LogLevel } from '@drizztdourden08/brock-core';
 import type { TesseraOverrides } from '@drizztdourden08/tessera/primitives';
 import { clipboardWriter } from '../../host/clipboard-writer';
+import { PROFILE_FIRST } from '../../menu/menu.constants';
+import type { MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { MenuItem } from '../../menu/menu.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { ScreenDef } from '../../screens/screen.type';
@@ -9,6 +11,7 @@ import type { TabDef } from '../../settings/settings.type';
 
 const NO_MODULES: never[] = [];
 const NO_MENU: never[] = [];
+const NO_MENU_OVERRIDES: readonly MenuOverrideRecord[] = [];
 const NO_SCREENS: ScreenDef[] = [];
 const NO_TABS: TabDef<object>[] = [];
 const NO_SHORTCUTS: readonly RouteShortcut[] = [];
@@ -22,7 +25,7 @@ const CHROMELESS_WINDOW_MODES: readonly string[] = ['borderless', 'fullscreen'];
 const MOUSE_BACK_BUTTON = 3;
 
 const HOME_ENTRY: Omit<MenuItem, 'screen'> = { key: 'home', label: 'Home', icon: 'house', fresh: true };
-const HOME_LOCKED: Pick<MenuItem, 'disabled' | 'description'> = { disabled: true, description: 'Pick or create a profile first' };
+const HOME_LOCKED: Pick<MenuItem, 'disabled' | 'description'> = { disabled: true, description: PROFILE_FIRST };
 
 const TOP_ENTRIES: readonly MenuItem[] = [
   { key: 'profiles', label: 'Profiles', icon: 'users', screen: PROFILES_SCREEN },
@@ -38,6 +41,6 @@ const DEV_CONSOLE_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'dev-console', label
 const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
 export {
-  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
+  ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MENU_OVERRIDES, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
   PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
 };

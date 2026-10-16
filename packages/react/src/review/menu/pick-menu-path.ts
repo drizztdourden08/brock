@@ -1,34 +1,15 @@
 /* @layer renderer-shell @kind logic */
 import { click } from '../dom/click';
-import { find } from '../dom/find';
-import { hover } from '../dom/hover';
-import { waitFor } from '../dom/wait-for';
-import { SELECTORS } from '../review.constants';
 import { closeMenu } from './close-menu';
-import { labelOf } from './label-of';
-import { menuItemsOf } from './menu-items-of';
-import { openMenu } from './open-menu';
-
-const itemIn = (panel: HTMLElement, label: string): HTMLElement | undefined =>
-  menuItemsOf(panel).find((item) => labelOf(item) === label);
-
-const walk = async (path: readonly string[]): Promise<boolean> => {
-  let panel = await openMenu();
-  for (const [index, label] of path.entries()) {
-    const item = panel ? itemIn(panel, label) : undefined;
-    if (!item) return false;
-    if (index === path.length - 1) {
-      click(item);
-      return true;
-    }
-    hover(item);
-    panel = await waitFor(() => find(SELECTORS.subMenu, item));
-  }
-  return false;
-};
+import { walkMenu } from './walk-menu';
 
 const pickMenuPath = async (path: readonly string[]): Promise<boolean> => {
-  if (await walk(path)) return true;
+  const last = path.at(-1);
+  const item = last === undefined ? null : await walkMenu(path.slice(0, -1), last);
+  if (item) {
+    click(item);
+    return true;
+  }
   await closeMenu();
   return false;
 };

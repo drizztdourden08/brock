@@ -4,9 +4,10 @@ import type { MenuEntry } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
 import { toMenuGroups } from '../../../menu/to-menu-groups';
 import type { MenuResolver } from '../../../menu/to-menu-groups.type';
-import { LAST_GROUP_ID, LAST_GROUP_KEYS } from '../TitleBar.constants';
+import { LAST_GROUP_ID } from '../TitleBar.constants';
+import { isEndEntry } from './is-end-entry';
 
-const isLast = (entry: MenuEntry): boolean => entry !== 'separator' && LAST_GROUP_KEYS.includes(entry.key);
+const isLast = (entry: MenuEntry): boolean => entry !== 'separator' && isEndEntry(entry);
 
 const titleBarGroups = (entries: readonly MenuEntry[], resolve: MenuResolver): MenuGroup[] => {
   let split = entries.length;

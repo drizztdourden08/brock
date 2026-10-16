@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
 import type { HeroBackdrop } from '@drizztdourden08/tessera/composites';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ShowRule } from '../show/show.type';
@@ -9,7 +10,7 @@ type HubNavMode = 'auto' | 'always' | false;
 
 type PageBackdrop = HeroBackdrop | { kind: 'none' };
 
-type ScreenMenu = false | 'entry' | (string & {});
+type ScreenMenu = false | 'entry' | (string & {}) | ProductMenuEntry;
 
 type ScreenSize = 'fill' | 'info';
 

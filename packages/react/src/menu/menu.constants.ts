@@ -12,6 +12,8 @@ const UNKNOWN_SECTION_ICON = 'folder';
 
 const MENU_GROUP_ID = 'menu';
 
+const PROFILE_FIRST = 'Pick or create a profile first';
+
 const MENU_SEPARATOR: MenuSeparator = { separator: true };
 
-export { MENU_GROUP_ID, MENU_SECTIONS, MENU_SEPARATOR, UNKNOWN_SECTION_ICON };
+export { MENU_GROUP_ID, MENU_SECTIONS, MENU_SEPARATOR, PROFILE_FIRST, UNKNOWN_SECTION_ICON };

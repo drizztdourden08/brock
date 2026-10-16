@@ -5,10 +5,11 @@ import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { NO_ACTIONS } from '../../../shell/TitleBar/TitleBar.constants';
+import { NO_MENU_OVERRIDES } from '../BrockApp.constants';
 import type { ReviewTourInput } from '../BrockApp.type';
 
 const useReviewTour = (input: ReviewTourInput): void => {
-  const { ready, menu, actions = NO_ACTIONS, moduleIds, review = null } = input;
+  const { ready, menu, menuOverrides = NO_MENU_OVERRIDES, actions = NO_ACTIONS, moduleIds, review = null } = input;
   const { product, home, homeScreen, screenTree } = useBrock();
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
@@ -17,9 +18,9 @@ const useReviewTour = (input: ReviewTourInput): void => {
   useEffect(() => {
     if (!ready || started.current || !isReviewLaunch()) return;
     started.current = true;
-    const env = { product, home, homeScreen, screens: registry.list(), menu, actions, moduleIds, developerTools, screenTree, review };
+    const env = { product, home, homeScreen, screens: registry.list(), menu, menuOverrides, actions, moduleIds, developerTools, screenTree, review };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
-  }, [ready, product, home, homeScreen, screenTree, registry, menu, actions, moduleIds, developerTools, review]);
+  }, [ready, product, home, homeScreen, screenTree, registry, menu, menuOverrides, actions, moduleIds, developerTools, review]);
 };
 
 export { useReviewTour };

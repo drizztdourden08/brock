@@ -1,10 +1,9 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import { nav } from '../navigation/nav';
 import { dialogs } from './dialogs';
-import { PROFILES_SCREEN } from './profiles.constants';
 import type { UseProfilesResult } from './profiles.type';
+import { removeProfile } from './remove-profile';
 import { useProfilesStore } from './useProfilesStore';
 
 const useProfiles = (): UseProfilesResult => {
@@ -16,12 +15,6 @@ const useProfiles = (): UseProfilesResult => {
   const create = useProfilesStore((s) => s.create);
   const refresh = useProfilesStore((s) => s.refresh);
   const renameNow = useProfilesStore((s) => s.rename);
-  const removeNow = useProfilesStore((s) => s.remove);
-
-  const removeConfirmed = useCallback((profile: Profile) => {
-    const wasActive = useProfilesStore.getState().active?.id === profile.id;
-    void removeNow(profile.id).then(() => { if (wasActive) nav.open(PROFILES_SCREEN); });
-  }, [removeNow]);
 
   const rename = useCallback((profile: Profile, name: string) => renameNow(profile.id, name), [renameNow]);
 
@@ -29,11 +22,11 @@ const useProfiles = (): UseProfilesResult => {
     dialogs.confirmDelete(
       'Delete profile',
       `Delete "${profile.name}" and everything saved in it? This cannot be undone.`,
-      () => removeConfirmed(profile),
+      () => { void removeProfile(profile); },
     );
-  }, [removeConfirmed]);
+  }, []);
 
-  return { profiles, active, lastProfileId, loaded, select, create, rename, remove, removeConfirmed, refresh };
+  return { profiles, active, lastProfileId, loaded, select, create, rename, remove, removeConfirmed: removeProfile, refresh };
 };
 
 export { useProfiles };

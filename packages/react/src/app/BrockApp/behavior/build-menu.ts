@@ -3,7 +3,7 @@ import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
 import { withRoutes } from '../../../menu/with-routes';
 import {
-  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
@@ -46,7 +46,7 @@ const buildMenu = (input: MenuBuildInput): MenuEntry[] => {
   const top = TOP_ENTRIES.filter(unnamed);
   const tail = [...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed);
   return tidySeparators([
-    { ...HOME_ENTRY, screen: homeScreen },
+    { ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) },
     ...top,
     ...unsectioned(app),
     'separator',

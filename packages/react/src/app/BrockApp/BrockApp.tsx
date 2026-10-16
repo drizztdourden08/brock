@@ -16,7 +16,7 @@ import { useAppScreens } from './behavior/useAppScreens';
 import { useBrandPalette } from './behavior/useBrandPalette';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
-import { useQuitGuards } from './behavior/useQuitGuards';
+import { useAppGuards } from './behavior/useAppGuards';
 import { useTitleBarSources } from './behavior/useTitleBarSources';
 import { useSettingsControls } from './behavior/useSettingsControls';
 import { AppShell } from './sub-components/AppShell';
@@ -36,7 +36,7 @@ import './BrockApp.css';
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
-    screenGroups, profileHooks, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags,
+    screenGroups, profileHooks, profiles, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -44,7 +44,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   useBrandPalette(product.icons.brand);
   const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
-  useQuitGuards(merged.beforeQuit, beforeQuit);
+  useAppGuards(merged.beforeQuit, beforeQuit, profiles);
   useTourRegistry(tours, merged.tours);
   useBugReportTransport(bugReport);
   useShowFlagsSource(APP_FLAGS_SOURCE, showFlags);

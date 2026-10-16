@@ -11,6 +11,7 @@ import { touringHolds } from '../../../tours/touring-key';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { handleShellKey } from './handle-shell-key';
+import { profilelessEscape } from './profileless-escape';
 import { shortcutTarget } from './shortcut-target';
 
 const isEditing = (target: EventTarget | null): boolean => {
@@ -31,7 +32,8 @@ const useKeyboardShortcuts = (): void => {
       screen !== undefined && isScreenAllowed(screen, developerTools, useProfilesStore.getState().active !== null);
     const context = {
       toggleFullscreen: fullscreenable ? () => win.toggleFullscreen() : undefined,
-      home: () => (allowed(registry.get(homeScreen)) ? homeScreen : null),
+      home: () => (allowed(registry.get(homeScreen)) ? homeScreen : profilelessEscape.home()),
+      holds: profilelessEscape.holds,
       escapes,
     };
     const handler = (e: KeyboardEvent) => {

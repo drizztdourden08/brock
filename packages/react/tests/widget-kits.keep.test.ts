@@ -118,10 +118,10 @@ describe('the kit store', () => {
 });
 
 describe('saved kit views', () => {
-  it('keeps the layout and the hidden overlays and never a popped window', () => {
+  it('keeps the layout, its popped windows and the hidden overlays', () => {
     const layout = { ...defaultKitView(EDITOR, MEMBERS).layout, popped: [{ id: 'tree' }] };
     const read = readKitViews({ editor: { layout, hidden: ['gizmo', 3] } });
-    expect(read.editor?.layout.popped).toEqual([]);
+    expect(read.editor?.layout.popped).toEqual([{ id: 'tree' }]);
     expect(read.editor?.hidden).toEqual(['gizmo']);
     expect(readKitViews(null)).toEqual({});
   });

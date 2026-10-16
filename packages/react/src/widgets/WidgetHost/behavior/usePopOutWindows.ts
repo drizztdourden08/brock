@@ -7,16 +7,14 @@ import { hostApi } from '../../../host/host-api';
 import { useWidgetPrefStore } from '../../../stores/useWidgetPrefStore';
 import { dockBack } from '../../dock-back';
 import { externalDrags } from '../../external-drags';
+import { layoutHolder } from '../../layout-holder';
 import { poppedWindows } from '../../popped-windows';
-import { useWidgetLayoutStore } from '../../useWidgetLayoutStore';
+import type { WidgetDef } from '../../widget.type';
 import { widgetMainRect } from '../../widget-main-rect';
 
-const store = () => useWidgetLayoutStore.getState();
-
-const isPopped = (id: string): boolean => store().layout.popped.some((p) => p.id === id);
-
-const whenPopped = (id: string, fn: (layout: WidgetLayout) => WidgetLayout): void => {
-  if (isPopped(id)) store().change(fn);
+const whenPopped = (id: string, fn: (layout: WidgetLayout, definitions: readonly WidgetDef[]) => WidgetLayout): void => {
+  const holder = layoutHolder(id);
+  if (holder.layout.popped.some((p) => p.id === id)) holder.change((layout) => fn(layout, holder.definitions));
 };
 
 const mainOrWindow = () => widgetMainRect.current ?? { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight };
@@ -27,11 +25,14 @@ const listen = (): (() => void) => {
   const offs = [
     api.onWidgetClosed((id, where, seq) => {
       if (!poppedWindows.settle(id, seq)) return;
-      whenPopped(id, (layout) => dockBack(layout, id, where, { definitions: store().definitions, main: mainOrWindow() }));
+      whenPopped(id, (layout, definitions) => dockBack(layout, id, where, { definitions, main: mainOrWindow() }));
     }),
     api.onWidgetBounds((id, bounds) => whenPopped(id, (layout) => setPopped(layout, id, { bounds }))),
     api.onWidgetPopped((id, patch) => whenPopped(id, (layout) => setPopped(layout, id, patch))),
-    api.onWidgetFrame((id, patch) => store().change((layout) => setFrame(layout, id, patch, getWidgetDefinition(store().definitions, id)))),
+    api.onWidgetFrame((id, patch) => {
+      const holder = layoutHolder(id);
+      holder.change((layout) => setFrame(layout, id, patch, getWidgetDefinition(holder.definitions, id)));
+    }),
     api.onWidgetDragOver(externalDrags.over),
     api.onWidgetDropIn(externalDrags.release),
     api.onWidgetPrefs((id, prefs) => useWidgetPrefStore.getState().replaceWidget(id, prefs)),

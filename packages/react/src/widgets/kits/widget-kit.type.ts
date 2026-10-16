@@ -77,7 +77,11 @@ interface WidgetKitState {
   close: () => void;
   toggle: (id: string) => void;
   setLayout: (layout: WidgetLayout) => void;
+  change: (fn: (layout: WidgetLayout) => WidgetLayout) => void;
+  openMember: (id: string) => void;
   toggleMember: (id: string) => void;
+  closeMember: (id: string) => void;
+  popOutMember: (id: string) => void;
   toggleOverlay: (id: string) => void;
   reset: (id: string) => void;
   replace: (stored: unknown) => void;

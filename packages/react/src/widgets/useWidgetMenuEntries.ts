@@ -17,9 +17,9 @@ const useWidgetMenuEntries = (): MenuItem[] => {
   const kits = useKitMenuEntries();
   const kitOpen = useWidgetKitStore((s) => s.active !== null);
   return useMemo(() => {
-    const own = [...buildWidgetMenuEntries(definitions, layout, toggle, developerTools), resetLayoutEntry(reset)];
-    const shown = kitOpen ? own.map((entry) => ({ ...entry, disabled: true })) : own;
-    return [...shown.slice(0, -1), ...kits, ...shown.slice(-1)];
+    const own = buildWidgetMenuEntries(definitions, layout, toggle, developerTools);
+    const shown = kitOpen ? own.map((entry) => ({ ...entry, checked: false })) : own;
+    return [...shown, ...kits, resetLayoutEntry(reset)];
   }, [definitions, layout, toggle, developerTools, kits, kitOpen, reset]);
 };
 

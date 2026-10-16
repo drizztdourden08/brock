@@ -108,6 +108,12 @@ interface DockOrigin {
   index: number;
 }
 
+interface LayoutHolder {
+  layout: WidgetLayout;
+  definitions: readonly WidgetDef[];
+  change: (fn: (layout: WidgetLayout) => WidgetLayout) => void;
+}
+
 export type {
-  DockOrigin, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, LayoutHolder, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

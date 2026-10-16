@@ -5,6 +5,7 @@ const store = () => useWidgetKitStore.getState();
 
 const widgetKits = {
   open: (id: string): void => store().open(id),
+  openWidget: (id: string): void => store().openMember(id),
   close: (): void => store().close(),
   toggle: (id: string): void => store().toggle(id),
   reset: (id: string): void => store().reset(id),

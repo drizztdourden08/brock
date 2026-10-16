@@ -1,5 +1,26 @@
 # @drizztdourden08/brock-updater
 
+## 0.46.0
+
+### Patch Changes
+
+- 16a9770: A check now finds a newer pre-release published before a newer stable hotfix. The check answers from the version list (the first listed version newer than the installed one, following Include pre-releases) instead of Velopack's check, which looks at a single GitHub release, so the check, the "Update available" badge and the install target agree. The version list reads every listed release's own `releases.<channel>.json` and keeps only that release's entries, since each feed holds only the packages that existed when it was packed; a failed feed read drops only its own release, and the list fails only when every read fails.
+- Updated dependencies [3df3667]
+- Updated dependencies [b1026b9]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [025bcf7]
+- Updated dependencies [025bcf7]
+- Updated dependencies [b1026b9]
+- Updated dependencies [c68c54a]
+- Updated dependencies [56201a6]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [3df3667]
+  - @drizztdourden08/brock-electron@0.46.0
+  - @drizztdourden08/brock-core@0.46.0
+  - @drizztdourden08/brock-react@0.46.0
+
 ## 0.45.1
 
 ### Patch Changes

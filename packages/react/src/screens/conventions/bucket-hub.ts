@@ -3,12 +3,14 @@ import type { HubDef, HubGroup, HubPage } from '../../hub/hub.type';
 import { contentPage } from './content-page';
 import { heroPage } from './hero-page';
 import { attachSubs } from './attach-subs';
+import { bucketBackdrop } from './bucket-backdrop';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
 import { showRuleOf } from '../show/show-rule-of';
 import type { BucketDef } from './screens-config.type';
 import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, PageMetaEntry, SettingsEntry, SubEntry, TabEntry } from './screen-tree.type';
 import { tabPages } from './tab-pages';
+import { withBackdropPreload } from './with-backdrop-preload';
 
 const withoutPage = (groups: readonly HubGroup[], page: HubPage): HubGroup[] =>
   groups.map((group) => ({ ...group, pages: group.pages.filter((candidate) => candidate !== page) })).filter((group) => group.pages.length > 0);
@@ -22,19 +24,19 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
   const groups = hubGroups(bucket, attachSubs(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs, metas)], subs));
   const home = hero ? heroPage(bucket, hero) : groups.at(0)?.pages.at(0);
   if (home === undefined) throw new Error(`Bucket "${bucket.id}" has no screens: add src/screens/${bucket.id}/home.hero.tsx or a page.`);
-  return {
+  return withBackdropPreload({
     id: bucket.id,
     title: bucket.title,
     icon: iconNode(bucket.icon),
     shortcut: bucket.shortcut,
     show: showRuleOf(bucket),
     nav: bucket.nav,
-    backdrop: bucket.backdrop,
+    backdrop: bucketBackdrop(bucket, entries),
     requiresProfile: bucket.requiresProfile,
     home,
     groups: hero ? groups : withoutPage(groups, home),
     search: { placeholder: `Search ${bucket.title}` },
-  };
+  }, entries);
 };
 
 export { bucketHub };

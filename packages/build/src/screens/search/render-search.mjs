@@ -8,8 +8,8 @@ import { fileSeed } from './file-seed.mjs';
  * @returns {string} the source of .brock/search.ts
  */
 const renderSearch = (rootDir, files) => {
-  const shipped = files.filter((file) => !file.dev);
-  const hasDev = shipped.length < files.length;
+  const shipped = files.filter((file) => !file.dev && file.kind !== 'backdrop');
+  const hasDev = files.some((file) => file.dev);
   const seeds = [...shipped.map((file) => `  ${JSON.stringify(fileSeed(rootDir, file))},`), ...(hasDev ? ['  ...devSearchSeeds,'] : [])];
   const list = seeds.length ? ['[', ...seeds, ']'].join('\n') : '[]';
   return [

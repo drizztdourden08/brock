@@ -4,9 +4,7 @@ import { useBrock } from '../../app/useBrock';
 import { useAppVersion } from '../../diagnostics/useAppVersion';
 import { failureTitle } from './behavior/failure-title';
 import { useFailureActions } from './behavior/useFailureActions';
-import { wordmarkProps } from './behavior/wordmark-props';
 import type { BootFailureSplashProps } from './BootFailureSplash.type';
-import './BootFailureSplash.css';
 
 const BootFailureSplash = (props: BootFailureSplashProps) => {
   const { failure } = props;
@@ -16,8 +14,8 @@ const BootFailureSplash = (props: BootFailureSplashProps) => {
   if (failure === null) return null;
   return (
     <Splash
-      {...wordmarkProps(product.icons.wordmark?.dark)}
       title={product.window.title ?? product.name}
+      wordmark={product.icons.wordmark?.dark}
       mark={product.logos.mark}
       status={failureTitle(failure)}
       detail={failure.message}

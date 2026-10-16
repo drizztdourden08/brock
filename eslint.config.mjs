@@ -17,12 +17,6 @@ export default brockEslint({
       why: 'the IPC contract is composed from generic channel maps; a mapped generic type has no constructive form',
     },
   ],
-  inlineStyle: [
-    {
-      files: ['packages/react/src/hub/Hub/sub-components/HubBackdrop/HubBackdrop.tsx'],
-      why: 'paints an app-given image URL or colour as the header backdrop; the value is data, so no class can hold it',
-    },
-  ],
   consoleGlobs: [
     'packages/build/**',
     'packages/create-brock/**',

@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.57.0
+
+### Minor Changes
+
+- 0b699d7: Brock moves to Tessera 0.40.0, which adds `newDisabled` on ItemList and a shared `useUndo` stack. Apps upgrade with `brock migrate`.
+
+### Patch Changes
+
+- Updated dependencies [2bf0884]
+  - @drizztdourden08/brock-core@0.57.0
+
 ## 0.56.0
 
 ### Minor Changes

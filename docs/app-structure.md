@@ -171,7 +171,7 @@ A file whose header says `@kind verbatim` is a data file whose string values are
 
 - The header names the source after the kind, `@source <short text>`; `brock/verbatim-source` fails a `@kind verbatim` header without one, and the exemption stays off until it has one.
 - The file gets everything `@kind data` gets, `brock/data-only` included, so it holds no logic.
-- `local/no-em-dash`, `local/no-smart-punctuation` and `local/no-slop-prose` skip its string values (string literals and the text of template literals). Identifiers, comments and the header are still read, and so is `local/no-tool-brand-words`. Brock's ESLint config passes each such file to the standards factory as a `verbatimText` entry whose `why` is the source.
+- `local/no-em-dash`, `local/no-smart-punctuation`, `local/no-slop-prose` and `local/no-tool-brand-words` skip its string values (string literals and the text of template literals). Identifiers, comments and the header are still read by every rule. Brock's ESLint config passes each such file to the standards factory as a `verbatimText` entry whose `why` is the source.
 - `brock structure` lists every `@kind verbatim` file with its source, so a review sees what is exempt.
 
 A UI string is never verbatim: it stays in an ordinary `@kind data` or `@kind constants` file and passes the prose rules. Keep a verbatim file to the reproduced text, and put the app's own labels for it elsewhere.

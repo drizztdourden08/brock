@@ -57,12 +57,13 @@ describe('the verbatim file kind', () => {
     expect(proseHits(rules)).toEqual(expect.arrayContaining(PROSE_RULES));
   }, LINT_TIMEOUT_MS);
 
-  it('keeps vendor names banned, comments read and logic refused in a verbatim file', async () => {
+  it('lets a vendor name stand in a verbatim string, but still reads comments and refuses logic', async () => {
     const root = app();
-    const code = [`const DIALOGUE = ['Ask the ${VENDOR_WORD}'];`, '// Saved\x21 Then closed.', 'const pick = () => DIALOGUE[0];', '', 'export { DIALOGUE, pick };', ''].join('\n');
+    const code = [`const DIALOGUE = ['Ask the ${VENDOR_WORD}'];`, `// Saved\x21 Ask the ${VENDOR_WORD}.`, 'const pick = () => DIALOGUE[0];', '', 'export { DIALOGUE, pick };', ''].join('\n');
     put(root, 'text/dialogue.ts', `${VERBATIM}${code}`);
     const rules = await lintMessages(root, 'text/dialogue.ts');
     expect(rules.map((m) => m.ruleId)).toEqual(expect.arrayContaining(['local/no-tool-brand-words', 'local/no-slop-prose', 'local/no-comments', 'brock/data-only']));
+    expect(rules.filter((m) => m.ruleId === 'local/no-tool-brand-words')).toHaveLength(1);
     expect(rules.find((m) => m.ruleId === 'brock/data-only').message).toMatch(/^A @kind verbatim file holds data only/);
   }, LINT_TIMEOUT_MS);
 });

@@ -1,5 +1,30 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.46.0
+
+### Minor Changes
+
+- b1026b9: `listNames()` entries carry `assetBytes`, the size of the ROM's asset blob read from the file store's `stat` (`null` when there is none or the stat fails), still with no read and no hash, so a Data Manager can show "Extracted (12 MB)". `hasAssets` now comes from the same stat.
+- b1026b9: Asset jobs run in a renderer Web Worker too, with no main process. `runAssetWebWorkerJob(options)` from `@drizztdourden08/brock-port-kit/renderer` takes the options of `runAssetWorkerJob` with the worker constructor of a `?worker` import, and the Web Worker serves the steps with `serveAssetSteps` from the new `@drizztdourden08/brock-port-kit/web-worker` entry. One `AssetWorkerSteps` object serves both sides: each step now gets the job's `workerData` as a third argument (the thread's `workerData` in Node, posted once to a Web Worker). The job is a renderer job: `jobs.start(id, steps, options?)` from brock-react returns the same `JobHandle` as `ctx.job`, its snapshots go into the job store, so the job dialog and the title bar show it on every host, and `jobs.cancel` and `jobs.dismiss` reach it. The job registry moved to brock-core (`createJobRegistry` and the `JobHandle`, `StartJob`, `JobRegistry` types from `@drizztdourden08/brock-core/jobs`); brock-electron re-exports the types as before.
+
+### Patch Changes
+
+- Updated dependencies [3df3667]
+- Updated dependencies [b1026b9]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [025bcf7]
+- Updated dependencies [025bcf7]
+- Updated dependencies [b1026b9]
+- Updated dependencies [c68c54a]
+- Updated dependencies [56201a6]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [3df3667]
+  - @drizztdourden08/brock-electron@0.46.0
+  - @drizztdourden08/brock-core@0.46.0
+  - @drizztdourden08/brock-react@0.46.0
+
 ## 0.45.1
 
 ### Patch Changes

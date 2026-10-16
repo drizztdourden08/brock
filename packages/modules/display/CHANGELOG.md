@@ -1,5 +1,25 @@
 # @drizztdourden08/brock-display
 
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [3df3667]
+- Updated dependencies [b1026b9]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [025bcf7]
+- Updated dependencies [025bcf7]
+- Updated dependencies [b1026b9]
+- Updated dependencies [c68c54a]
+- Updated dependencies [56201a6]
+- Updated dependencies [025bcf7]
+- Updated dependencies [c68c54a]
+- Updated dependencies [3df3667]
+  - @drizztdourden08/brock-electron@0.46.0
+  - @drizztdourden08/brock-core@0.46.0
+  - @drizztdourden08/brock-react@0.46.0
+
 ## 0.45.1
 
 ### Patch Changes

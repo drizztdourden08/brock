@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-build
 
+## 0.46.0
+
+### Minor Changes
+
+- 3df3667: The renderer dev server pre-bundles what Brock can find before the first page loads, so a cold start runs Vite's dep optimizer once instead of finding dependencies as the page asks for them, re-running it and reloading. `defineBrockViteConfig` sets `optimizeDeps.include` on the dev server: React and `react-dom/client`, the renderer entries of Tessera and of the Brock packages installed in `node_modules`, and every package import of the files under `src/` and of the linked workspace packages they reach (deep icon imports and the imports of worker files included; an import only a linked package can resolve is written `<linked> > <dep>`). The new `build.optimizeDeps` in `brock.config.ts` takes `include`, `exclude`, `entries` and `worker`, the dependencies only a renderer Web Worker imports that the source read cannot see (`worker: ['fs', 'crypto', 'path']` with `nodePolyfills`).
+- 025bcf7: Title bar items in the order an app chooses. A `src/title-bar/<id>.action.ts` file may export `order` (`export const order = 2`) or `meta: TitleBarItemMeta` with `order`, as screens do; `brock sync` carries it into `.brock/title-bar.ts`, and `titleBarFromFiles` puts the items with an order first, in that order, then the rest by id. Files without one keep the id order, so renaming files to order them is no longer needed.
+
+### Patch Changes
+
+- 3df3667: A dev boot no longer clears Chromium's HTTP cache every time, which threw away the pre-bundled dependency chunks. Main keeps the cache while the renderer's dep optimizer hash (in the `_metadata.json` the dev server names in `BROCK_DEV_DEPS_METADATA`) is the one of the last dev boot, and clears it once when the hash changes. `BROCK_DEV_CLEAR_CACHE=1` clears it on every dev boot, as before. Edits still show at once: Vite serves source modules and `public/` files with `no-cache`.
+- Updated dependencies [b1026b9]
+- Updated dependencies [025bcf7]
+- Updated dependencies [b1026b9]
+- Updated dependencies [c68c54a]
+  - @drizztdourden08/brock-core@0.46.0
+  - @drizztdourden08/brock-lint-config@0.46.0
+  - @drizztdourden08/brock-thread@0.46.0
+
 ## 0.45.1
 
 ### Patch Changes

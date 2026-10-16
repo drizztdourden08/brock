@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.48.0
+
+### Minor Changes
+
+- 367a4cb: Screens, widgets, title bar handlers and tour steps load on first use, so a dev boot loads only what the shell draws. `.brock/screens.ts`, `.brock/screens.dev.ts` and `.brock/widgets.ts` import each file's `meta` and hand its component over as `lazyComponent(() => import(<file>))`; settings pages stay eager. A new renderer Vite plugin, `brock-meta-modules`, serves those meta imports from `<file>?brock-meta`: the file cut down to its `meta` and `order` exports and what they reach, read with TypeScript and never run, falling back to the whole file when it cannot be cut. The authoring convention does not change. brock-react adds `lazyComponent`, `lazyLoads` (`track`, `idle`, `isIdle`, `pending`), `preloadRoute` and `LazyHost`, one Suspense boundary with a delayed Tessera spinner around the screen content in `ScreenHost`, the page body in `HubPageFrame` and the widget body in `WidgetBody`. The shell preloads the base and home screens at mount, `first-frame` waits for the loads it started, and pointing at or focusing a menu row, a hub nav entry or a bucket pill preloads that screen or page. A title bar `button` spec with literal looks becomes `lazyTitleBarButton(look, load)` and loads its handler on the first click; a tour with a literal title becomes `lazyTour(shell, load)` and loads its steps when it starts (`tours.load(id)`, and `TourDef.load`). The review's settle step and the search jump wait for lazy loads. Top-level code in a screen or widget file now runs when it first loads, not at boot. Production builds one chunk per screen and widget.
+- 33e371e: Tessera 0.37: the backdrop types are `Backdrop` and `BackdropFit` (they were `HeroBackdrop` and `HeroImageFit`).
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.48.0
+
 ## 0.47.0
 
 ### Minor Changes

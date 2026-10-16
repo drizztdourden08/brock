@@ -61,6 +61,18 @@ describe('a phone browser on the web host', () => {
     expect(createWebFactory().info).toMatchObject({ formFactor: 'desktop', input: 'touch' });
   });
 
+  it("drops the picker filter with anyType: 'mobile' in a phone's browser only", () => {
+    const accepts: string[] = [];
+    const click = HTMLInputElement.prototype.click;
+    HTMLInputElement.prototype.click = function record(this: HTMLInputElement) { accepts.push(this.accept); };
+    const { filePicker } = createWebFactory().ports;
+    void filePicker().pickFile({ extensions: ['sav'], anyType: 'mobile' });
+    Object.assign(media, { phone: true, coarse: true });
+    void filePicker().pickFile({ extensions: ['sav'], anyType: 'mobile' });
+    HTMLInputElement.prototype.click = click;
+    expect(accepts).toEqual(['.sav', '']);
+  });
+
   it('follows the viewport, so show rules and the page see the change', () => {
     const Reader = () => {
       const { info } = usePlatform();

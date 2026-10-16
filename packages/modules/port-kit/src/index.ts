@@ -26,6 +26,7 @@ export { packAssetChunks } from './assets/pack-asset-chunks';
 export { createAssetCache } from './assets/create-asset-cache';
 export type { AssetChunk, AssetExtractor, AssetPacker, AssetProgress, AssetPipelineRequest } from './assets/asset-pipeline.type';
 export type { AssetCache } from './assets/asset-cache.type';
+export type { AssetStepReport, AssetWorkerStep, AssetWorkerSteps, AssetWorkerStepDef } from './assets/worker/asset-worker.type';
 
 export { encodeSaveSlot } from './saves/encode-save-slot';
 export { decodeSaveSlot } from './saves/decode-save-slot';

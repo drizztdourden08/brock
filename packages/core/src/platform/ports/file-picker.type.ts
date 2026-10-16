@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { Result } from '../../result/result.type';
+import type { FormFactor, HostShell } from '../platform.type';
 
 interface PickedFile {
   name: string;
@@ -18,9 +19,13 @@ interface SaveFileResult {
   error?: string;
 }
 
+type AnyTypeScope = HostShell | FormFactor;
+
+type AnyTypeOption = boolean | AnyTypeScope | Partial<Record<AnyTypeScope, boolean>>;
+
 interface PickFileOptions {
   extensions?: string[];
-  anyType?: boolean;
+  anyType?: AnyTypeOption;
 }
 
 interface PickPathOptions {
@@ -37,4 +42,4 @@ interface FilePickerPort {
   revealPath?: (path: string) => Promise<Result>;
 }
 
-export type { PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort };
+export type { AnyTypeScope, AnyTypeOption, PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort };

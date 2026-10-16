@@ -73,15 +73,36 @@ describe('createRomStore name list', () => {
     disk.set('roms/us.sfc', dump);
     disk.set('roms/Other (EU).smc', new Uint8Array([9]));
     disk.set('roms/notes.txt', new Uint8Array([1]));
-    disk.set('assets/us.dat', new Uint8Array([1]));
+    disk.set('assets/us.dat', new Uint8Array(12_345));
     expect(await createRomStore(counted, portWith()).listNames()).toEqual([
-      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false },
-      { file: 'us.sfc', label: 'US', hasAssets: true },
+      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false, assetBytes: null },
+      { file: 'us.sfc', label: 'US', hasAssets: true, assetBytes: 12_345 },
     ]);
     expect(await createRomStore(counted, portWith(true)).listNames()).toEqual([
-      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false },
-      { file: 'us.sfc', label: 'us', hasAssets: true },
+      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false, assetBytes: null },
+      { file: 'us.sfc', label: 'us', hasAssets: true, assetBytes: 12_345 },
     ]);
     expect(reads).toEqual([]);
+  });
+
+  it('reads the asset size from the file store stat, and lists a ROM whose stat fails as having none', async () => {
+    const { files, disk } = memoryFiles();
+    const stats: string[] = [];
+    const statted = {
+      ...files,
+      stat: (path: string) => {
+        stats.push(path);
+        return path === 'assets/Other (EU).dat' ? Promise.reject(new Error('denied')) : files.stat(path);
+      },
+    };
+    disk.set('roms/us.sfc', dump);
+    disk.set('roms/Other (EU).smc', new Uint8Array([9]));
+    disk.set('assets/us.dat', new Uint8Array(0));
+    disk.set('assets/Other (EU).dat', new Uint8Array(4));
+    expect(await createRomStore(statted, portWith(true)).listNames()).toEqual([
+      { file: 'Other (EU).smc', label: 'Other (EU)', hasAssets: false, assetBytes: null },
+      { file: 'us.sfc', label: 'us', hasAssets: true, assetBytes: 0 },
+    ]);
+    expect(stats.sort()).toEqual(['assets/Other (EU).dat', 'assets/us.dat']);
   });
 });

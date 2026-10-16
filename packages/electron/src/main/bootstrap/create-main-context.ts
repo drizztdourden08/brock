@@ -11,7 +11,7 @@ import { createNodeFileStore } from '../files/node-file-store';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
 import { getMainWindow } from '../window/get-main-window';
-import { createJobRegistry } from '../jobs/create-job-registry';
+import { createJobRegistry } from '@drizztdourden08/brock-core/jobs';
 import { createDataDomains } from '../storage/create-data-domains';
 import { servicesProxy } from '../services/services-proxy';
 import { openRouter } from '../open/open-router';

@@ -22,6 +22,7 @@ const AboutScreenBody = (props: AboutScreenBodyProps) => {
         brand={branded?.brand}
         rim={branded ? product.icons.rim : undefined}
         heading={branded?.heading}
+        wordmark={product.icons.wordmark?.src}
         logo={branded ? undefined : logoSrc}
         rows={rows}
         copyText={copyText}

@@ -1,26 +1,14 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync } from 'node:fs';
-import { extname, join } from 'node:path';
+import { join } from 'node:path';
 import { BRAND_DIR, DARK_GROUND_DIR } from '../icons/brand-files.mjs';
 import { brandsRoot } from '../icons/brand-folder.mjs';
 import { brandRim } from '../icons/brand-rim.mjs';
 import { BRAND_MARK_PNG, DEFAULT_MARK, PUBLIC_DIR, TILED_ICON } from './installer.constants.mjs';
+import { readImage } from './read-image.mjs';
 
 /**
- * @typedef {{ data: Buffer, mime: string, from: string }} MarkSource  from: where it was read
+ * @typedef {import('./read-image.mjs').ImageSource} MarkSource
  */
-
-/**
- * @param {string} base  the folder rel is under
- * @param {string | null} rel
- * @returns {MarkSource | null}
- */
-const readImage = (base, rel) => {
-  const file = rel ? join(base, rel) : null;
-  if (!file || !existsSync(file)) return null;
-  const mime = extname(file).toLowerCase() === '.svg' ? 'image/svg+xml' : 'image/png';
-  return { data: readFileSync(file), mime, from: rel.split('\\').join('/') };
-};
 
 /**
  * @param {import('@drizztdourden08/brock-core/product').ProductConfig['icons']} icons

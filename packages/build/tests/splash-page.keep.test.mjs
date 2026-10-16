@@ -25,7 +25,36 @@ describe('the splash page', () => {
     expect(html).toContain('<p class="ts-detail" id="splash-message"></p>');
     expect(html).not.toContain('splash__message');
   });
+});
 
+describe('the splash page wordmark', () => {
+  it('draws the wordmark image in the title, named by the app name, when the app sets one', () => {
+    const html = renderSplashPage({ name: 'A & B', mark: 'mark.svg', styles: '', wordmark: './logos/wordmark-dark.svg' });
+    expect(html).toContain('<h1 class="ts-title splash__name"><img class="ts-wordmark splash__wordmark" src="./logos/wordmark-dark.svg" alt="A &amp; B" /></h1>');
+    expect(html).toContain('<title>A &amp; B</title>');
+    expect(OWN_STYLES).toContain('.splash__wordmark');
+  });
+
+  it('builds the page with the dark ground wordmark of product.icons.wordmark', async () => {
+    const product = {
+      id: 'look-check', name: 'Look check', appId: 'com.example.look-check', author: { name: 'tester' },
+      icons: { brand: 'brock', wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.svg' } },
+    };
+    const plugin = splashPlugin({ rootDir: join(import.meta.dirname, '..', '..', '..', 'templates', 'app'), product });
+    const files = [];
+    await plugin.generateBundle.call({ emitFile: (file) => files.push(file) });
+    expect(files[0].source).toContain('src="./logos/wordmark-dark.svg" alt="Look check"');
+    expect(files[0].source).not.toContain('src="./logos/wordmark.svg"');
+  }, 60_000);
+
+  it('keeps the name as text without a wordmark', () => {
+    const html = renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '' });
+    expect(html).toContain('<h1 class="ts-title splash__name">Brock</h1>');
+    expect(html).not.toContain('wordmark');
+  });
+});
+
+describe('the splash look', () => {
   it('puts the look on the app page too, so the window draws its boot failure splash the same way', async () => {
     const product = { id: 'look-check', name: 'Look check', appId: 'com.example.look-check', ports: { base: 35800 }, description: 'A test app.', author: { name: 'tester', email: 'tester@example.com' }, icons: { brand: 'brock' } };
     const plugin = splashPlugin({ rootDir: join(import.meta.dirname, '..', '..', '..', 'templates', 'app'), product });

@@ -14,6 +14,7 @@ interface AboutPanelProps {
   brand?: BrandApp;
   rim?: BrandRimTone;
   heading?: AboutPanelHeading;
+  wordmark?: string;
   logo?: string;
   rows: readonly AboutPanelRow[];
   copyText?: string | null;

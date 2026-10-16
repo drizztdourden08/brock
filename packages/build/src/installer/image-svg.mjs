@@ -3,15 +3,16 @@
 /**
  * @typedef {object} ImagePlacement
  * @property {number} x @property {number} y @property {number} size
+ * @property {number} [height]  the box height when it is not a square
  * @property {string} [extra]  attributes such as a filter
  */
 
 /**
- * @param {import('./mark-source.mjs').MarkSource} source
+ * @param {import('./read-image.mjs').ImageSource} source
  * @param {ImagePlacement} placement
- * @returns {string}  an SVG image element, centred in its square
+ * @returns {string}  an SVG image element, centred in its box
  */
-const imageSvg = ({ data, mime }, { x, y, size, extra = '' }) =>
-  `<image href="data:${mime};base64,${data.toString('base64')}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"${extra}/>`;
+const imageSvg = ({ data, mime }, { x, y, size, height = size, extra = '' }) =>
+  `<image href="data:${mime};base64,${data.toString('base64')}" x="${x}" y="${y}" width="${size}" height="${height}" preserveAspectRatio="xMidYMid meet"${extra}/>`;
 
 export { imageSvg };

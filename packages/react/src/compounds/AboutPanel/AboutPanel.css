@@ -35,6 +35,13 @@
   display: block;
 }
 
+.about-panel__title .about-panel__wordmark-image {
+  display: block;
+  background: none;
+  max-inline-size: 100%;
+  block-size: var(--size-48);
+}
+
 .about-panel__rows {
   display: flex;
   flex-direction: column;

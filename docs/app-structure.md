@@ -216,6 +216,27 @@ export const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresP
 - Under 560 px wide the window fills the screen, as every screen does.
 - `size` works on a card. The built-in Credits screen, from `credits` on `BrockApp`, opens this way too. List entries one per line; an informational window is never wide.
 
+## Product icons
+
+`product.icons` in `brock.config.ts` names the app's brand art. `brand` picks a Tessera brand, which `brock icons` copies into `public/logos/` and `build/icons/`; `rim` (`'light'` or `'dark'`) picks its rimmed set. `wordmark` is the app's name drawn as an image, an SVG or PNG under `public/`, given as the path the page loads it from, like the logos:
+
+```ts
+// brock.config.ts
+product: defineProduct({
+  // ...
+  icons: { brand: 'my-brand', wordmark: './logos/wordmark.svg' },
+  // or with a variant for the dark splash ground:
+  // icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.svg' } },
+}),
+```
+
+- With a wordmark, the boot splash, its failure screen, the window's failure splash (`BootFailureSplash`), the installer's Setup splash (`brock package`) and the About window show the image in place of the name text. Without one, they show the name as before.
+- `dark` is the variant for the splash's dark gradient, the way the splash mark comes from Tessera's dark ground set. The three splashes draw `dark`, and About, on the app surface, draws `src`. A plain path is used for both.
+- The image keeps the name as its accessible name: the splash page and About put it in the heading with the name as its `alt` text, and the window's failure splash keeps the name as the heading text under the painted image, which forced colours mode shows in place of it.
+- The splashes fit it in a box `--size-48` high and at most `--size-384` wide (`48` by `384` pixels on the Setup splash, narrower when the splash is), and About in one `--size-48` high, keeping its proportions. Draw it on a transparent ground with the name filling the art's height.
+- Give the dark variant at least 3:1 against both ends of the dark gradient, the large text contrast, so the name reads at its splash size. The status line, the detail and the version keep Tessera's tested text colours, so the rest of the splash still holds WCAG AA.
+- `defineProduct` refuses a file that is not `.svg` or `.png` and a path with `..`; `brock package` stops when the dark variant is not under `public/`. `brock icons` leaves the file alone, and `public/logos/wordmark*` is not one of the generated logos, so it is committed.
+
 ## Generated files: tracked or ignored
 
 Every generated file is either committed, so a fresh checkout has it, or ignored, so it never drifts in version control. `brock adopt` and `create-brock` write the `.gitignore` lines; `brock check` fails when a tracked one drifts.

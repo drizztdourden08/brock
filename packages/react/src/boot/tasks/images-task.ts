@@ -16,7 +16,9 @@ const imagesTask: RendererBootTask = {
   id: 'images',
   label: 'Decoding brand images',
   run: async ({ product, report }) => {
-    const sources = [product.logos.app, ...(isInstanceLaunch() ? [product.logos.instance] : [])];
+    const { wordmark } = product.icons;
+    const wordmarks = wordmark ? [...new Set([wordmark.src, wordmark.dark])] : [];
+    const sources = [product.logos.app, ...(isInstanceLaunch() ? [product.logos.instance] : []), ...wordmarks];
     await Promise.all(sources.map(decode));
     report(1, sources.join(', '));
   },

@@ -18,7 +18,13 @@ import { splashStyles } from './splash-styles.mjs';
 const splashPageOf = async (rootDir, looks) => {
   const { config, look, dark } = await looks.get();
   const brand = config.icons.brand ?? null;
-  return renderSplashPage({ name: config.window.title ?? config.name, mark: config.logos.mark, palette: brand, styles: splashStyles(rootDir, { look, dark }, brand) });
+  return renderSplashPage({
+    name: config.window.title ?? config.name,
+    mark: config.logos.mark,
+    wordmark: config.icons.wordmark?.dark ?? null,
+    palette: brand,
+    styles: splashStyles(rootDir, { look, dark }, brand),
+  });
 };
 
 /**

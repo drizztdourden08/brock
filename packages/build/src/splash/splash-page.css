@@ -5,6 +5,13 @@
   animation: splash-rise var(--duration-drawer) var(--ease-emphasized) both;
 }
 
+.splash__wordmark {
+  display: block;
+  max-inline-size: min(var(--size-384), 100vw - 2 * var(--space-2xl));
+  block-size: var(--size-48);
+  object-fit: contain;
+}
+
 .splash__failure {
   display: flex;
   flex-direction: column;

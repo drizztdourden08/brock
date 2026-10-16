@@ -1,10 +1,13 @@
 /* @layer core @kind logic */
-import type { InstallerConfig, ProductConfig, ProductIcons, ProductInput, ProductLogos, ProductPorts, ProductWidgets, WindowConfig } from './product.type';
+import type {
+  InstallerConfig, ProductConfig, ProductIcons, ProductIconsInput, ProductInput, ProductLogos, ProductPorts, ProductWidgets, WindowConfig,
+} from './product.type';
 import {
   BRAND_APP_LOGO, BRAND_ICONS, BRAND_RIMS, DEFAULT_HOME_SCREEN, DEFAULT_INSTALLER, DEFAULT_LOGOS, DEFAULT_WIDGETS, DEFAULT_WINDOW, HEX_COLOR, INSTALL_SCOPES, LICENCE_FILE,
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
 import { assertOsIntegration } from './assert-os-integration';
+import { resolveWordmark } from './resolve-wordmark';
 
 const toEnvPrefix = (id: string): string => id.replace(/[^a-z0-9]+/gi, '_').toUpperCase();
 
@@ -58,13 +61,15 @@ const resolveWindow = (input: ProductInput): WindowConfig => {
   };
 };
 
-const resolveIcons = (icons: ProductIcons = {}): ProductIcons => {
+const resolveIcons = ({ wordmark: wordmarkInput, ...rest }: ProductIconsInput = {}): ProductIcons => {
+  const wordmark = resolveWordmark(wordmarkInput);
+  const icons: ProductIcons = wordmark ? { ...rest, wordmark } : rest;
   if (!icons.brand) return icons;
   const rim = icons.rim ?? BRAND_RIMS[icons.brand];
   return { ...BRAND_ICONS, ...icons, ...(rim ? { rim } : {}) };
 };
 
-const resolveLogos = (logos: Partial<ProductLogos> = {}, icons: ProductIcons = {}): ProductLogos => {
+const resolveLogos = (logos: Partial<ProductLogos> = {}, icons: ProductIconsInput = {}): ProductLogos => {
   const app = logos.app ?? (icons.brand ? BRAND_APP_LOGO : DEFAULT_LOGOS.app);
   return { app, instance: logos.instance ?? (logos.app ? app : DEFAULT_LOGOS.instance), mark: logos.mark ?? DEFAULT_LOGOS.mark };
 };

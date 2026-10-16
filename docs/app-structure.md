@@ -226,14 +226,14 @@ export const meta: ScreenMeta = { title: 'Home', icon: 'house', hero: { size: 'c
 
 ```tsx
 // src/screens/library/library.backdrop.tsx
-import './library.backdrop.css';
+import { StripedBackdrop } from '../../views/StripedBackdrop';
 
-const LibraryBackdrop = () => <div className="library-backdrop" />;
+const LibraryBackdrop = () => <StripedBackdrop />;
 
 export default LibraryBackdrop;
 ```
 
-- Sync picks it up like a `.hero.tsx`. The component takes no props and fills the header behind every page of the bucket, inside Tessera's `BackdropLayer`.
+- Sync picks it up like a `.hero.tsx`. Its styles live with the view it draws (`src/views/StripedBackdrop/StripedBackdrop.css`), since `src/screens` holds no stylesheets. The component takes no props and fills the header behind every page of the bucket, inside Tessera's `BackdropLayer`.
 - It loads the first time a page header of the bucket draws; the header shows without it until then.
 - A page's own `meta.backdrop` still wins, and `{ kind: 'none' }` there removes it for that page. Keep either the file or `backdrop` in `screens.config.ts`: `brock structure` reports a bucket with both.
 - The file sits in its bucket folder and takes the bucket name; its constants go in `<bucket>.backdrop.constants.ts`.

@@ -3,12 +3,14 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { createDefaultLayout, isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import { defaultKitView } from '../src/widgets/kits/default-kit-view';
 import { defineWidgetKit } from '../src/widgets/kits/define-widget-kit';
+import { groupedMembers } from '../src/widgets/kits/grouped-members';
 import { useWidgetKitStore } from '../src/widgets/kits/useWidgetKitStore';
 import { widgetKits } from '../src/widgets/kits/widget-kits';
 import { defineWidget } from '../src/widgets/define-widget';
 import { poppedSources } from '../src/widgets/popped-sources';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { widgets } from '../src/widgets/widgets';
+import { widgetsFromFiles } from '../src/widgets/widgets-from-files';
 
 const widget = (id: string, extra: { kit?: string; popOut?: boolean } = {}) => defineWidget({ id, label: id, defaultSide: 'right', render: () => null, ...extra });
 
@@ -109,6 +111,15 @@ describe('the widgets API on a kit widget', () => {
   });
 });
 
+describe('kit widgets in Tessera', () => {
+  it('gives each kit widget its kit id as group, leaves normal widgets ungrouped, and reads chrome from a widget file', () => {
+    const grouped = groupedMembers([...MEMBERS, ...NORMAL, widget('stray', { kit: 'gone' })], [EDITOR, PROBE]);
+    expect(grouped.map((def) => [def.id, def.group])).toEqual([['tree', 'editor'], ['props', 'editor'], ['trace', 'probe']]);
+    const [compact] = widgetsFromFiles([{ id: 'tool', component: () => null, meta: { kit: 'editor', chrome: 'compact' } }]);
+    expect(compact?.chrome).toBe('compact');
+  });
+});
+
 describe('kit widgets in their own window', () => {
   it('pops a kit widget out within its kit, keeps it popped through a close, and drops it from the windows while closed', () => {
     widgets.popOut('tree');
@@ -126,8 +137,8 @@ describe('kit widgets in their own window', () => {
 
   it('shares the frames of the open kit with the normal ones', () => {
     widgets.popOut('tree');
-    kits().change((layout) => ({ ...layout, frame: { tree: { opacity: 0.5 } } }));
-    expect(poppedSources.framesSource.getState().tree).toEqual({ opacity: 0.5 });
+    kits().change((layout) => ({ ...layout, frame: { tree: { opacity: 0.5, show: 'always' } } }));
+    expect(poppedSources.framesSource.getState().tree?.opacity).toBe(0.5);
     widgetKits.close();
     expect(poppedSources.framesSource.getState().tree).toBeUndefined();
   });

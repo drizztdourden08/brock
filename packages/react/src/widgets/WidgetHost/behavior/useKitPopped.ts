@@ -19,7 +19,7 @@ const useKitPopped = (input: KitPoppedInput) => {
   const popped = useMemo<readonly PoppedWidget[]>(() => (layout && !blocked ? poppedShown(layout, gates) : NO_POPPED), [layout, blocked, gates]);
   const onPopOut = useCallback((id: string, point?: ScreenPoint) => {
     const current = kitRoute.openLayoutOf(id);
-    if (current) popOutWindow(current, gates, id, extraOf(id), point);
+    if (current) popOutWindow({ layout: current, gates, id, extra: extraOf(id), point });
   }, [gates, extraOf]);
   return { popped, onPopOut };
 };

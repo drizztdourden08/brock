@@ -375,7 +375,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 Fixed on this branch:
 
 - The template has `src/widgets/notes.widget.tsx`, `src/widgets/layout.ts` (Notes beside the main view), `.brock/widgets.ts` and `widgets={appWidgets}` with `widgetLayout={appWidgetLayout}` in `src/main.tsx`; its README lists the widgets and the Tessera part folders.
-- The template also has a small widget kit, `src/widgets/inspect.kit.ts` with `inspect-grid.widget.tsx`, `inspect-pointer.widget.tsx` and `inspect-grid.overlay.tsx`, its state in `src/stores/useInspectStore.ts` and the pointer tracking in `src/hooks/useInspectTracking.ts`, and passes `widgetKits={appWidgetKits}` from `.brock/widget-kits.ts`.
+- The template also has a small widget kit, `src/widgets/inspect.kit.ts` with `inspect-grid.widget.tsx`, `inspect-pointer.widget.tsx` (both `chrome: 'compact'`) and `inspect-grid.overlay.tsx`, its state in `src/stores/useInspectStore.ts` and the pointer tracking in `src/hooks/useInspectTracking.ts`, and passes `widgetKits={appWidgetKits}` from `.brock/widget-kits.ts`.
 - Brock's built-in widgets sit in `packages/react/src/widgets/built-in/` as `<id>.widget.tsx` files with their component folders, the same shape as `screens/built-in/` and as an app's `src/widgets`.
 - `brock-electron`'s handler files all end in `-handlers.ts` (`dialog-handlers.ts`, `screenshot-handlers.ts` and `session-log-handlers.ts` were `dialogs.ts`, `screenshot-handler.ts` and `session-log-handler.ts`).
 - `brock adopt` in a workspace with no design package still gives each app its own `views`, and prints where screens, widgets, views and shared parts go.

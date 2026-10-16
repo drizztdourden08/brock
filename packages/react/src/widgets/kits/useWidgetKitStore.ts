@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { dockOrigins } from '../dock-origins';
 import { defaultKitView } from './default-kit-view';
-import { activeChange, memberClose, memberOpen, memberPopOut, memberToggle, withView } from './kit-member-changes';
+import { kitMemberChanges as changes } from './kit-member-changes';
 import { readKitViews } from './read-kit-views';
 import type { KitView, WidgetKitState } from './widget-kit.type';
 
@@ -27,13 +27,13 @@ const useWidgetKitStore = create<WidgetKitState>()((set) => ({
   open: (id) => set((state) => (isKit(state, id) ? { active: id } : {})),
   close: () => set({ active: null }),
   toggle: (id) => set((state) => (state.active === id ? { active: null } : { active: isKit(state, id) ? id : state.active })),
-  setLayout: (layout) => set((state) => activeChange(state, recorded(() => layout))),
-  change: (fn) => set((state) => activeChange(state, recorded(fn))),
-  openMember: (id) => set((state) => memberOpen(state, id)),
-  toggleMember: (id) => set((state) => memberToggle(state, id)),
-  closeMember: (id) => set((state) => memberClose(state, id)),
-  popOutMember: (id) => set((state) => memberPopOut(state, id)),
-  toggleOverlay: (id) => set((state) => (state.active ? withView(state, state.active, (view) => overlayToggle(view, id)) : {})),
+  setLayout: (layout) => set((state) => changes.active(state, recorded(() => layout))),
+  change: (fn) => set((state) => changes.active(state, recorded(fn))),
+  openMember: (id) => set((state) => changes.open(state, id)),
+  toggleMember: (id) => set((state) => changes.toggle(state, id)),
+  closeMember: (id) => set((state) => changes.close(state, id)),
+  popOutMember: (id) => set((state) => changes.popOut(state, id)),
+  toggleOverlay: (id) => set((state) => (state.active ? changes.withView(state, state.active, (view) => overlayToggle(view, id)) : {})),
   reset: (id) => set((state) => {
     const kit = state.kits.find((each) => each.id === id);
     return kit ? { views: { ...state.views, [id]: defaultKitView(kit, state.members) } } : {};

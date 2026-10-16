@@ -9,7 +9,7 @@ import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { dragRelease } from '../drag-release';
 import { NO_KITS } from '../kits/widget-kit.constants';
-import { FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
+import { FLOAT_SNAP_PX, FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
 import { popOutWindow } from '../pop-out-window';
 import { poppedShown } from '../popped-shown';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
@@ -47,9 +47,9 @@ const WidgetHost = (props: WidgetHostProps) => {
   const gates = useWidgetGates(definitions, legacy);
   const resolveDisabled = useDisabledWidgets(widgetDisabled);
   const { content, settingsContent, toolsOf } = useWidgetContent(all);
-  const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
+  const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(all, id)?.taskbar === true }), [all]);
 
-  const popOut = useCallback((id: string, point?: ScreenPoint) => popOutWindow(useWidgetLayoutStore.getState().layout, gates, id, extraOf(id), point), [gates, extraOf]);
+  const popOut = useCallback((id: string, point?: ScreenPoint) => popOutWindow({ layout: useWidgetLayoutStore.getState().layout, gates, id, extra: extraOf(id), point }), [gates, extraOf]);
   const stage = useKitStage({
     definitions, layout, onLayoutChange: setLayout, contextActive: gates.contextActive, pageOpen: gates.pageOpen, onPopOut: popOut, externalDrag, children: content, settingsContent,
   }, extraOf);
@@ -74,6 +74,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       mainGrip="dragging"
       onMainRect={trackMainRect}
       floatingMin={FLOATING_MIN}
+      floatSnap={FLOAT_SNAP_PX}
       onExternalDrop={dropIn}
       developerToolsEnabled={gates.developerToolsEnabled}
       widgetActions={toolsOf}

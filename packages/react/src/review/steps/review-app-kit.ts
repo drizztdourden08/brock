@@ -9,8 +9,7 @@ import { click } from '../dom/click';
 import { find } from '../dom/find';
 import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
-import { menuPathTo } from '../menu/menu-path-to';
-import { walkMenu } from '../menu/walk-menu';
+import { walkToKey } from '../menu/walk-to-key';
 import type { StepTour } from '../review.type';
 import { kitSelectors } from '../widgets/kit-review.constants';
 
@@ -18,9 +17,7 @@ const drawn = (kit: WidgetKitDef): boolean =>
   find(kitSelectors.bar(kit.id)) !== null && kitMembers(kit.id, useWidgetKitStore.getState().members).every((def) => find(kitSelectors.widget(def.id)) !== null);
 
 const openFromMenu = async (tour: StepTour, kit: WidgetKitDef): Promise<void> => {
-  const path = menuPathTo(tour.env.menu, (item) => item.key === `${KIT_KEY_PREFIX}${kit.id}-open`);
-  const last = path?.at(-1);
-  const item = path && last !== undefined ? await walkMenu(path.slice(0, -1), last) : null;
+  const { path, item } = await walkToKey(tour.env.menu, `${KIT_KEY_PREFIX}${kit.id}-open`);
   tour.check(`app-kit-${kit.id}-in-menu`, item !== null, `the "${kit.id}" kit has its own sub-menu under ${path?.slice(0, -1).join(' > ') ?? 'Widgets'}`, `the "${kit.id}" kit has no Open kit entry in the menu`);
   if (!item) {
     await closeMenu();

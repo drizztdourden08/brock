@@ -89,6 +89,12 @@ interface WidgetKitState {
 
 type KitViews = Pick<WidgetKitState, 'views'>;
 
+type KitSource = Pick<WidgetKitState, 'kits' | 'members' | 'views'>;
+
+type KitLayoutChange = (layout: WidgetLayout) => WidgetLayout;
+
+type KitMemberAction = keyof Pick<WidgetKitState, 'openMember' | 'closeMember' | 'toggleMember' | 'popOutMember'>;
+
 type KitMenuState = Pick<WidgetKitState, 'kits' | 'members' | 'active' | 'views' | 'toggle' | 'toggleMember' | 'toggleOverlay' | 'reset'>;
 
 interface KitRegistryState {
@@ -97,7 +103,7 @@ interface KitRegistryState {
 }
 
 export type {
-  KitMenuState, KitOverlayDef, KitOverlayFile, KitOverlayMeta, KitRegistryState, KitRequirement, KitStatus, KitView, KitViews, KitViewSource, WidgetKitDef, WidgetKitFile,
+  KitLayoutChange, KitMemberAction, KitMenuState, KitOverlayDef, KitSource, KitOverlayFile, KitOverlayMeta, KitRegistryState, KitRequirement, KitStatus, KitView, KitViews, KitViewSource, WidgetKitDef, WidgetKitFile,
   WidgetKitFiles,
   WidgetKitMeta, WidgetKitState,
 };

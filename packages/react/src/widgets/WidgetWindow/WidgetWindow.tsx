@@ -55,6 +55,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         activeId={id}
         paneKey={null}
         mode="out"
+        chrome={definition?.chrome}
         dragRegion
         opacity={frame.opacity}
         square={own.square}

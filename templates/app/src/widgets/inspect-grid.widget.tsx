@@ -9,6 +9,7 @@ const meta: WidgetMeta = {
   label: 'Grid',
   icon: 'layout-grid',
   kit: 'inspect',
+  chrome: 'compact',
   defaultSide: 'left',
   defaultDockedSize: 240,
   tools: () => (

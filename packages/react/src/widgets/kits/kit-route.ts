@@ -1,15 +1,13 @@
 /* @layer renderer-shell @kind logic */
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { kitViewOf } from './kit-view-of';
-import { memberKitOf } from './kit-member-changes';
+import { memberKitOf } from './member-kit-of';
 import { useWidgetKitStore } from './useWidgetKitStore';
-import type { WidgetKitState } from './widget-kit.type';
-
-type MemberAction = keyof Pick<WidgetKitState, 'openMember' | 'closeMember' | 'toggleMember' | 'popOutMember'>;
+import type { KitMemberAction } from './widget-kit.type';
 
 const store = () => useWidgetKitStore.getState();
 
-const member = (id: string, action: MemberAction): boolean => {
+const member = (id: string, action: KitMemberAction): boolean => {
   if (memberKitOf(store(), id) === null) return false;
   store()[action](id);
   return true;

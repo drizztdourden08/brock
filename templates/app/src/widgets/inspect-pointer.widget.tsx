@@ -3,7 +3,7 @@ import type { WidgetMeta } from '@drizztdourden08/brock-react';
 import { Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import { useInspectStore } from '../stores/useInspectStore';
 
-const meta: WidgetMeta = { label: 'Pointer', icon: 'mouse', kit: 'inspect', defaultSide: 'right', defaultDockedSize: 240 };
+const meta: WidgetMeta = { label: 'Pointer', icon: 'mouse', kit: 'inspect', chrome: 'compact', defaultSide: 'right', defaultDockedSize: 240 };
 
 const InspectPointerWidget = () => {
   const pointer = useInspectStore((s) => s.pointer);

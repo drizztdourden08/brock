@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
-import type { Profile } from '@drizztdourden08/brock-core';
-import type { ExternalDrag, WidgetDefinition, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { Profile, WidgetWindowOpen } from '@drizztdourden08/brock-core';
+import type { ExternalDrag, ScreenPoint, WidgetDefinition, WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { ScreenViews } from '../stores/screen-state.type';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import type { LayoutPreset } from './layout-preset.type';
@@ -108,6 +108,14 @@ interface DockOrigin {
   index: number;
 }
 
+interface PopOutRequest {
+  layout: WidgetLayout;
+  gates: WidgetGates<WidgetDef>;
+  id: string;
+  extra: Partial<WidgetWindowOpen>;
+  point?: ScreenPoint;
+}
+
 interface LayoutHolder {
   layout: WidgetLayout;
   definitions: readonly WidgetDef[];
@@ -115,5 +123,5 @@ interface LayoutHolder {
 }
 
 export type {
-  DockOrigin, LayoutHolder, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

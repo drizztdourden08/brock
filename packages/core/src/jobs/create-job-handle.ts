@@ -15,9 +15,12 @@ const settleCurrent = (snapshot: JobSnapshot, state: JobStepState): void => {
   for (const step of snapshot.steps) if (step.state === 'current') step.state = state;
 };
 
-const appendLog = (snapshot: JobSnapshot, message: string, level: JobLogLevel, at: number): void => {
-  snapshot.log.push({ at, level, message });
+const appendLog = (record: JobRecord, message: string, level: JobLogLevel, at: number): void => {
+  const { snapshot } = record;
+  const entry = { at, level, message };
+  snapshot.log.push(entry);
   if (snapshot.log.length > JOB_LOG_LIMIT) snapshot.log.splice(0, snapshot.log.length - JOB_LOG_LIMIT);
+  record.forward?.(entry);
 };
 
 const finish = (snapshot: JobSnapshot, state: 'done' | 'failed', at: number): void => {
@@ -28,6 +31,17 @@ const finish = (snapshot: JobSnapshot, state: 'done' | 'failed', at: number): vo
     snapshot.progress = 1;
   } else {
     settleCurrent(snapshot, 'failed');
+  }
+};
+
+const runWork = async <T>(handle: JobHandle, signal: AbortSignal, work: (job: JobHandle) => Promise<T>): Promise<T> => {
+  try {
+    const result = await work(handle);
+    handle.done();
+    return result;
+  } catch (err) {
+    if (!signal.aborted) handle.fail(err);
+    throw err;
   }
 };
 
@@ -43,6 +57,8 @@ const createJobHandle = (record: JobRecord, now: () => number = Date.now): JobHa
   const handle: JobHandle = {
     id: snapshot.id,
     signal: controller.signal,
+    started: Promise.resolve(),
+    ended: record.ended,
     step: (stepId, line) => change(true, () => {
       settleCurrent(snapshot, 'done');
       setStep(snapshot, stepId, 'current');
@@ -55,7 +71,7 @@ const createJobHandle = (record: JobRecord, now: () => number = Date.now): JobHa
       if (line !== undefined) snapshot.line = line;
     }),
     line: (text) => change(false, () => { snapshot.line = text; }),
-    log: (message, level = 'info') => change(level === 'error', () => appendLog(snapshot, message, level, now())),
+    log: (message, level = 'info') => change(level === 'error', () => appendLog(record, message, level, now())),
     skip: (stepId) => change(true, () => setStep(snapshot, stepId, 'skipped')),
     setCancellable: (on) => change(true, () => { snapshot.cancellable = on; }),
     done: (line) => change(true, () => {
@@ -64,18 +80,13 @@ const createJobHandle = (record: JobRecord, now: () => number = Date.now): JobHa
     }),
     fail: (error) => change(true, () => {
       snapshot.error = messageOf(error);
-      appendLog(snapshot, snapshot.error, 'error', now());
+      appendLog(record, snapshot.error, 'error', now());
       finish(snapshot, 'failed', now());
     }),
-    run: async (work) => {
-      try {
-        const result = await work(handle);
-        handle.done();
-        return result;
-      } catch (err) {
-        if (!controller.signal.aborted) handle.fail(err);
-        throw err;
-      }
+    run: (work) => {
+      const outcome = runWork(handle, controller.signal, work);
+      record.outcome = outcome;
+      return outcome;
     },
   };
   return handle;

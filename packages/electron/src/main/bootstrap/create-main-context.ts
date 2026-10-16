@@ -26,12 +26,12 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     if (win) emit(win, channel, ...args);
   };
 
-  const jobs = createJobRegistry((snapshot) => emitToWindow('job:update', snapshot));
-
   const log = (message: string, level: MainLogLevel = 'info'): void => {
     console[level](`[main] ${message}`);
     emitToWindow('log:entry', { channel: 'main', level, message });
   };
+
+  const jobs = createJobRegistry((snapshot) => emitToWindow('job:update', snapshot), Date.now, (jobId, line) => log(`[job ${jobId}] ${line.message}`, line.level));
 
   return {
     product,

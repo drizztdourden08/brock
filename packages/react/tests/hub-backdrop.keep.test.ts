@@ -25,21 +25,21 @@ afterEach(showHarness.resetShow);
 describe('a hub header backdrop', () => {
   it('paints the hub colour or image behind every page header', () => {
     const host = draw({ kind: 'color', color: '--c-secondary' }, page('shelf'));
-    expect((backdropOf(host)?.querySelector('.hub-backdrop') as HTMLElement | null)?.style.backgroundColor).toBe('var(--c-secondary)');
+    expect((backdropOf(host)?.querySelector('.backdrop-layer--color') as HTMLElement | null)?.style.backgroundColor).toBe('var(--c-secondary)');
     draw({ kind: 'image', src: 'art/wall.png', fit: 'tile', tileSize: '64px', pixelated: true }, page('shelf'));
-    const tile = backdropOf(host)?.querySelector('.hub-backdrop') as HTMLElement | null;
+    const tile = backdropOf(host)?.querySelector('.backdrop-layer--image') as HTMLElement | null;
     expect(tile?.getAttribute('data-fit')).toBe('tile');
     expect(tile?.style.backgroundImage).toContain('art/wall.png');
-    expect(tile?.classList.contains('hub-backdrop--pixelated')).toBe(true);
+    expect(tile?.classList.contains('backdrop-layer--pixelated')).toBe(true);
   });
 
   it('lets a page draw its own node or none, and keeps the default art without one', () => {
     const host = draw({ kind: 'color', color: 'red' }, page('shelf', { backdrop: { kind: 'node', node: createElement('i', { className: 'own-art' }) } }));
-    expect(backdropOf(host)?.querySelector('.own-art')).not.toBeNull();
+    expect(backdropOf(host)?.querySelector('.backdrop-layer--node > .own-art')).not.toBeNull();
     draw({ kind: 'color', color: 'red' }, page('shelf', { backdrop: { kind: 'none' } }));
     expect(backdropOf(host)).toBeNull();
     draw(undefined, page('shelf'));
-    expect(backdropOf(host)?.querySelector('.hub-backdrop')).toBeNull();
+    expect(backdropOf(host)?.querySelector('.backdrop-layer')).toBeNull();
     expect(backdropOf(host)).not.toBeNull();
   });
 

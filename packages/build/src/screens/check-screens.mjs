@@ -38,6 +38,15 @@ const settingsPageFindings = (config, files) => {
 };
 
 /**
+ * @param {{ buckets: { id: string, backdrop?: unknown }[] }} config
+ * @param {import('./scan-screens.mjs').ScreenFile[]} files
+ * @returns {string[]}
+ */
+const backdropFindings = (config, files) => files
+  .filter((file) => file.kind === 'backdrop' && config.buckets.some((bucket) => bucket.id === file.bucket && bucket.backdrop !== undefined))
+  .map((file) => `${file.path}: bucket "${file.bucket}" also sets backdrop in ${SCREENS_CONFIG}; keep one of them`);
+
+/**
  * @param {string} rootDir the app root
  * @returns {Promise<string[]>}
  */
@@ -47,7 +56,7 @@ const checkScreens = async (rootDir) => {
   const findings = [...layout, ...searchFindings(rootDir, files)];
   try {
     const config = await readScreensConfig(rootDir);
-    return [...findings, ...configFindings(config, buckets), ...settingsPageFindings(config, files)];
+    return [...findings, ...configFindings(config, buckets), ...settingsPageFindings(config, files), ...backdropFindings(config, files)];
   } catch (error) {
     return [...findings, `${CONFIG_PATH}: ${error instanceof Error ? error.message : String(error)}`];
   }

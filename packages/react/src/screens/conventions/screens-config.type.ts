@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { HeroSize } from '@drizztdourden08/tessera/composites';
 import type { IconName, Backdrop } from '@drizztdourden08/tessera/primitives';
 import type { ShowRule } from '../show/show.type';
 
@@ -51,6 +52,10 @@ interface ScreensConfig {
   settings?: SettingsPlacement;
 }
 
+interface HeroMeta {
+  size?: HeroSize;
+}
+
 interface ScreenMeta extends ShowRule {
   title?: string;
   icon?: IconName;
@@ -67,6 +72,7 @@ interface ScreenMeta extends ShowRule {
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
   size?: ScreenSize;
+  hero?: HeroMeta;
 }
 
-export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };

@@ -125,7 +125,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
@@ -206,6 +206,37 @@ const PresetsPage = () => <ListDetail list={list} selectedId={selectedId} onSele
 - The page takes the window height and its body does not scroll. `ListDetail` and `ListDetailLayout` fill it and scroll each pane themselves.
 - The page's root fills the body: render the `ListDetail` at the root, or give the root you wrap it in `flex: 1` and `min-height: 0`.
 - `fill` works on a page, on a sub page and, through `<page>.page.ts`, on a tab page. A hero page and a settings page ignore it.
+
+## A shorter or taller hero
+
+A hero takes the default Tessera `Hero` height, 288 to 408 px. A home with a few facts and actions sets `hero.size` in its meta instead:
+
+```tsx
+// src/screens/library/home.hero.tsx
+export const meta: ScreenMeta = { title: 'Home', icon: 'house', hero: { size: 'compact' } };
+```
+
+- `'compact'` fits the hero to its content, with tighter padding and gaps; `'tall'` makes it 408 to 560 px; `'default'`, or no `hero` at all, keeps today's height.
+- Brock passes it to Tessera's `Hero` as `size`. Under 720 px wide every size stacks; `default` and `tall` keep their height as a minimum and `compact` has none.
+- `hero` works on a `.hero.tsx` only; other screens ignore it.
+
+## A backdrop drawn by a component
+
+`backdrop` on a bucket in `screens.config.ts` takes an image or a colour, since the config holds no JSX and imports nothing but `defineScreens`. A bucket whose page headers draw a scene of their own puts it in `src/screens/<bucket>/<bucket>.backdrop.tsx`, which default-exports a component:
+
+```tsx
+// src/screens/library/library.backdrop.tsx
+import './library.backdrop.css';
+
+const LibraryBackdrop = () => <div className="library-backdrop" />;
+
+export default LibraryBackdrop;
+```
+
+- Sync picks it up like a `.hero.tsx`. The component takes no props and fills the header behind every page of the bucket, inside Tessera's `BackdropLayer`.
+- It loads the first time a page header of the bucket draws; the header shows without it until then.
+- A page's own `meta.backdrop` still wins, and `{ kind: 'none' }` there removes it for that page. Keep either the file or `backdrop` in `screens.config.ts`: `brock structure` reports a bucket with both.
+- The file sits in its bucket folder and takes the bucket name; its constants go in `<bucket>.backdrop.constants.ts`.
 
 ## A small informational window
 

@@ -16,7 +16,7 @@ const heroPage = (bucket: BucketDef, entry: HeroEntry): HubPage => ({
   menu: entry.meta?.menu,
   order: entry.meta?.order,
   menuOrder: entry.meta?.menuOrder,
-  render: renderHero(entry.component, bucket),
+  render: renderHero(entry.component, bucket, entry.meta),
   preload: preloadOf(entry.component),
 });
 

@@ -3,6 +3,7 @@ import type { HubDef, HubGroup, HubPage } from '../../hub/hub.type';
 import { contentPage } from './content-page';
 import { heroPage } from './hero-page';
 import { attachSubs } from './attach-subs';
+import { bucketBackdrop } from './bucket-backdrop';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
 import { showRuleOf } from '../show/show-rule-of';
@@ -29,7 +30,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     shortcut: bucket.shortcut,
     show: showRuleOf(bucket),
     nav: bucket.nav,
-    backdrop: bucket.backdrop,
+    backdrop: bucketBackdrop(bucket, entries),
     requiresProfile: bucket.requiresProfile,
     home,
     groups: hero ? groups : withoutPage(groups, home),

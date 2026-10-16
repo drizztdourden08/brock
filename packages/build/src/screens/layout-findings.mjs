@@ -14,12 +14,14 @@ const repeated = (ids) => [...new Set(ids.filter((id, index) => ids.indexOf(id) 
  */
 const layoutFindings = (files, buckets) => buckets.flatMap((bucket) => {
   const at = `${SCREENS_DIR}/${bucket}`;
-  const own = files.filter((file) => file.bucket === bucket);
+  const own = files.filter((file) => file.bucket === bucket && file.kind !== 'backdrop');
+  const backdrops = files.filter((file) => file.bucket === bucket && file.kind === 'backdrop' && file.id !== bucket);
   const heroes = own.filter((file) => file.kind === 'hero').map((file) => file.path.split('/').at(-1));
   const pageIds = [...new Set(own.map(pageKey))].map((key) => key.split('/')[1]);
   return [
     ...(own.length === 0 ? [`${at}: a bucket folder with no screens`] : []),
     ...(heroes.length > 1 ? [`${at}: two homes (${heroes.join(', ')}); a bucket has one .hero.tsx`] : []),
+    ...backdrops.map((file) => `${file.path}: a bucket backdrop takes the bucket name; rename it ${bucket}.backdrop.tsx`),
     ...repeated(pageIds).map((id) => `${at}: two pages named "${id}"; a page id is unique in its bucket`),
   ];
 });

@@ -3,7 +3,7 @@ import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenDef } from '../screen.type';
 import type { ScreenEntry } from './screen-tree.type';
 
-const KIND_ICONS: Record<ScreenEntry['kind'], IconName> = {
+const KIND_ICONS: Record<Exclude<ScreenEntry['kind'], 'backdrop'>, IconName> = {
   hero: 'house',
   page: 'file-text',
   tab: 'layout-list',

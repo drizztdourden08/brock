@@ -7,8 +7,8 @@ import { createScreenRegistry } from '../src/screens/create-screen-registry';
 import { defineScreen } from '../src/screens/define-screen';
 
 const registry = createScreenRegistry([
-  defineScreen({ id: 'library', title: 'Library', shortcut: 'Mod+L', render: () => null }),
-  defineScreen({ id: 'tools', title: 'Tools', render: () => null }),
+  defineScreen({ id: 'library', title: 'Library', icon: 'folder', shortcut: 'Mod+L', render: () => null }),
+  defineScreen({ id: 'tools', title: 'Tools', icon: 'folder', render: () => null }),
 ]);
 const routes = [{ target: 'tools/notes', shortcut: 'Mod+N' }];
 const allowed = (): boolean => true;

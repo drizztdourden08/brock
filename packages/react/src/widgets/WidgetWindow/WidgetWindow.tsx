@@ -9,6 +9,7 @@ import { StandardOverlays } from '../../overlays/StandardOverlays/StandardOverla
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
 import { WidgetBody } from '../WidgetBody';
+import { widgetToolsOf } from '../widget-tools-of';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { WindowGuide } from '../WindowGuide';
@@ -62,6 +63,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         pin={own.pin}
         onPinChange={own.setPin}
         options={options}
+        titleBarActions={widgetToolsOf(definition)}
         onActivateTab={noop}
         onPopOut={popIn}
         canPopOut

@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { GENERATED_HEADER, LAZY_COMPONENT, REACT_PACKAGE } from '../screens/screen-conventions.constants.mjs';
+import { renderWidgetKits } from './render-widget-kits.mjs';
 import { scanWidgets } from './scan-widgets.mjs';
-import { WIDGETS_OUTPUT } from './widget-conventions.constants.mjs';
+import { KITS_OUTPUT, WIDGETS_OUTPUT } from './widget-conventions.constants.mjs';
 
 /** @param {string} id */
 const identifierOf = (id) => `${id.split('-').map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join('')}Widget`;
@@ -45,11 +46,14 @@ const renderWidgets = (files, layout = null) => {
 
 /**
  * @param {string} rootDir the app root
- * @returns {{ path: string, content: string }[]} .brock/widgets.ts, always
+ * @returns {{ path: string, content: string }[]} .brock/widgets.ts and .brock/widget-kits.ts, always
  */
 const renderWidgetsFiles = (rootDir) => {
-  const { files, layout } = scanWidgets(rootDir);
-  return [{ path: WIDGETS_OUTPUT, content: renderWidgets(files.filter((file) => file.hasDefault), layout?.hasDefault ? layout : null) }];
+  const { files, kits, overlays, layout } = scanWidgets(rootDir);
+  return [
+    { path: WIDGETS_OUTPUT, content: renderWidgets(files.filter((file) => file.hasDefault), layout?.hasDefault ? layout : null) },
+    { path: KITS_OUTPUT, content: renderWidgetKits(kits.filter((file) => file.hasDefault), overlays.filter((file) => file.hasDefault && file.hasMeta)) },
+  ];
 };
 
 export { renderWidgets, renderWidgetsFiles };

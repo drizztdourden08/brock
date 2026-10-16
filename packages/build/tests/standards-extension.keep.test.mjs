@@ -36,7 +36,7 @@ describe('the brock-app extension', () => {
   });
 
   it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.<kind>.constants.ts']);
+    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.overlay.tsx', '<id>.kit.ts', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.<kind>.constants.ts']);
   });
 
   it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta, context included', async () => {
@@ -65,7 +65,7 @@ describe('the brock-app extension', () => {
       'src/widgets/room.widget.tsx',
       'src/widgets/session-layout.ts',
     ]);
-    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize, padding, fill, context)');
+    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, tools, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize, padding, fill, context, kit)');
     expect(findings).toContain('src/widgets/logs.widget.tsx: "logs" is a built-in Brock widget id; pick another');
   });
 

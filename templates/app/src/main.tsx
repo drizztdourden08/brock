@@ -9,6 +9,7 @@ import { rendererModules } from '../.brock/modules.renderer';
 import { rendererBootTasks } from '../.brock/boot.renderer';
 import { screenTree } from '../.brock/screens';
 import { appWidgetLayout, appWidgets } from '../.brock/widgets';
+import { appWidgetKits } from '../.brock/widget-kits';
 import { appReview } from '../.brock/review';
 import { appTitleBar } from '../.brock/title-bar';
 import { appTours } from '../.brock/tours';
@@ -29,6 +30,7 @@ createRoot(root).render(
       bootTasks={rendererBootTasks}
       widgets={appWidgets}
       widgetLayout={appWidgetLayout}
+      widgetKits={appWidgetKits}
       review={appReview}
       titleBar={appTitleBar}
       tours={appTours}

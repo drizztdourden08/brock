@@ -23,6 +23,7 @@ import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
 import { NO_WIDGETS } from '../../widgets/widget.constants';
+import { NO_KITS } from '../../widgets/kits/widget-kit.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
@@ -35,7 +36,7 @@ import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
-    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
+    product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetKits = NO_KITS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
     screenGroups, profileHooks, profiles, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags,
   } = props;
 
@@ -51,6 +52,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
+  const allKits = useMemo(() => [...merged.widgetKits, ...widgetKits], [merged.widgetKits, widgetKits]);
   const settingsStore = useProfileSettingsStore(settings);
 
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
@@ -82,9 +84,8 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     moduleMenu={merged.menu}
                     titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
-                    widgets={allWidgets}
-                    widgetLayout={widgetLayout}
-                    widgetContext={widgetContext} widgetDisabled={widgetDisabled}
+                    widgets={allWidgets} widgetKits={allKits}
+                    widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
                     review={review}

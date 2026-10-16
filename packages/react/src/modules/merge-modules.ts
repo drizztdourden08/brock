@@ -22,6 +22,7 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   titleBarActions: modules.flatMap((m) => m.titleBarActions ?? []),
   searchActions: modules.flatMap((m) => m.searchActions ?? []),
   widgets: modules.flatMap((m) => m.widgets ?? []),
+  widgetKits: modules.flatMap((m) => m.widgetKits ?? []),
   ports: mergePorts(modules.flatMap((m) => (m.ports ? [m.ports] : []))),
   logChannels: [...new Set(modules.flatMap((m) => m.logChannels ?? []))],
   bootTasks: modules.flatMap((m) => m.bootTasks ?? []),

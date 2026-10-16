@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
+import { useWidgetKitStore } from './kits/useWidgetKitStore';
 import { profileViews } from './profile-views';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
 import { FLUSH_EVENTS } from './widget.constants';
@@ -17,11 +18,13 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
   bound.profileId = null;
   if (!profileId) {
     useWidgetLayoutStore.getState().replace(null);
+    useWidgetKitStore.getState().replace(null);
     return;
   }
   const views = await profileViews.read(profileId);
   if (!live()) return;
   useWidgetLayoutStore.getState().replace(views.widgetLayout);
+  useWidgetKitStore.getState().replace(views.widgetKits);
   useWidgetPrefStore.getState().hydrate(sanePrefs(views.widgetPrefs));
   bound.profileId = profileId;
 };
@@ -35,10 +38,15 @@ const watchWidgets = (): (() => void) => {
     const id = bound.profileId;
     if (id && state.byWidget !== prev.byWidget) void profileViews.patch(id, { widgetPrefs: state.byWidget });
   });
+  const offKits = useWidgetKitStore.subscribe((state, prev) => {
+    const id = bound.profileId;
+    if (id && state.views !== prev.views) void profileViews.patch(id, { widgetKits: state.views });
+  });
   for (const name of FLUSH_EVENTS) window.addEventListener(name, profileViews.flush);
   return () => {
     offLayout();
     offPrefs();
+    offKits();
     for (const name of FLUSH_EVENTS) window.removeEventListener(name, profileViews.flush);
     profileViews.flush();
   };

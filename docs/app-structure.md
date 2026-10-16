@@ -25,7 +25,7 @@ my-app/
     services/                      createAppServices(ctx), the graph bootstrapApp builds as ctx.services
     <subject>/                     main-side logic the handlers call (kebab-case functions)
   src/
-    main.tsx                       <BrockApp screenTree widgets titleBar tours modules bootTasks settings review />
+    main.tsx                       <BrockApp screenTree widgets widgetKits titleBar tours modules bootTasks settings review />
     index.html, product.ts, theme.css
     settings.type.ts, settings.constants.ts, main.constants.ts
     ipc/contract.constants.ts      APP_CHANNELS = defineChannels({...}), and its maps for the preload
@@ -38,6 +38,8 @@ my-app/
     widgets/<id>.widget.tsx        one widget per file
     widgets/layout.ts              the default widget layout: defineLayoutPreset({ rows })
     widgets/<id>.widget.constants.ts that widget's constants
+    widgets/<id>.kit.ts            a widget kit: default export its WidgetKitMeta; its widgets say kit: '<id>' in meta
+    widgets/<id>.overlay.tsx       a kit overlay drawn over the main view: default export the component, meta { kit }
     title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
     title-bar/<id>.action.constants.ts that item's constants
     tours/<id>.tour.ts             one guided tour per file: defineTour({ id, title, steps, trigger? })
@@ -129,6 +131,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
+| Widget kit | `src/widgets/` | `<id>.kit.ts` (default export: `WidgetKitMeta`), `<id>.overlay.tsx` (default export: the component, `meta` with `kit`), member widgets with `kit` in `meta`, `<id>.kit.constants.ts`, `<id>.overlay.constants.ts` | `brock sync` into `.brock/widget-kits.ts` as `appWidgetKits` |
 | Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
 | Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
 | Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp` (and of `<BrockApp>` on a phone, for the Storage page summary); the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
@@ -157,13 +160,13 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Installer | `build/installer/` | `header.png`, `splash.png` | `brock package` |
 | Tests | `tests/<area>/`, `tests/e2e/` | `<name>.keep.test.ts`, `<name>.e2e.ts` | `vitest` |
 | Screenshot baselines | `tests/baselines/<platform>/` (`windows`, `macos`, `linux`), `tests/baselines/` | `<capture>.png`, the review step name without its number; `baselines.json` | `--review --review-baselines` compares, `--review-bless` writes them ([architecture.md](architecture.md), Screenshot baselines) |
-| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `title-bar.ts`, `tours.ts`, `manifest.json`, and `tessera-parts.ts` (the part names `tessera guide` writes when `guide.parts` names it) | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
+| Generated | `.brock/` | `modules.*.ts`, `boot.*.ts`, `handlers.main.ts`, `review.ts`, `screens.ts`, `search.ts`, `widgets.ts`, `widget-kits.ts`, `title-bar.ts`, `tours.ts`, `manifest.json`, and `tessera-parts.ts` (the part names `tessera guide` writes when `guide.parts` names it) | written by `brock sync`, `brock dev`, `brock build`; `brock check` fails on drift |
 | Site | `apps/<name>/` | `brock.site.ts`, `src/views/<Name>/`, `src/main.tsx` (see A site) | `brock site add`; `brock sync` writes its `vite.config.ts`, `tsconfig.json` and `ci-<name>.yml` |
 | Config | the app root | `brock.config.ts`, `tessera.config.json`, the managed configs | `brock sync` rewrites the managed ones |
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@my-app/hosts/<subject>`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
-`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field and a widget id Brock already uses are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
+`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field, a widget id Brock already uses, a kit file without a default export or with a key that is not a kit field, an overlay without a default export or a `meta`, and a `meta.kit` that names no kit file are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
 
 A file whose header says `@kind data` holds data and nothing else: imports, types, and `const` declarations made of literals, arrays, objects, spreads, references to other values, constant arithmetic and `Object.freeze`, with `as const` and `satisfies` allowed. It may run past 200 lines, export several lists and name `UPPER_SNAKE` consts outside a `.constants.ts` file, which suits record files and generated tables. A function, an arrow, a call other than `Object.freeze`, a conditional, a getter, `let` or a statement in such a file is a `brock/data-only` error, so the kind exempts no code; a generated file that holds code keeps its own kind. Brock's ESLint config finds the data files by their header when it loads, so an editor picks a newly marked file up after an ESLint restart.
 
@@ -372,6 +375,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 Fixed on this branch:
 
 - The template has `src/widgets/notes.widget.tsx`, `src/widgets/layout.ts` (Notes beside the main view), `.brock/widgets.ts` and `widgets={appWidgets}` with `widgetLayout={appWidgetLayout}` in `src/main.tsx`; its README lists the widgets and the Tessera part folders.
+- The template also has a small widget kit, `src/widgets/inspect.kit.ts` with `inspect-grid.widget.tsx`, `inspect-pointer.widget.tsx` and `inspect-grid.overlay.tsx`, its state in `src/stores/useInspectStore.ts` and the pointer tracking in `src/hooks/useInspectTracking.ts`, and passes `widgetKits={appWidgetKits}` from `.brock/widget-kits.ts`.
 - Brock's built-in widgets sit in `packages/react/src/widgets/built-in/` as `<id>.widget.tsx` files with their component folders, the same shape as `screens/built-in/` and as an app's `src/widgets`.
 - `brock-electron`'s handler files all end in `-handlers.ts` (`dialog-handlers.ts`, `screenshot-handlers.ts` and `session-log-handlers.ts` were `dialogs.ts`, `screenshot-handler.ts` and `session-log-handler.ts`).
 - `brock adopt` in a workspace with no design package still gives each app its own `views`, and prints where screens, widgets, views and shared parts go.

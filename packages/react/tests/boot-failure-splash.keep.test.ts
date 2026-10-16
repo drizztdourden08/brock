@@ -25,6 +25,8 @@ const draw = (platform: Platform, failure: BootFailure): string => renderToStati
   createElement(PlatformContext.Provider, { value: platform }, createElement(BrockContext.Provider, { value: BROCK }, createElement(BootFailureSplash, { failure }))),
 );
 
+const FAILURE: BootFailure = { task: 'settings', label: 'Settings', message: 'config.json is not valid JSON', timedOut: false };
+
 describe('BootFailureSplash', () => {
   it('draws the failed splash with the task, the error, Retry, Open logs and Quit, as the splash page does', () => {
     const html = draw(platformWith(true), { task: 'settings', label: 'Settings', message: 'config.json is not valid JSON', timedOut: false });
@@ -34,6 +36,22 @@ describe('BootFailureSplash', () => {
     expect(html).toContain('config.json is not valid JSON');
     expect(html).toContain('data-boot-failure="settings"');
     for (const label of ['Retry', 'Open logs', 'Quit']) expect(html).toContain(`>${label}<`);
+  });
+
+  it('paints the dark ground wordmark over the title and keeps the name as its text', () => {
+    const product = defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'tester' }, icons: { wordmark: { src: './logos/w.svg', dark: './logos/w-dark.svg' } } });
+    const html = renderToStaticMarkup(
+      createElement(PlatformContext.Provider, { value: platformWith(true) }, createElement(BrockContext.Provider, { value: { ...BROCK, product } }, createElement(BootFailureSplash, { failure: FAILURE }))),
+    );
+    expect(html).toContain('class="ts-splash ts-splash--layer boot-failure-splash boot-failure-splash--wordmark"');
+    expect(html).toContain('--boot-wordmark:url(&quot;./logos/w-dark.svg&quot;)');
+    expect(html).toMatch(/<h1 class="ts-title">Demo<\/h1>/);
+  });
+
+  it('adds no wordmark class or style without one', () => {
+    const html = draw(platformWith(true), FAILURE);
+    expect(html).toContain('class="ts-splash ts-splash--layer boot-failure-splash"');
+    expect(html).not.toContain('--boot-wordmark');
   });
 
   it('keeps only Retry where the host cannot open the logs folder or close the window', () => {

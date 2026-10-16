@@ -62,9 +62,17 @@ interface FileAssociation {
 
 type ProductIconRim = 'light' | 'dark';
 
+interface ProductWordmark {
+  src: string;
+  dark: string;
+}
+
+type ProductWordmarkInput = string | { src: string; dark?: string };
+
 interface ProductIcons {
   brand?: string;
   rim?: ProductIconRim;
+  wordmark?: ProductWordmark;
   ico?: string;
   png256?: string;
   png512?: string;
@@ -140,8 +148,11 @@ interface ProductConfig {
   boot?: ProductBoot;
 }
 
+type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };
+
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
-  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets'>> & {
+  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets' | 'icons'>> & {
+    icons?: ProductIconsInput;
     window?: WindowInput;
     logos?: Partial<ProductLogos>;
     installer?: InstallerInput;
@@ -150,6 +161,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

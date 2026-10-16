@@ -11,6 +11,7 @@ import { rasteriseSvg } from '../src/installer/rasterise-svg.mjs';
 import { setupSplashPng } from '../src/installer/setup-splash-png.mjs';
 import { setupSplashSvg } from '../src/installer/setup-splash-svg.mjs';
 import { splashGround } from '../src/installer/splash-ground.mjs';
+import { wordmarkSourceOf } from '../src/installer/wordmark-source.mjs';
 
 const BROCK_DARK = {
   ...FALLBACK_THEME, primary: '#f0862b', text: '#eeeeee', gradientDarkFrom: '#2e1d0c', gradientDarkTo: '#0f0a06',
@@ -72,6 +73,37 @@ describe('the Setup splash', () => {
     expect(svg).toContain('fill="#eeeeee"');
     expect(svg).toContain('>A &amp; B</text>');
     expect(svg).not.toMatch(/radialGradient|filter|#ffffff/);
+  });
+
+  it('draws the wordmark image in place of the name, fitted under the mark', () => {
+    const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
+    const wordmark = { data: Buffer.from('<svg id="wordmark"/>'), mime: 'image/svg+xml', from: 'public/logos/wordmark.svg' };
+    const ground = { from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' };
+    const svg = setupSplashSvg({ width: 480, height: 360, ground, angle: 160, mark, name: 'Brock App', wordmark });
+    expect(svg).not.toContain('<text');
+    expect(svg).toContain(`data:image/svg+xml;base64,${wordmark.data.toString('base64')}" x="48" y="213" width="384" height="48"`);
+    expect(svg).toContain('x="192" y="99" width="96" height="96"');
+    const narrow = setupSplashSvg({ width: 300, height: 360, ground, angle: 160, mark, name: 'Brock App', wordmark });
+    expect(narrow).toContain('x="18" y="213" width="264" height="48"');
+  });
+
+  it('reads the dark ground wordmark from public/ and stops on a missing file', () => {
+    const rootDir = tempDir({ 'public/logos/wordmark.svg': '<svg/>', 'public/logos/wordmark-dark.png': MARK_PNG });
+    expect(wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.png' } } }))
+      .toMatchObject({ mime: 'image/png', from: 'public/logos/wordmark-dark.png' });
+    expect(wordmarkSourceOf(rootDir, { icons: {} })).toBeNull();
+    expect(() => wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/gone.svg', dark: './logos/gone.svg' } } })).toThrow(/not under public/);
+  });
+
+  it('writes the wordmark into the Setup splash PNG, and the name without one', () => {
+    const tesseraRoot = tempDir({ 'brand/dark-ground/brock/mark/mark-256.png': MARK_PNG });
+    const rootDir = tempDir({ 'public/logos/wordmark.png': MARK_PNG });
+    const ground = splashGround(tempDir(), { dark: null, theme: BROCK_DARK });
+    const withWordmark = { ...config(), icons: { brand: 'brock', wordmark: { src: './logos/wordmark.png', dark: './logos/wordmark.png' } } };
+    const { png, from } = setupSplashPng(rootDir, { config: withWordmark, colours: { angle: 160 }, splash: ground, tesseraRoot });
+    expect(from).toContain('wordmark from public/logos/wordmark.png');
+    expect(pixel(PNG.sync.read(png), 240, 237)).toBe('#7d7e81');
+    expect(setupSplashPng(rootDir, { config: config(), colours: { angle: 160 }, splash: ground, tesseraRoot }).from).toMatch(/name in /);
   });
 
   it('reads the mark from brand/dark-ground', () => {

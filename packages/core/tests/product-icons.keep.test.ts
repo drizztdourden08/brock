@@ -32,3 +32,26 @@ describe('product.logos.app', () => {
     expect(defineProduct({ ...BASE, icons: { brand: 'brock' }, logos: { app: './logos/own.png' } }).logos).toMatchObject({ app: './logos/own.png', instance: './logos/own.png' });
   });
 });
+
+describe('product.icons.wordmark', () => {
+  it('takes a path and uses it on the dark ground too', () => {
+    expect(defineProduct({ ...BASE, icons: { wordmark: './logos/wordmark.svg' } }).icons.wordmark).toEqual({ src: './logos/wordmark.svg', dark: './logos/wordmark.svg' });
+  });
+
+  it('keeps a dark ground variant beside the brand files', () => {
+    const { icons } = defineProduct({ ...BASE, icons: { brand: 'brock', wordmark: { src: './logos/wordmark.png', dark: './logos/wordmark-dark.png' } } });
+    expect(icons.wordmark).toEqual({ src: './logos/wordmark.png', dark: './logos/wordmark-dark.png' });
+    expect(icons.rim).toBe('light');
+  });
+
+  it('sets no wordmark when the app names none', () => {
+    expect(defineProduct(BASE).icons).not.toHaveProperty('wordmark');
+    expect(defineProduct({ ...BASE, icons: { brand: 'brock' } }).icons).not.toHaveProperty('wordmark');
+  });
+
+  it('refuses a file that is not an SVG or a PNG, or one outside public/', () => {
+    expect(() => defineProduct({ ...BASE, icons: { wordmark: './logos/wordmark.webp' } })).toThrow(/product\.icons\.wordmark ".\/logos\/wordmark\.webp" must be an \.svg or \.png/);
+    expect(() => defineProduct({ ...BASE, icons: { wordmark: { src: './logos/w.svg', dark: '../w.svg' } } })).toThrow(/product\.icons\.wordmark\.dark/);
+    expect(() => defineProduct({ ...BASE, icons: { wordmark: '' } })).toThrow(/product\.icons\.wordmark/);
+  });
+});

@@ -6,6 +6,7 @@ import { markSourceOf } from './mark-source.mjs';
 import { rasteriseSvg } from './rasterise-svg.mjs';
 import { setupSplashSvg } from './setup-splash-svg.mjs';
 import { titleFont } from './title-font.mjs';
+import { wordmarkSourceOf } from './wordmark-source.mjs';
 
 /**
  * @param {string} rootDir  The app root
@@ -21,8 +22,10 @@ const setupSplashPng = (rootDir, inputs) => {
   const { width, height } = config.window.splash;
   const font = titleFont(inputs.tesseraRoot);
   const name = config.window.title ?? config.name;
-  const svg = setupSplashSvg({ width, height, ground: splash, angle: colours.angle, mark, name, family: font?.family });
-  return { png: rasteriseSvg(svg, width, font?.file), from: `the dark ground, mark from ${mark.from}, name in ${font?.family ?? 'Segoe UI'}` };
+  const wordmark = wordmarkSourceOf(rootDir, config);
+  const svg = setupSplashSvg({ width, height, ground: splash, angle: colours.angle, mark, name, family: font?.family, wordmark });
+  const title = wordmark ? `wordmark from ${wordmark.from}` : `name in ${font?.family ?? 'Segoe UI'}`;
+  return { png: rasteriseSvg(svg, width, font?.file), from: `the dark ground, mark from ${mark.from}, ${title}` };
 };
 
 export { setupSplashPng };

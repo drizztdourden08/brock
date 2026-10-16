@@ -30,9 +30,9 @@ describe('the splash page', () => {
 describe('the splash page wordmark', () => {
   it('draws the wordmark image in the title, named by the app name, when the app sets one', () => {
     const html = renderSplashPage({ name: 'A & B', mark: 'mark.svg', styles: '', wordmark: './logos/wordmark-dark.svg' });
-    expect(html).toContain('<h1 class="ts-title splash__name"><img class="ts-wordmark splash__wordmark" src="./logos/wordmark-dark.svg" alt="A &amp; B" /></h1>');
+    expect(html).toContain('<h1 class="ts-title splash__name"><img class="ts-wordmark" src="./logos/wordmark-dark.svg" alt="A &amp; B" /></h1>');
     expect(html).toContain('<title>A &amp; B</title>');
-    expect(OWN_STYLES).toContain('.splash__wordmark');
+    expect(OWN_STYLES).not.toContain('wordmark');
   });
 
   it('builds the page with the dark ground wordmark of product.icons.wordmark', async () => {

@@ -22,6 +22,12 @@ interface HeroEntry extends EntryBase {
   component: ComponentType<HeroProps>;
 }
 
+interface BackdropEntry extends EntryBase {
+  kind: 'backdrop';
+  bucket: string;
+  component: ComponentType;
+}
+
 interface PageEntry extends EntryBase {
   kind: 'page';
   bucket: string;
@@ -75,7 +81,7 @@ interface BaseEntry extends EntryBase {
   component: ComponentType<BaseProps>;
 }
 
-type BucketEntry = HeroEntry | PageEntry | FreePageEntry | TabEntry | SubEntry | PageMetaEntry | SettingsEntry;
+type BucketEntry = HeroEntry | BackdropEntry | PageEntry | FreePageEntry | TabEntry | SubEntry | PageMetaEntry | SettingsEntry;
 
 type ScreenEntry = BucketEntry | CardEntry | BaseEntry;
 
@@ -126,6 +132,6 @@ interface PlacedPage {
 }
 
 export type {
-  BaseEntry, BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, MenuIconOf, PageMetaEntry, PlacedMenuItem, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
+  BackdropEntry, BaseEntry, BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, OrderedTab, PageEntry, MenuIconOf, PageMetaEntry, PlacedMenuItem, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
   SubEntry, SubMatch, TabEntry,
 };

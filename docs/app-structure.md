@@ -125,7 +125,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
@@ -206,6 +206,37 @@ const PresetsPage = () => <ListDetail list={list} selectedId={selectedId} onSele
 - The page takes the window height and its body does not scroll. `ListDetail` and `ListDetailLayout` fill it and scroll each pane themselves.
 - The page's root fills the body: render the `ListDetail` at the root, or give the root you wrap it in `flex: 1` and `min-height: 0`.
 - `fill` works on a page, on a sub page and, through `<page>.page.ts`, on a tab page. A hero page and a settings page ignore it.
+
+## A shorter or taller hero
+
+A hero takes the default Tessera `Hero` height, 288 to 408 px. A home with a few facts and actions sets `hero.size` in its meta instead:
+
+```tsx
+// src/screens/library/home.hero.tsx
+export const meta: ScreenMeta = { title: 'Home', icon: 'house', hero: { size: 'compact' } };
+```
+
+- `'compact'` fits the hero to its content, with tighter padding and gaps; `'tall'` makes it 408 to 560 px; `'default'`, or no `hero` at all, keeps today's height.
+- Brock passes it to Tessera's `Hero` as `size`. Under 720 px wide every size stacks; `default` and `tall` keep their height as a minimum and `compact` has none.
+- `hero` works on a `.hero.tsx` only; other screens ignore it.
+
+## A backdrop drawn by a component
+
+`backdrop` on a bucket in `screens.config.ts` takes an image or a colour, since the config holds no JSX and imports nothing but `defineScreens`. A bucket whose page headers draw a scene of their own puts it in `src/screens/<bucket>/<bucket>.backdrop.tsx`, which default-exports a component:
+
+```tsx
+// src/screens/library/library.backdrop.tsx
+import { StripedBackdrop } from '../../views/StripedBackdrop';
+
+const LibraryBackdrop = () => <StripedBackdrop />;
+
+export default LibraryBackdrop;
+```
+
+- Sync picks it up like a `.hero.tsx`. Its styles live with the view it draws (`src/views/StripedBackdrop/StripedBackdrop.css`), since `src/screens` holds no stylesheets. The component takes no props and fills the header behind every page of the bucket, inside Tessera's `BackdropLayer`.
+- It loads with the bucket's pages: when the hub or one of its pages preloads (a bucket switch pill or a menu row on hover or focus, the home hub at boot), and otherwise the first time a page header of the bucket draws.
+- A page's own `meta.backdrop` still wins, and `{ kind: 'none' }` there removes it for that page. Keep either the file or `backdrop` in `screens.config.ts`: `brock structure` reports a bucket with both.
+- The file sits in its bucket folder and takes the bucket name; its constants go in `<bucket>.backdrop.constants.ts`.
 
 ## A small informational window
 
@@ -295,7 +326,7 @@ product: defineProduct({
 
 - With a wordmark, the boot splash, its failure screen, the window's failure splash (`BootFailureSplash`), the installer's Setup splash (`brock package`) and the About window show the image in place of the name text. Without one, they show the name as before.
 - `dark` is the variant for the splash's dark gradient, the way the splash mark comes from Tessera's dark ground set. The three splashes draw `dark`, and About, on the app surface, draws `src`. A plain path is used for both.
-- The image keeps the name as its accessible name: the splash page and About put it in the heading with the name as its `alt` text, and the window's failure splash keeps the name as the heading text under the painted image, which forced colours mode shows in place of it.
+- The image keeps the name as its accessible name: the splash page, the window's failure splash and About put it in the heading with the name as its `alt` text.
 - The splashes fit it in a box `--size-48` high and at most `--size-384` wide (`48` by `384` pixels on the Setup splash, narrower when the splash is), and About in one `--size-48` high, keeping its proportions. Draw it on a transparent ground with the name filling the art's height.
 - Give the dark variant at least 3:1 against both ends of the dark gradient, the large text contrast, so the name reads at its splash size. The status line, the detail and the version keep Tessera's tested text colours, so the rest of the splash still holds WCAG AA.
 - `defineProduct` refuses a file that is not `.svg` or `.png` and a path with `..`; `brock package` stops when the dark variant is not under `public/`. `brock icons` leaves the file alone, and `public/logos/wordmark*` is not one of the generated logos, so it is committed.

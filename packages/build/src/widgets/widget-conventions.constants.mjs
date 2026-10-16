@@ -13,7 +13,7 @@ const BUILT_IN_WIDGET_IDS = ['logs', 'performance'];
 
 const META_KEYS = [
   'label', 'icon', 'order', 'popOut', 'devOnly', 'taskbar', 'settings', 'tools', 'defaultOpen',
-  'defaultVisibility', 'defaultSide', 'defaultDockedSize', 'defaultFloatingSize', 'padding', 'fill', 'context', 'kit',
+  'defaultVisibility', 'defaultSide', 'defaultDockedSize', 'defaultFloatingSize', 'padding', 'fill', 'chrome', 'context', 'kit',
 ];
 const KIT_KEYS = ['label', 'icon', 'order', 'devOnly', 'requires', 'layout'];
 const OVERLAY_KEYS = ['kit', 'label', 'order'];

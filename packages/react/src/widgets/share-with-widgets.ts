@@ -2,7 +2,7 @@
 import { hostApi } from '../host/host-api';
 import { useProfilesStore } from '../stores/useProfilesStore';
 import { sameSlice } from './same-slice';
-import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { poppedSources } from './popped-sources';
 import { useWidgetRelayStore } from './useWidgetRelayStore';
 import { RELAY_DELAY_MS } from './widget.constants';
 import { widgetWindowId } from './widget-window-id';
@@ -22,7 +22,7 @@ const shareWithWidgets = <S, T>(store: SharedStore<S>, options: ShareOptions<S, 
     timer = null;
     hostApi()?.publishWidgetSlice({ kind, data: current });
   };
-  const popped = (): boolean => useWidgetLayoutStore.getState().layout.popped.length > 0;
+  const popped = poppedSources.anyPopped;
   const later = (): void => {
     if (!popped()) return;
     if (delay <= 0) send();

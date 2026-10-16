@@ -9,9 +9,9 @@ import { useProfilesStore } from '../../stores/useProfilesStore';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
 import { dragRelease } from '../drag-release';
 import { NO_KITS } from '../kits/widget-kit.constants';
-import { FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
+import { FLOAT_SNAP_PX, FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
+import { popOutWindow } from '../pop-out-window';
 import { poppedShown } from '../popped-shown';
-import { poppedWindows } from '../popped-windows';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { widgetMainRect } from '../widget-main-rect';
@@ -27,15 +27,11 @@ import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
 import { useWidgetsNeverFocus } from './behavior/useWidgetsNeverFocus';
-import { NO_POPPED } from './WidgetHost.constants';
 import type { WidgetHostProps } from './WidgetHost.type';
 
 const trackMainRect = (rect: Rect | null): void => {
   widgetMainRect.current = rect;
 };
-
-const dragOutPlace = (point?: ScreenPoint): Partial<WidgetWindowOpen> =>
-  (point ? { at: { x: point.screenX, y: point.screenY } } : { atCursor: dragRelease.releasing() });
 
 const WidgetHost = (props: WidgetHostProps) => {
   const { widgets = NO_WIDGETS, widgetKits = NO_KITS, main, mainLabel, widgetContext, layout: preset = null, keepFocusWithApp = true, widgetDisabled } = props;
@@ -51,18 +47,13 @@ const WidgetHost = (props: WidgetHostProps) => {
   const gates = useWidgetGates(definitions, legacy);
   const resolveDisabled = useDisabledWidgets(widgetDisabled);
   const { content, settingsContent, toolsOf } = useWidgetContent(all);
-  const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(definitions, id)?.taskbar === true }), [definitions]);
+  const extraOf = useCallback((id: string): Partial<WidgetWindowOpen> => ({ taskbar: getWidgetDefinition(all, id)?.taskbar === true }), [all]);
 
-  const popOut = useCallback((id: string, point?: ScreenPoint) => {
-    const current = useWidgetLayoutStore.getState().layout;
-    const facts = { ...current.poppedMemory?.[id], id };
-    if (poppedShown({ ...current, popped: [facts] }, gates).length === 0) return;
-    poppedWindows.open(facts, { ...extraOf(id), ...dragOutPlace(point) });
-  }, [gates, extraOf]);
+  const popOut = useCallback((id: string, point?: ScreenPoint) => popOutWindow({ layout: useWidgetLayoutStore.getState().layout, gates, id, extra: extraOf(id), point }), [gates, extraOf]);
   const stage = useKitStage({
     definitions, layout, onLayoutChange: setLayout, contextActive: gates.contextActive, pageOpen: gates.pageOpen, onPopOut: popOut, externalDrag, children: content, settingsContent,
-  });
-  const shown = useMemo(() => (stage.open ? NO_POPPED : poppedShown(layout, gates)), [stage.open, layout, gates]);
+  }, extraOf);
+  const shown = useMemo(() => (stage.open ? stage.popped : poppedShown(layout, gates)), [stage.open, stage.popped, layout, gates]);
   const staged = <>{main}{stage.layer}</>;
 
   useEffect(() => useWidgetLayoutStore.getState().setPreset(preset), [preset]);
@@ -83,6 +74,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       mainGrip="dragging"
       onMainRect={trackMainRect}
       floatingMin={FLOATING_MIN}
+      floatSnap={FLOAT_SNAP_PX}
       onExternalDrop={dropIn}
       developerToolsEnabled={gates.developerToolsEnabled}
       widgetActions={toolsOf}

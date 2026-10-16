@@ -10,6 +10,8 @@ import { relayLog } from '../../relay-log';
 import { shareWithWidgets } from '../../share-with-widgets';
 import { RELAY_SLICES } from '../../widget.constants';
 import type { SettingsSlice } from '../../widget.type';
+import { useWidgetKitStore } from '../../kits/useWidgetKitStore';
+import { poppedSources } from '../../popped-sources';
 import { useWidgetLayoutStore } from '../../useWidgetLayoutStore';
 
 const publish = (kind: string, data: unknown): void => hostApi()?.publishWidgetSlice({ kind, data });
@@ -48,7 +50,7 @@ const relay = (settingsStore: SettingsStore<object> | null): (() => void) => {
 
 const shareLayoutAndPrefs = (): (() => void) => {
   const offs = [
-    shareWithWidgets(useWidgetLayoutStore, { kind: RELAY_SLICES.frames, pick: (state) => state.layout.frame, delay: 0 }),
+    shareWithWidgets(poppedSources.framesSource, { kind: RELAY_SLICES.frames, pick: (frames) => frames, delay: 0 }),
     shareWithWidgets(useWidgetPrefStore, { kind: RELAY_SLICES.prefs, pick: (state) => state.byWidget, delay: 0 }),
     shareWithWidgets(useContextsStore, { kind: RELAY_SLICES.contexts, pick: (state) => state.contexts, delay: 0 }),
   ];
@@ -58,7 +60,9 @@ const shareLayoutAndPrefs = (): (() => void) => {
 };
 
 const useWidgetRelayPublisher = (settingsStore: SettingsStore<object> | null): void => {
-  const active = useWidgetLayoutStore((s) => s.layout.popped.length > 0);
+  const normalPopped = useWidgetLayoutStore((s) => s.layout.popped.length > 0);
+  const kitPopped = useWidgetKitStore(poppedSources.kitPopped);
+  const active = normalPopped || kitPopped;
   useEffect(shareLayoutAndPrefs, []);
   useEffect(() => (active ? relay(settingsStore) : undefined), [active, settingsStore]);
 };

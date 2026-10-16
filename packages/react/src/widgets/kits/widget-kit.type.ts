@@ -77,13 +77,23 @@ interface WidgetKitState {
   close: () => void;
   toggle: (id: string) => void;
   setLayout: (layout: WidgetLayout) => void;
+  change: (fn: (layout: WidgetLayout) => WidgetLayout) => void;
+  openMember: (id: string) => void;
   toggleMember: (id: string) => void;
+  closeMember: (id: string) => void;
+  popOutMember: (id: string) => void;
   toggleOverlay: (id: string) => void;
   reset: (id: string) => void;
   replace: (stored: unknown) => void;
 }
 
 type KitViews = Pick<WidgetKitState, 'views'>;
+
+type KitSource = Pick<WidgetKitState, 'kits' | 'members' | 'views'>;
+
+type KitLayoutChange = (layout: WidgetLayout) => WidgetLayout;
+
+type KitMemberAction = keyof Pick<WidgetKitState, 'openMember' | 'closeMember' | 'toggleMember' | 'popOutMember'>;
 
 type KitMenuState = Pick<WidgetKitState, 'kits' | 'members' | 'active' | 'views' | 'toggle' | 'toggleMember' | 'toggleOverlay' | 'reset'>;
 
@@ -93,7 +103,7 @@ interface KitRegistryState {
 }
 
 export type {
-  KitMenuState, KitOverlayDef, KitOverlayFile, KitOverlayMeta, KitRegistryState, KitRequirement, KitStatus, KitView, KitViews, KitViewSource, WidgetKitDef, WidgetKitFile,
+  KitLayoutChange, KitMemberAction, KitMenuState, KitOverlayDef, KitSource, KitOverlayFile, KitOverlayMeta, KitRegistryState, KitRequirement, KitStatus, KitView, KitViews, KitViewSource, WidgetKitDef, WidgetKitFile,
   WidgetKitFiles,
   WidgetKitMeta, WidgetKitState,
 };

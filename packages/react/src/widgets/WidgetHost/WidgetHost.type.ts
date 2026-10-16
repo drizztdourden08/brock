@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { WidgetDisabledState, WidgetManagerProps } from '@drizztdourden08/tessera/composites';
+import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
+import type { PoppedWidget, WidgetContextActive, WidgetDisabledState, WidgetLayout, WidgetManagerProps } from '@drizztdourden08/tessera/composites';
 import type { WidgetKitDef } from '../kits/widget-kit.type';
 import type { LayoutPreset } from '../layout-preset.type';
 import type { WidgetDef } from '../widget.type';
@@ -31,6 +32,15 @@ interface KitStage {
   open: boolean;
   props: StageProps;
   layer: ReactNode;
+  popped: readonly PoppedWidget[];
 }
 
-export type { KitStage, StageProps, WidgetContextSource, WidgetDisabledHook, WidgetDisabledOf, WidgetHostProps };
+interface KitPoppedInput {
+  definitions: readonly WidgetDef[];
+  layout: WidgetLayout | null;
+  blocked: boolean;
+  contextActive: WidgetContextActive<WidgetDef> | undefined;
+  extraOf: (id: string) => Partial<WidgetWindowOpen>;
+}
+
+export type { KitPoppedInput, KitStage, StageProps, WidgetContextSource, WidgetDisabledHook, WidgetDisabledOf, WidgetHostProps };

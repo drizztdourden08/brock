@@ -1,5 +1,4 @@
 /* @layer electron-main @kind logic */
-import type { UpdateManager } from 'velopack';
 import type { UpdateInfo } from '../updater.type';
 import type { UpdaterRuntime } from './updater-main.type';
 import type { VersionCandidate } from './update-plan.type';
@@ -7,22 +6,19 @@ import { compareVersions } from './compare-versions';
 import { currentVersion } from './current-version';
 import { errorMessage } from './error-message';
 import { findNewerRelease } from './find-newer-release';
-import { refreshVersions } from './refresh-versions';
+import { loadVersions } from './load-versions';
 import { updaterCapabilities } from './updater-capabilities';
 
 const infoOf = ({ version, releaseNotes, releaseDate, release }: VersionCandidate): UpdateInfo => ({ version, releaseNotes, releaseDate, release });
 
-const checkWithManager = async (rt: UpdaterRuntime, manager: UpdateManager): Promise<UpdateInfo | null> => {
-  const found = await manager.checkForUpdatesAsync();
-  const target = found?.TargetFullRelease;
-  if (!target || compareVersions(target.Version, currentVersion(rt)) <= 0) return null;
-  const listed = (await refreshVersions(rt)).find((v) => v.version === target.Version);
-  return listed ? infoOf(listed) : { version: target.Version, releaseNotes: target.NotesMarkdown, releaseDate: '' };
+const newestListed = async (rt: UpdaterRuntime): Promise<UpdateInfo | null> => {
+  const current = currentVersion(rt);
+  const listed = (await loadVersions(rt)).find((v) => compareVersions(v.version, current) > 0);
+  return listed ? infoOf(listed) : null;
 };
 
 const findUpdate = (rt: UpdaterRuntime): Promise<UpdateInfo | null> => {
-  const manager = rt.manager();
-  if (manager) return checkWithManager(rt, manager);
+  if (rt.manager()) return newestListed(rt);
   if (!rt.feed) return Promise.resolve(null);
   return findNewerRelease(rt.feed, currentVersion(rt), rt.state.prefs.allowPrerelease);
 };

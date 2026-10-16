@@ -12,7 +12,7 @@ The feed is the product's `repo` in `brock.config.ts`. Without a `repo` the modu
 | `product.repo` | `github.com/<owner>/<name>` releases, tagged `v<version>` |
 | `<ENV_PREFIX>_UPDATE_API_ORIGIN` | Reads the release list from another origin, a fixture server. A dev run then checks and lists like a packaged build. |
 | `--update-source=<dir>` | Velopack reads packed releases from a local folder in place of GitHub. |
-| channel | `win`, `osx` or `linux` by platform, or `product.updateChannel` when set. The picker reads `releases.<channel>.json` from the newest release that has one. |
+| channel | `win`, `osx` or `linux` by platform, or `product.updateChannel` when set. The picker reads `releases.<channel>.json` from every listed release and keeps each release's own entries. |
 
 A build that Velopack did not install (a dev run, a portable copy) cannot apply an update. A packaged build still checks, and its dialog sends the user to the release page.
 
@@ -122,7 +122,9 @@ Release notes show in brock-react's `ReleaseNotesPanel` with `markdown` on: draw
 
 ## Pre-releases
 
-A release published with `prerelease` is marked a pre-release on GitHub. The module asks Velopack's `GithubSource` and the GitHub release list for pre-releases only while `allowPrerelease` is on, the dialog's pre-release toggle, off by default. Users who never turn it on are not offered a pre-release, on any channel: the channel names the platform feed (`releases.win.json`), not the stability. A pre-release that is newer than the latest stable release is offered to those who turned it on, and the next stable release reaches everyone.
+A release published with `prerelease` is marked a pre-release on GitHub. The module asks the GitHub release list for pre-releases only while `allowPrerelease` is on, the dialog's pre-release toggle, off by default. Users who never turn it on are not offered a pre-release, on any channel: the channel names the platform feed (`releases.win.json`), not the stability. A pre-release that is newer than the latest stable release is offered to those who turned it on, and the next stable release reaches everyone.
+
+A check answers from the version list, not from Velopack's check, which looks at a single GitHub release: the update is the first listed version newer than the installed one, and the same row backs the "Update available" badge and the install. Each release's `releases.<channel>.json` holds only the packages that existed when it was packed, so the list reads every listed release's own feed and keeps that release's entries. A pre-release published before a newer stable hotfix stays listed and is still offered. A feed that fails to load drops only its own release; the list fails only when every feed read fails, and a check then reports the error.
 
 ## Shipping updates
 

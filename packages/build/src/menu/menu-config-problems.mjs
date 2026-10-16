@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanScreens } from '../screens/scan-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from '../screens/screen-conventions.constants.mjs';
-import { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY, WINDOW_KEYS } from './menu-config.constants.mjs';
+import { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY } from './menu-config.constants.mjs';
 
 /** @param {unknown} value */
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -63,19 +63,6 @@ const referenceProblems = (key, entry, keys) => {
   return problems;
 };
 
-/** @param {unknown} entry */
-const outOfMenu = (entry) => isRecord(entry) && (entry.hidden === true || entry.inMenu === false);
-
-/**
- * @param {unknown} menu product.menu of brock.config.ts
- * @returns {string[]}
- */
-const menuConfigWarnings = (menu) => {
-  const entries = isRecord(menu) && isRecord(menu.entries) ? menu.entries : {};
-  if (!outOfMenu(entries[VIEW_KEY]) || !WINDOW_KEYS.every((key) => outOfMenu(entries[key]))) return [];
-  return [`${MENU_CONFIG_PATH}: entries.view, entries["${WINDOW_KEYS.join('"] and entries["')}"] are all out of the menu, so on a narrow window, where the title bar tucks its pin and full screen buttons away, nothing reaches them`];
-};
-
 /**
  * @param {Record<string, Record<string, unknown>>} entries
  * @returns {string[]}
@@ -117,4 +104,4 @@ const menuConfigProblems = (rootDir, menu) => {
   return [...shaped, ...Object.entries(valid).flatMap(([key, entry]) => referenceProblems(key, entry, keys)), ...loopProblems(valid)];
 };
 
-export { menuConfigProblems, menuConfigWarnings };
+export { menuConfigProblems };

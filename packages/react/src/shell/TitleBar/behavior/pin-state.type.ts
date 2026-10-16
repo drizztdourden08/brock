@@ -4,9 +4,4 @@ interface PinState {
   setPinned: (pinned: boolean) => void;
 }
 
-interface TuckedControls {
-  pin: boolean;
-  fullscreen: boolean;
-}
-
-export type { PinState, TuckedControls };
+export type { PinState };

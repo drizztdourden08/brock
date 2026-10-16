@@ -18,7 +18,6 @@ const SCREEN_KEY_PREFIX = 'screen:';
 const PAGE_KINDS = ['hero', 'page', 'custom', 'settings', 'page-meta'];
 const CARD_KINDS = ['card', 'layer'];
 const VIEW_KEY = 'view';
-const WINDOW_KEYS = ['window-pin', 'window-fullscreen'];
 const MENU_CONFIG_PATH = 'brock.config.ts product.menu';
 
-export { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY, WINDOW_KEYS };
+export { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY };

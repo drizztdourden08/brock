@@ -12,10 +12,25 @@ const file = (name: string, size: number) => ({ name, size });
 
 describe('targetFields', () => {
   it('turns the transport fields into limits, with defaults', () => {
-    expect(targetFields({})).toEqual({ contact: false, attachments: null, afterSend: 'toast' });
+    expect(targetFields({})).toEqual({ contact: false, attachments: null, afterSend: 'toast', identity: null });
     expect(targetFields({ contact: true, attachments: true, afterSend: 'view' }))
-      .toEqual({ contact: true, attachments: { maxFiles: 5, maxBytes: 10 * 1024 * 1024 }, afterSend: 'view' });
+      .toEqual({ contact: true, attachments: { maxFiles: 5, maxBytes: 10 * 1024 * 1024 }, afterSend: 'view', identity: null });
     expect(targetFields({ attachments: { maxBytes: 1024 } }).attachments).toEqual({ maxFiles: 5, maxBytes: 1024 });
+  });
+
+  it('keeps the signed-in identity and drops a blank one', () => {
+    expect(targetFields({ identity: ' sam@example.com ' }).identity).toBe('sam@example.com');
+    expect(targetFields({ identity: '  ' }).identity).toBeNull();
+    const send = vi.fn();
+    expect(resolveBugReportTarget({ app: null, main: { label: 'Upload', identity: 'sam' }, sendToMain: send, repo: undefined }))
+      .toMatchObject({ fields: { identity: 'sam' } });
+  });
+
+  it('takes the app config without a transport as no transport, so main or the issue still gets the report', () => {
+    const send = vi.fn();
+    expect(resolveBugReportTarget({ app: { label: 'Unused' }, main: { label: 'Upload' }, sendToMain: send, repo: undefined }))
+      .toMatchObject({ kind: 'transport', label: 'Upload' });
+    expect(resolveBugReportTarget({ app: {}, main: null, sendToMain: null, repo: undefined })).toEqual({ kind: 'clipboard', label: 'Copy report' });
   });
 
   it('reaches the target of an app or a main transport, never the GitHub issue', () => {

@@ -48,19 +48,29 @@ interface BugReportFields {
   afterSend?: BugReportAfterSend;
 }
 
+interface BugReportLink {
+  label: string;
+  url: string;
+}
+
 interface BugReportReceipt {
   message?: string;
   url?: string;
   id?: string;
+  links?: BugReportLink[];
+  retry?: () => Promise<Result<BugReportReceipt>>;
 }
+
+type BugReportReceiptWire = Omit<BugReportReceipt, 'retry'> & { retryId?: string };
 
 type BugReportTransport = (payload: BugReportPayload) => Promise<Result<BugReportReceipt>>;
 
 interface BugReportTransportInfo extends BugReportFields {
   label: string;
+  identity?: string;
 }
 
 export type {
-  BugReportAfterSend, BugReportAttachment, BugReportAttachmentLimits, BugReportDiagnostics, BugReportExtras, BugReportFields, BugReportLogLine,
-  BugReportPayload, BugReportReceipt, BugReportTransport, BugReportTransportInfo,
+  BugReportAfterSend, BugReportAttachment, BugReportAttachmentLimits, BugReportDiagnostics, BugReportExtras, BugReportFields, BugReportLink, BugReportLogLine,
+  BugReportPayload, BugReportReceipt, BugReportReceiptWire, BugReportTransport, BugReportTransportInfo,
 };

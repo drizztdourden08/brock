@@ -10,11 +10,13 @@ import { useBugReportTarget } from '../../useBugReportTarget';
 import type { BugReportForm } from '../BugReportDialog.type';
 import { announceReceipt } from './announce-receipt';
 import { deliverReport } from './deliver-report';
+import { useReceiptRetry } from './useReceiptRetry';
 import { useReportPayload } from './useReportPayload';
 
 const useBugReportForm = (): BugReportForm => {
   const open = useBugReportStore((s) => s.open);
   const hide = useBugReportStore((s) => s.hide);
+  const section = useBugReportStore((s) => s.appTransport?.section ?? null);
   const { repo } = useProduct();
   const target = useBugReportTarget(open);
   const fields = fieldsOf(target);
@@ -22,6 +24,7 @@ const useBugReportForm = (): BugReportForm => {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<BugReportReceipt | null>(null);
+  const retry = useReceiptRetry(sent, setSent);
   const { build, reset } = draft;
 
   const canSend = target !== null && !sending && draft.filled;
@@ -34,13 +37,18 @@ const useBugReportForm = (): BugReportForm => {
   }, [hide, reset]);
 
   const deliverTo = useCallback((to: BugReportTarget) => {
-    const view = fieldsOf(to)?.afterSend === 'view';
+    let shown = fieldsOf(to)?.afterSend === 'view';
+    const onReceipt = (receipt: BugReportReceipt): void => {
+      shown = shown || receipt.retry !== undefined;
+      if (shown) setSent(receipt);
+      else announceReceipt(receipt);
+    };
     setSending(true);
     setError(null);
-    void build().then((payload) => deliverReport(to, payload, view ? setSent : announceReceipt)).then((failure) => {
+    void build().then((payload) => deliverReport(to, payload, onReceipt)).then((failure) => {
       setSending(false);
       if (failure !== null) setError(failure);
-      else if (!view) close();
+      else if (!shown) close();
     });
   }, [build, close]);
 
@@ -51,7 +59,7 @@ const useBugReportForm = (): BugReportForm => {
   const fallbackTo = sending ? null : fallbackTarget(error, target, repo);
   const fallback = fallbackTo ? () => deliverTo(fallbackTo) : null;
 
-  return { ...draft, open, target, fields, sending, error, sent, canSend, send, fallback, close };
+  return { ...draft, open, target, fields, section, sending, error, sent, retry, canSend, send, fallback, close };
 };
 
 export { useBugReportForm };

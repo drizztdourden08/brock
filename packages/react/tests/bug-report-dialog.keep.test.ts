@@ -1,12 +1,10 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
-import { act, createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
+import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BugReportPayload } from '@drizztdourden08/brock-core';
-import { BugReportDialog } from '../src/bug-report/BugReportDialog';
 import { useBugReportStore } from '../src/bug-report/useBugReportStore';
+import { button, fillReport, mountDialog, settle, textInputs, type, unmountDialog } from './bug-report-harness';
 
 const sent = vi.hoisted(() => ({ payloads: [] as BugReportPayload[], afterSend: 'view', toasts: [] as string[] }));
 
@@ -17,7 +15,7 @@ vi.mock('../src/bug-report/useBugReportTarget', () => ({
   useBugReportTarget: () => ({
     kind: 'transport',
     label: 'Send report',
-    fields: { contact: true, attachments: null, afterSend: sent.afterSend },
+    fields: { contact: true, attachments: null, afterSend: sent.afterSend, identity: null },
     send: (payload: BugReportPayload) => {
       sent.payloads.push(payload);
       return Promise.resolve({ success: true, value: { message: 'Thanks, we have it.', id: 'R-7' } });
@@ -25,43 +23,23 @@ vi.mock('../src/bug-report/useBugReportTarget', () => ({
   }),
 }));
 
-let root: Root | null = null;
-
-const type = (input: HTMLInputElement | HTMLTextAreaElement, value: string): void => {
-  const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
-  act(() => {
-    setter?.call(input, value);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-};
-
-const button = (label: string): HTMLButtonElement | undefined =>
-  [...document.querySelectorAll('button')].find((candidate) => candidate.textContent.trim() === label);
-
 const fillAndSend = async (): Promise<void> => {
   useBugReportStore.setState({ open: true });
-  document.body.innerHTML = '<div id="host"></div>';
-  root = createRoot(document.getElementById('host') as HTMLElement);
-  act(() => root?.render(createElement(BugReportDialog)));
-  const [title, contact] = [...document.querySelectorAll('input')].filter((input) => input.type !== 'checkbox' && input.type !== 'file');
-  const description = document.querySelector('textarea');
-  if (!title || !contact || !description) throw new Error('the form fields are missing');
+  mountDialog();
+  fillReport();
+  const contact = textInputs()[1];
+  if (!contact) throw new Error('the contact field is missing');
   expect(contact.type).toBe('email');
-  type(title, 'Crash on save');
-  type(description, 'The app closed when I saved.');
   type(contact, 'me@example.com');
   act(() => button('Send report')?.click());
-  await act(() => new Promise((done) => { setTimeout(done, 0); }));
+  await settle();
 };
 
 afterEach(() => {
-  act(() => root?.unmount());
-  root = null;
+  unmountDialog();
   sent.payloads.length = 0;
   sent.toasts.length = 0;
   sent.afterSend = 'view';
-  useBugReportStore.setState({ open: false, appTransport: null });
-  document.body.replaceChildren();
 });
 
 describe('the bug report dialog after sending', () => {

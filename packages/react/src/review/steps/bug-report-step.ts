@@ -4,6 +4,7 @@ import { find } from '../dom/find';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
+import { bugReportPrefill } from './bug-report-prefill';
 import { escapeCloses } from './escape-closes';
 
 const bugReportStep: ReviewStep = {
@@ -16,6 +17,7 @@ const bugReportStep: ReviewStep = {
     if (opened === null) return;
     await tour.capture('bug-report');
     await escapeCloses(tour, 'bug-report', () => find(SELECTORS.bugReportDialog) === null);
+    await bugReportPrefill(tour);
   },
 };
 

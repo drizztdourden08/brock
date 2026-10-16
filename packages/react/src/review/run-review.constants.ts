@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import { aboutStep } from './steps/about-step';
 import { appWidgetsStep } from './steps/app-widgets-step';
+import { kitsStep } from './steps/kits-step';
 import { bootStep } from './steps/boot-step';
 import { bucketsStep } from './steps/buckets-step';
 import { bugReportStep } from './steps/bug-report-step';
@@ -23,7 +24,7 @@ import type { ReviewStep } from './review.type';
 const STEPS_BEFORE_SEED: readonly ReviewStep[] = [bootStep, profileStep];
 
 const STEPS_AFTER_SEED: readonly ReviewStep[] = [
-  menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, widgetWindowsStep,
+  menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, kitsStep, widgetWindowsStep,
   toursStep, fontsStep, stylesStep,
 ];
 

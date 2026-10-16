@@ -8,8 +8,8 @@ const SCREEN_FILE_GLOBS = [
   '**/src/screens/**/*.{page,tab,sub,card,custom,layer}.dev.tsx', '**/src/screens/**/*.{settings,page}.dev.ts',
 ];
 const SCREEN_FILE = '(^|\\/)src\\/screens\\/.+\\.(?:(?:hero|backdrop|page|tab|sub|card|custom|layer|base)\\.tsx|(?:settings|page)\\.ts|(?:page|tab|sub|card|custom|layer)\\.dev\\.tsx|(?:settings|page)\\.dev\\.ts)$';
-const WIDGET_FILE_GLOBS = ['**/src/widgets/**/*.widget.tsx', '**/src/widgets/layout.ts'];
-const WIDGET_FILE = '(^|\\/)src\\/widgets\\/(?:.+\\/)?[a-z][a-z0-9-]*\\.widget\\.tsx$';
+const WIDGET_FILE_GLOBS = ['**/src/widgets/**/*.widget.tsx', '**/src/widgets/**/*.overlay.tsx', '**/src/widgets/*.kit.ts', '**/src/widgets/layout.ts'];
+const WIDGET_FILE = '(^|\\/)src\\/widgets\\/(?:.+\\/)?[a-z][a-z0-9-]*\\.(?:widget|overlay)\\.tsx$';
 const TITLE_BAR_ACTION_FILE = '(^|\\/)src\\/title-bar\\/[a-z][a-z0-9-]*\\.action\\.ts$';
 
 const RAW_CONTROLS = [

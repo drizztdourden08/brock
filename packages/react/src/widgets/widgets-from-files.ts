@@ -5,13 +5,14 @@ import { defineWidget } from './define-widget';
 import type { WidgetDef, WidgetFile } from './widget.type';
 
 const widgetFromFile = ({ id, component, meta = {} }: WidgetFile): WidgetDef => {
-  const { settings, label, ...rest } = meta;
+  const { settings, tools, label, ...rest } = meta;
   return defineWidget({
     ...rest,
     id,
     label: label ?? titleCase(id),
     render: () => createElement(component),
     ...(settings ? { settings: () => createElement(settings) } : {}),
+    ...(tools ? { tools: () => createElement(tools) } : {}),
   });
 };
 

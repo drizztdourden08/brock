@@ -127,9 +127,10 @@ case without it), `icon`, `popOut`, `devOnly`, `taskbar`, `defaultVisibility`
 (`'context-only'` shows it only while its context is active), `context` (the context it
 needs, such as `'session'`: the widget shows while `contexts.set('session', { active: true })`
 holds, set from anywhere or with `useSetAppContext` in a component), `defaultOpen`, `defaultSide`, `defaultDockedSize`,
-`defaultFloatingSize` and `settings`, a component drawn in the widget's options panel.
-`src/widgets` holds widget files and `layout.ts` only: a widget with parts imports them
-from `src/views`. `pnpm structure` names anything else there.
+`defaultFloatingSize`, `settings`, a component drawn in the widget's options panel, `tools`,
+a component drawn in its title strip, and `kit`, the widget kit it belongs to.
+`src/widgets` holds widget, kit and overlay files and `layout.ts` only: a widget with parts
+imports them from `src/views`. `pnpm structure` names anything else there.
 
 `src/widgets/layout.ts` is the layout a new profile starts with and the one
 Menu > Widgets > Reset layout comes back to: rows of widget ids around `'main'`, the main
@@ -143,6 +144,16 @@ A widget keeps its own state per profile with `useWidgetState(key, initial)`, a 
 that survives a restart, a profile switch and a screen opened over it. App state reaches a
 popped widget window with `shareWithWidgets(store, { kind, pick })` in a boot task and
 `useWidgetSlice(kind)` in the widget.
+
+A widget kit is a group of widgets that opens and closes as one, with its own saved
+layout, kept apart from the other widgets: `src/widgets/<id>.kit.ts` default-exports its
+`WidgetKitMeta` (`label`, `icon`, `devOnly`, `requires: { context, reason }`, `layout`), each
+widget of the kit says `kit: '<id>'` in its `meta`, and `src/widgets/<id>.overlay.tsx` draws
+over the main view while the kit is open. The kit is a sub-menu of Widgets with one Close kit
+entry, and the bar it draws over the main view closes it too. `pnpm sync` writes
+`.brock/widget-kits.ts`, which `src/main.tsx` passes as `widgetKits`. The template's
+`inspect` kit (Layout inspector, shown while developer tools are on) has a Grid widget, a
+Pointer widget and a grid overlay.
 
 Brock adds two widgets of its own: Logs and Performance (frame rate, long tasks, heap,
 every process's CPU and memory, the app state, and a Copy snapshot button for bug reports).

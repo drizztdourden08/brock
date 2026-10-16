@@ -39,7 +39,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -71,7 +71,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const screens = useMemo(() => registry.list(), [registry]);
   const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootGate>;
-  const stage = <WidgetHost widgets={widgets} layout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} />;
+  const stage = <WidgetHost widgets={widgets} widgetKits={widgetKits} layout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} />;
 
   return (
     <>

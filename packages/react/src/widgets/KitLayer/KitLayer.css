@@ -1,0 +1,46 @@
+/* @layer renderer-shell @kind style */
+
+.widget-kit-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-sticky);
+  pointer-events: none;
+}
+
+.widget-kit-layer__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.widget-kit-layer__waiting {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--c-panel);
+  pointer-events: auto;
+}
+
+.widget-kit-bar {
+  position: absolute;
+  top: var(--space-sm);
+  left: 50%;
+  display: inline-flex;
+  gap: var(--space-xs);
+  align-items: center;
+  padding: var(--space-2xs) var(--space-2xs) var(--space-2xs) var(--space-sm);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-pill);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-overlay);
+  color: var(--c-text);
+  font-size: var(--text-sm);
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+.widget-kit-bar__label {
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}

@@ -14,11 +14,13 @@ interface WidgetDef extends WidgetDefinition {
   order?: number;
   defaultOpen?: boolean;
   context?: string;
+  kit?: string;
+  tools?: () => ReactNode;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
 
-type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings'>> & { settings?: ComponentType };
+type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings' | 'tools'>> & { settings?: ComponentType; tools?: ComponentType };
 
 interface WidgetFile {
   id: string;
@@ -79,6 +81,7 @@ interface WidgetLayoutReading {
 interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
+  widgetKits?: unknown;
   screens?: ScreenViews;
 }
 

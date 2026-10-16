@@ -18,6 +18,7 @@ import type { SettingsControlProps, TabDef } from '../../settings/settings.type'
 import type { LayoutPreset } from '../../widgets/layout-preset.type';
 import type { WidgetContextSource, WidgetDisabledHook } from '../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../widgets/widget.type';
+import type { WidgetKitDef } from '../../widgets/kits/widget-kit.type';
 import type { AppReview } from '../../review/app-review.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
@@ -48,6 +49,7 @@ interface BrockAppProps<S extends object> {
   modules?: RendererModule[];
   bootTasks?: RendererBootTask[];
   widgets?: readonly WidgetDef[];
+  widgetKits?: readonly WidgetKitDef[];
   widgetLayout?: LayoutPreset;
   widgetContext?: WidgetContextSource;
   widgetDisabled?: WidgetDisabledHook;

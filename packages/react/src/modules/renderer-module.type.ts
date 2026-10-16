@@ -7,6 +7,7 @@ import type { ModulePorts } from '../platform/platform.type';
 import type { ScreenDef } from '../screens/screen.type';
 import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
+import type { WidgetKitDef } from '../widgets/kits/widget-kit.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit } from '../quit/quit.type';
 import type { TourDef } from '../tours/tour.type';
@@ -24,6 +25,7 @@ interface RendererModule {
   titleBarActions?: TitleBarActionSource[];
   searchActions?: SearchAction[];
   widgets?: WidgetDef[];
+  widgetKits?: WidgetKitDef[];
   ports?: ModulePorts;
   logChannels?: string[];
   bootTasks?: RendererBootTask[];
@@ -40,6 +42,7 @@ interface MergedModules {
   titleBarActions: TitleBarActionSource[];
   searchActions: SearchAction[];
   widgets: WidgetDef[];
+  widgetKits: WidgetKitDef[];
   ports: ModulePorts;
   logChannels: string[];
   bootTasks: RendererBootTask[];

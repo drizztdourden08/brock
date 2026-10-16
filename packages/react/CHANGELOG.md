@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.58.0
+
+### Minor Changes
+
+- c4b9b7d: A volume control for the title bar, and an app volume store. A title bar item takes `kind: 'volume'` with `label`, `value` (0 to 1), `muted`, `onChange` and `onMuteToggle`: its icon gains sound waves as the level rises, in the primary tone, and turns to the red `volume-x` when muted or at 0; a click mutes and unmutes, and once it folds the main menu lists it as Mute or Unmute with the level as its subtitle. `useVolumeStore` holds `value`, `muted`, `setValue`, `setMuted` and `toggleMute`, saved per profile in `ui-views.json`, and `volumeTitleBarItem()` binds an item to it, so `src/title-bar/volume.action.ts` is `export default volumeTitleBarItem();`. An app that keeps the level in its own state passes `volume` on `BrockApp` or a module: a `{ get, set, subscribe }` binding, or `volumeFromSettings({ value: 'audio.master', muted: 'audio.muted', max: 100 })` for settings keys; the store and the item then read and write through it. The review checks each volume item: shown, muting and unmuting on click, and folded into the menu at the minimum window width. The slider on hover waits on a Tessera volume bar item. Brock moves to Tessera ^0.40.1.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.58.0
+
 ## 0.57.0
 
 ### Minor Changes

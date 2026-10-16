@@ -22,7 +22,7 @@ import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
 import { useSaveFailureToast } from '../../behavior/useSaveFailureToast';
-import { useScreenPersistence } from '../../behavior/useScreenPersistence';
+import { useProfileViews } from '../../behavior/useProfileViews';
 import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
 import { viewHidden } from '../../../../menu/view-hidden';
@@ -39,7 +39,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -55,7 +55,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useSaveFailureToast(settingsStore);
   useKeyboardShortcuts();
   useMouseBack();
-  useScreenPersistence();
+  useProfileViews(settingsStore, volume);
   useIpcLogBridge(log);
   useAppOpenBridge();
 

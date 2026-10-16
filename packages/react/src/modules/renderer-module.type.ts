@@ -11,6 +11,7 @@ import type { WidgetKitDef } from '../widgets/kits/widget-kit.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit } from '../quit/quit.type';
 import type { TourDef } from '../tours/tour.type';
+import type { VolumeSource } from '../volume/volume.type';
 
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
@@ -31,6 +32,7 @@ interface RendererModule {
   bootTasks?: RendererBootTask[];
   beforeQuit?: BeforeQuit;
   tours?: readonly TourDef[];
+  volume?: VolumeSource;
 }
 
 interface MergedModules {
@@ -48,6 +50,7 @@ interface MergedModules {
   bootTasks: RendererBootTask[];
   beforeQuit: BeforeQuit[];
   tours: TourDef[];
+  volume?: VolumeSource;
 }
 
 export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };

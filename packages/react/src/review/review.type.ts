@@ -188,6 +188,15 @@ interface SettingRowsSnapshot {
   empty: string[];
 }
 
+interface VolumeItemSnapshot {
+  shown: boolean;
+  toggled: boolean;
+  restored: boolean;
+  width: number;
+  tucked: boolean;
+  inMenu: boolean;
+}
+
 interface MenuKeyWalk {
   path: string[] | null;
   item: HTMLElement | null;
@@ -195,5 +204,5 @@ interface MenuKeyWalk {
 
 export type {
   AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuKeyWalk, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
-  ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
+  ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot, VolumeItemSnapshot,
 };

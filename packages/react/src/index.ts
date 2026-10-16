@@ -35,6 +35,7 @@ export * from './shortcuts-help';
 export * from './quit';
 export * from './review';
 export * from './title-bar';
+export * from './volume';
 export * from './tours';
 export * from './jobs';
 export * from './open';

@@ -24,6 +24,7 @@ import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
 import type { BeforeProfileRemove } from '../../stores/profiles.type';
+import type { VolumeSource } from '../../volume/volume.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -70,6 +71,7 @@ interface BrockAppProps<S extends object> {
   bugReport?: BrockAppBugReport;
   sessionLog?: boolean;
   showFlags?: ShowFlagValues;
+  volume?: VolumeSource;
 }
 
 interface MenuBuildInput {

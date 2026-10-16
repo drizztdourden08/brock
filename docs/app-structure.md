@@ -40,7 +40,7 @@ my-app/
     widgets/<id>.widget.constants.ts that widget's constants
     widgets/<id>.kit.ts            a widget kit: default export its WidgetKitMeta; its widgets say kit: '<id>' in meta
     widgets/<id>.overlay.tsx       a kit overlay drawn over the main view: default export the component, meta { kit }
-    title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu or a status tag
+    title-bar/<id>.action.ts       one title bar item per file: a button, a dropdown menu, a status tag or a volume control
     title-bar/<id>.action.constants.ts that item's constants
     tours/<id>.tour.ts             one guided tour per file: defineTour({ id, title, steps, trigger? })
     tours/<id>.tour.constants.ts   that tour's constants, such as the selectors it lights
@@ -132,7 +132,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
 | Widget kit | `src/widgets/` | `<id>.kit.ts` (default export: `WidgetKitMeta`), `<id>.overlay.tsx` (default export: the component, `meta` with `kit`), member widgets with `kit` in `meta`, `<id>.kit.constants.ts`, `<id>.overlay.constants.ts` | `brock sync` into `.brock/widget-kits.ts` as `appWidgetKits` |
-| Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)` or a hook from `src/hooks`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
+| Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)`, a hook from `src/hooks`, or `volumeTitleBarItem()`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
 | Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
 | Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp` (and of `<BrockApp>` on a phone, for the Storage page summary); the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
 | Renderer boot task | `src/boot/` | `<id>.task.ts`, `<id>.task.constants.ts` for its constants | `brock sync` into `.brock/boot.renderer.ts` |

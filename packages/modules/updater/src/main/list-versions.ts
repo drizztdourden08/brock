@@ -12,13 +12,25 @@ import { versionOfTag } from './version-of-tag';
 const notesOf = (asset: VelopackAsset, release: GithubRelease): string =>
   (asset.NotesMarkdown.length > 0 ? asset.NotesMarkdown : (release.body ?? ''));
 
-const feedUrlOf = (releases: GithubRelease[], feedFile: string): string | null =>
-  releases.flatMap((r) => r.assets ?? []).find((a) => a.name === feedFile)?.browser_download_url ?? null;
+const feedUrlOf = (release: GithubRelease, feedFile: string): string | null =>
+  release.assets?.find((a) => a.name === feedFile)?.browser_download_url ?? null;
 
-const fetchFeed = async (url: string): Promise<VelopackAsset[]> => {
+const fetchOwnEntries = async (url: string, version: string): Promise<VelopackAsset[]> => {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Could not read the release index (${res.status})`);
-  return parseFeed(await res.json());
+  return parseFeed(await res.json()).filter((asset) => asset.Version === version);
+};
+
+const readAllFeeds = async (feed: UpdateFeed, releases: GithubRelease[]): Promise<VelopackAsset[]> => {
+  const reads = releases.flatMap((release) => {
+    const url = feedUrlOf(release, feed.feedFile);
+    return url ? [fetchOwnEntries(url, versionOfTag(release.tag_name, feed.tagPrefix))] : [];
+  });
+  const settled = await Promise.allSettled(reads);
+  if (settled.length > 0 && settled.every((read) => read.status === 'rejected')) {
+    throw new Error('Could not read any release index');
+  }
+  return settled.flatMap((read) => (read.status === 'fulfilled' ? read.value : []));
 };
 
 const splitAssets = (assets: VelopackAsset[], known: ReadonlyMap<string, GithubRelease>): AssetTables => {
@@ -51,10 +63,8 @@ const candidateOf = (asset: VelopackAsset, release: GithubRelease, current: stri
 
 const listVersions = async (feed: UpdateFeed, current: string, allowPrerelease: boolean): Promise<VersionCandidate[]> => {
   const releases = await fetchReleases(feed, allowPrerelease);
-  const feedUrl = feedUrlOf(releases, feed.feedFile);
-  if (!feedUrl) return [];
   const byVersion = new Map(releases.map((r) => [versionOfTag(r.tag_name, feed.tagPrefix), r]));
-  const tables = splitAssets(await fetchFeed(feedUrl), byVersion);
+  const tables = splitAssets(await readAllFeeds(feed, releases), byVersion);
   return [...tables.full.values()]
     .flatMap((asset) => {
       const release = byVersion.get(asset.Version);

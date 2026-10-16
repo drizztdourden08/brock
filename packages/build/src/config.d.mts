@@ -24,6 +24,19 @@ interface BrockBuildOptions {
   nodePolyfills?: boolean | Record<string, unknown>;
   /** Globals replaced at build time in main, preload, the renderer, its workers and the web build: each value is JSON-stringified, so the code reads it as written here. Declare each name in a .d.ts of the app. */
   define?: Record<string, BrockDefineValue>;
+  /** Added to the renderer dev server's optimizeDeps, after the list Brock computes from the installed packages and the imports of the renderer source. */
+  optimizeDeps?: BrockOptimizeDepsOptions;
+}
+
+interface BrockOptimizeDepsOptions {
+  /** More dependencies to pre-bundle, as Vite's optimizeDeps.include takes them. */
+  include?: string[];
+  /** Dependencies never to pre-bundle; also dropped from the computed list. */
+  exclude?: string[];
+  /** Vite's optimizeDeps.entries: the files its scanner starts from instead of index.html. */
+  entries?: string[];
+  /** Dependencies only a renderer Web Worker imports (fs, crypto, path through build.nodePolyfills, js-yaml), pre-bundled at start instead of when the worker first loads. */
+  worker?: string[];
 }
 
 type BrockDefineValue = string | number | boolean | null | BrockDefineValue[] | { [key: string]: BrockDefineValue };
@@ -105,7 +118,7 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
 export type {
-  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockGateOptions, BrockPackagingOptions, BrockPlatform,
+  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
   BrockReviewOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
 };
 export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

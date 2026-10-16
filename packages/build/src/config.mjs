@@ -17,7 +17,7 @@
 
 /**
  * @typedef {object} BrockToolingConfig
- * @property {{ aliases?: Record<string, string>, nodePolyfills?: boolean | Record<string, unknown>, define?: Record<string, unknown> }} [build] Vite options
+ * @property {{ aliases?: Record<string, string>, nodePolyfills?: boolean | Record<string, unknown>, define?: Record<string, unknown>, optimizeDeps?: { include?: string[], exclude?: string[], entries?: string[], worker?: string[] } }} [build] Vite options
  * @property {{ scripts?: string[], clangFormat?: string[] }} [gate] the app's own gate steps
  * @property {BrockWorkflowOptions} [workflows] which workflows Brock keeps, and app steps
  * @property {{ compilerOptions?: Record<string, unknown> }} [tsconfig] over the managed tsconfig

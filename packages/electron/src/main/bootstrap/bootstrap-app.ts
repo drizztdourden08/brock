@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import { app, session } from 'electron';
+import { app } from 'electron';
 import type { ProductConfig } from '@drizztdourden08/brock-core/product';
 import type { BootstrapOptions } from '../types/main-context.type';
 import type { WindowSetup } from '../window/window-setup.type';
@@ -34,6 +34,7 @@ import { registerHandlerGroups } from './register-handlers';
 import { widgetHandlers } from '../widgets/widget-handlers';
 import { widgetWindowSetup } from '../widgets/widget-window-setup';
 import { logBoot } from './boot-timing';
+import { refreshDevCache } from './dev-cache';
 import { externalProtocols } from '../window/external-protocols';
 import { startProcess } from './start-process';
 import { startOpenRouting } from '../open/start-open-routing';
@@ -42,7 +43,7 @@ import { fileGuard } from '../files/file-guard-state';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
-  if (ctx.isDev) await session.defaultSession.clearCache();
+  if (ctx.isDev) logBoot(await refreshDevCache(app.getPath('userData')) ? 'dev cache cleared' : 'dev cache kept');
 
   initPaths(app.getPath('userData'));
   await ensureDataDirectories(dataDirs);

@@ -4,6 +4,7 @@ import type { SecurityOptions } from '../types/main-context.type';
 import { DEFAULT_PERMISSIONS } from './security.constants';
 import { externalProtocols } from './external-protocols';
 import { openExternal } from './open-external';
+import { guardNavigation } from './navigation-guard';
 
 const applyWindowSecurity = (win: BrowserWindow, options: SecurityOptions = {}): void => {
   if (options.externalProtocols) externalProtocols.allowed = new Set(options.externalProtocols);
@@ -13,6 +14,7 @@ const applyWindowSecurity = (win: BrowserWindow, options: SecurityOptions = {}):
     void openExternal(url);
     return { action: 'deny' };
   });
+  guardNavigation(win.webContents);
 
   const { session } = win.webContents;
   session.setPermissionCheckHandler((_wc, permission) => permissions.has(permission));

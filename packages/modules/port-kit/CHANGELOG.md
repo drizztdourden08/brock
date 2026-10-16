@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.47.0
+
+### Patch Changes
+
+- d8d344e: A title bar action file may export `order` or `meta` beside its default export, as screen and widget files may. A ROM whose asset file is empty lists as having no assets (`hasAssets: false`, `assetBytes: 0`).
+- Updated dependencies [6ead199]
+- Updated dependencies [7923723]
+- Updated dependencies [7923723]
+  - @drizztdourden08/brock-core@0.47.0
+  - @drizztdourden08/brock-react@0.47.0
+  - @drizztdourden08/brock-electron@0.47.0
+
 ## 0.46.0
 
 ### Minor Changes

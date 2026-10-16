@@ -35,7 +35,6 @@ import { JobHost } from '../../../../jobs/JobHost';
 import { TourHost } from '../../../../tours/TourHost';
 import { useAppOpenBridge } from '../../../../open/useAppOpenBridge';
 import { useBootPreload } from '../../../../lazy/useBootPreload';
-import { usePreloadOnHover } from '../../../../lazy/usePreloadOnHover';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -61,7 +60,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const shellMenu = useShellMenu(moduleMenu, railed);
   useBootPreload(registry, [home, homeScreen]);
-  usePreloadOnHover(shellMenu.menu, registry);
   const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();
   const actionIds = JSON.stringify(actions.map((action) => action.id));

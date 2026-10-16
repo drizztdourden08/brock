@@ -6,6 +6,7 @@ interface WorkspaceItem {
   label: string;
   icon: ReactNode;
   disabled?: boolean;
+  onHighlight?: () => void;
 }
 
 interface WorkspaceSwitchProps {

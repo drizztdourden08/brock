@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { createElement, useCallback, useMemo } from 'react';
+import { useRoutePreloader } from '../../../lazy/useRoutePreloader';
 import type { MenuEntry } from '../../../menu/menu.type';
 import type { SearchAction } from '../../../search/search.type';
 import { useSearchIndex } from '../../../search/useSearchIndex';
@@ -35,7 +36,8 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
     item.onCancel?.();
   }, [settle]);
 
-  const ranked = useMemo(() => paletteGroups(catalog, query, scope), [catalog, query, scope]);
+  const preload = useRoutePreloader();
+  const ranked = useMemo(() => paletteGroups(catalog, query, scope, preload), [catalog, query, scope, preload]);
   const groups = useMemo(() => withConfirmActions(
     ranked,
     (item) => createElement(PaletteConfirm, { item, armed: asking === item.id, onArm: () => ask(item.id), onConfirm: () => runNow(item), onSettle: () => cancel(item) }),

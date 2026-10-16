@@ -24,6 +24,7 @@ interface MenuItem extends Omit<ProductMenuEntry, 'label'> {
   devOnly?: boolean;
   show?: ShowRule;
   useDisabled?: () => boolean;
+  onHighlight?: () => void;
 }
 
 type MenuEntry = MenuItem | 'separator';

@@ -16,7 +16,7 @@ const selectOf = (item: MenuItem, resolve: MenuResolver): (() => void) | undefin
 };
 
 const toMenuItem = (item: MenuItem, resolve: MenuResolver): TesseraMenuItem => {
-  const { key, label, icon, description, shortcut, disabled, checked, children } = item;
+  const { key, label, icon, description, shortcut, disabled, checked, children, onHighlight } = item;
   return {
     id: key,
     label,
@@ -26,6 +26,7 @@ const toMenuItem = (item: MenuItem, resolve: MenuResolver): TesseraMenuItem => {
     disabled,
     checked,
     onSelect: selectOf(item, resolve),
+    onHighlight,
     children: children && toMenuNodes(children, resolve),
     ...confirmPart(item),
   };

@@ -9,7 +9,13 @@ import { lazyComponent } from '../src/lazy/lazy-component';
 import { lazyLoads } from '../src/lazy/lazy-loads';
 import { LazyHost } from '../src/lazy/LazyHost';
 import { preloadRoute } from '../src/lazy/preload-route';
-import { routesForLabel } from '../src/lazy/routes-for-label';
+import { routePreloader } from '../src/lazy/route-preloader';
+import { resolveMenu } from '../src/menu/resolve-menu';
+import { toMenuGroups } from '../src/menu/to-menu-groups';
+import { withPreload } from '../src/menu/with-preload';
+import type { MenuItem as TesseraMenuItem } from '@drizztdourden08/tessera/composites';
+import { buildHubNav } from '../src/hub/Hub/behavior/build-hub-nav';
+import { paletteGroups } from '../src/palette/PaletteHost/behavior/palette-groups';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import { defineHub } from '../src/hub/define-hub';
 import { createScreenRegistry } from '../src/screens/create-screen-registry';
@@ -141,13 +147,27 @@ describe('preloading', () => {
     expect(loaded.sort()).toEqual(['credits', 'hero', 'map', 'saves']);
   });
 
-  it('finds the routes a hovered menu row, hub nav entry or bucket pill names by its label', () => {
-    const { registry } = loaderTree();
-    const menu = [{ key: 'saves-entry', label: 'Saves', bucket: 'game', page: 'saves' }, 'separator' as const];
-    expect(routesForLabel('Saves', menu, registry)).toEqual(['game/saves']);
-    expect(routesForLabel('Game', [], registry)).toEqual(['game']);
-    expect(routesForLabel('Credits', [], registry)).toEqual(['credits']);
-    expect(routesForLabel('Nothing', menu, registry)).toEqual([]);
+  it('preloads the screen a highlighted menu row opens, after a rename and a move', async () => {
+    const { loaded, registry } = loaderTree();
+    const groups = { main: [{ key: 'saves-entry', label: 'Saves', screen: 'game/saves' }], sections: [], modules: [], end: [{ key: 'credits', label: 'Credits', screen: 'credits' }] };
+    const { entries } = resolveMenu({ groups, config: { entries: { 'saves-entry': { label: 'Save files', before: 'credits' } } } });
+    const [group] = toMenuGroups(withPreload(entries, routePreloader(registry)), { openScreen: () => undefined });
+    const items = (group?.items ?? []).filter((item): item is TesseraMenuItem => 'label' in item);
+    expect(items.map((item) => item.label)).toEqual(['Save files', 'Credits']);
+    items[0]?.onHighlight?.();
+    await flush();
+    expect(loaded).toEqual(['saves']);
+  });
+
+  it('preloads from a hub nav entry and a palette row by their route, not their label', async () => {
+    const { loaded, registry } = loaderTree();
+    const preload = routePreloader(registry);
+    const nav = buildHubNav({ id: 'saves', label: 'Saves' } as never, [], (page) => preload(`game/${page}`));
+    nav.home?.onHighlight?.();
+    const [palette] = paletteGroups([{ id: 'screen:credits', kind: 'screen', label: 'Credits', breadcrumb: [], keywords: [], target: { route: 'credits' } }], '', null, preload);
+    palette?.items[0]?.onHighlight?.();
+    await flush();
+    expect(loaded.sort()).toEqual(['credits', 'saves']);
   });
 });
 

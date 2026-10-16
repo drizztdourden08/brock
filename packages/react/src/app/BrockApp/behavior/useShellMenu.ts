@@ -8,6 +8,8 @@ import { profileLock } from '../../../menu/profile-lock';
 import { useMenuHooks } from '../../../menu/useMenuHooks';
 import { useMenuIssues } from '../../../menu/useMenuIssues';
 import { visibleMenu } from '../../../menu/visible-menu';
+import { withPreload } from '../../../menu/with-preload';
+import { routePreloader } from '../../../lazy/route-preloader';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
@@ -54,7 +56,8 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
     });
-    const searchable = railed ? stripScreenEntries(resolved.entries) : resolved.entries;
+    const entries = withPreload(resolved.entries, routePreloader(registry));
+    const searchable = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(searchable), searchable, issues: resolved.issues, overrides: resolved.overrides };
   }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry]);
   useMenuIssues(shell.issues);

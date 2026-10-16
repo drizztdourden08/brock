@@ -13,7 +13,7 @@ import { SettingsStoreContext } from '../../stores/settings-context';
 import { BrockContext } from '../brock-context';
 import type { BrockContextValue } from '../brock-context.type';
 import { useAppScreens } from './behavior/useAppScreens';
-import { useBrandPalette } from './behavior/useBrandPalette';
+import { useTesseraSetup } from './behavior/useTesseraSetup';
 import { useHostBoot } from './behavior/useHostBoot';
 import { useProfileSettingsStore } from './behavior/useProfileSettingsStore';
 import { useAppGuards } from './behavior/useAppGuards';
@@ -24,7 +24,7 @@ import { WidgetWindow } from '../../widgets/WidgetWindow';
 import { widgetWindowId } from '../../widgets/widget-window-id';
 import { NO_WIDGETS } from '../../widgets/widget.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
-import { NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp.constants';
+import { NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import { useBugReportTransport } from '../../bug-report/useBugReportTransport';
 import { useRendererLogging } from '../../log/useRendererLogging';
@@ -41,7 +41,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
-  useBrandPalette(product.icons.brand);
+  const overrides = useTesseraSetup(product);
   const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
   useAppGuards(merged.beforeQuit, beforeQuit, profiles);
@@ -67,7 +67,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   );
 
   return (
-    <TesseraProvider overrides={TESSERA_OVERRIDES}>
+    <TesseraProvider overrides={overrides}>
       <PlatformProvider ports={merged.ports}>
         <BrockContext.Provider value={context}>
           <ScreenRegistryContext.Provider value={registry}>

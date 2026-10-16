@@ -82,7 +82,7 @@ export default defineReviewStep({
 | `openScreen(id)` | opens a screen through its menu entry, else `nav.open` |
 | `openWidget(id)` | opens a widget and waits until it is drawn |
 | `resetUi()` | closes the menu, the palette, dialogs and the open screen |
-| `env` | the product, the home screen, the registered screens, the menu, the module ids |
+| `env` | the product, the home screen, the registered screens, the menu as drawn, its overridden entries (`menuOverrides`), the module ids |
 | `platform`, `api` | the platform ports and `window.api` |
 | `id` | the step's own name |
 

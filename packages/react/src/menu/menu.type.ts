@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
 import type { ShowRule } from '../screens/show/show.type';
 
-interface MenuItem {
+interface MenuItem extends Omit<ProductMenuEntry, 'label'> {
   key: string;
   label: string;
   icon?: ReactNode;
@@ -23,6 +24,7 @@ interface MenuItem {
   devOnly?: boolean;
   show?: ShowRule;
   useDisabled?: () => boolean;
+  onHighlight?: () => void;
 }
 
 type MenuEntry = MenuItem | 'separator';

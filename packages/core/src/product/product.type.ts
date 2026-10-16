@@ -118,6 +118,23 @@ interface ProductBoot {
   devWatchdogMs?: number;
 }
 
+type ProductMenuGroup = 'main' | 'sections' | 'modules' | 'end';
+
+interface ProductMenuEntry {
+  hidden?: boolean;
+  inMenu?: boolean;
+  label?: string;
+  group?: ProductMenuGroup;
+  order?: number;
+  before?: string;
+  after?: string;
+  parent?: string | null;
+}
+
+interface ProductMenu {
+  entries?: Readonly<Record<string, ProductMenuEntry>>;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -146,6 +163,7 @@ interface ProductConfig {
   widgets: ProductWidgets;
   installer: InstallerConfig;
   boot?: ProductBoot;
+  menu?: ProductMenu;
 }
 
 type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };
@@ -161,6 +179,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

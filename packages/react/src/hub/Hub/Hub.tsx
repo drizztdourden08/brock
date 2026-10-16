@@ -2,6 +2,8 @@
 import { useCallback, useMemo } from 'react';
 import { SideNavLayout } from '@drizztdourden08/tessera/composites';
 import { Box, ScrollArea } from '@drizztdourden08/tessera/primitives';
+import { useRoutePreloader } from '../../lazy/useRoutePreloader';
+import { joinRoute } from '../../navigation/join-route';
 import { activateEntry } from '../../search/activate-entry';
 import type { SearchEntry } from '../../search/search.type';
 import { useHubSearch } from '../../settings/SettingsHub/behavior/useHubSearch';
@@ -24,7 +26,8 @@ const Hub = (props: HubProps) => {
   const kept = useKeptPages(page, context);
   const { query, setQuery, clear } = useHubSearch();
 
-  const navConfig = useMemo(() => buildHubNav(def.home, groups), [def.home, groups]);
+  const preload = useRoutePreloader();
+  const navConfig = useMemo(() => buildHubNav(def.home, groups, (id) => preload(joinRoute(def.id, id))), [def.home, def.id, groups, preload]);
   const search = useMemo(() => (def.search
     ? { value: query, onChange: setQuery, placeholder: def.search.placeholder ?? DEFAULT_SEARCH_PLACEHOLDER }
     : undefined), [def.search, query, setQuery]);

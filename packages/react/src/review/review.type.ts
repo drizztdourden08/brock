@@ -2,6 +2,7 @@
 import type { ProductConfig, ReviewCheck, TitleBarControls } from '@drizztdourden08/brock-core';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry } from '../menu/menu.type';
+import type { MenuOverrideRecord } from '../menu/menu-config.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { SearchTarget } from '../search/search.type';
 import type { ScreenDef } from '../screens/screen.type';
@@ -15,6 +16,7 @@ interface ReviewEnv {
   homeScreen: string;
   screens: readonly ScreenDef[];
   menu: readonly MenuEntry[];
+  menuOverrides: readonly MenuOverrideRecord[];
   actions: readonly WindowTitleBarAction[];
   moduleIds: readonly string[];
   developerTools: boolean;
@@ -69,9 +71,17 @@ interface MenuExpectation {
   tail?: readonly string[];
 }
 
+type MenuPanelOf = (parents: readonly string[]) => readonly string[] | null;
+
+interface PaletteSearch {
+  shown: string[];
+  row: HTMLElement | null;
+}
+
 interface TitleBarExpectation {
   actions?: readonly WindowTitleBarAction[];
   controls?: Pick<TitleBarControls, 'pin' | 'fullscreen'>;
+  viewLabel?: string;
 }
 
 interface ViewMenuSnapshot {
@@ -178,6 +188,6 @@ interface SettingRowsSnapshot {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot,
 };

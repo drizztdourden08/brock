@@ -8,6 +8,8 @@ interface PaletteHostProps {
   actions?: readonly SearchAction[];
 }
 
+type PalettePreload = ((route: string) => void) | undefined;
+
 interface PaletteItem extends CommandPaletteItem {
   run: () => void;
   confirm?: string | true;
@@ -32,4 +34,4 @@ interface PaletteModel {
   close: () => void;
 }
 
-export type { PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel };
+export type { PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel, PalettePreload };

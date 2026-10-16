@@ -35,7 +35,6 @@ import { JobHost } from '../../../../jobs/JobHost';
 import { TourHost } from '../../../../tours/TourHost';
 import { useAppOpenBridge } from '../../../../open/useAppOpenBridge';
 import { useBootPreload } from '../../../../lazy/useBootPreload';
-import { usePreloadOnHover } from '../../../../lazy/usePreloadOnHover';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
@@ -59,15 +58,14 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useIpcLogBridge(log);
   useAppOpenBridge();
 
-  const fullMenu = useShellMenu(moduleMenu, railed);
+  const shellMenu = useShellMenu(moduleMenu, railed);
   useBootPreload(registry, [home, homeScreen]);
-  usePreloadOnHover(fullMenu, registry);
   const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();
   const actionIds = JSON.stringify(actions.map((action) => action.id));
-  const barMenu = useMemo(() => withoutActionEntries(fullMenu, JSON.parse(actionIds) as string[]), [fullMenu, actionIds]);
+  const barMenu = useMemo(() => withoutActionEntries(shellMenu.menu, JSON.parse(actionIds) as string[]), [shellMenu.menu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
-  useReviewTour({ ready, menu: barMenu, actions, moduleIds, review });
+  useReviewTour({ ready, menu: barMenu, menuOverrides: shellMenu.overrides, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);
   const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /></BootGate>;
@@ -93,7 +91,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         </Box>
         <WindowGuide />
         <JobHost />
-        <StandardOverlays menu={fullMenu} actions={searchActions} />
+        <StandardOverlays menu={shellMenu.searchable} actions={searchActions} />
         <TourHost ready={ready} />
       </Box>
       <BootFailureSplash failure={failure} />

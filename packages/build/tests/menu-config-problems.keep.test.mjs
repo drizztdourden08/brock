@@ -1,0 +1,79 @@
+/* @layer tooling-scripts @kind test */
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { menuConfigProblems } from '../src/menu/menu-config-problems.mjs';
+
+const CONFIG = `import { defineScreens } from '@drizztdourden08/brock-react';
+
+export default defineScreens({
+  buckets: [{ id: 'tools', title: 'Tools', icon: 'wrench', menu: 'submenu' }],
+  home: 'tools',
+});
+`;
+
+const PAGE = 'const Page = () => null;\n\nexport default Page;\n';
+
+const roots = [];
+
+const appWith = (files) => {
+  const root = mkdtempSync(join(tmpdir(), 'brock-menu-'));
+  roots.push(root);
+  for (const [path, body] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), body);
+  }
+  return root;
+};
+
+const APP = {
+  'src/screens/screens.config.ts': CONFIG,
+  'src/screens/tools/notes.page.tsx': PAGE,
+  'src/screens/tools/clock/face.tab.tsx': PAGE,
+  'src/screens/glossary.card.tsx': PAGE,
+};
+
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+describe('menuConfigProblems', () => {
+  it('passes a valid config, and no config at all', () => {
+    const root = appWith(APP);
+    expect(menuConfigProblems(root, undefined)).toEqual([]);
+    expect(menuConfigProblems(root, { entries: {
+      settings: { label: 'Preferences', before: 'about' },
+      'bucket:tools:notes': { parent: null, group: 'main' },
+      'bucket:tools:clock': { order: 2 },
+      'screen:glossary': { hidden: true },
+      'check-updates': { after: 'credits' },
+      view: { label: 'Window' },
+    } })).toEqual([]);
+  });
+
+  it('names bad fields, screen keys the app lacks, self references and loops', () => {
+    const root = appWith(APP);
+    expect(menuConfigProblems(root, { entries: {
+      settings: { label: '', colour: 'red' },
+      'bucket:tools:notez': { hidden: true },
+      profiles: { before: 'profiles' },
+      'screen:glossary': { after: 'about', before: 'bucket:tools' },
+      home: { before: 'credits' },
+      credits: { after: 'home' },
+      view: { hidden: true },
+    } })).toEqual([
+      'brock.config.ts product.menu: entries["settings"].label must be a non-empty text',
+      'brock.config.ts product.menu: entries["settings"] has an unknown field "colour"',
+      'brock.config.ts product.menu: entries["bucket:tools:notez"] names no screen of src/screens',
+      'brock.config.ts product.menu: entries["profiles"].before names the entry itself',
+      'brock.config.ts product.menu: entries["screen:glossary"] sets both before and after; before is used',
+      'brock.config.ts product.menu: entries.view takes only a label; the title bar draws the View sub-menu',
+      'brock.config.ts product.menu: entries home > credits > home name each other in before and after, so none of them moves',
+    ]);
+  });
+
+  it('rejects a menu that is not an entries object', () => {
+    expect(menuConfigProblems(appWith(APP), { entries: [] })).toEqual(['brock.config.ts product.menu: must be { entries: { <key>: { ... } } }']);
+  });
+});

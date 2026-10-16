@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import type { DataDomainDef, ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
+import type { MenuConfig, MenuIssue, MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
 import type { RendererModule } from '../../modules/renderer-module.type';
@@ -83,6 +84,16 @@ interface MenuBuildInput {
   onReportBug: () => void;
   onShortcuts: () => void;
   tours?: { list: readonly TourChoice[]; start: (id: string) => void };
+  menuConfig?: MenuConfig;
+  locked?: (route: string) => boolean;
+}
+
+interface ShellMenu {
+  menu: MenuEntry[];
+  searchable: MenuEntry[];
+  all: MenuEntry[];
+  issues: MenuIssue[];
+  overrides: MenuOverrideRecord[];
 }
 
 interface ShellKeyContext {
@@ -118,9 +129,10 @@ interface AppScreens {
 interface ReviewTourInput {
   ready: boolean;
   menu: readonly MenuEntry[];
+  menuOverrides?: readonly MenuOverrideRecord[];
   actions?: readonly WindowTitleBarAction[];
   moduleIds: readonly string[];
   review?: AppReview;
 }
 
-export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProfiles, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext };
+export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProfiles, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext, ShellMenu };

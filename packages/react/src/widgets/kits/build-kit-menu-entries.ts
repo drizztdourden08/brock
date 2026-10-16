@@ -39,7 +39,6 @@ const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus): Me
     label: kit.label,
     icon: kit.icon ?? KIT_ICON,
     description: status.reason ?? undefined,
-    checked: open,
     children: [
       { key: `${KIT_KEY_PREFIX}${kit.id}-open`, label: open ? KIT_WORDS.close : KIT_WORDS.open, icon: open ? 'x' : KIT_OPEN_ICON, onClick: () => state.toggle(kit.id) },
       'separator',

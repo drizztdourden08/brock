@@ -134,7 +134,7 @@ describe('the kit menu', () => {
   it('gives each kit a sub-menu: open or close, its widgets, its overlays and a reset', () => {
     store().open('editor');
     const editor = entries(SCENE_ON).find((entry) => entry.key === 'kit-editor') ?? { key: 'none', label: 'none' };
-    expect(editor.checked).toBe(true);
+    expect(editor.checked).toBeUndefined();
     expect(children(editor).map((child) => child.label)).toEqual(['Close kit', 'props', 'tree', 'Gizmo', 'Reset kit layout']);
     expect(children(editor).filter((child) => child.key.startsWith('widget-')).every((child) => child.checked)).toBe(true);
     expect((editor.children ?? []).filter((child: MenuEntry) => child === 'separator')).toHaveLength(2);

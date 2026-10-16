@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.51.0
+
+### Minor Changes
+
+- 692c83a: `runAssetWorkerJob` and `runAssetWebWorkerJob` take the job options `visible`, `forwardLog` and `onDuplicate` and pass them to the job they start.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.51.0
+- @drizztdourden08/brock-electron@0.51.0
+- @drizztdourden08/brock-react@0.51.0
+
 ## 0.50.0
 
 ### Patch Changes

@@ -36,12 +36,19 @@ describe('withoutActionEntries', () => {
 
 describe('titleBarGroups', () => {
   it('puts the trailing Credits, About and Quit in a group of their own, below where the bar adds its group', () => {
-    const groups = titleBarGroups([...MENU.slice(0, -2), { key: 'credits', label: 'Credits', screen: 'credits' }, ...MENU.slice(-2)], resolve);
+    const { groups, view } = titleBarGroups([...MENU.slice(0, -2), { key: 'credits', label: 'Credits', screen: 'credits' }, ...MENU.slice(-2)], resolve);
     expect(groups.map((group) => group.id)).toEqual(['menu', 'menu-end']);
     expect(groups[1]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['credits', 'about', 'quit']);
+    expect(view).toBeUndefined();
   });
 
   it('keeps one group when the menu ends with none of them', () => {
-    expect(titleBarGroups(MENU.slice(0, -2), resolve).map((group) => group.id)).toEqual(['menu']);
+    expect(titleBarGroups(MENU.slice(0, -2), resolve).groups.map((group) => group.id)).toEqual(['menu']);
+  });
+
+  it('takes the View marker out of the menu and gives its place, separators counted', () => {
+    const { groups, view } = titleBarGroups([MENU[0] ?? 'separator', 'separator', { key: 'view', label: 'View' }, 'separator', ...MENU.slice(2, 4)], resolve);
+    expect(view).toEqual({ group: 'menu', position: 2 });
+    expect(groups[0]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['home', 'separator', 'section:advanced', 'section:tools']);
   });
 });

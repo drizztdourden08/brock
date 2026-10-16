@@ -47,7 +47,7 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   return {
     main: [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }, ...TOP_ENTRIES.filter(unnamed), ...unsectioned(app)],
     sections: groupSections([...app, ...modules]),
-    modules: unsectioned(modules),
+    modules: [...unsectioned(modules), ...(input.windowEntries ?? [])],
     end: [...[...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed), { ...QUIT_ENTRY, onClick: onQuit }],
   };
 };

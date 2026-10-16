@@ -11,6 +11,7 @@ interface AppTitleBarProps {
   logoSrc?: string;
   actions?: readonly WindowTitleBarAction[];
   hidden: boolean;
+  viewHidden?: boolean;
 }
 
 export type { AppTitleBarProps };

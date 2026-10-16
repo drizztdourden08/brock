@@ -9,6 +9,7 @@ import { growForest } from './grow-forest';
 import { plantForest } from './plant-forest';
 import type { MenuItem } from './menu.type';
 import { sanitizeOverride } from './sanitize-override';
+import { viewMarker } from './view-marker';
 
 const ownOverride = (item: MenuItem): MenuEntryOverride => {
   const { hidden, inMenu, group, order, before, after, parent } = item;
@@ -41,10 +42,13 @@ const resolveMenu = ({ groups, config, known }: MenuResolveInput): ResolvedMenu 
   const issues: MenuIssue[] = [];
   const forest = plantForest(groups);
   const keys = new Set([...(known ?? []), ...forest.byKey.keys(), VIEW_MENU_KEY]);
-  const overrides = applyOverrides(forest, configOverrides(config, keys, issues), issues);
+  const given = configOverrides(config, keys, issues);
+  const marker = viewMarker.plant(forest, given.get(VIEW_MENU_KEY));
+  const overrides = applyOverrides(forest, given, issues);
   applyParents(forest, keys, issues);
   applyOrder(forest);
   applyAnchors(forest, keys, issues);
+  viewMarker.settle(forest, marker, issues);
   return { entries: growForest(forest), issues, overrides };
 };
 

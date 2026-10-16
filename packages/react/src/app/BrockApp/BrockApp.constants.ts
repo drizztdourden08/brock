@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind constants */
 import type { LogLevel } from '@drizztdourden08/brock-core';
-import type { TesseraOverrides } from '@drizztdourden08/tessera/primitives';
+import { TESSERA_STRINGS, type TesseraOverrides } from '@drizztdourden08/tessera/primitives';
 import { clipboardWriter } from '../../host/clipboard-writer';
 import { PROFILE_FIRST } from '../../menu/menu.constants';
+import { WINDOW_FULLSCREEN_KEY, WINDOW_PIN_KEY } from '../../menu/menu-config.constants';
 import type { MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { MenuItem } from '../../menu/menu.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
@@ -37,10 +38,13 @@ const ABOUT_ENTRY: MenuItem = { key: 'about', label: 'About', icon: 'info', scre
 const QUIT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'quit', label: 'Quit', icon: 'log-out' };
 const REPORT_BUG_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'report-bug', label: 'Report a bug', icon: 'bug', section: 'advanced' };
 const DEV_CONSOLE_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'dev-console', label: 'Dev Console', icon: 'cpu', section: 'advanced', devOnly: true };
+const WINDOW_PIN_ENTRY: Omit<MenuItem, 'onClick'> = { key: WINDOW_PIN_KEY, label: TESSERA_STRINGS.windows.pinOnTop, icon: 'pin' };
+const WINDOW_FULLSCREEN_ENTRY: Omit<MenuItem, 'onClick'> = { key: WINDOW_FULLSCREEN_KEY, label: TESSERA_STRINGS.windows.fullscreen, icon: 'maximize-2' };
+const NO_WINDOW_ENTRIES: readonly MenuItem[] = [];
 
 const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
 export {
   ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MENU_OVERRIDES, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
-  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION,
+  NO_WINDOW_ENTRIES, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION, WINDOW_FULLSCREEN_ENTRY, WINDOW_PIN_ENTRY,
 };

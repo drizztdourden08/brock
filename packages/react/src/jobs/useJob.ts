@@ -7,13 +7,14 @@ import { useJobStore } from './useJobStore';
 const useJob = (id: string): UseJobResult => {
   const job = useJobStore((s) => s.jobs[id] ?? null);
   const shown = useJobStore((s) => s.shown === id);
+  const step = job?.steps.find((entry) => entry.id === job.currentStep) ?? null;
   const controls = useMemo(() => ({
     open: () => jobs.open(id),
     hide: jobs.hide,
     cancel: () => jobs.cancel(id),
     dismiss: () => jobs.dismiss(id),
   }), [id]);
-  return { job, shown, ...controls };
+  return { job, step, shown, ...controls };
 };
 
 export { useJob };

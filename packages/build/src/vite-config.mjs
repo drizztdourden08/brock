@@ -14,6 +14,7 @@ import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { devServerPort } from './dev-server-port.mjs';
 import { loadBrockConfig } from './load-config.mjs';
 import { ownsSplashPage } from './splash/owns-splash-page.mjs';
+import { metaModulesPlugin } from './meta-modules/meta-modules-plugin.mjs';
 import { screensPlugin } from './screens/screens-plugin.mjs';
 import { widgetsPlugin } from './widgets/widgets-plugin.mjs';
 import { titleBarPlugin } from './title-bar/title-bar-plugin.mjs';
@@ -144,7 +145,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       publicDir: resolve(rootDir, 'public'),
       define,
       plugins: [
-        devOnlyPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }),
+        devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }),
         splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },

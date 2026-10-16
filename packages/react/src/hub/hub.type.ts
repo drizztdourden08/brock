@@ -27,6 +27,7 @@ interface HubTab {
   id: string;
   label: string;
   render: (ctx: HubRenderContext) => ReactNode;
+  preload?: () => Promise<unknown>;
 }
 
 interface HubSubPage {
@@ -37,6 +38,7 @@ interface HubSubPage {
   header?: HubPageHeader;
   fill?: boolean;
   render: (ctx: HubRenderContext) => ReactNode;
+  preload?: () => Promise<unknown>;
 }
 
 interface HubPrimaryAction {
@@ -58,6 +60,7 @@ interface HubPage {
   fill?: boolean;
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
+  preload?: () => Promise<unknown>;
   devOnly?: boolean;
   shortcut?: string;
   settingsTab?: string;

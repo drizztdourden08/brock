@@ -49,9 +49,10 @@ describe('dev-only screens', () => {
     expect(contentOf(files, '.brock/search.ts')).toContain("import { devSearchSeeds } from './screens.dev';");
     expect(contentOf(files, '.brock/search.ts')).not.toContain('inspector');
     const dev = contentOf(files, '.brock/screens.dev.ts');
-    expect(dev).toContain("import ToolsInspectorPage, { meta as toolsInspectorPageMeta } from '../src/screens/tools/inspector.page.dev';");
-    expect(dev).toContain("{ kind: 'page', bucket: 'tools', id: 'inspector', component: ToolsInspectorPage, meta: toolsInspectorPageMeta },");
-    expect(dev).toContain("{ kind: 'card', id: 'editor', component: EditorCard, meta: editorCardMeta },");
+    expect(dev).toContain("import { lazyComponent } from '@drizztdourden08/brock-react';");
+    expect(dev).toContain("import { meta as toolsInspectorPageMeta } from '../src/screens/tools/inspector.page.dev';");
+    expect(dev).toContain("{ kind: 'page', bucket: 'tools', id: 'inspector', component: lazyComponent(() => import('../src/screens/tools/inspector.page.dev')), meta: toolsInspectorPageMeta },");
+    expect(dev).toContain("{ kind: 'card', id: 'editor', component: lazyComponent(() => import('../src/screens/editor.card.dev')), meta: editorCardMeta },");
     expect(dev).toContain('"title":"DEV-INSPECTOR-MARK"');
     expect(dev).toContain('export { devScreens, devSearchSeeds };');
   });

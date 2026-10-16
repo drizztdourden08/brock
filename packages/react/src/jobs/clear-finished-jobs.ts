@@ -1,18 +1,22 @@
 /* @layer renderer-shell @kind logic */
+import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
 import { jobs } from './jobs';
 import { DONE_JOB_CLEAR_MS } from './jobs.constants';
 import { useJobStore } from './useJobStore';
 
+const clearsByItself = (job: JobSnapshot): boolean => job.state === 'done' || (!job.visible && job.state !== 'running');
+
 const clearIfStillDone = (id: string): void => {
   const { jobs: all, shown } = useJobStore.getState();
-  if (all[id]?.state === 'done' && shown !== id) jobs.dismiss(id);
+  const job = all[id];
+  if (job && clearsByItself(job) && shown !== id) jobs.dismiss(id);
 };
 
 const clearFinishedJobs = (): (() => void) => {
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   const schedule = (): void => {
     for (const job of Object.values(useJobStore.getState().jobs)) {
-      if (job.state !== 'done' || timers.has(job.id)) continue;
+      if (!clearsByItself(job) || timers.has(job.id)) continue;
       const wait = Math.max(0, (job.endedAt ?? Date.now()) + DONE_JOB_CLEAR_MS - Date.now());
       timers.set(job.id, setTimeout(() => {
         timers.delete(job.id);

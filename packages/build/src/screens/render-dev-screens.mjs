@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { entryLine, importLine } from './screen-entry-lines.mjs';
-import { GENERATED_HEADER, REACT_PACKAGE } from './screen-conventions.constants.mjs';
+import { entryLine, importLines, isLazy } from './screen-entry-lines.mjs';
+import { GENERATED_HEADER, LAZY_COMPONENT, REACT_PACKAGE } from './screen-conventions.constants.mjs';
 import { fileSeed } from './search/file-seed.mjs';
 
 const list = (lines) => (lines.length ? ['[', ...lines, ']'].join('\n') : '[]');
@@ -12,8 +12,9 @@ const list = (lines) => (lines.length ? ['[', ...lines, ']'].join('\n') : '[]');
  */
 const renderDevScreens = (rootDir, files) => [
   GENERATED_HEADER,
+  ...(files.some(isLazy) ? [`import { ${LAZY_COMPONENT} } from '${REACT_PACKAGE}';`] : []),
   `import type { ScreenEntry, SearchFileSeed } from '${REACT_PACKAGE}';`,
-  ...files.map(importLine),
+  ...files.flatMap(importLines),
   '',
   `const devScreens: ScreenEntry[] = ${list(files.map(entryLine))};`,
   '',

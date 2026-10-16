@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { loadTour } from './load-tour';
 import { tourProgress } from './tour-progress';
 import { tourEvents } from './tour-events';
 import type { TourDef } from './tour.type';
@@ -13,13 +14,21 @@ const activeTour = (): TourDef | null => {
   return active ? tourOf(active.id) : null;
 };
 
-const start = (id: string, at?: number): boolean => {
-  const tour = tourOf(id);
-  if (!tour || tour.steps.length === 0) return false;
+const begin = (tour: TourDef, at?: number): void => {
   const { progress, setProgress, setActive } = state();
   const index = tourProgress.startStep(progress, tour, at);
-  setProgress(tourProgress.started(progress, id, index));
-  setActive({ id, index });
+  setProgress(tourProgress.started(progress, tour.id, index));
+  setActive({ id: tour.id, index });
+};
+
+const start = (id: string, at?: number): boolean => {
+  const tour = tourOf(id);
+  if (tour?.load && tour.steps.length === 0) {
+    void loadTour(id).then((full) => { if (full && full.steps.length > 0) begin(full, at); });
+    return true;
+  }
+  if (!tour || tour.steps.length === 0) return false;
+  begin(tour, at);
   return true;
 };
 
@@ -67,6 +76,7 @@ const startFirstRun = (): boolean => {
 
 const tours = {
   start,
+  load: loadTour,
   stop,
   next,
   back,

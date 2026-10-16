@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubPage } from '../../hub/hub.type';
+import { preloadOf } from '../../lazy/preload-of';
 import { renderHero } from '../kinds/render-hero';
 import { iconNode } from './icon-node';
 import { HOME_LABEL, KIND_ICONS } from './screens.constants';
@@ -16,6 +17,7 @@ const heroPage = (bucket: BucketDef, entry: HeroEntry): HubPage => ({
   order: entry.meta?.order,
   menuOrder: entry.meta?.menuOrder,
   render: renderHero(entry.component, bucket),
+  preload: preloadOf(entry.component),
 });
 
 export { heroPage };

@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import type { FactsPanelGroup, HeroArt, HeroBackdrop, HeroProps as HeroCompositeProps, HeroShade } from '@drizztdourden08/tessera/composites';
+import type { FactsPanelGroup, HeroArt, HeroProps as HeroCompositeProps, HeroShade } from '@drizztdourden08/tessera/composites';
+import type { Backdrop } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import type { BucketDef } from '../conventions/screens-config.type';
 
@@ -39,7 +40,7 @@ interface HeroActionsProps {
 
 type HeroArtProps = HeroArt;
 
-type HeroBackdropProps = HeroBackdrop | { kind: 'none' };
+type HeroBackdropProps = Backdrop | { kind: 'none' };
 
 interface HeroShadeProps {
   value: HeroShade;

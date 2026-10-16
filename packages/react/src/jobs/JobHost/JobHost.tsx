@@ -7,7 +7,7 @@ import { useJobStore } from '../useJobStore';
 const JobHost = () => {
   useJobBridge();
   const job = useJobStore((s) => (s.shown === null ? null : s.jobs[s.shown] ?? null));
-  if (!job) return null;
+  if (!job?.visible) return null;
   return <JobDialog job={job} onHide={jobs.hide} onCancel={() => jobs.cancel(job.id)} onClose={() => jobs.dismiss(job.id)} />;
 };
 

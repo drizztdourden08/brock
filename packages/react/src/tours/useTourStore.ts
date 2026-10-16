@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { create } from 'zustand';
+import { loadedTours } from './loaded-tours';
 import { EMPTY_PROGRESS, NO_TOURS } from './tours.constants';
 import type { TourState } from './tour.type';
 
@@ -12,7 +13,7 @@ const useTourStore = create<TourState>()((set) => ({
   shown: null,
   spot: null,
   clickRelay: null,
-  setTours: (tours) => set({ tours }),
+  setTours: (tours) => set({ tours: tours.map(loadedTours.resolve) }),
   setActive: (active) => set({ active }),
   setProgress: (progress) => set({ progress }),
   setLoaded: (progress, firstUse) => set({ progress, firstUse, loaded: true }),

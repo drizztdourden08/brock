@@ -1,50 +1,52 @@
 /* @layer core @kind logic */
-import type { JobOptions, JobSnapshot, JobStepDef } from '../types/job.type';
+import type { JobOptions, JobStepDef } from '../types/job.type';
 import { createJobHandle } from './create-job-handle';
-import type { EmitJob, JobRecord, JobRegistry } from './job-handle.type';
-import { JOB_EMIT_MS } from './jobs.constants';
+import { createJobRecord } from './create-job-record';
+import { createQueuedHandle } from './create-queued-handle';
+import type { EmitJob, JobEntry, JobHandle, JobLogSink, JobRegistry } from './job-handle.type';
+import { joinJobHandle } from './join-job-handle';
 
-const initialSnapshot = (id: string, steps: readonly JobStepDef[], options: JobOptions, at: number): JobSnapshot => ({
-  id,
-  title: options.title ?? id,
-  state: 'running',
-  steps: steps.map((step) => ({ id: step.id, label: step.label, weight: step.weight ?? 1, state: 'upcoming' })),
-  currentStep: null,
-  progress: 0,
-  stepProgress: 0,
-  line: null,
-  error: null,
-  log: [],
-  startedAt: at,
-  endedAt: null,
-  cancellable: options.cancellable ?? true,
-});
-
-const createNotifier = (snapshot: JobSnapshot, emit: EmitJob): ((urgent: boolean) => void) => {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  const flush = (): void => {
-    if (timer) clearTimeout(timer);
-    timer = null;
-    emit({ ...snapshot, steps: snapshot.steps.map((step) => ({ ...step })), log: [...snapshot.log] });
+const createJobRegistry = (emit: EmitJob, now: () => number = Date.now, sink?: JobLogSink): JobRegistry => {
+  const entries = new Map<string, JobEntry>();
+  const waiting = new Map<string, (() => void)[]>();
+  const running = (id: string): boolean => entries.get(id)?.record.snapshot.state === 'running';
+  const busy = (id: string): boolean => running(id) || waiting.has(id);
+  const next = (id: string): void => {
+    const queue = waiting.get(id);
+    const begin = queue?.shift();
+    if (queue?.length === 0) waiting.delete(id);
+    begin?.();
   };
-  return (urgent) => {
-    if (urgent) flush();
-    else timer ??= setTimeout(flush, JOB_EMIT_MS);
-  };
-};
-
-const createJobRegistry = (emit: EmitJob, now: () => number = Date.now): JobRegistry => {
-  const records = new Map<string, JobRecord>();
-  const start: JobRegistry['start'] = (id, steps, options = {}) => {
-    if (records.get(id)?.snapshot.state === 'running') throw new Error(`job "${id}" is already running`);
-    const snapshot = initialSnapshot(id, steps, options, now());
-    const record: JobRecord = { snapshot, controller: new AbortController(), notify: createNotifier(snapshot, emit) };
-    records.set(id, record);
+  const open = (id: string, steps: readonly JobStepDef[], options: JobOptions, controller = new AbortController()): JobHandle => {
+    const record = createJobRecord({ id, steps, options, at: now(), controller, emit, sink, onEnd: () => next(id) });
+    const handle = createJobHandle(record, now);
+    entries.set(id, { record, handle });
     record.notify(true);
-    return createJobHandle(record, now);
+    return handle;
   };
+  const enqueue = (id: string, steps: readonly JobStepDef[], options: JobOptions): JobHandle => {
+    const controller = new AbortController();
+    const queued = createQueuedHandle(id, controller.signal);
+    waiting.set(id, [...(waiting.get(id) ?? []), () => queued.attach(open(id, steps, options, controller))]);
+    return queued.handle;
+  };
+  const freeId = (id: string): string => {
+    let n = 2;
+    while (busy(`${id}-${n}`)) n += 1;
+    return `${id}-${n}`;
+  };
+  const duplicate = (id: string, steps: readonly JobStepDef[], options: JobOptions): JobHandle => {
+    const policy = options.onDuplicate ?? 'throw';
+    const entry = entries.get(id);
+    if (policy === 'queue') return enqueue(id, steps, options);
+    if (policy === 'parallel') return open(freeId(id), steps, { ...options, title: options.title ?? id });
+    if (policy === 'join' && entry) return joinJobHandle(entry.handle, entry.record);
+    throw new Error(`job "${id}" is already running`);
+  };
+  const start: JobRegistry['start'] = (id, steps, options = {}) =>
+    busy(id) ? duplicate(id, steps, options) : open(id, steps, options);
   const cancel = (id: string): void => {
-    const record = records.get(id);
+    const record = entries.get(id)?.record;
     if (record?.snapshot.state !== 'running' || !record.snapshot.cancellable) return;
     record.snapshot.state = 'cancelled';
     record.snapshot.endedAt = now();
@@ -53,9 +55,9 @@ const createJobRegistry = (emit: EmitJob, now: () => number = Date.now): JobRegi
     record.notify(true);
   };
   const dismiss = (id: string): void => {
-    if (records.get(id)?.snapshot.state !== 'running') records.delete(id);
+    if (!running(id)) entries.delete(id);
   };
-  return { start, list: () => [...records.values()].map((record) => record.snapshot), cancel, dismiss };
+  return { start, list: () => [...entries.values()].map((entry) => entry.record.snapshot), cancel, dismiss };
 };
 
 export { createJobRegistry };

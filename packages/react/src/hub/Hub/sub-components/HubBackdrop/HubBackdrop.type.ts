@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
-import type { HeroBackdrop } from '@drizztdourden08/tessera/composites';
+import type { Backdrop } from '@drizztdourden08/tessera/primitives';
 
-type PaintedBackdrop = Exclude<HeroBackdrop, { kind: 'node' }>;
+type PaintedBackdrop = Exclude<Backdrop, { kind: 'node' }>;
 
 interface HubBackdropProps {
   backdrop: PaintedBackdrop;

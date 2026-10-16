@@ -6,8 +6,8 @@ import { useJobStore } from '../src/jobs/useJobStore';
 
 const START = 1_000_000;
 
-const job = (id: string, state: JobState, endedAt: number | null = null): JobSnapshot => ({
-  id, title: id, state, steps: [], currentStep: null, progress: state === 'running' ? 0.5 : 1, stepProgress: 0, line: null, error: null, log: [], startedAt: START, endedAt, cancellable: false,
+const job = (id: string, state: JobState, endedAt: number | null = null, visible = true): JobSnapshot => ({
+  id, title: id, state, steps: [], currentStep: null, progress: state === 'running' ? 0.5 : 1, stepProgress: 0, line: null, error: null, log: [], startedAt: START, endedAt, cancellable: false, visible,
 });
 
 const ids = (): string[] => Object.keys(useJobStore.getState().jobs).sort();
@@ -57,5 +57,15 @@ describe('finished jobs in the title bar', () => {
     useJobStore.getState().show(null);
     vi.advanceTimersByTime(0);
     expect(ids()).toEqual([]);
+  });
+
+  it('clears a quiet job 30 seconds after it ends, whether it succeeded, failed or was cancelled', () => {
+    const { upsert } = useJobStore.getState();
+    upsert(job('quiet-done', 'done', START, false));
+    upsert(job('quiet-failed', 'failed', START, false));
+    upsert(job('quiet-cancelled', 'cancelled', START, false));
+    upsert(job('quiet-running', 'running', null, false));
+    vi.advanceTimersByTime(30_000);
+    expect(ids()).toEqual(['quiet-running']);
   });
 });

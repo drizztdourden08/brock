@@ -267,7 +267,7 @@ product: defineProduct({
 
 - With a wordmark, the boot splash, its failure screen, the window's failure splash (`BootFailureSplash`), the installer's Setup splash (`brock package`) and the About window show the image in place of the name text. Without one, they show the name as before.
 - `dark` is the variant for the splash's dark gradient, the way the splash mark comes from Tessera's dark ground set. The three splashes draw `dark`, and About, on the app surface, draws `src`. A plain path is used for both.
-- The image keeps the name as its accessible name: the splash page and About put it in the heading with the name as its `alt` text, and the window's failure splash keeps the name as the heading text under the painted image, which forced colours mode shows in place of it.
+- The image keeps the name as its accessible name: the splash page, the window's failure splash and About put it in the heading with the name as its `alt` text.
 - The splashes fit it in a box `--size-48` high and at most `--size-384` wide (`48` by `384` pixels on the Setup splash, narrower when the splash is), and About in one `--size-48` high, keeping its proportions. Draw it on a transparent ground with the name filling the art's height.
 - Give the dark variant at least 3:1 against both ends of the dark gradient, the large text contrast, so the name reads at its splash size. The status line, the detail and the version keep Tessera's tested text colours, so the rest of the splash still holds WCAG AA.
 - `defineProduct` refuses a file that is not `.svg` or `.png` and a path with `..`; `brock package` stops when the dark variant is not under `public/`. `brock icons` leaves the file alone, and `public/logos/wordmark*` is not one of the generated logos, so it is committed.

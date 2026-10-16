@@ -38,20 +38,19 @@ describe('BootFailureSplash', () => {
     for (const label of ['Retry', 'Open logs', 'Quit']) expect(html).toContain(`>${label}<`);
   });
 
-  it('paints the dark ground wordmark over the title and keeps the name as its text', () => {
+  it('draws the dark ground wordmark in the title, named by the app name', () => {
     const product = defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'tester' }, icons: { wordmark: { src: './logos/w.svg', dark: './logos/w-dark.svg' } } });
     const html = renderToStaticMarkup(
       createElement(PlatformContext.Provider, { value: platformWith(true) }, createElement(BrockContext.Provider, { value: { ...BROCK, product } }, createElement(BootFailureSplash, { failure: FAILURE }))),
     );
-    expect(html).toContain('class="ts-splash ts-splash--layer boot-failure-splash boot-failure-splash--wordmark"');
-    expect(html).toContain('--boot-wordmark:url(&quot;./logos/w-dark.svg&quot;)');
-    expect(html).toMatch(/<h1 class="ts-title">Demo<\/h1>/);
+    expect(html).toMatch(/<h1 class="ts-title"><img class="ts-wordmark" src="\.\/logos\/w-dark\.svg" alt="Demo"\/?><\/h1>/);
+    expect(html).not.toContain('./logos/w.svg');
   });
 
-  it('adds no wordmark class or style without one', () => {
+  it('keeps the name as the title text without a wordmark', () => {
     const html = draw(platformWith(true), FAILURE);
-    expect(html).toContain('class="ts-splash ts-splash--layer boot-failure-splash"');
-    expect(html).not.toContain('--boot-wordmark');
+    expect(html).toMatch(/<h1 class="ts-title">Demo<\/h1>/);
+    expect(html).not.toContain('ts-wordmark');
   });
 
   it('keeps only Retry where the host cannot open the logs folder or close the window', () => {

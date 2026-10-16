@@ -35,11 +35,16 @@ describe('withoutActionEntries', () => {
 });
 
 describe('titleBarGroups', () => {
-  it('puts the trailing Credits, About and Quit in a group of their own, below where the bar adds its group', () => {
+  it('puts the trailing Credits, About and Quit in a group of their own, below where the bar adds its group, with a line above Quit', () => {
     const { groups, view } = titleBarGroups([...MENU.slice(0, -2), { key: 'credits', label: 'Credits', screen: 'credits' }, ...MENU.slice(-2)], resolve);
     expect(groups.map((group) => group.id)).toEqual(['menu', 'menu-end']);
-    expect(groups[1]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['credits', 'about', 'quit']);
+    expect(groups[1]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['credits', 'about', 'separator', 'quit']);
     expect(view).toBeUndefined();
+  });
+
+  it('adds no line above Quit when it is alone in the last group', () => {
+    const { groups } = titleBarGroups([...MENU.slice(0, -2), MENU.at(-1) ?? 'separator'], resolve);
+    expect(groups[1]?.items.map((node) => ('id' in node ? node.id : 'separator'))).toEqual(['quit']);
   });
 
   it('keeps one group when the menu ends with none of them', () => {

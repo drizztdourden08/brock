@@ -49,7 +49,7 @@ describe('the View entry of the menu config', () => {
     expect(bar(withView({ view: { group: 'end' } })).view).toEqual({ group: 'menu-end', position: 'end' });
     expect(bar(withView({ view: { after: 'home' } })).view).toEqual({ group: 'menu', position: 1 });
     expect(bar(withView({ view: { order: 1 } })).view).toEqual({ group: 'menu', position: 'end' });
-    expect(ids(withView({ view: { after: 'about' } }))).toEqual([['home', 'profiles', 'section:tools', '|', 'section:advanced'], ['about', 'quit']]);
+    expect(ids(withView({ view: { after: 'about' } }))).toEqual([['home', 'profiles', 'section:tools', '|', 'section:advanced'], ['about', '|', 'quit']]);
   });
 
   it('lets other entries sit beside a moved View', () => {

@@ -5,7 +5,7 @@ import type { MenuEntry } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
 import { toMenuGroups } from '../../../menu/to-menu-groups';
 import type { MenuResolver } from '../../../menu/to-menu-groups.type';
-import { LAST_GROUP_ID } from '../TitleBar.constants';
+import { LAST_GROUP_ID, QUIT_KEY } from '../TitleBar.constants';
 import { MENU_GROUP_ID } from '../../../menu/menu.constants';
 import { isEndEntry } from './is-end-entry';
 import type { TitleBarMenu, TuckedPlaces } from './title-bar-menu.type';
@@ -14,11 +14,17 @@ const isLast = (entry: MenuEntry): boolean => entry !== 'separator' && isEndEntr
 
 const markerOf = (entry: MenuEntry): string | null => (entry !== 'separator' && BAR_MARKER_KEYS.has(entry.key) ? entry.key : null);
 
+const quitApart = (entries: readonly MenuEntry[]): MenuEntry[] => {
+  const at = entries.findIndex((entry) => entry !== 'separator' && entry.key === QUIT_KEY);
+  if (at <= 0 || entries[at - 1] === 'separator') return [...entries];
+  return [...entries.slice(0, at), 'separator', ...entries.slice(at)];
+};
+
 const splitGroups = (entries: readonly MenuEntry[]): [string, MenuEntry[]][] => {
   let split = entries.length;
   while (split > 0 && isLast(entries[split - 1] ?? 'separator')) split -= 1;
   if (split === entries.length || split === 0) return [[MENU_GROUP_ID, [...entries]]];
-  return [[MENU_GROUP_ID, tidySeparators(entries.slice(0, split))], [LAST_GROUP_ID, entries.slice(split)]];
+  return [[MENU_GROUP_ID, tidySeparators(entries.slice(0, split))], [LAST_GROUP_ID, quitApart(entries.slice(split))]];
 };
 
 const placeAt = (group: string, at: number, length: number): WindowTitleBarViewPlace => {

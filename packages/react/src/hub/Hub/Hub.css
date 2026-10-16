@@ -7,3 +7,12 @@
 .hub__kept[hidden] {
   display: none;
 }
+
+.hub__solo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-xl);
+  min-width: 0;
+  min-height: 0;
+}

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
+import { nav } from '../../navigation/nav';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { pageHeaderChecks } from '../checks/page-header-checks';
 import { click } from '../dom/click';
@@ -27,13 +28,22 @@ const checkRowHint = async (tour: StepTour, id: string): Promise<void> => {
   leave();
 };
 
-const visitHubPages = async (tour: StepTour, hub: HubDef, pages: readonly HubPage[]): Promise<void> => {
+const openPage = (hub: HubDef, page: HubPage, navShown: boolean): string => {
+  if (!navShown) {
+    if (!showing(hub, page)) nav.open(hub.id, { section: page.id });
+    return 'with open, since the hub has no nav';
+  }
+  const item = navItem(page.label);
+  if (item) click(item);
+  return 'from its nav entry';
+};
+
+const visitHubPages = async (tour: StepTour, hub: HubDef, pages: readonly HubPage[], navShown: boolean): Promise<void> => {
   for (const page of pages) {
-    const item = navItem(page.label);
-    if (item) click(item);
+    const how = openPage(hub, page, navShown);
     const shown = await waitFor(() => showing(hub, page));
     const id = `${hub.id}-${page.id}`;
-    tour.check(`${id}-page`, shown !== null, `the "${page.label}" page of "${hub.id}" opens from its nav entry`, `the "${page.label}" page of "${hub.id}" did not open from its nav entry`);
+    tour.check(`${id}-page`, shown !== null, `the "${page.label}" page of "${hub.id}" opens ${how}`, `the "${page.label}" page of "${hub.id}" did not open ${how}`);
     if (shown === null) continue;
     if (page.fullBleed !== true) tour.report(pageHeaderChecks(id, page.label, pageHeader(find(SELECTORS.hubPage) ?? document)));
     await tour.capture(`bucket-${id}`);

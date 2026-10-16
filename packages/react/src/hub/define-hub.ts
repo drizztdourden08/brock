@@ -16,6 +16,7 @@ const defineHub = (def: HubDef): ScreenDef => {
     header: 'own',
     shortcut: def.shortcut,
     show: def.show,
+    ...(def.requiresProfile === undefined ? {} : { requiresProfile: def.requiresProfile }),
     subtitle: () => createElement(ScreenSubtitle),
     floating: (ctx) => createElement(HubSwitch, { current: def.id, onSelect: (id: string) => ctx.open(id) }),
     render: (ctx) => createElement(Hub, { def, ctx }),

@@ -109,6 +109,7 @@ const defineProduct = (input: ProductInput): ProductConfig => {
     icons: resolveIcons(input.icons),
     logos: resolveLogos(input.logos, input.icons),
     homeScreen: input.homeScreen ?? DEFAULT_HOME_SCREEN,
+    ...(input.profilesRoute ? { profilesRoute: input.profilesRoute } : {}),
     ports: input.ports,
     widgets: resolveWidgets(input.widgets),
     installer: resolveInstaller(input),

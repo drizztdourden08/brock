@@ -20,8 +20,8 @@ const noop = (): void => undefined;
 
 const profile = (extra: Record<string, unknown>): Profile => ({ id: 'p1', name: 'Player', created: 0, lastPlayed: 0, ...extra });
 
-const DESKTOP: ShowContext = { profile: profile({}), host: 'electron', formFactor: 'desktop' };
-const PHONE: ShowContext = { profile: profile({}), host: 'capacitor', formFactor: 'mobile' };
+const DESKTOP: ShowContext = { profile: profile({}), host: 'electron', formFactor: 'desktop', flags: {} };
+const PHONE: ShowContext = { profile: profile({}), host: 'capacitor', formFactor: 'mobile', flags: {} };
 const RANKED: ShowContext = { ...DESKTOP, profile: profile({ mode: 'ranked' }) };
 
 const CONFIG: ScreensConfig = {

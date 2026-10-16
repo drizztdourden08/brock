@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { MenuEntry } from '../../menu/menu.type';
+import { LAST_GROUP_KEYS } from '../../shell/TitleBar/TitleBar.constants';
 import { BUILT_IN_ENTRIES, SECTION_KEY_PREFIX } from '../review.constants';
 import type { MenuExpectation, TitleBarExpectation } from '../review.type';
 import { isMenuItem } from './is-menu-item';
@@ -14,7 +15,8 @@ const menuExpectation = (menu: readonly MenuEntry[], homeScreen: string, titleBa
       ?? top.find((item) => entry.screen !== undefined && item.screen === entry.screen))?.label ?? entry.label);
   const sections = top.filter((item) => item.key.startsWith(SECTION_KEY_PREFIX)).map((item) => item.label);
   const view = controls?.pin === true || controls?.fullscreen === true ? TESSERA_STRINGS.windows.view : null;
-  return { required, sections, actions: actions.map((action) => action.label), view };
+  const tail = top.filter((item) => LAST_GROUP_KEYS.includes(item.key)).map((item) => item.label);
+  return { required, sections, actions: actions.map((action) => action.label), view, tail };
 };
 
 export { menuExpectation };

@@ -133,6 +133,7 @@ interface ProductConfig {
   icons: ProductIcons;
   logos: ProductLogos;
   homeScreen: string;
+  profilesRoute?: string;
   ports?: ProductPorts;
   widgets: ProductWidgets;
   installer: InstallerConfig;

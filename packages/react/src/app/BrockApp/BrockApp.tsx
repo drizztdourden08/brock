@@ -28,13 +28,15 @@ import { NO_MODULES, NO_SHORTCUTS, NO_TABS, TESSERA_OVERRIDES } from './BrockApp
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
 import { useBugReportTransport } from '../../bug-report/useBugReportTransport';
 import { useRendererLogging } from '../../log/useRendererLogging';
+import { APP_FLAGS_SOURCE } from '../../screens/show/show.constants';
+import { useShowFlagsSource } from '../../screens/show/useShowFlagsSource';
 import type { BrockAppProps } from './BrockApp.type';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
-    screenGroups, profileHooks, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog,
+    screenGroups, profileHooks, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -45,14 +47,14 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   useQuitGuards(merged.beforeQuit, beforeQuit);
   useTourRegistry(tours, merged.tours);
   useBugReportTransport(bugReport);
+  useShowFlagsSource(APP_FLAGS_SOURCE, showFlags);
   const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const settingsStore = useProfileSettingsStore(settings);
-  const appTabs = settings.tabs ?? NO_TABS;
 
-  const builtInTabs = useMemo(() => separateModuleTabs([...appTabs, ...merged.settingsTabs] as TabDef<object>[]), [appTabs, merged.settingsTabs]);
-  const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen });
+  const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
+  const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen, profilesRoute: product.profilesRoute });
 
   const settingsControls = useSettingsControls(settings);
 

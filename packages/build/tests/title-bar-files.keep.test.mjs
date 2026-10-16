@@ -63,6 +63,20 @@ describe('renderTitleBar', () => {
     expect(renderTitleBarFiles(dir)[0]?.content).toContain("{ id: 'rooms', source: roomsItem }");
     expect(renderTitleBarFiles(dir)[0]?.content).not.toContain('half');
   });
+
+  it('carries an order export, or meta.order, into the list', () => {
+    const dir = appDir({
+      'src/title-bar/rooms.action.ts': 'export default defineTitleBarItem({});\nexport const order = 2;\n',
+      'src/title-bar/sync-status.action.ts': 'const meta = { order: 1 };\nexport default defineTitleBarItem({});\nexport { meta };\n',
+      'src/title-bar/plain.action.ts': 'export default defineTitleBarItem({});\n',
+    });
+    const content = renderTitleBarFiles(dir)[0]?.content ?? '';
+    expect(content).toContain("import roomsItem, { order as roomsOrder } from '../src/title-bar/rooms.action';");
+    expect(content).toContain("import syncStatusItem, { meta as syncStatusMeta } from '../src/title-bar/sync-status.action';");
+    expect(content).toContain("{ id: 'rooms', source: roomsItem, order: roomsOrder },");
+    expect(content).toContain("{ id: 'sync-status', source: syncStatusItem, order: syncStatusMeta.order },");
+    expect(content).toContain("{ id: 'plain', source: plainItem },");
+  });
 });
 
 describe('checkTitleBar', () => {

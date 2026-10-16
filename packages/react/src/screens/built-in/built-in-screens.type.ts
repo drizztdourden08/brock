@@ -5,6 +5,7 @@ import type { AboutScreenOptions } from './AboutScreen';
 interface BuiltInScreenOptions extends AboutScreenOptions {
   credits?: ReactNode;
   settings?: boolean;
+  profiles?: boolean;
 }
 
 export type { BuiltInScreenOptions };

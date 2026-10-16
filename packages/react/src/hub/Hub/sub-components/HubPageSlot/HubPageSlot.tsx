@@ -11,7 +11,7 @@ const HubPageSlot = (props: HubPageSlotProps) => {
   const { hub, page, tab, sub } = context;
   return (
     <ScreenStateScope.Provider value={hubScope(context)}>
-      <HubPageFrame key={`${page.id}/${sub?.id ?? ''}`} page={page} tab={tab} sub={sub} route={joinRoute(hub.id, page.id)} onSelectTab={onSelectTab} onUp={onUp}>
+      <HubPageFrame key={`${page.id}/${sub?.id ?? ''}`} page={page} tab={tab} sub={sub} route={joinRoute(hub.id, page.id)} backdrop={page.backdrop ?? hub.backdrop} onSelectTab={onSelectTab} onUp={onUp}>
         {hubContent(context)}
       </HubPageFrame>
     </ScreenStateScope.Provider>

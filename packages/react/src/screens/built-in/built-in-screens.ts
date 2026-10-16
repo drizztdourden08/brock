@@ -7,7 +7,7 @@ import { profilesScreen } from './ProfilesScreen';
 import { settingsScreen } from './SettingsScreen';
 
 const createBuiltInScreens = (options: BuiltInScreenOptions): ScreenDef[] => [
-  profilesScreen,
+  ...(options.profiles === false ? [] : [profilesScreen]),
   ...(options.settings === false ? [] : [settingsScreen]),
   createAboutScreen(options),
   ...(options.credits === undefined ? [] : [createCreditsScreen(options.credits)]),

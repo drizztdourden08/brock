@@ -66,6 +66,7 @@ interface MenuExpectation {
   sections: readonly string[];
   actions: readonly string[];
   view: string | null;
+  tail?: readonly string[];
 }
 
 interface TitleBarExpectation {
@@ -113,6 +114,7 @@ interface AboutSnapshot {
 interface BucketSnapshot {
   hub: string;
   reachedVia: string | null;
+  nav: boolean;
   expected: readonly string[];
   shown: readonly string[];
 }

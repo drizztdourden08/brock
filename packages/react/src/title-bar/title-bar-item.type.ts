@@ -42,9 +42,14 @@ type TitleBarItemSource = TitleBarItemSpec | TitleBarItemHook;
 interface TitleBarItemEntry {
   id: string;
   source: TitleBarItemSource;
+  order?: number;
+}
+
+interface TitleBarItemMeta {
+  order?: number;
 }
 
 export type {
-  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
+  TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
   TitleBarStatusSpec,
 };

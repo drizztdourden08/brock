@@ -72,6 +72,17 @@ describe('appTitleBarSources', () => {
     expect(sources[0]).toMatchObject({ id: 'hosting', bar: 'button' });
   });
 
+  it('puts the items with an order first, in that order, and the rest after by id', () => {
+    const entries = titleBarFromFiles([
+      { id: 'alpha', source: button.source },
+      { id: 'zulu', source: button.source, order: 2 },
+      { id: 'mike', source: button.source, order: 1 },
+      { id: 'bravo', source: button.source },
+      { id: 'kilo', source: button.source, order: 1 },
+    ]);
+    expect(entries.map((entry) => entry.id)).toEqual(['kilo', 'mike', 'zulu', 'alpha', 'bravo']);
+  });
+
   it('wraps a hook so it resolves to a bar action, or to nothing while it returns null', () => {
     let status: string | null = null;
     const [source] = appTitleBarSources([{ id: 'room', source: () => (status ? { kind: 'status', label: 'Room', icon: 'radio', status } : null) }], []);

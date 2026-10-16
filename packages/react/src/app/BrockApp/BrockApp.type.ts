@@ -86,7 +86,6 @@ interface MenuBuildInput {
   tours?: { list: readonly TourChoice[]; start: (id: string) => void };
   menuConfig?: MenuConfig;
   locked?: (route: string) => boolean;
-  windowEntries?: readonly MenuItem[];
 }
 
 interface ShellMenu {

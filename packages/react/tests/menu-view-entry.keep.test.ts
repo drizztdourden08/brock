@@ -26,9 +26,6 @@ const BASE: MenuBuildInput = {
   onShortcuts: noop,
 };
 
-const PIN = { key: 'window-pin', label: 'Pin window on top', onClick: noop };
-const FULL = { key: 'window-fullscreen', label: 'Full screen', onClick: noop };
-
 const withView = (entries: NonNullable<MenuConfig['entries']>, more: Partial<MenuBuildInput> = {}): MenuBuildInput => ({ ...BASE, ...more, menuConfig: { entries } });
 const keys = (entries: readonly MenuEntry[]): string[] => entries.map((entry) => (entry === 'separator' ? '|' : entry.key));
 const bar = (input: MenuBuildInput) => titleBarGroups(visibleMenu(resolveShellMenu(input).entries), { openScreen: noop });
@@ -90,16 +87,12 @@ describe('the View entry of the menu config', () => {
   });
 });
 
-describe('the Pin on top and Full screen menu entries', () => {
-  it('sit where View sat, above the last group, when the shell passes them', () => {
-    expect(ids({ ...BASE, windowEntries: [PIN, FULL] })).toEqual([['home', 'profiles', 'section:tools', '|', 'section:advanced', '|', 'window-pin', 'window-fullscreen'], ['about', 'quit']]);
-  });
-
-  it('take the menu config by their keys, which are known even while the entries are not shown', () => {
-    const input = withView({ 'window-pin': { label: 'Keep on top', group: 'end', order: -1 }, 'window-fullscreen': { hidden: true } }, { windowEntries: [PIN, FULL] });
-    expect(ids(input)[1]).toEqual(['window-pin', 'about', 'quit']);
-    expect(visibleMenu(resolveShellMenu(input).entries).find((entry) => entry !== 'separator' && entry.key === 'window-pin')).toMatchObject({ label: 'Keep on top' });
+describe('the Pin on top and Full screen menu keys', () => {
+  it('are known, so an override by them is no issue, and add no entry of their own', () => {
+    const input = withView({ view: { hidden: true }, 'window-pin': { label: 'Keep on top', group: 'end' }, 'window-fullscreen': { hidden: true } });
     expect(messages(input)).toEqual([]);
-    expect(messages(withView({ 'window-pin': { label: 'Keep on top' } }))).toEqual([]);
+    expect(ids(input).flat()).not.toContain('window-pin');
+    expect(ids(input).flat()).not.toContain('window-fullscreen');
+    expect(resolveShellMenu(input).overrides.map((record) => record.key)).toEqual(['view']);
   });
 });

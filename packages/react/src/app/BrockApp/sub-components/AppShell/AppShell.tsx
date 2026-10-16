@@ -25,7 +25,6 @@ import { useSaveFailureToast } from '../../behavior/useSaveFailureToast';
 import { useScreenPersistence } from '../../behavior/useScreenPersistence';
 import { useShellActions } from '../../behavior/useShellActions';
 import { useShellMenu } from '../../behavior/useShellMenu';
-import { useWindowEntries } from '../../behavior/useWindowEntries';
 import { viewHidden } from '../../../../menu/view-hidden';
 import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { useTitleBarShown } from '../../behavior/useTitleBarShown';
@@ -61,7 +60,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useAppOpenBridge();
 
   const hideView = viewHidden(product.menu);
-  const shellMenu = useShellMenu(moduleMenu, railed, useWindowEntries(hideView, titleBar));
+  const shellMenu = useShellMenu(moduleMenu, railed);
   useBootPreload(registry, [home, homeScreen]);
   const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();

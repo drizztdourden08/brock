@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { menuConfigProblems, menuConfigWarnings } from '../src/menu/menu-config-problems.mjs';
+import { menuConfigProblems } from '../src/menu/menu-config-problems.mjs';
 
 const CONFIG = `import { defineScreens } from '@drizztdourden08/brock-react';
 
@@ -80,15 +80,9 @@ describe('menuConfigProblems', () => {
     expect(menuConfigProblems(root, { entries: { view: { hidden: true } } })).toEqual([]);
   });
 
-  it('warns when View, Pin on top and Full screen are all out of the menu', () => {
+  it('takes the Pin on top and Full screen keys without a problem', () => {
     const hidden = { hidden: true };
-    expect(menuConfigWarnings({ entries: { view: hidden } })).toEqual([]);
-    expect(menuConfigWarnings({ entries: { view: hidden, 'window-pin': hidden } })).toEqual([]);
-    expect(menuConfigWarnings({ entries: { 'window-pin': hidden, 'window-fullscreen': hidden } })).toEqual([]);
-    expect(menuConfigWarnings({ entries: { view: { inMenu: false }, 'window-pin': hidden, 'window-fullscreen': { inMenu: false } } })).toEqual([
-      'brock.config.ts product.menu: entries.view, entries["window-pin"] and entries["window-fullscreen"] are all out of the menu, so on a narrow window, where the title bar tucks its pin and full screen buttons away, nothing reaches them',
-    ]);
-    expect(menuConfigWarnings(undefined)).toEqual([]);
+    expect(menuConfigProblems(appWith(APP), { entries: { view: hidden, 'window-pin': { label: 'Keep on top' }, 'window-fullscreen': hidden } })).toEqual([]);
   });
 
   it('rejects a menu that is not an entries object', () => {

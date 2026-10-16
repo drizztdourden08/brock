@@ -197,7 +197,7 @@ The job is a renderer job (`jobs.start` from brock-react), so it needs no main p
 
 ### Both sides
 
-The steps run one after another in one worker, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to the caller without a copy. A step that throws, a step the worker lacks or a worker that stops fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the worker.
+The steps run one after another in one worker, each made the job's current step; the job resolves every step's result by id, and `onResult` sees each as it lands. Typed arrays in a result move to the caller without a copy. A step that throws, a step the worker lacks or a worker that stops fails the job with that reason, and cancelling the job (`cancellable`, true by default) ends the worker. The job options `visible`, `forwardLog` and `onDuplicate` pass through to the job, so an asset job can run without showing in the title bar, keep its log lines in the app log, or queue or join a job with the same id.
 
 ## ensure-wasm
 

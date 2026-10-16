@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { JobLogLevel, JobStepDef } from '@drizztdourden08/brock-core/types';
+import type { JobLogLevel, JobOptions, JobStepDef } from '@drizztdourden08/brock-core/types';
 
 interface AssetStepReport {
   progress: (fraction: number, line?: string) => void;
@@ -35,7 +35,7 @@ interface AssetStepChannel {
   listen: (onRequest: (request: AssetWorkerRequest) => void) => void;
 }
 
-interface AssetJobOptions {
+interface AssetJobOptions extends Pick<JobOptions, 'visible' | 'forwardLog' | 'onDuplicate'> {
   id: string;
   title?: string;
   steps: AssetWorkerStepDef[];

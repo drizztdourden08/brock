@@ -29,6 +29,18 @@ describe('runAssetWebWorkerJob in a Web Worker', () => {
     expect(job.events.join(' | ')).toBe('step tiles | progress 0.5 half | log tiles ready | step sounds | line mixing | done');
   });
 
+  it('passes the visible, forwardLog and onDuplicate job options through, and nothing it was not given', async () => {
+    const job = fakeJob();
+    const start = vi.fn(job.ctx.job);
+    const steps = [{ id: 'sounds', label: 'Sounds' }];
+    await runAssetWebWorkerJob({ id: 'quiet', worker: AssetStepsWorker, start, steps, visible: false, forwardLog: true, onDuplicate: 'join' }, counted().spawn);
+    await runAssetWebWorkerJob({ id: 'plain', worker: AssetStepsWorker, start, steps }, counted().spawn);
+    expect(start.mock.calls.map(([, , options]) => options)).toEqual([
+      { cancellable: true, visible: false, forwardLog: true, onDuplicate: 'join' },
+      { cancellable: true },
+    ]);
+  });
+
   it('hands each step the worker data', async () => {
     const job = fakeJob();
     const results = await runAssetWebWorkerJob({

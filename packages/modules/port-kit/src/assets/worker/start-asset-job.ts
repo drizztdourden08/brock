@@ -40,9 +40,11 @@ const runSteps = async (port: AssetWorkerPort, job: JobHandle, options: AssetJob
 };
 
 const startAssetJob = (start: StartJob, options: AssetJobOptions, spawn: () => AssetWorkerPort): Promise<Record<string, unknown>> => {
-  const { id, title, steps, cancellable = true } = options;
+  const { id, title, steps, cancellable = true, visible, forwardLog, onDuplicate } = options;
   const defs = steps.map(({ id: stepId, label, weight }) => ({ id: stepId, label, ...(weight === undefined ? {} : { weight }) }));
-  const job = start(id, defs, { cancellable, ...(title ? { title } : {}) });
+  const passed = { visible, forwardLog, onDuplicate };
+  const extra = Object.fromEntries(Object.entries(passed).filter(([, value]) => value !== undefined));
+  const job = start(id, defs, { cancellable, ...(title ? { title } : {}), ...extra });
   return job.run(async () => {
     const port = spawn();
     const abort = (): void => void port.terminate();

@@ -10,7 +10,7 @@ const HeaderActions = (props: HeaderActionsProps) => {
       {search && (
         <SearchInput
           size="sm"
-          className="header-actions__search"
+          grow={false}
           value={search.value}
           onChange={search.onChange}
           placeholder={search.placeholder ?? 'Filter'}

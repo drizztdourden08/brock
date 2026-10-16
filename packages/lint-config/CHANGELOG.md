@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.48.0
+
 ## 0.47.0
 
 ### Patch Changes

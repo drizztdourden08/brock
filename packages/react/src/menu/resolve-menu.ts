@@ -2,14 +2,14 @@
 import { applyAnchors } from './apply-anchors';
 import { applyOrder } from './apply-order';
 import { applyParents } from './apply-parents';
+import { barMarkers } from './bar-markers';
 import { configOverrides } from './config-overrides';
-import { VIEW_MENU_KEY } from './menu-config.constants';
+import { BAR_MARKER_KEYS } from './menu-config.constants';
 import type { MenuEntryOverride, MenuForest, MenuIssue, MenuOverrideRecord, MenuResolveInput, ResolvedMenu } from './menu-config.type';
 import { growForest } from './grow-forest';
 import { plantForest } from './plant-forest';
 import type { MenuItem } from './menu.type';
 import { sanitizeOverride } from './sanitize-override';
-import { viewMarker } from './view-marker';
 
 const ownOverride = (item: MenuItem): MenuEntryOverride => {
   const { hidden, inMenu, group, order, before, after, parent } = item;
@@ -41,14 +41,14 @@ const applyOverrides = (forest: MenuForest, given: ReadonlyMap<string, MenuEntry
 const resolveMenu = ({ groups, config, known }: MenuResolveInput): ResolvedMenu => {
   const issues: MenuIssue[] = [];
   const forest = plantForest(groups);
-  const keys = new Set([...(known ?? []), ...forest.byKey.keys(), VIEW_MENU_KEY]);
+  const keys = new Set([...(known ?? []), ...forest.byKey.keys(), ...BAR_MARKER_KEYS]);
   const given = configOverrides(config, keys, issues);
-  const marker = viewMarker.plant(forest, given.get(VIEW_MENU_KEY));
+  const markers = barMarkers.plant(forest, given);
   const overrides = applyOverrides(forest, given, issues);
   applyParents(forest, keys, issues);
   applyOrder(forest);
   applyAnchors(forest, keys, issues);
-  viewMarker.settle(forest, marker, issues);
+  barMarkers.settle(forest, markers, issues);
   return { entries: growForest(forest), issues, overrides };
 };
 

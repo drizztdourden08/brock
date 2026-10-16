@@ -7,7 +7,7 @@ import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
-import { menuConfigProblems } from '../menu/menu-config-problems.mjs';
+import { menuConfigProblems, menuConfigWarnings } from '../menu/menu-config-problems.mjs';
 import { syncApp } from '../modules/sync.mjs';
 import { workflowInputs } from '../release/workspace-workflow-inputs.mjs';
 import { workflowProblems } from '../release/workflow-problems.mjs';
@@ -58,6 +58,7 @@ const syncOne = async (appDir, check) => {
     reportProblems(managedConfigProblems(appDir), `${prefix}: the managed configs of ${label} would not load:`),
     reportProblems(menuConfigProblems(appDir, config.product?.menu), `${prefix}: the menu config of ${label} has problems:`),
   );
+  for (const warning of menuConfigWarnings(config.product?.menu)) console.warn(`${prefix}: warning: ${warning}`);
   return check ? Math.max(code, problems) : code;
 };
 

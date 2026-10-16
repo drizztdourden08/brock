@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
 import { SideNavLayout } from '@drizztdourden08/tessera/composites';
-import { Box } from '@drizztdourden08/tessera/primitives';
+import { Box, ScrollArea } from '@drizztdourden08/tessera/primitives';
 import { activateEntry } from '../../search/activate-entry';
 import type { SearchEntry } from '../../search/search.type';
 import { useHubSearch } from '../../settings/SettingsHub/behavior/useHubSearch';
@@ -9,6 +9,7 @@ import { DEFAULT_SEARCH_PLACEHOLDER } from '../hub.constants';
 import type { HubSearchHit } from '../hub.type';
 import { buildHubNav } from './behavior/build-hub-nav';
 import { hubNavKey } from './behavior/hub-nav-key';
+import { showsHubNav } from './behavior/shows-hub-nav';
 import { useHubState } from './behavior/useHubState';
 import { HubIndexResults } from './sub-components/HubIndexResults';
 import { HubPageSlot } from './sub-components/HubPageSlot';
@@ -36,14 +37,22 @@ const Hub = (props: HubProps) => {
   const indexed = <HubIndexResults def={def} pages={pages} query={query} onOpen={openEntry} onOpenPage={openPage} />;
   const results = ownIndex ? <HubSearchHits query={query} index={ownIndex} onOpen={openHit} /> : indexed;
 
-  return (
-    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
+  const content = (
+    <>
       {page.keepMounted !== true && <HubPageSlot context={context} onSelectTab={selectTab} onUp={up} />}
       {kept.map((entry) => (
         <Box key={`kept:${entry.id}`} className="hub__kept" hidden={!entry.shown}>
           <HubPageSlot context={entry.context} onSelectTab={selectTab} onUp={up} />
         </Box>
       ))}
+    </>
+  );
+
+  if (!showsHubNav(def.nav, pages.length)) return <ScrollArea className="hub__solo">{content}</ScrollArea>;
+
+  return (
+    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
+      {content}
     </SideNavLayout>
   );
 };

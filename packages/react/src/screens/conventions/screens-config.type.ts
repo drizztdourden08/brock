@@ -4,6 +4,8 @@ import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
 
+type HubNavMode = 'auto' | 'always' | false;
+
 type ScreenMenu = false | 'entry' | (string & {});
 
 interface PagePrimaryAction {
@@ -29,6 +31,7 @@ interface BucketDef extends ShowRule {
   menu: MenuPlacement;
   groups?: BucketGroupDef[];
   shortcut?: string;
+  nav?: HubNavMode;
 }
 
 interface SettingsPlacement {
@@ -58,4 +61,4 @@ interface ScreenMeta extends ShowRule {
   keepMounted?: boolean;
 }
 
-export type { BucketDef, BucketGroupDef, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };

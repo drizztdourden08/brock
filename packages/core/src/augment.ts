@@ -122,6 +122,8 @@ interface IpcNamespaces {}
 
 interface AppServices {}
 
+interface ShowFlags {}
+
 interface Capabilities {
   windowChrome: boolean;
   titleBar?: boolean;
@@ -143,5 +145,5 @@ export type {
   BaseProfile, ProfileExtension, ProfileCreateExtension, ProfilePatchExtension,
   Profile, CreateProfileOptions, ProfilePatch,
   InvokeContract, SendContract, EventContract, IpcNamespaces,
-  Capabilities, PlatformPorts, AppServices,
+  Capabilities, PlatformPorts, AppServices, ShowFlags,
 };

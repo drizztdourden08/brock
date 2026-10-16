@@ -4,6 +4,7 @@ import type {
 } from '@drizztdourden08/brock-core';
 import { EMPTY_SUMMARY } from './web-factory.constants';
 import { pickBrowserFile } from './pick-browser-file';
+import { webDevice } from './web-device';
 
 const noopUnsub = () => () => {};
 const resolveFalse = () => Promise.resolve(false);
@@ -84,7 +85,7 @@ const createFilePicker = (): FilePickerPort => ({
 });
 
 const createWebFactory = (): PlatformFactory => ({
-  info: { host: 'web', os: 'unknown', formFactor: 'desktop', input: 'pointer', isDev: false },
+  info: { host: 'web', os: 'unknown', ...webDevice(), isDev: false },
   capabilities: {
     windowChrome: false,
     titleBar: false,

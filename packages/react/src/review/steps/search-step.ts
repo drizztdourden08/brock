@@ -4,6 +4,7 @@ import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
 import { SEARCH_TOP } from '../review.constants';
 import type { SearchSample, StepTour, ReviewStep } from '../review.type';
 import { hubSearchPick } from '../search/hub-search-pick';
+import { hubSearchSample } from '../search/hub-search-sample';
 import { palettePick } from '../search/palette-pick';
 import { reachedTarget } from '../search/reached-target';
 import { searchSamples } from '../search/search-samples';
@@ -35,9 +36,10 @@ const searchStep: ReviewStep = {
       await resetUi();
       await checkSample(tour, sample, sample === firstSetting);
     }
-    if (firstSetting === undefined) return;
+    const inHub = hubSearchSample(tour.env, samples);
+    if (inHub === undefined) return;
     await resetUi();
-    await hubSearchPick(tour, firstSetting);
+    await hubSearchPick(tour, inHub);
   },
 };
 

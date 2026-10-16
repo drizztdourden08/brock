@@ -134,7 +134,7 @@ const SELECTORS = {
   liveControl: 'input, button, select, textarea, [role="switch"], [role="radio"], [role="slider"]',
   dialogClose: '.dialog .window-header__close',
   hubNavItem: '.screen-layer:not(.screen-layer--hidden) .side-nav__item',
-  hubPage: '.screen-layer:not(.screen-layer--hidden) .side-nav-layout__pane',
+  hubPage: '.screen-layer:not(.screen-layer--hidden) .side-nav-layout__pane, .screen-layer:not(.screen-layer--hidden) .hub__solo',
   switchItem: '.screen-layer:not(.screen-layer--hidden) .floating-switch__item',
 } as const;
 

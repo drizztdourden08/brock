@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { ScreenParams } from '../navigation/navigation.type';
-import type { ScreenMenu } from '../screens/conventions/screens-config.type';
+import type { HubNavMode, ScreenMenu } from '../screens/conventions/screens-config.type';
 import type { ShowRule } from '../screens/show/show.type';
 
 interface HubTarget {
@@ -98,6 +98,7 @@ interface HubDef {
   icon: ReactNode;
   shortcut?: string;
   show?: ShowRule;
+  nav?: HubNavMode;
 }
 
 export type { HubDef, HubGroup, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget };

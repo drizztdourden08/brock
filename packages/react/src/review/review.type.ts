@@ -113,6 +113,7 @@ interface AboutSnapshot {
 interface BucketSnapshot {
   hub: string;
   reachedVia: string | null;
+  nav: boolean;
   expected: readonly string[];
   shown: readonly string[];
 }

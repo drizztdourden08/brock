@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { showsHubNav } from '../../hub/Hub/behavior/shows-hub-nav';
 import { visibleHubPages } from '../../hub/Hub/behavior/visible-hub-pages';
 import { nav } from '../../navigation/nav';
 import { bucketChecks } from '../checks/bucket-checks';
@@ -26,9 +27,10 @@ const bucketsStep: ReviewStep = {
       const reachedVia = await openBucket(tour.env, hub);
       const opened = await waitFor(() => nav.active() === hub.id && find(SELECTORS.layer) !== null);
       const { pages } = visibleHubPages(hub, developerTools);
-      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, expected: pages.map((page) => page.label), shown: navLabels() }));
+      const navShown = showsHubNav(hub.nav, pages.length);
+      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: pages.map((page) => page.label), shown: navLabels() }));
       if (opened === null) continue;
-      await visitHubPages(tour, hub, pages);
+      await visitHubPages(tour, hub, pages, navShown);
       await hubBackCheck(tour, hub);
     }
   },

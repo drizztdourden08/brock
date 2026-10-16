@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
+import { hiddenRoutes } from '../../screens/show/hidden-routes';
+import { routeHidden } from '../../screens/show/route-hidden';
 import { foldText } from '../../search/fold-text';
 import type { SearchEntry } from '../../search/search.type';
 import { WIDGET_KEY_PREFIX } from '../../widgets/widget.constants';
@@ -21,7 +23,8 @@ const settingSamples = (index: readonly SearchEntry[], unique: (label: string) =
 };
 
 const searchSamples = (env: ReviewEnv, widgetDefs: readonly WidgetDef[]): SearchSample[] => {
-  const index = (env.screenTree?.search ?? []).filter((entry) => entry.devOnly !== true || env.developerTools);
+  const hidden = hiddenRoutes(env.screenTree?.hubs ?? [], env.screens);
+  const index = (env.screenTree?.search ?? []).filter((entry) => (entry.devOnly !== true || env.developerTools) && !routeHidden(entry.target?.route ?? '', hidden));
   const routes = new Set(index.map((entry) => entry.target?.route));
   const leaves = menuLeaves(env.menu).filter((item) => !item.key.startsWith(WIDGET_KEY_PREFIX) && !routes.has(item.screen));
   const widgets = widgetDefs.filter((def) => def.devOnly !== true || env.developerTools);

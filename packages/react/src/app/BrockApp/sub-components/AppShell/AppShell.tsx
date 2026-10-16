@@ -34,11 +34,13 @@ import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
 import { TourHost } from '../../../../tours/TourHost';
 import { useAppOpenBridge } from '../../../../open/useAppOpenBridge';
+import { useBootPreload } from '../../../../lazy/useBootPreload';
+import { usePreloadOnHover } from '../../../../lazy/usePreloadOnHover';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review } = props;
-  const { product, home, logoSrc } = useBrock();
+  const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
   const registry = useScreenRegistry();
@@ -58,6 +60,8 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useAppOpenBridge();
 
   const fullMenu = useShellMenu(moduleMenu, railed);
+  useBootPreload(registry, [home, homeScreen]);
+  usePreloadOnHover(fullMenu, registry);
   const actions = useShellActions(titleBarActions);
   const square = useWindowSquare();
   const actionIds = JSON.stringify(actions.map((action) => action.id));

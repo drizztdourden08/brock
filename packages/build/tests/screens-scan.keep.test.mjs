@@ -148,17 +148,20 @@ describe('checkScreens', () => {
 });
 
 describe('renderScreens', () => {
-  it('imports each default export and meta, and lists the entries', () => {
+  it('imports each meta, loads each component on first use, keeps settings pages eager, and lists the entries', () => {
     const { files } = scanScreens(appWith(VALID));
     const out = renderScreens(files);
+    expect(out).toContain("import { buildScreenTree, lazyComponent } from '@drizztdourden08/brock-react';");
     expect(out).toContain("import config from '../src/screens/screens.config';");
-    expect(out).toContain("import GameHomeHero, { meta as gameHomeHeroMeta } from '../src/screens/game/home.hero';");
-    expect(out).toContain("import GameTrackerItemsTab from '../src/screens/game/tracker/items.tab';");
-    expect(out).toContain("{ kind: 'tab', bucket: 'game', page: 'tracker', id: 'items', component: GameTrackerItemsTab },");
+    expect(out).toContain("import { meta as gameHomeHeroMeta } from '../src/screens/game/home.hero';");
+    expect(out).not.toContain('import GameHomeHero');
+    expect(out).not.toContain('items.tab\';');
+    expect(out).toContain("{ kind: 'tab', bucket: 'game', page: 'tracker', id: 'items', component: lazyComponent(() => import('../src/screens/game/tracker/items.tab')) },");
+    expect(out).toContain("import GameVideoDisplaySettings from '../src/screens/game/video/display.settings';");
     expect(out).toContain("{ kind: 'settings', bucket: 'game', group: 'video', id: 'display', sections: GameVideoDisplaySettings },");
     expect(out).toContain("import { searchIndex } from './search';");
     expect(out).toContain('], searchIndex);');
-    expect(out).toContain("{ kind: 'custom', bucket: 'game', id: 'controls', component: GameControlsCustom, meta: gameControlsCustomMeta },");
+    expect(out).toContain("{ kind: 'custom', bucket: 'game', id: 'controls', component: lazyComponent(() => import('../src/screens/game/controls.custom')), meta: gameControlsCustomMeta },");
     expect(out).toContain('export { screenTree };');
   });
 });

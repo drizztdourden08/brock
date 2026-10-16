@@ -7,6 +7,7 @@ import { defineValues } from './build-options/define-values.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { loadBrockConfig } from './load-config.mjs';
+import { metaModulesPlugin } from './meta-modules/meta-modules-plugin.mjs';
 import { webManifestPlugin } from './platforms/web/web-manifest-plugin.mjs';
 import { WEB_OUT_DIR } from './platforms/web/web.constants.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
@@ -28,7 +29,7 @@ const defineBrockWebConfig = async (rootDir, overrides = {}) => {
     base: './',
     publicDir: resolve(rootDir, 'public'),
     define: defineValues(build?.define, 'brock.config.ts'),
-    plugins: [devOnlyPlugin({ rootDir }), react(), ...polyfills(), splashPlugin({ rootDir, product }), ...manifest],
+    plugins: [devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), splashPlugin({ rootDir, product }), ...manifest],
     worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
     resolve: { alias: appAliases(rootDir, build), dedupe: SHARED_SINGLETONS },
     build: { outDir: resolve(rootDir, WEB_OUT_DIR), emptyOutDir: true, rollupOptions: { input: { index: resolve(src, 'index.html') } } },

@@ -20,6 +20,7 @@ const defineHub = (def: HubDef): ScreenDef => {
     subtitle: () => createElement(ScreenSubtitle),
     floating: (ctx) => createElement(HubSwitch, { current: def.id, onSelect: (id: string) => ctx.open(id) }),
     render: (ctx) => createElement(Hub, { def, ctx }),
+    preload: def.home.preload,
   });
   HUB_DEFS.set(screen, def);
   return screen;

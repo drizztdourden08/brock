@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
 import { SettingsTabPage } from '../../hub/SettingsTabPage/SettingsTabPage';
+import { preloadOf } from '../../lazy/preload-of';
 import { joinRoute } from '../../navigation/join-route';
 import { renderPage } from '../kinds/render-page';
 import { entryLabel } from './entry-label';
@@ -23,6 +24,7 @@ const contentPage = (bucket: BucketDef, entry: PageEntry | FreePageEntry | Setti
     render: entry.kind !== 'settings'
       ? renderPage(entry.component, bucket)
       : () => createElement(SettingsTabPage, { tabId: joinRoute(entry.bucket, entry.id) }),
+    preload: entry.kind === 'settings' ? undefined : preloadOf(entry.component),
   },
 });
 

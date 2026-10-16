@@ -29,6 +29,16 @@ const OVERRIDE_WANTS: Readonly<Record<keyof MenuEntryOverride, string>> = {
 
 const VIEW_MENU_KEY = 'view';
 
+const VIEW_MARKER_GROUP: MenuGroupId = 'modules';
+
+const VIEW_PLACE_FIELDS: readonly (keyof MenuEntryOverride)[] = ['hidden', 'inMenu', 'group', 'order', 'before', 'after'];
+
+const WINDOW_PIN_KEY = 'window-pin';
+
+const WINDOW_FULLSCREEN_KEY = 'window-fullscreen';
+
 const KEY_SUGGESTIONS = 3;
 
-export { END_GROUP, KEY_SUGGESTIONS, MENU_GROUP_IDS, OVERRIDE_CHECKS, OVERRIDE_WANTS, VIEW_MENU_KEY };
+export {
+  END_GROUP, KEY_SUGGESTIONS, MENU_GROUP_IDS, OVERRIDE_CHECKS, OVERRIDE_WANTS, VIEW_MARKER_GROUP, VIEW_MENU_KEY, VIEW_PLACE_FIELDS, WINDOW_FULLSCREEN_KEY, WINDOW_PIN_KEY,
+};

@@ -1,12 +1,12 @@
 /* @layer renderer-shell @kind hook */
-import { useState } from 'react';
 import { usePlatform } from '../../../platform/usePlatform';
+import { togglePin } from './toggle-pin';
+import { usePinStore } from './usePinStore';
 
 const usePinWindow = () => {
   const { window: win } = usePlatform();
-  const [pinned, setPinned] = useState(false);
-  const togglePin = async (): Promise<void> => setPinned(await win.setAlwaysOnTop(!pinned));
-  return { pinned, togglePin };
+  const pinned = usePinStore((s) => s.pinned);
+  return { pinned, togglePin: (): Promise<void> => togglePin(win) };
 };
 
 export { usePinWindow };

@@ -9,11 +9,11 @@ const unknownKey = (key: string, known: ReadonlySet<string>): MenuIssue => {
   return { key, message: `menu.entries names "${key}", but no menu entry has that key${hint}` };
 };
 
-const viewIssues = (override: MenuEntryOverride): MenuIssue[] =>
-  Object.keys(override).filter((field) => field !== 'label').map((field) => ({
-    key: VIEW_MENU_KEY,
-    message: `menu.entries.view sets ${field}, but the View sub-menu is drawn by the title bar itself and only takes a label`,
-  }));
+const viewOverride = (override: MenuEntryOverride, issues: MenuIssue[]): MenuEntryOverride => {
+  const { parent, ...kept } = override;
+  if (parent !== undefined) issues.push({ key: VIEW_MENU_KEY, message: 'menu.entries.view sets parent, but the View sub-menu sits at the top level of the menu and takes no parent' });
+  return kept;
+};
 
 const entriesOf = (config: MenuConfig | undefined, issues: MenuIssue[]): [string, unknown][] => {
   const entries: unknown = config?.entries;
@@ -27,9 +27,8 @@ const configOverrides = (config: MenuConfig | undefined, known: ReadonlySet<stri
   const overrides = new Map<string, MenuEntryOverride>();
   for (const [key, raw] of entriesOf(config, issues)) {
     const override = sanitizeOverride(key, raw, issues);
-    if (key === VIEW_MENU_KEY) issues.push(...viewIssues(override));
-    else if (!known.has(key)) issues.push(unknownKey(key, known));
-    overrides.set(key, override);
+    if (key !== VIEW_MENU_KEY && !known.has(key)) issues.push(unknownKey(key, known));
+    overrides.set(key, key === VIEW_MENU_KEY ? viewOverride(override, issues) : override);
   }
   return overrides;
 };

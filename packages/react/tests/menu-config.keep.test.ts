@@ -127,11 +127,6 @@ describe('menu config sources, issues and profile locks', () => {
     expect(keys(buildMenu(input))).toEqual(DEFAULT_KEYS);
   });
 
-  it('takes only a label for the View sub-menu the title bar draws', () => {
-    expect(messages(withConfig({ view: { label: 'Window' } }))).toEqual([]);
-    expect(messages(withConfig({ view: { hidden: true } }))[0]).toContain('only takes a label');
-  });
-
   it('does not report a key that a show rule or developer tools hide right now', () => {
     expect(messages(withConfig({ 'dev-console': { label: 'Console' } }))).toEqual([]);
   });

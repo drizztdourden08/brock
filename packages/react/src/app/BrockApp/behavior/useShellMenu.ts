@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { bugReport } from '../../../bug-report/bug-report';
 import { requestQuit } from '../../../quit/request-quit';
 import { shortcutsHelp } from '../../../shortcuts-help/shortcuts-help';
-import type { MenuEntry } from '../../../menu/menu.type';
+import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { profileLock } from '../../../menu/profile-lock';
 import { useMenuHooks } from '../../../menu/useMenuHooks';
 import { useMenuIssues } from '../../../menu/useMenuIssues';
@@ -26,7 +26,7 @@ import type { ShellMenu } from '../BrockApp.type';
 import { resolveShellMenu } from './resolve-shell-menu';
 import { stripScreenEntries } from './strip-screen-entries';
 
-const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): ShellMenu => {
+const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean, windowEntries: readonly MenuItem[]): ShellMenu => {
   const { menu: givenMenu, homeScreen, product } = useBrock();
   const menu = useMenuHooks(givenMenu);
   const moduleMenu = useMenuHooks(givenModuleMenu);
@@ -57,11 +57,12 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       tours: { list: tourList, start: tours.start },
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
+      windowEntries,
     });
     const entries = withPreload(resolved.entries, routePreloader(registry));
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry]);
+  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, windowEntries]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

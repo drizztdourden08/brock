@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanScreens } from '../screens/scan-screens.mjs';
 import { SCREENS_CONFIG, SCREENS_DIR } from '../screens/screen-conventions.constants.mjs';
-import { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY } from './menu-config.constants.mjs';
+import { BUCKET_KEY_PREFIX, CARD_KINDS, MENU_CONFIG_PATH, MENU_FIELDS, PAGE_KINDS, SCREEN_KEY_PREFIX, VIEW_KEY, WINDOW_KEYS } from './menu-config.constants.mjs';
 
 /** @param {unknown} value */
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -59,8 +59,21 @@ const referenceProblems = (key, entry, keys) => {
     if (target === key) problems.push(`${MENU_CONFIG_PATH}: entries["${key}"].${field} names the entry itself`);
     else if (unknownScreenKey(target, keys)) problems.push(`${MENU_CONFIG_PATH}: entries["${key}"].${field} "${target}" names no screen of src/screens`);
   }
-  if (key === VIEW_KEY && Object.keys(entry).some((field) => field !== 'label')) problems.push(`${MENU_CONFIG_PATH}: entries.view takes only a label; the title bar draws the View sub-menu`);
+  if (key === VIEW_KEY && entry.parent !== undefined) problems.push(`${MENU_CONFIG_PATH}: entries.view takes no parent; the View sub-menu sits at the top level of the menu`);
   return problems;
+};
+
+/** @param {unknown} entry */
+const outOfMenu = (entry) => isRecord(entry) && (entry.hidden === true || entry.inMenu === false);
+
+/**
+ * @param {unknown} menu product.menu of brock.config.ts
+ * @returns {string[]}
+ */
+const menuConfigWarnings = (menu) => {
+  const entries = isRecord(menu) && isRecord(menu.entries) ? menu.entries : {};
+  if (!outOfMenu(entries[VIEW_KEY]) || !WINDOW_KEYS.every((key) => outOfMenu(entries[key]))) return [];
+  return [`${MENU_CONFIG_PATH}: entries.view, entries["${WINDOW_KEYS.join('"] and entries["')}"] are all out of the menu, so on a narrow window, where the title bar tucks its pin and full screen buttons away, nothing reaches them`];
 };
 
 /**
@@ -104,4 +117,4 @@ const menuConfigProblems = (rootDir, menu) => {
   return [...shaped, ...Object.entries(valid).flatMap(([key, entry]) => referenceProblems(key, entry, keys)), ...loopProblems(valid)];
 };
 
-export { menuConfigProblems };
+export { menuConfigProblems, menuConfigWarnings };

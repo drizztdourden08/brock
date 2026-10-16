@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { VIEW_MENU_KEY } from '../../menu/menu-config.constants';
+import { viewHidden } from '../../menu/view-hidden';
 import { menuChecks } from '../checks/menu-checks';
 import { viewMenuChecks } from '../checks/view-menu-checks';
 import { find } from '../dom/find';
@@ -20,7 +21,7 @@ const menuStep: ReviewStep = {
     const { controls } = product.window.titleBar;
     await openMenu();
     const snapshot = readMenu();
-    const titleBar = { actions, controls, viewLabel: product.menu?.entries?.[VIEW_MENU_KEY]?.label };
+    const titleBar = { actions, controls, viewLabel: product.menu?.entries?.[VIEW_MENU_KEY]?.label, viewHidden: viewHidden(product.menu) };
     const expected = menuExpectation(menu, homeScreen, titleBar, new Set(menuOverrides.map((record) => record.key)));
     tour.report(menuChecks(snapshot, expected));
     if (!snapshot.open) return;

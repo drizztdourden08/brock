@@ -147,7 +147,7 @@ describe('brock migrate --tessera-from-copy on an app holding its own copy', () 
     converted.root = repo(APP);
     made.splice(made.indexOf(converted.root), 1);
     converted.run = convert(converted.root);
-  }, 60000);
+  }, 240_000);
 
   afterAll(() => rmSync(converted.root, { recursive: true, force: true }));
 

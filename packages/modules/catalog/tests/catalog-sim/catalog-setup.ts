@@ -35,7 +35,7 @@ const fakeJobs = () => {
   const job = (id: string): JobHandle => {
     running.add(id);
     const handle: JobHandle = {
-      id, signal: controller.signal, step: (step) => { steps.push(step); }, progress: () => undefined, line: () => undefined, log: () => undefined,
+      id, signal: controller.signal, started: Promise.resolve(), ended: Promise.resolve('done'), step: (step) => { steps.push(step); }, progress: () => undefined, line: () => undefined, log: () => undefined,
       skip: () => undefined, done: () => undefined, fail: () => undefined, setCancellable: (on) => { steps.push(on ? 'cancellable' : 'locked'); },
       run: async (work) => { try { return await work(handle); } finally { running.delete(id); } },
     };

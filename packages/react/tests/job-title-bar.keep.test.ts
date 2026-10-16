@@ -24,6 +24,7 @@ const job = (state: JobState, currentStep: string | null): JobSnapshot => ({
   startedAt: 1,
   endedAt: state === 'running' ? null : 2,
   cancellable: false,
+  visible: true,
 });
 
 afterEach(() => document.body.replaceChildren());

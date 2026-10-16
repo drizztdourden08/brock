@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { lazyLoads } from '../lazy/lazy-loads';
 import { toast } from '../toast/toast';
 import { focusAnchorControl } from './focus-anchor-control';
 import { ANCHOR_ATTRIBUTES, ANCHOR_BUDGET_MS, ANCHOR_FLASH_CLASS, ANCHOR_FLASH_MS } from './search.constants';
@@ -9,8 +10,9 @@ const anchorSelector = (anchor: string): string => {
 };
 
 const scrollToAnchor = (anchor: string, budgetMs = ANCHOR_BUDGET_MS, label = anchor): void => {
-  const started = performance.now();
+  let started = performance.now();
   const attempt = (): void => {
+    if (!lazyLoads.isIdle()) started = performance.now();
     const target = document.querySelector<HTMLElement>(anchorSelector(anchor));
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });

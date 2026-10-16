@@ -44,7 +44,8 @@ const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<bo
   return moved;
 };
 
-const walkTour = async (tour: StepTour, def: TourDef): Promise<void> => {
+const walkTour = async (tour: StepTour, listed: TourDef): Promise<void> => {
+  const def = await tours.load(listed.id) ?? listed;
   tours.start(def.id, 0);
   let index = 0;
   while (index < def.steps.length && await walkStep(tour, def, index)) index += 1;

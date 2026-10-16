@@ -57,7 +57,12 @@ interface TourDef {
   readonly description?: string;
   readonly steps: readonly TourStepDef[];
   readonly trigger?: TourTrigger;
+  readonly load?: TourLoader;
 }
+
+type TourLoader = () => Promise<{ default: TourDef }>;
+
+type TourShell = Pick<TourDef, 'title' | 'description' | 'trigger'>;
 
 type TourChoice = Pick<TourDef, 'id' | 'title'>;
 
@@ -135,5 +140,5 @@ interface TourApi {
 
 export type {
   ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
-  TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
+  TourLoader, TourShell, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

@@ -52,8 +52,10 @@ const META_EXPORT = /export\s*\{[^}]*\bmeta\b[^}]*\}|export\s+const\s+meta\b/;
 const SEARCH_ENTRIES_EXPORT = /export\s*\{[^}]*\bsearchEntries\b[^}]*\}|export\s+const\s+searchEntries\b/;
 const IMPORT_STATEMENT = /^\s*import\s+(type\s+)?[^;]*?\s+from\s+['"]([^'"]+)['"];?[ \t]*$/gm;
 const WATCH_EVENTS = ['add', 'unlink', 'change', 'addDir', 'unlinkDir'];
+const LAZY_COMPONENT = 'lazyComponent';
+const EAGER_KINDS = ['settings', 'page-meta'];
 
 export {
-  CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, GENERATED_HEADER, IMPORT_STATEMENT, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, REACT_PACKAGE, SCREEN_ID,
+  CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, EAGER_KINDS, LAZY_COMPONENT, GENERATED_HEADER, IMPORT_STATEMENT, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, REACT_PACKAGE, SCREEN_ID,
   SCREENS_CONFIG, SCREENS_DEV_OUTPUT, SCREENS_DIR, SCREENS_OUTPUT, SEARCH_ENTRIES_EXPORT, SEARCH_OUTPUT, WATCH_EVENTS,
 };

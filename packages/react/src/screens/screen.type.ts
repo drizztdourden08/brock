@@ -23,6 +23,7 @@ interface ScreenDef {
   icon: ReactNode;
   header?: ScreenHeader;
   render: (ctx: ScreenRenderContext) => ReactNode;
+  preload?: () => Promise<unknown>;
   layer?: ScreenLayerKind;
   size?: ScreenSize;
   keepMounted?: boolean;

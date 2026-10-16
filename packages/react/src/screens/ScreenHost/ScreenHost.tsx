@@ -5,6 +5,7 @@ import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { backLabelOf } from '../../hub/back-label-of';
+import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
@@ -41,7 +42,7 @@ const ScreenHost = (props: ScreenHostProps) => {
 
   const guarded = (screen: ScreenDef, hidden: boolean): ReactNode => (
     <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>
-      <ScreenStateScope.Provider value={screen.id}>{screen.render(ctx)}</ScreenStateScope.Provider>
+      <ScreenStateScope.Provider value={screen.id}><LazyHost>{screen.render(ctx)}</LazyHost></ScreenStateScope.Provider>
     </RenderErrorBoundary>
   );
 
@@ -74,7 +75,7 @@ const ScreenHost = (props: ScreenHostProps) => {
       <Box className="screen-host__home">
         {allowed(homeScreen) && (
           <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>
-            <ScreenStateScope.Provider value={homeScreen.id}>{homeScreen.render(ctx)}</ScreenStateScope.Provider>
+            <ScreenStateScope.Provider value={homeScreen.id}><LazyHost>{homeScreen.render(ctx)}</LazyHost></ScreenStateScope.Provider>
           </RenderErrorBoundary>
         )}
       </Box>

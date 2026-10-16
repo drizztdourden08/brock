@@ -5,7 +5,7 @@ import { nav } from '../../../navigation/nav';
 import { useNavigationStore } from '../../../navigation/useNavigationStore';
 import { useDialogStore } from '../../../stores/useDialogStore';
 
-const closeTopmost = (e: KeyboardEvent, homeScreen: string | null): void => {
+const closeTopmost = (e: KeyboardEvent, homeScreen: string | null, holdsScreen?: () => boolean): void => {
   const layer = escapeLayers.topmost();
   const dialog = useDialogStore.getState();
   const action = resolveEscape({
@@ -18,8 +18,9 @@ const closeTopmost = (e: KeyboardEvent, homeScreen: string | null): void => {
   e.preventDefault();
   if (action === 'layer') layer?.close();
   else if (action === 'dialog') dialog.dismiss();
-  else if (action === 'screen') nav.escape();
-  else if (homeScreen !== null) nav.home(homeScreen);
+  else if (action === 'screen') {
+    if (holdsScreen?.() !== true) nav.escape();
+  } else if (homeScreen !== null) nav.home(homeScreen);
 };
 
 export { closeTopmost };

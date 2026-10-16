@@ -1,6 +1,13 @@
 /* @layer renderer-shell @kind types */
 import type { CreateProfileOptions, Profile } from '@drizztdourden08/brock-core';
 
+type BeforeProfileRemove = (profile: Profile) => boolean | undefined | Promise<boolean | undefined>;
+
+interface ProfileRemovalRegistry {
+  add: (guard: BeforeProfileRemove) => () => void;
+  allows: (profile: Profile) => Promise<boolean>;
+}
+
 interface ProfilesState {
   profiles: Profile[];
   active: Profile | null;
@@ -23,8 +30,8 @@ interface UseProfilesResult {
   create: (opts: CreateProfileOptions) => Promise<Profile>;
   rename: (profile: Profile, name: string) => Promise<void>;
   remove: (profile: Profile) => void;
-  removeConfirmed: (profile: Profile) => void;
+  removeConfirmed: (profile: Profile) => Promise<boolean>;
   refresh: () => Promise<Profile[]>;
 }
 
-export type { ProfilesState, UseProfilesResult };
+export type { BeforeProfileRemove, ProfileRemovalRegistry, ProfilesState, UseProfilesResult };

@@ -21,6 +21,7 @@ import type { AppReview } from '../../review/app-review.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
+import type { BeforeProfileRemove } from '../../stores/profiles.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -32,6 +33,10 @@ interface BrockAppSettings<S extends object> extends SettingsControls<S> {
   effects?: SettingsEffect<S>[];
   normalise?: SettingsNormalise<S>;
   transformPatch?: SettingsPatchTransform<S>;
+}
+
+interface BrockAppProfiles {
+  onBeforeRemove?: BeforeProfileRemove;
 }
 
 interface BrockAppProps<S extends object> {
@@ -50,6 +55,7 @@ interface BrockAppProps<S extends object> {
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
   profileHooks?: ProfileStoreHooks;
+  profiles?: BrockAppProfiles;
   dataDomains?: readonly DataDomainDef[];
   homeScreen?: string;
   credits?: ReactNode;
@@ -68,6 +74,7 @@ interface MenuBuildInput {
   moduleMenu: readonly MenuEntry[];
   widgets: readonly MenuItem[];
   homeScreen: string;
+  homeLocked?: boolean;
   hasCredits: boolean;
   developerTools: boolean;
   show?: ShowContext;
@@ -81,6 +88,7 @@ interface MenuBuildInput {
 interface ShellKeyContext {
   toggleFullscreen?: () => void;
   home: () => string | null;
+  holds?: () => boolean;
   escapes: EscapeStack;
 }
 
@@ -115,4 +123,4 @@ interface ReviewTourInput {
   review?: AppReview;
 }
 
-export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext };
+export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProfiles, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext };

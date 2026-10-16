@@ -53,7 +53,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
       onSelect={(id) => { const profile = byId(id); if (profile) void handleSelect(profile); }}
       onCreate={handleCreate}
       onRename={handleRename}
-      onDelete={(id) => { const profile = byId(id); if (profile) removeConfirmed(profile); }}
+      onDelete={(id) => { const profile = byId(id); if (profile) void removeConfirmed(profile); }}
       createOpen={loaded && profiles.length === 0}
       extraFields={extraFields}
       canSubmit={canSubmit}

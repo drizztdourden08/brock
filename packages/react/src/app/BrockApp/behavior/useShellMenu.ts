@@ -8,6 +8,7 @@ import { useMenuHooks } from '../../../menu/useMenuHooks';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
+import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { tours } from '../../../tours/tours';
 import { useTourStore } from '../../../tours/useTourStore';
 import { useWidgetMenuEntries } from '../../../widgets/useWidgetMenuEntries';
@@ -28,6 +29,8 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): M
   const hasCredits = registry.has(CREDITS_SCREEN);
   const widgets = useWidgetMenuEntries();
   const tourList = useTourStore((s) => s.tours);
+  const hasProfile = useProfilesStore((s) => s.active !== null);
+  const homeLocked = !hasProfile && registry.get(homeScreen)?.requiresProfile !== false;
 
   return useMemo(() => {
     const built = buildMenu({
@@ -35,6 +38,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): M
       moduleMenu,
       widgets,
       homeScreen,
+      homeLocked,
       hasCredits,
       developerTools,
       show,
@@ -45,7 +49,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): M
       tours: { list: tourList, start: tours.start },
     });
     return railed ? stripScreenEntries(built) : built;
-  }, [menu, moduleMenu, widgets, tourList, homeScreen, hasCredits, developerTools, show, win, railed]);
+  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed]);
 };
 
 export { useShellMenu };

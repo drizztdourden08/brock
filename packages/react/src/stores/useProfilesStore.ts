@@ -43,8 +43,11 @@ const useProfilesStore = create<ProfilesState>()((set, get) => ({
 
   remove: async (id) => {
     await deleteProfile(id);
-    if (get().active?.id === id) set({ active: null });
-    await get().refresh();
+    const left = await get().refresh();
+    if (get().active?.id !== id) return;
+    const [next] = left;
+    if (next === undefined) set({ active: null });
+    else await get().select(next);
   },
 }));
 

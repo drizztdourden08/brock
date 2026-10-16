@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
-import type { HeroBackdrop } from '@drizztdourden08/tessera/composites';
+import type { Backdrop } from '@drizztdourden08/tessera/primitives';
 import type { HeroBackdropProps } from './screen-kinds.type';
 
-const heroBackdropOf = (props: HeroBackdropProps): HeroBackdrop | null => {
+const heroBackdropOf = (props: HeroBackdropProps): Backdrop | null => {
   switch (props.kind) {
     case 'none': return null;
     case 'node': return { kind: 'node', node: props.node };

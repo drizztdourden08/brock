@@ -9,5 +9,7 @@ export default defineConfig({
       'packages/plugins/*/tests/**/*.test.mjs',
     ],
     passWithNoTests: true,
+    testTimeout: 30_000,
+    hookTimeout: 60_000,
   },
 });

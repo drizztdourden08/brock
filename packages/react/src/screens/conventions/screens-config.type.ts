@@ -11,6 +11,8 @@ type PageBackdrop = HeroBackdrop | { kind: 'none' };
 
 type ScreenMenu = false | 'entry' | (string & {});
 
+type ScreenSize = 'fill' | 'info';
+
 interface PagePrimaryAction {
   label: string;
   icon?: IconName;
@@ -65,6 +67,7 @@ interface ScreenMeta extends ShowRule {
   fill?: boolean;
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
+  size?: ScreenSize;
 }
 
-export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };

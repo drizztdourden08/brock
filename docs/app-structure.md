@@ -203,6 +203,19 @@ const PresetsPage = () => <ListDetail list={list} selectedId={selectedId} onSele
 - The page's root fills the body: render the `ListDetail` at the root, or give the root you wrap it in `flex: 1` and `min-height: 0`.
 - `fill` works on a page, on a sub page and, through `<page>.page.ts`, on a tab page. A hero page and a settings page ignore it.
 
+## A small informational window
+
+A card fills the window by default. A card with no tools, such as credits or a licence list, sets `size: 'info'` in its meta, so it opens like About: a small window sized to its content and centred, at most `--size-512` wide and at most the window's height.
+
+```tsx
+// src/screens/credits.card.tsx
+export const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresProfile: false, size: 'info' };
+```
+
+- Brock passes it to Tessera's `ScreenWindow` as `size="info"`. The window's title bar names it, so the card has no page header; the card's content scrolls inside the window when it is taller.
+- Under 560 px wide the window fills the screen, as every screen does.
+- `size` works on a card. The built-in Credits screen, from `credits` on `BrockApp`, opens this way too. List entries one per line; an informational window is never wide.
+
 ## Generated files: tracked or ignored
 
 Every generated file is either committed, so a fresh checkout has it, or ignored, so it never drifts in version control. `brock adopt` and `create-brock` write the `.gitignore` lines; `brock check` fails when a tracked one drifts.

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { IconName } from '@drizztdourden08/tessera/primitives';
+import type { ScreenDef } from '../screen.type';
 import type { ScreenEntry } from './screen-tree.type';
 
 const KIND_ICONS: Record<ScreenEntry['kind'], IconName> = {
@@ -25,8 +26,9 @@ const MENU_KEY_PREFIX = 'menu:';
 const MENU_GROUP_ICON: IconName = 'folder';
 const BUILT_IN_SCREEN_IDS: readonly string[] = ['profiles', 'settings', 'about', 'credits'];
 const UNORDERED = Number.POSITIVE_INFINITY;
+const INFO_CARD: Pick<ScreenDef, 'size' | 'header'> = { size: 'info', header: 'none' };
 
 export {
-  BUCKET_KEY_PREFIX, BUILT_IN_SCREEN_IDS, HOME_LABEL, KIND_ICONS, MENU_GROUP_ICON, MENU_KEY_PREFIX, SCREEN_KEY_PREFIX, SETTINGS_ALIAS, SETTINGS_GROUP_PREFIX, SETTINGS_SHORTCUT,
+  BUCKET_KEY_PREFIX, BUILT_IN_SCREEN_IDS, HOME_LABEL, INFO_CARD, KIND_ICONS, MENU_GROUP_ICON, MENU_KEY_PREFIX, SCREEN_KEY_PREFIX, SETTINGS_ALIAS, SETTINGS_GROUP_PREFIX, SETTINGS_SHORTCUT,
   UNORDERED,
 };

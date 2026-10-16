@@ -93,6 +93,7 @@ interface AppScreensInput {
   menu?: readonly MenuEntry[];
   homeScreen?: string;
   productHome: string;
+  profilesRoute?: string;
   credits?: ReactNode;
   legalText?: string;
 }

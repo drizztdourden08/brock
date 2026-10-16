@@ -1,10 +1,13 @@
 /* @layer renderer-shell @kind types */
+import type { HeroBackdrop } from '@drizztdourden08/tessera/composites';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
 
 type HubNavMode = 'auto' | 'always' | false;
+
+type PageBackdrop = HeroBackdrop | { kind: 'none' };
 
 type ScreenMenu = false | 'entry' | (string & {});
 
@@ -32,6 +35,8 @@ interface BucketDef extends ShowRule {
   groups?: BucketGroupDef[];
   shortcut?: string;
   nav?: HubNavMode;
+  backdrop?: PageBackdrop;
+  requiresProfile?: boolean;
 }
 
 interface SettingsPlacement {
@@ -59,6 +64,7 @@ interface ScreenMeta extends ShowRule {
   path?: string;
   fill?: boolean;
   keepMounted?: boolean;
+  backdrop?: PageBackdrop;
 }
 
-export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreensConfig, SettingsPlacement };

@@ -66,6 +66,7 @@ interface MenuExpectation {
   sections: readonly string[];
   actions: readonly string[];
   view: string | null;
+  tail?: readonly string[];
 }
 
 interface TitleBarExpectation {

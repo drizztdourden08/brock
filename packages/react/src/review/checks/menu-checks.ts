@@ -8,6 +8,13 @@ const missingFrom = (labels: readonly string[], wanted: readonly string[]): stri
 const viewOutcomes = (sections: readonly string[], view: string | null): ReviewOutcome[] =>
   (view === null ? [] : [outcome('menu-view', sections.includes(view), `the menu has the ${view} sub-menu`, `the menu lacks the ${view} sub-menu`)]);
 
+const tailOutcomes = (labels: readonly string[], tail: readonly string[] | undefined): ReviewOutcome[] => {
+  if (tail === undefined || tail.length === 0) return [];
+  const last = labels.slice(-tail.length);
+  const pass = last.join('|') === tail.join('|');
+  return [outcome('menu-ends', pass, `the menu ends with ${tail.join(', ')}`, `the menu ends with ${last.join(', ')}, not ${tail.join(', ')}`)];
+};
+
 const menuChecks = (snapshot: MenuSnapshot, expected: MenuExpectation): ReviewOutcome[] => {
   const { open, items } = snapshot;
   if (!open) return [{ id: 'menu-opens', pass: false, reason: 'the menu did not open' }];
@@ -25,6 +32,7 @@ const menuChecks = (snapshot: MenuSnapshot, expected: MenuExpectation): ReviewOu
     outcome('menu-sections', missingSections.length === 0, `the menu has ${sectionText}`, `the menu lacks the ${missingSections.join(', ')} section`),
     outcome('menu-actions', missingActions.length === 0, `the menu has every title bar action: ${expected.actions.join(', ')}`, `the menu lacks the title bar action ${missingActions.join(', ')}`),
     ...viewOutcomes(sections, expected.view),
+    ...tailOutcomes(items.map((item) => item.label), expected.tail),
     outcome('menu-icons', bare.length === 0, 'every built-in entry has an icon', `no icon on ${bare.join(', ')}`),
   ];
 };

@@ -1,12 +1,12 @@
 /* @layer renderer-shell @kind logic */
-import { PROFILES_SCREEN } from '../app/BrockApp/BrockApp.constants';
+import { isProfilesRoute } from '../stores/is-profiles-route';
 import { navigationSteps } from './navigation-steps';
 import type { NavigationSnapshot, SavedNavigation } from './navigation.type';
 import { useNavigationStore } from './useNavigationStore';
 
 const isStartupState = (state: NavigationSnapshot, homeScreen: string): boolean =>
   state.active === null
-  || state.active === PROFILES_SCREEN
+  || isProfilesRoute(state.active, state.params)
   || (state.active === homeScreen && navigationSteps.isBare(state.params) && (state.history[homeScreen]?.length ?? 0) === 0);
 
 const restoreNavigation = (saved: SavedNavigation | null, homeScreen: string): void => {

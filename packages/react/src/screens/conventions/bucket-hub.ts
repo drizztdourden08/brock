@@ -29,6 +29,8 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     shortcut: bucket.shortcut,
     show: showRuleOf(bucket),
     nav: bucket.nav,
+    backdrop: bucket.backdrop,
+    requiresProfile: bucket.requiresProfile,
     home,
     groups: hero ? groups : withoutPage(groups, home),
     search: { placeholder: `Search ${bucket.title}` },

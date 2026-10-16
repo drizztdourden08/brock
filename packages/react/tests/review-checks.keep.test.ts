@@ -58,7 +58,7 @@ describe('bootChecks', () => {
 
 describe('menuExpectation', () => {
   it('drops Settings when it is the home screen and takes labels from the built menu', () => {
-    expect(menuExpectation(MENU, 'settings')).toEqual({ required: ['Home', 'Profiles', 'About', 'Quit'], sections: ['Advanced'], actions: [], view: null });
+    expect(menuExpectation(MENU, 'settings')).toEqual({ required: ['Home', 'Profiles', 'About', 'Quit'], sections: ['Advanced'], actions: [], view: null, tail: ['About', 'Quit'] });
   });
 
   it('expects the sections the menu holds, every title bar action and the View sub-menu', () => {
@@ -100,6 +100,14 @@ describe('menuChecks', () => {
     const outcomes = menuChecks({ open: true, items: [item('Home', false)] }, expected);
     expect(failed(outcomes)).toEqual(['menu-entries', 'menu-sections', 'menu-actions', 'menu-view', 'menu-icons']);
     expect(reasonOf(outcomes, 'menu-icons')).toBe('no icon on Home');
+  });
+
+  it('expects Credits, About and Quit last, after the View sub-menu and the title bar actions', () => {
+    const tail = { ...expected, required: ['Home'], tail: ['Credits', 'About', 'Quit'] };
+    const last = [item('Home'), item('Advanced', true, true), item('View', true, true), item('Report a bug'), item('Credits'), item('About'), item('Quit')];
+    expect(failed(menuChecks({ open: true, items: last }, tail))).toEqual([]);
+    const between = [item('Home'), item('Advanced', true, true), item('Credits'), item('About'), item('View', true, true), item('Report a bug'), item('Quit')];
+    expect(reasonOf(menuChecks({ open: true, items: between }, tail), 'menu-ends')).toBe('the menu ends with View, Report a bug, Quit, not Credits, About, Quit');
   });
 });
 

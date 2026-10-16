@@ -8,7 +8,7 @@ import { ProfilesPanel } from '../../compounds/ProfilesPanel';
 import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
-import { PROFILES_SCREEN } from '../../app/BrockApp/BrockApp.constants';
+import { isProfilesRoute } from '../../stores/is-profiles-route';
 import { getAppLog } from '../../log/get-app-log';
 import type { ProfilesScreenProps } from './ProfilesScreen.type';
 
@@ -28,7 +28,8 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
 
   const handleSelect = useCallback(async (profile: Profile) => {
     await select(profile);
-    if (useNavigationStore.getState().active === PROFILES_SCREEN) close();
+    const { active: open, params } = useNavigationStore.getState();
+    if (isProfilesRoute(open, params)) close();
   }, [select, close]);
 
   const handleCreate = useCallback(async (name: string) => {

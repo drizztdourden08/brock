@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-updater
 
+## 0.56.0
+
+### Patch Changes
+
+- 1c0b1b6: Brock moves to Tessera 0.39.0 and draws the dates it shows with Tessera's `DateText` and `formatDate`.
+
+  - The Profiles screen shows when each profile was last used with `DateText` in the relative format (5 minutes ago, Yesterday, Last week), with the full date on hover, and keeps it up to date while the screen is open. Before, it read 5m ago, 3h ago and 2d ago, and did not update. A profile never used still reads Never.
+  - The Logs widget and the job dialog log draw their time gutter through `formatDate`, as a 24 hour clock with seconds in the user's locale. The new `formatLogTime(timestamp)` gives the same text for an app's own log panel. The copied debug text and the bug report keep `formatClockTime`, so the text they send does not change.
+  - The updater's version list reads each release date with `formatDate` in the `date` format (Oct 16, 2026 in English), in place of the browser's short numeric date.
+  - The hub header search box uses Tessera's `grow={false}` in place of Brock's fixed 224 px width, so it is 256 px and narrows to 160 px beside the other header actions. The `header-actions__search` class is gone.
+
+  No date Brock stores or sends over IPC changes. An app on Tessera 0.38 runs `brock migrate --tessera-from 0.38.0`; migrations 252 and 253 have no renames.
+
+- Updated dependencies [1c0b1b6]
+  - @drizztdourden08/brock-react@0.56.0
+  - @drizztdourden08/brock-core@0.56.0
+  - @drizztdourden08/brock-electron@0.56.0
+
 ## 0.55.0
 
 ### Patch Changes

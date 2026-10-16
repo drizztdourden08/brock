@@ -52,7 +52,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       show,
       onQuit: () => void requestQuit(() => win.close()),
       onDevConsole: () => win.openDevTools(),
-      onReportBug: bugReport.open,
+      onReportBug: () => bugReport.open(),
       onShortcuts: shortcutsHelp.open,
       tours: { list: tourList, start: tours.start },
       menuConfig: product.menu,

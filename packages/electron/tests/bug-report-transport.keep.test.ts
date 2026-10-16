@@ -5,6 +5,8 @@ import { join } from 'path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BugReportPayload } from '@drizztdourden08/brock-core/types';
 import { collectDebugFiles } from '../src/main/bug-report/collect-debug-files';
+import { receiptWire } from '../src/main/bug-report/receipt-wire';
+import { retryBugReport } from '../src/main/bug-report/retry-bug-report';
 import { sendBugReport } from '../src/main/bug-report/send-bug-report';
 import { transportInfo } from '../src/main/bug-report/transport-info';
 import { writeDebugZip } from '../src/main/bug-report/write-debug-zip';
@@ -88,6 +90,38 @@ describe('transportInfo', () => {
     expect(await transportInfo({ transport, available: () => Promise.resolve(true) }, contextWith(lines))).toEqual({ label: 'Send report' });
     expect(await transportInfo({ transport, available: () => { throw new Error('offline'); } }, contextWith(lines))).toBeNull();
     expect(lines).toEqual(['bug report availability check threw: offline']);
+  });
+
+  it('tells the renderer who is signed in, and leaves a blank or failing identity out', async () => {
+    const lines: string[] = [];
+    expect(await transportInfo({ transport, identity: () => Promise.resolve(' sam@example.com ') }, contextWith(lines)))
+      .toEqual({ label: 'Send report', identity: 'sam@example.com' });
+    expect(await transportInfo({ transport, identity: () => null }, contextWith(lines))).toEqual({ label: 'Send report' });
+    expect(await transportInfo({ transport, identity: () => { throw new Error('no session'); } }, contextWith(lines))).toEqual({ label: 'Send report' });
+    expect(lines).toEqual(['bug report identity threw: no session']);
+  });
+});
+
+describe('receipt retry over IPC', () => {
+  it('holds the retry in main, sends its id and runs it on bugReport:retry', async () => {
+    const retry = vi.fn().mockResolvedValueOnce({ success: false, error: 'offline' }).mockResolvedValueOnce({ success: true, value: { message: 'Uploaded.' } });
+    const wire = receiptWire({ success: true, value: { id: '9', links: [{ label: 'View', url: 'https://reports.example/9' }], retry } });
+    if (!wire.success) throw new Error(wire.error);
+    const { retryId } = wire.value;
+    expect(wire.value).toEqual({ id: '9', links: [{ label: 'View', url: 'https://reports.example/9' }], retryId });
+    if (retryId === undefined) throw new Error('no retry id');
+    const lines: string[] = [];
+    expect(await retryBugReport(retryId, contextWith(lines))).toEqual({ success: false, error: 'offline' });
+    expect(await retryBugReport(retryId, contextWith(lines))).toEqual({ success: true, value: { message: 'Uploaded.' } });
+    expect(await retryBugReport(retryId, contextWith(lines))).toEqual({ success: false, error: 'This report can no longer be retried.' });
+    expect(lines).toEqual(['bug report not sent: offline']);
+  });
+
+  it('drops an older retry when a newer receipt comes back', () => {
+    const first = receiptWire({ success: true, value: { retry: vi.fn() } });
+    receiptWire({ success: true, value: { id: 'plain' } });
+    expect(first.success && first.value.retryId).toBeTruthy();
+    expect(receiptWire({ success: false, error: 'offline' })).toEqual({ success: false, error: 'offline' });
   });
 });
 

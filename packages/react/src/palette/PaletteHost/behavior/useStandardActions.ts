@@ -8,7 +8,7 @@ const useStandardActions = (): SearchAction[] => useMemo(() => [
     id: 'report-bug',
     label: 'Report a bug',
     keywords: 'bug issue problem feedback github',
-    run: bugReport.open,
+    run: () => bugReport.open(),
   },
 ], []);
 

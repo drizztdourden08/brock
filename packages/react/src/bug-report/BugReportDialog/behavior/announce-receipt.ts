@@ -2,11 +2,12 @@
 import type { BugReportReceipt } from '@drizztdourden08/brock-core';
 import { openExternal } from '../../../host/open-external';
 import { toast } from '../../../toast/toast';
-import { OPEN_RECEIPT_LABEL, SENT_MESSAGE } from '../BugReportDialog.constants';
+import { SENT_MESSAGE } from '../BugReportDialog.constants';
+import { receiptLinks } from './receipt-links';
 
 const announceReceipt = (receipt: BugReportReceipt): void => {
-  const { message, url } = receipt;
-  toast(message ?? SENT_MESSAGE, { variant: 'success', ...(url ? { action: { label: OPEN_RECEIPT_LABEL, onSelect: () => openExternal(url) } } : {}) });
+  const [link] = receiptLinks(receipt);
+  toast(receipt.message ?? SENT_MESSAGE, { variant: 'success', ...(link ? { action: { label: link.label, onSelect: () => openExternal(link.url) } } : {}) });
 };
 
 export { announceReceipt };

@@ -1,17 +1,19 @@
 /* @layer renderer-shell @kind component */
 import { Button } from '@drizztdourden08/tessera/primitives';
 import { openExternal } from '../../../host/open-external';
-import { CLOSE_LABEL, OPEN_RECEIPT_LABEL, SENDING_LABEL } from '../BugReportDialog.constants';
+import { receiptLinks } from '../behavior/receipt-links';
+import { CLOSE_LABEL, SENDING_LABEL } from '../BugReportDialog.constants';
 import type { BugReportActionsProps } from './BugReportActions.type';
 
 const BugReportActions = (props: BugReportActionsProps) => {
   const { form } = props;
-  const receiptUrl = form.sent?.url;
 
   if (form.sent) {
     return (
       <>
-        {receiptUrl !== undefined && <Button variant="tertiary" onClick={() => openExternal(receiptUrl)}>{OPEN_RECEIPT_LABEL}</Button>}
+        {receiptLinks(form.sent).map((link) => (
+          <Button key={`${link.label}-${link.url}`} variant="tertiary" onClick={() => openExternal(link.url)}>{link.label}</Button>
+        ))}
         <Button variant="primary" onClick={form.close}>{CLOSE_LABEL}</Button>
       </>
     );

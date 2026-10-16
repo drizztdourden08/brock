@@ -4,6 +4,7 @@ import type { BugReportTransportInfo } from '@drizztdourden08/brock-core';
 import { useProduct } from '../app/useProduct';
 import { hostApi } from '../host/host-api';
 import type { BugReportTarget } from './bug-report.type';
+import { mainTransport } from './main-transport';
 import { resolveBugReportTarget } from './resolve-bug-report-target';
 import { useBugReportStore } from './useBugReportStore';
 
@@ -21,10 +22,10 @@ const useBugReportTarget = (open: boolean): BugReportTarget | null => {
   useEffect(() => {
     if (!open) return undefined;
     let live = true;
-    void (app ? Promise.resolve(null) : askMain()).then((main) => {
+    void (app?.transport ? Promise.resolve(null) : askMain()).then((main) => {
       if (!live) return;
       const api = hostApi();
-      setTarget(resolveBugReportTarget({ app, main, sendToMain: api ? (payload) => api.sendBugReport(payload) : null, repo }));
+      setTarget(resolveBugReportTarget({ app, main, sendToMain: api ? mainTransport(api) : null, repo }));
     });
     return () => { live = false; };
   }, [open, app, repo]);

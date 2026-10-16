@@ -9,9 +9,10 @@ import type { BugReportTarget } from '../../bug-report.type';
 import type { ReceiptHandler } from '../BugReportDialog.type';
 import { COPIED_MESSAGE, COPY_FAILED_MESSAGE, OPENED_MESSAGE } from '../BugReportDialog.constants';
 import { announceReceipt } from './announce-receipt';
+import { settleTransport } from './settle-transport';
 
 const sendThrough = async (send: BugReportTransport, payload: BugReportPayload, onReceipt: ReceiptHandler): Promise<string | null> => {
-  const result = await send(payload).catch((err: unknown) => ({ success: false as const, error: err instanceof Error ? err.message : String(err) }));
+  const result = await settleTransport(() => send(payload));
   if (!result.success) return result.error;
   onReceipt(result.value);
   return null;

@@ -12,7 +12,7 @@ const RenderErrorActions = (props: RenderErrorActionsProps) => {
     <ButtonRow align="start">
       <Button size="sm" variant="tertiary" icon={<Icon name="rotate-ccw" />} onClick={reload}>{RELOAD_LABEL}</Button>
       {onHome && <Button size="sm" variant="tertiary" icon={<Icon name="house" />} onClick={onHome}>{HOME_LABEL}</Button>}
-      <Button size="sm" variant="tertiary" icon={<Icon name="bug" />} onClick={bugReport.open}>{REPORT_LABEL}</Button>
+      <Button size="sm" variant="tertiary" icon={<Icon name="bug" />} onClick={() => bugReport.open()}>{REPORT_LABEL}</Button>
     </ButtonRow>
   );
 };

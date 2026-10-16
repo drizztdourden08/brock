@@ -3,7 +3,7 @@ import type { FileStat, DataLocation, StorageSummary, StoragePort } from './plat
 import type { ProcessDiagnostics, SystemDiagnostics } from './types/diagnostics.type';
 import type { LanAddress } from './types/network.type';
 import type { OpenRequest } from './types/open.type';
-import type { BugReportPayload, BugReportReceipt, BugReportTransportInfo } from './types/bug-report.type';
+import type { BugReportPayload, BugReportReceiptWire, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
 import type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
@@ -37,7 +37,8 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
   'diagnostics:getProcesses': () => Promise<ProcessDiagnostics>;
   'bugReport:transport': () => Promise<BugReportTransportInfo | null>;
-  'bugReport:send': (payload: BugReportPayload) => Promise<Result<BugReportReceipt>>;
+  'bugReport:send': (payload: BugReportPayload) => Promise<Result<BugReportReceiptWire>>;
+  'bugReport:retry': (retryId: string) => Promise<Result<BugReportReceiptWire>>;
   'network:lanAddresses': () => Promise<LanAddress[]>;
 
   'storage:getLocation': () => Promise<DataLocation>;

@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { BugReportPayload, LogEntry } from '@drizztdourden08/brock-core';
 import { buildBugReportPayload } from '../src/bug-report/build-bug-report-payload';
 import { resolveBugReportTarget } from '../src/bug-report/resolve-bug-report-target';
+import { mainTransport } from '../src/bug-report/main-transport';
 import { deliverReport } from '../src/bug-report/BugReportDialog/behavior/deliver-report';
+import { receiptLinks } from '../src/bug-report/BugReportDialog/behavior/receipt-links';
 
 const toasts = vi.hoisted(() => [] as { message: string; options: { variant?: string; action?: { label: string; onSelect: () => void } } }[]);
 const opened = vi.hoisted(() => [] as string[]);
@@ -80,5 +82,44 @@ describe('deliverReport', () => {
     expect(await deliverReport({ kind: 'github', label: 'Open GitHub issue', repo: REPO }, payload({ diagnostics }))).toBeNull();
     expect(opened[0]).toMatch(/^https:\/\/github\.com\/someone\/my-app\/issues\/new\?/);
     expect(new URL(opened[0] ?? '').searchParams.get('body')).toContain('Version: 1.0.0');
+  });
+});
+
+describe('receiptLinks', () => {
+  const links = [{ label: 'View report', url: 'https://reports.example/1' }, { label: 'Files', url: 'https://reports.example/files' }];
+
+  it('keeps the single url as Open and adds it ahead of the links unless one of them carries it', () => {
+    expect(receiptLinks({})).toEqual([]);
+    expect(receiptLinks({ url: 'https://reports.example/1' })).toEqual([{ label: 'Open', url: 'https://reports.example/1' }]);
+    expect(receiptLinks({ url: 'https://reports.example/1', links })).toEqual(links);
+    expect(receiptLinks({ url: 'https://reports.example/2', links })).toEqual([{ label: 'Open', url: 'https://reports.example/2' }, ...links]);
+  });
+
+  it('gives the toast the first link', async () => {
+    const send = vi.fn().mockResolvedValue({ success: true, value: { links } });
+    await deliverReport({ kind: 'transport', label: 'Send', send }, payload());
+    expect(toasts[0]?.options.action?.label).toBe('View report');
+  });
+});
+
+describe('mainTransport', () => {
+  it('turns the retry id main sends back into a retry that asks main again', async () => {
+    const api = {
+      sendBugReport: vi.fn().mockResolvedValue({ success: true, value: { id: '7', retryId: '1' } }),
+      retryBugReport: vi.fn().mockResolvedValue({ success: true, value: { id: '7', message: 'Uploaded.' } }),
+    };
+    const result = await mainTransport(api)(payload());
+    if (!result.success) throw new Error(result.error);
+    expect(result.value).not.toHaveProperty('retryId');
+    const again = await result.value.retry?.();
+    expect(api.retryBugReport).toHaveBeenCalledWith('1');
+    expect(again).toEqual({ success: true, value: { id: '7', message: 'Uploaded.' } });
+  });
+
+  it('passes a plain receipt and a failure through', async () => {
+    const api = { sendBugReport: vi.fn().mockResolvedValue({ success: true, value: { id: '8' } }), retryBugReport: vi.fn() };
+    expect(await mainTransport(api)(payload())).toEqual({ success: true, value: { id: '8' } });
+    api.sendBugReport.mockResolvedValue({ success: false, error: 'offline' });
+    expect(await mainTransport(api)(payload())).toEqual({ success: false, error: 'offline' });
   });
 });

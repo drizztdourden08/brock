@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
-import type { BugReportAttachment, BugReportAttachmentLimits, BugReportPayload, BugReportReceipt } from '@drizztdourden08/brock-core';
-import type { BugReportTarget, BugReportTargetFields } from '../bug-report.type';
+import type { ComponentType } from 'react';
+import type { BugReportAttachment, BugReportAttachmentLimits, BugReportExtras, BugReportPayload, BugReportReceipt } from '@drizztdourden08/brock-core';
+import type { BugReportSectionProps, BugReportTarget, BugReportTargetFields } from '../bug-report.type';
 
 interface AttachmentsModel {
   files: BugReportAttachment[];
@@ -9,6 +10,17 @@ interface AttachmentsModel {
   add: (files: File[]) => void;
   remove: (index: number) => void;
   reset: () => void;
+}
+
+interface ReceiptRetry {
+  run: (() => void) | null;
+  retrying: boolean;
+  error: string | null;
+}
+
+interface RetryFailure {
+  receipt: BugReportReceipt;
+  error: string;
 }
 
 interface BugReportForm {
@@ -25,9 +37,12 @@ interface BugReportForm {
   contact: string;
   setContact: (value: string) => void;
   attachments: AttachmentsModel;
+  section: ComponentType<BugReportSectionProps> | null;
+  setSectionExtras: (extras: BugReportExtras | null) => void;
   sending: boolean;
   error: string | null;
   sent: BugReportReceipt | null;
+  retry: ReceiptRetry;
   canSend: boolean;
   send: () => void;
   fallback: (() => void) | null;
@@ -45,6 +60,7 @@ interface ReportPayloadModel {
   setAttach: (value: boolean) => void;
   diagnostics: string | null;
   attachments: AttachmentsModel;
+  setSectionExtras: (extras: BugReportExtras | null) => void;
   filled: boolean;
   build: () => Promise<BugReportPayload>;
   reset: () => void;
@@ -52,4 +68,4 @@ interface ReportPayloadModel {
 
 type ReceiptHandler = (receipt: BugReportReceipt) => void;
 
-export type { AttachmentsModel, BugReportForm, ReceiptHandler, ReportPayloadModel };
+export type { AttachmentsModel, BugReportForm, ReceiptHandler, ReceiptRetry, ReportPayloadModel, RetryFailure };

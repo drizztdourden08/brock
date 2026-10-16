@@ -9,5 +9,7 @@ export { resolveBugReportTarget } from './resolve-bug-report-target';
 export { BugReportDialog } from './BugReportDialog';
 export { BugReportButton } from './BugReportButton';
 export type { BugReportButtonProps } from './BugReportButton';
-export type { BrockAppBugReport, BugReportExtrasSource, BugReportState, BugReportTarget, BugReportTargetFields, IssueDraft } from './bug-report.type';
+export type {
+  BrockAppBugReport, BugReportExtrasSource, BugReportOpenOptions, BugReportSectionProps, BugReportState, BugReportTarget, BugReportTargetFields, IssueDraft,
+} from './bug-report.type';
 export type { PayloadInput, TargetSources } from './bug-report-payload.type';

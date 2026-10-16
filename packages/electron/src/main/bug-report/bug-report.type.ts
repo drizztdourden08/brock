@@ -9,6 +9,12 @@ interface BugReportOptions extends BugReportFields {
   transport: MainBugReportTransport;
   label?: string;
   available?: (ctx: MainContext) => boolean | Promise<boolean>;
+  identity?: (ctx: MainContext) => string | null | undefined | Promise<string | null | undefined>;
+}
+
+interface HeldRetry {
+  id: string;
+  run: NonNullable<BugReportReceipt['retry']>;
 }
 
 interface DebugFile {
@@ -21,4 +27,4 @@ interface DebugZipEntry {
   data: Buffer | string;
 }
 
-export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport };
+export type { BugReportOptions, DebugFile, DebugZipEntry, HeldRetry, MainBugReportTransport };

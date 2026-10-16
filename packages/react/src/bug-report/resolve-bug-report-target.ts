@@ -5,7 +5,7 @@ import { CLIPBOARD_LABEL, GITHUB_LABEL, SEND_LABEL } from './bug-report.constant
 import { targetFields } from './target-fields';
 
 const resolveBugReportTarget = ({ app, main, sendToMain, repo }: TargetSources): BugReportTarget => {
-  if (app) return { kind: 'transport', label: app.label ?? SEND_LABEL, send: app.transport, fields: targetFields(app) };
+  if (app?.transport) return { kind: 'transport', label: app.label ?? SEND_LABEL, send: app.transport, fields: targetFields(app) };
   if (main && sendToMain) return { kind: 'transport', label: main.label, send: sendToMain, fields: targetFields(main) };
   if (repo) return { kind: 'github', label: GITHUB_LABEL, repo };
   return { kind: 'clipboard', label: CLIPBOARD_LABEL };

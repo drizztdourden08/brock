@@ -11,6 +11,7 @@ const BASE_INVOKE_MAP = {
   getProcessDiagnostics: 'diagnostics:getProcesses',
   getBugReportTransport: 'bugReport:transport',
   sendBugReport: 'bugReport:send',
+  retryBugReport: 'bugReport:retry',
   getLanAddresses: 'network:lanAddresses',
 
   getDataLocation: 'storage:getLocation',

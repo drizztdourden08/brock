@@ -20,6 +20,7 @@ import { titleBarPlugin } from './title-bar/title-bar-plugin.mjs';
 import { toursPlugin } from './tours/tours-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
+import { optimizeDepsPlugin } from './optimize-deps/optimize-deps-plugin.mjs';
 import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS, SPLASH_PRELOAD } from './vite.constants.mjs';
 
 const readScope = (dir) => {
@@ -143,7 +144,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       publicDir: resolve(rootDir, 'public'),
       define,
       plugins: [
-        devOnlyPlugin({ rootDir }), react(), ...polyfills(),
+        devOnlyPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }),
         splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },

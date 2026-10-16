@@ -3,13 +3,19 @@ import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import { getAppLog } from '../log/get-app-log';
 import type { TitleBarActionSource } from '../modules/renderer-module.type';
 import { toBarAction } from './to-bar-action';
-import type { TitleBarItemEntry } from './title-bar-item.type';
+import type { TitleBarItemEntry, TitleBarItemSpec } from './title-bar-item.type';
+import { volumeItems } from './volume-items';
+
+const barActionOf = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction => {
+  if (spec.kind === 'volume') volumeItems.add(id);
+  return toBarAction(id, spec);
+};
 
 const sourceOf = ({ id, source }: TitleBarItemEntry): TitleBarActionSource => {
-  if (typeof source !== 'function') return toBarAction(id, source);
+  if (typeof source !== 'function') return barActionOf(id, source);
   return (): WindowTitleBarAction | null => {
     const spec = source();
-    return spec ? toBarAction(id, spec) : null;
+    return spec ? barActionOf(id, spec) : null;
   };
 };
 

@@ -83,6 +83,7 @@ interface ProfileViews {
   widgetPrefs?: WidgetPrefs;
   widgetKits?: unknown;
   screens?: ScreenViews;
+  volume?: unknown;
 }
 
 interface ProfileViewsTake {

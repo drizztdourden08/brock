@@ -11,6 +11,7 @@ import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { WidgetKitDef } from '../../../../widgets/kits/widget-kit.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
 import type { AppReview } from '../../../../review/app-review.type';
+import type { VolumeSource } from '../../../../volume/volume.type';
 import type { BrockAppLayout } from '../../BrockApp.type';
 
 interface AppShellProps<S extends object> {
@@ -29,6 +30,7 @@ interface AppShellProps<S extends object> {
   layout?: BrockAppLayout;
   screenGroups?: readonly ScreenRailGroup[];
   review?: AppReview;
+  volume?: VolumeSource;
 }
 
 export type { AppShellProps };

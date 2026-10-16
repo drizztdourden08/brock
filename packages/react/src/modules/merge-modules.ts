@@ -28,6 +28,7 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   bootTasks: modules.flatMap((m) => m.bootTasks ?? []),
   beforeQuit: modules.flatMap((m) => (m.beforeQuit ? [m.beforeQuit] : [])),
   tours: modules.flatMap((m) => m.tours ?? []),
+  volume: modules.find((m) => m.volume !== undefined)?.volume,
 });
 
 export { mergeModules };

@@ -3,6 +3,7 @@ import type { MenuGroup, WindowTitleBarAction } from '@drizztdourden08/tessera/c
 import { navResolver as resolve } from '../menu/nav-resolver';
 import { toMenuGroups } from '../menu/to-menu-groups';
 import type { TitleBarItemSpec, TitleBarMenuSpec } from './title-bar-item.type';
+import { volumeBarAction } from './volume-bar-action';
 
 const noop = (): void => {};
 
@@ -12,6 +13,7 @@ const menuGroups = (id: string, spec: TitleBarMenuSpec): MenuGroup[] => {
 };
 
 const toBarAction = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction => {
+  if (spec.kind === 'volume') return volumeBarAction(id, spec);
   const { label, icon } = spec;
   const look = { tone: spec.tone, effect: spec.effect };
   if (spec.kind === 'menu') return { id, label, icon, bar: 'dropdown', ...look, groups: menuGroups(id, spec) };

@@ -10,6 +10,16 @@ type MenuConfig = ProductMenu;
 
 type MenuGroups = Readonly<Record<MenuGroupId, readonly MenuEntry[]>>;
 
+type TuckedRow = 'pin' | 'fullscreen';
+
+interface BarMarker {
+  key: string;
+  ref: string;
+  name: string;
+  label: string;
+  fields: readonly (keyof MenuEntryOverride)[];
+}
+
 interface MenuNode {
   item: MenuItem | null;
   container: MenuContainer;
@@ -67,5 +77,6 @@ interface MenuResolveInput {
 }
 
 export type {
-  MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuHiddenState, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput, ResolvedMenu,
+  BarMarker, MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuHiddenState, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput,
+  ResolvedMenu, TuckedRow,
 };

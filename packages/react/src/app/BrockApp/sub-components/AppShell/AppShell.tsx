@@ -86,6 +86,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
             actions={actions}
             hidden={titleBarHidden}
             viewHidden={hideView}
+            menuConfig={product.menu}
           />
         )}
         <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>

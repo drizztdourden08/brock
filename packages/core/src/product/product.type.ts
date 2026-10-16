@@ -124,6 +124,7 @@ interface ProductMenuEntry {
   hidden?: boolean;
   inMenu?: boolean;
   label?: string;
+  activeLabel?: string;
   group?: ProductMenuGroup;
   order?: number;
   before?: string;

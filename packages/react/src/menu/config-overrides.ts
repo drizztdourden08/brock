@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { KEY_SUGGESTIONS, VIEW_MENU_KEY } from './menu-config.constants';
+import { KEY_SUGGESTIONS, TUCKED_KEYS, VIEW_MENU_KEY } from './menu-config.constants';
 import type { MenuConfig, MenuEntryOverride, MenuIssue } from './menu-config.type';
 import { sanitizeOverride } from './sanitize-override';
 
@@ -12,6 +12,14 @@ const unknownKey = (key: string, known: ReadonlySet<string>): MenuIssue => {
 const viewOverride = (override: MenuEntryOverride, issues: MenuIssue[]): MenuEntryOverride => {
   const { parent, ...kept } = override;
   if (parent !== undefined) issues.push({ key: VIEW_MENU_KEY, message: 'menu.entries.view sets parent, but the View sub-menu sits at the top level of the menu and takes no parent' });
+  return kept;
+};
+
+const ownFields = (key: string, override: MenuEntryOverride, issues: MenuIssue[]): MenuEntryOverride => {
+  if (key === VIEW_MENU_KEY) return viewOverride(override, issues);
+  if (override.activeLabel === undefined || TUCKED_KEYS.has(key)) return override;
+  const { activeLabel, ...kept } = override;
+  issues.push({ key, message: `the menu entry "${key}" sets activeLabel "${activeLabel}", which only "${[...TUCKED_KEYS].join('" and "')}" take` });
   return kept;
 };
 
@@ -28,7 +36,7 @@ const configOverrides = (config: MenuConfig | undefined, known: ReadonlySet<stri
   for (const [key, raw] of entriesOf(config, issues)) {
     const override = sanitizeOverride(key, raw, issues);
     if (key !== VIEW_MENU_KEY && !known.has(key)) issues.push(unknownKey(key, known));
-    overrides.set(key, key === VIEW_MENU_KEY ? viewOverride(override, issues) : override);
+    overrides.set(key, ownFields(key, override, issues));
   }
   return overrides;
 };

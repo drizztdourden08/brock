@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
 import { isReviewLaunch } from '../../../host/is-review-launch';
+import { dropEntries } from '../../../menu/drop-entries';
+import { TUCKED_KEYS } from '../../../menu/menu-config.constants';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
@@ -18,7 +20,8 @@ const useReviewTour = (input: ReviewTourInput): void => {
   useEffect(() => {
     if (!ready || started.current || !isReviewLaunch()) return;
     started.current = true;
-    const env = { product, home, homeScreen, screens: registry.list(), menu, menuOverrides, actions, moduleIds, developerTools, screenTree, review };
+    const drawn = { menu: dropEntries(menu, (item) => TUCKED_KEYS.has(item.key)), menuOverrides: menuOverrides.filter((record) => !TUCKED_KEYS.has(record.key)) };
+    const env = { product, home, homeScreen, screens: registry.list(), ...drawn, actions, moduleIds, developerTools, screenTree, review };
     void import('../../../review/run-review').then(({ runReview }) => runReview(env));
   }, [ready, product, home, homeScreen, screenTree, registry, menu, menuOverrides, actions, moduleIds, developerTools, review]);
 };

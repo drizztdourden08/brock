@@ -15,3 +15,5 @@ A kit widget with `popOut` pops out into its own window like a normal widget, an
 From Tessera 0.38.0: a widget's `chrome` (`full`, `compact` or `none`) is a widget meta field (`meta.chrome`, checked by `brock structure`). It applies docked, floating and popped. Floating widgets snap to the stage edges, the main view and each other (`floatSnap`, 10 px). The template's Layout inspector widgets use `chrome: 'compact'`.
 
 The review's `kits` step covers one kit at a time, a normal widget closing the kit from the menu and the API, `widgets.open` opening a kit widget's kit, the compact chrome, and a kit widget popping out, closing with the kit and coming back when it reopens.
+
+The review's bug report step moves the pointer off the title bar button after its click: with Tessera 0.38 a press shows the button's hint, which takes the first Escape.

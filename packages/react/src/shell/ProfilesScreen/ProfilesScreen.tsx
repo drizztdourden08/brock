@@ -1,15 +1,13 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
-import { formatRelativeTime } from '@drizztdourden08/brock-core';
-import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
-import { Span } from '@drizztdourden08/tessera/primitives';
 import { ProfilesPanel } from '../../compounds/ProfilesPanel';
 import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { isProfilesRoute } from '../../stores/is-profiles-route';
 import { getAppLog } from '../../log/get-app-log';
+import { ProfileLastUsed } from './sub-components/ProfileLastUsed';
 import type { ProfilesScreenProps } from './ProfilesScreen.type';
 
 const ProfilesScreen = (props: ProfilesScreenProps) => {
@@ -21,7 +19,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
     id: profile.id,
     name: profile.name,
     meta: subtitleOf?.(profile),
-    aside: <Span {...REVIEW_MASK}>{formatRelativeTime(profile.lastPlayed)}</Span>,
+    aside: <ProfileLastUsed at={profile.lastPlayed} />,
   })), [profiles, subtitleOf]);
 
   const byId = useCallback((id: string): Profile | undefined => profiles.find((profile) => profile.id === id), [profiles]);

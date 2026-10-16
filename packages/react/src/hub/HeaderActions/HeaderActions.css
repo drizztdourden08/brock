@@ -5,7 +5,3 @@
   gap: var(--space-sm);
   align-items: center;
 }
-
-.header-actions__search {
-  width: var(--size-224);
-}

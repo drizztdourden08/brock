@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { formatDate } from '@drizztdourden08/tessera/primitives';
 import type { VersionOption } from '../../../updater.type';
 import { formatBytes } from './format-bytes';
 
@@ -8,8 +9,7 @@ const stateOf = ({ installed, downgrade }: VersionOption): string => {
 };
 
 const describeVersion = (version: VersionOption): string => {
-  const date = version.releaseDate ? new Date(version.releaseDate).toLocaleDateString() : '';
-  return [formatBytes(version.downloadSize), date, stateOf(version), version.prerelease ? 'pre-release' : '']
+  return [formatBytes(version.downloadSize), formatDate(version.releaseDate, 'date'),stateOf(version), version.prerelease ? 'pre-release' : '']
     .filter((part) => part.length > 0)
     .join(' · ');
 };

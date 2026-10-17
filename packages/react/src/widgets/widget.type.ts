@@ -53,6 +53,11 @@ interface WidgetLayoutState {
   popOut: (id: string) => void;
 }
 
+interface ForcedWidgetState {
+  ids: string[];
+  pending: string[];
+}
+
 interface WidgetRegistryState {
   registered: WidgetDef[];
   add: (definitions: readonly WidgetDef[]) => () => void;
@@ -131,5 +136,5 @@ interface LayoutHolder {
 }
 
 export type {
-  DockOrigin, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, ForcedWidgetState, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

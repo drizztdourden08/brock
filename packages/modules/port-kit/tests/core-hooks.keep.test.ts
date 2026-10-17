@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CoreCalls } from '../src/port/port-definition.type';
 import type { EmscriptenConfig, EmscriptenModule } from '../src/renderer/core/emscripten.type';
-import type { CoreCrash } from '../src/renderer/core/game-core.type';
+import type { CoreCrash, CoreState } from '../src/renderer/core/game-core.type';
 import { createGameCore } from '../src/renderer/core/create-game-core';
 import { watchCoreCrash } from '../src/renderer/core/watch-core-crash';
 import { createSaveSlots } from '../src/renderer/saves/create-save-slots';
@@ -127,6 +127,34 @@ describe('parts without createGameCore', () => {
     expect(settings.push({ volume: 3 })).toBe(true);
     expect(settings.reassert()).toBe(true);
     expect(log).toEqual(['SetVolume(3)', 'SetVolume(3)']);
+  });
+
+  it('delivers settings pushed before the core runs once it runs, and again after each restart', () => {
+    const log: string[] = [];
+    const listeners: ((state: CoreState) => void)[] = [];
+    let live: CoreCalls | null = null;
+    const emit = (status: CoreState['status']): void => {
+      live = status === 'running' || status === 'paused' ? calls(log) : null;
+      for (const listener of listeners) listener({ status, error: null });
+    };
+    const settings = createLiveSettings<{ volume: number }>({
+      calls: () => live,
+      apply: (value, core) => core.call('SetVolume', value.volume),
+      subscribe: (listener) => { listeners.push(listener); return () => { listeners.splice(listeners.indexOf(listener), 1); }; },
+    });
+    expect(settings.push({ volume: 2 })).toBe(false);
+    emit('loading');
+    emit('running');
+    emit('paused');
+    emit('running');
+    expect(log).toEqual(['SetVolume(2)']);
+    emit('idle');
+    emit('running');
+    expect(log).toEqual(['SetVolume(2)', 'SetVolume(2)']);
+    settings.dispose();
+    emit('idle');
+    emit('running');
+    expect(log).toHaveLength(2);
   });
 
   it('syncs SRAM from a reader', async () => {

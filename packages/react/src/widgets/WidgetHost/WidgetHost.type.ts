@@ -40,6 +40,7 @@ interface KitPoppedInput {
   layout: WidgetLayout | null;
   blocked: boolean;
   contextActive: WidgetContextActive<WidgetDef> | undefined;
+  pageOpen: boolean;
   extraOf: (id: string) => Partial<WidgetWindowOpen>;
 }
 

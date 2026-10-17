@@ -136,6 +136,32 @@ describe('the --screenshot watchdog default', () => {
   });
 });
 
+describe('review captures', () => {
+  it('wait for the same holds as --screenshot, and report the holds still open when the wait runs out', async () => {
+    vi.resetModules();
+    vi.useFakeTimers();
+    const { captureHolds } = await import('../src/main/handlers/capture-holds');
+    const { awaitCaptureHolds } = await import('../src/main/review/await-capture-holds');
+    const checks: unknown[] = [];
+    const session = { addCheck: (check: unknown) => { checks.push(check); } } as Parameters<typeof awaitCaptureHolds>[0];
+    captureHolds.set(1);
+    let done = false;
+    void awaitCaptureHolds(session, 'home').then(() => { done = true; });
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(done).toBe(false);
+    captureHolds.set(0);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(done).toBe(true);
+    expect(checks).toEqual([]);
+    captureHolds.set(2);
+    const late = awaitCaptureHolds(session, 'settings');
+    await vi.advanceTimersByTimeAsync(10_000);
+    await late;
+    expect(checks).toEqual([{ id: 'capture-holds', step: 'settings', pass: false, reason: '2 screenshot hold(s) still open after 10 s; captured what there was' }]);
+    captureHolds.set(0);
+  });
+});
+
 describe('captureFrame', () => {
   const contents = (devtools: Partial<WebContents['debugger']>, fallback = 'page') => {
     const state = { attached: false };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { holdUntilPainted } from './hold-until-painted';
 import { IDLE_POLL_MS, LOADING_ATTRIBUTE } from './lazy.constants';
 
 const pending = new Set<Promise<unknown>>();
@@ -7,6 +8,7 @@ const isIdle = (): boolean => pending.size === 0 && document.querySelector(`[${L
 
 const track = <T>(load: Promise<T>): Promise<T> => {
   pending.add(load);
+  holdUntilPainted(load);
   const done = (): void => { pending.delete(load); };
   load.then(done, done);
   return load;

@@ -11,7 +11,7 @@ import { attachSessionParts } from './attach-session-parts';
 const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> => {
   const { core, canvas, files, romFile, profileId = null, settings: initial, config, volume, extraFiles, log } = options;
   const audio = createAudioAdapter(volume);
-  const settings = createLiveSettings(core);
+  const settings = createLiveSettings({ calls: core.calls, definition: core.definition });
   const store = createSaveStore(files);
   const roms = createRomStore(files, core.definition);
   let parts: SessionParts | null = null;
@@ -22,7 +22,8 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
     await core.start({ assets, canvas, config, sram, extraFiles, log });
     if (core.state().status !== 'running') return false;
     parts = attachSessionParts({ core, canvas, audio, sram: store.sram, profileId });
-    if (initial !== undefined) settings.push(initial);
+    if (settings.last() !== null) settings.reassert();
+    else if (initial !== undefined) settings.push(initial);
     return true;
   };
 

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
+import { forcedWidgets } from './forced-widgets';
 import { kitRoute } from './kits/kit-route';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
 
@@ -15,6 +16,7 @@ const widgets = {
   toggle: (id: string): void => useWidgetLayoutStore.getState().toggle(id),
   popOut: (id: string): void => useWidgetLayoutStore.getState().popOut(id),
   reset: (): void => useWidgetLayoutStore.getState().reset(),
+  force: (ids: readonly string[]): void => forcedWidgets.force(ids),
   isVisible: visible,
 };
 

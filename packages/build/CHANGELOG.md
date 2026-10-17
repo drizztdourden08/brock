@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-build
 
+## 0.59.0
+
+### Minor Changes
+
+- 19b7a49: Breaking: a `volume` title bar item no longer takes `labels`, and brock-react no longer exports `TitleBarVolumeStrings`. Tessera's volume bar item draws the Mute and Unmute labels from its own strings, so an app that passed `labels` removes it. The `volume-item-labels` migration (0.59.0) leaves a to-do where `labels` sits in a file with a volume item, and on each use of `TitleBarVolumeStrings`.
+- e886c2a: A Developer submenu in Widgets, and menu placement for widgets and kits. Every `devOnly` widget and every `devOnly` kit now sits in Widgets > Developer (key `widgets-developer`), so a developer kit reads Widgets > Developer > its label > Open kit, its widgets, its overlays and Reset kit layout. Developer shows only while developer tools are on, and it is left out when nothing goes in it. `WidgetMeta` and `WidgetKitMeta` take `menu: { parent, group, order }` (the `WidgetMenuPlacement` type), placed like the same fields of `product.menu.entries`. When a widget, a kit or Developer names a `parent` that no entry has, in its meta or in `product.menu.entries`, that submenu is made inside Widgets, labelled from its key (`audio-tools` reads Audio tools), and the menu config renames or moves it by that key; `parent: 'widgets-developer'` files any widget or kit under Developer, and `parent: null` in the config keeps a `devOnly` one out. `brock structure` accepts `menu` in widget and kit files and reports a placement with an unknown field or a wrong value. The review registers a `devOnly` widget and kit and checks that Developer lists them with the kit as its own submenu, and, in a packaged review, that Developer is gone while developer tools are off; each `devOnly` app kit gets an `app-kit-<id>-in-developer` check.
+- ea30589: `product.icons.wordmark` takes `rendering`: `'auto'` (the default, smooth scaling) or `'pixelated'`, for pixel art that should scale with hard pixel edges. With `{ src: './logos/wordmark.png', rendering: 'pixelated' }`, About, the boot splash page, the window's failure splash and the Setup splash draw the wordmark with `image-rendering: pixelated` (nearest neighbour on the Setup splash); without it nothing changes, since most logos look wrong pixelated. `defineProduct` keeps `rendering: 'pixelated'` on the resolved wordmark and refuses any other value. `AboutPanel` takes `wordmarkRendering`.
+
+### Patch Changes
+
+- Updated dependencies [ea30589]
+  - @drizztdourden08/brock-core@0.59.0
+  - @drizztdourden08/brock-lint-config@0.59.0
+  - @drizztdourden08/brock-thread@0.59.0
+
 ## 0.58.0
 
 ### Patch Changes

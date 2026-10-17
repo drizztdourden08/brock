@@ -6,6 +6,7 @@ interface LiveSettings<S> {
   push: (settings: S) => boolean;
   reassert: () => boolean;
   last: () => S | null;
+  dispose: () => void;
 }
 
 interface LiveSettingsCalls<S> {
@@ -13,6 +14,6 @@ interface LiveSettingsCalls<S> {
   apply: (settings: S, calls: CoreCalls) => void;
 }
 
-type LiveSettingsTarget<S> = Pick<GameCore<S>, 'calls' | 'definition'> | LiveSettingsCalls<S>;
+type LiveSettingsTarget<S> = (Pick<GameCore<S>, 'calls' | 'definition'> | LiveSettingsCalls<S>) & Partial<Pick<GameCore<S>, 'subscribe'>>;
 
 export type { LiveSettings, LiveSettingsCalls, LiveSettingsTarget };

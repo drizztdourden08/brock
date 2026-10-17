@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
+import { forcedWidgets } from './forced-widgets';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
 import { profileViews } from './profile-views';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
@@ -19,12 +20,14 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
   if (!profileId) {
     useWidgetLayoutStore.getState().replace(null);
     useWidgetKitStore.getState().replace(null);
+    forcedWidgets.rearm();
     return;
   }
   const views = await profileViews.read(profileId);
   if (!live()) return;
   useWidgetLayoutStore.getState().replace(views.widgetLayout);
   useWidgetKitStore.getState().replace(views.widgetKits);
+  forcedWidgets.rearm();
   useWidgetPrefStore.getState().hydrate(sanePrefs(views.widgetPrefs));
   bound.profileId = profileId;
 };

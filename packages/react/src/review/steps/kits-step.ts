@@ -5,9 +5,11 @@ import { waitFor } from '../dom/wait-for';
 import { find } from '../dom/find';
 import type { ReviewStep } from '../review.type';
 import { checkKitExclusive } from '../widgets/kit-exclusive-check';
+import { checkKitForced } from '../widgets/kit-forced-check';
 import { checkKitGate } from '../widgets/kit-gate-check';
 import { checkKitLayout } from '../widgets/kit-layout-check';
 import { checkKitMixing } from '../widgets/kit-mixing-check';
+import { checkKitPage } from '../widgets/kit-page-check';
 import { checkKitPopOut } from '../widgets/kit-pop-out-check';
 import { KIT_NORMAL_WIDGET, REVIEW_KIT_ID, kitSelectors } from '../widgets/kit-review.constants';
 import { checkKitTogether } from '../widgets/kit-together-check';
@@ -23,11 +25,13 @@ const kitsStep: ReviewStep = {
     try {
       await withReviewKit(async () => {
         await checkKitGate(tour);
+        await checkKitPage(tour);
         await checkKitMixing(tour);
         await checkKitExclusive(tour);
         await checkKitPopOut(tour);
         await checkKitLayout(tour);
         await checkKitTogether(tour);
+        await checkKitForced(tour);
       });
     } finally {
       if (!normalOpen) widgets.close(KIT_NORMAL_WIDGET);

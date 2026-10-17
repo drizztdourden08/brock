@@ -12,6 +12,14 @@ const setCaptureHolds = (next: number): void => {
 const whenCaptureSettled = (): Promise<void> =>
   (count === 0 ? Promise.resolve() : new Promise((resolve) => { changes.once('settled', resolve); }));
 
-const captureHolds = { set: setCaptureHolds, settled: whenCaptureSettled, count: (): number => count };
+const settledWithin = (timeoutMs: number): Promise<boolean> => new Promise((resolve) => {
+  const timer = setTimeout(() => resolve(false), timeoutMs);
+  void whenCaptureSettled().then(() => {
+    clearTimeout(timer);
+    resolve(true);
+  });
+});
+
+const captureHolds = { set: setCaptureHolds, settled: whenCaptureSettled, settledWithin, count: (): number => count };
 
 export { captureHolds };

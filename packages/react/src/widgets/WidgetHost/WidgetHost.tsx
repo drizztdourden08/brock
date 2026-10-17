@@ -12,6 +12,7 @@ import { NO_KITS } from '../kits/widget-kit.constants';
 import { FLOAT_SNAP_PX, FLOATING_MIN, NO_WIDGETS } from '../widget.constants';
 import { popOutWindow } from '../pop-out-window';
 import { poppedShown } from '../popped-shown';
+import { useForcedWidgetStore } from '../useForcedWidgetStore';
 import { useWidgetLayoutStore } from '../useWidgetLayoutStore';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { widgetMainRect } from '../widget-main-rect';
@@ -42,6 +43,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   const layout = useWidgetLayoutStore((s) => s.layout);
   const setLayout = useWidgetLayoutStore((s) => s.setLayout);
   const externalDrag = useWidgetLayoutStore((s) => s.externalDrag);
+  const forcedIds = useForcedWidgetStore((s) => s.ids);
   const settingsStore = useContext(SettingsStoreContext);
   const legacy = useLegacyWidgetContext(widgetContext);
   const gates = useWidgetGates(definitions, legacy);
@@ -77,6 +79,7 @@ const WidgetHost = (props: WidgetHostProps) => {
       floatSnap={FLOAT_SNAP_PX}
       onExternalDrop={dropIn}
       developerToolsEnabled={gates.developerToolsEnabled}
+      startupForcedWidgetIds={forcedIds}
       widgetActions={toolsOf}
       resolveDisabled={resolveDisabled} onOpenSettings={openSettingTarget}
     />

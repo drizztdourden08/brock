@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useMemo } from 'react';
 import { uniqueById } from '../../../collections/unique-by-id';
+import { forcedWidgets } from '../../forced-widgets';
 import { groupedMembers } from '../../kits/grouped-members';
 import { useKitRegistryStore } from '../../kits/useKitRegistryStore';
 import { useWidgetKitStore } from '../../kits/useWidgetKitStore';
@@ -16,6 +17,7 @@ const useKitSplit = (definitions: readonly WidgetDef[], given: readonly WidgetKi
 
   useEffect(() => useWidgetLayoutStore.getState().setDefinitions(normal), [normal]);
   useEffect(() => useWidgetKitStore.getState().setKits(kits, members), [kits, members]);
+  useEffect(forcedWidgets.apply, [normal, kits, members]);
   return normal;
 };
 

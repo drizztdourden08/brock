@@ -95,6 +95,8 @@ await session.stop();
 
 `createLiveSettings` and `createSramSync` also run without `createGameCore`, for an app that loads its core itself: `createLiveSettings({ calls, apply })` takes a `calls()` accessor and the apply function, and `createSramSync({ read, store, profileId })` a `read()` that returns the SRAM bytes or `null`. `createCoreCalls(module)` builds the `CoreCalls` of an Emscripten module.
 
+Settings pushed before the core runs are not lost: `createLiveSettings(core)` on a `GameCore`, or a target that also has `subscribe` (a `GameCore`'s), applies the last pushed settings each time the core starts running, and again after a restart; `dispose()` stops listening. `push` returns `false` while there is no core to apply to. A session's `start` applies the settings pushed while the core loaded, and its `settings` option only when nothing was pushed.
+
 `useCoreState(core)` gives `{ status, error }` to a component. `GameCanvas` and `RomPicker` are the two Tessera-built pieces of UI. Every part also stands alone: `createGameCore`, `createFramePresenter`, `createFrameLoop`, `createAudioAdapter`, `createLiveSettings`, `createSramSync`, `createSaveSlots`, `createRomStore`, `createAssetCache`, `runAssetPipeline`.
 
 ## Saves

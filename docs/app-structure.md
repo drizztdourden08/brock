@@ -291,6 +291,8 @@ Each entry takes these fields:
 | `before`, `after` | Puts the entry right before or after the entry with that key, in that entry's list, whatever its group or submenu. They apply after `order`, and win over `parent` and `group`. |
 | `parent` | Files the entry in the submenu with that key. `parent: null` lifts it out to the top level, into `group` or the group of the submenu it left. |
 
+Widgets and kits take `meta.menu: { parent, group, order }` in their `<id>.widget.tsx` or `<id>.kit.ts` file. A `devOnly` widget or kit lands in Widgets > Developer (`widgets-developer`), which shows only while developer tools are on. When a widget, a kit or Developer names a `parent` that no entry has, in its meta or here, that submenu is made inside Widgets, labelled from its key (`audio-tools` reads Audio tools), and `entries['audio-tools']` renames it. [architecture.md](architecture.md), The Widgets menu, has the details.
+
 `meta.menu` takes the same object on a page, a tab page's `<page>.page.ts` or a card; the string forms (`false`, `'entry'`, a path) work as before. A `label` in `meta.menu` renames the entry where Brock detects it, which `meta.title` alone would not when the menu needs a shorter name. A page of an `entry` or `hidden` bucket has no menu entry of its own; `meta.menu` with a `parent`, `group`, `before` or `after` gives it one.
 
 The keys:
@@ -301,6 +303,8 @@ The keys:
 | Credits, About, Quit | `credits`, `about`, `quit` |
 | Widgets, Help, Advanced and any other section | `section:widgets`, `section:help`, `section:advanced`, `section:<id>` |
 | A widget, Reset layout | `widget-<id>`, `widgets-reset-layout` |
+| A widget kit, its Open kit and Reset kit layout rows | `kit-<id>`, `kit-<id>-open`, `kit-<id>-reset` |
+| The Developer submenu of Widgets | `widgets-developer` |
 | Take the tour, one tour of several | `take-the-tour`, `tour:<id>` |
 | Keyboard shortcuts, Report a bug, Dev Console | `keyboard-shortcuts`, `report-bug`, `dev-console` |
 | A bucket, a page of a bucket | `bucket:<bucket>`, `bucket:<bucket>:<page>` |

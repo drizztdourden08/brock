@@ -80,8 +80,27 @@ describe('kit files in src/widgets', () => {
     expect(checkWidgets(root)).toEqual([
       'src/widgets/lost.widget.tsx: meta.kit names "shadow", but there is no src/widgets/shadow.kit.ts',
       'src/widgets/broken.kit.ts: no default export; a kit file default-exports its WidgetKitMeta ({ label, icon, devOnly, requires, layout })',
-      'src/widgets/odd.kit.ts: kit.colour is not a kit field (label, icon, order, devOnly, requires, layout)',
+      'src/widgets/odd.kit.ts: kit.colour is not a kit field (label, icon, order, devOnly, requires, layout, menu)',
       'src/widgets/loose.overlay.tsx: no meta; an overlay exports meta = { kit } naming the kit it belongs to',
+    ]);
+  });
+});
+
+describe('menu placement in widget and kit files', () => {
+  it('accepts a menu placement and reports an unknown field or a wrong value', () => {
+    const placed = "const Tool = () => null;\n\nconst meta = { menu: { parent: 'audio-tools', group: 'modules', order: 1 } };\n\nexport default Tool;\nexport { meta };\n";
+    expect(checkWidgets(appWith({ 'src/widgets/tool.widget.tsx': placed, 'src/widgets/paint.kit.ts': "const kit = { menu: { parent: 'widgets-developer' } };\n\nexport default kit;\n" }))).toEqual([]);
+    const root = appWith({
+      'src/widgets/odd.widget.tsx': "const Odd = () => null;\n\nconst meta = { menu: { parent: '', where: 'top' } };\n\nexport default Odd;\nexport { meta };\n",
+      'src/widgets/flat.kit.ts': "const kit = { menu: 'Tools' };\n\nexport default kit;\n",
+      'src/widgets/late.kit.ts': "const kit = { menu: { group: 'last', order: 'first' } };\n\nexport default kit;\n",
+    });
+    expect(checkWidgets(root)).toEqual([
+      'src/widgets/odd.widget.tsx: meta.menu.parent must be a submenu key',
+      'src/widgets/odd.widget.tsx: meta.menu.where is not a menu placement field (parent, group, order)',
+      'src/widgets/flat.kit.ts: kit.menu must be an object ({ parent, group, order })',
+      "src/widgets/late.kit.ts: kit.menu.group must be 'main', 'sections', 'modules', 'end'",
+      'src/widgets/late.kit.ts: kit.menu.order must be a number',
     ]);
   });
 });

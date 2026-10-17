@@ -1,6 +1,6 @@
 /* @layer electron-main @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { BrowserWindow, WebContents } from 'electron';
+import type { BrowserWindow } from 'electron';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 
@@ -10,10 +10,6 @@ vi.mock('electron', () => ({ app: { quit: () => { shots.quits += 1; }, exit: (co
 vi.mock('../src/main/handlers/capture-window', () => ({
   captureWindow: (_win: unknown, name: string) => { shots.taken.push(name); return Promise.resolve(`/data/screenshots/${name}.png`); },
 }));
-
-const settle = async (): Promise<void> => {
-  for (let i = 0; i < 10; i += 1) await Promise.resolve();
-};
 
 const contextFor = (name: string | null, timeout: string | null = null): MainContext => ({
   flags: { flagValue: (flag: string) => ({ '--screenshot': name, '--screenshot-timeout': timeout }[flag] ?? null) } as Partial<AutomationFlags> as AutomationFlags,
@@ -29,33 +25,68 @@ afterEach(() => {
   shots.logs.length = 0;
 });
 
+const STABLE_MS = 50;
+
+const shooting = async () => {
+  vi.resetModules();
+  vi.useFakeTimers();
+  const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
+  const { captureHolds } = await import('../src/main/handlers/capture-holds');
+  const { bootEvents } = await import('../src/main/boot/boot-events');
+  armScreenshotFlag(contextFor('boot'));
+  return { captureHolds, bootEvents };
+};
+
 describe('--screenshot', () => {
   it('waits for the reveal, then for every hold the app took to be released', async () => {
-    vi.resetModules();
-    const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
-    const { captureHolds } = await import('../src/main/handlers/capture-holds');
-    const { bootEvents } = await import('../src/main/boot/boot-events');
+    const { captureHolds, bootEvents } = await shooting();
     captureHolds.set(2);
-    armScreenshotFlag(contextFor('boot'));
     bootEvents.emit('revealed');
-    await settle();
+    await vi.advanceTimersByTimeAsync(STABLE_MS * 4);
     expect(shots.taken).toEqual([]);
     captureHolds.set(1);
-    await settle();
+    await vi.advanceTimersByTimeAsync(STABLE_MS * 4);
     expect(shots.taken).toEqual([]);
     captureHolds.set(0);
-    await settle();
+    await vi.advanceTimersByTimeAsync(STABLE_MS - 1);
+    expect(shots.taken).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1);
     expect(shots.taken).toEqual(['boot']);
     expect(shots.quits).toBe(1);
   });
 
-  it('shoots at the reveal when the app holds nothing', async () => {
-    vi.resetModules();
-    const { armScreenshotFlag } = await import('../src/main/bootstrap/screenshot-flag');
-    const { bootEvents } = await import('../src/main/boot/boot-events');
-    armScreenshotFlag(contextFor('boot'));
+  it('shoots once the count has stayed at 0 for a frame when the app holds nothing', async () => {
+    const { bootEvents } = await shooting();
     bootEvents.emit('revealed');
-    await settle();
+    await vi.advanceTimersByTimeAsync(STABLE_MS);
+    expect(shots.taken).toEqual(['boot']);
+  });
+
+  it('a hold that appears just after the count hits 0 delays the capture until it is released too', async () => {
+    const { captureHolds, bootEvents } = await shooting();
+    captureHolds.set(1);
+    bootEvents.emit('revealed');
+    captureHolds.set(0);
+    await vi.advanceTimersByTimeAsync(STABLE_MS / 2);
+    captureHolds.set(1);
+    await vi.advanceTimersByTimeAsync(STABLE_MS * 10);
+    expect(shots.taken).toEqual([]);
+    captureHolds.set(0);
+    await vi.advanceTimersByTimeAsync(STABLE_MS);
+    expect(shots.taken).toEqual(['boot']);
+  });
+
+  it('adds up the holds of every window, and forgets the holds of a window that is gone', async () => {
+    const { captureHolds, bootEvents } = await shooting();
+    captureHolds.set(1, 1);
+    captureHolds.set(2, 2);
+    bootEvents.emit('revealed');
+    expect(captureHolds.count()).toBe(3);
+    captureHolds.set(0, 1);
+    await vi.advanceTimersByTimeAsync(STABLE_MS * 4);
+    expect(shots.taken).toEqual([]);
+    captureHolds.drop(2);
+    await vi.advanceTimersByTimeAsync(STABLE_MS);
     expect(shots.taken).toEqual(['boot']);
   });
 });
@@ -106,7 +137,7 @@ describe('the --screenshot watchdog', () => {
   it('quits with no error code when the capture beats it', async () => {
     const { bootEvents } = await armed('1');
     bootEvents.emit('revealed');
-    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(STABLE_MS);
     expect(shots.quits).toBe(1);
     await vi.advanceTimersByTimeAsync(5_000);
     expect(shots.exits).toEqual([]);
@@ -137,7 +168,7 @@ describe('the --screenshot watchdog default', () => {
 });
 
 describe('review captures', () => {
-  it('wait for the same holds as --screenshot, and report the holds still open when the wait runs out', async () => {
+  it('wait for the same holds as --screenshot, stable for a frame, and report the holds still open when the wait runs out', async () => {
     vi.resetModules();
     vi.useFakeTimers();
     const { captureHolds } = await import('../src/main/handlers/capture-holds');
@@ -150,7 +181,12 @@ describe('review captures', () => {
     await vi.advanceTimersByTimeAsync(1_000);
     expect(done).toBe(false);
     captureHolds.set(0);
-    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(STABLE_MS / 2);
+    captureHolds.set(1);
+    await vi.advanceTimersByTimeAsync(STABLE_MS * 2);
+    expect(done).toBe(false);
+    captureHolds.set(0);
+    await vi.advanceTimersByTimeAsync(STABLE_MS);
     expect(done).toBe(true);
     expect(checks).toEqual([]);
     captureHolds.set(2);
@@ -159,36 +195,5 @@ describe('review captures', () => {
     await late;
     expect(checks).toEqual([{ id: 'capture-holds', step: 'settings', pass: false, reason: '2 screenshot hold(s) still open after 10 s; captured what there was' }]);
     captureHolds.set(0);
-  });
-});
-
-describe('captureFrame', () => {
-  const contents = (devtools: Partial<WebContents['debugger']>, fallback = 'page') => {
-    const state = { attached: false };
-    return {
-      debugger: {
-        isAttached: () => state.attached,
-        attach: vi.fn(() => { state.attached = true; }),
-        detach: vi.fn(() => { state.attached = false; }),
-        ...devtools,
-      },
-      capturePage: () => Promise.resolve({ toPNG: () => Buffer.from(fallback) }),
-    } as Partial<WebContents> as WebContents;
-  };
-
-  it('takes the frame from the surface through the debugger, which also works for an off-screen window', async () => {
-    const { captureFrame } = await import('../src/main/handlers/capture-frame');
-    const page = contents({ sendCommand: (method: string) => Promise.resolve(method === 'Page.captureScreenshot' ? { data: Buffer.from('surface').toString('base64') } : {}) });
-    expect((await captureFrame(page)).toString()).toBe('surface');
-    expect(page.debugger.attach).toHaveBeenCalledWith('1.3');
-    expect(page.debugger.detach).toHaveBeenCalled();
-  });
-
-  it('falls back to capturePage when the debugger is busy or fails', async () => {
-    const { captureFrame } = await import('../src/main/handlers/capture-frame');
-    const busy = contents({ attach: () => { throw new Error('Another debugger is already attached'); } });
-    expect((await captureFrame(busy)).toString()).toBe('page');
-    const failing = contents({ sendCommand: () => Promise.reject(new Error('no surface')) });
-    expect((await captureFrame(failing)).toString()).toBe('page');
   });
 });

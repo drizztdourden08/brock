@@ -37,7 +37,7 @@ const armScreenshotFlag = (ctx: MainContext, defaultTimeoutMs = Math.max(SCREENS
     return app.exit(SCREENSHOT_TIMEOUT_EXIT_CODE);
   };
 
-  void whenRevealed().then(() => { revealed = true; }).then(captureHolds.settled).then(() => shoot(false));
+  void whenRevealed().then(() => { revealed = true; }).then(captureHolds.stable).then(() => shoot(false));
   bootEvents.once('failed', () => {
     done = true;
     app.exit(1);

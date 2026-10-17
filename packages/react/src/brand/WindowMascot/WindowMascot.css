@@ -1,0 +1,20 @@
+/* @layer renderer-shell @kind style */
+
+.window-mascot__probe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.window-mascot {
+  position: fixed;
+  pointer-events: none;
+}
+
+.window-mascot__hint {
+  position: absolute;
+  inset-block-end: 100%;
+  inset-inline-start: clamp(var(--size-128), var(--hint-x), calc(100% - var(--size-128)));
+  max-inline-size: var(--size-256);
+  transform: translateX(-50%);
+}

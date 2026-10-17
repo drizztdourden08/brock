@@ -39,6 +39,11 @@ const assertBoot = (boot: ProductInput['boot']): void => {
   }
 };
 
+const assertMascot = (mascot: ProductInput['mascot']): void => {
+  if (mascot === undefined || mascot === false) return;
+  if (mascot.searchHint !== undefined && !mascot.searchHint.trim()) throw new Error('product.mascot.searchHint must be a sentence, or left out for the default');
+};
+
 const assertProductInput = (input: ProductInput): void => {
   if (!SLUG.test(input.id)) throw new Error(`product.id "${input.id}" must be a slug like "my-app"`);
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
@@ -48,6 +53,7 @@ const assertProductInput = (input: ProductInput): void => {
   assertPorts(input.ports);
   assertInstaller(input.installer);
   assertBoot(input.boot);
+  assertMascot(input.mascot);
   assertOsIntegration(input);
 };
 
@@ -89,10 +95,11 @@ const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets =
   keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
 });
 
-const optionalParts = ({ profilesRoute, boot, menu }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'boot' | 'menu'> => ({
+const optionalParts = ({ profilesRoute, boot, menu, mascot }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'boot' | 'menu' | 'mascot'> => ({
   ...(profilesRoute ? { profilesRoute } : {}),
   ...(boot ? { boot } : {}),
   ...(menu ? { menu } : {}),
+  ...(mascot !== undefined ? { mascot } : {}),
 });
 
 const defineProduct = (input: ProductInput): ProductConfig => {

@@ -139,6 +139,10 @@ interface ProductMenu {
   entries?: Readonly<Record<string, ProductMenuEntry>>;
 }
 
+interface ProductMascot {
+  searchHint?: string;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -168,6 +172,7 @@ interface ProductConfig {
   installer: InstallerConfig;
   boot?: ProductBoot;
   menu?: ProductMenu;
+  mascot?: false | ProductMascot;
 }
 
 type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };
@@ -183,6 +188,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup, ProductMascot,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

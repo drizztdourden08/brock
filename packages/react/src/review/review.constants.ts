@@ -144,6 +144,8 @@ const SELECTORS = {
   hubSearchIdle: '.screen-layer:not(.screen-layer--hidden) .search-results--idle',
   hubSearchEmpty: '.screen-layer:not(.screen-layer--hidden) .search-results__body .search-results__empty',
   mascot: '.animated-mascot-auto',
+  walker: '[data-window-mascot]',
+  walkerBeside: '[data-window-mascot][data-beside]',
   liveControl: 'input, button, select, textarea, [role="switch"], [role="radio"], [role="slider"]',
   dialogClose: '.dialog .window-header__close',
   hubNavItem: '.screen-layer:not(.screen-layer--hidden) .side-nav__item',

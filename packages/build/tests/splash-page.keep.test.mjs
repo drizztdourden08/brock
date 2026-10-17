@@ -49,9 +49,12 @@ describe('the splash page wordmark', () => {
 
   it('scales the wordmark with hard pixel edges only when the app opts into it', () => {
     const pixelated = renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '', wordmark: './logos/w.png', pixelated: true });
-    expect(pixelated).toContain('<img class="ts-wordmark splash__pixelated" src="./logos/w.png"');
-    expect(OWN_STYLES).toMatch(/\.splash__pixelated \{\s*image-rendering: pixelated;/);
-    expect(renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '', wordmark: './logos/w.png' })).not.toContain('splash__pixelated');
+    expect(pixelated).toContain('<img class="ts-wordmark ts-wordmark--pixelated" src="./logos/w.png"');
+    expect(renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '', wordmark: './logos/w.png' })).not.toContain('ts-wordmark--pixelated');
+  });
+
+  it('leaves the pixel art rule to the Tessera kit', () => {
+    expect(OWN_STYLES).not.toContain('pixelated');
   });
 
   it('keeps the name as text without a wordmark', () => {

@@ -13,10 +13,9 @@ import { menuPathTo } from '../src/review/menu/menu-path-to';
 import { narrowFitChecks } from '../src/review/checks/narrow-fit-checks';
 import { updaterChecks } from '../src/review/checks/updater-checks';
 import { viewMenuChecks } from '../src/review/checks/view-menu-checks';
-import type { BootSnapshot, ControlSizeSnapshot, MenuItemSnapshot, ReviewOutcome } from '../src/review/review.type';
+import type { BootSnapshot, ControlSizeSnapshot, MenuItemSnapshot } from '../src/review/review.type';
+import { failed, reasonOf } from './review-outcomes';
 
-const failed = (outcomes: readonly ReviewOutcome[]): string[] => outcomes.filter((o) => !o.pass).map((o) => o.id);
-const reasonOf = (outcomes: readonly ReviewOutcome[], id: string): string | undefined => outcomes.find((o) => o.id === id)?.reason;
 const item = (label: string, hasIcon = true, isSection = false): MenuItemSnapshot => ({ label, hasIcon, isSection });
 
 const BOOT: BootSnapshot = {

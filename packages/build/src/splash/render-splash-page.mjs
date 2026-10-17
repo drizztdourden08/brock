@@ -20,7 +20,7 @@ import { SPLASH_SCRIPT } from './splash-script.mjs';
  * @returns {string}  the name as text, or the wordmark image named by it
  */
 const titleOf = (name, wordmark, pixelated) => (wordmark
-  ? `<img class="ts-wordmark${pixelated ? ' splash__pixelated' : ''}" src="${escapeHtml(wordmark)}" alt="${escapeHtml(name)}" />`
+  ? `<img class="ts-wordmark${pixelated ? ' ts-wordmark--pixelated' : ''}" src="${escapeHtml(wordmark)}" alt="${escapeHtml(name)}" />`
   : escapeHtml(name));
 
 /**

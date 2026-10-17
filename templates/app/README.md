@@ -64,6 +64,10 @@ so the rim stays crisp at 20 px); `icons.rim` picks the rimmed set (`'light'` by
 `brock`); a named instance shows `logos.instance`, the bot variant the same command draws.
 The splash shows `logos.mark` (`./logos/mark.svg`), the brand mark without its tile. An app with its own art drops `brand`, sets `ico`,
 `png256` and `png512` for the installer and puts its logos in `public/logos/`.
+`icons.wordmark` (`'./logos/wordmark.svg'`, committed) draws the app name as an image on
+the splashes and About. Ship it at least 48 px high: the splashes never scale a smooth
+wordmark up, and `brock check` warns about a shorter one. Pixel art sets
+`rendering: 'pixelated'` and scales up with hard edges.
 
 The splash window is the only loading screen. The build writes its page from the product
 name, the mark and the look: `product.look = { gradient: [from, to, via?], angle? }` in

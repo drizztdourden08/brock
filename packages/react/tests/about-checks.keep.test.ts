@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
 import { aboutChecks } from '../src/review/checks/about-checks';
-import type { ReviewOutcome } from '../src/review/review.type';
+import { failed, reasonOf } from './review-outcomes';
 
-const failed = (outcomes: readonly ReviewOutcome[]): string[] => outcomes.filter((o) => !o.pass).map((o) => o.id);
-const reasonOf = (outcomes: readonly ReviewOutcome[], id: string): string | undefined => outcomes.find((o) => o.id === id)?.reason;
 
 describe('aboutChecks', () => {
   it('compares the version row with the app version', () => {

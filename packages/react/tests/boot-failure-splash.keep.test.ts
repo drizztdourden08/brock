@@ -47,15 +47,16 @@ describe('BootFailureSplash', () => {
     expect(html).not.toContain('./logos/w.svg');
   });
 
-  it('marks the splash pixelated only when the wordmark opts into it', () => {
+  it('asks Tessera for the pixel art wordmark only when the wordmark opts into it', () => {
     const drawWith = (wordmark: { src: string; rendering?: 'auto' | 'pixelated' }): string => {
       const product = defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'tester' }, icons: { wordmark } });
       return renderToStaticMarkup(
         createElement(PlatformContext.Provider, { value: platformWith(true) }, createElement(BrockContext.Provider, { value: { ...BROCK, product } }, createElement(BootFailureSplash, { failure: FAILURE }))),
       );
     };
-    expect(drawWith({ src: './logos/w.png', rendering: 'pixelated' })).toContain('ts-splash ts-splash--layer boot-failure-splash--pixelated');
-    expect(drawWith({ src: './logos/w.svg' })).not.toContain('boot-failure-splash--pixelated');
+    expect(drawWith({ src: './logos/w.png', rendering: 'pixelated' })).toMatch(/<img class="ts-wordmark ts-wordmark--pixelated" src="\.\/logos\/w\.png"/);
+    expect(drawWith({ src: './logos/w.svg' })).not.toContain('ts-wordmark--pixelated');
+    expect(drawWith({ src: './logos/w.png', rendering: 'pixelated' })).not.toContain('boot-failure-splash');
   });
 
   it('keeps the name as the title text without a wordmark', () => {

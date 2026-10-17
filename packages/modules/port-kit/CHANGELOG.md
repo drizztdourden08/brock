@@ -1,5 +1,25 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.59.0
+
+### Minor Changes
+
+- 4cdb713: Settings pushed before the core runs are no longer lost. `createLiveSettings(core)` listens to the core and applies the last pushed settings each time the core starts running, and again after a restart; a plain `{ calls, apply }` target can pass `subscribe` for the same. The new `dispose()` stops listening. `createPortSession` applies the settings pushed while the core loaded when it starts, and uses its `settings` option only when nothing was pushed, where it used to overwrite them with the option.
+
+### Patch Changes
+
+- Updated dependencies [ea30589]
+- Updated dependencies [4cdb713]
+- Updated dependencies [4cdb713]
+- Updated dependencies [4cdb713]
+- Updated dependencies [19b7a49]
+- Updated dependencies [19b7a49]
+- Updated dependencies [e886c2a]
+- Updated dependencies [ea30589]
+  - @drizztdourden08/brock-react@0.59.0
+  - @drizztdourden08/brock-electron@0.59.0
+  - @drizztdourden08/brock-core@0.59.0
+
 ## 0.58.0
 
 ### Patch Changes

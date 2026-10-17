@@ -103,6 +103,8 @@ const SELECTORS = {
   aboutRow: '.about-panel__row',
   aboutLabel: '.stat-row__label',
   aboutValue: '.stat-row__value',
+  aboutWordmark: '.about-panel__wordmark-image',
+  aboutCard: '.info-screen, .screen-window',
   logsWidget: '.logs-widget',
   performanceWidget: '.performance-widget',
   widgetBody: '.widget__content',

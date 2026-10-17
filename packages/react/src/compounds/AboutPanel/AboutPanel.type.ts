@@ -9,12 +9,15 @@ interface AboutPanelRow {
 
 type AboutPanelHeading = 'wordmark' | 'title';
 
+type AboutPanelWordmarkRendering = 'auto' | 'pixelated';
+
 interface AboutPanelProps {
   title: string;
   brand?: BrandApp;
   rim?: BrandRimTone;
   heading?: AboutPanelHeading;
   wordmark?: string;
+  wordmarkRendering?: AboutPanelWordmarkRendering;
   logo?: string;
   rows: readonly AboutPanelRow[];
   copyText?: string | null;
@@ -23,4 +26,4 @@ interface AboutPanelProps {
   className?: string;
 }
 
-export type { AboutPanelHeading, AboutPanelProps, AboutPanelRow };
+export type { AboutPanelHeading, AboutPanelProps, AboutPanelRow, AboutPanelWordmarkRendering };

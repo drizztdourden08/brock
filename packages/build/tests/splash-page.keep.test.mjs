@@ -47,6 +47,13 @@ describe('the splash page wordmark', () => {
     expect(files[0].source).not.toContain('src="./logos/wordmark.svg"');
   }, 60_000);
 
+  it('scales the wordmark with hard pixel edges only when the app opts into it', () => {
+    const pixelated = renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '', wordmark: './logos/w.png', pixelated: true });
+    expect(pixelated).toContain('<img class="ts-wordmark splash__pixelated" src="./logos/w.png"');
+    expect(OWN_STYLES).toMatch(/\.splash__pixelated \{\s*image-rendering: pixelated;/);
+    expect(renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '', wordmark: './logos/w.png' })).not.toContain('splash__pixelated');
+  });
+
   it('keeps the name as text without a wordmark', () => {
     const html = renderSplashPage({ name: 'Brock', mark: 'mark.svg', styles: '' });
     expect(html).toContain('<h1 class="ts-title splash__name">Brock</h1>');

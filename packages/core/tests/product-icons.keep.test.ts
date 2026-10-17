@@ -44,6 +44,19 @@ describe('product.icons.wordmark', () => {
     expect(icons.rim).toBe('light');
   });
 
+  it('keeps the pixelated rendering an app opts into, and drops auto', () => {
+    expect(defineProduct({ ...BASE, icons: { wordmark: { src: './logos/wordmark.svg', rendering: 'pixelated' } } }).icons.wordmark)
+      .toEqual({ src: './logos/wordmark.svg', dark: './logos/wordmark.svg', rendering: 'pixelated' });
+    expect(defineProduct({ ...BASE, icons: { wordmark: { src: './logos/wordmark.svg', rendering: 'auto' } } }).icons.wordmark)
+      .toEqual({ src: './logos/wordmark.svg', dark: './logos/wordmark.svg' });
+  });
+
+  it('refuses a rendering it does not know', () => {
+    const wordmark = { src: './logos/wordmark.svg', rendering: 'auto' as const };
+    Reflect.set(wordmark, 'rendering', 'crisp');
+    expect(() => defineProduct({ ...BASE, icons: { wordmark } })).toThrow(/product\.icons\.wordmark\.rendering "crisp" must be one of auto, pixelated/);
+  });
+
   it('sets no wordmark when the app names none', () => {
     expect(defineProduct(BASE).icons).not.toHaveProperty('wordmark');
     expect(defineProduct({ ...BASE, icons: { brand: 'brock' } }).icons).not.toHaveProperty('wordmark');

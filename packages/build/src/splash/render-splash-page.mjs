@@ -10,22 +10,24 @@ import { SPLASH_SCRIPT } from './splash-script.mjs';
  * @property {string} styles  Every rule, in cascade order
  * @property {string | null} [palette]  The data-palette of the page root, the app's brand
  * @property {string | null} [wordmark]  The dark wordmark in place of the name
+ * @property {boolean} [pixelated]  Scale the wordmark with hard pixel edges
  */
 
 /**
  * @param {string} name
  * @param {string | null} wordmark
+ * @param {boolean} pixelated
  * @returns {string}  the name as text, or the wordmark image named by it
  */
-const titleOf = (name, wordmark) => (wordmark
-  ? `<img class="ts-wordmark" src="${escapeHtml(wordmark)}" alt="${escapeHtml(name)}" />`
+const titleOf = (name, wordmark, pixelated) => (wordmark
+  ? `<img class="ts-wordmark${pixelated ? ' splash__pixelated' : ''}" src="${escapeHtml(wordmark)}" alt="${escapeHtml(name)}" />`
   : escapeHtml(name));
 
 /**
  * @param {SplashPageInput} input
  * @returns {string}  The splash window page: static HTML with no bundle
  */
-const renderSplashPage = ({ name, mark, styles, palette = null, wordmark = null }) => `<!DOCTYPE html>
+const renderSplashPage = ({ name, mark, styles, palette = null, wordmark = null, pixelated = false }) => `<!DOCTYPE html>
 <html lang="en"${palette ? ` data-palette="${escapeHtml(palette)}"` : ''}>
   <head>
     <meta charset="UTF-8" />
@@ -38,7 +40,7 @@ ${styles}
   <body class="ts-splash splash">
     <main class="ts-stage">
       <img class="ts-mark splash__mark" src="${escapeHtml(mark)}" alt="" />
-      <h1 class="ts-title splash__name">${titleOf(name, wordmark)}</h1>
+      <h1 class="ts-title splash__name">${titleOf(name, wordmark, pixelated)}</h1>
       <p class="ts-status" id="splash-status" aria-live="polite">Starting</p>
       <section class="splash__failure" id="splash-failure" hidden>
         <p class="ts-detail" id="splash-message"></p>

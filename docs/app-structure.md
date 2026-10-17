@@ -327,13 +327,16 @@ product: defineProduct({
   icons: { brand: 'my-brand', wordmark: './logos/wordmark.svg' },
   // or with a variant for the dark splash ground:
   // icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.svg' } },
+  // or pixel art, scaled with hard pixel edges:
+  // icons: { wordmark: { src: './logos/wordmark.png', rendering: 'pixelated' } },
 }),
 ```
 
 - With a wordmark, the boot splash, its failure screen, the window's failure splash (`BootFailureSplash`), the installer's Setup splash (`brock package`) and the About window show the image in place of the name text. Without one, they show the name as before.
 - `dark` is the variant for the splash's dark gradient, the way the splash mark comes from Tessera's dark ground set. The three splashes draw `dark`, and About, on the app surface, draws `src`. A plain path is used for both.
 - The image keeps the name as its accessible name: the splash page, the window's failure splash and About put it in the heading with the name as its `alt` text.
-- The splashes fit it in a box `--size-48` high and at most `--size-384` wide (`48` by `384` pixels on the Setup splash, narrower when the splash is), and About in one `--size-48` high, keeping its proportions. Draw it on a transparent ground with the name filling the art's height.
+- Any width fits, never cut and always centred, keeping its proportions. The splashes fit it in a box `--size-48` high and at most `--size-384` wide (`48` by `384` pixels on the Setup splash, narrower when the splash is or the window is). About fits it to the width of its card, up to `--size-448`, with its height following its proportions up to `--size-48`. Draw it on a transparent ground with the name filling the art's height; a very wide wordmark draws smaller.
+- `rendering` is `'auto'` by default: the image scales smoothly, which suits most logos. Set `rendering: 'pixelated'` only for pixel art, so About and the three splashes scale it with hard pixel edges (`image-rendering: pixelated`) instead of blurring it. Any other value fails `defineProduct`.
 - Give the dark variant at least 3:1 against both ends of the dark gradient, the large text contrast, so the name reads at its splash size. The status line, the detail and the version keep Tessera's tested text colours, so the rest of the splash still holds WCAG AA.
 - `defineProduct` refuses a file that is not `.svg` or `.png` and a path with `..`; `brock package` stops when the dark variant is not under `public/`. `brock icons` leaves the file alone, and `public/logos/wordmark*` is not one of the generated logos, so it is committed.
 

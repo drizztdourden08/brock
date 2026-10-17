@@ -13,16 +13,20 @@ const asPng = (source) => (source.mime === 'image/svg+xml'
   : source);
 
 /**
+ * @typedef {import('./read-image.mjs').ImageSource & { pixelated?: boolean }} WordmarkSource  pixelated: rendering
+ */
+
+/**
  * @param {string} rootDir  The app root
  * @param {import('@drizztdourden08/brock-core/product').ProductConfig} config
- * @returns {import('./read-image.mjs').ImageSource | null}  the dark wordmark, null without one
+ * @returns {WordmarkSource | null}  the dark wordmark, null without one
  */
 const wordmarkSourceOf = (rootDir, config) => {
   const wordmark = config.icons?.wordmark;
   if (!wordmark) return null;
   const source = readImage(rootDir, join(PUBLIC_DIR, wordmark.dark));
   if (!source) throw new Error(`product.icons.wordmark names ${wordmark.dark}, which is not under public/`);
-  return asPng(source);
+  return wordmark.rendering === 'pixelated' ? { ...asPng(source), pixelated: true } : asPng(source);
 };
 
 export { wordmarkSourceOf };

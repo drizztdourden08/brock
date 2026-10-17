@@ -5,6 +5,10 @@
   animation: splash-rise var(--duration-drawer) var(--ease-emphasized) both;
 }
 
+.splash__pixelated {
+  image-rendering: pixelated;
+}
+
 .splash__failure {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
-import type { ProductWordmark, ProductWordmarkInput } from './product.type';
-import { WORDMARK_FILE } from './define-product.constants';
+import type { ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering } from './product.type';
+import { WORDMARK_FILE, WORDMARK_RENDERINGS } from './define-product.constants';
 
 const assertWordmarkPath = (field: string, path: string): void => {
   if (!WORDMARK_FILE.test(path) || path.split(/[\\/]+/).includes('..')) {
@@ -8,12 +8,19 @@ const assertWordmarkPath = (field: string, path: string): void => {
   }
 };
 
+const assertRendering = (rendering: ProductWordmarkRendering): void => {
+  if (!WORDMARK_RENDERINGS.includes(rendering)) {
+    throw new Error(`product.icons.wordmark.rendering "${String(rendering)}" must be one of ${WORDMARK_RENDERINGS.join(', ')}`);
+  }
+};
+
 const resolveWordmark = (input: ProductWordmarkInput | undefined): ProductWordmark | undefined => {
   if (input === undefined) return undefined;
-  const { src, dark = src } = typeof input === 'string' ? { src: input } : input;
+  const { src, dark = src, rendering = 'auto' } = typeof input === 'string' ? { src: input } : input;
   assertWordmarkPath(typeof input === 'string' ? 'wordmark' : 'wordmark.src', src);
   if (dark !== src) assertWordmarkPath('wordmark.dark', dark);
-  return { src, dark };
+  assertRendering(rendering);
+  return rendering === 'pixelated' ? { src, dark, rendering } : { src, dark };
 };
 
 export { resolveWordmark };

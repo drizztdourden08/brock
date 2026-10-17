@@ -6,6 +6,10 @@
   margin: 0 auto;
 }
 
+.about-panel--wordmark {
+  inline-size: 100%;
+}
+
 .about-panel__header {
   display: flex;
   flex-direction: column;
@@ -31,6 +35,11 @@
   font-weight: var(--weight-semi);
 }
 
+.about-panel__title--image {
+  align-self: stretch;
+  min-inline-size: 0;
+}
+
 .about-panel__title .about-panel__wordmark {
   display: block;
 }
@@ -38,8 +47,9 @@
 .about-panel__title .about-panel__wordmark-image {
   display: block;
   background: none;
-  max-inline-size: 100%;
-  block-size: var(--size-48);
+  inline-size: 100%;
+  block-size: auto;
+  max-block-size: var(--size-48);
 }
 
 .about-panel__rows {

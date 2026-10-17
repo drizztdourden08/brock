@@ -1,6 +1,0 @@
----
-'@drizztdourden08/brock-react': patch
-'@drizztdourden08/brock-electron': patch
----
-
-A screenshot no longer catches a widget that was just opened as a spinner or an empty body. A widget asked to open through `widgets.open`, `widgets.toggle`, `widgets.force` or `widgetKits.open`, `toggle` and `openWidget` now holds the capture from that call until its body mounts, and a kit's overlays hold until they mount, so the hold no longer starts only once the widget's lazy import does. A `LazyHost` fallback holds while it is drawn. The hold lets go by itself when the widget did not open, after 60 frames when its body never mounts (a tab behind another), and after 5 s at most. The renderer now reports 0 holds only after two frames with no new hold and once the page's images have loaded and faded in, and main captures only once the count has stayed at 0 for 50 ms, waiting again if a hold comes back. This applies to `--screenshot` and to the review's `review:capture`, `review:captureWidget` and `review:captureGroup`, whose `settle` also waits for images. Main now adds up the holds of every window instead of keeping the last window's count. An app that waited on `lazyLoads.idle` plus a fixed delay before its capture can drop that wait.

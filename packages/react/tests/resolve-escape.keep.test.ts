@@ -15,7 +15,13 @@ describe('resolveEscape', () => {
     expect(resolveEscape({ ...NOTHING, screenOpen: true })).toBe('screen');
   });
 
-  it('opens home when nothing is open, and does nothing without a home', () => {
+  it('reopens the last closed window when nothing is open, ahead of home', () => {
+    expect(resolveEscape({ ...NOTHING, reopenAvailable: true })).toBe('reopen');
+    expect(resolveEscape({ ...NOTHING, screenOpen: true, reopenAvailable: true })).toBe('screen');
+    expect(resolveEscape({ ...NOTHING, dialogOpen: true, reopenAvailable: true })).toBe('dialog');
+  });
+
+  it('opens home when nothing is open and nothing was closed, and does nothing without a home', () => {
     expect(resolveEscape(NOTHING)).toBe('home');
     expect(resolveEscape({ ...NOTHING, homeAvailable: false })).toBe('none');
   });

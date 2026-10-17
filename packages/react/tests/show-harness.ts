@@ -31,7 +31,7 @@ const resetShow = (): void => {
   document.body.innerHTML = '';
   platformState.platform = null;
   useShowFlagsStore.setState({ sources: {}, flags: {} });
-  useNavigationStore.getState().setEscapeTo(null);
+  useNavigationStore.getState().restore(null);
 };
 
 const showHarness = { render, unmount, resetShow };

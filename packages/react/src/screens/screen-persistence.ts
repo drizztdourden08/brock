@@ -14,8 +14,8 @@ const saneStates = (stored: unknown): ScreenStates =>
   (isRecord(stored) ? Object.fromEntries(Object.entries(stored).filter((entry): entry is [string, Record<string, unknown>] => isRecord(entry[1]))) : {});
 
 const screenViews = (): ScreenViews => {
-  const { active, params, history, remembered } = useNavigationStore.getState();
-  return { nav: { active, params, history, remembered }, state: useScreenStateStore.getState().byScope };
+  const { active, params, history, remembered, closed } = useNavigationStore.getState();
+  return { nav: { active, params, history, remembered, closed }, state: useScreenStateStore.getState().byScope };
 };
 
 const loadScreens = async (profileId: string | null, restore: ScreenRestore, live: () => boolean = () => true): Promise<void> => {
@@ -35,7 +35,7 @@ const save = (): void => {
 
 const watchScreens = (): (() => void) => {
   const offNav = useNavigationStore.subscribe((state, prev) => {
-    if (state.params !== prev.params || state.active !== prev.active || state.history !== prev.history || state.remembered !== prev.remembered) save();
+    if (state.params !== prev.params || state.active !== prev.active || state.history !== prev.history || state.remembered !== prev.remembered || state.closed !== prev.closed) save();
   });
   const offState = useScreenStateStore.subscribe((state, prev) => {
     if (state.byScope !== prev.byScope) save();

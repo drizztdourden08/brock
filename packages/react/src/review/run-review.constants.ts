@@ -7,6 +7,7 @@ import { bucketsStep } from './steps/buckets-step';
 import { bugReportStep } from './steps/bug-report-step';
 import { escapeHomeStep } from './steps/escape-home-step';
 import { fontsStep } from './steps/fonts-step';
+import { fullscreenStep } from './steps/fullscreen-step';
 import { heroStep } from './steps/hero-step';
 import { stylesStep } from './steps/styles-step';
 import { menuStep } from './steps/menu-step';
@@ -25,7 +26,7 @@ import type { ReviewStep } from './review.type';
 const STEPS_BEFORE_SEED: readonly ReviewStep[] = [bootStep, profileStep];
 
 const STEPS_AFTER_SEED: readonly ReviewStep[] = [
-  menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, volumeStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, kitsStep, widgetWindowsStep,
+  menuStep, screensStep, bucketsStep, heroStep, escapeHomeStep, paletteStep, searchStep, bugReportStep, updaterStep, volumeStep, aboutStep, widgetsStep, performanceStep, appWidgetsStep, kitsStep, widgetWindowsStep, fullscreenStep,
   toursStep, fontsStep, stylesStep,
 ];
 

@@ -41,25 +41,12 @@ describe('hub history', () => {
 });
 
 describe('Escape and Home in a hub', () => {
-  it('goes up one level on Escape, to the hub home, then closes the hub, while Back keeps the whole history', () => {
+  it('closes the open window on Escape from any page, never going up to its home first', () => {
     nav.open('game');
     nav.open('game/saves');
     nav.open('game/tracker');
     nav.open('game/library');
-    state().setEscapeTo({});
-    nav.escape();
-    expect(state().active).toBe('game');
-    expect(section()).toBeUndefined();
-    expect(trail('game')).toEqual([undefined, 'saves', 'tracker']);
-    state().setEscapeTo(null);
-    nav.escape();
-    expect(state().active).toBeNull();
-  });
-
-  it('closes a hub on its home page at the first Escape, whatever the history holds', () => {
-    nav.open('game/saves');
-    nav.open('game');
-    nav.escape();
+    expect(nav.escape()).toBe(true);
     expect(state().active).toBeNull();
   });
 
@@ -101,6 +88,45 @@ describe('Escape and Home in a hub', () => {
 
 });
 
+describe('reopening the last closed window', () => {
+  it('reopens the last closed window on Escape with nothing open, on its page and with its history', () => {
+    nav.open('game');
+    nav.open('game/saves');
+    nav.open('game/tracker/map');
+    nav.escape();
+    expect(state().closed).toMatchObject({ active: 'game', params: { section: 'tracker', tab: 'map' } });
+    expect(nav.escape()).toBe(true);
+    expect(state().active).toBe('game');
+    expect(state().params).toEqual({ section: 'tracker', tab: 'map' });
+    expect(trail('game')).toEqual([undefined, 'saves']);
+    expect(state().closed).toBeNull();
+    expect(nav.back()).toBe(true);
+    expect(section()).toBe('saves');
+  });
+
+  it('reopens only the window closed last, and nothing when no window was closed', () => {
+    expect(nav.reopen()).toBe(false);
+    nav.open('game/saves');
+    nav.open('data/library');
+    nav.close();
+    nav.reopen();
+    expect(state().active).toBe('data');
+    expect(section()).toBe('library');
+    expect(nav.reopen()).toBe(false);
+  });
+
+  it('keeps the last closed window in the saved navigation, so a restart can reopen it', () => {
+    nav.open('game/saves');
+    nav.close();
+    const { active, params, history, remembered, closed } = state();
+    const saved = readSavedNavigation(JSON.parse(JSON.stringify({ active, params, history, remembered, closed })), () => true);
+    state().restore(null);
+    restoreNavigation(saved, 'settings');
+    expect(state().closed).toEqual({ active: 'game', params: { section: 'saves' }, history: [] });
+    expect(readSavedNavigation({ closed: { active: 'gone', params: {} } }, (id) => id !== 'gone')?.closed).toBeNull();
+  });
+});
+
 describe('sub-page history', () => {
   it('goes up from a sub-page to its page, reusing the history entry when it is the page', () => {
     nav.open('game/saves');
@@ -111,14 +137,14 @@ describe('sub-page history', () => {
     expect(trail('game')).toEqual([]);
   });
 
-  it('falls back to the sub-page parent when there is no history', () => {
+  it('falls back to the sub-page parent when there is no history, and Escape still closes the window', () => {
     nav.open('game/saves/new');
     state().setParent({ section: 'saves' });
-    state().setEscapeTo({ section: 'saves' });
     expect(nav.canGoBack()).toBe(true);
     nav.escape();
-    expect(state().active).toBe('game');
-    expect(state().params).toEqual({ section: 'saves' });
+    expect(state().active).toBeNull();
+    nav.escape();
+    expect(state().params).toEqual({ section: 'saves', tab: 'new' });
   });
 });
 
@@ -151,7 +177,7 @@ describe('restoring navigation', () => {
 
   it('reads a saved state and drops screens the app no longer has', () => {
     const saved = readSavedNavigation({ active: 'gone', params: { section: 'x' }, history: { game: [{ section: 'a' }, 'junk'], gone: [] }, remembered: { data: { section: 'library' } } }, known);
-    expect(saved).toEqual({ active: null, params: {}, history: { game: [{ section: 'a' }] }, remembered: { data: { section: 'library' } } });
+    expect(saved).toEqual({ active: null, params: {}, history: { game: [{ section: 'a' }] }, remembered: { data: { section: 'library' } }, closed: null });
     expect(readSavedNavigation('nope', known)).toBeNull();
   });
 

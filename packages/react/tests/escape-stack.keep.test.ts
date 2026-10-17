@@ -81,19 +81,26 @@ describe('shellTakesEscape', () => {
     for (const level of ['dialog', 'menu', 'popover', 'drag'] as const) expect(shellTakesEscape(free, stack(level))).toBe(false);
     expect(shellTakesEscape({ defaultPrevented: true }, stack(null))).toBe(false);
   });
+
+  it('leaves Escape to a concealed title bar the keyboard revealed, so leaving it reopens no window', () => {
+    const bar = document.body.appendChild(document.createElement('div'));
+    bar.className = 'window-title-bar window-title-bar--concealed';
+    const button = bar.appendChild(document.createElement('button'));
+    expect(shellTakesEscape({ defaultPrevented: false, target: button }, stack(null))).toBe(false);
+    bar.className = 'window-title-bar';
+    expect(shellTakesEscape({ defaultPrevented: false, target: button }, stack(null))).toBe(true);
+  });
 });
 
 describe('Escape between the shell and Tessera\'s escape stack', () => {
-  it('goes up a hub level once, through the shell, with the screen frame on the stack', () => {
+  it('closes the open window from a hub page in one press, through the shell, with the screen frame on the stack', () => {
     const screenClose = vi.fn();
     mount({ screenClose });
     nav.open('game');
     nav.open('game/saves');
-    useNavigationStore.getState().setEscapeTo({});
     const event = escape(document.querySelector('.screen-window') ?? document.body);
     expect(event.defaultPrevented).toBe(true);
-    expect(useNavigationStore.getState().active).toBe('game');
-    expect(useNavigationStore.getState().params.section).toBeUndefined();
+    expect(useNavigationStore.getState().active).toBeNull();
     expect(screenClose).not.toHaveBeenCalled();
   });
 
@@ -144,5 +151,22 @@ describe('Escape between the shell and Tessera\'s escape stack', () => {
     escape();
     expect(useNavigationStore.getState().active).toBeNull();
     expect(screenClose).not.toHaveBeenCalled();
+  });
+});
+
+describe('Escape with no window open', () => {
+  it('reopens the window it closed on the next Escape, and opens home when nothing can be reopened', () => {
+    const escapes = { depth: () => 0, top: () => null };
+    const press = (reopenable: boolean): void => {
+      handleShellKey(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }), { home: () => 'settings', reopenable: () => reopenable, escapes });
+    };
+    nav.open('game/saves');
+    press(true);
+    expect(useNavigationStore.getState().active).toBeNull();
+    press(true);
+    expect(useNavigationStore.getState()).toMatchObject({ active: 'game', params: { section: 'saves' } });
+    press(true);
+    press(false);
+    expect(useNavigationStore.getState()).toMatchObject({ active: 'settings', params: {} });
   });
 });

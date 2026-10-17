@@ -21,7 +21,7 @@ const handleShellKey = (e: KeyboardEvent, context: ShellKeyContext): boolean => 
   if (e.key === 'Escape') {
     if (!shellTakesEscape(e, context.escapes)) return true;
     if (clearTextField(e.target)) e.preventDefault();
-    else closeTopmost(e, context.home(), context.holds);
+    else closeTopmost(e, context);
     return true;
   }
   if (!isShortcutsChord(e)) return false;

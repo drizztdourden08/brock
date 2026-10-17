@@ -9,6 +9,8 @@ const isStartupState = (state: NavigationSnapshot, homeScreen: string): boolean 
   || isProfilesRoute(state.active, state.params)
   || (state.active === homeScreen && navigationSteps.isBare(state.params) && (state.history[homeScreen]?.length ?? 0) === 0);
 
+const closedOf = (saved: SavedNavigation | null, state: NavigationSnapshot): NavigationSnapshot['closed'] => saved?.closed ?? state.closed;
+
 const restoreNavigation = (saved: SavedNavigation | null, homeScreen: string): void => {
   const state = useNavigationStore.getState();
   const takeOver = saved?.active != null && isStartupState(state, homeScreen);
@@ -17,6 +19,7 @@ const restoreNavigation = (saved: SavedNavigation | null, homeScreen: string): v
     params: takeOver ? saved.params : state.params,
     history: saved?.history ?? {},
     remembered: saved?.remembered ?? {},
+    closed: closedOf(saved, state),
   });
 };
 

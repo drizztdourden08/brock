@@ -1,26 +1,32 @@
 /* @layer renderer-shell @kind logic */
 import { escapeLayers } from '../../../escape/escape-layers';
 import { resolveEscape } from '../../../escape/resolve-escape';
+import type { EscapeAction } from '../../../escape/escape.type';
 import { nav } from '../../../navigation/nav';
 import { useNavigationStore } from '../../../navigation/useNavigationStore';
 import { useDialogStore } from '../../../stores/useDialogStore';
+import type { EscapeContext } from '../BrockApp.type';
 
-const closeTopmost = (e: KeyboardEvent, homeScreen: string | null, holdsScreen?: () => boolean): void => {
-  const layer = escapeLayers.topmost();
-  const dialog = useDialogStore.getState();
+const run = (action: EscapeAction, context: EscapeContext, homeScreen: string | null): void => {
+  if (action === 'layer') escapeLayers.topmost()?.close();
+  else if (action === 'dialog') useDialogStore.getState().dismiss();
+  else if (action === 'screen' && context.holds?.() !== true) nav.close();
+  else if (action === 'reopen') nav.reopen();
+  else if (action === 'home' && homeScreen !== null) nav.home(homeScreen);
+};
+
+const closeTopmost = (e: KeyboardEvent, context: EscapeContext): void => {
+  const homeScreen = context.home();
   const action = resolveEscape({
-    layerOpen: layer !== null,
-    dialogOpen: dialog.dialog !== null,
+    layerOpen: escapeLayers.topmost() !== null,
+    dialogOpen: useDialogStore.getState().dialog !== null,
     screenOpen: useNavigationStore.getState().active !== null,
+    reopenAvailable: context.reopenable?.() === true,
     homeAvailable: homeScreen !== null,
   });
   if (action === 'none') return;
   e.preventDefault();
-  if (action === 'layer') layer?.close();
-  else if (action === 'dialog') dialog.dismiss();
-  else if (action === 'screen') {
-    if (holdsScreen?.() !== true) nav.escape();
-  } else if (homeScreen !== null) nav.home(homeScreen);
+  run(action, context, homeScreen);
 };
 
 export { closeTopmost };

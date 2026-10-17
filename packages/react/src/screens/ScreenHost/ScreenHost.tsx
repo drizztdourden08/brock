@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
@@ -16,8 +16,13 @@ import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
 import { useMountedScreens } from './behavior/useMountedScreens';
+import { screenScroll } from '../scroll/screen-scroll';
 import type { ScreenHostProps } from './ScreenHost.type';
 import './ScreenHost.css';
+
+const scoped = (screen: ScreenDef, ctx: ScreenRenderContext): ReactNode => (
+  <ScreenStateScope.Provider value={screen.id}><LazyHost>{screen.render(ctx)}</LazyHost></ScreenStateScope.Provider>
+);
 
 const covers = (shown: ScreenDef | null, home: string): boolean => shown !== null && shown.id !== home && shown.layer !== 'own';
 
@@ -32,17 +37,18 @@ const ScreenHost = (props: ScreenHostProps) => {
 
   const ctx = useMemo<ScreenRenderContext>(() => ({ params, profile, open, close }), [params, profile, open, close]);
 
-  const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>
-    screen !== undefined && isScreenAllowed(screen, developerTools, profile !== null, show);
+  const allowed = (screen: ScreenDef | undefined): screen is ScreenDef => screen !== undefined && isScreenAllowed(screen, developerTools, profile !== null, show);
 
   const homeScreen = registry.get(home);
   const active = registry.get(activeId ?? '');
   const shown = allowed(active) ? active : null;
   const mounted = useMountedScreens(shown);
+  useEffect(screenScroll.watch, []);
 
   const guarded = (screen: ScreenDef, hidden: boolean): ReactNode => (
     <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>
-      <ScreenStateScope.Provider value={screen.id}><LazyHost>{screen.render(ctx)}</LazyHost></ScreenStateScope.Provider>
+      {scoped(screen, ctx)}
+      <Box hidden data-screen-scroll={screen.id} />
     </RenderErrorBoundary>
   );
 
@@ -75,7 +81,7 @@ const ScreenHost = (props: ScreenHostProps) => {
       <Box className="screen-host__home">
         {allowed(homeScreen) && (
           <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>
-            <ScreenStateScope.Provider value={homeScreen.id}><LazyHost>{homeScreen.render(ctx)}</LazyHost></ScreenStateScope.Provider>
+            {scoped(homeScreen, ctx)}
           </RenderErrorBoundary>
         )}
       </Box>

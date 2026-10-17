@@ -12,11 +12,12 @@ const nav = {
   close: (): void => useNavigationStore.getState().close(),
   back: (): boolean => useNavigationStore.getState().back(),
   up: (parent: ScreenParams): void => useNavigationStore.getState().up(parent),
-  escape: (): void => {
+  reopen: (): boolean => useNavigationStore.getState().reopen(),
+  escape: (): boolean => {
     const state = useNavigationStore.getState();
-    if (state.escapeTo !== null) state.up(state.escapeTo);
-    else if (state.parent !== null) state.up(state.parent);
-    else state.close();
+    if (state.active === null) return state.reopen();
+    state.close();
+    return true;
   },
   canGoBack: (): boolean => navigationSteps.canGoBack(useNavigationStore.getState()),
   active: (): string | null => useNavigationStore.getState().active,

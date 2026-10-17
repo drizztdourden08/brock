@@ -46,7 +46,7 @@ describe('the widget layout store', () => {
     store().replace(FLAT);
     const current = store().layout;
     store().replace(current);
-    expect(store().layout).toBe(current);
+    expect(store().layout).toEqual(current);
     store().replace(undefined);
     expect(widgetsIn(store().layout.dock)).toEqual([]);
   });

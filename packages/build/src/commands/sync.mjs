@@ -5,6 +5,7 @@ import { isSiteDir } from '../site/load-site.mjs';
 import { repoRootOf, siteDirs } from '../site/site-dirs.mjs';
 import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { wordmarkHeightWarnings } from '../installer/wordmark-height-warnings.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
 import { menuConfigProblems, menuConfigWarnings } from '../menu/menu-config-problems.mjs';
@@ -58,7 +59,8 @@ const syncOne = async (appDir, check) => {
     reportProblems(managedConfigProblems(appDir), `${prefix}: the managed configs of ${label} would not load:`),
     reportProblems(menuConfigProblems(appDir, config.product?.menu), `${prefix}: the menu config of ${label} has problems:`),
   );
-  for (const warning of menuConfigWarnings(config.product?.menu)) console.warn(`${prefix}: warning: ${warning}`);
+  const warnings = [...menuConfigWarnings(config.product?.menu), ...wordmarkHeightWarnings(appDir, config.product ?? {})];
+  for (const warning of warnings) console.warn(`${prefix}: warning: ${warning}`);
   return check ? Math.max(code, problems) : code;
 };
 

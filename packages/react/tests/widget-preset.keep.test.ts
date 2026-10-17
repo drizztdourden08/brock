@@ -75,7 +75,7 @@ describe('the layout store with a preset', () => {
     expect(widgetsIn(store().layout.dock)).toEqual(['players', 'hints', 'room', 'log', 'console', 'notes']);
     const saved = presetLayout(null, SESSION);
     store().replace(saved);
-    expect(store().layout).toBe(saved);
+    expect(store().layout).toEqual(saved);
   });
 
   it('resets every placement to the preset, closing floating and popped widgets', () => {

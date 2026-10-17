@@ -56,6 +56,7 @@ interface MenuItemSnapshot {
   label: string;
   hasIcon: boolean;
   isSection: boolean;
+  isSlider?: boolean;
 }
 
 interface MenuSnapshot {

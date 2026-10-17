@@ -32,7 +32,7 @@ const opensOnFocus = async (item: HTMLElement): Promise<boolean> => {
 };
 
 const reviewSlider = async (tour: StepTour, id: string, item: HTMLElement): Promise<{ hoverOpens: boolean; focusOpens: boolean; slides: boolean }> => {
-  hover(item);
+  hover(find(VOLUME_SELECTORS.button, item) ?? item);
   const hoverOpens = (await waitFor(volumePanelOpen)) !== null;
   await settle();
   await tour.capture(`volume-${id}-slider`);

@@ -7,7 +7,7 @@ import { volumePanelOpen } from './volume-panel-open';
 import { VOLUME_SELECTORS } from './volume-step.constants';
 
 const closeVolumePanel = async (item: HTMLElement): Promise<void> => {
-  unhover(item);
+  unhover(find(VOLUME_SELECTORS.button, item) ?? item);
   const active = document.activeElement;
   if (active instanceof HTMLElement && (item.contains(active) || find(VOLUME_SELECTORS.panel)?.contains(active) === true)) active.blur();
   await waitFor(() => !volumePanelOpen());

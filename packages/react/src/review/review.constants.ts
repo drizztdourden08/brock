@@ -81,6 +81,7 @@ const SELECTORS = {
   menuLabelShown: ':scope > [aria-live]',
   menuIcon: '.dropdown__icon',
   sectionTrigger: 'dropdown__submenu-trigger',
+  sliderRow: 'dropdown__slider',
   layer: '.screen-layer:not(.screen-layer--hidden)',
   card: '.screen-layer__frame[role="dialog"] .screen-layer__card',
   layerTitle: '.screen-window__header .window-header__title',

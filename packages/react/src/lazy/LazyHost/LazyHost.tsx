@@ -1,17 +1,12 @@
 /* @layer renderer-shell @kind component */
 import { Suspense } from 'react';
-import { Box, Spinner } from '@drizztdourden08/tessera/primitives';
+import { LazyFallback } from './sub-components/LazyFallback';
 import type { LazyHostProps } from './LazyHost.type';
 import './LazyHost.css';
 
 const LazyHost = (props: LazyHostProps) => {
   const { children } = props;
-  const fallback = (
-    <Box className="lazy-host" data-brock-loading="">
-      <Spinner size="md" />
-    </Box>
-  );
-  return <Suspense fallback={fallback}>{children}</Suspense>;
+  return <Suspense fallback={<LazyFallback />}>{children}</Suspense>;
 };
 
 export { LazyHost };

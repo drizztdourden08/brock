@@ -1,0 +1,8 @@
+/* @layer renderer-shell @kind constants */
+const STABLE_FRAMES = 2;
+const IMAGE_WAIT_MS = 5000;
+const BODY_MOUNT_FRAMES = 60;
+const BODY_MOUNT_MS = 5000;
+const FRAME_FALLBACK_MS = 16;
+
+export { BODY_MOUNT_FRAMES, BODY_MOUNT_MS, FRAME_FALLBACK_MS, IMAGE_WAIT_MS, STABLE_FRAMES };

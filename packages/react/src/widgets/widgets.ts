@@ -1,23 +1,22 @@
 /* @layer renderer-shell @kind logic */
-import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import { forcedWidgets } from './forced-widgets';
-import { kitRoute } from './kits/kit-route';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { widgetBodyHolds } from './widget-body-holds';
+import { widgetVisible } from './widget-visible';
 
-const visible = (id: string): boolean => {
-  if (!kitRoute.isMember(id)) return isWidgetOpen(useWidgetLayoutStore.getState().layout, id);
-  const layout = kitRoute.openLayoutOf(id);
-  return layout !== null && isWidgetOpen(layout, id);
+const opening = (change: (id: string) => void) => (id: string): void => {
+  change(id);
+  widgetBodyHolds.widgets([id]);
 };
 
 const widgets = {
-  open: (id: string): void => useWidgetLayoutStore.getState().open(id),
+  open: opening((id) => useWidgetLayoutStore.getState().open(id)),
   close: (id: string): void => useWidgetLayoutStore.getState().close(id),
-  toggle: (id: string): void => useWidgetLayoutStore.getState().toggle(id),
+  toggle: opening((id) => useWidgetLayoutStore.getState().toggle(id)),
   popOut: (id: string): void => useWidgetLayoutStore.getState().popOut(id),
   reset: (): void => useWidgetLayoutStore.getState().reset(),
   force: (ids: readonly string[]): void => forcedWidgets.force(ids),
-  isVisible: visible,
+  isVisible: widgetVisible,
 };
 
 export { widgets };

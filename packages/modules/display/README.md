@@ -26,6 +26,8 @@ window.api.display.onChanged(() => ...)
 
 The Display tab has the id `display`, so `open('settings', { tab: 'display' })` opens it. When an app settings page or tab already uses that id, the app keeps it and the Display tab moves to `display.display` (`moduleTabId('display', 'display')` from brock-react).
 
+It sits in the App group, `group: 'App'` with `groupId: 'app'`. An app whose settings bucket declares `{ id: 'app', label: 'App' }` gets one App group, its own pages first and the Display tab after them.
+
 The Display tab reads and writes four keys of the profile settings. `windowMode` is already part of `BaseSettings`; add the other three to the app's defaults:
 
 ```ts

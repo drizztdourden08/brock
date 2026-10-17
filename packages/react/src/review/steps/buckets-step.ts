@@ -6,9 +6,11 @@ import { isShown } from '../../screens/show/is-shown';
 import { bucketChecks } from '../checks/bucket-checks';
 import { hiddenBucketChecks } from '../checks/hidden-bucket-checks';
 import { menuReachChecks } from '../checks/menu-reach-checks';
+import { navGroupChecks } from '../checks/nav-group-checks';
 import { hiddenRoutes } from '../menu/hidden-routes';
 import { menuReachIds } from '../menu/menu-reach-ids';
 import { find } from '../dom/find';
+import { navGroupLabels } from '../dom/nav-group-labels';
 import { navLabels } from '../dom/nav-labels';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
@@ -37,6 +39,7 @@ const bucketsStep: ReviewStep = {
       const navShown = showsHubNav(hub.nav, pages.length);
       tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: pages.map((page) => page.label), shown: navLabels() }));
       if (opened === null) continue;
+      if (navShown) tour.report(navGroupChecks(hub.id, navGroupLabels()));
       await visitHubPages(tour, hub, pages, navShown);
       await hubBackCheck(tour, hub);
     }

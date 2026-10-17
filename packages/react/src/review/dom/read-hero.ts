@@ -5,11 +5,13 @@ import type { HeroSnapshot } from '../review.type';
 const filled = (element: Element | null): boolean =>
   element !== null && (element.childElementCount > 0 || element.textContent.trim() !== '');
 
-const readHero = (hub: string, hero: Element | null): HeroSnapshot => ({
+const readHero = (hub: string, hero: Element | null, artNone = false): HeroSnapshot => ({
   hub,
   rendered: hero !== null,
   title: hero?.querySelector(SELECTORS.heroTitle)?.textContent.trim() ?? '',
   slots: hero ? Object.entries(HERO_SLOT_SELECTORS).filter(([, selector]) => filled(hero.querySelector(selector))).map(([name]) => name) : [],
+  artNone,
+  artDrawn: hero?.querySelector(HERO_SLOT_SELECTORS.art) != null,
 });
 
 export { readHero };

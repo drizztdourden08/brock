@@ -144,6 +144,8 @@ interface HeroSnapshot {
   rendered: boolean;
   title: string;
   slots: readonly string[];
+  artNone?: boolean;
+  artDrawn?: boolean;
 }
 
 interface UpdaterTitleBarSnapshot {

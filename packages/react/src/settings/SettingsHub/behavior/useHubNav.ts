@@ -1,10 +1,14 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
 import type { FormFactor } from '@drizztdourden08/brock-core';
+import { groupKey } from '../../group-key';
 import type { TabDef } from '../../settings.type';
-import type { HubNavModel } from '../SettingsHub.type';
+import type { HubNavGroup, HubNavModel } from '../SettingsHub.type';
 
 const navItem = <S extends object>(tab: TabDef<S>) => ({ id: tab.id, label: tab.label, icon: tab.navIcon });
+
+const groupOf = <S extends object>(groups: readonly HubNavGroup<S>[], tab: TabDef<S>): HubNavGroup<S> | undefined =>
+  groups.find((group) => tab.groupId !== undefined && group.id === tab.groupId) ?? groups.find((group) => groupKey(group.label) === groupKey(tab.group));
 
 const useHubNav = <S extends object>(
   tabs: readonly TabDef<S>[],
@@ -15,11 +19,11 @@ const useHubNav = <S extends object>(
   const home = listed.find((tab) => tab.id === homeTabId) ?? listed.at(0) ?? null;
   const grouped = listed.filter((tab) => tab !== home);
 
-  const groups: { id: string; label: string; items: TabDef<S>[] }[] = [];
+  const groups: HubNavGroup<S>[] = [];
   for (const tab of grouped) {
-    const group = groups.find((g) => g.label === tab.group);
+    const group = groupOf(groups, tab);
     if (group) group.items.push(tab);
-    else groups.push({ id: tab.group, label: tab.group, items: [tab] });
+    else groups.push({ id: tab.groupId ?? tab.group, label: tab.group, items: [tab] });
   }
 
   return {

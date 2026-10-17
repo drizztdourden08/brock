@@ -223,6 +223,41 @@ export const meta: ScreenMeta = { title: 'Home', icon: 'house', hero: { size: 'c
 - Brock passes it to Tessera's `Hero` as `size`. Under 720 px wide every size stacks; `default` and `tall` keep their height as a minimum and `compact` has none.
 - `hero` works on a `.hero.tsx` only; other screens ignore it.
 
+## A hero without art
+
+In an app with a Tessera brand, a hero that renders no `Art` gets the brand mascot. A hero that wants no art at all renders `Art` with `kind="none"`, as `Backdrop` takes `kind="none"` for no backdrop:
+
+```tsx
+// src/screens/library/home.hero.tsx
+const LibraryHome = (props: HeroProps) => {
+  const { Title, Art } = props.slots;
+  return (
+    <>
+      <Title>Library</Title>
+      <Art kind="none" />
+    </>
+  );
+};
+```
+
+- The hero draws no art, not even the brand mascot; the other slots fill the space as they do in an app with no brand.
+- With no `Backdrop` either, Tessera's `Hero` sits the content at the top (`hero--bare`).
+- The review's `hero` step checks that such a hero draws no art (`<bucket>-hero-art-none`).
+
+## Settings groups an app shares with modules
+
+A module's settings tab names its nav group with `group` (the label) and, for apps to target it, `groupId`. brock-display's Display tab has `group: 'App', groupId: 'app'`. An app that declares the same group on its settings bucket gets one group holding both:
+
+```ts
+// src/screens/screens.config.ts
+buckets: [{ id: 'settings', title: 'Settings', icon: 'settings', menu: 'entry', groups: [{ id: 'app', label: 'App' }] }],
+```
+
+- A tab joins the group whose id is its `groupId`, else the group whose label is its `group` (trimmed, any case).
+- Inside the group, the app's own pages come first, in their `meta.order`, then the tabs in the order they are listed: the app's `settings.tabs`, then each module's.
+- A tab that matches no group starts one after the app's groups, and later tabs with the same id or label join it.
+- The review's `buckets` step fails a hub whose nav shows two groups with the same label (`<bucket>-nav-groups`).
+
 ## A backdrop drawn by a component
 
 `backdrop` on a bucket in `screens.config.ts` takes an image or a colour, since the config holds no JSX and imports nothing but `defineScreens`. A bucket whose page headers draw a scene of their own puts it in `src/screens/<bucket>/<bucket>.backdrop.tsx`, which default-exports a component:

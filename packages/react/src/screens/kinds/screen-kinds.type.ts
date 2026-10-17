@@ -38,7 +38,7 @@ interface HeroActionsProps {
   children: ReactNode;
 }
 
-type HeroArtProps = HeroArt;
+type HeroArtProps = HeroArt | { kind: 'none' };
 
 type HeroBackdropProps = Backdrop | { kind: 'none' };
 
@@ -82,6 +82,7 @@ interface HeroFrame {
 interface HeroRootProps {
   frame: HeroFrame;
   size?: HeroSize;
+  bucket?: string;
   children?: ReactNode;
 }
 

@@ -19,10 +19,16 @@ interface TabMatches<S extends object> {
   total: number;
 }
 
+interface HubNavGroup<S extends object> {
+  id: string;
+  label: string;
+  items: TabDef<S>[];
+}
+
 interface HubNavModel<S extends object> {
   navConfig: SideNavConfig;
   visibleTabs: TabDef<S>[];
   home: TabDef<S> | null;
 }
 
-export type { HubNavModel, SettingsHubProps, TabMatches };
+export type { HubNavGroup, HubNavModel, SettingsHubProps, TabMatches };

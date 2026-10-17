@@ -154,6 +154,14 @@ describe('aboutChecks', () => {
     expect(failed(aboutChecks({ logoLoaded: true, version: '1.0.0', appVersion: '1.0.0' }))).toEqual([]);
     expect(failed(aboutChecks({ logoLoaded: null, version: '0.0.0', appVersion: '1.0.0' }))).toEqual(['about-logo', 'about-version']);
   });
+
+  it('checks the wordmark sits inside the About card, only when there is one', () => {
+    const base = { logoLoaded: true, version: '1.0.0', appVersion: '1.0.0' };
+    expect(aboutChecks(base).map((check) => check.id)).not.toContain('about-wordmark-fits');
+    expect(failed(aboutChecks({ ...base, wordmark: { left: 281, right: 729, cardLeft: 250, cardRight: 760 } }))).toEqual([]);
+    const cut = aboutChecks({ ...base, wordmark: { left: 121, right: 889, cardLeft: 250, cardRight: 760 } });
+    expect(reasonOf(cut, 'about-wordmark-fits')).toBe('the wordmark overflows the About card, 129 px past its left edge and 129 px past its right edge, so it is cut');
+  });
 });
 
 describe('iconSlotChecks', () => {

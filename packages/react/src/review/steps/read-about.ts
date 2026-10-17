@@ -4,7 +4,7 @@ import { find } from '../dom/find';
 import { imageLoaded } from '../dom/image-loaded';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
-import type { AboutSnapshot } from '../review.type';
+import type { AboutSnapshot, AboutWordmarkFit } from '../review.type';
 
 const rowValue = (label: string): string | null => {
   const rows = [...document.querySelectorAll<HTMLElement>(SELECTORS.aboutRow)];
@@ -19,10 +19,19 @@ const logoLoaded = async (): Promise<boolean | null> => {
   return imageLoaded(SELECTORS.aboutLogo);
 };
 
+const wordmarkFit = (): AboutWordmarkFit | null => {
+  const wordmark = find(SELECTORS.aboutWordmark);
+  const card = wordmark?.closest(SELECTORS.aboutCard);
+  if (!wordmark || !card) return null;
+  const { left, right } = wordmark.getBoundingClientRect();
+  const { left: cardLeft, right: cardRight } = card.getBoundingClientRect();
+  return { left, right, cardLeft, cardRight };
+};
+
 const readAbout = async (label: string): Promise<AboutSnapshot> => {
   const appVersion = await requireHostApi().getAppVersion();
   await waitFor(() => rowValue(label) === appVersion);
-  return { logoLoaded: await logoLoaded(), version: rowValue(label), appVersion };
+  return { logoLoaded: await logoLoaded(), version: rowValue(label), appVersion, wordmark: wordmarkFit() };
 };
 
 export { readAbout };

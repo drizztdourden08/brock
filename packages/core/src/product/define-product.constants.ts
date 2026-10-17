@@ -1,5 +1,5 @@
 /* @layer core @kind constants */
-import type { InstallerConfig, InstallScope, ProductIconRim, ProductIcons, ProductLogos, ProductWidgets, WindowConfig } from './product.type';
+import type { InstallerConfig, InstallScope, ProductIconRim, ProductIcons, ProductLogos, ProductWidgets, ProductWordmarkRendering, WindowConfig } from './product.type';
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const REVERSE_DNS = /^[a-z0-9]+(\.[a-z0-9-]+)+$/i;
@@ -45,9 +45,10 @@ const DEFAULT_INSTALLER: Omit<InstallerConfig, 'folderName'> = {
 const INSTALL_SCOPES: InstallScope[] = ['user', 'machine'];
 const LICENCE_FILE = /\.(?:md|txt)$/i;
 const WORDMARK_FILE = /^\S.*\.(?:svg|png)$/i;
+const WORDMARK_RENDERINGS: ProductWordmarkRendering[] = ['auto', 'pixelated'];
 const UNSAFE_FILE_CHARS = /[/\\?%*:|"<>\p{Cc}]/gu;
 
 export {
   SLUG, REVERSE_DNS, HEX_COLOR, PORT_BASE_MIN, PORT_BASE_MAX, DEFAULT_WINDOW, BRAND_ICONS, BRAND_RIMS, BRAND_APP_LOGO, DEFAULT_LOGOS, DEFAULT_HOME_SCREEN, DEFAULT_WIDGETS,
-  DEFAULT_INSTALLER, INSTALL_SCOPES, LICENCE_FILE, UNSAFE_FILE_CHARS, WORDMARK_FILE,
+  DEFAULT_INSTALLER, INSTALL_SCOPES, LICENCE_FILE, UNSAFE_FILE_CHARS, WORDMARK_FILE, WORDMARK_RENDERINGS,
 };

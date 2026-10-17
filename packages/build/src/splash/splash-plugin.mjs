@@ -22,6 +22,7 @@ const splashPageOf = async (rootDir, looks) => {
     name: config.window.title ?? config.name,
     mark: config.logos.mark,
     wordmark: config.icons.wordmark?.dark ?? null,
+    pixelated: config.icons.wordmark?.rendering === 'pixelated',
     palette: brand,
     styles: splashStyles(rootDir, { look, dark }, brand),
   });

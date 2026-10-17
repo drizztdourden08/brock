@@ -116,10 +116,18 @@ interface PageHeaderSnapshot {
   title: string | null;
 }
 
+interface AboutWordmarkFit {
+  left: number;
+  right: number;
+  cardLeft: number;
+  cardRight: number;
+}
+
 interface AboutSnapshot {
   logoLoaded: boolean | null;
   version: string | null;
   appVersion: string;
+  wordmark?: AboutWordmarkFit | null;
 }
 
 interface BucketSnapshot {
@@ -203,6 +211,6 @@ interface MenuKeyWalk {
 }
 
 export type {
-  AboutSnapshot, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuKeyWalk, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, AboutWordmarkFit, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuKeyWalk, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot, VolumeItemSnapshot,
 };

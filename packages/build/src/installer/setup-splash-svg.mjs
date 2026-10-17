@@ -12,7 +12,7 @@ import { SPLASH_FONT, SPLASH_GAP, SPLASH_MARK, SPLASH_NAME_SIZE, SPLASH_WORDMARK
  * @property {import('./mark-source.mjs').MarkSource} mark  the mark in its dark ground colours
  * @property {string} name
  * @property {string | null} [family]  the title font's family, ahead of Segoe UI
- * @property {import('./read-image.mjs').ImageSource | null} [wordmark]  the dark ground wordmark, drawn in place of the name
+ * @property {import('./wordmark-source.mjs').WordmarkSource | null} [wordmark]  the dark ground wordmark, drawn in place of the name
  */
 
 /**
@@ -27,14 +27,15 @@ const nameSvg = ({ width, ground, name, family = null }, top) => {
 };
 
 /**
- * @param {import('./read-image.mjs').ImageSource} wordmark
+ * @param {import('./wordmark-source.mjs').WordmarkSource} wordmark  pixelated: nearest neighbour
  * @param {number} width  the splash width
  * @param {number} top  where the wordmark's box starts
  * @returns {string}  the wordmark, fitted and centred in its box
  */
 const wordmarkSvg = (wordmark, width, top) => {
   const box = Math.min(SPLASH_WORDMARK_WIDTH, width - 2 * SPLASH_GAP);
-  return imageSvg(wordmark, { x: (width - box) / 2, y: top, size: box, height: SPLASH_WORDMARK_HEIGHT });
+  const extra = wordmark.pixelated ? ' image-rendering="optimizeSpeed"' : '';
+  return imageSvg(wordmark, { x: (width - box) / 2, y: top, size: box, height: SPLASH_WORDMARK_HEIGHT, extra });
 };
 
 /**

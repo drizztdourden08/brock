@@ -62,12 +62,15 @@ interface FileAssociation {
 
 type ProductIconRim = 'light' | 'dark';
 
+type ProductWordmarkRendering = 'auto' | 'pixelated';
+
 interface ProductWordmark {
   src: string;
   dark: string;
+  rendering?: 'pixelated';
 }
 
-type ProductWordmarkInput = string | { src: string; dark?: string };
+type ProductWordmarkInput = string | { src: string; dark?: string; rendering?: ProductWordmarkRendering };
 
 interface ProductIcons {
   brand?: string;
@@ -180,6 +183,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

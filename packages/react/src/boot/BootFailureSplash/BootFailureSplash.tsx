@@ -5,6 +5,7 @@ import { useAppVersion } from '../../diagnostics/useAppVersion';
 import { failureTitle } from './behavior/failure-title';
 import { useFailureActions } from './behavior/useFailureActions';
 import type { BootFailureSplashProps } from './BootFailureSplash.type';
+import './BootFailureSplash.css';
 
 const BootFailureSplash = (props: BootFailureSplashProps) => {
   const { failure } = props;
@@ -12,10 +13,12 @@ const BootFailureSplash = (props: BootFailureSplashProps) => {
   const version = useAppVersion();
   const actions = useFailureActions();
   if (failure === null) return null;
+  const { wordmark } = product.icons;
   return (
     <Splash
+      className={wordmark?.rendering === 'pixelated' ? 'boot-failure-splash--pixelated' : undefined}
       title={product.window.title ?? product.name}
-      wordmark={product.icons.wordmark?.dark}
+      wordmark={wordmark?.dark}
       mark={product.logos.mark}
       status={failureTitle(failure)}
       detail={failure.message}

@@ -88,6 +88,15 @@ describe('the Setup splash wordmark', () => {
     expect(svg).toContain('x="192" y="99" width="96" height="96"');
     const narrow = setupSplashSvg({ width: 300, height: 360, ground, angle: 160, mark, name: 'Brock App', wordmark });
     expect(narrow).toContain('x="18" y="213" width="264" height="48"');
+    expect(svg).not.toContain('image-rendering');
+  });
+
+  it('scales the wordmark nearest neighbour only when it is pixelated', () => {
+    const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
+    const wordmark = { data: Buffer.from('<svg id="wordmark"/>'), mime: 'image/png', from: 'public/logos/wordmark.png', pixelated: true };
+    const ground = { from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' };
+    const svg = setupSplashSvg({ width: 480, height: 360, ground, angle: 160, mark, name: 'Brock App', wordmark });
+    expect(svg).toContain('width="384" height="48" preserveAspectRatio="xMidYMid meet" image-rendering="optimizeSpeed"/>');
   });
 
   it('reads the dark ground wordmark from public/ and stops on a missing file', () => {
@@ -99,6 +108,9 @@ describe('the Setup splash wordmark', () => {
     expect(svg).toMatchObject({ mime: 'image/png', from: 'public/logos/wordmark.svg' });
     expect(PNG.sync.read(svg.data).width).toBe(768);
     expect(wordmarkSourceOf(rootDir, { icons: {} })).toBeNull();
+    expect(wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/wordmark-dark.png', dark: './logos/wordmark-dark.png', rendering: 'pixelated' } } }))
+      .toMatchObject({ mime: 'image/png', pixelated: true });
+    expect(svg).not.toHaveProperty('pixelated');
     expect(() => wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/gone.svg', dark: './logos/gone.svg' } } })).toThrow(/not under public/);
   });
 

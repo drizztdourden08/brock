@@ -15,7 +15,8 @@ const usage = {
   rules: [
     'Pass brand only when the product is that Tessera brand, and set heading to title when the product name is not the brand name, so the wordmark never names another app.',
     'Give logo when there is no brand; brand wins when both are set.',
-    'Pass wordmark, the product.icons.wordmark src, to show that image as the heading in place of the name text or the brand wordmark.',
+    'Pass wordmark, the product.icons.wordmark src, to show that image as the heading in place of the name text or the brand wordmark. It fits the panel width and is at most --size-48 high, keeping its proportions, however wide it is.',
+    'Set wordmarkRendering to pixelated, the product.icons.wordmark rendering, only for pixel art that must scale with hard pixel edges; leave it out for any other logo.',
     'Pass rim, the product.icons.rim, so the brand draws as its bare mark with that rim, readable on the panel surface.',
     'Keep each row a short fact with its own label: the label is the row key.',
     'Pass copyText as null while the debug text is gathered, so the button shows a spinner; leave it out to hide the button.',
@@ -39,7 +40,7 @@ const AboutSample = ({ onClose }: { onClose: () => void }) => (
   </InfoScreen>
 );
 `,
-  propsHash: 'd1e550180bb69104',
+  propsHash: '3aec0f63b8e14f47',
 } satisfies ComponentUsage;
 
 export { usage };

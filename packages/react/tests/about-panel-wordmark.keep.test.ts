@@ -15,6 +15,22 @@ describe('AboutPanel wordmark', () => {
     expect(heading(html)).toContain('about-panel__wordmark-image');
   });
 
+  it('gives the heading the full panel width, so the image fits it however wide it is', () => {
+    const html = renderToStaticMarkup(createElement(AboutPanel, { title: 'My App', wordmark: './logos/wordmark.svg', rows: ROWS }));
+    expect(html).toContain('<div class="about-panel about-panel--wordmark"');
+    expect(html).toMatch(/<h2[^>]*class="[^"]*about-panel__title--image/);
+    const text = renderToStaticMarkup(createElement(AboutPanel, { title: 'My App', rows: ROWS }));
+    expect(text).not.toContain('about-panel--wordmark');
+    expect(text).not.toContain('about-panel__title--image');
+  });
+
+  it('scales the image with hard pixel edges only when the rendering is pixelated', () => {
+    const smooth = renderToStaticMarkup(createElement(AboutPanel, { title: 'My App', wordmark: './logos/wordmark.svg', rows: ROWS }));
+    expect(heading(smooth)).not.toContain('image--pixelated');
+    const pixelated = renderToStaticMarkup(createElement(AboutPanel, { title: 'My App', wordmark: './logos/wordmark.png', wordmarkRendering: 'pixelated', rows: ROWS }));
+    expect(heading(pixelated)).toContain('image--pixelated');
+  });
+
   it('puts the wordmark image ahead of the brand wordmark', () => {
     const html = renderToStaticMarkup(createElement(AboutPanel, { title: 'Brock', brand: 'brock', wordmark: './logos/wordmark.png', rows: ROWS }));
     expect(heading(html)).toContain('src="./logos/wordmark.png"');

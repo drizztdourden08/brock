@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-build
 
+## 0.62.0
+
+### Minor Changes
+
+- 9a154a7: Breaking: the navigation store no longer has `escapeTo` and `setEscapeTo`, since Escape now closes the open window and reopens the last one. The `escape-to-removed` migration (0.62.0) leaves a to-do at each use; drop the call, or use `nav.reopen()`.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.62.0
+- @drizztdourden08/brock-lint-config@0.62.0
+- @drizztdourden08/brock-thread@0.62.0
+
 ## 0.61.0
 
 ### Patch Changes

@@ -1,5 +1,35 @@
 # @drizztdourden08/brock-react
 
+## 0.62.0
+
+### Minor Changes
+
+- 16321f1: An app can bind Brock's developer tools to a setting of its own, and turning developer tools off now closes the dev widgets that are open.
+
+  - `developerTools` on `BrockApp` takes a binding, `{ get(): boolean, set(on), subscribe(listener) }`, or `developerToolsFromSettings('<key>')`, which reads and patches that key of the profile's settings (a dotted key reaches into a nested object). The binding is then the one switch: it decides in every build, a development run included, where developer tools are otherwise always on. Without a binding nothing changes: development runs and the `developerToolsEnabled` setting decide. `bindDeveloperTools(binding)` binds outside React and returns the unbind, which gives back the binding it replaced; `developerTools.bound()` and `developerTools.set(on)` read and flip a bound switch.
+  - Turning developer tools off, in the same profile, now closes every open `devOnly` widget (docked, floating or in its own window, whose window closes), the open `devOnly` kit with its popped windows, and the `devOnly` widgets open in a kit that is not dev-only. Widgets > Developer and every `devOnly` menu entry hide as before. Turning them back on brings the submenu back; the closed widgets stay closed. A forced widget stays open. Before, a dev widget only hid while developer tools were off and came back where it was when they came back on.
+  - The review drives developer tools through a binding of its own, so its checks run in a development run too. The `kits` step opens the dev widget and the dev kit, turns developer tools off and checks both closed (`widgets-developer-closes`) and Widgets > Developer gone (`widgets-developer-hidden`), then on again (`widgets-developer-back`). The widget windows check now expects a popped `devOnly` widget to close with its window when developer tools go off (`gate-dev-only-closed`) and to stay closed when they come back (`gate-dev-only-stays-closed`); `gate-dev-only-start`, `-toggled` and `-restored` are gone.
+
+- 16321f1: Escape on a window now closes it, and Escape with no window open reopens the last one closed. This changes what every app does on Escape.
+
+  - With a screen window open (a hub, a page, a sub-page, any `ScreenWindow`), Escape closes it in one press. It no longer goes up to the page, then to the hub home, before closing. Back, Alt+Left and the mouse Back button still walk the page history.
+  - With nothing open, Escape reopens the window closed last, on the page, tab or sub-page it was on, with its page history and the scroll offsets of its scroll areas. The last closed window is kept in the saved navigation (`closed`), so it comes back after a restart too. When no window was closed, or the last one is not allowed any more (a dev-only screen with developer tools off, a screen that needs a profile with none active), Escape opens the home screen as before, or the profiles route without a profile.
+  - Inner surfaces still take Escape first: a dropdown, a menu, a popover, a dialog, the palette, a tour, a text field with text in it. A title bar the keyboard revealed in full screen keeps its own Escape too, so leaving it does not reopen a window.
+  - New: `nav.reopen()` and the store's `reopen()`, `ClosedScreen`, `closed` in `SavedNavigation`, and the `'reopen'` `EscapeAction` (`reopenAvailable` in `EscapeState`). `nav.escape()` closes the open screen, or reopens the last one when none is open, and returns whether it did something.
+  - Removed: the store's `escapeTo` and `setEscapeTo`, which held where Escape went up to. An app that called `setEscapeTo` can drop the call.
+  - The review follows: the `buckets` step checks that Escape closes each hub from its last page in one press (`<hub>-escape`), that the next Escape reopens it on that page (`<hub>-escape-reopen`) at its scroll offset (`<hub>-reopen-scroll`, captured as `bucket-<hub>-reopened`); `<hub>-escape-up` is gone. The `escape-home` step checks that Escape reopens the last closed window (`escape-reopens-last`, captured as `escape-reopen`), then that it opens home when there is none to reopen (`escape-opens-home`).
+
+- 9a154a7: Breaking: the navigation store no longer has `escapeTo` and `setEscapeTo`, since Escape now closes the open window and reopens the last one. The `escape-to-removed` migration (0.62.0) leaves a to-do at each use; drop the call, or use `nav.reopen()`.
+- 16321f1: The title bar in full screen hides fully and slides in whole when the pointer reaches the top edge, above the widgets. Before, the revealed bar was drawn under the docked and floating widgets and under anything in the app content with a z-index, so only part of it showed: the window buttons sat behind a docked widget on the right, and an app whose main view stacks above the content saw a thin strip. The app content (`brock-app__content`) is now its own stacking context, so nothing in it can cover the title bar.
+
+  - The behaviour is Tessera's `WindowTitleBar` one: hidden in full screen (and in a borderless or full screen window mode), shown while the pointer is within the top 40 px, and Alt moves focus into it for the keyboard. Escape inside that revealed bar is left to it.
+  - A headless run (the review, `--screenshot`) now lays full screen out off screen at the display size, as cluster full screen already did, instead of taking over the real screen.
+  - New review step `fullscreen`: in full screen the bar is fully hidden (`fullscreen-bar-hidden`, captured as `fullscreen`), pointing at the top edge draws all of it with nothing covering it, a docked widget open (`fullscreen-bar-reveal`, `fullscreen-revealed`), moving away hides it (`fullscreen-bar-leaves`), Alt reveals it with focus inside (`fullscreen-bar-keyboard`, `fullscreen-keyboard`), and leaving full screen puts it back above the content (`fullscreen-bar-restored`).
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.62.0
+
 ## 0.61.0
 
 ### Minor Changes

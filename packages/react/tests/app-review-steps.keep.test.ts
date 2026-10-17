@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
 import type { AppReview, ReviewStepDef } from '../src/review/app-review.type';
-import type { ReviewEnv, ReviewOutcome, StepTour } from '../src/review/review.type';
+import type { StepTour } from '../src/review/review.type';
+import { recordingTour } from './review-outcomes';
 
 vi.mock('../src/review/app/app-tour', () => ({
   appTour: (tour: StepTour, id: string) => ({ ...tour, id, capture: (name: string) => tour.capture(`${id}-${name}`) }),
@@ -9,18 +10,6 @@ vi.mock('../src/review/app/app-tour', () => ({
 
 const { appSteps } = await import('../src/review/app/app-steps');
 const { seedSteps } = await import('../src/review/app/seed-steps');
-
-const recordingTour = () => {
-  const checks: ReviewOutcome[] = [];
-  const captures: string[] = [];
-  const tour: StepTour = {
-    env: {} as ReviewEnv,
-    report: (outcomes) => { checks.push(...outcomes); },
-    check: (id, pass, passReason, failReason) => { checks.push({ id, pass, reason: pass ? passReason : failReason }); },
-    capture: (name) => { captures.push(name); return Promise.resolve(); },
-  };
-  return { tour, checks, captures };
-};
 
 const stepModule = (def: ReviewStepDef) => () => Promise.resolve({ default: def });
 

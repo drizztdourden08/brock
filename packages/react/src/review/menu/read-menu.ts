@@ -14,6 +14,7 @@ const readMenu = (): MenuSnapshot => {
       label: labelOf(item),
       hasIcon: item.querySelector(`${SELECTORS.menuIcon} svg, ${SELECTORS.menuIcon} img`) !== null,
       isSection: item.classList.contains(SELECTORS.sectionTrigger),
+      isSlider: item.classList.contains(SELECTORS.sliderRow),
     })),
   };
 };

@@ -4,67 +4,70 @@ import { useVolumeStore } from '../../volume/useVolumeStore';
 import { volumeChecks } from '../checks/volume-checks';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
-import { hover } from '../dom/hover';
 import { settle } from '../dom/settle';
-import { unhover } from '../dom/unhover';
 import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
 import { openMenu } from '../menu/open-menu';
-import { readMenu } from '../menu/read-menu';
+import { readVolumeRows } from '../menu/read-volume-rows';
 import { BAR_ITEM_PREFIX, NARROW_WINDOW, SELECTORS } from '../review.constants';
 import type { ReviewStep, StepTour } from '../review.type';
 import { probe } from '../widgets/probe';
+import { closeVolumePanel } from './close-volume-panel';
+import { reviewSlider } from './volume-slider';
+import { VOLUME_SELECTORS } from './volume-step.constants';
 
 const barItem = (id: string): HTMLElement | null => find(`${SELECTORS.titleBar} [data-bar-item="${BAR_ITEM_PREFIX}${id}"]`);
 
+const muteButton = (id: string): HTMLElement | null => {
+  const item = barItem(id);
+  return item ? find(VOLUME_SELECTORS.button, item) : null;
+};
+
 const flip = async (id: string): Promise<boolean> => {
   const item = barItem(id);
-  if (!item) return false;
+  const button = muteButton(id);
+  if (!item || !button) return false;
   const before = useVolumeStore.getState().muted;
-  click(item);
-  return (await waitFor(() => useVolumeStore.getState().muted !== before)) !== null;
+  click(button);
+  const flipped = (await waitFor(() => useVolumeStore.getState().muted !== before)) !== null;
+  await closeVolumePanel(item);
+  return flipped;
 };
 
 const mutes = async (tour: StepTour, id: string): Promise<{ toggled: boolean; restored: boolean }> => {
   const startMuted = useVolumeStore.getState().muted;
   if (startMuted) await tour.capture(`volume-${id}-muted`);
   const toggled = await flip(id);
-  await settle();
   if (toggled && !startMuted) await tour.capture(`volume-${id}-muted`);
   const restored = toggled && await flip(id);
-  await settle();
   return { toggled, restored };
 };
 
-const tucks = async (tour: StepTour, id: string): Promise<{ width: number; tucked: boolean; inMenu: boolean }> => {
+const tucks = async (tour: StepTour, id: string): Promise<{ width: number; tucked: boolean; muteRow: boolean; sliderRow: boolean }> => {
   const start = (await probe({ kind: 'main' })).bounds;
   const width = tour.env.product.window.minSize.width;
-  if (start === null) return { width, tucked: false, inMenu: false };
+  if (start === null) return { width, tucked: false, muteRow: false, sliderRow: false };
   await probe({ kind: 'main', bounds: { ...start, width, height: NARROW_WINDOW.height } });
   await settle();
   const tucked = barItem(id)?.inert === true;
-  const label = barItem(id)?.getAttribute('aria-label') ?? tour.env.actions.find((action) => action.id === id)?.label ?? '';
+  const label = tour.env.actions.find((action) => action.id === id)?.label ?? '';
+  const muteLabel = muteButton(id)?.getAttribute('aria-label') ?? '';
   await openMenu();
-  const inMenu = readMenu().items.some((item) => item.label === label);
+  const rows = readVolumeRows(label, muteLabel);
   await tour.capture(`volume-${id}-menu`);
   await closeMenu();
   await probe({ kind: 'main', bounds: start });
   await settle();
-  return { width, tucked, inMenu };
+  return { width, tucked, ...rows };
 };
 
 const reviewVolume = async (tour: StepTour, id: string): Promise<void> => {
   const item = barItem(id);
   const shown = item?.querySelector('svg') != null;
   await tour.capture(`volume-${id}-rest`);
-  if (item) {
-    hover(item);
-    await settle();
-    await tour.capture(`volume-${id}-hover`);
-    unhover(item);
-  }
+  const slider = item ? await reviewSlider(tour, id, item) : { hoverOpens: false, focusOpens: false, slides: false };
   const muting = await mutes(tour, id);
-  tour.report(volumeChecks(id, { shown, ...muting, ...(await tucks(tour, id)) }));
+  tour.report(volumeChecks(id, { shown, ...slider, ...muting, ...(await tucks(tour, id)) }));
 };
 
 const volumeStep: ReviewStep = {

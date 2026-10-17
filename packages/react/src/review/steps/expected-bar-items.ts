@@ -4,6 +4,7 @@ import { BAR_ITEM_PREFIX } from '../review.constants';
 
 const onBar = (action: WindowTitleBarAction): boolean => {
   if (action.bar === 'dropdown') return action.groups.some((group) => group.items.length > 0);
+  if (action.bar === 'volume') return true;
   const bar = action.bar ?? 'button';
   return bar === 'button' || (bar === 'status' && Boolean(action.status));
 };

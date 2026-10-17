@@ -24,7 +24,7 @@ const menuChecks = (snapshot: MenuSnapshot, expected: MenuExpectation): ReviewOu
   const missingSections = missingFrom(sections, expected.sections);
   const missingActions = missingFrom([...entries, ...sections], expected.actions);
   const builtIn = [...expected.required, ...expected.sections, ...expected.actions];
-  const bare = items.filter((item) => builtIn.includes(item.label) && !item.hasIcon).map((item) => item.label);
+  const bare = items.filter((item) => builtIn.includes(item.label) && !item.hasIcon && item.isSlider !== true).map((item) => item.label);
   const sectionText = expected.sections.length > 0 ? `the ${expected.sections.join(', ')} section` : 'no section';
   return [
     outcome('menu-opens', true, `the menu opened with ${items.length} entries`, ''),

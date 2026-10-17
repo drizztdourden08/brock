@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSettingsStore } from '../src/stores/create-settings-store';
 import type { SettingsStore } from '../src/stores/settings-store.type';
-import { toBarAction } from '../src/title-bar/to-bar-action';
+import { volumeBarAction } from '../src/title-bar/volume-bar-action';
 import { bindVolume } from '../src/volume/bind-volume';
 import { useVolumeStore } from '../src/volume/useVolumeStore';
 import { volumeFromSettings } from '../src/volume/volume-from-settings';
@@ -38,7 +38,7 @@ const settingsStore = (): SettingsStore<AppSettings> => createSettingsStore<AppS
 
 const barOf = () => {
   const { value, muted, setValue, toggleMute } = useVolumeStore.getState();
-  return toBarAction('sound', { kind: 'volume', label: 'Volume', value, muted, onChange: setValue, onMuteToggle: toggleMute });
+  return volumeBarAction('sound', { kind: 'volume', label: 'Volume', value, muted, onChange: setValue, onMuteToggle: toggleMute });
 };
 
 beforeEach(() => {
@@ -125,19 +125,17 @@ describe('volumeFromSettings', () => {
   it('moves the title bar item and the app settings together, both ways', () => {
     const settings = settingsStore();
     const stop = bindVolume(volumeFromSettings({ value: 'audio.master', muted: 'audio.muted', max: 100 })(settings));
-    expect(barOf()).toMatchObject({ status: 'Volume 60%', icon: 'volume-2', label: 'Mute' });
+    expect(barOf()).toMatchObject({ bar: 'volume', value: 0.6, muted: false });
 
     settings.getState().patch({ audio: { ...settings.getState().settings.audio, muted: true } });
-    expect(barOf()).toMatchObject({ icon: 'volume-x', label: 'Unmute' });
+    expect(barOf()).toMatchObject({ value: 0.6, muted: true });
 
-    const bar = barOf();
-    if (bar.bar === 'dropdown') throw new Error('a volume item is a button');
-    bar.onSelect();
+    barOf().onMutedChange(false);
     expect(settings.getState().settings.audio).toEqual({ master: 60, muted: false, music: 40 });
 
-    useVolumeStore.getState().setValue(0.25);
+    barOf().onChange(0.25);
     expect(settings.getState().settings).toEqual({ theme: 'dark', audio: { master: 25, muted: false, music: 40 } });
-    expect(barOf()).toMatchObject({ status: 'Volume 25%', icon: 'volume-1' });
+    expect(barOf()).toMatchObject({ value: 0.25, muted: false });
     stop();
   });
 

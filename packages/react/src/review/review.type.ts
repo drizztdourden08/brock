@@ -56,6 +56,7 @@ interface MenuItemSnapshot {
   label: string;
   hasIcon: boolean;
   isSection: boolean;
+  isSlider?: boolean;
 }
 
 interface MenuSnapshot {
@@ -198,11 +199,15 @@ interface SettingRowsSnapshot {
 
 interface VolumeItemSnapshot {
   shown: boolean;
+  hoverOpens: boolean;
+  focusOpens: boolean;
+  slides: boolean;
   toggled: boolean;
   restored: boolean;
   width: number;
   tucked: boolean;
-  inMenu: boolean;
+  muteRow: boolean;
+  sliderRow: boolean;
 }
 
 interface MenuKeyWalk {

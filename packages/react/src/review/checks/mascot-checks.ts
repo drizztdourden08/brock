@@ -9,7 +9,7 @@ const atBottom = ({ card, walker }: WalkerReading): boolean =>
   card !== null && walker !== null && Math.abs(walker.bottom - card.bottom) <= SLACK && walker.left >= card.left - SLACK && walker.right <= card.right + SLACK;
 
 const apart = ({ actor, palette }: WalkerReading): boolean =>
-  actor !== null && palette !== null && (actor.right <= palette.left || actor.left >= palette.right);
+  actor !== null && palette !== null && ((actor.left + actor.right) / 2 < palette.left || (actor.left + actor.right) / 2 > palette.right);
 
 const windowChecks = (reading: WalkerReading): ReviewOutcome[] => [
   outcome('mascot-window', reading.walker !== null, 'the brand mascot walks in the open window', 'no mascot walks in the open window'),
@@ -21,4 +21,4 @@ const paletteChecks = (reading: WalkerReading): ReviewOutcome[] => [
   outcome('mascot-search-hint', reading.hint !== null && reading.hint.length > 0, `the mascot says "${reading.hint}"`, 'the mascot shows no search hint beside the palette'),
 ];
 
-export { paletteChecks, windowChecks };
+export { apart, paletteChecks, windowChecks };

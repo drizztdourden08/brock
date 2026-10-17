@@ -14,7 +14,13 @@
 .window-mascot__hint {
   position: absolute;
   inset-block-end: 100%;
-  inset-inline-start: clamp(var(--size-128), var(--hint-x), calc(100% - var(--size-128)));
   max-inline-size: var(--size-256);
-  transform: translateX(-50%);
+}
+
+.window-mascot__hint[data-face='right'] {
+  inset-inline-end: clamp(0px, calc(100% - var(--hint-x) - var(--size-32)), calc(100% - var(--size-256)));
+}
+
+.window-mascot__hint[data-face='left'] {
+  inset-inline-start: clamp(0px, calc(var(--hint-x) - var(--size-32)), calc(100% - var(--size-256)));
 }

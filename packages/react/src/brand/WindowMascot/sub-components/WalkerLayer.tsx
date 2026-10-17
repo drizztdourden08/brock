@@ -15,7 +15,7 @@ const WalkerLayer = (props: WalkerSetup) => {
   const probeRef = useRef<HTMLElement>(null);
   const stageRef = useRef<MascotStageHandle>(null);
   const rect = useProbeRect(probeRef);
-  const spot = useBesidePalette(stageRef, usePaletteOpen(), rect !== null);
+  const spot = useBesidePalette(stageRef, usePaletteOpen(), rect?.width ?? 0);
   const cast = useMemo<MascotStageCast[]>(() => [{ id: WALKER_ID, brand, clip: REST_CLIP, autonomy: true }], [brand]);
   const place: CSSProperties | null = rect && { left: rect.left, top: rect.top + rect.height - WALKER_HEIGHT, width: rect.width, height: WALKER_HEIGHT };
 
@@ -27,7 +27,7 @@ const WalkerLayer = (props: WalkerSetup) => {
           <Box className="window-mascot" data-window-mascot={brand} data-beside={spot ? 'palette' : undefined} style={place} aria-hidden inert>
             <MascotStage ref={stageRef} cast={cast} height={WALKER_HEIGHT} label={hint} />
             {spot && (
-              <Box className="window-mascot__hint" style={{ '--hint-x': `${spot.x}px` } as CSSProperties}>
+              <Box className="window-mascot__hint" data-face={spot.face} style={{ '--hint-x': `${spot.x}px` } as CSSProperties}>
                 <Callout tone="info">{hint}</Callout>
               </Box>
             )}

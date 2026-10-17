@@ -6,11 +6,11 @@ import { HINT_CLIP, MOVE_SLACK, PALETTE_SELECTOR, REST_CLIP, WALKER_ID } from '.
 import type { WalkerSpot } from '../WindowMascot.type';
 import { besideSpot } from './beside-spot';
 
-const useBesidePalette = (stageRef: RefObject<MascotStageHandle | null>, open: boolean, ready: boolean): WalkerSpot | null => {
+const useBesidePalette = (stageRef: RefObject<MascotStageHandle | null>, open: boolean, width: number): WalkerSpot | null => {
   const [spot, setSpot] = useState<WalkerSpot | null>(null);
 
   useEffect(() => {
-    const actor = ready ? stageRef.current?.actor(WALKER_ID) : undefined;
+    const actor = width > 0 ? stageRef.current?.actor(WALKER_ID) : undefined;
     if (!actor) return undefined;
     const palette = open ? document.querySelector(PALETTE_SELECTOR) : null;
     if (!palette) {
@@ -41,7 +41,7 @@ const useBesidePalette = (stageRef: RefObject<MascotStageHandle | null>, open: b
       setSpot(null);
       void actor.play(REST_CLIP);
     };
-  }, [stageRef, open, ready]);
+  }, [stageRef, open, width]);
 
   return spot;
 };

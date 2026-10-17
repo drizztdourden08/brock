@@ -114,6 +114,7 @@ interface TabDef<S extends object> {
   navIcon: ReactNode;
   icon?: string;
   group: string;
+  groupId?: string;
   sections?: (settings: S) => Section[];
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;

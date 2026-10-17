@@ -4,10 +4,11 @@ import { BrockContext } from '../../../app/brock-context';
 import { heroBrandArt } from '../hero-brand-art';
 import { heroBrandOf } from '../hero-brand-of';
 import { HeroSlotContext } from '../hero-slot-context';
+import { useHeroArtNone } from '../useHeroArtNone';
 import type { HeroRootProps, HeroSlotValues, PutHeroSlot } from '../screen-kinds.type';
 
 const HeroRoot = (props: HeroRootProps) => {
-  const { frame, size, children } = props;
+  const { frame, size, bucket, children } = props;
   const { Composite, label } = frame;
   const brand = heroBrandOf(useContext(BrockContext)?.product.icons.brand);
   const brandArt = useMemo(() => heroBrandArt(brand), [brand]);
@@ -16,7 +17,9 @@ const HeroRoot = (props: HeroRootProps) => {
     setValues((prev) => (prev[name] === value ? prev : { ...prev, [name]: value }));
   }, []);
 
-  const art = values.art ?? brandArt;
+  const artNone = values.art === null;
+  useHeroArtNone(bucket, artNone);
+  const art = artNone ? null : values.art ?? brandArt;
 
   return (
     <HeroSlotContext.Provider value={put}>

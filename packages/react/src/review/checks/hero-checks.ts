@@ -2,13 +2,17 @@
 import type { HeroSnapshot, ReviewOutcome } from '../review.type';
 import { outcome } from './outcome';
 
+const artNoneCheck = ({ hub, artDrawn = false }: HeroSnapshot): ReviewOutcome =>
+  outcome(`${hub}-hero-art-none`, !artDrawn, `the "${hub}" hero sets art none and draws no art`, `the "${hub}" hero sets art none but still draws art`);
+
 const heroChecks = (snapshot: HeroSnapshot): ReviewOutcome[] => {
-  const { hub, rendered, title, slots } = snapshot;
+  const { hub, rendered, title, slots, artNone = false } = snapshot;
   if (!rendered) return [outcome(`${hub}-hero-renders`, false, '', `the "${hub}" home did not render the Hero composite`)];
   return [
     outcome(`${hub}-hero-renders`, true, `the "${hub}" home renders the Hero composite`, ''),
     outcome(`${hub}-hero-title`, title !== '', `the hero title reads "${title}"`, 'the hero title is empty'),
     outcome(`${hub}-hero-slots`, slots.length > 0, `the hero fills ${slots.join(', ')}`, 'the hero fills no slot besides the title'),
+    ...(artNone ? [artNoneCheck(snapshot)] : []),
   ];
 };
 

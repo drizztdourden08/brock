@@ -9,6 +9,7 @@ const DISPLAY_SETTINGS_TAB: TabDef<object> = {
   label: 'Display',
   navIcon: createElement(Icon, { name: 'monitor' }),
   group: 'App',
+  groupId: 'app',
   render: ({ settings, onChange }) => createElement(DisplaySettingsTab, { settings, onChange }),
 };
 

@@ -13,7 +13,7 @@ const renderHero = (component: ComponentType<HeroProps>, bucket: BucketDef, meta
   heroBuckets.add(bucket.id);
   const size = meta?.hero?.size;
   return (ctx: HubRenderContext): ReactNode =>
-    createElement(HeroRoot, { frame: HERO_FRAME, size }, createElement(component, { ...pageProps(bucket, ctx), slots: HERO_FRAME.slots }));
+    createElement(HeroRoot, { frame: HERO_FRAME, size, bucket: bucket.id }, createElement(component, { ...pageProps(bucket, ctx), slots: HERO_FRAME.slots }));
 };
 
 export { renderHero };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { heroArtNone } from '../../screens/kinds/hero-art-none';
 import { heroBuckets } from '../../screens/kinds/hero-buckets';
 import { heroChecks } from '../checks/hero-checks';
 import { find } from '../dom/find';
@@ -17,7 +18,7 @@ const heroStep: ReviewStep = {
       await resetUi();
       await openBucket(tour.env, hub);
       const hero = await waitFor(() => find(SELECTORS.hero));
-      tour.report(heroChecks(readHero(hub.id, hero)));
+      tour.report(heroChecks(readHero(hub.id, hero, heroArtNone.has(hub.id))));
       if (hero !== null) await tour.capture(`hero-${hub.id}`);
     }
   },

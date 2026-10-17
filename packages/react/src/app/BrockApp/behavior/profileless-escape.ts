@@ -10,8 +10,8 @@ const profilelessEscape = {
   home: (): string | null => (hasProfile() ? null : PROFILES_SCREEN),
   holds: (): boolean => {
     if (hasProfile()) return false;
-    const { active, params, parent, escapeTo } = useNavigationStore.getState();
-    return parent === null && escapeTo === null && isProfilesRoute(active, params);
+    const { active, params, parent } = useNavigationStore.getState();
+    return parent === null && isProfilesRoute(active, params);
   },
 };
 

@@ -28,6 +28,7 @@ import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
 import { useWidgetsNeverFocus } from './behavior/useWidgetsNeverFocus';
+import { useDeveloperToolsOff } from '../../developer-tools/useDeveloperToolsOff';
 import type { WidgetHostProps } from './WidgetHost.type';
 
 const trackMainRect = (rect: Rect | null): void => {
@@ -65,6 +66,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   useWidgetRelayPublisher(settingsStore);
   useWidgetLayoutGlobal();
   useWidgetsNeverFocus(keepFocusWithApp);
+  useDeveloperToolsOff();
 
   const dropIn = useCallback(() => useWidgetLayoutStore.getState().setExternalDrag(null), []);
 

@@ -25,9 +25,13 @@ const useNavigationStore = create<NavigationState>()((set, get) => ({
   up: (parent) => {
     if (navigationSteps.up(get(), parent) !== null) whenLeft(() => set(navigationSteps.up(get(), parent) ?? {}));
   },
+  reopen: () => {
+    const step = navigationSteps.reopen(get());
+    if (step !== null) set(step);
+    return step !== null;
+  },
   setParent: (parent) => set({ parent }),
-  setEscapeTo: (escapeTo) => set({ escapeTo }),
-  restore: (saved) => set(saved ? { ...EMPTY, ...saved } : EMPTY),
+  restore: (saved) => set(saved ? { ...EMPTY, ...saved, closed: saved.closed ?? null } : EMPTY),
 }));
 
 export { useNavigationStore };

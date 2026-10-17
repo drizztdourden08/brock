@@ -38,7 +38,7 @@ const bucketsStep: ReviewStep = {
       tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: pages.map((page) => page.label), shown: navLabels() }));
       if (opened === null) continue;
       await visitHubPages(tour, hub, pages, navShown);
-      await hubBackCheck(tour, hub);
+      await hubBackCheck(tour, hub, pages);
     }
   },
 };

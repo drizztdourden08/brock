@@ -3,13 +3,14 @@ import { useEffect } from 'react';
 import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
 import { closeTopmost } from '../../../app/BrockApp/behavior/close-topmost';
 import { shellTakesEscape } from '../../../escape/shell-takes-escape';
+import { POPPED_ESCAPE } from '../WidgetWindow.constants';
 
 const useWidgetWindowEscape = (): void => {
   const escapes = useEscapeStack();
   useEffect(() => {
     const root = document.documentElement;
     const handler = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && shellTakesEscape(e, escapes)) closeTopmost(e, null);
+      if (e.key === 'Escape' && shellTakesEscape(e, escapes)) closeTopmost(e, POPPED_ESCAPE);
     };
     root.addEventListener('keydown', handler);
     return () => root.removeEventListener('keydown', handler);

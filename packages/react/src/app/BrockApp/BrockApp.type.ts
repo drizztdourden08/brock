@@ -25,6 +25,7 @@ import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
 import type { BeforeProfileRemove } from '../../stores/profiles.type';
 import type { VolumeSource } from '../../volume/volume.type';
+import type { DeveloperToolsSource } from '../../developer-tools/developer-tools.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -72,6 +73,7 @@ interface BrockAppProps<S extends object> {
   sessionLog?: boolean;
   showFlags?: ShowFlagValues;
   volume?: VolumeSource;
+  developerTools?: DeveloperToolsSource;
 }
 
 interface MenuBuildInput {
@@ -104,8 +106,11 @@ interface ShellKeyContext {
   toggleFullscreen?: () => void;
   home: () => string | null;
   holds?: () => boolean;
+  reopenable?: () => boolean;
   escapes: EscapeStack;
 }
+
+type EscapeContext = Pick<ShellKeyContext, 'home' | 'holds' | 'reopenable'>;
 
 interface AppScreensInput {
   home?: string;
@@ -139,4 +144,4 @@ interface ReviewTourInput {
   review?: AppReview;
 }
 
-export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProfiles, BrockAppProps, BrockAppSettings, MenuBuildInput, ReviewTourInput, ShellKeyContext, ShellMenu };
+export type { AppScreens, AppScreensInput, BrockAppLayout, BrockAppProfiles, BrockAppProps, BrockAppSettings, EscapeContext, MenuBuildInput, ReviewTourInput, ShellKeyContext, ShellMenu };

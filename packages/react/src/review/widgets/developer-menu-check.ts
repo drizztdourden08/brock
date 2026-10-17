@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { WIDGETS_SECTION } from '../../app/BrockApp/BrockApp.constants';
-import { requireHostApi } from '../../host/require-host-api';
+import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import { MENU_SECTIONS } from '../../menu/menu.constants';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import { KIT_WORDS } from '../../widgets/kits/widget-kit.constants';
@@ -11,7 +11,10 @@ import { walkMenu } from '../menu/walk-menu';
 import type { StepTour } from '../review.type';
 import { until } from '../dom/until';
 import { DEV_MENU_KIT, DEV_MENU_WIDGET, SECTION_KEY_PREFIX } from './kit-review.constants';
-import { DEV_SETTING } from './widget-review.constants';
+import { widgetKits } from '../../widgets/kits/widget-kits';
+import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
+import { widgets } from '../../widgets/widgets';
+import { withDeveloperTools } from './with-developer-tools';
 import { withDeveloperEntries } from './with-developer-entries';
 
 const widgetsLabel = MENU_SECTIONS.find((section) => section.id === WIDGETS_SECTION)?.label ?? WIDGETS_SECTION;
@@ -48,26 +51,30 @@ const checkHidden = async (tour: StepTour, path: readonly string[]): Promise<voi
   await closeMenu();
 };
 
-const checkState = async (tour: StepTour, path: readonly string[], on: boolean): Promise<void> => {
-  if (on) await checkShown(tour, path);
-  else await checkHidden(tour, path);
+const devOpen = (): boolean => isWidgetOpen(useWidgetLayoutStore.getState().layout, DEV_MENU_WIDGET.id) || widgetKits.active() === DEV_MENU_KIT.id;
+
+const checkCloses = async (tour: StepTour, path: readonly string[], switchTo: (on: boolean) => Promise<void>): Promise<void> => {
+  widgets.open(DEV_MENU_WIDGET.id);
+  const widgetOpen = await until(() => Promise.resolve(isWidgetOpen(useWidgetLayoutStore.getState().layout, DEV_MENU_WIDGET.id)));
+  widgetKits.open(DEV_MENU_KIT.id);
+  const kitOpen = await until(() => Promise.resolve(widgetKits.active() === DEV_MENU_KIT.id));
+  await switchTo(false);
+  const closed = widgetOpen && kitOpen && await until(() => Promise.resolve(!devOpen()));
+  tour.check('widgets-developer-closes', closed, 'turning developer tools off closed the open devOnly widget and the open devOnly kit', 'turning developer tools off left a devOnly widget or kit open');
+  await checkHidden(tour, path);
+  await switchTo(true);
+  const back = await panelHas(path, [DEV_MENU_WIDGET.label, DEV_MENU_KIT.label], true);
+  tour.check('widgets-developer-back', back && !devOpen(), `turning developer tools back on brought ${path.join(' > ')} back, with the closed widget and kit left closed`, `turning developer tools back on did not bring ${path.join(' > ')} back as it was`);
+  await closeMenu();
 };
 
 const checkDeveloperMenu = async (tour: StepTour): Promise<void> => {
   const path = developerPath(tour);
   await withDeveloperEntries(async () => {
-    if (requireHostApi().isDev) {
-      await checkState(tour, path, true);
-      return;
-    }
-    const start = tour.env.developerTools;
-    try {
-      await checkState(tour, path, start);
-      requireHostApi().patchWidgetSettings({ [DEV_SETTING]: !start });
-      await checkState(tour, path, !start);
-    } finally {
-      requireHostApi().patchWidgetSettings({ [DEV_SETTING]: start });
-    }
+    await withDeveloperTools(async (switchTo) => {
+      await checkShown(tour, path);
+      await checkCloses(tour, path, switchTo);
+    });
   });
 };
 

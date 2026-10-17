@@ -7,7 +7,6 @@ import { showsHubNav } from '../src/hub/Hub/behavior/shows-hub-nav';
 import type { HubDef, HubPage } from '../src/hub/hub.type';
 import { NO_PARAMS } from '../src/navigation/navigation.constants';
 import type { ScreenParams } from '../src/navigation/navigation.type';
-import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { PlatformProvider } from '../src/platform/PlatformProvider';
 import { bucketChecks } from '../src/review/checks/bucket-checks';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
@@ -60,14 +59,13 @@ describe('the hub nav with one visible page', () => {
     expect(document.querySelector('.side-nav-layout')).toBeNull();
   });
 
-  it('keeps the nav with nav: always, and leaves it out with nav: false while Escape still goes up to the hub home', () => {
+  it('keeps the nav with nav: always, and leaves it out with nav: false', () => {
     draw(hubWith('always'), false);
     expect(navItems()).toEqual(['home']);
     showHarness.unmount();
     draw(hubWith(false), true, { section: 'billing' });
     expect(document.querySelector('.side-nav-layout')).toBeNull();
     expect(document.querySelector('.hub__solo')?.textContent).toBe('page billing');
-    expect(useNavigationStore.getState().escapeTo).toEqual(NO_PARAMS);
   });
 
   it('takes nav from the bucket of screens.config.ts', () => {

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import type { HubDef } from '../../hub/hub.type';
+import type { HubDef, HubPage } from '../../hub/hub.type';
+import type { ScreenParams } from '../../navigation/navigation.type';
 import { HISTORY_LIMIT } from '../../navigation/navigation.constants';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { click } from '../dom/click';
@@ -10,6 +11,7 @@ import { settle } from '../dom/settle';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
 import type { StepTour } from '../review.type';
+import { scrolledPane } from './scrolled-pane';
 
 const trailOf = (hub: HubDef): number => useNavigationStore.getState().history[hub.id]?.length ?? 0;
 
@@ -24,30 +26,39 @@ const checkBackButton = async (tour: StepTour, hub: HubDef): Promise<void> => {
   tour.check(`${hub.id}-back`, went !== null, `Back went one page back in "${hub.id}"`, `Back did not go a page back in "${hub.id}"`);
 };
 
-const onHome = (hub: HubDef): boolean => {
-  const { active, params } = useNavigationStore.getState();
-  return active === hub.id && (params.section === undefined || params.section === hub.home.id) && params.tab === undefined;
+const sameParams = (a: ScreenParams, b: ScreenParams): boolean => JSON.stringify(a) === JSON.stringify(b);
+
+const reopened = (hub: HubDef, params: ScreenParams): boolean => {
+  const state = useNavigationStore.getState();
+  return state.active === hub.id && sameParams(state.params, params) && find(SELECTORS.layer) !== null;
 };
 
-const escapeGoesUp = async (tour: StepTour, hub: HubDef): Promise<void> => {
-  if (!onHome(hub)) {
-    const before = trailOf(hub);
-    press({ key: 'Escape' });
-    const home = await waitFor(() => onHome(hub) && !isClosed());
-    tour.check(`${hub.id}-escape-up`, home !== null && trailOf(hub) >= before - 1, `Escape went up to the home page of "${hub.id}" in one press, keeping the history`, `Escape did not go up to the home page of "${hub.id}"`);
-  }
+const checkReopen = async (tour: StepTour, hub: HubDef, params: ScreenParams, top: number | null): Promise<void> => {
+  press({ key: 'Escape' });
+  const back = await waitFor(() => reopened(hub, params));
+  tour.check(`${hub.id}-escape-reopen`, back !== null, `Escape with nothing open reopened "${hub.id}" on the page it was closed on`, `Escape with nothing open did not reopen "${hub.id}" on ${JSON.stringify(params)}`);
+  if (back === null) return;
+  const scrolled = top === null || (await waitFor(() => scrolledPane.at(top))) !== null;
+  tour.check(`${hub.id}-reopen-scroll`, scrolled, top === null ? `skipped: no page of "${hub.id}" scrolls` : `the reopened "${hub.id}" came back at its scroll offset`, `the reopened "${hub.id}" lost its scroll offset`);
+  await tour.capture(`bucket-${hub.id}-reopened`);
+};
+
+const escapeCloses = async (tour: StepTour, hub: HubDef, pages: readonly HubPage[]): Promise<void> => {
+  const top = await scrolledPane.scroll(hub, pages);
+  const { params } = useNavigationStore.getState();
   press({ key: 'Escape' });
   const closed = await waitFor(() => isClosed());
-  tour.check(`${hub.id}-escape`, closed !== null, `Escape on the home page closed "${hub.id}"`, `Escape on the home page left "${hub.id}" open`);
+  tour.check(`${hub.id}-escape`, closed !== null, `Escape closed "${hub.id}" from its "${String(params.section ?? hub.home.id)}" page in one press`, `Escape left "${hub.id}" open`);
+  if (closed !== null) await checkReopen(tour, hub, params, top);
   for (let step = 0; step <= HISTORY_LIMIT && !isClosed(); step += 1) {
     press({ key: 'Escape' });
     await settle();
   }
 };
 
-const hubBackCheck = async (tour: StepTour, hub: HubDef): Promise<void> => {
+const hubBackCheck = async (tour: StepTour, hub: HubDef, pages: readonly HubPage[]): Promise<void> => {
   if (trailOf(hub) > 1) await checkBackButton(tour, hub);
-  await escapeGoesUp(tour, hub);
+  await escapeCloses(tour, hub, pages);
 };
 
 export { hubBackCheck };

@@ -9,12 +9,13 @@ interface EscapeLayerRegistry {
   topmost: () => EscapeLayer | null;
 }
 
-type EscapeAction = 'layer' | 'dialog' | 'screen' | 'home' | 'none';
+type EscapeAction = 'layer' | 'dialog' | 'screen' | 'reopen' | 'home' | 'none';
 
 interface EscapeState {
   layerOpen: boolean;
   dialogOpen: boolean;
   screenOpen: boolean;
+  reopenAvailable?: boolean;
   homeAvailable: boolean;
 }
 

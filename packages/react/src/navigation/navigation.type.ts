@@ -3,16 +3,23 @@ type ScreenParams = Record<string, unknown>;
 
 type NavigationHistory = Record<string, ScreenParams[]>;
 
+interface ClosedScreen {
+  active: string;
+  params: ScreenParams;
+  history: ScreenParams[];
+}
+
 interface SavedNavigation {
   active: string | null;
   params: ScreenParams;
   history: NavigationHistory;
   remembered: Record<string, ScreenParams>;
+  closed?: ClosedScreen | null;
 }
 
 interface NavigationSnapshot extends SavedNavigation {
   parent: ScreenParams | null;
-  escapeTo: ScreenParams | null;
+  closed: ClosedScreen | null;
 }
 
 interface OpenOptions {
@@ -26,8 +33,8 @@ interface NavigationState extends NavigationSnapshot {
   close: () => void;
   back: () => boolean;
   up: (parent: ScreenParams) => void;
+  reopen: () => boolean;
   setParent: (parent: ScreenParams | null) => void;
-  setEscapeTo: (target: ScreenParams | null) => void;
   restore: (saved: SavedNavigation | null) => void;
 }
 
@@ -64,6 +71,6 @@ interface LeaveGuardRegistry {
 }
 
 export type {
-  LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, OpenOptions, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
+  ClosedScreen, LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, OpenOptions, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
   UseNavigationResult,
 };

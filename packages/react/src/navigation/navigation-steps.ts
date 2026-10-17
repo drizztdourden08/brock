@@ -30,7 +30,14 @@ const openStep = (state: NavigationSnapshot, target: ResolvedRoute, fresh = fals
 const closeStep = (state: NavigationSnapshot): Step => {
   const { active, params, history, remembered } = state;
   if (active === null) return {};
-  return { active: null, params: NO_PARAMS, parent: null, escapeTo: null, history: without(history, active), remembered: { ...remembered, [active]: params } };
+  const closed = { active, params, history: history[active] ?? [] };
+  return { active: null, params: NO_PARAMS, parent: null, closed, history: without(history, active), remembered: { ...remembered, [active]: params } };
+};
+
+const reopenStep = (state: NavigationSnapshot): Step | null => {
+  const { active, closed, history } = state;
+  if (active !== null || closed === null) return null;
+  return { active: closed.active, params: closed.params, history: { ...history, [closed.active]: closed.history }, parent: null, closed: null };
 };
 
 const backStep = (state: NavigationSnapshot): Step | null => {
@@ -56,6 +63,6 @@ const backTarget = (state: NavigationSnapshot): ScreenParams | null =>
 
 const canGoBack = (state: NavigationSnapshot): boolean => backTarget(state) !== null;
 
-const navigationSteps = { open: openStep, close: closeStep, back: backStep, up: upStep, backTarget, canGoBack, isHere, isBare };
+const navigationSteps = { open: openStep, close: closeStep, reopen: reopenStep, back: backStep, up: upStep, backTarget, canGoBack, isHere, isBare };
 
 export { navigationSteps };

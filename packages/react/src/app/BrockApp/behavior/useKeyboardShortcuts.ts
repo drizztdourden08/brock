@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
 import { usePlatform } from '../../../platform/usePlatform';
 import { nav } from '../../../navigation/nav';
+import { useNavigationStore } from '../../../navigation/useNavigationStore';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import type { ScreenDef } from '../../../screens/screen.type';
@@ -34,6 +35,7 @@ const useKeyboardShortcuts = (): void => {
       toggleFullscreen: fullscreenable ? () => win.toggleFullscreen() : undefined,
       home: () => (allowed(registry.get(homeScreen)) ? homeScreen : profilelessEscape.home()),
       holds: profilelessEscape.holds,
+      reopenable: () => allowed(registry.get(useNavigationStore.getState().closed?.active ?? '')),
       escapes,
     };
     const handler = (e: KeyboardEvent) => {

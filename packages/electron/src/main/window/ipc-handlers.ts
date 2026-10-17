@@ -1,8 +1,13 @@
 /* @layer electron-main @kind logic */
+import type { BrowserWindow } from 'electron';
 import type { HandlerGroup } from '../types/main-context.type';
 import { mainClusterControl } from '../widgets/main-cluster-control';
 import { widgetWindowControl } from '../widgets/widget-window-control';
+import { emit } from '../ipc/emit';
+import { headlessFullscreen } from './headless-fullscreen';
 import { setPinned } from './set-pinned';
+
+const isFullscreen = (win: BrowserWindow | null | undefined): boolean => (win ? win.isFullScreen() || headlessFullscreen.is(win) : false);
 
 const windowHandlers: HandlerGroup = {
   id: 'window',
@@ -21,12 +26,14 @@ const windowHandlers: HandlerGroup = {
     on('window:toggleFullscreen', () => {
       const win = window();
       if (!win?.isFullScreenable() || mainClusterControl.fullscreen()) return;
-      win.setFullScreen(!win.isFullScreen());
+      if (headlessFullscreen.applies()) headlessFullscreen.set(win, !headlessFullscreen.is(win), (on) => emit(win, 'window:fullscreen', on));
+      else win.setFullScreen(!win.isFullScreen());
     });
     on('window:setFullscreen', (_e, value) => {
       const win = window();
       if (!win?.isFullScreenable() || mainClusterControl.fullscreen(value)) return;
-      win.setFullScreen(value);
+      if (headlessFullscreen.applies()) headlessFullscreen.set(win, value, (on) => emit(win, 'window:fullscreen', on));
+      else win.setFullScreen(value);
     });
 
     handle('window:isMaximized', () => mainClusterControl.isMaximized() ?? window()?.isMaximized() ?? false);
@@ -36,7 +43,7 @@ const windowHandlers: HandlerGroup = {
       return contents?.isAudioMuted() ?? false;
     });
     handle('window:isAudioMuted', () => window()?.webContents.isAudioMuted() ?? false);
-    handle('window:isFullscreen', () => mainClusterControl.isFullscreen() ?? window()?.isFullScreen() ?? false);
+    handle('window:isFullscreen', () => mainClusterControl.isFullscreen() ?? isFullscreen(window()));
     handle('window:setAlwaysOnTop', (_event, value) => {
       const win = window();
       if (win) setPinned(win, value);

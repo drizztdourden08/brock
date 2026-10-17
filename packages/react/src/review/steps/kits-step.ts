@@ -4,6 +4,7 @@ import { widgets } from '../../widgets/widgets';
 import { waitFor } from '../dom/wait-for';
 import { find } from '../dom/find';
 import type { ReviewStep } from '../review.type';
+import { checkDeveloperMenu } from '../widgets/developer-menu-check';
 import { checkKitExclusive } from '../widgets/kit-exclusive-check';
 import { checkKitGate } from '../widgets/kit-gate-check';
 import { checkKitLayout } from '../widgets/kit-layout-check';
@@ -32,6 +33,7 @@ const kitsStep: ReviewStep = {
     } finally {
       if (!normalOpen) widgets.close(KIT_NORMAL_WIDGET);
     }
+    await checkDeveloperMenu(tour);
     const own = useWidgetKitStore.getState().kits.filter((kit) => kit.id !== REVIEW_KIT_ID);
     for (const kit of own) await reviewAppKit(tour, kit);
   },

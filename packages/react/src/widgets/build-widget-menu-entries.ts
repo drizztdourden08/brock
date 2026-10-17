@@ -4,6 +4,7 @@ import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { MenuItem } from '../menu/menu.type';
 import { byOrder } from '../screens/conventions/by-order';
 import { UNORDERED } from '../screens/conventions/screens.constants';
+import { menuPlacementOf } from './menu-placement-of';
 import { WIDGET_KEY_PREFIX } from './widget.constants';
 import type { WidgetDef } from './widget.type';
 
@@ -23,6 +24,8 @@ const buildWidgetMenuEntries = (
       icon: def.icon,
       checked: isWidgetOpen(layout, def.id),
       onClick: () => toggle(def.id),
+      ...(def.devOnly === true ? { devOnly: true } : {}),
+      ...menuPlacementOf(def.menu),
     }));
 
 export { buildWidgetMenuEntries };

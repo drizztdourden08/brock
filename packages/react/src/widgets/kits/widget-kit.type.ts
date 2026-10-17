@@ -2,7 +2,7 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { LayoutPreset } from '../layout-preset.type';
-import type { WidgetDef } from '../widget.type';
+import type { WidgetDef, WidgetMenuPlacement } from '../widget.type';
 
 interface KitRequirement {
   context: string;
@@ -25,6 +25,7 @@ interface WidgetKitDef {
   requires?: KitRequirement;
   layout?: LayoutPreset;
   overlays?: readonly KitOverlayDef[];
+  menu?: WidgetMenuPlacement;
 }
 
 type WidgetKitMeta = Partial<Omit<WidgetKitDef, 'id' | 'overlays'>>;

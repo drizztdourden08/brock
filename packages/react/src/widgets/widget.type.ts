@@ -1,10 +1,16 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
-import type { Profile, WidgetWindowOpen } from '@drizztdourden08/brock-core';
+import type { Profile, ProductMenuGroup, WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, ScreenPoint, WidgetDefinition, WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { ScreenViews } from '../stores/screen-state.type';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import type { LayoutPreset } from './layout-preset.type';
+
+interface WidgetMenuPlacement {
+  parent?: string;
+  group?: ProductMenuGroup;
+  order?: number;
+}
 
 interface WidgetDef extends WidgetDefinition {
   icon?: string;
@@ -16,6 +22,7 @@ interface WidgetDef extends WidgetDefinition {
   context?: string;
   kit?: string;
   tools?: () => ReactNode;
+  menu?: WidgetMenuPlacement;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
@@ -124,5 +131,5 @@ interface LayoutHolder {
 }
 
 export type {
-  DockOrigin, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
 };

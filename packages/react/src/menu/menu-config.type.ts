@@ -70,13 +70,16 @@ interface ResolvedMenu {
   overrides: MenuOverrideRecord[];
 }
 
+type MenuGrows = (key: string, parent: string) => boolean;
+
 interface MenuResolveInput {
   groups: MenuGroups;
   config?: MenuConfig;
   known?: ReadonlySet<string>;
+  grows?: MenuGrows;
 }
 
 export type {
-  BarMarker, MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuHiddenState, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput,
+  BarMarker, MenuAnchorPass, MenuConfig, MenuContainer, MenuEntryOverride, MenuForest, MenuGroupId, MenuGroups, MenuGrows, MenuHiddenState, MenuIssue, MenuNode, MenuOverrideRecord, MenuPass, MenuResolveInput,
   ResolvedMenu, TuckedRow,
 };

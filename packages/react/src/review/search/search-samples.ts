@@ -4,7 +4,7 @@ import { hiddenRoutes } from '../../screens/show/hidden-routes';
 import { routeHidden } from '../../screens/show/route-hidden';
 import { foldText } from '../../search/fold-text';
 import type { SearchEntry } from '../../search/search.type';
-import { WIDGET_KEY_PREFIX } from '../../widgets/widget.constants';
+import { WIDGET_KEY_PREFIX, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import type { WidgetDef } from '../../widgets/widget.type';
 import { isMenuItem } from '../menu/is-menu-item';
 import { SEARCH_SETTINGS_PAGES } from '../review.constants';
@@ -27,7 +27,7 @@ const searchSamples = (env: ReviewEnv, widgetDefs: readonly WidgetDef[]): Search
   const index = (env.screenTree?.search ?? []).filter((entry) => (entry.devOnly !== true || env.developerTools) && !routeHidden(entry.target?.route ?? '', hidden));
   const routes = new Set(index.map((entry) => entry.target?.route));
   const leaves = menuLeaves(env.menu).filter((item) => !item.key.startsWith(WIDGET_KEY_PREFIX) && !routes.has(item.screen));
-  const widgets = widgetDefs.filter((def) => def.devOnly !== true || env.developerTools);
+  const widgets = widgetDefs.filter((def) => (def.devOnly !== true && def.menu?.parent !== WIDGETS_DEVELOPER_KEY) || env.developerTools);
   const labels = [...index, ...leaves, ...widgets].map((item) => foldText(item.label));
   const unique = (label: string): boolean => labels.filter((candidate) => candidate === foldText(label)).length === 1;
   const first = (kind: SearchEntry['kind']): SearchEntry | undefined => index.find((entry) => entry.kind === kind && unique(entry.label));

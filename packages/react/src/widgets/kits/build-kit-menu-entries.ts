@@ -3,6 +3,7 @@ import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import { byOrder } from '../../screens/conventions/by-order';
 import { UNORDERED } from '../../screens/conventions/screens.constants';
+import { menuPlacementOf } from '../menu-placement-of';
 import { WIDGET_KEY_PREFIX } from '../widget.constants';
 import { kitMembers } from './kit-members';
 import { kitViewOf } from './kit-view-of';
@@ -39,6 +40,8 @@ const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus): Me
     label: kit.label,
     icon: kit.icon ?? KIT_ICON,
     description: status.reason ?? undefined,
+    ...(kit.devOnly === true ? { devOnly: true } : {}),
+    ...menuPlacementOf(kit.menu),
     children: [
       { key: `${KIT_KEY_PREFIX}${kit.id}-open`, label: open ? KIT_WORDS.close : KIT_WORDS.open, icon: open ? 'x' : KIT_OPEN_ICON, onClick: () => state.toggle(kit.id) },
       'separator',

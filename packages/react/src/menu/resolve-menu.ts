@@ -7,6 +7,7 @@ import { configOverrides } from './config-overrides';
 import { BAR_MARKER_KEYS } from './menu-config.constants';
 import type { MenuEntryOverride, MenuForest, MenuIssue, MenuOverrideRecord, MenuResolveInput, ResolvedMenu } from './menu-config.type';
 import { growForest } from './grow-forest';
+import { growParents } from './grow-parents';
 import { plantForest } from './plant-forest';
 import type { MenuItem } from './menu.type';
 import { sanitizeOverride } from './sanitize-override';
@@ -38,9 +39,10 @@ const applyOverrides = (forest: MenuForest, given: ReadonlyMap<string, MenuEntry
   return [...records.values()];
 };
 
-const resolveMenu = ({ groups, config, known }: MenuResolveInput): ResolvedMenu => {
+const resolveMenu = ({ groups, config, known, grows }: MenuResolveInput): ResolvedMenu => {
   const issues: MenuIssue[] = [];
   const forest = plantForest(groups);
+  growParents(forest, config, grows);
   const keys = new Set([...(known ?? []), ...forest.byKey.keys(), ...BAR_MARKER_KEYS]);
   const given = configOverrides(config, keys, issues);
   const markers = barMarkers.plant(forest, given);

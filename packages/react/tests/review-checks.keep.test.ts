@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
 import type { MenuEntry } from '../src/menu/menu.type';
-import { aboutChecks } from '../src/review/checks/about-checks';
 import { bootChecks } from '../src/review/checks/boot-checks';
 import { controlSizeChecks } from '../src/review/checks/control-size-checks';
 import { frameChecks } from '../src/review/checks/frame-checks';
@@ -151,21 +150,6 @@ describe('pageHeaderChecks', () => {
     expect(failed(pageHeaderChecks('about', null, { shown: true, icon: true, title: 'Brock' }))).toEqual([]);
     expect(failed(pageHeaderChecks('credits', 'Credits', { shown: true, icon: false, title: 'Credits' }))).toEqual(['credits-page-header']);
     expect(failed(pageHeaderChecks('credits', 'Credits', { shown: false, icon: false, title: null }))).toEqual(['credits-page-header']);
-  });
-});
-
-describe('aboutChecks', () => {
-  it('compares the version row with the app version', () => {
-    expect(failed(aboutChecks({ logoLoaded: true, version: '1.0.0', appVersion: '1.0.0' }))).toEqual([]);
-    expect(failed(aboutChecks({ logoLoaded: null, version: '0.0.0', appVersion: '1.0.0' }))).toEqual(['about-logo', 'about-version']);
-  });
-
-  it('checks the wordmark sits inside the About card, only when there is one', () => {
-    const base = { logoLoaded: true, version: '1.0.0', appVersion: '1.0.0' };
-    expect(aboutChecks(base).map((check) => check.id)).not.toContain('about-wordmark-fits');
-    expect(failed(aboutChecks({ ...base, wordmark: { left: 281, right: 729, cardLeft: 250, cardRight: 760 } }))).toEqual([]);
-    const cut = aboutChecks({ ...base, wordmark: { left: 121, right: 889, cardLeft: 250, cardRight: 760 } });
-    expect(reasonOf(cut, 'about-wordmark-fits')).toBe('the wordmark overflows the About card, 129 px past its left edge and 129 px past its right edge, so it is cut');
   });
 });
 

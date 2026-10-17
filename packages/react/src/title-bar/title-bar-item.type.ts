@@ -35,11 +35,6 @@ interface TitleBarStatusSpec extends TitleBarItemBase {
   onSelect?: () => void;
 }
 
-interface TitleBarVolumeStrings {
-  mute: string;
-  unmute: string;
-}
-
 interface TitleBarVolumeSpec {
   kind: 'volume';
   label: string;
@@ -48,7 +43,6 @@ interface TitleBarVolumeSpec {
   onChange: (value: number) => void;
   onMuteToggle: () => void;
   shortcut?: string;
-  labels?: TitleBarVolumeStrings;
 }
 
 type TitleBarItemSpec = TitleBarButtonSpec | TitleBarMenuSpec | TitleBarStatusSpec | TitleBarVolumeSpec;
@@ -69,5 +63,5 @@ interface TitleBarItemMeta {
 
 export type {
   TitleBarButtonLook, TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
-  TitleBarStatusSpec, TitleBarVolumeSpec, TitleBarVolumeStrings,
+  TitleBarStatusSpec, TitleBarVolumeSpec,
 };

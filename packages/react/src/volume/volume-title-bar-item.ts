@@ -16,7 +16,6 @@ const volumeTitleBarItem = (options: VolumeItemOptions = {}): (() => TitleBarVol
       onChange: setValue,
       onMuteToggle: toggleMute,
       shortcut: options.shortcut,
-      labels: { mute: common.mute, unmute: common.unmute },
     };
   };
   return useVolumeTitleBarItem;

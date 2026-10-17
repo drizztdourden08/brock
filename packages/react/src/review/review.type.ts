@@ -215,7 +215,13 @@ interface MenuKeyWalk {
   item: HTMLElement | null;
 }
 
+interface PointedRow {
+  found: boolean;
+  hint: string | null;
+  leave: () => void;
+}
+
 export type {
-  AboutSnapshot, AboutWordmarkFit, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuKeyWalk, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
+  AboutSnapshot, AboutWordmarkFit, BootSnapshot, BucketSnapshot, ControlSizeSnapshot, FrameSnapshot, HeroSnapshot, IconSlotSnapshot, KeyChord, MenuExpectation, MenuKeyWalk, MenuItemSnapshot, MenuPanelOf, PaletteSearch, MenuSnapshot, NarrowFitSnapshot, PageHeaderSnapshot, PerformanceReading, PointedRow, ScreenFocusSnapshot, PerformanceSnapshot, ReviewEnv,
   ReviewOutcome, ReviewStep, SearchPick, SearchSample, SettingRowsSnapshot, StepTour, TitleBarExpectation, UpdaterTitleBarSnapshot, ViewMenuSnapshot, VolumeItemSnapshot,
 };

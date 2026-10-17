@@ -16,7 +16,7 @@ const mountDialog = (): void => {
 const unmountDialog = (): void => {
   act(() => state.root?.unmount());
   state.root = null;
-  useBugReportStore.setState({ open: false, prefill: null, appTransport: null });
+  useBugReportStore.setState({ open: false, prefill: null, prefillIsDefault: false, appTransport: null });
   document.body.replaceChildren();
 };
 

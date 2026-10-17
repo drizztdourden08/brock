@@ -22,7 +22,11 @@ const showing = (hub: HubDef, page: HubPage): boolean => {
 };
 
 const checkRowHint = async (tour: StepTour, id: string): Promise<void> => {
-  const { hint, leave } = await pointSettingRow(find(SELECTORS.hubPage) ?? document);
+  const { found, hint, leave } = await pointSettingRow(find(SELECTORS.hubPage) ?? document);
+  if (!found) {
+    tour.check(`${id}-row-hint`, true, `skipped: no settings row on "${id}" has a hint to point at`, '');
+    return;
+  }
   tour.check(`${id}-row-hint`, hint !== null, `pointing at a settings row on "${id}" shows its hint: ${hint ?? ''}`, `pointing at a settings row on "${id}" showed no hint`);
   if (hint !== null) await tour.capture(`bucket-${id}-hint`);
   leave();

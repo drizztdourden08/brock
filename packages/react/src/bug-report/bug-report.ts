@@ -8,6 +8,7 @@ const bugReport = {
   open: (options?: BugReportOpenOptions): void => useBugReportStore.getState().show(options),
   close: (): void => useBugReportStore.getState().hide(),
   isOpen: (): boolean => useBugReportStore.getState().open,
+  hasDefaultTitle: (): boolean => useBugReportStore.getState().prefillIsDefault,
 };
 
 export { bugReport };

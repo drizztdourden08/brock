@@ -94,6 +94,8 @@ const SELECTORS = {
   toggleRow: '.settings-row[data-kind="toggle"]',
   rowFocusable: '.settings-row__control input, .settings-row__control button, .settings-row__control [tabindex]',
   rowHint: '.settings-row__line[data-pointed] .settings-row__hint',
+  rowHints: '.settings-row__sizer, .settings-row__rest-line',
+  rowRestHint: '.settings-row__rest-line[data-current]',
   profileInput: '.inline-create-form input',
   profileSubmit: '.inline-create-form__actions button',
   palette: '.command-palette--open',

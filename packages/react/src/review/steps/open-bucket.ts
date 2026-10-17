@@ -2,6 +2,7 @@
 import type { HubDef } from '../../hub/hub.type';
 import { nav } from '../../navigation/nav';
 import { ROUTE_SEPARATOR } from '../../navigation/navigation.constants';
+import { isShown } from '../../screens/show/is-shown';
 import { click } from '../dom/click';
 import { waitFor } from '../dom/wait-for';
 import { menuPathTo } from '../menu/menu-path-to';
@@ -18,7 +19,7 @@ const opensBucket = (id: string) => (screen: string | undefined): boolean =>
 const openBucket = async (env: ReviewEnv, hub: HubDef): Promise<string | null> => {
   const path = menuPathTo(env.menu, (item) => opensBucket(hub.id)(item.screen));
   if (path && await pickMenuPath(path)) return `the menu entry ${path.join(' > ')}`;
-  const other = env.screenTree?.hubs.find((candidate) => candidate.id !== hub.id);
+  const other = env.screenTree?.hubs.find((candidate) => candidate.id !== hub.id && isShown(candidate.show));
   if (!other) return null;
   nav.open(other.id);
   const pill = await waitFor(() => switchPill(hub.title));

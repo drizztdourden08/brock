@@ -2,7 +2,9 @@
 import { showsHubNav } from '../../hub/Hub/behavior/shows-hub-nav';
 import { visibleHubPages } from '../../hub/Hub/behavior/visible-hub-pages';
 import { nav } from '../../navigation/nav';
+import { isShown } from '../../screens/show/is-shown';
 import { bucketChecks } from '../checks/bucket-checks';
+import { hiddenBucketChecks } from '../checks/hidden-bucket-checks';
 import { menuReachChecks } from '../checks/menu-reach-checks';
 import { hiddenRoutes } from '../menu/hidden-routes';
 import { menuReachIds } from '../menu/menu-reach-ids';
@@ -24,6 +26,10 @@ const bucketsStep: ReviewStep = {
     tour.check('home-bucket', homeScreen === screenTree.home, `Escape and Home open the "${screenTree.home}" bucket`, `home is "${homeScreen}", not the config home "${screenTree.home}"`);
     tour.report(menuReachChecks(menu, menuReachIds(screenTree, hiddenRoutes(menuOverrides))));
     for (const hub of screenTree.hubs) {
+      if (!isShown(hub.show)) {
+        tour.report(hiddenBucketChecks(hub.id));
+        continue;
+      }
       await resetUi();
       const reachedVia = await openBucket(tour.env, hub);
       const opened = await waitFor(() => nav.active() === hub.id && find(SELECTORS.layer) !== null);

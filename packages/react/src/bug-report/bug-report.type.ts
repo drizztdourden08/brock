@@ -52,6 +52,7 @@ interface AttachmentAdmission<F extends SizedFile> {
 interface BugReportState {
   open: boolean;
   prefill: string | null;
+  prefillIsDefault: boolean;
   appTransport: BrockAppBugReport | null;
   extras: BugReportExtrasSource | null;
   show: (options?: BugReportOpenOptions) => void;

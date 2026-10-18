@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.64.0
+
+### Minor Changes
+
+- 961c0e4: Hub windows have no title row and can be moved and resized, positions saved per hub. A hub window uses Tessera's `titleRow={false}` and `movable`: the hub switch names the page, a round X sits on the top right corner, and a lock beside it frees the window to move and resize. Each hub keeps its own lock and position under `brock.hub.<hubId>`. Back and the profile tag now sit in the first row of the hub content. Plain screens keep their title row.
+- 9150a2b: Brock moves to Tessera 0.43.0. The two workarounds from 0.62.0 are gone: the Escape guard for a revealed title bar (Tessera's peek now handles that Escape itself) and `isolation: isolate` on `.brock-app__content` (the revealed bar has its own `--z-title-bar` layer). The behaviour is the same. Tessera renamed the `dock-resize*` classes to `rect-resize*`, so an app that styled or selected `dock-resize*` must use the new names.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.64.0
+
 ## 0.63.0
 
 ### Minor Changes

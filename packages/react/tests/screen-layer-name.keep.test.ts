@@ -2,11 +2,12 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { backLabelOf } from '../src/hub/back-label-of';
 import { defineHub } from '../src/hub/define-hub';
+import { HUB_WINDOW_KEY } from '../src/hub/hub.constants';
 import { navigationSteps } from '../src/navigation/navigation-steps';
 import { EMPTY_NAVIGATION } from '../src/navigation/navigation.constants';
 import { defineScreen } from '../src/screens/define-screen';
+import { layerKeyOf } from '../src/screens/ScreenHost/behavior/layer-key-of';
 import { ScreenLayer } from '../src/screens/ScreenLayer/ScreenLayer';
 
 const noop = (): void => undefined;
@@ -39,16 +40,23 @@ describe('ScreenLayer', () => {
   });
 });
 
-describe('the way back', () => {
-  const page = (id: string, label: string) => ({ id, label, icon: null, render: () => null });
-  const hub = defineHub({ id: 'game', title: 'Game', icon: null, home: page('home', 'Overview'), groups: [{ id: 'play', label: 'Play', pages: [page('saves', 'Saves')] }] });
-
-  it('names the hub page the history goes back to, and the screen title elsewhere', () => {
-    expect(backLabelOf(hub, { section: 'saves' })).toBe('Saves');
-    expect(backLabelOf(hub, {})).toBe('Overview');
-    expect(backLabelOf(defineScreen({ id: 'tools', title: 'Tools', icon: null, render: () => null }), {})).toBe('Tools');
+describe('a hub window', () => {
+  it('has no title row, so no Back button', () => {
+    const html = renderToStaticMarkup(createElement(ScreenLayer, { title: 'Game', icon: null, free: HUB_WINDOW_KEY, back: { onSelect: noop }, onClose: noop, header: 'own', children: 'body' }));
+    expect(html).not.toContain('window-header__back');
   });
 
+  it('shares one window key, and so one rect and lock, whichever hub is shown', () => {
+    const page = { id: 'home', label: 'Home', icon: null, render: () => null };
+    const game = defineHub({ id: 'game', title: 'Game', icon: null, home: page, groups: [] });
+    const data = defineHub({ id: 'data', title: 'Data', icon: null, home: page, groups: [] });
+    expect(layerKeyOf(game)).toBe(HUB_WINDOW_KEY);
+    expect(layerKeyOf(data)).toBe(HUB_WINDOW_KEY);
+    expect(layerKeyOf(defineScreen({ id: 'tools', title: 'Tools', icon: null, render: () => null }))).toBe('tools');
+  });
+});
+
+describe('the way back', () => {
   it('goes back to the last page of the trail, else the parent, else nowhere', () => {
     const saves = { section: 'saves' };
     expect(navigationSteps.backTarget({ ...EMPTY_NAVIGATION, active: 'game', history: { game: [{}, saves] } })).toBe(saves);

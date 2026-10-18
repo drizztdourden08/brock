@@ -3,7 +3,6 @@ import type { HubDef, HubPage } from '../../hub/hub.type';
 import type { ScreenParams } from '../../navigation/navigation.type';
 import { HISTORY_LIMIT } from '../../navigation/navigation.constants';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
-import { click } from '../dom/click';
 import { find } from '../dom/find';
 import { isClosed } from '../dom/is-closed';
 import { press } from '../dom/press-key';
@@ -15,15 +14,16 @@ import { scrolledPane } from './scrolled-pane';
 
 const trailOf = (hub: HubDef): number => useNavigationStore.getState().history[hub.id]?.length ?? 0;
 
-const checkBackButton = async (tour: StepTour, hub: HubDef): Promise<void> => {
+const checkNoBackButton = (tour: StepTour, hub: HubDef): void => {
+  const button = find(SELECTORS.hubWindowBack);
+  tour.check(`${hub.id}-no-back-button`, button === null, `the "${hub.id}" window shows no Back button`, `the "${hub.id}" window shows a Back button`);
+};
+
+const checkKeyBack = async (tour: StepTour, hub: HubDef): Promise<void> => {
   const before = trailOf(hub);
-  const button = find(SELECTORS.layerBack);
-  tour.check(`${hub.id}-back-button`, button !== null, `the "${hub.id}" header shows Back after a page change`, `the "${hub.id}" header has no Back button after a page change`);
-  if (button === null) return;
-  await tour.capture(`bucket-${hub.id}-back`);
-  click(button);
+  useNavigationStore.getState().back();
   const went = await waitFor(() => trailOf(hub) === before - 1);
-  tour.check(`${hub.id}-back`, went !== null, `Back went one page back in "${hub.id}"`, `Back did not go a page back in "${hub.id}"`);
+  tour.check(`${hub.id}-back`, went !== null, `Back (Alt+Left, the mouse button) went one page back in "${hub.id}"`, `Back did not go a page back in "${hub.id}"`);
 };
 
 const sameParams = (a: ScreenParams, b: ScreenParams): boolean => JSON.stringify(a) === JSON.stringify(b);
@@ -57,7 +57,8 @@ const escapeCloses = async (tour: StepTour, hub: HubDef, pages: readonly HubPage
 };
 
 const hubBackCheck = async (tour: StepTour, hub: HubDef, pages: readonly HubPage[]): Promise<void> => {
-  if (trailOf(hub) > 1) await checkBackButton(tour, hub);
+  checkNoBackButton(tour, hub);
+  if (trailOf(hub) > 1) await checkKeyBack(tour, hub);
   await escapeCloses(tour, hub, pages);
 };
 

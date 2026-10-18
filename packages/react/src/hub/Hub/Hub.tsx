@@ -13,7 +13,6 @@ import { buildHubNav } from './behavior/build-hub-nav';
 import { hubNavKey } from './behavior/hub-nav-key';
 import { showsHubNav } from './behavior/shows-hub-nav';
 import { useHubState } from './behavior/useHubState';
-import { HubBar } from './sub-components/HubBar';
 import { HubIndexResults } from './sub-components/HubIndexResults';
 import { HubPageSlot } from './sub-components/HubPageSlot';
 import { HubSearchHits } from './sub-components/HubSearchHits';
@@ -22,7 +21,7 @@ import type { HubProps } from './Hub.type';
 import './Hub.css';
 
 const Hub = (props: HubProps) => {
-  const { def, ctx, subtitle } = props;
+  const { def, ctx } = props;
   const { groups, pages, page, context, selectPage, selectTab, up } = useHubState(def, ctx);
   const kept = useKeptPages(page, context);
   const { query, setQuery, clear } = useHubSearch();
@@ -52,20 +51,13 @@ const Hub = (props: HubProps) => {
     </>
   );
 
-  const body = showsHubNav(def.nav, pages.length)
+  return showsHubNav(def.nav, pages.length)
     ? (
       <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
         {content}
       </SideNavLayout>
     )
     : <ScrollArea className="hub__solo">{content}</ScrollArea>;
-
-  return (
-    <>
-      <HubBar def={def} subtitle={subtitle} />
-      {body}
-    </>
-  );
 };
 
 export { Hub };

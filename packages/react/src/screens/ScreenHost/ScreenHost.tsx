@@ -5,6 +5,7 @@ import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { backLabelOf } from '../../hub/back-label-of';
+import { HUB_DEFS } from '../../hub/hub.constants';
 import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
@@ -54,6 +55,7 @@ const ScreenHost = (props: ScreenHostProps) => {
 
   const draw = (screen: ScreenDef, hidden: boolean): ReactNode => {
     if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{guarded(screen, hidden)}</Box>;
+    const hub = HUB_DEFS.has(screen);
     return (
       <ScreenLayer
         key={screen.id}
@@ -62,11 +64,12 @@ const ScreenHost = (props: ScreenHostProps) => {
         header={screen.header}
         size={screen.size}
         square={square}
-        subtitle={screen.subtitle?.(ctx)}
-        extra={screen.extra?.(ctx)}
+        subtitle={hub ? undefined : screen.subtitle?.(ctx)}
+        extra={hub ? undefined : screen.extra?.(ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
-        back={backTarget !== null && !hidden ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
+        free={hub ? `brock.hub.${screen.id}` : undefined}
+        back={backTarget !== null && !hidden && !hub ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
         onClose={close}
       >
         {guarded(screen, hidden)}

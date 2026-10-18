@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind style */
+
+.hub__bar {
+  display: flex;
+  flex: none;
+  gap: var(--space-sm);
+  align-items: center;
+  min-width: 0;
+}
+
+.hub__bar-subtitle {
+  margin-inline-start: auto;
+  color: var(--c-text-dim);
+}

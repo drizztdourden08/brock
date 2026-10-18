@@ -13,6 +13,7 @@ import { buildHubNav } from './behavior/build-hub-nav';
 import { hubNavKey } from './behavior/hub-nav-key';
 import { showsHubNav } from './behavior/shows-hub-nav';
 import { useHubState } from './behavior/useHubState';
+import { HubBar } from './sub-components/HubBar';
 import { HubIndexResults } from './sub-components/HubIndexResults';
 import { HubPageSlot } from './sub-components/HubPageSlot';
 import { HubSearchHits } from './sub-components/HubSearchHits';
@@ -51,12 +52,19 @@ const Hub = (props: HubProps) => {
     </>
   );
 
-  if (!showsHubNav(def.nav, pages.length)) return <ScrollArea className="hub__solo">{content}</ScrollArea>;
+  const body = showsHubNav(def.nav, pages.length)
+    ? (
+      <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
+        {content}
+      </SideNavLayout>
+    )
+    : <ScrollArea className="hub__solo">{content}</ScrollArea>;
 
   return (
-    <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
-      {content}
-    </SideNavLayout>
+    <>
+      <HubBar def={def} />
+      {body}
+    </>
   );
 };
 

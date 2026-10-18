@@ -11,10 +11,12 @@ const bodyOf = (props: ScreenLayerProps): ReactNode => {
   return size === 'info' ? <ScrollArea className="brock-info-card">{children}</ScrollArea> : children;
 };
 
+const frameOf = ({ free }: ScreenLayerProps) => (free === undefined ? {} : { titleRow: false, movable: true, storageKey: free });
+
 const ScreenLayer = (props: ScreenLayerProps) => {
   const { title, subtitle, extra, floating, hidden = false, size, square, back, onClose } = props;
   return (
-    <ScreenWindow title={title} subtitle={subtitle} extra={extra} floating={floating} hidden={hidden} size={size} square={square} back={back} onClose={onClose}>
+    <ScreenWindow {...frameOf(props)} title={title} subtitle={subtitle} extra={extra} floating={floating} hidden={hidden} size={size} square={square} back={back} onClose={onClose}>
       {bodyOf(props)}
     </ScreenWindow>
   );

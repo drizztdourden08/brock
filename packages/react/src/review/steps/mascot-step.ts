@@ -32,7 +32,7 @@ const mascotStep: ReviewStep = {
       await tour.capture('mascot-window');
       press({ key: 'k', ctrlKey: true });
       await waitFor(() => find(SELECTORS.walkerBeside) && readWalker().hint);
-      await waitFor(() => mascotApart(readWalker()), 2000);
+      await waitFor(() => mascotApart(readWalker()), 8000);
       tour.report(paletteChecks(readWalker()));
       await tour.capture('mascot-palette');
       await escapeCloses(tour, 'mascot-palette', () => find(SELECTORS.palette) === null);

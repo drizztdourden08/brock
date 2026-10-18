@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind style */
+
+.hub-switch {
+  position: relative;
+}
+
+.hub-switch__status {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(100% + var(--space-md));
+  color: var(--c-text-dim);
+  white-space: nowrap;
+  transform: translateY(-50%);
+}

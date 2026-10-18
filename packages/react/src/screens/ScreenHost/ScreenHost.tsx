@@ -4,8 +4,7 @@ import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
-import { backLabelOf } from '../../hub/back-label-of';
-import { HUB_DEFS } from '../../hub/hub.constants';
+import { HUB_DEFS, HUB_WINDOW_KEY } from '../../hub/hub.constants';
 import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
@@ -16,6 +15,7 @@ import { useShowContext } from '../show/useShowContext';
 import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
+import { layerKeyOf } from './behavior/layer-key-of';
 import { useMountedScreens } from './behavior/useMountedScreens';
 import { screenScroll } from '../scroll/screen-scroll';
 import type { ScreenHostProps } from './ScreenHost.type';
@@ -28,14 +28,14 @@ const scoped = (screen: ScreenDef, ctx: ScreenRenderContext): ReactNode => (
 const covers = (shown: ScreenDef | null, home: string): boolean => shown !== null && shown.id !== home && shown.layer !== 'own';
 
 const guarded = (screen: ScreenDef, hidden: boolean, ctx: ScreenRenderContext, onHome: () => void): ReactNode => (
-  <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={onHome} resetKey={hidden}>
+  <RenderErrorBoundary key={screen.id} scope={`Screen ${screen.id}`} onHome={onHome} resetKey={hidden}>
     {scoped(screen, ctx)}
     <Box hidden data-screen-scroll={screen.id} />
   </RenderErrorBoundary>
 );
 
 const chromeOf = (screen: ScreenDef, ctx: ScreenRenderContext) =>
-  (HUB_DEFS.has(screen) ? { free: `brock.hub.${screen.id}` } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
+  (HUB_DEFS.has(screen) ? { free: HUB_WINDOW_KEY } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
 
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
@@ -61,7 +61,7 @@ const ScreenHost = (props: ScreenHostProps) => {
     const backable = backTarget !== null && !hidden && !HUB_DEFS.has(screen);
     return (
       <ScreenLayer
-        key={screen.id}
+        key={layerKeyOf(screen)}
         title={screen.title}
         icon={screen.icon}
         header={screen.header}
@@ -70,7 +70,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         {...chromeOf(screen, ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
-        back={backable ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
+        back={backable ? { onSelect: back, label: screen.title } : undefined}
         onClose={close}
       >
         {guarded(screen, hidden, ctx, close)}

@@ -88,7 +88,7 @@ const SELECTORS = {
   layerTitle: '.screen-window__header .window-header__title',
   layerClose: '.screen-window__header .window-header__close, .screen-window__corner-close',
   layerDialog: '[role="dialog"]',
-  layerBack: '.screen-layer:not(.screen-layer--hidden) :is(.screen-window__header .window-header__back, .hub__bar .hub__back)',
+  hubWindowBack: '.screen-layer:not(.screen-layer--hidden) .window-header__back',
   pageHead: '.content-header',
   pageIcon: '.content-header__icon',
   pageTitle: '.content-header__title',

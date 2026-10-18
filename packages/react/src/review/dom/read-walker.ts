@@ -12,7 +12,7 @@ const boxOf = (element: Element | null): WalkerBox | null => {
 const readWalker = (): WalkerReading => {
   const walker = find(SELECTORS.walker);
   return {
-    card: boxOf(find(SELECTORS.card)),
+    app: boxOf(document.documentElement),
     walker: boxOf(walker),
     actor: boxOf(walker?.querySelector('.mascot-stage__actor') ?? null),
     palette: boxOf(find(SELECTORS.palette)),

@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
+import { WindowMascot } from '../../brand/WindowMascot';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { HUB_DEFS, HUB_WINDOW_KEY } from '../../hub/hub.constants';
 import { LazyHost } from '../../lazy/LazyHost';
@@ -94,6 +95,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         const screen = registry.get(id);
         return screen && id !== home ? draw(screen, shown?.id !== id) : null;
       })}
+      {(allowed(homeScreen) || shown !== null) && <WindowMascot />}
     </Box>
   );
 };

@@ -2,7 +2,6 @@
 import type { ReactNode } from 'react';
 import { ScreenPage, ScreenWindow } from '@drizztdourden08/tessera/composites';
 import { ScrollArea } from '@drizztdourden08/tessera/primitives';
-import { WindowMascot } from '../../brand/WindowMascot';
 import type { ScreenLayerProps } from './ScreenLayer.type';
 import './ScreenLayer.css';
 
@@ -19,7 +18,6 @@ const ScreenLayer = (props: ScreenLayerProps) => {
   return (
     <ScreenWindow {...frameOf(props)} title={title} subtitle={subtitle} extra={extra} floating={floating} hidden={hidden} size={size} square={square} back={back} onClose={onClose}>
       {bodyOf(props)}
-      {!hidden && <WindowMascot />}
     </ScreenWindow>
   );
 };

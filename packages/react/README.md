@@ -123,6 +123,7 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 - `openSearchTarget(target)` opens the route through `nav.open` and scrolls to the element whose `data-setting-key`, `data-section` or `data-search-anchor` equals `anchor`, flashing it with `search-hit`.
 - A generated hub has search on: SideNavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
 - The product brand's mascot (Flint for `brock`, Pelago for `archipelia`, Sentri for `rotp`) sits in the palette's input row, as Tessera's `CommandPalette` `mascot="auto"`, and in every hub search, drawn as `<AnimatedMascot brand="auto">`, which picks the mascot of the `data-palette` Brock sets on the page root from `product.icons.brand`. It runs on Tessera's mascot state machine: it scans while the field is empty; when nothing matches it cuts in with `alert` on each new query and settles into `worried` once the clip ends, blending between states with no remount. A brand without a mascot, or no brand, shows the plain search icon and no mascot.
+- The same brand mascot walks along the bottom of the main app viewport on Home and other screens. Tessera's autonomous stage gives it random walks and animation states. It stays mounted while screens change and steps beside the command palette to offer a search hint.
 
 ## Escape and home
 

@@ -6,7 +6,7 @@ interface WalkerBox {
 }
 
 interface WalkerReading {
-  card: WalkerBox | null;
+  app: WalkerBox | null;
   walker: WalkerBox | null;
   actor: WalkerBox | null;
   palette: WalkerBox | null;

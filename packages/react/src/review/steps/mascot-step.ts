@@ -38,8 +38,10 @@ const mascotStep: ReviewStep = {
       await escapeCloses(tour, 'mascot-palette', () => find(SELECTORS.palette) === null);
     }
     await escapeCloses(tour, 'mascot-window', isClosed);
-    const gone = await waitFor(() => find(SELECTORS.walker) === null);
-    tour.check('mascot-gone', gone !== null, 'the mascot goes when no window is open', 'the mascot stays after the window closed');
+    if (walks) {
+      const homeWalker = await waitFor(() => find(SELECTORS.walker));
+      tour.check('mascot-home', homeWalker !== null, 'the mascot keeps walking on Home', 'the mascot disappeared on Home');
+    }
   },
 };
 

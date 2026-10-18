@@ -23,9 +23,9 @@ const stage = { actor: () => actor, stageX: (x: number) => x, width: () => 1000 
 
 vi.mock('@drizztdourden08/tessera/brand', async (original) => ({
   ...(await original<object>()),
-  MascotStage: (props: { ref?: { current: unknown }; cast: readonly { brand: string }[] }) => {
+  MascotStage: (props: { ref?: { current: unknown }; cast: readonly { brand: string; autonomy: boolean }[] }) => {
     if (props.ref) props.ref.current = stage;
-    return createElement('div', { 'data-stage': props.cast[0]?.brand });
+    return createElement('div', { 'data-stage': props.cast[0]?.brand, 'data-autonomy': props.cast[0]?.autonomy });
   },
 }));
 
@@ -72,6 +72,7 @@ describe('the walking mascot', () => {
     expect(walker?.hasAttribute('inert')).toBe(true);
     expect(walker?.getAttribute('aria-hidden')).toBe('true');
     expect(walker?.querySelector('[data-stage="brock"]')).not.toBeNull();
+    expect(walker?.querySelector('[data-autonomy="true"]')).not.toBeNull();
   });
 
   it('draws nothing for a brand with no mascot, and nothing when product.mascot is false', () => {
@@ -126,9 +127,9 @@ describe('where the mascot stands beside the palette', () => {
 
 describe('the mascot review checks', () => {
   const box = (left: number, right: number, bottom: number) => ({ left, right, bottom });
-  const reading = { card: box(0, 800, 600), walker: box(0, 800, 600), actor: box(100, 180, 600), palette: box(300, 500, 400), hint: 'Type to search' };
+  const reading = { app: box(0, 1000, 600), walker: box(0, 1000, 600), actor: box(100, 180, 600), palette: box(300, 500, 400), hint: 'Type to search' };
 
-  it('pass for a mascot along the window bottom and beside the palette with a hint', () => {
+  it('pass for a mascot along the app bottom and beside the palette with a hint', () => {
     expect(failed([...windowChecks(reading), ...paletteChecks(reading)])).toEqual([]);
   });
 

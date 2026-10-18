@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.65.0
+
+### Minor Changes
+
+- 3a7f2b1: Brock moves to Tessera 0.44.0, which adds the `SpeechBubble` part, `useReducedMotion` and ItemList `maxRows`. Apps upgrade with `brock migrate`.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.65.0
+
 ## 0.64.0
 
 ### Minor Changes

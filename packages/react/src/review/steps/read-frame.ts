@@ -8,7 +8,7 @@ const readFrame = (): FrameSnapshot => {
   return {
     layers: layers.length,
     card: layer?.querySelector(SELECTORS.card) != null,
-    title: layer?.querySelector(SELECTORS.layerTitle)?.textContent.trim() ?? null,
+    title: layer?.querySelector(SELECTORS.layerTitle)?.textContent.trim() ?? layer?.querySelector(SELECTORS.layerDialog)?.getAttribute('aria-label') ?? null,
     closeButton: layer?.querySelector(SELECTORS.layerClose) != null,
   };
 };

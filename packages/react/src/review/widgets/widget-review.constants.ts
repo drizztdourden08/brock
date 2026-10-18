@@ -24,7 +24,7 @@ const SQUARE_SELECTOR = '.screen-layer--square';
 const SQUARE_SCREEN = 'profiles';
 const OPTIONS_WAIT_MS = 600;
 const GUIDE_POINTER = { x: 96, y: 18 } as const;
-const FLOAT_HANDLE = '.dock-resize--se';
+const FLOAT_HANDLE = '.rect-resize--se';
 const FLOAT_SHRINK = 2000;
 const FLOAT_TOLERANCE = 2;
 

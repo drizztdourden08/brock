@@ -27,6 +27,16 @@ const scoped = (screen: ScreenDef, ctx: ScreenRenderContext): ReactNode => (
 
 const covers = (shown: ScreenDef | null, home: string): boolean => shown !== null && shown.id !== home && shown.layer !== 'own';
 
+const guarded = (screen: ScreenDef, hidden: boolean, ctx: ScreenRenderContext, onHome: () => void): ReactNode => (
+  <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={onHome} resetKey={hidden}>
+    {scoped(screen, ctx)}
+    <Box hidden data-screen-scroll={screen.id} />
+  </RenderErrorBoundary>
+);
+
+const chromeOf = (screen: ScreenDef, ctx: ScreenRenderContext) =>
+  (HUB_DEFS.has(screen) ? { free: `brock.hub.${screen.id}` } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
+
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
   const registry = useScreenRegistry();
@@ -46,16 +56,9 @@ const ScreenHost = (props: ScreenHostProps) => {
   const mounted = useMountedScreens(shown);
   useEffect(screenScroll.watch, []);
 
-  const guarded = (screen: ScreenDef, hidden: boolean): ReactNode => (
-    <RenderErrorBoundary scope={`Screen ${screen.id}`} onHome={close} resetKey={hidden}>
-      {scoped(screen, ctx)}
-      <Box hidden data-screen-scroll={screen.id} />
-    </RenderErrorBoundary>
-  );
-
   const draw = (screen: ScreenDef, hidden: boolean): ReactNode => {
-    if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{guarded(screen, hidden)}</Box>;
-    const hub = HUB_DEFS.has(screen);
+    if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{guarded(screen, hidden, ctx, close)}</Box>;
+    const backable = backTarget !== null && !hidden && !HUB_DEFS.has(screen);
     return (
       <ScreenLayer
         key={screen.id}
@@ -64,15 +67,13 @@ const ScreenHost = (props: ScreenHostProps) => {
         header={screen.header}
         size={screen.size}
         square={square}
-        subtitle={hub ? undefined : screen.subtitle?.(ctx)}
-        extra={hub ? undefined : screen.extra?.(ctx)}
+        {...chromeOf(screen, ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
-        free={hub ? `brock.hub.${screen.id}` : undefined}
-        back={backTarget !== null && !hidden && !hub ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
+        back={backable ? { onSelect: back, label: backLabelOf(screen, backTarget) } : undefined}
         onClose={close}
       >
-        {guarded(screen, hidden)}
+        {guarded(screen, hidden, ctx, close)}
       </ScreenLayer>
     );
   };

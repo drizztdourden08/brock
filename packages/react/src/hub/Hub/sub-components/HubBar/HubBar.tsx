@@ -3,7 +3,7 @@ import { Box, Icon, IconButton, useTesseraStrings } from '@drizztdourden08/tesse
 import { useBackTarget } from '../../../../navigation/useBackTarget';
 import { useNavigation } from '../../../../navigation/useNavigation';
 import { ScreenSubtitle } from '../../../../shell/ScreenSubtitle';
-import { hubBackLabel } from '../../../back-label-of';
+import { hubBackLabel } from '../../../hub-back-label';
 import type { HubBarProps } from './HubBar.type';
 import './HubBar.css';
 

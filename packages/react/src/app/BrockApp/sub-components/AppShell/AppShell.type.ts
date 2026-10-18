@@ -31,6 +31,7 @@ interface AppShellProps<S extends object> {
   screenGroups?: readonly ScreenRailGroup[];
   review?: AppReview;
   volume?: VolumeSource;
+  restoreNavigation?: boolean;
 }
 
 export type { AppShellProps };

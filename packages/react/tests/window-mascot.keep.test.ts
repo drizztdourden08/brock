@@ -12,7 +12,8 @@ import type { BrockContextValue } from '../src/app/brock-context.type';
 import { WindowMascot } from '../src/brand/WindowMascot';
 import { besideSpot } from '../src/brand/WindowMascot/behavior/beside-spot';
 import { DEFAULT_SEARCH_HINT, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
-import { paletteChecks, windowChecks } from '../src/review/checks/mascot-checks';
+import { paletteChecks } from '../src/review/checks/mascot-palette-checks';
+import { windowChecks } from '../src/review/checks/mascot-window-checks';
 import { usePaletteStore } from '../src/palette/usePaletteStore';
 import { ScreenLayer } from '../src/screens/ScreenLayer/ScreenLayer';
 import { failed } from './review-outcomes';
@@ -40,6 +41,10 @@ const layer = (product: ProductConfig) => createElement(BrockContext.Provider, {
 
 beforeEach(() => {
   vi.stubGlobal('ResizeObserver', class { observe = vi.fn(); disconnect = vi.fn(); });
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    const width = this.classList.contains('window-mascot__probe') ? 1000 : 0;
+    return { left: 0, top: 0, width, height: 112, right: width, bottom: 112, x: 0, y: 0, toJSON: () => ({}) };
+  });
   host = document.createElement('div');
   document.body.append(host);
   root = createRoot(host);
@@ -51,6 +56,7 @@ afterEach(() => {
   document.querySelectorAll('.command-palette--open, #portal-root').forEach((el) => el.remove());
   usePaletteStore.getState().hide();
   vi.clearAllMocks();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 

@@ -1,20 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { SELECTORS } from '../review.constants';
 import { find } from './find';
-
-interface WalkerBox {
-  left: number;
-  right: number;
-  bottom: number;
-}
-
-interface WalkerReading {
-  card: WalkerBox | null;
-  walker: WalkerBox | null;
-  actor: WalkerBox | null;
-  palette: WalkerBox | null;
-  hint: string | null;
-}
+import type { WalkerBox, WalkerReading } from './read-walker.type';
 
 const boxOf = (element: Element | null): WalkerBox | null => {
   if (element === null) return null;
@@ -29,9 +16,8 @@ const readWalker = (): WalkerReading => {
     walker: boxOf(walker),
     actor: boxOf(walker?.querySelector('.mascot-stage__actor') ?? null),
     palette: boxOf(find(SELECTORS.palette)),
-    hint: walker?.querySelector('.window-mascot__hint')?.textContent?.trim() ?? null,
+    hint: walker?.querySelector('.window-mascot__hint')?.textContent.trim() ?? null,
   };
 };
 
 export { readWalker };
-export type { WalkerReading };

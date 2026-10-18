@@ -2,6 +2,10 @@
 import { brockEslint } from '@drizztdourden08/brock-lint-config';
 
 export default brockEslint({
+  inlineStyle: [{
+    files: ['packages/react/src/brand/WindowMascot/sub-components/WalkerLayer.tsx'],
+    why: 'The mascot follows live window and palette bounds, which change as either surface moves or resizes.',
+  }],
   rawColorOffGlobs: ['packages/electron/**', 'templates/app/electron/**'],
   doubleCast: [
     {

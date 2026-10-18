@@ -63,6 +63,7 @@ interface BrockAppProps<S extends object> {
   profiles?: BrockAppProfiles;
   dataDomains?: readonly DataDomainDef[];
   homeScreen?: string;
+  restoreNavigation?: boolean;
   credits?: ReactNode;
   legalText?: string;
   beforeQuit?: BeforeQuit;

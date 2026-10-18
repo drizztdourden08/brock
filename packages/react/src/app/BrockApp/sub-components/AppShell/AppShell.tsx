@@ -39,7 +39,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume, restoreNavigation } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -55,7 +55,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useSaveFailureToast(settingsStore);
   useKeyboardShortcuts();
   useMouseBack();
-  useProfileViews(settingsStore, volume);
+  useProfileViews(settingsStore, volume, restoreNavigation);
   useIpcLogBridge(log);
   useAppOpenBridge();
 

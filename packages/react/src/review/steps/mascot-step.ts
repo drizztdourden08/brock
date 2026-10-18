@@ -2,7 +2,9 @@
 import { brandMascot } from '../../brand/brand-mascot';
 import { isScreenAllowed } from '../../screens/is-screen-allowed';
 import { useProfilesStore } from '../../stores/useProfilesStore';
-import { apart, paletteChecks, windowChecks } from '../checks/mascot-checks';
+import { mascotApart } from '../checks/mascot-apart';
+import { paletteChecks } from '../checks/mascot-palette-checks';
+import { windowChecks } from '../checks/mascot-window-checks';
 import { find } from '../dom/find';
 import { isClosed } from '../dom/is-closed';
 import { press } from '../dom/press-key';
@@ -30,7 +32,7 @@ const mascotStep: ReviewStep = {
       await tour.capture('mascot-window');
       press({ key: 'k', ctrlKey: true });
       await waitFor(() => find(SELECTORS.walkerBeside) && readWalker().hint);
-      await waitFor(() => { const reading = readWalker(); return apart(reading); }, 2000);
+      await waitFor(() => mascotApart(readWalker()), 2000);
       tour.report(paletteChecks(readWalker()));
       await tour.capture('mascot-palette');
       await escapeCloses(tour, 'mascot-palette', () => find(SELECTORS.palette) === null);

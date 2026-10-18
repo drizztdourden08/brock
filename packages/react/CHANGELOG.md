@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.68.1
+
+### Patch Changes
+
+- 2d1698e: Position the walking mascot's search hint with valid CSS and give the mascot time to finish walking beside the search palette during review.
+  - @drizztdourden08/brock-core@0.68.1
+
 ## 0.68.0
 
 ### Minor Changes

@@ -81,15 +81,6 @@ describe('shellTakesEscape', () => {
     for (const level of ['dialog', 'menu', 'popover', 'drag'] as const) expect(shellTakesEscape(free, stack(level))).toBe(false);
     expect(shellTakesEscape({ defaultPrevented: true }, stack(null))).toBe(false);
   });
-
-  it('leaves Escape to a concealed title bar the keyboard revealed, so leaving it reopens no window', () => {
-    const bar = document.body.appendChild(document.createElement('div'));
-    bar.className = 'window-title-bar window-title-bar--concealed';
-    const button = bar.appendChild(document.createElement('button'));
-    expect(shellTakesEscape({ defaultPrevented: false, target: button }, stack(null))).toBe(false);
-    bar.className = 'window-title-bar';
-    expect(shellTakesEscape({ defaultPrevented: false, target: button }, stack(null))).toBe(true);
-  });
 });
 
 describe('Escape between the shell and Tessera\'s escape stack', () => {

@@ -14,7 +14,6 @@ html.notch-safe .brock-app {
 
 .brock-app__content {
   position: relative;
-  isolation: isolate;
   flex: 1;
   min-height: 0;
   overflow: hidden;

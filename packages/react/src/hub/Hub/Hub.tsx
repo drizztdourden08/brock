@@ -22,7 +22,7 @@ import type { HubProps } from './Hub.type';
 import './Hub.css';
 
 const Hub = (props: HubProps) => {
-  const { def, ctx } = props;
+  const { def, ctx, subtitle } = props;
   const { groups, pages, page, context, selectPage, selectTab, up } = useHubState(def, ctx);
   const kept = useKeptPages(page, context);
   const { query, setQuery, clear } = useHubSearch();
@@ -62,7 +62,7 @@ const Hub = (props: HubProps) => {
 
   return (
     <>
-      <HubBar def={def} />
+      <HubBar def={def} subtitle={subtitle} />
       {body}
     </>
   );

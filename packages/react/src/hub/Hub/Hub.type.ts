@@ -1,10 +1,12 @@
 /* @layer renderer-shell @kind types */
+import type { ReactNode } from 'react';
 import type { ScreenRenderContext } from '../../screens/screen.type';
 import type { HubDef, HubGroup, HubPage, HubRenderContext, HubSubPage, HubTab } from '../hub.type';
 
 interface HubProps {
   def: HubDef;
   ctx: ScreenRenderContext;
+  subtitle?: ReactNode;
 }
 
 interface HubPageList {

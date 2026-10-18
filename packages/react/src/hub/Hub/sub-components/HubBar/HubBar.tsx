@@ -2,12 +2,11 @@
 import { Box, Icon, IconButton, useTesseraStrings } from '@drizztdourden08/tessera/primitives';
 import { useBackTarget } from '../../../../navigation/useBackTarget';
 import { useNavigation } from '../../../../navigation/useNavigation';
-import { ScreenSubtitle } from '../../../../shell/ScreenSubtitle';
 import { hubBackLabel } from '../../../hub-back-label';
 import type { HubBarProps } from './HubBar.type';
 import './HubBar.css';
 
-const HubBar = ({ def }: HubBarProps) => {
+const HubBar = ({ def, subtitle }: HubBarProps) => {
   const target = useBackTarget();
   const { back } = useNavigation();
   const { navigation } = useTesseraStrings();
@@ -18,7 +17,7 @@ const HubBar = ({ def }: HubBarProps) => {
           <Icon name="arrow-left" size={18} />
         </IconButton>
       )}
-      <Box className="hub__bar-subtitle"><ScreenSubtitle /></Box>
+      {subtitle !== undefined && <Box className="hub__bar-subtitle">{subtitle}</Box>}
     </Box>
   );
 };

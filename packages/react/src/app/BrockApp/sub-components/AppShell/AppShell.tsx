@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
+import { WindowMascot } from '../../../../brand/WindowMascot';
 import { instanceName } from '../../../../host/instance-name';
 import { StandardOverlays } from '../../../../overlays/StandardOverlays/StandardOverlays';
 import { ScreenHost } from '../../../../screens/ScreenHost/ScreenHost';
@@ -93,6 +94,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
           {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
         </Box>
+        <WindowMascot />
         <WindowGuide />
         <JobHost />
         <StandardOverlays menu={shellMenu.searchable} actions={searchActions} />

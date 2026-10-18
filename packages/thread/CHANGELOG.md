@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-thread
 
+## 0.67.0
+
 ## 0.66.0
 
 ## 0.65.0

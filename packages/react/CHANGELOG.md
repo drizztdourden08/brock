@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.68.3
+
+### Patch Changes
+
+- 223a01b: Start the brand mascot walking across the app when a window opens, allow Tessera's random animations to run, and hide the mascot when the window closes.
+  - @drizztdourden08/brock-core@0.68.3
+
 ## 0.68.2
 
 ### Patch Changes

@@ -11,21 +11,22 @@ import { BrockContext } from '../src/app/brock-context';
 import type { BrockContextValue } from '../src/app/brock-context.type';
 import { WindowMascot } from '../src/brand/WindowMascot';
 import { besideSpot } from '../src/brand/WindowMascot/behavior/beside-spot';
-import { DEFAULT_SEARCH_HINT, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
+import { DEFAULT_SEARCH_HINT, WALKER_EDGE_FRACTION, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
+import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { paletteChecks } from '../src/review/checks/mascot-palette-checks';
 import { windowChecks } from '../src/review/checks/mascot-window-checks';
 import { usePaletteStore } from '../src/palette/usePaletteStore';
 import { ScreenLayer } from '../src/screens/ScreenLayer/ScreenLayer';
 import { failed } from './review-outcomes';
 
-const actor = { moveTo: vi.fn((..._args: unknown[]) => Promise.resolve('done')), play: vi.fn((..._args: unknown[]) => Promise.resolve('done')), autonomy: vi.fn() };
+const actor = { moveTo: vi.fn((..._args: unknown[]) => Promise.resolve('done')), play: vi.fn((..._args: unknown[]) => Promise.resolve('done')), autonomy: vi.fn(), stop: vi.fn() };
 const stage = { actor: () => actor, stageX: (x: number) => x, width: () => 1000 };
 
 vi.mock('@drizztdourden08/tessera/brand', async (original) => ({
   ...(await original<object>()),
-  MascotStage: (props: { ref?: { current: unknown }; cast: readonly { brand: string; autonomy: boolean }[] }) => {
+  MascotStage: (props: { ref?: { current: unknown }; cast: readonly { brand: string; autonomy: boolean; clip?: string }[] }) => {
     if (props.ref) props.ref.current = stage;
-    return createElement('div', { 'data-stage': props.cast[0]?.brand, 'data-autonomy': props.cast[0]?.autonomy });
+    return createElement('div', { 'data-stage': props.cast[0]?.brand, 'data-autonomy': props.cast[0]?.autonomy, 'data-clip': props.cast[0]?.clip ?? 'none' });
   },
 }));
 
@@ -55,13 +56,17 @@ afterEach(() => {
   host?.remove();
   document.querySelectorAll('.command-palette--open, #portal-root').forEach((el) => el.remove());
   usePaletteStore.getState().hide();
+  useNavigationStore.setState({ active: null });
   vi.clearAllMocks();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
 const show = (product: ProductConfig): void => {
-  act(() => root?.render(layer(product)));
+  act(() => {
+    useNavigationStore.setState({ active: 'credits' });
+    root?.render(layer(product));
+  });
 };
 
 describe('the walking mascot', () => {
@@ -73,6 +78,22 @@ describe('the walking mascot', () => {
     expect(walker?.getAttribute('aria-hidden')).toBe('true');
     expect(walker?.querySelector('[data-stage="brock"]')).not.toBeNull();
     expect(walker?.querySelector('[data-autonomy="true"]')).not.toBeNull();
+    expect(walker?.querySelector('[data-clip="none"]')).not.toBeNull();
+  });
+
+  it('only appears while a window is open', () => {
+    act(() => root?.render(layer(PRODUCT)));
+    expect(document.querySelector('[data-window-mascot]')).toBeNull();
+    show(PRODUCT);
+    expect(document.querySelector('[data-window-mascot]')).not.toBeNull();
+    act(() => useNavigationStore.setState({ active: null }));
+    expect(document.querySelector('[data-window-mascot]')).toBeNull();
+  });
+
+  it('starts walking toward a distant point in the full app width', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    show(PRODUCT);
+    expect(actor.moveTo).toHaveBeenCalledWith(1000 * WALKER_EDGE_FRACTION);
   });
 
   it('draws nothing for a brand with no mascot, and nothing when product.mascot is false', () => {
@@ -94,6 +115,7 @@ describe('the walking mascot', () => {
     expect(document.querySelector('.window-mascot__hint')?.textContent).toContain(DEFAULT_SEARCH_HINT);
     act(() => usePaletteStore.getState().hide());
     expect(actor.autonomy).toHaveBeenLastCalledWith(true);
+    expect(actor.stop).toHaveBeenCalledOnce();
     expect(document.querySelector('.window-mascot__hint')).toBeNull();
   });
 

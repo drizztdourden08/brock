@@ -5,9 +5,10 @@ import { MascotStage } from '@drizztdourden08/tessera/brand';
 import type { MascotStageCast, MascotStageHandle } from '@drizztdourden08/tessera/brand';
 import { Box, Callout, Portal } from '@drizztdourden08/tessera/primitives';
 import { usePaletteOpen } from '../../../palette/usePaletteOpen';
-import { REST_CLIP, WALKER_HEIGHT, WALKER_ID } from '../WindowMascot.constants';
+import { WALKER_HEIGHT, WALKER_ID } from '../WindowMascot.constants';
 import type { WalkerSetup } from '../WindowMascot.type';
 import { useBesidePalette } from '../behavior/useBesidePalette';
+import { useFirstWalk } from '../behavior/useFirstWalk';
 import { useProbeRect } from '../behavior/useProbeRect';
 
 const WalkerLayer = (props: WalkerSetup) => {
@@ -15,8 +16,10 @@ const WalkerLayer = (props: WalkerSetup) => {
   const probeRef = useRef<HTMLElement>(null);
   const stageRef = useRef<MascotStageHandle>(null);
   const rect = useProbeRect(probeRef);
-  const spot = useBesidePalette(stageRef, usePaletteOpen(), rect?.width ?? 0);
-  const cast = useMemo<MascotStageCast[]>(() => [{ id: WALKER_ID, brand, clip: REST_CLIP, autonomy: true }], [brand]);
+  const paletteOpen = usePaletteOpen();
+  const spot = useBesidePalette(stageRef, paletteOpen, rect?.width ?? 0);
+  useFirstWalk(stageRef, rect?.width ?? 0, paletteOpen);
+  const cast = useMemo<MascotStageCast[]>(() => [{ id: WALKER_ID, brand, autonomy: true }], [brand]);
   const place: CSSProperties | null = rect && { left: rect.left, top: rect.top + rect.height - WALKER_HEIGHT, width: rect.width, height: WALKER_HEIGHT };
 
   return (

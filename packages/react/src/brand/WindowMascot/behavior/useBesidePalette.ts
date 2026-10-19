@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import type { MascotStageHandle } from '@drizztdourden08/tessera/brand';
-import { HINT_CLIP, MOVE_SLACK, PALETTE_SELECTOR, REST_CLIP, WALKER_ID } from '../WindowMascot.constants';
+import { HINT_CLIP, MOVE_SLACK, PALETTE_SELECTOR, WALKER_ID } from '../WindowMascot.constants';
 import type { WalkerSpot } from '../WindowMascot.type';
 import { besideSpot } from './beside-spot';
 
@@ -39,7 +39,7 @@ const useBesidePalette = (stageRef: RefObject<MascotStageHandle | null>, open: b
       live = false;
       observer.disconnect();
       setSpot(null);
-      void actor.play(REST_CLIP);
+      actor.stop();
     };
   }, [stageRef, open, width]);
 

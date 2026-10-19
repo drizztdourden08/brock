@@ -29,6 +29,12 @@ const mascotStep: ReviewStep = {
       tour.check('mascot-off', walker === null, 'no mascot walks: the product has none or turned it off', 'a mascot walks although the product has none or turned it off');
     } else {
       tour.report(windowChecks(readWalker()));
+      const firstX = readWalker().actor?.left;
+      const moved = firstX === undefined ? null : await waitFor(() => {
+        const x = readWalker().actor?.left;
+        return x !== undefined && Math.abs(x - firstX) > 16;
+      }, 8000);
+      tour.check('mascot-walks', moved !== null, 'the mascot walks along the app bottom', 'the mascot did not move along the app bottom');
       await tour.capture('mascot-window');
       press({ key: 'k', ctrlKey: true });
       await waitFor(() => find(SELECTORS.walkerBeside) && readWalker().hint);
@@ -39,8 +45,8 @@ const mascotStep: ReviewStep = {
     }
     await escapeCloses(tour, 'mascot-window', isClosed);
     if (walks) {
-      const homeWalker = await waitFor(() => find(SELECTORS.walker));
-      tour.check('mascot-home', homeWalker !== null, 'the mascot keeps walking on Home', 'the mascot disappeared on Home');
+      const gone = await waitFor(() => find(SELECTORS.walker) === null);
+      tour.check('mascot-gone', gone !== null, 'the mascot leaves when the window closes', 'the mascot stays over the game after the window closes');
     }
   },
 };

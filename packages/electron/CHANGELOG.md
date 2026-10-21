@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-electron
 
+## 0.68.4
+
+### Patch Changes
+
+- 19a9788: Clear stale widget drag-over dimming when a window starts resizing.
+  - @drizztdourden08/brock-core@0.68.4
+
 ## 0.68.3
 
 ### Patch Changes

@@ -12,6 +12,7 @@ const createControllerSource = ({ addon, emit, log }: SourceInput): ControllerSo
     started = true;
     addon.start((event) => routeSdl3Event({ emit, log, registry }, event));
     registry.refreshListed();
+    emit('input:devices', registry.snapshot());
   };
 
   const stop = (): void => {
@@ -27,12 +28,19 @@ const createControllerSource = ({ addon, emit, log }: SourceInput): ControllerSo
     emit('input:devices', registry.snapshot());
   };
 
+  const refresh = () => {
+    registry.refreshListed();
+    const entries = registry.snapshot();
+    emit('input:devices', entries);
+    return entries;
+  };
+
   const rumble = (deviceKey: string, low: number, high: number, durationMs: number): boolean => {
     const device = registry.device(deviceKey);
     return device ? addon.rumble(device.sdlId, low, high, durationMs) : false;
   };
 
-  return { start, stop, rescan, rumble, snapshot: registry.snapshot, listed: registry.listed };
+  return { start, stop, refresh, rescan, rumble, snapshot: registry.snapshot, listed: registry.listed };
 };
 
 export { createControllerSource };

@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.68.6
+
+### Patch Changes
+
+- 8b48bd8: Raise the Tessera minimum to 0.46.1 for the corrected panel behavior.
+  - @drizztdourden08/brock-core@0.68.6
+
 ## 0.68.5
 
 ### Patch Changes

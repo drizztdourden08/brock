@@ -10,27 +10,41 @@ const createInputMain = (ctx: MainContext): InputMain => {
   let options: InputOptions = {};
   let current: InputRuntime | null = null;
   let started = false;
+  let starting: Promise<void> | null = null;
+  let lifecycle = 0;
 
   const runtime = (): InputRuntime => {
     current ??= createInputRuntime(ctx, options);
     return current;
   };
 
-  const start = async (): Promise<void> => {
-    if (started) return;
+  const start = (): Promise<void> => {
+    if (starting) return starting;
+    if (started) return Promise.resolve();
     if (ctx.flags.isHeadlessLaunch()) {
       ctx.log('input: automation launch, SDL3 stays off so no controller is taken from the running session');
-      return;
+      return Promise.resolve();
     }
-    started = true;
-    const { mappings, source, status } = runtime();
-    if (!status().available) return;
-    await mappings.load();
-    source.start();
-    ctx.log(`input: SDL3 ${status().sdlVersion ?? 'unknown'} started`);
+    const generation = lifecycle;
+    const pending = (async () => {
+      const { mappings, source, status } = runtime();
+      if (!status().available) {
+        if (lifecycle === generation) started = true;
+        return;
+      }
+      await mappings.load();
+      if (lifecycle !== generation) return;
+      source.start();
+      started = true;
+      ctx.log(`input: SDL3 ${status().sdlVersion ?? 'unknown'} started`);
+    })().finally(() => { if (lifecycle === generation) starting = null; });
+    starting = pending;
+    return pending;
   };
 
   const stop = (): void => {
+    lifecycle += 1;
+    starting = null;
     if (!current) return;
     current.haptics.cancelAll();
     current.source.stop();

@@ -6,11 +6,15 @@ import { RESCAN_TIMEOUT_MS } from './input-renderer.constants';
 import { isInputAvailable } from './is-input-available';
 
 let unsubscribeDevices: (() => void) | null = null;
+let devicesRevision = 0;
 
 const useControllerDevicesStore = create<ControllerDevicesStore>()((set) => {
   const listen = (): void => {
     if (unsubscribeDevices || !isInputAvailable()) return;
-    unsubscribeDevices = inputApi().onDevices((entries) => set({ entries, rescanPending: false }));
+    unsubscribeDevices = inputApi().onDevices((entries) => {
+      devicesRevision += 1;
+      set({ entries, rescanPending: false });
+    });
   };
 
   return {
@@ -22,8 +26,9 @@ const useControllerDevicesStore = create<ControllerDevicesStore>()((set) => {
     refresh: async () => {
       const api = inputApi();
       listen();
+      const revision = devicesRevision;
       const [status, entries] = await Promise.all([api.status(), api.list()]);
-      set({ status, entries, loaded: true });
+      set((state) => ({ status, entries: revision === devicesRevision ? entries : state.entries, loaded: true }));
     },
 
     rescan: async () => {

@@ -6,6 +6,7 @@ import type { Sdl3Input } from './sdl3.type';
 interface ControllerSource {
   start: () => void;
   stop: () => void;
+  refresh: () => DeviceEntry[];
   rescan: () => void;
   rumble: (deviceKey: string, low: number, high: number, durationMs: number) => boolean;
   snapshot: () => DeviceEntry[];

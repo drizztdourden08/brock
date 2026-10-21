@@ -2,6 +2,7 @@
 import type { BrowserWindow } from 'electron';
 import { activeCluster } from './active-cluster';
 import { clusterLayout } from './cluster-layout';
+import { dragInSignal } from './drag-in-signal';
 import { endResize } from './end-resize';
 import { followCluster } from './follow-cluster';
 import { modifierRelease } from './modifier-release';
@@ -20,6 +21,7 @@ const followMainCluster = (main: BrowserWindow): void => {
     });
   });
   main.on('will-resize', (event, proposed, details) => {
+    dragInSignal.clearAll();
     windowGuide.touch(MAIN_ANCHOR, 'resizing');
     onWillResize(MAIN_ANCHOR, main, { event, proposed, edge: details.edge });
   });

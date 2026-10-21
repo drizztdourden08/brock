@@ -5,6 +5,7 @@ import { getMainWindow } from '../window/get-main-window';
 import { boundsOf } from './bounds-of';
 import { cursorInApp } from './cursor-in-app';
 import { dragBounds } from './drag-bounds';
+import { dragInSignal } from './drag-in-signal';
 import { endMove } from './end-move';
 import { endResize } from './end-resize';
 import { followCluster } from './follow-cluster';
@@ -44,6 +45,7 @@ const watchManipulation = (id: string, win: BrowserWindow): void => {
     win.setBounds(wanted);
   });
   win.on('will-resize', (event, proposed, details) => {
+    dragInSignal.clearAll();
     windowGuide.touch(id, 'resizing');
     onWillResize(id, win, { event, proposed, edge: details.edge });
   });

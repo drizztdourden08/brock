@@ -2,6 +2,7 @@
 import type { WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import { emit } from '../ipc/emit';
 import { getMainWindow } from '../window/get-main-window';
+import { liveEntries } from './live-entries';
 import { DRAG_FADE_OPACITY } from './widget-windows.constants';
 import type { WidgetWindowEntry } from './widget-windows.type';
 
@@ -25,6 +26,10 @@ const drop = (id: string, entry: WidgetWindowEntry, point: WidgetWindowPoint): v
   if (main) emit(main, 'widget:dropIn', id, point);
 };
 
-const dragInSignal = { over, drop };
+const clearAll = (): void => {
+  for (const [id, entry] of liveEntries()) over(id, entry, null);
+};
+
+const dragInSignal = { clearAll, over, drop };
 
 export { dragInSignal };

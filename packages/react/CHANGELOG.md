@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.68.5
+
+### Patch Changes
+
+- 75e4730: Update Tessera to 0.46.0 and align its supported peer range.
+  - @drizztdourden08/brock-core@0.68.5
+
 ## 0.68.4
 
 ### Patch Changes

@@ -45,6 +45,8 @@ describe('an informational card', () => {
   it('draws a card without it as before', () => {
     const html = layer();
     expect(html).not.toContain('screen-layer--info');
-    expect(html).toContain('screen-page');
+    expect(html).toContain('screen-window--header');
+    expect(html).toContain('brock-page-body');
+    expect(html).not.toContain('screen-page');
   });
 });

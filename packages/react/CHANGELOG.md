@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.69.0
+
+### Patch Changes
+
+- 9ef1f24: Draw a card screen under one window header with its content straight in the window body, instead of a second page header and an inner card.
+  - @drizztdourden08/brock-core@0.69.0
+
 ## 0.68.6
 
 ### Patch Changes

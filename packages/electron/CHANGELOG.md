@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-electron
 
+## 0.69.0
+
+### Patch Changes
+
+- f5cb604: Fix the Controllers window showing no controllers: the input, catalog, display and secrets modules now keep one instance per app, so register and onWindow no longer build two.
+  - @drizztdourden08/brock-core@0.69.0
+
 ## 0.68.6
 
 ### Patch Changes

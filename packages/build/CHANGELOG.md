@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-build
 
+## 0.69.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.69.0
+- @drizztdourden08/brock-lint-config@0.69.0
+- @drizztdourden08/brock-thread@0.69.0
+
 ## 0.68.6
 
 ### Patch Changes

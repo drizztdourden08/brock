@@ -70,6 +70,7 @@ interface ScreenMeta extends ShowRule {
   header?: PageHeaderMeta;
   path?: string;
   fill?: boolean;
+  bare?: boolean;
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
   size?: ScreenSize;

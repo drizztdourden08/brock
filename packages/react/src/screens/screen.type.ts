@@ -22,6 +22,7 @@ interface ScreenDef {
   title: string;
   icon: ReactNode;
   header?: ScreenHeader;
+  bare?: boolean;
   render: (ctx: ScreenRenderContext) => ReactNode;
   preload?: () => Promise<unknown>;
   layer?: ScreenLayerKind;

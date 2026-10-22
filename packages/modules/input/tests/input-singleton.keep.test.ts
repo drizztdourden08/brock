@@ -71,4 +71,14 @@ describe('input module context', () => {
     expect(runtimes[0]?.source.refresh).not.toHaveBeenCalled();
     expect(runtimes[0]?.source.start).toHaveBeenCalledTimes(1);
   });
+
+  it('runs the full scan only on input:refresh', async () => {
+    const ctx = contextWith();
+    await inputMain.register({ ...ctx });
+    inputMain.onWindow?.({} as never, ctx);
+    const refresh = vi.mocked(ctx.handle).mock.calls.find(([channel]) => channel === 'input:refresh')?.[1] as () => Promise<unknown>;
+    await refresh();
+
+    expect(runtimes[0]?.source.refresh).toHaveBeenCalledTimes(1);
+  });
 });

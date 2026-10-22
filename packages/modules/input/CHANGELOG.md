@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-input
 
+## 0.72.0
+
+### Minor Changes
+
+- a86ed4e: Report each controller's state by physical place. `onPadState` and `usePadState` give a `PadState` keyed by slot (`face.south`, `stick.left`, `trigger.right`, and so on), with stick Y up positive. Each ready `DeviceEntry` now has a `family` hint (`xbox`, `playstation`, `nintendo` or `generic`).
+
+### Patch Changes
+
+- e4a5b6c: A Bluetooth Xbox pad on Windows lists once. SDL opens it through XInput as `045e:02ff`, and the HID listing also showed its real id, `045e:0b13`, as a second unavailable pad. The addon now reads the Windows device container of each HID device and marks the ones that share a container with an XInput interface. The snapshot lets each open XInput pad claim one such device, so two real pads still list as two. The SDL3 addon moves to 1.2.0. An older addon sends no mark, and the list behaves as before.
+  - @drizztdourden08/brock-core@0.72.0
+  - @drizztdourden08/brock-electron@0.72.0
+  - @drizztdourden08/brock-react@0.72.0
+
 ## 0.71.1
 
 ### Patch Changes

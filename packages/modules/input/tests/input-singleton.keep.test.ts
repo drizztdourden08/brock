@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 
-const runtimes: { source: { start: ReturnType<typeof vi.fn> } }[] = [];
+const runtimes: { source: { start: ReturnType<typeof vi.fn>; refresh: ReturnType<typeof vi.fn> } }[] = [];
 
 vi.mock('@drizztdourden08/brock-electron/context', () => ({
   memoByContext: <T>(create: (ctx: MainContext) => T) => {
@@ -18,7 +18,7 @@ vi.mock('../src/main/create-input-runtime', () => ({
   createInputRuntime: vi.fn(() => {
     const runtime = {
       mappings: { load: vi.fn(() => Promise.resolve()) },
-      source: { start: vi.fn(), stop: vi.fn(), refresh: vi.fn(() => []) },
+      source: { start: vi.fn(), stop: vi.fn(), refresh: vi.fn(() => []), snapshot: vi.fn(() => [{ deviceKey: 'cached' }]) },
       haptics: { cancelAll: vi.fn() },
       status: () => ({ available: true, sdlVersion: '3.0.0' }),
     };
@@ -65,9 +65,10 @@ describe('input module context', () => {
     await inputMain.register({ ...ctx });
     inputMain.onWindow?.({} as never, ctx);
     const list = vi.mocked(ctx.handle).mock.calls.find(([channel]) => channel === 'input:list')?.[1] as () => Promise<unknown>;
-    await list();
+    expect(await list()).toEqual([{ deviceKey: 'cached' }]);
 
     expect(runtimes).toHaveLength(1);
+    expect(runtimes[0]?.source.refresh).not.toHaveBeenCalled();
     expect(runtimes[0]?.source.start).toHaveBeenCalledTimes(1);
   });
 });

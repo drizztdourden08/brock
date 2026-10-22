@@ -48,7 +48,11 @@ const createAndroidInputApi = (plugin: BrockInputPlugin): InputApi => {
     onAdded: controllers.added.on,
     onRemoved: controllers.removed.on,
     onState: (listener) => controllers.state.on(listener),
-    onPadState: padStateSubscription((listener) => controllers.state.on(listener)),
+    onPadState: padStateSubscription({
+      onState: (listener) => controllers.state.on(listener),
+      onDevices: controllers.devices.on,
+      list: () => Promise.resolve(registry.snapshot()),
+    }),
     onDevices: controllers.devices.on,
     mapping: {
       add: mappings.add,

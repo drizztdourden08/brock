@@ -14,6 +14,11 @@ interface PadState {
 
 type PadFamily = 'xbox' | 'playstation' | 'nintendo' | 'generic';
 
+interface PadDevice {
+  family?: PadFamily;
+  hasButton?: readonly boolean[];
+}
+
 type PadStateListener = (deviceKey: string, state: PadState) => void;
 
-export type { ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadStateListener };
+export type { ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadDevice, PadStateListener };

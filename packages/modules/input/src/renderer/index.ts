@@ -37,7 +37,7 @@ export { usePadState } from './usePadState';
 export { padFamilyOf } from '../pad/pad-family-of';
 export { padStateOf } from '../pad/pad-state-of';
 export type {
-  ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadStateListener,
+  ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadDevice, PadStateListener,
 } from '../pad/controller-slot.type';
 export type { ControllerLiveState, ControllerStateStore } from './controller-state-store.type';
 export { useCalibrationStore } from './useCalibrationStore';

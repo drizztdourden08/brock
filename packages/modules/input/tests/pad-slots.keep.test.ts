@@ -2,7 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { buildDeviceSnapshot } from '../src/devices/build-device-snapshot';
 import type { LiveDevice } from '../src/devices/live-device.type';
-import type { ControllerGamepadType } from '../src/device.type';
+import type { ControllerGamepadType, ControllerStateListener, DeviceEntry } from '../src/device.type';
+import type { PadFamily } from '../src/pad/controller-slot.type';
+import { padStateSubscription } from '../src/pad/pad-state-subscription';
 import { SDL_AXIS_NAMES, SDL_BUTTON_NAMES } from '../src/input.constants';
 import { padFamilyOf } from '../src/pad/pad-family-of';
 import { padStateOf } from '../src/pad/pad-state-of';
@@ -82,6 +84,59 @@ describe('the SDL to extras mapping', () => {
       expect(extras.filter((extra) => extra.pressed === true).map((extra) => extra.label), button).toEqual([label]);
       expect(CONTROLLER_SLOT_IDS.some((id) => slots[id]?.pressed === true), button).toBe(false);
     }
+  });
+});
+
+const extraLabels = (family: PadFamily, hasButton: boolean[]): string[] =>
+  padStateOf(buttonsWith(), NO_AXES, { family, hasButton }).extras.map((extra) => extra.label);
+
+describe('extras limited to what the device has', () => {
+  const BASE = ['SOUTH', 'EAST', 'WEST', 'NORTH', 'MISC1'] as const;
+
+  it('lists no paddle extras for a pad without paddles', () => {
+    const extras = padStateOf(buttonsWith(), NO_AXES, { family: 'xbox', hasButton: buttonsWith(...BASE) }).extras;
+    expect(extras).toEqual([]);
+  });
+
+  it('lists only the touchpad for a pad that has one', () => {
+    const extras = padStateOf(buttonsWith('TOUCHPAD'), NO_AXES, { family: 'playstation', hasButton: buttonsWith(...BASE, 'TOUCHPAD') }).extras;
+    expect(extras).toEqual([{ id: 'extra.touchpad', label: 'Touchpad', pressed: true }]);
+  });
+
+  it('labels the paddles by family', () => {
+    const paddles = ['RIGHT_PADDLE1', 'RIGHT_PADDLE2', 'LEFT_PADDLE1', 'LEFT_PADDLE2'] as const;
+    const has = buttonsWith(...paddles);
+    expect(extraLabels('xbox', has)).toEqual(['P1', 'P3', 'P2', 'P4']);
+    expect(extraLabels('playstation', has)).toEqual(['RB', 'LB', 'Right Fn', 'Left Fn']);
+    expect(extraLabels('nintendo', has)).toEqual(['GR', 'GL', 'Paddle R2', 'Paddle L2']);
+    expect(extraLabels('generic', has)).toEqual(['Paddle R1', 'Paddle L1', 'Paddle R2', 'Paddle L2']);
+  });
+
+  it('keeps the ids stable across families', () => {
+    const ids = (family: PadFamily): string[] => padStateOf(buttonsWith(), NO_AXES, { family, hasButton: buttonsWith('RIGHT_PADDLE1', 'MISC2') }).extras.map((extra) => extra.id);
+    expect(ids('xbox')).toEqual(['extra.misc2', 'extra.paddle.right1']);
+    expect(ids('nintendo')).toEqual(ids('xbox'));
+  });
+
+  it('lists all ten extras when the device sent no capabilities', () => {
+    expect(padStateOf(buttonsWith(), NO_AXES, { family: 'xbox' }).extras).toHaveLength(10);
+    expect(padStateOf(buttonsWith(), NO_AXES, { family: 'xbox', hasButton: [] }).extras).toHaveLength(10);
+    expect(padStateOf(buttonsWith(), NO_AXES, { hasButton: [] }).extras.at(5)?.label).toBe('Paddle R1');
+  });
+
+  it('uses the capabilities of the device the subscription heard about', () => {
+    const entry = { deviceKey: 'a:b', hasButton: buttonsWith(...BASE), family: 'xbox' } as DeviceEntry;
+    let emit: ControllerStateListener = () => undefined;
+    const pads: number[] = [];
+    const subscribe = padStateSubscription({
+      onState: (listener) => { emit = listener; return () => undefined; },
+      onDevices: (listener) => { listener([entry]); return () => undefined; },
+      list: () => Promise.resolve([]),
+    });
+    subscribe((_deviceKey, state) => pads.push(state.extras.length));
+    emit('a:b', buttonsWith(), NO_AXES);
+    emit('c:d', buttonsWith(), NO_AXES);
+    expect(pads).toEqual([0, 10]);
   });
 });
 

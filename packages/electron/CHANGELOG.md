@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-electron
 
+## 0.70.0
+
+### Minor Changes
+
+- a7bdec6: A headless launch (any automation flag without `--visible`) is now hidden: its windows are never shown, so no window, taskbar flash or focus steal reaches the desktop; `--visible` is the only way to show one.
+
+  A hidden launch also turns hardware acceleration off, so its offscreen windows draw on the CPU and a machine without a GPU no longer crashes the GPU process.
+
+- 34221ba: A hidden launch now draws WebGL. Hardware acceleration stays off, and the launch adds `enable-unsafe-swiftshader`, so a WebGL canvas renders on SwiftShader, the CPU renderer Chromium ships. It draws the same pixels on every host, with or without a GPU. A screenshot baseline run uses the same path.
+
+  `--gpu` keeps hardware acceleration in a hidden launch, for a heavy WebGL check on a machine that has a GPU. A GPU-less host must not pass it.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.70.0
+
 ## 0.69.0
 
 ### Patch Changes

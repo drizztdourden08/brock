@@ -147,13 +147,24 @@ A `PadState` is `{ slots, extras }`. It feeds the Tessera `ControllerLayout` dir
 | `meta.guide` | `GUIDE` (Home, PS, Xbox) |
 | `meta.capture` | `MISC1` (Switch capture, Xbox share) |
 
-`extras` is a separate list of `{ id, label, pressed }` items, shaped like Tessera's `ControllerExtra` without a glyph. It always holds ten items, in this order:
+`extras` is a separate list of `{ id, label, pressed }` items, shaped like Tessera's `ControllerExtra` without a glyph. It lists only the controls the device has, so an Xbox pad with no paddles has no paddle rows. The device reports what it has through SDL (`SDL_GamepadHasButton`), carried on `DeviceEntry.hasButton`. The full set is ten items, in this order:
 
 | Extra `id` | `label` | SDL control |
 |---|---|---|
 | `extra.misc2` to `extra.misc6` | `Misc 2` to `Misc 6` | `MISC2` to `MISC6` |
 | `extra.paddle.right1`, `extra.paddle.left1`, `extra.paddle.right2`, `extra.paddle.left2` | `Paddle R1`, `Paddle L1`, `Paddle R2`, `Paddle L2` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
 | `extra.touchpad` | `Touchpad` | `TOUCHPAD` |
+
+The `label` is the default one in the table. A device with a `family` gets the names its own hardware uses for the paddles:
+
+| Extra `id` | `xbox` | `playstation` | `nintendo` | `generic` |
+|---|---|---|---|---|
+| `extra.paddle.right1` | `P1` | `RB` | `GR` | `Paddle R1` |
+| `extra.paddle.left1` | `P3` | `LB` | `GL` | `Paddle L1` |
+| `extra.paddle.right2` | `P2` | `Right Fn` | `Paddle R2` | `Paddle R2` |
+| `extra.paddle.left2` | `P4` | `Left Fn` | `Paddle L2` | `Paddle L2` |
+
+The ids never change, only the labels. `onPadState` and `usePadState` fill this in for you. Call `padStateOf(buttons, axes, device)` with a `DeviceEntry` (or any `{ family, hasButton }`) to do the same by hand. Without a device, or when the device sent no `hasButton`, all ten extras are listed with the default labels.
 
 `ControllerSlotId` and `ControllerSlotState` are Tessera's own types, re-exported. The slot list `CONTROLLER_SLOT_IDS` comes from Tessera too.
 

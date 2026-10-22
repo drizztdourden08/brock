@@ -1,4 +1,5 @@
 /* @layer electron-main @kind logic */
+import { memoByContext } from '@drizztdourden08/brock-electron/context';
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { CatalogInstallResult, CatalogLink, CatalogUninstallResult } from '../catalog.type';
 import { createCatalogClient } from './catalog-client';
@@ -10,8 +11,6 @@ import { installItem } from './install-item';
 import type { InstallDeps } from './install-item.type';
 import { createInstalledRegistry } from './installed-registry';
 import { uninstallItem } from './uninstall-item';
-
-const instances = new WeakMap<MainContext, CatalogMain>();
 
 const createCatalogMain = (ctx: MainContext): CatalogMain => {
   const registry = createInstalledRegistry(ctx.files);
@@ -57,12 +56,6 @@ const createCatalogMain = (ctx: MainContext): CatalogMain => {
   };
 };
 
-const getCatalog = (ctx: MainContext): CatalogMain => {
-  const existing = instances.get(ctx);
-  if (existing) return existing;
-  const created = createCatalogMain(ctx);
-  instances.set(ctx, created);
-  return created;
-};
+const getCatalog = memoByContext<MainContext, CatalogMain>(createCatalogMain);
 
 export { getCatalog };

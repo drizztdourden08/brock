@@ -1,10 +1,9 @@
 /* @layer electron-main @kind logic */
+import { memoByContext } from '@drizztdourden08/brock-electron/context';
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { InputMain, InputOptions, InputRuntime } from './input-main.type';
 import { createCalibrationStore } from '../calibration/calibration-store';
 import { createInputRuntime } from './create-input-runtime';
-
-const instances = new WeakMap<MainContext, InputMain>();
 
 const createInputMain = (ctx: MainContext): InputMain => {
   let options: InputOptions = {};
@@ -60,12 +59,6 @@ const createInputMain = (ctx: MainContext): InputMain => {
   };
 };
 
-const getInput = (ctx: MainContext): InputMain => {
-  const existing = instances.get(ctx);
-  if (existing) return existing;
-  const created = createInputMain(ctx);
-  instances.set(ctx, created);
-  return created;
-};
+const getInput = memoByContext<MainContext, InputMain>(createInputMain);
 
 export { getInput };

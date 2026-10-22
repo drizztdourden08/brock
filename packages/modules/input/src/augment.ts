@@ -14,6 +14,7 @@ declare module '@drizztdourden08/brock-core/augment' {
   interface InvokeContract {
     'input:status': () => Promise<InputStatus>;
     'input:list': () => Promise<DeviceEntry[]>;
+    'input:refresh': () => Promise<DeviceEntry[]>;
     'input:listHid': () => Promise<HidListedDevice[]>;
     'input:rescan': () => Promise<void>;
     'input:rumble': (deviceKey: string, low: number, high: number, durationMs: number) => Promise<boolean>;

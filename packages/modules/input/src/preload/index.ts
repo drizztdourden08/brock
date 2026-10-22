@@ -6,6 +6,7 @@ import type { InputApi } from '../input-api.type';
 const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
   status: () => invoke('input:status'),
   list: () => invoke('input:list'),
+  refresh: () => invoke('input:refresh'),
   listHid: () => invoke('input:listHid'),
   rescan: () => invoke('input:rescan'),
   rumble: (deviceKey, low, high, durationMs) => invoke('input:rumble', deviceKey, low, high, durationMs),

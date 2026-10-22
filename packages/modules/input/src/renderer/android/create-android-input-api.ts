@@ -33,6 +33,10 @@ const createAndroidInputApi = (plugin: BrockInputPlugin): InputApi => {
       await controllers.start();
       return registry.snapshot();
     },
+    refresh: async () => {
+      await controllers.start();
+      return registry.snapshot();
+    },
     listHid: () => Promise.resolve([]),
     rescan: async () => {
       await controllers.start();

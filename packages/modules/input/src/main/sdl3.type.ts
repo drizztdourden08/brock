@@ -74,6 +74,7 @@ interface Sdl3HidDevice {
   manufacturerString: string;
   path: string;
   busType: 'usb' | 'bluetooth' | 'unknown';
+  xinput?: boolean;
 }
 
 type Sdl3RawCaptureResult = { success: true } | { success: false; reason: RawCaptureFailureReason; message?: string };

@@ -7,6 +7,8 @@
 
 #include <utility>
 
+#include "hid-xinput-faces.h"
+
 namespace {
 
 const char* BusTypeToString(SDL_hid_bus_type busType) {
@@ -61,6 +63,7 @@ std::string WideToUtf8(const wchar_t* wide) {
 
 std::vector<HidDeviceInfo> SdlThread::EnumerateHid() {
   std::vector<HidDeviceInfo> devices;
+  const XInputFaces xinputFaces;
 
   SDL_hid_device_info* first = SDL_hid_enumerate(0, 0);
   for (SDL_hid_device_info* d = first; d != nullptr; d = d->next) {
@@ -92,6 +95,7 @@ std::vector<HidDeviceInfo> SdlThread::EnumerateHid() {
     info.manufacturerString = WideToUtf8(d->manufacturer_string);
     info.path = d->path != nullptr ? d->path : "";
     info.busType = BusTypeToString(d->bus_type);
+    info.xinput = xinputFaces.Has(d->path);
     devices.push_back(std::move(info));
   }
   SDL_hid_free_enumeration(first);

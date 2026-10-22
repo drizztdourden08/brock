@@ -43,6 +43,7 @@ interface HidListedDevice {
   productId: number;
   product: string;
   busType: ControllerBusType;
+  xinput?: boolean;
 }
 
 interface DeviceEntry {

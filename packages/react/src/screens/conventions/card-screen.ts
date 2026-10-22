@@ -4,6 +4,7 @@ import { defineScreen } from '../define-screen';
 import { renderCard } from '../kinds/render-card';
 import type { ScreenDef } from '../screen.type';
 import { entryLabel } from './entry-label';
+import { fillHeader } from './fill-header';
 import { iconNode } from './icon-node';
 import { INFO_CARD, KIND_ICONS } from './screens.constants';
 import { screenMetaFields } from './screen-meta-fields';
@@ -16,6 +17,7 @@ const cardScreen = (entry: CardEntry | BaseEntry): ScreenDef => defineScreen({
   layer: entry.kind === 'card' ? 'fullscreen' : 'own',
   ...screenMetaFields(entry.meta),
   ...(entry.kind === 'card' && entry.meta?.size === 'info' ? INFO_CARD : {}),
+  ...fillHeader(entry),
   ...(entry.kind === 'base' ? { header: 'none', menu: false } : {}),
   render: renderCard(entry.component),
   preload: preloadOf(entry.component),

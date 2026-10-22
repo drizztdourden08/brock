@@ -14,6 +14,8 @@ export { ScreenLayer } from './ScreenLayer';
 export type { ScreenLayerProps } from './ScreenLayer';
 export { ScreenHost } from './ScreenHost';
 export type { ScreenHostProps } from './ScreenHost';
+export { defineWindow } from './window/define-window';
+export type { WindowDef, WindowGroup, WindowItem, WindowRenderContext } from './window/window.type';
 export { defineScreens } from './conventions/define-screens';
 export { buildScreenTree } from './conventions/build-screen-tree';
 export { resolveScreenTree } from './conventions/resolve-screen-tree';

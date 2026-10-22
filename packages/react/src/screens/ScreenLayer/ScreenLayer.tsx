@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import { ScreenWindow } from '@drizztdourden08/tessera/composites';
 import { ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
+import { HEADED } from './ScreenLayer.constants';
 import type { ScreenLayerProps } from './ScreenLayer.type';
 import './ScreenLayer.css';
 
@@ -20,7 +21,7 @@ const actionsOf = ({ subtitle, extra }: ScreenLayerProps): ReactNode => (
 
 const frameOf = (props: ScreenLayerProps) => {
   if (props.free !== undefined) return { titleRow: false, movable: true, storageKey: props.free };
-  return (props.header ?? 'page') === 'page' ? { header: { icon: props.icon, actions: actionsOf(props) } } : {};
+  return HEADED.has(props.header ?? 'page') ? { header: { icon: props.icon, actions: actionsOf(props) } } : {};
 };
 
 const ScreenLayer = (props: ScreenLayerProps) => {

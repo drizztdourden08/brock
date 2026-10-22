@@ -289,6 +289,42 @@ export const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresP
 - Under 560 px wide the window fills the screen, as every screen does.
 - `size` works on a card. The built-in Credits screen, from `credits` on `BrockApp`, opens this way too. List entries one per line; an informational window is never wide.
 
+## A window with a side nav
+
+A tool window, such as a data inspector or a studio, often has a nav on the left and one pane per nav item on the right. Declare it with `defineWindow` in a card or layer file, and set `fill: true` in its meta so the window draws the nav and the pane edge to edge under one header. You never touch a Tessera layout:
+
+```tsx
+// src/screens/library.card.tsx
+import { defineWindow } from '@drizztdourden08/brock-react';
+import type { ScreenMeta } from '@drizztdourden08/brock-react';
+import { ItemsPane } from '@app/views/Library/ItemsPane';
+import { MapsPane } from '@app/views/Library/MapsPane';
+
+export const meta: ScreenMeta = { title: 'Library', icon: 'library', fill: true };
+
+export default defineWindow({
+  groups: [
+    {
+      id: 'records',
+      label: 'Records',
+      items: [
+        { id: 'items', label: 'Items', icon: 'package', render: () => <ItemsPane /> },
+        { id: 'maps', label: 'Maps', icon: 'map', render: () => <MapsPane /> },
+      ],
+    },
+  ],
+});
+```
+
+- **Items.** `items` is a flat list; `groups` is the same list under group labels. Use either or both. Each item has an `id`, a `label`, an `icon` (an icon name), an optional `disabled`, an optional `badge` (typed now, drawn once Tessera's side nav draws it) and `render`. `render` gets the card props plus `active` (the item id) and `select(id)`, so a pane can send the user to another item.
+- **Active item.** The first enabled item opens, or `initial` when set. The choice is remembered per screen while the app runs. Open a screen on an item with the `nav` param: `open('library', { nav: 'maps' })`.
+- **Collapse.** The nav folds to its toggle on the window's own width: under 640 px it becomes a bar with a menu, and above it the user folds it with its toggle, remembered for the screen. `narrow: true` starts it folded. `label` names the nav for assistive tools.
+- **Scroll.** A pane scrolls as a whole by default. A pane that holds a Tessera `ListDetailLayout` or `ListDetail` sets `scroll: 'none'` on the window, so the layout scrolls its own panes, and its root fills the pane like a `fill` page.
+- **Header.** `fill: true` on a card gives the window the one header with the icon and title and the close button, and no padding or scroll wrapper around the body. A card without it is unchanged.
+- `defineWindow` throws when the window has no items, repeats an id, has only disabled items or names an unknown `initial`, so a mistake shows when the file loads.
+
+A window is a plain card, so the menu, the shortcut, `requiresProfile`, `when` and `keywords` in its meta work as on any card.
+
 ## Menu order and overrides
 
 Brock builds the title bar menu on its own: Home, Profiles, Settings and the app entries the screens give, then the sections (Widgets, Help, Advanced), then module entries, and Credits, About and Quit as the last group. An app changes that menu entry by entry, in two places. They merge in this order: what Brock detects, then the screen's own `meta.menu`, then `product.menu` in `brock.config.ts`, which wins field by field.

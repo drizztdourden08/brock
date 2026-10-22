@@ -51,6 +51,7 @@ const windowOptions = (setup: WindowSetup, plan: WindowPlan): BrowserWindowConst
       contextIsolation: true,
       nodeIntegration: false,
       backgroundThrottling: false,
+      offscreen: headless,
       additionalArguments: startupRendererArgs({ config: startup, flags, instance, isDev: is.dev, rendererFlags }),
     },
   };

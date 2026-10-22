@@ -26,7 +26,7 @@ const openSplash = ({ plan, size, title, version, backgroundColor, icon, pagePat
     skipTaskbar: plan.headless,
     show: false,
     backgroundColor,
-    webPreferences: { preload: preloadPath, sandbox: false, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false },
+    webPreferences: { preload: preloadPath, sandbox: false, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, offscreen: plan.headless },
   });
   bootState.splash = splash;
   bootState.headless = plan.headless;

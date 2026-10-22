@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
-import { HUB_DEFS, HUB_WINDOW_KEY } from '../../hub/hub.constants';
+import { HUB_WINDOW_KEY } from '../../hub/hub.constants';
 import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
@@ -15,6 +15,7 @@ import { useShowContext } from '../show/useShowContext';
 import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
+import { isHubWindow } from './behavior/is-hub-window';
 import { layerKeyOf } from './behavior/layer-key-of';
 import { useMountedScreens } from './behavior/useMountedScreens';
 import { screenScroll } from '../scroll/screen-scroll';
@@ -35,7 +36,7 @@ const guarded = (screen: ScreenDef, hidden: boolean, ctx: ScreenRenderContext, o
 );
 
 const chromeOf = (screen: ScreenDef, ctx: ScreenRenderContext) =>
-  (HUB_DEFS.has(screen) ? { free: HUB_WINDOW_KEY } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
+  (isHubWindow(screen) ? { free: HUB_WINDOW_KEY } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
 
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;
@@ -58,7 +59,7 @@ const ScreenHost = (props: ScreenHostProps) => {
 
   const draw = (screen: ScreenDef, hidden: boolean): ReactNode => {
     if (screen.layer === 'own') return hidden ? null : <Box key={screen.id}>{guarded(screen, hidden, ctx, close)}</Box>;
-    const backable = backTarget !== null && !hidden && !HUB_DEFS.has(screen);
+    const backable = backTarget !== null && !hidden && !isHubWindow(screen);
     return (
       <ScreenLayer
         key={layerKeyOf(screen)}

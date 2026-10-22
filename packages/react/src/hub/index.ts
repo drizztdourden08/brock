@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind barrel */
 export { defineHub } from './define-hub';
+export { HUB_WINDOW_KEY } from './hub.constants';
 export { settingsTabPage } from './settings-tab-page';
 export { PageActions } from './PageActions';
 export type { PageActionsProps } from './PageActions';

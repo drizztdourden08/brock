@@ -33,7 +33,7 @@ describe('the no-op input API', () => {
   it('subscribes without calling back and hands an unsubscribe', () => {
     const listener = vi.fn();
     const subscriptions = [
-      noopInputApi.onAdded(listener), noopInputApi.onRemoved(listener), noopInputApi.onState(listener), noopInputApi.onDevices(listener),
+      noopInputApi.onAdded(listener), noopInputApi.onRemoved(listener), noopInputApi.onState(listener), noopInputApi.onPadState(listener), noopInputApi.onDevices(listener),
       noopInputApi.capture.onRaw(listener), noopInputApi.capture.onJoystick(listener), noopInputApi.capture.onHoldChanged(listener),
     ];
     for (const unsubscribe of subscriptions) expect(() => unsubscribe()).not.toThrow();

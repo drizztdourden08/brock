@@ -2,6 +2,7 @@
 import '../augment';
 import type { PreloadNamespace, BridgeTools } from '@drizztdourden08/brock-electron/preload';
 import type { InputApi } from '../input-api.type';
+import { padStateSubscription } from '../pad/pad-state-subscription';
 
 const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
   status: () => invoke('input:status'),
@@ -14,6 +15,7 @@ const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
   onAdded: (listener) => subscribe('input:added', listener),
   onRemoved: (listener) => subscribe('input:removed', listener),
   onState: (listener) => subscribe('input:state', listener),
+  onPadState: padStateSubscription((listener) => subscribe('input:state', listener)),
   onDevices: (listener) => subscribe('input:devices', listener),
   mapping: {
     add: (mapping) => invoke('input:mapping:add', mapping),

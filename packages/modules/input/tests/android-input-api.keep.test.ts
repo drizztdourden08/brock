@@ -57,7 +57,7 @@ describe('the Android input API over the BrockInput plugin', () => {
     expect(await api.status()).toEqual({ available: true, sdlVersion: '3.4.14' });
     expect(plugin.addListener).toHaveBeenCalledBefore(plugin.start);
     const [entry] = await api.list();
-    expect(entry).toMatchObject({ deviceKey: '057e:2009', sdlId: 7, status: 'ready', product: 'Pro Controller', busType: 'bluetooth' });
+    expect(entry).toMatchObject({ deviceKey: '057e:2009', sdlId: 7, status: 'ready', product: 'Pro Controller', busType: 'bluetooth', family: 'nintendo' });
   });
 
   it('keys a second pad of the same kind #2 and frees the key when it leaves', async () => {
@@ -89,6 +89,17 @@ describe('the Android input API over the BrockInput plugin', () => {
     send({ type: 'state', id: 4, buttons: [true], axes: [0.5] });
     send({ type: 'state', id: 99, buttons: [false], axes: [0] });
     expect(states).toEqual([['057e:2009', [true], [0.5]]]);
+  });
+
+  it('sends the same state keyed by slot through onPadState', async () => {
+    const { plugin, send } = fakePlugin();
+    const api = createAndroidInputApi(plugin);
+    const pads: [string, number | undefined, boolean | undefined][] = [];
+    api.onPadState((deviceKey, state) => pads.push([deviceKey, state['stick.left']?.x, state['face.south']?.pressed]));
+    await api.status();
+    send(added(4));
+    send({ type: 'state', id: 4, buttons: [true], axes: [0.5] });
+    expect(pads).toEqual([['057e:2009', 0.5, true]]);
   });
 });
 

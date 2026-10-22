@@ -1,6 +1,7 @@
 /* @layer core @kind logic */
 import type { DeviceEntry, HidListedDevice } from '../device.type';
 import type { LiveDevice } from './live-device.type';
+import { padFamilyOf } from '../pad/pad-family-of';
 import { toVidPid } from './vid-pid';
 
 const findListed = (listed: readonly HidListedDevice[], vendorId: number, productId: number): HidListedDevice | undefined =>
@@ -12,6 +13,7 @@ const readyEntry = (device: LiveDevice, listed: readonly HidListedDevice[]): Dev
   return {
     ...rest,
     ...(mapping === null ? {} : { mapping }),
+    family: padFamilyOf(device.sdlType),
     product: match?.product ?? '',
     busType: match?.busType ?? 'unknown',
     status: 'ready',

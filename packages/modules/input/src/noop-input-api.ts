@@ -41,6 +41,7 @@ const api: InputApi = {
   onAdded: listen,
   onRemoved: listen,
   onState: listen,
+  onPadState: listen,
   onDevices: listen,
   mapping: Object.freeze(mapping),
   calibration: Object.freeze(calibration),

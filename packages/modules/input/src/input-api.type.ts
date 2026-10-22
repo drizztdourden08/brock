@@ -9,6 +9,7 @@ import type {
 import type {
   DeviceStickCalibration, StickCalibrationStore, TriggerCalibration, TriggerCalibrationStore,
 } from './calibration.type';
+import type { PadStateListener } from './pad/controller-slot.type';
 
 type Unsubscribe = () => void;
 
@@ -48,6 +49,7 @@ interface InputApi {
   onAdded: (listener: (info: ControllerAddedInfo) => void) => Unsubscribe;
   onRemoved: (listener: (deviceKey: string) => void) => Unsubscribe;
   onState: (listener: ControllerStateListener) => Unsubscribe;
+  onPadState: (listener: PadStateListener) => Unsubscribe;
   onDevices: (listener: (devices: DeviceEntry[]) => void) => Unsubscribe;
   mapping: InputMappingApi;
   calibration: InputCalibrationApi;

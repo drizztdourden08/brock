@@ -124,6 +124,32 @@ window.api.input.capture.startJoystick(joystickId)
 
 `buttons` and `axes` follow SDL's gamepad order. `SDL_BUTTON_NAMES`, `SDL_AXIS_NAMES` and `SDL_AXIS` name each index. Sticks read from -1 to 1 and triggers from 0 to 1.
 
+## Pad slots
+
+`onState` speaks SDL's order. For a controller drawing, `window.api.input.onPadState((deviceKey, pad) => ...)` sends the same state keyed by the control's physical place. It rides the `input:state` stream, so no second event crosses the bridge. In the renderer, `usePadState(deviceKey)` gives the same `PadState`, and `padStateOf(buttons, axes)` converts a raw reading yourself.
+
+Each slot reports plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
+
+| Slot | SDL control |
+|---|---|
+| `face.south`, `face.east`, `face.west`, `face.north` | `SOUTH`, `EAST`, `WEST`, `NORTH` |
+| `dpad.up`, `dpad.down`, `dpad.left`, `dpad.right` | `DPAD_*` |
+| `shoulder.left`, `shoulder.right` | `LEFT_SHOULDER`, `RIGHT_SHOULDER` |
+| `trigger.left`, `trigger.right` | the trigger axes |
+| `stick.left`, `stick.right` | the stick axes |
+| `stick.left.click`, `stick.right.click` | `LEFT_STICK`, `RIGHT_STICK` |
+| `meta.view` | `BACK` (Select, Minus, PS share) |
+| `meta.menu` | `START` (Options, Plus) |
+| `meta.guide` | `GUIDE` (Home, PS, Xbox) |
+| `meta.capture` | `MISC1` (Switch capture, Xbox share) |
+| `extra.paddle.right1`, `extra.paddle.left1`, `extra.paddle.right2`, `extra.paddle.left2` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
+| `extra.touchpad` | `TOUCHPAD` |
+| `extra.misc2` to `extra.misc6` | `MISC2` to `MISC6`, one slot each |
+
+`CONTROLLER_SLOT_IDS` lists every slot, and `ControllerSlotId` and `ControllerSlotState` mirror the Tessera types of the same names.
+
+Each ready `DeviceEntry` has a `family` hint: `'xbox'`, `'playstation'`, `'nintendo'` or `'generic'`, from SDL's gamepad type (`padFamilyOf(sdlType)`). Xbox 360 and One are `xbox`; PS3, PS4 and PS5 are `playstation`; Switch Pro, the Joy-Cons and GameCube are `nintendo`; standard and unknown are `generic`. An unavailable entry has no family. An app uses it to pick a layout variant.
+
 ## Main side
 
 The module needs no main code from the app. `configure` points at an addon or a mapping database of the app's own:

@@ -26,6 +26,7 @@ vi.mock('../src/main/create-input-runtime', () => ({
     return runtime;
   }),
 }));
+vi.mock('../src/main/pad-gate', () => ({ createPadGate: () => ({ claim: () => true, release: vi.fn() }) }));
 vi.mock('../src/calibration/calibration-store', () => ({ createCalibrationStore: () => ({}) }));
 
 const { default: inputMain, getInput } = await import('../src/main/index');
@@ -33,7 +34,7 @@ const { createInputRuntime } = await import('../src/main/create-input-runtime');
 
 const contextWith = (): MainContext => {
   const partial: Partial<MainContext> = {
-    flags: { isHeadlessLaunch: () => false } as MainContext['flags'],
+    flags: { flags: [], isAutomationLaunch: () => false, isHeadlessLaunch: () => false, flagValue: () => null, hasFlag: () => false },
     paths: { userData: () => 'u', data: () => 'd' },
     files: {} as MainContext['files'],
     handle: vi.fn(),

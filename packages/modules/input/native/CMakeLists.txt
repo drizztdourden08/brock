@@ -31,6 +31,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   src/addon.cc
+  src/hid-xinput-faces.cc
   src/addon-raw-capture.cc
   src/addon-joystick.cc
   src/libusb-preload.cc
@@ -71,6 +72,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   # platforms whose libc already provides them.
   ${CMAKE_DL_LIBS}
 )
+
+# Config Manager, which reads the device container that pairs a Bluetooth Xbox
+# pad's HID face with its XInput interface (see src/hid-xinput-faces.h).
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE cfgmgr32)
+endif()
 
 if(APPLE)
   set_target_properties(${PROJECT_NAME} PROPERTIES

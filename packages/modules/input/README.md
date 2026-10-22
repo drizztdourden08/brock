@@ -98,6 +98,8 @@ The bundled database is `resources/gamecontrollerdb.txt`, taken from SDL_GameCon
 
 A device is keyed by `vid:pid` in lowercase hex, `057e:2009` style. A second device with the same `vid:pid` gets `#2`, the next `#3`. A freed number is reused by the next device to connect, and no other key moves.
 
+On Windows a Bluetooth Xbox pad has two faces. SDL opens it through XInput as `045e:02ff`, and the HID listing shows its real id, `045e:0b13` for a Series pad. The addon pairs the two through the Windows device container, so the pad lists once, under its XInput key.
+
 ## Install
 
 ```sh

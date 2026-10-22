@@ -118,6 +118,7 @@ Napi::Value EnumerateHid(const Napi::CallbackInfo& info) {
     object.Set("manufacturerString", devices[i].manufacturerString);
     object.Set("path", devices[i].path);
     object.Set("busType", devices[i].busType);
+    object.Set("xinput", devices[i].xinput);
     result.Set(i, object);
   }
   return result;

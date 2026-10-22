@@ -99,6 +99,10 @@ struct HidDeviceInfo {
   std::string manufacturerString;
   std::string path;
   std::string busType;
+  // True when this is the HID face of a pad that XInput serves, so SDL has
+  // it open as an XInput device under another product id. See
+  // hid-xinput-faces.h.
+  bool xinput = false;
 };
 
 // Emitted after ApplyReleaseGamepads/ApplyRestoreGamepads finish, so the

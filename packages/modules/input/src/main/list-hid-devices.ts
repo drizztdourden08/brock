@@ -13,6 +13,7 @@ const listHidDevices = (addon: Sdl3Input): HidListedDevice[] => {
       productId: device.productId,
       product: device.productString || 'Unknown controller',
       busType: device.busType,
+      xinput: device.xinput === true,
     });
   }
   return [...seen.values()];

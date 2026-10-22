@@ -2,6 +2,7 @@
 import { createCalibrationStore } from '../../calibration/calibration-store';
 import { createHapticPlayer } from '../../haptics/haptic-player';
 import type { InputApi } from '../../input-api.type';
+import { padStateSubscription } from '../../pad/pad-state-subscription';
 import type { BrockInputPlugin } from './android-input.type';
 import { STORAGE_PREFIX, UNSUPPORTED_CAPTURE } from './android-input.constants';
 import { createAndroidControllers } from './create-android-controllers';
@@ -43,6 +44,7 @@ const createAndroidInputApi = (plugin: BrockInputPlugin): InputApi => {
     onAdded: controllers.added.on,
     onRemoved: controllers.removed.on,
     onState: (listener) => controllers.state.on(listener),
+    onPadState: padStateSubscription((listener) => controllers.state.on(listener)),
     onDevices: controllers.devices.on,
     mapping: {
       add: mappings.add,

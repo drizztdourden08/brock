@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { PadFamily } from './pad/controller-slot.type';
+
 type ControllerBusType = 'usb' | 'bluetooth' | 'unknown';
 
 type ControllerConnectionState = 'wired' | 'wireless' | 'unknown';
@@ -58,6 +60,7 @@ interface DeviceEntry {
   hasGyro?: boolean;
   connectionState?: ControllerConnectionState;
   sdlType?: ControllerGamepadType;
+  family?: PadFamily;
   hasButton?: boolean[];
   hasAxis?: boolean[];
   buttonLabels?: string[];

@@ -1,7 +1,7 @@
 /* @layer core @kind constants */
 import type { ControllerGamepadType } from '../device.type';
 import type { ControllerSlotId, PadFamily } from './controller-slot.type';
-import type { SdlButtonName } from './pad-slots.constants.type';
+import type { SdlButtonName } from './sdl-button-name.type';
 
 const CONTROLLER_SLOT_IDS: readonly ControllerSlotId[] = [
   'face.south', 'face.east', 'face.west', 'face.north',

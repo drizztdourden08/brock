@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import { SDL_AXIS, SDL_BUTTON_NAMES } from '../input.constants';
-import type { SdlButtonName } from './pad-slots.constants.type';
+import type { SdlButtonName } from './sdl-button-name.type';
 import type { PadState } from './controller-slot.type';
 import { BUTTON_SLOTS } from './pad-slots.constants';
 

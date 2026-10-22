@@ -1,6 +1,4 @@
 /* @layer core @kind types */
-// These types mirror Tessera's ControllerSlotId and ControllerSlotState. Switch to a type import once Tessera ships them.
-
 type ControllerSlotId =
   | 'face.south' | 'face.east' | 'face.west' | 'face.north'
   | 'dpad.up' | 'dpad.down' | 'dpad.left' | 'dpad.right'
@@ -8,9 +6,9 @@ type ControllerSlotId =
   | 'trigger.left' | 'trigger.right'
   | 'stick.left' | 'stick.right' | 'stick.left.click' | 'stick.right.click'
   | 'meta.view' | 'meta.menu' | 'meta.guide' | 'meta.capture'
-  | 'extra.misc' | 'extra.paddle1' | 'extra.paddle2' | 'extra.paddle3' | 'extra.paddle4' | 'extra.touchpad';
+  | 'extra.misc2' | 'extra.misc3' | 'extra.misc4' | 'extra.misc5' | 'extra.misc6'
+  | 'extra.paddle.right1' | 'extra.paddle.left1' | 'extra.paddle.right2' | 'extra.paddle.left2' | 'extra.touchpad';
 
-// Plain data only. Buttons set `pressed`, triggers set `value` (0..1), sticks set `x` and `y` (-1..1, up is positive).
 interface ControllerSlotState {
   pressed?: boolean;
   value?: number;

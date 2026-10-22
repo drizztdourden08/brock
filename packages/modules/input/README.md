@@ -139,9 +139,9 @@ Each slot reports plain data. Buttons set `pressed`, triggers set `value` (0 to 
 | `meta.menu` | `START` (Options, Plus) |
 | `meta.guide` | `GUIDE` (Home, PS, Xbox) |
 | `meta.capture` | `MISC1` (Switch capture, Xbox share) |
-| `extra.paddle1` to `extra.paddle4` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
+| `extra.paddle.right1`, `extra.paddle.left1`, `extra.paddle.right2`, `extra.paddle.left2` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
 | `extra.touchpad` | `TOUCHPAD` |
-| `extra.misc` | any of `MISC2` to `MISC6` |
+| `extra.misc2` to `extra.misc6` | `MISC2` to `MISC6`, one slot each |
 
 `CONTROLLER_SLOT_IDS` lists every slot, and `ControllerSlotId` and `ControllerSlotState` mirror the Tessera types of the same names.
 

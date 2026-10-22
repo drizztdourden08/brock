@@ -26,9 +26,10 @@ describe('the SDL to slot mapping', () => {
       ['LEFT_SHOULDER', 'shoulder.left'], ['RIGHT_SHOULDER', 'shoulder.right'],
       ['LEFT_STICK', 'stick.left.click'], ['RIGHT_STICK', 'stick.right.click'],
       ['BACK', 'meta.view'], ['START', 'meta.menu'], ['GUIDE', 'meta.guide'], ['MISC1', 'meta.capture'],
-      ['RIGHT_PADDLE1', 'extra.paddle1'], ['LEFT_PADDLE1', 'extra.paddle2'],
-      ['RIGHT_PADDLE2', 'extra.paddle3'], ['LEFT_PADDLE2', 'extra.paddle4'],
-      ['TOUCHPAD', 'extra.touchpad'], ['MISC3', 'extra.misc'],
+      ['RIGHT_PADDLE1', 'extra.paddle.right1'], ['LEFT_PADDLE1', 'extra.paddle.left1'],
+      ['RIGHT_PADDLE2', 'extra.paddle.right2'], ['LEFT_PADDLE2', 'extra.paddle.left2'],
+      ['TOUCHPAD', 'extra.touchpad'], ['MISC2', 'extra.misc2'], ['MISC3', 'extra.misc3'], ['MISC4', 'extra.misc4'],
+      ['MISC5', 'extra.misc5'], ['MISC6', 'extra.misc6'],
     ] as const;
     for (const [button, slot] of pairs) {
       const state = padStateOf(buttonsWith(button), NO_AXES);

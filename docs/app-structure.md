@@ -321,6 +321,7 @@ export default defineWindow({
 - **Collapse.** The nav folds to its toggle on the window's own width: under 640 px it becomes a bar with a menu, and above it the user folds it with its toggle, remembered for the screen. `narrow: true` starts it folded. `label` names the nav for assistive tools.
 - **Scroll.** A pane scrolls as a whole by default. A pane that holds a Tessera `ListDetailLayout` or `ListDetail` sets `scroll: 'none'` on the window, so the layout scrolls its own panes, and its root fills the pane like a `fill` page.
 - **Header.** `fill: true` on a card gives the window the one header with the icon and title and the close button, and no padding or scroll wrapper around the body. A card without it is unchanged.
+- **Bare.** `bare: true` on a card makes it look exactly like the Home hub window: no title row, the hub's padding, the corner close and lock, no screen switcher, movable, and the shared hub window storage key (`HUB_WINDOW_KEY`, exported from `brock-react`), so it opens where the hubs sit and moving it moves them all. It wins over `fill` and `size`. Use it for a card that must read as a hub; the card draws its own title if it wants one.
 - `defineWindow` throws when the window has no items, repeats an id, has only disabled items or names an unknown `initial`, so a mistake shows when the file loads.
 
 A window is a plain card, so the menu, the shortcut, `requiresProfile`, `when` and `keywords` in its meta work as on any card.

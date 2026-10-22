@@ -95,7 +95,7 @@ describe('the Android input API over the BrockInput plugin', () => {
     const { plugin, send } = fakePlugin();
     const api = createAndroidInputApi(plugin);
     const pads: [string, number | undefined, boolean | undefined][] = [];
-    api.onPadState((deviceKey, state) => pads.push([deviceKey, state['stick.left']?.x, state['face.south']?.pressed]));
+    api.onPadState((deviceKey, state) => pads.push([deviceKey, state.slots['stick.left']?.x, state.slots['face.south']?.pressed]));
     await api.status();
     send(added(4));
     send({ type: 'state', id: 4, buttons: [true], axes: [0.5] });

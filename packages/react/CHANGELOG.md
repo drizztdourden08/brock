@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.73.0
+
+### Minor Changes
+
+- 7cdfd3a: A bare card now shows its title and icon in the small corner chip that Tessera 0.49 draws on a window with no title row. Hubs keep the chip off, as their floating switch already names them. Requires Tessera 0.49.0.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.73.0
+
 ## 0.72.0
 
 ### Patch Changes

@@ -42,7 +42,20 @@ When no addon loads, main logs one warning, every call returns an empty or false
 
 In the renderer, `inputApi()` never returns null. On a host with no input side (a browser, or an Android build without the plugin) it returns `noopInputApi`: `status()` reports `available: false`, the lists are empty, every action resolves to `false` or `{ ok: false }`, and every subscription hands back an unsubscribe that does nothing. App code calls it without a null check. `isInputAvailable()` tells the two apart, and `inputApi() === noopInputApi` does too.
 
-An automation launch never starts SDL3, so a test run cannot take a controller from a session already running on the same machine.
+An automation launch leaves SDL3 off by default, so a test run cannot take a controller from a session already running on the same machine. The Controllers list is then empty and main logs why.
+
+## Checking a real pad headless: `--input-live`
+
+`--input-live` turns SDL3 on in an automation launch, so a thread can read a real pad without a window on the desktop. It has no effect on a normal or `--visible` launch, where SDL3 is already on.
+
+```sh
+<app> launch <name> none --input-live
+brock start -- --no-focus --muted --user-data=<dir> --input-live
+```
+
+`launch` forwards flags it does not own to the app, so the launch verb of a repo built on `@drizztdourden08/brock-thread` (the `rotp` verb included) needs nothing more than the flag on the command line. A tool that builds the app's arguments itself must add `--input-live` to them.
+
+Only one instance may hold the pad. Every instance that starts SDL3 records itself in `brock-input-pad.lock` in the OS temp folder (one file for the whole machine, any app, any `--user-data`). A normal launch always takes the pad. A `--input-live` launch looks first: when another running process holds it, main logs one warning naming that app and process, SDL3 stays off and the list stays empty. The check retries on the next `input:list`, so it starts once the other instance quits. A lock whose process is gone is ignored. The holder releases the file when it stops. An app built on an older Brock writes no lock, so it cannot be seen: close it before a live check.
 
 ## Android
 

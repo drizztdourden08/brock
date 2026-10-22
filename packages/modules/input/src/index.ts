@@ -2,11 +2,10 @@
 import './augment';
 
 export { SDL_BUTTON_NAMES, SDL_AXIS_NAMES, SDL_AXIS } from './input.constants';
-export { CONTROLLER_SLOT_IDS } from './pad/pad-slots.constants';
 export { padFamilyOf } from './pad/pad-family-of';
 export { padStateOf } from './pad/pad-state-of';
 export type {
-  ControllerSlotId, ControllerSlotState, PadState, PadFamily, PadStateListener,
+  ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadStateListener,
 } from './pad/controller-slot.type';
 export { applyStickCalibration } from './calibration/apply-stick-calibration';
 export { applyTriggerCalibration } from './calibration/apply-trigger-calibration';

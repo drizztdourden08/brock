@@ -130,7 +130,9 @@ window.api.input.capture.startJoystick(joystickId)
 
 `onState` speaks SDL's order. For a controller drawing, `window.api.input.onPadState((deviceKey, pad) => ...)` sends the same state keyed by the control's physical place. It rides the `input:state` stream, so no second event crosses the bridge. In the renderer, `usePadState(deviceKey)` gives the same `PadState`, and `padStateOf(buttons, axes)` converts a raw reading yourself.
 
-Each slot reports plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
+A `PadState` is `{ slots, extras }`. It feeds the Tessera `ControllerLayout` directly: pass `pad.slots` as `slots` and `pad.extras` as `extras`.
+
+`slots` holds the 20 silhouette places of Tessera's `ControllerSlotId`, with plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
 
 | Slot | SDL control |
 |---|---|
@@ -144,11 +146,16 @@ Each slot reports plain data. Buttons set `pressed`, triggers set `value` (0 to 
 | `meta.menu` | `START` (Options, Plus) |
 | `meta.guide` | `GUIDE` (Home, PS, Xbox) |
 | `meta.capture` | `MISC1` (Switch capture, Xbox share) |
-| `extra.paddle.right1`, `extra.paddle.left1`, `extra.paddle.right2`, `extra.paddle.left2` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
-| `extra.touchpad` | `TOUCHPAD` |
-| `extra.misc2` to `extra.misc6` | `MISC2` to `MISC6`, one slot each |
 
-`CONTROLLER_SLOT_IDS` lists every slot, and `ControllerSlotId` and `ControllerSlotState` mirror the Tessera types of the same names.
+`extras` is a separate list of `{ id, label, pressed }` items, shaped like Tessera's `ControllerExtra` without a glyph. It always holds ten items, in this order:
+
+| Extra `id` | `label` | SDL control |
+|---|---|---|
+| `extra.misc2` to `extra.misc6` | `Misc 2` to `Misc 6` | `MISC2` to `MISC6` |
+| `extra.paddle.right1`, `extra.paddle.left1`, `extra.paddle.right2`, `extra.paddle.left2` | `Paddle R1`, `Paddle L1`, `Paddle R2`, `Paddle L2` | `RIGHT_PADDLE1`, `LEFT_PADDLE1`, `RIGHT_PADDLE2`, `LEFT_PADDLE2` |
+| `extra.touchpad` | `Touchpad` | `TOUCHPAD` |
+
+`ControllerSlotId` and `ControllerSlotState` are Tessera's own types, re-exported. The slot list `CONTROLLER_SLOT_IDS` comes from Tessera too.
 
 Each ready `DeviceEntry` has a `family` hint: `'xbox'`, `'playstation'`, `'nintendo'` or `'generic'`, from SDL's gamepad type (`padFamilyOf(sdlType)`). Xbox 360 and One are `xbox`; PS3, PS4 and PS5 are `playstation`; Switch Pro, the Joy-Cons and GameCube are `nintendo`; standard and unknown are `generic`. An unavailable entry has no family. An app uses it to pick a layout variant.
 

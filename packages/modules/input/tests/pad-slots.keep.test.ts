@@ -6,7 +6,7 @@ import type { ControllerGamepadType } from '../src/device.type';
 import { SDL_AXIS_NAMES, SDL_BUTTON_NAMES } from '../src/input.constants';
 import { padFamilyOf } from '../src/pad/pad-family-of';
 import { padStateOf } from '../src/pad/pad-state-of';
-import { CONTROLLER_SLOT_IDS } from '../src/pad/pad-slots.constants';
+import { CONTROLLER_SLOT_IDS } from '@drizztdourden08/tessera';
 
 const buttonsWith = (...down: (typeof SDL_BUTTON_NAMES)[number][]): boolean[] =>
   SDL_BUTTON_NAMES.map((name) => down.includes(name));
@@ -14,9 +14,9 @@ const buttonsWith = (...down: (typeof SDL_BUTTON_NAMES)[number][]): boolean[] =>
 const NO_AXES = SDL_AXIS_NAMES.map(() => 0);
 
 describe('the SDL to slot mapping', () => {
-  it('reports every slot', () => {
-    const state = padStateOf(buttonsWith(), NO_AXES);
-    expect(Object.keys(state).sort()).toEqual([...CONTROLLER_SLOT_IDS].sort());
+  it('reports every Tessera slot', () => {
+    const { slots } = padStateOf(buttonsWith(), NO_AXES);
+    expect(Object.keys(slots).sort()).toEqual([...CONTROLLER_SLOT_IDS].sort());
   });
 
   it('puts each SDL button in its physical slot', () => {
@@ -26,51 +26,76 @@ describe('the SDL to slot mapping', () => {
       ['LEFT_SHOULDER', 'shoulder.left'], ['RIGHT_SHOULDER', 'shoulder.right'],
       ['LEFT_STICK', 'stick.left.click'], ['RIGHT_STICK', 'stick.right.click'],
       ['BACK', 'meta.view'], ['START', 'meta.menu'], ['GUIDE', 'meta.guide'], ['MISC1', 'meta.capture'],
-      ['RIGHT_PADDLE1', 'extra.paddle.right1'], ['LEFT_PADDLE1', 'extra.paddle.left1'],
-      ['RIGHT_PADDLE2', 'extra.paddle.right2'], ['LEFT_PADDLE2', 'extra.paddle.left2'],
-      ['TOUCHPAD', 'extra.touchpad'], ['MISC2', 'extra.misc2'], ['MISC3', 'extra.misc3'], ['MISC4', 'extra.misc4'],
-      ['MISC5', 'extra.misc5'], ['MISC6', 'extra.misc6'],
     ] as const;
     for (const [button, slot] of pairs) {
-      const state = padStateOf(buttonsWith(button), NO_AXES);
-      const lit = CONTROLLER_SLOT_IDS.filter((id) => state[id]?.pressed === true);
+      const { slots, extras } = padStateOf(buttonsWith(button), NO_AXES);
+      const lit = CONTROLLER_SLOT_IDS.filter((id) => slots[id]?.pressed === true);
       expect(lit, button).toEqual([slot]);
+      expect(extras.some((extra) => extra.pressed === true), button).toBe(false);
     }
   });
 
   it('reads triggers as 0..1 values', () => {
-    const state = padStateOf(buttonsWith(), [0, 0, 0, 0, 0.25, 1]);
-    expect(state['trigger.left']).toEqual({ value: 0.25 });
-    expect(state['trigger.right']).toEqual({ value: 1 });
+    const { slots } = padStateOf(buttonsWith(), [0, 0, 0, 0, 0.25, 1]);
+    expect(slots['trigger.left']).toEqual({ value: 0.25 });
+    expect(slots['trigger.right']).toEqual({ value: 1 });
   });
 
   it('reads sticks with up as positive Y', () => {
-    const state = padStateOf(buttonsWith(), [0.5, -1, -0.25, 0.75, 0, 0]);
-    expect(state['stick.left']).toEqual({ x: 0.5, y: 1 });
-    expect(state['stick.right']).toEqual({ x: -0.25, y: -0.75 });
+    const { slots } = padStateOf(buttonsWith(), [0.5, -1, -0.25, 0.75, 0, 0]);
+    expect(slots['stick.left']).toEqual({ x: 0.5, y: 1 });
+    expect(slots['stick.right']).toEqual({ x: -0.25, y: -0.75 });
   });
 
   it('never reports negative zero', () => {
-    const state = padStateOf(buttonsWith(), NO_AXES);
-    expect(Object.is(state['stick.left']?.y, 0)).toBe(true);
+    const { slots } = padStateOf(buttonsWith(), NO_AXES);
+    expect(Object.is(slots['stick.left']?.y, 0)).toBe(true);
   });
 
   it('reads an empty state as idle', () => {
-    const state = padStateOf([], []);
-    expect(state['face.south']).toEqual({ pressed: false });
-    expect(state['stick.right']).toEqual({ x: 0, y: 0 });
-    expect(state['trigger.left']).toEqual({ value: 0 });
+    const { slots, extras } = padStateOf([], []);
+    expect(slots['face.south']).toEqual({ pressed: false });
+    expect(slots['stick.right']).toEqual({ x: 0, y: 0 });
+    expect(slots['trigger.left']).toEqual({ value: 0 });
+    expect(extras.every((extra) => extra.pressed === false)).toBe(true);
+  });
+});
+
+describe('the SDL to extras mapping', () => {
+  it('reports the ten extras apart from the slots, with plain labels', () => {
+    const { extras } = padStateOf(buttonsWith(), NO_AXES);
+    expect(extras.map((extra) => extra.id)).toEqual([
+      'extra.misc2', 'extra.misc3', 'extra.misc4', 'extra.misc5', 'extra.misc6',
+      'extra.paddle.right1', 'extra.paddle.left1', 'extra.paddle.right2', 'extra.paddle.left2', 'extra.touchpad',
+    ]);
+    expect(extras.find((extra) => extra.id === 'extra.paddle.right1')).toEqual({ id: 'extra.paddle.right1', label: 'Paddle R1', pressed: false });
+    expect(extras.find((extra) => extra.id === 'extra.misc2')?.label).toBe('Misc 2');
+  });
+
+  it('puts each extra SDL button in its own extra and no slot', () => {
+    const labels: Record<string, string> = {
+      TOUCHPAD: 'Touchpad', MISC2: 'Misc 2', MISC3: 'Misc 3', MISC4: 'Misc 4', MISC5: 'Misc 5', MISC6: 'Misc 6',
+      RIGHT_PADDLE1: 'Paddle R1', LEFT_PADDLE1: 'Paddle L1', RIGHT_PADDLE2: 'Paddle R2', LEFT_PADDLE2: 'Paddle L2',
+    };
+    for (const [button, label] of Object.entries(labels)) {
+      const { slots, extras } = padStateOf(buttonsWith(button as (typeof SDL_BUTTON_NAMES)[number]), NO_AXES);
+      expect(extras.filter((extra) => extra.pressed === true).map((extra) => extra.label), button).toEqual([label]);
+      expect(CONTROLLER_SLOT_IDS.some((id) => slots[id]?.pressed === true), button).toBe(false);
+    }
   });
 });
 
 describe('the SDL gamepad type to family mapping', () => {
   it('maps every SDL type', () => {
-    const expected: Record<ControllerGamepadType, string> = {
-      unknown: 'generic', standard: 'generic', xbox360: 'xbox', xboxone: 'xbox', ps3: 'playstation', ps4: 'playstation',
-      ps5: 'playstation', 'switch-pro': 'nintendo', 'joycon-left': 'nintendo', 'joycon-right': 'nintendo',
-      'joycon-pair': 'nintendo', gamecube: 'nintendo',
+    const byFamily: Record<string, ControllerGamepadType[]> = {
+      generic: ['unknown', 'standard'],
+      xbox: ['xbox360', 'xboxone'],
+      playstation: ['ps3', 'ps4', 'ps5'],
+      nintendo: ['switch-pro', 'joycon-left', 'joycon-right', 'joycon-pair', 'gamecube'],
     };
-    for (const [type, family] of Object.entries(expected)) expect(padFamilyOf(type as ControllerGamepadType), type).toBe(family);
+    for (const [family, types] of Object.entries(byFamily)) {
+      for (const type of types) expect(padFamilyOf(type), type).toBe(family);
+    }
   });
 
   it('puts the family on a ready entry and not on an unavailable one', () => {

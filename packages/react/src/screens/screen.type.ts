@@ -8,7 +8,7 @@ import type { ShowRule } from './show/show.type';
 
 type ScreenLayerKind = 'fullscreen' | 'own';
 
-type ScreenHeader = 'page' | 'own' | 'none';
+type ScreenHeader = 'page' | 'fill' | 'own' | 'none';
 
 interface ScreenRenderContext {
   params: ScreenParams;

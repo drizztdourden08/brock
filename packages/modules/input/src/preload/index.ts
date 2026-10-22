@@ -15,7 +15,11 @@ const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
   onAdded: (listener) => subscribe('input:added', listener),
   onRemoved: (listener) => subscribe('input:removed', listener),
   onState: (listener) => subscribe('input:state', listener),
-  onPadState: padStateSubscription((listener) => subscribe('input:state', listener)),
+  onPadState: padStateSubscription({
+    onState: (listener) => subscribe('input:state', listener),
+    onDevices: (listener) => subscribe('input:devices', listener),
+    list: () => invoke('input:list'),
+  }),
   onDevices: (listener) => subscribe('input:devices', listener),
   mapping: {
     add: (mapping) => invoke('input:mapping:add', mapping),

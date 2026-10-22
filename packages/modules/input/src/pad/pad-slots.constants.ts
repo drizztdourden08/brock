@@ -19,6 +19,16 @@ const EXTRA_BUTTONS: ReadonlyArray<readonly [string, string, SdlButtonName]> = [
   ['extra.touchpad', 'Touchpad', 'TOUCHPAD'],
 ];
 
+const EXTRA_FAMILY_LABELS: Partial<Record<PadFamily, Readonly<Record<string, string>>>> = {
+  xbox: {
+    'extra.paddle.right1': 'P1', 'extra.paddle.right2': 'P2', 'extra.paddle.left1': 'P3', 'extra.paddle.left2': 'P4',
+  },
+  playstation: {
+    'extra.paddle.right1': 'RB', 'extra.paddle.left1': 'LB', 'extra.paddle.right2': 'Right Fn', 'extra.paddle.left2': 'Left Fn',
+  },
+  nintendo: { 'extra.paddle.right1': 'GR', 'extra.paddle.left1': 'GL' },
+};
+
 const FAMILY_OF_TYPE: Record<ControllerGamepadType, PadFamily> = {
   unknown: 'generic',
   standard: 'generic',
@@ -34,4 +44,4 @@ const FAMILY_OF_TYPE: Record<ControllerGamepadType, PadFamily> = {
   gamecube: 'nintendo',
 };
 
-export { BUTTON_SLOTS, EXTRA_BUTTONS, FAMILY_OF_TYPE };
+export { BUTTON_SLOTS, EXTRA_BUTTONS, EXTRA_FAMILY_LABELS, FAMILY_OF_TYPE };

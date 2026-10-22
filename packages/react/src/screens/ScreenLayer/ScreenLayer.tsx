@@ -20,7 +20,7 @@ const actionsOf = ({ subtitle, extra }: ScreenLayerProps): ReactNode => (
 );
 
 const frameOf = (props: ScreenLayerProps) => {
-  if (props.free !== undefined) return { titleRow: false, movable: true, storageKey: props.free };
+  if (props.free !== undefined) return { titleRow: false, movable: true, storageKey: props.free, icon: props.icon, cornerTitle: props.cornerTitle };
   return HEADED.has(props.header ?? 'page') ? { header: { icon: props.icon, actions: actionsOf(props) } } : {};
 };
 

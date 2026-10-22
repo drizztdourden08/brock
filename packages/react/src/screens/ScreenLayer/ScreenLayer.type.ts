@@ -15,6 +15,7 @@ interface ScreenLayerProps {
   hidden?: boolean;
   square?: boolean;
   free?: string;
+  cornerTitle?: boolean;
   back?: BackAction;
   onClose: () => void;
   children: ReactNode;

@@ -4,3 +4,17 @@
   flex: 1;
   min-height: 0;
 }
+
+.brock-page-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-xl);
+}
+
+@container screen-layer (width < 840px) or (height < 560px) {
+  .brock-page-body { padding: var(--space-md); }
+}
+
+.brock-page-subtitle {
+  color: var(--c-text-dim);
+}

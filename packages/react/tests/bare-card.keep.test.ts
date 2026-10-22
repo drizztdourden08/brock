@@ -42,7 +42,7 @@ describe('a bare card', () => {
   });
 
   it('names the window with a corner title chip and its icon', () => {
-    const card = html(cardScreen({ kind: 'card', id: 'game', component: View, meta: { bare: true, icon: 'gear' } }));
+    const card = html(cardScreen({ kind: 'card', id: 'game', component: View, meta: { bare: true, icon: 'house' } }));
     expect(card).toContain('screen-window__corner-title');
     expect(card).toContain('screen-window__corner-icon');
     expect(card).toContain('>Game<');

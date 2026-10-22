@@ -2,6 +2,7 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { bootEvents } from '../src/main/boot/boot-events';
 import { bootState } from '../src/main/boot/boot-state';
+import { keepOffScreen } from '../src/main/window/keep-off-screen';
 import { REVEAL_MS } from '../src/main/boot/reveal.constants';
 import { tryReveal } from '../src/main/boot/try-reveal';
 import { openWidgetWindow } from '../src/main/widgets/open-widget-window';
@@ -18,7 +19,6 @@ import type { Rect } from './window-sim/window-sim.type';
 vi.mock('electron', async () => (await import('./window-sim/fake-electron')).fakeElectron);
 vi.mock('../src/main/window/load-renderer', () => ({ loadRendererPage: (): void => undefined }));
 vi.mock('../src/main/window/security', () => ({ applyWindowSecurity: (): void => undefined }));
-vi.mock('../src/main/window/keep-in-background', () => ({ keepWindowInBackground: (): void => undefined }));
 
 const platform = Object.getOwnPropertyDescriptor(process, 'platform');
 
@@ -33,6 +33,7 @@ const setupFor = (headless: boolean) => ({ headless, muted: false, title: 'App',
 const bootMain = (headless = false): FakeWindow => {
   const main = openMain(MAIN);
   main.hide();
+  if (headless) keepOffScreen(main as never);
   Object.assign(bootState, {
     app: main, headless, splash: null, mainDone: false, rendererReady: false, failure: null, revealing: false, revealed: false, holds: [],
     present: () => (headless ? main.showInactive() : main.show()),
@@ -121,7 +122,7 @@ describe('late and automation widget windows', () => {
     expect(logs.opacity).toBe(1);
   });
 
-  it('keeps an automation launch off screen and never focused', async () => {
+  it('keeps an automation launch off screen, never shown natively and never focused', async () => {
     const main = bootMain(true);
     const logs = restore('logs', LOGS, true);
     sim.track([main, logs]);
@@ -130,7 +131,8 @@ describe('late and automation widget windows', () => {
     logs.emit('ready-to-show');
     await finishBoot();
     await vi.advanceTimersByTimeAsync(REVEAL_MS * 2);
-    expect(shows.map((s) => s.how)).toEqual(['showInactive', 'showInactive']);
+    expect(shows).toEqual([]);
+    expect([main.isVisible(), logs.isVisible()]).toEqual([true, true]);
     expect(logs.getBounds()).toEqual(placed);
     expect([main.focusCalls, logs.focusCalls]).toEqual([0, 0]);
   });

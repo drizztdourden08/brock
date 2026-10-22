@@ -4,7 +4,9 @@ import type {
   WidgetProbeFacts, WidgetProbeRequest, WidgetWindowBounds, WidgetWindowPoint, WindowClusterAction, WindowGuideMode,
 } from '@drizztdourden08/brock-core';
 import { getMainWindow } from '../window/get-main-window';
+import { keepOffScreen } from '../window/keep-off-screen';
 import { offscreenOrigin } from '../window/offscreen-origin';
+import { widgetRuntime } from './widget-runtime';
 import { anyWindow } from './any-window';
 import { clusterLayout } from './cluster-layout';
 import { clusterVisibility } from './cluster-visibility';
@@ -21,6 +23,7 @@ const settled = (ms = PROBE_SETTLE_MS): Promise<void> => new Promise((resolve) =
 
 const focusAway = async (id: string): Promise<WidgetProbeFacts> => {
   const other = new BrowserWindow({ ...offscreenOrigin(), width: 240, height: 160, show: false, frame: false, skipTaskbar: true, title: 'focus-away' });
+  if (widgetRuntime.headless) keepOffScreen(other);
   other.show();
   other.focus();
   await settled(FOCUS_AWAY_MS);

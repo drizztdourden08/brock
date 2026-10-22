@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { BrowserWindow } from 'electron';
 import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
-import { keepWindowInBackground } from '../window/keep-in-background';
+import { keepOffScreen } from '../window/keep-off-screen';
 import { loadRendererPage } from '../window/load-renderer';
 import { applyWindowSecurity } from '../window/security';
 import { alignToLink } from './align-to-link';
@@ -30,7 +30,7 @@ const openWidgetWindow = (setup: WidgetWindowSetup, id: string, popped?: WidgetW
   const win = new BrowserWindow(widgetWindowOptions(setup, id, popped));
   const entry = widgetWindowControl.register(id, win, popped);
   if (setup.muted) win.webContents.setAudioMuted(true);
-  if (setup.headless) keepWindowInBackground(win);
+  if (setup.headless) keepOffScreen(win);
   applyWindowSecurity(win, setup.security);
   attachWidgetWindow(id, win, entry);
   alignToLink(entry);

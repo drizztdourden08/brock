@@ -11,7 +11,7 @@ pnpm install
 pnpm dev                 electron-vite dev server and the app, hot reloading
 pnpm build               dist/electron, dist/preload, dist/renderer
 pnpm start               run the built app
-pnpm start:headless      the same, off screen and muted (automation)
+pnpm start:headless      the same, hidden (no window is ever shown) and muted (automation)
 pnpm sync                regenerate the managed files after a Brock update
 pnpm brock icons         copy the Tessera brand icon set (build runs it first)
 pnpm lint                tsc, eslint, stylelint

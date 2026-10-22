@@ -316,7 +316,7 @@ export default defineWindow({
 });
 ```
 
-- **Items.** `items` is a flat list; `groups` is the same list under group labels. Use either or both. Each item has an `id`, a `label`, an `icon` (an icon name), an optional `disabled`, an optional `badge` (typed now, drawn once Tessera's side nav draws it) and `render`. `render` gets the card props plus `active` (the item id) and `select(id)`, so a pane can send the user to another item.
+- **Items.** `items` is a flat list; `groups` is the same list under group labels. Use either or both. Each item has an `id`, a `label`, an `icon` (an icon name), an optional `disabled`, an optional `badge` (a count or a short text, drawn as a pill on the nav row) and `render`. `render` gets the card props plus `active` (the item id) and `select(id)`, so a pane can send the user to another item.
 - **Active item.** The first enabled item opens, or `initial` when set. The choice is remembered per screen while the app runs. Open a screen on an item with the `nav` param: `open('library', { nav: 'maps' })`.
 - **Collapse.** The nav folds to its toggle on the window's own width: under 640 px it becomes a bar with a menu, and above it the user folds it with its toggle, remembered for the screen. `narrow: true` starts it folded. `label` names the nav for assistive tools.
 - **Scroll.** A pane scrolls as a whole by default. A pane that holds a Tessera `ListDetailLayout` or `ListDetail` sets `scroll: 'none'` on the window, so the layout scrolls its own panes, and its root fills the pane like a `fill` page.

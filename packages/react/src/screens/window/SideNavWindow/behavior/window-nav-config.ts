@@ -8,7 +8,7 @@ const windowNavConfig = (def: WindowDef): SideNavConfig => ({
   groups: groupsOf(def).map((group) => ({
     id: group.id,
     label: group.label,
-    items: group.items.map((item) => ({ id: item.id, label: item.label, icon: iconNode(item.icon), disabled: item.disabled })),
+    items: group.items.map((item) => ({ id: item.id, label: item.label, icon: iconNode(item.icon), badge: item.badge, disabled: item.disabled })),
   })),
 });
 

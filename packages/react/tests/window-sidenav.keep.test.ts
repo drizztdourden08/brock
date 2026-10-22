@@ -49,6 +49,11 @@ describe('a window with a sidenav', () => {
     expect(windowNavConfig(flat).groups[0]?.label).toBeUndefined();
   });
 
+  it('passes an item badge to the side nav', () => {
+    const badged: WindowDef = { items: [{ id: 'a', label: 'A', icon: 'package', badge: 3, render: () => null }] };
+    expect(windowNavConfig(badged).groups[0]?.items[0]?.badge).toBe(3);
+  });
+
   it('refuses a window that cannot work', () => {
     expect(() => assertWindow({})).toThrow('no nav items');
     expect(() => assertWindow({ items: [...(def.groups?.[0]?.items ?? []), ...(def.groups?.[0]?.items ?? [])] })).toThrow('declared twice');

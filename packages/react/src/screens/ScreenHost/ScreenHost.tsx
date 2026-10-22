@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
-import { HUB_WINDOW_KEY } from '../../hub/hub.constants';
 import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
 import { useNavigation } from '../../navigation/useNavigation';
@@ -15,6 +14,7 @@ import { useShowContext } from '../show/useShowContext';
 import { ScreenStateScope } from '../screen-state-scope';
 import type { ScreenDef, ScreenRenderContext } from '../screen.type';
 import { ScreenLayer } from '../ScreenLayer/ScreenLayer';
+import { freeFrameOf } from './behavior/free-frame-of';
 import { isHubWindow } from './behavior/is-hub-window';
 import { layerKeyOf } from './behavior/layer-key-of';
 import { useMountedScreens } from './behavior/useMountedScreens';
@@ -36,7 +36,7 @@ const guarded = (screen: ScreenDef, hidden: boolean, ctx: ScreenRenderContext, o
 );
 
 const chromeOf = (screen: ScreenDef, ctx: ScreenRenderContext) =>
-  (isHubWindow(screen) ? { free: HUB_WINDOW_KEY } : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
+  (isHubWindow(screen) ? freeFrameOf(screen) : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
 
 const ScreenHost = (props: ScreenHostProps) => {
   const { home, square = false, className = 'screen-host' } = props;

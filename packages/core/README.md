@@ -41,7 +41,7 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 ## Automation flags
 
 - An automated launch is read-only for the configuration every launch shares (window state, default profile). Main and preload read the same flag list so both processes agree.
-- `IDENTITY_FLAGS` (`--instance`, `--profile`) tag a window a person can still use. `isHeadlessLaunch` is true for any other automation flag unless `--visible` is given.
+- `IDENTITY_FLAGS` (`--instance`, `--profile`) tag a window a person can still use. `isHeadlessLaunch` is true for any other automation flag unless `--visible` is given, and a headless launch is hidden: no window is ever shown (see the electron README).
 - A flag matches bare or as `--flag=value`; `flagValue` returns the value part or null.
 
 ## Platform

@@ -12,6 +12,7 @@ import { forwardWindowEvents } from './forward-window-events';
 import { loadRendererPage } from './load-renderer';
 import { offscreenOrigin } from './offscreen-origin';
 import { placeHiddenWindow } from './place-hidden-window';
+import { keepOffScreen } from './keep-off-screen';
 import { setMainWindow } from './set-main-window';
 import { attachAppWindow } from '../boot/attach-app-window';
 
@@ -50,6 +51,7 @@ const windowOptions = (setup: WindowSetup, plan: WindowPlan): BrowserWindowConst
       contextIsolation: true,
       nodeIntegration: false,
       backgroundThrottling: false,
+      offscreen: headless,
       additionalArguments: startupRendererArgs({ config: startup, flags, instance, isDev: is.dev, rendererFlags }),
     },
   };
@@ -58,6 +60,7 @@ const windowOptions = (setup: WindowSetup, plan: WindowPlan): BrowserWindowConst
 const createWindow = (setup: WindowSetup, plan: WindowPlan): BrowserWindow => {
   const { flags, instance, paths, security } = setup;
   const win = new BrowserWindow(windowOptions(setup, plan));
+  if (plan.headless) keepOffScreen(win);
   setMainWindow(win);
   if (instance.name) holdTitle(win, plan.title);
   const present = placeHiddenWindow(win, plan, !flags.isAutomationLaunch());

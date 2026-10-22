@@ -1,6 +1,8 @@
 /* @layer electron-main @kind logic */
 import { BrowserWindow } from 'electron';
 import type { WidgetWindowBounds } from '@drizztdourden08/brock-core';
+import { keepOffScreen } from '../window/keep-off-screen';
+import { widgetRuntime } from './widget-runtime';
 import { BACKDROP_COLOR } from './widget-windows.constants';
 
 const clusterBackdrop = (area: WidgetWindowBounds): BrowserWindow => {
@@ -20,6 +22,7 @@ const clusterBackdrop = (area: WidgetWindowBounds): BrowserWindow => {
     backgroundColor: BACKDROP_COLOR,
     title: 'backdrop',
   });
+  if (widgetRuntime.headless) keepOffScreen(backdrop);
   backdrop.setBounds(area);
   backdrop.showInactive();
   return backdrop;

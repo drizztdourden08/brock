@@ -22,6 +22,7 @@ const widgetWindowSetup = (setup: WindowSetup, plan: WindowPlan): WidgetWindowSe
         contextIsolation: true,
         nodeIntegration: false,
         backgroundThrottling: false,
+        offscreen: plan.headless,
         additionalArguments: startupRendererArgs({ config: plan.startup, flags, instance, isDev: is.dev, rendererFlags }),
       },
     },

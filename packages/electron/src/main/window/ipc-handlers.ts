@@ -4,6 +4,7 @@ import type { HandlerGroup } from '../types/main-context.type';
 import { mainClusterControl } from '../widgets/main-cluster-control';
 import { widgetWindowControl } from '../widgets/widget-window-control';
 import { emit } from '../ipc/emit';
+import { bootState } from '../boot/boot-state';
 import { headlessFullscreen } from './headless-fullscreen';
 import { setPinned } from './set-pinned';
 
@@ -22,7 +23,9 @@ const windowHandlers: HandlerGroup = {
       else win.maximize();
     });
     on('window:close', () => window()?.close());
-    on('window:openDevTools', () => window()?.webContents.openDevTools());
+    on('window:openDevTools', () => {
+      if (!bootState.headless) window()?.webContents.openDevTools();
+    });
     on('window:toggleFullscreen', () => {
       const win = window();
       if (!win?.isFullScreenable() || mainClusterControl.fullscreen()) return;

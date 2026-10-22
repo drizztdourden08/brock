@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { app, BrowserWindow } from 'electron';
 import { loadRendererPage } from '../window/load-renderer';
-import { keepWindowInBackground } from '../window/keep-in-background';
+import { keepOffScreen } from '../window/keep-off-screen';
 import { bootState } from './boot-state';
 import { installSplashActions } from './install-splash-actions';
 import { replaySplash } from './replay-splash';
@@ -26,12 +26,12 @@ const openSplash = ({ plan, size, title, version, backgroundColor, icon, pagePat
     skipTaskbar: plan.headless,
     show: false,
     backgroundColor,
-    webPreferences: { preload: preloadPath, sandbox: false, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false },
+    webPreferences: { preload: preloadPath, sandbox: false, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, offscreen: plan.headless },
   });
   bootState.splash = splash;
   bootState.headless = plan.headless;
   installSplashActions();
-  if (plan.headless) keepWindowInBackground(splash);
+  if (plan.headless) keepOffScreen(splash);
 
   splash.webContents.on('did-finish-load', replaySplash);
   splash.once('ready-to-show', () => {

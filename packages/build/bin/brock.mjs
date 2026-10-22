@@ -116,7 +116,7 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock worktree base [name] [<new base>]
                              the branch the thread starts from, rebases on, opens its PR into and lands on
   brock launch <name> <state|none> [...]
-                             same as worktree launch; headless and muted unless --visible
+                             same as worktree launch; hidden (no window shown) and muted unless --visible
   brock pr push | open | status [name]
                              push and open ask: work leaves the machine
   brock mobile push          web build, cap sync, gradle, adb install and start

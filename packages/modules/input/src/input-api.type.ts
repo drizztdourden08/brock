@@ -40,6 +40,7 @@ interface InputCaptureApi {
 interface InputApi {
   status: () => Promise<InputStatus>;
   list: () => Promise<DeviceEntry[]>;
+  refresh: () => Promise<DeviceEntry[]>;
   listHid: () => Promise<HidListedDevice[]>;
   rescan: () => Promise<void>;
   rumble: (deviceKey: string, low: number, high: number, durationMs: number) => Promise<boolean>;

@@ -33,6 +33,7 @@ const capture: InputCaptureApi = {
 const api: InputApi = {
   status: () => Promise.resolve({ available: false, sdlVersion: null }),
   list: none,
+  refresh: none,
   listHid: none,
   rescan: done,
   rumble: no,

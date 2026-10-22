@@ -108,7 +108,8 @@ The preload adds `window.api.input`:
 
 ```ts
 window.api.input.status()                      // { available, sdlVersion }
-window.api.input.list()                        // DeviceEntry[], ready and unavailable
+window.api.input.list()                        // DeviceEntry[], ready and unavailable (the cached snapshot)
+window.api.input.refresh()                     // same shape, after a full device scan
 window.api.input.rescan()
 window.api.input.rumble(deviceKey, low, high, durationMs)
 window.api.input.vibratePattern(deviceKey, [{ durationMs, intensity }], gapMs)
@@ -118,6 +119,8 @@ window.api.input.mapping.add(line)
 window.api.input.calibration.writeStick(deviceKey, calibration)
 window.api.input.capture.startJoystick(joystickId)
 ```
+
+`list()` is cheap. It returns the snapshot main already holds, and the `onDevices` stream keeps that snapshot current on hotplug, so never poll it for changes. `refresh()` runs a full HID scan on the main thread and emits `onDevices`. Call it from a user action, such as a Rescan button, and never on a timer: a scan beside SDL's own HID thread can drop a pad that is in use.
 
 `buttons` and `axes` follow SDL's gamepad order. `SDL_BUTTON_NAMES`, `SDL_AXIS_NAMES` and `SDL_AXIS` name each index. Sticks read from -1 to 1 and triggers from 0 to 1.
 

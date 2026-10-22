@@ -7,6 +7,10 @@ const registerInputHandlers = ({ handle }: Pick<MainContext, 'handle'>, input: I
   handle('input:status', () => runtime().status());
   handle('input:list', async () => {
     await input.start();
+    return runtime().source.snapshot();
+  });
+  handle('input:refresh', async () => {
+    await input.start();
     return runtime().source.refresh();
   });
   handle('input:listHid', async () => {

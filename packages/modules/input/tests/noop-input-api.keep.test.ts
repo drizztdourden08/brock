@@ -7,6 +7,7 @@ describe('the no-op input API', () => {
   it('reports controllers off and lists nothing', async () => {
     expect(await noopInputApi.status()).toEqual({ available: false, sdlVersion: null });
     expect(await noopInputApi.list()).toEqual([]);
+    expect(await noopInputApi.refresh()).toEqual([]);
     expect(await noopInputApi.listHid()).toEqual([]);
     expect(await noopInputApi.capture.listJoysticks()).toEqual([]);
   });

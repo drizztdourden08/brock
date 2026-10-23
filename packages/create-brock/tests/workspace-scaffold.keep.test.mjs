@@ -64,4 +64,13 @@ describe('a workspace member app', () => {
     expect(knip.entry).not.toContain('brock.workspace.mjs');
     expect(knip.entry).toContain('brock.config.ts');
   });
+
+  it('keeps its own markdownlint config and knip entry for its lint:md script', () => {
+    const dir = tempDir();
+    copyTemplate(locateTemplate(), dir);
+    dropRootOwned(dir);
+    expect(existsSync(join(dir, '.markdownlint-cli2.mjs'))).toBe(true);
+    const knip = JSON.parse(readFileSync(join(dir, 'knip.json'), 'utf8'));
+    expect(knip.entry).toContain('.markdownlint-cli2.mjs');
+  });
 });

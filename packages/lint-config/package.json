@@ -27,6 +27,7 @@
     "./stylelint-rules/*": "./stylelint-rules/*",
     "./file-shape": "./file-shape.mjs",
     "./data-files": "./data-files.mjs",
+    "./generated-files": "./generated-files.mjs",
     "./standards.extension.mjs": "./standards.extension.mjs"
   },
   "files": [

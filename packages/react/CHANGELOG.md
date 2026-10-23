@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-react
 
+## 0.77.0
+
+### Minor Changes
+
+- 44c38e9: Live hub pages. A `<id>.live.tsx` file in a bucket or group folder is a slot in the hub nav that fills at runtime. It default-exports a hook that returns `LivePage[]` (`key`, `title`, `icon`, `badge` of `'ok'` or `'warn'`, `render`) and exports `meta: LiveMeta` (`icon`, `empty`, `title`, `order`, `keywords`, `devOnly`). The slot sorts by `meta.order` among the static pages, so Directory, one entry per connected pad, then Logs and Diagnostics keep their order. The badge shows as a status dot on Tessera's `SideNavItem`, `empty` shows as a disabled nav entry while the list is empty, and `keywords` feed the hub search. An entry opens at `<bucket>/<id>/<key>` (`section` and `tab`); when it disappears, the hub shows the first static page of the group. `brock sync` reads the file as an eager kind, and `brock-lint-config` treats it as a screen file. See Live hub pages in `docs/app-structure.md`.
+- 0cffb66: An opt-in menu bar row. Pass `<BrockApp menuBar>` a list of `{ id, label, entries }` menus whose entries are command ids, `'separator'` or `{ label, entries }` submenus, and the app draws a row of menu buttons under the title bar. Labels, icons and chords come from the command registry, so a remap shows at once, and an entry is greyed out while the command's `when()` is false. Alt opens the first menu, the arrow keys move between menus and items, and Escape closes. The hamburger stays.
+- af040f2: Recent documents and recovery snapshots for document apps. The documents port gains `recent()`, `clearRecent()` and `openRecent(path)`, a capped per-profile list that main fills on Open and on save, drops missing files from, feeds to the OS jump list and Dock menu, and reopens only through the document allowlist. It also gains opt-in `snapshot(key, data)`, `recoverable()`, `restoreSnapshot(key)` and `discardSnapshot(key)`, stored atomically in the profile folder and cleared on a clean save. brock-react adds `useRecentDocuments`, `useRecentMenu`, `useRecoverable` and an optional `RecoveryPrompt`.
+- 49214f2: A title bar button spec takes `disabled`. A button with a `command` is disabled while the `when` of that command returns false, and the bar re-reads it each time the component that registers the command renders, so Undo and Redo follow the document. A disabled button ignores clicks. Brock hands Tessera `disabled: true` on the bar action; Tessera 0.52 has no disabled look for title bar actions yet, so the button is not dimmed until it does.
+
+### Patch Changes
+
+- Updated dependencies [af040f2]
+  - @drizztdourden08/brock-core@0.77.0
+
 ## 0.76.0
 
 ### Minor Changes

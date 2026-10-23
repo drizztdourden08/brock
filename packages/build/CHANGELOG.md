@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-build
 
+## 0.77.0
+
+### Minor Changes
+
+- 44c38e9: Live hub pages. A `<id>.live.tsx` file in a bucket or group folder is a slot in the hub nav that fills at runtime. It default-exports a hook that returns `LivePage[]` (`key`, `title`, `icon`, `badge` of `'ok'` or `'warn'`, `render`) and exports `meta: LiveMeta` (`icon`, `empty`, `title`, `order`, `keywords`, `devOnly`). The slot sorts by `meta.order` among the static pages, so Directory, one entry per connected pad, then Logs and Diagnostics keep their order. The badge shows as a status dot on Tessera's `SideNavItem`, `empty` shows as a disabled nav entry while the list is empty, and `keywords` feed the hub search. An entry opens at `<bucket>/<id>/<key>` (`section` and `tab`); when it disappears, the hub shows the first static page of the group. `brock sync` reads the file as an eager kind, and `brock-lint-config` treats it as a screen file. See Live hub pages in `docs/app-structure.md`.
+
+### Patch Changes
+
+- 9b5dd81: The knip config that `brock adopt` writes, and the app template, now list `src/views/*/*.usage.ts` as entries. Tessera usage files are read by tooling and never imported, so knip no longer reports them as unused. A lazy title bar button also keeps a literal `disabled` from its spec.
+- Updated dependencies [44c38e9]
+- Updated dependencies [af040f2]
+  - @drizztdourden08/brock-lint-config@0.77.0
+  - @drizztdourden08/brock-core@0.77.0
+  - @drizztdourden08/brock-thread@0.77.0
+
 ## 0.76.0
 
 ### Minor Changes

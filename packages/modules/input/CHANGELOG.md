@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-input
 
+## 0.77.0
+
+### Minor Changes
+
+- 475439c: `window.api.input.mapping.list()` returns every gamepad mapping SDL knows as `{ guid, name, vid, pid, platform?, family? }`, so an app can show a searchable directory of supported controllers. The vendor and product ids are decoded from the SDL GUID, the platform comes from the mapping line, and the family comes from the vendor or the name. Main parses the list once and clears it when a mapping is added. The addon adds a `mappingList` call and moves to version 1.3.0. With an older addon, with controllers off, or on Android, `list()` returns an empty list. See the mapping directory section of the module README.
+
+### Patch Changes
+
+- Updated dependencies [44c38e9]
+- Updated dependencies [0cffb66]
+- Updated dependencies [af040f2]
+- Updated dependencies [49214f2]
+  - @drizztdourden08/brock-react@0.77.0
+  - @drizztdourden08/brock-core@0.77.0
+  - @drizztdourden08/brock-electron@0.77.0
+
 ## 0.76.0
 
 ### Patch Changes

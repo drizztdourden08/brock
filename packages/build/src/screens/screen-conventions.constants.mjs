@@ -13,6 +13,7 @@ const KIND_SUFFIXES = [
   { kind: 'page', suffix: '.page.tsx' },
   { kind: 'tab', suffix: '.tab.tsx' },
   { kind: 'sub', suffix: '.sub.tsx' },
+  { kind: 'live', suffix: '.live.tsx' },
   { kind: 'page-meta', suffix: '.page.ts' },
   { kind: 'settings', suffix: '.settings.ts' },
   { kind: 'card', suffix: '.card.tsx' },
@@ -24,8 +25,8 @@ const KIND_SUFFIXES = [
 /** @type {Record<'root' | 'bucket' | 'group' | 'page', string[]>} */
 const KINDS_AT = {
   root: ['card', 'layer', 'base'],
-  bucket: ['hero', 'backdrop', 'page', 'page-meta', 'settings', 'custom'],
-  group: ['page', 'page-meta', 'settings', 'custom'],
+  bucket: ['hero', 'backdrop', 'page', 'page-meta', 'settings', 'custom', 'live'],
+  group: ['page', 'page-meta', 'settings', 'custom', 'live'],
   page: ['tab', 'sub'],
 };
 
@@ -38,24 +39,25 @@ const MISPLACED = {
   tab: 'a tab sits in its page folder: src/screens/<bucket>/<page>/<tab>.tab.tsx',
   sub: 'a sub-page sits in the folder of its page: src/screens/<bucket>/<page>/<sub>.sub.tsx, beside <page>.page.tsx or the tabs of that page',
   'page-meta': 'a page meta file sits beside its tab folder: src/screens/<bucket>/<page>.page.ts next to <page>/',
+  live: 'a live page sits in a bucket folder, src/screens/<bucket>/ or a group folder inside it',
   card: 'card screens sit at the root of src/screens',
   custom: 'a custom page sits in a bucket folder, src/screens/<bucket>/ or a group folder inside it; a full-bleed screen at the root is <id>.layer.tsx (brock migrate renames it)',
   layer: 'layers sit at the root of src/screens',
   base: 'the base screen sits at the root of src/screens: src/screens/<id>.base.tsx',
 };
 
-const NAMING_HINT = 'name it <id>.hero.tsx, <bucket>.backdrop.tsx, .page.tsx, .custom.tsx, .settings.ts, .card.tsx, .layer.tsx, .base.tsx, <page>/<tab>.tab.tsx, <page>/<sub>.sub.tsx or <page>.page.ts beside a tab folder, with .dev before the extension for a dev-only screen (inspector.page.dev.tsx); the constants of a screen go beside it in <id>.<kind>.constants.ts, such as library.page.constants.ts, or <name>.constants.ts when several screens share them';
+const NAMING_HINT = 'name it <id>.hero.tsx, <bucket>.backdrop.tsx, .page.tsx, .custom.tsx, .settings.ts, .live.tsx, .card.tsx, .layer.tsx, .base.tsx, <page>/<tab>.tab.tsx, <page>/<sub>.sub.tsx or <page>.page.ts beside a tab folder, with .dev before the extension for a dev-only screen (inspector.page.dev.tsx); the constants of a screen go beside it in <id>.<kind>.constants.ts, such as library.page.constants.ts, or <name>.constants.ts when several screens share them';
 const SCREEN_ID = /^[a-z][a-z0-9-]*$/;
-const CONSTANTS_FILE = /^[a-z][a-z0-9-]*(?:\.(?:hero|backdrop|page|tab|sub|settings|card|custom|layer|base)(?:\.dev)?)?\.constants\.ts$/;
+const CONSTANTS_FILE = /^[a-z][a-z0-9-]*(?:\.(?:hero|backdrop|page|tab|sub|settings|live|card|custom|layer|base)(?:\.dev)?)?\.constants\.ts$/;
 const SCREENS_DEV_OUTPUT = '.brock/screens.dev.ts';
 const DEV_SCREEN = /\.dev(\.tsx?)$/;
-const DEV_KINDS = ['page', 'tab', 'sub', 'settings', 'card', 'custom', 'layer'];
+const DEV_KINDS = ['page', 'tab', 'sub', 'settings', 'live', 'card', 'custom', 'layer'];
 const META_EXPORT = /export\s*\{[^}]*\bmeta\b[^}]*\}|export\s+const\s+meta\b/;
 const SEARCH_ENTRIES_EXPORT = /export\s*\{[^}]*\bsearchEntries\b[^}]*\}|export\s+const\s+searchEntries\b/;
 const IMPORT_STATEMENT = /^\s*import\s+(type\s+)?[^;]*?\s+from\s+['"]([^'"]+)['"];?[ \t]*$/gm;
 const WATCH_EVENTS = ['add', 'unlink', 'change', 'addDir', 'unlinkDir'];
 const LAZY_COMPONENT = 'lazyComponent';
-const EAGER_KINDS = ['settings', 'page-meta'];
+const EAGER_KINDS = ['settings', 'live', 'page-meta'];
 
 export {
   CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, EAGER_KINDS, LAZY_COMPONENT, GENERATED_HEADER, IMPORT_STATEMENT, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, REACT_PACKAGE, SCREEN_ID,

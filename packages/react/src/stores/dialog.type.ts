@@ -5,6 +5,11 @@ interface DialogChoice<T extends string = string> {
   description?: string;
 }
 
+interface DialogAlternate {
+  label: string;
+  onSelect: () => void;
+}
+
 interface ConfirmDialogConfig {
   title: string;
   message: string;
@@ -13,11 +18,18 @@ interface ConfirmDialogConfig {
   variant?: 'danger' | 'default';
   choices?: readonly DialogChoice[];
   choice?: string;
+  alternate?: DialogAlternate;
   onConfirm: () => void;
   onCancel?: () => void;
 }
 
-type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice'>;
+type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate'>;
+
+type ConfirmSaveAnswer = 'save' | 'discard' | 'cancel';
+
+interface ConfirmSaveOptions extends ConfirmActionOptions {
+  discardLabel?: string;
+}
 
 interface ConfirmChoiceOptions<T extends string> extends ConfirmActionOptions {
   choices: readonly DialogChoice<T>[];
@@ -37,4 +49,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { ConfirmActionOptions, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, DialogChoice, DialogState };
+export type { ConfirmActionOptions, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogState };

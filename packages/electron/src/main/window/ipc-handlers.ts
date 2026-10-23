@@ -5,6 +5,7 @@ import { mainClusterControl } from '../widgets/main-cluster-control';
 import { widgetWindowControl } from '../widgets/widget-window-control';
 import { emit } from '../ipc/emit';
 import { bootState } from '../boot/boot-state';
+import { closeApproval } from './close-approval';
 import { headlessFullscreen } from './headless-fullscreen';
 import { setPinned } from './set-pinned';
 
@@ -22,7 +23,12 @@ const windowHandlers: HandlerGroup = {
       if (win.isMaximized()) win.unmaximize();
       else win.maximize();
     });
-    on('window:close', () => window()?.close());
+    on('window:close', () => {
+      const win = window();
+      if (!win) return;
+      closeApproval.grant(win);
+      win.close();
+    });
     on('window:openDevTools', () => {
       if (!bootState.headless) window()?.webContents.openDevTools();
     });

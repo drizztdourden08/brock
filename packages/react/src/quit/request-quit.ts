@@ -6,6 +6,7 @@ import { quitGuards } from './quit-guards';
 const requestQuit = async (quit: () => void): Promise<boolean> => {
   const messages = quitGuards.messages();
   if (messages.length > 0 && !(await confirmAction({ ...QUIT_CONFIRM, message: messages.join('\n') }))) return false;
+  if ((await quitGuards.decide()) === 'stay') return false;
   quit();
   return true;
 };

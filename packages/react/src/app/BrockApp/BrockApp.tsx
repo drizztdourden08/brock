@@ -38,7 +38,7 @@ import './BrockApp.css';
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetKits = NO_KITS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
-    screenGroups, profileHooks, profiles, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags, volume, developerTools, restoreNavigation, menuBar,
+    screenGroups, profileHooks, profiles, dataDomains, beforeQuit, onBeforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags, volume, developerTools, restoreNavigation, menuBar,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -46,7 +46,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const overrides = useTesseraSetup(product);
   const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
-  useAppGuards(merged.beforeQuit, beforeQuit, profiles);
+  useAppGuards({ moduleSync: merged.beforeQuit, moduleAsync: merged.onBeforeQuit, sync: beforeQuit, async: onBeforeQuit }, profiles);
   useTourRegistry(tours, merged.tours);
   useBugReportTransport(bugReport);
   useShowFlagsSource(APP_FLAGS_SOURCE, showFlags);

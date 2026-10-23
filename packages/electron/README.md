@@ -72,7 +72,7 @@ The app window is created with `show: false` at its saved geometry and is shown 
 
 ## MainContext
 
-Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, profiles, window(), handle, on, emit, log, onOpen }`. `onOpen(handler)` subscribes to the links and files the OS hands the app and returns the unsubscribe. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
+Every handler and module receives `{ product, isDev, flags, instance, paths: { userData, data }, files, documents, profiles, window(), handle, on, emit, log, onOpen }`. `onOpen(handler)` subscribes to the links and files the OS hands the app and returns the unsubscribe. `files` is a Node FileStore rooted at `Data/`; `profiles` is the core profile store over it; `emit` sends to the main window and is a no-op while there is none.
 
 ## Boot details
 
@@ -131,6 +131,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 ## Handlers
 
 - A cancelled dialog is an ordinary outcome: `pickFile` and `pickPath` return null and `saveFile` reports `saved: false` with no error. `dialog:pickPath(folder, extensions)` returns the picked path, not the bytes: a folder dialog when `folder` is true, else a file dialog filtered by `extensions`.
+- Document files at user paths: `document:open` and `document:saveAs` show the native dialogs (`{ title?, filters?, defaultPath? }`) and answer the absolute path or null; `document:read`, `document:readText`, `document:write` and `document:writeText` read and write by absolute path. Only a path the user picked in one of those dialogs this session, or one main code passed to `ctx.documents.allow(path)`, is accepted; any other path rejects with an error naming it. Writes use `writeAtomic` (temp file beside the target, flush, rename over it, a few retries when Windows holds the target, temp removed on failure). See `docs/architecture.md`, Document files.
 - `debug:revealLogs` opens `Data/debug` in the file manager, as Open logs on the boot splash does.
 - `bugReport:transport` answers `{ label }` when `bootstrapApp` got a `bugReport` transport, else null; `bugReport:send` runs it and answers its `Result`, an error when there is none, and the message of a transport that throws (logged as an error; a failed result is logged as a warning). `writeDebugZip(target, debugDir, payload, extras?)` writes `report.json`, the `.log`, `.txt` and `.json` files of `debugDir` under `logs/`, then each extra `{ name, data }`, with Brock's zip writer, and removes the file when a write fails.
 - `profiles:create` writes the record only; which profile opens next time is a separate `profiles:setLast` call, so a renderer can skip it on an automation launch.

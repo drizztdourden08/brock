@@ -89,21 +89,6 @@ describe('recent documents over IPC', () => {
     expect(await call('document:recent', 'p3')).toEqual([]);
   });
 
-  it('skips the recent list and the recovery snapshots when the write says recent is false', async () => {
-    const picked = await make('a.bxel');
-    await openDialog(picked);
-    await call('document:snapshot', 'p2', { key: 'doc-1', data: bytes(1), path: picked });
-    await call('document:write', picked, bytes(1), 'p2', { recent: false });
-    await call('document:writeText', picked, 'text', 'p2', { recent: false });
-    expect(await call('document:recent', 'p2')).toEqual([]);
-    expect(await call('document:recoverable', 'p2')).toHaveLength(1);
-    expect(electron.addRecent).toHaveBeenCalledTimes(1);
-    await call('document:writeText', picked, 'text', 'p2', { recent: true });
-    expect(await call('document:recent', 'p2')).toMatchObject([{ path: picked }]);
-    await call('document:write', picked, bytes(2), 'p3', {});
-    expect(await call('document:recent', 'p3')).toMatchObject([{ path: picked }]);
-  });
-
   it('reopens a recent file through the allowlist in a new session', async () => {
     const picked = await make('a.bxel', 'doc a');
     await openDialog(picked);
@@ -134,6 +119,23 @@ describe('recent documents over IPC', () => {
   it('refuses a profile id that could leave the profiles folder', async () => {
     await expect(call('document:recent', '../x')).rejects.toThrow(/Unsafe profile id/);
     await expect(call('document:recent')).rejects.toThrow(/needs a profile id/);
+  });
+});
+
+describe('writes that opt out of the recent list', () => {
+  it('skips the recent list and the recovery snapshots when the write says recent is false', async () => {
+    const picked = await make('a.bxel');
+    await openDialog(picked);
+    await call('document:snapshot', 'p2', { key: 'doc-1', data: bytes(1), path: picked });
+    await call('document:write', picked, bytes(1), 'p2', { recent: false });
+    await call('document:writeText', picked, 'text', 'p2', { recent: false });
+    expect(await call('document:recent', 'p2')).toEqual([]);
+    expect(await call('document:recoverable', 'p2')).toHaveLength(1);
+    expect(electron.addRecent).toHaveBeenCalledTimes(1);
+    await call('document:writeText', picked, 'text', 'p2', { recent: true });
+    expect(await call('document:recent', 'p2')).toMatchObject([{ path: picked }]);
+    await call('document:write', picked, bytes(2), 'p3', {});
+    expect(await call('document:recent', 'p3')).toMatchObject([{ path: picked }]);
   });
 });
 

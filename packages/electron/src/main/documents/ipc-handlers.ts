@@ -17,7 +17,7 @@ const documentHandlers: HandlerGroup = {
   register: (ctx) => {
     const { handle, window, documents } = ctx;
     const tracking = createDocumentTracking(ctx);
-    const save = async (path: string, content: () => string | Uint8Array, profileId: unknown, options: unknown): Promise<void> => {
+    const save = async (path: string, content: () => string | Uint8Array, [profileId, options]: readonly unknown[]): Promise<void> => {
       const full = documents.resolve(path);
       await writeAtomic(full, content());
       if (!isUnrecorded(options)) await tracking.saved(profileId, full);
@@ -43,8 +43,8 @@ const documentHandlers: HandlerGroup = {
 
     handle('document:read', async (_event, path) => toArrayBuffer(await readFile(documents.resolve(path))));
     handle('document:readText', (_event, path) => readFile(documents.resolve(path), 'utf8'));
-    handle('document:write', (_event, path, data, profileId, options) => save(path, () => bytesOf(data, 'A document write'), profileId, options));
-    handle('document:writeText', (_event, path, text, profileId, options) => save(path, () => textOf(text), profileId, options));
+    handle('document:write', (_event, path, data, ...extras) => save(path, () => bytesOf(data, 'A document write'), extras));
+    handle('document:writeText', (_event, path, text, ...extras) => save(path, () => textOf(text), extras));
     registerRecentHandlers(ctx, tracking);
     registerRecoveryHandlers(ctx, tracking);
   },

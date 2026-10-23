@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-electron
 
+## 0.79.0
+
+### Minor Changes
+
+- 6b26c03: An async quit guard and a write option for exports. `onBeforeQuit` on `BrockApp` and on a module is `() => 'quit' | 'stay'`, sync or async; the first `'stay'` keeps the app open, and a guard that throws counts as `'stay'`, so a failed save never closes the app. `quitGuards.addAsync` and `quitGuards.decide` register and run them, and `saveBeforeQuit({ dirty, save })` builds the usual guard with a Save, Discard and Cancel dialog (`confirmSave` is the dialog). Concurrent requests share one run, so a second close never stacks a second dialog. An app that registered a guard, sync or async, now also has native closes held (Alt+F4, the taskbar, the OS, `app.quit()`): main pings the renderer for 5 s, then waits on the user, and the renderer runs the same decision as Quit (sync messages, then async guards). An app with no guard closes at once as before, and a renderer that does not answer the ping closes. `window.close()` from app code goes through the hold too; `window.close({ force: true })` closes at once. An automation launch installs no hold. `documents.write` and `documents.writeText` take `{ recent: false }` for an export such as a PNG: the file is not added to the recent list or the OS recent menu, and no recovery snapshot is cleared. The default still records. The new `QuitDecision`, `DocumentWriteOptions` and `WindowCloseOptions` types are in core.
+
+### Patch Changes
+
+- Updated dependencies [6b26c03]
+  - @drizztdourden08/brock-core@0.79.0
+
 ## 0.78.0
 
 ### Minor Changes

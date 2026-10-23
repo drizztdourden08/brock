@@ -7,7 +7,7 @@ import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
 import type { RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
-import type { BeforeQuit } from '../../quit/quit.type';
+import type { BeforeQuit, OnBeforeQuit } from '../../quit/quit.type';
 import type { TitleBarItemEntry } from '../../title-bar/title-bar-item.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
@@ -70,6 +70,7 @@ interface BrockAppProps<S extends object> {
   credits?: ReactNode;
   legalText?: string;
   beforeQuit?: BeforeQuit;
+  onBeforeQuit?: OnBeforeQuit;
   titleBar?: readonly TitleBarItemEntry[];
   review?: AppReview;
   tours?: readonly TourDef[];

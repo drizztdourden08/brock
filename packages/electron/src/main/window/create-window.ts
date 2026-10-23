@@ -9,6 +9,7 @@ import { attachTextInteraction } from './text-interaction';
 import { attachKeyPassthrough } from './key-passthrough';
 import { applyWindowSecurity } from './security';
 import { forwardWindowEvents } from './forward-window-events';
+import { holdClose } from './hold-close';
 import { loadRendererPage } from './load-renderer';
 import { offscreenOrigin } from './offscreen-origin';
 import { placeHiddenWindow } from './place-hidden-window';
@@ -69,6 +70,7 @@ const createWindow = (setup: WindowSetup, plan: WindowPlan): BrowserWindow => {
   attachTextInteraction(win);
   applyWindowSecurity(win, security);
   forwardWindowEvents(win);
+  if (!flags.isAutomationLaunch()) holdClose(win);
   attachAppWindow(win, present);
   loadRendererPage(win, paths.renderer);
   return win;

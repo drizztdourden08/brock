@@ -12,7 +12,7 @@ const useFailureActions = (): readonly SplashAction[] => {
   return useMemo(() => [
     { label: 'Retry', primary: true, onSelect: retry },
     ...(revealLogs ? [{ label: 'Open logs', onSelect: () => void revealLogs() }] : []),
-    ...(quit ? [{ label: 'Quit', onSelect: () => win.close() }] : []),
+    ...(quit ? [{ label: 'Quit', onSelect: () => win.close({ force: true }) }] : []),
   ], [revealLogs, quit, win]);
 };
 

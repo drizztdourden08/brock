@@ -12,7 +12,7 @@ const useWindowControl = () => {
     pin: () => void togglePin(),
     minimize: () => win.minimize(),
     maximize: () => win.toggleMaximize(),
-    close: () => void requestQuit(() => win.close()),
+    close: () => void requestQuit(() => win.close({ force: true })),
   };
   return { pinned, onControl: (control: WindowControl): void => actions[control]() };
 };

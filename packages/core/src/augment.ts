@@ -6,7 +6,7 @@ import type { OpenRequest } from './types/open.type';
 import type { BugReportPayload, BugReportReceiptWire, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
-import type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
+import type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './ipc/payloads.type';
 import type { WindowControlsPort } from './platform/ports/window-controls.type';
 import type { FileStore } from './platform/ports/file-store.type';
 import type { FilePickerPort } from './platform/ports/file-picker.type';
@@ -99,7 +99,8 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, Docum
 interface SendContract extends WidgetSendContract, DataSendContract {
   'window:minimize': () => void;
   'window:maximize': () => void;
-  'window:close': () => void;
+  'window:close': (force?: boolean) => void;
+  'window:setCloseGuarded': (guarded: boolean) => void;
   'window:openDevTools': () => void;
   'window:toggleFullscreen': () => void;
   'window:setFullscreen': (value: boolean) => void;
@@ -124,7 +125,10 @@ interface EventContract extends WidgetEventContract, DataEventContract {
   'ask:request': (id: number, channel: string, args: unknown[]) => void;
 }
 
-interface AskContract {}
+interface AskContract {
+  'window:pingQuit': () => Promise<true>;
+  'window:confirmQuit': () => Promise<QuitDecision>;
+}
 
 interface IpcNamespaces {}
 

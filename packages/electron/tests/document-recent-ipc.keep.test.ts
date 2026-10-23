@@ -122,6 +122,23 @@ describe('recent documents over IPC', () => {
   });
 });
 
+describe('writes that opt out of the recent list', () => {
+  it('skips the recent list and the recovery snapshots when the write says recent is false', async () => {
+    const picked = await make('a.bxel');
+    await openDialog(picked);
+    await call('document:snapshot', 'p2', { key: 'doc-1', data: bytes(1), path: picked });
+    await call('document:write', picked, bytes(1), 'p2', { recent: false });
+    await call('document:writeText', picked, 'text', 'p2', { recent: false });
+    expect(await call('document:recent', 'p2')).toEqual([]);
+    expect(await call('document:recoverable', 'p2')).toHaveLength(1);
+    expect(electron.addRecent).toHaveBeenCalledTimes(1);
+    await call('document:writeText', picked, 'text', 'p2', { recent: true });
+    expect(await call('document:recent', 'p2')).toMatchObject([{ path: picked }]);
+    await call('document:write', picked, bytes(2), 'p3', {});
+    expect(await call('document:recent', 'p3')).toMatchObject([{ path: picked }]);
+  });
+});
+
 describe('recovery snapshots over IPC', () => {
   it('saves a snapshot, lists it, restores the bytes and discards it', async () => {
     await call('document:snapshot', 'p1', { key: 'doc-1', data: bytes(5, 6), name: 'sprite', path: join(dir, 'sprite.bxel') });

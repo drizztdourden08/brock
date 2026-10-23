@@ -54,7 +54,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       hasCredits,
       developerTools,
       show,
-      onQuit: () => void requestQuit(() => win.close()),
+      onQuit: () => void requestQuit(() => win.close({ force: true })),
       onDevConsole: () => win.openDevTools(),
       onReportBug: () => bugReport.open(),
       onShortcuts: shortcutsHelp.open,

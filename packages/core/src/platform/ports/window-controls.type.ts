@@ -1,10 +1,14 @@
 /* @layer core @kind types */
 type Unsub = () => void;
 
+interface WindowCloseOptions {
+  force?: boolean;
+}
+
 interface WindowControlsPort {
   minimize: () => void;
   toggleMaximize: () => void;
-  close: () => void;
+  close: (options?: WindowCloseOptions) => void;
   toggleFullscreen: () => void;
   setFullscreen: (on: boolean) => void;
   setTitle: (title: string) => void;
@@ -19,4 +23,4 @@ interface WindowControlsPort {
   isAudioMuted?: () => Promise<boolean>;
 }
 
-export type { WindowControlsPort, Unsub };
+export type { WindowCloseOptions, WindowControlsPort, Unsub };

@@ -11,6 +11,8 @@ import { searchableMenu } from '../../../menu/searchable-menu';
 import { useMenuHiddenRoutes } from '../../../menu/useMenuHiddenRoutes';
 import { visibleMenu } from '../../../menu/visible-menu';
 import { withPreload } from '../../../menu/with-preload';
+import { withCommandChords } from '../../../menu/with-command-chords';
+import { useChordLookup } from '../../../commands/useChordLookup';
 import { routePreloader } from '../../../lazy/route-preloader';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
@@ -39,6 +41,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
   const tourList = useTourStore((s) => s.tours);
   const hasProfile = useProfilesStore((s) => s.active !== null);
   const homeLocked = !hasProfile && registry.get(homeScreen)?.requiresProfile !== false;
+  const chords = useChordLookup();
 
   const shell = useMemo(() => {
     const resolved = resolveShellMenu({
@@ -59,10 +62,10 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
     });
-    const entries = withPreload(resolved.entries, routePreloader(registry));
+    const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords);
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry]);
+  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

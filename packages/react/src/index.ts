@@ -32,6 +32,7 @@ export * from './overlays';
 export * from './boot';
 export * from './errors';
 export * from './shortcuts-help';
+export * from './commands';
 export * from './quit';
 export * from './review';
 export * from './title-bar';

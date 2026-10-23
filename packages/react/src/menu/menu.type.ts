@@ -9,6 +9,7 @@ interface MenuItem extends Omit<ProductMenuEntry, 'label'> {
   icon?: ReactNode;
   description?: string;
   shortcut?: string;
+  command?: string;
   disabled?: boolean;
   checked?: boolean;
   screen?: string;

@@ -12,6 +12,7 @@ import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit } from '../quit/quit.type';
 import type { TourDef } from '../tours/tour.type';
 import type { VolumeSource } from '../volume/volume.type';
+import type { CommandDef } from '../commands/command.type';
 
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
@@ -33,6 +34,7 @@ interface RendererModule {
   beforeQuit?: BeforeQuit;
   tours?: readonly TourDef[];
   volume?: VolumeSource;
+  commands?: readonly CommandDef[];
 }
 
 interface MergedModules {
@@ -51,6 +53,7 @@ interface MergedModules {
   beforeQuit: BeforeQuit[];
   tours: TourDef[];
   volume?: VolumeSource;
+  commands: CommandDef[];
 }
 
 export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };

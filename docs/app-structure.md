@@ -326,6 +326,56 @@ export default defineWindow({
 
 A window is a plain card, so the menu, the shortcut, `requiresProfile`, `when` and `keywords` in its meta work as on any card.
 
+## Commands and shortcuts
+
+An app action with a shortcut is a command. Declare the app-wide ones once and pass them to `BrockApp`:
+
+```ts
+// src/commands.ts
+import { defineCommand, nav } from '@drizztdourden08/brock-react';
+
+const appCommands = [
+  defineCommand({ id: 'file.save', label: 'Save', icon: 'save', group: 'File', chord: 'Mod+S', run: () => void saveDocument() }),
+  defineCommand({ id: 'edit.redo', label: 'Redo', group: 'Edit', chord: { mac: 'Mod+Shift+Z', other: ['Mod+Y', 'Mod+Shift+Z'] }, run: redo }),
+  defineCommand({ id: 'view.gallery', label: 'Gallery', group: 'View', chord: 'Mod+G', run: () => nav.open('gallery') }),
+];
+
+export { appCommands };
+```
+
+```tsx
+<BrockApp product={product} settings={settings} commands={appCommands} />
+```
+
+A screen's own tools go in the screen, with `scope` set to its id, so they act only while it is open and can read its state:
+
+```tsx
+useCommands([
+  { id: 'editor.pencil', label: 'Pencil', group: 'Tools', chord: 'B', scope: 'editor', run: () => setTool('pencil') },
+  { id: 'editor.undo', label: 'Undo stroke', group: 'Edit', chord: 'Mod+Z', scope: 'editor', run: undoStroke },
+]);
+```
+
+- A plain key such as `B` does nothing while the user types in a field. A chord with Mod fires anyway. Set `whileTyping` to change that.
+- Show the chord where the action is. A menu entry takes `command: 'file.save'` (it runs the command and shows its chord), a title bar item takes `command` in `defineTitleBarItem({ kind: 'button', label, icon, command })`, and any other tooltip reads `formatChord(useCommandChords('file.save')[0] ?? '')`. Never write the chord twice.
+- Every command is listed in the Ctrl+/ dialog under its `group`.
+- Users remap chords on the Keyboard page. Add it to the settings bucket with one page file:
+
+```tsx
+// src/screens/settings/keyboard.page.tsx
+import { KeymapPage } from '@drizztdourden08/brock-react';
+import type { ScreenMeta } from '@drizztdourden08/brock-react';
+
+const meta: ScreenMeta = { title: 'Keyboard', icon: 'keyboard', keywords: ['shortcuts', 'keys', 'keymap', 'chord'] };
+
+const KeyboardPage = () => <KeymapPage />;
+
+export default KeyboardPage;
+export { meta };
+```
+
+The remaps are saved per profile in the settings, under `keymap`. The page shows conflicts and has a reset per row, per group and for all. [architecture.md](architecture.md), Commands and the keymap, has the whole contract.
+
 ## Menu order and overrides
 
 Brock builds the title bar menu on its own: Home, Profiles, Settings and the app entries the screens give, then the sections (Widgets, Help, Advanced), then module entries, and Credits, About and Quit as the last group. An app changes that menu entry by entry, in two places. They merge in this order: what Brock detects, then the screen's own `meta.menu`, then `product.menu` in `brock.config.ts`, which wins field by field.

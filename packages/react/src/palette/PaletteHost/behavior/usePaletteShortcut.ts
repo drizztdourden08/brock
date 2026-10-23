@@ -1,11 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
 import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
-import { PALETTE_KEY } from '../../palette.constants';
+import { capturingChord } from '../../../commands/capturing-chord';
+import { commands } from '../../../commands/commands';
+import { BROCK_COMMANDS } from '../../../commands/commands.constants';
 import { usePaletteStore } from '../../usePaletteStore';
-
-const isPaletteChord = (event: KeyboardEvent): boolean =>
-  (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === PALETTE_KEY;
 
 const claim = (event: KeyboardEvent): void => {
   event.preventDefault();
@@ -20,7 +19,7 @@ const usePaletteShortcut = (): void => {
 
   useEffect(() => {
     const handler = (event: KeyboardEvent): void => {
-      if (!isPaletteChord(event)) return;
+      if (capturingChord(event.target) || !commands.matches(BROCK_COMMANDS.search, event)) return;
       claim(event);
       usePaletteStore.getState().toggle();
     };

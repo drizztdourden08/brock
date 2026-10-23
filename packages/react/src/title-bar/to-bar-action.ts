@@ -23,7 +23,10 @@ const toBarAction = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction =
     return { id, label, icon, bar: 'status', status: spec.status ?? undefined, ...look, pulse: spec.pulse, onSelect: spec.onSelect ?? noop };
   }
   if (spec.command !== undefined) actionCommands.link(id, spec.command);
-  return { id, label, icon, bar: 'button', ...look, shortcut: spec.shortcut, onSelect: spec.onSelect ?? (() => selectButton(spec)) };
+  const button: WindowTitleBarAction & { disabled?: boolean } = {
+    id, label, icon, bar: 'button', ...look, shortcut: spec.shortcut, disabled: spec.disabled, onSelect: spec.onSelect ?? (() => selectButton(spec)),
+  };
+  return button;
 };
 
 export { toBarAction };

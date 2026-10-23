@@ -41,7 +41,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume, restoreNavigation } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume, restoreNavigation, menuBar } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -86,7 +86,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
             instanceName={instanceName()}
             logoSrc={logoSrc}
             actions={actions}
-            hidden={titleBarHidden}
+            hidden={titleBarHidden} menuBar={menuBar}
             viewHidden={viewHidden(product.menu)}
             menuConfig={product.menu}
           />

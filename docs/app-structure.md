@@ -410,6 +410,28 @@ export { meta };
 
 The remaps are saved per profile in the settings, under `keymap`. The page shows conflicts and has a reset per row, per group and for all. [architecture.md](architecture.md), Commands and the keymap, has the whole contract.
 
+## A menu bar row
+
+A document app can add a classic menu bar (File, Edit, View) under the title bar. It is off by default, and the hamburger stays. Pass the menus to `BrockApp`; each entry is a command id from the registry:
+
+```tsx
+import type { MenuBarMenu } from '@drizztdourden08/brock-react';
+
+const menuBar: MenuBarMenu[] = [
+  { id: 'file', label: 'File', entries: ['file.new', 'file.save', 'separator', { label: 'Export', entries: ['file.png', 'file.gif'] }] },
+  { id: 'edit', label: 'Edit', entries: ['edit.undo', 'edit.redo'] },
+];
+
+<BrockApp product={product} settings={settings} commands={appCommands} menuBar={menuBar} />
+```
+
+- An entry is a command id, the word `'separator'`, or `{ label, entries }` for a submenu.
+- The label, the icon and the chord of an entry come from the command, so a remap shows at once. An entry runs `commands.run(id)`.
+- An entry is greyed out while the command's `when()` returns `false`. An id no command registered is left out, and a menu left with no entry is not drawn.
+- The row sits under the title bar and hides with it. The row drags the window; only the menu buttons are no-drag.
+- Alt on its own opens the first menu and closes it again. The arrow keys move between the menus and the items, Down opens a focused menu, and Escape closes it. Hovering another button while a menu is open switches to it.
+- Access keys (underlined letters) are not drawn.
+
 ## Menu order and overrides
 
 Brock builds the title bar menu on its own: Home, Profiles, Settings and the app entries the screens give, then the sections (Widgets, Help, Advanced), then module entries, and Credits, About and Quit as the last group. An app changes that menu entry by entry, in two places. They merge in this order: what Brock detects, then the screen's own `meta.menu`, then `product.menu` in `brock.config.ts`, which wins field by field.

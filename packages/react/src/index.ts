@@ -33,6 +33,7 @@ export * from './boot';
 export * from './errors';
 export * from './shortcuts-help';
 export * from './commands';
+export * from './menu-bar';
 export * from './quit';
 export * from './review';
 export * from './title-bar';

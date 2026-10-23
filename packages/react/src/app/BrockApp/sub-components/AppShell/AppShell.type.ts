@@ -12,6 +12,7 @@ import type { WidgetKitDef } from '../../../../widgets/kits/widget-kit.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
 import type { AppReview } from '../../../../review/app-review.type';
 import type { VolumeSource } from '../../../../volume/volume.type';
+import type { MenuBarMenu } from '../../../../menu-bar/menu-bar.type';
 import type { BrockAppLayout } from '../../BrockApp.type';
 
 interface AppShellProps<S extends object> {
@@ -32,6 +33,7 @@ interface AppShellProps<S extends object> {
   review?: AppReview;
   volume?: VolumeSource;
   restoreNavigation?: boolean;
+  menuBar?: readonly MenuBarMenu[];
 }
 
 export type { AppShellProps };

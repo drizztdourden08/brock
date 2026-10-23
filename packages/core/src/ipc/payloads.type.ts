@@ -25,4 +25,6 @@ interface SaveFileResultWire {
   error?: string;
 }
 
-export type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire };
+type AskOutcome = { ok: true; value: unknown } | { ok: false; message: string };
+
+export type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire };

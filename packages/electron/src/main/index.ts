@@ -8,7 +8,10 @@ export type {
 export { handle } from './ipc/handle';
 export { on } from './ipc/on';
 export { emit } from './ipc/emit';
+export { ask } from './ipc/ask';
+export { askWithin } from './ipc/ask-within';
 export type { HandleFn, OnFn, EmitFn, InvokeHandler, SendHandler } from './ipc/handle.type';
+export type { AskFn, AskWithinFn } from './ipc/ask.type';
 export type { FileGuardVerdict, FileWriteGuard, FileWriteKind, FileWriteRequest } from './files/file-guard.type';
 export type { NodeFileStoreOptions } from './files/node-file-store.type';
 

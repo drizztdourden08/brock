@@ -2,17 +2,19 @@
 export { BASE_INVOKE_MAP, BASE_SEND_MAP, BASE_EVENT_MAP } from './maps.constants';
 export { composeMaps } from './compose-maps';
 export { defineChannels } from './define-channels';
+export { ask } from './ask-channel';
 export { event } from './event-channel';
 export { invoke } from './invoke-channel';
 export { send } from './send-channel';
 export type {
-  AnyChannel, ChannelApi, ChannelDecl, ChannelDecls, ChannelKind, ChannelMaps, ChannelRef, DefinedChannels, EventChannel, EventContractOf, InvokeChannel, InvokeContractOf, InvokeSignature,
+  AnyChannel, AskChannel, AskContractOf, MappedChannelKind, ChannelApi, ChannelDecl, ChannelDecls, ChannelKind, ChannelMaps, ChannelRef, DefinedChannels, EventChannel, EventContractOf, InvokeChannel, InvokeContractOf, InvokeSignature,
   SendChannel, SendContractOf, VoidSignature,
 } from './channels.type';
 export type { InvokeMap, SendMap, EventMap } from './maps.type';
 export type { AppIpcApi, AppIpcMaps, InvokeApi, SendApi, EventApi, IpcApi, IpcHostApi, StartupInfo, InstanceInfo } from './api.type';
-export type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './payloads.type';
-export type { InvokeContract, SendContract, EventContract, IpcNamespaces } from '../augment';
+export type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './payloads.type';
+export type { AskArgs, AskHandler, AskReply } from './ask.type';
+export type { InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces } from '../augment';
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
 export type { DataEventContract, DataInvokeContract, DataSendContract } from './data-contract.type';
 export type {

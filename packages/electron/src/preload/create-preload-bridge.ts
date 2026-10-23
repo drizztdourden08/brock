@@ -8,6 +8,7 @@ import { subscribe } from './subscribe';
 import { buildInvoke } from './build-invoke';
 import { buildSend } from './build-send';
 import { buildEvents } from './build-events';
+import { createAnswerer } from './create-answerer';
 import { readStartupInfo } from './read-startup-info';
 import { readInstanceInfo } from './read-instance-info';
 
@@ -25,6 +26,7 @@ const createPreloadBridge = <I extends InvokeMap, S extends SendMap, E extends E
     isDev,
     os,
     getFilePath: (file: File) => webUtils.getPathForFile(file),
+    answer: createAnswerer(subscribe, send),
     startup,
     instance,
     ...helpers,

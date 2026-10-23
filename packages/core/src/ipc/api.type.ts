@@ -1,5 +1,6 @@
 /* @layer core @kind types */
-import type { InvokeContract, SendContract, EventContract, IpcNamespaces } from '../augment';
+import type { InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces } from '../augment';
+import type { AskHandler } from './ask.type';
 import type { InvokeMap, SendMap, EventMap } from './maps.type';
 import type { BASE_INVOKE_MAP, BASE_SEND_MAP, BASE_EVENT_MAP } from './maps.constants';
 
@@ -24,6 +25,7 @@ interface IpcHostApi {
   isDev: boolean;
   os: NodeJS.Platform;
   getFilePath: (file: File) => string;
+  answer: <K extends keyof AskContract>(channel: K, handler: AskHandler<K>) => () => void;
   startup: StartupInfo;
   instance: InstanceInfo;
 }

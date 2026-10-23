@@ -7,6 +7,8 @@ import type { ContextInput } from './create-main-context.type';
 import { handle } from '../ipc/handle';
 import { on } from '../ipc/on';
 import { emit } from '../ipc/emit';
+import { ask } from '../ipc/ask';
+import { askWithin } from '../ipc/ask-within';
 import { createNodeFileStore } from '../files/node-file-store';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
@@ -48,6 +50,8 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     handle,
     on,
     emit: emitToWindow,
+    ask,
+    askWithin,
     log,
     onOpen: openRouter.onOpen,
     services: servicesProxy,

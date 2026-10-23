@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind barrel */
+export { answer } from './answer';
 export { channelApi } from './channel-api';
 export { hostApi } from './host-api';
 export { exposeHostNamespace } from './expose-host-namespace';

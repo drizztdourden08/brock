@@ -4,7 +4,7 @@ import { join } from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { readBridgeDiscovery, writeBridgeDiscovery } from '../src/bridge';
 import type { SystemToolRun } from '../src/main/bridge/bridge.type';
-import { isUserOnlyFile } from '../src/main/bridge/is-user-only-file';
+import { windowsAccessProblem } from '../src/main/bridge/windows-access-problem';
 import { closeOpened, discoveryOf, serve, tempDir, writeOpenFile } from './bridge-fixture';
 
 afterEach(closeOpened);
@@ -19,7 +19,7 @@ const fakeTools = (sddl: string): SystemToolRun => (exe) =>
 const privateTo = (sddl: string): boolean => {
   const file = join(tempDir(), 'bridge.json');
   writeFileSync(file, '{}');
-  return isUserOnlyFile(file, fakeTools(sddl));
+  return windowsAccessProblem(file, fakeTools(sddl)) === null;
 };
 
 describe('the Windows access check on the discovery file', () => {
@@ -42,6 +42,19 @@ describe('the Windows access check on the discovery file', () => {
     expect(privateTo('')).toBe(false);
   });
 
+  it('names the owner and each unexpected entry it found, and why it could not read them', () => {
+    const file = join(tempDir(), 'bridge.json');
+    writeFileSync(file, '{}');
+    expect(windowsAccessProblem(file, fakeTools(`O:${OTHER}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-15-2-1)(OA;;CC;;;AU)`))).toBe(
+      `owner ${OTHER} (not trusted); access list flags "P"; unexpected entries: S-1-15-2-1 0x1200a9, OA AU CC; you are ${ME}`,
+    );
+    const broken: SystemToolRun = (exe) => {
+      if (exe === 'whoami.exe') return Buffer.from(`"me","${ME}"`, 'latin1');
+      throw new Error('powershell.exe exited with 1: Get-Acl failed');
+    };
+    expect(windowsAccessProblem(file, broken)).toBe('could not read its owner and access list: powershell.exe exited with 1: Get-Acl failed');
+  });
+
   it.runIf(process.platform === 'win32')('reads a real file in a folder with a non-ASCII name', async () => {
     const { server } = await serve();
     const folder = join(tempDir(), 'dossier-été');
@@ -51,6 +64,6 @@ describe('the Windows access check on the discovery file', () => {
     expect(readBridgeDiscovery(file).endpoint).toBe(server.endpoint);
     const open = join(folder, 'open.json');
     writeOpenFile(open, JSON.stringify(discoveryOf(server)));
-    expect(isUserOnlyFile(open)).toBe(false);
+    expect(windowsAccessProblem(open)).toMatch(/unexpected entries: (?:.*[ ,])?(?:BU|S-1-5-32-545) /);
   });
 });

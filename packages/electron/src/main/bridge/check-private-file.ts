@@ -1,12 +1,13 @@
 /* @layer electron-main @kind logic */
 import { statSync } from 'fs';
 import { BRIDGE_OTHERS_MASK } from './bridge.constants';
-import { isUserOnlyFile } from './is-user-only-file';
+import { windowsAccessProblem } from './windows-access-problem';
 
 const checkPrivateFile = (file: string): void => {
   const uid = process.getuid?.();
   if (uid === undefined) {
-    if (!isUserOnlyFile(file)) throw new Error(`${file} is open to other accounts; the bridge refuses it.`);
+    const problem = windowsAccessProblem(file);
+    if (problem) throw new Error(`${file} is open to other accounts (${problem}); the bridge refuses it.`);
     return;
   }
   const stat = statSync(file);

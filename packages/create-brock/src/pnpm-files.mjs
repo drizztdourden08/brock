@@ -3,6 +3,7 @@ import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { ensurePnpmPackageManager, keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
+import { TESSERA, tesseraRange } from './tessera-range.mjs';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
 
@@ -34,7 +35,7 @@ const readCatalog = (file) => {
 const templateCatalog = (templateDir) => {
   const source = CATALOG_SOURCES(templateDir).find((file) => existsSync(file));
   if (!source) throw new Error(`No pnpm-workspace.yaml with a catalog near ${templateDir}`);
-  return readCatalog(source);
+  return { ...readCatalog(source), [TESSERA]: tesseraRange(templateDir) };
 };
 
 const yamlKey = (name) => (name.startsWith('@') ? `'${name}'` : name);

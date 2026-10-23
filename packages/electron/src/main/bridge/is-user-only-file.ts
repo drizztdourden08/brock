@@ -1,43 +1,31 @@
 /* @layer electron-main @kind logic */
-import { mkdtempSync, readFileSync, rmSync } from 'fs';
-import { tmpdir } from 'os';
-import { basename, dirname, join, resolve } from 'path';
-import type { SystemToolRun, WindowsUser } from './bridge.type';
-import { BRIDGE_OWNER_COLUMN, BRIDGE_PLAIN_FILE_NAME } from './bridge.constants';
+import { resolve } from 'path';
+import type { SystemToolRun } from './bridge.type';
+import {
+  BRIDGE_ACL_ENV, BRIDGE_ACL_SCRIPT, BRIDGE_POWERSHELL, BRIDGE_SDDL_ACE, BRIDGE_SDDL_DACL, BRIDGE_SDDL_OWNER, BRIDGE_TRUSTED_SIDS,
+} from './bridge.constants';
 import { runSystemTool } from './run-system-tool';
 import { windowsUser } from './windows-user';
 
-const daclOf = (folder: string, name: string, run: SystemToolRun): string => {
-  const scratch = mkdtempSync(join(tmpdir(), 'brock-acl-'));
-  try {
-    run('icacls.exe', [name, '/save', join(scratch, 'acl.txt')], folder);
-    return readFileSync(join(scratch, 'acl.txt'), 'utf16le').split(/\r?\n/).find((line) => line.startsWith('D:')) ?? '';
-  } finally {
-    rmSync(scratch, { recursive: true, force: true });
-  }
+const sddlOf = (file: string, run: SystemToolRun): string =>
+  run(BRIDGE_POWERSHELL, ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', BRIDGE_ACL_SCRIPT], { env: { [BRIDGE_ACL_ENV]: file } }).toString('latin1').trim();
+
+const allowsOnly = (ace: string, trusted: ReadonlySet<string>): boolean => {
+  const [type = '', , , , , sid = ''] = ace.split(';');
+  if (type === 'D') return true;
+  return type === 'A' && trusted.has(sid);
 };
 
-const ownerLine = (folder: string, name: string, run: SystemToolRun): string => {
-  const listing = run('cmd.exe', ['/u', '/d', '/c', 'dir', '/q', '/a', name], folder).toString('utf16le');
-  return listing.split(/\r?\n/).find((line) => line.endsWith(` ${name}`))?.slice(0, -name.length).trimEnd().toLowerCase() ?? '';
-};
-
-const ownedBy = (line: string, user: WindowsUser): boolean => {
-  const name = user.name.toLowerCase();
-  const shown = [name.length, ...BRIDGE_OWNER_COLUMN.filter((width) => width < name.length)];
-  return shown.some((width) => line.endsWith(` ${name.slice(0, width)}`));
+const sddlIsPrivate = (sddl: string, userSid: string): boolean => {
+  const trusted = new Set([userSid, ...BRIDGE_TRUSTED_SIDS]);
+  const owner = BRIDGE_SDDL_OWNER.exec(sddl)?.[1];
+  const aces = [...(BRIDGE_SDDL_DACL.exec(sddl)?.[2] ?? '').matchAll(BRIDGE_SDDL_ACE)].map((match) => match[1] ?? '');
+  return owner !== undefined && trusted.has(owner) && aces.length > 0 && aces.every((ace) => allowsOnly(ace, trusted));
 };
 
 const isUserOnlyFile = (file: string, run: SystemToolRun = runSystemTool): boolean => {
-  const full = resolve(file);
-  const [folder, name] = [dirname(full), basename(full)];
-  if (!BRIDGE_PLAIN_FILE_NAME.test(name)) return false;
   try {
-    const user = windowsUser(run);
-    const dacl = daclOf(folder, name, run);
-    const aces = [...dacl.matchAll(/\(([^)]*)\)/g)].map((match) => match[1]);
-    const userOnly = dacl.startsWith('D:P') && aces.length === 1 && aces[0] === `A;;FA;;;${user.sid}`;
-    return userOnly && ownedBy(ownerLine(folder, name, run), user);
+    return sddlIsPrivate(sddlOf(resolve(file), run), windowsUser(run).sid);
   } catch {
     return false;
   }

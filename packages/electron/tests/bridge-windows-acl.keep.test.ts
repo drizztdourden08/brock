@@ -1,37 +1,45 @@
 /* @layer electron-main @kind test */
 import { mkdirSync, writeFileSync } from 'fs';
-import { userInfo } from 'os';
 import { join } from 'path';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { readBridgeDiscovery, writeBridgeDiscovery } from '../src/bridge';
 import type { SystemToolRun } from '../src/main/bridge/bridge.type';
 import { isUserOnlyFile } from '../src/main/bridge/is-user-only-file';
-import { closeOpened, discoveryOf, serve, tempDir } from './bridge-fixture';
+import { closeOpened, discoveryOf, serve, tempDir, writeOpenFile } from './bridge-fixture';
 
-afterEach(() => {
-  vi.unstubAllEnvs();
-  closeOpened();
-});
+afterEach(closeOpened);
 
-const SID = 'S-1-5-21-1-2-3-1001';
+const ME = 'S-1-5-21-1-2-3-1001';
+const OTHER = 'S-1-5-21-1-2-3-1004';
+const FULL = (sid: string): string => `(A;ID;FA;;;${sid})`;
 
-const fakeTools = (dacl: string, owner: string): SystemToolRun => (exe, args) => {
-  if (exe === 'whoami.exe') return Buffer.from(`"pc\\someone","${SID}"\r\n`, 'latin1');
-  if (exe === 'icacls.exe') writeFileSync(args[2] ?? '', `bridge.json\r\n${dacl}\r\n`, 'utf16le');
-  return Buffer.from(`2026-10-23  06:34 PM   1 ${owner}        bridge.json\r\n`, 'utf16le');
+const fakeTools = (sddl: string): SystemToolRun => (exe) =>
+  Buffer.from(exe === 'whoami.exe' ? `"pc\\me","${ME}"\r\n` : `${sddl}\r\n`, 'latin1');
+
+const privateTo = (sddl: string): boolean => {
+  const file = join(tempDir(), 'bridge.json');
+  writeFileSync(file, '{}');
+  return isUserOnlyFile(file, fakeTools(sddl));
 };
 
 describe('the Windows access check on the discovery file', () => {
-  it('accepts one full control entry for the user, owned by the user, and nothing else', () => {
-    vi.stubEnv('USERDOMAIN', 'PC');
-    const file = join(tempDir(), 'bridge.json');
-    writeFileSync(file, '{}');
-    const me = `PC\\${userInfo().username}`;
-    expect(isUserOnlyFile(file, fakeTools(`D:P(A;;FA;;;${SID})`, me))).toBe(true);
-    expect(isUserOnlyFile(file, fakeTools(`D:P(A;;FA;;;${SID})`, 'PC\\intruder'))).toBe(false);
-    expect(isUserOnlyFile(file, fakeTools(`D:(A;;FA;;;${SID})`, me))).toBe(false);
-    expect(isUserOnlyFile(file, fakeTools(`D:P(A;;FA;;;${SID})(A;;0x1200a9;;;S-1-5-21-1-2-3-1004)`, me))).toBe(false);
-    expect(isUserOnlyFile(join(tempDir(), 'odd & name.json'), fakeTools(`D:P(A;;FA;;;${SID})`, me))).toBe(false);
+  it('trusts the user, SYSTEM and Administrators as owner and as access entries', () => {
+    expect(privateTo(`O:${ME}G:${ME}D:P(A;;FA;;;${ME})`)).toBe(true);
+    expect(privateTo(`O:BAG:S-1-5-21-1-2-3-513D:AI${FULL('SY')}${FULL('BA')}${FULL(ME)}`)).toBe(true);
+    expect(privateTo(`O:S-1-5-32-544G:SYD:P${FULL('S-1-5-18')}${FULL('S-1-5-32-544')}${FULL(ME)}`)).toBe(true);
+    expect(privateTo(`O:SYD:P${FULL(ME)}(D;;FA;;;WD)`)).toBe(true);
+  });
+
+  it('refuses any other owner or access entry', () => {
+    expect(privateTo(`O:${OTHER}D:P${FULL(ME)}`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;BU)`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-5-32-545)`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;AU)`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-5-11)`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(ME)}${FULL('WD')}`)).toBe(false);
+    expect(privateTo(`O:${ME}D:P${FULL(OTHER)}`)).toBe(false);
+    expect(privateTo(`O:${ME}D:NO_ACCESS_CONTROL`)).toBe(false);
+    expect(privateTo('')).toBe(false);
   });
 
   it.runIf(process.platform === 'win32')('reads a real file in a folder with a non-ASCII name', async () => {
@@ -42,7 +50,7 @@ describe('the Windows access check on the discovery file', () => {
     writeBridgeDiscovery(file, discoveryOf(server));
     expect(readBridgeDiscovery(file).endpoint).toBe(server.endpoint);
     const open = join(folder, 'open.json');
-    writeFileSync(open, JSON.stringify(discoveryOf(server)));
+    writeOpenFile(open, JSON.stringify(discoveryOf(server)));
     expect(isUserOnlyFile(open)).toBe(false);
   });
 });

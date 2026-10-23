@@ -1,6 +1,6 @@
 /* @layer electron-main @kind logic */
 import { connect } from 'net';
-import type { BridgeDiscovery, BridgeLink, BridgeLinkEvents } from './bridge.type';
+import type { BridgeDiscovery, BridgeLink, BridgeLinkEvents, BridgeLinkLimits } from './bridge.type';
 import { BRIDGE_IMPOSTOR, BRIDGE_PROTOCOL } from './bridge.constants';
 import { bridgeProof } from './bridge-proof';
 import { createLineReader } from './line-reader';
@@ -9,7 +9,7 @@ import { parseReply } from './parse-reply';
 import { readBridgeDiscovery } from './read-bridge-discovery';
 import { secretMatches } from './secret-matches';
 
-const openBridgeLink = (file: string, maxBytes: number, events: BridgeLinkEvents): Promise<BridgeLink> => new Promise((resolve, reject) => {
+const openBridgeLink = (file: string, { maxBytes, handshakeMs }: BridgeLinkLimits, events: BridgeLinkEvents): Promise<BridgeLink> => new Promise((resolve, reject) => {
   const discovery: BridgeDiscovery = readBridgeDiscovery(file);
   const clientNonce = bridgeProof.nonce();
   const socket = connect({ path: discovery.endpoint });
@@ -18,7 +18,9 @@ const openBridgeLink = (file: string, maxBytes: number, events: BridgeLinkEvents
     state.reason = new Error(message);
     socket.destroy();
   };
+  const deadline = setTimeout(() => fail(`the app did not answer the bridge handshake within ${handshakeMs} ms`), handshakeMs);
   const onHello = (line: string): void => {
+    clearTimeout(deadline);
     const hello = parseHello(line);
     const expected = hello ? bridgeProof.server(discovery.secret, clientNonce, hello.nonce) : '';
     if (!hello?.proof || !secretMatches(hello.proof, expected)) return fail(BRIDGE_IMPOSTOR);
@@ -40,6 +42,7 @@ const openBridgeLink = (file: string, maxBytes: number, events: BridgeLinkEvents
     state.reason = new Error(`could not reach the app's bridge: ${error.message}`);
   });
   socket.once('close', () => {
+    clearTimeout(deadline);
     reject(state.reason);
     events.onClose(state.reason);
   });

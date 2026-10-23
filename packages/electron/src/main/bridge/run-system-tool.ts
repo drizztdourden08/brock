@@ -2,8 +2,9 @@
 import { execFileSync } from 'child_process';
 import { join } from 'path';
 import type { SystemToolRun } from './bridge.type';
+import { BRIDGE_SYSTEM32 } from './bridge.constants';
 
-const runSystemTool: SystemToolRun = (exe, args) =>
-  execFileSync(join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', exe), args, { encoding: 'latin1', windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'] });
+const runSystemTool: SystemToolRun = (exe, args, cwd) =>
+  execFileSync(join(BRIDGE_SYSTEM32, exe), args, { cwd, windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'] });
 
 export { runSystemTool };

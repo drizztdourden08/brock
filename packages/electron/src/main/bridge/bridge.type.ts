@@ -81,6 +81,7 @@ interface BridgeClientOptions {
   file?: string;
   maxMessageBytes?: number;
   timeoutMs?: number;
+  handshakeMs?: number;
 }
 
 interface BridgeClient {
@@ -92,6 +93,11 @@ interface BridgeLink {
   sign: (id: number, channel: string, args: string) => string;
   write: (line: string) => void;
   end: () => void;
+}
+
+interface BridgeLinkLimits {
+  maxBytes: number;
+  handshakeMs: number;
 }
 
 interface BridgeLinkEvents {
@@ -129,10 +135,10 @@ interface WindowsUser {
   sid: string;
 }
 
-type SystemToolRun = (exe: string, args: string[]) => string;
+type SystemToolRun = (exe: string, args: string[], cwd?: string) => Buffer;
 
 export type {
-  BridgeArgsCheck, BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeHello, BridgeLink, BridgeLinkEvents, BridgeReply,
+  BridgeArgsCheck, BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeHello, BridgeLink, BridgeLinkEvents, BridgeLinkLimits, BridgeReply,
   BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions, BridgeServer, BridgeServerOptions,
   BridgeSession, DiscoveryHost, PathStat, PendingReplies, PendingWaiter, PrivateEndpoint, SystemToolRun, WindowsUser,
 };

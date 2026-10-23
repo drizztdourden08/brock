@@ -1,12 +1,12 @@
 /* @layer electron-main @kind logic */
 import { statSync } from 'fs';
 import { BRIDGE_OTHERS_MASK } from './bridge.constants';
-import { grantsOnlyUser } from './grants-only-user';
+import { isUserOnlyFile } from './is-user-only-file';
 
 const checkPrivateFile = (file: string): void => {
   const uid = process.getuid?.();
   if (uid === undefined) {
-    if (!grantsOnlyUser(file)) throw new Error(`${file} is open to other accounts; the bridge refuses it.`);
+    if (!isUserOnlyFile(file)) throw new Error(`${file} is open to other accounts; the bridge refuses it.`);
     return;
   }
   const stat = statSync(file);

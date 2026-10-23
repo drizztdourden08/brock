@@ -117,7 +117,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 
   void app.whenReady()
-    .then(() => onReady({ ctx, options, dataDirs, schemes, setup, bridgeKey: bridgeKeyOf(instance.name, userDataOverride) }))
+    .then(() => onReady({ ctx, options, dataDirs, schemes, setup, bridgeKey: bridgeKeyOf(instance.name, userDataOverride ?? portableData) }))
     .catch((err: unknown) => {
       noteSync('error', `boot failed: ${stackOf(err)}`);
       app.exit(1);

@@ -4,7 +4,7 @@ import { createServer } from 'net';
 import { join } from 'path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@drizztdourden08/brock-core/ipc';
-import { BRIDGE_PROTOCOL, BridgeError } from '../src/bridge';
+import { BRIDGE_PROTOCOL, BridgeError, connectBridge } from '../src/bridge';
 import { bridgeProof } from '../src/main/bridge/bridge-proof';
 import { createLineReader } from '../src/main/bridge/line-reader';
 import { ROUTES, client, closeOpened, discoveryFor, handshake, rawSession, serve, signed, tempDir } from './bridge-fixture';
@@ -77,6 +77,16 @@ describe('the bridge handshake', () => {
 });
 
 describe('the bridge limits', () => {
+  it('gives up on an endpoint that never answers the handshake', async () => {
+    const endpoint = impostorEndpoint();
+    const silent = createServer(() => undefined);
+    await new Promise<void>((resolve) => silent.listen(endpoint, resolve));
+    const quiet = connectBridge({ file: discoveryFor({ endpoint, secret: 'unused' }), handshakeMs: 200 });
+    await expect(quiet.request(ROUTES.add, 1, 1)).rejects.toThrow('did not answer the bridge handshake within 200 ms');
+    quiet.close();
+    silent.close();
+  });
+
   it('caps the connections still in the handshake and drops them after the deadline', async () => {
     const { server, file } = await serve({ maxPending: 2, handshakeMs: 300 });
     const idle = [rawSession(server.endpoint), rawSession(server.endpoint)];

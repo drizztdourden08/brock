@@ -1,6 +1,6 @@
 /* @layer electron-main @kind logic */
 import type { BridgeClient, BridgeClientOptions, BridgeLink } from './bridge.type';
-import { BRIDGE_FILE_ENV, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_REQUEST_TIMEOUT_MS } from './bridge.constants';
+import { BRIDGE_FILE_ENV, BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_REQUEST_TIMEOUT_MS } from './bridge.constants';
 import { bridgeDiscoveryFile } from './bridge-discovery-file';
 import { encodeMessage } from './encode-message';
 import { openBridgeLink } from './open-bridge-link';
@@ -22,7 +22,7 @@ const connectBridge = (options: BridgeClientOptions): BridgeClient => {
   const state: { link: Promise<BridgeLink> | null; nextId: number } = { link: null, nextId: 1 };
   const link = (): Promise<BridgeLink> => {
     if (state.link) return state.link;
-    const opening = openBridgeLink(file, maxBytes, {
+    const opening = openBridgeLink(file, { maxBytes, handshakeMs: options.handshakeMs ?? BRIDGE_HANDSHAKE_MS }, {
       onReply: pending.settle,
       onClose: (error) => {
         if (state.link === opening) state.link = null;

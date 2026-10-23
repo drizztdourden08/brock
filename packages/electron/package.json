@@ -22,6 +22,7 @@
     "./zip": "./src/main/storage/zip/index.ts",
     "./context": "./src/main/context/index.ts",
     "./node": "./src/node/index.ts",
+    "./bridge": "./src/bridge/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

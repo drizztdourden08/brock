@@ -56,6 +56,9 @@ export { writeDebugZip } from './bug-report/write-debug-zip';
 export { collectDebugFiles } from './bug-report/collect-debug-files';
 export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport } from './bug-report/bug-report.type';
 export { lanAddresses } from './network/lan-addresses';
+export { helperLaunch } from './bridge/helper-launch';
+export type { AppBridgeOptions, HelperLaunch } from './bridge/app-bridge.type';
+export type { BridgeHandler, BridgeRoute, BridgeServer } from './bridge/bridge.type';
 
 export { serveDirectoryScheme } from './protocol/serve-directory-scheme';
 export { servedFilePathOf } from './protocol/served-file-path-of';

@@ -10,6 +10,7 @@ interface ReadyInput {
   dataDirs: string[];
   schemes: PrivilegedScheme[];
   setup: WindowSetup;
+  ownUserData: boolean;
 }
 
 interface ProcessStart {

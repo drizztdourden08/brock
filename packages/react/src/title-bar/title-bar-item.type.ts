@@ -14,6 +14,7 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   onSelect?: () => void;
   command?: string;
   shortcut?: string;
+  disabled?: boolean;
 }
 
 type TitleBarButtonLook = Omit<TitleBarButtonSpec, 'onSelect'>;

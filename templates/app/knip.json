@@ -6,6 +6,7 @@
     "src/main.tsx",
     "src/ipc/contract.type.ts",
     "src/screens/**/*.custom.tsx",
+    "src/views/*/*.usage.ts",
     ".brock/*.ts",
     "*.config.{cjs,ts,mjs}",
     ".markdownlint-cli2.mjs",

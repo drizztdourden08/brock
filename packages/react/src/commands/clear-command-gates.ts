@@ -1,0 +1,11 @@
+/* @layer renderer-shell @kind logic */
+import { useCommandGates } from './useCommandGates';
+
+const clearCommandGates = (key: string): void => {
+  useCommandGates.setState((state) => {
+    const { [key]: _gone, ...rest } = state.gates;
+    return { gates: rest };
+  });
+};
+
+export { clearCommandGates };

@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { knipJson } from '../src/commands/knip-config.mjs';
+import { USAGE_ENTRY } from '../src/commands/knip.constants.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-adopt-knip-');
@@ -40,6 +41,17 @@ describe('knipJson for a workspace', () => {
     expect(Object.keys(workspaces)).toEqual(['.', 'apps/desktop']);
     expect(workspaces['apps/desktop'].entry).not.toContain('brock.workspace.mjs');
     expect(workspaces['apps/desktop'].entry).not.toContain('.markdownlint-cli2.mjs');
+  });
+
+  it('lists the Tessera usage files of an app as entries', () => {
+    const { workspaces } = JSON.parse(knipJson(workspaceRepo()));
+    expect(workspaces['apps/desktop'].entry).toContain(USAGE_ENTRY);
+    expect(USAGE_ENTRY).toBe('src/views/*/*.usage.ts');
+  });
+
+  it('keeps the app template knip.json on the same usage entry', () => {
+    const template = JSON.parse(readFileSync(join(import.meta.dirname, '..', '..', '..', 'templates', 'app', 'knip.json'), 'utf8'));
+    expect(template.entry).toContain(USAGE_ENTRY);
   });
 
   it('keeps one top-level entry and no workspaces for a repo without apps in folders', () => {

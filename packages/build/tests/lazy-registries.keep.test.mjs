@@ -112,12 +112,14 @@ describe('title bar items', () => {
   it('loads a button the build can read on its first click, and keeps a hook or a computed label eager', () => {
     const root = tempDir();
     put(root, 'src/title-bar/export.action.ts', "export const order = 1;\nexport default defineTitleBarItem({ kind: 'button', label: 'Export', icon: 'download', shortcut: 'Mod+E', onSelect: () => runExport() });\n");
+    put(root, 'src/title-bar/undo.action.ts', "export default defineTitleBarItem({ kind: 'button', label: 'Undo', icon: 'undo', command: 'doc.undo', disabled: true });\n");
     put(root, 'src/title-bar/status.action.ts', 'const useStatus = () => null;\nexport default useStatus;\n');
     put(root, 'src/title-bar/named.action.ts', "export default defineTitleBarItem({ kind: 'button', label: LABEL, icon: 'x', onSelect: () => {} });\n");
     const out = renderTitleBarFiles(root)[0]?.content ?? '';
     expect(out).toContain("import { lazyTitleBarButton, titleBarFromFiles } from '@drizztdourden08/brock-react';");
     expect(out).toContain("import { order as exportOrder } from '../src/title-bar/export.action';");
     expect(out).toContain(`{ id: 'export', source: lazyTitleBarButton({"kind":"button","label":"Export","icon":"download","shortcut":"Mod+E"}, () => import('../src/title-bar/export.action')), order: exportOrder },`);
+    expect(out).toContain(`{ id: 'undo', source: lazyTitleBarButton({"kind":"button","label":"Undo","icon":"undo","command":"doc.undo","disabled":true}, () => import('../src/title-bar/undo.action')) },`);
     expect(out).toContain("import statusItem from '../src/title-bar/status.action';");
     expect(out).toContain("import namedItem from '../src/title-bar/named.action';");
   });

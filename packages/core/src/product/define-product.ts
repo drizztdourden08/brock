@@ -95,8 +95,9 @@ const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets =
   keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
 });
 
-const optionalParts = ({ profilesRoute, boot, menu, mascot }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'boot' | 'menu' | 'mascot'> => ({
+const optionalParts = ({ profilesRoute, singleProfile, boot, menu, mascot }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'boot' | 'menu' | 'mascot'> => ({
   ...(profilesRoute ? { profilesRoute } : {}),
+  ...(singleProfile ? { singleProfile } : {}),
   ...(boot ? { boot } : {}),
   ...(menu ? { menu } : {}),
   ...(mascot !== undefined ? { mascot } : {}),

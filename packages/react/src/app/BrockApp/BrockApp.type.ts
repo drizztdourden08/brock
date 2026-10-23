@@ -83,6 +83,7 @@ interface MenuBuildInput {
   widgets: readonly MenuItem[];
   homeScreen: string;
   homeLocked?: boolean;
+  singleProfile?: boolean;
   hasCredits: boolean;
   developerTools: boolean;
   show?: ShowContext;
@@ -123,6 +124,7 @@ interface AppScreensInput {
   homeScreen?: string;
   productHome: string;
   profilesRoute?: string;
+  singleProfile?: boolean;
   credits?: ReactNode;
   legalText?: string;
 }

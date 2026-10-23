@@ -32,6 +32,7 @@ const windowHandlers: HandlerGroup = {
       if (headlessFullscreen.applies()) headlessFullscreen.set(win, !headlessFullscreen.is(win), (on) => emit(win, 'window:fullscreen', on));
       else win.setFullScreen(!win.isFullScreen());
     });
+    on('window:setTitle', (_e, title) => window()?.setTitle(title));
     on('window:setFullscreen', (_e, value) => {
       const win = window();
       if (!win?.isFullScreenable() || mainClusterControl.fullscreen(value)) return;

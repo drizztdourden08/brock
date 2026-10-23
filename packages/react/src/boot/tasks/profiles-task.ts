@@ -4,6 +4,7 @@ import { instanceProfile } from '../../host/instance-profile';
 import { nav } from '../../navigation/nav';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { PROFILES_SCREEN } from '../../app/BrockApp/BrockApp.constants';
+import { DEFAULT_PROFILE_NAME } from '../../stores/profiles.constants';
 import type { RendererBootTask } from '../renderer-boot.type';
 
 const openPicker = (reason: string): string => {
@@ -39,11 +40,19 @@ const pickProfile = async (): Promise<string> => {
   return `Resuming ${last.name}`;
 };
 
+const implicitProfile = async (): Promise<string> => {
+  const store = useProfilesStore.getState();
+  const [existing] = await store.refresh();
+  const profile = existing ?? (await store.create({ name: DEFAULT_PROFILE_NAME }));
+  store.setActive(profile);
+  return `Single profile ${profile.name}`;
+};
+
 const profilesTask: RendererBootTask = {
   id: 'profiles',
   label: 'Reading profiles',
-  run: async ({ report }) => {
-    const outcome = await pickProfile();
+  run: async ({ report, product }) => {
+    const outcome = await (product.singleProfile === true ? implicitProfile() : pickProfile());
     getAppLog().log('app', outcome);
     report(1, outcome);
   },

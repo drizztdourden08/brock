@@ -12,6 +12,7 @@ const createCapacitorWindow = (): WindowControlsPort => ({
   close: () => { capacitorPlugins.app()?.exitApp().catch(ignore); },
   toggleFullscreen: ignore,
   setFullscreen: ignore,
+  setTitle: ignore,
   setAspectRatioLock: ignore,
   setAlwaysOnTop: no,
   openDevTools: ignore,

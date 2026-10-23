@@ -47,6 +47,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       widgets,
       homeScreen,
       homeLocked,
+      singleProfile: product.singleProfile,
       hasCredits,
       developerTools,
       show,

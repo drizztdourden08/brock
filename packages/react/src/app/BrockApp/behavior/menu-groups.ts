@@ -3,7 +3,7 @@ import type { MenuGroups } from '../../../menu/menu-config.type';
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { withRoutes } from '../../../menu/with-routes';
 import {
-  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
@@ -44,8 +44,9 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const modules = filter(withRoutes([...moduleMenu, ...standard]));
   const named = screensNamed([...app, ...modules]);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
+  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !(input.singleProfile && item.screen === PROFILES_SCREEN));
   return {
-    main: [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }, ...TOP_ENTRIES.filter(unnamed), ...unsectioned(app)],
+    main: [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }, ...topEntries, ...unsectioned(app)],
     sections: groupSections([...app, ...modules]),
     modules: unsectioned(modules),
     end: [...[...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed), { ...QUIT_ENTRY, onClick: onQuit }],

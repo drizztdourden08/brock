@@ -26,6 +26,7 @@ const createWindowControls = (): WindowControlsPort => {
     close: () => api.close(),
     toggleFullscreen: () => api.toggleFullscreen(),
     setFullscreen: (on) => api.setFullscreen(on),
+    setTitle: (title) => api.setTitle(title),
     setAspectRatioLock: (ratio, extra) => api.setAspectRatioLock(ratio, extra),
     setAlwaysOnTop: (on) => api.setAlwaysOnTop(on),
     openDevTools: () => api.openDevTools(),

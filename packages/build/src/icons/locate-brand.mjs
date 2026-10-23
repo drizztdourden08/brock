@@ -8,7 +8,7 @@ import { tesseraDir } from './tessera-dir.mjs';
 /**
  * @param {string} rootDir The app root
  * @param {string} brand The Tessera brand id
- * @param {'light' | 'dark' | null} [rim] Reads brand/<rim>-rim/<brand> instead
+ * @param {'light' | null} [rim] Reads brand/<rim>-rim/<brand> instead
  * @returns {string} Absolute brand folder inside the Tessera package
  */
 const locateBrand = (rootDir, brand, rim = null) => {

@@ -394,7 +394,7 @@ With no active profile, an entry that opens a screen needing a profile shows dis
 
 ## Product icons
 
-`product.icons` in `brock.config.ts` names the app's brand art. `brand` picks a Tessera brand, which `brock icons` copies into `public/logos/` and `build/icons/`; `rim` (`'light'` or `'dark'`) picks its rimmed set. `wordmark` is the app's name drawn as an image, an SVG or PNG under `public/`, given as the path the page loads it from, like the logos:
+`product.icons` in `brock.config.ts` names the app's brand art. `brand` picks a Tessera brand, which `brock icons` copies into `public/logos/` and `build/icons/`; `rim` (`'light'`) picks its rimmed set. `wordmark` is the app's name drawn as an image, an SVG or PNG under `public/`, given as the path the page loads it from, like the logos:
 
 ```ts
 // brock.config.ts

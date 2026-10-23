@@ -196,9 +196,8 @@ describe('markSourceOf', () => {
     expect(markSourceOf(tempDir(), { config: config(), tesseraRoot: tempDir({ 'brand/light-rim/brock.svg': '<svg/>' }) })).toMatchObject({ from: 'brand/light-rim/brock.svg' });
   });
 
-  it('reads the rim product.icons.rim names, and the plain set for a brand with no rim', () => {
-    const tesseraRoot = tempDir({ 'brand/dark-rim/brock/mark/mark-256.png': 'png', 'brand/atlas/mark/mark-256.png': 'png' });
-    expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'brock', rim: 'dark' }), tesseraRoot })).toMatchObject({ from: 'brand/dark-rim/brock/mark/mark-256.png' });
+  it('reads the plain set for a brand with no rim', () => {
+    const tesseraRoot = tempDir({ 'brand/atlas/mark/mark-256.png': 'png' });
     expect(markSourceOf(tempDir(), { config: config(undefined, { brand: 'atlas' }), tesseraRoot })).toMatchObject({ from: 'brand/atlas/mark/mark-256.png' });
   });
 

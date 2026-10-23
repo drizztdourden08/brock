@@ -1,18 +1,28 @@
 /* @layer electron-main @kind logic */
-import type { BridgeReply, BridgeRequest, BridgeRouteFn } from './bridge.type';
-import { BRIDGE_PROTOCOL } from './bridge.constants';
+import type { BridgeArgsCheck, BridgeReply, BridgeRequest, BridgeSession } from './bridge.type';
+import { BRIDGE_FAILED } from './bridge.constants';
+import { BridgeError } from './bridge-error';
+import { parseJson } from './parse-json';
 
-const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
-
-const answerRequest = async (request: BridgeRequest, routes: ReadonlyMap<string, BridgeRouteFn>): Promise<BridgeReply> => {
-  const { id, channel } = request;
-  if (request.v !== BRIDGE_PROTOCOL) return { id, ok: false, error: `the bridge speaks protocol ${BRIDGE_PROTOCOL}, not ${request.v}` };
-  const route = routes.get(channel);
-  if (!route) return { id, ok: false, error: `no handler is registered for "${channel}"` };
+const passes = (validate: BridgeArgsCheck | null, args: readonly unknown[]): boolean => {
+  if (!validate) return true;
   try {
-    return { id, ok: true, value: await route(request.args) };
+    return validate(args);
+  } catch {
+    return false;
+  }
+};
+
+const answerRequest = async ({ id, channel, args }: BridgeRequest, session: BridgeSession): Promise<BridgeReply> => {
+  const route = session.routes.get(channel);
+  if (!route) return { id, ok: false, error: `no handler is registered for "${channel}"` };
+  const list = parseJson(args);
+  if (!Array.isArray(list) || !passes(route.validate, list)) return { id, ok: false, error: `invalid arguments for "${channel}"` };
+  try {
+    return { id, ok: true, value: await route.call(list) };
   } catch (error) {
-    return { id, ok: false, error: messageOf(error) };
+    session.onError(channel, error);
+    return { id, ok: false, error: error instanceof BridgeError ? error.message : BRIDGE_FAILED };
   }
 };
 

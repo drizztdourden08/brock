@@ -2,7 +2,7 @@
 import { homedir } from 'os';
 import { join } from 'path';
 import type { DiscoveryHost } from './bridge.type';
-import { BRIDGE_DISCOVERY_FILE } from './bridge.constants';
+import { bridgeFileName } from './bridge-file-name';
 
 const appDataDir = ({ env, platform, home }: DiscoveryHost): string => {
   if (platform === 'win32') return env.APPDATA ?? join(home, 'AppData', 'Roaming');
@@ -12,6 +12,7 @@ const appDataDir = ({ env, platform, home }: DiscoveryHost): string => {
 
 const currentHost = (): DiscoveryHost => ({ env: process.env, platform: process.platform, home: homedir() });
 
-const bridgeDiscoveryFile = (app: string, host: DiscoveryHost = currentHost()): string => join(appDataDir(host), app, BRIDGE_DISCOVERY_FILE);
+const bridgeDiscoveryFile = (app: string, key: string | null = null, host: DiscoveryHost = currentHost()): string =>
+  join(appDataDir(host), app, bridgeFileName(key));
 
 export { bridgeDiscoveryFile };

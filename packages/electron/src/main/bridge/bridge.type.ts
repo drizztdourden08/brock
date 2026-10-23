@@ -1,20 +1,35 @@
 /* @layer electron-main @kind types */
+import type { Socket } from 'net';
+import type { Stats } from 'fs';
 import type { InvokeChannel, InvokeSignature } from '@drizztdourden08/brock-core/ipc';
 
 type BridgeRoute<F extends InvokeSignature = InvokeSignature> = InvokeChannel<string, F>;
 
 type BridgeHandler<F extends InvokeSignature> = (...args: Parameters<F>) => ReturnType<F> | Awaited<ReturnType<F>>;
 
-type BridgeRouteFn = (args: unknown[]) => unknown;
+type BridgeArgsCheck = (args: readonly unknown[]) => boolean;
+
+interface BridgeRouteOptions {
+  validate?: BridgeArgsCheck;
+}
+
+interface BridgeRouteEntry {
+  call: (args: unknown[]) => unknown;
+  validate: BridgeArgsCheck | null;
+}
 
 type BridgeRequestId = string | number;
 
 interface BridgeRequest {
-  v: number;
-  id: BridgeRequestId;
-  secret: string;
+  id: number;
   channel: string;
-  args: unknown[];
+  args: string;
+  mac: string;
+}
+
+interface BridgeHello {
+  nonce: string;
+  proof: string | null;
 }
 
 type BridgeReply =
@@ -34,25 +49,35 @@ interface BridgeServerOptions {
   app: string;
   maxMessageBytes?: number;
   maxClients?: number;
-  firstMessageMs?: number;
+  maxPending?: number;
+  handshakeMs?: number;
+  onError?: (channel: string, error: unknown) => void;
 }
 
 interface BridgeServer {
   readonly endpoint: string;
   readonly secret: string;
-  handle: <F extends InvokeSignature>(route: BridgeRoute<F>, handler: BridgeHandler<F>) => () => void;
+  handle: <F extends InvokeSignature>(route: BridgeRoute<F>, handler: BridgeHandler<F>, options?: BridgeRouteOptions) => () => void;
   close: () => void;
 }
 
 interface BridgeSession {
   secret: string;
-  routes: ReadonlyMap<string, BridgeRouteFn>;
+  routes: ReadonlyMap<string, BridgeRouteEntry>;
   maxMessageBytes: number;
-  firstMessageMs: number;
+  handshakeMs: number;
+  onError: (channel: string, error: unknown) => void;
+  admit: (socket: Socket) => boolean;
+}
+
+interface BridgeReplyWriter {
+  send: (reply: BridgeReply) => void;
+  refuse: (id: BridgeRequestId | null, error: string) => void;
 }
 
 interface BridgeClientOptions {
   app?: string;
+  instance?: string;
   file?: string;
   maxMessageBytes?: number;
   timeoutMs?: number;
@@ -64,7 +89,7 @@ interface BridgeClient {
 }
 
 interface BridgeLink {
-  secret: string;
+  sign: (id: number, channel: string, args: string) => string;
   write: (line: string) => void;
   end: () => void;
 }
@@ -97,7 +122,17 @@ interface DiscoveryHost {
   home: string;
 }
 
+type PathStat = Pick<Stats, 'isSymbolicLink' | 'isDirectory' | 'isSocket' | 'uid' | 'mode'>;
+
+interface WindowsUser {
+  name: string;
+  sid: string;
+}
+
+type SystemToolRun = (exe: string, args: string[]) => string;
+
 export type {
-  BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeLink, BridgeLinkEvents, BridgeReply, BridgeRequest, BridgeRequestId,
-  BridgeRoute, BridgeRouteFn, BridgeServer, BridgeServerOptions, BridgeSession, DiscoveryHost, PendingReplies, PendingWaiter, PrivateEndpoint,
+  BridgeArgsCheck, BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeHello, BridgeLink, BridgeLinkEvents, BridgeReply,
+  BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions, BridgeServer, BridgeServerOptions,
+  BridgeSession, DiscoveryHost, PathStat, PendingReplies, PendingWaiter, PrivateEndpoint, SystemToolRun, WindowsUser,
 };

@@ -3,25 +3,30 @@ import { app } from 'electron';
 import { join } from 'path';
 import type { MainContext } from '../types/main-context.type';
 import type { AppBridgeOptions } from './app-bridge.type';
-import { BRIDGE_DISCOVERY_FILE, BRIDGE_PROTOCOL } from './bridge.constants';
+import { BRIDGE_PROTOCOL } from './bridge.constants';
+import { bridgeFileName } from './bridge-file-name';
+import { clearStaleDiscovery } from './clear-stale-discovery';
 import { removeDiscovery } from './remove-discovery';
 import { startBridgeServer } from './start-bridge-server';
-import { writeDiscovery } from './write-discovery';
+import { writeBridgeDiscovery } from './write-bridge-discovery';
 
-const discoveryFileFor = (id: string, ownUserData: boolean): string =>
-  (ownUserData ? join(app.getPath('userData'), BRIDGE_DISCOVERY_FILE) : join(app.getPath('appData'), id, BRIDGE_DISCOVERY_FILE));
-
-const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, ownUserData: boolean): Promise<void> => {
+const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, key: string | null): Promise<void> => {
   const id = ctx.product.id;
-  const server = await startBridgeServer({ app: id, maxMessageBytes: options.maxMessageBytes, maxClients: options.maxClients });
-  const file = discoveryFileFor(id, ownUserData);
+  const file = join(app.getPath('appData'), id, bridgeFileName(key));
+  if (clearStaleDiscovery(file)) ctx.log(`bridge: removed a stale discovery file, ${file}`);
+  const server = await startBridgeServer({
+    app: id,
+    maxMessageBytes: options.maxMessageBytes,
+    maxClients: options.maxClients,
+    onError: (channel, error) => ctx.log(`bridge request "${channel}" failed: ${error instanceof Error ? error.message : String(error)}`, 'warn'),
+  });
   const stop = (): void => {
     server.close();
     removeDiscovery(file, server.secret);
   };
   try {
     await options.register(server, ctx);
-    writeDiscovery(file, { v: BRIDGE_PROTOCOL, app: id, pid: process.pid, endpoint: server.endpoint, secret: server.secret, startedAt: new Date().toISOString() });
+    writeBridgeDiscovery(file, { v: BRIDGE_PROTOCOL, app: id, pid: process.pid, endpoint: server.endpoint, secret: server.secret, startedAt: new Date().toISOString() });
   } catch (error) {
     stop();
     throw error;

@@ -1,11 +1,9 @@
 /* @layer electron-main @kind logic */
+import { toJson } from './to-json';
+
 const encodeMessage = (value: unknown, maxBytes: number): string | null => {
-  try {
-    const text = JSON.stringify(value);
-    return Buffer.byteLength(text, 'utf8') > maxBytes ? null : `${text}\n`;
-  } catch {
-    return null;
-  }
+  const text = toJson(value);
+  return text === null || Buffer.byteLength(text, 'utf8') > maxBytes ? null : `${text}\n`;
 };
 
 export { encodeMessage };

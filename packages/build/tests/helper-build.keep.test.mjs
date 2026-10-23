@@ -22,13 +22,12 @@ const realVite = pathToFileURL(createRequire(import.meta.url).resolve('vite')).h
 const bridgeEntry = resolve(import.meta.dirname, '../../electron/src/bridge/index.ts').replace(/\\/g, '/');
 
 const SERVER = [
-  `import { startBridgeServer } from '${bridgeEntry}';`,
-  "import { writeFileSync } from 'node:fs';",
+  `import { startBridgeServer, writeBridgeDiscovery } from '${bridgeEntry}';`,
   "import { ADD } from './route';",
   "const server = await startBridgeServer({ app: 'demo' });",
   'server.handle(ADD, (a: number, b: number) => a + b);',
   'const discovery = { v: 1, app: "demo", pid: process.pid, endpoint: server.endpoint, secret: server.secret, startedAt: "now" };',
-  'writeFileSync(process.argv[2] as string, JSON.stringify(discovery), { mode: 0o600 });',
+  'writeBridgeDiscovery(process.argv[2] as string, discovery);',
   "process.stdout.write('ready\\n');",
   '',
 ].join('\n');

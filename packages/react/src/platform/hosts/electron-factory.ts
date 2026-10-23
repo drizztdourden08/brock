@@ -1,14 +1,11 @@
 /* @layer renderer-shell @kind logic */
 import type {
-  DevicePort, DocumentsPort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
+  DevicePort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
 } from '@drizztdourden08/brock-core';
 import { anyTypeFor, osFromProcess } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../host/require-host-api';
-
-const toArrayBuffer = (data: Uint8Array): ArrayBuffer =>
-  data.byteOffset === 0 && data.byteLength === data.buffer.byteLength
-    ? (data.buffer as ArrayBuffer)
-    : (data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer);
+import { createElectronDocuments } from './electron-documents';
+import { toArrayBuffer } from './to-array-buffer';
 
 const createDevice = (): DevicePort => ({
   keepAwake: () => {},
@@ -84,18 +81,6 @@ const createFilePicker = (): FilePickerPort => {
   };
 };
 
-const createDocuments = (): DocumentsPort => {
-  const api = requireHostApi();
-  return {
-    open: (opts) => api.documentOpen(opts),
-    saveAs: (opts) => api.documentSaveAs(opts),
-    read: async (path) => new Uint8Array(await api.documentRead(path)),
-    readText: (path) => api.documentReadText(path),
-    write: (path, data) => api.documentWrite(path, toArrayBuffer(data)),
-    writeText: (path, text) => api.documentWriteText(path, text),
-  };
-};
-
 const createElectronFactory =(): PlatformFactory => {
   const api = requireHostApi();
   return {
@@ -120,7 +105,7 @@ const createElectronFactory =(): PlatformFactory => {
       files: createFileStore,
       filePicker: createFilePicker,
       device: createDevice,
-      documents: createDocuments,
+      documents: createElectronDocuments,
     },
   };
 };

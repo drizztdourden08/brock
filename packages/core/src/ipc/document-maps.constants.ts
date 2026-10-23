@@ -8,6 +8,13 @@ const DOCUMENT_INVOKE_MAP = {
   documentReadText: 'document:readText',
   documentWrite: 'document:write',
   documentWriteText: 'document:writeText',
+  documentRecent: 'document:recent',
+  documentClearRecent: 'document:clearRecent',
+  documentOpenRecent: 'document:openRecent',
+  documentSnapshot: 'document:snapshot',
+  documentRecoverable: 'document:recoverable',
+  documentRestoreSnapshot: 'document:restoreSnapshot',
+  documentDiscardSnapshot: 'document:discardSnapshot',
 } as const satisfies Record<string, keyof DocumentInvokeContract>;
 
 export { DOCUMENT_INVOKE_MAP };

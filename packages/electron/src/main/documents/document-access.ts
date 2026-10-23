@@ -1,8 +1,7 @@
 /* @layer electron-main @kind logic */
 import { isAbsolute, resolve } from 'path';
 import type { DocumentAccess } from './document-access.type';
-
-const keyOf = (full: string): string => (process.platform === 'win32' ? full.toLowerCase() : full);
+import { pathKey as keyOf } from './path-key';
 
 const absolute = (path: unknown): string => {
   if (typeof path !== 'string' || path === '' || path.includes('\0') || !isAbsolute(path)) {

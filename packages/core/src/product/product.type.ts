@@ -60,7 +60,7 @@ interface FileAssociation {
   icon?: string;
 }
 
-type ProductIconRim = 'light' | 'dark';
+type ProductIconRim = 'light';
 
 type ProductWordmarkRendering = 'auto' | 'pixelated';
 

@@ -28,7 +28,7 @@ const sampleApp = () => {
   const tessera = join(root, 'node_modules', '@drizztdourden08', 'tessera');
   write(join(root, 'package.json'), '{"name":"app"}');
   write(join(tessera, 'package.json'), '{"name":"@drizztdourden08/tessera","version":"0.8.0"}');
-  for (const [folder, tag] of [['brand', 'plain'], ['brand/light-rim', 'light'], ['brand/dark-rim', 'dark']]) {
+  for (const [folder, tag] of [['brand', 'plain'], ['brand/light-rim', 'light']]) {
     brandSet(join(tessera, folder, 'brock'), tag);
     brandSet(join(tessera, folder, 'atlas'), tag);
     write(join(tessera, folder, 'brock.svg'), `${tag}:mark`);
@@ -53,10 +53,7 @@ describe('copyBrandIcons with a rim', () => {
     expect(read(root, 'public/logos/icon-bot.svg')).toBe('light:bot/icon.svg');
   });
 
-  it('takes the rim icons.rim names and the plain set for a brand with no rim', () => {
-    const dark = sampleApp();
-    copyBrandIcons(dark, { product: { icons: { brand: 'brock', rim: 'dark' } } });
-    expect(read(dark, 'public/logos/icon-256.png')).toBe('dark:icon/png/icon-256.png');
+  it('takes the plain set for a brand with no rim', () => {
     const plain = sampleApp();
     copyBrandIcons(plain, { product: { icons: { brand: 'atlas' } } });
     expect(read(plain, 'public/logos/mark.svg')).toBe('ground:atlas');

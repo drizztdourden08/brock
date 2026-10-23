@@ -10,7 +10,6 @@ describe('product.icons.rim', () => {
   });
 
   it('keeps the rim an app sets', () => {
-    expect(defineProduct({ ...BASE, icons: { brand: 'brock', rim: 'dark' } }).icons.rim).toBe('dark');
     expect(defineProduct({ ...BASE, icons: { brand: 'tessera', rim: 'light' } }).icons.rim).toBe('light');
   });
 

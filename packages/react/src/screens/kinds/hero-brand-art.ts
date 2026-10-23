@@ -9,7 +9,7 @@ import { HERO_GREETING } from './hero-brand-art.constants';
 const heroBrandArt = (brand: BrandApp | undefined): HeroArt | undefined => {
   if (brand === undefined) return undefined;
   const node = brandMascot(brand) === null
-    ? createElement(BrandMark, { app: brand, size: 'xl', ground: 'dark' })
+    ? createElement(BrandMark, { app: brand, size: 'xl' })
     : createElement(AnimatedMascot, { brand: 'auto', animation: HERO_GREETING, size: 'xl' });
   return { kind: 'node', node };
 };

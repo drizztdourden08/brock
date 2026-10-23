@@ -10,6 +10,7 @@ import { emit } from '../ipc/emit';
 import { ask } from '../ipc/ask';
 import { askWithin } from '../ipc/ask-within';
 import { createNodeFileStore } from '../files/node-file-store';
+import { createDocumentAccess } from '../documents/document-access';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
 import { getMainWindow } from '../window/get-main-window';
@@ -42,6 +43,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     instance,
     paths: { userData: getLegacyPath, data: getUserDataPath },
     files,
+    documents: createDocumentAccess(),
     profiles,
     storage,
     job: jobs.start,

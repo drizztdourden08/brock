@@ -14,6 +14,9 @@ export type { HandleFn, OnFn, EmitFn, InvokeHandler, SendHandler } from './ipc/h
 export type { AskFn, AskWithinFn } from './ipc/ask.type';
 export type { FileGuardVerdict, FileWriteGuard, FileWriteKind, FileWriteRequest } from './files/file-guard.type';
 export type { NodeFileStoreOptions } from './files/node-file-store.type';
+export type { DocumentAccess } from './documents/document-access.type';
+export { createDocumentAccess } from './documents/document-access';
+export { writeAtomic } from './storage/write-atomic';
 
 export { initPaths } from './paths/init-paths';
 export { getUserDataPath } from './paths/get-user-data-path';

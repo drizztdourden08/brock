@@ -6,6 +6,7 @@ import { aspectRatioHandlers } from '../window/aspect-ratio';
 import { appHandlers } from '../app/ipc-handlers';
 import { dialogHandlers } from '../handlers/dialog-handlers';
 import { fileHandlers } from '../handlers/file-handlers';
+import { documentHandlers } from '../documents/ipc-handlers';
 import { shellHandlers } from '../handlers/shell-handlers';
 import { storageHandlers } from '../handlers/storage-handlers';
 import { profileHandlers } from '../handlers/profile-handlers';
@@ -30,6 +31,7 @@ const baseHandlers = (): HandlerGroup[] => [
   openHandlers,
   dialogHandlers,
   fileHandlers,
+  documentHandlers,
   shellHandlers,
   storageHandlers,
   dataDomainHandlers,

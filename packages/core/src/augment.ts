@@ -15,6 +15,8 @@ import type { ReviewCheck } from './review/review.type';
 import type { BootFailure, BootProgress } from './boot/boot-task.type';
 import type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './ipc/widget-contract.type';
 import type { DataEventContract, DataInvokeContract, DataSendContract } from './ipc/data-contract.type';
+import type { DocumentInvokeContract } from './ipc/document-contract.type';
+import type { DocumentsPort } from './platform/ports/documents.type';
 
 interface BaseProfile {
   id: string;
@@ -30,7 +32,7 @@ type Profile = BaseProfile & ProfileExtension;
 type CreateProfileOptions = { name: string; initialConfig?: Record<string, unknown> } & ProfileCreateExtension;
 type ProfilePatch = { name?: string } & ProfilePatchExtension;
 
-interface InvokeContract extends WidgetInvokeContract, DataInvokeContract {
+interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, DocumentInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'app:takeOpens': () => Promise<OpenRequest[]>;
@@ -144,6 +146,7 @@ interface PlatformPorts {
   files: FileStore;
   filePicker: FilePickerPort;
   device: DevicePort;
+  documents?: DocumentsPort;
 }
 
 export type {

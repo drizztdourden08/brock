@@ -69,6 +69,7 @@ The app window is created with `show: false` at its saved geometry and is shown 
 | `bugReport` | `{ transport(payload, ctx), label? }`: where the bug report dialog sends its payload, in place of the GitHub issue; see brock-react, Bug report |
 | `paths` | `{ preload, renderer, splash, splashPreload }`; relative entries resolve against `<appPath>/dist/electron`, defaults `../preload/preload.mjs`, `../renderer/index.html`, `../renderer/splash.html`, `../preload/splash-preload.mjs` |
 | `security` | `externalProtocols` (default `http:`, `https:`, `mailto:`) and `permissions` (see `DEFAULT_PERMISSIONS`) |
+| `bridge` | `{ register(bridge, ctx), maxMessageBytes?, maxClients? }`: opens the local bridge an outside helper talks to (a named pipe or a private Unix socket, a per-session secret proved by an HMAC handshake, a private discovery file). `bridge.handle(route, fn, { validate })`; only a `BridgeError` message reaches the caller. The helper's client is `connectBridge` from `/bridge`, which imports nothing from Electron. See docs/architecture.md, Outside helpers and the bridge |
 
 ## MainContext
 

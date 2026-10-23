@@ -240,6 +240,96 @@ product: {
 
 The `catalog` module (`@drizztdourden08/brock-catalog`) is a generic content catalogue client, for any app that installs items from its own catalogue (presets, themes, levels): `configureCatalog(ctx, config)` gives it the app's endpoint, schema validators, routes and one installer per container, and it serves the reads over `catalog:*`, runs each install as the job `catalog-install:<id>` through `ctx.job` (grant, download, verify, unpack; cancel is turned off once the download is in; the size and sha256 must match the grant before anything is unpacked; an update installs before it releases the old copy through the app's `onRelease`, and what the installer removes goes to the system trash unless `removeTo: 'delete'`), keeps the installed record in `Data/catalog/installed.json` for the renderer's installed guard (`useCatalogInstalled`, `installedByName`) and for `readInstalledRecords`, which reads it with no context, gives app code `isCatalogInstalling(itemId, jobs)` and `catalogJobId`, and parses install links of `config.linkScheme`. The app declares the scheme in `product.protocols` (see Links, files and custom schemes); the module subscribes to `ctx.onOpen` and takes every `url` request of that scheme, from the launch argv, a second launch or macOS `open-url`. `getCatalog(ctx).links.deliverUrl(url)` stays for a link that reaches the app another way, such as one pasted into it. What an item is, where it lands and what uses it stay in the app. The details are in `packages/modules/catalog/README.md`.
 
+### Outside helpers and the bridge
+
+Some programs drive the app from outside. An MCP client starts a small stdio helper, and the helper asks the running app to do things. Brock gives the two halves: a helper entry in the build, and a local bridge in main.
+
+A helper is a second Node entry. The app names each one in `brock.config.ts`, as erasable TypeScript:
+
+```ts
+helpers: { 'bxel-mcp': 'src/helper/main.ts' },
+```
+
+The name is lower case letters, digits and dashes. The entry is a `.ts`, `.mts`, `.js` or `.mjs` file inside the app folder. `brock build` and `brock dev` bundle each one into `dist/helpers/<name>.mjs` before Electron's own build: one ES module file for Node 22 or later, with every import inlined except Node's built-ins, so it needs no `node_modules`. The app's aliases and `build.define` apply. A helper that imports `electron` fails the build, since it never runs inside Electron. The managed electron-builder config ships the files as `extraResources`, so the installed app holds `resources/helpers/<name>.mjs` outside the asar, where any Node can read it.
+
+The bridge is off until the app passes `bridge` to `bootstrapApp`:
+
+```ts
+const BRIDGE = defineChannels({
+  listDocs: invoke<(filter: string) => Promise<DocInfo[]>>()('bxel:docs:list'),
+});
+
+bootstrapApp(product, {
+  bridge: {
+    register: (bridge, ctx) => {
+      bridge.handle(BRIDGE.listDocs, (filter) => ctx.services.docs.list(filter), { validate: ([filter]) => typeof filter === 'string' });
+    },
+  },
+});
+```
+
+A route is an `invoke` entry, the same builder as the IPC contract, kept in its own `defineChannels` object that never reaches the preload maps. Arguments and replies cross as JSON, so they must be plain data. `bridge.handle(route, handler, { validate? })` returns the unregister call; a second handler for one channel throws. Main starts the bridge after the main boot tasks, runs `register`, then writes the discovery file, so no request can arrive before the handlers exist. A bridge that fails to open is logged and the app keeps running. `maxMessageBytes` (1 MiB by default) and `maxClients` (8) set the limits.
+
+The helper uses the client from `@drizztdourden08/brock-electron/bridge`, which imports nothing from Electron:
+
+```ts
+import { connectBridge } from '@drizztdourden08/brock-electron/bridge';
+import { BRIDGE } from '../bridge/channels.constants';
+
+const bridge = connectBridge({ app: 'bxel' });
+const docs = await bridge.request(BRIDGE.listDocs, '*.bxel');
+```
+
+`request` is typed from the route. The client connects on the first request, reads the discovery file again on each reconnect (so it follows a restarted app), and rejects with a plain message when the app is not running, the file is stale, a reply is an error, the endpoint does not finish the handshake within `handshakeMs` (2 s), or the request runs past `timeoutMs` (30 s). `close()` ends the connection. The same entry exports `startBridgeServer`, `writeBridgeDiscovery`, `readBridgeDiscovery`, `bridgeDiscoveryFile` and `BridgeError`, so a helper's tests can stand up a fake app.
+
+The wire is one JSON object per line, in both directions, and it starts with a handshake that proves both ends know the secret without ever sending it:
+
+1. The client sends `{ v: 1, hello: <client nonce> }`, 32 random bytes.
+2. The server answers `{ v: 1, hello: <server nonce>, proof }`, where `proof` is HMAC-SHA256 of the secret over both nonces. The client checks it in constant time and closes the connection when it does not match, before it sends anything else. An endpoint that does not hold the secret (a squatter on a stale pipe name or socket path) never learns more than a random nonce.
+3. Both ends derive a session key, HMAC of the secret over both nonces again under another label. Each request is `{ id, channel, args, mac }`: `args` is the JSON text of the arguments and `mac` is HMAC of the session key over the id, the channel and that text. Ids are whole numbers that must grow on each connection, so a request replayed on the same connection or on another one is refused.
+
+A reply is `{ id, ok: true, value }` or `{ id, ok: false, error }`. A connection may carry many requests at once; replies come back by id. Replies carry no MAC: once the server has proved the secret on this connection, nothing else can write into it.
+
+The endpoint and the discovery file:
+
+- Windows: a named pipe, `\\.\pipe\brock-<id>-<32 hex digits>`, new each session. Elsewhere: a Unix socket `bridge.sock` in a fresh private temp folder (mode 0700), the socket itself 0600. The bridge never listens on TCP.
+- The discovery file always lives in the per-user app data folder, never beside a portable copy: `%APPDATA%\<id>` on Windows, `~/Library/Application Support/<id>` on macOS, `$XDG_CONFIG_HOME/<id>` or `~/.config/<id>` on Linux. It is `bridge.json`, or `bridge.<key>.json` for a named instance (keyed by its name) and for a `--user-data` launch or a portable copy (keyed by `data-` and a hash of its data folder), so a test launch or a portable copy never replaces the installed app's file. A client picks a named instance with `instance`, or any file with `file` or `BROCK_BRIDGE_FILE`.
+- It holds `{ v, app, pid, endpoint, secret, startedAt }`. Main first removes a stale file (one whose process is gone or that does not parse), then writes a temp file and renames it into place. On macOS and Linux the file is mode 0600. On Windows a mode does nothing, so main runs `icacls` on the temp file: the owner set to the current user's SID, inheritance off and one entry, full control for that SID, which the rename keeps. Node has no clean way to read or set an owner or an access list on Windows, so Brock runs `whoami.exe`, `icacls.exe` and `cmd.exe` from the fixed `C:\Windows\System32` (never from `PATH` or `SystemRoot`), without a shell, on the file's base name from its own folder, so a profile path with any characters works.
+- It is removed on quit (and on process exit) only while it still holds this session's secret, so a second instance's file is never deleted by the first.
+
+The rules main enforces on every connection:
+
+- A connection must finish the handshake and send a request with a valid MAC within 2 s. At most 4 connections may be in that state at once (`maxPending`); one past the cap is dropped at once. Authenticated clients have their own cap (`maxClients`, 8).
+- A request with a wrong MAC or a reused id gets `unauthorized` and the connection is closed. A line that is not a hello or a request gets an error and the connection is closed.
+- A message larger than `maxMessageBytes` (a request, or a line that never ends) gets an error and the connection is closed. A reply larger than the limit, or one that is not JSON, is replaced by an error reply. The client applies its own limit to replies.
+- Routes must validate their arguments: JSON from outside is untrusted, whatever the route's type says. `bridge.handle(route, handler, { validate })` runs `validate(args)` first and answers `invalid arguments for "<channel>"` when it returns false or throws.
+- A handler error goes back as `the request failed`, and main logs the real error as a warning. Only a `BridgeError` (from `/main` or `/bridge`) sends its own message, so a handler chooses what the caller may read. A channel with no handler answers `no handler is registered for "<channel>"`.
+- On quit main closes every connection, stops listening, removes the socket folder and the discovery file. Requests in flight on the client reject.
+
+The client checks the discovery file before it connects. The file must be private: on macOS and Linux it belongs to the user and is closed to group and others; on Windows its access list (read by SID with `icacls /save`) must be protected and hold exactly one entry, full control for the current user's SID, and its owner (read with `dir /q`, in Unicode) must be the current user. The endpoint must be a Brock pipe name under `\\.\pipe\` (never `\\host\pipe\...`) or an absolute socket path. The recorded process must be alive, and a process the client may not signal counts as gone, since the app always runs as the same user as its helper. On macOS and Linux the socket's folder must be a real folder (not a link) owned by the user with mode 0700, and the socket must be the user's.
+
+The threat model:
+
+- Other local users. On macOS and Linux they cannot read the discovery file or reach the socket, and the client refuses a socket folder they could have made. On Windows the pipe name can be listed by anyone, but the pipe's default security lets only the user, SYSTEM and administrators open it for writing, the discovery file is readable by the user alone, and a request needs the session key. A pipe name taken before the app makes its pipe is refused, and the app tries a new random name.
+- A stale discovery file, left by a crash. Main removes it on the next start. Until then the client refuses it when the recorded process is gone. When the pid has been reused by another process of the same user, the client does connect to the old endpoint name, and someone else may hold that name by then: the handshake stops there, since an endpoint that does not hold the secret cannot answer the proof, and the client sends nothing but its nonce. One gap stays on Windows: Node opens a pipe without a security quality of service, so impersonation is not limited, and Node has no `GetNamedPipeServerProcessId` to check which process serves the pipe. An account with the impersonate privilege (a service or an administrator) that squats a stale pipe name could therefore impersonate the user while the client waits for the proof, which the client gives up on after `handshakeMs`. Such an account already controls the machine.
+- Other apps of the same user. They can read the discovery file, so they can use the bridge. The user account is the boundary, as it is for the app's own data, so a route must not grant more than that user could do anyway. Keep the routes narrow and validated: no route that runs a command, evaluates code or reads or writes an arbitrary path.
+
+An MCP client config points at the packaged helper and runs it with the app's own executable as Node:
+
+```json
+{
+  "mcpServers": {
+    "bxel": {
+      "command": "C:\\Users\\me\\AppData\\Local\\bxel\\current\\Bxel.exe",
+      "args": ["C:\\Users\\me\\AppData\\Local\\bxel\\current\\resources\\helpers\\bxel-mcp.mjs"],
+      "env": { "ELECTRON_RUN_AS_NODE": "1" }
+    }
+  }
+}
+```
+
+Brock chose the bundled Node through `ELECTRON_RUN_AS_NODE` because the user need not install Node, the helper runs on the Node version it was built and tested with, and Velopack keeps the `current` folder at one path across updates. On macOS the command is `<App>.app/Contents/MacOS/<App>` and the helper is under `<App>.app/Contents/Resources/helpers`. A plain `node` (22 or later) runs the same file, which suits development and CI. Brock does not turn off Electron's `RunAsNode` fuse; an app that does must use a plain `node`. `helperLaunch(name)` from `@drizztdourden08/brock-electron/main` returns `{ command, args, env }` for this install (or `dist/helpers` in development), ready for a settings page that shows or copies the config.
+
 ## Boot
 
 The splash window is the only loading screen. Nothing loads inside the app window before it appears.

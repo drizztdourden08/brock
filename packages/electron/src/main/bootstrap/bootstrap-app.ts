@@ -41,8 +41,10 @@ import { startProcess } from './start-process';
 import { startOpenRouting } from '../open/start-open-routing';
 import { bugReportTransport } from '../bug-report/bug-report-transport';
 import { fileGuard } from '../files/file-guard-state';
+import { startAppBridge } from '../bridge/start-app-bridge';
+import { bridgeKeyOf } from '../bridge/bridge-key';
 
-const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
+const onReady = async ({ ctx, options, dataDirs, schemes, setup, bridgeKey }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
   if (ctx.isDev) logBoot(await refreshDevCache(app.getPath('userData')) ? 'dev cache cleared' : 'dev cache kept');
 
@@ -81,6 +83,8 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
     options.onWindow?.(win, ctx);
   };
   await runMainBoot(mainBootTasks(options, openWindow), ctx);
+  if (!options.bridge || !bootState.mainDone) return;
+  await startAppBridge(ctx, options.bridge, bridgeKey).catch((error: unknown) => ctx.log(`the bridge did not open: ${stackOf(error)}`, 'error'));
 };
 
 const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): void => {
@@ -113,7 +117,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 
   void app.whenReady()
-    .then(() => onReady({ ctx, options, dataDirs, schemes, setup }))
+    .then(() => onReady({ ctx, options, dataDirs, schemes, setup, bridgeKey: bridgeKeyOf(instance.name, userDataOverride ?? portableData) }))
     .catch((err: unknown) => {
       noteSync('error', `boot failed: ${stackOf(err)}`);
       app.exit(1);

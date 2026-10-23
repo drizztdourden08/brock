@@ -14,6 +14,7 @@ import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';
 import type { DocumentAccess } from '../documents/document-access.type';
+import type { AppBridgeOptions } from '../bridge/app-bridge.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -103,6 +104,7 @@ interface BootstrapOptions {
   paths?: BootstrapPaths;
   security?: SecurityOptions;
   screenshotTimeoutMs?: number;
+  bridge?: AppBridgeOptions;
 }
 
 export type {

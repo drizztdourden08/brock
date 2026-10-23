@@ -6,6 +6,7 @@ import { dirname, join, resolve } from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 const ENTRY = resolve(import.meta.dirname, '../src/node/index.ts');
+const BRIDGE_ENTRY = resolve(import.meta.dirname, '../src/bridge/index.ts');
 const IMPORT = /(?:import|export)[^'"]*?from\s+'([^']+)'/g;
 
 const fileOf = (from: string, spec: string): string => {
@@ -36,8 +37,8 @@ afterEach(async () => {
 });
 
 describe('the Electron-free entry, @drizztdourden08/brock-electron/node', () => {
-  it('reaches no module of Electron, so a plain Node test can load it', () => {
-    const reached = packagesReached(ENTRY);
+  it.each([ENTRY, BRIDGE_ENTRY])('reaches no module of Electron from %s, so plain Node can load it', (entry) => {
+    const reached = packagesReached(entry);
     expect(reached.length).toBeGreaterThan(0);
     expect(reached.filter((spec) => spec === 'electron' || spec.startsWith('electron/') || spec.startsWith('@electron-toolkit'))).toEqual([]);
   });

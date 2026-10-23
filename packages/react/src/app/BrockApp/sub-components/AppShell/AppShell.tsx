@@ -19,6 +19,7 @@ import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
 import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
 import { useMouseBack } from '../../behavior/useMouseBack';
+import { useAppTitle } from '../../../../document-title/useAppTitle';
 import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
 import { useReviewTour } from '../../behavior/useReviewTour';
@@ -46,6 +47,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const controls = useBarControls(product.window.titleBar.controls);
   const registry = useScreenRegistry();
   const railed = layout === 'rail';
+  const title = useAppTitle(product.window.title ?? product.name);
 
   const phase = useBootStore((s) => s.phase);
   const failure = useBootStore((s) => (s.phase === 'failed' ? s.failure : null));
@@ -60,7 +62,6 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useIpcLogBridge(log);
   useAppOpenBridge();
 
-  const hideView = viewHidden(product.menu);
   const shellMenu = useShellMenu(moduleMenu, railed);
   useBootPreload(registry, [home, homeScreen]);
   const actions = useShellActions(titleBarActions);
@@ -79,14 +80,14 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
       <Box className="brock-app" inert={failure !== null}>
         {titleBar && (
           <AppTitleBar
-            title={product.window.title ?? product.name}
+            title={title}
             menu={barMenu}
             controls={controls}
             instanceName={instanceName()}
             logoSrc={logoSrc}
             actions={actions}
             hidden={titleBarHidden}
-            viewHidden={hideView}
+            viewHidden={viewHidden(product.menu)}
             menuConfig={product.menu}
           />
         )}

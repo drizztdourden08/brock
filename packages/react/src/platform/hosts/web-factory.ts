@@ -43,6 +43,7 @@ const createWindowControls = (): WindowControlsPort => ({
   close: () => {},
   toggleFullscreen: () => {},
   setFullscreen: () => {},
+  setTitle: (title) => { document.title = title; },
   setAspectRatioLock: () => {},
   setAlwaysOnTop: resolveFalse,
   openDevTools: () => {},

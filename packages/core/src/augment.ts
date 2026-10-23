@@ -101,6 +101,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'window:openDevTools': () => void;
   'window:toggleFullscreen': () => void;
   'window:setFullscreen': (value: boolean) => void;
+  'window:setTitle': (title: string) => void;
   'window:setAspectRatioLock': (ratio: number, extraHeight: number) => void;
   'boot:progress': (progress: BootProgress) => void;
   'boot:failed': (failure: BootFailure) => void;

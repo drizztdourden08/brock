@@ -76,6 +76,7 @@ const BASE_SEND_MAP = {
   openDevTools: 'window:openDevTools',
   toggleFullscreen: 'window:toggleFullscreen',
   setFullscreen: 'window:setFullscreen',
+  setTitle: 'window:setTitle',
   setAspectRatioLock: 'window:setAspectRatioLock',
   bootProgress: 'boot:progress',
   bootFailed: 'boot:failed',

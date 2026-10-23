@@ -7,6 +7,7 @@ interface WindowControlsPort {
   close: () => void;
   toggleFullscreen: () => void;
   setFullscreen: (on: boolean) => void;
+  setTitle: (title: string) => void;
   setAspectRatioLock: (ratio: number, extraHeight: number) => void;
   setAlwaysOnTop: (on: boolean) => Promise<boolean>;
   openDevTools: () => void;

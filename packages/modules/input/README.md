@@ -94,6 +94,17 @@ What Android does not do:
 
 The bundled database is `resources/gamecontrollerdb.txt`, taken from SDL_GameControllerDB. Main reads it from `configure({ mappingDbPath })`, then `<resourcesPath>/gamecontrollerdb.txt`, then this package.
 
+## The mapping directory
+
+`mapping.list()` returns every gamepad mapping SDL knows: the built-in table, the bundled database and the lines the user added. Each entry is `{ guid, name, vid, pid, platform?, family? }`. An app can show them as a searchable table and join them with `list()` on `vid:pid`.
+
+- `vid` and `pid` come from the SDL GUID. The GUID is 16 bytes in hex. Bytes 0 to 1 are the bus, bytes 2 to 3 are a CRC of the name, bytes 4 to 5 the vendor, bytes 8 to 9 the product, bytes 12 to 13 the version. Each word is little endian. The CRC is skipped. A GUID that carries the product name in place of ids, and the `xinput` pseudo GUID, give `0` and `0`.
+- `platform` is the value of the mapping's `platform:` field, such as `Windows`, `Linux` or `Mac OS X`. It is left off when the line has none.
+- `family` is `xbox`, `playstation` or `nintendo`. It comes from the vendor (Microsoft, Sony, Nintendo) and, when the vendor is unknown, from the name. It is left off for a generic pad.
+- SDL keeps one mapping per GUID, so there is no cross platform duplicate to merge. If the same GUID and platform ever repeats, the last line wins. The same GUID on two platforms stays as two entries.
+- Main parses the list once and caches it. Adding a mapping with `mapping.add` clears the cache. An empty answer is never cached, since SDL may not be up yet.
+- The call needs addon 1.3.0. With an older addon, with controllers off, and on Android, it returns `[]` and never throws.
+
 ## Device keys
 
 A device is keyed by `vid:pid` in lowercase hex, `057e:2009` style. A second device with the same `vid:pid` gets `#2`, the next `#3`. A freed number is reused by the next device to connect, and no other key moves.
@@ -118,6 +129,7 @@ window.api.input.vibratePattern(deviceKey, [{ durationMs, intensity }], gapMs)
 window.api.input.onState((deviceKey, buttons, axes) => ...)
 window.api.input.onDevices((entries) => ...)
 window.api.input.mapping.add(line)
+window.api.input.mapping.list()                // MappingEntry[], every mapping SDL knows
 window.api.input.calibration.writeStick(deviceKey, calibration)
 window.api.input.capture.startJoystick(joystickId)
 ```

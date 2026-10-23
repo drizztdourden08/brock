@@ -21,3 +21,4 @@ Napi::Value StartJoystickCapture(const Napi::CallbackInfo& info);
 Napi::Value StopJoystickCapture(const Napi::CallbackInfo& info);
 Napi::Value ListJoysticks(const Napi::CallbackInfo& info);
 Napi::Value MappingForGuid(const Napi::CallbackInfo& info);
+Napi::Value MappingList(const Napi::CallbackInfo& info);

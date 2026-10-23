@@ -182,6 +182,10 @@ class SdlThread {
   // std::nullopt when SDL isn't initialized or no mapping exists for this GUID.
   std::optional<std::string> MappingForGuid(const std::string& guid);
 
+  // Every mapping string SDL knows right now, built in and added. Same guards
+  // as MappingForGuid, so it is empty when SDL or the gamepad subsystem is down.
+  std::vector<std::string> MappingList();
+
  private:
   void Run();
   void PumpCommands();

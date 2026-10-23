@@ -111,6 +111,8 @@ interface BrockConfig {
   tsconfig?: BrockTsconfigOptions;
   /** What the managed electron-builder config and vpk take beside the product. */
   packaging?: BrockPackagingOptions;
+  /** Standalone Node scripts an outside program runs, such as a stdio MCP helper: name to entry file, relative to the app folder. Each builds into dist/helpers/<name>.mjs and ships in resources/helpers, outside the asar. */
+  helpers?: Record<string, string>;
 }
 
 declare const CONFIG_FILE: 'brock.config.ts';

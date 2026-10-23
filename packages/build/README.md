@@ -573,6 +573,17 @@ packaging: {
   `Shell`, `None`) and an `icon` in place of the product's; the Windows file icon follows it.
 - `velopackIcons`: the icon `vpk pack` takes, an `.ico` on Windows and a `.png` on Linux, in place of the app icon.
 
+`helpers` names the standalone Node scripts an outside program runs, such as a stdio MCP helper:
+
+```ts
+helpers: { 'bxel-mcp': 'src/helper/main.ts' },
+```
+
+`brock build` and `brock dev` bundle each one into `dist/helpers/<name>.mjs` (one ES module for Node 22
+or later, every import inlined but Node's built-ins, no Electron import allowed), and the managed
+electron-builder config ships them in `resources/helpers`, outside the asar. The bridge the helper
+talks to and the MCP client config are in docs/architecture.md, Outside helpers and the bridge.
+
 The app's `package.json` must say `"type": "module"`: the managed `electron.vite.config.ts` and
 `vite.web.config.ts` pass `import.meta.dirname`, which a CommonJS package leaves empty, and
 `brock check` fails while it is missing.

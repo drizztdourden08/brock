@@ -22,6 +22,7 @@
  * @property {BrockWorkflowOptions} [workflows] which workflows Brock keeps, and app steps
  * @property {{ compilerOptions?: Record<string, unknown> }} [tsconfig] over the managed tsconfig
  * @property {BrockPackagingOptions} [packaging] electron-builder and vpk options
+ * @property {Record<string, string>} [helpers] Node scripts: name to entry file
  */
 
 /**

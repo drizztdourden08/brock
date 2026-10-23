@@ -13,7 +13,7 @@ import { tabSeedEntries } from './tab-seed-entries';
 const pageMetaOf = (seed: SearchFileSeed, seeds: readonly SearchFileSeed[]): SearchFileSeed | undefined =>
   seeds.find((other) => other.kind === 'page-meta' && other.bucket === seed.bucket && other.group === seed.group && other.id === seed.page);
 
-const pageSeedEntries = (place: SeedPlace, seed: SearchFileSeed, kind: 'page' | 'custom' | 'settings'): SearchEntry[] => {
+const pageSeedEntries = (place: SeedPlace, seed: SearchFileSeed, kind: 'page' | 'custom' | 'live' | 'settings'): SearchEntry[] => {
   const page = pageEntry(place, seed, entryLabel({ id: seed.id, meta: { title: seed.title } }), seed.icon ?? KIND_ICONS[kind]);
   if (kind === 'settings') return [page, ...settingsSeedEntries(page, seed.sections ?? [])];
   return [page, ...customSeedEntries(page, seed.entries ?? [])];
@@ -23,7 +23,7 @@ const bucketSeedEntries = (bucket: BucketDef, seed: SearchFileSeed, seeds: reado
   const place = seedPlace(bucket, seed.group);
   if (seed.kind === 'tab') return tabSeedEntries(place, seed, pageMetaOf(seed, seeds));
   if (seed.kind === 'sub') return subSeedEntries(place, seed, seeds);
-  return seed.kind === 'page' || seed.kind === 'custom' || seed.kind === 'settings' ? pageSeedEntries(place, seed, seed.kind) : [];
+  return seed.kind === 'page' || seed.kind === 'custom' || seed.kind === 'live' || seed.kind === 'settings' ? pageSeedEntries(place, seed, seed.kind) : [];
 };
 
 export { bucketSeedEntries };

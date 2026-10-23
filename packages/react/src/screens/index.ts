@@ -28,7 +28,7 @@ export type {
   BucketDef, BucketGroupDef, HeroMeta, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement,
 } from './conventions/screens-config.type';
 export type {
-  BackdropEntry, BaseEntry, BucketEntry, CardEntry, HeroEntry, PageEntry, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource, SubEntry, TabEntry,
+  BackdropEntry, BaseEntry, BucketEntry, CardEntry, HeroEntry, LiveEntry, PageEntry, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource, SubEntry, TabEntry,
 } from './conventions/screen-tree.type';
 export type {
   BaseProps, CardProps, HeroActionsProps, HeroArtProps, HeroBackdropProps, HeroFactsProps, HeroFrame, HeroProps, HeroShadeProps, HeroSlotProps, HeroSlots, Open, PageProps, SubPageProps,

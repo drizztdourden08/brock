@@ -1,15 +1,25 @@
 /* @layer renderer-shell @kind types */
 import type { ScreenRenderContext } from '../../screens/screen.type';
-import type { HubDef, HubGroup, HubPage, HubRenderContext, HubSubPage, HubTab } from '../hub.type';
+import type { HubDef, HubGroup, HubLiveLists, HubLiveSource, HubPage, HubRenderContext, HubSubPage, HubTab } from '../hub.type';
 
 interface HubProps {
   def: HubDef;
   ctx: ScreenRenderContext;
 }
 
+interface HubLiveEntry {
+  id: string;
+  source: HubLiveSource;
+}
+
+interface HubBodyProps extends HubProps {
+  live: HubLiveLists;
+}
+
 interface HubPageList {
   groups: HubGroup[];
   pages: HubPage[];
+  fallbacks: ReadonlyMap<string, HubPage>;
 }
 
 interface HubSelection {
@@ -32,4 +42,4 @@ interface HubState extends HubPageList, HubSelection {
   up: () => void;
 }
 
-export type { HubPageList, HubProps, HubSelection, HubState, KeptPage };
+export type { HubBodyProps, HubLiveEntry, HubPageList, HubProps, HubSelection, HubState, KeptPage };

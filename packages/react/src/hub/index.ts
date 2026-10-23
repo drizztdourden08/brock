@@ -8,5 +8,5 @@ export { HeaderActions } from './HeaderActions';
 export type { HeaderActionsProps, HeaderPrimary, HeaderSearch } from './HeaderActions';
 export { usePageSearch } from './usePageSearch';
 export type {
-  HubDef, HubGroup, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget,
+  HubDef, HubGroup, HubLiveSource, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget, LiveBadge, LiveMeta, LivePage, UseLivePages,
 } from './hub.type';

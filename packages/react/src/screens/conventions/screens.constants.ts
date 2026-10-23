@@ -8,6 +8,7 @@ const KIND_ICONS: Record<Exclude<ScreenEntry['kind'], 'backdrop'>, IconName> = {
   page: 'file-text',
   tab: 'layout-list',
   sub: 'pencil',
+  live: 'radio',
   'page-meta': 'layout-list',
   settings: 'settings',
   card: 'file',

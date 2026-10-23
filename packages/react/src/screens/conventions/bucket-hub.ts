@@ -6,9 +6,10 @@ import { attachSubs } from './attach-subs';
 import { bucketBackdrop } from './bucket-backdrop';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
+import { livePage } from './live-page';
 import { showRuleOf } from '../show/show-rule-of';
 import type { BucketDef } from './screens-config.type';
-import type { BucketEntry, FreePageEntry, HeroEntry, PageEntry, PageMetaEntry, SettingsEntry, SubEntry, TabEntry } from './screen-tree.type';
+import type { BucketEntry, FreePageEntry, HeroEntry, LiveEntry, PageEntry, PageMetaEntry, SettingsEntry, SubEntry, TabEntry } from './screen-tree.type';
 import { tabPages } from './tab-pages';
 import { withBackdropPreload } from './with-backdrop-preload';
 
@@ -21,8 +22,9 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
   const tabs = entries.filter((entry): entry is TabEntry => entry.kind === 'tab');
   const metas = entries.filter((entry): entry is PageMetaEntry => entry.kind === 'page-meta');
   const subs = entries.filter((entry): entry is SubEntry => entry.kind === 'sub');
-  const groups = hubGroups(bucket, attachSubs(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs, metas)], subs));
-  const home = hero ? heroPage(bucket, hero) : groups.at(0)?.pages.at(0);
+  const lives = entries.filter((entry): entry is LiveEntry => entry.kind === 'live');
+  const groups = hubGroups(bucket, attachSubs(bucket, [...content.map((entry) => contentPage(bucket, entry)), ...tabPages(bucket, tabs, metas), ...lives.map(livePage)], subs));
+  const home = hero ? heroPage(bucket, hero) : groups.flatMap((group) => group.pages).find((page) => page.live === undefined);
   if (home === undefined) throw new Error(`Bucket "${bucket.id}" has no screens: add src/screens/${bucket.id}/home.hero.tsx or a page.`);
   return withBackdropPreload({
     id: bucket.id,

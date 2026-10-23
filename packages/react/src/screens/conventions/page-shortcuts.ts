@@ -13,9 +13,11 @@ const targetOf = (entry: ScreenEntry): string | null => {
   return joinRoute(entry.bucket, entry.id);
 };
 
+const shortcutOf = (entry: ScreenEntry): string | undefined => (entry.kind === 'live' ? undefined : entry.meta?.shortcut);
+
 const pageShortcuts = (entries: readonly ScreenEntry[]): RouteShortcut[] =>
   entries.flatMap((entry) => {
-    const shortcut = entry.meta?.shortcut;
+    const shortcut = shortcutOf(entry);
     const target = targetOf(entry);
     return shortcut === undefined || target === null ? [] : [{ shortcut, target }];
   });

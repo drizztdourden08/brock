@@ -23,5 +23,9 @@ export type {
   StickCalibration, DeviceStickCalibration, TriggerCalibration, StickCalibrationStore, TriggerCalibrationStore,
   StickPoint, StickSide,
 } from './calibration.type';
+export type { MappingEntry } from './mapping/mapping-entry.type';
+export { parseMapping } from './mapping/parse-mapping';
+export { parseMappings } from './mapping/parse-mappings';
+export { decodeGuid } from './mapping/decode-guid';
 export type { InputMappingApi, InputCalibrationApi, InputCaptureApi, InputApi } from './input-api.type';
 export { noopInputApi } from './noop-input-api';

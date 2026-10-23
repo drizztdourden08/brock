@@ -23,6 +23,7 @@ describe('the no-op input API', () => {
     expect((await noopInputApi.vibratePattern('k', [{ durationMs: 10, intensity: 1 }], 0)).ok).toBe(false);
     expect(await noopInputApi.mapping.add('line')).toBe(false);
     expect(await noopInputApi.mapping.forGuid('guid')).toBeNull();
+    expect(await noopInputApi.mapping.list()).toEqual([]);
     expect((await noopInputApi.capture.startRaw(1, 2)).ok).toBe(false);
     expect(await noopInputApi.capture.startJoystick(0)).toBe(false);
     await expect(noopInputApi.rescan()).resolves.toBeUndefined();

@@ -133,6 +133,7 @@ describe('the Android input API calls into the plugin', () => {
     await createAndroidInputApi(second.plugin).status();
     expect(second.plugin.addMapping).toHaveBeenCalledWith({ mapping: MAPPING });
     expect(await api.mapping.forGuid('abc')).toBe(MAPPING);
+    expect(await api.mapping.list()).toEqual([]);
   });
 
   it('stores calibration in the WebView and has no raw capture', async () => {

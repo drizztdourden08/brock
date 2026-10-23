@@ -9,6 +9,7 @@ import type {
   DeviceStickCalibration, StickCalibrationStore, TriggerCalibration, TriggerCalibrationStore,
 } from './calibration.type';
 import type { InputApi } from './input-api.type';
+import type { MappingEntry } from './mapping/mapping-entry.type';
 
 declare module '@drizztdourden08/brock-core/augment' {
   interface InvokeContract {
@@ -21,6 +22,7 @@ declare module '@drizztdourden08/brock-core/augment' {
     'input:vibratePattern': (deviceKey: string, pattern: VibrateSegment[], gapMs: number) => Promise<VibrateResult>;
     'input:mapping:add': (mapping: string) => Promise<boolean>;
     'input:mapping:forGuid': (guid: string) => Promise<string | null>;
+    'input:mapping:list': () => Promise<MappingEntry[]>;
     'input:calibration:readSticks': () => Promise<StickCalibrationStore>;
     'input:calibration:writeStick': (deviceKey: string, calibration: DeviceStickCalibration) => Promise<void>;
     'input:calibration:readTriggers': () => Promise<TriggerCalibrationStore>;

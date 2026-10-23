@@ -9,6 +9,7 @@ import type {
 import type {
   DeviceStickCalibration, StickCalibrationStore, TriggerCalibration, TriggerCalibrationStore,
 } from './calibration.type';
+import type { MappingEntry } from './mapping/mapping-entry.type';
 import type { PadStateListener } from './pad/controller-slot.type';
 
 type Unsubscribe = () => void;
@@ -16,6 +17,7 @@ type Unsubscribe = () => void;
 interface InputMappingApi {
   add: (mapping: string) => Promise<boolean>;
   forGuid: (guid: string) => Promise<string | null>;
+  list: () => Promise<MappingEntry[]>;
 }
 
 interface InputCalibrationApi {

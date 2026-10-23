@@ -41,7 +41,7 @@ describe('the brand mascot', () => {
     expect(mascot.type).toBe(AnimatedMascot);
     expect(mascot.props).toMatchObject({ brand: 'auto', animation: 'wave', size: 'xl' });
     expect(artNode('tessera').type).toBe(BrandMark);
-    expect(artNode('tessera').props).toMatchObject({ app: 'tessera', ground: 'dark' });
+    expect(artNode('tessera').props).toMatchObject({ app: 'tessera', size: 'xl' });
     expect(heroBrandArt(undefined)).toBeUndefined();
   });
 });

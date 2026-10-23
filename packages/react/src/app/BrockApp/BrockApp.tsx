@@ -38,7 +38,7 @@ import './BrockApp.css';
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const {
     product, settings, modules = NO_MODULES, bootTasks = NO_BOOT_TASKS, widgets = NO_WIDGETS, widgetKits = NO_KITS, widgetLayout, widgetContext, widgetDisabled, layout = 'menu',
-    screenGroups, profileHooks, profiles, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags, volume, developerTools, restoreNavigation,
+    screenGroups, profileHooks, profiles, dataDomains, beforeQuit, review, titleBar = NO_TITLE_BAR_ITEMS, tours = NO_TOURS, bugReport, sessionLog, showFlags, volume, developerTools, restoreNavigation, menuBar,
   } = props;
 
   const merged = useMemo(() => mergeModules(modules), [modules]);
@@ -86,7 +86,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
-                    review={review} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation}
+                    review={review} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation} menuBar={menuBar}
                   />
                 )}
               </ModuleProviders>

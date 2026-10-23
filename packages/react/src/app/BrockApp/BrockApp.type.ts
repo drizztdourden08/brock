@@ -28,6 +28,7 @@ import type { VolumeSource } from '../../volume/volume.type';
 import type { DeveloperToolsSource } from '../../developer-tools/developer-tools.type';
 import type { CommandDef } from '../../commands/command.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
+import type { MenuBarMenu } from '../../menu-bar/menu-bar.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -78,6 +79,7 @@ interface BrockAppProps<S extends object> {
   volume?: VolumeSource;
   developerTools?: DeveloperToolsSource;
   commands?: readonly CommandDef[];
+  menuBar?: readonly MenuBarMenu[];
 }
 
 interface MenuBuildInput {

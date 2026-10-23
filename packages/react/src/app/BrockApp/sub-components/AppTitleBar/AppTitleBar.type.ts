@@ -3,6 +3,7 @@ import type { TitleBarControls } from '@drizztdourden08/brock-core';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { MenuConfig } from '../../../../menu/menu-config.type';
 import type { MenuEntry } from '../../../../menu/menu.type';
+import type { MenuBarMenu } from '../../../../menu-bar/menu-bar.type';
 
 interface AppTitleBarProps {
   title: string;
@@ -14,6 +15,7 @@ interface AppTitleBarProps {
   hidden: boolean;
   viewHidden?: boolean;
   menuConfig?: MenuConfig;
+  menuBar?: readonly MenuBarMenu[];
 }
 
 export type { AppTitleBarProps };

@@ -1,0 +1,15 @@
+/* @layer renderer-shell @kind style */
+.menu-bar {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-xs);
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: var(--border-width-thin) solid var(--c-border);
+  background: var(--c-surface);
+  -webkit-app-region: drag;
+}
+
+.menu-bar > * {
+  -webkit-app-region: no-drag;
+}

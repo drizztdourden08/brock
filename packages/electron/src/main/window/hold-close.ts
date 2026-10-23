@@ -1,12 +1,13 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
 import { closeApproval } from './close-approval';
+import { closeGuardState } from './close-guard-state';
 import { decideClose } from './decide-close';
 
 const holdClose = (win: BrowserWindow): void => {
   let asking = false;
   win.on('close', (event) => {
-    if (closeApproval.take(win)) return;
+    if (closeApproval.take(win) || !closeGuardState.has(win)) return;
     event.preventDefault();
     if (asking) return;
     asking = true;

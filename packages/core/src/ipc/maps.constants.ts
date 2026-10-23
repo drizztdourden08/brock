@@ -75,6 +75,7 @@ const BASE_SEND_MAP = {
   minimize: 'window:minimize',
   maximize: 'window:maximize',
   close: 'window:close',
+  setCloseGuarded: 'window:setCloseGuarded',
   openDevTools: 'window:openDevTools',
   toggleFullscreen: 'window:toggleFullscreen',
   setFullscreen: 'window:setFullscreen',

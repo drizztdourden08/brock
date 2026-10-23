@@ -10,6 +10,8 @@ interface QuitGuardRegistry {
   addAsync: (guard: OnBeforeQuit) => () => void;
   messages: () => string[];
   decide: () => Promise<QuitDecision>;
+  count: () => number;
+  subscribe: (listener: () => void) => () => void;
 }
 
 interface SaveBeforeQuitOptions {

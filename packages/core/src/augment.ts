@@ -99,7 +99,8 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, Docum
 interface SendContract extends WidgetSendContract, DataSendContract {
   'window:minimize': () => void;
   'window:maximize': () => void;
-  'window:close': () => void;
+  'window:close': (force?: boolean) => void;
+  'window:setCloseGuarded': (guarded: boolean) => void;
   'window:openDevTools': () => void;
   'window:toggleFullscreen': () => void;
   'window:setFullscreen': (value: boolean) => void;
@@ -125,6 +126,7 @@ interface EventContract extends WidgetEventContract, DataEventContract {
 }
 
 interface AskContract {
+  'window:pingQuit': () => Promise<true>;
   'window:confirmQuit': () => Promise<QuitDecision>;
 }
 

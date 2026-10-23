@@ -1,6 +1,6 @@
 /* @layer electron-main @kind constants */
-const CLOSE_ASK_TIMEOUT_MS = 600_000;
+const CLOSE_PING_TIMEOUT_MS = 5_000;
 
-const TIMED_OUT = /timed out after/;
+const CLOSE_WAIT_FOR_USER_MS = 2_147_483_647;
 
-export { CLOSE_ASK_TIMEOUT_MS, TIMED_OUT };
+export { CLOSE_PING_TIMEOUT_MS, CLOSE_WAIT_FOR_USER_MS };

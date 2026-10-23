@@ -5,6 +5,7 @@ import type { BeforeQuit, OnBeforeQuit, QuitGuardRegistry } from './quit.type';
 
 const guards = new Set<BeforeQuit>();
 const asyncGuards = new Set<OnBeforeQuit>();
+const listeners = new Set<() => void>();
 let deciding: Promise<QuitDecision> | null = null;
 
 const describe = (error: unknown): string => (error instanceof Error ? error.message : String(error));
@@ -35,14 +36,26 @@ const runAll = async (): Promise<QuitDecision> => {
   return 'quit';
 };
 
+const changed = (): void => {
+  for (const listener of [...listeners]) listener();
+};
+
+const track = <T>(set: Set<T>, guard: T): (() => void) => {
+  set.add(guard);
+  changed();
+  return () => {
+    set.delete(guard);
+    changed();
+  };
+};
+
 const quitGuards: QuitGuardRegistry = {
-  add: (guard) => {
-    guards.add(guard);
-    return () => { guards.delete(guard); };
-  },
-  addAsync: (guard) => {
-    asyncGuards.add(guard);
-    return () => { asyncGuards.delete(guard); };
+  add: (guard) => track(guards, guard),
+  addAsync: (guard) => track(asyncGuards, guard),
+  count: () => guards.size + asyncGuards.size,
+  subscribe: (listener) => {
+    listeners.add(listener);
+    return () => { listeners.delete(listener); };
   },
   messages: () => [...guards].flatMap(ask),
   decide: () => {

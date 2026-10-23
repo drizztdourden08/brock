@@ -20,7 +20,7 @@ const createWindowControls = (): WindowControlsPort => {
   return {
     minimize: () => api.minimize(),
     toggleMaximize: () => api.maximize(),
-    close: () => api.close(),
+    close: (options) => api.close(options?.force === true),
     toggleFullscreen: () => api.toggleFullscreen(),
     setFullscreen: (on) => api.setFullscreen(on),
     setTitle: (title) => api.setTitle(title),

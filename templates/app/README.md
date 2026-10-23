@@ -78,7 +78,9 @@ painted, then the splash fades out while the app fades in.
 
 `electron.vite.config.ts`, `electron-builder.config.cjs`, `eslint.config.mjs`,
 `stylelint.config.mjs`, `.markdownlint-cli2.mjs` and `tsconfig.json` are managed:
-`brock sync` rewrites them and `brock check` fails CI when they drift.
+`brock sync` rewrites them and `brock check` fails CI when they drift. In a monorepo the
+root owns the lint configs, except `.markdownlint-cli2.mjs`: an app whose `package.json` has a
+`lint:md` script gets its own copy, so that script works in the app folder under `pnpm -r`.
 
 Dependency versions are `catalog:` entries resolved from `pnpm-workspace.yaml`; change a
 version there and it applies everywhere.

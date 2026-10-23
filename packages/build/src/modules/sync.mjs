@@ -5,6 +5,7 @@ import { renderBootFiles } from '../boot/render-boot-files.mjs';
 import { clangFormatFiles } from '../gate/clang-format-files.mjs';
 import { renderHandlersFiles } from '../handlers/render-handlers.mjs';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
+import { appScripts } from '../managed/app-scripts.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
 import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
@@ -119,7 +120,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderToursFiles(rootDir),
     ...renderPaletteFile(rootDir, config),
     ...renderTesseraEntryFiles(rootDir),
-    ...renderManagedFiles({ inWorkspace, ...managedFileOptions(config) }),
+    ...renderManagedFiles({ inWorkspace, scripts: appScripts(rootDir), ...managedFileOptions(config) }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
     ...clangFormatFiles(rootDir, config),

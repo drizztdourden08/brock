@@ -11,7 +11,8 @@ interface TitleBarItemBase {
 
 interface TitleBarButtonSpec extends TitleBarItemBase {
   kind: 'button';
-  onSelect: () => void;
+  onSelect?: () => void;
+  command?: string;
   shortcut?: string;
 }
 

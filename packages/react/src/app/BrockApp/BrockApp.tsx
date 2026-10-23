@@ -32,6 +32,7 @@ import { useRendererLogging } from '../../log/useRendererLogging';
 import { APP_FLAGS_SOURCE } from '../../screens/show/show.constants';
 import { useShowFlagsSource } from '../../screens/show/useShowFlagsSource';
 import type { BrockAppProps } from './BrockApp.type';
+import { useAppCommands } from './behavior/useAppCommands';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
@@ -53,20 +54,17 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const allKits = useMemo(() => [...merged.widgetKits, ...widgetKits], [merged.widgetKits, widgetKits]);
+  useAppCommands(merged.commands, props.commands);
   const settingsStore = useProfileSettingsStore(settings, developerTools);
 
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
-
   const settingsControls = useSettingsControls(settings);
 
-  const context = useMemo<BrockContextValue>(
-    () => ({
-      product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
-      logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance, moduleIds: merged.ids,
-    }),
-    [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids],
-  );
+  const context = useMemo<BrockContextValue>(() => ({
+    product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
+    logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance, moduleIds: merged.ids,
+  }), [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids]);
 
   return (
     <TesseraProvider overrides={overrides}>

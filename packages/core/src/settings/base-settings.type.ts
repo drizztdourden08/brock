@@ -1,6 +1,8 @@
 /* @layer core @kind types */
 type WindowMode = 'windowed' | 'borderless' | 'fullscreen';
 
+type KeymapOverrides = Readonly<Record<string, readonly string[]>>;
+
 interface BaseSettings {
   windowMode: WindowMode;
   startFullscreen: boolean;
@@ -8,6 +10,7 @@ interface BaseSettings {
   masterVolume: number;
   developerToolsEnabled: boolean;
   allowDebugLogging: boolean;
+  keymap?: KeymapOverrides;
 }
 
-export type { BaseSettings, WindowMode };
+export type { BaseSettings, KeymapOverrides, WindowMode };

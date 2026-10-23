@@ -1,37 +1,51 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
-import type { ScreenDef } from '../src/screens/screen.type';
-import { collectShortcuts } from '../src/shortcuts-help/collect-shortcuts';
-import { shortcutKeys } from '../src/shortcuts-help/shortcut-keys';
+import { chordKeys } from '../src/commands/chord-keys';
+import { commandGroups } from '../src/commands/command-groups';
+import type { CommandDef } from '../src/commands/command.type';
+import { GENERAL_GROUP, SCREENS_GROUP } from '../src/commands/commands.constants';
+import { shortcutGroups } from '../src/shortcuts-help/shortcut-groups';
 
-const screen = (id: string, title: string, shortcut?: string): ScreenDef => ({ id, title, icon: null, render: () => null, shortcut });
+const run = (): void => {};
+const command = (id: string, label: string, chord: string | undefined, group: string): CommandDef => ({ id, label, chord, group, run });
 
-describe('shortcutKeys', () => {
+describe('chordKeys', () => {
   it('turns a chord into Tessera keycaps', () => {
-    expect(shortcutKeys('Mod+Comma')).toEqual(['ctrl', ',']);
-    expect(shortcutKeys('Ctrl+Shift+p')).toEqual(['ctrl', 'shift', 'P']);
-    expect(shortcutKeys('Alt+Enter')).toEqual(['alt', 'enter']);
-    expect(shortcutKeys('Mod+/')).toEqual(['ctrl', '/']);
-    expect(shortcutKeys('F5')).toEqual(['F5']);
+    expect(chordKeys('Mod+Comma', false)).toEqual(['ctrl', ',']);
+    expect(chordKeys('Ctrl+Shift+p', false)).toEqual(['ctrl', 'shift', 'P']);
+    expect(chordKeys('Alt+Enter', false)).toEqual(['alt', 'enter']);
+    expect(chordKeys('Mod+/', false)).toEqual(['ctrl', '/']);
+    expect(chordKeys('F5', false)).toEqual(['F5']);
+    expect(chordKeys('Esc', false)).toEqual(['esc']);
+  });
+
+  it('shows the platform modifier', () => {
+    expect(chordKeys('Mod+K', true)).toEqual(['cmd', 'K']);
   });
 });
 
-describe('collectShortcuts', () => {
-  const sources = {
-    screens: [screen('settings', 'Settings', 'Mod+Comma'), screen('about', 'About')],
-    routes: [{ shortcut: 'mod+comma', target: 'settings' }, { shortcut: 'Mod+R', target: 'play/rooms' }],
-    labelOf: (target: string) => (target === 'play/rooms' ? 'Rooms' : target),
-    fullscreen: true,
-  };
+describe('shortcutGroups', () => {
+  const defs = [
+    command('brock.search', 'Search', 'Mod+K', GENERAL_GROUP),
+    command('open:settings', 'Settings', 'Mod+Comma', SCREENS_GROUP),
+    command('open:settings/home', 'Settings home', 'mod+comma', SCREENS_GROUP),
+    command('open:play/rooms', 'Rooms', 'Mod+R', SCREENS_GROUP),
+    command('open:about', 'About', undefined, SCREENS_GROUP),
+    command('save', 'Save', 'Mod+S', 'File'),
+  ];
+  const state = { sources: [{ key: 'all', rank: 0, defs }], overrides: {}, mac: false };
 
-  it('lists the framework shortcuts, then each screen and page once', () => {
-    const [general, own] = collectShortcuts(sources);
-    expect(general?.rows.map((row) => row.shortcut)).toEqual(['Mod+K', 'Esc', 'Alt+Enter', 'Mod+/']);
-    expect(own?.rows).toEqual([{ label: 'Settings', shortcut: 'Mod+Comma' }, { label: 'Rooms', shortcut: 'Mod+R' }]);
+  it('lists General first with Escape, the app groups, then each screen chord once', () => {
+    const groups = shortcutGroups({ groups: commandGroups(defs), state });
+    expect(groups.map((group) => group.title)).toEqual([GENERAL_GROUP, 'File', SCREENS_GROUP]);
+    expect(groups[0]?.rows.map((row) => row.shortcut)).toEqual(['Mod+K', 'Esc']);
+    expect(groups[2]?.rows).toEqual([{ label: 'Settings', shortcut: 'Mod+,' }, { label: 'Rooms', shortcut: 'Mod+R' }]);
   });
 
-  it('leaves fullscreen out when the window has no fullscreen control', () => {
-    const [general] = collectShortcuts({ ...sources, fullscreen: false });
-    expect(general?.rows.map((row) => row.shortcut)).not.toContain('Alt+Enter');
+  it('shows a remapped chord and leaves out a cleared one', () => {
+    const remapped = { ...state, overrides: { save: ['Mod+Shift+S'], 'brock.search': [] } };
+    const groups = shortcutGroups({ groups: commandGroups(defs), state: remapped });
+    expect(groups[0]?.rows.map((row) => row.shortcut)).toEqual(['Esc']);
+    expect(groups[1]?.rows).toEqual([{ label: 'Save', shortcut: 'Mod+Shift+S' }]);
   });
 });

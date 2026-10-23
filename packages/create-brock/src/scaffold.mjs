@@ -1,9 +1,9 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { basename, join, relative } from 'node:path';
 import {
-  appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, syncApp, BROCK_VERSION, MANAGED_FILES,
+  appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, syncApp, BROCK_VERSION,
 } from '@drizztdourden08/brock-build';
 import { finishPlatforms } from './finish-platforms.mjs';
 import { initRepository } from './git-init.mjs';
@@ -15,6 +15,7 @@ import { applyIdentity } from './substitute.mjs';
 import { templateIcons } from './template-brand.mjs';
 import { templateModules } from './template-modules.mjs';
 import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
+import { dropRootOwned } from './workspace-member.mjs';
 
 /**
  * @typedef {object} ScaffoldPlan
@@ -82,10 +83,6 @@ const printNextSteps = (plan, { missing, later }, command) => {
   console.log(lines.join('\n'));
 };
 
-const removeRootOwnedFiles = (targetDir) => {
-  for (const { target, rootOwned } of MANAGED_FILES) if (rootOwned) rmSync(join(targetDir, target), { force: true });
-};
-
 /**
  * @param {string} targetDir
  * @param {string[]} packages module packages whose peers were not known before install
@@ -135,7 +132,7 @@ const scaffold = async (plan) => {
   const workspaceRoot = findWorkspaceRoot(targetDir);
   if (workspaceRoot) {
     console.log(`create-brock: workspace member of ${workspaceRoot}; the root keeps the lint configs, the catalog and .npmrc`);
-    removeRootOwnedFiles(targetDir);
+    dropRootOwned(targetDir);
   }
   const pnpmFiles = writePnpmFiles(targetDir, templateDir, workspaceRoot);
   if (pnpmFiles.length) console.log(`create-brock: wrote ${pnpmFiles.join(', ')}`);

@@ -1,12 +1,13 @@
 /* @layer tooling-scripts @kind logic */
 import { copyFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { REACT_MANIFEST_NAME } from './tessera-range.mjs';
 
 const PACKAGE_DIR = resolve(import.meta.dirname, '..');
 
 const TEMPLATE_CANDIDATES = [resolve(PACKAGE_DIR, '../../templates/app'), join(PACKAGE_DIR, 'template')];
 
-const SKIPPED = new Set(['node_modules', 'dist', 'release', 'out', '.brock', '.user-data', 'pnpm-workspace.yaml']);
+const SKIPPED = new Set(['node_modules', 'dist', 'release', 'out', '.brock', '.user-data', 'pnpm-workspace.yaml', REACT_MANIFEST_NAME]);
 
 const PACKED_NAMES = { _gitignore: '.gitignore' };
 

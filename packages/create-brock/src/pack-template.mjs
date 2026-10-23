@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { copyFileSync, renameSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { REACT_MANIFEST_NAME } from './tessera-range.mjs';
 import { copyTemplate } from './template.mjs';
 
 const PACKAGE_DIR = resolve(import.meta.dirname, '..');
@@ -11,3 +12,4 @@ rmSync(PACKED, { recursive: true, force: true });
 copyTemplate(join(REPO_DIR, 'templates', 'app'), PACKED);
 renameSync(join(PACKED, '.gitignore'), join(PACKED, '_gitignore'));
 copyFileSync(join(REPO_DIR, 'pnpm-workspace.yaml'), join(PACKED, 'pnpm-workspace.yaml'));
+copyFileSync(join(REPO_DIR, 'packages', 'react', 'package.json'), join(PACKED, REACT_MANIFEST_NAME));

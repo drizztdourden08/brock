@@ -10,6 +10,10 @@ interface DocumentDialogOptions {
   defaultPath?: string;
 }
 
+interface DocumentWriteOptions {
+  recent?: boolean;
+}
+
 interface RecentDocument {
   path: string;
   name: string;
@@ -39,8 +43,8 @@ interface DocumentsPort {
   saveAs: (opts?: DocumentDialogOptions) => Promise<string | null>;
   read: (path: string) => Promise<Uint8Array>;
   readText: (path: string) => Promise<string>;
-  write: (path: string, data: Uint8Array) => Promise<void>;
-  writeText: (path: string, text: string) => Promise<void>;
+  write: (path: string, data: Uint8Array, options?: DocumentWriteOptions) => Promise<void>;
+  writeText: (path: string, text: string, options?: DocumentWriteOptions) => Promise<void>;
   recent: () => Promise<RecentDocument[]>;
   clearRecent: () => Promise<void>;
   openRecent: (path: string) => Promise<string | null>;
@@ -50,4 +54,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentFilter, DocumentsPort, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentDialogOptions, DocumentFilter, DocumentsPort, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

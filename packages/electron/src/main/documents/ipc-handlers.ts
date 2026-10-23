@@ -6,6 +6,7 @@ import { toArrayBuffer } from '../files/to-array-buffer';
 import { writeAtomic } from '../storage/write-atomic';
 import { bytesOf } from './bytes-of';
 import { createDocumentTracking } from './document-tracking';
+import { isUnrecorded } from './is-unrecorded';
 import { registerRecentHandlers } from './recent-handlers';
 import { registerRecoveryHandlers } from './recovery-handlers';
 import { textOf } from './text-of';
@@ -16,10 +17,10 @@ const documentHandlers: HandlerGroup = {
   register: (ctx) => {
     const { handle, window, documents } = ctx;
     const tracking = createDocumentTracking(ctx);
-    const save = async (path: string, content: () => string | Uint8Array, profileId: unknown): Promise<void> => {
+    const save = async (path: string, content: () => string | Uint8Array, profileId: unknown, options: unknown): Promise<void> => {
       const full = documents.resolve(path);
       await writeAtomic(full, content());
-      await tracking.saved(profileId, full);
+      if (!isUnrecorded(options)) await tracking.saved(profileId, full);
     };
 
     handle('document:open', async (_event, opts, profileId) => {
@@ -42,8 +43,8 @@ const documentHandlers: HandlerGroup = {
 
     handle('document:read', async (_event, path) => toArrayBuffer(await readFile(documents.resolve(path))));
     handle('document:readText', (_event, path) => readFile(documents.resolve(path), 'utf8'));
-    handle('document:write', (_event, path, data, profileId) => save(path, () => bytesOf(data, 'A document write'), profileId));
-    handle('document:writeText', (_event, path, text, profileId) => save(path, () => textOf(text), profileId));
+    handle('document:write', (_event, path, data, profileId, options) => save(path, () => bytesOf(data, 'A document write'), profileId, options));
+    handle('document:writeText', (_event, path, text, profileId, options) => save(path, () => textOf(text), profileId, options));
     registerRecentHandlers(ctx, tracking);
     registerRecoveryHandlers(ctx, tracking);
   },

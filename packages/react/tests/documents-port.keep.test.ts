@@ -16,8 +16,8 @@ const stubApi = () => {
     documentSaveAs: vi.fn(() => Promise.resolve(null)),
     documentRead: vi.fn(() => Promise.resolve(new Uint8Array([4, 5]).buffer)),
     documentReadText: vi.fn(() => Promise.resolve('text')),
-    documentWrite: vi.fn((_path: string, _data: ArrayBuffer, _profileId?: string) => Promise.resolve()),
-    documentWriteText: vi.fn((_path: string, _text: string, _profileId?: string) => Promise.resolve()),
+    documentWrite: vi.fn((_path: string, _data: ArrayBuffer, _profileId?: string, _options?: unknown) => Promise.resolve()),
+    documentWriteText: vi.fn((_path: string, _text: string, _profileId?: string, _options?: unknown) => Promise.resolve()),
     documentRecent: vi.fn((_profileId: string) => Promise.resolve([{ path: FILE, name: 'a.bxel', lastOpened: 1 }])),
     documentClearRecent: vi.fn((_profileId: string) => Promise.resolve()),
     documentOpenRecent: vi.fn((_profileId: string, _path: string) => Promise.resolve<string | null>(FILE)),
@@ -58,7 +58,19 @@ describe('the documents port', () => {
     await documents.write(FILE, new Uint8Array([1, 2]));
     expect([...new Uint8Array(api.documentWrite.mock.calls[0]?.[1] ?? new ArrayBuffer(0))]).toEqual([1, 2]);
     await documents.writeText(FILE, 'hello');
-    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'hello', undefined);
+    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'hello', undefined, undefined);
+  });
+
+  it('passes the write options on, and leaves them out by default', async () => {
+    const api = stubApi();
+    useProfilesStore.setState({ active: PROFILE });
+    const documents = electronDocuments();
+    await documents.write(FILE, new Uint8Array([1]), { recent: false });
+    await documents.writeText(FILE, 'png', { recent: false });
+    expect(api.documentWrite.mock.calls[0]?.[3]).toEqual({ recent: false });
+    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'png', 'p1', { recent: false });
+    await documents.writeText(FILE, 'doc');
+    expect(api.documentWriteText).toHaveBeenLastCalledWith(FILE, 'doc', 'p1', undefined);
   });
 
   it('is absent on the web host', () => {
@@ -76,7 +88,7 @@ describe('recent documents and recovery on Electron', () => {
     await documents.writeText(FILE, 'x');
     expect(api.documentOpen).toHaveBeenCalledWith(undefined, 'p1');
     expect(api.documentWrite.mock.calls[0]?.[2]).toBe('p1');
-    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'x', 'p1');
+    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'x', 'p1', undefined);
     expect(await documents.recent()).toEqual([{ path: FILE, name: 'a.bxel', lastOpened: 1 }]);
     expect(await documents.openRecent(FILE)).toBe(FILE);
     await documents.clearRecent();

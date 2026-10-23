@@ -52,6 +52,10 @@ const addFile = (state, rel, name, place) => {
     state.findings.push(`${rel}: a page meta file exports meta: ScreenMeta and nothing else`);
     return;
   }
+  if (found.kind === 'live' && !exports.hasMeta) {
+    state.findings.push(`${rel}: a live page exports meta: LiveMeta (icon and empty) beside its default-exported useLivePages hook`);
+    return;
+  }
   state.files.push({ ...found, bucket: place.bucket, group: place.group, page: place.page, path: rel, ...exports });
 };
 

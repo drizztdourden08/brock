@@ -8,7 +8,7 @@ import type { ShowContext } from '../screens/show/show.type';
 
 type SearchKind = 'screen' | 'page' | 'tab' | 'section' | 'setting' | 'entry' | 'widget' | 'action';
 
-type SearchFileKind = 'hero' | 'page' | 'page-meta' | 'tab' | 'sub' | 'settings' | 'custom' | 'card' | 'layer' | 'base';
+type SearchFileKind = 'hero' | 'page' | 'page-meta' | 'tab' | 'sub' | 'live' | 'settings' | 'custom' | 'card' | 'layer' | 'base';
 
 interface SearchTarget {
   route: string;

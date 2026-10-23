@@ -127,7 +127,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `.live.tsx`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
@@ -288,6 +288,40 @@ export const meta: ScreenMeta = { title: 'Credits', icon: 'file-text', requiresP
 - Brock passes it to Tessera's `ScreenWindow` as `size="info"`. The window's title bar names it, so the card has no page header; the card's content scrolls inside the window when it is taller.
 - Under 560 px wide the window fills the screen, as every screen does.
 - `size` works on a card. The built-in Credits screen, from `credits` on `BrockApp`, opens this way too. List entries one per line; an informational window is never wide.
+
+## Live hub pages
+
+A hub group sometimes lists things that come and go while the app runs, such as one entry per connected controller. A `<id>.live.tsx` file in a bucket or group folder holds a live slot: it takes a place in the group like a page does, and fills it with whatever its hook returns.
+
+```tsx
+// src/screens/controllers/pads.live.tsx
+import type { LiveMeta, LivePage } from '@drizztdourden08/brock-react';
+import { PadPage } from '@app/views/Controllers/PadPage';
+import { usePads } from '@app/stores/usePads';
+
+export const meta: LiveMeta = { icon: 'gamepad-2', empty: 'No controller connected', order: 2, keywords: ['gamepad', 'pad'] };
+
+const useLivePages = (): readonly LivePage[] =>
+  usePads().map((pad) => ({
+    key: pad.id,
+    title: pad.name,
+    badge: pad.connected ? 'ok' : 'warn',
+    render: () => <PadPage id={pad.id} />,
+  }));
+
+export default useLivePages;
+```
+
+With `directory.page.tsx` at `order: 1` and `logs.page.tsx` at `order: 3`, the nav reads Directory, one entry per pad, then Logs. The slot sorts by `meta.order` and then by title, exactly like a page.
+
+- **The hook.** The default export is a React hook with no arguments that returns the current `LivePage[]`. The hub calls it on every render, so it can read stores, subscribe and poll. The hub redraws its nav when the list changes.
+- **LivePage.** `key` is required and must not change for the same thing (a device id, not an index), because the selection and the deep link follow it. A repeated key keeps the first entry; an empty key is skipped. `title` is the nav label and the page title. `icon` defaults to the `meta.icon`. `badge` is `'ok'` or `'warn'` and shows as a green or amber status dot through the `badge` of Tessera's `SideNavItem`. `render` gets the hub render context and returns the page body.
+- **LiveMeta.** `icon` and `empty` are required. `empty` is the text of a disabled nav entry shown in the slot while the list is empty. `title` names the slot where the id is not enough, `order` places it among the pages of its group, `keywords` feed search and `devOnly` keeps it out of a production build.
+- **Selection.** An entry opens with `section=<id of the file>` and `tab=<key>`, so the route is `<bucket>/<id>/<key>`, for example `controllers/pads/pad-1`. Use `open('controllers', { section: 'pads', tab: pad.id })`, or `<bucket>/<id>` to open the first entry. When the selected entry disappears, the hub shows the first static page of the same group (the home page when the group has none) and keeps the route as it is, so the same key selects its entry again when it comes back.
+- **Search.** The keywords reach the hub search on each entry, and the slot itself has one search entry, `<bucket>/<id>`, for the palette. The entries are runtime pages: they match by title and keywords while they exist.
+- **Menu and shortcuts.** A live slot has no menu entry and no shortcut. Its entries are reached from the hub nav.
+- **Loading.** A live file loads at boot, like a settings file, because the hub needs the hook at once. Keep it small: import the page body from a view, or load it lazily inside `render`, and leave heavy code out of the file. A live file does not take a page folder, and `brock sync` reports one without a `meta` export.
+- **Not covered.** A card window made with `defineWindow` has a fixed item list.
 
 ## A window with a side nav
 

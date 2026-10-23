@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
+import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
-import type { HubNavMode, PageBackdrop, ScreenMenu } from '../screens/conventions/screens-config.type';
+import type { HubNavMode, PageBackdrop, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
 import type { ShowRule } from '../screens/show/show.type';
 
 interface HubTarget {
@@ -52,6 +53,35 @@ interface HubPageHeader {
   search?: { placeholder?: string };
 }
 
+type LiveBadge = 'ok' | 'warn';
+
+interface LivePage {
+  key: string;
+  title: string;
+  icon?: IconName;
+  badge?: LiveBadge;
+  render: (ctx: HubRenderContext) => ReactNode;
+}
+
+interface LiveMeta extends Pick<ScreenMeta, 'title' | 'order' | 'keywords' | 'devOnly'> {
+  icon: IconName;
+  empty: string;
+}
+
+type UseLivePages = () => readonly LivePage[];
+
+interface HubLiveSource {
+  usePages: UseLivePages;
+  meta: LiveMeta;
+}
+
+interface HubLiveRef {
+  source: string;
+  key: string;
+}
+
+type HubLiveLists = Readonly<Record<string, readonly LivePage[]>>;
+
 interface HubPage {
   id: string;
   label: string;
@@ -72,6 +102,11 @@ interface HubPage {
   show?: ShowRule;
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
+  live?: HubLiveSource;
+  liveRef?: HubLiveRef;
+  badge?: ReactNode;
+  disabled?: boolean;
+  keywords?: readonly string[];
 }
 
 interface HubGroup {
@@ -107,4 +142,4 @@ interface HubDef {
   requiresProfile?: boolean;
 }
 
-export type { HubDef, HubGroup, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget };
+export type { HubDef, HubGroup, HubLiveLists, HubLiveSource, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget, LiveBadge, LiveMeta, LivePage, UseLivePages };

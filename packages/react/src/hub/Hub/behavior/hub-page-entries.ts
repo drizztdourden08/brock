@@ -16,7 +16,7 @@ const tabEntries = (hub: HubDef, page: HubPage): SearchEntry[] => (page.tabs ?? 
 
 const hubPageEntries = (hub: HubDef, pages: readonly HubPage[]): SearchEntry[] => pages.flatMap((page) => {
   const route = page === hub.home ? hub.id : joinRoute(hub.id, page.id);
-  const own: SearchEntry = { id: `${SCREEN_ID_PREFIX}${route}`, kind: 'page', label: page.label, keywords: [], breadcrumb: [hub.title], target: { route }, icon: page.icon };
+  const own: SearchEntry = { id: `${SCREEN_ID_PREFIX}${route}`, kind: 'page', label: page.label, keywords: page.keywords ?? [], breadcrumb: [hub.title], target: { route }, icon: page.icon };
   return [own, ...tabEntries(hub, page)];
 });
 

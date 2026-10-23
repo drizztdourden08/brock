@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type {
-  DevicePort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
+  DevicePort, DocumentsPort, FilePickerPort, FileStore, PlatformFactory, StoragePort, WindowControlsPort,
 } from '@drizztdourden08/brock-core';
 import { anyTypeFor, osFromProcess } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../host/require-host-api';
@@ -83,7 +83,19 @@ const createFilePicker = (): FilePickerPort => {
   };
 };
 
-const createElectronFactory = (): PlatformFactory => {
+const createDocuments = (): DocumentsPort => {
+  const api = requireHostApi();
+  return {
+    open: (opts) => api.documentOpen(opts),
+    saveAs: (opts) => api.documentSaveAs(opts),
+    read: async (path) => new Uint8Array(await api.documentRead(path)),
+    readText: (path) => api.documentReadText(path),
+    write: (path, data) => api.documentWrite(path, toArrayBuffer(data)),
+    writeText: (path, text) => api.documentWriteText(path, text),
+  };
+};
+
+const createElectronFactory =(): PlatformFactory => {
   const api = requireHostApi();
   return {
     info: {
@@ -107,6 +119,7 @@ const createElectronFactory = (): PlatformFactory => {
       files: createFileStore,
       filePicker: createFilePicker,
       device: createDevice,
+      documents: createDocuments,
     },
   };
 };

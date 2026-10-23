@@ -2,6 +2,7 @@
 import type { InvokeContract, SendContract, EventContract } from '../augment';
 import { WIDGET_EVENT_MAP, WIDGET_INVOKE_MAP, WIDGET_SEND_MAP } from './widget-maps.constants';
 import { DATA_EVENT_MAP, DATA_INVOKE_MAP, DATA_SEND_MAP } from './data-maps.constants';
+import { DOCUMENT_INVOKE_MAP } from './document-maps.constants';
 
 const BASE_INVOKE_MAP = {
   getUserDataPath: 'app:getUserDataPath',
@@ -67,6 +68,7 @@ const BASE_INVOKE_MAP = {
   reviewCapture: 'review:capture',
   ...WIDGET_INVOKE_MAP,
   ...DATA_INVOKE_MAP,
+  ...DOCUMENT_INVOKE_MAP,
 } as const satisfies Record<string, keyof InvokeContract>;
 
 const BASE_SEND_MAP = {

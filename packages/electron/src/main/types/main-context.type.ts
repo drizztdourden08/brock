@@ -12,6 +12,7 @@ import type { JobRegistry, StartJob } from '@drizztdourden08/brock-core/jobs';
 import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';
+import type { DocumentAccess } from '../documents/document-access.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -34,6 +35,7 @@ interface MainContext {
   instance: InstanceInfo;
   paths: MainPaths;
   files: FileStore;
+  documents: DocumentAccess;
   profiles: ProfileStore;
   storage: DataDomains;
   job: StartJob;

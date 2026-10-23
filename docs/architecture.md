@@ -255,6 +255,16 @@ The bridge adds `isDev`, `os`, `getFilePath`, `startup` (`fresh`, `automation`, 
 
 [ipc.md](ipc.md) walks one app invoke channel and one event channel from the declaration to the renderer call. `defineChannels({ engineStatus: invoke<() => Promise<EngineStatus>>()('ap:engine:status'), onProgress: event<(p: number) => void>()('ap:engine:progress') })` in brock-core is the one declaration: its `maps` feed the preload, `InvokeContractOf`, `SendContractOf` and `EventContractOf` of its type feed the augmentation, main's `handle`, `on` and `emit` take an entry in place of the channel name, and brock-react's `channelApi(APP_CHANNELS)` types the renderer calls by method name. The builders are curried (`invoke<Signature>()('channel')`) because TypeScript cannot infer the channel literal once the signature is given explicitly. Channels written in the augmentation, a map and a handler keep working.
 
+### Main asks a renderer
+
+An invoke goes from a renderer to main. An ask goes the other way: main puts a typed question to one window and awaits the answer. Declare it once beside the other channels, `snapshot: ask<(docId: string) => Promise<Snapshot>>()('doc:snapshot')`. The entry feeds `AskContractOf<typeof APP_CHANNELS>`, which the augmentation adds to `AskContract` (`interface AskContract extends AskContractOf<typeof APP_CHANNELS> {}`). An ask has no method on `window.api` and no entry in `maps`, so the preload needs no change.
+
+- Renderer: `answer(APP_CHANNELS.snapshot, (docId) => engine.snapshot(docId))` from brock-react (or `window.api.answer(channel, handler)`) registers the handler and returns the unregister call. The handler may be sync or async. A window has one handler per channel, and a second `answer` replaces the first.
+- Main: `await ctx.ask(win, APP_CHANNELS.snapshot, docId)`, or with the channel string, resolves with the reply, typed from the declaration. The window is always explicit, so each window answers for itself. `ctx.askWithin(timeoutMs, win, channel, ...args)` sets the timeout, and `ask` uses 10 s. Both are also exported from `@drizztdourden08/brock-electron/main`.
+- Wire: each ask carries a correlation id. Main sends `ask:request` (id, channel, args) to that window, the preload runs the handler and sends `ask:reply` (id, outcome) back. Main takes a reply only from the window it asked. Nothing polls: one timer per ask, cleared on any outcome.
+- The promise rejects and never hangs. Timeout: `ask "<channel>" timed out after <ms> ms`. No handler in that window (a renderer still booting, or a screen not mounted): `no handler is registered for "<channel>"`. The window or its renderer process goes away: `the window closed before it answered`, or `the window is closed` when it already was. A handler that throws or rejects: its own message. A reload drops the handlers and any ask in flight, which then ends by timeout.
+- Arguments and replies cross as structured clone, so they must be plain data.
+
 ## Renderer
 
 ```tsx

@@ -1,6 +1,6 @@
 /* @layer electron-main @kind test */
 import { spawnSync } from 'child_process';
-import { chmodSync, existsSync, statSync, writeFileSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 import { join } from 'path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { bridgeDiscoveryFile, readBridgeDiscovery } from '../src/bridge';
@@ -12,7 +12,7 @@ import { createLineReader } from '../src/main/bridge/line-reader';
 import { isLocalEndpoint } from '../src/main/bridge/is-local-endpoint';
 import { isProcessAlive } from '../src/main/bridge/is-process-alive';
 import { removeDiscovery } from '../src/main/bridge/remove-discovery';
-import { ROUTES, client, closeOpened, discoveryFor, discoveryOf, serve, tempDir } from './bridge-fixture';
+import { ROUTES, client, closeOpened, discoveryFor, discoveryOf, serve, tempDir, writeOpenFile } from './bridge-fixture';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -51,8 +51,7 @@ describe('the bridge discovery file', () => {
   it('refuses a discovery file other accounts can read', async () => {
     const { server } = await serve();
     const open = join(tempDir(), 'bridge.json');
-    writeFileSync(open, JSON.stringify(discoveryOf(server)));
-    if (process.platform !== 'win32') chmodSync(open, 0o644);
+    writeOpenFile(open, JSON.stringify(discoveryOf(server)));
     expect(() => readBridgeDiscovery(open)).toThrow(/open to other/);
   });
 

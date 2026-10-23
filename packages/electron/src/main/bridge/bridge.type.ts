@@ -131,11 +131,15 @@ interface DiscoveryHost {
 type PathStat = Pick<Stats, 'isSymbolicLink' | 'isDirectory' | 'isSocket' | 'uid' | 'mode'>;
 
 interface WindowsUser {
-  name: string;
   sid: string;
 }
 
-type SystemToolRun = (exe: string, args: string[], cwd?: string) => Buffer;
+interface SystemToolOptions {
+  cwd?: string;
+  env?: Record<string, string>;
+}
+
+type SystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) => Buffer;
 
 export type {
   BridgeArgsCheck, BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeHello, BridgeLink, BridgeLinkEvents, BridgeLinkLimits, BridgeReply,

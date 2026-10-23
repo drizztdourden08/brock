@@ -26,13 +26,21 @@ const BRIDGE_NEWLINE = 10;
 const BRIDGE_FAILED = 'the request failed';
 const BRIDGE_WHOAMI = /"(S-[0-9-]+)"/;
 const BRIDGE_SYSTEM32 = 'C:\\Windows\\System32';
-const BRIDGE_PLAIN_FILE_NAME = /^[A-Za-z0-9._-]+$/;
-const BRIDGE_OWNER_COLUMN = [22, 23];
+const BRIDGE_POWERSHELL = 'WindowsPowerShell\\v1.0\\powershell.exe';
+const BRIDGE_ACL_ENV = 'BROCK_BRIDGE_ACL_PATH';
+const BRIDGE_ACL_SCRIPT = [
+  `$acl = Get-Acl -LiteralPath $env:${BRIDGE_ACL_ENV}`,
+  '$sid = [System.Security.Principal.SecurityIdentifier]',
+  "'O ' + $acl.GetOwner($sid).Value",
+  "'P ' + $acl.AreAccessRulesProtected",
+  "foreach ($rule in $acl.GetAccessRules($true, $true, $sid)) { 'E ' + $rule.AccessControlType + ' ' + $rule.IdentityReference.Value + ' ' + $rule.FileSystemRights }",
+].join('; ');
+const BRIDGE_TRUSTED_SIDS: readonly string[] = ['S-1-5-18', 'S-1-5-32-544'];
 const BRIDGE_IMPOSTOR = 'the endpoint could not prove it is the app; the bridge refuses it';
 
 export {
   BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
   BRIDGE_HELPERS_DIR, BRIDGE_LISTEN_TRIES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_NEWLINE, BRIDGE_NONCE,
   BRIDGE_NONCE_BYTES, BRIDGE_OTHERS_MASK, BRIDGE_PERMISSION_BITS, BRIDGE_PIPE_NAME, BRIDGE_PIPE_PREFIX, BRIDGE_PROTOCOL, BRIDGE_REQUEST_TIMEOUT_MS,
-  BRIDGE_OWNER_COLUMN, BRIDGE_PLAIN_FILE_NAME, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
+  BRIDGE_ACL_ENV, BRIDGE_ACL_SCRIPT, BRIDGE_POWERSHELL, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
 };

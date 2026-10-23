@@ -1,13 +1,14 @@
 /* @layer electron-main @kind test */
-import { mkdtempSync, rmSync } from 'fs';
+import { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { connect, type Socket } from 'net';
 import { tmpdir } from 'os';
-import { join } from 'path';
+import { basename, dirname, join } from 'path';
 import { invoke } from '@drizztdourden08/brock-core/ipc';
 import { BRIDGE_PROTOCOL, connectBridge, startBridgeServer, writeBridgeDiscovery } from '../src/bridge';
 import type { BridgeClient, BridgeServer, BridgeServerOptions } from '../src/bridge';
 import { bridgeProof } from '../src/main/bridge/bridge-proof';
 import { createLineReader } from '../src/main/bridge/line-reader';
+import { runSystemTool } from '../src/main/bridge/run-system-tool';
 
 const ROUTES = {
   add: invoke<(a: number, b: number) => Promise<number>>()('test:add'),
@@ -39,6 +40,12 @@ const discoveryFor = (server: Pick<BridgeServer, 'endpoint' | 'secret'>, pid = p
   const file = join(tempDir(), 'bridge.json');
   writeBridgeDiscovery(file, discoveryOf(server, pid));
   return file;
+};
+
+const writeOpenFile = (file: string, text: string): void => {
+  writeFileSync(file, text);
+  if (process.platform !== 'win32') chmodSync(file, 0o644);
+  else runSystemTool('icacls.exe', [basename(file), '/grant', '*S-1-5-32-545:(R)'], { cwd: dirname(file) });
 };
 
 const serve = async (options: Partial<BridgeServerOptions> = {}): Promise<{ server: BridgeServer; file: string }> => {
@@ -93,4 +100,4 @@ const signed = (key: string, id: number, channel: string, args: unknown[]) => {
   return { id, channel, args: body, mac: bridgeProof.request(key, id, channel, body) };
 };
 
-export { ROUTES, client, closeOpened, discoveryFor, discoveryOf, handshake, rawSession, serve, signed, tempDir };
+export { ROUTES, client, closeOpened, discoveryFor, discoveryOf, handshake, rawSession, serve, signed, tempDir, writeOpenFile };

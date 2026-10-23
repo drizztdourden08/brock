@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-electron
 
+## 0.76.0
+
+### Minor Changes
+
+- 05f559e: Two options for document apps. `useDocumentTitle({ name, dirty })` shows the open document in the title bar and the OS window title, as `name * - App` while it has unsaved changes. `product.singleProfile: true` runs with one implicit `Default` profile, made silently on the first launch, with no profiles screen and no Profiles menu entry. Both are off until an app uses them.
+- 5830a25: Document files at user paths. The renderer gets `usePlatform().documents` on Electron: `open`, `saveAs`, `read`, `readText`, `write` and `writeText`, over the new `document:*` channels (`documentOpen`, `documentSaveAs`, `documentRead`, `documentReadText`, `documentWrite`, `documentWriteText`). Open and Save As return the absolute path or null on cancel. A write is atomic: temp file beside the target, flush, rename over it, retried while Windows holds the target. The renderer may touch only a path the user picked in a dialog this session or one main code allows with the new `ctx.documents.allow(path)`. Data domain writes now flush before the rename too.
+- 3a1ebfb: Main can now ask a renderer window a question and await a typed reply. Declare the channel with `ask<(id: string) => Promise<Snapshot>>()('doc:snapshot')` in `defineChannels`, add `AskContractOf<typeof APP_CHANNELS>` to the new `AskContract` interface, register the handler in the renderer with `answer(channel, handler)` from brock-react, and call `await ctx.ask(win, channel, ...args)` in main. Each ask has a correlation id and a 10 second timeout (`ctx.askWithin` sets another). It rejects with a clear message on a timeout, when the window has no handler, when the window closes, and with the handler's own message when it throws. No polling. See the Main asks a renderer section of `docs/architecture.md`.
+
+### Patch Changes
+
+- Updated dependencies [1e8234c]
+- Updated dependencies [05f559e]
+- Updated dependencies [5830a25]
+- Updated dependencies [3a1ebfb]
+  - @drizztdourden08/brock-core@0.76.0
+
 ## 0.75.0
 
 ### Patch Changes

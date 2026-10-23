@@ -1,5 +1,33 @@
 # @drizztdourden08/brock-react
 
+## 0.76.0
+
+### Minor Changes
+
+- 1e8234c: Breaking: `matchesShortcut`, `parseShortcut` and `ParsedShortcut` are removed from brock-react, and `Mod` now means only the platform key. Apps move to `commands.matches`, `commands.chords` and `formatChord`; migration `shortcut-helpers-removed` turns each use into a to-do.
+
+  A command keymap. Every shortcut is now a command in one registry: `{ id, label, icon?, group?, chord?, scope?, whileTyping?, when?, run }`. A chord is `'Mod+S'`, a list, or `{ mac, other }`, and `Mod` is Ctrl on Windows and Linux and Cmd on macOS. An app declares commands with `<BrockApp commands>`, `RendererModule.commands`, `useCommands(defs)` in a screen (with `scope` set to the screen id) or `commands.register(defs)`, and runs one with `commands.run(id)`.
+
+  One dispatcher resolves chords. A plain key does nothing while the user types in a field, a Mod chord still fires, and `whileTyping` changes that. A scoped command wins over a global one while its screen is open.
+
+  Users remap chords on the new `KeymapPage`, which an app adds as a settings page file. Remaps are stored per profile in the settings under `keymap` (`BaseSettings.keymap`, `KeymapOverrides` in brock-core). The page shows conflicts and resets one row, a group or all. `commands.remap`, `commands.reset` and `commands.conflicts` do the same from code.
+
+  Menus, title bar tooltips and the Ctrl+/ dialog read the current chord from the registry, so a remap shows everywhere at once. A menu entry takes `command`, and a title bar button spec takes `command` in place of `onSelect`; `brock-build` keeps `command` in a lazy title bar button.
+
+  Brock's own shortcuts moved onto the registry with the same defaults: Search (Mod+K), Keyboard shortcuts (Mod+/), Toggle fullscreen (Alt+Enter) and Go back (Alt+Left, now listed in the dialog). Screen and page shortcuts are `open:<route>` commands. `Mod` now means only the platform key, so Win+K no longer opens Search on Windows. `matchesShortcut`, `parseShortcut` and `ParsedShortcut` are removed; use `commands.matches(id, event)` and `formatChord`.
+
+- 05f559e: Two options for document apps. `useDocumentTitle({ name, dirty })` shows the open document in the title bar and the OS window title, as `name * - App` while it has unsaved changes. `product.singleProfile: true` runs with one implicit `Default` profile, made silently on the first launch, with no profiles screen and no Profiles menu entry. Both are off until an app uses them.
+- 5830a25: Document files at user paths. The renderer gets `usePlatform().documents` on Electron: `open`, `saveAs`, `read`, `readText`, `write` and `writeText`, over the new `document:*` channels (`documentOpen`, `documentSaveAs`, `documentRead`, `documentReadText`, `documentWrite`, `documentWriteText`). Open and Save As return the absolute path or null on cancel. A write is atomic: temp file beside the target, flush, rename over it, retried while Windows holds the target. The renderer may touch only a path the user picked in a dialog this session or one main code allows with the new `ctx.documents.allow(path)`. Data domain writes now flush before the rename too.
+- 3a1ebfb: Main can now ask a renderer window a question and await a typed reply. Declare the channel with `ask<(id: string) => Promise<Snapshot>>()('doc:snapshot')` in `defineChannels`, add `AskContractOf<typeof APP_CHANNELS>` to the new `AskContract` interface, register the handler in the renderer with `answer(channel, handler)` from brock-react, and call `await ctx.ask(win, channel, ...args)` in main. Each ask has a correlation id and a 10 second timeout (`ctx.askWithin` sets another). It rejects with a clear message on a timeout, when the window has no handler, when the window closes, and with the handler's own message when it throws. No polling. See the Main asks a renderer section of `docs/architecture.md`.
+
+### Patch Changes
+
+- Updated dependencies [1e8234c]
+- Updated dependencies [05f559e]
+- Updated dependencies [5830a25]
+- Updated dependencies [3a1ebfb]
+  - @drizztdourden08/brock-core@0.76.0
+
 ## 0.75.0
 
 ### Minor Changes

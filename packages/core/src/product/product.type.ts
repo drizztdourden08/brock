@@ -167,6 +167,7 @@ interface ProductConfig {
   logos: ProductLogos;
   homeScreen: string;
   profilesRoute?: string;
+  singleProfile?: boolean;
   ports?: ProductPorts;
   widgets: ProductWidgets;
   installer: InstallerConfig;

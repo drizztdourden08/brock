@@ -56,7 +56,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const settingsStore = useProfileSettingsStore(settings, developerTools);
 
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
-  const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen, profilesRoute: product.profilesRoute });
+  const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
 
   const settingsControls = useSettingsControls(settings);
 

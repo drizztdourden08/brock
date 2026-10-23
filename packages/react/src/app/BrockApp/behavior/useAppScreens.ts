@@ -14,7 +14,7 @@ import { useScreenTree } from './useScreenTree';
 const baseOf = (home: string | undefined, tree: ResolvedScreenTree | null): string => home ?? tree?.base ?? NO_BACKGROUND;
 
 const useAppScreens = (input: AppScreensInput): AppScreens => {
-  const { home, screens = NO_SCREENS, screenTree, builtInTabs, moduleScreens, menu = NO_MENU, homeScreen, productHome, credits, legalText, profilesRoute } = input;
+  const { home, screens = NO_SCREENS, screenTree, builtInTabs, moduleScreens, menu = NO_MENU, homeScreen, productHome, credits, legalText, profilesRoute, singleProfile } = input;
   const tree = useScreenTree(screenTree, builtInTabs);
   useRouteAlias(SETTINGS_ALIAS, tree?.settingsAlias ?? null);
   const toProfiles = useMemo(() => profilesAlias(profilesRoute), [profilesRoute]);
@@ -22,11 +22,11 @@ const useAppScreens = (input: AppScreensInput): AppScreens => {
 
   const registry = useMemo(() => {
     const all = createScreenRegistry([...screens, ...(tree?.screens ?? NO_SCREENS), ...moduleScreens]);
-    for (const screen of createBuiltInScreens({ legalText, credits, settings: tree === null, profiles: profilesRoute === undefined })) {
+    for (const screen of createBuiltInScreens({ legalText, credits, settings: tree === null, profiles: profilesRoute === undefined && singleProfile !== true })) {
       if (!all.has(screen.id)) all.register(screen);
     }
     return all;
-  }, [screens, tree, moduleScreens, legalText, credits, profilesRoute]);
+  }, [screens, tree, moduleScreens, legalText, credits, profilesRoute, singleProfile]);
 
   const fullMenu = useMemo(() => (tree ? [...tree.menu, ...menu] : [...menu]), [tree, menu]);
 

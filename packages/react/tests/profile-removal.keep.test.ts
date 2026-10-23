@@ -170,7 +170,7 @@ describe('the paths to profiles with no profile', () => {
   it('sends the boot picker to the route the app names', async () => {
     removals.push(profileAlias('data/profiles'));
     await start([], null);
-    await profilesTask.run({ report: vi.fn() } as never);
+    await profilesTask.run({ report: vi.fn(), product: {} } as never);
     const { active, params } = useNavigationStore.getState();
     expect([active, params.section]).toEqual(['data', 'profiles']);
   });

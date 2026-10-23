@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-electron
 
+## 0.78.0
+
+### Minor Changes
+
+- 0a78a00: Outside helpers and the bridge. `helpers` in `brock.config.ts` names standalone Node entries, such as a stdio MCP helper: `brock build` and `brock dev` bundle each into `dist/helpers/<name>.mjs` with only Node built-ins left as imports, refuse an Electron import, and the managed electron-builder config ships them in `resources/helpers` outside the asar. `bootstrapApp({ bridge: { register } })` opens an opt-in local bridge in main: a per-session named pipe on Windows or a 0600 Unix socket in a private temp folder, never TCP, guarded by a random per-session secret that never crosses the wire: an HMAC handshake proves both ends hold it, and each request carries an HMAC under a session key, with ids that must grow. The discovery file always lives in the per-user app data folder, keyed by instance or data folder, private to the user (0600, or on Windows an owner and a single access entry for the user, set and checked with System32's icacls), cleared when stale and removed on quit. The client refuses a stale or open file, a dead pid, a non-local endpoint and, on POSIX, a socket folder that is not the user's own. Unauthenticated connections have their own cap and a 2 s deadline, and the client gives up on a handshake after 2 s. Routes take a `validate` check, and handler errors are masked unless they are a `BridgeError`. Routes are `invoke` entries, as in the IPC contract. Messages are JSON lines with ids, bounded by `maxMessageBytes`. The helper's client is `connectBridge` from the new `@drizztdourden08/brock-electron/bridge` entry, which imports nothing from Electron. `helperLaunch(name)` gives the command, arguments and environment for an MCP client config.
+
+### Patch Changes
+
+- dd4f22c: The bridge's Windows check on the discovery file now reads the owner and each access entry as full SIDs through `Get-Acl` (never the SDDL text, whose `LA` alias hid the built-in Administrator account), and trusts the user, SYSTEM and Administrators as owner and as allow entries. An administrator account, whose new files are owned by Administrators, was refused before, and the owner name match was fragile.
+  - @drizztdourden08/brock-core@0.78.0
+
 ## 0.77.0
 
 ### Minor Changes

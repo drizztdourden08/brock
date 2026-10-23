@@ -2,12 +2,13 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { appDirs } from './app-dirs.mjs';
+import { USAGE_ENTRY } from './knip.constants.mjs';
 import { THREAD } from './workspace-config.mjs';
 
 const KNIP_BASE = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@drizztdourden08/standards/knip/base.json'), 'utf8'));
 
 const APP_WORKSPACE = {
-  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/ipc/contract.type.ts', 'src/screens/**/*.custom.tsx', '.brock/*.ts', '*.config.{cjs,ts,mjs}', 'brock.config.ts'],
+  entry: ['electron/main.ts', 'electron/preload.ts', 'src/main.tsx', 'src/ipc/contract.type.ts', 'src/screens/**/*.custom.tsx', USAGE_ENTRY, '.brock/*.ts', '*.config.{cjs,ts,mjs}', 'brock.config.ts'],
   project: ['src/**/*.{ts,tsx}', 'electron/**/*.ts', '.brock/*.ts'],
 };
 

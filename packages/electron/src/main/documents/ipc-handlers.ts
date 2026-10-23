@@ -1,26 +1,36 @@
 /* @layer electron-main @kind logic */
 import { dialog } from 'electron';
 import { readFile } from 'fs/promises';
-import { types } from 'util';
 import type { HandlerGroup } from '../types/main-context.type';
 import { toArrayBuffer } from '../files/to-array-buffer';
 import { writeAtomic } from '../storage/write-atomic';
+import { bytesOf } from './bytes-of';
+import { createDocumentTracking } from './document-tracking';
+import { registerRecentHandlers } from './recent-handlers';
+import { registerRecoveryHandlers } from './recovery-handlers';
+import { textOf } from './text-of';
 import { toDialogOptions } from './to-dialog-options';
-
-const bytesOf = (data: unknown): Uint8Array => {
-  if (!types.isAnyArrayBuffer(data)) throw new Error('A document write needs bytes');
-  return new Uint8Array(data);
-};
 
 const documentHandlers: HandlerGroup = {
   id: 'document',
-  register: ({ handle, window, documents }) => {
-    handle('document:open', async (_event, opts) => {
+  register: (ctx) => {
+    const { handle, window, documents } = ctx;
+    const tracking = createDocumentTracking(ctx);
+    const save = async (path: string, content: () => string | Uint8Array, profileId: unknown): Promise<void> => {
+      const full = documents.resolve(path);
+      await writeAtomic(full, content());
+      await tracking.saved(profileId, full);
+    };
+
+    handle('document:open', async (_event, opts, profileId) => {
       const win = window();
       if (!win) return null;
       const result = await dialog.showOpenDialog(win, { ...toDialogOptions(opts), properties: ['openFile'] });
       const picked = result.filePaths[0];
-      return result.canceled || picked === undefined ? null : documents.allow(picked);
+      if (result.canceled || picked === undefined) return null;
+      const full = documents.allow(picked);
+      await tracking.opened(profileId, full);
+      return full;
     });
 
     handle('document:saveAs', async (_event, opts) => {
@@ -32,11 +42,10 @@ const documentHandlers: HandlerGroup = {
 
     handle('document:read', async (_event, path) => toArrayBuffer(await readFile(documents.resolve(path))));
     handle('document:readText', (_event, path) => readFile(documents.resolve(path), 'utf8'));
-    handle('document:write', (_event, path, data) => writeAtomic(documents.resolve(path), bytesOf(data)));
-    handle('document:writeText', (_event, path, text) => {
-      if (typeof text !== 'string') throw new Error('A document text write needs a string');
-      return writeAtomic(documents.resolve(path), text);
-    });
+    handle('document:write', (_event, path, data, profileId) => save(path, () => bytesOf(data, 'A document write'), profileId));
+    handle('document:writeText', (_event, path, text, profileId) => save(path, () => textOf(text), profileId));
+    registerRecentHandlers(ctx, tracking);
+    registerRecoveryHandlers(ctx, tracking);
   },
 };
 

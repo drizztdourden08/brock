@@ -37,6 +37,7 @@ export * from './review';
 export * from './title-bar';
 export * from './volume';
 export * from './document-title';
+export * from './documents';
 export * from './developer-tools';
 export * from './tours';
 export * from './jobs';

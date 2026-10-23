@@ -10,44 +10,47 @@ import { closeOpened, discoveryOf, serve, tempDir, writeOpenFile } from './bridg
 afterEach(closeOpened);
 
 const ME = 'S-1-5-21-1-2-3-1001';
+const BUILTIN_ADMIN = 'S-1-5-21-3776380004-1005456608-3524014338-500';
 const OTHER = 'S-1-5-21-1-2-3-1004';
-const FULL = (sid: string): string => `(A;ID;FA;;;${sid})`;
+const FULL = (sid: string): string => `E Allow ${sid} FullControl`;
 
-const fakeTools = (sddl: string): SystemToolRun => (exe) =>
-  Buffer.from(exe === 'whoami.exe' ? `"pc\\me","${ME}"\r\n` : `${sddl}\r\n`, 'latin1');
+const fakeTools = (lines: readonly string[], me = ME): SystemToolRun => (exe) =>
+  Buffer.from(exe === 'whoami.exe' ? `"pc\\me","${me}"\r\n` : `${lines.join('\r\n')}\r\n`, 'latin1');
 
-const privateTo = (sddl: string): boolean => {
+const problemOf = (lines: readonly string[], me = ME): string | null => {
   const file = join(tempDir(), 'bridge.json');
   writeFileSync(file, '{}');
-  return windowsAccessProblem(file, fakeTools(sddl)) === null;
+  return windowsAccessProblem(file, fakeTools(lines, me));
 };
 
+const privateTo = (owner: string, ...entries: string[]): boolean => problemOf([`O ${owner}`, 'P True', ...entries]) === null;
+
 describe('the Windows access check on the discovery file', () => {
-  it('trusts the user, SYSTEM and Administrators as owner and as access entries', () => {
-    expect(privateTo(`O:${ME}G:${ME}D:P(A;;FA;;;${ME})`)).toBe(true);
-    expect(privateTo(`O:BAG:S-1-5-21-1-2-3-513D:AI${FULL('SY')}${FULL('BA')}${FULL(ME)}`)).toBe(true);
-    expect(privateTo(`O:S-1-5-32-544G:SYD:P${FULL('S-1-5-18')}${FULL('S-1-5-32-544')}${FULL(ME)}`)).toBe(true);
-    expect(privateTo(`O:SYD:P${FULL(ME)}(D;;FA;;;WD)`)).toBe(true);
+  it('trusts the user, SYSTEM and Administrators as owner and as access entries, by full SID', () => {
+    expect(privateTo(ME, FULL(ME))).toBe(true);
+    expect(privateTo('S-1-5-32-544', FULL('S-1-5-18'), FULL('S-1-5-32-544'), FULL(ME))).toBe(true);
+    expect(privateTo('S-1-5-18', FULL(ME), 'E Deny S-1-1-0 FullControl')).toBe(true);
+    expect(problemOf([`O ${BUILTIN_ADMIN}`, 'P True', FULL(BUILTIN_ADMIN)], BUILTIN_ADMIN)).toBeNull();
   });
 
   it('refuses any other owner or access entry', () => {
-    expect(privateTo(`O:${OTHER}D:P${FULL(ME)}`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;BU)`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-5-32-545)`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;AU)`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-5-11)`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(ME)}${FULL('WD')}`)).toBe(false);
-    expect(privateTo(`O:${ME}D:P${FULL(OTHER)}`)).toBe(false);
-    expect(privateTo(`O:${ME}D:NO_ACCESS_CONTROL`)).toBe(false);
-    expect(privateTo('')).toBe(false);
+    expect(privateTo(OTHER, FULL(ME))).toBe(false);
+    expect(privateTo(ME, FULL(ME), 'E Allow S-1-5-32-545 ReadAndExecute, Synchronize')).toBe(false);
+    expect(privateTo(ME, FULL(ME), 'E Allow S-1-5-11 ReadAndExecute, Synchronize')).toBe(false);
+    expect(privateTo(ME, FULL(ME), FULL('S-1-1-0'))).toBe(false);
+    expect(privateTo(ME, FULL(ME), FULL('S-1-15-2-1'))).toBe(false);
+    expect(privateTo(ME, FULL(OTHER))).toBe(false);
+    expect(privateTo(ME)).toBe(false);
+    expect(privateTo('LA', FULL('LA'))).toBe(false);
+    expect(problemOf([])).not.toBeNull();
   });
 
   it('names the owner and each unexpected entry it found, and why it could not read them', () => {
+    expect(problemOf([`O ${OTHER}`, 'P False', FULL(ME), 'E Allow S-1-5-32-545 ReadAndExecute, Synchronize'])).toBe(
+      `owner ${OTHER} (not trusted); access list protected: False; unexpected entries: Allow S-1-5-32-545 ReadAndExecute, Synchronize; you are ${ME}`,
+    );
     const file = join(tempDir(), 'bridge.json');
     writeFileSync(file, '{}');
-    expect(windowsAccessProblem(file, fakeTools(`O:${OTHER}D:P${FULL(ME)}(A;ID;0x1200a9;;;S-1-15-2-1)(OA;;CC;;;AU)`))).toBe(
-      `owner ${OTHER} (not trusted); access list flags "P"; unexpected entries: S-1-15-2-1 0x1200a9, OA AU CC; you are ${ME}`,
-    );
     const broken: SystemToolRun = (exe) => {
       if (exe === 'whoami.exe') return Buffer.from(`"me","${ME}"`, 'latin1');
       throw new Error('powershell.exe exited with 1: Get-Acl failed');
@@ -64,6 +67,6 @@ describe('the Windows access check on the discovery file', () => {
     expect(readBridgeDiscovery(file).endpoint).toBe(server.endpoint);
     const open = join(folder, 'open.json');
     writeOpenFile(open, JSON.stringify(discoveryOf(server)));
-    expect(windowsAccessProblem(open)).toMatch(/unexpected entries: (?:.*[ ,])?(?:BU|S-1-5-32-545) /);
+    expect(windowsAccessProblem(open)).toMatch(/unexpected entries: (?:.* \| )?Allow S-1-5-32-545 /);
   });
 });

@@ -56,6 +56,7 @@ const createAndroidInputApi = (plugin: BrockInputPlugin): InputApi => {
     onDevices: controllers.devices.on,
     mapping: {
       add: mappings.add,
+      list: () => Promise.resolve([]),
       forGuid: async (guid) => (await plugin.mappingForGuid({ guid }).catch(() => ({ mapping: undefined }))).mapping ?? null,
     },
     calibration: createCalibrationStore(files),

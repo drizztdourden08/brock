@@ -173,6 +173,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("stopJoystickCapture", Napi::Function::New(env, StopJoystickCapture));
   exports.Set("listJoysticks", Napi::Function::New(env, ListJoysticks));
   exports.Set("mappingForGuid", Napi::Function::New(env, MappingForGuid));
+  exports.Set("mappingList", Napi::Function::New(env, MappingList));
   return exports;
 }
 

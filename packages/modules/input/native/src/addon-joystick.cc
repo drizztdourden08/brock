@@ -1,7 +1,7 @@
 /* @layer electron-main @kind native */
 // N-API handlers for the joystick-level surface: start/stop capture,
 // listJoysticks (marshals SdlThread's JoystickInfo snapshot into plain
-// objects), and mappingForGuid. Split out of addon.cc to keep that file
+// objects), mappingForGuid and mappingList. Split out of addon.cc to keep that file
 // under the line cap.
 #include "addon-handlers.h"
 
@@ -62,4 +62,19 @@ Napi::Value MappingForGuid(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   return Napi::String::New(env, *mapping);
+}
+
+Napi::Value MappingList(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  SdlThread* thread = GetSdlThread(false);
+  if (!thread) {
+    return Napi::Array::New(env, 0);
+  }
+
+  std::vector<std::string> mappings = thread->MappingList();
+  Napi::Array result = Napi::Array::New(env, static_cast<uint32_t>(mappings.size()));
+  for (size_t i = 0; i < mappings.size(); ++i) {
+    result.Set(i, Napi::String::New(env, mappings[i]));
+  }
+  return result;
 }

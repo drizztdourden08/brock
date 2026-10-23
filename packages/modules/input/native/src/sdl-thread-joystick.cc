@@ -89,3 +89,24 @@ std::optional<std::string> SdlThread::MappingForGuid(const std::string& guid) {
   SDL_free(mapping);
   return result;
 }
+
+std::vector<std::string> SdlThread::MappingList() {
+  std::vector<std::string> result;
+  if (!running_.load(std::memory_order_acquire) || SDL_WasInit(SDL_INIT_GAMEPAD) == 0) {
+    return result;
+  }
+
+  int count = 0;
+  char** mappings = SDL_GetGamepadMappings(&count);
+  if (mappings == nullptr) {
+    return result;
+  }
+  result.reserve(static_cast<size_t>(count));
+  for (int i = 0; i < count; ++i) {
+    if (mappings[i] != nullptr) {
+      result.emplace_back(mappings[i]);
+    }
+  }
+  SDL_free(mappings);
+  return result;
+}

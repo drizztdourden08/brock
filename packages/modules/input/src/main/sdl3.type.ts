@@ -96,6 +96,7 @@ interface Sdl3Input {
   stopJoystickCapture: () => void;
   listJoysticks: () => JoystickInfo[];
   mappingForGuid: (guid: string) => string | null;
+  mappingList?: () => string[];
 }
 
 export type { Sdl3AddedEvent, Sdl3Event, Sdl3EventCallback, Sdl3HidDevice, Sdl3RawCaptureResult, Sdl3Input };

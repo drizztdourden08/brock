@@ -8,7 +8,7 @@ const none = <T>(): Promise<T[]> => Promise.resolve([]);
 const no = (): Promise<boolean> => Promise.resolve(false);
 const done = (): Promise<void> => Promise.resolve();
 
-const mapping: InputMappingApi = { add: no, forGuid: () => Promise.resolve(null) };
+const mapping: InputMappingApi = { add: no, forGuid: () => Promise.resolve(null), list: none };
 
 const calibration: InputCalibrationApi = {
   readSticks: () => Promise.resolve({}),

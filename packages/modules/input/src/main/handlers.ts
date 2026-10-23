@@ -23,6 +23,10 @@ const registerInputHandlers = ({ handle }: Pick<MainContext, 'handle'>, input: I
   handle('input:vibratePattern', (_event, deviceKey, pattern, gapMs) => runtime().haptics.play(deviceKey, pattern, gapMs));
   handle('input:mapping:add', (_event, mapping) => runtime().mappings.add(mapping));
   handle('input:mapping:forGuid', (_event, guid) => runtime().mappings.forGuid(guid));
+  handle('input:mapping:list', async () => {
+    await input.start();
+    return runtime().mappings.list();
+  });
   handle('input:calibration:readSticks', () => calibration.readSticks());
   handle('input:calibration:writeStick', (_event, deviceKey, value) => calibration.writeStick(deviceKey, value));
   handle('input:calibration:readTriggers', () => calibration.readTriggers());

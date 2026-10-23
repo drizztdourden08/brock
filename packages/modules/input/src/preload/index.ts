@@ -24,6 +24,7 @@ const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
   mapping: {
     add: (mapping) => invoke('input:mapping:add', mapping),
     forGuid: (guid) => invoke('input:mapping:forGuid', guid),
+    list: () => invoke('input:mapping:list'),
   },
   calibration: {
     readSticks: () => invoke('input:calibration:readSticks'),

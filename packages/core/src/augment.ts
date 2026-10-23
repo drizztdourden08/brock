@@ -6,7 +6,7 @@ import type { OpenRequest } from './types/open.type';
 import type { BugReportPayload, BugReportReceiptWire, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
-import type { ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
+import type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, SaveFileResultWire } from './ipc/payloads.type';
 import type { WindowControlsPort } from './platform/ports/window-controls.type';
 import type { FileStore } from './platform/ports/file-store.type';
 import type { FilePickerPort } from './platform/ports/file-picker.type';
@@ -109,6 +109,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'capture:holds': (count: number) => void;
   'review:check': (check: ReviewCheck) => void;
   'review:finish': () => void;
+  'ask:reply': (id: number, outcome: AskOutcome) => void;
 }
 
 interface EventContract extends WidgetEventContract, DataEventContract {
@@ -117,7 +118,10 @@ interface EventContract extends WidgetEventContract, DataEventContract {
   'log:entry': (entry: LogEntryWire) => void;
   'import:progress': (progress: ImportProgress) => void;
   'app:open': (request: OpenRequest) => void;
+  'ask:request': (id: number, channel: string, args: unknown[]) => void;
 }
+
+interface AskContract {}
 
 interface IpcNamespaces {}
 
@@ -145,6 +149,6 @@ interface PlatformPorts {
 export type {
   BaseProfile, ProfileExtension, ProfileCreateExtension, ProfilePatchExtension,
   Profile, CreateProfileOptions, ProfilePatch,
-  InvokeContract, SendContract, EventContract, IpcNamespaces,
+  InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces,
   Capabilities, PlatformPorts, AppServices, ShowFlags,
 };

@@ -1,5 +1,6 @@
 /* @layer core @kind types */
-type ChannelKind = 'invoke' | 'send' | 'event';
+type ChannelKind = 'invoke' | 'send' | 'event' | 'ask';
+type MappedChannelKind = Exclude<ChannelKind, 'ask'>;
 
 type InvokeSignature = (...args: never[]) => Promise<unknown>;
 type VoidSignature = (...args: never[]) => void;
@@ -13,6 +14,7 @@ interface ChannelDecl<K extends ChannelKind, C extends string, F> {
 type InvokeChannel<C extends string, F extends InvokeSignature> = ChannelDecl<'invoke', C, F>;
 type SendChannel<C extends string, F extends VoidSignature> = ChannelDecl<'send', C, F>;
 type EventChannel<C extends string, F extends VoidSignature> = ChannelDecl<'event', C, F>;
+type AskChannel<C extends string, F extends InvokeSignature> = ChannelDecl<'ask', C, F>;
 
 type AnyChannel = ChannelDecl<ChannelKind, string, unknown>;
 type ChannelDecls = Record<string, AnyChannel>;
@@ -26,6 +28,7 @@ type ContractOf<D, K extends ChannelKind> = {
 type InvokeContractOf<D> = ContractOf<D, 'invoke'>;
 type SendContractOf<D> = ContractOf<D, 'send'>;
 type EventContractOf<D> = ContractOf<D, 'event'>;
+type AskContractOf<D> = ContractOf<D, 'ask'>;
 
 type ChannelMapOf<D, K extends ChannelKind> = {
   readonly [M in keyof D as D[M] extends ChannelDecl<K, string, unknown> ? M : never]: D[M] extends ChannelDecl<K, infer C, unknown> ? C : never;
@@ -52,6 +55,6 @@ interface ChannelRef<C extends PropertyKey> {
 }
 
 export type {
-  AnyChannel, ChannelApi, ChannelDecl, ChannelDecls, ChannelKind, ChannelMaps, ChannelRef, DefinedChannels, EventChannel, EventContractOf, InvokeChannel, InvokeContractOf, InvokeSignature,
+  AnyChannel, AskChannel, AskContractOf, MappedChannelKind, ChannelApi, ChannelDecl, ChannelDecls, ChannelKind, ChannelMaps, ChannelRef, DefinedChannels, EventChannel, EventContractOf, InvokeChannel, InvokeContractOf, InvokeSignature,
   SendChannel, SendContractOf, VoidSignature,
 };

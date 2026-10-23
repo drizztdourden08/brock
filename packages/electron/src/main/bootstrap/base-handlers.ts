@@ -20,6 +20,7 @@ import { transferHandlers } from '../storage/transfer-handlers';
 import { jobHandlers } from '../jobs/ipc-handlers';
 import { openHandlers } from '../open/ipc-handlers';
 import { bugReportHandlers } from '../bug-report/ipc-handlers';
+import { askHandlers } from '../ipc/ask-handlers';
 
 const baseHandlers = (): HandlerGroup[] => [
   bootHandlers,
@@ -42,6 +43,7 @@ const baseHandlers = (): HandlerGroup[] => [
   networkHandlers,
   sessionLogHandlers,
   screenshotHandlers,
+  askHandlers,
 ];
 
 export { baseHandlers };

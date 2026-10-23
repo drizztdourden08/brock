@@ -8,6 +8,7 @@ import type { AppServices, EventContract } from '@drizztdourden08/brock-core/aug
 import type { BootTask } from '@drizztdourden08/brock-core/boot';
 import type { OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
+import type { AskFn, AskWithinFn } from '../ipc/ask.type';
 import type { JobRegistry, StartJob } from '@drizztdourden08/brock-core/jobs';
 import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
@@ -42,6 +43,8 @@ interface MainContext {
   handle: HandleFn;
   on: OnFn;
   emit: EmitToWindow;
+  ask: AskFn;
+  askWithin: AskWithinFn;
   log: (message: string, level?: MainLogLevel) => void;
   onOpen: (handler: (request: OpenRequest) => void) => () => void;
   readonly services: AppServices;

@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.91.0
+
+### Minor Changes
+
+- c364271: `documents.open` and `documents.saveAs` take `grantFolder: 'ask'` or `{ ask: true, levels }` to grant the folder of the picked file, after a native confirm that names the exact folder, with the refused-root checks and the remembered folders of `openFolder`; the answer then carries `folderGranted` and a reason.
+
+### Patch Changes
+
+- Updated dependencies [c364271]
+  - @drizztdourden08/brock-core@0.91.0
+
 ## 0.90.0
 
 ### Minor Changes

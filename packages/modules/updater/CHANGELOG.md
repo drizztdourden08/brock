@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-updater
 
+## 0.91.0
+
+### Patch Changes
+
+- Updated dependencies [c364271]
+  - @drizztdourden08/brock-core@0.91.0
+  - @drizztdourden08/brock-electron@0.91.0
+  - @drizztdourden08/brock-react@0.91.0
+
 ## 0.90.0
 
 ### Patch Changes

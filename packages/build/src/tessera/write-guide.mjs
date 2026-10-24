@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { runTesseraCommand } from '../commands/tessera.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
+import { settleLineEndings } from '../write-changed.mjs';
+import { guidePartsFiles } from './guide-parts-files.mjs';
 import { guideRunDirs } from './guide-run-dirs.mjs';
 import { hasGuideParts } from './has-guide-parts.mjs';
 import { GUIDE_OUT, TESSERA_CONFIG_FILE } from './tessera.constants.mjs';
@@ -35,7 +37,10 @@ const writeGuide = async (rootDir, { label = 'brock sync', missingOnly = false }
   const out = guideOutOf(configDir);
   if (missingOnly && existsSync(join(configDir, out))) return;
   console.log(missingOnly ? `${label}: ${out}/ is missing, running tessera guide.` : `${label}: tessera.config.json sets guide.parts, running tessera guide.`);
+  const parts = guidePartsFiles(configDir);
+  const before = new Map(parts.map((file) => [file, existsSync(file) ? readFileSync(file, 'utf8') : null]));
   for (const cwd of guideRunDirs(configDir)) await runGuideIn(configDir, cwd, label);
+  for (const file of parts) settleLineEndings(file, before.get(file));
 };
 
 export { writeGuide };

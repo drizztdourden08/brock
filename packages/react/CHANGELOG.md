@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-react
 
+## 0.82.0
+
+### Minor Changes
+
+- 44e91ce: feat: focus zones for commands
+
+  `CommandDef` gains `zone`. A zoned command fires only while the focused element sits inside an element marked with `{...commandZone('canvas')}`, and it ranks above a scoped and an unscoped command with the same chord. The same chord in different zones is not a conflict. A command bound to Mod+C, X, V, A or Z already wins over the native Edit menu, since it runs on keydown and prevents the default.
+
+- 9e2ade8: `showHeader` in `ScreenMeta`, `LiveMeta` and `LivePage` also takes `'compact'`, which draws the hub page header in Tessera's compact size and still holds `PageActions`; `true` and `false` work as before. `PageHeaderMode` is exported. The lint config turns off `local/hook-file-named-after-hook` for `.live.tsx` and `.live.dev.tsx` files under `src/screens`, so a live file declares its hook and default-exports it without a re-export from a view.
+
+### Patch Changes
+
+- Updated dependencies [b5c6c13]
+  - @drizztdourden08/brock-core@0.82.0
+
 ## 0.81.0
 
 ### Minor Changes

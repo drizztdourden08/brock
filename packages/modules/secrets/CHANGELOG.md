@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-secrets
 
+## 0.82.0
+
+### Minor Changes
+
+- 163cdd4: A Node secret store for headless apps. `@drizztdourden08/brock-secrets/node` exports `createNodeSecretStore({ dataDir, env?, envPrefix? })`, with the same `canStore`, `set`, `get`, `has`, `list` and `delete` as the Electron store, for a server with no Electron and no OS keychain. The entry never imports `electron`. Secrets live in one JSON file, `<dataDir>/secrets/secrets.json`, written atomically with mode 0600 on posix (on Windows the mode is ignored and the file keeps the folder's ACL). An environment variable `BROCK_SECRET_<KEY>` overrides the file for a key: the name is upper case with each run of characters outside A-Z and 0-9 turned into one `_`, so `api-token` reads `BROCK_SECRET_API_TOKEN`. This store is not encrypted at rest. The Electron store is unchanged.
+
+### Patch Changes
+
+- Updated dependencies [44e91ce]
+- Updated dependencies [9e2ade8]
+- Updated dependencies [a44cf5d]
+- Updated dependencies [b5c6c13]
+- Updated dependencies [c0b1c3d]
+  - @drizztdourden08/brock-react@0.82.0
+  - @drizztdourden08/brock-electron@0.82.0
+  - @drizztdourden08/brock-core@0.82.0
+
 ## 0.81.0
 
 ### Patch Changes

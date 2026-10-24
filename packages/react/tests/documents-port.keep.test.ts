@@ -1,42 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { DocumentsPort } from '@drizztdourden08/brock-core';
-import { createElectronFactory } from '../src/platform/hosts/electron-factory';
 import { createWebFactory } from '../src/platform/hosts/web-factory';
 import { useProfilesStore } from '../src/stores/useProfilesStore';
-
-const FILE = 'C:\\art\\a.bxel';
-const PROFILE = { id: 'p1', name: 'Mira', created: 1, lastPlayed: 1 };
-
-const stubApi = () => {
-  const api = {
-    os: 'win32',
-    isDev: false,
-    documentOpen: vi.fn((_opts?: unknown, _profileId?: string) => Promise.resolve(FILE)),
-    documentSaveAs: vi.fn(() => Promise.resolve(null)),
-    documentOpenFolder: vi.fn((_opts?: unknown) => Promise.resolve<string | null>('C:\\art')),
-    documentList: vi.fn((_folder: string, _options?: unknown) => Promise.resolve({ entries: [{ path: FILE, name: 'a.bxel', kind: 'file', size: 2, modified: 3, link: false }], truncated: false })),
-    documentRead: vi.fn(() => Promise.resolve(new Uint8Array([4, 5]).buffer)),
-    documentReadText: vi.fn(() => Promise.resolve('text')),
-    documentWrite: vi.fn((_path: string, _data: ArrayBuffer, _profileId?: string, _options?: unknown) => Promise.resolve()),
-    documentWriteText: vi.fn((_path: string, _text: string, _profileId?: string, _options?: unknown) => Promise.resolve()),
-    documentRecent: vi.fn((_profileId: string) => Promise.resolve([{ path: FILE, name: 'a.bxel', lastOpened: 1 }])),
-    documentClearRecent: vi.fn((_profileId: string) => Promise.resolve()),
-    documentOpenRecent: vi.fn((_profileId: string, _path: string) => Promise.resolve<string | null>(FILE)),
-    documentSnapshot: vi.fn((_profileId: string, _snapshot: { key: string; data: ArrayBuffer; name?: string }) => Promise.resolve()),
-    documentRecoverable: vi.fn((_profileId: string) => Promise.resolve([{ key: 'k', name: null, path: null, savedAt: 1, size: 2 }])),
-    documentRestoreSnapshot: vi.fn((_profileId: string, _key: string) => Promise.resolve<ArrayBuffer | null>(new Uint8Array([8, 9]).buffer)),
-    documentDiscardSnapshot: vi.fn((_profileId: string, _key: string) => Promise.resolve()),
-  };
-  vi.stubGlobal('window', { api });
-  return api;
-};
-
-const electronDocuments = (): DocumentsPort => {
-  const documents = createElectronFactory().ports.documents?.();
-  if (!documents) throw new Error('the Electron host has no documents port');
-  return documents;
-};
+import { electronDocuments, FILE, PROFILE, stubApi } from './documents-port-fixture';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -58,7 +24,7 @@ describe('the documents port', () => {
     const api = stubApi();
     const documents = electronDocuments();
     expect(await documents.openFolder({ title: 'Project' })).toBe('C:\\art');
-    expect(api.documentOpenFolder).toHaveBeenCalledWith({ title: 'Project' });
+    expect(api.documentOpenFolder).toHaveBeenCalledWith({ title: 'Project' }, undefined);
     expect((await documents.list('C:\\art', { extensions: ['bxel'], recursive: true })).entries.map((entry) => entry.name)).toEqual(['a.bxel']);
     expect(api.documentList).toHaveBeenCalledWith('C:\\art', { extensions: ['bxel'], recursive: true });
   });

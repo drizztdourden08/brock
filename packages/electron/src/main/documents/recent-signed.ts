@@ -1,11 +1,7 @@
 /* @layer electron-main @kind logic */
-import { timingSafeEqual } from 'crypto';
+import { entrySigned } from './entry-signed';
 import { signRecent } from './sign-recent';
 
-const recentSigned = (key: Buffer, profileId: string, path: string, sig: string): boolean => {
-  const expected = Buffer.from(signRecent(key, profileId, path));
-  const given = Buffer.from(sig);
-  return given.length === expected.length && timingSafeEqual(given, expected);
-};
+const recentSigned = entrySigned(signRecent);
 
 export { recentSigned };

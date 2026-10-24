@@ -37,17 +37,19 @@ const testAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => createDocu
 
 const refusedBy = (access: DocumentAccess) => (path: string): Promise<void> => expect(access.resolve(path)).rejects.toThrow(/may not use/);
 
-const sessionOf = (given: Partial<MainContext>): Call => {
+const sessionOf = (given: Partial<MainContext>, sender: unknown = {}): Call => {
   const handlers = new Map<string, Handler>();
   const ctx: Partial<MainContext> = {
     profiles: knownProfiles,
+    window: windowOf(() => ({}) as BrowserWindow),
     ...given,
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
-    window: windowOf(() => ({}) as BrowserWindow),
   };
   documentHandlers.register(ctx as MainContext);
-  return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));
+  return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({ sender }, ...args));
 };
 
-export { knownProfiles, makeBase, makeTree, refusedBy, sessionOf, testAccess };
+const loose = <T>(value: unknown): T => value as T;
+
+export { knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
 export type { Call };

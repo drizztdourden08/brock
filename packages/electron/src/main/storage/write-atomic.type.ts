@@ -7,4 +7,12 @@ interface AtomicFileOps {
   pause: (ms: number) => Promise<void>;
 }
 
-export type { AtomicFileOps };
+interface WritableHandle {
+  writeFile: (data: string | Uint8Array) => Promise<void>;
+  sync: () => Promise<void>;
+  close: () => Promise<void>;
+}
+
+type OpenFile = (file: string, flags: 'w', mode?: number) => Promise<WritableHandle>;
+
+export type { AtomicFileOps, OpenFile };

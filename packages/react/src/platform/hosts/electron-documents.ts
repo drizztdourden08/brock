@@ -4,6 +4,7 @@ import { requireHostApi } from '../../host/require-host-api';
 import { activeProfileId } from './active-profile-id';
 import { NO_PROFILE } from './electron-documents.constants';
 import { toArrayBuffer } from './to-array-buffer';
+import { watchFolder } from './watch-folder';
 
 const createElectronDocuments = (): DocumentsPort => {
   const api = requireHostApi();
@@ -18,7 +19,15 @@ const createElectronDocuments = (): DocumentsPort => {
   return {
     open: (opts) => api.documentOpen(opts, activeProfileId() ?? undefined),
     saveAs: (opts) => api.documentSaveAs(opts),
-    openFolder: (opts) => api.documentOpenFolder(opts),
+    openFolder: (opts) => api.documentOpenFolder(opts, activeProfileId() ?? undefined),
+    revokeFolder: (path) => api.documentRevokeFolder(path),
+    trash: (path) => api.documentTrash(path),
+    rename: (from, to, options) => api.documentRename(from, to, options),
+    mkdir: (path, options) => api.documentMkdir(path, options),
+    watch: (folder, options, listener) => watchFolder(api, folder, options, listener),
+    rememberedFolders: () => withProfile([], (profileId) => api.documentRememberedFolders(profileId)),
+    regrant: (path) => needProfile((profileId) => api.documentRegrant(profileId, path)),
+    forgetFolder: (path) => withProfile(false, (profileId) => api.documentForgetFolder(profileId, path)),
     list: (folder, options) => api.documentList(folder, options),
     read: async (path) => new Uint8Array(await api.documentRead(path)),
     readText: (path) => api.documentReadText(path),

@@ -32,6 +32,12 @@ const seed = async (files: string[]): Promise<void> => {
   }
 };
 
+const outcomeOf = (outcome: PromiseSettledResult<unknown>): string => {
+  if (outcome.status === 'fulfilled') return 'fulfilled';
+  const reason = String(outcome.reason);
+  return reason.includes('may not use') ? 'refused' : reason.slice(0, 160);
+};
+
 const refusedWrite = async (file: string): Promise<void> => {
   const path = join(granted, file);
   await expect(call('document:writeText', path, 'evil'), file).rejects.toThrow(/may not use/);
@@ -130,15 +136,20 @@ describe('writes of the files every git directory needs', () => {
     }
   });
 
-  it('are refused in a parallel burst of the three names, which no layout check could see', async () => {
-    const settled = await Promise.allSettled([
-      call('document:writeText', join(granted, 'burst', 'HEAD'), 'ref: refs/heads/main'),
-      call('document:writeText', join(granted, 'burst', 'objects', 'x'), 'o'),
-      call('document:writeText', join(granted, 'burst', 'refs', 'heads', 'main'), 'r'),
-    ]);
-    expect(settled.map((outcome) => outcome.status)).toEqual(['rejected', 'fulfilled', 'fulfilled']);
-    expect(existsSync(join(granted, 'burst', 'HEAD'))).toBe(false);
-  });
+  it('are refused in a parallel burst of the three names, and the ordinary two are never refused with them', async () => {
+    const seen = new Set<string>();
+    for (let n = 0; n < 100; n += 1) {
+      const settled = await Promise.allSettled([
+        call('document:writeText', join(granted, `b${n}`, 'HEAD'), 'ref'),
+        call('document:writeText', join(granted, `b${n}`, 'objects', 'x'), 'o'),
+        call('document:writeText', join(granted, `b${n}`, 'refs', 'heads', 'main'), 'r'),
+      ]);
+      const key = JSON.stringify(settled.map(outcomeOf));
+      if (key !== '["refused","fulfilled","fulfilled"]') seen.add(key);
+    }
+    expect([...seen]).toEqual([]);
+    expect(existsSync(join(granted, 'b0', 'HEAD'))).toBe(false);
+  }, 60000);
 
   it('are refused for the commondir split, X holding HEAD and commondir and Y the objects', async () => {
     await call('document:writeText', join(granted, 'y', 'objects', 'x'), 'o');

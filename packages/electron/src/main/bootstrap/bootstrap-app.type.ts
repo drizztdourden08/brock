@@ -10,7 +10,6 @@ interface ReadyInput {
   dataDirs: string[];
   schemes: PrivilegedScheme[];
   setup: WindowSetup;
-  bridgeKey: string | null;
 }
 
 interface ProcessStart {

@@ -8,7 +8,9 @@ const bridgeProof = {
   nonce: (): string => randomBytes(BRIDGE_NONCE_BYTES).toString('base64url'),
   server: (secret: string, clientNonce: string, serverNonce: string): string => mac(secret, ['server', clientNonce, serverNonce]),
   sessionKey: (secret: string, clientNonce: string, serverNonce: string): string => mac(secret, ['session', clientNonce, serverNonce]),
+  auth: (sessionKey: string): string => mac(sessionKey, ['auth']),
   request: (sessionKey: string, id: number, channel: string, args: string): string => mac(sessionKey, ['request', id, channel, args]),
+  message: (sessionKey: string, body: string): string => mac(sessionKey, ['message', body]),
 };
 
 export { bridgeProof };

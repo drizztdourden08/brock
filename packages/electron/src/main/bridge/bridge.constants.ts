@@ -1,5 +1,5 @@
 /* @layer electron-main @kind constants */
-const BRIDGE_PROTOCOL = 1;
+const BRIDGE_PROTOCOL = 2;
 const BRIDGE_SECRET_BYTES = 32;
 const BRIDGE_NONCE_BYTES = 32;
 const BRIDGE_NONCE = /^[A-Za-z0-9_-]{43}$/;
@@ -24,6 +24,10 @@ const BRIDGE_RUN_AS_NODE = 'ELECTRON_RUN_AS_NODE';
 const BRIDGE_HELPER_NAME = /^[a-z0-9][a-z0-9-]*$/;
 const BRIDGE_NEWLINE = 10;
 const BRIDGE_FAILED = 'the request failed';
+const BRIDGE_ERROR_DATA_BYTES = 65_536;
+const BRIDGE_TOO_LARGE = 'the reply is not JSON or is larger than the bridge allows';
+const BRIDGE_ERROR_CODE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
+const BRIDGE_CODES = { error: 'error', failed: 'failed', noHandler: 'no-handler', invalidArguments: 'invalid-arguments', tooLarge: 'too-large', timeout: 'timeout', closed: 'closed' } as const;
 const BRIDGE_WHOAMI = /"(S-[0-9-]+)"/;
 const BRIDGE_SYSTEM32 = 'C:\\Windows\\System32';
 const BRIDGE_POWERSHELL = 'WindowsPowerShell\\v1.0\\powershell.exe';
@@ -39,6 +43,7 @@ const BRIDGE_TRUSTED_SIDS: readonly string[] = ['S-1-5-18', 'S-1-5-32-544'];
 const BRIDGE_IMPOSTOR = 'the endpoint could not prove it is the app; the bridge refuses it';
 
 export {
+  BRIDGE_CODES, BRIDGE_ERROR_CODE, BRIDGE_ERROR_DATA_BYTES, BRIDGE_TOO_LARGE,
   BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
   BRIDGE_HELPERS_DIR, BRIDGE_LISTEN_TRIES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_NEWLINE, BRIDGE_NONCE,
   BRIDGE_NONCE_BYTES, BRIDGE_OTHERS_MASK, BRIDGE_PERMISSION_BITS, BRIDGE_PIPE_NAME, BRIDGE_PIPE_PREFIX, BRIDGE_PROTOCOL, BRIDGE_REQUEST_TIMEOUT_MS,

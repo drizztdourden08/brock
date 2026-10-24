@@ -1,18 +1,14 @@
 /* @layer electron-main @kind logic */
-import { app } from 'electron';
-import { join } from 'path';
 import type { MainContext } from '../types/main-context.type';
-import type { AppBridgeOptions } from './app-bridge.type';
+import type { AppBridgeOptions, OpenedAppBridge } from './app-bridge.type';
 import { BRIDGE_PROTOCOL } from './bridge.constants';
-import { bridgeFileName } from './bridge-file-name';
 import { clearStaleDiscovery } from './clear-stale-discovery';
 import { removeDiscovery } from './remove-discovery';
 import { startBridgeServer } from './start-bridge-server';
 import { writeBridgeDiscovery } from './write-bridge-discovery';
 
-const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, key: string | null): Promise<void> => {
+const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, file: string): Promise<OpenedAppBridge> => {
   const id = ctx.product.id;
-  const file = join(app.getPath('appData'), id, bridgeFileName(key));
   if (clearStaleDiscovery(file)) ctx.log(`bridge: removed a stale discovery file, ${file}`);
   const server = await startBridgeServer({
     app: id,
@@ -31,9 +27,8 @@ const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, key: 
     stop();
     throw error;
   }
-  app.once('will-quit', stop);
-  process.once('exit', stop);
   ctx.log(`bridge open; its discovery file is ${file}`);
+  return { server, stop };
 };
 
 export { startAppBridge };

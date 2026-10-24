@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-secrets
 
+## 0.87.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.87.1
+- @drizztdourden08/brock-electron@0.87.1
+- @drizztdourden08/brock-react@0.87.1
+
 ## 0.87.0
 
 ### Patch Changes

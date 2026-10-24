@@ -15,7 +15,7 @@ const shortcuts = [{ target: 'tools/notes', shortcut: 'Mod+N' }];
 const defs = routeCommands({ registry, shortcuts, allowed: () => true, labelOf: (target) => target });
 const state = { sources: [{ key: 'routes', rank: 2, defs }], overrides: {}, mac: false, persist: null };
 const chord = (key: string): KeyboardEvent => new KeyboardEvent('keydown', { key, ctrlKey: true });
-const targetOf = (key: string): string | undefined => findCommand(chord(key), state, { route: null, typing: false })?.id;
+const targetOf = (key: string): string | undefined => findCommand(chord(key), state, { route: null, typing: false, zones: [] })?.id;
 
 afterEach(() => {
   useMenuHiddenStore.getState().setRoutes(new Set());

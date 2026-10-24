@@ -6,6 +6,7 @@ import { resolveModules } from '../modules/resolve.mjs';
 import { brockPinOf } from '../upgrade/brock-pin-of.mjs';
 import { collectMigrations } from '../upgrade/collect-migrations.mjs';
 import { runMigrations } from '../upgrade/run-migrations.mjs';
+import { selectById } from '../upgrade/select-by-id.mjs';
 import { selectMigrations } from '../upgrade/select-migrations.mjs';
 import { tesseraRenamesStep } from '../upgrade/tessera/tessera-renames-step.mjs';
 import { readCopyMap } from '../upgrade/tessera-copy/copy-map.mjs';
@@ -37,11 +38,15 @@ const refusal = (ctx) => {
   const copy = copyRefusal(ctx);
   if (copy) return copy;
   const pinned = brockPinOf(ctx.rootDir) !== null;
+  if (ctx.run) return pinned ? null : neverOnBrock(ctx.rootDir);
   if (ctx.from || ctx.tesseraFrom || ctx.tesseraFromCopy) return ctx.from && !pinned ? neverOnBrock(ctx.rootDir) : null;
   return pinned ? MISSING_FROM : neverOnBrock(ctx.rootDir);
 };
 
-const tesseraStep = (ctx) => (ctx.tesseraFromCopy ? copyStepOf(ctx) : tesseraRenamesStep({ rootDir: ctx.rootDir, from: ctx.tesseraFrom ?? null }));
+const tesseraStep = (ctx) => {
+  if (ctx.run) return { applied: [], skipped: '--run runs one Brock migration alone' };
+  return ctx.tesseraFromCopy ? copyStepOf(ctx) : tesseraRenamesStep({ rootDir: ctx.rootDir, from: ctx.tesseraFrom ?? null });
+};
 
 const printTodos = (todos) => {
   if (todos.length === 0) return;
@@ -68,11 +73,12 @@ const printRun = ({ applied, todos, tessera }, range) => {
   printTodos(todos);
 };
 
-const brockRun = async (rootDir, range) => {
-  if (!range.from) return { applied: [], todos: [] };
+const brockRun = async (rootDir, range, id) => {
+  if (!range.from && !id) return { applied: [], todos: [] };
   const config = await loadBrockConfig(rootDir);
   const { modules } = resolveModules(rootDir, config.modules ?? []);
-  return runMigrations(rootDir, selectMigrations(collectMigrations(modules), range));
+  const all = collectMigrations(modules);
+  return runMigrations(rootDir, id ? await selectById(all, id) : selectMigrations(all, range));
 };
 
 const withoutTodos = (entry) => Object.fromEntries(Object.entries(entry).filter(([key]) => key !== 'todos'));
@@ -93,18 +99,22 @@ const writeReport = (report, run) => {
 };
 
 /**
- * @param {{ rootDir: string, from?: string, to?: string, tesseraFrom?: string, tesseraFromCopy?: string, aliases?: string[], map?: string, report?: string }} ctx
+ * @param {{ rootDir: string, from?: string, to?: string, run?: string, tesseraFrom?: string, tesseraFromCopy?: string, aliases?: string[], map?: string, report?: string }} ctx
  * @returns {Promise<number>} exit code; Brock migrations, then the Tessera renames
  */
 const runMigrate = async (ctx) => {
-  const { rootDir, from, to, report } = ctx;
+  const { rootDir, from, to, report, run: id } = ctx;
   const refused = refusal(ctx);
   if (refused) {
     console.error(refused);
     return 1;
   }
   const range = { from: from ?? null, to: to ?? null };
-  const brock = await brockRun(rootDir, range);
+  const brock = await brockRun(rootDir, range, id);
+  if (id && brock.applied.length === 0) {
+    console.error(`brock migrate: no migration has the id ${id}.`);
+    return 1;
+  }
   const tessera = tesseraStep(ctx);
   if (tessera.refused) {
     console.error(`brock migrate: ${tessera.refused}`);

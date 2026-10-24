@@ -8,6 +8,7 @@ const SCREEN_FILE_GLOBS = [
   '**/src/screens/**/*.{page,tab,sub,live,card,custom,layer}.dev.tsx', '**/src/screens/**/*.{settings,page}.dev.ts',
 ];
 const SCREEN_FILE = '(^|\\/)src\\/screens\\/.+\\.(?:(?:hero|backdrop|page|tab|sub|live|card|custom|layer|base)\\.tsx|(?:settings|page)\\.ts|(?:page|tab|sub|live|card|custom|layer)\\.dev\\.tsx|(?:settings|page)\\.dev\\.ts)$';
+const LIVE_FILE_GLOBS = ['**/src/screens/**/*.live.tsx', '**/src/screens/**/*.live.dev.tsx'];
 const WIDGET_FILE_GLOBS = ['**/src/widgets/**/*.widget.tsx', '**/src/widgets/**/*.overlay.tsx', '**/src/widgets/*.kit.ts', '**/src/widgets/layout.ts'];
 const WIDGET_FILE = '(^|\\/)src\\/widgets\\/(?:.+\\/)?[a-z][a-z0-9-]*\\.(?:widget|overlay)\\.tsx$';
 const TITLE_BAR_ACTION_FILE = '(^|\\/)src\\/title-bar\\/[a-z][a-z0-9-]*\\.action\\.ts$';
@@ -29,6 +30,7 @@ export default defineExtension({
   eslint: {
     plugins: { brock: { rules: { 'data-only': dataOnly, 'verbatim-source': verbatimSource } } },
     rules: { 'brock/data-only': 'error', 'brock/verbatim-source': 'error' },
+    configs: [{ name: 'brock/live-hook', files: LIVE_FILE_GLOBS, rules: { 'local/hook-file-named-after-hook': 'off' } }],
     options: {
       rawControls: RAW_CONTROLS,
       defaultExportGlobs: BROCK_DEFAULT_EXPORTS,

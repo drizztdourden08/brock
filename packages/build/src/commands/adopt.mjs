@@ -2,15 +2,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { followBrockPin, keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
+import { followBrockPin, installLauncher, keepCrossDriveLinks, launcherName, linkSpec } from '@drizztdourden08/brock-thread';
 import { scopeOf } from '@drizztdourden08/standards/structure';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
 import { ensurePnpmPackageManager } from '../release/pnpm-package-manager.mjs';
 import { releaseAppDir } from '../release/release-app-dir.mjs';
 import { releaseWorkflow } from '../release/release-workflow.mjs';
 import { RELEASE_WORKFLOW_FILE } from '../release/workflows.constants.mjs';
-import { installLauncher } from '../launcher/install-launcher.mjs';
-import { launcherName } from '../launcher/launcher-name.mjs';
 import { designPackageOf } from '../tessera/design-package-of.mjs';
 import { tesseraConfigFor } from '../tessera/tessera-config-for.mjs';
 import { TESSERA_CONFIG_FILE } from '../tessera/tessera.constants.mjs';

@@ -15,12 +15,16 @@
   "engines": {
     "node": ">=24"
   },
+  "bin": {
+    "brock-thread": "./bin/brock-thread.mjs"
+  },
   "exports": {
     ".": "./src/index.mjs",
-    "./cli": "./src/cli/run-thread.mjs",
+    "./cli": "./src/cli/run-thread-cli.mjs",
     "./ports": "./src/ports/index.mjs"
   },
   "files": [
+    "bin",
     "src",
     "README.md",
     "CHANGELOG.md"

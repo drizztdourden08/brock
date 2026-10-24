@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-build
 
+## 0.87.1
+
+### Patch Changes
+
+- 25cb813: `BrockServerOptions` types `optionalAddons`, so a brock.config.ts that sets `server.optionalAddons` typechecks. The build already read it in 0.87.0.
+- b079114: Fix the duplicate copy of standards in a repo that is ahead of Brock. These packages asked for standards `^0.11`, so a repo on standards `^0.12` got two copies and `standards sync` failed with "Cannot redefine plugin". The range is now `>=0.11.0 <1`, so the one copy a repo installs satisfies every Brock package.
+- Updated dependencies [b079114]
+  - @drizztdourden08/brock-lint-config@0.87.1
+  - @drizztdourden08/brock-thread@0.87.1
+  - @drizztdourden08/brock-core@0.87.1
+
 ## 0.87.0
 
 ### Minor Changes

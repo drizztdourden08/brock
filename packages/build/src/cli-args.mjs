@@ -13,6 +13,7 @@ const OPTIONS = {
   'render-installer': { type: 'boolean', default: false },
   from: { type: 'string' },
   to: { type: 'string' },
+  run: { type: 'string' },
   'tessera-from': { type: 'string' },
   'tessera-from-copy': { type: 'string' },
   alias: { type: 'string', multiple: true },

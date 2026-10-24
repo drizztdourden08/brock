@@ -18,7 +18,7 @@ const secretsMain: MainModule = {
 export default secretsMain;
 export { secretsMain, getSecrets };
 export { createSecretStore } from './secret-store';
-export type { SecretStore } from './secret-store.type';
+export type { SecretStore } from '../secret-store.type';
 export { createDeviceSignIn } from './device-sign-in';
 export { DEFAULT_POLL_MS, DEFAULT_TTL_MS } from './device-sign-in.constants';
 export type { DeviceSignIn, CodeListener } from './device-sign-in.type';

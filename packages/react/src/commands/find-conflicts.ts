@@ -3,7 +3,9 @@ import { chordsOf } from './chords-of';
 import type { CommandConflict, CommandDef, CommandState } from './command.type';
 import { listCommands } from './list-commands';
 
-const overlaps = (a: CommandDef, b: CommandDef): boolean => a.scope === undefined || b.scope === undefined || a.scope === b.scope;
+const shares = (a: string | undefined, b: string | undefined): boolean => a === undefined || b === undefined || a === b;
+
+const overlaps = (a: CommandDef, b: CommandDef): boolean => shares(a.scope, b.scope) && shares(a.zone, b.zone);
 
 const findConflicts = (state: Omit<CommandState, 'persist'>): CommandConflict[] => {
   const byChord = new Map<string, CommandDef[]>();

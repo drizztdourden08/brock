@@ -12,6 +12,8 @@ import { sharedSteps, sharedSystemSteps } from './shared-workflow-steps.mjs';
 import { managedWorkflows, stepSources } from './workflow-modes.mjs';
 import { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, WORKFLOWS_DIR } from './workflows.constants.mjs';
 
+const targetsOf = (config) => config.targets ?? DEFAULT_TARGETS;
+
 const slashed = (path) => path.replace(/\\/g, '/');
 
 /**
@@ -36,7 +38,7 @@ const trackedIgnore = (repoDir) => {
  * @param {import('./release-layout.mjs').ReleaseLayout} layout
  */
 const composeInputOf = (config, layout) => ({
-  targets: config.targets ?? DEFAULT_TARGETS,
+  targets: targetsOf(config),
   appDir: layout.appDir,
   prefix: artifactPrefixOf(config.product),
   app: layout.app,
@@ -57,7 +59,7 @@ const writesSharedCi = (layout) => layout.app !== null && layout.apps[0] === lay
 const sharedCiOf = ({ layout, config, modules }, inputs) => {
   const managed = managedWorkflows(inputs.sharedWorkflows, 'brock.workspace.mjs').ci;
   if (!managed || !writesSharedCi(layout)) return null;
-  const own = { name: layout.app.name, appDir: layout.appDir, systemSteps: modules.flatMap((m) => m.manifest.ci ?? []), steps: collectWorkflowSteps(stepSources(config, modules, [])) };
+  const own = { name: layout.app.name, appDir: layout.appDir, systemSteps: modules.flatMap((m) => m.manifest.ci ?? []), steps: collectWorkflowSteps(stepSources(config, modules, [], targetsOf(config))) };
   const apps = inputs.workspaceApps ?? [own];
   const steps = sharedSteps({ plugins: collectWorkflowSteps(inputs.pluginSteps ?? []), apps });
   return workspaceCi(sharedSystemSteps(apps), defaultBranchOf(layout.repoDir), steps);
@@ -75,7 +77,7 @@ const renderWorkflows = (rootDir, config, modules, inputs = {}) => {
   if (!layout) return [];
   const managed = managedWorkflows(config.workflows);
   const systemSteps = modules.flatMap((m) => m.manifest.ci ?? []);
-  const steps = collectWorkflowSteps(stepSources(config, modules, inputs.pluginSteps ?? []));
+  const steps = collectWorkflowSteps(stepSources(config, modules, inputs.pluginSteps ?? [], targetsOf(config)));
   const branch = defaultBranchOf(layout.repoDir);
   const { ci, release } = composeWorkflows({ ...composeInputOf(config, layout), systemSteps, steps, branch });
   const at = (file) => slashed(relative(rootDir, join(layout.repoDir, file)));

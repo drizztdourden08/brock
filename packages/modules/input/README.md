@@ -96,11 +96,14 @@ The bundled database is `resources/gamecontrollerdb.txt`, taken from SDL_GameCon
 
 ## The mapping directory
 
-`mapping.list()` returns every gamepad mapping SDL knows: the built-in table, the bundled database and the lines the user added. Each entry is `{ guid, name, vid, pid, platform?, family? }`. An app can show them as a searchable table and join them with `list()` on `vid:pid`.
+`mapping.list()` returns every gamepad mapping SDL knows: the built-in table, the bundled database and the lines the user added. Each entry is `{ guid, name, vid, pid, platform?, family?, source, mapping, inputCount }`. An app can show them as a searchable table and join them with `list()` on `vid:pid`.
 
 - `vid` and `pid` come from the SDL GUID. The GUID is 16 bytes in hex. Bytes 0 to 1 are the bus, bytes 2 to 3 are a CRC of the name, bytes 4 to 5 the vendor, bytes 8 to 9 the product, bytes 12 to 13 the version. Each word is little endian. The CRC is skipped. A GUID that carries the product name in place of ids, and the `xinput` pseudo GUID, give `0` and `0`.
 - `platform` is the value of the mapping's `platform:` field, such as `Windows`, `Linux` or `Mac OS X`. It is left off when the line has none.
 - `family` is `xbox`, `playstation` or `nintendo`. It comes from the vendor (Microsoft, Sony, Nintendo) and, when the vendor is unknown, from the name. It is left off for a generic pad.
+- `source` says where the mapping came from: `builtin` for SDL's own table, `bundled` for a line in the bundled database, `user` for a line in the user's file or added with `mapping.add`. The user file wins over the bundled one, and the bundled one over the built-in table. Main reads both files on load and matches by GUID, ignoring lines for another platform.
+- `mapping` is the SDL GameControllerDB line as SDL reports it.
+- `inputCount` is the number of bound inputs the line declares. The `platform:`, `crc:`, `hint:`, `sdk>=:`, `sdk<=:`, `type:` and `face:` fields are not inputs.
 - SDL keeps one mapping per GUID, so there is no cross platform duplicate to merge. If the same GUID and platform ever repeats, the last line wins. The same GUID on two platforms stays as two entries.
 - Main parses the list once and caches it. Adding a mapping with `mapping.add` clears the cache. An empty answer is never cached, since SDL may not be up yet.
 - The call needs addon 1.3.0. With an older addon, with controllers off, and on Android, it returns `[]` and never throws.

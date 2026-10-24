@@ -18,6 +18,7 @@ interface CommandDef {
   group?: string;
   chord?: ChordInput;
   scope?: string;
+  zone?: string;
   whileTyping?: boolean;
   when?: () => boolean;
   run: () => void;
@@ -58,6 +59,7 @@ interface CommandState {
 interface CommandLookup {
   route: string | null;
   typing: boolean;
+  zones: readonly string[];
 }
 
 type ChordLookup = (id: string) => readonly string[] | undefined;

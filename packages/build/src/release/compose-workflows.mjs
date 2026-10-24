@@ -2,6 +2,7 @@
 import { resolvePlatforms } from '../platforms/resolve-platforms.mjs';
 import { noWorkflowSteps } from './collect-workflow-steps.mjs';
 import { fillTemplate } from './fill-template.mjs';
+import { jobPermissionsBlock, mergePermissions, withJobPermissions } from './lift-permissions.mjs';
 import { stepsAfter, stepsForJob } from './render-workflow-step.mjs';
 import { REVIEW_RUNNER } from './review-job.constants.mjs';
 import { reviewJobValues } from './review-job-values.mjs';
@@ -36,35 +37,49 @@ const rootSteps = () => fillTemplate(RELEASE_DIR, 'ci-root-steps.yml.tmpl', {}).
  * @param {'ci' | 'release'} workflow
  * @returns {JobContext} the setup and the step points of one workflow's jobs
  */
-const jobContext = ({ appDir, prefix, systemSteps, steps }, workflow) => ({
-  appDir,
-  prefix,
-  setup: (os, opts = {}) => setupSteps({
-    os, release: opts.release, history: opts.history, systemSteps,
-    appSteps: stepsForJob(steps[workflow].beforeInstall, { os, platform: opts.platform, job: opts.job }),
-  }),
-  stepsAt: (point, os, platform = null, job = null) => stepsAfter(stepsForJob(steps[workflow][point] ?? [], { os, platform, job })),
-});
+const jobContext = ({ appDir, prefix, systemSteps, steps }, workflow) => {
+  const lifted = new Map();
+  const runHere = (list, where) => {
+    const chosen = stepsForJob(list, where);
+    if (where.job) lifted.set(where.job, mergePermissions(lifted.get(where.job) ?? {}, ...chosen.map((step) => step.permissions)));
+    return chosen;
+  };
+  return {
+    appDir,
+    prefix,
+    liftedPermissions: (job) => lifted.get(job),
+    setup: (os, opts = {}) => setupSteps({
+      os, release: opts.release, history: opts.history, systemSteps,
+      appSteps: runHere(steps[workflow].beforeInstall, { os, platform: opts.platform, job: opts.job }),
+    }),
+    stepsAt: (point, os, platform = null, job = null) => stepsAfter(runHere(steps[workflow][point] ?? [], { os, platform, job })),
+  };
+};
 
 /**
  * @param {Job[]} jobs
  * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext }} where
  */
-const releaseText = (jobs, { appDir, app, branch, ctx }) => fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
-  TITLE: app ? ` ${app.name}` : '',
-  GROUP: app ? `-${app.name}` : '',
-  APP_FLAG: app ? ` --app ${app.name}` : '',
-  TAG_PREFIX: app?.tagPrefix ?? 'v',
-  NOTES_DIR: app?.notesDir ?? 'release-notes',
-  APP_DIR: appDir,
-  BRANCH: branch,
-  PREPARE_STEPS: ctx.stepsAt('beforeInstall', 'linux', null, 'prepare'),
-  PREPARE_AFTER_INSTALL: ctx.stepsAt('prepare', 'linux', null, 'prepare'),
-  SET_VERSION,
-  JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
-  NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
-  DOWNLOADS: jobs.flatMap((job) => job.downloads ?? []).map(downloadLine).join('\n') || '            echo "No platform builds a download."',
-});
+const releaseText = (jobs, { appDir, app, branch, ctx }) => {
+  const prepareSteps = ctx.stepsAt('beforeInstall', 'linux', null, 'prepare');
+  const prepareAfterInstall = ctx.stepsAt('prepare', 'linux', null, 'prepare');
+  return fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
+    TITLE: app ? ` ${app.name}` : '',
+    GROUP: app ? `-${app.name}` : '',
+    APP_FLAG: app ? ` --app ${app.name}` : '',
+    TAG_PREFIX: app?.tagPrefix ?? 'v',
+    NOTES_DIR: app?.notesDir ?? 'release-notes',
+    APP_DIR: appDir,
+    BRANCH: branch,
+    PREPARE_PERMISSIONS: jobPermissionsBlock(ctx.liftedPermissions('prepare')),
+    PREPARE_STEPS: prepareSteps,
+    PREPARE_AFTER_INSTALL: prepareAfterInstall,
+    SET_VERSION,
+    JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
+    NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
+    DOWNLOADS: jobs.flatMap((job) => job.downloads ?? []).map(downloadLine).join('\n') || '            echo "No platform builds a download."',
+  });
+};
 
 /**
  * @param {JobContext} ctx
@@ -109,7 +124,8 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
   const ciCtx = jobContext({ appDir, prefix, systemSteps, steps }, 'ci');
   const releaseCtx = jobContext({ appDir, prefix, systemSteps, steps }, 'release');
   const ciJobs = platforms.flatMap((platform) => (platform.ciJob ? [platform.ciJob(ciCtx)] : []));
-  const releaseJobs = platforms.flatMap((platform) => (platform.releaseJob ? [platform.releaseJob(releaseCtx)] : []));
+  const releaseJobs = platforms.flatMap((platform) => (platform.releaseJob ? [platform.releaseJob(releaseCtx)] : []))
+    .map((job) => ({ ...job, text: withJobPermissions(job.text, releaseCtx.liftedPermissions(job.id)) }));
   return {
     ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx }).trimEnd()}\n`,
     release: `${releaseText(releaseJobs, { appDir, app, branch, ctx: releaseCtx }).trimEnd()}\n`,

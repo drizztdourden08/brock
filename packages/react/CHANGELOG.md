@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.89.0
+
+### Minor Changes
+
+- af60e66: `brock-react` now requires Tessera `^0.57.0`. The release adds 48 pixel icons, Toolbar items that take any node as `icon`, and a public `useHoverOpen`. It has no MIGRATION entry, and Brock needed no code change for it.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.89.0
+
 ## 0.88.1
 
 ### Patch Changes

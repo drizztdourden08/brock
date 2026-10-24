@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-build
 
+## 0.90.0
+
+### Minor Changes
+
+- a45f9fd: File type icons come from the brand, and a settings page can read app values. `brock icons` copies `brand/<brand>/filetypes/<type>/` for each file association into `build/filetypes` (an `.ico`, an `.icns` and the Linux sizes), the builder config points each association that sets no `icon` at it, and `brock sync` ignores the folder. A settings page (`meta.source` of a `.settings.ts` file, or `source` on a tab) or a section can name a `source` of `{ get(key), set(key, value), subscribe?(listener) }`; its rows read and write through it, and the hub search and the palette still find them. Profile settings stay the default.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.90.0
+- @drizztdourden08/brock-lint-config@0.90.0
+- @drizztdourden08/brock-thread@0.90.0
+
 ## 0.89.1
 
 ### Patch Changes

@@ -27,6 +27,8 @@ interface BrockServerOptions {
   image?: string;
   /** The CPU architectures `brock server package` builds when --arch is not given. Default ['x64']; arm64 adds QEMU time to the image build. */
   arch?: BrockServerArch[];
+  /** Packages whose guarded native addon load (.node, bindings, node-gyp-build, prebuild-install) becomes a stub that throws, so their own fallback runs and no binary ships. */
+  optionalAddons?: string[];
 }
 
 interface BrockReviewOptions {

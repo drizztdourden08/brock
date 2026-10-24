@@ -20,13 +20,14 @@ const toBarAction = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction =
   const look = { tone: spec.tone, effect: spec.effect };
   if (spec.kind === 'menu') return { id, label, icon, bar: 'dropdown', ...look, groups: menuGroups(id, spec) };
   if (spec.kind === 'status') {
-    return { id, label, icon, bar: 'status', status: spec.status ?? undefined, ...look, pulse: spec.pulse, onSelect: spec.onSelect ?? noop };
+    return {
+      id, label, icon, bar: 'status', status: spec.status ?? undefined, ...look, pulse: spec.pulse, disabled: spec.disabled, disabledReason: spec.disabledReason, onSelect: spec.onSelect ?? noop,
+    };
   }
   if (spec.command !== undefined) actionCommands.link(id, spec.command);
-  const button: WindowTitleBarAction & { disabled?: boolean } = {
-    id, label, icon, bar: 'button', ...look, shortcut: spec.shortcut, disabled: spec.disabled, onSelect: spec.onSelect ?? (() => selectButton(spec)),
+  return {
+    id, label, icon, bar: 'button', ...look, shortcut: spec.shortcut, disabled: spec.disabled, disabledReason: spec.disabledReason, onSelect: spec.onSelect ?? (() => selectButton(spec)),
   };
-  return button;
 };
 
 export { toBarAction };

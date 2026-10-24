@@ -55,7 +55,7 @@ type SettingDescription = SettingsDescription;
 interface SettingItemFields {
   key: string;
   label: string;
-  hint: string;
+  hint?: string;
   keywords?: string;
   link?: string;
   control?: SettingControl;

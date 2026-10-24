@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.85.0
+
+### Minor Changes
+
+- 2e23c94: `brock-react` now requires Tessera `^0.55.0`. The release adds ContextMenu, AnchorPicker, VirtualList, `useMarqueeSelect` and SegmentedControl icons that take any node. It has no MIGRATION entry, and Brock needed no code change for it.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.85.0
+
 ## 0.84.0
 
 ### Minor Changes

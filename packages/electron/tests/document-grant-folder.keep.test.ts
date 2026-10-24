@@ -34,7 +34,7 @@ const start = (home: string[] = []): void => {
     profiles: PROFILES,
     log: () => undefined,
     dialogs: { confirm },
-    flags: { isAutomationLaunch: () => automation } as MainContext['flags'],
+    flags: { isAutomationLaunch: () => automation, hasFlag: () => false } as unknown as MainContext['flags'],
     product: { name: 'Bxel' } as MainContext['product'],
   });
 };

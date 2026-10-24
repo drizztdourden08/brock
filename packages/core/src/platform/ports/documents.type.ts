@@ -7,6 +7,7 @@ interface DocumentFilter {
 interface DocumentFolderAsk {
   ask: true;
   levels?: number;
+  showOnAutomation?: boolean;
 }
 
 type DocumentGrantFolder = 'ask' | DocumentFolderAsk;

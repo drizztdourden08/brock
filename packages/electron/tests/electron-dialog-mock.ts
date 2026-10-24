@@ -2,8 +2,8 @@
 import { vi } from 'vitest';
 
 const electronDialogMock = {
-  dialog: { showOpenDialog: vi.fn(), showSaveDialog: vi.fn() },
-  app: { addRecentDocument: vi.fn(), clearRecentDocuments: vi.fn() },
+  dialog: { showOpenDialog: vi.fn(), showSaveDialog: vi.fn(), showMessageBox: vi.fn() },
+  app: { addRecentDocument: vi.fn(), clearRecentDocuments: vi.fn(), isPackaged: true },
 };
 
 export { electronDialogMock };

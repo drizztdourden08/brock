@@ -2,7 +2,7 @@
 import type { MainContext } from '../types/main-context.type';
 import type { DocumentTracking } from './document-tracking.type';
 
-type FolderGrantContext = Pick<MainContext, 'documents' | 'dialogs' | 'flags' | 'product'>;
+type FolderGrantContext = Pick<MainContext, 'documents' | 'dialogs' | 'flags' | 'product' | 'log'>;
 
 interface FolderGrantRequest {
   ctx: FolderGrantContext;

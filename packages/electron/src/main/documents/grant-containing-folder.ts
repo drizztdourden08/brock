@@ -1,7 +1,9 @@
 /* @layer electron-main @kind logic */
 import { folderCandidates } from './folder-candidates';
 import { folderLevels } from './folder-levels';
+import { folderTestAnswer } from './folder-test-answer';
 import { FOLDER_PROMPT_ALLOW, FOLDER_PROMPT_DENY, FOLDER_PROMPT_TITLE } from './grant-containing-folder.constants';
+import { optionFlag } from './option-flag';
 import type { FolderGrantContext, FolderGrantRequest, FolderOutcome } from './grant-containing-folder.type';
 
 const declined = (reason: string): FolderOutcome => ({ folderGranted: false, reason });
@@ -21,16 +23,22 @@ const widestAllowed = (ctx: FolderGrantContext, file: string, levels: number): {
 const grantContainingFolder = async ({ ctx, tracking, profileId }: FolderGrantRequest, file: string, option: unknown): Promise<FolderOutcome> => {
   const levels = folderLevels(option);
   if (levels === null) return declined('The grantFolder option is not valid');
-  if (ctx.flags.isAutomationLaunch()) return declined('The folder is not asked about in an automation launch');
+  const answer = folderTestAnswer(ctx);
+  const optedIn = optionFlag(option, 'showOnAutomation');
+  if (answer === null && !optedIn && ctx.flags.isAutomationLaunch()) return declined('The folder is not asked about in an automation launch');
   try {
     const chosen = widestAllowed(ctx, file, levels);
     if ('reason' in chosen) return declined(chosen.reason);
-    const allowed = await ctx.dialogs.confirm({
-      title: FOLDER_PROMPT_TITLE,
-      message: `Allow ${ctx.product.name} to read and write the folder ${chosen.folder}?`,
-      confirmLabel: FOLDER_PROMPT_ALLOW,
-      cancelLabel: FOLDER_PROMPT_DENY,
-    });
+    const allowed =
+      answer === null
+        ? await ctx.dialogs.confirm({
+            title: FOLDER_PROMPT_TITLE,
+            message: `Allow ${ctx.product.name} to read and write the folder ${chosen.folder}?`,
+            confirmLabel: FOLDER_PROMPT_ALLOW,
+            cancelLabel: FOLDER_PROMPT_DENY,
+            showOnAutomation: optedIn,
+          })
+        : answer === 'grant';
     if (!allowed) return declined('The folder was not allowed');
     const real = ctx.documents.allowFolder(chosen.folder);
     await tracking.picked(profileId, real);

@@ -25,7 +25,7 @@ describe('yamlScalar', () => {
     expect(yamlScalar('a #b')).toBe("'a #b'");
     expect(yamlScalar(' 1')).toBe("' 1'");
     expect(yamlScalar('catalog:')).toBe("'catalog:'");
-    expect(yamlScalar("it's")).toBe("'it''s'");
+    expect(yamlScalar("'it's")).toBe("'''it''s'");
   });
 
   it('quotes a value YAML would read as another type', () => {

@@ -1,6 +1,8 @@
 /* @layer core @kind types */
 import type { PadFamily } from '../pad/controller-slot.type';
 
+type MappingSource = 'builtin' | 'bundled' | 'user';
+
 interface MappingEntry {
   guid: string;
   name: string;
@@ -8,6 +10,9 @@ interface MappingEntry {
   pid: number;
   platform?: string;
   family?: PadFamily;
+  source: MappingSource;
+  mapping: string;
+  inputCount: number;
 }
 
 interface GuidIds {
@@ -15,4 +20,4 @@ interface GuidIds {
   pid: number;
 }
 
-export type { MappingEntry, GuidIds };
+export type { MappingEntry, MappingSource, GuidIds };

@@ -50,6 +50,7 @@ describe('parsing a mapping string', () => {
   it('parses an Xbox pad with its platform and family', () => {
     expect(parseMapping(XBOX)).toEqual({
       guid: '030000005e040000130b000001050000', name: 'Xbox Series Controller', vid: 0x045e, pid: 0x0b13, platform: 'Windows', family: 'xbox',
+      source: 'builtin', mapping: XBOX, inputCount: 4,
     });
   });
 

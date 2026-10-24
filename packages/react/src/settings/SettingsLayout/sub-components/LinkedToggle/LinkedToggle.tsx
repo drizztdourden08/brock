@@ -8,7 +8,7 @@ const LinkedToggle = (props: LinkedToggleProps) => {
     <Toggle
       label={item.label}
       description={item.description}
-      hint={{ label: '', description: item.hint }}
+      hint={item.hint === undefined || item.hint === '' ? undefined : { label: '', description: item.hint }}
       link={item.link}
       checked={checked}
       disabled={disabled}

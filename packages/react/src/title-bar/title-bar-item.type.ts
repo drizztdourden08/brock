@@ -15,6 +15,7 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   command?: string;
   shortcut?: string;
   disabled?: boolean;
+  disabledReason?: string;
 }
 
 type TitleBarButtonLook = Omit<TitleBarButtonSpec, 'onSelect'>;
@@ -35,6 +36,8 @@ interface TitleBarStatusSpec extends TitleBarItemBase {
   status: string | null;
   pulse?: boolean;
   onSelect?: () => void;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 interface TitleBarVolumeSpec {

@@ -29,6 +29,17 @@ describe('a title bar button with a disabled state', () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
+  it('hands disabledReason to Tessera on a button and keeps it through the guard', () => {
+    const action = toBarAction('undo-reason', { kind: 'button', label: 'Undo', icon: 'send', onSelect: vi.fn(), disabled: true, disabledReason: 'Nothing to undo' });
+    expect(action).toMatchObject({ disabled: true, disabledReason: 'Nothing to undo' });
+    expect(withActionState(action, () => true)).toMatchObject({ disabled: true, disabledReason: 'Nothing to undo' });
+  });
+
+  it('hands disabled and disabledReason to Tessera on a status', () => {
+    const action = toBarAction('sync-state', { kind: 'status', label: 'Sync', icon: 'server', status: 'Offline', disabled: true, disabledReason: 'No connection' });
+    expect(action).toMatchObject({ bar: 'status', disabled: true, disabledReason: 'No connection' });
+  });
+
   it('leaves an enabled button alone', () => {
     const onSelect = vi.fn();
     const action = toBarAction('redo', { kind: 'button', label: 'Redo', icon: 'send', onSelect });

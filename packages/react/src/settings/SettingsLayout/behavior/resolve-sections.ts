@@ -11,7 +11,7 @@ const choiceWords = (item: SettingItem): string[] =>
   (item.control && 'options' in item.control ? item.control.options.flatMap((option) => [option.label, option.hint ?? '']) : []);
 
 const matches = (item: SettingItem, query: string): boolean =>
-  [item.label, item.description ?? '', item.hint, item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));
+  [item.label, item.description ?? '', item.hint ?? '', item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));
 
 const shownWith = (settings: object | undefined) => (item: SettingItem): boolean =>
   settings === undefined || item.visible === undefined || item.visible(settings as SettingValues);

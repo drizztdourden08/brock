@@ -34,6 +34,13 @@ describe('settingRow', () => {
     expect(onChange).toHaveBeenCalledWith({ audio: false });
   });
 
+  it('passes a missing hint through as undefined', () => {
+    const bare: SettingItem = { key: 'audio', label: 'Audio', description: 'Play sound.' };
+    const row = settingRow(bare, context());
+    expect(row).toMatchObject({ id: 'audio', title: 'Audio', input: { kind: 'toggle' } });
+    expect(row?.hint).toBeUndefined();
+  });
+
   it('keeps noDescription and draws a choice as a segmented input with its hints', () => {
     const row = settingRow(MODE, context());
     expect(row).toMatchObject({ noDescription: true, hint: 'How the window sits on the screen.', input: { kind: 'segmented', options: MODE.control?.kind === 'choice' ? MODE.control.options : [] } });
@@ -110,5 +117,11 @@ describe('resolveSections', () => {
   it('matches a row by its hint and by the hint of an option', () => {
     expect(resolveSections(sections, 'mutes')[0]?.groups[0]?.items.map((item) => item.key)).toEqual(['audio']);
     expect(resolveSections(sections, 'drag')[0]?.groups[0]?.items.map((item) => item.key)).toEqual(['mode']);
+  });
+
+  it('searches a row that has no hint', () => {
+    const bare: Section[] = [{ id: 'window', title: 'Window', items: [{ key: 'audio', label: 'Audio', description: 'Play sound.' }] }];
+    expect(resolveSections(bare, 'sound')[0]?.groups[0]?.items.map((item) => item.key)).toEqual(['audio']);
+    expect(resolveSections(bare, 'mutes')).toEqual([]);
   });
 });

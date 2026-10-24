@@ -114,8 +114,8 @@ importers:
         specifier: workspace:*
         version: link:packages/lint-config
       '@drizztdourden08/standards':
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+        specifier: ^0.12.0
+        version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
         version: 0.55.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
@@ -207,8 +207,8 @@ importers:
         specifier: workspace:*
         version: link:../thread
       '@drizztdourden08/standards':
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+        specifier: '>=0.11.0 <1'
+        version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
       '@resvg/resvg-js':
         specifier: 'catalog:'
         version: 2.6.2
@@ -258,8 +258,8 @@ importers:
         specifier: workspace:*
         version: link:../build
       '@drizztdourden08/standards':
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+        specifier: '>=0.11.0 <1'
+        version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
 
   packages/electron:
     dependencies:
@@ -277,8 +277,8 @@ importers:
   packages/lint-config:
     dependencies:
       '@drizztdourden08/standards':
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+        specifier: '>=0.11.0 <1'
+        version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
       eslint:
         specifier: ^10.0.0
         version: 10.11.0(jiti@2.7.0)
@@ -504,8 +504,8 @@ importers:
   packages/thread:
     dependencies:
       '@drizztdourden08/standards':
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+        specifier: '>=0.11.0 <1'
+        version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
 
   templates/app:
     dependencies:
@@ -799,19 +799,14 @@ packages:
     peerDependencies:
       postcss-selector-parser: ^7.1.1
 
-  '@drizztdourden08/standards@0.11.0':
-    resolution: {integrity: sha512-iGzEU7WsnQPw4JLPLUrjX7IcYzxFzFxWvfnVwqpBh4DDUkcEaieI9Y8vw9Wl3psla70K8JUex9GCOeHSWEpVgQ==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/standards/0.11.0/9609aabbd852d65ce664966133a4384d398d31ce}
+  '@drizztdourden08/standards@0.12.0':
+    resolution: {integrity: sha512-kt1F8Jmh8ce5fvVWQvMzSrH52vLBZ/1XJ0ZZtbiOfDgrMned1M8QAvGBGnekWPyqFtHcIUw2AR/QaoD8BY4ckA==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/standards/0.12.0/ea1ea3e9c7f5b24335d0218cd6886c8cf636a929}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       eslint: ^10.0.0
       stylelint: ^17.0.0
       typescript: ^6.0.0
-    peerDependenciesMeta:
-      stylelint:
-        optional: true
-      typescript:
-        optional: true
 
   '@drizztdourden08/tessera@0.55.0':
     resolution: {integrity: sha512-KuPkBoQeygTJRuwvDpFPIHuTH/rsZ4ywF2G0UfmTViK5k5lSJqhAuxFDoDIBF6Nr7byIRFOdus4BDe0QvjATqA==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/tessera/0.55.0/b88b340458e0a50260869ca8d2fb0d799b67a437}
@@ -821,6 +816,9 @@ packages:
       react: ^19.0.0
       react-dom: ^19.0.0
       typescript: '>=5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@electron-internal/extract-zip@1.0.5':
     resolution: {integrity: sha512-+bqFCP98pLI0Tt0XQo1TmlXtwjWchISndDOxCkEcIuUgXWpBnLyRI+2DU+mesvnMMX6L1XDqYNA0lXNDHd/yiA==}
@@ -5233,7 +5231,7 @@ snapshots:
     dependencies:
       postcss-selector-parser: 7.1.6
 
-  '@drizztdourden08/standards@0.11.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)':
+  '@drizztdourden08/standards@0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@eslint/js': 10.0.1(eslint@10.11.0(jiti@2.7.0))
       eslint: 10.11.0(jiti@2.7.0)
@@ -5241,11 +5239,10 @@ snapshots:
       jscpd: 5.4.0
       knip: 6.39.0
       markdownlint-cli2: 0.22.1
-      stylelint-config-standard: 40.0.0(stylelint@17.15.0(typescript@6.0.3))
-      typescript-eslint: 8.71.0(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3)
-    optionalDependencies:
       stylelint: 17.15.0(typescript@6.0.3)
+      stylelint-config-standard: 40.0.0(stylelint@17.15.0(typescript@6.0.3))
       typescript: 6.0.3
+      typescript-eslint: 8.71.0(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -5261,6 +5258,7 @@ snapshots:
       react-color: 2.19.3(react@19.3.0)
       react-dom: 19.3.0(react@19.3.0)
       react-markdown: 10.1.0(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
       - '@types/react'

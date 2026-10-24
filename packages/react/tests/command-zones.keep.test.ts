@@ -108,3 +108,40 @@ describe('zones and conflicts', () => {
     expect(commands.conflicts()).toEqual([{ chord: 'Delete', ids: ['b', 'c', 'd'] }]);
   });
 });
+
+describe('an edit key owned by a command', () => {
+  const copies: string[] = [];
+  let unregister = (): void => {};
+
+  beforeEach(() => {
+    copies.length = 0;
+    useCommandStore.setState({ sources: [], overrides: {}, mac: true, persist: null });
+    unregister = commands.register([{ id: 'canvas-copy', label: 'Copy pixels', chord: 'Mod+C', zone: 'canvas', run: () => { copies.push('copy'); } }]);
+  });
+
+  afterEach(() => {
+    unregister();
+    document.body.replaceChildren();
+  });
+
+  const pressCopy = (): KeyboardEvent => {
+    const event = key({ key: 'c', metaKey: true });
+    document.addEventListener('keydown', (each) => dispatchCommand(each, null), { once: true });
+    document.dispatchEvent(event);
+    return event;
+  };
+
+  it('fires once and prevents the native edit, so the Edit menu never sees the key', () => {
+    focusIn('canvas');
+    const event = pressCopy();
+    expect(copies).toEqual(['copy']);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('leaves the key to the native edit outside the zone', () => {
+    focusIn();
+    const event = pressCopy();
+    expect(copies).toEqual([]);
+    expect(event.defaultPrevented).toBe(false);
+  });
+});

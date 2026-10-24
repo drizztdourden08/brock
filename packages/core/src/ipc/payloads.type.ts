@@ -27,8 +27,6 @@ interface SaveFileResultWire {
 
 type QuitDecision = 'quit' | 'stay';
 
-type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll';
-
 type AskOutcome = { ok: true; value: unknown } | { ok: false; message: string };
 
-export type { AskOutcome, EditRole, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire };
+export type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire };

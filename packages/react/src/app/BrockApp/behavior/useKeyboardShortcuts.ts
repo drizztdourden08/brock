@@ -12,7 +12,6 @@ import { touringHolds } from '../../../tours/touring-key';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { handleShellKey } from './handle-shell-key';
-import { useEditAnswer } from './useEditAnswer';
 import { profilelessEscape } from './profileless-escape';
 import { useRouteCommands } from './useRouteCommands';
 import { useShellCommands } from './useShellCommands';
@@ -25,7 +24,6 @@ const useKeyboardShortcuts = (): void => {
   useShellCommands();
   useRouteCommands();
   useKeymapSync();
-  useEditAnswer(base);
 
   useEffect(() => {
     const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>

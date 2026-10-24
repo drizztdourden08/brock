@@ -415,7 +415,7 @@ useCommands([
 
 - A plain key such as `B` does nothing while the user types in a field. A chord with Mod fires anyway. Set `whileTyping` to change that.
 - A command with `zone` fires only while the focus is inside an element marked with `{...commandZone('canvas')}` (from brock-react). Give it to a list and a canvas and the same Delete does two jobs: `{ id: 'list.remove', chord: 'Delete', zone: 'list', run }` and `{ id: 'canvas.clear', chord: 'Delete', zone: 'canvas', run }`. The zone wins over a scoped and a global command with the same chord, and two zones never conflict.
-- An app owns Cmd+C, X, V, A and Z by binding a command to the chord, ideally with a `zone`. The Edit menu asks the app first and runs the native action only when no command is enabled for the focus, so text fields outside the zone keep copy and paste.
+- An app owns Mod+C, X, V, A and Z by binding a command to the chord. The command runs on keydown and prevents the native edit, on every platform. Give it a `zone` so text fields outside the zone keep copy and paste, or set `whileTyping: false`. A click on the Edit menu still runs the native action, so a zone that wants menu copy handles the DOM `copy` event and sets `clipboardData`.
 - Show the chord where the action is. A menu entry takes `command: 'file.save'` (it runs the command and shows its chord), a title bar item takes `command` in `defineTitleBarItem({ kind: 'button', label, icon, command })`, and any other tooltip reads `formatChord(useCommandChords('file.save')[0] ?? '')`. Never write the chord twice.
 - Every command is listed in the Ctrl+/ dialog under its `group`.
 - Users remap chords on the Keyboard page. Add it to the settings bucket with one page file:

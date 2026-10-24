@@ -124,6 +124,7 @@ interface BootstrapOptions {
   profileHooks?: ProfileStoreHooks;
   rendererFlags?: (argv: string[]) => string[];   // extra --startup-* args
   onReady?: (ctx: MainContext) => void | Promise<void>;  // after paths, before the window
+  beforeWindow?: (ctx: MainContext) => 'show' | 'skip' | void | Promise<'show' | 'skip' | void>;  // before the app window is created; 'skip' starts the app with no window (see Background launch and the tray)
   onWindow?: (win: BrowserWindow, ctx: MainContext) => void;
   onWillQuit?: (ctx: MainContext) => void;
   bootTasks?: MainBootTask[];            // .brock/boot.main.ts
@@ -143,7 +144,8 @@ interface MainContext {
   storage: DataDomains;                  // list(), def(id), domain(id): DomainFiles, usage(id)
   job: StartJob;                         // job(id, steps, { title?, cancellable?, visible?, forwardLog?, onDuplicate? }) -> JobHandle
   jobs: JobRegistry;                     // list(), cancel(id), dismiss(id)
-  window: () => BrowserWindow | null;
+  window: { (): BrowserWindow | null; show(): Promise<void> };  // window() is the app window or null; window.show() creates it when there is none, then restores and focuses it
+  tray: TrayControl;                     // set(spec), clear(), onItem(handler), active; off until the app asks
   handle, on, emit;                      // typed against the augmented contracts; take a channel name or a defineChannels entry
   services: AppServices;                 // the app's services (see below)
   log: (message: string, level?: 'info' | 'warn' | 'error') => void;
@@ -233,8 +235,29 @@ product: {
 - Windows: the updater module's Velopack hooks write the keys under `HKCU\Software\Classes` after install and after each update, and remove them before uninstall, before the app's own hooks: each protocol gets `URL Protocol` and `shell\open\command` (`"<exe>" "%1"`), each extension points at its ProgId and lists it under `OpenWithProgids`, and the ProgId carries the name, the `description` as its `InfoTip` when the file type has one, the icon (`resources/file-icons/<ext>.ico`, which the builder config ships from `build/<icon>.ico`, else the exe) and the open command. Uninstall removes the protocol keys, the ProgIds and the `OpenWithProgids` values, never an extension another program claims. A portable copy runs no Velopack hook, so the installer stub, after unpacking one, runs `<exe> --os-integration=register` when the product declares a protocol or a file type (`BROCK_REGISTERS_OS`). `registerOsIntegration` and `unregisterOsIntegration` are exported for an app that writes its own hooks.
 - macOS: the builder config passes `protocols` and `fileAssociations` to electron-builder, which writes `CFBundleURLTypes` and `CFBundleDocumentTypes` into Info.plist.
 - Linux: the same config puts `x-scheme-handler/<scheme>` and each file type's mime type (`application/x-<ext>` when none is given) in the deb's `.desktop` file, and electron-builder installs the mime XML, each type's comment being its `description`, else its `name`; the managed `deb-postinst.sh` then runs `update-mime-database` and `update-desktop-database`. The Velopack AppImage has no installer, so on each packaged launch from an AppImage main writes `~/.local/share/applications/<id>.desktop` and `~/.local/share/mime/packages/<id>.xml` when their text changed, and refreshes both databases.
-- Routing: requests are parsed from argv at launch (a non-flag argument whose scheme is a declared protocol, or whose extension is declared, resolved against the working folder), from a second launch, and on macOS from `open-url` and `open-file`. Each becomes an `OpenRequest`: `{ kind: 'url', url, scheme, source }` or `{ kind: 'file', path, ext, source }`, `source` being `launch` or `running`. An app that declares a protocol or a file type takes the single-instance lock (`singleInstance` of `bootstrapApp` forces it on or off); a second launch quits before crash forensics opens the log and hands its argv to the first, which brings its window forward. A named instance and an automation launch never take the lock.
+- Routing: requests are parsed from argv at launch (a non-flag argument whose scheme is a declared protocol, or whose extension is declared, resolved against the working folder), from a second launch, and on macOS from `open-url` and `open-file`. Each becomes an `OpenRequest`: `{ kind: 'url', url, scheme, source }` or `{ kind: 'file', path, ext, source }`, `source` being `launch` or `running`. An app that declares a protocol or a file type takes the single-instance lock (`singleInstance` of `bootstrapApp` forces it on or off); a second launch quits before crash forensics opens the log and hands its argv to the first, which brings its window forward (or creates it, in a background launch; see Background launch and the tray). A named instance and an automation launch never take the lock.
 - Delivery waits for the reveal. Then each request goes to every main handler (`ctx.onOpen(handler)`, which returns the unsubscribe, and `bootstrapApp({ onOpen(request, ctx) })`) and to the renderer: the first `app:takeOpens` call returns what arrived before it, and later ones come on `app:open`. `BrockApp` drains both into `appOpen`, which holds requests until a handler exists and hands them to every handler that subscribes before the next task, so two screens mounted together both see a launch request; a screen subscribes with `useAppOpen(handler)` or `appOpen.on(handler)`.
+
+### Background launch and the tray
+
+An app can start with no window, for a helper that runs it for another program, and can keep a tray icon so the owner sees it and stops it. Both are off unless the app asks.
+
+Background launch (`packages/electron/src/main/background`):
+
+- A launch with `--background` (`ctx.flags.isBackgroundLaunch()`) skips the splash and the app window. An app can decide the same in `beforeWindow(ctx)`, which runs in the `window-state` boot task, after the `modules` task and `onReady`, so settings and services are ready. It returns `'skip'` to start with no window, `'show'` to create it even on a `--background` launch, or nothing to follow the flag. The hook can also end the launch itself (`app.exit(code)`). When it skips after the splash opened, the splash is destroyed without quitting.
+- Main still runs its whole boot: the modules, the app handlers, the boot tasks and the bridge (`options.bridge` opens after the boot, with or without a window). Only the window is missing. Open requests (deep links, files) wait for the first reveal, as at any launch.
+- `ctx.window.show()` creates the window when there is none, through the same path as the first one (`onWindow` hooks, the splash-free reveal), and restores, shows and focuses it when it exists. It resolves once the window is created, not once it is revealed; a window still loading is left to its own reveal. `ctx.window()` still returns the window or null.
+- Background mode starts when the window is skipped and lasts for the process. `window-all-closed` no longer quits, so closing the last window leaves the app running; quit with the tray, `app.quit()` or the OS. On macOS, `activate` shows the window.
+- The single-instance lock follows its usual rules (`singleInstance`, deep links and file types; never for a named instance or an automation launch). A second launch hands its argv to the first. If the first has no window in background mode, a normal second launch creates and focuses it. A second launch that carries `--background` shows nothing, so two helpers racing leave the owner's screen alone; its open requests still arrive. A background app that wants one copy sets `singleInstance: true`.
+- An automation launch is unchanged: `--background` is not an automation flag and does not combine with one (`isBackgroundLaunch` is false whenever `isAutomationLaunch` is true), `beforeWindow` runs but its `'skip'` is ignored, the splash and the window open as before, `--no-focus` still opens hidden and off screen, and a product tray is not created.
+
+The tray (`packages/electron/src/main/tray`):
+
+- Declare it in the product, `defineProduct({ ..., tray: { tooltip, icon?, menu? } })`, or at run time with `ctx.tray.set({ tooltip, icon?, menu? })` (create or replace in place). `ctx.tray.clear()` removes it and `ctx.tray.active` says whether it exists. The product tray is created at ready, before the boot, and never on an automation launch.
+- `icon` is a path, absolute or relative to the app folder; with none, the app window icon is used (the instance icon for a named instance). A missing icon is logged and the tray still appears.
+- `menu` is a list of items: `{ label, action: 'show' }` (shows the window), `{ label, action: 'quit' }` (`app.quit()`), `{ label, id, enabled? }` (calls the handlers added with `ctx.tray.onItem(handler)`, which returns its unsubscribe) and `{ type: 'separator' }`. With no menu the tray has `Show <name>`, a separator and `Quit`. Ids are unique; the product config is checked when it is defined.
+- A left click on the icon shows the window (creating it in background mode). The menu opens on a right click, where the platform allows it.
+- The tray is destroyed on `will-quit`, before the services are disposed.
 
 ### Content catalogue
 

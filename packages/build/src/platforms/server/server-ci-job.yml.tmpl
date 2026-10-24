@@ -1,0 +1,24 @@
+  server:
+    runs-on: ubuntu-24.04
+    steps:
+__SETUP____BEFORE_BUILD__
+
+      - name: Build the server
+        run: pnpm --dir "$APP_DIR" exec brock server build__AFTER_BUILD__
+
+      - name: Start the server and wait for its health check
+        shell: bash
+        run: |
+          BUNDLE="$GITHUB_WORKSPACE/$APP_DIR/dist/server/main.mjs"
+          DATA="$(mktemp -d)"
+          node "$BUNDLE" --user-data="$DATA" &
+          PID=$!
+          HEALTHY=""
+          for _ in $(seq 1 30); do
+            if node "$BUNDLE" health --user-data="$DATA"; then HEALTHY=1; break; fi
+            kill -0 "$PID" 2>/dev/null || break
+            sleep 1
+          done
+          kill "$PID" 2>/dev/null || true
+          wait "$PID" 2>/dev/null || true
+          test -n "$HEALTHY" || { echo "::error::The server never reported healthy."; exit 1; }

@@ -1,0 +1,38 @@
+  publish-server-image:
+    needs: [prepare, release]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: __DOCKER_ARTIFACT__
+          path: docker__QEMU__
+
+      - uses: __BUILDX__
+
+      - uses: __LOGIN__
+        with:
+          registry: __REGISTRY__
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Name the image tags
+        id: tags
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          SET_LATEST: ${{ inputs.set_latest }}
+        run: |
+          IMAGE="__IMAGE__"
+          TAGS="$IMAGE:$VERSION"
+          if [ "$SET_LATEST" = "true" ]; then TAGS="$TAGS,$IMAGE:latest"; fi
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+
+      - uses: __BUILD__
+        with:
+          context: docker
+          platforms: __PLATFORMS__
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}

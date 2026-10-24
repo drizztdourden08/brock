@@ -16,6 +16,7 @@ const definePlatform = (spec) => {
     scaffold: [],
     ciJob: null,
     releaseJob: null,
+    publishJob: null,
     secrets: [],
     secretsHint: null,
     managed: null,

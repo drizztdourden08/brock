@@ -1,0 +1,25 @@
+  build-server:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    steps:
+__SETUP____BEFORE_PACKAGE__
+
+      - name: Package the server
+        run: pnpm --dir "$APP_DIR" exec brock server package --arch __ARCH__ --deb
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+          cp "$APP_DIR"/release/server/*.tar.gz "$APP_DIR"/release/server/*.deb upload/
+          ls -l upload__AFTER_PACKAGE__
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-server
+          path: upload/*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: __DOCKER_ARTIFACT__
+          path: ${{ env.APP_DIR }}/release/server/docker

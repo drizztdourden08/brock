@@ -5,8 +5,8 @@ const STEP_POINTS = Object.freeze({
 });
 
 const WORKFLOW_JOBS = Object.freeze({
-  ci: Object.freeze(['changes', 'quality', 'review', 'web', 'workspace']),
-  release: Object.freeze(['prepare', 'build-windows', 'build-macos', 'build-linux', 'build-android', 'build-web']),
+  ci: Object.freeze(['changes', 'quality', 'review', 'web', 'server', 'workspace']),
+  release: Object.freeze(['prepare', 'build-windows', 'build-macos', 'build-linux', 'build-android', 'build-web', 'build-server']),
 });
 
 const STEP_KEYS = new Set(['name', 'id', 'run', 'uses', 'with', 'env', 'shell', 'if', 'secrets', 'os', 'platforms', 'jobs', 'permissions']);

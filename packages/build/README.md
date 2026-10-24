@@ -149,6 +149,27 @@ To move the default Node version:
 3. Set `SERVER_NODE_VERSION` and the two hashes in `SERVER_NODE_SHA256` to match. Better still, download the two archives yourself and run `sha256sum` on them, so the pin does not rest on the same file it cross-checks.
 4. Run the server tests, then add a changeset.
 
+## Server workflows
+
+An app with `server` in `targets` gets three jobs from `brock sync`. A desktop-only app gets none of them, and its `ci.yml` and `release.yml` stay byte for byte what they were.
+
+- CI job `server`: `brock server build`, then the bundle starts on a temporary data folder, the job waits up to 30 seconds for `main.mjs health` to exit 0, and stops the server. A server that exits early or never reports healthy fails the run. An app whose only target is `server` has no `review` job, since there is no window to launch.
+- Release job `build-server`, on ubuntu-24.04: `brock server package --arch <server.arch> --deb`. It uploads `<prefix>server-linux-<arch>.tar.gz` and `<prefix>server_<version>_<arch>.deb` as the `release-server` artifact, so the release job attaches them and links them in the release body. It uploads the Docker build context as the `server-docker` artifact, which the release does not attach. `server.arch` is `['x64']` unless the app lists `arm64` too.
+- Image job `publish-server-image`, after the release job (`needs: [prepare, release]`), so no image exists for a release that failed. It is the only job with `packages: write` (and `contents: read`); the workflow keeps `contents: write` and `packages: read`. It builds the `server-docker` context with docker buildx and pushes `<image>:<version>`, plus `<image>:latest` only when the run has `set_latest` on. A draft or pre-release never moves `latest`. QEMU is set up only when `server.arch` has `arm64`. The image is built for `linux/amd64`, plus `linux/arm64` then.
+
+The image is `server.image`, or `ghcr.io/<repo owner>/<product.id>-server` with the owner in lower case. The job logs in to `ghcr.io` with `GITHUB_TOKEN`, so `server.image` must live under `ghcr.io/`; `brock sync` refuses another registry. A new GHCR package starts private. To make it public, open the package on GitHub (the Packages list of the repository), choose Package settings, then Change visibility. GitHub offers that switch on the settings page only.
+
+The Docker actions are pinned to full commit SHAs in `src/platforms/server/server-actions.constants.mjs`, and the generated workflow names the version beside each pin:
+
+| Action | Version | Commit |
+|---|---|---|
+| docker/setup-qemu-action | v4.4.0 | 99012661954931238ded8c8b007157a8430204e1 |
+| docker/setup-buildx-action | v4.4.1 | f87e5991a6d7451dcb8d9637bfbc97413f497069 |
+| docker/login-action | v4.6.0 | dbcb813823bdd20940b903addbd779551569679f |
+| docker/build-push-action | v7.4.0 | c3c9e263c25d99ce0380d002d59b67737d91b0dc |
+
+To move a pin, take a release at least two weeks old, read the commit its tag points at, and change the `sha` and the `version` together. Steps an app adds with `workflows.steps` reach the server jobs through `platforms: ['server']`, or `jobs: 'server'` in CI and `jobs: 'build-server'` in the release.
+
 ## Ports and the dev server
 
 The Vite factory reads `product.ports.base` (or `derivePortBase(product.id)` when unset) and the checkout's port slot, and sets the renderer `server.port` to `base + 10 x slot` with `strictPort` from `product.ports.strict`, true by default. `devServerPort(rootDir, product)` returns that pair. The scheme lives in brock-thread (`/ports`); `portFor`, `portSlotOf`, `derivePortBase` and `PORT_OFFSETS` are re-exported here.
@@ -457,6 +478,7 @@ walk the chosen strategies; neither names a platform.
 | linux | .NET 8 SDK and vpk (on Linux), module libraries | brand icons; `build/linux/deb-postinst.sh` through sync | none | `build-linux`: deb and the vpk AppImage | none |
 | android | JDK 21, `ANDROID_HOME`, `platform-tools`, `platforms;android-36`, `build-tools;36.0.0`, plus the modules' `android.sdkPackages` | no `capacitor.config.ts` or `.js`, Capacitor packages, ignore lines, `cap add android`, `@capacitor/assets`, the module Android sides, Gradle signing, `versionCode` | none | `build-android`: JDK 21, setup-android, `brock mobile build --release` | `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` |
 | web | nothing beyond Node and pnpm | `build:web` and `dev:web` scripts | `web`: `brock web build` | `build-web`: `dist/web` zipped | none |
+| server | `dpkg-deb` (on Linux) | none | `server`: build, start, wait for `health` | `build-server`: tarball and .deb per `server.arch`; `publish-server-image` after the release | none (the image push uses `GITHUB_TOKEN`) |
 | ios | reserved: choosing it says it is not supported yet | | | | |
 
 - `doctor` checks run on the machine and only report: each result is `ok`, `missing` with the install command for this OS, or `skip` when the check belongs to another OS. `brock doctor` exits 1 when anything is missing. A module adds its own through its manifest `doctor` entries (`name`, `os`, `probe`, `install`); the input module checks `pkg-config --exists libusb-1.0` on Linux and macOS.

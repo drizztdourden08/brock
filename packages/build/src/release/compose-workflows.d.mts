@@ -41,6 +41,11 @@ interface ServerJobOptions {
   image: string | null;
 }
 
+interface TestEnv {
+  linuxPackages: string[];
+  userNamespaces: boolean;
+}
+
 interface ComposeInput {
   targets: string[];
   appDir?: string;
@@ -52,6 +57,7 @@ interface ComposeInput {
   branch?: string;
   server?: ServerJobOptions;
   publish?: PublishPlan | null;
+  testEnv?: TestEnv;
 }
 
 interface ComposedWorkflows {
@@ -64,4 +70,4 @@ declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
 declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string, steps?: CollectedSteps) => string;
 
 export { composeWorkflows, workspaceCi };
-export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, PublishPlan, ServerJobOptions, SystemStep };
+export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, PublishPlan, ServerJobOptions, SystemStep, TestEnv };

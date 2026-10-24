@@ -4,6 +4,7 @@ const REVIEW_COMMAND = 'pnpm --dir "$APP_DIR" exec brock launch main none --prod
 const PLAIN_REVIEW_DATA = '.user-data';
 
 const REVIEW_RUNNER = 'ubuntu-24.04';
+const REVIEW_USERNS_STEP_NAME = 'Let Electron start its sandbox';
 const BASELINE_SCREEN = '-screen 0 1920x1080x24';
 const BASELINE_SET = 'tests/baselines/linux';
 const BASELINE_MODE = "${{ inputs.bless && '--review-bless' || '--review-baselines' }}";
@@ -22,5 +23,5 @@ const REVIEW_NOTE = ' The review job launches the built app headless under xvfb 
 const WINDOWLESS_NOTE = ' The server job starts the built server and waits for its health check.';
 
 export {
-  BASELINE_MODE, BASELINE_REVIEW_DATA, BASELINE_SCREEN, BASELINE_SET, BLESS_INPUT, PLAIN_REVIEW_DATA, REVIEW_COMMAND, REVIEW_NOTE, REVIEW_RUNNER, WINDOWLESS_NOTE,
+  BASELINE_MODE, BASELINE_REVIEW_DATA, BASELINE_SCREEN, BASELINE_SET, BLESS_INPUT, PLAIN_REVIEW_DATA, REVIEW_COMMAND, REVIEW_NOTE, REVIEW_RUNNER, REVIEW_USERNS_STEP_NAME, WINDOWLESS_NOTE,
 };

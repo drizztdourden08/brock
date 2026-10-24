@@ -11,6 +11,8 @@ import { stepsAfter, stepsForJob } from './render-workflow-step.mjs';
 import { REVIEW_NOTE, REVIEW_RUNNER, WINDOWLESS_NOTE } from './review-job.constants.mjs';
 import { reviewJobValues } from './review-job-values.mjs';
 import { setupSteps } from './setup-steps.mjs';
+import { testEnvSteps, userNamespaceStep } from './test-env-steps.mjs';
+import { REVIEW_USERNS_STEP_NAME } from './review-job.constants.mjs';
 import { DEFAULT_BRANCH, RELEASE_DIR, SET_VERSION } from './workflows.constants.mjs';
 
 /**
@@ -20,7 +22,10 @@ import { DEFAULT_BRANCH, RELEASE_DIR, SET_VERSION } from './workflows.constants.
  * @typedef {import('./collect-workflow-steps.mjs').CollectedSteps} CollectedSteps
  * @typedef {{ name: string, tagPrefix: string, notesDir: string }} AppOfMany
  * @typedef {import('./publish-packages.mjs').PublishPlan} PublishPlan
+ * @typedef {import('./test-env-steps.mjs').TestEnv} TestEnv
  */
+
+const NO_TEST_ENV = Object.freeze({ linuxPackages: [], userNamespaces: false });
 
 const DEFAULT_SERVER = Object.freeze({ id: 'app', arch: SERVER_DEFAULT_ARCHES, image: null });
 
@@ -110,19 +115,20 @@ const jobSteps = (ctx, key, job) => ({
  * @returns {string} the review job
  */
 const reviewJob = (ctx, { app, review }) => fillTemplate(RELEASE_DIR, 'ci-review-job.yml.tmpl', {
-  ARTIFACT: app ? `-${app.name}` : '', REVIEW_RUNNER, ...review, ...jobSteps(ctx, 'REVIEW', 'review'),
+  ARTIFACT: app ? `-${app.name}` : '', REVIEW_RUNNER, USERNS_STEP: userNamespaceStep(REVIEW_USERNS_STEP_NAME), ...review, ...jobSteps(ctx, 'REVIEW', 'review'),
 }).trimEnd();
 
 /**
  * @param {Job[]} platformJobs
- * @param {{ appDir: string, app: AppOfMany | null, baselines: boolean, branch: string, ctx: JobContext, windowless: boolean }} where
+ * @param {{ appDir: string, app: AppOfMany | null, baselines: boolean, branch: string, ctx: JobContext, windowless: boolean, testEnv: TestEnv }} where
  */
-const ciText = (platformJobs, { appDir, app, baselines, branch, ctx, windowless }) => {
+const ciText = (platformJobs, { appDir, app, baselines, branch, ctx, windowless, testEnv }) => {
   const review = reviewJobValues({ baselines: baselines && !windowless, app });
   const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', {
     ROOT_STEPS: app ? '' : rootSteps(),
     REVIEW_JOB: windowless ? '' : reviewJob(ctx, { app, review }),
     ...jobSteps(ctx, 'QUALITY', 'quality'),
+    TEST_ENV: testEnvSteps(testEnv),
     BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux', null, 'quality'),
   });
   const own = `${appJobs.trimEnd()}\n${platformJobs.map(jobBlock).join('')}`;
@@ -148,10 +154,10 @@ const jobIdsOf = ({ app, windowless, publish, ciJobs, releaseJobs, postJobs }) =
 });
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, server?: JobContext['server'], publish?: PublishPlan | null }} input
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, server?: JobContext['server'], publish?: PublishPlan | null, testEnv?: TestEnv }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER, publish = null }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER, publish = null, testEnv = NO_TEST_ENV }) => {
   const { platforms } = resolvePlatforms(targets);
   const ciCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'ci');
   const releaseCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'release');
@@ -161,7 +167,7 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
     .map((job) => ({ ...job, text: withJobPermissions(job.text, releaseCtx.liftedPermissions(job.id)) }));
   const postJobs = platforms.flatMap((platform) => (platform.publishJob ? [platform.publishJob(releaseCtx)] : []));
   return {
-    ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx, windowless }).trimEnd()}\n`,
+    ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx, windowless, testEnv }).trimEnd()}\n`,
     release: `${releaseText({ jobs: releaseJobs, postJobs }, { appDir, app, branch, ctx: releaseCtx, publish }).trimEnd()}\n`,
     jobs: jobIdsOf({ app, windowless, publish, ciJobs, releaseJobs, postJobs }),
   };

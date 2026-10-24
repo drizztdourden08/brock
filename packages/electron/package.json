@@ -23,6 +23,7 @@
     "./context": "./src/main/context/index.ts",
     "./node": "./src/node/index.ts",
     "./bridge": "./src/bridge/index.ts",
+    "./server": "./src/server/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

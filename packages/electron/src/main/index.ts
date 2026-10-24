@@ -30,6 +30,8 @@ export { readJsonFile } from './files/read-json-file';
 export { writeJsonFile } from './files/write-json-file';
 export { toArrayBuffer } from './files/to-array-buffer';
 export { toArrayBufferOrNull } from './files/to-array-buffer-or-null';
+export { embedServer } from './server/embed-server';
+export type { EmbeddedServer, EmbedServerContext, EmbedServerOptions } from './server/embed-server.type';
 export { appendMainLog } from './logs/append-main-log';
 export { appendMainLogSync } from './logs/append-main-log-sync';
 export { mainLogPath } from './logs/main-log-path';

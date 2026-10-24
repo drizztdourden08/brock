@@ -12,6 +12,7 @@ interface ContextInput {
   instance: InstanceInfo;
   profileHooks?: ProfileStoreHooks;
   dataDomains?: readonly DataDomainDef[];
+  icon?: string;
   bridge?: { options: AppBridgeOptions | null; key: string | null };
 }
 

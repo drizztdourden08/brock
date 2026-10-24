@@ -1,5 +1,6 @@
 /* @layer electron-main @kind logic */
 import { app } from 'electron';
+import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { OpenSource } from '@drizztdourden08/brock-core/types';
 import type { OpenTargets } from './open.type';
 import { focusForOpen } from './focus-for-open';
@@ -21,14 +22,14 @@ const listenOnMac = (targets: OpenTargets): void => {
   });
 };
 
-const installOpenSources = (targets: OpenTargets, lock: boolean): boolean => {
+const installOpenSources = (targets: OpenTargets, lock: boolean, flags: AutomationFlags): boolean => {
   if (lock && !app.requestSingleInstanceLock()) return false;
   openRouter.push(openRequestsOf(process.argv, targets, { cwd: process.cwd(), source: 'launch' }));
   if (process.platform === 'darwin') listenOnMac(targets);
   if (lock) {
     app.on('second-instance', (_event, argv, cwd) => {
       openRouter.push(openRequestsOf(argv, targets, { cwd, source: 'running' }));
-      focusForOpen();
+      if (!flags.isBackgroundLaunch(argv)) focusForOpen();
     });
   }
   return true;

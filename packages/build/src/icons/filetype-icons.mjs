@@ -2,6 +2,8 @@
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { FILETYPE_SIZES, FILETYPES_BUILD_DIR, FILETYPES_DIR } from './brand-files.mjs';
+import { brandFolder } from './brand-folder.mjs';
+import { tesseraDir } from './tessera-dir.mjs';
 
 /**
  * @typedef {{ ext: string, name: string, icon?: string }} AssociationInput
@@ -68,4 +70,12 @@ const withFiletypeIcons = (rootDir, brand, associations = []) =>
     return existsSync(generated) ? { ...association, icon: fileTypeIconName(association.ext) } : association;
   });
 
-export { filetypeFiles, withFiletypeIcons };
+/**
+ * @param {string} rootDir The app root
+ * @param {string} brand icons.brand
+ * @param {string} brandDir The brand folder the icons came from, with its rim
+ * @returns {string} The folder with filetypes/, the plain brand for a rim
+ */
+const filetypeBrandDir = (rootDir, brand, brandDir) => (isFolder(join(brandDir, FILETYPES_DIR)) ? brandDir : join(tesseraDir(rootDir), brandFolder(brand, null)));
+
+export { filetypeFiles, filetypeBrandDir, withFiletypeIcons };

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { BRAND_DIR, BRAND_FILES, DARK_GROUND_DIR, markFile } from './brand-files.mjs';
 import { brandRim } from './brand-rim.mjs';
 import { copyFiles } from './copy-files.mjs';
-import { filetypeFiles } from './filetype-icons.mjs';
+import { filetypeBrandDir, filetypeFiles } from './filetype-icons.mjs';
 import { locateBrand } from './locate-brand.mjs';
 import { tesseraDir } from './tessera-dir.mjs';
 import { writeBotVariant } from './bot/write-bot-variant.mjs';
@@ -27,7 +27,8 @@ const copyBrandIcons = (rootDir, config, { force = false } = {}) => {
   if (!brand) return null;
   const brandDir = locateBrand(rootDir, brand, brandRim(icons));
   const base = copyFiles(brandDir, rootDir, BRAND_FILES, force);
-  const types = copyFiles(brandDir, rootDir, filetypeFiles(brandDir, config.product?.fileAssociations), force);
+  const typesDir = filetypeBrandDir(rootDir, brand, brandDir);
+  const types = copyFiles(typesDir, rootDir, filetypeFiles(typesDir, config.product?.fileAssociations), force);
   const mark = copyFiles(join(tesseraDir(rootDir), BRAND_DIR, DARK_GROUND_DIR), rootDir, [markFile(brand)], force);
   const bot = writeBotVariant(brandDir, rootDir, force || base.written.length > 0);
   return { brandDir, written: [...base.written, ...types.written, ...mark.written, ...bot.written], current: [...base.current, ...types.current, ...mark.current, ...bot.current] };

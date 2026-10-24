@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useId, useMemo } from 'react';
-import { PressedGrid } from '@drizztdourden08/tessera/composites';
+import { PressedGrid } from '../PressedGrid';
 import { Button, ButtonRow, Flex, Paragraph, Span, Stack, Text } from '@drizztdourden08/tessera/primitives';
 import { CalibrationMeter } from './sub-components/CalibrationMeter';
 import { InputGlyph } from './sub-components/InputGlyph';

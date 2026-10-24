@@ -29,6 +29,12 @@ export type {
   CalibrationButtons, CalibrationControl, CalibrationPanelAction, CalibrationPanelProps, CalibrationReading, CalibrationStickReading,
   CalibrationTriggerReading,
 } from '../compounds/CalibrationPanel';
+export { ControllerLayout, CONTROLLER_LAYOUT_VARIANTS, CONTROLLER_SLOT_IDS } from '../compounds/ControllerLayout';
+export type { ControllerExtra, ControllerLayoutProps, ControllerLayoutVariant, ControllerSlots } from '../compounds/ControllerLayout';
+export { StickPlot } from '../compounds/StickPlot';
+export type { StickPlotPoint, StickPlotProps, StickPlotRange, StickPlotSize } from '../compounds/StickPlot';
+export { PressedGrid } from '../compounds/PressedGrid';
+export type { PressedGridItem, PressedGridProps } from '../compounds/PressedGrid';
 export { useControllerDevicesStore } from './useControllerDevicesStore';
 export type { ControllerDevicesStore } from './controller-devices-store.type';
 export { useControllerStateStore } from './useControllerStateStore';

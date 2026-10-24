@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { PressedGridItem } from '@drizztdourden08/tessera/composites';
+import type { PressedGridItem } from '../../PressedGrid';
 import type { InputIconFamily } from '@drizztdourden08/tessera/primitives';
 import { controlIcon } from './control-icon';
 

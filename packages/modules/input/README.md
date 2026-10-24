@@ -145,9 +145,9 @@ window.api.input.capture.startJoystick(joystickId)
 
 `onState` speaks SDL's order. For a controller drawing, `window.api.input.onPadState((deviceKey, pad) => ...)` sends the same state keyed by the control's physical place. It rides the `input:state` stream, so no second event crosses the bridge. In the renderer, `usePadState(deviceKey)` gives the same `PadState`, and `padStateOf(buttons, axes)` converts a raw reading yourself.
 
-A `PadState` is `{ slots, extras }`. It feeds the Tessera `ControllerLayout` directly: pass `pad.slots` as `slots` and `pad.extras` as `extras`.
+A `PadState` is `{ slots, extras }`. It feeds the module's `ControllerLayout` directly: pass `pad.slots` as `slots` and `pad.extras` as `extras`.
 
-`slots` holds the 20 silhouette places of Tessera's `ControllerSlotId`, with plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
+`slots` holds the 20 silhouette places of the module's `ControllerSlotId`, with plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
 
 | Slot | SDL control |
 |---|---|
@@ -162,7 +162,7 @@ A `PadState` is `{ slots, extras }`. It feeds the Tessera `ControllerLayout` dir
 | `meta.guide` | `GUIDE` (Home, PS, Xbox) |
 | `meta.capture` | `MISC1` (Switch capture, Xbox share) |
 
-`extras` is a separate list of `{ id, label, pressed }` items, shaped like Tessera's `ControllerExtra` without a glyph. It lists only the controls the device has, so an Xbox pad with no paddles has no paddle rows. The device reports what it has through SDL (`SDL_GamepadHasButton`), carried on `DeviceEntry.hasButton`. The full set is ten items, in this order:
+`extras` is a separate list of `{ id, label, pressed }` items, shaped like the module's `ControllerExtra` without a glyph. It lists only the controls the device has, so an Xbox pad with no paddles has no paddle rows. The device reports what it has through SDL (`SDL_GamepadHasButton`), carried on `DeviceEntry.hasButton`. The full set is ten items, in this order:
 
 | Extra `id` | `label` | SDL control |
 |---|---|---|
@@ -181,7 +181,7 @@ The `label` is the default one in the table. A device with a `family` gets the n
 
 The ids never change, only the labels. `onPadState` and `usePadState` fill this in for you. Call `padStateOf(buttons, axes, device)` with a `DeviceEntry` (or any `{ family, hasButton }`) to do the same by hand. Without a device, or when the device sent no `hasButton`, all ten extras are listed with the default labels.
 
-`ControllerSlotId` and `ControllerSlotState` are Tessera's own types, re-exported. The slot list `CONTROLLER_SLOT_IDS` comes from Tessera too.
+`ControllerSlotId` and `ControllerSlotState` are the types of the module's `ControllerLayout`, re-exported. The slot list `CONTROLLER_SLOT_IDS` comes from the same component.
 
 Each ready `DeviceEntry` has a `family` hint: `'xbox'`, `'playstation'`, `'nintendo'` or `'generic'`, from SDL's gamepad type (`padFamilyOf(sdlType)`). Xbox 360 and One are `xbox`; PS3, PS4 and PS5 are `playstation`; Switch Pro, the Joy-Cons and GameCube are `nintendo`; standard and unknown are `generic`. An unavailable entry has no family. An app uses it to pick a layout variant.
 
@@ -204,9 +204,17 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 ## Renderer side
 
-The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed (Tessera `PressedGrid`), draws both sticks (`StickPlot`) and both triggers (`StatRow` over a `ProgressBar`), runs a stick or trigger calibration in the module's `CalibrationPanel` (the stick step draws a large `StickPlot` with the measured range, the recorded center and the dead zones; the trigger step shows the peak as the bar's second value; the buttons held show in the panel while it is open), plays rumble patterns, and takes a new mapping line.
+The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed (`PressedGrid`), draws both sticks (`StickPlot`) and both triggers (`StatRow` over a `ProgressBar`), runs a stick or trigger calibration in the module's `CalibrationPanel` (the stick step draws a large `StickPlot` with the measured range, the recorded center and the dead zones; the trigger step shows the peak as the bar's second value; the buttons held show in the panel while it is open), plays rumble patterns, and takes a new mapping line.
 
-`CalibrationPanel` is a Brock compound, exported from `@drizztdourden08/brock-input/renderer` with its types. It sits in `src/compounds/CalibrationPanel/` with its usage file, built on Tessera's `StickPlot`, `PressedGrid`, `ProgressBar` and `StatRow`. It takes `title`, `instruction`, `readout`, `action` (`label`, `disabled`, `onClick`), `onCancel`, `cancelLabel` and `children` like the Tessera panel it replaces, plus `reading`, the live stick (`x`, `y`, `center`, `range`, the dead zones) or trigger (`value`, `peak`) named by its SDL control name and label, and `buttons`, the `PressedGrid` items and the ones held. Every control glyph is drawn by one sub-component, `InputGlyph`, which today writes the control's label in a key cap.
+`CalibrationPanel` is a Brock compound, exported from `@drizztdourden08/brock-input/renderer` with its types. It sits in `src/compounds/CalibrationPanel/` with its usage file, built on the module's `StickPlot` and `PressedGrid` and Tessera's `ProgressBar` and `StatRow`. It takes `title`, `instruction`, `readout`, `action` (`label`, `disabled`, `onClick`), `onCancel`, `cancelLabel` and `children` like the Tessera panel it replaces, plus `reading`, the live stick (`x`, `y`, `center`, `range`, the dead zones) or trigger (`value`, `peak`) named by its SDL control name and label, and `buttons`, the `PressedGrid` items and the ones held. Every control glyph is drawn by one sub-component, `InputGlyph`, which today writes the control's label in a key cap.
+
+`ControllerLayout`, `StickPlot` and `PressedGrid` are compounds of this module, exported from `@drizztdourden08/brock-input/renderer` with their prop types, `CONTROLLER_LAYOUT_VARIANTS`, `CONTROLLER_SLOT_IDS`, `ControllerExtra` and `ControllerSlots`. They left Tessera, which keeps `ControllerSilhouette`, `InputIcon` and the input icon sets. Each sits in `src/compounds/<Name>/` and keeps its props.
+
+- `ControllerLayout` draws a pad (`variant`: `offset`, `symmetric`, `nintendo` or `pad`) with every slot lit while held, plus a hidden list of what is held and a visible list for `extras` the outline has no place for. Its strings (`Controller`, `Held now`, the slot names) are in `ControllerLayout.constants.ts`.
+- `StickPlot` plots one stick (`x`, `y`) with optional dead zones, measured `range` and recorded `center`.
+- `PressedGrid` lists `items` of a pad `family` and lights the ids in `pressed`.
+
+The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
 
 An app adds its own buttons to every device card, on the module's Controllers screen too, with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook. `InputTester` and `DeviceCard` also take them as a prop (`deviceActions` and `actions`); a prop action replaces a registered one with the same `id`. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. They show as a row of buttons under the rumble row.
 

@@ -2,7 +2,7 @@
 import { loadTypescript } from '../tessera/load-typescript.mjs';
 import { tsSource } from '../tessera/ts-source.mjs';
 
-const MENTIONS = /@drizztdourden08\/tessera\/[\w-]/;
+const MENTIONS = /@drizztdourden08\/tessera(?:\/[\w-]|['"])/;
 
 const MAX_PASSES = 64;
 

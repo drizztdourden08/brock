@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
-import { PressedGrid } from '@drizztdourden08/tessera/composites';
+import { PressedGrid } from '../../compounds/PressedGrid';
 import { Card, Flex, Text } from '@drizztdourden08/tessera/primitives';
 import { inputFamilyOf } from '../../compounds/CalibrationPanel';
 import { shownDeviceCardActions } from '../shown-device-card-actions';

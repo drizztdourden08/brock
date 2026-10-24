@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { StickPlot } from '@drizztdourden08/tessera/composites';
+import { StickPlot } from '../../StickPlot';
 import { ProgressBar, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import type { CalibrationMeterProps } from './CalibrationMeter.type';
 

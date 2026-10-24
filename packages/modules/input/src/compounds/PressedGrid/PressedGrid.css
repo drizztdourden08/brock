@@ -1,0 +1,40 @@
+/* @layer renderer-shell @kind style */
+.input-pressed-grid {
+  grid-template-columns: repeat(auto-fill, minmax(var(--size-96), 1fr));
+}
+
+.input-pressed-grid__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: 0;
+  min-height: var(--size-40);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.input-pressed-grid__cell[data-pressed] {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+.input-pressed-grid__icon {
+  flex: none;
+  color: var(--c-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.input-pressed-grid__cell[data-pressed] .input-pressed-grid__icon {
+  color: var(--c-primary-bright);
+}
+
+.input-pressed-grid__label {
+  overflow: hidden;
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

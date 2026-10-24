@@ -78,7 +78,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
   registerHandlerGroups([widgetHandlers(widgetWindowSetup(setup, plan))], ctx);
 
   const openWindow = async (): Promise<void> => {
-    const win = createWindow(setup, plan);
+    const win = createWindow(setup, planWindow(setup));
     logBoot('window created');
     if (ctx.isDev) await installDevFileLogging(win);
     installEditMenu();

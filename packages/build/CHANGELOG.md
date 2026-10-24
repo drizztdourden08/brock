@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-build
 
+## 0.93.1
+
+### Patch Changes
+
+- fb7f2e4: Generated `.brock` files are written with LF and compared without regard to line endings, and `.brock/tessera-parts.ts` is put back when `tessera guide` changed only its line endings, so a build no longer churns git.
+  - @drizztdourden08/brock-core@0.93.1
+  - @drizztdourden08/brock-lint-config@0.93.1
+  - @drizztdourden08/brock-thread@0.93.1
+
 ## 0.93.0
 
 ### Patch Changes

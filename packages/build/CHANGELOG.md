@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-build
 
+## 0.86.0
+
+### Minor Changes
+
+- e04f39c: Scaffold the server kind. `create-brock --platforms server` writes a windowless app from a new `template-server`: no Electron, React or Tessera dependency of its own, no Electron binary built on install, a `brock.workspace.mjs` that launches the built server, and `server/main.ts`, `server/start.ts` and `server/data-domains.ts`, where main calls `runServer` with `createDataDomains`, start logs one line and each file exports one value. `--platforms desktop,server` writes the desktop app with the same two files and an `electron/boot/server.task.ts` boot task that embeds the server through `embedServer`. The files come from a new scaffold step of the server platform, so `brock platform add server` adds them to an existing app too; the step skips a file the app already has and an app that sets `server.entry`, and adds the server entry and folder to `knip.json`. The scaffolder's closing lines no longer ask for a second `platform add` when no chosen platform has a step that needs the install. `brock-build` exports `shapeOf`. `docs/architecture.md` gains a section on the server kind (runtime, build, packaging, workflows, and the security notes on the deb unit and the account checks), and the brock-build, brock-electron and create-brock READMEs point to it.
+- 2bc3e29: Any repo with a `brock.workspace.mjs` can get its own command from brock-thread alone. brock-thread gains a `brock-thread` bin with `brock-thread link [--force]`, which installs the launcher `bin/<name>.mjs`, the `bin` entry and the `postinstall` for the workspace `name`, and `brock-thread <verb>` for the thread verbs. The launcher, its template, `installLauncher`, `launcherName` and `launcherSource` moved from brock-build to brock-thread, which brock-build now imports, so `adopt`, `create-brock` and `sync` write the same file as before. A repo that already has a command of that name, such as `tessera`, keeps it: `link` leaves its `package.json` alone and checks that its file forwards the thread verbs with `runThreadCli(argv)`, new in `@drizztdourden08/brock-thread/cli` beside `runThread` and `threadVerbNames`. It returns null for a word that is not a thread word, so the repo's own command handles it.
+
+### Patch Changes
+
+- 49ea4f8: `brock sync` finds the repo owner for `workflows.publish` in a linked git worktree too. It follows the `.git` file to the main repository's config instead of reading only a `.git` folder, so a worktree no longer falls back to the `repository` field of the root package.json.
+- Updated dependencies [2bc3e29]
+  - @drizztdourden08/brock-thread@0.86.0
+  - @drizztdourden08/brock-core@0.86.0
+  - @drizztdourden08/brock-lint-config@0.86.0
+
 ## 0.85.0
 
 ### Minor Changes

@@ -1,6 +1,0 @@
----
-'@drizztdourden08/brock-build': minor
-'@drizztdourden08/create-brock': minor
----
-
-Scaffold the server kind. `create-brock --platforms server` writes a windowless app from a new `template-server`: no Electron, React or Tessera dependency of its own, no Electron binary built on install, a `brock.workspace.mjs` that launches the built server, and `server/main.ts`, `server/start.ts` and `server/data-domains.ts`, where main calls `runServer` with `createDataDomains`, start logs one line and each file exports one value. `--platforms desktop,server` writes the desktop app with the same two files and an `electron/boot/server.task.ts` boot task that embeds the server through `embedServer`. The files come from a new scaffold step of the server platform, so `brock platform add server` adds them to an existing app too; the step skips a file the app already has and an app that sets `server.entry`, and adds the server entry and folder to `knip.json`. The scaffolder's closing lines no longer ask for a second `platform add` when no chosen platform has a step that needs the install. `brock-build` exports `shapeOf`. `docs/architecture.md` gains a section on the server kind (runtime, build, packaging, workflows, and the security notes on the deb unit and the account checks), and the brock-build, brock-electron and create-brock READMEs point to it.

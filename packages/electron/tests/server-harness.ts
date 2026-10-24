@@ -42,6 +42,7 @@ const createHarness = async (): Promise<Harness> => {
     signals,
     now: () => clock.value,
     heartbeatMs: 3_600_000,
+    holdProcess: false,
     setExitCode: (code) => exitCodes.push(code),
   };
   return { root, dataDir, options, out, err, signals, exitCodes, clock, healthOptions: { ...options, argv: [`--user-data=${dataDir}`, 'health'] } };

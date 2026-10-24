@@ -7,6 +7,7 @@ interface HeartbeatInput {
   log: ServerLog;
   now?: () => number;
   intervalMs?: number;
+  hold?: boolean;
 }
 
 interface Heartbeat {

@@ -15,9 +15,11 @@ import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { runVpk } from '../packaging/run-vpk.mjs';
 import { shipInstaller } from '../packaging/ship-installer.mjs';
 import { vpkPackArgs } from '../packaging/vpk-args.mjs';
+import { appShape } from '../platforms/server/app-shape.mjs';
 import { runBin } from '../run.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { runBuild } from './build.mjs';
+import { runServer } from './server.mjs';
 
 /**
  * @param {string} rootDir
@@ -84,7 +86,7 @@ const packVelopack = async ({ rootDir, platform, product, version, packaging }, 
  * @param {{ rootDir: string, full?: boolean, channel?: string, renderInstaller?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
-const runPackage = async ({ rootDir, full = false, channel, renderInstaller, passthrough = [] }) => {
+const packageDesktop = async ({ rootDir, full = false, channel, renderInstaller, passthrough = [] }) => {
   const platform = process.platform;
   if (!BUILDER_TARGETS[platform]) throw new Error(`brock package does not know how to package on ${platform}`);
   const config = await loadBrockConfig(rootDir);
@@ -97,5 +99,12 @@ const runPackage = async ({ rootDir, full = false, channel, renderInstaller, pas
   if (packaged !== 0 || !UNPACKED_DIRS[platform]) return packaged;
   return packVelopack({ rootDir, platform, product, version, packaging: config.packaging }, { full, channel: channel ?? product.updateChannel ?? null });
 };
+
+/**
+ * @param {{ rootDir: string, full?: boolean, channel?: string, renderInstaller?: boolean, arch?: string, deb?: boolean, passthrough?: string[]}} ctx
+ * @returns {Promise<number>} exit code
+ */
+const runPackage = (ctx) =>
+  (appShape(ctx.rootDir).windowless ? runServer({ rootDir: ctx.rootDir, args: ['package'], arch: ctx.arch, deb: ctx.deb }) : packageDesktop(ctx));
 
 export { runPackage };

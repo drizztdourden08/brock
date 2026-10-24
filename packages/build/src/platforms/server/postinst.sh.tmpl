@@ -1,0 +1,41 @@
+#!/bin/sh
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the .deb post-install script, run as root by dpkg.
+# It makes the system user, or stops when the name belongs to another account,
+# runs build/server/after-install.sh if the app has one, then handles the service:
+# a first install enables and starts it, an upgrade only restarts a running one.
+set -e
+if [ "$1" = "configure" ]; then
+  if entry=$(getent passwd __ID__); then
+    uid=$(echo "$entry" | cut -d: -f3)
+    comment=$(echo "$entry" | cut -d: -f5)
+    shell=$(echo "$entry" | cut -d: -f7)
+    if [ "$uid" -lt 100 ] || [ "$uid" -gt 999 ] || [ "$shell" != "/usr/sbin/nologin" ] || [ "$comment" != "__ID__ server (brock)" ]; then
+      echo "__ID__: the account __ID__ exists and was not made by this package; refusing to run the server as it." >&2
+      exit 1
+    fi
+  else
+    group_option="--user-group"
+    if group_entry=$(getent group __ID__); then
+      gid=$(echo "$group_entry" | cut -d: -f3)
+      members=$(echo "$group_entry" | cut -d: -f4)
+      if [ "$gid" -lt 100 ] || [ "$gid" -gt 999 ] || [ -n "$members" ]; then
+        echo "__ID__: the group __ID__ exists and is not a plain system group (gid 100 to 999, no members); refusing to run the server in it." >&2
+        exit 1
+      fi
+      group_option="-g __ID__"
+    fi
+    useradd --system $group_option --comment "__ID__ server (brock)" --home-dir /var/lib/__ID__ --no-create-home --shell /usr/sbin/nologin __ID__
+  fi
+__HOOK__
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload
+    if [ -z "$2" ]; then
+      systemctl enable __ID__.service
+      systemctl start __ID__.service
+    else
+      systemctl try-restart __ID__.service
+    fi
+  fi
+fi
+exit 0

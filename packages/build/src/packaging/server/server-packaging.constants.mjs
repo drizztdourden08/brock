@@ -1,0 +1,18 @@
+/* @layer tooling-scripts @kind constants */
+const SERVER_RELEASE_DIR = 'release/server';
+const DOCKER_CONTEXT_DIR = 'docker';
+const NODE_DIST_URL = 'https://nodejs.org/dist';
+const TAR_BLOCK = 512;
+const TAR_MTIME = 946684800;
+const MODE_EXECUTABLE = 0o755;
+const MODE_FILE = 0o644;
+const MODE_DIRECTORY = 0o755;
+const TAR_NAME_LENGTH = 100;
+const TAR_PREFIX_LENGTH = 155;
+const DEB_SECTION = 'misc';
+const DEB_MAINTAINER_FALLBACK = 'noreply@localhost';
+
+export {
+  SERVER_RELEASE_DIR, DOCKER_CONTEXT_DIR, NODE_DIST_URL, TAR_BLOCK, TAR_MTIME, MODE_EXECUTABLE, MODE_FILE, MODE_DIRECTORY,
+  TAR_NAME_LENGTH, TAR_PREFIX_LENGTH, DEB_SECTION, DEB_MAINTAINER_FALLBACK,
+};

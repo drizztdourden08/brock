@@ -12,6 +12,7 @@ const INSTALL_HINTS = Object.freeze({
     linux: 'sudo apt-get install -y dotnet-sdk-8.0',
   },
   vpk: { all: 'dotnet tool install -g vpk --version <the velopack version in package.json>' },
+  dpkg: { all: 'sudo apt-get install -y dpkg-dev' },
   msvc: {
     win32: 'winget install Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive"',
   },

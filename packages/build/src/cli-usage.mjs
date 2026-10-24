@@ -78,6 +78,11 @@ Usage:
   brock server build | dev   the server entry (server.entry, default server/main.ts) as one Node file with every
                              dependency inlined, dist/server/main.mjs; dev rebuilds on change and restarts it with
                              node --watch; anything after -- reaches the app. A native .node addon is refused
+  brock server package [--arch x64,arm64] [--deb]
+                             build, then fill release/server: <prefix>server-linux-<arch>.tar.gz with a pinned
+                             Node binary (sha256 checked against nodejs.org), a docker/ build context, and with
+                             --deb a <prefix>server_<version>_<arch>.deb (needs dpkg-deb, so Linux). The arches
+                             default to server.arch, then x64. A server-only app runs this as brock package
   brock site add <name> [--brand <brand>] [--api <url | port offset>]
                              add a web app at apps/<name>: a Vite single-page app on Tessera (TesseraProvider, the
                              brand palette, tokens, theme.css), Vite dev on a tool port of the app's block, its

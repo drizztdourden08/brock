@@ -76,7 +76,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = resolve(values.root ?? process.cwd());
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
 };
 
 main().then(

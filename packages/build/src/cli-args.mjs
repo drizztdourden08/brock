@@ -9,6 +9,8 @@ const OPTIONS = {
   check: { type: 'boolean', default: false },
   'if-stale': { type: 'boolean', default: false },
   full: { type: 'boolean', default: false },
+  arch: { type: 'string' },
+  deb: { type: 'boolean', default: false },
   channel: { type: 'string' },
   'render-installer': { type: 'boolean', default: false },
   from: { type: 'string' },

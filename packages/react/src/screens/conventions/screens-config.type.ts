@@ -8,6 +8,8 @@ type MenuPlacement = 'entry' | 'submenu' | 'hidden';
 
 type HubNavMode = 'auto' | 'always' | false;
 
+type HubPagesMode = 'framed' | 'bare';
+
 type PageBackdrop = Backdrop | { kind: 'none' };
 
 type ScreenMenu = false | 'entry' | (string & {}) | ProductMenuEntry;
@@ -38,6 +40,7 @@ interface BucketDef extends ShowRule {
   groups?: BucketGroupDef[];
   shortcut?: string;
   nav?: HubNavMode;
+  pages?: HubPagesMode;
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
 }
@@ -71,10 +74,11 @@ interface ScreenMeta extends ShowRule {
   path?: string;
   fill?: boolean;
   bare?: boolean;
+  showHeader?: boolean;
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
   size?: ScreenSize;
   hero?: HeroMeta;
 }
 
-export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };

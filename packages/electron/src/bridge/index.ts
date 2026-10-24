@@ -5,8 +5,9 @@ export { bridgeDiscoveryFile } from '../main/bridge/bridge-discovery-file';
 export { startBridgeServer } from '../main/bridge/start-bridge-server';
 export { writeBridgeDiscovery } from '../main/bridge/write-bridge-discovery';
 export { BridgeError } from '../main/bridge/bridge-error';
-export { BRIDGE_FILE_ENV, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_PROTOCOL } from '../main/bridge/bridge.constants';
+export { BRIDGE_CODES, BRIDGE_FILE_ENV, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_PROTOCOL } from '../main/bridge/bridge.constants';
+export type { BridgeClient, BridgeClientOptions } from '../main/bridge/bridge-client.type';
 export type {
-  BridgeArgsCheck, BridgeClient, BridgeClientOptions, BridgeDiscovery, BridgeHandler, BridgeReply, BridgeRequest, BridgeRoute, BridgeRouteOptions,
-  BridgeServer, BridgeServerOptions,
+  BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeDiscovery, BridgeErrorOptions, BridgeEvent, BridgeHandler, BridgeReply, BridgeRequest, BridgeRoute,
+  BridgeRouteOptions, BridgeServer, BridgeServerOptions,
 } from '../main/bridge/bridge.type';

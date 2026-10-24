@@ -143,6 +143,17 @@ interface ProductMascot {
   searchHint?: string;
 }
 
+type TrayMenuItem =
+  | { type: 'separator' }
+  | { label: string; action: 'show' | 'quit' }
+  | { label: string; id: string; enabled?: boolean };
+
+interface ProductTray {
+  icon?: string;
+  tooltip: string;
+  menu?: readonly TrayMenuItem[];
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -174,6 +185,7 @@ interface ProductConfig {
   boot?: ProductBoot;
   menu?: ProductMenu;
   mascot?: false | ProductMascot;
+  tray?: ProductTray;
 }
 
 type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };
@@ -189,6 +201,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup, ProductMascot,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup, ProductMascot, ProductTray, TrayMenuItem,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

@@ -9,7 +9,7 @@ import { shouldLockInstance } from './should-lock-instance';
 const claimInstance = (product: ProductConfig, wanted: boolean | undefined, flags: AutomationFlags): boolean => {
   const targets = openTargets(product);
   const lock = shouldLockInstance({ wanted, targets, automation: flags.isAutomationLaunch(), namedInstance: isInstanceLaunch() });
-  return installOpenSources(targets, lock);
+  return installOpenSources(targets, lock, flags);
 };
 
 export { claimInstance };

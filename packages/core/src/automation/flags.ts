@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import type { AutomationFlags } from './flags.type';
-import { BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS } from './flags.constants';
+import { BACKGROUND_FLAG, BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS } from './flags.constants';
 
 const matches = (arg: string, flag: string): boolean => arg === flag || arg.startsWith(`${flag}=`);
 
@@ -8,9 +8,11 @@ const createAutomationFlags = (extra: readonly string[] = []): AutomationFlags =
   const flags = [...new Set([...BASE_AUTOMATION_FLAGS, ...extra])];
   const headless = flags.filter((f) => !IDENTITY_FLAGS.includes(f));
   const argvOf = (argv?: readonly string[]): readonly string[] => argv ?? (typeof process !== 'undefined' ? process.argv : []);
+  const isAutomationLaunch = (argv?: readonly string[]): boolean => argvOf(argv).some((arg) => flags.some((f) => matches(arg, f)));
   return {
     flags,
-    isAutomationLaunch: (argv) => argvOf(argv).some((arg) => flags.some((f) => matches(arg, f))),
+    isAutomationLaunch,
+    isBackgroundLaunch: (argv) => !isAutomationLaunch(argv) && argvOf(argv).some((arg) => matches(arg, BACKGROUND_FLAG)),
     isHeadlessLaunch: (argv) => {
       const args = argvOf(argv);
       if (args.includes('--visible')) return false;

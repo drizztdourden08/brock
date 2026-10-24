@@ -44,6 +44,19 @@ const assertMascot = (mascot: ProductInput['mascot']): void => {
   if (mascot.searchHint !== undefined && !mascot.searchHint.trim()) throw new Error('product.mascot.searchHint must be a sentence, or left out for the default');
 };
 
+const assertTray = (tray: ProductInput['tray']): void => {
+  if (!tray) return;
+  if (!tray.tooltip.trim()) throw new Error('product.tray.tooltip is required');
+  const ids = new Set<string>();
+  for (const item of tray.menu ?? []) {
+    if ('type' in item) continue;
+    if (!item.label.trim()) throw new Error('product.tray.menu items need a label');
+    if (!('id' in item)) continue;
+    if (!item.id.trim() || ids.has(item.id)) throw new Error(`product.tray.menu id "${item.id}" must be unique and not empty`);
+    ids.add(item.id);
+  }
+};
+
 const assertProductInput = (input: ProductInput): void => {
   if (!SLUG.test(input.id)) throw new Error(`product.id "${input.id}" must be a slug like "my-app"`);
   if (!REVERSE_DNS.test(input.appId)) throw new Error(`product.appId "${input.appId}" must be reverse-DNS like "com.example.my-app"`);
@@ -54,6 +67,7 @@ const assertProductInput = (input: ProductInput): void => {
   assertInstaller(input.installer);
   assertBoot(input.boot);
   assertMascot(input.mascot);
+  assertTray(input.tray);
   assertOsIntegration(input);
 };
 
@@ -95,12 +109,13 @@ const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets =
   keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
 });
 
-const optionalParts = ({ profilesRoute, singleProfile, boot, menu, mascot }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'boot' | 'menu' | 'mascot'> => ({
+const optionalParts = ({ profilesRoute, singleProfile, boot, menu, mascot, tray }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'boot' | 'menu' | 'mascot' | 'tray'> => ({
   ...(profilesRoute ? { profilesRoute } : {}),
   ...(singleProfile ? { singleProfile } : {}),
   ...(boot ? { boot } : {}),
   ...(menu ? { menu } : {}),
   ...(mascot !== undefined ? { mascot } : {}),
+  ...(tray ? { tray } : {}),
 });
 
 const defineProduct = (input: ProductInput): ProductConfig => {

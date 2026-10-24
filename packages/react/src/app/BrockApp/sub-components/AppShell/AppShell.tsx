@@ -17,8 +17,7 @@ import { BootGate } from '../../../../boot/BootGate';
 import { useBootStore } from '../../../../boot/useBootStore';
 import { useRendererBoot } from '../../../../boot/useRendererBoot';
 import { useIpcLogBridge } from '../../behavior/useIpcLogBridge';
-import { useKeyboardShortcuts } from '../../behavior/useKeyboardShortcuts';
-import { useMouseBack } from '../../behavior/useMouseBack';
+import { useShellInput } from '../../behavior/useShellInput';
 import { useAppTitle } from '../../../../document-title/useAppTitle';
 import { useOpenHomeOnStart } from '../../behavior/useOpenHomeOnStart';
 import { useProfileHydration } from '../../behavior/useProfileHydration';
@@ -35,13 +34,14 @@ import { useBarControls } from '../../behavior/useBarControls';
 import { AppRail } from '../AppRail';
 import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
+import { useStartupPrompts } from '../../../../startup/useStartupPrompts';
 import { TourHost } from '../../../../tours/TourHost';
 import { useAppOpenBridge } from '../../../../open/useAppOpenBridge';
 import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, volume, restoreNavigation, menuBar } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, startupPrompts, volume, restoreNavigation, menuBar } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -56,8 +56,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const ready = phase === 'ready';
   useProfileHydration(settingsStore);
   useSaveFailureToast(settingsStore);
-  useKeyboardShortcuts();
-  useMouseBack();
+  useShellInput();
   useProfileViews(settingsStore, volume, restoreNavigation);
   useIpcLogBridge(log);
   useAppOpenBridge();
@@ -69,6 +68,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   const actionIds = JSON.stringify(actions.map((action) => action.id));
   const barMenu = useMemo(() => withoutActionEntries(shellMenu.menu, JSON.parse(actionIds) as string[]), [shellMenu.menu, actionIds]);
   const titleBarHidden = useTitleBarHidden();
+  useStartupPrompts({ ready, settingsStore, prompts: startupPrompts });
   useReviewTour({ ready, menu: barMenu, menuOverrides: shellMenu.overrides, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);

@@ -20,6 +20,7 @@ import type { WidgetContextSource, WidgetDisabledHook } from '../../widgets/Widg
 import type { WidgetDef } from '../../widgets/widget.type';
 import type { WidgetKitDef } from '../../widgets/kits/widget-kit.type';
 import type { AppReview } from '../../review/app-review.type';
+import type { StartupPromptDef } from '../../startup/startup.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
@@ -74,6 +75,7 @@ interface BrockAppProps<S extends object> {
   titleBar?: readonly TitleBarItemEntry[];
   review?: AppReview;
   tours?: readonly TourDef[];
+  startupPrompts?: readonly StartupPromptDef[];
   bugReport?: BrockAppBugReport;
   sessionLog?: boolean;
   showFlags?: ShowFlagValues;

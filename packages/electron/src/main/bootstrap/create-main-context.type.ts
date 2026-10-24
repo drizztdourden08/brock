@@ -4,6 +4,7 @@ import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { DataDomainDef } from '@drizztdourden08/brock-core/platform';
 import type { ProfileStoreHooks } from '@drizztdourden08/brock-core/storage';
 import type { InstanceInfo } from '../types/main-context.type';
+import type { AppBridgeOptions } from '../bridge/app-bridge.type';
 
 interface ContextInput {
   product: ProductConfig;
@@ -11,6 +12,8 @@ interface ContextInput {
   instance: InstanceInfo;
   profileHooks?: ProfileStoreHooks;
   dataDomains?: readonly DataDomainDef[];
+  icon?: string;
+  bridge?: { options: AppBridgeOptions | null; key: string | null };
 }
 
 export type { ContextInput };

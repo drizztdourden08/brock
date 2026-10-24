@@ -2,6 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { MainContext } from '../src/main/types/main-context.type';
 import { windowHandlers } from '../src/main/window/ipc-handlers';
+import { windowOf } from './window-control';
 
 vi.mock('electron', () => ({ screen: {}, BrowserWindow: { getAllWindows: () => [] } }));
 
@@ -21,12 +22,12 @@ describe('the window title channel', () => {
   it('sets the OS title of the app window', () => {
     const titles: string[] = [];
     const win = { setTitle: (title: string) => titles.push(title) };
-    sendTitle(() => win as never, 'sprite * - Bxel');
+    sendTitle(windowOf(() => win as never), 'sprite * - Bxel');
     expect(titles).toEqual(['sprite * - Bxel']);
   });
 
   it('does nothing without an app window', () => {
-    const send = (): void => sendTitle(() => null, 'sprite - Bxel');
+    const send = (): void => sendTitle(windowOf(() => null), 'sprite - Bxel');
     expect(send).not.toThrow();
   });
 });

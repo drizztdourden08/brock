@@ -2,8 +2,10 @@
 export { bootstrapApp } from './bootstrap/bootstrap-app';
 export type {
   MainContext, MainModule, HandlerGroup, BootstrapOptions, BootstrapPaths, SecurityOptions, ServicesFactory,
-  InstanceInfo, MainPaths, MainLogLevel, EmitToWindow,
+  InstanceInfo, MainPaths, MainLogLevel, EmitToWindow, WindowDecision,
 } from './types/main-context.type';
+export type { MainWindowControl } from './window/main-window-control.type';
+export type { TrayControl, TrayItemHandler } from './tray/tray.type';
 
 export { handle } from './ipc/handle';
 export { on } from './ipc/on';
@@ -57,9 +59,11 @@ export { collectDebugFiles } from './bug-report/collect-debug-files';
 export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport } from './bug-report/bug-report.type';
 export { lanAddresses } from './network/lan-addresses';
 export { helperLaunch } from './bridge/helper-launch';
-export type { AppBridgeOptions, HelperLaunch } from './bridge/app-bridge.type';
+export type { AppBridge, AppBridgeOptions, HelperLaunch } from './bridge/app-bridge.type';
 export { BridgeError } from './bridge/bridge-error';
-export type { BridgeArgsCheck, BridgeHandler, BridgeRoute, BridgeRouteOptions, BridgeServer } from './bridge/bridge.type';
+export type {
+  BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionListener, BridgeErrorOptions, BridgeEvent, BridgeHandler, BridgeRoute, BridgeRouteOptions, BridgeServer,
+} from './bridge/bridge.type';
 
 export { serveDirectoryScheme } from './protocol/serve-directory-scheme';
 export { servedFilePathOf } from './protocol/served-file-path-of';

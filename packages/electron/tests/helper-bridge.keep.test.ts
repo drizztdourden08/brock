@@ -7,7 +7,7 @@ import { invoke } from '@drizztdourden08/brock-core/ipc';
 import { BRIDGE_PROTOCOL, BridgeError, connectBridge } from '../src/bridge';
 import { bridgeProof } from '../src/main/bridge/bridge-proof';
 import { createLineReader } from '../src/main/bridge/line-reader';
-import { ROUTES, client, closeOpened, discoveryFor, handshake, rawSession, serve, signed, tempDir } from './bridge-fixture';
+import { ROUTES, client, closeOpened, discoveryFor, handshake, nextFrom, rawSession, serve, signed, tempDir } from './bridge-fixture';
 
 afterEach(closeOpened);
 
@@ -38,7 +38,7 @@ describe('the bridge handshake', () => {
     await expect(client(file).request(ROUTES.add, 1, 1)).rejects.toThrow('could not prove it is the app');
     impostor.close();
     expect(heard).toHaveLength(1);
-    expect(heard[0]).toMatch(/^\{"v":1,"hello":"[\w-]{43}"\}$/);
+    expect(heard[0]).toMatch(/^\{"v":\d+,"hello":"[\w-]{43}"\}$/);
   });
 
   it('refuses a client with the wrong secret, both ways', async () => {
@@ -46,9 +46,8 @@ describe('the bridge handshake', () => {
     const file = discoveryFor({ endpoint: server.endpoint, secret: 'wrong' });
     await expect(client(file).request(ROUTES.add, 1, 1)).rejects.toThrow('could not prove it is the app');
     const session = rawSession(server.endpoint);
-    const key = await handshake(session, 'wrong');
-    session.send(signed(key, 1, ROUTES.add.channel, [1, 1]));
-    expect(await session.next()).toEqual({ id: 1, ok: false, error: 'unauthorized' });
+    await handshake(session, 'wrong');
+    expect(await session.next()).toEqual({ id: null, ok: false, error: 'unauthorized' });
     await session.closed;
   });
 
@@ -56,13 +55,14 @@ describe('the bridge handshake', () => {
     const { server } = await serve();
     const first = rawSession(server.endpoint);
     const key = await handshake(first, server.secret);
+    expect(await nextFrom(first, key)).toEqual({ type: 'ready', connectionId: expect.stringMatching(/^[0-9a-f]{32}$/) as unknown });
     const request = signed(key, 1, ROUTES.add.channel, [2, 2]);
     first.send(request);
-    expect(await first.next()).toEqual({ id: 1, ok: true, value: 4 });
+    expect(await nextFrom(first, key)).toEqual({ type: 'reply', id: 1, ok: true, value: 4 });
     first.send(request);
     expect(await first.next()).toEqual({ id: 1, ok: false, error: 'unauthorized' });
     const second = rawSession(server.endpoint);
-    await handshake(second, server.secret);
+    await nextFrom(second, await handshake(second, server.secret));
     second.send(request);
     expect(await second.next()).toEqual({ id: 1, ok: false, error: 'unauthorized' });
   });

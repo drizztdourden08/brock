@@ -22,7 +22,7 @@ export { currentShowContext } from './show/current-show-context';
 export { useShowFlags } from './show/useShowFlags';
 export type { ShowContext, ShowFlagValues, ShowRule } from './show/show.type';
 export type {
-  BucketDef, BucketGroupDef, HeroMeta, HubNavMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement,
+  BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement,
 } from './conventions/screens-config.type';
 export type {
   BackdropEntry, BaseEntry, BucketEntry, CardEntry, HeroEntry, LiveEntry, PageEntry, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource, SubEntry, TabEntry,

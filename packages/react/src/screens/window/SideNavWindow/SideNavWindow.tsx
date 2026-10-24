@@ -14,7 +14,7 @@ const SideNavWindow = (props: SideNavWindowProps) => {
   return (
     <SideNavLayout
       narrow={def.narrow}
-      paneScroll={def.scroll ?? 'page'}
+      paneScroll={item.bare === true ? 'none' : def.scroll ?? 'page'}
       nav={{ config, activeId: item.id, onSelect: select, storageKey: windowNavKey(scope), ariaLabel: def.label }}
     >
       {item.render({ ...ctx, active: item.id, select })}

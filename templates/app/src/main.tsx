@@ -12,6 +12,7 @@ import { appWidgetLayout, appWidgets } from '../.brock/widgets';
 import { appWidgetKits } from '../.brock/widget-kits';
 import { appReview } from '../.brock/review';
 import { appTitleBar } from '../.brock/title-bar';
+import { appStartupPrompts } from '../.brock/startup';
 import { appTours } from '../.brock/tours';
 import { SETTINGS } from './main.constants';
 import { product } from './product';
@@ -34,6 +35,7 @@ createRoot(root).render(
       review={appReview}
       titleBar={appTitleBar}
       tours={appTours}
+      startupPrompts={appStartupPrompts}
     />
   </StrictMode>,
 );

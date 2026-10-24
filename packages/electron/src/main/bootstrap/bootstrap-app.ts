@@ -39,12 +39,13 @@ import { refreshDevCache } from './dev-cache';
 import { externalProtocols } from '../window/external-protocols';
 import { startProcess } from './start-process';
 import { startOpenRouting } from '../open/start-open-routing';
+import { armWindow } from '../background/arm-window';
+import { startProductTray } from '../tray/start-product-tray';
 import { bugReportTransport } from '../bug-report/bug-report-transport';
 import { fileGuard } from '../files/file-guard-state';
-import { startAppBridge } from '../bridge/start-app-bridge';
 import { bridgeKeyOf } from '../bridge/bridge-key';
 
-const onReady = async ({ ctx, options, dataDirs, schemes, setup, bridgeKey }: ReadyInput): Promise<void> => {
+const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
   if (ctx.isDev) logBoot(await refreshDevCache(app.getPath('userData')) ? 'dev cache cleared' : 'dev cache kept');
 
@@ -58,17 +59,19 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup, bridgeKey }: Re
   const plan = planWindow(setup);
   const { window: config } = setup.product;
   bootState.watchdogMs = watchdogMsOf(ctx.isDev, setup.product.boot);
-  openSplash({
-    plan,
-    size: config.splash,
-    title: plan.title,
-    version: setup.version,
-    backgroundColor: config.backgroundColor,
-    icon: setup.icon,
-    pagePath: setup.paths.splash,
-    preloadPath: setup.paths.splashPreload,
-  });
-  logBoot('splash opened');
+  if (!ctx.flags.isBackgroundLaunch()) {
+    openSplash({
+      plan,
+      size: config.splash,
+      title: plan.title,
+      version: setup.version,
+      backgroundColor: config.backgroundColor,
+      icon: setup.icon,
+      pagePath: setup.paths.splash,
+      preloadPath: setup.paths.splashPreload,
+    });
+    logBoot('splash opened');
+  }
   armScreenshotFlag(ctx, options.screenshotTimeoutMs);
   armSplashScreenshotFlag(ctx);
   armReviewFlag(ctx, setup.icon);
@@ -82,9 +85,10 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup, bridgeKey }: Re
     for (const module of modules) module.onWindow?.(win, ctx);
     options.onWindow?.(win, ctx);
   };
-  await runMainBoot(mainBootTasks(options, openWindow), ctx);
-  if (!options.bridge || !bootState.mainDone) return;
-  await startAppBridge(ctx, options.bridge, bridgeKey).catch((error: unknown) => ctx.log(`the bridge did not open: ${stackOf(error)}`, 'error'));
+  startProductTray(ctx);
+  await runMainBoot(mainBootTasks(options, armWindow(ctx, options, openWindow)), ctx);
+  if (!options.bridge || options.bridge.openOnBoot === false || !bootState.mainDone) return;
+  await ctx.bridge.open().catch((error: unknown) => ctx.log(`the bridge did not open: ${stackOf(error)}`, 'error'));
 };
 
 const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): void => {
@@ -104,7 +108,10 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   pinHeadlessRendering(flags);
   pinReviewRendering(flags);
 
-  const ctx = createMainContext({ product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains });
+  const ctx = createMainContext({
+    product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains, icon,
+    bridge: { options: options.bridge ?? null, key: bridgeKeyOf(instance.name, userDataOverride ?? portableData) },
+  });
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];
   const setup: WindowSetup = {
     product, flags, instance, paths, icon,
@@ -117,7 +124,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 
   void app.whenReady()
-    .then(() => onReady({ ctx, options, dataDirs, schemes, setup, bridgeKey: bridgeKeyOf(instance.name, userDataOverride ?? portableData) }))
+    .then(() => onReady({ ctx, options, dataDirs, schemes, setup }))
     .catch((err: unknown) => {
       noteSync('error', `boot failed: ${stackOf(err)}`);
       app.exit(1);

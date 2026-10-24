@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind component */
-import { Dialog } from '@drizztdourden08/tessera/composites';
-import { Button, RadioGroup } from '@drizztdourden08/tessera/primitives';
+import { Dialog, FactsPanel } from '@drizztdourden08/tessera/composites';
+import { Button } from '@drizztdourden08/tessera/primitives';
 import { useDialogStore } from '../../stores/useDialogStore';
+import { ConfirmChoices } from './sub-components/ConfirmChoices';
 
 const noop = () => {};
 
@@ -11,7 +12,7 @@ const ConfirmDialog = () => {
   const choose = useDialogStore((s) => s.choose);
 
   if (!dialog) return <Dialog open={false} title="" message="" onConfirm={noop} onCancel={dismiss} />;
-  const { choices, choice, alternate } = dialog;
+  const { choices, choice, alternate, facts } = dialog;
   return (
     <Dialog
       open
@@ -23,9 +24,10 @@ const ConfirmDialog = () => {
       onConfirm={dialog.onConfirm}
       onCancel={dismiss}
     >
+      {facts && facts.length > 0 && <FactsPanel groups={[facts]} layout="rows" label={dialog.title} />}
       {alternate && <Button variant="danger" onClick={alternate.onSelect}>{alternate.label}</Button>}
       {choices && choices.length > 0 && (
-        <RadioGroup value={choice ?? choices[0]?.value ?? ''} options={[...choices]} onChange={choose} label={dialog.title} direction="vertical" />
+        <ConfirmChoices choices={choices} value={choice} label={dialog.title} look={dialog.look} searchable={dialog.searchable} onChange={choose} />
       )}
     </Dialog>
   );

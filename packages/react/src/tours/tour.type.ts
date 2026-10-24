@@ -113,6 +113,7 @@ interface TourState {
   progress: TourProgress;
   loaded: boolean;
   firstUse: boolean;
+  starting: boolean;
   shown: TourShown | null;
   spot: TourSpotSlice | null;
   clickRelay: TourClickSlice | null;
@@ -121,6 +122,7 @@ interface TourState {
   setProgress: (progress: TourProgress) => void;
   setLoaded: (progress: TourProgress, firstUse: boolean) => void;
   setFirstUse: (firstUse: boolean) => void;
+  setStarting: (starting: boolean) => void;
   setShown: (shown: TourShown | null) => void;
   setSpot: (spot: TourSpotSlice | null) => void;
   setClickRelay: (clickRelay: TourClickSlice | null) => void;

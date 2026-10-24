@@ -14,7 +14,9 @@ import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';
 import type { DocumentAccess } from '../documents/document-access.type';
-import type { AppBridgeOptions } from '../bridge/app-bridge.type';
+import type { AppBridge, AppBridgeOptions } from '../bridge/app-bridge.type';
+import type { MainWindowControl } from '../window/main-window-control.type';
+import type { TrayControl } from '../tray/tray.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -42,7 +44,8 @@ interface MainContext {
   storage: DataDomains;
   job: StartJob;
   jobs: JobRegistry;
-  window: () => BrowserWindow | null;
+  window: MainWindowControl;
+  tray: TrayControl;
   handle: HandleFn;
   on: OnFn;
   emit: EmitToWindow;
@@ -50,10 +53,13 @@ interface MainContext {
   askWithin: AskWithinFn;
   log: (message: string, level?: MainLogLevel) => void;
   onOpen: (handler: (request: OpenRequest) => void) => () => void;
+  bridge: AppBridge;
   readonly services: AppServices;
 }
 
 type ServicesFactory = (ctx: MainContext) => AppServices | Promise<AppServices>;
+
+type WindowDecision = 'show' | 'skip';
 
 interface MainModule {
   id: string;
@@ -95,6 +101,7 @@ interface BootstrapOptions {
   profileHooks?: ProfileStoreHooks;
   rendererFlags?: (argv: string[]) => string[];
   onReady?: (ctx: MainContext) => void | Promise<void>;
+  beforeWindow?: (ctx: MainContext) => WindowDecision | void | Promise<WindowDecision | void>;
   onWindow?: (win: BrowserWindow, ctx: MainContext) => void;
   onWillQuit?: (ctx: MainContext) => void;
   onOpen?: (request: OpenRequest, ctx: MainContext) => void;
@@ -109,5 +116,5 @@ interface BootstrapOptions {
 
 export type {
   MainLogLevel, InstanceInfo, MainPaths, EmitToWindow, MainContext, MainModule, HandlerGroup,
-  BootstrapPaths, SecurityOptions, BootstrapOptions, ServicesFactory,
+  BootstrapPaths, SecurityOptions, BootstrapOptions, ServicesFactory, WindowDecision,
 };

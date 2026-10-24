@@ -44,6 +44,8 @@ my-app/
     title-bar/<id>.action.constants.ts that item's constants
     tours/<id>.tour.ts             one guided tour per file: defineTour({ id, title, steps, trigger? })
     tours/<id>.tour.constants.ts   that tour's constants, such as the selectors it lights
+    startup/<id>.prompt.ts         one start-up prompt per file: defineStartupPrompt({ order?, run(ctx) })
+    startup/<id>.prompt.constants.ts that prompt's constants
     boot/<id>.task.ts              renderer boot tasks
     views/<Name>/                  Tessera views: the screens' state-owning bodies
     compounds/<Name>/              Tessera compounds: one app concept drawn from Tessera parts
@@ -134,6 +136,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 | Widget kit | `src/widgets/` | `<id>.kit.ts` (default export: `WidgetKitMeta`), `<id>.overlay.tsx` (default export: the component, `meta` with `kit`), member widgets with `kit` in `meta`, `<id>.kit.constants.ts`, `<id>.overlay.constants.ts` | `brock sync` into `.brock/widget-kits.ts` as `appWidgetKits` |
 | Title bar item | `src/title-bar/` | `<id>.action.ts` (default export: `defineTitleBarItem(spec)`, a hook from `src/hooks`, or `volumeTitleBarItem()`), `<id>.action.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/title-bar.ts` |
 | Guided tour | `src/tours/` | `<id>.tour.ts` (default export: `defineTour({ id, title, steps, trigger? })`, the id the file name), `<id>.tour.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/tours.ts`, passed as `tours` in `src/main.tsx` |
+| Start-up prompt | `src/startup/` | `<id>.prompt.ts` (default export: `defineStartupPrompt({ order?, run(ctx) })`, the id the file name), `<id>.prompt.constants.ts` or `<name>.constants.ts` for its constants | `brock sync` into `.brock/startup.ts`, passed as `startupPrompts` in `src/main.tsx` |
 | Data domain | `electron/main.ts` | `dataDomains` of `bootstrapApp` (and of `<BrockApp>` on a phone, for the Storage page summary); the Storage page is `src/screens/<bucket>/storage.page.tsx` rendering `StoragePage` | `ctx.storage`, `dataDomain(id)`, the Storage page |
 | Renderer boot task | `src/boot/` | `<id>.task.ts`, `<id>.task.constants.ts` for its constants | `brock sync` into `.brock/boot.renderer.ts` |
 | Main boot task | `electron/boot/` | `<id>.task.ts` | `brock sync` into `.brock/boot.main.ts` |
@@ -166,7 +169,7 @@ Every release has `release-notes/v<version>.md` at the repo root: `# <product.na
 
 A renderer file (anything in `src/`) imports a package that also holds Node code through its per-subject subpath export (`@my-app/hosts/<subject>`), never through the package barrel: the barrel re-exports the Node side too, and Vite then pulls modules such as `ssh2` or `node:child_process` into the renderer bundle. `brock structure` warns when a renderer file imports a workspace package's barrel that reaches a Node builtin through its re-exports, and names a subpath to use instead.
 
-`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field, a widget id Brock already uses, a kit file without a default export or with a key that is not a kit field, an overlay without a default export or a `meta`, and a `meta.kit` that names no kit file are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name.
+`brock structure` enforces the screen, widget, title bar and tour folders: an unknown screen suffix, a stray file or folder in `src/widgets`, a widget file without a default export, a `meta` key that is not a widget field, a widget id Brock already uses, a kit file without a default export or with a key that is not a kit field, an overlay without a default export or a `meta`, and a `meta.kit` that names no kit file are findings, and so are a file in `src/title-bar` that is not `<id>.action.ts`, a folder there, a title bar id that is not kebab-case, one with no default export and one Brock uses (`search`, `report-bug`, `brock-jobs`), and a file in `src/tours` that is neither `<id>.tour.ts` nor a constants file (`<id>.tour.constants.ts`, the one the constants lint rule names, or `<name>.constants.ts`), a folder there, a tour id that is not kebab-case, one with no default export and a `defineTour` whose literal `id` is not the file name. `src/startup` is held the same way: only `<id>.prompt.ts` files with a default export and their constants files (`<id>.prompt.constants.ts`, `<name>.constants.ts`), no folders, kebab-case ids.
 
 A file whose header says `@kind data` holds data and nothing else: imports, types, and `const` declarations made of literals, arrays, objects, spreads, references to other values, constant arithmetic and `Object.freeze`, with `as const` and `satisfies` allowed. It may run past 200 lines, export several lists and name `UPPER_SNAKE` consts outside a `.constants.ts` file, which suits record files and generated tables. A function, an arrow, a call other than `Object.freeze`, a conditional, a getter, `let` or a statement in such a file is a `brock/data-only` error, so the kind exempts no code; a generated file that holds code keeps its own kind. Brock's ESLint config finds the data files by their header when it loads, so an editor picks a newly marked file up after an ESLint restart.
 
@@ -195,9 +198,29 @@ Each of these folders takes the constants file the constants lint rule names for
 
 Screens, widgets, a title bar button's handler and a tour's steps load when they are first used (see Lazy registries and the Suspense host in [architecture.md](architecture.md)); only their `meta` loads at boot. So keep a screen or widget file's `meta` to plain values and what they need (constants, icons, a `when` rule, small helpers), and never read the default-exported component from it, or the whole file loads at boot again. Code at the top level of a screen or widget file runs when that screen or widget first loads; anything that must run at boot belongs in a boot task. A settings page (`.settings.ts`) still loads at boot, since its sections feed the live settings search.
 
+## The frame of a hub page
+
+A page of a hub (the side nav on the left, the page on the right) sits in a frame Brock draws: `HubPageFrame` puts it in Tessera's page card (`page-card`, with `screen-page__body` padding and a scroll area), and the whole content slot is the side nav layout's pane, which scrolls too. A view that brings its own panel, card or wizard ends up as a container inside a container. The app decides how much of the frame it keeps, from most to least:
+
+- **Bare.** `bare: true` in the meta of a `.page.tsx`, a `.custom.tsx`, a `<page>.page.ts` or a `.live.tsx`, or in a `LivePage` entry, renders the page component straight into the content slot. There is no card, no padding, no header and no scroll area: the app owns all of it, including how it scrolls, and the root should be `flex: 1` with `min-height: 0` to fill the slot. The slot is a `section` named by the page title (`aria-label`), so a screen reader still hears the page. A bare page with tabs, a settings page and a sub page are never bare, since their tab bar, back button and settings rows live in the frame.
+- **A bare hub.** `pages: 'bare'` on a bucket in `screens.config.ts` (or on the `HubDef` of `defineHub`) makes every page of the hub bare. A page opts back into the frame with `bare: false`. The hero home keeps its own layout.
+- **The header.** A hub page draws no big page header by default: the card holds the body and is named by the title. `showHeader: true` in the meta brings the header back (icon, title and the actions below). A page that declares `header: { primary, search }` keeps its header, since the actions need it, unless it says `showHeader: false`. A page whose component fills the header with `PageActions` needs `showHeader: true`, as Brock cannot know that before it renders. A page with tabs keeps its header because it holds the tab bar, and a sub page keeps its back button. A bucket or page `backdrop` paints behind the header, so a page without a header shows none.
+
+```tsx
+// src/screens/studio/wizard.page.tsx: the view draws its own panel, so the frame steps aside
+export const meta: ScreenMeta = { title: 'Wizard', icon: 'wand-sparkles', bare: true };
+
+// src/screens/library/presets.page.tsx: the card stays, with its header back
+export const meta: ScreenMeta = { title: 'Presets', icon: 'sliders-horizontal', showHeader: true };
+```
+
+`brock upgrade` lists each page that had a header as a to-do to add `showHeader: true` (migration `hub-page-header-off`, 0.80.0).
+
+A `defineWindow` side nav never drew a card or a header: its pane only scrolls. `scroll: 'none'` on the window drops the scroll area for every item, and `bare: true` on a `WindowItem` drops it for that item alone, so the item draws its own layout edge to edge.
+
 ## A page that fills the window
 
-A page scrolls as a whole by default: its header stays and its body scrolls under it. A page that holds a list beside an editor, such as Tessera's `ListDetail` or `ListDetailLayout`, sets `fill` in its meta instead, so a long editor scrolls on its own and the list stays in view:
+A page scrolls as a whole by default: its body scrolls inside the card, and a header, when the page shows one, stays above it. A page that holds a list beside an editor, such as Tessera's `ListDetail` or `ListDetailLayout`, sets `fill` in its meta instead, so a long editor scrolls on its own and the list stays in view:
 
 ```tsx
 // src/screens/library/presets.page.tsx
@@ -316,7 +339,7 @@ With `directory.page.tsx` at `order: 1` and `logs.page.tsx` at `order: 3`, the n
 
 - **The hook.** The default export is a React hook with no arguments that returns the current `LivePage[]`. The hub calls it on every render, so it can read stores, subscribe and poll. The hub redraws its nav when the list changes.
 - **LivePage.** `key` is required and must not change for the same thing (a device id, not an index), because the selection and the deep link follow it. A repeated key keeps the first entry; an empty key is skipped. `title` is the nav label and the page title. `icon` defaults to the `meta.icon`. `badge` is `'ok'` or `'warn'` and shows as a green or amber status dot through the `badge` of Tessera's `SideNavItem`. `render` gets the hub render context and returns the page body.
-- **LiveMeta.** `icon` and `empty` are required. `empty` is the text of a disabled nav entry shown in the slot while the list is empty. `title` names the slot where the id is not enough, `order` places it among the pages of its group, `keywords` feed search and `devOnly` keeps it out of a production build.
+- **LiveMeta.** `icon` and `empty` are required. `empty` is the text of a disabled nav entry shown in the slot while the list is empty. `title` names the slot where the id is not enough, `order` places it among the pages of its group, `keywords` feed search and `devOnly` keeps it out of a production build. `bare` and `showHeader` are the frame options of every entry (see The frame of a hub page); a `LivePage` entry can set its own, which win over the slot's.
 - **Selection.** An entry opens with `section=<id of the file>` and `tab=<key>`, so the route is `<bucket>/<id>/<key>`, for example `controllers/pads/pad-1`. Use `open('controllers', { section: 'pads', tab: pad.id })`, or `<bucket>/<id>` to open the first entry. When the selected entry disappears, the hub shows the first static page of the same group (the home page when the group has none) and keeps the route as it is, so the same key selects its entry again when it comes back.
 - **Search.** The keywords reach the hub search on each entry, and the slot itself has one search entry, `<bucket>/<id>`, for the palette. The entries are runtime pages: they match by title and keywords while they exist.
 - **Menu and shortcuts.** A live slot has no menu entry and no shortcut. Its entries are reached from the hub nav.

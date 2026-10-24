@@ -5,6 +5,7 @@ import { mergeModules } from '../../modules/merge-modules';
 import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
 import { NO_TOURS } from '../../tours/tours.constants';
 import { useTourRegistry } from '../../tours/useTourRegistry';
+import { useAllStartupPrompts } from '../../startup/useAllStartupPrompts';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
@@ -55,6 +56,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const allKits = useMemo(() => [...merged.widgetKits, ...widgetKits], [merged.widgetKits, widgetKits]);
   useAppCommands(merged.commands, props.commands);
+  const allStartupPrompts = useAllStartupPrompts(merged.startupPrompts, props.startupPrompts);
   const settingsStore = useProfileSettingsStore(settings, developerTools);
 
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
@@ -86,7 +88,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}
-                    review={review} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation} menuBar={menuBar}
+                    review={review} startupPrompts={allStartupPrompts} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation} menuBar={menuBar}
                   />
                 )}
               </ModuleProviders>

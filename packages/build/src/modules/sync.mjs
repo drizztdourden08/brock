@@ -17,6 +17,7 @@ import { renderWidgetsFiles } from '../widgets/render-widgets.mjs';
 import { renderTesseraEntryFiles } from '../tessera/render-tessera-entry.mjs';
 import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
 import { renderPaletteFile } from '../tessera/render-palette.mjs';
+import { renderStartupFiles } from '../startup/render-startup.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
@@ -118,6 +119,7 @@ const syncApp = (rootDir, config, opts = {}) => {
     ...renderWidgetsFiles(rootDir),
     ...renderTitleBarFiles(rootDir),
     ...renderToursFiles(rootDir),
+    ...renderStartupFiles(rootDir),
     ...renderPaletteFile(rootDir, config),
     ...renderTesseraEntryFiles(rootDir),
     ...renderManagedFiles({ inWorkspace, scripts: appScripts(rootDir), ...managedFileOptions(config) }),

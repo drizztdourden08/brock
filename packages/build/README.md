@@ -588,6 +588,16 @@ The app's `package.json` must say `"type": "module"`: the managed `electron.vite
 `vite.web.config.ts` pass `import.meta.dirname`, which a CommonJS package leaves empty, and
 `brock check` fails while it is missing.
 
+`fuses` sets the Electron fuses of the packaged app. The managed electron-builder config turns off
+`EnableNodeOptionsEnvironmentVariable` and `EnableNodeCliInspectArguments` (no `NODE_OPTIONS`, no
+`--inspect`), and turns on `OnlyLoadAppFromAsar`, `EnableCookieEncryption` and, on Windows and macOS,
+`EnableEmbeddedAsarIntegrityValidation`. Electron has no asar integrity on Linux, so that fuse stays off
+there. `RunAsNode` is on only when `helpers` is declared, because a helper starts through
+`ELECTRON_RUN_AS_NODE`; an app without a helper has no use for it, so it is off. `fuses: { runAsNode: true }`
+turns it on for an app that needs it anyway, and `false` beside `helpers` is refused. `brock dev` and the
+headless launches run the dev Electron, which has no fuses flipped. The cookie fuse is one way: a store
+written with it cannot be read without it.
+
 `gate` declares the app's own gate steps, which `brock gate` runs, and with it the managed CI
 `quality` job and `<repo> upgrade`:
 

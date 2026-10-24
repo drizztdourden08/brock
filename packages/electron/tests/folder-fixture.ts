@@ -8,6 +8,7 @@ import type { MainContext } from '../src/main/types/main-context.type';
 import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess, DocumentAccessDeps } from '../src/main/documents/document-access.type';
 import { documentHandlers } from '../src/main/documents/ipc-handlers';
+import { windowOf } from './window-control';
 
 type Handler = (event: unknown, ...args: unknown[]) => unknown;
 type Call = (channel: string, ...args: unknown[]) => Promise<unknown>;
@@ -42,7 +43,7 @@ const sessionOf = (given: Partial<MainContext>): Call => {
     profiles: knownProfiles,
     ...given,
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
-    window: () => ({}) as BrowserWindow,
+    window: windowOf(() => ({}) as BrowserWindow),
   };
   documentHandlers.register(ctx as MainContext);
   return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));

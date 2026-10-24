@@ -31,7 +31,7 @@ const runServer = async <TDomains = undefined>(
     setExitCode(1);
     return null;
   }
-  const heartbeat = await startHeartbeat({ dataDir, health: running.health, log, now, intervalMs: options.heartbeatMs });
+  const heartbeat = await startHeartbeat({ dataDir, health: running.health, log, now, intervalMs: options.heartbeatMs, hold: options.holdProcess });
   const stop = createStopServer({ running, heartbeat, log, setExitCode });
   signals.once('SIGTERM', () => void stop());
   signals.once('SIGINT', () => void stop());

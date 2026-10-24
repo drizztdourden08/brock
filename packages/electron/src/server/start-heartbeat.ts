@@ -13,7 +13,7 @@ const isHealthy = async (health: HeartbeatInput['health']): Promise<boolean> => 
   }
 };
 
-const startHeartbeat = async ({ dataDir, health, log, now = Date.now, intervalMs = HEARTBEAT_MS }: HeartbeatInput): Promise<Heartbeat> => {
+const startHeartbeat = async ({ dataDir, health, log, now = Date.now, intervalMs = HEARTBEAT_MS, hold = true }: HeartbeatInput): Promise<Heartbeat> => {
   let failing = false;
   const beat = async (): Promise<void> => {
     const ok = await isHealthy(health);
@@ -27,7 +27,7 @@ const startHeartbeat = async ({ dataDir, health, log, now = Date.now, intervalMs
   };
   await beat();
   const timer = setInterval(() => void beat(), intervalMs);
-  timer.unref();
+  if (!hold) timer.unref();
   return {
     stop: () => {
       clearInterval(timer);

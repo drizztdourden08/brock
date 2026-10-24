@@ -18,6 +18,7 @@ interface RunServerOptions<TDomains = undefined> {
   signals?: SignalSource;
   now?: () => number;
   heartbeatMs?: number;
+  holdProcess?: boolean;
   setExitCode?: (code: number) => void;
 }
 

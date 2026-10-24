@@ -14,7 +14,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
   const { title, menu, controls, instanceName, logoSrc, actions = NO_ACTIONS, hidden, viewHidden = false, menuConfig, menuBar } = props;
   const { isMaximized, isFullscreen } = useTitleBar();
   const { pinned, onControl } = useWindowControl();
-  const { groups, view, tucked } = useTitleBarMenu(menu);
+  const { groups, view, tucked, viewItems } = useTitleBarMenu(menu);
   const rows = useMemo(() => (viewHidden ? tuckedRows(menuConfig, tucked) : undefined), [viewHidden, menuConfig, tucked]);
 
   return (
@@ -26,6 +26,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
         menu={groups}
         menuLabel={MENU_LABEL}
         view={viewHidden ? false : view}
+        viewItems={viewHidden ? undefined : viewItems}
         tucked={rows}
         actions={actions}
         controls={controls}

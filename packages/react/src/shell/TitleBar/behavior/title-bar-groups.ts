@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuGroup, WindowTitleBarViewPlace } from '@drizztdourden08/tessera/composites';
 import { BAR_MARKER_KEYS, TUCKED_ROWS, VIEW_MENU_KEY } from '../../../menu/menu-config.constants';
-import type { MenuEntry } from '../../../menu/menu.type';
+import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { tidySeparators } from '../../../menu/tidy-separators';
 import { toMenuGroups } from '../../../menu/to-menu-groups';
 import type { MenuResolver } from '../../../menu/to-menu-groups.type';
@@ -12,7 +12,7 @@ import type { TitleBarMenu, TuckedPlaces } from './title-bar-menu.type';
 
 const isLast = (entry: MenuEntry): boolean => entry !== 'separator' && isEndEntry(entry);
 
-const markerOf = (entry: MenuEntry): string | null => (entry !== 'separator' && BAR_MARKER_KEYS.has(entry.key) ? entry.key : null);
+const markerOf = (entry: MenuEntry): MenuItem | null => (entry !== 'separator' && BAR_MARKER_KEYS.has(entry.key) ? entry : null);
 
 const quitApart = (entries: readonly MenuEntry[]): MenuEntry[] => {
   const at = entries.findIndex((entry) => entry !== 'separator' && entry.key === QUIT_KEY);
@@ -32,22 +32,24 @@ const placeAt = (group: string, at: number, length: number): WindowTitleBarViewP
   return { group, position: at >= length ? 'end' : at };
 };
 
-const takeMarkers = (lists: [string, MenuEntry[]][]): Map<string, WindowTitleBarViewPlace> => {
+const takeMarkers = (lists: [string, MenuEntry[]][]): { places: Map<string, WindowTitleBarViewPlace>; viewEntries: MenuEntry[] } => {
   const places = new Map<string, WindowTitleBarViewPlace>();
+  const viewEntries: MenuEntry[] = [];
   for (const list of lists) {
     const [group, entries] = list;
-    const found: [string, number][] = [];
+    const found: [MenuItem, number][] = [];
     const kept: MenuEntry[] = [];
     for (const entry of entries) {
-      const key = markerOf(entry);
-      if (key === null) kept.push(entry);
-      else found.push([key, kept.length]);
+      const marker = markerOf(entry);
+      if (marker === null) kept.push(entry);
+      else found.push([marker, kept.length]);
     }
     if (found.length === 0) continue;
     list[1] = tidySeparators(kept);
-    for (const [key, at] of found) places.set(key, placeAt(group, at, list[1].length));
+    for (const [marker, at] of found) places.set(marker.key, placeAt(group, at, list[1].length));
+    viewEntries.push(...found.flatMap(([marker]) => (marker.key === VIEW_MENU_KEY ? marker.children ?? [] : [])));
   }
-  return places;
+  return { places, viewEntries };
 };
 
 const tuckedPlaces = (places: ReadonlyMap<string, WindowTitleBarViewPlace>): TuckedPlaces | undefined => {
@@ -60,11 +62,12 @@ const tuckedPlaces = (places: ReadonlyMap<string, WindowTitleBarViewPlace>): Tuc
 
 const titleBarGroups = (entries: readonly MenuEntry[], resolve: MenuResolver): TitleBarMenu => {
   const lists = splitGroups(entries);
-  const places = takeMarkers(lists);
+  const { places, viewEntries } = takeMarkers(lists);
   const groups = lists.flatMap(([id, list]): MenuGroup[] => toMenuGroups(list, resolve).map((group) => ({ ...group, id })));
   const view = places.get(VIEW_MENU_KEY);
   const tucked = tuckedPlaces(places);
-  return { groups, ...(view === undefined ? {} : { view }), ...(tucked === undefined ? {} : { tucked }) };
+  const viewItems = toMenuGroups(tidySeparators(viewEntries), resolve).flatMap((group) => group.items);
+  return { groups, ...(view === undefined ? {} : { view }), ...(tucked === undefined ? {} : { tucked }), ...(viewItems.length === 0 ? {} : { viewItems }) };
 };
 
 export { titleBarGroups };

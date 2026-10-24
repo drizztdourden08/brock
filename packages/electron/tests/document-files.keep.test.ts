@@ -65,7 +65,7 @@ describe('the document path rule', () => {
     picker.open.mockResolvedValue({ canceled: true, filePaths: [] });
     await call('document:open', { title: 'Open', defaultPath: hinted, filters: [{ name: 'Bxel', extensions: ['.bxel', '*.png'] }, { name: 'Bad', extensions: [] }] });
     expect(picker.open.mock.calls[0]?.[1]).toMatchObject({ title: 'Open', defaultPath: hinted, filters: [{ name: 'Bxel', extensions: ['bxel', 'png'] }], properties: ['openFile'] });
-    expect(access.isAllowed(hinted)).toBe(false);
+    expect(await access.isAllowed(hinted)).toBe(false);
   });
 
   it('returns null on a cancelled dialog and allows nothing', async () => {
@@ -73,7 +73,7 @@ describe('the document path rule', () => {
     picker.save.mockResolvedValue({ canceled: true });
     expect(await call('document:open')).toBeNull();
     expect(await call('document:saveAs')).toBeNull();
-    expect(access.isAllowed(join(dir, 'a.bxel'))).toBe(false);
+    expect(await access.isAllowed(join(dir, 'a.bxel'))).toBe(false);
   });
 
 });
@@ -103,10 +103,10 @@ describe('the document path rule for new files and app allowances', () => {
     await expect(call('document:writeText', listed, bytes(1))).rejects.toThrow(/needs a string/);
   });
 
-  it('matches paths without caring for dot segments, and for case on Windows only', () => {
+  it('matches paths without caring for dot segments, and for case on Windows only', async () => {
     const file = join(dir, 'case.bxel');
     access.allow(file);
-    expect(access.isAllowed(join(dir, '.', 'sub', '..', 'case.bxel'))).toBe(true);
-    expect(access.isAllowed(file.toUpperCase())).toBe(process.platform === 'win32');
+    expect(await access.isAllowed(join(dir, '.', 'sub', '..', 'case.bxel'))).toBe(true);
+    expect(await access.isAllowed(file.toUpperCase())).toBe(process.platform === 'win32');
   });
 });

@@ -118,10 +118,10 @@ describe('the recent documents list on disk', () => {
 describe('reopening a recent document', () => {
   it('allows the path in main only after the check, and moves it to the top', async () => {
     const { access, recent, a, b } = await seeded();
-    expect(access.isAllowed(a)).toBe(false);
+    expect(await access.isAllowed(a)).toBe(false);
     expect(await recent.reopen('p1', a)).toBe(a);
-    expect(access.isAllowed(a)).toBe(true);
-    expect(access.isAllowed(b)).toBe(false);
+    expect(await access.isAllowed(a)).toBe(true);
+    expect(await access.isAllowed(b)).toBe(false);
     expect((await recent.list('p1'))[0]?.path).toBe(a);
   });
 
@@ -131,7 +131,7 @@ describe('reopening a recent document', () => {
     await recent.record('p1', a);
     await rm(a);
     expect(await recent.reopen('p1', a)).toBeNull();
-    expect(access.isAllowed(a)).toBe(false);
+    expect(await access.isAllowed(a)).toBe(false);
     expect(await recent.list('p1')).toEqual([]);
   });
 
@@ -139,6 +139,6 @@ describe('reopening a recent document', () => {
     const { access, recent } = setup();
     const stranger = await make('stranger.bxel');
     await expect(recent.reopen('p1', stranger)).rejects.toThrow(/not in the recent documents list/);
-    expect(access.isAllowed(stranger)).toBe(false);
+    expect(await access.isAllowed(stranger)).toBe(false);
   });
 });

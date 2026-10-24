@@ -1,38 +1,41 @@
 /* @layer electron-main @kind logic */
-import { isAbsolute, resolve } from 'path';
-import type { DocumentAccess } from './document-access.type';
+import { absolutePath } from './absolute-path';
+import type { DocumentAccess, DocumentAccessDeps } from './document-access.type';
+import { createFolderGrants } from './folder-grants';
+import { listFolder } from './list-folder';
+import { listOptions } from './list-options';
 import { pathKey as keyOf } from './path-key';
 
-const absolute = (path: unknown): string => {
-  if (typeof path !== 'string' || path === '' || path.includes('\0') || !isAbsolute(path)) {
-    throw new Error('A document path must be an absolute path');
-  }
-  return resolve(path);
-};
-
-const createDocumentAccess = (): DocumentAccess => {
+const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => {
   const allowed = new Map<string, string>();
+  const folders = createFolderGrants();
+
   const allow = (path: string): string => {
-    const full = absolute(path);
+    const full = absolutePath(path);
     allowed.set(keyOf(full), full);
     return full;
   };
-  const isAllowed = (path: string): boolean => {
-    try {
-      return allowed.has(keyOf(absolute(path)));
-    } catch {
-      return false;
-    }
+
+  const resolve = async (path: string): Promise<string> => {
+    const full = absolutePath(path);
+    const granted = allowed.get(keyOf(full)) ?? (await folders.contain(path));
+    if (granted === null) throw new Error(`The renderer may not use "${full}": pick it in a document dialog first`);
+    return granted;
   };
+
   return {
     allow,
-    isAllowed,
-    resolve: (path) => {
-      const full = absolute(path);
-      const granted = allowed.get(keyOf(full));
-      if (granted === undefined) throw new Error(`The renderer may not use "${full}": pick it in a document dialog first`);
-      return granted;
+    allowFolder: folders.allow,
+    revokeFolder: folders.revoke,
+    isAllowed: (path) => resolve(path).then(() => true, () => false),
+    resolve,
+    list: async (folder, options) => {
+      const settings = listOptions(options);
+      const real = await folders.contain(folder);
+      if (real === null) throw new Error(`"${absolutePath(folder)}" is not inside a granted folder`);
+      return listFolder(real, settings, folders.covers);
     },
+    recent: (profileId) => deps.recent?.(profileId) ?? Promise.resolve([]),
   };
 };
 

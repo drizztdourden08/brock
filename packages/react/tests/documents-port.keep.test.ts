@@ -14,6 +14,8 @@ const stubApi = () => {
     isDev: false,
     documentOpen: vi.fn((_opts?: unknown, _profileId?: string) => Promise.resolve(FILE)),
     documentSaveAs: vi.fn(() => Promise.resolve(null)),
+    documentOpenFolder: vi.fn((_opts?: unknown) => Promise.resolve<string | null>('C:\\art')),
+    documentList: vi.fn((_folder: string, _options?: unknown) => Promise.resolve([{ path: FILE, name: 'a.bxel', kind: 'file', size: 2, modified: 3, link: false }])),
     documentRead: vi.fn(() => Promise.resolve(new Uint8Array([4, 5]).buffer)),
     documentReadText: vi.fn(() => Promise.resolve('text')),
     documentWrite: vi.fn((_path: string, _data: ArrayBuffer, _profileId?: string, _options?: unknown) => Promise.resolve()),
@@ -50,6 +52,15 @@ describe('the documents port', () => {
     expect(await documents.saveAs()).toBeNull();
     expect([...(await documents.read(FILE))]).toEqual([4, 5]);
     expect(await documents.readText(FILE)).toBe('text');
+  });
+
+  it('maps the folder dialog and the listing onto their channels', async () => {
+    const api = stubApi();
+    const documents = electronDocuments();
+    expect(await documents.openFolder({ title: 'Project' })).toBe('C:\\art');
+    expect(api.documentOpenFolder).toHaveBeenCalledWith({ title: 'Project' });
+    expect((await documents.list('C:\\art', { extensions: ['bxel'], recursive: true })).map((entry) => entry.name)).toEqual(['a.bxel']);
+    expect(api.documentList).toHaveBeenCalledWith('C:\\art', { extensions: ['bxel'], recursive: true });
   });
 
   it('sends writes as bytes and text on Electron', async () => {

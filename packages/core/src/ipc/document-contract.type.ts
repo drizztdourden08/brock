@@ -1,9 +1,11 @@
 /* @layer core @kind types */
-import type { DocumentDialogOptions, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
+import type { DocumentDialogOptions, DocumentEntry, DocumentFolderOptions, DocumentListOptions, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
 
 interface DocumentInvokeContract {
   'document:open': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | null>;
   'document:saveAs': (opts?: DocumentDialogOptions) => Promise<string | null>;
+  'document:openFolder': (opts?: DocumentFolderOptions) => Promise<string | null>;
+  'document:list': (folder: string, options?: DocumentListOptions) => Promise<DocumentEntry[]>;
   'document:read': (path: string) => Promise<ArrayBuffer>;
   'document:readText': (path: string) => Promise<string>;
   'document:write': (path: string, data: ArrayBuffer, profileId?: string, options?: DocumentWriteOptions) => Promise<void>;

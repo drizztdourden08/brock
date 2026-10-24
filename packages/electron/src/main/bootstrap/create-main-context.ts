@@ -11,6 +11,8 @@ import { ask } from '../ipc/ask';
 import { askWithin } from '../ipc/ask-within';
 import { createNodeFileStore } from '../files/node-file-store';
 import { createDocumentAccess } from '../documents/document-access';
+import type { DocumentAccess } from '../documents/document-access.type';
+import { mainRecent } from '../documents/main-recent';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
 import { getMainWindow } from '../window/get-main-window';
@@ -20,6 +22,7 @@ import { servicesProxy } from '../services/services-proxy';
 import { openRouter } from '../open/open-router';
 
 const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [] }: ContextInput): MainContext => {
+  const paths = { userData: getLegacyPath, data: getUserDataPath };
   const files = createNodeFileStore({ trashItem: (full) => shell.trashItem(full) });
   const profiles = createProfileStore(files, profileHooks);
   const storage = createDataDomains(dataDomains, (dir) => getUserDataPath(dir));
@@ -34,6 +37,8 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     emitToWindow('log:entry', { channel: 'main', level, message });
   };
 
+  const documents: DocumentAccess = createDocumentAccess({ recent: (profileId) => mainRecent({ paths, documents, files, log }, profileId) });
+
   const jobs = createJobRegistry((snapshot) => emitToWindow('job:update', snapshot), Date.now, (jobId, line) => log(`[job ${jobId}] ${line.message}`, line.level));
 
   return {
@@ -41,9 +46,9 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     isDev: is.dev,
     flags,
     instance,
-    paths: { userData: getLegacyPath, data: getUserDataPath },
+    paths,
     files,
-    documents: createDocumentAccess(),
+    documents,
     profiles,
     storage,
     job: jobs.start,

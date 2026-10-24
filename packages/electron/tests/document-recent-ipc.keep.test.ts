@@ -3,11 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import type { BrowserWindow } from 'electron';
-import type { MainContext } from '../src/main/types/main-context.type';
 import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { documentHandlers } from '../src/main/documents/ipc-handlers';
+import { sessionOf } from './folder-fixture';
+import type { Call } from './folder-fixture';
 
 const electron = vi.hoisted(() => ({
   open: vi.fn<(win: unknown, options: unknown) => Promise<{ canceled: boolean; filePaths: string[] }>>(),
@@ -19,9 +18,6 @@ vi.mock('electron', () => ({
   dialog: { showOpenDialog: electron.open, showSaveDialog: vi.fn() },
   app: { addRecentDocument: electron.addRecent, clearRecentDocuments: electron.clearRecent },
 }));
-
-type Handler = (event: unknown, ...args: unknown[]) => unknown;
-type Call = (channel: string, ...args: unknown[]) => Promise<unknown>;
 
 let dir = '';
 let call: Call;
@@ -38,18 +34,12 @@ const openDialog = async (path: string): Promise<void> => {
   await call('document:open', undefined, 'p1');
 };
 
-const session = (documents: DocumentAccess): Call => {
-  const handlers = new Map<string, Handler>();
-  const ctx: Partial<MainContext> = {
-    handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
+const session = (documents: DocumentAccess): Call =>
+  sessionOf({
     documents,
-    window: () => ({}) as BrowserWindow,
     paths: { userData: (...segments) => join(dir, ...segments), data: (...segments) => join(dir, 'Data', ...segments) },
     log,
-  };
-  documentHandlers.register(ctx as MainContext);
-  return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));
-};
+  });
 
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), 'brock-recent-ipc-'));

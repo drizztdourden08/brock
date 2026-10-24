@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind types */
-import type { WorkflowSteps } from '@drizztdourden08/brock-core/module';
+import type { WorkflowAttest, WorkflowPublish, WorkflowSteps } from '@drizztdourden08/brock-core/module';
 import type { ProductInput } from '@drizztdourden08/brock-core/product';
 
 type BrockPlatform = 'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web';
@@ -50,6 +50,10 @@ interface BrockWorkflowOptions {
   release?: BrockWorkflowMode;
   /** The app's own steps, spliced into the managed workflows at fixed points, after the steps of the modules and plugins. */
   steps?: WorkflowSteps;
+  /** Attests release files with a provenance bundle in the Linux build job of the managed release workflow. */
+  attest?: WorkflowAttest;
+  /** Publishes workspace library packages to GitHub Packages from a job of the managed release workflow. */
+  publish?: WorkflowPublish;
 }
 
 interface BrockTsconfigOptions {
@@ -130,4 +134,4 @@ export type {
   BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
   BrockReviewOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
 };
-export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';
+export type { WorkflowAttest, WorkflowPublish, WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

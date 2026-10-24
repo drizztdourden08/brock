@@ -22,6 +22,7 @@ const createElectronDocuments = (): DocumentsPort => {
     openFolder: (opts) => api.documentOpenFolder(opts, activeProfileId() ?? undefined),
     revokeFolder: (path) => api.documentRevokeFolder(path),
     trash: (path) => api.documentTrash(path),
+    reveal: (path) => api.documentReveal(path),
     rename: (from, to, options) => api.documentRename(from, to, options),
     mkdir: (path, options) => api.documentMkdir(path, options),
     watch: (folder, options, listener) => watchFolder(api, folder, options, listener),

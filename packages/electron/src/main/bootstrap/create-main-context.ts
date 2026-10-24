@@ -52,6 +52,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     recent: (profileId) => mainRecent({ paths, documents, files, log, profiles }, profileId),
     memory: () => mainFolderMemory({ paths, documents, log, profiles }),
     trashItem: (full) => shell.trashItem(full),
+    showItemInFolder: (full) => shell.showItemInFolder(full),
   });
 
   const jobs = createJobRegistry((snapshot) => emitToWindow('job:update', snapshot), Date.now, (jobId, line) => log(`[job ${jobId}] ${line.message}`, line.level));

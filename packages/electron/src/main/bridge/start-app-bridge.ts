@@ -1,10 +1,12 @@
 /* @layer electron-main @kind logic */
 import type { MainContext } from '../types/main-context.type';
 import type { AppBridgeOptions, AppBridgeStart, OpenedAppBridge } from './app-bridge.type';
+import { appLaunch } from './app-launch';
 import { BRIDGE_PROTOCOL, BRIDGE_STALE_OPEN } from './bridge.constants';
 import { clearStaleDiscovery } from './clear-stale-discovery';
 import { removeDiscovery } from './remove-discovery';
 import { startBridgeServer } from './start-bridge-server';
+import { writeAppLaunch } from './write-app-launch';
 import { writeBridgeDiscovery } from './write-bridge-discovery';
 
 const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, { file, isCurrent }: AppBridgeStart): Promise<OpenedAppBridge> => {
@@ -28,6 +30,11 @@ const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, { fil
   } catch (error) {
     stop();
     throw error;
+  }
+  try {
+    writeAppLaunch(file, appLaunch());
+  } catch (error) {
+    ctx.log(`bridge: the app launch file was not written: ${error instanceof Error ? error.message : String(error)}`, 'warn');
   }
   ctx.log(`bridge open; its discovery file is ${file}`);
   return { server, stop };

@@ -62,7 +62,10 @@ export { collectDebugFiles } from './bug-report/collect-debug-files';
 export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport } from './bug-report/bug-report.type';
 export { lanAddresses } from './network/lan-addresses';
 export { helperLaunch } from './bridge/helper-launch';
-export type { AppBridge, AppBridgeOptions, HelperLaunch } from './bridge/app-bridge.type';
+export { appLaunch } from './bridge/app-launch';
+export { relayAsk } from './bridge/relay-ask';
+export type { AppLaunch, AppLaunchOptions } from './bridge/app-launch.type';
+export type { AppBridge, AppBridgeOptions, HelperLaunch, RelayAskOptions } from './bridge/app-bridge.type';
 export { BridgeError } from './bridge/bridge-error';
 export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionListener, BridgeErrorOptions, BridgeEvent, BridgeHandler, BridgeRoute, BridgeRouteOptions, BridgeServer,

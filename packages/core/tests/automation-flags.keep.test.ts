@@ -29,6 +29,14 @@ describe('createAutomationFlags', () => {
     expect(flags.isHeadlessLaunch(['node', 'app', '--background'])).toBe(false);
   });
 
+  it('keeps --background on for a named instance or profile, since those flags only pick an identity', () => {
+    expect(flags.isBackgroundLaunch(['node', 'app', '--instance=mcp', '--background'])).toBe(true);
+    expect(flags.isBackgroundLaunch(['node', 'app', '--profile=a', '--instance=mcp', '--background'])).toBe(true);
+    expect(flags.isBackgroundLaunch(['node', 'app', '--instance=mcp', '--background', '--screenshot=boot'])).toBe(false);
+    expect(flags.isBackgroundLaunch(['node', 'app', '--instance=mcp'])).toBe(false);
+    expect(flags.isAutomationLaunch(['node', 'app', '--instance=mcp', '--background'])).toBe(true);
+  });
+
   it('reads a flag value', () => {
     expect(flags.flagValue('--instance', ['node', 'app', '--instance=probe'])).toBe('probe');
     expect(flags.flagValue('--instance', ['node', 'app'])).toBeNull();

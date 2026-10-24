@@ -16,5 +16,5 @@ export * from './jobs';
 export { createRegistry } from './registry/registry';
 export type { Registry } from './registry/registry.type';
 export { createAutomationFlags } from './automation/flags';
-export { BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS } from './automation/flags.constants';
+export { BACKGROUND_FLAG, BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS } from './automation/flags.constants';
 export type { AutomationFlags } from './automation/flags.type';

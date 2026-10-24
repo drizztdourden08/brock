@@ -13,6 +13,12 @@ const BRIDGE_STALE_OPEN = 'the bridge was closed while it opened';
 const BRIDGE_HANDSHAKE_MS = 2_000;
 const BRIDGE_REQUEST_TIMEOUT_MS = 30_000;
 const BRIDGE_DISCOVERY_NAME = 'bridge';
+const BRIDGE_LAUNCH_PREFIX = 'launch-';
+const BRIDGE_RELAY_MAX_PENDING = 8;
+const BRIDGE_ASK_TIMED_OUT = /timed out after/;
+const BRIDGE_ASK_WINDOW_GONE = /the window (?:is closed|closed before)/;
+const BRIDGE_LAUNCH_ARG = /^--(?:user-data|instance|profile)(?:=.+)?$/;
+const BRIDGE_STRIPPED_ENV: readonly string[] = ['ELECTRON_RUN_AS_NODE', 'NODE_OPTIONS'];
 const BRIDGE_FILE_ENV = 'BROCK_BRIDGE_FILE';
 const BRIDGE_PIPE_PREFIX = '\\\\.\\pipe\\';
 const BRIDGE_PIPE_NAME = /^brock-[A-Za-z0-9.-]+-[0-9a-f]{32}$/;
@@ -31,7 +37,7 @@ const BRIDGE_FAILED = 'the request failed';
 const BRIDGE_ERROR_DATA_BYTES = 65_536;
 const BRIDGE_TOO_LARGE = 'the reply is not JSON or is larger than the bridge allows';
 const BRIDGE_ERROR_CODE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
-const BRIDGE_CODES = { error: 'error', failed: 'failed', noHandler: 'no-handler', invalidArguments: 'invalid-arguments', tooLarge: 'too-large', timeout: 'timeout', closed: 'closed' } as const;
+const BRIDGE_CODES = { error: 'error', failed: 'failed', noHandler: 'no-handler', invalidArguments: 'invalid-arguments', tooLarge: 'too-large', timeout: 'timeout', closed: 'closed', noWindow: 'no-window', busy: 'busy' } as const;
 const BRIDGE_WHOAMI = /"(S-[0-9-]+)"/;
 const BRIDGE_SYSTEM32 = 'C:\\Windows\\System32';
 const BRIDGE_POWERSHELL = 'WindowsPowerShell\\v1.0\\powershell.exe';
@@ -48,7 +54,7 @@ const BRIDGE_IMPOSTOR = 'the endpoint could not prove it is the app; the bridge 
 
 export {
   BRIDGE_CONNECTION_ID_BYTES, BRIDGE_MAX_BUFFERED_BYTES, BRIDGE_STALE_OPEN, BRIDGE_WORLD_WRITABLE, BRIDGE_CODES, BRIDGE_ERROR_CODE, BRIDGE_ERROR_DATA_BYTES, BRIDGE_TOO_LARGE,
-  BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
+  BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_LAUNCH_ARG, BRIDGE_LAUNCH_PREFIX, BRIDGE_ASK_TIMED_OUT, BRIDGE_ASK_WINDOW_GONE, BRIDGE_RELAY_MAX_PENDING, BRIDGE_STRIPPED_ENV, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
   BRIDGE_HELPERS_DIR, BRIDGE_LISTEN_TRIES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_NEWLINE, BRIDGE_NONCE,
   BRIDGE_NONCE_BYTES, BRIDGE_OTHERS_MASK, BRIDGE_PERMISSION_BITS, BRIDGE_PIPE_NAME, BRIDGE_PIPE_PREFIX, BRIDGE_PROTOCOL, BRIDGE_REQUEST_TIMEOUT_MS,
   BRIDGE_ACL_ENV, BRIDGE_ACL_SCRIPT, BRIDGE_POWERSHELL, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,

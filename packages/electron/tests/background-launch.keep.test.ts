@@ -82,6 +82,17 @@ describe('deciding to skip the window', () => {
     expect(await skipsWindow(context(), { beforeWindow: () => Promise.resolve('skip') })).toBe(true);
   });
 
+  it('skips the window of a named instance started with --background, and not of one started without it', async () => {
+    const real = createAutomationFlags();
+    const launched = (...argv: string[]): MainContext => ({
+      ...context(),
+      flags: { ...real, isAutomationLaunch: () => real.isAutomationLaunch(argv), isBackgroundLaunch: () => real.isBackgroundLaunch(argv) },
+    });
+    expect(await skipsWindow(launched('app', '--instance=mcp', '--background'), {})).toBe(true);
+    expect(await skipsWindow(launched('app', '--instance=mcp'), { beforeWindow: () => 'skip' })).toBe(false);
+    expect(await skipsWindow(launched('app', '--instance=mcp', '--background', '--no-focus'), {})).toBe(false);
+  });
+
   it('runs the hook but never skips the window in an automation launch', async () => {
     const hook = vi.fn(() => 'skip' as const);
     const automation = { ...context(), flags: { ...flags, isAutomationLaunch: () => true, isBackgroundLaunch: () => false } } as MainContext;

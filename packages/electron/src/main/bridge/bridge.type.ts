@@ -1,8 +1,10 @@
 /* @layer electron-main @kind types */
 import type { Stats } from 'fs';
-import type { EventChannel, InvokeChannel, InvokeSignature, VoidSignature } from '@drizztdourden08/brock-core/ipc';
+import type { AskChannel, EventChannel, InvokeChannel, InvokeSignature, VoidSignature } from '@drizztdourden08/brock-core/ipc';
 
 type BridgeRoute<F extends InvokeSignature = InvokeSignature> = InvokeChannel<string, F>;
+
+type BridgeRequestRoute<F extends InvokeSignature = InvokeSignature> = BridgeRoute<F> | AskChannel<string, F>;
 
 type BridgeEvent<F extends VoidSignature = VoidSignature> = EventChannel<string, F>;
 
@@ -137,5 +139,5 @@ type SystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) 
 export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionLink, BridgeConnectionListener, BridgeDiscovery, BridgeErrorOptions, BridgeEvent,
   BridgeHandler, BridgeHello, BridgeReply, BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions,
-  BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, WindowsUser,
+  BridgeRequestRoute, BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, WindowsUser,
 };

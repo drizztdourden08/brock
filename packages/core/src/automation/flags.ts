@@ -12,7 +12,10 @@ const createAutomationFlags = (extra: readonly string[] = []): AutomationFlags =
   return {
     flags,
     isAutomationLaunch,
-    isBackgroundLaunch: (argv) => !isAutomationLaunch(argv) && argvOf(argv).some((arg) => matches(arg, BACKGROUND_FLAG)),
+    isBackgroundLaunch: (argv) => {
+      const args = argvOf(argv);
+      return !args.some((arg) => headless.some((f) => matches(arg, f))) && args.some((arg) => matches(arg, BACKGROUND_FLAG));
+    },
     isHeadlessLaunch: (argv) => {
       const args = argvOf(argv);
       if (args.includes('--visible')) return false;

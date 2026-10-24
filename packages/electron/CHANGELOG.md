@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-electron
 
+## 0.93.0
+
+### Minor Changes
+
+- ee7a2a8: `documents.reveal(path)` in the renderer and `ctx.documents.reveal(path)` in main show a file or folder in the system file manager with `shell.showItemInFolder`, only for a path the documents port can already read, and answer `{ revealed, reason? }` over the new `document:reveal` channel. Built-in chords now yield to app commands: when an app, module or runtime command has the same default chord, the Brock command drops it and no conflict is reported. `brock.fullscreen` is now bound to F11 and Alt+Enter, so an app can take Alt+Enter for Properties with no override.
+
+### Patch Changes
+
+- Updated dependencies [ee7a2a8]
+  - @drizztdourden08/brock-core@0.93.0
+
 ## 0.92.0
 
 ### Patch Changes

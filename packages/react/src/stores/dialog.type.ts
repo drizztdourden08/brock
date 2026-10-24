@@ -5,6 +5,13 @@ interface DialogChoice<T extends string = string> {
   description?: string;
 }
 
+interface DialogFact {
+  label: string;
+  value: string;
+}
+
+type ChoiceLook = 'radio' | 'select';
+
 interface DialogAlternate {
   label: string;
   onSelect: () => void;
@@ -16,14 +23,17 @@ interface ConfirmDialogConfig {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: 'danger' | 'default';
+  facts?: readonly DialogFact[];
   choices?: readonly DialogChoice[];
   choice?: string;
+  look?: ChoiceLook;
+  searchable?: boolean;
   alternate?: DialogAlternate;
   onConfirm: () => void;
   onCancel?: () => void;
 }
 
-type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate'>;
+type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate' | 'look' | 'searchable'>;
 
 type ConfirmSaveAnswer = 'save' | 'discard' | 'cancel';
 
@@ -34,6 +44,8 @@ interface ConfirmSaveOptions extends ConfirmActionOptions {
 interface ConfirmChoiceOptions<T extends string> extends ConfirmActionOptions {
   choices: readonly DialogChoice<T>[];
   initial: T;
+  look?: ChoiceLook;
+  searchable?: boolean;
 }
 
 interface ConfirmDeleteOptions {
@@ -49,4 +61,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { ConfirmActionOptions, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogState };
+export type { ChoiceLook, ConfirmActionOptions, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };

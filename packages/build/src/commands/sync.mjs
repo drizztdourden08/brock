@@ -84,8 +84,8 @@ const syncApps = async (apps, staleOnly, check) => {
 
 const syncIconIgnores = async (repoRoot) => {
   const apps = await syncTargets(repoRoot);
-  const brands = await Promise.all(apps.map(async (appDir) => (await loadBrockConfig(appDir)).product?.icons?.brand));
-  if (syncBrandIgnores(repoRoot, brands.some(Boolean))) console.log('brock sync: updated .gitignore (generated icon files)');
+  const branded = await Promise.all(apps.map(async (appDir) => ((await loadBrockConfig(appDir)).product?.icons?.brand ? relative(repoRoot, appDir).replace(/\\/g, '/') : null)));
+  if (syncBrandIgnores(repoRoot, branded.filter((path) => path !== null))) console.log('brock sync: updated .gitignore (generated icon files)');
 };
 
 const runSync = async ({ rootDir, check = false, ifStale = false }) => {

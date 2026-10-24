@@ -55,7 +55,7 @@ describe('the bridge handshake', () => {
     const { server } = await serve();
     const first = rawSession(server.endpoint);
     const key = await handshake(first, server.secret);
-    expect(await nextFrom(first, key)).toEqual({ type: 'ready', connectionId: expect.stringMatching(/^c\d+$/) as unknown });
+    expect(await nextFrom(first, key)).toEqual({ type: 'ready', connectionId: expect.stringMatching(/^[0-9a-f]{32}$/) as unknown });
     const request = signed(key, 1, ROUTES.add.channel, [2, 2]);
     first.send(request);
     expect(await nextFrom(first, key)).toEqual({ type: 'reply', id: 1, ok: true, value: 4 });

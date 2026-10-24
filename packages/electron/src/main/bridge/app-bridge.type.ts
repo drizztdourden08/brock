@@ -7,6 +7,7 @@ interface AppBridgeOptions {
   openOnBoot?: boolean;
   maxMessageBytes?: number;
   maxClients?: number;
+  maxBufferedBytes?: number;
 }
 
 interface AppBridge {
@@ -22,6 +23,11 @@ interface AppBridgeInput {
   ctx: () => MainContext;
 }
 
+interface AppBridgeStart {
+  file: string;
+  isCurrent: () => boolean;
+}
+
 interface OpenedAppBridge {
   server: BridgeServer;
   stop: () => void;
@@ -33,4 +39,4 @@ interface HelperLaunch {
   env: Record<string, string>;
 }
 
-export type { AppBridge, AppBridgeInput, AppBridgeOptions, HelperLaunch, OpenedAppBridge };
+export type { AppBridge, AppBridgeInput, AppBridgeOptions, AppBridgeStart, HelperLaunch, OpenedAppBridge };

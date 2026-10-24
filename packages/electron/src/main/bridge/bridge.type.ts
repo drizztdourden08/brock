@@ -67,6 +67,7 @@ interface BridgeServerOptions {
   maxMessageBytes?: number;
   maxClients?: number;
   maxPending?: number;
+  maxBufferedBytes?: number;
   handshakeMs?: number;
   onError?: (channel: string, error: unknown) => void;
 }
@@ -82,7 +83,7 @@ interface BridgeServer {
   onClose: (listener: BridgeConnectionListener) => () => void;
   connections: () => string[];
   emit: <F extends VoidSignature>(event: BridgeEvent<F>, ...args: Parameters<F>) => number;
-  emitTo: <F extends VoidSignature>(connectionId: string, event: BridgeEvent<F>, ...args: Parameters<F>) => boolean;
+  emitTo: <F extends VoidSignature>(connectionId: string, event: BridgeEvent<F>, ...args: Parameters<F>) => number;
   close: () => void;
 }
 
@@ -90,10 +91,14 @@ interface BridgeConnectionLink {
   push: (event: string, args: unknown[]) => boolean;
 }
 
-interface BridgeSession {
+interface BridgeWriteLimits {
+  maxMessageBytes: number;
+  maxBufferedBytes: number;
+}
+
+interface BridgeSession extends BridgeWriteLimits {
   secret: string;
   routes: ReadonlyMap<string, BridgeRouteEntry>;
-  maxMessageBytes: number;
   handshakeMs: number;
   onError: (channel: string, error: unknown) => void;
   admit: (link: BridgeConnectionLink) => string | null;
@@ -132,5 +137,5 @@ type SystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) 
 export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionLink, BridgeConnectionListener, BridgeDiscovery, BridgeErrorOptions, BridgeEvent,
   BridgeHandler, BridgeHello, BridgeReply, BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions,
-  BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, WindowsUser,
+  BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, WindowsUser,
 };

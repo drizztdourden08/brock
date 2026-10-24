@@ -3,7 +3,9 @@ import { randomBytes } from 'crypto';
 import { rmSync } from 'fs';
 import { createServer, type Socket } from 'net';
 import type { BridgeRouteEntry, BridgeRouteOptions, BridgeServer, BridgeServerOptions, BridgeSession } from './bridge.type';
-import { BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_SECRET_BYTES } from './bridge.constants';
+import {
+  BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_BUFFERED_BYTES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_SECRET_BYTES,
+} from './bridge.constants';
 import { connectionRegistry } from './connection-registry';
 import { listenPrivate } from './listen-private';
 import { serveConnection } from './serve-connection';
@@ -25,15 +27,17 @@ const routeTable = () => {
 
 const startBridgeServer = async (options: BridgeServerOptions): Promise<BridgeServer> => {
   const table = routeTable();
-  const registry = connectionRegistry(options.maxClients ?? BRIDGE_MAX_CLIENTS);
+  const onError = options.onError ?? (() => undefined);
+  const registry = connectionRegistry(options.maxClients ?? BRIDGE_MAX_CLIENTS, onError);
   const sockets = new Set<Socket>();
   const pending = new Set<Socket>();
   const session: BridgeSession = {
     secret: randomBytes(BRIDGE_SECRET_BYTES).toString('base64url'),
     routes: table.routes,
     maxMessageBytes: options.maxMessageBytes ?? BRIDGE_MAX_MESSAGE_BYTES,
+    maxBufferedBytes: options.maxBufferedBytes ?? BRIDGE_MAX_BUFFERED_BYTES,
     handshakeMs: options.handshakeMs ?? BRIDGE_HANDSHAKE_MS,
-    onError: options.onError ?? (() => undefined),
+    onError,
     admit: registry.admit,
     release: registry.release,
   };

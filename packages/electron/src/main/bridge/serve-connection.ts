@@ -13,7 +13,7 @@ import { secretMatches } from './secret-matches';
 
 const serveConnection = (socket: Socket, session: BridgeSession): void => {
   const state = { key: null as string | null, connectionId: null as string | null, lastId: 0, seq: 0 };
-  const writer = replyWriter(socket, session.maxMessageBytes);
+  const writer = replyWriter(socket, session);
   const deadline = setTimeout(() => socket.destroy(), session.handshakeMs);
   const onHello = (line: string): void => {
     const hello = parseHello(line);

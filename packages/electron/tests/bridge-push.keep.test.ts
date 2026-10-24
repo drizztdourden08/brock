@@ -71,8 +71,8 @@ describe('bridge push', () => {
     second.on(CHANGED, heardSecond);
     const firstId = await first.connect();
     await second.connect();
-    expect(server.emitTo(firstId, CHANGED, 'a.bxel', 1)).toBe(true);
-    expect(server.emitTo('c999', CHANGED, 'a.bxel', 1)).toBe(false);
+    expect(server.emitTo(firstId, CHANGED, 'a.bxel', 1)).toBe(1);
+    expect(server.emitTo('0'.repeat(32), CHANGED, 'a.bxel', 1)).toBe(0);
     expect(server.emit(CHANGED, 'b.bxel', 2)).toBe(2);
     await settle();
     expect(heardFirst.mock.calls).toEqual([['a.bxel', 1], ['b.bxel', 2]]);

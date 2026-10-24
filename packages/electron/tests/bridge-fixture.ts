@@ -84,6 +84,9 @@ const rawSession = (endpoint: string) => {
       if (queue.length > 0) resolve(queue.shift());
       else waiters.push(resolve);
     }),
+    pause: (): void => {
+      socket.pause();
+    },
     closed: new Promise<void>((resolve) => socket.once('close', () => resolve())),
   };
 };

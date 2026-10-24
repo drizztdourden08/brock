@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { useRoutePreloader } from '../../../../lazy/useRoutePreloader';
 import { WorkspaceSwitch } from '../../../../shell/WorkspaceSwitch/WorkspaceSwitch';
+import { switcherHubs } from '../../behavior/switcher-hubs';
 import { useRegisteredHubs } from '../../behavior/useRegisteredHubs';
 import type { HubSwitchProps } from './HubSwitch.type';
 import './HubSwitch.css';
@@ -11,7 +12,7 @@ const HubSwitch = (props: HubSwitchProps) => {
   const { current, onSelect, status } = props;
   const hubs = useRegisteredHubs();
   const preload = useRoutePreloader();
-  const items = useMemo(() => hubs.map((hub) => ({ id: hub.id, label: hub.title, icon: hub.icon, onHighlight: () => preload(hub.id) })), [hubs, preload]);
+  const items = useMemo(() => switcherHubs(hubs).map((hub) => ({ id: hub.id, label: hub.title, icon: hub.icon, onHighlight: () => preload(hub.id) })), [hubs, preload]);
   if (items.length < 2) return status ?? null;
   return (
     <Box className="hub-switch">

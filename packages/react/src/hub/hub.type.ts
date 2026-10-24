@@ -141,6 +141,7 @@ interface HubDef {
   icon: ReactNode;
   shortcut?: string;
   show?: ShowRule;
+  switcher?: boolean;
   nav?: HubNavMode;
   pages?: HubPagesMode;
   backdrop?: PageBackdrop;

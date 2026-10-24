@@ -1,5 +1,6 @@
 /* @layer electron-main @kind logic */
 import { readdir } from 'fs/promises';
+import { relative } from 'path';
 import type { DataDomainDef, DomainUsage } from '@drizztdourden08/brock-core/platform';
 import { createDomainFiles } from './create-domain-files';
 import type { DataDomains, DomainFiles } from './domain-files.type';
@@ -18,8 +19,8 @@ const assertDefs = (defs: readonly DataDomainDef[]): void => {
   const seen = new Set<string>();
   for (const def of defs) {
     if (seen.has(def.domain)) throw new Error(`data domain "${def.domain}" is declared twice`);
-    if (def.dir.trim() === '' || def.dir === '.') throw new Error(`data domain "${def.domain}" needs a folder of its own under Data/`);
-    resolveInside('/data', def.dir);
+    const inside = resolveInside('/data', def.dir);
+    if (def.dir.trim() === '' || relative('/data', inside) === '') throw new Error(`data domain "${def.domain}" needs a folder of its own under Data/`);
     seen.add(def.domain);
   }
 };

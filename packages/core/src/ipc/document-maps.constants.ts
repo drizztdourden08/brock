@@ -4,6 +4,8 @@ import type { DocumentInvokeContract } from './document-contract.type';
 const DOCUMENT_INVOKE_MAP = {
   documentOpen: 'document:open',
   documentSaveAs: 'document:saveAs',
+  documentOpenFolder: 'document:openFolder',
+  documentList: 'document:list',
   documentRead: 'document:read',
   documentReadText: 'document:readText',
   documentWrite: 'document:write',

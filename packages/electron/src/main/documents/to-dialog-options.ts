@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { FileFilter } from 'electron';
 import type { DocumentDialogOptions } from '@drizztdourden08/brock-core/platform';
+import { toFolderDialogOptions } from './to-folder-dialog-options';
 import type { DialogOptions } from './to-dialog-options.type';
 import { ANY_FILE } from './to-dialog-options.constants';
 
@@ -17,8 +18,7 @@ const filtersOf = (value: unknown): FileFilter[] => {
 };
 
 const toDialogOptions = (opts: DocumentDialogOptions | undefined): DialogOptions => ({
-  ...(typeof opts?.title === 'string' ? { title: opts.title } : {}),
-  ...(typeof opts?.defaultPath === 'string' && opts.defaultPath !== '' ? { defaultPath: opts.defaultPath } : {}),
+  ...toFolderDialogOptions(opts),
   filters: filtersOf(opts?.filters),
 });
 

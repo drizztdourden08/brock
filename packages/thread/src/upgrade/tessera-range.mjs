@@ -1,10 +1,22 @@
 /* @layer tooling-scripts @kind logic */
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { jsonFile } from '../provision/json-file.mjs';
+import { readYamlScalar } from '../yaml/yaml-scalar.mjs';
 import { npm, scopeRegistry } from './npm-view.mjs';
-import { REACT_PACKAGE, TESSERA_PACKAGE } from './upgrade.constants.mjs';
+import { REACT_PACKAGE, TESSERA_PACKAGE, WORKSPACE_FILE } from './upgrade.constants.mjs';
+
+const CATALOG_LINE = new RegExp(String.raw`^[ \t]+['"]?${TESSERA_PACKAGE.replace('/', String.raw`\/`)}['"]?:[ \t]*(\S.*?)[ \t]*$`, 'm');
+
+const testedRange = (checkout) => {
+  const file = join(checkout, WORKSPACE_FILE);
+  const spec = existsSync(file) ? CATALOG_LINE.exec(readFileSync(file, 'utf8'))?.[1] : undefined;
+  return spec === undefined ? null : readYamlScalar(spec);
+};
 
 const fromCheckout = (checkout) => {
+  const tested = testedRange(checkout);
+  if (tested) return tested;
   const peers = jsonFile(join(checkout, 'packages', 'react', 'package.json')).read()?.peerDependencies;
   return typeof peers?.[TESSERA_PACKAGE] === 'string' ? peers[TESSERA_PACKAGE] : null;
 };
@@ -23,7 +35,7 @@ const fromRegistry = (target, cwd) => {
 /**
  * @param {{ target: string, checkout: string | null }} plan
  * @param {string} cwd the app checkout, whose .npmrc names the registry
- * @returns {string | null} brock-react's Tessera peer range, or null
+ * @returns {string | null} the checkout catalog, else the peer range
  */
 const tesseraRange = (plan, cwd) => (plan.checkout ? fromCheckout(plan.checkout) : fromRegistry(plan.target, cwd));
 

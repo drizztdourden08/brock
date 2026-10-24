@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { yamlScalar } from '@drizztdourden08/brock-thread';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
@@ -25,8 +26,8 @@ const yamlKey = (name) => (name.startsWith('@') ? `'${name}'` : name);
 
 /**
  * @param {string} rootDir
- * @param {Record<string, string>} entries
- * @returns {string[]}
+ * @param {Record<string, string>} entries name to plain range
+ * @returns {string[]} the names added
  */
 const mergeCatalog = (rootDir, entries) => {
   const file = join(rootDir, WORKSPACE_FILE);
@@ -42,7 +43,7 @@ const mergeCatalog = (rootDir, entries) => {
   });
   const added = Object.keys(entries).filter((name) => !present.has(name)).sort();
   if (!added.length) return [];
-  const block = added.map((name) => `  ${yamlKey(name)}: ${entries[name]}`);
+  const block = added.map((name) => `  ${yamlKey(name)}: ${yamlScalar(entries[name])}`);
   if (catalogAt === -1) lines.push('catalog:', ...block);
   else {
     lines[catalogAt] = 'catalog:';

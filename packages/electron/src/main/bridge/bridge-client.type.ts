@@ -1,6 +1,6 @@
 /* @layer electron-main @kind types */
 import type { InvokeSignature, VoidSignature } from '@drizztdourden08/brock-core/ipc';
-import type { BridgeEvent, BridgeReply, BridgeRequestId, BridgeRoute } from './bridge.type';
+import type { BridgeEvent, BridgeReply, BridgeRequestId, BridgeRequestRoute } from './bridge.type';
 
 interface BridgeClientOptions {
   app?: string;
@@ -12,7 +12,7 @@ interface BridgeClientOptions {
 }
 
 interface BridgeClient {
-  request: <F extends InvokeSignature>(route: BridgeRoute<F>, ...args: Parameters<F>) => Promise<Awaited<ReturnType<F>>>;
+  request: <F extends InvokeSignature>(route: BridgeRequestRoute<F>, ...args: Parameters<F>) => Promise<Awaited<ReturnType<F>>>;
   on: <F extends VoidSignature>(event: BridgeEvent<F>, listener: F) => () => void;
   connect: () => Promise<string>;
   close: () => void;

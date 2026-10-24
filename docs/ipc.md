@@ -76,7 +76,7 @@ A handler that needs the app's stores or services reads them from `ctx.services`
 
 ## 4. The renderer call
 
-`channelApi` from brock-react narrows `window.api` to Brock's methods plus the declared ones, typed by method name. It throws, naming the methods, when the preload does not expose them.
+`channelApi` from brock-react narrows `window.api` to Brock's methods plus the declared ones, typed by method name. It throws, naming the methods, when the preload does not expose them. An ask channel in the set is not a method of `window.api` (the renderer answers it with `answer`), so `channelApi` skips it.
 
 ```tsx
 import { useEffect, useState } from 'react';

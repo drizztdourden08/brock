@@ -1,19 +1,12 @@
 /* @layer electron-main @kind logic */
 import type { BridgeClient, BridgeClientOptions, BridgeLink } from './bridge-client.type';
-import { BRIDGE_FILE_ENV, BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_REQUEST_TIMEOUT_MS } from './bridge.constants';
-import { bridgeDiscoveryFile } from './bridge-discovery-file';
+import { BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_REQUEST_TIMEOUT_MS } from './bridge.constants';
+import { discoveryFileOf } from './discovery-file-of';
 import { encodeMessage } from './encode-message';
 import { openBridgeLink } from './open-bridge-link';
 import { createPendingReplies } from './pending-replies';
 import { pushListeners } from './push-listeners';
 import { toJson } from './to-json';
-
-const discoveryFileOf = ({ file, app, instance }: BridgeClientOptions): string => {
-  const chosen = file ?? process.env[BRIDGE_FILE_ENV];
-  if (chosen) return chosen;
-  if (!app) throw new Error(`connectBridge needs the app id, a file, or ${BRIDGE_FILE_ENV} in the environment.`);
-  return bridgeDiscoveryFile(app, instance ?? null);
-};
 
 const connectBridge = (options: BridgeClientOptions): BridgeClient => {
   const file = discoveryFileOf(options);

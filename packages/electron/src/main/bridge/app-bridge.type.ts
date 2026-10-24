@@ -1,6 +1,7 @@
 /* @layer electron-main @kind types */
+import type { BrowserWindow } from 'electron';
 import type { MainContext } from '../types/main-context.type';
-import type { BridgeServer } from './bridge.type';
+import type { BridgeArgsCheck, BridgeServer } from './bridge.type';
 
 interface AppBridgeOptions {
   register: (bridge: BridgeServer, ctx: MainContext) => void | Promise<void>;
@@ -39,4 +40,10 @@ interface HelperLaunch {
   env: Record<string, string>;
 }
 
-export type { AppBridge, AppBridgeInput, AppBridgeOptions, AppBridgeStart, HelperLaunch, OpenedAppBridge };
+interface RelayAskOptions {
+  window: () => BrowserWindow | null;
+  timeoutMs?: number;
+  validate?: BridgeArgsCheck;
+}
+
+export type { AppBridge, AppBridgeInput, AppBridgeOptions, AppBridgeStart, HelperLaunch, OpenedAppBridge, RelayAskOptions };

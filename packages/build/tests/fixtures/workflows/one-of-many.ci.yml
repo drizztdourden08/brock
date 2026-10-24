@@ -1,0 +1,132 @@
+name: CI tool
+run-name: CI tool ${{ github.head_ref || github.ref_name }}
+
+# Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
+# Runs on pull requests, on a push to main (releases and release notes land there straight)
+# and from the Actions tab. The review job launches the built app headless under xvfb and fails
+# the run when a check in its report fails.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-tool-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  APP_DIR: apps/tool
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      changed: ${{ steps.changed.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      # A pull request builds and reviews only the apps it touches: their own files, a workspace
+      # package they depend on, or a file outside every package. A push or a manual run builds the app.
+      - name: Does this change touch the app
+        id: changed
+        shell: bash
+        env:
+          BASE: ${{ github.base_ref }}
+        run: echo "changed=$(pnpm exec brock affected "$APP_DIR" ${BASE:+"origin/$BASE"})" >> "$GITHUB_OUTPUT"
+
+  quality:
+    needs: changes
+    if: needs.changes.outputs.changed == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Release note
+        run: pnpm --dir "$APP_DIR" exec brock release-notes check
+
+      - name: App gate steps
+        run: pnpm --dir "$APP_DIR" exec brock gate
+
+  # The review job is pinned to one image, never ubuntu-latest: the apparmor step below and the
+  # linux screenshot baselines both depend on the image, so a new Ubuntu moves only with Brock.
+  review:
+    needs: changes
+    if: needs.changes.outputs.changed == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Let Electron start its sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install xvfb
+        run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }
+
+      - name: Headless review
+        run: xvfb-run -a pnpm --dir "$APP_DIR" exec brock launch main none --prod --review
+
+      - name: Keep the review report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: review-tool
+          path: .user-data/Data/review/
+          if-no-files-found: ignore

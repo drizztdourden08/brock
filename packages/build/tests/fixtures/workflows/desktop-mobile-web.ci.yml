@@ -1,0 +1,145 @@
+name: CI
+run-name: CI ${{ github.head_ref || github.ref_name }}
+
+# Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
+# Runs on pull requests, on a push to main (releases and release notes land there straight)
+# and from the Actions tab. The review job launches the built app headless under xvfb and fails
+# the run when a check in its report fails.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bless:
+        description: Store the review captures as the linux baselines and keep them as the review-baselines artifact
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  APP_DIR: .
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Release note
+        run: pnpm --dir "$APP_DIR" exec brock release-notes check
+
+      - name: App gate steps
+        run: pnpm --dir "$APP_DIR" exec brock gate
+
+      - name: Managed files match brock sync
+        run: pnpm exec brock check
+
+      - name: Lint and typecheck
+        run: pnpm run lint
+
+      - name: Markdown
+        run: pnpm run --if-present lint:md
+
+      - name: Structure
+        run: pnpm exec brock structure --check
+
+      - name: Tests
+        run: pnpm run --if-present test
+  # The review job is pinned to one image, never ubuntu-latest: the apparmor step below and the
+  # linux screenshot baselines both depend on the image, so a new Ubuntu moves only with Brock.
+  review:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: pnpm --dir "$APP_DIR" exec brock build
+
+      - name: Let Electron start its sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install xvfb
+        run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }
+
+      - name: Headless review
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" pnpm --dir "$APP_DIR" exec brock launch main none --prod --review ${{ inputs.bless && '--review-bless' || '--review-baselines' }}
+
+      - name: Keep the blessed baselines
+        if: always() && inputs.bless
+        uses: actions/upload-artifact@v7
+        with:
+          name: review-baselines
+          path: ${{ env.APP_DIR }}/tests/baselines/linux/
+          if-no-files-found: error
+
+      - name: Keep the review report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: review
+          path: .user-data-review/Data/review/
+          if-no-files-found: ignore
+
+  web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build the web app
+        run: pnpm --dir "$APP_DIR" exec brock web build

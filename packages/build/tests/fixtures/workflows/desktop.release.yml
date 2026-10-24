@@ -1,0 +1,372 @@
+name: Release
+run-name: Release ${{ inputs.version }}${{ inputs.prerelease && ' (pre-release)' || (inputs.set_latest && ' (latest)' || ' (draft)') }}
+
+# Managed by brock sync from the targets in brock.config.ts. Change the targets, then run brock sync.
+# Run it from the Actions tab or with `<repo> release <version> [--latest | --prerelease]`.
+# release-notes/v<version>.md must be on the default branch first and pass `brock release-notes check`:
+# it is the release body, and the updater shows it. Tags are v<version>.
+# Every build runs from the commit prepare checked; the release job commits the version, tags it
+# and publishes only once every build succeeded, so a failed build leaves no tag and the same
+# version can run again. The builds fetch the previous release for the Velopack delta before
+# this one exists.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 0.9.0, 0.9.0-beta.1 or v0.9.0. The tag v<version> must not exist yet.'
+        required: true
+        type: string
+      full:
+        description: 'Rebuild the Windows installer payload and directory zip that the small installer fetches. On by itself while no latest release exists.'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Publish as a pre-release: downloadable at once, never the latest, offered only to users who turned pre-releases on.'
+        type: boolean
+        default: false
+      set_latest:
+        description: 'Publish at once as the latest release. Off, and not a pre-release, leaves a draft.'
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: read
+
+env:
+  APP_DIR: .
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
+      full: ${{ steps.resolve.outputs.full }}
+      sha: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check the inputs, the notes and the tag
+        id: resolve
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RAW="${{ inputs.version }}"
+          VERSION="${RAW#v}"
+          TAG="v$VERSION"
+          NOTES="release-notes/v$VERSION.md"
+          if [ "${{ inputs.prerelease }}" = "true" ] && [ "${{ inputs.set_latest }}" = "true" ]; then
+            echo "::error::prerelease and set_latest exclude each other: a pre-release never becomes the latest release."
+            exit 1
+          fi
+          test -f "$NOTES" || { echo "::error::$NOTES is missing. Commit the notes first."; exit 1; }
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists."
+            exit 1
+          fi
+          FULL="${{ inputs.full }}"
+          if ! gh api "repos/${{ github.repository }}/releases/latest" >/dev/null 2>&1; then
+            echo "::notice::No latest release yet, so $TAG is a full release: the small installer needs a payload to fetch."
+            FULL=true
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "full=$FULL" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Release note
+        run: pnpm --dir "$APP_DIR" exec brock release-notes check "${{ steps.resolve.outputs.version }}"
+
+      - name: Lint
+        run: pnpm lint
+
+  build-windows:
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+
+      # The tag and the version commit wait for every build: the release job makes them.
+      - name: Set the release version
+        shell: bash
+        run: node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${{ needs.prepare.outputs.version }}"
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Set up .NET for vpk
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
+
+      # vpk and the velopack package the app loads must be the same version.
+      - name: Install vpk
+        shell: bash
+        run: |
+          VPK=$(cd "$APP_DIR" && node -p "require('velopack/package.json').version" 2>/dev/null || true)
+          if [ -n "$VPK" ]; then dotnet tool install -g vpk --version "$VPK"; else dotnet tool install -g vpk; fi
+
+      # The previous release lets vpk build a delta and list every version in the feed.
+      - name: Fetch the previous release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+            --outputDir "$APP_DIR/release/velopack" --token "$GH_TOKEN" || echo "no previous release to delta against"
+
+      - name: Package
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          FULL=""
+          if [ "${{ needs.prepare.outputs.full }}" = "true" ]; then FULL="--full"; fi
+          pnpm --dir "$APP_DIR" exec brock package $FULL
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+          cp "$APP_DIR"/release/velopack/* upload/
+          ls -l upload
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-windows
+          path: upload/*
+
+  build-macos:
+    needs: prepare
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+
+      # The tag and the version commit wait for every build: the release job makes them.
+      - name: Set the release version
+        shell: bash
+        run: node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${{ needs.prepare.outputs.version }}"
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Package
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          FULL=""
+          if [ "${{ needs.prepare.outputs.full }}" = "true" ]; then FULL="--full"; fi
+          pnpm --dir "$APP_DIR" exec brock package $FULL
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+          cp "$APP_DIR"/release/*.dmg upload/
+          cp "$APP_DIR"/release/*.zip upload/
+          ls -l upload
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-macos
+          path: upload/*
+
+  build-linux:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+
+      # The tag and the version commit wait for every build: the release job makes them.
+      - name: Set the release version
+        shell: bash
+        run: node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${{ needs.prepare.outputs.version }}"
+
+      # pnpm/action-setup takes the version from packageManager in the root package.json.
+      # Naming a version here as well fails the step.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@drizztdourden08'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Set up .NET for vpk
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
+
+      # vpk and the velopack package the app loads must be the same version.
+      - name: Install vpk
+        shell: bash
+        run: |
+          VPK=$(cd "$APP_DIR" && node -p "require('velopack/package.json').version" 2>/dev/null || true)
+          if [ -n "$VPK" ]; then dotnet tool install -g vpk --version "$VPK"; else dotnet tool install -g vpk; fi
+
+      # The previous release lets vpk build a delta and list every version in the feed.
+      - name: Fetch the previous release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+            --outputDir "$APP_DIR/release/velopack" --token "$GH_TOKEN" || echo "no previous release to delta against"
+
+      - name: Package
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          FULL=""
+          if [ "${{ needs.prepare.outputs.full }}" = "true" ]; then FULL="--full"; fi
+          pnpm --dir "$APP_DIR" exec brock package $FULL
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p upload
+          cp "$APP_DIR"/release/velopack/* upload/
+          cp "$APP_DIR"/release/*.deb upload/
+          ls -l upload
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-linux
+          path: upload/*
+
+  release:
+    needs: [prepare, build-windows, build-macos, build-linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Write the release body
+        id: body
+        shell: bash
+        env:
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          TAG="${{ needs.prepare.outputs.tag }}"
+          NOTES="release-notes/v${{ needs.prepare.outputs.version }}.md"
+          BASE="https://github.com/${{ github.repository }}/releases/download/${TAG}"
+          LATEST="https://github.com/${{ github.repository }}/releases/latest/download"
+          link() { for f in $1; do if [ -f "$f" ]; then echo "- [$2]($BASE/$(basename "$f"))"; fi; done; }
+          stub() {
+            for f in $1; do
+              [ -f "$f" ] || continue
+              if [ "$PRERELEASE" != "true" ]; then echo "- [$2]($LATEST/$(basename "$f"))"; continue; fi
+              shown=""
+              for p in $3; do if [ -f "$p" ]; then echo "- [$4]($BASE/$(basename "$p"))"; shown=1; fi; done
+              if [ -z "$shown" ]; then echo "- [$2]($LATEST/$(basename "$f")), which installs the latest stable release; turn on pre-releases in the app's updater to move to this one"; fi
+            done
+          }
+          {
+            grep -v -E '^\s*<!--.*-->\s*$' "$NOTES"
+            echo ""
+            echo "## Downloads"
+            echo ""
+            stub "artifacts/release-windows/*-windows-setup.exe" "Windows installer (.exe), a small download that installs and updates itself" "artifacts/release-windows/*-windows-payload.exe" "Windows setup (.exe) of this pre-release, which updates itself"
+            link "artifacts/release-macos/*.dmg" "macOS disk image (.dmg)"
+            link "artifacts/release-linux/*.AppImage" "Linux AppImage, updates itself"
+            link "artifacts/release-linux/*.deb" "Debian package (.deb)"
+          } > release-body.md
+          echo "title=$(grep -m 1 '^# ' "$NOTES" | sed 's/^# //')" >> "$GITHUB_OUTPUT"
+          cat release-body.md
+
+      # Every build succeeded: commit the version on the commit they built, tag it, then move the
+      # default branch to it. When the branch moved meanwhile, the bump goes on top of it instead.
+      - name: Commit the version and tag it
+        shell: bash
+        env:
+          BRANCH: main
+        run: |
+          TAG="${{ needs.prepare.outputs.tag }}"
+          node -e "const f=process.argv[1];const p=JSON.parse(require('fs').readFileSync(f,'utf8'));p.version=process.argv[2];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$APP_DIR/package.json" "${{ needs.prepare.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$APP_DIR/package.json"
+          BUMPED=""
+          if ! git diff --cached --quiet; then git commit -m "release: $TAG"; BUMPED=1; fi
+          git tag "$TAG"
+          git push origin "$TAG"
+          if [ -n "$BUMPED" ] && ! git push origin "HEAD:$BRANCH"; then
+            git fetch origin "$BRANCH"
+            git checkout -B release-bump "origin/$BRANCH"
+            { git cherry-pick "$TAG" && git push origin "HEAD:$BRANCH"; } || echo "::warning::$TAG is tagged, but the version bump could not reach $BRANCH. Commit $APP_DIR/package.json at ${{ needs.prepare.outputs.version }} by hand."
+          fi
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: ${{ steps.body.outputs.title }}
+          draft: ${{ inputs.set_latest != true && inputs.prerelease != true }}
+          prerelease: ${{ inputs.prerelease == true }}
+          make_latest: ${{ inputs.set_latest == true && inputs.prerelease != true }}
+          body_path: release-body.md
+          files: artifacts/release-*/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

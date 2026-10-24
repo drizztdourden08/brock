@@ -116,7 +116,7 @@ describe('steps for one job and the prepare job', () => {
   });
 
   it('refuses a job its workflow does not have', () => {
-    expect(() => app({ ci: { beforeBuild: [{ name: 'x', run: 'a', jobs: 'build-windows' }] } })).toThrow(/jobs takes changes, quality, review, web, workspace/);
+    expect(() => app({ ci: { beforeBuild: [{ name: 'x', run: 'a', jobs: 'build-windows' }] } })).toThrow(/jobs takes changes, quality, review, web, server, workspace/);
     expect(() => app({ release: { prepare: [{ name: 'x', run: 'a', jobs: ['review'] }] } })).toThrow(/jobs takes prepare, build-windows/);
   });
 });

@@ -18,6 +18,9 @@ const BLESS_INPUT = [
   '        default: false',
 ].join('\n');
 
+const REVIEW_NOTE = ' The review job launches the built app headless under xvfb and fails\n# the run when a check in its report fails.';
+const WINDOWLESS_NOTE = ' The server job starts the built server and waits for its health check.';
+
 export {
-  BASELINE_MODE, BASELINE_REVIEW_DATA, BASELINE_SCREEN, BASELINE_SET, BLESS_INPUT, PLAIN_REVIEW_DATA, REVIEW_COMMAND, REVIEW_RUNNER,
+  BASELINE_MODE, BASELINE_REVIEW_DATA, BASELINE_SCREEN, BASELINE_SET, BLESS_INPUT, PLAIN_REVIEW_DATA, REVIEW_COMMAND, REVIEW_NOTE, REVIEW_RUNNER, WINDOWLESS_NOTE,
 };

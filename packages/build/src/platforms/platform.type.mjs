@@ -49,6 +49,7 @@
  * @property {(os: string, opts?: { release?: boolean, history?: boolean, platform?: string, job?: string }) => string} setup
  * @property {(point: string, os: string, platform?: string | null, job?: string | null) => string} stepsAt a step point's steps
  * @property {(job: string) => Record<string, string> | undefined} liftedPermissions the permissions the steps of a job asked for
+ * @property {{ id: string, arch: ('x64' | 'arm64')[], image: string | null }} server the id and options a server app reads
  */
 
 /**
@@ -78,6 +79,7 @@
  * @property {ScaffoldStep[]} scaffold
  * @property {((ctx: JobContext) => Job) | null} ciJob
  * @property {((ctx: JobContext) => Job) | null} releaseJob
+ * @property {((ctx: JobContext) => Job) | null} publishJob a job that waits for the release job
  * @property {((ctx: PlatformContext) => { path: string, content: string }[]) | null} managed
  */
 

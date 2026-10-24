@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { artifactPrefixOf } from '../packaging/release-names.mjs';
 import { DEFAULT_TARGETS } from '../platforms/platforms.constants.mjs';
+import { shapeOf } from '../platforms/server/app-shape.mjs';
+import { serverOptions } from '../platforms/server/server-options.mjs';
 import { collectWorkflowSteps } from './collect-workflow-steps.mjs';
 import { composeWorkflows, workspaceCi } from './compose-workflows.mjs';
 import { defaultBranchOf } from './default-branch.mjs';
@@ -36,10 +38,21 @@ const trackedIgnore = (repoDir) => {
 
 /**
  * @param {import('../config.mjs').BrockConfig} config
+ * @returns {{ server?: import('./compose-workflows.mjs').ServerJobOptions }} the server options of an app with a server target
+ */
+const serverInputOf = (config) => {
+  if (!shapeOf(targetsOf(config)).server) return {};
+  const { arch, image } = serverOptions(config);
+  return { server: { id: config.product.id, arch, image } };
+};
+
+/**
+ * @param {import('../config.mjs').BrockConfig} config
  * @param {import('./release-layout.mjs').ReleaseLayout} layout
  */
 const composeInputOf = (config, layout) => ({
   targets: targetsOf(config),
+  ...serverInputOf(config),
   appDir: layout.appDir,
   prefix: artifactPrefixOf(config.product),
   app: layout.app,

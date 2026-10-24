@@ -35,6 +35,12 @@ interface CollectedSteps {
   release: Record<string, CheckedStep[]>;
 }
 
+interface ServerJobOptions {
+  id: string;
+  arch: ('x64' | 'arm64')[];
+  image: string | null;
+}
+
 interface ComposeInput {
   targets: string[];
   appDir?: string;
@@ -44,6 +50,7 @@ interface ComposeInput {
   app?: AppOfMany | null;
   baselines?: boolean;
   branch?: string;
+  server?: ServerJobOptions;
   publish?: PublishPlan | null;
 }
 
@@ -57,4 +64,4 @@ declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
 declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string, steps?: CollectedSteps) => string;
 
 export { composeWorkflows, workspaceCi };
-export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, PublishPlan, SystemStep };
+export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, PublishPlan, ServerJobOptions, SystemStep };

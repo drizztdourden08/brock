@@ -20,6 +20,11 @@ interface WorkflowAttest {
   stage: 'beforePackage' | 'afterPackage';
 }
 
+interface WorkflowPublish {
+  packages: string[];
+  registry?: 'github';
+}
+
 interface WorkflowStep {
   name: string;
   id?: string;
@@ -105,5 +110,5 @@ interface ResolvedModule {
 
 export type {
   BrockModuleManifest, CiWorkflowSteps, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ReleaseWorkflowSteps, ResolvedModule,
-  WorkflowAttest, WorkflowPermissionLevel, WorkflowPermissions, WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
+  WorkflowAttest, WorkflowPermissionLevel, WorkflowPermissions, WorkflowPublish, WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
 };

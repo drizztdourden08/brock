@@ -11,6 +11,11 @@ interface AppOfMany {
   notesDir: string;
 }
 
+interface PublishPlan {
+  owner: string;
+  packages: { name: string; dir: string; build: boolean }[];
+}
+
 interface CheckedStep {
   name: string;
   run: string | null;
@@ -39,6 +44,7 @@ interface ComposeInput {
   app?: AppOfMany | null;
   baselines?: boolean;
   branch?: string;
+  publish?: PublishPlan | null;
 }
 
 interface ComposedWorkflows {
@@ -51,4 +57,4 @@ declare const composeWorkflows: (input: ComposeInput) => ComposedWorkflows;
 declare const workspaceCi: (systemSteps?: SystemStep[], branch?: string, steps?: CollectedSteps) => string;
 
 export { composeWorkflows, workspaceCi };
-export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, SystemStep };
+export type { AppOfMany, CheckedStep, CollectedSteps, ComposeInput, ComposedWorkflows, PublishPlan, SystemStep };

@@ -5,6 +5,7 @@ export type {
   InstanceInfo, MainPaths, MainLogLevel, EmitToWindow, WindowDecision,
 } from './types/main-context.type';
 export type { MainWindowControl } from './window/main-window-control.type';
+export type { ConfirmDialogOptions, MainDialogs } from './dialogs/dialogs.type';
 export type { TrayControl, TrayItemHandler } from './tray/tray.type';
 
 export { handle } from './ipc/handle';

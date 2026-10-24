@@ -16,6 +16,7 @@ import type { FileWriteGuard } from '../files/file-guard.type';
 import type { DocumentAccess } from '../documents/document-access.type';
 import type { AppBridge, AppBridgeOptions } from '../bridge/app-bridge.type';
 import type { MainWindowControl } from '../window/main-window-control.type';
+import type { MainDialogs } from '../dialogs/dialogs.type';
 import type { TrayControl } from '../tray/tray.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
@@ -46,6 +47,7 @@ interface MainContext {
   jobs: JobRegistry;
   window: MainWindowControl;
   tray: TrayControl;
+  dialogs: MainDialogs;
   handle: HandleFn;
   on: OnFn;
   emit: EmitToWindow;

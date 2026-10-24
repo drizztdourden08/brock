@@ -1,7 +1,9 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
+import { offScreenWindows } from './off-screen-windows';
 
 const keepOffScreen = (win: BrowserWindow): BrowserWindow => {
+  offScreenWindows.add(win);
   const state = { shown: false, minimized: false, maximized: false, fullscreen: false };
 
   const reveal = (): void => {

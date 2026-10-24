@@ -24,7 +24,7 @@
  * @property {BrockPackagingOptions} [packaging] electron-builder and vpk options
  * @property {Record<string, string>} [helpers] Node scripts: name to entry file
  * @property {{ runAsNode?: boolean }} [fuses] Electron fuses of the packaged app
- * @property {{ entry?: string, node?: string, osPackages?: string[], ports?: number[], image?: string, arch?: ('x64' | 'arm64')[] }} [server] the server: entry, Node, OS packages, ports, image, arches
+ * @property {{ entry?: string, node?: string, osPackages?: string[], ports?: number[], image?: string, arch?: ('x64' | 'arm64')[], optionalAddons?: string[] }} [server] the server options
  */
 
 /**

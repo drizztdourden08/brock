@@ -27,7 +27,7 @@ createPreloadBridge({ maps: { invoke: INVOKE_MAP, send: SEND_MAP, events: EVENT_
 
 ## The server runtime
 
-A server has no window. `@drizztdourden08/brock-electron/server` is the Electron-free entry: `runServer(start, { domains })` resolves the data folder, logs to stdout, writes the health heartbeat and stops on SIGTERM. `embedServer(start, ctx, { domains })` from `/main` runs the same start function inside the desktop app. `createDataDomains(dataDir, defs)` from `/node` builds the data domains without Electron. See `docs/architecture.md`, section The server kind.
+A server has no window. `@drizztdourden08/brock-electron/server` is the Electron-free entry: `runServer(start, { domains })` resolves the data folder (`resolveDataDir(argv, env, cwd)`, exported for tools that must find the same folder: `--user-data=`, `BROCK_DATA_DIR`, `STATE_DIRECTORY`, then `./.user-data`), logs to stdout, writes the health heartbeat and stops on SIGTERM. `embedServer(start, ctx, { domains })` from `/main` runs the same start function inside the desktop app. `createDataDomains(dataDir, defs)` from `/node` builds the data domains without Electron. See `docs/architecture.md`, section The server kind.
 
 ## Boot order
 

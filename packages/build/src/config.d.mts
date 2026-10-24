@@ -83,6 +83,11 @@ interface BrockPackagingOptions {
   velopackIcons?: { windows?: string; linux?: string };
 }
 
+interface BrockFuseOptions {
+  /** Whether the packaged app honours ELECTRON_RUN_AS_NODE. Default: true when helpers are declared (a helper starts through it), false otherwise. false with helpers is refused. */
+  runAsNode?: boolean;
+}
+
 interface BrockGateOptions {
   /** package.json scripts the gate runs, in order: from the app's own package.json, else the workspace root's. */
   scripts?: string[];
@@ -113,6 +118,8 @@ interface BrockConfig {
   packaging?: BrockPackagingOptions;
   /** Standalone Node scripts an outside program runs, such as a stdio MCP helper: name to entry file, relative to the app folder. Each builds into dist/helpers/<name>.mjs and ships in resources/helpers, outside the asar. */
   helpers?: Record<string, string>;
+  /** The Electron fuses of the packaged app. */
+  fuses?: BrockFuseOptions;
 }
 
 declare const CONFIG_FILE: 'brock.config.ts';
@@ -120,7 +127,7 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
 export type {
-  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
+  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
   BrockReviewOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
 };
 export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

@@ -1,0 +1,5 @@
+---
+'@drizztdourden08/brock-build': minor
+---
+
+Packaged apps now flip Electron fuses in the managed electron-builder config. `EnableNodeOptionsEnvironmentVariable` and `EnableNodeCliInspectArguments` are off, so `NODE_OPTIONS` and `--inspect` no longer work on a packaged app. `OnlyLoadAppFromAsar` and `EnableCookieEncryption` are on, and `EnableEmbeddedAsarIntegrityValidation` is on for Windows and macOS builds (Electron has no asar integrity on Linux, so it stays off there). `RunAsNode` follows `helpers`: on when `brock.config.ts` declares helpers, since they start through `ELECTRON_RUN_AS_NODE`, and off otherwise. The new `fuses: { runAsNode }` option overrides it; `false` beside declared helpers is refused. `brock dev` and the headless launches use the dev Electron and are unchanged. The cookie fuse is a one-way change for existing cookie stores.

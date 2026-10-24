@@ -6,6 +6,7 @@ import { modulePackaging } from './modules/module-packaging.mjs';
 import { createAfterPack } from './packaging/after-pack.mjs';
 import { appAfterPack, appExtraResources, withAssociationOptions } from './packaging/app-packaging.mjs';
 import { builderIcons } from './packaging/builder-icons.mjs';
+import { electronFusesOf } from './packaging/electron-fuses.mjs';
 import { linuxMetadata } from './packaging/linux-metadata.mjs';
 import { copyrightOf, windowsVersionStrings } from './packaging/windows-version-info.mjs';
 import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
@@ -55,10 +56,10 @@ const debOptions = (rootDir) => (existsSync(join(rootDir, DEB_POSTINST_FILE)) ? 
 
 /**
  * @param {ProductInput} product
- * @param {{ rootDir: string, packaging?: import('./config.mjs').BrockPackagingOptions }} opts packaging: the options of brock.config.ts
+ * @param {{ rootDir: string, packaging?: import('./config.mjs').BrockPackagingOptions, helpers?: Record<string, string>, fuses?: { runAsNode?: boolean }, platform?: string }} opts
  * @returns {Record<string, unknown>}  An electron-builder Configuration
  */
-const createBuilderConfig = (product, { rootDir, packaging = {} }) => {
+const createBuilderConfig = (product, { rootDir, packaging = {}, helpers, fuses, platform }) => {
   const associations = withAssociationOptions(product.fileAssociations, packaging.fileAssociations);
   const prefix = product.artifactPrefix ?? `${product.id}-`;
   const icons = builderIcons(product.icons);
@@ -72,6 +73,7 @@ const createBuilderConfig = (product, { rootDir, packaging = {} }) => {
     electronLanguages: ['en-US'],
     files: APP_FILES,
     asarUnpack: [VELOPACK_ASAR_UNPACK],
+    electronFuses: electronFusesOf({ platform, helpers, fuses }),
     copyright: copyrightOf(product),
     afterPack: createAfterPack(rootDir, { ico: icons.win, versionStrings: windowsVersionStrings(product) }, appAfterPack(packaging.afterPack)),
     fileAssociations: toBuilderAssociations(associations),
@@ -107,7 +109,7 @@ const createBuilderConfig = (product, { rootDir, packaging = {} }) => {
  */
 const loadBuilderConfig = async (rootDir) => {
   const cfg = await loadBrockConfig(rootDir);
-  const config = createBuilderConfig(cfg.product, { rootDir, packaging: cfg.packaging });
+  const config = createBuilderConfig(cfg.product, { rootDir, packaging: cfg.packaging, helpers: cfg.helpers, fuses: cfg.fuses });
   const modules = modulePackaging(rootDir, cfg.modules);
   const extraResources = [...modules.extraResources, ...helperResources(rootDir, cfg.helpers), ...appExtraResources(cfg.packaging?.extraResources)];
   return {

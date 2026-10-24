@@ -48,14 +48,32 @@ describe('a folder rename and what the folder carries', () => {
     expect(await names(granted)).toEqual(['app', 'empty', 'sub']);
   });
 
-  it('refuses a folder whose content would land in a class under an ordinary name, at any depth', async () => {
+});
+
+describe('a folder rename and where its content would land', () => {
+  it('refuses a folder whose content is not protected where it is but would be at the new place', async () => {
     const { access, granted } = world;
-    for (const inner of [join('.git', 'config'), join('deep', 'er', '.vscode', 'tasks.json'), 'danger.lnk', join('a', 'desktop.ini'), join('.config', 'autostart', 'x.desktop'), '.bashrc']) {
-      await put(join(granted, 'src', inner));
-      await expect(access.rename(join(granted, 'src'), join(granted, 'plain')), inner).rejects.toThrow(/may not be changed/);
+    const cases: [string, string, string][] = [
+      ['WindowsPowerShell', 'Microsoft.PowerShell_profile.ps1', ''],
+      ['powershell', 'modules', 'm.psm1'],
+    ];
+    for (const [parent, first, second] of cases) {
+      await mkdir(join(granted, parent), { recursive: true });
+      await put(join(granted, 'src', first, second));
+      await expect(access.rename(join(granted, 'src'), join(granted, parent, 'src')), parent).rejects.toThrow(/may not be changed/);
       await rm(join(granted, 'src'), { recursive: true });
+      expect(existsSync(join(granted, parent, 'src'))).toBe(false);
     }
-    expect(existsSync(join(granted, 'plain'))).toBe(false);
+  });
+
+  it('lets a project folder that already holds protected entries be renamed', async () => {
+    const { access, granted } = world;
+    for (const inner of [join('.git', 'config'), join('deep', '.vscode', 'tasks.json'), 'danger.lnk', join('a', 'desktop.ini'), '.bashrc', join('.husky', 'pre-commit')]) {
+      await put(join(granted, 'project', inner));
+    }
+    await access.rename(join(granted, 'project'), join(granted, 'renamed'));
+    expect(await readFile(join(granted, 'renamed', '.git', 'config'), 'utf8')).toBe('x');
+    expect(existsSync(join(granted, 'project'))).toBe(false);
   });
 
   it('refuses a folder with more entries than it can check', async () => {
@@ -63,6 +81,8 @@ describe('a folder rename and what the folder carries', () => {
     for (const name of ['a', 'b', 'c', 'd']) await put(join(granted, 'big', name));
     await expect(subtreeDenied(join(granted, 'big'), join(granted, 'moved'), 3)).rejects.toThrow(/more than 3 entries/);
     await expect(subtreeDenied(join(granted, 'big'), join(granted, 'moved'), 4)).resolves.toBe(false);
+    await put(join(granted, 'big', '.git', 'config'));
+    await expect(subtreeDenied(join(granted, 'big'), join(granted, 'moved'), 10)).resolves.toBe(false);
   });
 
   it('still renames an ordinary folder with ordinary content', async () => {
@@ -89,6 +109,16 @@ describe('renaming a link', () => {
     await access.rename(join(granted, 'in'), join(granted, 'in2'));
     expect(await names(join(granted, 'sub'))).toEqual(['in.txt']);
     expect(existsSync(join(granted, 'in2'))).toBe(true);
+  });
+
+  it('refuses a link renamed to a name that opens a protected class', async () => {
+    const { access, granted, outside } = world;
+    await symlink(outside, join(granted, 'out'), dirLink);
+    for (const name of ['.github', 'WindowsPowerShell', 'Library', '.git']) {
+      await expect(access.rename(join(granted, 'out'), join(granted, name)), name).rejects.toThrow(/may not be changed/);
+    }
+    expect(existsSync(join(granted, 'out'))).toBe(true);
+    expect(await names(outside)).toEqual(['secret.txt']);
   });
 
   it('still checks the name of the link and what sits behind it as a write', async () => {

@@ -11,7 +11,7 @@ const subtreeDenied = async (source: string, target: string, max: number): Promi
       seen += 1;
       if (seen > max) throw new Error(`"${source}" holds more than ${max} entries and cannot be checked before it is moved`);
       const child = join(rel, dirent.name);
-      if (writeDenied(join(target, child))) return true;
+      if (writeDenied(join(target, child)) && !writeDenied(join(source, child))) return true;
       if (dirent.isDirectory()) pending.push(child);
     }
   }

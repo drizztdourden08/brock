@@ -192,3 +192,29 @@ describe('confirmSave discard', () => {
     expect(useDialogStore.getState().dialog).toBeNull();
   });
 });
+
+describe('confirm dialog footer', () => {
+  const textOf = (selector: string): string[] => [...document.querySelectorAll(`${selector} button`)].map((button) => button.textContent.trim());
+
+  it.each([
+    ['confirmSave', () => { void confirmSave({ title: 'Unsaved', message: 'x' }); }, 'Discard', ['Cancel', 'Save']],
+    ['a neutral alternate', () => { void confirmAction({ title: 'Upgrade', message: 'x', confirmLabel: 'Upgrade', cancelLabel: 'Not now', alternate: { label: 'Release notes', onSelect: () => {} } }); }, 'Release notes', ['Not now', 'Upgrade']],
+  ])('puts the alternate of %s in a start group and cancel and confirm in an end group', (_name, open, alternateLabel, endLabels) => {
+    mount();
+    act(open);
+    const footer = document.querySelector('.dialog__actions');
+    const start = footer?.querySelector('.confirm-actions__start');
+    const end = footer?.querySelector('.confirm-actions__end');
+    expect(textOf('.confirm-actions__start')).toEqual([alternateLabel]);
+    expect(textOf('.confirm-actions__end')).toEqual(endLabels);
+    expect((start?.compareDocumentPosition(end as Node) ?? 0) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(footer?.querySelectorAll('button')).toHaveLength(3);
+  });
+
+  it('draws only the end group when there is no alternate', () => {
+    mount();
+    act(() => { void confirmAction({ title: 'Plain', message: 'x' }); });
+    expect(document.querySelector('.confirm-actions__start')).toBeNull();
+    expect(textOf('.confirm-actions__end')).toEqual(['Cancel', 'Confirm']);
+  });
+});

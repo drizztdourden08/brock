@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { knipConfigFor } from '@drizztdourden08/standards/knip';
 import { knipBin } from './knip-bin.mjs';
+import { knipScope } from './knip-scope.mjs';
 
 const PREPROCESSOR = join(import.meta.dirname, '..', 'knip-brock-dependencies.mjs');
 const CONFIG_FILES = ['knip.json', '.knip.json'];
@@ -26,7 +27,8 @@ const configArgs = (rootDir) => {
  * @param {{ rootDir: string, args: string[] }} ctx
  * @returns {number} exit code
  */
-const runKnip = ({ rootDir, args }) => {
+const runKnip = (ctx) => {
+  const { rootDir, args } = knipScope(ctx.rootDir, ctx.args);
   const bin = knipBin(rootDir);
   if (!bin) {
     console.error('brock knip: knip is not installed');

@@ -90,3 +90,26 @@ const { state, userCode, lastError, begin, cancel } = useSignIn('account');
 ```
 
 `state` is `signed-out`, `waiting` or `signed-in`. The module's renderer boot task (`secrets-sign-in`) reads `signIn.signedIn()` before the window shows, so a provider with a stored token starts `signed-in` and the screen never draws the signed-out state first. `useSignIn` reads it too when the boot task did not run, and `useSignInStore` keeps `loaded` and `loadSignedIn()` for a refresh after the app removed a token. `useSecretsStore` holds `metas`, `canStore`, `refresh`, `set` and `remove` for a settings tab; the module ships no screen of its own.
+
+## Headless apps: the Node store
+
+A server with no Electron and no OS keychain imports the Node entry. It never imports `electron`, and it has the same `canStore`, `set`, `get`, `has`, `list` and `delete` as the main-side store.
+
+```ts
+import { createNodeSecretStore } from '@drizztdourden08/brock-secrets/node';
+
+const secrets = createNodeSecretStore({ dataDir: '/var/lib/my-server/Data' });
+await secrets.set('api-token', token);
+const value = await secrets.get('api-token');
+```
+
+**This store is not encrypted at rest.** A value sits in plain text in `<dataDir>/secrets/secrets.json`. Anyone who can read that file can read every secret. Keep the data folder private to the service user, and prefer the environment for secrets you do not want on disk at all. The type says it too: `NodeSecretStore.encryptedAtRest` is the literal `false`.
+
+| Platform | Protection |
+|---|---|
+| posix | The file is written with mode 0600 and the folder with mode 0700, so only the owner reads it. |
+| Windows | Node ignores the mode. The file keeps the access list its folder gives it, normally the user profile. Put `dataDir` where only the service account has access. |
+
+Writes are atomic: the store writes a temporary file beside the target, then renames it over the target. A crash leaves the old file or the new one, never half of one.
+
+An environment variable overrides the file for a key. The variable is `BROCK_SECRET_` plus the key in upper case, with each run of characters outside `A-Z` and `0-9` turned into one `_`. So `api-token` reads `BROCK_SECRET_API_TOKEN`, and `lobby.admin key` reads `BROCK_SECRET_LOBBY_ADMIN_KEY`. An empty variable counts as unset. `get` and `has` see the override. `set` and `delete` touch the file only, and `list` lists the file only. `envPrefix` changes the prefix and `env` replaces `process.env`, which is how tests inject values.

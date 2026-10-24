@@ -25,7 +25,7 @@ const ConfirmDialog = () => {
       onCancel={dismiss}
     >
       {facts && facts.length > 0 && <FactsPanel groups={[facts]} layout="rows" label={dialog.title} />}
-      {alternate && <Button variant="danger" onClick={alternate.onSelect}>{alternate.label}</Button>}
+      {alternate && <Button variant={alternate.tone === 'neutral' ? 'secondary' : 'danger'} onClick={alternate.onSelect}>{alternate.label}</Button>}
       {choices && choices.length > 0 && (
         <ConfirmChoices choices={choices} value={choice} label={dialog.title} look={dialog.look} searchable={dialog.searchable} onChange={choose} />
       )}

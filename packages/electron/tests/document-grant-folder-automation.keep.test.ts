@@ -1,19 +1,16 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mkdir, rm, writeFile } from 'fs/promises';
+import { rm } from 'fs/promises';
 import { join } from 'path';
-import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { createDialogs } from '../src/main/dialogs/create-dialogs';
-import { mainFolderMemory } from '../src/main/documents/main-folder-memory';
 import { electronDialogMock } from './electron-dialog-mock';
-import { makeBase, sessionOf, testAccess } from './folder-fixture';
 import type { Call } from './folder-fixture';
+import { flagsOf, grantSession, makeGrantTree, openHero, reads } from './folder-grant-fixture';
 
 vi.mock('electron', async () => (await import('./electron-dialog-mock')).electronDialogMock);
 
-const PROFILES = { load: (id: string) => Promise.resolve(id === 'p1' ? { id, name: id, created: 1, lastPlayed: 1 } : null) } as MainContext['profiles'];
 const ANSWER = '--answer-folder-grants';
 const OPT_IN = { grantFolder: { ask: true, showOnAutomation: true } };
 
@@ -24,46 +21,14 @@ let call: Call;
 let confirm: ReturnType<typeof vi.fn<MainContext['dialogs']['confirm']>>;
 let log: ReturnType<typeof vi.fn<MainContext['log']>>;
 
-const paths: MainContext['paths'] = { userData: (...segments) => join(base, 'user', ...segments), data: (...segments) => join(base, 'Data', ...segments) };
-
-const flagsOf = (argv: string[]): MainContext['flags'] => {
-  const real = createAutomationFlags();
-  return {
-    ...real,
-    isAutomationLaunch: () => real.isAutomationLaunch(argv),
-    isHeadlessLaunch: () => real.isHeadlessLaunch(argv),
-    hasFlag: (flag) => real.hasFlag(flag, argv),
-    flagValue: (flag) => real.flagValue(flag, argv),
-  };
-};
-
 const launch = (argv: string[], dialogs?: MainContext['dialogs']): void => {
-  const flags = flagsOf(argv);
-  const made: DocumentAccess = testAccess({ memory: () => mainFolderMemory({ paths, log: () => undefined, profiles: PROFILES, documents: made }) });
-  access = made;
-  call = sessionOf({
-    documents: access,
-    paths,
-    profiles: PROFILES,
-    log,
-    dialogs: dialogs ?? { confirm },
-    flags,
-    product: { name: 'Bxel' } as MainContext['product'],
-  });
+  ({ access, call } = grantSession({ base, confirm, log, dialogs, flags: flagsOf(argv) }));
 };
 
-const openFile = (opts: unknown): Promise<unknown> => {
-  electronDialogMock.dialog.showOpenDialog.mockResolvedValueOnce({ canceled: false, filePaths: [join(assets, 'hero.json')] });
-  return call('document:open', opts, 'p1');
-};
-const reads = (path: string): Promise<boolean> => access.resolve(path).then(() => true, () => false);
+const openFile = (opts: unknown): Promise<unknown> => openHero(call, assets, opts, 'p1');
 
 beforeEach(async () => {
-  base = await makeBase('brock-grant-folder-auto-');
-  assets = join(base, 'proj', 'assets');
-  await mkdir(assets, { recursive: true });
-  await writeFile(join(assets, 'hero.json'), '{}');
-  await writeFile(join(assets, 'side.json'), '{}');
+  ({ base, assets } = await makeGrantTree('brock-grant-folder-auto-'));
   confirm = vi.fn<MainContext['dialogs']['confirm']>().mockResolvedValue(false);
   log = vi.fn<MainContext['log']>();
   electronDialogMock.app.isPackaged = false;
@@ -82,14 +47,14 @@ describe('the folder question in an automation launch', () => {
     launch(['--no-focus']);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
     expect(confirm).not.toHaveBeenCalled();
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
   it('shows the native question on a plain --no-focus launch when the call opts in', async () => {
     launch(['--no-focus'], createDialogs({ flags: flagsOf(['--no-focus']), window: () => null, log }));
     expect(await openFile(OPT_IN)).toEqual({ path: join(assets, 'hero.json'), folderGranted: true, folder: assets });
     expect(electronDialogMock.dialog.showMessageBox).toHaveBeenCalledTimes(1);
-    expect(await reads(join(assets, 'side.json'))).toBe(true);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(true);
   });
 
   it.each([['--review'], ['--screenshot=boot'], ['--screenshot-splash']])('refuses the opted-in question on %s', async (flag) => {
@@ -97,7 +62,7 @@ describe('the folder question in an automation launch', () => {
     launch(argv, createDialogs({ flags: flagsOf(argv), window: () => null, log }));
     expect(await openFile(OPT_IN)).toMatchObject({ folderGranted: false });
     expect(electronDialogMock.dialog.showMessageBox).not.toHaveBeenCalled();
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
   it('passes the opt-in to the dialog only when the call sets it', async () => {
@@ -116,7 +81,7 @@ describe(ANSWER, () => {
     expect(confirm).not.toHaveBeenCalled();
     expect(electronDialogMock.dialog.showMessageBox).not.toHaveBeenCalled();
     expect(await access.rememberedFolders('p1')).toEqual([]);
-    expect(await reads(join(assets, 'side.json'))).toBe(true);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(true);
   });
 
   it('keeps the widening rules: levels and refused roots apply as for a human yes', async () => {
@@ -128,7 +93,7 @@ describe(ANSWER, () => {
   it('declines on decline', async () => {
     launch(['--no-focus', `${ANSWER}=decline`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
   it('does not remember a folder it granted, so a dev run leaves nothing for the installed app', async () => {
@@ -143,27 +108,28 @@ describe(`${ANSWER} refusals and edge cases`, () => {
   it('is ignored with an identity flag alone, which is an automation launch but not a headless one', async () => {
     launch(['--profile=x', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
     expect(log).toHaveBeenCalledWith(expect.stringContaining(ANSWER));
   });
 
   it('answers folderGranted false when reading the flag throws', async () => {
-    launch(['--no-focus', `${ANSWER}=grant`]);
-    const flags = flagsOf(['--no-focus', `${ANSWER}=grant`]);
-    call = sessionOf({ documents: access, paths, profiles: PROFILES, log, dialogs: { confirm }, product: { name: 'Bxel' } as MainContext['product'], flags: { ...flags, hasFlag: () => { throw new Error('flags broke'); } } });
+    const hasFlag = (): never => {
+      throw new Error('flags broke');
+    };
+    ({ access, call } = grantSession({ base, confirm, log, flags: { ...flagsOf(['--no-focus', `${ANSWER}=grant`]), hasFlag } }));
     expect(await openFile({ grantFolder: 'ask' })).toEqual({ path: join(assets, 'hero.json'), folderGranted: false, reason: 'flags broke' });
   });
 
   it('grants nothing when the app asks for no folder', async () => {
     launch(['--no-focus', `${ANSWER}=grant`]);
     expect(await openFile({})).toBe(join(assets, 'hero.json'));
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
   it('refuses a bad option even with the flag', async () => {
     launch(['--no-focus', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: { ask: false } })).toMatchObject({ folderGranted: false });
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
   it('is ignored and logged once in a packaged app', async () => {
@@ -171,7 +137,7 @@ describe(`${ANSWER} refusals and edge cases`, () => {
     launch(['--no-focus', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
     expect(log.mock.calls.filter(([message]) => message.includes(ANSWER))).toHaveLength(1);
   });
 
@@ -179,13 +145,13 @@ describe(`${ANSWER} refusals and edge cases`, () => {
     launch([`${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
     expect(confirm).toHaveBeenCalledTimes(1);
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
     expect(log).toHaveBeenCalledWith(expect.stringContaining(ANSWER));
   });
 
   it('is ignored for a value it does not know', async () => {
     launch(['--no-focus', `${ANSWER}=yes`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
-    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 });

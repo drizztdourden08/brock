@@ -138,6 +138,17 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 window opens off screen and unfocused, and the app writes under `<dir>`. Add `--review` for the
 automated review, which writes `<dir>/Data/review/review/report.md` and exits 1 on a failed check.
 
+## Server packaging: the pinned Node
+
+`brock server package` bundles a Linux Node binary. Brock pins the sha256 of the official `node-v<version>-linux-<x64 | arm64>.tar.gz` archives of its default version in `SERVER_NODE_SHA256` (`src/platforms/server/server.constants.mjs`). The download must match the pin, and `SHASUMS256.txt` from nodejs.org must agree with it; either mismatch stops the build before anything is staged. A `server.node` version that Brock does not pin is checked against `SHASUMS256.txt` alone.
+
+To move the default Node version:
+
+1. Pick the release on nodejs.org and open `https://nodejs.org/dist/v<version>/SHASUMS256.txt`.
+2. Copy the two lines for `node-v<version>-linux-x64.tar.gz` and `node-v<version>-linux-arm64.tar.gz`.
+3. Set `SERVER_NODE_VERSION` and the two hashes in `SERVER_NODE_SHA256` to match. Better still, download the two archives yourself and run `sha256sum` on them, so the pin does not rest on the same file it cross-checks.
+4. Run the server tests, then add a changeset.
+
 ## Ports and the dev server
 
 The Vite factory reads `product.ports.base` (or `derivePortBase(product.id)` when unset) and the checkout's port slot, and sets the renderer `server.port` to `base + 10 x slot` with `strictPort` from `product.ports.strict`, true by default. `devServerPort(rootDir, product)` returns that pair. The scheme lives in brock-thread (`/ports`); `portFor`, `portSlotOf`, `derivePortBase` and `PORT_OFFSETS` are re-exported here.

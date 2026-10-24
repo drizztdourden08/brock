@@ -1,18 +1,35 @@
 #!/bin/sh
 # @layer tooling-scripts @kind build
 # Managed by brock sync: the .deb post-install script, run as root by dpkg.
-# It makes the system user, runs build/server/after-install.sh if the app has one,
-# then enables and (re)starts the service.
+# It makes the system user, or stops when the name belongs to another account,
+# runs build/server/after-install.sh if the app has one, then handles the service:
+# a first install enables and starts it, an upgrade only restarts a running one.
 set -e
 if [ "$1" = "configure" ]; then
-  if ! getent passwd __ID__ >/dev/null 2>&1; then
-    useradd --system --user-group --home-dir /var/lib/__ID__ --no-create-home --shell /usr/sbin/nologin __ID__
+  if entry=$(getent passwd __ID__); then
+    uid=$(echo "$entry" | cut -d: -f3)
+    comment=$(echo "$entry" | cut -d: -f5)
+    shell=$(echo "$entry" | cut -d: -f7)
+    if [ "$uid" -lt 100 ] || [ "$uid" -gt 999 ] || [ "$shell" != "/usr/sbin/nologin" ] || [ "$comment" != "__ID__ server (brock)" ]; then
+      echo "__ID__: the account __ID__ exists and was not made by this package; refusing to run the server as it." >&2
+      exit 1
+    fi
+  else
+    group_option="--user-group"
+    if getent group __ID__ >/dev/null 2>&1; then
+      group_option="-g __ID__"
+    fi
+    useradd --system $group_option --comment "__ID__ server (brock)" --home-dir /var/lib/__ID__ --no-create-home --shell /usr/sbin/nologin __ID__
   fi
 __HOOK__
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload
-    systemctl enable __ID__.service
-    systemctl restart __ID__.service
+    if [ -z "$2" ]; then
+      systemctl enable __ID__.service
+      systemctl start __ID__.service
+    else
+      systemctl try-restart __ID__.service
+    fi
   fi
 fi
 exit 0

@@ -13,6 +13,10 @@ const splitName = (name) => {
   return { prefix, base };
 };
 
+const checkPath = (path) => {
+  if (path.startsWith('/') || path.includes('\\') || path.split('/').includes('..')) throw new Error(`tar: the path "${path}" is absolute or has a ".." part.`);
+};
+
 const header = ({ name, mode, size, type }) => {
   const block = Buffer.alloc(TAR_BLOCK);
   const { prefix, base } = splitName(name);
@@ -42,6 +46,7 @@ const padding = (size) => Buffer.alloc((TAR_BLOCK - (size % TAR_BLOCK)) % TAR_BL
  * @returns {Buffer} a gzip ustar archive, root-owned, fixed time
  */
 const tarGz = (entries) => {
+  entries.forEach(({ path }) => checkPath(path));
   const dirs = directoriesOf(entries).map((name) => header({ name, mode: MODE_DIRECTORY, size: 0, type: '5' }));
   const files = [...entries].sort((a, b) => a.path.localeCompare(b.path)).flatMap(({ path, mode, data }) => {
     const bytes = Buffer.from(data);

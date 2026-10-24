@@ -10,8 +10,8 @@ import { BINARIES, CONFIG, NO_DPKG, PRODUCT, appFolder, cleanup, fakeDownloads, 
 afterEach(cleanup);
 
 const pack = (root, extra = {}, deps = {}) => {
-  const { download } = fakeDownloads(extra.node ?? SERVER_NODE_VERSION, BINARIES, extra);
-  return packageServer({ rootDir: root, config: extra.config ?? CONFIG, arches: extra.arches, deb: extra.deb, deps: { download, cacheDir: tempDir(), dpkg: NO_DPKG, ...deps } });
+  const { download, pins } = fakeDownloads(extra.node ?? SERVER_NODE_VERSION, BINARIES, extra);
+  return packageServer({ rootDir: root, config: extra.config ?? CONFIG, arches: extra.arches, deb: extra.deb, deps: { download, pins, cacheDir: tempDir(), dpkg: NO_DPKG, ...deps } });
 };
 
 const dpkgMock = (calls) => ({
@@ -110,9 +110,9 @@ describe('brock server package: the deb and the refusals', () => {
     expect(existsSync(join(root, 'release'))).toBe(false);
   });
 
-  it('stops on a checksum mismatch and writes no tarball', async () => {
+  it('stops when SHASUMS256.txt disagrees with the pin and writes no tarball', async () => {
     const root = appFolder();
-    await expect(pack(root, { lie: true })).rejects.toThrow('does not match SHASUMS256.txt');
+    await expect(pack(root, { lie: true })).rejects.toThrow('but Brock pins');
     expect(readdirSync(join(root, 'release/server'))).toEqual([]);
   });
 

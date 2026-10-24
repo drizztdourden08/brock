@@ -10,11 +10,16 @@ Type=simple
 User=__ID__
 Group=__ID__
 StateDirectory=__ID__
+StateDirectoryMode=0750
+UMask=0027
 ExecStart=/opt/__ID__/bin/__ID__-server
 Restart=on-failure
 RestartSec=5
-ProtectSystem=full
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
 PrivateTmp=yes
+PrivateDevices=yes__CAPABILITIES__
 
 [Install]
 WantedBy=multi-user.target

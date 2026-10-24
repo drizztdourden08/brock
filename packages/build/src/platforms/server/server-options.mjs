@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import {
-  DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT, NODE_VERSION_PATTERN, SERVER_ARCHES, SERVER_DEFAULT_ARCHES, SERVER_LABEL, SERVER_NODE_VERSION,
+  ACCOUNT_PATTERN, DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT, NODE_VERSION_PATTERN, RESERVED_ACCOUNT_PREFIXES, RESERVED_ACCOUNTS, SERVER_ARCHES,
+  SERVER_DEFAULT_ARCHES, SERVER_LABEL, SERVER_NODE_VERSION,
 } from './server.constants.mjs';
 
 const fail = (field, message) => {
@@ -49,6 +50,12 @@ const imageOf = (value, product) => {
   return product.repo?.owner ? `ghcr.io/${product.repo.owner.toLowerCase()}/${product.id}-server` : null;
 };
 
+const checkAccount = (id) => {
+  const reserved = RESERVED_ACCOUNTS.includes(id) || RESERVED_ACCOUNT_PREFIXES.some((prefix) => id.startsWith(prefix));
+  if (reserved) throw new Error(`brock.config.ts product.id "${id}" is a system account name, and the server runs as the account named after the id. Pick another id.`);
+  if (!ACCOUNT_PATTERN.test(id)) throw new Error(`brock.config.ts product.id "${id}" cannot name the server's system account: use lowercase letters, digits and dashes, starting with a letter, 31 characters at most.`);
+};
+
 /**
  * @param {string} text the --arch value, a comma list
  * @returns {('x64' | 'arm64')[]} the architectures it names
@@ -61,6 +68,7 @@ const archesFromFlag = (text) => archesOf(text.split(',').map((arch) => arch.tri
  */
 const serverOptions = (config) => {
   const server = config.server ?? {};
+  checkAccount(config.product.id);
   return {
     node: nodeOf(server.node),
     osPackages: packagesOf(server.osPackages),

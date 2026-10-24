@@ -23,7 +23,7 @@ const defaultDeps = () => ({ download: downloadBytes, cacheDir: join(homedir(), 
  * @returns {Promise<{ tarballs: string[], debs: string[], dockerDir: string, image: string | null, version: string }>} what was written under release/server
  */
 const packageServer = async ({ rootDir, config, arches, deb = false, deps = {} }) => {
-  const { download, cacheDir, dpkg } = { ...defaultDeps(), ...deps };
+  const { download, cacheDir, dpkg, pins } = { ...defaultDeps(), ...deps };
   if (deb && !dpkg.available()) throw new Error(NO_DPKG);
   const options = serverOptions(config);
   const { product } = config;
@@ -34,7 +34,7 @@ const packageServer = async ({ rootDir, config, arches, deb = false, deps = {} }
   mkdirSync(outDir, { recursive: true });
   const built = [];
   for (const arch of arches ?? options.arch) {
-    const node = await fetchNodeBinary({ version: options.node, arch, cacheDir, download });
+    const node = await fetchNodeBinary({ version: options.node, arch, cacheDir, download, pins });
     const entries = stageServer({ rootDir, id: product.id, node });
     const tarball = writeTarball({ outDir, prefix, arch, entries });
     const debFile = deb ? writeDeb({ rootDir, outDir, prefix, arch: { name: arch, deb: SERVER_ARCHES[arch].deb }, version, product, osPackages: options.osPackages, entries, runDpkg: dpkg.run }) : null;

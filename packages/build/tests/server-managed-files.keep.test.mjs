@@ -27,11 +27,16 @@ describe('the managed server unit and Dockerfile', () => {
       'User=fixture',
       'Group=fixture',
       'StateDirectory=fixture',
+      'StateDirectoryMode=0750',
+      'UMask=0027',
       'ExecStart=/opt/fixture/bin/fixture-server',
       'Restart=on-failure',
       'RestartSec=5',
-      'ProtectSystem=full',
+      'NoNewPrivileges=yes',
+      'ProtectSystem=strict',
+      'ProtectHome=yes',
       'PrivateTmp=yes',
+      'PrivateDevices=yes',
       '',
       '[Install]',
       'WantedBy=multi-user.target',
@@ -67,9 +72,9 @@ describe('the managed deb scripts', () => {
     const files = managedFiles();
     const postinst = files['build/server/postinst'];
     expect(postinst.startsWith('#!/bin/sh\n')).toBe(true);
-    expect(postinst).toContain('useradd --system --user-group --home-dir /var/lib/fixture --no-create-home --shell /usr/sbin/nologin fixture');
+    expect(postinst).toContain('useradd --system $group_option --comment "fixture server (brock)" --home-dir /var/lib/fixture --no-create-home --shell /usr/sbin/nologin fixture');
     expect(postinst).toContain('systemctl enable fixture.service');
-    expect(postinst).toContain('systemctl restart fixture.service');
+    expect(postinst).toContain('systemctl try-restart fixture.service');
     expect(postinst).not.toContain('__');
     const prerm = files['build/server/prerm'];
     expect(prerm.startsWith('#!/bin/sh\n')).toBe(true);
@@ -82,7 +87,7 @@ describe('the managed deb scripts', () => {
     put(root, 'build/server/after-install.sh', '#!/bin/sh\r\ninstall-the-engine --quiet\r\n');
     const postinst = managedFiles(CONFIG, root)['build/server/postinst'];
     expect(postinst).toContain('\ninstall-the-engine --quiet\n');
-    expect(postinst.indexOf('install-the-engine')).toBeLessThan(postinst.indexOf('systemctl restart'));
+    expect(postinst.indexOf('install-the-engine')).toBeLessThan(postinst.indexOf('systemctl daemon-reload'));
     expect(postinst.match(/#!/g)).toHaveLength(1);
   });
 });

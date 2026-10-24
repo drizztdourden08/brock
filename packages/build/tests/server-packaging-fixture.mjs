@@ -35,6 +35,7 @@ const fakeDownloads = (version, binaries, { lie = false } = {}) => {
   const files = {};
   for (const [arch, binary] of Object.entries(binaries)) files[`node-v${version}-linux-${arch}.tar.gz`] = fakeNodeArchive(version, arch, binary);
   const sums = Object.entries(files).map(([name, bytes]) => `${lie ? '0'.repeat(64) : sha256(bytes)}  ${name}`).join('\n');
+  const pins = { [version]: Object.fromEntries(Object.keys(binaries).map((arch) => [arch, sha256(files[`node-v${version}-linux-${arch}.tar.gz`])])) };
   const calls = [];
   const download = async (url) => {
     calls.push(url);
@@ -43,7 +44,7 @@ const fakeDownloads = (version, binaries, { lie = false } = {}) => {
     if (files[name]) return files[name];
     throw new Error(`unexpected ${url}`);
   };
-  return { download, calls };
+  return { download, calls, pins };
 };
 
 const appFolder = () => {

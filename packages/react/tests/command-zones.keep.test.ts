@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { commandZone } from '../src/commands/command-zone';
 import { commands } from '../src/commands/commands';
 import { dispatchCommand } from '../src/commands/dispatch-command';
-import { useCommandStore } from '../src/commands/useCommandStore';
+import { registerFresh } from './command-fixtures';
 
 const key = (init: KeyboardEventInit): KeyboardEvent => new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
 
@@ -34,8 +34,7 @@ describe('focus zones', () => {
 
   beforeEach(() => {
     ran.length = 0;
-    useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
-    unregister = commands.register([
+    unregister = registerFresh([
       { id: 'any-delete', label: 'Delete anywhere', chord: 'Delete', run: run('any-delete') },
       { id: 'list-delete', label: 'Delete item', chord: 'Delete', zone: 'list', run: run('list-delete') },
       { id: 'canvas-delete', label: 'Clear selection', chord: 'Delete', zone: 'canvas', run: run('canvas-delete') },
@@ -93,8 +92,7 @@ describe('zones and conflicts', () => {
   let unregister = (): void => {};
 
   beforeEach(() => {
-    useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
-    unregister = commands.register([
+    unregister = registerFresh([
       { id: 'a', label: 'A', chord: 'Delete', zone: 'list', run: () => {} },
       { id: 'b', label: 'B', chord: 'Delete', zone: 'canvas', run: () => {} },
       { id: 'c', label: 'C', chord: 'Delete', zone: 'canvas', scope: 'editor', run: () => {} },
@@ -115,8 +113,7 @@ describe('an edit key owned by a command', () => {
 
   beforeEach(() => {
     copies.length = 0;
-    useCommandStore.setState({ sources: [], overrides: {}, mac: true, persist: null });
-    unregister = commands.register([{ id: 'canvas-copy', label: 'Copy pixels', chord: 'Mod+C', zone: 'canvas', run: () => { copies.push('copy'); } }]);
+    unregister = registerFresh([{ id: 'canvas-copy', label: 'Copy pixels', chord: 'Mod+C', zone: 'canvas', run: () => { copies.push('copy'); } }], true);
   });
 
   afterEach(() => {

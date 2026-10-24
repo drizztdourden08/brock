@@ -10,6 +10,7 @@ import { matchesChord } from '../src/commands/matches-chord';
 import { normalizeChord } from '../src/commands/normalize-chord';
 import { parseChord } from '../src/commands/parse-chord';
 import { useCommandStore } from '../src/commands/useCommandStore';
+import { registerFresh } from './command-fixtures';
 
 const key = (init: KeyboardEventInit): KeyboardEvent => new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
 
@@ -73,8 +74,7 @@ describe('the dispatcher', () => {
 
   beforeEach(() => {
     ran.length = 0;
-    useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
-    unregister = commands.register([
+    unregister = registerFresh([
       command({ id: 'pencil', label: 'Pencil', chord: 'B' }),
       command({ id: 'save', label: 'Save', chord: 'Mod+S' }),
       command({ id: 'fill', label: 'Fill', chord: 'G', whileTyping: true }),

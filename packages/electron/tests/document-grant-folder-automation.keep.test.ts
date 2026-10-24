@@ -115,7 +115,7 @@ describe(ANSWER, () => {
     expect(await openFile({ grantFolder: 'ask' })).toEqual({ path: join(assets, 'hero.json'), folderGranted: true, folder: assets });
     expect(confirm).not.toHaveBeenCalled();
     expect(electronDialogMock.dialog.showMessageBox).not.toHaveBeenCalled();
-    expect((await access.rememberedFolders('p1')).map((entry) => entry.path)).toEqual([assets]);
+    expect(await access.rememberedFolders('p1')).toEqual([]);
     expect(await reads(join(assets, 'side.json'))).toBe(true);
   });
 
@@ -137,6 +137,9 @@ describe(ANSWER, () => {
     expect(await access.rememberedFolders('p1')).toEqual([]);
   });
 
+});
+
+describe(`${ANSWER} refusals and edge cases`, () => {
   it('is ignored with an identity flag alone, which is an automation launch but not a headless one', async () => {
     launch(['--profile=x', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });

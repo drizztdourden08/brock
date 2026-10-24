@@ -1,8 +1,8 @@
 /* @layer electron-main @kind logic */
+import { askFolder } from './ask-folder';
 import { folderCandidates } from './folder-candidates';
 import { folderLevels } from './folder-levels';
 import { folderTestAnswer } from './folder-test-answer';
-import { FOLDER_PROMPT_ALLOW, FOLDER_PROMPT_DENY, FOLDER_PROMPT_TITLE } from './grant-containing-folder.constants';
 import { optionFlag } from './option-flag';
 import type { FolderGrantContext, FolderGrantRequest, FolderOutcome } from './grant-containing-folder.type';
 
@@ -29,16 +29,7 @@ const grantContainingFolder = async ({ ctx, tracking, profileId }: FolderGrantRe
     if (answer === null && !optedIn && ctx.flags.isAutomationLaunch()) return declined('The folder is not asked about in an automation launch');
     const chosen = widestAllowed(ctx, file, levels);
     if ('reason' in chosen) return declined(chosen.reason);
-    const allowed =
-      answer === null
-        ? await ctx.dialogs.confirm({
-            title: FOLDER_PROMPT_TITLE,
-            message: `Allow ${ctx.product.name} to read and write the folder ${chosen.folder}?`,
-            confirmLabel: FOLDER_PROMPT_ALLOW,
-            cancelLabel: FOLDER_PROMPT_DENY,
-            showOnAutomation: optedIn,
-          })
-        : answer === 'grant';
+    const allowed = await askFolder({ ctx, folder: chosen.folder, answer, optedIn });
     if (!allowed) return declined('The folder was not allowed');
     const real = ctx.documents.allowFolder(chosen.folder);
     if (answer === null) await tracking.picked(profileId, real);

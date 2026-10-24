@@ -4,7 +4,7 @@ import type { FolderTestAnswer } from './folder-test-answer.type';
 import type { FolderGrantContext } from './grant-containing-folder.type';
 import { isPackagedApp } from './is-packaged-app';
 
-const warned = new WeakSet<object>();
+const warned = new WeakSet();
 
 const ignored = (ctx: FolderGrantContext, why: string): null => {
   if (!warned.has(ctx.flags)) {

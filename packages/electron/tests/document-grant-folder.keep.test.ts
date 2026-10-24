@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { mainFolderMemory } from '../src/main/documents/main-folder-memory';
@@ -34,7 +35,7 @@ const start = (home: string[] = []): void => {
     profiles: PROFILES,
     log: () => undefined,
     dialogs: { confirm },
-    flags: { isAutomationLaunch: () => automation, hasFlag: () => false } as unknown as MainContext['flags'],
+    flags: { ...createAutomationFlags(), isAutomationLaunch: () => automation, hasFlag: () => false },
     product: { name: 'Bxel' } as MainContext['product'],
   });
 };

@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-react
 
+## 0.80.0
+
+### Minor Changes
+
+- 845f695: Breaking: hub pages draw no big page header by default, and the app can take over the content side of a hub. A page shows the header only with `showHeader: true` in its meta (a page that declares `header: { primary, search }` keeps it, a page with tabs keeps its tab bar, a sub page keeps its back button); a page that fills the header with `PageActions` needs `showHeader: true`. Migration `hub-page-header-off` (0.80.0) lists each hub page and custom page without a header setting as a to-do. New: `bare: true` in the meta of a `.page.tsx`, `.custom.tsx`, `<page>.page.ts` or `.live.tsx`, or on a `LivePage` entry, renders the page straight into the content slot with no card, padding, header or scroll area, named by the page title for assistive tech. `pages: 'bare'` on a bucket (or `HubDef`) makes every page of the hub bare, and a page opts back in with `bare: false`. `WindowItem` takes `bare: true` to drop the pane scroll area of one `defineWindow` item. `HubPagesMode` is exported.
+- 7fe7469: Start-up prompts and a richer confirm dialog. A start-up prompt is `src/startup/<id>.prompt.ts`, default-exporting `defineStartupPrompt({ order?, run(ctx) })`; `RendererModule.startupPrompts` adds a module's. Brock runs them once per launch, one at a time in `order`, after the window reveal, once a profile is active with its settings loaded and after any first-run tour has ended or been skipped, and never on an automation launch. A prompt that throws is logged and the next one runs. `ctx` carries `confirmAction`, `confirmChoice`, `confirmSave`, `profile`, `settings` (`get`, `patch`, `flush`) and `nav`. `brock sync` writes `.brock/startup.ts` (a prompt with a literal `order` loads when it runs), `src/main.tsx` passes it as `startupPrompts` (the `startup-prompts` migration of 0.80.0 adds that), `brock structure` checks the folder and the lint preset lets prompt files default-export. `confirmChoice` takes `look: 'select'` (Tessera's `Select`, with `searchable`) in place of the radio group and still resolves the picked value, or `null` on cancel. Every confirm dialog takes `facts: { label, value }[]`, drawn under the message with Tessera's `FactsPanel`. Defaults are unchanged.
+
+### Patch Changes
+
+- Updated dependencies [b6459f5]
+  - @drizztdourden08/brock-core@0.80.0
+
 ## 0.79.0
 
 ### Minor Changes

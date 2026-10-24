@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { describe, expect, it, onTestFinished } from 'vitest';
 import { collectMigrations, runMigrations, selectMigrations } from '../src/upgrade/index.mjs';
 
-const step = () => selectMigrations(collectMigrations([]), { from: '0.80.0', to: null }).filter((m) => m.file.endsWith('controller-components-to-input.mjs'));
+const step = () => selectMigrations(collectMigrations([]), { from: '0.81.0', to: null }).filter((m) => m.file.endsWith('controller-components-to-input.mjs'));
 
 const migrate = async (files: Record<string, string>) => {
   const root = mkdtempSync(join(tmpdir(), 'brock-controller-parts-'));
@@ -18,9 +18,9 @@ const migrate = async (files: Record<string, string>) => {
 };
 
 describe('controller-components-to-input', () => {
-  it('runs once, for an app on Brock 0.80', () => {
-    expect(step().map((m) => m.version)).toEqual(['0.81.0']);
-    expect(selectMigrations(collectMigrations([]), { from: '0.81.0', to: null }).some((m) => m.file.endsWith('controller-components-to-input.mjs'))).toBe(false);
+  it('runs once, for an app on Brock 0.81', () => {
+    expect(step().map((m) => m.version)).toEqual(['0.82.0']);
+    expect(selectMigrations(collectMigrations([]), { from: '0.82.0', to: null }).some((m) => m.file.endsWith('controller-components-to-input.mjs'))).toBe(false);
   });
 
   it('moves the three components and their types out of the composites entry, keeping what stays in Tessera', async () => {

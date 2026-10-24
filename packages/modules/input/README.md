@@ -211,7 +211,7 @@ The module adds a `Controllers` screen (`input-tester`) and a menu entry that op
 - `StickPlot` plots one stick (`x`, `y`) with optional dead zones, measured `range` and recorded `center`.
 - `PressedGrid` lists `items` of a pad `family` and lights the ids in `pressed`.
 
-The `controller-components-to-input` migration of 0.81.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
+The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
 
 An app adds its own buttons to every device card, on the module's Controllers screen too, with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook. `InputTester` and `DeviceCard` also take them as a prop (`deviceActions` and `actions`); a prop action replaces a registered one with the same `id`. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. They show as a row of buttons under the rumble row.
 

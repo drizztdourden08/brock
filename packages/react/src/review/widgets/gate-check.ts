@@ -3,7 +3,7 @@ import { frameOf, getWidgetDefinition, setFrame } from '@drizztdourden08/tessera
 import type { WidgetVisibility } from '@drizztdourden08/tessera/composites';
 import { nav } from '../../navigation/nav';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
-import { ABOUT_SCREEN } from '../review.constants';
+import { ABOUT_SCREEN, POP_OUT_WAIT_MS } from '../review.constants';
 import type { StepTour } from '../review.type';
 import { poppedEntry } from './popped-entry';
 import { windowOpen } from './window-open';
@@ -29,8 +29,10 @@ const checkContextGate = async (tour: StepTour, id: string): Promise<void> => {
   tour.check('gate-context-only-closes', closed, `a context-only "${id}" window closed while a page was open and kept its place in the layout`, `a context-only "${id}" window stayed open over a page`);
   nav.close();
   const back = closed && await windowOpen(id, true);
-  const same = back && sameRect((await probe({ kind: 'window', id })).bounds, remembered);
-  tour.check('gate-context-only-reopens', same, `the "${id}" window came back where it was once the page closed`, `the "${id}" window did not come back where it was`);
+  const now = back ? (await probe({ kind: 'window', id })).bounds : null;
+  const same = sameRect(now, remembered);
+  const missed = back ? `the "${id}" window came back at ${JSON.stringify(now)}, not at ${JSON.stringify(remembered)}` : `the "${id}" window was not shown again within ${POP_OUT_WAIT_MS} ms of the page closing`;
+  tour.check('gate-context-only-reopens', same, `the "${id}" window came back where it was once the page closed`, missed);
   showAs(id, show);
   if (page !== null) nav.open(page);
 };

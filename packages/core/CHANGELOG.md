@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-core
 
+## 0.87.2
+
 ## 0.87.1
 
 ## 0.87.0

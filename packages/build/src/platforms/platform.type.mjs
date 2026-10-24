@@ -48,6 +48,7 @@
  * @property {string} prefix the release file prefix
  * @property {(os: string, opts?: { release?: boolean, history?: boolean, platform?: string, job?: string }) => string} setup
  * @property {(point: string, os: string, platform?: string | null, job?: string | null) => string} stepsAt a step point's steps
+ * @property {(job: string) => Record<string, string> | undefined} liftedPermissions the permissions the steps of a job asked for
  */
 
 /**

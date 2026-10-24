@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { PLATFORM_ORDER } from '../platforms/platforms.constants.mjs';
-import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS, WORKFLOW_JOBS } from './workflow-steps.constants.mjs';
+import { ENV_NAME, PERMISSION_LEVELS, PERMISSION_NAMES, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_ID, STEP_KEYS, WORKFLOW_JOBS } from './workflow-steps.constants.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/module').WorkflowStep} WorkflowStep
@@ -10,6 +10,7 @@ import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS, WORKFLO
 /**
  * @typedef {object} CheckedAction
  * @property {string} name
+ * @property {string | null} id
  * @property {string | null} run
  * @property {string | null} uses
  * @property {Record<string, string | number | boolean>} with
@@ -25,6 +26,7 @@ import { ENV_NAME, RESERVED_SECRET, RUNNER_OSES, SECRET_NAME, STEP_KEYS, WORKFLO
  * @property {string[] | null} os null runs on every runner
  * @property {string[] | null} platforms null runs in every job
  * @property {string[] | null} jobs null runs in every job of the point
+ * @property {Record<string, string>} permissions lifted onto every job that runs the step
  */
 
 const listOf = (value) => (Array.isArray(value) ? value : [value]);
@@ -64,6 +66,23 @@ const secretsOf = (where, value) => {
   return [...value];
 };
 
+const idOf = (where, value) => {
+  const id = textOf(where, value, 'id');
+  if (id !== null && !STEP_ID.test(id)) fail(where, `id "${id}" is not a step id (letters, digits, dashes, underscores).`);
+  return id;
+};
+
+const checkPermission = (where) => (name, level) => {
+  if (!PERMISSION_NAMES.includes(name)) fail(where, `permissions.${name} is not a GitHub permission; it takes ${PERMISSION_NAMES.join(', ')}.`);
+  if (!Object.hasOwn(PERMISSION_LEVELS, level)) fail(where, `permissions.${name} is ${JSON.stringify(level)}; it takes ${Object.keys(PERMISSION_LEVELS).join(', ')}.`);
+};
+
+const permissionsOf = (where, value, workflow) => {
+  if (value === undefined) return {};
+  if (workflow !== 'release') fail(where, 'permissions are lifted onto release jobs only.');
+  return mapOf(where, value, 'permissions', checkPermission(where));
+};
+
 const assertKeys = (where, step) => {
   const unknown = Object.keys(step).filter((key) => !STEP_KEYS.has(key));
   if (unknown.length) fail(where, `unknown key ${unknown.join(', ')}; a step takes ${[...STEP_KEYS].join(', ')}.`);
@@ -95,6 +114,7 @@ const checkWorkflowStep = (step, where, workflow) => {
   assertAction(where, step);
   return {
     name: textOf(where, step.name, 'name') ?? fail(where, 'name is missing.'),
+    id: idOf(where, step.id),
     run: textOf(where, step.run, 'run'),
     uses: textOf(where, step.uses, 'uses'),
     with: mapOf(where, step.with, 'with', checkWith(where)),
@@ -105,6 +125,7 @@ const checkWorkflowStep = (step, where, workflow) => {
     os: choicesOf(where, step.os, 'os', RUNNER_OSES),
     platforms: choicesOf(where, step.platforms, 'platforms', PLATFORM_ORDER),
     jobs: choicesOf(where, step.jobs, 'jobs', WORKFLOW_JOBS[workflow]),
+    permissions: permissionsOf(where, step.permissions, workflow),
   };
 };
 

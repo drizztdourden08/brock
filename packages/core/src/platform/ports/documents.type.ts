@@ -4,10 +4,34 @@ interface DocumentFilter {
   extensions: string[];
 }
 
+interface DocumentFolderAsk {
+  ask: true;
+  levels?: number;
+}
+
+type DocumentGrantFolder = 'ask' | DocumentFolderAsk;
+
 interface DocumentDialogOptions {
   title?: string;
   filters?: DocumentFilter[];
   defaultPath?: string;
+  grantFolder?: DocumentGrantFolder;
+}
+
+interface DocumentGrantingOptions extends DocumentDialogOptions {
+  grantFolder: DocumentGrantFolder;
+}
+
+interface DocumentPick {
+  path: string;
+  folderGranted: boolean;
+  folder?: string;
+  reason?: string;
+}
+
+interface DocumentPicker {
+  (opts: DocumentGrantingOptions): Promise<DocumentPick | null>;
+  (opts?: DocumentDialogOptions): Promise<string | null>;
 }
 
 interface DocumentFolderOptions {
@@ -93,8 +117,8 @@ interface RecoverableSnapshot {
 }
 
 interface DocumentsPort {
-  open: (opts?: DocumentDialogOptions) => Promise<string | null>;
-  saveAs: (opts?: DocumentDialogOptions) => Promise<string | null>;
+  open: DocumentPicker;
+  saveAs: DocumentPicker;
   openFolder: (opts?: DocumentFolderOptions) => Promise<string | null>;
   list: (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
   revokeFolder: (path: string) => Promise<boolean>;
@@ -118,4 +142,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

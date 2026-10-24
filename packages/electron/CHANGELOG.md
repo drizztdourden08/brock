@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-electron
 
+## 0.81.0
+
+### Minor Changes
+
+- 1f6543a: Breaking: `ctx.documents.resolve` and `ctx.documents.isAllowed` now return a promise, so main code must await them; migration documents-access-async leaves a to-do at each call that is not awaited. Folder grants in the documents allowlist. The user picks a folder with the new `documents.openFolder(options?)` dialog, or main code calls `ctx.documents.allowFolder(path)` (and `revokeFolder(path)`). Every file inside a granted folder, at any depth and whether it exists or not, then passes for `read`, `readText`, `write` and `writeText`. The check runs on the real path on every call: a `..` segment, a link or junction that leads outside, a sibling folder with the same name prefix, a dangling link and, on Windows, a raw prefix, an alternate data stream or a device name are all refused, and 8.3 short names and case are resolved. The exact-file rule still holds for everything else. `ctx.documents.list(folder, { extensions?, recursive? })` in main, and `documents.list(folder, options?)` in the renderer over `document:list`, list a granted folder only and answer `{ entries, truncated }`, entries being `{ path, name, kind, size, modified, link }`, bounded to 5000 entries, 8 levels and 5 seconds. A grant that is, or sits inside, one of the app's own folders (userData, `Data`, the executable's folder, resources) is refused, a broader grant never reaches them (reads, writes and listings leave them out), a grant that is the home folder, holds it, or is, holds or sits inside AppData, Library, .config, .local, .cache, Program Files, Windows or ProgramData is refused, writes under any grant are refused in autostart paths (Startup folders, shell and PowerShell profiles, LaunchAgents), in repository and editor configuration (any .git segment, .husky, .vscode, .idea, .devcontainer, .github/workflows, files named HEAD, commondir or gitdir) and for credential-leaking files (.lnk, .url, .scf, .library-ms, .searchConnector-ms, desktop.ini, autorun.inf), and on Windows an executable or macro-capable file written under a grant gets a Mark of the Web stream, only one listing runs at a time, a data domain `dir` that resolves to `Data/` itself is refused, the recent signing key lives in the user data `keys` folder, network paths are refused before any file system call, Windows names that end in a dot or a space and all device names are refused, and a file reached only through a grant is never added to the recent list. Recent entries are now signed with a per-install key and checked when read, so the entries an earlier version wrote are dropped once; document calls that name a profile need an existing profile. `ctx.documents.recent(profileId?)` gives main code the same recent list the renderer sees. The new `DocumentEntry`, `DocumentListOptions` and `DocumentFolderOptions` types are in core.
+
+### Patch Changes
+
+- Updated dependencies [1f6543a]
+  - @drizztdourden08/brock-core@0.81.0
+
 ## 0.80.0
 
 ### Minor Changes

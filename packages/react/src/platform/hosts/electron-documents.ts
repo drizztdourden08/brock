@@ -18,6 +18,8 @@ const createElectronDocuments = (): DocumentsPort => {
   return {
     open: (opts) => api.documentOpen(opts, activeProfileId() ?? undefined),
     saveAs: (opts) => api.documentSaveAs(opts),
+    openFolder: (opts) => api.documentOpenFolder(opts),
+    list: (folder, options) => api.documentList(folder, options),
     read: async (path) => new Uint8Array(await api.documentRead(path)),
     readText: (path) => api.documentReadText(path),
     write: (path, data, options) => api.documentWrite(path, toArrayBuffer(data), activeProfileId() ?? undefined, options),

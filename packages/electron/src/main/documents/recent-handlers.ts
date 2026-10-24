@@ -1,14 +1,13 @@
 /* @layer electron-main @kind logic */
 import type { MainContext } from '../types/main-context.type';
 import type { DocumentTracking } from './document-tracking.type';
-import { profileIdOf } from './profile-id-of';
 
-const registerRecentHandlers = ({ handle }: Pick<MainContext, 'handle'>, { recent }: DocumentTracking): void => {
-  handle('document:recent', (_event, profileId) => recent.list(profileIdOf(profileId)));
-  handle('document:clearRecent', (_event, profileId) => recent.clear(profileIdOf(profileId)));
-  handle('document:openRecent', (_event, profileId, path) => {
+const registerRecentHandlers = ({ handle }: Pick<MainContext, 'handle'>, { recent, profile }: DocumentTracking): void => {
+  handle('document:recent', async (_event, profileId) => recent.list(await profile(profileId)));
+  handle('document:clearRecent', async (_event, profileId) => recent.clear(await profile(profileId)));
+  handle('document:openRecent', async (_event, profileId, path) => {
     if (typeof path !== 'string') throw new Error('A recent document is opened by its path');
-    return recent.reopen(profileIdOf(profileId), path);
+    return recent.reopen(await profile(profileId), path);
   });
 };
 

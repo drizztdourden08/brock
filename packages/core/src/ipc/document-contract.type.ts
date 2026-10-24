@@ -1,11 +1,20 @@
 /* @layer core @kind types */
-import type { DocumentDialogOptions, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
+import type { DocumentDialogOptions, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentWatchEvent, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
 
 interface DocumentInvokeContract {
   'document:open': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | null>;
   'document:saveAs': (opts?: DocumentDialogOptions) => Promise<string | null>;
-  'document:openFolder': (opts?: DocumentFolderOptions) => Promise<string | null>;
+  'document:openFolder': (opts?: DocumentFolderOptions, profileId?: string) => Promise<string | null>;
   'document:list': (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
+  'document:revokeFolder': (path: string) => Promise<boolean>;
+  'document:trash': (path: string) => Promise<void>;
+  'document:rename': (from: string, to: string, options?: DocumentRenameOptions) => Promise<void>;
+  'document:mkdir': (path: string, options?: DocumentMkdirOptions) => Promise<void>;
+  'document:watch': (id: string, folder: string, options: DocumentWatchOptions) => Promise<void>;
+  'document:unwatch': (id: string) => Promise<void>;
+  'document:rememberedFolders': (profileId: string) => Promise<RememberedFolder[]>;
+  'document:regrant': (profileId: string, path: string) => Promise<string>;
+  'document:forgetFolder': (profileId: string, path: string) => Promise<boolean>;
   'document:read': (path: string) => Promise<ArrayBuffer>;
   'document:readText': (path: string) => Promise<string>;
   'document:write': (path: string, data: ArrayBuffer, profileId?: string, options?: DocumentWriteOptions) => Promise<void>;
@@ -19,4 +28,8 @@ interface DocumentInvokeContract {
   'document:discardSnapshot': (profileId: string, key: string) => Promise<void>;
 }
 
-export type { DocumentInvokeContract };
+interface DocumentEventContract {
+  'document:watchEvent': (id: string, event: DocumentWatchEvent) => void;
+}
+
+export type { DocumentEventContract, DocumentInvokeContract };

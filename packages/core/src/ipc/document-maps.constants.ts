@@ -1,11 +1,20 @@
 /* @layer core @kind constants */
-import type { DocumentInvokeContract } from './document-contract.type';
+import type { DocumentEventContract, DocumentInvokeContract } from './document-contract.type';
 
 const DOCUMENT_INVOKE_MAP = {
   documentOpen: 'document:open',
   documentSaveAs: 'document:saveAs',
   documentOpenFolder: 'document:openFolder',
   documentList: 'document:list',
+  documentRevokeFolder: 'document:revokeFolder',
+  documentTrash: 'document:trash',
+  documentRename: 'document:rename',
+  documentMkdir: 'document:mkdir',
+  documentWatch: 'document:watch',
+  documentUnwatch: 'document:unwatch',
+  documentRememberedFolders: 'document:rememberedFolders',
+  documentRegrant: 'document:regrant',
+  documentForgetFolder: 'document:forgetFolder',
   documentRead: 'document:read',
   documentReadText: 'document:readText',
   documentWrite: 'document:write',
@@ -19,4 +28,8 @@ const DOCUMENT_INVOKE_MAP = {
   documentDiscardSnapshot: 'document:discardSnapshot',
 } as const satisfies Record<string, keyof DocumentInvokeContract>;
 
-export { DOCUMENT_INVOKE_MAP };
+const DOCUMENT_EVENT_MAP = {
+  onDocumentWatch: 'document:watchEvent',
+} as const satisfies Record<string, keyof DocumentEventContract>;
+
+export { DOCUMENT_EVENT_MAP, DOCUMENT_INVOKE_MAP };

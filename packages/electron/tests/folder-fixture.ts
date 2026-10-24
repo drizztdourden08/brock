@@ -41,13 +41,15 @@ const sessionOf = (given: Partial<MainContext>): Call => {
   const handlers = new Map<string, Handler>();
   const ctx: Partial<MainContext> = {
     profiles: knownProfiles,
+    window: windowOf(() => ({}) as BrowserWindow),
     ...given,
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
-    window: windowOf(() => ({}) as BrowserWindow),
   };
   documentHandlers.register(ctx as MainContext);
   return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));
 };
 
-export { knownProfiles, makeBase, makeTree, refusedBy, sessionOf, testAccess };
+const loose = <T>(value: unknown): T => value as T;
+
+export { knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
 export type { Call };

@@ -5,10 +5,12 @@ import type { HandlerGroup } from '../types/main-context.type';
 import { toArrayBuffer } from '../files/to-array-buffer';
 import { writeAtomic } from '../storage/write-atomic';
 import { bytesOf } from './bytes-of';
+import { registerFolderHandlers } from './folder-handlers';
 import { isUnrecorded } from './is-unrecorded';
 import { markOfTheWeb } from './mark-of-the-web';
 import { registerRecentHandlers } from './recent-handlers';
 import { registerRecoveryHandlers } from './recovery-handlers';
+import { registerWatchHandlers } from './watch-handlers';
 import { textOf } from './text-of';
 import { toDialogOptions } from './to-dialog-options';
 import { toFolderDialogOptions } from './to-folder-dialog-options';
@@ -44,12 +46,15 @@ const documentHandlers: HandlerGroup = {
       return result.canceled || !result.filePath ? null : documents.allow(result.filePath);
     });
 
-    handle('document:openFolder', async (_event, opts) => {
+    handle('document:openFolder', async (_event, opts, profileId) => {
       const win = window();
       if (!win) return null;
       const result = await dialog.showOpenDialog(win, { ...toFolderDialogOptions(opts), properties: ['openDirectory'] });
       const picked = result.filePaths[0];
-      return result.canceled || picked === undefined ? null : documents.allowFolder(picked);
+      if (result.canceled || picked === undefined) return null;
+      const real = documents.allowFolder(picked);
+      await tracking.picked(profileId, real);
+      return real;
     });
 
     handle('document:list', (_event, folder, options) => documents.list(folder, options));
@@ -57,6 +62,8 @@ const documentHandlers: HandlerGroup = {
     handle('document:readText', async (_event, path) => readFile(await documents.resolve(path), 'utf8'));
     handle('document:write', (_event, path, data, ...extras) => save(path, () => bytesOf(data, 'A document write'), extras));
     handle('document:writeText', (_event, path, text, ...extras) => save(path, () => textOf(text), extras));
+    registerFolderHandlers(ctx);
+    registerWatchHandlers(ctx);
     registerRecentHandlers(ctx, tracking);
     registerRecoveryHandlers(ctx, tracking);
   },

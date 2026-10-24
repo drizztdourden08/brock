@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import { realpathSync, statSync } from 'fs';
 import { absolutePath } from './absolute-path';
+import { containNew } from './contain-new';
 import { NETWORK_PATH } from './folder-grants.constants';
 import { grantRefusal } from './grant-refusal';
 import type { FolderGrantDeps, FolderGrants } from './folder-grants.type';
@@ -14,7 +15,7 @@ import { writeDenied } from './write-denied';
 
 const isNetwork = (path: string): boolean => process.platform === 'win32' && NETWORK_PATH.test(path);
 
-const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensitiveFolders }: FolderGrantDeps = {}): FolderGrants => {
+const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensitiveFolders, onRevoke }: FolderGrantDeps = {}): FolderGrants => {
   const roots = new Set<string>();
   const spellings = new Map<string, string>();
   const guarded = protectedReals(protectedRoots);
@@ -26,7 +27,7 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     return [...roots].find((root) => pathInside(root, real)) ?? null;
   };
 
-  const allow = (path: string): string => {
+  const vet = (path: string): string => {
     const full = absolutePath(path);
     if (unsafeSegments(path)) throw new Error(`"${path}" is not a plain folder path`);
     const real = realpathSync.native(full);
@@ -34,8 +35,13 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     for (const guard of [guarded, sensitiveHome, sensitiveTrees]) guard.refresh();
     const refusal = grantRefusal(real, { own: guarded.current(), home: sensitiveHome.current(), trees: sensitiveTrees.current() });
     if (refusal !== null) throw new Error(refusal);
+    return real;
+  };
+
+  const allow = (path: string): string => {
+    const real = vet(path);
     roots.add(real);
-    spellings.set(pathKey(full), real);
+    spellings.set(pathKey(absolutePath(path)), real);
     return real;
   };
 
@@ -52,7 +58,9 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     spellings.forEach((value, spelling) => {
       if (value === root) spellings.delete(spelling);
     });
-    return roots.delete(root);
+    const removed = roots.delete(root);
+    if (removed) onRevoke?.(root);
+    return removed;
   };
 
   const onNetworkRoot = (full: string): boolean => [...roots].some((root) => isNetwork(root) && pathInside(root, full, pathKey));
@@ -67,7 +75,9 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     return write && writeDenied(real) ? null : real;
   };
 
-  return { allow, revoke, contain, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };
+  const holdsProtected = (real: string): boolean => guarded.current().some((guard) => pathInside(real, guard, pathKey));
+
+  return { allow, vet, revoke, contain, containNew: (path) => containNew(contain, path), holdsProtected, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };
 };
 
 export { createFolderGrants };

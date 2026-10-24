@@ -15,7 +15,7 @@ import type { ReviewCheck } from './review/review.type';
 import type { BootFailure, BootProgress } from './boot/boot-task.type';
 import type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './ipc/widget-contract.type';
 import type { DataEventContract, DataInvokeContract, DataSendContract } from './ipc/data-contract.type';
-import type { DocumentInvokeContract } from './ipc/document-contract.type';
+import type { DocumentEventContract, DocumentInvokeContract } from './ipc/document-contract.type';
 import type { DocumentsPort } from './platform/ports/documents.type';
 
 interface BaseProfile {
@@ -116,7 +116,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'ask:reply': (id: number, outcome: AskOutcome) => void;
 }
 
-interface EventContract extends WidgetEventContract, DataEventContract {
+interface EventContract extends WidgetEventContract, DataEventContract, DocumentEventContract {
   'window:maximized': (maximized: boolean) => void;
   'window:fullscreen': (fullscreen: boolean) => void;
   'log:entry': (entry: LogEntryWire) => void;

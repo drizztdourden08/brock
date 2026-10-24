@@ -17,7 +17,7 @@ export type { AskArgs, AskHandler, AskReply } from './ask.type';
 export type { InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces } from '../augment';
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
 export type { DataEventContract, DataInvokeContract, DataSendContract } from './data-contract.type';
-export type { DocumentInvokeContract } from './document-contract.type';
+export type { DocumentEventContract, DocumentInvokeContract } from './document-contract.type';
 export type {
   PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
   WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,

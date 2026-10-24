@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind config */
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { withFiletypeIcons } from './icons/filetype-icons.mjs';
 import { loadBrockConfig } from './load-config.mjs';
 import { modulePackaging } from './modules/module-packaging.mjs';
 import { createAfterPack } from './packaging/after-pack.mjs';
@@ -54,13 +55,16 @@ const winFileIcons = (list = []) => {
  */
 const debOptions = (rootDir) => (existsSync(join(rootDir, DEB_POSTINST_FILE)) ? { deb: { afterInstall: DEB_POSTINST_FILE } } : {});
 
+const fileAssociationsOf = (product, rootDir, packaging) =>
+  withFiletypeIcons(rootDir, product.icons?.brand, withAssociationOptions(product.fileAssociations, packaging.fileAssociations));
+
 /**
  * @param {ProductInput} product
  * @param {{ rootDir: string, packaging?: import('./config.mjs').BrockPackagingOptions, helpers?: Record<string, string>, fuses?: { runAsNode?: boolean }, platform?: string }} opts
  * @returns {Record<string, unknown>}  An electron-builder Configuration
  */
 const createBuilderConfig = (product, { rootDir, packaging = {}, helpers, fuses, platform }) => {
-  const associations = withAssociationOptions(product.fileAssociations, packaging.fileAssociations);
+  const associations = fileAssociationsOf(product, rootDir, packaging);
   const prefix = product.artifactPrefix ?? `${product.id}-`;
   const icons = builderIcons(product.icons);
   const artifact = (os) => `${prefix}${os}-\${arch}.\${ext}`;

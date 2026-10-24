@@ -17,6 +17,7 @@ out/
 *.tsbuildinfo
 .brock-port-slot
 build/icons/
+build/filetypes/
 build/splash/
 build/installer-splash.png
 /guide/

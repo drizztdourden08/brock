@@ -2,6 +2,7 @@
 import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
 import type { HeroSize } from '@drizztdourden08/tessera/composites';
 import type { IconName, Backdrop } from '@drizztdourden08/tessera/primitives';
+import type { SettingsValueSource } from '../../settings/settings.type';
 import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
@@ -81,6 +82,7 @@ interface ScreenMeta extends ShowRule {
   backdrop?: PageBackdrop;
   size?: ScreenSize;
   hero?: HeroMeta;
+  source?: SettingsValueSource;
 }
 
 export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };

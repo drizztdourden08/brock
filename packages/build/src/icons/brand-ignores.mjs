@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 const BRAND_PATHS = [
   'build/icons/',
+  'build/filetypes/',
   'build/splash/',
   'public/logos/icon.svg',
   'public/logos/icon.ico',

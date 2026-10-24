@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
-import type { RenderControl, RunSettingActionOptions, SettingAction, SettingItem, SettingLockCause, SettingsPatch } from '../settings.type';
+import type { RenderControl, RunSettingActionOptions, SettingAction, SettingItem, SettingLockCause, SettingsPatch, SettingsValueSource } from '../settings.type';
 
 interface ItemGroup {
   id: string | null;
@@ -12,6 +12,7 @@ interface ItemGroup {
 interface ResolvedSection {
   id: string;
   title: string;
+  source?: SettingsValueSource;
   groups: ItemGroup[];
 }
 
@@ -23,7 +24,7 @@ interface GroupListInput<S extends object> {
   defaults?: S;
   onChange: SettingsPatch<S>;
   lockOf: (key: string) => SettingLockCause | null;
-  rowsOf: (item: SettingItem) => SettingsSectionRow[];
+  rowsOf: (item: SettingItem, section: ResolvedSection) => SettingsSectionRow[];
 }
 
 type BusyActions = Readonly<Record<string, true>>;

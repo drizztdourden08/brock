@@ -12,9 +12,19 @@ interface DialogFact {
 
 type ChoiceLook = 'radio' | 'select';
 
+type AlternateTone = 'danger' | 'neutral';
+
 interface DialogAlternate {
   label: string;
   onSelect: () => void;
+  tone?: AlternateTone;
+}
+
+interface ConfirmAlternate {
+  label: string;
+  onSelect: () => void;
+  tone?: AlternateTone;
+  closes?: boolean;
 }
 
 interface ConfirmDialogConfig {
@@ -33,11 +43,15 @@ interface ConfirmDialogConfig {
   onCancel?: () => void;
 }
 
-type ConfirmActionOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate' | 'look' | 'searchable'>;
+type ConfirmBaseOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate' | 'look' | 'searchable'>;
+
+interface ConfirmActionOptions extends ConfirmBaseOptions {
+  alternate?: ConfirmAlternate;
+}
 
 type ConfirmSaveAnswer = 'save' | 'discard' | 'cancel';
 
-interface ConfirmSaveOptions extends ConfirmActionOptions {
+interface ConfirmSaveOptions extends ConfirmBaseOptions {
   discardLabel?: string;
 }
 
@@ -61,4 +75,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { ChoiceLook, ConfirmActionOptions, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };
+export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };

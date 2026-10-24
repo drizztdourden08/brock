@@ -13,7 +13,7 @@ const confirmSave = ({ discardLabel = 'Discard', confirmLabel = 'Save', cancelLa
       ...rest,
       confirmLabel,
       cancelLabel,
-      alternate: { label: discardLabel, onSelect: answer('discard') },
+      alternate: { label: discardLabel, onSelect: answer('discard'), tone: 'danger' },
       onConfirm: answer('save'),
       onCancel: () => resolve('cancel'),
     });

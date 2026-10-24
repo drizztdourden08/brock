@@ -4,14 +4,13 @@ import { existsSync } from 'fs';
 import { mkdir, readFile, rm, symlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { MainContext } from '../src/main/types/main-context.type';
-import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { pathExists } from '../src/main/documents/path-exists';
 import { createRecentDocuments } from '../src/main/documents/recent-documents';
 import { RECENT_FILE } from '../src/main/documents/recent-documents.constants';
 import type { StoredRecent } from '../src/main/documents/recent-documents.type';
 import { createSigningKey } from '../src/main/documents/signing-key';
-import { makeTree, sessionOf } from './folder-fixture';
+import { makeTree, sessionOf, testAccess } from './folder-fixture';
 import type { Call } from './folder-fixture';
 
 vi.mock('electron', () => ({ dialog: {}, app: { addRecentDocument: () => undefined, clearRecentDocuments: () => undefined } }));
@@ -30,7 +29,7 @@ beforeEach(async () => {
   appDir = join(base, 'app');
   await mkdir(join(appDir, 'Data', 'profiles', 'p1'), { recursive: true });
   await writeFile(join(appDir, 'Data', 'app.json'), '{}');
-  access = createDocumentAccess({ protectedRoots: () => [appDir, join(base, 'missing-install')] });
+  access = testAccess({ protectedRoots: () => [appDir, join(base, 'missing-install')] });
 });
 
 afterEach(async () => {
@@ -46,7 +45,7 @@ describe('the folders of the app itself', () => {
     await writeFile(join(base, 'bin', 'resources', 'app.asar'), 'asar');
     await writeFile(join(appDir, 'app.json'), '{}');
     await writeFile(join(appDir, 'Data', 'profiles', 'p1', RECENT_FILE), '[]');
-    access = createDocumentAccess({ protectedRoots: () => [appDir, join(appDir, 'Data'), join(base, 'bin'), join(base, 'bin', 'resources'), join(base, 'missing-install')] });
+    access = testAccess({ protectedRoots: () => [appDir, join(appDir, 'Data'), join(base, 'bin'), join(base, 'bin', 'resources'), join(base, 'missing-install')] });
   });
 
   it('refuses a grant that is one of them or sits inside one', () => {

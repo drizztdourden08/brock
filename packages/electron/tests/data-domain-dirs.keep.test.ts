@@ -5,8 +5,7 @@ import { rm } from 'fs/promises';
 import { join } from 'path';
 import { createDataDomains } from '../src/main/storage/create-data-domains';
 import { createListGate } from '../src/main/documents/list-gate';
-import { createDocumentAccess } from '../src/main/documents/document-access';
-import { knownProfiles, makeTree, sessionOf } from './folder-fixture';
+import { knownProfiles, makeTree, sessionOf, testAccess } from './folder-fixture';
 
 vi.mock('electron', () => ({ dialog: {}, app: { addRecentDocument: () => undefined, clearRecentDocuments: () => undefined } }));
 
@@ -37,7 +36,7 @@ describe('the folder of a data domain', () => {
 
 describe('the recent signing key', () => {
   it('lives in the user data keys folder, not in the Data tree', async () => {
-    const access = createDocumentAccess();
+    const access = testAccess();
     const paths = { userData: (...segments: string[]) => join(base, ...segments), data: (...segments: string[]) => join(base, 'Data', ...segments) };
     const call = sessionOf({ documents: access, paths, profiles: knownProfiles, log: vi.fn() });
     access.allow(join(granted, 'sub', 'in.txt'));
@@ -71,7 +70,7 @@ describe('one listing at a time', () => {
   });
 
   it('keeps folder listings of one app in turn, and says busy past the queue', async () => {
-    const access = createDocumentAccess({ limits: { waiting: 1 } });
+    const access = testAccess({ limits: { waiting: 1 } });
     access.allowFolder(granted);
     const settled = await Promise.allSettled([access.list(granted), access.list(granted), access.list(granted)]);
     expect(settled.map((outcome) => outcome.status)).toEqual(['fulfilled', 'fulfilled', 'rejected']);

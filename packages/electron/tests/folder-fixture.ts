@@ -5,7 +5,8 @@ import { join } from 'path';
 import type { BrowserWindow } from 'electron';
 import { expect } from 'vitest';
 import type { MainContext } from '../src/main/types/main-context.type';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
+import { createDocumentAccess } from '../src/main/documents/document-access';
+import type { DocumentAccess, DocumentAccessDeps } from '../src/main/documents/document-access.type';
 import { documentHandlers } from '../src/main/documents/ipc-handlers';
 
 type Handler = (event: unknown, ...args: unknown[]) => unknown;
@@ -31,6 +32,8 @@ const makeTree = async (prefix: string): Promise<Tree> => {
 
 const knownProfiles = { load: (id: string) => Promise.resolve({ id, name: id, created: 1, lastPlayed: 1 }) } as MainContext['profiles'];
 
+const testAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => createDocumentAccess({ sensitiveRoots: () => ({ home: [], trees: [] }), ...deps });
+
 const refusedBy = (access: DocumentAccess) => (path: string): Promise<void> => expect(access.resolve(path)).rejects.toThrow(/may not use/);
 
 const sessionOf = (given: Partial<MainContext>): Call => {
@@ -45,5 +48,5 @@ const sessionOf = (given: Partial<MainContext>): Call => {
   return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));
 };
 
-export { knownProfiles, makeBase, makeTree, refusedBy, sessionOf };
+export { knownProfiles, makeBase, makeTree, refusedBy, sessionOf, testAccess };
 export type { Call };

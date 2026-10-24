@@ -8,9 +8,14 @@ interface FolderGrants {
   holds: (root: string) => boolean;
 }
 
-interface FolderGrantDeps {
-  protectedRoots?: () => string[];
-  sensitiveRoots?: () => string[];
+interface SensitiveRoots {
+  home: string[];
+  trees: string[];
 }
 
-export type { FolderGrantDeps, FolderGrants };
+interface FolderGrantDeps {
+  protectedRoots?: () => string[];
+  sensitiveRoots?: () => SensitiveRoots;
+}
+
+export type { FolderGrantDeps, FolderGrants, SensitiveRoots };

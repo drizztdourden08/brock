@@ -17,12 +17,12 @@ const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
 const STARTUP = join('AppData', 'Roaming', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
 const RISKY = [
   join(STARTUP, 'run.cmd'), join('ProgramData', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'StartUp', 'run.cmd'),
-  join('proj', '.git', 'hooks', 'pre-commit'), join('proj', '.git', 'config'), '.bashrc', '.zshrc', '.profile', '.bash_profile',
+  '.bashrc', '.zshrc', '.profile', '.bash_profile',
   join('Documents', 'WindowsPowerShell', 'Microsoft.PowerShell_profile.ps1'), join('Documents', 'PowerShell', 'profile.ps1'),
   join('Documents', 'PowerShell', 'Modules', 'evil', 'evil.psm1'), join('Library', 'LaunchAgents', 'a.plist'),
   join('.config', 'autostart', 'a.desktop'), join('.config', 'systemd', 'user', 'a.service'), join('.ssh', 'authorized_keys'),
 ];
-const SAFE = [join('Documents', 'notes.txt'), join('Documents', 'PowerShell', 'readme.txt'), join('proj', 'src', 'hooks.ts'), join('proj', '.git', 'HEAD.txt'), 'startup.txt'];
+const SAFE = [join('Documents', 'notes.txt'), join('Documents', 'PowerShell', 'readme.txt'), join('proj', 'src', 'hooks.ts'), 'startup.txt'];
 
 let base = '';
 let granted = '';
@@ -34,8 +34,10 @@ let call: Call;
 beforeEach(async () => {
   ({ base, granted, outside } = await makeTree('brock-autostart-'));
   home = join(base, 'home');
-  for (const folder of ['Documents', 'AppData/Local/Foo', 'Library', '.config/app']) await mkdir(join(home, folder), { recursive: true });
-  access = createDocumentAccess({ sensitiveRoots: () => [home, join(home, 'AppData'), join(home, 'Library'), join(home, '.config')] });
+  const trees = ['AppData', '.config', '.local', '.cache', 'Library'].map((name) => join(home, name));
+  for (const folder of [...trees, join(base, 'ProgramData')]) await mkdir(folder, { recursive: true });
+  for (const folder of ['Documents', 'Desktop/proj', 'Downloads', 'AppData/Roaming', 'AppData/Local/Foo', '.config/app', '.local/bin']) await mkdir(join(home, folder), { recursive: true });
+  access = createDocumentAccess({ sensitiveRoots: () => ({ home: [home], trees: [...trees, join(base, 'ProgramData')] }) });
   call = sessionOf({ documents: access });
 });
 
@@ -44,22 +46,36 @@ afterEach(async () => {
 });
 
 describe('a grant that would reach too much', () => {
-  it('refuses the home folder, its parents, a filesystem root, and folders that hold AppData, Library or .config', () => {
-    for (const folder of [home, base, parse(base).root, join(home, 'AppData'), join(home, 'Library'), join(home, '.config')]) {
-      expect(() => access.allowFolder(folder)).toThrow(/cannot be granted|below the filesystem root/);
+  it('refuses the home folder and its parents, and a filesystem root', () => {
+    for (const folder of [home, base, parse(base).root]) expect(() => access.allowFolder(folder)).toThrow(/home folder|below the filesystem root/);
+  });
+
+  it('refuses any folder that is, holds or sits inside AppData, Library, .config, .local, .cache or ProgramData', () => {
+    const inside = ['AppData', 'AppData/Roaming', 'AppData/Local/Foo', 'Library', '.config', '.config/app', '.local', '.local/bin', '.cache'].map((name) => join(home, name));
+    for (const folder of [...inside, join(base, 'ProgramData')]) expect(() => access.allowFolder(folder), folder).toThrow(/cannot be granted/);
+  });
+
+  it('allows the ordinary content folders inside home and folders elsewhere', () => {
+    for (const folder of [join(home, 'Documents'), join(home, 'Desktop', 'proj'), join(home, 'Downloads'), granted]) {
+      expect(access.allowFolder(folder)).toBe(folder);
     }
   });
 
-  it('allows the folders inside home, even inside AppData and .config', () => {
-    for (const folder of ['Documents', join('AppData', 'Local', 'Foo'), join('.config', 'app')]) {
-      expect(access.allowFolder(join(home, folder))).toBe(join(home, folder));
-    }
-  });
-
-  it('uses the real home folder by default', () => {
+  it('uses the real home folder and system folders by default', () => {
     const real = createDocumentAccess();
     expect(() => real.allowFolder(homedir())).toThrow(/home folder/);
     expect(() => real.allowFolder(dirname(homedir()))).toThrow(/home folder/);
+    for (const folder of [process.env.APPDATA, process.env.LOCALAPPDATA, process.env.ProgramFiles, process.env.SystemRoot, process.env.ProgramData]) {
+      if (folder !== undefined && existsSync(folder)) expect(() => real.allowFolder(folder), folder).toThrow(/cannot be granted/);
+    }
+    for (const folder of ['/usr', '/etc', join(homedir(), '.config'), join(homedir(), '.local', 'bin')]) {
+      if (process.platform !== 'win32' && existsSync(folder)) expect(() => real.allowFolder(folder), folder).toThrow(/cannot be granted/);
+    }
+  });
+
+  it('allows the real Documents folder when it is there', () => {
+    const documents = join(homedir(), 'Documents');
+    if (existsSync(documents)) expect(createDocumentAccess().allowFolder(documents)).toBeTruthy();
   });
 });
 
@@ -82,7 +98,7 @@ describe('writing to autostart and hook paths under a grant', () => {
   });
 
   it('refuses a new file in them, in any case', async () => {
-    for (const path of [join(granted, STARTUP, 'new.cmd'), join(granted, STARTUP.toUpperCase(), 'new.cmd'), join(granted, 'proj', '.GIT', 'HOOKS', 'post-merge')]) {
+    for (const path of [join(granted, STARTUP, 'new.cmd'), join(granted, STARTUP.toUpperCase(), 'new.cmd')]) {
       await expect(call('document:writeText', path, 'evil')).rejects.toThrow(/may not use/);
       expect(existsSync(path)).toBe(false);
     }
@@ -130,7 +146,7 @@ describe('the app folders that are not there yet', () => {
   });
 
   it('refuses a folder that appears later through a link, under a broader grant', async () => {
-    const guarded = createDocumentAccess({ protectedRoots: () => [join(base, 'later', 'Data')], sensitiveRoots: () => [] });
+    const guarded = createDocumentAccess({ protectedRoots: () => [join(base, 'later', 'Data')], sensitiveRoots: () => ({ home: [], trees: [] }) });
     guarded.allowFolder(base);
     await symlink(outside, join(base, 'later'), dirLink);
     await mkdir(join(outside, 'Data'));

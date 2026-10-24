@@ -1,8 +1,6 @@
 /* @layer electron-main @kind constants */
 const AUTOSTART_SEQUENCES: readonly (readonly string[])[] = [
   ['start menu', 'programs', 'startup'],
-  ['.git', 'hooks'],
-  ['.git', 'config'],
   ['library', 'launchagents'],
   ['library', 'launchdaemons'],
   ['.config', 'autostart'],

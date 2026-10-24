@@ -3,8 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, sep } from 'path';
-import { createDocumentAccess } from '../src/main/documents/document-access';
-import { makeTree, refusedBy, sessionOf } from './folder-fixture';
+import { makeTree, refusedBy, sessionOf, testAccess } from './folder-fixture';
 import type { Call } from './folder-fixture';
 
 const picker = vi.hoisted(() => ({
@@ -18,7 +17,7 @@ const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
 let base = '';
 let granted = '';
 let outside = '';
-let access = createDocumentAccess();
+let access = testAccess();
 let call: Call;
 
 const canLinkFiles = await (async (): Promise<boolean> => {
@@ -39,7 +38,7 @@ const refused = (path: string): Promise<void> => refusedBy(access)(path);
 beforeEach(async () => {
   ({ base, granted, outside } = await makeTree('brock-grants-'));
   await mkdir(join(granted, 'sub', 'deep'));
-  access = createDocumentAccess();
+  access = testAccess();
   call = sessionOf({ documents: access });
   picker.folder.mockReset();
 });

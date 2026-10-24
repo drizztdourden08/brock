@@ -3,10 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, rm, symlink, utimes, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { MainContext } from '../src/main/types/main-context.type';
-import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { mainRecent } from '../src/main/documents/main-recent';
-import { knownProfiles, makeBase, sessionOf } from './folder-fixture';
+import { knownProfiles, makeBase, sessionOf, testAccess } from './folder-fixture';
 import type { Call } from './folder-fixture';
 
 const electron = vi.hoisted(() => ({
@@ -46,7 +45,7 @@ beforeEach(async () => {
   await writeFile(join(granted, 'notes.txt'), 'n');
   await writeFile(join(granted, 'docs', 'c.bxel'), 'c');
   await writeFile(join(granted, 'docs', 'deep', 'd.png'), 'd');
-  access = createDocumentAccess({ recent: (profileId) => mainRecent({ paths, documents: access, files, log: vi.fn(), profiles: knownProfiles }, profileId) });
+  access = testAccess({ recent: (profileId) => mainRecent({ paths, documents: access, files, log: vi.fn(), profiles: knownProfiles }, profileId) });
   appState = JSON.stringify({ lastProfileId: null });
   call = sessionOf({ documents: access, files, paths, log: vi.fn() });
   electron.dialog.showOpenDialog.mockReset();
@@ -174,6 +173,6 @@ describe('the recent list for main code', () => {
 
   it('refuses an unsafe profile id and is empty without a recent source', async () => {
     await expect(access.recent('../p1')).rejects.toThrow();
-    expect(await createDocumentAccess().recent('p1')).toEqual([]);
+    expect(await testAccess().recent('p1')).toEqual([]);
   });
 });

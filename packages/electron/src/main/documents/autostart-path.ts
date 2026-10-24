@@ -1,8 +1,7 @@
 /* @layer electron-main @kind logic */
 import { AUTOSTART_SEQUENCES, POWERSHELL_FOLDERS, POWERSHELL_PROFILE, SHELL_PROFILE_FILES } from './autostart-paths.constants';
-
-const hasSequence = (segments: string[], sequence: readonly string[]): boolean =>
-  segments.some((_segment, index) => sequence.every((name, offset) => segments[index + offset] === name));
+import { hasSequence } from './has-sequence';
+import { pathSegments } from './path-segments';
 
 const powershellCode = (segments: string[]): boolean => {
   const at = segments.findIndex((segment) => POWERSHELL_FOLDERS.has(segment));
@@ -10,7 +9,7 @@ const powershellCode = (segments: string[]): boolean => {
 };
 
 const autostartPath = (path: string): boolean => {
-  const segments = path.toLowerCase().split(/[\\/]/).filter((segment) => segment !== '');
+  const segments = pathSegments(path);
   return AUTOSTART_SEQUENCES.some((sequence) => hasSequence(segments, sequence))
     || SHELL_PROFILE_FILES.has(segments[segments.length - 1] ?? '')
     || powershellCode(segments);

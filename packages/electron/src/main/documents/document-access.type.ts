@@ -1,5 +1,6 @@
 /* @layer electron-main @kind types */
 import type { DocumentListing, DocumentListOptions, RecentDocument } from '@drizztdourden08/brock-core/platform';
+import type { SensitiveRoots } from './folder-grants.type';
 import type { ListLimits } from './list-limits.type';
 
 interface DocumentAccess {
@@ -15,7 +16,7 @@ interface DocumentAccess {
 
 interface DocumentAccessDeps {
   protectedRoots?: () => string[];
-  sensitiveRoots?: () => string[];
+  sensitiveRoots?: () => SensitiveRoots;
   limits?: Partial<ListLimits>;
   recent?: (profileId?: string) => Promise<RecentDocument[]>;
 }

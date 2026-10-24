@@ -1,9 +1,8 @@
 /* @layer electron-main @kind logic */
 import { realpathSync, statSync } from 'fs';
-import { dirname } from 'path';
 import { absolutePath } from './absolute-path';
-import { autostartPath } from './autostart-path';
 import { NETWORK_PATH } from './folder-grants.constants';
+import { grantRefusal } from './grant-refusal';
 import type { FolderGrantDeps, FolderGrants } from './folder-grants.type';
 import { pathInside } from './path-inside';
 import { pathKey } from './path-key';
@@ -11,6 +10,7 @@ import { protectedReals } from './protected-reals';
 import { realPathOf } from './real-path-of';
 import { sensitiveFolders } from './sensitive-folders';
 import { unsafeSegments } from './unsafe-segments';
+import { writeDenied } from './write-denied';
 
 const isNetwork = (path: string): boolean => process.platform === 'win32' && NETWORK_PATH.test(path);
 
@@ -18,7 +18,8 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
   const roots = new Set<string>();
   const spellings = new Map<string, string>();
   const guarded = protectedReals(protectedRoots);
-  const sensitive = protectedReals(sensitiveRoots);
+  const sensitiveHome = protectedReals(() => sensitiveRoots().home);
+  const sensitiveTrees = protectedReals(() => sensitiveRoots().trees);
 
   const rootOf = (real: string): string | null => {
     if (guarded.current().some((guard) => pathInside(guard, real, pathKey))) return null;
@@ -30,15 +31,9 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     if (unsafeSegments(path)) throw new Error(`"${path}" is not a plain folder path`);
     const real = realpathSync.native(full);
     if (!statSync(real).isDirectory()) throw new Error(`"${real}" is not a folder`);
-    if (dirname(real) === real) throw new Error('A folder grant needs a folder below the filesystem root');
-    guarded.refresh();
-    sensitive.refresh();
-    if (guarded.current().some((guard) => pathInside(guard, real, pathKey))) {
-      throw new Error(`"${real}" is, or sits inside, one of the app's own folders and cannot be granted`);
-    }
-    if (sensitive.current().some((guard) => pathInside(real, guard, pathKey))) {
-      throw new Error(`"${real}" is, or holds, your home folder, AppData, Library or .config and cannot be granted`);
-    }
+    for (const guard of [guarded, sensitiveHome, sensitiveTrees]) guard.refresh();
+    const refusal = grantRefusal(real, { own: guarded.current(), home: sensitiveHome.current(), trees: sensitiveTrees.current() });
+    if (refusal !== null) throw new Error(refusal);
     roots.add(real);
     spellings.set(pathKey(full), real);
     return real;
@@ -68,7 +63,8 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     if (isNetwork(full) && !onNetworkRoot(full)) return null;
     guarded.refresh();
     const real = await realPathOf(full);
-    return real !== null && rootOf(real) !== null && !(write && autostartPath(real)) ? real : null;
+    if (real === null || rootOf(real) === null) return null;
+    return write && (await writeDenied(real)) ? null : real;
   };
 
   return { allow, revoke, contain, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };

@@ -2,14 +2,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, readFile, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { listFolder } from '../src/main/documents/list-folder';
 import { LIST_LIMITS } from '../src/main/documents/list-limits.constants';
 import { pathInside } from '../src/main/documents/path-inside';
 import { pathKey } from '../src/main/documents/path-key';
 import { unsafeSegments } from '../src/main/documents/unsafe-segments';
-import { makeTree } from './folder-fixture';
+import { makeTree, testAccess } from './folder-fixture';
 
 const windows = process.platform === 'win32';
 
@@ -28,14 +27,14 @@ let granted = '';
 let access: DocumentAccess;
 
 const limited = (limits: Partial<typeof LIST_LIMITS>): DocumentAccess => {
-  const limitedAccess = createDocumentAccess({ limits });
+  const limitedAccess = testAccess({ limits });
   limitedAccess.allowFolder(granted);
   return limitedAccess;
 };
 
 beforeEach(async () => {
   ({ base, granted } = await makeTree('brock-hardening-'));
-  access = createDocumentAccess();
+  access = testAccess();
   access.allowFolder(granted);
 });
 
@@ -104,7 +103,7 @@ describe('network paths', () => {
 
   it.runIf(windows)('stay inside the share that was granted', async () => {
     const share = `\\\\localhost\\${base.slice(0, 1)}$${base.slice(2)}\\granted`;
-    const shared = createDocumentAccess();
+    const shared = testAccess();
     try {
       shared.allowFolder(share);
     } catch {

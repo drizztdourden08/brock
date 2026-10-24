@@ -3,13 +3,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { execSync } from 'child_process';
 import { readFile, rm } from 'fs/promises';
 import { join } from 'path';
-import { createDocumentAccess } from '../src/main/documents/document-access';
-import { makeTree, refusedBy } from './folder-fixture';
+import { makeTree, refusedBy, testAccess } from './folder-fixture';
 
 let base = '';
 let granted = '';
 let outside = '';
-let access = createDocumentAccess();
+let access = testAccess();
 
 const shortNameOf = (path: string): string => execSync(`for %I in ("${path}") do @echo %~sI`).toString().trim();
 
@@ -19,7 +18,7 @@ const refused = (path: string): Promise<void> => refusedBy(access)(path);
 
 beforeEach(async () => {
   ({ base, granted, outside } = await makeTree('brock-grants-win-'));
-  access = createDocumentAccess();
+  access = testAccess();
 });
 
 afterEach(async () => {

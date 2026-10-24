@@ -1,10 +1,25 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { GITHUB_REMOTE, ORIGIN_SECTION, REMOTE_URL, REPOSITORY_SHORTHAND } from './publish-packages.constants.mjs';
 
+const readIfFile = (file) => (existsSync(file) && statSync(file).isFile() ? readFileSync(file, 'utf8').trim() : null);
+
+const gitCommonDir = (repoDir) => {
+  const dotGit = join(repoDir, '.git');
+  if (!existsSync(dotGit)) return null;
+  if (statSync(dotGit).isDirectory()) return dotGit;
+  const pointer = /^gitdir:\s*(.+)$/m.exec(readIfFile(dotGit) ?? '');
+  if (!pointer) return null;
+  const gitDir = resolve(repoDir, pointer[1].trim());
+  const common = readIfFile(join(gitDir, 'commondir'));
+  return common ? resolve(gitDir, common) : gitDir;
+};
+
 const originUrl = (repoDir) => {
-  const config = join(repoDir, '.git', 'config');
+  const commonDir = gitCommonDir(repoDir);
+  if (!commonDir) return null;
+  const config = join(commonDir, 'config');
   if (!existsSync(config) || !statSync(config).isFile()) return null;
   const lines = readFileSync(config, 'utf8').split(/\r?\n/).map((line) => line.trim());
   const start = lines.findIndex((line) => ORIGIN_SECTION.test(line));

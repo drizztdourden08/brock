@@ -21,6 +21,7 @@ import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
 import { renderPaletteFile } from '../tessera/render-palette.mjs';
 import { renderStartupFiles } from '../startup/render-startup.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
+import { renderToolbarsFiles } from '../toolbars/render-toolbars.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
@@ -113,6 +114,7 @@ const rendererSideFiles = (rootDir, config) => [
   ...renderWidgetsFiles(rootDir),
   ...renderTitleBarFiles(rootDir),
   ...renderToursFiles(rootDir),
+  ...renderToolbarsFiles(rootDir),
   ...renderStartupFiles(rootDir),
   ...renderPaletteFile(rootDir, config),
   ...renderTesseraEntryFiles(rootDir),

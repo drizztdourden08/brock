@@ -94,6 +94,7 @@ interface ProfileViews {
   widgetLayout?: unknown;
   widgetPrefs?: WidgetPrefs;
   widgetKits?: unknown;
+  toolbarLayout?: unknown;
   screens?: ScreenViews;
   volume?: unknown;
 }

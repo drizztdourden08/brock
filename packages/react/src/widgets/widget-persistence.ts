@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
+import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import { forcedWidgets } from './forced-widgets';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
@@ -20,12 +21,14 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
   if (!profileId) {
     useWidgetLayoutStore.getState().replace(null);
     useWidgetKitStore.getState().replace(null);
+    useToolbarLayoutStore.getState().replace(null);
     forcedWidgets.rearm();
     return;
   }
   const views = await profileViews.read(profileId);
   if (!live()) return;
   useWidgetLayoutStore.getState().replace(views.widgetLayout);
+  useToolbarLayoutStore.getState().replace(views.toolbarLayout);
   useWidgetKitStore.getState().replace(views.widgetKits);
   forcedWidgets.rearm();
   useWidgetPrefStore.getState().hydrate(sanePrefs(views.widgetPrefs));
@@ -37,7 +40,11 @@ const watchWidgets = (): (() => void) => {
     const id = bound.profileId;
     if (id && state.layout !== prev.layout) void profileViews.patch(id, { widgetLayout: state.layout });
   });
-  const offPrefs = useWidgetPrefStore.subscribe((state, prev) => {
+  const offToolbars = useToolbarLayoutStore.subscribe((state, prev) => {
+    const id = bound.profileId;
+    if (id && state.layout !== prev.layout) void profileViews.patch(id, { toolbarLayout: state.layout });
+  });
+  const offPrefs =useWidgetPrefStore.subscribe((state, prev) => {
     const id = bound.profileId;
     if (id && state.byWidget !== prev.byWidget) void profileViews.patch(id, { widgetPrefs: state.byWidget });
   });
@@ -48,6 +55,7 @@ const watchWidgets = (): (() => void) => {
   for (const name of FLUSH_EVENTS) window.addEventListener(name, profileViews.flush);
   return () => {
     offLayout();
+    offToolbars();
     offPrefs();
     offKits();
     for (const name of FLUSH_EVENTS) window.removeEventListener(name, profileViews.flush);

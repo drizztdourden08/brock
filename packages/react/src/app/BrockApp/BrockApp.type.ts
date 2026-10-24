@@ -22,6 +22,7 @@ import type { WidgetKitDef } from '../../widgets/kits/widget-kit.type';
 import type { AppReview } from '../../review/app-review.type';
 import type { StartupPromptDef } from '../../startup/startup.type';
 import type { TourChoice, TourDef } from '../../tours/tour.type';
+import type { ToolbarDef } from '../../toolbars/toolbar.type';
 import type { BrockAppBugReport } from '../../bug-report/bug-report.type';
 import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
 import type { BeforeProfileRemove } from '../../stores/profiles.type';
@@ -75,6 +76,7 @@ interface BrockAppProps<S extends object> {
   titleBar?: readonly TitleBarItemEntry[];
   review?: AppReview;
   tours?: readonly TourDef[];
+  toolbars?: readonly ToolbarDef[];
   startupPrompts?: readonly StartupPromptDef[];
   bugReport?: BrockAppBugReport;
   sessionLog?: boolean;

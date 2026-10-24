@@ -30,6 +30,10 @@ html.notch-safe .brock-app {
   min-height: 0;
 }
 
+.brock-app__stage--docked {
+  height: 100%;
+}
+
 .brock-app__screens {
   position: absolute;
   inset: 0;

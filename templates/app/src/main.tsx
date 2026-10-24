@@ -14,6 +14,7 @@ import { appReview } from '../.brock/review';
 import { appTitleBar } from '../.brock/title-bar';
 import { appStartupPrompts } from '../.brock/startup';
 import { appTours } from '../.brock/tours';
+import { appToolbars } from '../.brock/toolbars';
 import { SETTINGS } from './main.constants';
 import { product } from './product';
 import type { AppSettings } from './settings.type';
@@ -36,6 +37,7 @@ createRoot(root).render(
       titleBar={appTitleBar}
       tours={appTours}
       startupPrompts={appStartupPrompts}
+      toolbars={appToolbars}
     />
   </StrictMode>,
 );

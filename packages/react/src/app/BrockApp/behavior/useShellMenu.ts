@@ -21,6 +21,7 @@ import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { tours } from '../../../tours/tours';
 import { useTourStore } from '../../../tours/useTourStore';
 import { useWidgetMenuEntries } from '../../../widgets/useWidgetMenuEntries';
+import { useToolbarMenuEntries } from '../../../toolbars/useToolbarMenuEntries';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
 import { CREDITS_SCREEN } from '../BrockApp.constants';
@@ -37,7 +38,9 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
   const hasCredits = registry.has(CREDITS_SCREEN);
-  const widgets = useWidgetMenuEntries();
+  const widgetEntries = useWidgetMenuEntries();
+  const toolbarEntries = useToolbarMenuEntries();
+  const widgets = useMemo(() => [...widgetEntries, ...toolbarEntries], [widgetEntries, toolbarEntries]);
   const tourList = useTourStore((s) => s.tours);
   const hasProfile = useProfilesStore((s) => s.active !== null);
   const homeLocked = !hasProfile && registry.get(homeScreen)?.requiresProfile !== false;

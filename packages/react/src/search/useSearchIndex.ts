@@ -9,6 +9,7 @@ import { useScreenRegistry } from '../screens/useScreenRegistry';
 import { useProfilesStore } from '../stores/useProfilesStore';
 import { useSettings } from '../stores/useSettings';
 import { useWidgetMenuEntries } from '../widgets/useWidgetMenuEntries';
+import { useToolbarMenuEntries } from '../toolbars/useToolbarMenuEntries';
 import { hiddenRoutes } from '../screens/show/hidden-routes';
 import { useShowContext } from '../screens/show/useShowContext';
 import { buildCatalog } from './catalog/build-catalog';
@@ -26,7 +27,9 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
   const { settings, patch, hydrated } = useSettings<object>();
   const registered = useSearchActionStore((s) => s.actions);
   const live = useLiveSearchStore((s) => s.entries);
-  const widgets = useWidgetMenuEntries();
+  const widgetEntries = useWidgetMenuEntries();
+  const toolbarEntries = useToolbarMenuEntries();
+  const widgets = useMemo(() => [...widgetEntries, ...toolbarEntries], [widgetEntries, toolbarEntries]);
   const show = useShowContext();
   const menuHidden = useMenuHiddenStore((s) => s.routes);
 

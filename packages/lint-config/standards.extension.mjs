@@ -21,12 +21,12 @@ const RAW_CONTROLS = [
 
 const BROCK_DEFAULT_EXPORTS = [
   ...SCREEN_FILE_GLOBS, ...WIDGET_FILE_GLOBS, '**/modules/*/src/{main,preload,renderer}/index.ts', '**/brock.workspace.mjs', '**/brock.site.ts', '**/boot/*.task.ts',
-  '**/src/review/*.step.ts', '**/src/review/seed.ts', '**/src/title-bar/*.action.ts', '**/src/tours/*.tour.ts', '**/src/startup/*.prompt.ts',
+  '**/src/review/*.step.ts', '**/src/review/seed.ts', '**/src/title-bar/*.action.ts', '**/src/tours/*.tour.ts', '**/src/toolbars/*.toolbar.tsx', '**/src/startup/*.prompt.ts',
 ];
 
 export default defineExtension({
   id: 'brock-lint-config',
-  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item, tour and start-up prompt files, module entries, boot tasks and review steps, Tessera tokens',
+  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item, tour, toolbar and start-up prompt files, module entries, boot tasks and review steps, Tessera tokens',
   eslint: {
     plugins: { brock: { rules: { 'data-only': dataOnly, 'verbatim-source': verbatimSource } } },
     rules: { 'brock/data-only': 'error', 'brock/verbatim-source': 'error' },

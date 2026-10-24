@@ -13,7 +13,7 @@ const tarIsGnu = () => {
 };
 
 /**
- * @param {string} archive a .tar.gz, or a .7z when tar is bsdtar
+ * @param {string} archive a .tar.gz
  * @param {string} destination
  * @returns {boolean} whether tar unpacked it
  */

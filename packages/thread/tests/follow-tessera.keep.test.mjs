@@ -29,6 +29,15 @@ describe('followTessera', () => {
     expect(followTessera(root, '^0.4.0')).toEqual([]);
   });
 
+  it('quotes a range a plain YAML scalar cannot start with, and follows it again later', () => {
+    const root = app('catalog:', "catalog:\n  '@drizztdourden08/tessera': ^0.3.0\n");
+    expect(followTessera(root, '>=0.58.0 <1')).toEqual(['catalog.@drizztdourden08/tessera']);
+    expect(readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')).toBe("catalog:\n  '@drizztdourden08/tessera': '>=0.58.0 <1'\n");
+    expect(followTessera(root, '>=0.58.0 <1')).toEqual([]);
+    expect(followTessera(root, '^0.59.0')).toEqual(['catalog.@drizztdourden08/tessera']);
+    expect(readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')).toBe("catalog:\n  '@drizztdourden08/tessera': ^0.59.0\n");
+  });
+
   it('moves a plain spec', () => {
     const root = app('^0.3.0');
     expect(followTessera(root, '^0.4.0')).toEqual(['dependencies.@drizztdourden08/tessera']);

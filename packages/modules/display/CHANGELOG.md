@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-display
 
+## 0.89.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.89.1
+- @drizztdourden08/brock-electron@0.89.1
+- @drizztdourden08/brock-react@0.89.1
+
 ## 0.89.0
 
 ### Patch Changes

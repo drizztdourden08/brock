@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-core
 
+## 0.83.0
+
+### Minor Changes
+
+- 203ad09: `workflows.attest` takes `perFile: true`, and `BrockWorkflowOptions` now types `attest` and `publish`. With `perFile`, each matched file gets its own attestation, so its `<file>.sigstore.json` has exactly one subject. The action cannot loop and the globs are only known at run time, so sync writes a shell step that expands `paths` and 16 `actions/attest-build-provenance` steps, one per file slot, that skip when empty; the step fails when no file matches or more than 16 do. Without `perFile` nothing changes.
+- 203ad09: `workflows.publish: { packages, registry? }` publishes workspace library packages to GitHub Packages from the managed `release.yml`. `packages` are workspace folders, and `registry` takes `'github'`. `brock sync` adds a `publish-packages` job that waits for `prepare` and every build job, runs on `ubuntu-24.04` with `contents: read` and `packages: write`, installs with the frozen lockfile, builds each package that has a `build` script, and runs `pnpm publish --no-git-checks` for each one with `GITHUB_TOKEN`. A version `npm view` already finds is skipped, so a re-run is safe. Sync refuses a path that is not a workspace package, a `private: true` package, a name outside the repo owner's scope, and a package without `publishConfig.registry` set to `https://npm.pkg.github.com`, and says how to fix each. An app repo publishes its libraries without owning the workflow. `brock structure` expects a package listed there to be named `@<owner>/<app>-<subject>`, and every other package keeps `@<app>/<subject>`; the finding names the form that applies.
+
+### Patch Changes
+
+- 10222eb: The review no longer fails `console-errors` on the browser notice `ResizeObserver loop completed with undelivered notifications.`. A window resize can defer observer callbacks to the next frame, and nothing is lost when it does. The renderer's global error handler now logs exactly that message as a warning and keeps it off the console, and the review's console feed skips it. Core exports `isBenignBrowserError` for that test. Every other console error still fails the check. `gate-context-only-reopens` now says whether the window came back in the wrong place, with both bounds, or was not shown again in time.
+
 ## 0.82.0
 
 ### Minor Changes

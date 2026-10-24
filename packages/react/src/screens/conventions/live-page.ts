@@ -12,6 +12,8 @@ const livePage = (entry: LiveEntry): PlacedPage => ({
     label: entryLabel(entry),
     icon: iconNode(entry.meta.icon),
     devOnly: entry.meta.devOnly,
+    bare: entry.meta.bare,
+    showHeader: entry.meta.showHeader,
     order: entry.meta.order,
     menu: false,
     render: () => null,

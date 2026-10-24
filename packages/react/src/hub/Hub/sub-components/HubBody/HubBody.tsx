@@ -11,6 +11,7 @@ import { DEFAULT_SEARCH_PLACEHOLDER } from '../../../hub.constants';
 import type { HubSearchHit } from '../../../hub.type';
 import { buildHubNav } from '../../behavior/build-hub-nav';
 import { hubNavKey } from '../../behavior/hub-nav-key';
+import { isBarePage } from '../../behavior/is-bare-page';
 import { showsHubNav } from '../../behavior/shows-hub-nav';
 import { useHubState } from '../../behavior/useHubState';
 import { HubIndexResults } from '../HubIndexResults';
@@ -21,7 +22,8 @@ import type { HubBodyProps } from '../../Hub.type';
 
 const HubBody = (props: HubBodyProps) => {
   const { def, ctx, live } = props;
-  const { groups, pages, page, context, selectPage, selectTab, up } = useHubState(def, ctx, live);
+  const { groups, pages, page, sub, context, selectPage, selectTab, up } = useHubState(def, ctx, live);
+  const bare = isBarePage(def, page, sub);
   const kept = useKeptPages(page, context);
   const { query, setQuery, clear } = useHubSearch();
 
@@ -50,13 +52,12 @@ const HubBody = (props: HubBodyProps) => {
     </>
   );
 
-  return showsHubNav(def.nav, pages.length)
-    ? (
-      <SideNavLayout nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
-        {content}
-      </SideNavLayout>
-    )
-    : <ScrollArea className="hub__solo">{content}</ScrollArea>;
+  if (!showsHubNav(def.nav, pages.length)) return bare ? <Box className="hub__solo">{content}</Box> : <ScrollArea className="hub__solo">{content}</ScrollArea>;
+  return (
+    <SideNavLayout paneScroll={bare ? 'none' : 'page'} nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
+      {content}
+    </SideNavLayout>
+  );
 };
 
 export { HubBody };

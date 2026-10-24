@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
-import type { HubNavMode, PageBackdrop, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
+import type { HubNavMode, HubPagesMode, PageBackdrop, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
 import type { ShowRule } from '../screens/show/show.type';
 
 interface HubTarget {
@@ -60,10 +60,12 @@ interface LivePage {
   title: string;
   icon?: IconName;
   badge?: LiveBadge;
+  bare?: boolean;
+  showHeader?: boolean;
   render: (ctx: HubRenderContext) => ReactNode;
 }
 
-interface LiveMeta extends Pick<ScreenMeta, 'title' | 'order' | 'keywords' | 'devOnly'> {
+interface LiveMeta extends Pick<ScreenMeta, 'title' | 'order' | 'keywords' | 'devOnly' | 'bare' | 'showHeader'> {
   icon: IconName;
   empty: string;
 }
@@ -88,6 +90,8 @@ interface HubPage {
   icon: ReactNode;
   fullBleed?: boolean;
   fill?: boolean;
+  bare?: boolean;
+  showHeader?: boolean;
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
   preload?: () => Promise<unknown>;
@@ -138,6 +142,7 @@ interface HubDef {
   shortcut?: string;
   show?: ShowRule;
   nav?: HubNavMode;
+  pages?: HubPagesMode;
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
 }

@@ -9,6 +9,7 @@ interface HubPageFrameProps {
   sub: HubSubPage | null;
   route: string;
   backdrop?: PageBackdrop;
+  bare?: boolean;
   onSelectTab: (id: string) => void;
   onUp: () => void;
   children: ReactNode;

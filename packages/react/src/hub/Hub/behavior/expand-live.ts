@@ -11,6 +11,8 @@ const livePageOf = (holder: HubPage, source: HubLiveSource, item: LivePage): Hub
   icon: iconNode(item.icon ?? source.meta.icon),
   badge: liveBadge(item.badge),
   keywords: source.meta.keywords,
+  bare: item.bare ?? source.meta.bare,
+  showHeader: item.showHeader ?? source.meta.showHeader,
   liveRef: { source: holder.id, key: item.key },
   render: item.render,
 });

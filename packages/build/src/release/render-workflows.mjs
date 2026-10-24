@@ -9,11 +9,11 @@ import { collectWorkflowSteps } from './collect-workflow-steps.mjs';
 import { composeWorkflows, workspaceCi } from './compose-workflows.mjs';
 import { defaultBranchOf } from './default-branch.mjs';
 import { keepGithubTracked } from './keep-github-tracked.mjs';
-import { publishPlan } from './publish-packages.mjs';
+import { publishPlan, publishWorkflowText } from './publish-packages.mjs';
 import { releaseLayout } from './release-layout.mjs';
 import { sharedSteps, sharedSystemSteps } from './shared-workflow-steps.mjs';
 import { managedWorkflows, stepSources } from './workflow-modes.mjs';
-import { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, WORKFLOWS_DIR } from './workflows.constants.mjs';
+import { CI_WORKFLOW_FILE, PUBLISH_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, WORKFLOWS_DIR } from './workflows.constants.mjs';
 
 const targetsOf = (config) => config.targets ?? DEFAULT_TARGETS;
 
@@ -21,11 +21,11 @@ const slashed = (path) => path.replace(/\\/g, '/');
 
 /**
  * @param {import('./release-layout.mjs').ReleaseLayout} layout
- * @returns {{ ci: string, release: string }} the workflow files of the app, from the repo root
+ * @returns {{ ci: string, release: string, publish: string }} the workflow files of the app, from the repo root
  */
 const workflowFilesOf = ({ app }) => (app
-  ? { ci: `${WORKFLOWS_DIR}/ci-${app.name}.yml`, release: `${WORKFLOWS_DIR}/release-${app.name}.yml` }
-  : { ci: CI_WORKFLOW_FILE, release: RELEASE_WORKFLOW_FILE });
+  ? { ci: `${WORKFLOWS_DIR}/ci-${app.name}.yml`, release: `${WORKFLOWS_DIR}/release-${app.name}.yml`, publish: `${WORKFLOWS_DIR}/publish-packages-${app.name}.yml` }
+  : { ci: CI_WORKFLOW_FILE, release: RELEASE_WORKFLOW_FILE, publish: PUBLISH_WORKFLOW_FILE });
 
 /**
  * @param {string} repoDir
@@ -80,6 +80,17 @@ const sharedCiOf = ({ layout, config, modules }, inputs) => {
 };
 
 /**
+ * @param {import('../config.mjs').BrockConfig} config
+ * @param {import('./release-layout.mjs').ReleaseLayout} layout
+ * @param {import('./workflow-modes.mjs').ManagedWorkflows} managed
+ * @returns {{ publish: import('./publish-packages.mjs').PublishPlan | null, publishWorkflow: string | null }} the release job plan and the standalone workflow
+ */
+const publishInputsOf = (config, layout, managed) => {
+  const plan = publishPlan(config.workflows?.publish, layout.repoDir);
+  return { publish: managed.release ? plan : null, publishWorkflow: publishWorkflowText(plan, layout.app) };
+};
+
+/**
  * @param {string} rootDir the app root
  * @param {import('../config.mjs').BrockConfig} config
  * @param {{ manifest: Record<string, any> }[]} modules
@@ -93,7 +104,7 @@ const renderWorkflows = (rootDir, config, modules, inputs = {}) => {
   const systemSteps = modules.flatMap((m) => m.manifest.ci ?? []);
   const steps = collectWorkflowSteps(stepSources(config, modules, inputs.pluginSteps ?? [], targetsOf(config)));
   const branch = defaultBranchOf(layout.repoDir);
-  const publish = managed.release ? publishPlan(config.workflows?.publish, layout.repoDir) : null;
+  const { publish, publishWorkflow } = publishInputsOf(config, layout, managed);
   const { ci, release } = composeWorkflows({ ...composeInputOf(config, layout), systemSteps, steps, branch, publish });
   const at = (file) => slashed(relative(rootDir, join(layout.repoDir, file)));
   const files = workflowFilesOf(layout);
@@ -103,6 +114,7 @@ const renderWorkflows = (rootDir, config, modules, inputs = {}) => {
     ...(sharedCi === null ? [] : [{ path: at(CI_WORKFLOW_FILE), content: sharedCi }]),
     ...(managed.ci ? [{ path: at(files.ci), content: ci }] : []),
     ...(managed.release ? [{ path: at(files.release), content: release }] : []),
+    ...(publishWorkflow === null ? [] : [{ path: at(files.publish), content: publishWorkflow }]),
     ...(ignore === null ? [] : [{ path: at('.gitignore'), content: ignore }]),
   ];
 };

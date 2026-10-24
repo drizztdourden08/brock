@@ -87,18 +87,47 @@ const publishPlan = (publish, repoDir) => {
   return { owner, packages };
 };
 
+const RELEASE_REF = '\n        with:\n          ref: ${{ needs.prepare.outputs.sha }}';
+
+const stepsOf = (plan, selected) => {
+  const each = (name, values) => fillTemplate(RELEASE_DIR, name, { REGISTRY: GITHUB_REGISTRY, ...values }).trimEnd();
+  const dirs = plan.packages.map((pkg) => pkg.dir);
+  const condition = (pkg) => (selected ? `        if: contains(steps.select.outputs.folders, ',${pkg.dir},')\n` : '');
+  const builds = plan.packages.filter((pkg) => pkg.build).map((pkg) => each('publish-build-step.yml.tmpl', { NAME: pkg.name, DIR: pkg.dir, CONDITION: condition(pkg) }));
+  const publishes = plan.packages.map((pkg) => each('publish-package-step.yml.tmpl', { NAME: pkg.name, DIR: pkg.dir, CONDITION: condition(pkg) }));
+  const select = selected ? [each('publish-select-step.yml.tmpl', { ALLOWED: `,${dirs.join(',')},`, LISTED: dirs.join(', ') })] : [];
+  return [...select, ...builds, ...publishes].join('\n');
+};
+
+const jobText = (plan, { needs, ref, selected }) => fillTemplate(RELEASE_DIR, 'publish-job.yml.tmpl', {
+  JOB: PUBLISH_JOB,
+  NEEDS: needs,
+  REF: ref,
+  REGISTRY: GITHUB_REGISTRY,
+  OWNER: plan.owner,
+  STEPS: `\n${stepsOf(plan, selected)}`,
+}).trimEnd();
+
 /**
  * @param {PublishPlan | null} plan
  * @param {string} needs the YAML list of jobs the publish job waits for
  * @returns {string} the job and a blank line, or nothing
  */
-const publishJobText = (plan, needs) => {
-  if (!plan) return '';
-  const each = (name, values) => fillTemplate(RELEASE_DIR, name, { REGISTRY: GITHUB_REGISTRY, ...values }).trimEnd();
-  const builds = plan.packages.filter((pkg) => pkg.build).map((pkg) => each('publish-build-step.yml.tmpl', { NAME: pkg.name, DIR: pkg.dir }));
-  const publishes = plan.packages.map((pkg) => each('publish-package-step.yml.tmpl', { NAME: pkg.name, DIR: pkg.dir }));
-  const steps = [...builds, ...publishes].join('\n');
-  return `${each('publish-job.yml.tmpl', { JOB: PUBLISH_JOB, NEEDS: needs, OWNER: plan.owner, STEPS: `\n${steps}` })}\n\n`;
+const publishJobText = (plan, needs) => (plan ? `${jobText(plan, { needs: `    needs: ${needs}\n`, ref: RELEASE_REF, selected: false })}\n\n` : '');
+
+/**
+ * @param {PublishPlan | null} plan
+ * @param {{ name: string } | null} app the app of a repo of several apps, null for one
+ * @returns {string | null} the standalone publish-packages workflow, null for none
+ */
+const publishWorkflowText = (plan, app) => {
+  if (!plan) return null;
+  return `${fillTemplate(RELEASE_DIR, 'publish-packages-workflow.yml.tmpl', {
+    TITLE: app ? ` ${app.name}` : '',
+    GROUP: app ? `-${app.name}` : '',
+    FOLDERS: plan.packages.map((pkg) => pkg.dir).join(', '),
+    JOB: jobText(plan, { needs: '', ref: '', selected: true }),
+  }).trimEnd()}\n`;
 };
 
-export { publishPlan, publishJobText };
+export { publishPlan, publishJobText, publishWorkflowText };

@@ -1,0 +1,20 @@
+name: Publish packages__TITLE__
+
+# Managed by brock sync from workflows.publish in brock.config.ts. Change it there, then run brock sync.
+# Publishes the workspace packages to GitHub Packages without a release of the app. The same steps
+# run in the publish-packages job of the release workflow. A version npm view already finds is skipped.
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Package folders to publish, separated by commas. Empty publishes all of them: __FOLDERS__.'
+        required: false
+        default: ''
+        type: string
+
+concurrency:
+  group: publish-packages__GROUP__
+  cancel-in-progress: false
+
+jobs:
+__JOB__

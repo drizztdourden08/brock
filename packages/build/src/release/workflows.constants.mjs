@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind constants */
 const CI_WORKFLOW_FILE = '.github/workflows/ci.yml';
 const RELEASE_WORKFLOW_FILE = '.github/workflows/release.yml';
+const PUBLISH_WORKFLOW_FILE = '.github/workflows/publish-packages.yml';
 
 const RELEASE_DIR = import.meta.dirname;
 
@@ -34,6 +35,6 @@ const GITHUB_IGNORES = new Set(['.*/', '.*', '/.*/', '/.*', '.github', '.github/
 const GITHUB_UNIGNORES = new Set([GITHUB_EXCEPTION, '!.github', '!/.github/', '!/.github']);
 
 export {
-  CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, RELEASE_DIR, CHECKOUT_RELEASE, SET_VERSION, CHECKOUT_HISTORY, HOST_OS, WORKFLOWS_DIR, DEFAULT_BRANCH,
+  CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, PUBLISH_WORKFLOW_FILE, RELEASE_DIR, CHECKOUT_RELEASE, SET_VERSION, CHECKOUT_HISTORY, HOST_OS, WORKFLOWS_DIR, DEFAULT_BRANCH,
   GITHUB_EXCEPTION, GITHUB_IGNORES, GITHUB_UNIGNORES,
 };

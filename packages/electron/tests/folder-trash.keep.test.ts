@@ -42,11 +42,29 @@ describe('trash', () => {
     expect(await readFile(join(outside, 'secret.txt'), 'utf8')).toBe('secret');
   });
 
-  it('refuses a link that leads outside, and what sits behind it', async () => {
+  it('refuses what sits behind a link that leads outside', async () => {
     const { access, granted, outside, trashed } = world;
     await symlink(outside, join(granted, 'out'), dirLink);
-    await expect(access.trash(join(granted, 'out'))).rejects.toThrow(/not inside a granted folder/);
     await expect(access.trash(join(granted, 'out', 'secret.txt'))).rejects.toThrow(/not inside a granted folder/);
+    expect(trashed).toEqual([]);
+    expect(await readFile(join(outside, 'secret.txt'), 'utf8')).toBe('secret');
+  });
+
+  it('trashes a link itself, never its target, whether it leads outside or inside', async () => {
+    const { access, granted, outside, trashed } = world;
+    await symlink(outside, join(granted, 'out'), dirLink);
+    await symlink(join(granted, 'sub'), join(granted, 'in'), dirLink);
+    await access.trash(join(granted, 'out'));
+    await access.trash(join(granted, 'in'));
+    expect(trashed).toEqual([join(granted, 'out'), join(granted, 'in')]);
+    expect(await readFile(join(outside, 'secret.txt'), 'utf8')).toBe('secret');
+    expect(await readFile(join(granted, 'sub', 'in.txt'), 'utf8')).toBe('inside');
+  });
+
+  it('still checks the name of a link as a write', async () => {
+    const { access, granted, trashed } = world;
+    await symlink(join(granted, 'sub'), join(granted, 'danger.lnk'), dirLink);
+    await expect(access.trash(join(granted, 'danger.lnk'))).rejects.toThrow(/may not be changed/);
     expect(trashed).toEqual([]);
   });
 

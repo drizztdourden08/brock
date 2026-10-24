@@ -12,7 +12,7 @@ const regrantFolder = async (folders: FolderGrants, memory: RememberedFolders, p
   if (stored === null) throw new Error(`"${full}" is not a remembered folder`);
   const real = folders.vet(stored);
   if (pathKey(real) !== pathKey(stored)) throw new Error(`"${stored}" now leads somewhere else and is not granted again`);
-  return folders.allow(stored);
+  return folders.adopt(real);
 };
 
 export { regrantFolder };

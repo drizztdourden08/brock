@@ -25,7 +25,7 @@ const stubApi = () => {
       watchers.push(callback);
       return () => watchers.splice(watchers.indexOf(callback), 1);
     }),
-    documentRememberedFolders: vi.fn((_profileId: string) => Promise.resolve([{ path: 'C:\\art', name: 'art', lastOpened: 1 }])),
+    documentRememberedFolders: vi.fn((_profileId: string) => Promise.resolve([{ path: 'C:\\art', name: 'art', lastOpened: 1, available: true }])),
     documentRegrant: vi.fn((_profileId: string, path: string) => Promise.resolve(path)),
     documentForgetFolder: vi.fn((_profileId: string, _path: string) => Promise.resolve(true)),
     documentRead: vi.fn(() => Promise.resolve(new Uint8Array([4, 5]).buffer)),

@@ -174,10 +174,12 @@ describe('recent documents and folder grants', () => {
 });
 
 describe('revoking a folder by another spelling', () => {
-  it('finds the grant through a link to the folder', async () => {
+  it('does not find the grant through a link the grant was never made with', async () => {
     await symlink(granted, join(base, 'alias'), dirLink);
     access.allowFolder(granted);
-    expect(access.revokeFolder(join(base, 'alias'))).toBe(true);
+    expect(access.revokeFolder(join(base, 'alias'))).toBe(false);
+    await expect(access.resolve(join(granted, 'sub', 'in.txt'))).resolves.toBeTruthy();
+    expect(access.revokeFolder(granted)).toBe(true);
     await expect(access.resolve(join(granted, 'sub', 'in.txt'))).rejects.toThrow(/may not use/);
   });
 

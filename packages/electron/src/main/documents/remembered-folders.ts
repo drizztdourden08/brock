@@ -9,8 +9,6 @@ import type { RememberedDeps, RememberedFolders } from './remembered-folders.typ
 import { signFolder } from './sign-folder';
 import { createSignedEntries } from './signed-entries';
 
-const plain = ({ path, name, lastOpened }: StoredRecent): RememberedFolder => ({ path, name, lastOpened });
-
 const createRememberedFolders = (deps: RememberedDeps): RememberedFolders => {
   const now = deps.now ?? Date.now;
   const same = (a: string, b: string): boolean => pathKey(a) === pathKey(b);
@@ -21,7 +19,10 @@ const createRememberedFolders = (deps: RememberedDeps): RememberedFolders => {
     exists: deps.exists,
   });
 
-  const list = async (profileId: string): Promise<RememberedFolder[]> => (await entries.present(profileId)).map(plain);
+  const list = async (profileId: string): Promise<RememberedFolder[]> => {
+    const stored = await entries.load(profileId);
+    return Promise.all(stored.map(async ({ path, name, lastOpened }) => ({ path, name, lastOpened, available: await deps.exists(path) })));
+  };
 
   const find = async (profileId: string, path: string): Promise<string | null> =>
     (await entries.load(profileId)).find((entry) => same(entry.path, path))?.path ?? null;

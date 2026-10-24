@@ -27,7 +27,12 @@ const watchGranted = async ({ folders, registry, watcher, ms, max }: GrantedWatc
     live: () => folders.holds(root),
     listener,
   });
-  return registry.add(root, stop);
+  const remove = registry.add(root, stop);
+  if (!folders.holds(root)) {
+    remove();
+    throw new Error(`"${dir}" was revoked while the watch was starting`);
+  }
+  return remove;
 };
 
 export { watchGranted };

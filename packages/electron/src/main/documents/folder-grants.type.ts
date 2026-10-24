@@ -2,9 +2,11 @@
 interface FolderGrants {
   allow: (path: string) => string;
   vet: (path: string) => string;
+  adopt: (real: string) => string;
   revoke: (path: string) => boolean;
   contain: (path: string, write?: boolean) => Promise<string | null>;
   containNew: (path: string) => Promise<string | null>;
+  containLink: (path: string) => Promise<string | null>;
   holdsProtected: (real: string) => boolean;
   covers: (real: string) => boolean;
   rootOf: (real: string) => string | null;

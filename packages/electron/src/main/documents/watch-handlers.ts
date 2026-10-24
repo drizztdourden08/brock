@@ -1,42 +1,60 @@
 /* @layer electron-main @kind logic */
+import type { WebContents } from 'electron';
 import type { MainContext } from '../types/main-context.type';
 import { MAX_WATCH_ID } from './watch-limits.constants';
 
-const registerWatchHandlers = ({ handle, window, emit, documents }: Pick<MainContext, 'handle' | 'window' | 'emit' | 'documents'>): void => {
-  const stops = new Map<string, () => void>();
-  const closing = new WeakSet();
+const registerWatchHandlers = ({ handle, documents }: Pick<MainContext, 'handle' | 'documents'>): void => {
+  const sessions = new WeakMap<WebContents, Map<string, () => void>>();
+  const hooked = new WeakSet();
 
-  const stopAll = (): void => {
-    const all = [...stops.values()];
-    stops.clear();
-    for (const stop of all) stop();
+  const stopAll = (sender: WebContents): void => {
+    const owned = sessions.get(sender);
+    sessions.delete(sender);
+    for (const stop of owned?.values() ?? []) stop();
   };
 
-  handle('document:watch', async (_event, id, folder, options) => {
+  const hook = (sender: WebContents): void => {
+    if (hooked.has(sender)) return;
+    hooked.add(sender);
+    sender.on('did-start-navigation', (details) => {
+      if (details.isMainFrame && !details.isSameDocument) stopAll(sender);
+    });
+    sender.on('render-process-gone', () => stopAll(sender));
+    sender.on('destroyed', () => stopAll(sender));
+  };
+
+  const ownedBy = (sender: WebContents): Map<string, () => void> => {
+    const owned = sessions.get(sender) ?? new Map<string, () => void>();
+    sessions.set(sender, owned);
+    return owned;
+  };
+
+  handle('document:watch', async (event, id, folder, options) => {
     if (typeof id !== 'string' || id === '' || id.length > MAX_WATCH_ID) throw new Error('A folder watch needs an id of 1 to 64 characters');
-    if (stops.has(id)) throw new Error(`The folder watch "${id}" already exists`);
-    const win = window();
-    if (!win) throw new Error('There is no window to send folder changes to');
-    stops.set(id, () => undefined);
+    const { sender } = event;
+    const owned = ownedBy(sender);
+    if (owned.has(id)) throw new Error(`The folder watch "${id}" already exists`);
+    owned.set(id, () => undefined);
+    hook(sender);
     try {
-      const stop = await documents.watch(folder, options, (event) => emit('document:watchEvent', id, event));
-      if (!stops.has(id)) {
+      const stop = await documents.watch(folder, options, (change) => {
+        if (!sender.isDestroyed()) sender.send('document:watchEvent', id, change);
+      });
+      if (sessions.get(sender) !== owned || !owned.has(id)) {
         stop();
         return;
       }
-      stops.set(id, stop);
+      owned.set(id, stop);
     } catch (error) {
-      stops.delete(id);
+      owned.delete(id);
       throw error;
     }
-    if (closing.has(win)) return;
-    closing.add(win);
-    win.once('closed', stopAll);
   });
 
-  handle('document:unwatch', (_event, id) => {
-    const stop = typeof id === 'string' ? stops.get(id) : undefined;
-    if (typeof id === 'string') stops.delete(id);
+  handle('document:unwatch', (event, id) => {
+    const owned = sessions.get(event.sender);
+    const stop = typeof id === 'string' ? owned?.get(id) : undefined;
+    if (typeof id === 'string') owned?.delete(id);
     stop?.();
     return Promise.resolve();
   });

@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import { writeAtomic } from '../storage/write-atomic';
+import { writePrivate } from '../storage/write-private';
 import { readRecentEntries } from './recent-entries';
 import type { StoredRecent } from './recent-documents.type';
 import type { SignedEntries, SignedEntriesDeps } from './signed-entries.type';
@@ -10,7 +10,7 @@ const createSignedEntries = ({ fileOf, key, signed, exists }: SignedEntriesDeps)
     const stored = await readRecentEntries(fileOf(profileId));
     return stored.filter((entry) => signed(secret, profileId, entry.path, entry.sig));
   };
-  const save = (profileId: string, list: StoredRecent[]): Promise<void> => writeAtomic(fileOf(profileId), JSON.stringify(list));
+  const save = (profileId: string, list: StoredRecent[]): Promise<void> => writePrivate(fileOf(profileId), JSON.stringify(list));
 
   const present = async (profileId: string): Promise<StoredRecent[]> => {
     const stored = await load(profileId);

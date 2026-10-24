@@ -55,7 +55,7 @@ afterEach(async () => {
 describe('remembering the folders the user picked', () => {
   it('remembers a folder picked in the dialog for the profile, signed', async () => {
     expect(await pick(granted, 'p1')).toBe(granted);
-    expect(await access.rememberedFolders('p1')).toEqual([{ path: granted, name: 'granted', lastOpened: expect.any(Number) as number }]);
+    expect(await access.rememberedFolders('p1')).toEqual([{ path: granted, name: 'granted', lastOpened: expect.any(Number) as number, available: true }]);
     expect(await access.rememberedFolders('p2')).toEqual([]);
     const stored = JSON.parse(await readFile(fileOf('p1'), 'utf8')) as { sig: string }[];
     expect(stored[0]?.sig).toMatch(/^[0-9a-f]{64}$/);
@@ -97,14 +97,18 @@ describe('remembering the folders the user picked', () => {
     expect(new Set(listed).size).toBe(listed.length);
   });
 
-  it('drops a folder that is gone from the list', async () => {
+  it('keeps a folder that is gone, marked unavailable, and finds it again when it returns', async () => {
     const gone = join(base, 'gone');
     await mkdir(gone);
     await pick(gone, 'p1');
     await pick(granted, 'p1');
     await rm(gone, { recursive: true });
-    expect((await access.rememberedFolders('p1')).map((entry) => entry.path)).toEqual([granted]);
-    await expect(access.regrant('p1', gone)).rejects.toThrow(/not a remembered folder/);
+    const listed = await access.rememberedFolders('p1');
+    expect(listed.map((entry) => [entry.path, entry.available])).toEqual([[granted, true], [gone, false]]);
+    await expect(access.regrant('p1', gone)).rejects.toThrow();
+    await mkdir(gone);
+    expect((await access.rememberedFolders('p1')).map((entry) => entry.available)).toEqual([true, true]);
+    expect(await access.regrant('p1', gone)).toBe(gone);
   });
 });
 

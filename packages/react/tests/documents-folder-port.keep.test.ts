@@ -58,7 +58,7 @@ describe('remembered folders on Electron', () => {
     const api = stubApi();
     useProfilesStore.setState({ active: PROFILE });
     const documents = electronDocuments();
-    expect(await documents.rememberedFolders()).toEqual([{ path: 'C:\\art', name: 'art', lastOpened: 1 }]);
+    expect(await documents.rememberedFolders()).toEqual([{ path: 'C:\\art', name: 'art', lastOpened: 1, available: true }]);
     expect(await documents.regrant('C:\\art')).toBe('C:\\art');
     expect(await documents.forgetFolder('C:\\art')).toBe(true);
     await documents.openFolder();

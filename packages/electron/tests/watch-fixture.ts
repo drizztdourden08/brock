@@ -64,5 +64,5 @@ const withoutSentinel = (granted: string, events: DocumentWatchEvent[]): Documen
 
 const pause = (ms: number): Promise<void> => new Promise((done) => setTimeout(done, ms));
 
-export { openWatchWorld, pause, settle, withoutSentinel };
-export type { WatchWorld };
+export { createFakeWatcher, openWatchWorld, pause, settle, withoutSentinel };
+export type { FakeWatch, WatchWorld };

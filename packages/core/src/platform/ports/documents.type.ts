@@ -61,6 +61,7 @@ interface RememberedFolder {
   path: string;
   name: string;
   lastOpened: number;
+  available: boolean;
 }
 
 interface DocumentWriteOptions {

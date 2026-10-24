@@ -79,6 +79,23 @@ Then it prints the doctor report for the chosen platforms (what this machine has
 install command for what it lacks; it installs nothing) and the release secrets the
 chosen platforms need, with how to make them.
 
+## Server apps
+
+`--platforms server` scaffolds a windowless app from `template-server/` (it ships in the package
+as it is): `package.json` with no Electron, React or Tessera dependency of its own, `brock.config.ts` with
+`targets: ['server']`, a `brock.workspace.mjs` that launches the built server, and the managed
+files of the server kind (the unit, the Dockerfile and the `.deb` scripts under `build/server/`).
+The server platform's file step then writes `server/main.ts`, which calls `runServer` with
+`createDataDomains`, and `server/start.ts`, which holds the start function and the data
+domains and logs one line. Its `pnpm-workspace.yaml` leaves Electron out of
+`onlyBuiltDependencies`, so no Electron binary is downloaded.
+
+`--platforms desktop,server` scaffolds the desktop app and the same two server files, plus
+`electron/boot/server.task.ts`, a main boot task that runs `embedServer` on the same start
+function, so the desktop app carries the server in its own process. `brock platform add server`
+runs the same file step on an existing app. Each step skips a file the app already has. The
+design is in `docs/architecture.md`, section The server kind.
+
 ## Working against a checkout
 
 ```
@@ -111,7 +128,7 @@ are committed, so worktrees get them too. `brock add --local`, `brock adopt --lo
 
 ## What it writes
 
-The template at `templates/app` in the Brock repo (or `template/` in the published
+The template at `templates/app` in the Brock repo (`template-server/` for a server-only app, see Server apps) (or `template/` in the published
 package), with `brock-template-app` / `Brock App` / `com.drizztdourden08.brock-template-app`
 replaced by the new identity in `brock.config.ts`, `package.json`, the two HTML titles
 and the README. The template's `workspace:*` specs become `^<brock version>` (or `link:`

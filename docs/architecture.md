@@ -1030,6 +1030,62 @@ Libraries released with changesets follow the same standard through the reusable
 
 The updater shows the note of the chosen version (Velopack's `NotesMarkdown`, else the GitHub release body) in `ReleaseNotesPanel` with `markdown` on. The panel draws it with Tessera's `Markdown` composite (Tessera 0.28), `<Markdown size="sm" headingOffset={2} hideTitle onLink={onOpenLink}>`: the `#` title is left out since the panel names the notes, the `##` sections are h4 under the panel's h3 title, raw HTML and comment lines are dropped, and a link calls `onOpenLink`, `openExternal` unless the app gives its own, which opens it in the system browser through the main process allow list. The update dialog passes `openExternal`.
 
+## The server kind
+
+`server` is a platform like `web`. `targets: ['server']` is a windowless app: no Electron, no renderer, no installer. `targets: ['desktop', 'server']` ships the desktop app and the server together. The entry is `server/main.ts`, or `server.entry` in `brock.config.ts`. Everything below is for apps that list `server`; an app without it is untouched, and its workflows stay byte for byte what they were.
+
+### Runtime
+
+`@drizztdourden08/brock-electron/server` has no Electron import, so plain Node loads it. The app writes one start function, `start(host) => { stop, health? }`, where `host` is `{ dataDir, args, log, domains? }`. `server/main.ts` is a call to `runServer(start, { domains })`:
+
+```ts
+import { createDataDomains } from '@drizztdourden08/brock-electron/node';
+import { runServer } from '@drizztdourden08/brock-electron/server';
+import { dataDomains, start } from './start';
+
+void runServer(start, { domains: (dataDir) => createDataDomains(dataDir, dataDomains) });
+```
+
+- The data folder is `--user-data=`, then `BROCK_DATA_DIR`, then the first path of systemd's `STATE_DIRECTORY`, then `./.user-data`.
+- `runServer` writes one log line per event to stdout, errors to stderr, in the format of the main log. It stops on SIGTERM and SIGINT by calling `stop`, and exits 1 when `start` throws.
+- A heartbeat file, `<data>/.brock/server-health.json`, is rewritten while the server runs. `main.mjs health` reads it and exits 0 when it is under 30 seconds old and `ok`. It needs no port and no protocol, so it works for every app. A `health` function in the object `start` returns makes the heartbeat report `ok` only while it answers true.
+- `createDataDomains(dataDir, defs)` from `/node` builds the same `DataDomains` as `ctx.storage` (see Data domains), and the `secrets` module has a Node store beside its Electron one (`@drizztdourden08/brock-secrets/node`).
+
+The desktop app embeds the server in its own process with `embedServer(start, ctx, { domains })` from `/main`. It takes the data folder from `ctx.paths.userData()`, logs through the main log and stops the server when the app quits. The desktop imports the source of `server/start.ts` and never spawns `dist/server`, so `ELECTRON_RUN_AS_NODE` is not needed and the RunAsNode fuse stays off. An app that wants the server out of process declares it as a helper (`helpers: { server: 'server/main.ts' }`), which builds through the same Node bundle config and turns the fuse on by the usual rule.
+
+### Build
+
+`brock server build` bundles the entry with Vite SSR into one file, `dist/server/main.mjs`, every dependency inlined, so the shipped folder needs no `node_modules`. The config is the one outside helpers use (`node-bundle-config.mjs`): node22 target, ES module output, `build.aliases` and `build.define` applied, and a plugin that refuses `electron`. A native `.node` addon fails the build with a clear message. `brock server dev` rebuilds on change and restarts the server. A windowless app gets no `electron.vite.config.ts`, `electron-builder.config.cjs`, boot, screens, widgets, title bar or tours files from `brock sync`, and no installer or screen checks from `brock structure`. `brock launch main none` runs `brock server dev`, and with `--prod` the built `dist/server/main.mjs`, both with `--user-data=<dir>`. The managed `tsconfig.json` includes `server`.
+
+### Packaging
+
+`brock server package [--arch x64,arm64] [--deb]` fills `release/server`:
+
+- `<prefix>server-linux-<arch>.tar.gz` holds `<id>/bin/<id>-server` (a launcher), `<id>/server/main.mjs` and `<id>/node/bin/node`.
+- `<prefix>server_<version>_<arch>.deb` with `--deb`, which needs `dpkg-deb` and refuses off Linux. It installs under `/opt/<id>`, adds `/usr/bin/<id>-server`, a systemd unit and the postinst and prerm scripts, and lists `server.osPackages` in `Depends:`.
+- `docker/`, a build context for the image.
+
+The Node binary is bundled and pinned: system Node trails Brock's Node floor on Debian, and `ELECTRON_RUN_AS_NODE` has no Electron in a server package. Brock downloads `node-v<version>-linux-<arch>.tar.gz` from nodejs.org, checks it against its pinned sha256 and against `SHASUMS256.txt`, and caches it. `server.node` overrides the version. `server.arch` is `['x64']` unless the app also lists `arm64`. The Dockerfile is managed under `build/server/`, uses `debian:trixie-slim` and the same tarball, runs as uid 10001 under `tini`, keeps its data in the volume `/data` and uses `<id>-server health` as its `HEALTHCHECK`.
+
+The managed files `build/server/<id>.service`, `Dockerfile`, `postinst` and `prerm` are written by `brock sync` and checked by `brock check`, like `deb-postinst.sh`. An app adds its own post-install step in `build/server/after-install.sh`, which is appended to postinst.
+
+### Workflows
+
+An app with `server` in `targets` gets the CI job `server`, the release job `build-server` and the image job `publish-server-image`. The brock-build README describes them (Server workflows). The image job needs the `release` job, so no image exists for a release that failed, and it is the only job with `packages: write`.
+
+### Security notes
+
+- The unit runs the server as the system account `<product.id>` with `NoNewPrivileges`, `ProtectSystem=strict`, `ProtectHome`, `PrivateTmp` and `PrivateDevices`, state in `/var/lib/<id>` (mode 0750, umask 0027), and `CAP_NET_BIND_SERVICE` only when a declared port is under 1024.
+- The account is named after the product id, so `brock sync` refuses an id that is a system account name (`root`, `daemon`, `www-data`, `postgres`, `docker` and the rest of the reserved list, and anything starting with `systemd-`), and an id that is not lowercase letters, digits and dashes starting with a letter, 31 characters at most.
+- postinst creates the account with `useradd --system`, comment `<id> server (brock)`, shell `/usr/sbin/nologin`. When the name already exists it must be an account this package made: uid 100 to 999, that shell and that comment. Otherwise postinst stops with an error and the package never runs the server as someone else's account. An existing group of the same name must be a plain system group (gid 100 to 999, no members) before the account joins it.
+- prerm stops and disables the unit and leaves `/var/lib/<id>` in place on remove.
+- The Node download is checked twice before anything is staged. The Docker actions in the image job are pinned to full commit SHAs, and the job logs in to GHCR with `GITHUB_TOKEN` alone.
+- The image is `server.image`, or `ghcr.io/<repo owner>/<product.id>-server`. A new GHCR package starts private; making it public is a switch on the package's settings page in GitHub.
+
+### Scaffold
+
+`create-brock --platforms server` writes a windowless app from `template-server/`, and `--platforms desktop,server` writes the desktop app with the server on top. Both get `server/main.ts` and `server/start.ts` from the server platform's file step. With a window, the step also writes `electron/boot/server.task.ts`, a main boot task that calls `embedServer` on the same start function. `brock platform add server` runs the step on an existing app and skips a file that exists. The create-brock README describes the scaffold.
+
 ## Automated review
 
 Every Brock app carries a built-in review: `--review` (or `--review=<name>`, default `review`) is a headless automation flag like `--screenshot`. Run it with `<app> launch main none --review`, or `brock start -- --review --no-focus --muted --user-data=<dir>` after a build.

@@ -8,6 +8,14 @@ const SERVER_LABEL = 'brock.config.ts server';
 const NATIVE_ADDON = /\.node(?:[?#].*)?$/;
 const NATIVE_LOADERS = new Set(['bindings', 'node-gyp-build', 'prebuild-install']);
 const SERVER_DIR = import.meta.dirname;
+const STARTER_FOLDER = 'starter';
+const STARTER_FILES = Object.freeze([
+  Object.freeze({ from: 'main.ts.tmpl', to: 'server/main.ts' }),
+  Object.freeze({ from: 'start.ts.tmpl', to: 'server/start.ts' }),
+]);
+const STARTER_EMBED_FILE = Object.freeze({ from: 'server.task.ts.tmpl', to: 'electron/boot/server.task.ts' });
+const STARTER_KNIP_ENTRY = 'server/main.ts';
+const STARTER_KNIP_PROJECT = 'server/**/*.ts';
 const SERVER_NODE_VERSION = '24.11.0';
 const SERVER_NODE_SHA256 = Object.freeze({
   [SERVER_NODE_VERSION]: Object.freeze({
@@ -41,7 +49,7 @@ const DEB_VERSION_PATTERN = /^[0-9][A-Za-z0-9.+~-]*$/;
 
 export {
   SERVER_ENTRY, SERVER_OUT, SERVER_FILE, DIST_SERVER, SERVER_SOURCE, SERVER_LABEL, NATIVE_ADDON, NATIVE_LOADERS,
-  SERVER_DIR, SERVER_NODE_VERSION, SERVER_ARCHES, SERVER_DEFAULT_ARCHES, SERVER_DOCKERFILE, SERVER_POSTINST,
+  SERVER_DIR, STARTER_FOLDER, STARTER_FILES, STARTER_EMBED_FILE, STARTER_KNIP_ENTRY, STARTER_KNIP_PROJECT, SERVER_NODE_VERSION, SERVER_ARCHES, SERVER_DEFAULT_ARCHES, SERVER_DOCKERFILE, SERVER_POSTINST,
   SERVER_PRERM, SERVER_HOOK, NODE_VERSION_PATTERN, DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT, SERVER_NODE_SHA256,
   PRIVILEGED_PORT_LIMIT, ACCOUNT_PATTERN, RESERVED_ACCOUNT_PREFIXES, RESERVED_ACCOUNTS, DEB_EMAIL_PATTERN, DEB_VERSION_PATTERN,
 };

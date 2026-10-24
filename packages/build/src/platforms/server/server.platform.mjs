@@ -3,11 +3,13 @@ import { definePlatform } from '../define-platform.mjs';
 import { dpkgCheck } from '../doctor/dpkg-check.mjs';
 import { serverJobs } from './server-jobs.mjs';
 import { serverManagedFiles } from './server-managed-files.mjs';
+import { serverStarter } from './server-starter.mjs';
 
 const serverPlatform = definePlatform({
   id: 'server',
   label: 'Server',
   doctor: [dpkgCheck(['linux'])],
+  scaffold: [serverStarter()],
   managed: serverManagedFiles,
   ciJob: serverJobs.ci,
   releaseJob: serverJobs.release,

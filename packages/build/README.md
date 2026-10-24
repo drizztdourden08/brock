@@ -138,6 +138,10 @@ skipped or interrupted. Everything after `--` reaches electron-vite or the app u
 window opens off screen and unfocused, and the app writes under `<dir>`. Add `--review` for the
 automated review, which writes `<dir>/Data/review/review/report.md` and exits 1 on a failed check.
 
+## The server kind
+
+An app with `server` in `targets` is built by `brock server build` (Vite SSR, one file in `dist/server/main.mjs`), started by `brock server dev` and packaged by `brock server package [--arch x64,arm64] [--deb]` into `release/server`. `brock platform add server` adds the target and writes `server/main.ts`, `server/start.ts` and, for an app with a window, the boot task that embeds the server. The design, the packaging and the security notes on the deb unit and the account checks are in `docs/architecture.md`, section The server kind. The pinned Node and the workflows follow.
+
 ## Server packaging: the pinned Node
 
 `brock server package` bundles a Linux Node binary. Brock pins the sha256 of the official `node-v<version>-linux-<x64 | arm64>.tar.gz` archives of its default version in `SERVER_NODE_SHA256` (`src/platforms/server/server.constants.mjs`). The download must match the pin, and `SHASUMS256.txt` from nodejs.org must agree with it; either mismatch stops the build before anything is staged. A `server.node` version that Brock does not pin is checked against `SHASUMS256.txt` alone.
@@ -478,7 +482,7 @@ walk the chosen strategies; neither names a platform.
 | linux | .NET 8 SDK and vpk (on Linux), module libraries | brand icons; `build/linux/deb-postinst.sh` through sync | none | `build-linux`: deb and the vpk AppImage | none |
 | android | JDK 21, `ANDROID_HOME`, `platform-tools`, `platforms;android-36`, `build-tools;36.0.0`, plus the modules' `android.sdkPackages` | no `capacitor.config.ts` or `.js`, Capacitor packages, ignore lines, `cap add android`, `@capacitor/assets`, the module Android sides, Gradle signing, `versionCode` | none | `build-android`: JDK 21, setup-android, `brock mobile build --release` | `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` |
 | web | nothing beyond Node and pnpm | `build:web` and `dev:web` scripts | `web`: `brock web build` | `build-web`: `dist/web` zipped | none |
-| server | `dpkg-deb` (on Linux) | none | `server`: build, start, wait for `health` | `build-server`: tarball and .deb per `server.arch`; `publish-server-image` after the release | none (the image push uses `GITHUB_TOKEN`) |
+| server | `dpkg-deb` (on Linux) | `server/main.ts` and `server/start.ts`, and the embedding boot task `electron/boot/server.task.ts` for an app with a window; knip entries | `server`: build, start, wait for `health` | `build-server`: tarball and .deb per `server.arch`; `publish-server-image` after the release | none (the image push uses `GITHUB_TOKEN`) |
 | ios | reserved: choosing it says it is not supported yet | | | | |
 
 - `doctor` checks run on the machine and only report: each result is `ok`, `missing` with the install command for this OS, or `skip` when the check belongs to another OS. `brock doctor` exits 1 when anything is missing. A module adds its own through its manifest `doctor` entries (`name`, `os`, `probe`, `install`); the input module checks `pkg-config --exists libusb-1.0` on Linux and macOS.

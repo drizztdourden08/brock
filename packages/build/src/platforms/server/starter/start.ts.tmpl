@@ -1,0 +1,15 @@
+/* @layer electron-main @kind logic */
+import type { DataDomainDef } from '@drizztdourden08/brock-core/platform';
+import type { DataDomains } from '@drizztdourden08/brock-electron/node';
+import type { ServerStart } from '@drizztdourden08/brock-electron/server';
+
+const dataDomains: DataDomainDef[] = [
+  { domain: 'logs', label: 'Logs', dir: 'logs', description: 'Server logs.', cleanOlderThanDays: [7, 30], portable: false },
+];
+
+const start: ServerStart<DataDomains> = (host) => {
+  host.log(`ready, ${host.domains?.list().length ?? 0} data domain(s) in ${host.dataDir}`);
+  return { stop: () => host.log('stopping') };
+};
+
+export { dataDomains, start };

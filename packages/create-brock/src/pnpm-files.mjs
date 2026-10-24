@@ -11,6 +11,10 @@ const NPMRC_TEMPLATE = createRequire(import.meta.url).resolve('@drizztdourden08/
 
 const BUILT_DEPENDENCIES = ['electron', 'esbuild'];
 
+const SERVER_BUILT_DEPENDENCIES = ['esbuild'];
+
+const builtDependencies = (windowless) => (windowless ? SERVER_BUILT_DEPENDENCIES : BUILT_DEPENDENCIES);
+
 /**
  * @param {string} file
  * @returns {Record<string, string>}
@@ -42,11 +46,12 @@ const yamlKey = (name) => (name.startsWith('@') ? `'${name}'` : name);
 
 /**
  * @param {Record<string, string>} catalog
+ * @param {string[]} built the dependencies pnpm may run install scripts for
  * @returns {string}
  */
-const renderWorkspaceYaml = (catalog) => {
+const renderWorkspaceYaml = (catalog, built) => {
   const entries = Object.entries(catalog).sort(([a], [b]) => a.localeCompare(b));
-  const lines = ['packages: []', '', 'catalog:', ...entries.map(([name, range]) => `  ${yamlKey(name)}: ${range}`), '', 'onlyBuiltDependencies:', ...BUILT_DEPENDENCIES.map((name) => `  - ${name}`), ''];
+  const lines = ['packages: []', '', 'catalog:', ...entries.map(([name, range]) => `  ${yamlKey(name)}: ${range}`), '', 'onlyBuiltDependencies:', ...built.map((name) => `  - ${name}`), ''];
   return lines.join('\n');
 };
 
@@ -72,14 +77,15 @@ const neededCatalog = (targetDir, templateDir) => {
  * @param {string} targetDir
  * @param {Record<string, string>} catalog
  * @param {string | null} workspaceRoot
+ * @param {string[]} built
  * @returns {string[]} the files written or updated
  */
-const writeCatalog = (targetDir, catalog, workspaceRoot) => {
+const writeCatalog = (targetDir, catalog, workspaceRoot, built) => {
   if (workspaceRoot) {
     const added = mergeCatalog(workspaceRoot, catalog);
     return added.length ? [`${join(workspaceRoot, 'pnpm-workspace.yaml')} (+${added.length} catalog entries)`] : [];
   }
-  writeFileSync(join(targetDir, 'pnpm-workspace.yaml'), renderWorkspaceYaml(catalog), 'utf8');
+  writeFileSync(join(targetDir, 'pnpm-workspace.yaml'), renderWorkspaceYaml(catalog, built), 'utf8');
   copyFileSync(NPMRC_TEMPLATE, join(targetDir, '.npmrc'));
   return ['pnpm-workspace.yaml', '.npmrc'];
 };
@@ -88,14 +94,15 @@ const writeCatalog = (targetDir, catalog, workspaceRoot) => {
  * @param {string} targetDir
  * @param {string} templateDir
  * @param {string | null} workspaceRoot
+ * @param {string[]} built
  * @returns {string[]} the files written or updated
  */
-const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null) => {
-  const written = writeCatalog(targetDir, neededCatalog(targetDir, templateDir), workspaceRoot);
+const writePnpmFiles = (targetDir, templateDir, workspaceRoot = null, built = BUILT_DEPENDENCIES) => {
+  const written = writeCatalog(targetDir, neededCatalog(targetDir, templateDir), workspaceRoot, built);
   const packageManager = ensurePnpmPackageManager(workspaceRoot ?? targetDir);
   if (packageManager.status === 'added') written.push(`package.json packageManager ${packageManager.value}`);
   const crossDrive = keepCrossDriveLinks(targetDir, workspaceRoot ?? targetDir).length > 0;
   return crossDrive ? [...written, 'prefer-frozen-lockfile=false and a .gitattributes line (the links cross drives)'] : written;
 };
 
-export { writePnpmFiles };
+export { builtDependencies, writePnpmFiles };

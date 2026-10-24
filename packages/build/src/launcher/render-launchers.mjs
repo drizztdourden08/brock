@@ -1,8 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { launcherSource } from '@drizztdourden08/brock-thread';
 import { findWorkspaceRoot } from '../workspace.mjs';
-import { launcherSource } from './launcher-source.mjs';
 
 const MARKER = "const PACKAGE = '@drizztdourden08/brock';";
 

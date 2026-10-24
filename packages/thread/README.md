@@ -25,7 +25,7 @@ Without `--target`, `launch` picks the target whose app folder holds the folder 
 
 A review with screenshot baselines (`--review --review-baselines` or `--review --review-bless`) runs on an emptied `<userData>-review` folder beside the target's data folder (`.user-data-review`), every launch, with no provisioning, so two runs start from the same state.
 
-`<repo>` is the repository's own command (`my-app`, `tessera`): `bin/<repo>.mjs` at the repo root, written by `brock adopt` or `create-brock`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
+`<repo>` is the repository's own command (`my-app`, `tessera`): `bin/<repo>.mjs` at the repo root, written by `brock adopt`, `create-brock` or `brock-thread link`. It is how you run everything in the repo; it reaches the global `brock`, which runs the Brock version the repo pinned. Every hint and usage line these verbs print names the workspace's command, never `brock`.
 
 `mobile` drives the Capacitor Android project. It reads `mobile` from `brock.workspace.mjs`
 when there is one, else the `capacitor.config.json` that `platform add android` writes at the app
@@ -67,6 +67,47 @@ linux: {
 `setup-vm.sh` (its path is printed by `linux init`) sets a VM or a WSL distro up once: the build tools, rsync, Node 24 with pnpm, .NET 8 with vpk, the Electron runtime libraries and sshd. You run it in the VM yourself, and you authorize your key once with the line `linux init` prints; that is the only time the VM password is typed, by you, into ssh.
 
 A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. `workflows: { ci: 'own' }` there leaves the shared workspace `ci.yml` of a repo of several apps to the repo (docs/architecture.md, Workflows, App steps). A plugin adds verbs, targets and steps through `definePlugin`, and `workflows`: steps `brock sync` splices into the managed CI and release workflows of the repo's apps, in the shape of `workflows.steps` of `brock.config.ts` (docs/architecture.md, Workflows, App steps).
+
+## A repo that is not a Brock app
+
+A library, a docs site or a tool repo gets the same `<repo>` command from this package alone. It needs brock-thread as a devDependency and a `brock.workspace.mjs`; it does not need brock-build.
+
+```
+brock-thread link [--force]    write bin/<name>.mjs, the package.json bin entry and the postinstall
+brock-thread <verb> ...        run a thread verb straight from the repo's node_modules
+```
+
+`link` runs at the repo root and names the command after `name` in `brock.workspace.mjs`. It writes the same launcher `brock adopt` writes and adds `"bin": { "<name>": "./bin/<name>.mjs" }` and `node bin/<name>.mjs --link` to the `postinstall`, so a `pnpm install` links `<name>` into the npm global folder. A second run changes nothing. The launcher runs the global `brock`, which uses the repo's own brock-build when it has one, else its own, so the thread verbs run either way.
+
+When the package already has a command of that name, `link` leaves `package.json` alone and the command forwards the verbs itself. `runThreadCli(argv)` from `@drizztdourden08/brock-thread/cli` runs a thread verb and returns its exit code, or `null` for any other word:
+
+```js
+import { runThreadCli } from '@drizztdourden08/brock-thread/cli';
+
+const code = await runThreadCli(argv);
+if (code !== null) return code;
+```
+
+`link` checks that the command's file mentions `runThreadCli` and prints these lines when it does not. In that case the command is the one `pnpm exec <name>` runs; no global `<name>` is linked.
+
+Tessera, for example, adds:
+
+1. `@drizztdourden08/brock-thread` in `devDependencies`.
+2. `brock.workspace.mjs` with the catalogue as a target:
+
+   ```js
+   import { defineWorkspace, serveTarget } from '@drizztdourden08/brock-thread';
+
+   export default defineWorkspace({
+     name: 'tessera',
+     base: 'main',
+     targets: { storylite: serveTarget({ command: ['storylite', 'dev'], port: 4400 }) },
+   });
+   ```
+
+3. The two lines above in its `tessera` bin, `scripts/cli/tessera.mjs`, before it handles `new`, `check` and `guide`.
+
+Then `pnpm exec tessera launch <worktree> none --target storylite` prints the catalogue URL for that worktree.
 
 ## Thread bases
 

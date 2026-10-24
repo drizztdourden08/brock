@@ -74,7 +74,7 @@ brock tessera <args...>    Tessera's own command line, such as tessera new compo
 In a repo you do not type `brock`: you type the repo's own command (`my-app`,
 `tessera`), which runs everything above and the thread verbs. That command is
 `bin/<repo>.mjs`, a plain Node file with no dependencies that `brock adopt` and
-`create-brock` write from `src/launcher/launcher.mjs.tmpl`; the root `package.json`
+`create-brock` write from `launcher.mjs.tmpl` in `@drizztdourden08/brock-thread` (`brock-thread link` writes it for a repo without brock-build); the root `package.json`
 gets `"bin": { "<repo>": "./bin/<repo>.mjs" }` and a `postinstall` of
 `node bin/<repo>.mjs --link` (appended with `&&` to one already there). `adopt` keeps an
 existing `bin/<repo>.mjs` unless `--force` is given. The name is the one in

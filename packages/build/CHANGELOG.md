@@ -1,5 +1,28 @@
 # @drizztdourden08/brock-build
 
+## 0.83.0
+
+### Minor Changes
+
+- 203ad09: `workflows.attest` takes `perFile: true`, and `BrockWorkflowOptions` now types `attest` and `publish`. With `perFile`, each matched file gets its own attestation, so its `<file>.sigstore.json` has exactly one subject. The action cannot loop and the globs are only known at run time, so sync writes a shell step that expands `paths` and 16 `actions/attest-build-provenance` steps, one per file slot, that skip when empty; the step fails when no file matches or more than 16 do. Without `perFile` nothing changes.
+- 495cd91: The server app kind builds. `server` is a new platform in `targets`: `targets: ['server']` is a windowless app, `['desktop', 'server']` ships both. `server.entry` in brock.config.ts names the entry, default `server/main.ts`. `brock server build` bundles it with Vite SSR into `dist/server/main.mjs`, one Node file with every dependency inlined, the app's `build.aliases` and `build.define` applied, and `brock server dev` rebuilds on change and restarts it with `node --watch`; anything after `--` reaches the app. The bundle refuses an `electron` import and a native `.node` addon (and the `bindings` and `node-gyp-build` loaders) with a clear error. The helper bundle now calls the same Node bundle config, and its output is unchanged. `brock build` builds the server for a server app and both builds for a desktop plus server app, and `brock build --if-stale` checks `dist/server/main.mjs` and the `server` folder. A windowless app gets none of the Electron or renderer managed files (electron.vite.config.ts, electron-builder.config.cjs, the boot, handler, review, screen, widget, title bar, tour and start-up lists, the palette and the module lists but the manifest) and none of the installer or screen checks; `brock dev` on it points at `brock server dev`. The managed tsconfig.json now includes `server`, so every app's tsconfig changes on its next `brock sync`. In thread, `serverTarget({ app, userData, states })` is a launch target: dev runs `brock server dev`, `--prod` runs `brock build --if-stale` then `node dist/server/main.mjs --user-data=<dir>`, output piped, and only the state `none` unless a states hook is given.
+- 7a23ca9: Title bar items take `disabledReason` beside `disabled`, and a `status` spec takes both. Brock hands them to Tessera 0.53, which makes a disabled action inert and shows the reason as its tooltip. `brock-react` now requires Tessera `^0.53.0`. `disabledReason` is a literal a lazy title bar button can keep.
+
+  `SettingItem.hint` is optional. Tessera 0.53 draws a settings row with no hint line and no gap when the hint is missing or empty, and Brock hands the row `undefined` as it is. The settings search, the palette and the build-time seeds already treat a missing hint as no text. A linked toggle with no hint draws none.
+
+- 203ad09: `workflows.publish: { packages, registry? }` publishes workspace library packages to GitHub Packages from the managed `release.yml`. `packages` are workspace folders, and `registry` takes `'github'`. `brock sync` adds a `publish-packages` job that waits for `prepare` and every build job, runs on `ubuntu-24.04` with `contents: read` and `packages: write`, installs with the frozen lockfile, builds each package that has a `build` script, and runs `pnpm publish --no-git-checks` for each one with `GITHUB_TOKEN`. A version `npm view` already finds is skipped, so a re-run is safe. Sync refuses a path that is not a workspace package, a `private: true` package, a name outside the repo owner's scope, and a package without `publishConfig.registry` set to `https://npm.pkg.github.com`, and says how to fix each. An app repo publishes its libraries without owning the workflow. `brock structure` expects a package listed there to be named `@<owner>/<app>-<subject>`, and every other package keeps `@<app>/<subject>`; the finding names the form that applies.
+
+### Patch Changes
+
+- ef025e4: `brock sync` ignores the generated icon files (`public/logos/icon.svg`, `icon.ico`, `icon-256.png`, `icon-32.png`, `icon-24.png`, the `icon-bot` files, `mark.svg`, `build/icons/` and `build/splash/`) only for an app that sets `icons.brand`, the case where Brock generates them. The lines name that app's own folder and sit in a marked block that sync rewrites and nothing else. An app without `icons.brand` supplies those files itself and no longer needs `git add -f`; one that drops `icons.brand` loses its lines on the next sync. `brock adopt` no longer writes these lines.
+- Updated dependencies [203ad09]
+- Updated dependencies [10222eb]
+- Updated dependencies [495cd91]
+- Updated dependencies [203ad09]
+  - @drizztdourden08/brock-core@0.83.0
+  - @drizztdourden08/brock-thread@0.83.0
+  - @drizztdourden08/brock-lint-config@0.83.0
+
 ## 0.82.0
 
 ### Minor Changes

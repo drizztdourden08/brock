@@ -56,7 +56,7 @@ const workspaceApp = async (repoDir, dir) => {
     name: basename(dir),
     appDir: dir,
     systemSteps: modules.flatMap((m) => m.manifest.ci ?? []),
-    steps: collectWorkflowSteps(stepSources(config, modules, []).map((source) => ({ ...source, label: `${dir}: ${source.label}` }))),
+    steps: collectWorkflowSteps(stepSources(config, modules, [], config.targets).map((source) => ({ ...source, label: `${dir}: ${source.label}` }))),
   };
 };
 

@@ -37,6 +37,7 @@ const envEntries = (step) => {
  */
 const stepLines = (step) => [
   `${STEP_INDENT}- name: ${JSON.stringify(step.name)}`,
+  ...(step.id ? [`${KEY_INDENT}id: ${step.id}`] : []),
   ...(step.if ? [`${KEY_INDENT}if: ${JSON.stringify(step.if)}`] : []),
   ...(step.uses ? [`${KEY_INDENT}uses: ${PLAIN_REF.test(step.uses) ? step.uses : JSON.stringify(step.uses)}`] : []),
   ...mapLines('with', Object.entries(step.with).map(([name, value]) => [name, scalar(value)])),

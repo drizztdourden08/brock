@@ -1,20 +1,11 @@
 /* @layer electron-main @kind logic */
-import { readFileSync } from 'fs';
 import type { BridgeDiscovery } from './bridge.type';
-import { checkPrivateFile } from './check-private-file';
 import { checkSocketFolder } from './check-socket-folder';
 import { isLocalEndpoint } from './is-local-endpoint';
 import { isProcessAlive } from './is-process-alive';
 import { isRecord } from './is-record';
 import { parseJson } from './parse-json';
-
-const readText = (file: string): string => {
-  try {
-    return readFileSync(file, 'utf8');
-  } catch {
-    throw new Error(`The app is not running, or its bridge is off: ${file} is missing.`);
-  }
-};
+import { readPrivateFile } from './read-private-file';
 
 const asDiscovery = (data: unknown): BridgeDiscovery | null => {
   if (!isRecord(data)) return null;
@@ -25,8 +16,7 @@ const asDiscovery = (data: unknown): BridgeDiscovery | null => {
 };
 
 const readBridgeDiscovery = (file: string): BridgeDiscovery => {
-  const text = readText(file);
-  checkPrivateFile(file);
+  const text = readPrivateFile(file);
   const discovery = asDiscovery(parseJson(text));
   if (!discovery) throw new Error(`${file} is not a bridge discovery file.`);
   if (!isLocalEndpoint(discovery.endpoint)) throw new Error(`${file} names an endpoint that is not a local pipe or socket; the bridge refuses it.`);

@@ -14,7 +14,7 @@ import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';
 import type { DocumentAccess } from '../documents/document-access.type';
-import type { AppBridgeOptions } from '../bridge/app-bridge.type';
+import type { AppBridge, AppBridgeOptions } from '../bridge/app-bridge.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -50,6 +50,7 @@ interface MainContext {
   askWithin: AskWithinFn;
   log: (message: string, level?: MainLogLevel) => void;
   onOpen: (handler: (request: OpenRequest) => void) => () => void;
+  bridge: AppBridge;
   readonly services: AppServices;
 }
 

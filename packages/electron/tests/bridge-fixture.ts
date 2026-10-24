@@ -84,6 +84,9 @@ const rawSession = (endpoint: string) => {
       if (queue.length > 0) resolve(queue.shift());
       else waiters.push(resolve);
     }),
+    pause: (): void => {
+      socket.pause();
+    },
     closed: new Promise<void>((resolve) => socket.once('close', () => resolve())),
   };
 };
@@ -92,12 +95,22 @@ const handshake = async (session: ReturnType<typeof rawSession>, secret: string)
   const nonce = bridgeProof.nonce();
   session.send({ v: BRIDGE_PROTOCOL, hello: nonce });
   const reply = (await session.next()) as { hello: string };
-  return bridgeProof.sessionKey(secret, nonce, reply.hello);
+  const key = bridgeProof.sessionKey(secret, nonce, reply.hello);
+  session.send({ auth: bridgeProof.auth(key) });
+  return key;
 };
+
+const unsigned = (message: unknown, key: string): unknown => {
+  const { body, mac } = (message ?? {}) as { body?: unknown; mac?: unknown };
+  if (typeof body !== 'string' || typeof mac !== 'string' || mac !== bridgeProof.message(key, body)) return message;
+  return JSON.parse(body) as unknown;
+};
+
+const nextFrom = async (session: ReturnType<typeof rawSession>, key: string): Promise<unknown> => unsigned(await session.next(), key);
 
 const signed = (key: string, id: number, channel: string, args: unknown[]) => {
   const body = JSON.stringify(args);
   return { id, channel, args: body, mac: bridgeProof.request(key, id, channel, body) };
 };
 
-export { ROUTES, client, closeOpened, discoveryFor, discoveryOf, handshake, rawSession, serve, signed, tempDir, writeOpenFile };
+export { ROUTES, client, closeOpened, discoveryFor, discoveryOf, handshake, nextFrom, rawSession, serve, signed, tempDir, writeOpenFile };

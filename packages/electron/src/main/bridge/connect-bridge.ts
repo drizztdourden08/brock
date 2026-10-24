@@ -1,10 +1,11 @@
 /* @layer electron-main @kind logic */
-import type { BridgeClient, BridgeClientOptions, BridgeLink } from './bridge.type';
+import type { BridgeClient, BridgeClientOptions, BridgeLink } from './bridge-client.type';
 import { BRIDGE_FILE_ENV, BRIDGE_HANDSHAKE_MS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_REQUEST_TIMEOUT_MS } from './bridge.constants';
 import { bridgeDiscoveryFile } from './bridge-discovery-file';
 import { encodeMessage } from './encode-message';
 import { openBridgeLink } from './open-bridge-link';
 import { createPendingReplies } from './pending-replies';
+import { pushListeners } from './push-listeners';
 import { toJson } from './to-json';
 
 const discoveryFileOf = ({ file, app, instance }: BridgeClientOptions): string => {
@@ -19,11 +20,13 @@ const connectBridge = (options: BridgeClientOptions): BridgeClient => {
   const maxBytes = options.maxMessageBytes ?? BRIDGE_MAX_MESSAGE_BYTES;
   const timeoutMs = options.timeoutMs ?? BRIDGE_REQUEST_TIMEOUT_MS;
   const pending = createPendingReplies();
+  const listeners = pushListeners();
   const state: { link: Promise<BridgeLink> | null; nextId: number } = { link: null, nextId: 1 };
   const link = (): Promise<BridgeLink> => {
     if (state.link) return state.link;
     const opening = openBridgeLink(file, { maxBytes, handshakeMs: options.handshakeMs ?? BRIDGE_HANDSHAKE_MS }, {
       onReply: pending.settle,
+      onPush: listeners.dispatch,
       onClose: (error) => {
         if (state.link === opening) state.link = null;
         pending.failAll(error);
@@ -51,7 +54,7 @@ const connectBridge = (options: BridgeClientOptions): BridgeClient => {
     state.link = null;
     void current?.then((open) => open.end(), () => undefined);
   };
-  return { request, close };
+  return { request, on: listeners.on, connect: () => link().then((open) => open.connectionId), close };
 };
 
 export { connectBridge };

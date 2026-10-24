@@ -5,6 +5,7 @@ import { isSiteDir } from '../site/load-site.mjs';
 import { repoRootOf, siteDirs } from '../site/site-dirs.mjs';
 import { syncSites } from '../site/sync-sites.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { syncBrandIgnores } from '../icons/brand-ignores.mjs';
 import { wordmarkHeightWarnings } from '../installer/wordmark-height-warnings.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
@@ -81,6 +82,12 @@ const syncApps = async (apps, staleOnly, check) => {
   return code;
 };
 
+const syncIconIgnores = async (repoRoot) => {
+  const apps = await syncTargets(repoRoot);
+  const branded = await Promise.all(apps.map(async (appDir) => ((await loadBrockConfig(appDir)).product?.icons?.brand ? relative(repoRoot, appDir).replace(/\\/g, '/') : null)));
+  if (syncBrandIgnores(repoRoot, branded.filter((path) => path !== null))) console.log('brock sync: updated .gitignore (generated icon files)');
+};
+
 const runSync = async ({ rootDir, check = false, ifStale = false }) => {
   const repoRoot = repoRootOf(rootDir);
   if (isSiteDir(rootDir)) return syncSites(repoRoot, { check, only: [relative(repoRoot, rootDir).replace(/\\/g, '/')] });
@@ -89,6 +96,7 @@ const runSync = async ({ rootDir, check = false, ifStale = false }) => {
   const staleOnly = ifStale && !check;
   let code = await syncApps(apps, staleOnly, check);
   if (staleOnly) return code;
+  if (!check) await syncIconIgnores(repoRoot);
   code = Math.max(code, await syncSites(repoRoot, { check }));
   if (!check) await writeGuide(rootDir);
   return code;

@@ -1,0 +1,72 @@
+/* @layer renderer-shell @kind style */
+.input-stick-plot__plot {
+  width: var(--size-96);
+  height: var(--size-96);
+}
+
+.input-stick-plot[data-size='lg'] .input-stick-plot__plot {
+  width: var(--size-160);
+  height: var(--size-160);
+}
+
+.input-stick-plot__ring {
+  fill: var(--c-sunken);
+  stroke: var(--c-border);
+  stroke-width: var(--border-width-thin);
+}
+
+.input-stick-plot__zone {
+  fill: color-mix(in srgb, var(--c-text-muted) 22%, transparent);
+}
+
+.input-stick-plot__zone--inner {
+  stroke: color-mix(in srgb, var(--c-text-muted) 60%, transparent);
+  stroke-width: var(--border-width-thin);
+}
+
+.input-stick-plot__axis {
+  stroke: var(--c-hairline);
+  stroke-width: var(--border-width-thin);
+}
+
+.input-stick-plot__range {
+  fill: none;
+  stroke: var(--c-info);
+  stroke-width: var(--border-width-thin);
+}
+
+.input-stick-plot__center {
+  fill: var(--c-info);
+}
+
+.input-stick-plot__stem {
+  stroke: var(--c-primary);
+  stroke-width: var(--border-width-thick);
+  stroke-linecap: round;
+}
+
+.input-stick-plot__stem[data-resting] {
+  stroke: var(--c-text-muted);
+}
+
+.input-stick-plot__dot {
+  fill: var(--c-primary);
+}
+
+.input-stick-plot__dot[data-resting] {
+  fill: var(--c-text-muted);
+}
+
+.input-stick-plot__label {
+  font-size: var(--text-sm);
+}
+
+.input-stick-plot__value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.input-stick-plot__value .input-stick-plot__cal {
+  margin-left: var(--space-xs);
+  font-size: inherit;
+}

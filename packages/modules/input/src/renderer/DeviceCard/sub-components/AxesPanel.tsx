@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { StickPlot } from '@drizztdourden08/tessera/composites';
+import { StickPlot } from '../../../compounds/StickPlot';
 import { Button, Flex, ProgressBar, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import type { AxesPanelProps } from './AxesPanel.type';
 

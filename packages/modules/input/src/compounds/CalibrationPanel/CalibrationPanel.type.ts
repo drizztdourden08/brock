@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { PressedGridItem, StickPlotPoint, StickPlotRange } from '@drizztdourden08/tessera/composites';
+import type { PressedGridItem } from '../PressedGrid';
+import type { StickPlotPoint, StickPlotRange } from '../StickPlot';
 import type { InputIconFamily } from '@drizztdourden08/tessera/primitives';
 
 interface CalibrationPanelAction {

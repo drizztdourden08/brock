@@ -2,10 +2,16 @@
 import { brockEslint } from '@drizztdourden08/brock-lint-config';
 
 export default brockEslint({
-  inlineStyle: [{
-    files: ['packages/react/src/brand/WindowMascot/sub-components/WalkerLayer.tsx'],
-    why: 'The mascot follows live window and palette bounds, which change as either surface moves or resizes.',
-  }],
+  inlineStyle: [
+    {
+      files: ['packages/react/src/brand/WindowMascot/sub-components/WalkerLayer.tsx'],
+      why: 'The mascot follows live window and palette bounds, which change as either surface moves or resizes.',
+    },
+    {
+      files: ['packages/modules/input/src/compounds/ControllerLayout/sub-components/ControllerTag.tsx'],
+      why: 'Each tag sits at a position measured from the controller drawing, which no class can carry.',
+    },
+  ],
   rawColorOffGlobs: ['packages/electron/**', 'templates/app/electron/**'],
   doubleCast: [
     {

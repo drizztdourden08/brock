@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { ControllerExtra, ControllerSlotId, ControllerSlotState } from '@drizztdourden08/tessera';
+import type { ControllerExtra, ControllerSlotId, ControllerSlotState } from '../compounds/ControllerLayout';
 
 type PadSlotState = Pick<ControllerSlotState, 'pressed' | 'value' | 'x' | 'y'>;
 

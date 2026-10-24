@@ -32,6 +32,7 @@ import { useTitleBarShown } from '../../behavior/useTitleBarShown';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { useBarControls } from '../../behavior/useBarControls';
 import { AppRail } from '../AppRail';
+import { AppStage } from '../AppStage';
 import { AppTitleBar } from '../AppTitleBar';
 import { JobHost } from '../../../../jobs/JobHost';
 import { useStartupPrompts } from '../../../../startup/useStartupPrompts';
@@ -41,7 +42,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, startupPrompts, volume, restoreNavigation, menuBar } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, toolbars, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, startupPrompts, volume, restoreNavigation, menuBar } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -73,7 +74,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
 
   const screens = useMemo(() => registry.list(), [registry]);
   const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /><WindowMascot /></BootGate>;
-  const stage = <WidgetHost widgets={widgets} widgetKits={widgetKits} layout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} />;
+  const stage = <AppStage toolbars={toolbars} railed={railed}><WidgetHost widgets={widgets} widgetKits={widgetKits} layout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} /></AppStage>;
 
   return (
     <>
@@ -93,7 +94,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
         )}
         <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
           {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
-          {railed ? <Box className="brock-app__stage">{stage}</Box> : stage}
+          {stage}
         </Box>
         <WindowGuide />
         <JobHost />

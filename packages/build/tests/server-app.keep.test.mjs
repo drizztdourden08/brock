@@ -26,7 +26,7 @@ describe('a windowless app', () => {
     const server = syncedFiles(['server']);
     expect(server).toContain('tsconfig.json');
     expect(server).toContain('.brock/manifest.json');
-    for (const absent of ['electron.vite.config.ts', 'electron-builder.config.cjs', '.brock/modules.main.ts', '.brock/boot.main.ts', '.brock/boot.renderer.ts', '.brock/screens.ts', '.brock/widgets.ts', '.brock/title-bar.ts', '.brock/tours.ts', '.brock/startup.ts', '.brock/review.ts', '.brock/palette.css']) {
+    for (const absent of ['electron.vite.config.ts', 'electron-builder.config.cjs', '.brock/modules.main.ts', '.brock/boot.main.ts', '.brock/boot.renderer.ts', '.brock/screens.ts', '.brock/widgets.ts', '.brock/title-bar.ts', '.brock/tours.ts', '.brock/toolbars.ts', '.brock/startup.ts', '.brock/review.ts', '.brock/palette.css']) {
       expect(server).not.toContain(absent);
     }
   });

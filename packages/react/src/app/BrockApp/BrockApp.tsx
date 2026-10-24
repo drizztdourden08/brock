@@ -5,6 +5,7 @@ import { mergeModules } from '../../modules/merge-modules';
 import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
 import { NO_TOURS } from '../../tours/tours.constants';
 import { useTourRegistry } from '../../tours/useTourRegistry';
+import { useAllToolbars } from '../../toolbars/useAllToolbars';
 import { useAllStartupPrompts } from '../../startup/useAllStartupPrompts';
 import { PlatformProvider } from '../../platform/PlatformProvider';
 import { ScreenRegistryContext } from '../../screens/screen-registry-context';
@@ -55,6 +56,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);
   const allKits = useMemo(() => [...merged.widgetKits, ...widgetKits], [merged.widgetKits, widgetKits]);
+  const allToolbars = useAllToolbars(merged.toolbars, props.toolbars);
   useAppCommands(merged.commands, props.commands);
   const allStartupPrompts = useAllStartupPrompts(merged.startupPrompts, props.startupPrompts);
   const settingsStore = useProfileSettingsStore(settings, developerTools);
@@ -84,7 +86,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     moduleMenu={merged.menu}
                     titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
-                    widgets={allWidgets} widgetKits={allKits}
+                    widgets={allWidgets} widgetKits={allKits} toolbars={allToolbars}
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}

@@ -12,6 +12,7 @@ import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit, OnBeforeQuit } from '../quit/quit.type';
 import type { StartupPromptDef } from '../startup/startup.type';
 import type { TourDef } from '../tours/tour.type';
+import type { ToolbarDef } from '../toolbars/toolbar.type';
 import type { VolumeSource } from '../volume/volume.type';
 import type { CommandDef } from '../commands/command.type';
 
@@ -35,6 +36,7 @@ interface RendererModule {
   beforeQuit?: BeforeQuit;
   onBeforeQuit?: OnBeforeQuit;
   tours?: readonly TourDef[];
+  toolbars?: readonly ToolbarDef[];
   startupPrompts?: readonly StartupPromptDef[];
   volume?: VolumeSource;
   commands?: readonly CommandDef[];
@@ -56,6 +58,7 @@ interface MergedModules {
   beforeQuit: BeforeQuit[];
   onBeforeQuit: OnBeforeQuit[];
   tours: TourDef[];
+  toolbars: ToolbarDef[];
   startupPrompts: StartupPromptDef[];
   volume?: VolumeSource;
   commands: CommandDef[];

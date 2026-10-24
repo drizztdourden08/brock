@@ -7,33 +7,10 @@ import '../src/hooks/useWidgetState';
 import '../src/widgets/define-widget';
 import '../src/widgets/widget-persistence';
 import '../src/widgets/WidgetBody';
+import { fakeDisk, settle } from './fake-ui-views-disk';
 
 const LOG_BOUNDS = { x: 40, y: 60, width: 420, height: 300 };
 const FLOAT_RECT = { x: 10, y: 20, width: 300, height: 200 };
-
-const fakeDisk = (initial: Record<string, unknown>) => {
-  const disk = { file: structuredClone(initial), saves: 0 };
-  const listeners = new Map<string, () => void>();
-  const api = {
-    loadUiViews: () => Promise.resolve(structuredClone(disk.file)),
-    saveUiViews: (data: Record<string, unknown>) => {
-      disk.file = structuredClone(data);
-      disk.saves += 1;
-      return Promise.resolve();
-    },
-  };
-  vi.stubGlobal('window', {
-    api,
-    location: { search: '' },
-    addEventListener: (name: string, fn: () => void) => listeners.set(name, fn),
-    removeEventListener: (name: string) => listeners.delete(name),
-  });
-  return { disk, listeners };
-};
-
-const settle = async (): Promise<void> => {
-  for (let i = 0; i < 5; i += 1) await Promise.resolve();
-};
 
 const startApp = async () => {
   vi.resetModules();

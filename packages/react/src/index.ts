@@ -42,6 +42,7 @@ export * from './document-title';
 export * from './documents';
 export * from './developer-tools';
 export * from './tours';
+export * from './toolbars';
 export * from './startup';
 export * from './jobs';
 export * from './open';

@@ -3,6 +3,7 @@ import { writeBootFiles } from '../boot/write-boot-files.mjs';
 import { writeStartupFile } from '../startup/write-startup.mjs';
 import { writeTitleBarFile } from '../title-bar/write-title-bar.mjs';
 import { writeToursFile } from '../tours/write-tours.mjs';
+import { writeToolbarsFile } from '../toolbars/write-toolbars.mjs';
 import { writeWidgetsFile } from '../widgets/write-widgets.mjs';
 
 const LISTS = [
@@ -10,6 +11,7 @@ const LISTS = [
   [writeWidgetsFile, 'the widget list'],
   [writeTitleBarFile, 'the title bar item list'],
   [writeToursFile, 'the tour list'],
+  [writeToolbarsFile, 'the toolbar list'],
   [writeStartupFile, 'the start-up prompt list'],
 ];
 

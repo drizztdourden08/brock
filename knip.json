@@ -55,7 +55,7 @@
     },
     "packages/create-brock": {
       "project": [
-        "**/*.mjs"
+        "{bin,src,tests}/**/*.mjs"
       ]
     },
     "packages/core": {

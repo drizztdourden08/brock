@@ -18,7 +18,8 @@ Options:
   --author-email <text>  (default: git config user.email)
   --modules a,b          Brock module ids to install and record, beside the template's own
   --platforms a,b        platform ids and bundles for targets: windows, macos, linux, android, web,
-                         desktop (windows, macos, linux), mobile (android; iOS once it lands).
+                         server, desktop (windows, macos, linux), mobile (android; iOS once it lands).
+                         server alone is a windowless app; desktop,server ships both.
                          Default desktop. Without it and without --yes, asked on the terminal
   --local <path>         Brock checkout; dependencies become link: specs into it
   --tessera <path|registry>  Tessera checkout, or registry for the published package (default: <local>/../tessera when present, else the registry)

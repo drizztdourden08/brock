@@ -25,6 +25,7 @@
     "bin",
     "src",
     "template",
+    "template-server",
     "README.md",
     "CHANGELOG.md"
   ],

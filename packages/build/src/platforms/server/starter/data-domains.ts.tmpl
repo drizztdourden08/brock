@@ -1,0 +1,8 @@
+/* @layer electron-main @kind constants */
+import type { DataDomainDef } from '@drizztdourden08/brock-core/platform';
+
+const dataDomains: DataDomainDef[] = [
+  { domain: 'logs', label: 'Logs', dir: 'logs', description: 'Server logs.', cleanOlderThanDays: [7, 30], portable: false },
+];
+
+export { dataDomains };

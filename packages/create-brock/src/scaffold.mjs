@@ -3,18 +3,18 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { basename, join, relative } from 'node:path';
 import {
-  appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, syncApp, BROCK_VERSION,
+  appendModuleId, findWorkspaceRoot, installLauncher, installPeers, launcherName, shapeOf, syncApp, BROCK_VERSION,
 } from '@drizztdourden08/brock-build';
 import { finishPlatforms } from './finish-platforms.mjs';
 import { initRepository } from './git-init.mjs';
 import { applyDependencies } from './local-links.mjs';
-import { writePnpmFiles } from './pnpm-files.mjs';
+import { builtDependencies, writePnpmFiles } from './pnpm-files.mjs';
 import { writePortBase } from './port-base.mjs';
 import { preparePlatforms } from './prepare-platforms.mjs';
 import { applyIdentity } from './substitute.mjs';
 import { templateIcons } from './template-brand.mjs';
 import { templateModules } from './template-modules.mjs';
-import { copyTemplate, isEmptyDir, locateTemplate } from './template.mjs';
+import { copyTemplate, isEmptyDir, templatesFor } from './template.mjs';
 import { dropRootOwned } from './workspace-member.mjs';
 
 /**
@@ -72,11 +72,16 @@ const printNextSteps = (plan, { missing, later }, command) => {
   if (!plan.install) lines.push(command ? `  pnpm install          (links the ${command} command)` : '  pnpm install');
   if (missing.length) lines.push(`  pnpm brock sync        (module packages to resolve: ${missing.map((m) => m.id).join(', ')})`);
   const run = command ?? 'pnpm brock';
+  const launch = shapeOf(plan.targets).windowless
+    ? [`  ${run} launch main none              (the server, built and started with its data folder)`]
+    : [
+        `  ${run} launch main none --visible     (the app, hot reload)`,
+        `  ${run} launch main none --review      (headless review: screenshots and a report)`,
+      ];
   lines.push(
     ...later.map((line) => `  ${run} ${line}`),
     `  ${run} platform list                  (platform add and remove rewrite both workflows)`,
-    `  ${run} launch main none --visible     (the app, hot reload)`,
-    `  ${run} launch main none --review      (headless review: screenshots and a report)`,
+    ...launch,
     '  pnpm lint',
     '',
   );
@@ -121,10 +126,11 @@ const scaffold = async (plan) => {
     console.error(`create-brock: ${targetDir} is not empty`);
     return 1;
   }
-  const templateDir = locateTemplate();
-  const modules = [...new Set([...templateModules(templateDir), ...plan.modules])];
-  console.log(`create-brock: copying ${basename(templateDir)} template to ${targetDir}`);
-  copyTemplate(templateDir, targetDir);
+  const { windowless } = shapeOf(plan.targets);
+  const { templateDir, sourceDir } = templatesFor(windowless);
+  const modules = [...new Set([...templateModules(sourceDir), ...plan.modules])];
+  console.log(`create-brock: copying ${basename(sourceDir)} template to ${targetDir}`);
+  copyTemplate(sourceDir, targetDir);
   applyIdentity(targetDir, identity);
   console.log(`create-brock: dev ports from ${writePortBase(targetDir, identity.id)} (product.ports.base)`);
   const { added, pending } = applyDependencies(targetDir, { modules, version: BROCK_VERSION, templateDir, local, tessera });
@@ -134,13 +140,13 @@ const scaffold = async (plan) => {
     console.log(`create-brock: workspace member of ${workspaceRoot}; the root keeps the lint configs, the catalog and .npmrc`);
     dropRootOwned(targetDir);
   }
-  const pnpmFiles = writePnpmFiles(targetDir, templateDir, workspaceRoot);
+  const pnpmFiles = writePnpmFiles(targetDir, templateDir, workspaceRoot, builtDependencies(windowless));
   if (pnpmFiles.length) console.log(`create-brock: wrote ${pnpmFiles.join(', ')}`);
   recordModules(targetDir, modules);
 
   const config = { product: { id: identity.id, name: identity.name, appId: identity.appId, author: { name: identity.authorName } }, targets: plan.targets, modules };
   await preparePlatforms(targetDir, config);
-  const synced = { ...config, product: { ...config.product, icons: templateIcons(templateDir) } };
+  const synced = { ...config, product: { ...config.product, icons: templateIcons(sourceDir) } };
   const sync = syncApp(targetDir, synced, { onMissing: 'skip' });
   console.log(`create-brock: wrote ${sync.written.length} managed file(s)${workspaceRoot ? '' : ', the CI and release workflows among them'}`);
   const command = writeLauncher(targetDir, identity.id, workspaceRoot);

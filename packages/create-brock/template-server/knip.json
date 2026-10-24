@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "server/main.ts",
+    "*.config.{cjs,ts,mjs}",
+    ".markdownlint-cli2.mjs",
+    "brock.config.ts",
+    "brock.workspace.mjs"
+  ],
+  "project": [
+    "server/**/*.ts"
+  ],
+  "ignoreDependencies": [
+    "@drizztdourden08/standards"
+  ]
+}

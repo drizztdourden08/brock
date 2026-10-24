@@ -22,6 +22,7 @@ export { composeWorkflows } from './release/compose-workflows.mjs';
 export { expandTargets } from './platforms/expand-targets.mjs';
 export { resolvePlatforms } from './platforms/resolve-platforms.mjs';
 export { allPlatforms } from './platforms/all-platforms.mjs';
+export { shapeOf } from './platforms/server/app-shape.mjs';
 export { readTargets, writeTargets } from './platforms/targets-source.mjs';
 export { BUNDLES, BUNDLE_LABELS, DEFAULT_TARGETS, PLATFORM_ORDER } from './platforms/platforms.constants.mjs';
 export { runPlatformPhase } from './platforms/run-platform-phase.mjs';

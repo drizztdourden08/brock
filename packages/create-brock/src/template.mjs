@@ -11,10 +11,26 @@ const SKIPPED = new Set(['node_modules', 'dist', 'release', 'out', '.brock', '.u
 
 const PACKED_NAMES = { _gitignore: '.gitignore' };
 
+const SERVER_TEMPLATE = join(PACKAGE_DIR, 'template-server');
+
 const locateTemplate = () => {
   const found = TEMPLATE_CANDIDATES.find((dir) => existsSync(join(dir, 'brock.config.ts')));
   if (!found) throw new Error(`No app template found. Looked in:\n  ${TEMPLATE_CANDIDATES.join('\n  ')}`);
   return found;
+};
+
+const locateServerTemplate = () => {
+  if (!existsSync(join(SERVER_TEMPLATE, 'brock.config.ts'))) throw new Error(`No server template found at ${SERVER_TEMPLATE}`);
+  return SERVER_TEMPLATE;
+};
+
+/**
+ * @param {boolean} windowless
+ * @returns {{ templateDir: string, sourceDir: string }} templateDir holds the catalog; sourceDir is what gets copied
+ */
+const templatesFor = (windowless) => {
+  const templateDir = locateTemplate();
+  return { templateDir, sourceDir: windowless ? locateServerTemplate() : templateDir };
 };
 
 const isEmptyDir = (dir) => !existsSync(dir) || readdirSync(dir).length === 0;
@@ -36,4 +52,4 @@ const copyTree = (fromDir, toDir, skip) => {
  */
 const copyTemplate = (templateDir, targetDir) => copyTree(templateDir, targetDir, SKIPPED);
 
-export { locateTemplate, copyTemplate, isEmptyDir };
+export { locateTemplate, templatesFor, copyTemplate, isEmptyDir };

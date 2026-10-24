@@ -1,0 +1,7 @@
+/* @layer electron-main @kind entry */
+import { createDataDomains } from '@drizztdourden08/brock-electron/node';
+import { runServer } from '@drizztdourden08/brock-electron/server';
+import { dataDomains } from './data-domains';
+import { start } from './start';
+
+void runServer(start, { domains: (dataDir) => createDataDomains(dataDir, dataDomains) });

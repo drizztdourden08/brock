@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-input
 
+## 0.80.0
+
+### Patch Changes
+
+- c53d56d: The Windows addon build unpacks libusb with 7-Zip instead of tar, and skips the download when native/third_party already holds the pinned libusb version.
+- Updated dependencies [b6459f5]
+- Updated dependencies [845f695]
+- Updated dependencies [9398c37]
+- Updated dependencies [7fe7469]
+  - @drizztdourden08/brock-core@0.80.0
+  - @drizztdourden08/brock-electron@0.80.0
+  - @drizztdourden08/brock-react@0.80.0
+
 ## 0.79.0
 
 ### Patch Changes

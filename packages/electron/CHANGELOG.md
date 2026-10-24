@@ -1,5 +1,26 @@
 # @drizztdourden08/brock-electron
 
+## 0.80.0
+
+### Minor Changes
+
+- b6459f5: Breaking: `ctx.window` is now a function with a `show()` method and `AutomationFlags` gains `isBackgroundLaunch()`, so a hand-built `MainContext` or flags object in a test needs the new members; migration main-context-window-show leaves a to-do at each one.
+
+  feat: background launch and an opt-in tray icon
+
+  An app can start with no window. A `--background` launch, or a `beforeWindow(ctx)` hook that returns `'skip'`, skips the splash and the app window while the whole boot and the bridge still run. `ctx.window.show()` creates the window on demand, or restores and focuses it. In background mode the app keeps running when the last window closes. A normal second launch shows the window, a second launch with `--background` shows nothing, and automation launches behave as before.
+
+  `product.tray` or `ctx.tray.set({ tooltip, icon?, menu? })` adds a tray icon. It uses the app icon by default, a left click shows the window, the menu takes show and quit actions, id items for `ctx.tray.onItem` and separators, and the tray is removed on quit. It is off unless the app asks.
+
+- 9398c37: Breaking: the helper bridge moves to protocol 2, so a helper built against 0.78 or 0.79 cannot talk to an app on this version and must be rebuilt (`brock build` bundles it again) and shipped with the app; `bridge.emitTo` now returns a count. Migration `bridge-protocol-2` turns each `connectBridge` use and each `.emitTo(` into a to-do, since the fix is a rebuild and a release, not a code edit.
+
+  Bridge v2. `ctx.bridge.open()` and `ctx.bridge.close()` open and close the bridge at run time, each open with a new secret and endpoint, and serialized so a close and a reopen never remove the live discovery file; `bridge.openOnBoot: false` keeps it closed until the app opens it. `bridge.handleWith(route, (call, ...args) => ...)` gives handlers `call.connectionId` (16 random bytes, not a capability), and `bridge.onOpen`, `bridge.onClose` and `bridge.connections()` follow clients; a throwing listener is logged. `bridge.emit(event, ...args)` and `bridge.emitTo(connectionId, event, ...args)` push events, which the helper hears with `client.on(event, listener)` after `client.connect()`. The client authenticates with the session key before any request, and every server message is signed with it, pushes with their own counter. Each connection holds at most `maxBufferedBytes` (4 MiB) of unread output: pushes past it are dropped and a reply that does not fit closes the connection. `BridgeError` takes `{ code, data }`, which reach the client as fields; other errors stay masked, and Brock's codes are in `BRIDGE_CODES`. The client reads the discovery file through one handle with no link followed, checks that handle and, on macOS and Linux, the folder. `helperLaunch(name)` sets `BROCK_BRIDGE_FILE` to this app's discovery file.
+
+### Patch Changes
+
+- Updated dependencies [b6459f5]
+  - @drizztdourden08/brock-core@0.80.0
+
 ## 0.79.0
 
 ### Minor Changes

@@ -36,7 +36,17 @@ describe('the brock-app extension', () => {
   });
 
   it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.overlay.tsx', '<id>.kit.ts', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.<kind>.constants.ts']);
+    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.overlay.tsx', '<id>.kit.ts', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.prompt.ts', '<id>.<kind>.constants.ts']);
+  });
+
+  it('holds src/startup to <id>.prompt.ts files with a default export and their constants', async () => {
+    const files = { 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '' };
+    const prompt = 'export default defineStartupPrompt({ run: async () => undefined });\n';
+    const ok = tree({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/pick.prompt.constants.ts': 'export const A = 1;\n' });
+    expect((await collectFindings(ok, '@app', [brockApp])).findings).toEqual([]);
+    const bad = tree({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/helpers.ts': '', 'src/startup/none.prompt.ts': 'const x = 1;\n' });
+    const { findings } = await collectFindings(bad, '@app', [brockApp]);
+    expect(findings.map((finding) => finding.split(': ')[0]).sort()).toEqual(['src/startup/helpers.ts', 'src/startup/none.prompt.ts']);
   });
 
   it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta, context included', async () => {

@@ -1,12 +1,10 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { migration } from '../migrations/0.27.0/tour-files.mjs';
 import { SYNC_INPUTS } from '../src/freshness/freshness.constants.mjs';
 import { checkTours } from '../src/tours/check-tours.mjs';
 import { renderTours, renderToursFiles } from '../src/tours/render-tours.mjs';
+import { appDirs } from './app-dir-harness.mjs';
 
 const MAIN = [
   "import { BrockApp } from '@drizztdourden08/brock-react';",
@@ -25,25 +23,9 @@ const MAIN = [
   '',
 ].join('\n');
 
-const made = new Set();
+const { appDir, cleanUp } = appDirs('brock-tours-');
 
-const writeInto = (dir) => ([path, content]) => {
-  const target = join(dir, path);
-  mkdirSync(dirname(target), { recursive: true });
-  writeFileSync(target, content);
-};
-
-const appDir = (files) => {
-  const dir = mkdtempSync(join(tmpdir(), 'brock-tours-'));
-  made.add(dir);
-  Object.entries({ 'brock.config.ts': 'export default {};\n', ...files }).forEach(writeInto(dir));
-  return dir;
-};
-
-afterEach(() => {
-  made.forEach((dir) => rmSync(dir, { recursive: true, force: true }));
-  made.clear();
-});
+afterEach(cleanUp);
 
 describe('renderTours', () => {
   it('imports each tour file into one list keyed by the file id', () => {

@@ -1,27 +1,25 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { conventionReader } from '../convention-file-reader.mjs';
 import { scanFlatDir } from '../scan-flat-dir.mjs';
-import { literalFields } from '../screens/literal/literal-fields.mjs';
-import { readDefinedDefault } from '../screens/literal/read-defined-default.mjs';
-import { DEFAULT_EXPORT } from '../widgets/widget-conventions.constants.mjs';
 import { CONSTANTS_FILE, FILE_HINT, FOLDER_HINT, LITERAL_ID, TOUR_ID, TOUR_SHELL, TOUR_SUFFIX, TOURS_DIR } from './tour-conventions.constants.mjs';
 
 /**
  * @typedef {{ id: string, path: string, hasDefault: boolean, literalId: string | null, shell: Record<string, unknown> | null }} TourFile
  */
 
-/** @param {string} rootDir @param {import('node:fs').Dirent} entry @returns {{ file?: TourFile, finding?: string }} */
-const readEntry = (rootDir, entry) => {
-  const path = `${TOURS_DIR}/${entry.name}`;
-  if (entry.isDirectory()) return { finding: `${path}: ${FOLDER_HINT}` };
-  if (CONSTANTS_FILE.test(entry.name)) return {};
-  if (!entry.name.endsWith(TOUR_SUFFIX)) return { finding: `${path}: not a tour file; ${FILE_HINT}` };
-  const id = entry.name.slice(0, -TOUR_SUFFIX.length);
-  if (!TOUR_ID.test(id)) return { finding: `${path}: "${id}" is not a kebab-case id` };
-  const source = readFileSync(join(rootDir, path), 'utf8');
-  return { file: { id, path, hasDefault: DEFAULT_EXPORT.test(source), literalId: LITERAL_ID.exec(source)?.[1] ?? null, shell: literalFields(readDefinedDefault(source, 'defineTour'), TOUR_SHELL, ['title']) } };
-};
+const readEntry = conventionReader({
+  dir: TOURS_DIR,
+  suffix: TOUR_SUFFIX,
+  idPattern: TOUR_ID,
+  constantsFile: CONSTANTS_FILE,
+  noun: 'tour',
+  fileHint: FILE_HINT,
+  folderHint: FOLDER_HINT,
+  define: 'defineTour',
+  shell: TOUR_SHELL,
+  required: ['title'],
+  extra: (source) => ({ literalId: LITERAL_ID.exec(source)?.[1] ?? null }),
+});
 
 /**
  * @param {string} rootDir the app root

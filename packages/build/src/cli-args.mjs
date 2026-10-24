@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util';
 
 const OPTIONS = {
   root: { type: 'string' },
+  app: { type: 'string' },
   scope: { type: 'string' },
   local: { type: 'string' },
   force: { type: 'boolean', default: false },

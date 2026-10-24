@@ -85,6 +85,20 @@ describe('the app launch file', () => {
     }
   });
 
+  it('allows only the arguments and the empty env that main writes', () => {
+    const file = join(tempDir(), 'bridge.json');
+    const read = (args: string[], env: Record<string, string> = {}) => {
+      writePrivateFile(bridgeLaunchFile(file), JSON.stringify({ command: process.execPath, args, env }));
+      return () => readAppLaunch({ file });
+    };
+    expect(read([APP_PATH, '--user-data=/d', '--instance=a', '--profile=b', '--background'])()).toMatchObject({ args: [APP_PATH, '--user-data=/d', '--instance=a', '--profile=b', '--background'] });
+    expect(read([])()).toMatchObject({ args: [], env: {} });
+    const refused = [['--inspect=9229'], ['--remote-debugging-port=1'], ['--eval=1'], ['--instance=a', APP_PATH], ['--no-focus'], ['relative/app']];
+    for (const args of refused) expect(read(args)).toThrow('is not an app launch file');
+    expect(read([], { NODE_OPTIONS: '--require x' })).toThrow('is not an app launch file');
+    expect(read([], { PATH: '/evil' })).toThrow('is not an app launch file');
+  });
+
   it('keeps the bridge open and logs a warning when the launch file cannot be written', async () => {
     const log = vi.fn();
     const file = join(tempDir(), 'bridge.json');

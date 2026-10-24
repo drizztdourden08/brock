@@ -43,7 +43,7 @@ interface HelperLaunch {
 interface RelayAskOptions {
   window: () => BrowserWindow | null;
   timeoutMs?: number;
-  validate?: BridgeArgsCheck;
+  validate: BridgeArgsCheck;
 }
 
 export type { AppBridge, AppBridgeInput, AppBridgeOptions, AppBridgeStart, HelperLaunch, OpenedAppBridge, RelayAskOptions };

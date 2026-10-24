@@ -10,7 +10,7 @@ import { SettingsPageContext } from '../src/settings/SettingsLayout/behavior/set
 import { showHarness } from './show-harness';
 
 const noop = (): void => undefined;
-const page = (id: string, extra: Partial<HubPage> = {}): HubPage => ({ id, label: id, icon: null, render: () => createElement('p', null, id), ...extra });
+const page = (id: string, extra: Partial<HubPage> = {}): HubPage => ({ id, label: id, icon: null, showHeader: true, render: () => createElement('p', null, id), ...extra });
 
 const draw = (hubBackdrop: PageBackdrop | undefined, shown: HubPage): HTMLElement => {
   const hub: HubDef = { id: 'library', title: 'Library', icon: null, home: shown, groups: [], backdrop: hubBackdrop };

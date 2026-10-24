@@ -15,6 +15,7 @@ interface WindowItem {
   icon: IconName;
   badge?: number | string;
   disabled?: boolean;
+  bare?: boolean;
   render: (ctx: WindowRenderContext) => ReactNode;
 }
 

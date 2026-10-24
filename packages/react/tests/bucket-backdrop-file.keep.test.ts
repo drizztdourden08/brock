@@ -26,7 +26,7 @@ const entries = (art: ScreenEntry[] = []): ScreenEntry[] => [
 ];
 
 const draw = (hub: HubDef, page: HubPage): HTMLElement => {
-  const context: HubRenderContext = { hub, page, tab: null, sub: null, subParams: {}, params: {}, open: noop, close: noop, profile: null };
+  const context: HubRenderContext = { hub, page: { ...page, showHeader: true }, tab: null, sub: null, subParams: {}, params: {}, open: noop, close: noop, profile: null };
   return showHarness.render(createElement(HubPageSlot, { context, onSelectTab: noop, onUp: noop }));
 };
 

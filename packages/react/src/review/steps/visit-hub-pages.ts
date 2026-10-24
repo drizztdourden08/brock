@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
+import { drawsPageHeader } from '../../hub/Hub/behavior/draws-page-header';
 import { nav } from '../../navigation/nav';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { pageHeaderChecks } from '../checks/page-header-checks';
@@ -49,7 +50,7 @@ const visitHubPages = async (tour: StepTour, hub: HubDef, pages: readonly HubPag
     const id = `${hub.id}-${page.id}`;
     tour.check(`${id}-page`, shown !== null, `the "${page.label}" page of "${hub.id}" opens ${how}`, `the "${page.label}" page of "${hub.id}" did not open ${how}`);
     if (shown === null) continue;
-    if (page.fullBleed !== true) tour.report(pageHeaderChecks(id, page.label, pageHeader(find(SELECTORS.hubPage) ?? document)));
+    if (drawsPageHeader(hub, page)) tour.report(pageHeaderChecks(id, page.label, pageHeader(find(SELECTORS.hubPage) ?? document)));
     await tour.capture(`bucket-${id}`);
     if (page.settingsTab !== undefined) await checkRowHint(tour, id);
   }

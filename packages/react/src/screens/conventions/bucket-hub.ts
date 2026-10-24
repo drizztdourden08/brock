@@ -33,6 +33,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     shortcut: bucket.shortcut,
     show: showRuleOf(bucket),
     nav: bucket.nav,
+    pages: bucket.pages,
     backdrop: bucketBackdrop(bucket, entries),
     requiresProfile: bucket.requiresProfile,
     home,

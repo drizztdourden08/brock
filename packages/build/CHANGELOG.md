@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-build
 
+## 0.87.2
+
+### Patch Changes
+
+- 82d23f3: Give the server and helper bundles a working `__dirname`, `__filename` and `require.resolve` for inlined CommonJS packages. A package such as ssh2 that reads `__dirname` at top level no longer dies at start with `ReferenceError: __dirname is not defined in ES module scope`. The bundle defines them under private names in an output banner and `define` maps the free identifiers to those names, so a bundled module that declares its own `__dirname` is not touched. `__dirname` is the folder of the bundle, `dist/server` or `dist/helpers`. A helper bundle now starts with that banner, so its bytes change.
+  - @drizztdourden08/brock-core@0.87.2
+  - @drizztdourden08/brock-lint-config@0.87.2
+  - @drizztdourden08/brock-thread@0.87.2
+
 ## 0.87.1
 
 ### Patch Changes

@@ -16,7 +16,13 @@ if [ "$1" = "configure" ]; then
     fi
   else
     group_option="--user-group"
-    if getent group __ID__ >/dev/null 2>&1; then
+    if group_entry=$(getent group __ID__); then
+      gid=$(echo "$group_entry" | cut -d: -f3)
+      members=$(echo "$group_entry" | cut -d: -f4)
+      if [ "$gid" -lt 100 ] || [ "$gid" -gt 999 ] || [ -n "$members" ]; then
+        echo "__ID__: the group __ID__ exists and is not a plain system group (gid 100 to 999, no members); refusing to run the server in it." >&2
+        exit 1
+      fi
       group_option="-g __ID__"
     fi
     useradd --system $group_option --comment "__ID__ server (brock)" --home-dir /var/lib/__ID__ --no-create-home --shell /usr/sbin/nologin __ID__

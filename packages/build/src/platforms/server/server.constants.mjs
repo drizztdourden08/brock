@@ -34,7 +34,7 @@ const RESERVED_ACCOUNT_PREFIXES = Object.freeze(['systemd-']);
 const RESERVED_ACCOUNTS = Object.freeze([
   'root', 'daemon', 'bin', 'sys', 'sync', 'games', 'man', 'lp', 'mail', 'news', 'uucp', 'proxy', 'www-data', 'backup', 'list', 'irc',
   'gnats', 'nobody', 'messagebus', 'sshd', 'polkitd', 'ntp', 'postgres', 'mysql', 'redis', 'mongodb', 'docker', 'syslog', 'dnsmasq',
-  'avahi', 'colord', 'cups', 'dbus', 'postfix', 'chrony', 'admin', 'adm', 'operator', 'staff', 'users', 'sudo', 'shadow', 'tty', 'disk',
+  'lxd', 'kvm', 'wheel', 'systemd-journal', 'avahi', 'colord', 'cups', 'dbus', 'postfix', 'chrony', 'admin', 'adm', 'operator', 'staff', 'users', 'sudo', 'shadow', 'tty', 'disk',
 ]);
 const DEB_EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$/;
 const DEB_VERSION_PATTERN = /^[0-9][A-Za-z0-9.+~-]*$/;

@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { debControl } from '../src/packaging/server/deb-control.mjs';
 import { fetchNodeBinary } from '../src/packaging/server/fetch-node.mjs';
 import { tarGz } from '../src/packaging/server/tar-gz.mjs';
@@ -36,7 +36,7 @@ describe('the system account', () => {
   const idProblem = (id) => () => serverOptions({ product: { ...PRODUCT, id } });
 
   it('rejects ids that name a system account', () => {
-    for (const id of ['root', 'daemon', 'bin', 'sys', 'nobody', 'www-data', 'systemd-network']) expect(idProblem(id)).toThrow(`product.id "${id}" is a system account name`);
+    for (const id of ['root', 'daemon', 'bin', 'sys', 'nobody', 'www-data', 'systemd-network', 'lxd', 'kvm', 'wheel', 'sudo', 'adm', 'docker', 'disk', 'shadow', 'staff', 'systemd-journal']) expect(idProblem(id)).toThrow(`product.id "${id}" is a system account name`);
   });
 
   it('rejects ids that cannot be an account name', () => {
@@ -59,9 +59,12 @@ describe('the system account', () => {
     expect(postinst).toMatch(/was not made by this package[^\n]*>&2\n\s+exit 1/);
   });
 
-  it('joins an existing group of the same name instead of failing', () => {
+  it('adopts an existing group of the same name only when it is a plain system group', () => {
     const postinst = managedFiles()['build/server/postinst'];
-    expect(postinst).toContain('if getent group fixture >/dev/null 2>&1; then\n      group_option="-g fixture"');
+    expect(postinst).toContain('if group_entry=$(getent group fixture); then');
+    expect(postinst).toContain('[ "$gid" -lt 100 ] || [ "$gid" -gt 999 ] || [ -n "$members" ]');
+    expect(postinst).toMatch(/not a plain system group[^\n]*>&2\n\s+exit 1/);
+    expect(postinst).toContain('group_option="-g fixture"');
     expect(postinst).toContain('group_option="--user-group"');
   });
 
@@ -129,6 +132,17 @@ describe('the pinned Node checksums', () => {
     await expect(fetchNodeBinary({ version: '24.1.0', arch: 'x64', cacheDir, download: sums, pins: swapped })).rejects.toThrow('does not match the pinned sha256');
     expect(readdirSync(cacheDir)).toEqual([]);
     expect(pins['24.1.0'].x64).not.toBe(swapped['24.1.0'].x64);
+  });
+
+  it('says an unpinned version was checked against SHASUMS256.txt only, in the error and in the log', async () => {
+    const { download } = fakeDownloads('24.1.0', { x64: Buffer.from('x64-node') }, { lie: true });
+    await expect(fetchNodeBinary({ version: '24.1.0', arch: 'x64', cacheDir: tempDir(), download, pins: {} })).rejects.toThrow('does not match SHASUMS256.txt only (Node 24.1.0 has no pin in Brock)');
+    const honest = fakeDownloads('24.1.0', { x64: Buffer.from('x64-node') });
+    const lines = [];
+    const log = vi.spyOn(console, 'log').mockImplementation((line) => lines.push(line));
+    await fetchNodeBinary({ version: '24.1.0', arch: 'x64', cacheDir: tempDir(), download: honest.download, pins: {} });
+    log.mockRestore();
+    expect(lines).toEqual(['brock server package: Node 24.1.0 has no pin; node-v24.1.0-linux-x64.tar.gz was checked against SHASUMS256.txt only.']);
   });
 
   it('refuses when SHASUMS256.txt disagrees with the pin', async () => {

@@ -32,7 +32,9 @@ const verifiedArchive = async ({ version, file, download, archivePath, hashPath,
   const wanted = await wantedHash({ version, file, download, pin });
   const bytes = await download(`${NODE_DIST_URL}/v${version}/${file}`);
   const actual = sha256(bytes);
-  if (actual !== wanted) throw new Error(`${file} does not match ${pin ? 'the pinned sha256' : 'SHASUMS256.txt'}: expected ${wanted}, got ${actual}. Nothing was staged.`);
+  const checkedAgainst = pin ? 'the pinned sha256' : `SHASUMS256.txt only (Node ${version} has no pin in Brock)`;
+  if (actual !== wanted) throw new Error(`${file} does not match ${checkedAgainst}: expected ${wanted}, got ${actual}. Nothing was staged.`);
+  if (!pin) console.log(`brock server package: Node ${version} has no pin; ${file} was checked against SHASUMS256.txt only.`);
   mkdirSync(join(archivePath, '..'), { recursive: true });
   writeFileSync(archivePath, bytes);
   writeFileSync(hashPath, `${actual}\n`);

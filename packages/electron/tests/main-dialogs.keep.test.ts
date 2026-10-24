@@ -71,4 +71,22 @@ describe('ctx.dialogs.confirm', () => {
     expect(log).toHaveBeenCalledTimes(1);
     expect(log.mock.calls[0]?.[0]).toContain('Allow it?');
   });
+
+  it('shows the dialog on a plain --no-focus launch when showOnAutomation is set, and keeps the default false', async () => {
+    const noFocus = ['node', 'app', '--no-focus'];
+    const own = { ...flags, isAutomationLaunch: () => true, hasFlag: (flag: string) => noFocus.includes(flag) };
+    const dialogs = createDialogs({ flags: own, window: () => null, log });
+    expect(await dialogs.confirm({ ...options, showOnAutomation: true })).toBe(true);
+    expect(shared.showMessageBox).toHaveBeenCalledTimes(1);
+    shared.showMessageBox.mockClear();
+    expect(await dialogs.confirm({ ...options, showOnAutomation: false })).toBe(false);
+    expect(await dialogs.confirm(options)).toBe(false);
+    expect(shared.showMessageBox).not.toHaveBeenCalled();
+  });
+
+  it.each(['--review', '--review=boot', '--screenshot=boot', '--screenshot-splash=splash'])('stays refused on %s even with showOnAutomation', async (arg) => {
+    const own = { ...flags, isAutomationLaunch: () => true, hasFlag: (flag: string) => arg === flag || arg.startsWith(`${flag}=`) };
+    expect(await createDialogs({ flags: own, window: () => null, log }).confirm({ ...options, showOnAutomation: true })).toBe(false);
+    expect(shared.showMessageBox).not.toHaveBeenCalled();
+  });
 });

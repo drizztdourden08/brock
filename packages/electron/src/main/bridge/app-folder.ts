@@ -16,7 +16,8 @@ const mainOf = (folder: string): string | null => {
 
 const appFolder = (): string => {
   const start = resolve(app.getAppPath());
-  const entry = process.argv[1] === undefined ? null : resolve(process.argv[1]);
+  const first = process.argv.slice(1).find((arg) => !arg.startsWith('-'));
+  const entry = first === undefined ? null : resolve(first);
   for (let folder = start; ; folder = dirname(folder)) {
     const main = mainOf(folder);
     if (main !== null && entry !== null && (samePath(main, entry) || samePath(folder, entry))) return folder;

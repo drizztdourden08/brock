@@ -51,6 +51,8 @@ describe('appLaunch', () => {
     fakeApp.getAppPath = () => join(root, 'dist', 'electron');
     process.argv = ['electron', join(root, 'dist', 'electron', 'main.js'), '--no-focus'];
     expect(appLaunch().args).toEqual([root]);
+    process.argv = ['electron', '--inspect=0', '--remote-debugging-port=0', join(root, 'dist', 'electron', 'main.js'), '--no-focus'];
+    expect(appLaunch().args).toEqual([root]);
     process.argv = ['electron', root];
     fakeApp.getAppPath = () => root;
     expect(appLaunch().args).toEqual([root]);

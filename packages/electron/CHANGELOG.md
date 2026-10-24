@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-electron
 
+## 0.87.0
+
+### Minor Changes
+
+- f32d5d9: A helper can now start the app and call ask channels. `appLaunch({ background? })` from `brock-electron/main` returns `{ command, args, env }` for the current app, packaged or in development, with the identity flags of the launch. The bridge writes it to `launch-<discovery file name>` beside the discovery file each time it opens, and `readAppLaunch` and `startApp` from `brock-electron/bridge` read it under the same private-file checks and start the app, with `--background` on request. `relayAsk(bridge, CHANNEL, { window, timeoutMs?, validate? })` exposes an ask channel as a bridge route, so `bridge.request` accepts ask channels and returns the renderer's answer; `validate` is required, at most 8 requests wait per route (code `busy`), and failures reach the helper as fixed `no-window`, `timeout` and `closed` errors or as `the request failed`. `readAppLaunch` refuses a launch file with a non-empty `env` or unknown arguments, and `startApp` checks the executable exists and drops `ELECTRON_RUN_AS_NODE` and `NODE_OPTIONS` in any case. `--instance` and `--profile` no longer stop `--background` from counting, so a background launch works for a named instance. `channelApi` no longer throws on a channel set that holds ask channels, which the preload never maps. `brock-core` exports `BACKGROUND_FLAG`, and `IDENTITY_FLAGS` from `/automation`.
+- 5c45abf: Add `server.optionalAddons: string[]` to `brock.config.ts`, a list of package names. For a `.node` require, or a `bindings`, `node-gyp-build` or `prebuild-install` load, inside a listed package, `brock server build` replaces the addon with a module that throws when it loads, so the package's own try/catch runs and the bundle carries no binary (ssh2 and cpu-features work this way). An addon in the app's own code or in an unlisted package is still refused, and the error now names the package and points to `server.optionalAddons`. `@drizztdourden08/brock-electron/server` also exports `resolveDataDir(argv, env, cwd)`, the rule `runServer` uses for the data folder (`--user-data=`, `BROCK_DATA_DIR`, `STATE_DIRECTORY`, then `./.user-data`); `runServer` calls the same function.
+- ec02417: `ctx.window.show()` now brings the window of a hidden automation launch on screen, at its saved bounds or centred on the primary work area, and `ctx.dialogs.confirm({ title, message, detail?, confirmLabel?, cancelLabel? })` asks a native yes or no question from main code while the app window is hidden. On an automation launch confirm shows nothing and resolves false.
+
+### Patch Changes
+
+- Updated dependencies [f32d5d9]
+  - @drizztdourden08/brock-core@0.87.0
+
 ## 0.86.0
 
 ### Patch Changes

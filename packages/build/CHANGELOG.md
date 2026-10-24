@@ -1,5 +1,27 @@
 # @drizztdourden08/brock-build
 
+## 0.87.0
+
+### Minor Changes
+
+- 2092aad: Set up the Linux test job of the managed ci.yml. `workflows.testEnv` in `brock.config.ts` takes `linuxPackages`, Debian package names that the `quality` job installs with `apt-get install -y --no-install-recommends` before the build (checked with the pattern `server.osPackages` uses), and `userNamespaces: true`, which adds the step that sets `kernel.apparmor_restrict_unprivileged_userns=0` so a test can run a real bubblewrap sandbox. The step is the one the `review` job runs, now shared. It is a sibling of `workflows.ci` because that key is the `managed` or `own` mode. An app that sets neither option gets the same ci.yml as before. `docs/architecture.md` says that `server.osPackages: ['bubblewrap']` already reaches the `.deb` `Depends` and the Docker image, and lists the `docker run` and compose security options a container running bubblewrap needs.
+- 20ce5ee: Docked toolbars by convention, on Tessera `^0.56.0`. An app puts a toolbar in `src/toolbars/<id>.toolbar.tsx`, default-exporting `defineToolbar({ id, label, defaultSide, hiddenByDefault?, render(slot) })`; `slot` carries the orientation, the grip `handle` and the `side`. `brock sync` lists the files in `.brock/toolbars.ts` as `appToolbars`, `brock structure` accepts and checks the folder, and `RendererModule.toolbars` adds a module's toolbars.
+
+  `BrockApp` takes `toolbars` and, when at least one is registered, wraps the widget host in Tessera's `ToolbarDock` inside `brock-app__stage`. An app with no toolbars is unchanged. The layout is saved per profile as its own `toolbarLayout` key in `ui-views.json` beside `widgetLayout`, loaded with `migrateToolbarLayout`, and defaults to `createToolbarLayout`. `useToolbarMenuEntries()` adds a Toolbars sub-menu to Widgets, with its own Reset toolbars entry; Reset layout still resets widgets only.
+
+  The `toolbar-files` migration (0.87.0) adds `toolbars={appToolbars}` and its import to `src/main.tsx`. The lint stack allows the default export in `src/toolbars/*.toolbar.tsx`.
+
+- 928ded0: When `workflows.publish` is set, `brock sync` also writes a managed `publish-packages.yml` that publishes the listed packages on `workflow_dispatch`, with an optional `packages` input for a comma-separated subset. It shares its steps with the `publish-packages` job of `release.yml`, needs no app build job, and refuses a folder that is not in `workflows.publish`. `brock check` compares the new file, and an app without `workflows.publish` gets no file.
+- 5c45abf: Add `server.optionalAddons: string[]` to `brock.config.ts`, a list of package names. For a `.node` require, or a `bindings`, `node-gyp-build` or `prebuild-install` load, inside a listed package, `brock server build` replaces the addon with a module that throws when it loads, so the package's own try/catch runs and the bundle carries no binary (ssh2 and cpu-features work this way). An addon in the app's own code or in an unlisted package is still refused, and the error now names the package and points to `server.optionalAddons`. `@drizztdourden08/brock-electron/server` also exports `resolveDataDir(argv, env, cwd)`, the rule `runServer` uses for the data folder (`--user-data=`, `BROCK_DATA_DIR`, `STATE_DIRECTORY`, then `./.user-data`); `runServer` calls the same function.
+
+### Patch Changes
+
+- Updated dependencies [f32d5d9]
+- Updated dependencies [20ce5ee]
+  - @drizztdourden08/brock-core@0.87.0
+  - @drizztdourden08/brock-lint-config@0.87.0
+  - @drizztdourden08/brock-thread@0.87.0
+
 ## 0.86.0
 
 ### Minor Changes

@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-react
 
+## 0.87.0
+
+### Minor Changes
+
+- f32d5d9: A helper can now start the app and call ask channels. `appLaunch({ background? })` from `brock-electron/main` returns `{ command, args, env }` for the current app, packaged or in development, with the identity flags of the launch. The bridge writes it to `launch-<discovery file name>` beside the discovery file each time it opens, and `readAppLaunch` and `startApp` from `brock-electron/bridge` read it under the same private-file checks and start the app, with `--background` on request. `relayAsk(bridge, CHANNEL, { window, timeoutMs?, validate? })` exposes an ask channel as a bridge route, so `bridge.request` accepts ask channels and returns the renderer's answer; `validate` is required, at most 8 requests wait per route (code `busy`), and failures reach the helper as fixed `no-window`, `timeout` and `closed` errors or as `the request failed`. `readAppLaunch` refuses a launch file with a non-empty `env` or unknown arguments, and `startApp` checks the executable exists and drops `ELECTRON_RUN_AS_NODE` and `NODE_OPTIONS` in any case. `--instance` and `--profile` no longer stop `--background` from counting, so a background launch works for a named instance. `channelApi` no longer throws on a channel set that holds ask channels, which the preload never maps. `brock-core` exports `BACKGROUND_FLAG`, and `IDENTITY_FLAGS` from `/automation`.
+- 20ce5ee: Docked toolbars by convention, on Tessera `^0.56.0`. An app puts a toolbar in `src/toolbars/<id>.toolbar.tsx`, default-exporting `defineToolbar({ id, label, defaultSide, hiddenByDefault?, render(slot) })`; `slot` carries the orientation, the grip `handle` and the `side`. `brock sync` lists the files in `.brock/toolbars.ts` as `appToolbars`, `brock structure` accepts and checks the folder, and `RendererModule.toolbars` adds a module's toolbars.
+
+  `BrockApp` takes `toolbars` and, when at least one is registered, wraps the widget host in Tessera's `ToolbarDock` inside `brock-app__stage`. An app with no toolbars is unchanged. The layout is saved per profile as its own `toolbarLayout` key in `ui-views.json` beside `widgetLayout`, loaded with `migrateToolbarLayout`, and defaults to `createToolbarLayout`. `useToolbarMenuEntries()` adds a Toolbars sub-menu to Widgets, with its own Reset toolbars entry; Reset layout still resets widgets only.
+
+  The `toolbar-files` migration (0.87.0) adds `toolbars={appToolbars}` and its import to `src/main.tsx`. The lint stack allows the default export in `src/toolbars/*.toolbar.tsx`.
+
+- 20ce5ee: `brock-react` now requires Tessera `^0.56.0`, and the lockfile resolves 0.56.1, which fixes the double fold handle of ListDetailLayout. The release adds ToolbarDock, `useToolbarLayout` and `toolbarMenuGroups`, tooltips on segmented controls and toggle groups, and crisp pixel icons. Its MIGRATION notes have no entry that concerns Brock, and the bump itself needed no code change.
+
+### Patch Changes
+
+- Updated dependencies [f32d5d9]
+  - @drizztdourden08/brock-core@0.87.0
+
 ## 0.86.0
 
 ### Minor Changes

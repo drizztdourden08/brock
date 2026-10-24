@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { collectFindings } from '@drizztdourden08/standards/structure';
 import brockApp from '../standards.extension.mjs';
-import { migration } from '../migrations/0.86.0/toolbar-files.mjs';
+import { migration } from '../migrations/0.87.0/toolbar-files.mjs';
 import { SYNC_INPUTS } from '../src/freshness/freshness.constants.mjs';
 import { checkToolbars } from '../src/toolbars/check-toolbars.mjs';
 import { renderToolbars, renderToolbarsFiles } from '../src/toolbars/render-toolbars.mjs';
@@ -101,7 +101,7 @@ describe('the brock-app extension on src/toolbars', () => {
   });
 });
 
-describe('toolbar-files migration (0.86.0)', () => {
+describe('toolbar-files migration (0.87.0)', () => {
   it('adds toolbars={appToolbars} and its import to src/main.tsx, once', () => {
     const once = migration.apply({ path: 'src/main.tsx', source: MAIN });
     expect(once.source).toContain("import { appTours } from '../.brock/tours';\nimport { appToolbars } from '../.brock/toolbars';");

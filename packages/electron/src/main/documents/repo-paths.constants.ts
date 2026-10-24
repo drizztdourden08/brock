@@ -3,6 +3,6 @@ const REPO_SEGMENTS: ReadonlySet<string> = new Set(['.git', '.husky', '.vscode',
 
 const REPO_SEQUENCES: readonly (readonly string[])[] = [['.github', 'workflows']];
 
-const BARE_REPO_NAMES: readonly string[] = ['head', 'objects', 'refs'];
+const GIT_DIR_FILES: ReadonlySet<string> = new Set(['head', 'commondir', 'gitdir']);
 
-export { BARE_REPO_NAMES, REPO_SEGMENTS, REPO_SEQUENCES };
+export { GIT_DIR_FILES, REPO_SEGMENTS, REPO_SEQUENCES };

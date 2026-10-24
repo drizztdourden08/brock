@@ -118,36 +118,47 @@ describe('writes of files that leak credentials when a folder is shown', () => {
   });
 });
 
-describe('writes that would complete a bare repository', () => {
-  const make = async (folder: string, names: string[]): Promise<void> => {
+describe('writes of the files every git directory needs', () => {
+  const names = ['HEAD', 'head', 'commondir', 'CommonDir', 'gitdir'];
+
+  it('are refused by name, whatever the folder', async () => {
     for (const name of names) {
-      if (name === 'HEAD') await writeFile(join(granted, folder, name), 'ref: refs/heads/main');
-      else await mkdir(join(granted, folder, name), { recursive: true });
+      await refusedWrite(name);
+      await refusedWrite(join('bare', name));
+      await refusedWrite(join('deep', 'er', name));
+      expect(existsSync(join(granted, 'bare', name))).toBe(false);
     }
-  };
-
-  beforeEach(async () => {
-    for (const folder of ['bare', 'bare2', 'bare3', 'plain', 'half']) await mkdir(join(granted, folder));
-    await make('bare', ['objects', 'refs']);
-    await make('bare2', ['HEAD', 'refs']);
-    await make('bare3', ['HEAD', 'objects']);
-    await make('plain', []);
-    await make('half', ['refs']);
   });
 
-  it('refuses the last piece, whichever it is', async () => {
-    await refusedWrite(join('bare', 'HEAD'));
-    await refusedWrite(join('bare', 'head'));
-    await refusedWrite(join('bare2', 'objects', 'pack', 'x'));
-    await refusedWrite(join('bare3', 'refs', 'heads', 'main'));
-    await refusedWrite(join('bare3', 'REFS', 'heads', 'main'));
-    expect(existsSync(join(granted, 'bare', 'HEAD'))).toBe(false);
+  it('are refused in a parallel burst of the three names, which no layout check could see', async () => {
+    const settled = await Promise.allSettled([
+      call('document:writeText', join(granted, 'burst', 'HEAD'), 'ref: refs/heads/main'),
+      call('document:writeText', join(granted, 'burst', 'objects', 'x'), 'o'),
+      call('document:writeText', join(granted, 'burst', 'refs', 'heads', 'main'), 'r'),
+    ]);
+    expect(settled.map((outcome) => outcome.status)).toEqual(['rejected', 'fulfilled', 'fulfilled']);
+    expect(existsSync(join(granted, 'burst', 'HEAD'))).toBe(false);
   });
 
-  it('allows the pieces while the layout is not completed, and ordinary files', async () => {
-    for (const file of [join('plain', 'HEAD'), join('half', 'objects', 'x'), join('docs', 'refs', 'x.md'), join('bare', 'objects', 'x'), join('bare', 'refs', 'heads', 'x')]) {
+  it('are refused for the commondir split, X holding HEAD and commondir and Y the objects', async () => {
+    await call('document:writeText', join(granted, 'y', 'objects', 'x'), 'o');
+    await call('document:writeText', join(granted, 'y', 'refs', 'heads', 'main'), 'r');
+    await call('document:writeText', join(granted, 'y', 'config'), 'c');
+    await refusedWrite(join('x', 'HEAD'));
+    await refusedWrite(join('x', 'commondir'));
+    expect(existsSync(join(granted, 'x', 'HEAD'))).toBe(false);
+    expect(existsSync(join(granted, 'x', 'commondir'))).toBe(false);
+  });
+
+  it('leave the files that only look like them alone', async () => {
+    for (const file of ['HEAD.md', 'heads', 'common', join('docs', 'objects', 'x.md'), join('docs', 'refs', 'x.md'), 'gitdir.txt']) {
       await call('document:writeText', join(granted, file), 'ok');
       expect(await readFile(join(granted, file), 'utf8')).toBe('ok');
     }
+  });
+
+  it('can still be read', async () => {
+    await seed(['bare/HEAD']);
+    expect(await call('document:readText', join(granted, 'bare', 'HEAD'))).toBe('old');
   });
 });

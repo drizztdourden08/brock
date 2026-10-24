@@ -6,6 +6,7 @@ import { toArrayBuffer } from '../files/to-array-buffer';
 import { writeAtomic } from '../storage/write-atomic';
 import { bytesOf } from './bytes-of';
 import { isUnrecorded } from './is-unrecorded';
+import { markOfTheWeb } from './mark-of-the-web';
 import { registerRecentHandlers } from './recent-handlers';
 import { registerRecoveryHandlers } from './recovery-handlers';
 import { textOf } from './text-of';
@@ -21,6 +22,7 @@ const documentHandlers: HandlerGroup = {
     const save = async (path: string, content: () => string | Uint8Array, [profileId, options]: readonly unknown[]): Promise<void> => {
       const full = await documents.resolve(path, 'write');
       await writeAtomic(full, content());
+      if (!documents.exact(full)) await markOfTheWeb(full);
       if (!isUnrecorded(options)) await tracking.saved(profileId, full, documents.exact(full));
     };
 

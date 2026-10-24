@@ -64,7 +64,7 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     guarded.refresh();
     const real = await realPathOf(full);
     if (real === null || rootOf(real) === null) return null;
-    return write && (await writeDenied(real)) ? null : real;
+    return write && writeDenied(real) ? null : real;
   };
 
   return { allow, revoke, contain, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };

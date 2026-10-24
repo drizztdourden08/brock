@@ -34,9 +34,9 @@ const draw = (buckets: BucketDef[], current: string): void => {
   ));
 };
 
-const tabs = (): string[] => [...document.querySelectorAll('.floating-switch__label')].map((label) => label.textContent ?? '');
+const tabs = (): string[] => [...document.querySelectorAll('.floating-switch__label')].map((label) => label.textContent);
 
-const selected = (): string[] => [...document.querySelectorAll('.floating-switch__item--active .floating-switch__label')].map((label) => label.textContent ?? '');
+const selected = (): string[] => [...document.querySelectorAll('.floating-switch__item--active .floating-switch__label')].map((label) => label.textContent);
 
 afterEach(showHarness.resetShow);
 

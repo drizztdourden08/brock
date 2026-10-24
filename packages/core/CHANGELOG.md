@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-core
 
+## 0.88.0
+
+### Minor Changes
+
+- 8422f5e: File operations and watching for folder grants. `ctx.documents` and the renderer's `documents` gain `trash(path)` (the system trash through `shell.trashItem`, no permanent delete, never the grant root), `rename(from, to, { overwrite? })`, `mkdir(path, { recursive? })`, `revokeFolder(path)` and `watch(folder, { recursive? }, listener)`, which emits `{ kind: 'add' | 'change' | 'remove', path }` over `fs.watch` with a 100 ms debounce and the 5000 entry cap of a listing, and stops on unsubscribe, revoke and window close. Every operation runs the write checks on the real path on every call: the class refusals, links that lead outside, the app's own folders, device names and the Mark of the Web on a risky new extension. Folders the user picks in the dialog are remembered per profile in the signed store of the recent list (per-install key), and `documents.rememberedFolders()`, `regrant(path)` and `forgetFolder(path)` list, restore without the dialog (only a signed entry that still passes the grant root checks) and remove them. Main grants are never remembered unless main calls `rememberFolder`. New channels `document:revokeFolder`, `document:trash`, `document:rename`, `document:mkdir`, `document:watch`, `document:unwatch`, `document:rememberedFolders`, `document:regrant`, `document:forgetFolder` and the event `document:watchEvent`; `document:openFolder` takes the profile id. Revoking never touches the disk and matches by name only, a rename checks the new name of a folder or link and what a folder's content would newly become, trash and rename act on a link itself, watches belong to the page that asked and stop on reload, and remembered folders that are missing stay listed as unavailable.
+
 ## 0.87.2
 
 ## 0.87.1

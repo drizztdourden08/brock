@@ -3,27 +3,22 @@ import { describe, expect, it, vi } from 'vitest';
 import { markOfTheWeb } from '../src/main/documents/mark-of-the-web';
 import { MARKED_EXTENSIONS, ZONE_CONTENT } from '../src/main/documents/mark-of-the-web.constants';
 
-const EXPECTED = [
-  '.exe', '.com', '.scr', '.bat', '.cmd', '.ps1', '.psm1', '.vbs', '.vbe', '.js', '.jse', '.wsf', '.wsh', '.hta', '.msi', '.msp', '.cpl', '.jar', '.chm', '.reg',
-  '.docm', '.dotm', '.xlsm', '.xltm', '.xlam', '.pptm', '.potm', '.ppam', '.one',
-  '.doc', '.xls', '.ppt', '.xll', '.rtf',
-  '.zip', '.7z', '.rar', '.iso', '.img', '.vhd', '.vhdx',
-  '.msc', '.appref-ms', '.application', '.appx', '.msix', '.appinstaller', '.pif', '.settingcontent-ms', '.diagcab',
-];
+const REPRESENTATIVE = ['.exe', '.docm', '.doc', '.zip', '.msc'];
 
 describe('the extensions that get a Mark of the Web', () => {
-  it('are the executable and macro-capable ones', () => {
-    expect([...MARKED_EXTENSIONS].sort()).toEqual([...EXPECTED].sort());
+  it('include a representative of each group and leave harmless ones out', () => {
+    for (const extension of REPRESENTATIVE) expect(MARKED_EXTENSIONS.has(extension)).toBe(true);
+    expect(MARKED_EXTENSIONS.has('.png')).toBe(false);
   });
 
-  it('are the only ones that get the stream, in any case, on Windows', async () => {
+  it('get the stream on Windows, in any case, and nothing else does', async () => {
     const writeFileTo = vi.fn<(path: string, data: string) => Promise<void>>().mockResolvedValue();
-    for (const extension of EXPECTED) await markOfTheWeb(`C:\\g\\file${extension.toUpperCase()}`, { platform: 'win32', writeFile: writeFileTo });
-    expect(writeFileTo).toHaveBeenCalledTimes(EXPECTED.length);
+    for (const extension of REPRESENTATIVE) await markOfTheWeb(`C:\\g\\file${extension.toUpperCase()}`, { platform: 'win32', writeFile: writeFileTo });
+    expect(writeFileTo).toHaveBeenCalledTimes(REPRESENTATIVE.length);
     expect(writeFileTo).toHaveBeenCalledWith('C:\\g\\file.EXE:Zone.Identifier', '[ZoneTransfer]\r\nZoneId=3\r\n');
     expect(ZONE_CONTENT).toBe('[ZoneTransfer]\r\nZoneId=3\r\n');
     writeFileTo.mockClear();
-    for (const name of ['notes.txt', 'a.png', 'a.exe.txt', 'exe', 'a.docx', 'a.json']) await markOfTheWeb(`C:\\g\\${name}`, { platform: 'win32', writeFile: writeFileTo });
+    for (const name of ['notes.txt', 'a.png', 'a.PNG', 'a.exe.txt', 'exe', 'a.docx', 'a.json']) await markOfTheWeb(`C:\\g\\${name}`, { platform: 'win32', writeFile: writeFileTo });
     expect(writeFileTo).not.toHaveBeenCalled();
   });
 

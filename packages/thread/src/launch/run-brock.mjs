@@ -27,4 +27,4 @@ const runBrock = (appDir, args, { inherit = false } = {}) => {
   return { status: result.status, output: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim() };
 };
 
-export { runBrock };
+export { brockBin, runBrock };

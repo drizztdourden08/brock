@@ -7,11 +7,11 @@ import { withCompilerOptions } from '../build-options/tsconfig-compiler-options.
 const TEMPLATE_DIR = import.meta.dirname;
 
 /**
- * @type {{ target: string, template: string, rootOwned?: boolean, unlessScript?: string } []}
+ * @type {{ target: string, template: string, rootOwned?: boolean, unlessScript?: string, electronOnly?: boolean } []}
  */
 const MANAGED_FILES = [
-  { target: 'electron.vite.config.ts', template: 'electron.vite.config.ts.tmpl' },
-  { target: 'electron-builder.config.cjs', template: 'electron-builder.config.cjs.tmpl' },
+  { target: 'electron.vite.config.ts', template: 'electron.vite.config.ts.tmpl', electronOnly: true },
+  { target: 'electron-builder.config.cjs', template: 'electron-builder.config.cjs.tmpl', electronOnly: true },
   { target: 'eslint.config.mjs', template: 'eslint.config.mjs.tmpl', rootOwned: true },
   { target: 'stylelint.config.mjs', template: 'stylelint.config.mjs.tmpl', rootOwned: true },
   { target: '.markdownlint-cli2.mjs', template: 'markdownlint-cli2.mjs.tmpl', rootOwned: true, unlessScript: 'lint:md' },
@@ -33,11 +33,11 @@ const rootOwnedTargets = (scripts = {}) =>
   MANAGED_FILES.filter(({ rootOwned, unlessScript }) => rootOwned && !(unlessScript && scripts[unlessScript])).map(({ target }) => target);
 
 /**
- * @param {{ inWorkspace?: boolean, scripts?: Record<string, string>, aliases?: Record<string, string>, compilerOptions?: Record<string, unknown> }} [opts] scripts: the app's package.json scripts; tsconfig additions
+ * @param {{ inWorkspace?: boolean, windowless?: boolean, scripts?: Record<string, string>, aliases?: Record<string, string>, compilerOptions?: Record<string, unknown> }} [opts] scripts: the app's package.json scripts; tsconfig additions
  * @returns {{ path: string, content: string } []}  Root-relative path and the file body
  */
-const renderManagedFiles = ({ inWorkspace = false, scripts, aliases, compilerOptions } = {}) =>
-  MANAGED_FILES.filter(({ target }) => !(inWorkspace && rootOwnedTargets(scripts).includes(target))).map(({ target, template }) => ({
+const renderManagedFiles = ({ inWorkspace = false, windowless = false, scripts, aliases, compilerOptions } = {}) =>
+  MANAGED_FILES.filter(({ target, electronOnly }) => !(windowless && electronOnly) && !(inWorkspace && rootOwnedTargets(scripts).includes(target))).map(({ target, template }) => ({
     path: target,
     content: contentOf(target, template, { aliases, compilerOptions }),
   }));

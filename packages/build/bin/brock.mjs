@@ -19,6 +19,7 @@ import { runStart } from '../src/commands/start.mjs';
 import { runProse } from '../src/commands/prose.mjs';
 import { runStructure } from '../src/commands/structure.mjs';
 import { runSync } from '../src/commands/sync.mjs';
+import { runServer } from '../src/commands/server.mjs';
 import { runWeb } from '../src/commands/web.mjs';
 import { runSite } from '../src/commands/site.mjs';
 import { OWN_PACKAGE } from '../src/modules/sync.mjs';
@@ -89,13 +90,16 @@ Usage:
                              inside a dot-folder; a dependency an app declares for the Brock and workspace
                              packages it bundles counts as used, built or not; every word after knip reaches it
   brock platform list | add <id | bundle>... | remove <id | bundle>...
-                             the platforms in brock.config.ts targets: windows, macos, linux, android, web
+                             the platforms in brock.config.ts targets: windows, macos, linux, android, web, server
                              (ios is reserved), bundles desktop and mobile. add runs each platform's scaffold
                              steps and doctor; add and remove rewrite targets and regenerate both workflows
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
+  brock server build | dev   the server entry (server.entry, default server/main.ts) as one Node file with every
+                             dependency inlined, dist/server/main.mjs; dev rebuilds on change and restarts it with
+                             node --watch; anything after -- reaches the app. A native .node addon is refused
   brock site add <name> [--brand <brand>] [--api <url | port offset>]
                              add a web app at apps/<name>: a Vite single-page app on Tessera (TesseraProvider, the
                              brand palette, tokens, theme.css), Vite dev on a tool port of the app's block, its
@@ -160,6 +164,7 @@ const COMMANDS = {
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
   web: (ctx) => runWeb(ctx),
+  server: (ctx) => runServer(ctx),
   site: (ctx) => runSite(ctx),
   'release-notes': (ctx) => runReleaseNotes(ctx),
   affected: (ctx) => runAffected(ctx),

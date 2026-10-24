@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { defineExtension } from '@drizztdourden08/standards';
+import { appShape } from './src/platforms/server/app-shape.mjs';
 import { checkInstallerFolder } from './src/installer/check-installer-folder.mjs';
 import { checkScreens } from './src/screens/check-screens.mjs';
 import { scanScreens } from './src/screens/scan-screens.mjs';
@@ -49,6 +50,7 @@ const customPageNote = (dir, label) => {
 };
 
 const brockAppChecks = async ({ rootDir, packageDir, label, kind }) => {
+  if (isApp(packageDir) && appShape(packageDir).windowless) return { findings: [], notes: [] };
   const prefix = label === '.' ? '' : `${label}/`;
   const screens = (await checkScreens(packageDir)).map((finding) => `${prefix}${finding}`);
   const widgets = hasWidgets(packageDir) ? checkWidgets(packageDir).map((finding) => `${prefix}${finding}`) : [];

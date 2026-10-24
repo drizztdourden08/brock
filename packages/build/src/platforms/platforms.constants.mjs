@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind constants */
-const PLATFORM_ORDER = ['windows', 'macos', 'linux', 'android', 'ios', 'web'];
+const PLATFORM_ORDER = ['windows', 'macos', 'linux', 'android', 'ios', 'web', 'server'];
 
 const BUNDLES = Object.freeze({
   desktop: ['windows', 'macos', 'linux'],

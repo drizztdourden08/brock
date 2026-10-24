@@ -6,7 +6,7 @@ const GENERATED_IMPORT = /from\s+['"](\.\.\/\.brock\/[^'"]+)['"]/g;
 const DIST_MAIN = 'dist/electron/main.js';
 const DIST_RENDERER = 'dist/renderer/index.html';
 const BUILD_OUTPUTS = [DIST_MAIN, 'dist/preload/preload.mjs', DIST_RENDERER];
-const BUILD_INPUTS = ['brock.config.ts', 'package.json', 'tsconfig.json', 'electron.vite.config.ts', 'src', 'electron', 'public'];
+const BUILD_INPUTS = ['brock.config.ts', 'package.json', 'tsconfig.json', 'electron.vite.config.ts', 'src', 'electron', 'server', 'public'];
 const NOT_SOURCES = new Set(['node_modules', 'dist', 'release', 'out', 'coverage']);
 
 export {

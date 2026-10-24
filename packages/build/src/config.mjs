@@ -5,7 +5,7 @@
  */
 
 /**
- * @typedef {'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web'} BrockPlatform
+ * @typedef {'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web' | 'server'} BrockPlatform
  * @typedef {BrockPlatform | 'desktop' | 'mobile'} BrockTarget
  * @typedef {object} BrockAppConfig
  * @property {ProductInput} product Identity fields; defaults fill the rest at boot
@@ -24,6 +24,7 @@
  * @property {BrockPackagingOptions} [packaging] electron-builder and vpk options
  * @property {Record<string, string>} [helpers] Node scripts: name to entry file
  * @property {{ runAsNode?: boolean }} [fuses] Electron fuses of the packaged app
+ * @property {{ entry?: string }} [server] the windowless server: entry file, default server/main.ts
  */
 
 /**

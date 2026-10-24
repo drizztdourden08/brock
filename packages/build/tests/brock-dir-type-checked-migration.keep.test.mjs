@@ -46,6 +46,6 @@ describe('brock-dir-type-checked migration (0.34.0)', () => {
 
   it('matches the tsconfig brock sync writes', () => {
     const tsconfig = renderManagedFiles().find((file) => file.path === 'tsconfig.json');
-    expect(tsconfig?.content).toContain(NEW_INCLUDE);
+    expect(tsconfig?.content).toContain('"include": ["src", "electron", "server", "tests", ".brock/*.ts", "brock.config.ts"],');
   });
 });

@@ -1,6 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { appShape } from '../platforms/server/app-shape.mjs';
+import { DIST_SERVER } from '../platforms/server/server.constants.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { workspaceDirs } from '../workspace-dirs.mjs';
 import { BUILD_INPUTS, BUILD_OUTPUTS, DIST_RENDERER, NOT_SOURCES } from './freshness.constants.mjs';
@@ -37,16 +39,24 @@ const workspacePackagesUsed = (appDir) => {
   return [...found];
 };
 
+const outputsOf = ({ server, windowless }) => [...(windowless ? [] : BUILD_OUTPUTS), ...(server ? [DIST_SERVER] : [])];
+
+const builtAt = (appDir, { server, windowless }) => {
+  const stamps = [...(windowless ? [] : [DIST_RENDERER]), ...(server ? [DIST_SERVER] : [])];
+  return Math.min(...stamps.map((output) => statSync(join(appDir, output)).mtimeMs));
+};
+
 /**
  * @param {string} appDir
  * @returns {string | null} why dist is behind the sources, or null
  */
 const buildStaleReason = (appDir) => {
-  const missing = BUILD_OUTPUTS.find((output) => !existsSync(join(appDir, output)));
+  const shape = appShape(appDir);
+  const missing = outputsOf(shape).find((output) => !existsSync(join(appDir, output)));
   if (missing) return `${missing} is missing`;
-  const half = halfBuildReason(appDir);
+  const half = shape.windowless ? null : halfBuildReason(appDir);
   if (half) return half;
-  const built = statSync(join(appDir, DIST_RENDERER)).mtimeMs;
+  const built = builtAt(appDir, shape);
   const own = BUILD_INPUTS.find((input) => newestSource(join(appDir, input)) > built);
   if (own) return `${own} changed since the last build`;
   const used = workspacePackagesUsed(appDir).find((dir) => newestSource(dir) > built);

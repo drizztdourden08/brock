@@ -8,7 +8,7 @@ import { padStateSubscription } from '../src/pad/pad-state-subscription';
 import { SDL_AXIS_NAMES, SDL_BUTTON_NAMES } from '../src/input.constants';
 import { padFamilyOf } from '../src/pad/pad-family-of';
 import { padStateOf } from '../src/pad/pad-state-of';
-import { CONTROLLER_SLOT_IDS } from '@drizztdourden08/tessera';
+import { CONTROLLER_SLOT_IDS } from '../src/compounds/ControllerLayout/ControllerLayout.constants';
 
 const buttonsWith = (...down: (typeof SDL_BUTTON_NAMES)[number][]): boolean[] =>
   SDL_BUTTON_NAMES.map((name) => down.includes(name));

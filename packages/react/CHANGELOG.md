@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.86.0
+
+### Minor Changes
+
+- 4b2f410: `brock-react` now exports `chordKeys(chord, mac?)`, which turns a chord into its keycaps in order, plus `useIsMac()` and `isMac()` to read the platform flag of the command store. `useCommandChords(id)` was already reactive and now has a keep test. Use them to show shortcut hints without parsing chords by hand.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.86.0
+
 ## 0.85.0
 
 ### Minor Changes

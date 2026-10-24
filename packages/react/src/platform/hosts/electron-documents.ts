@@ -17,8 +17,8 @@ const createElectronDocuments = (): DocumentsPort => {
     return profileId === null ? Promise.reject(new Error(NO_PROFILE)) : call(profileId);
   };
   return {
-    open: (opts) => api.documentOpen(opts, activeProfileId() ?? undefined),
-    saveAs: (opts) => api.documentSaveAs(opts),
+    open: ((opts) => api.documentOpen(opts, activeProfileId() ?? undefined)) as DocumentsPort['open'],
+    saveAs: ((opts) => api.documentSaveAs(opts, activeProfileId() ?? undefined)) as DocumentsPort['saveAs'],
     openFolder: (opts) => api.documentOpenFolder(opts, activeProfileId() ?? undefined),
     revokeFolder: (path) => api.documentRevokeFolder(path),
     trash: (path) => api.documentTrash(path),

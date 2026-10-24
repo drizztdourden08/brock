@@ -8,6 +8,7 @@ import { bytesOf } from './bytes-of';
 import { registerFolderHandlers } from './folder-handlers';
 import { isUnrecorded } from './is-unrecorded';
 import { markOfTheWeb } from './mark-of-the-web';
+import { pickAnswer } from './pick-answer';
 import { registerRecentHandlers } from './recent-handlers';
 import { registerRecoveryHandlers } from './recovery-handlers';
 import { registerWatchHandlers } from './watch-handlers';
@@ -36,14 +37,15 @@ const documentHandlers: HandlerGroup = {
       if (result.canceled || picked === undefined) return null;
       const full = documents.allow(picked);
       await tracking.opened(profileId, full);
-      return full;
+      return pickAnswer({ ctx, tracking, profileId }, full, opts?.grantFolder);
     });
 
-    handle('document:saveAs', async (_event, opts) => {
+    handle('document:saveAs', async (_event, opts, profileId) => {
       const win = window();
       if (!win) return null;
       const result = await dialog.showSaveDialog(win, toDialogOptions(opts));
-      return result.canceled || !result.filePath ? null : documents.allow(result.filePath);
+      if (result.canceled || !result.filePath) return null;
+      return pickAnswer({ ctx, tracking, profileId }, documents.allow(result.filePath), opts?.grantFolder);
     });
 
     handle('document:openFolder', async (_event, opts, profileId) => {

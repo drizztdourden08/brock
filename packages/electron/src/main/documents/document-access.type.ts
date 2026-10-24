@@ -9,6 +9,7 @@ interface DocumentAccess {
   allow: (path: string) => string;
   allowFolder: (path: string) => string;
   revokeFolder: (path: string) => boolean;
+  folderRefusal: (path: string) => string | null;
   exact: (path: string) => boolean;
   isAllowed: (path: string) => Promise<boolean>;
   resolve: (path: string, intent?: 'read' | 'write') => Promise<string>;

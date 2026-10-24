@@ -47,6 +47,14 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     allow,
     allowFolder: folders.allow,
     revokeFolder: folders.revoke,
+    folderRefusal: (path) => {
+      try {
+        folders.vet(path);
+        return null;
+      } catch (error) {
+        return error instanceof Error ? error.message : String(error);
+      }
+    },
     exact: (path) => allowed.has(keyOf(absolutePath(path))),
     isAllowed: (path) => resolve(path).then(() => true, () => false),
     resolve,

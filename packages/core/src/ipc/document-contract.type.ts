@@ -1,9 +1,9 @@
 /* @layer core @kind types */
-import type { DocumentDialogOptions, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentWatchEvent, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
+import type { DocumentDialogOptions, DocumentPick, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentWatchEvent, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
 
 interface DocumentInvokeContract {
-  'document:open': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | null>;
-  'document:saveAs': (opts?: DocumentDialogOptions) => Promise<string | null>;
+  'document:open': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | DocumentPick | null>;
+  'document:saveAs': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | DocumentPick | null>;
   'document:openFolder': (opts?: DocumentFolderOptions, profileId?: string) => Promise<string | null>;
   'document:list': (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
   'document:revokeFolder': (path: string) => Promise<boolean>;

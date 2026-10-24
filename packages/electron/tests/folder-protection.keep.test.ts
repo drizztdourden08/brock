@@ -38,23 +38,55 @@ afterEach(async () => {
 });
 
 describe('the folders of the app itself', () => {
-  it('refuses a grant that holds, or sits inside, one of them', () => {
-    expect(() => access.allowFolder(base)).toThrow(/app's own folders/);
-    expect(() => access.allowFolder(appDir)).toThrow(/app's own folders/);
-    expect(() => access.allowFolder(join(appDir, 'Data'))).toThrow(/app's own folders/);
+  const inApp = (): string[] => [join(appDir, 'app.json'), join(appDir, 'Data', 'app.json'), join(appDir, 'Data', 'profiles', 'p1', RECENT_FILE), join(base, 'bin', 'app.exe'), join(base, 'bin', 'resources', 'app.asar')];
+
+  beforeEach(async () => {
+    await mkdir(join(base, 'bin', 'resources'), { recursive: true });
+    await writeFile(join(base, 'bin', 'app.exe'), 'exe');
+    await writeFile(join(base, 'bin', 'resources', 'app.asar'), 'asar');
+    await writeFile(join(appDir, 'app.json'), '{}');
+    await writeFile(join(appDir, 'Data', 'profiles', 'p1', RECENT_FILE), '[]');
+    access = createDocumentAccess({ protectedRoots: () => [appDir, join(appDir, 'Data'), join(base, 'bin'), join(base, 'bin', 'resources'), join(base, 'missing-install')] });
+  });
+
+  it('refuses a grant that is one of them or sits inside one', () => {
+    for (const folder of [appDir, join(appDir, 'Data'), join(base, 'bin', 'resources')]) expect(() => access.allowFolder(folder)).toThrow(/app's own folders/);
     expect(access.allowFolder(granted)).toBe(granted);
   });
 
-  it('refuses a grant that holds a folder that does not exist yet', async () => {
-    await rm(appDir, { recursive: true, force: true });
-    expect(() => access.allowFolder(base)).toThrow(/app's own folders/);
+  it('keeps them out of reach under a grant that holds them, like a home folder', async () => {
+    expect(access.allowFolder(base)).toBe(base);
+    for (const path of inApp()) {
+      await expect(access.resolve(path)).rejects.toThrow(/may not use/);
+      await expect(access.resolve(join(path, '..', 'x'))).rejects.toThrow(/may not use/);
+      expect(await access.isAllowed(path)).toBe(false);
+    }
+    await expect(access.resolve(join(appDir, 'Data', 'new.json'))).rejects.toThrow(/may not use/);
+    expect(await access.resolve(join(granted, 'sub', 'in.txt'))).toBe(join(granted, 'sub', 'in.txt'));
+    expect(await access.resolve(join(base, 'outside', 'fresh.txt'))).toBe(join(base, 'outside', 'fresh.txt'));
   });
 
-  it('refuses a link out of a grant into them', async () => {
-    access.allowFolder(granted);
+  it('refuses to list them and hides them when listing the parent', async () => {
+    access.allowFolder(base);
+    for (const folder of [appDir, join(appDir, 'Data'), join(base, 'bin'), join(base, 'bin', 'resources')]) {
+      await expect(access.list(folder)).rejects.toThrow(/not inside a granted folder/);
+    }
+    const names = (await access.list(base)).entries.map((entry) => entry.name);
+    expect(names).toEqual(expect.arrayContaining(['granted', 'outside']));
+    expect(names).not.toContain('app');
+    expect(names).not.toContain('bin');
+    const tree = (await access.list(base, { recursive: true })).entries.map((entry) => entry.path);
+    expect(tree).toContain(join(granted, 'sub', 'in.txt'));
+    expect(tree.filter((path) => path.startsWith(appDir) || path.startsWith(join(base, 'bin')))).toEqual([]);
+  });
+
+  it('keeps them out of reach through a link and when they do not exist yet', async () => {
+    access.allowFolder(base);
     await symlink(join(appDir, 'Data'), join(granted, 'sneak'), dirLink);
     await expect(access.resolve(join(granted, 'sneak', 'app.json'))).rejects.toThrow(/may not use/);
-    await expect(access.resolve(join(granted, 'sneak', 'profiles', 'p1', RECENT_FILE))).rejects.toThrow(/may not use/);
+    expect((await access.list(granted)).entries.map((entry) => entry.name)).not.toContain('sneak');
+    await rm(appDir, { recursive: true, force: true });
+    await expect(access.resolve(join(appDir, 'Data', 'app.json'))).rejects.toThrow(/may not use/);
   });
 });
 

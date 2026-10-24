@@ -28,8 +28,8 @@ const createFolderGrants = ({ protectedRoots = () => [] }: FolderGrantDeps = {})
     const real = realpathSync.native(full);
     if (!statSync(real).isDirectory()) throw new Error(`"${real}" is not a folder`);
     if (dirname(real) === real) throw new Error('A folder grant needs a folder below the filesystem root');
-    if (guarded().some((guard) => pathInside(guard, real, pathKey) || pathInside(real, guard, pathKey))) {
-      throw new Error(`"${real}" holds or sits inside the app's own folders and cannot be granted`);
+    if (guarded().some((guard) => pathInside(guard, real, pathKey))) {
+      throw new Error(`"${real}" is, or sits inside, one of the app's own folders and cannot be granted`);
     }
     roots.add(real);
     spellings.set(pathKey(full), real);

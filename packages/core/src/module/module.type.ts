@@ -7,8 +7,22 @@ interface ModuleCiStep {
 
 type WorkflowRunnerOs = 'windows' | 'linux' | 'macos';
 
+type WorkflowPermissionLevel = 'read' | 'write' | 'none';
+
+type WorkflowPermissions = Partial<Record<
+  'actions' | 'attestations' | 'checks' | 'contents' | 'deployments' | 'discussions' | 'id-token' | 'issues' | 'models' | 'packages' | 'pages'
+  | 'pull-requests' | 'security-events' | 'statuses',
+  WorkflowPermissionLevel
+>>;
+
+interface WorkflowAttest {
+  paths: string[];
+  stage: 'beforePackage' | 'afterPackage';
+}
+
 interface WorkflowStep {
   name: string;
+  id?: string;
   run?: string;
   uses?: string;
   with?: Record<string, string | number | boolean>;
@@ -19,6 +33,7 @@ interface WorkflowStep {
   os?: WorkflowRunnerOs | WorkflowRunnerOs[];
   platforms?: string[];
   jobs?: string | string[];
+  permissions?: WorkflowPermissions;
 }
 
 interface CiWorkflowSteps {
@@ -90,5 +105,5 @@ interface ResolvedModule {
 
 export type {
   BrockModuleManifest, CiWorkflowSteps, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ReleaseWorkflowSteps, ResolvedModule,
-  WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
+  WorkflowAttest, WorkflowPermissionLevel, WorkflowPermissions, WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
 };

@@ -29,7 +29,7 @@
 
 /**
  * @typedef {BrockAppConfig & BrockToolingConfig} BrockConfig
- * @typedef {{ ci?: 'managed' | 'own', release?: 'managed' | 'own', steps?: import('@drizztdourden08/brock-core/module').WorkflowSteps }} BrockWorkflowOptions
+ * @typedef {{ ci?: 'managed' | 'own', release?: 'managed' | 'own', steps?: import('@drizztdourden08/brock-core/module').WorkflowSteps, attest?: import('@drizztdourden08/brock-core/module').WorkflowAttest }} BrockWorkflowOptions
  */
 
 /**

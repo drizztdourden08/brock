@@ -8,3 +8,5 @@ export { readJsonFile } from '../main/files/read-json-file';
 export { writeJsonFile } from '../main/files/write-json-file';
 export { createNodeFileStore } from '../main/files/node-file-store';
 export type { NodeFileStoreOptions } from '../main/files/node-file-store.type';
+export { createDataDomains } from './create-node-data-domains';
+export type { DataDomains, DomainFiles } from '../main/storage/domain-files.type';

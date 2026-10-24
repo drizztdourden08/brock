@@ -1,5 +1,5 @@
-/* @layer electron-main @kind types */
-import type { SecretMeta } from '../secrets.type';
+/* @layer core @kind types */
+import type { SecretMeta } from './secrets.type';
 
 interface SecretStore {
   canStore: () => boolean;

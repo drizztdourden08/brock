@@ -3,6 +3,7 @@
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Hub } from '../src/hub/Hub';
+import { PageActions } from '../src/hub/PageActions';
 import { expandLive } from '../src/hub/Hub/behavior/expand-live';
 import { drawsPageHeader } from '../src/hub/Hub/behavior/draws-page-header';
 import { isBarePage } from '../src/hub/Hub/behavior/is-bare-page';
@@ -16,6 +17,8 @@ import type { BucketDef, ScreenMeta } from '../src/screens/conventions/screens-c
 import { showHarness } from './show-harness';
 
 const Panel = () => createElement('p', { className: 'own-panel' }, 'own panel');
+
+const Acting = () => createElement('div', null, createElement(PageActions, null, createElement('button', { className: 'own-action' }, 'Go')), createElement(Panel));
 
 const BUCKET: BucketDef = { id: 'tools', title: 'Tools', icon: 'wrench', menu: 'entry' };
 
@@ -114,6 +117,23 @@ describe('the page header of a hub page', () => {
     expect(document.querySelector('.screen-page__body .own-panel')).not.toBeNull();
   });
 
+  it('takes the compact header with showHeader: compact and still holds the page actions', () => {
+    const list: ScreenEntry[] = [
+      { kind: 'hero', bucket: 'tools', id: 'home', component: Panel },
+      { kind: 'page', bucket: 'tools', id: 'editor', component: Acting, meta: { showHeader: 'compact' } },
+    ];
+    draw(BUCKET, list, 'editor');
+    expect(document.querySelector('.content-header.content-header--compact')).not.toBeNull();
+    expect(document.querySelector('.content-header .own-action')).not.toBeNull();
+    expect(document.querySelector('.screen-page__body .own-panel')).not.toBeNull();
+  });
+
+  it('keeps the full header with showHeader: true', () => {
+    draw(BUCKET, entries({ showHeader: true }), 'editor');
+    expect(document.querySelector('.content-header')).not.toBeNull();
+    expect(document.querySelector('.content-header--compact')).toBeNull();
+  });
+
   it('stays for a page that declares header actions, unless showHeader is false', () => {
     const header = { search: { placeholder: 'Find' } };
     draw(BUCKET, entries({ header }), 'editor');
@@ -140,6 +160,16 @@ describe('a live page', () => {
   it('takes bare and showHeader from the slot meta, and an entry can override them', () => {
     expect(expandLive(holder({ bare: true, showHeader: true }), [item])[0]).toMatchObject({ bare: true, showHeader: true });
     expect(expandLive(holder({ bare: true }), [{ ...item, bare: false }])[0]).toMatchObject({ bare: false });
+  });
+
+  it('takes the compact header from the slot meta', () => {
+    expect(expandLive(holder({ showHeader: 'compact' }), [item])[0]).toMatchObject({ showHeader: 'compact' });
+    const list: ScreenEntry[] = [
+      { kind: 'hero', bucket: 'tools', id: 'home', component: Panel },
+      { kind: 'live', bucket: 'tools', id: 'pads', usePages: () => [{ key: 'a', title: 'Pad a', render: () => createElement(Acting) }], meta: { icon: 'gamepad-2', empty: 'None', showHeader: 'compact' } },
+    ];
+    draw(BUCKET, list, 'pads');
+    expect(document.querySelector('.content-header.content-header--compact .own-action')).not.toBeNull();
   });
 
   it('draws bare in the content slot', () => {

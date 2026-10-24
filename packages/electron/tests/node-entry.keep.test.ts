@@ -43,6 +43,27 @@ describe('the Electron-free entry, @drizztdourden08/brock-electron/node', () => 
     expect(reached.filter((spec) => spec === 'electron' || spec.startsWith('electron/') || spec.startsWith('@electron-toolkit'))).toEqual([]);
   });
 
+  it('reaches the data domain code and still no module of Electron', () => {
+    const reached = packagesReached(ENTRY);
+    expect(reached).toContain('fs/promises');
+    expect(reached.some((spec) => spec.startsWith('electron') || spec.startsWith('@electron-toolkit'))).toBe(false);
+  });
+
+  it('serves data domains from a folder the caller passes, with atomic writes, path guards and sizes', async () => {
+    const node = await import('../src/node');
+    root = await mkdtemp(join(tmpdir(), 'brock-node-domains-'));
+    const domains = node.createDataDomains(root, [{ domain: 'lobby', label: 'Lobby', dir: 'lobby/rooms' }]);
+    const lobby = domains.domain('lobby');
+    expect(lobby.dir()).toBe(join(root, 'lobby', 'rooms'));
+    await lobby.writeJson('a/one.json', { seat: 2 });
+    expect(await lobby.readJson('a/one.json', null)).toEqual({ seat: 2 });
+    expect(await lobby.size('a/one.json')).toBeGreaterThan(0);
+    expect((await domains.usage('lobby')).bytes).toBeGreaterThan(0);
+    await expect(lobby.writeText('../escape.txt', 'x')).rejects.toThrow();
+    expect(() => domains.domain('missing')).toThrow(/unknown data domain/);
+    expect(() => node.createDataDomains(root, [{ domain: 'a', label: 'A', dir: '../out' }])).toThrow();
+  });
+
   it('serves the data paths and the JSON helpers under a folder a test picks', async () => {
     const node = await import('../src/node');
     root = await mkdtemp(join(tmpdir(), 'brock-node-'));

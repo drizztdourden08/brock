@@ -4,7 +4,8 @@ import { assertSafeName, readJson, writeJson } from '@drizztdourden08/brock-core
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { SecretMeta } from '../secrets.type';
-import type { SecretStore } from './secret-store.type';
+import type { SecretStore } from '../secret-store.type';
+import { createSerialQueue } from '../serial-queue';
 import { DIR, INDEX_FILE } from './secret-store.constants';
 
 const fileOf = (name: string): string => `${DIR}/${assertSafeName(name, 'secret name')}.bin`;
@@ -22,15 +23,6 @@ const upsertMeta = (metas: SecretMeta[], name: string, label: string | undefined
     ? { ...existing, updatedAt: now, ...(label === undefined ? {} : { label }) }
     : { name, createdAt: now, updatedAt: now, ...(label === undefined ? {} : { label }) };
   return [...metas.filter((m) => m.name !== name), next].sort((a, b) => a.name.localeCompare(b.name));
-};
-
-const createSerialQueue = (): (<T>(job: () => Promise<T>) => Promise<T>) => {
-  let tail: Promise<unknown> = Promise.resolve();
-  return (job) => {
-    const run = tail.then(job, job);
-    tail = run.then(() => undefined, () => undefined);
-    return run;
-  };
 };
 
 const createSecretStore = ({ files, log }: Pick<MainContext, 'files' | 'log'>): SecretStore => {

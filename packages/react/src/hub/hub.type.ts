@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
-import type { HubNavMode, HubPagesMode, PageBackdrop, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
+import type { HubNavMode, HubPagesMode, PageBackdrop, PageHeaderMode, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
 import type { ShowRule } from '../screens/show/show.type';
 
 interface HubTarget {
@@ -61,7 +61,7 @@ interface LivePage {
   icon?: IconName;
   badge?: LiveBadge;
   bare?: boolean;
-  showHeader?: boolean;
+  showHeader?: PageHeaderMode;
   render: (ctx: HubRenderContext) => ReactNode;
 }
 
@@ -91,7 +91,7 @@ interface HubPage {
   fullBleed?: boolean;
   fill?: boolean;
   bare?: boolean;
-  showHeader?: boolean;
+  showHeader?: PageHeaderMode;
   tabs?: HubTab[];
   render: (ctx: HubRenderContext) => ReactNode;
   preload?: () => Promise<unknown>;

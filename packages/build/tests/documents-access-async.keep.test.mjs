@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { describe, expect, it } from 'vitest';
-import { migration } from '../migrations/0.80.0/documents-access-async.mjs';
+import { migration } from '../migrations/0.81.0/documents-access-async.mjs';
 
 const run = (source) => migration.apply({ path: 'src/main/files.ts', source });
 

@@ -7,6 +7,7 @@ import { SettingsPageContext } from '../../../../settings/SettingsLayout/behavio
 import type { SettingsPageContextValue } from '../../../../settings/SettingsLayout/SettingsLayout.type';
 import { PageActionsContext } from '../../../page-actions-context';
 import { backdropNode } from '../../behavior/backdrop-node';
+import { compactHeader } from '../../behavior/compact-header';
 import { showsPageHeader } from '../../behavior/shows-page-header';
 import { useHeaderActions } from '../../behavior/useHeaderActions';
 import { HubBarePage } from '../HubBarePage';
@@ -32,7 +33,7 @@ const HubPageFrame = (props: HubPageFrameProps) => {
   if (bare) return <HubBarePage label={page.label}>{body}</HubBarePage>;
   if (tabs) return <SettingsPage icon={page.icon} title={page.label} tabs={tabs} backdrop={backdrop} actions={actions} scroll={scroll}>{body}</SettingsPage>;
   if (!showsPageHeader(page)) return <HubPlainPage label={page.label} scroll={scroll}>{body}</HubPlainPage>;
-  return <ScreenPage icon={page.icon} title={page.label} backdrop={backdrop} actions={actions} scroll={scroll}>{body}</ScreenPage>;
+  return <ScreenPage icon={page.icon} title={page.label} backdrop={backdrop} actions={actions} scroll={scroll} compact={compactHeader(page)}>{body}</ScreenPage>;
 };
 
 export { HubPageFrame };

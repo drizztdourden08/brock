@@ -31,6 +31,7 @@ const flagsOf = (argv: string[]): MainContext['flags'] => {
   return {
     ...real,
     isAutomationLaunch: () => real.isAutomationLaunch(argv),
+    isHeadlessLaunch: () => real.isHeadlessLaunch(argv),
     hasFlag: (flag) => real.hasFlag(flag, argv),
     flagValue: (flag) => real.flagValue(flag, argv),
   };
@@ -128,6 +129,26 @@ describe(ANSWER, () => {
     launch(['--no-focus', `${ANSWER}=decline`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
     expect(await reads(join(assets, 'side.json'))).toBe(false);
+  });
+
+  it('does not remember a folder it granted, so a dev run leaves nothing for the installed app', async () => {
+    launch(['--no-focus', `${ANSWER}=grant`]);
+    expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: true });
+    expect(await access.rememberedFolders('p1')).toEqual([]);
+  });
+
+  it('is ignored with an identity flag alone, which is an automation launch but not a headless one', async () => {
+    launch(['--profile=x', `${ANSWER}=grant`]);
+    expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
+    expect(await reads(join(assets, 'side.json'))).toBe(false);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining(ANSWER));
+  });
+
+  it('answers folderGranted false when reading the flag throws', async () => {
+    launch(['--no-focus', `${ANSWER}=grant`]);
+    const flags = flagsOf(['--no-focus', `${ANSWER}=grant`]);
+    call = sessionOf({ documents: access, paths, profiles: PROFILES, log, dialogs: { confirm }, product: { name: 'Bxel' } as MainContext['product'], flags: { ...flags, hasFlag: () => { throw new Error('flags broke'); } } });
+    expect(await openFile({ grantFolder: 'ask' })).toEqual({ path: join(assets, 'hero.json'), folderGranted: false, reason: 'flags broke' });
   });
 
   it('grants nothing when the app asks for no folder', async () => {

@@ -23,10 +23,10 @@ const widestAllowed = (ctx: FolderGrantContext, file: string, levels: number): {
 const grantContainingFolder = async ({ ctx, tracking, profileId }: FolderGrantRequest, file: string, option: unknown): Promise<FolderOutcome> => {
   const levels = folderLevels(option);
   if (levels === null) return declined('The grantFolder option is not valid');
-  const answer = folderTestAnswer(ctx);
-  const optedIn = optionFlag(option, 'showOnAutomation');
-  if (answer === null && !optedIn && ctx.flags.isAutomationLaunch()) return declined('The folder is not asked about in an automation launch');
   try {
+    const answer = folderTestAnswer(ctx);
+    const optedIn = optionFlag(option, 'showOnAutomation');
+    if (answer === null && !optedIn && ctx.flags.isAutomationLaunch()) return declined('The folder is not asked about in an automation launch');
     const chosen = widestAllowed(ctx, file, levels);
     if ('reason' in chosen) return declined(chosen.reason);
     const allowed =
@@ -41,7 +41,7 @@ const grantContainingFolder = async ({ ctx, tracking, profileId }: FolderGrantRe
         : answer === 'grant';
     if (!allowed) return declined('The folder was not allowed');
     const real = ctx.documents.allowFolder(chosen.folder);
-    await tracking.picked(profileId, real);
+    if (answer === null) await tracking.picked(profileId, real);
     return { folderGranted: true, folder: real };
   } catch (error) {
     return declined(error instanceof Error ? error.message : String(error));

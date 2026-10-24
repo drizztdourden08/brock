@@ -16,7 +16,7 @@ const ignored = (ctx: FolderGrantContext, why: string): null => {
 
 const folderTestAnswer = (ctx: FolderGrantContext): FolderTestAnswer | null => {
   if (!ctx.flags.hasFlag(ANSWER_FOLDER_GRANTS_FLAG)) return null;
-  if (!ctx.flags.isAutomationLaunch()) return ignored(ctx, 'this is not an automation launch');
+  if (!ctx.flags.isHeadlessLaunch()) return ignored(ctx, 'this is not a headless automation launch');
   if (isPackagedApp()) return ignored(ctx, 'this is a packaged app');
   const value = ctx.flags.flagValue(ANSWER_FOLDER_GRANTS_FLAG);
   const answer = FOLDER_TEST_ANSWERS.find((known) => known === value);

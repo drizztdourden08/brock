@@ -8,6 +8,7 @@ import type { MainContext } from '../src/main/types/main-context.type';
 import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { documentHandlers } from '../src/main/documents/ipc-handlers';
+import { windowOf } from './window-control';
 
 const electron = vi.hoisted(() => ({
   open: vi.fn<(win: unknown, options: unknown) => Promise<{ canceled: boolean; filePaths: string[] }>>(),
@@ -43,7 +44,7 @@ const session = (documents: DocumentAccess): Call => {
   const ctx: Partial<MainContext> = {
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
     documents,
-    window: () => ({}) as BrowserWindow,
+    window: windowOf(() => ({}) as BrowserWindow),
     paths: { userData: (...segments) => join(dir, ...segments), data: (...segments) => join(dir, 'Data', ...segments) },
     log,
   };

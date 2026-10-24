@@ -10,6 +10,7 @@ import { createNodeFileStore } from '../src/main/files/node-file-store';
 import { initPaths } from '../src/main/paths/init-paths';
 import { fileHandlers } from '../src/main/handlers/file-handlers';
 import { windowHandlers } from '../src/main/window/ipc-handlers';
+import { windowOf } from './window-control';
 
 vi.mock('electron', () => ({ screen: {}, BrowserWindow: { getAllWindows: () => [] } }));
 
@@ -89,11 +90,11 @@ describe('the audio mute channels', () => {
   it('mute and unmute the app window and read its state back', async () => {
     let muted = false;
     const win = { webContents: { setAudioMuted: (value: boolean) => { muted = value; }, isAudioMuted: () => muted } };
-    const call = registered(windowHandlers, { window: () => win as never });
+    const call = registered(windowHandlers, { window: windowOf(() => win as never) });
     expect(await call('window:setAudioMuted', true)).toBe(true);
     expect(await call('window:isAudioMuted')).toBe(true);
     expect(await call('window:setAudioMuted', false)).toBe(false);
-    const none = registered(windowHandlers, { window: () => null });
+    const none = registered(windowHandlers, { window: windowOf(() => null) });
     expect(await none('window:isAudioMuted')).toBe(false);
   });
 });

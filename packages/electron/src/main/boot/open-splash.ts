@@ -2,6 +2,7 @@
 import { app, BrowserWindow } from 'electron';
 import { loadRendererPage } from '../window/load-renderer';
 import { keepOffScreen } from '../window/keep-off-screen';
+import { backgroundMode } from '../background/background-mode';
 import { bootState } from './boot-state';
 import { installSplashActions } from './install-splash-actions';
 import { replaySplash } from './replay-splash';
@@ -41,7 +42,7 @@ const openSplash = ({ plan, size, title, version, backgroundColor, icon, pagePat
   splash.once('closed', () => {
     if (bootState.splash === splash) bootState.splash = null;
     bootState.timeline.splashClosedAt ??= Date.now();
-    if (!bootState.revealed && !bootState.revealing) app.quit();
+    if (!bootState.revealed && !bootState.revealing && !backgroundMode.active) app.quit();
   });
   loadRendererPage(splash, pagePath, { v: version });
   return splash;

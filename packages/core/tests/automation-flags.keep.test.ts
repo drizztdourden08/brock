@@ -21,6 +21,14 @@ describe('createAutomationFlags', () => {
     expect(flags.isHeadlessLaunch(['node', 'app', '--no-focus', '--visible'])).toBe(false);
   });
 
+  it('sees --background as a background launch, and never in an automation launch', () => {
+    expect(flags.isBackgroundLaunch(['node', 'app', '--background'])).toBe(true);
+    expect(flags.isBackgroundLaunch(['node', 'app'])).toBe(false);
+    expect(flags.isBackgroundLaunch(['node', 'app', '--background', '--no-focus'])).toBe(false);
+    expect(flags.isAutomationLaunch(['node', 'app', '--background'])).toBe(false);
+    expect(flags.isHeadlessLaunch(['node', 'app', '--background'])).toBe(false);
+  });
+
   it('reads a flag value', () => {
     expect(flags.flagValue('--instance', ['node', 'app', '--instance=probe'])).toBe('probe');
     expect(flags.flagValue('--instance', ['node', 'app'])).toBeNull();

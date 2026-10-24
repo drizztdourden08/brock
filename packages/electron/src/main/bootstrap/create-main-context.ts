@@ -14,7 +14,9 @@ import { createNodeFileStore } from '../files/node-file-store';
 import { createDocumentAccess } from '../documents/document-access';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
-import { getMainWindow } from '../window/get-main-window';
+import { createWindowControl } from '../window/create-window-control';
+import { showMainWindow } from '../background/show-main-window';
+import { createTrayControl } from '../tray/create-tray-control';
 import { createJobRegistry } from '@drizztdourden08/brock-core/jobs';
 import { createDataDomains } from '../storage/create-data-domains';
 import { servicesProxy } from '../services/services-proxy';
@@ -22,13 +24,15 @@ import { openRouter } from '../open/open-router';
 import { createAppBridge } from '../bridge/create-app-bridge';
 import { bridgeFileName } from '../bridge/bridge-file-name';
 
-const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [], bridge }: ContextInput): MainContext => {
+const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [], icon, bridge }: ContextInput): MainContext => {
   const files = createNodeFileStore({ trashItem: (full) => shell.trashItem(full) });
   const profiles = createProfileStore(files, profileHooks);
   const storage = createDataDomains(dataDomains, (dir) => getUserDataPath(dir));
 
+  const window = createWindowControl();
+
   const emitToWindow: EmitToWindow = (channel, ...args) => {
-    const win = getMainWindow();
+    const win = window();
     if (win) emit(win, channel, ...args);
   };
 
@@ -52,7 +56,8 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     storage,
     job: jobs.start,
     jobs,
-    window: getMainWindow,
+    window,
+    tray: createTrayControl({ productName: product.name, icon, show: showMainWindow, quit: () => app.quit(), log }),
     handle,
     on,
     emit: emitToWindow,

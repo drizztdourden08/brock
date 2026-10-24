@@ -34,7 +34,7 @@ const { createInputRuntime } = await import('../src/main/create-input-runtime');
 
 const contextWith = (): MainContext => {
   const partial: Partial<MainContext> = {
-    flags: { flags: [], isAutomationLaunch: () => false, isHeadlessLaunch: () => false, flagValue: () => null, hasFlag: () => false },
+    flags: { flags: [], isAutomationLaunch: () => false, isBackgroundLaunch: () => false, isHeadlessLaunch: () => false, flagValue: () => null, hasFlag: () => false },
     paths: { userData: () => 'u', data: () => 'd' },
     files: {} as MainContext['files'],
     handle: vi.fn(),

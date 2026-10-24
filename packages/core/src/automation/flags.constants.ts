@@ -12,4 +12,6 @@ const BASE_AUTOMATION_FLAGS = [
 
 const IDENTITY_FLAGS = ['--instance', '--profile'];
 
-export { BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS };
+const BACKGROUND_FLAG = '--background';
+
+export { BASE_AUTOMATION_FLAGS, IDENTITY_FLAGS, BACKGROUND_FLAG };

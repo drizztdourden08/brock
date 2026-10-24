@@ -2,8 +2,10 @@
 export { bootstrapApp } from './bootstrap/bootstrap-app';
 export type {
   MainContext, MainModule, HandlerGroup, BootstrapOptions, BootstrapPaths, SecurityOptions, ServicesFactory,
-  InstanceInfo, MainPaths, MainLogLevel, EmitToWindow,
+  InstanceInfo, MainPaths, MainLogLevel, EmitToWindow, WindowDecision,
 } from './types/main-context.type';
+export type { MainWindowControl } from './window/main-window-control.type';
+export type { TrayControl, TrayItemHandler } from './tray/tray.type';
 
 export { handle } from './ipc/handle';
 export { on } from './ipc/on';

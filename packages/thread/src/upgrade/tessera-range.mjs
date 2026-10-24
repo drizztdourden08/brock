@@ -35,7 +35,7 @@ const fromRegistry = (target, cwd) => {
 /**
  * @param {{ target: string, checkout: string | null }} plan
  * @param {string} cwd the app checkout, whose .npmrc names the registry
- * @returns {string | null} the Tessera range an app should follow: the version a Brock checkout is tested on (its catalog), else brock-react's peer range, or null
+ * @returns {string | null} the checkout catalog, else the peer range
  */
 const tesseraRange = (plan, cwd) => (plan.checkout ? fromCheckout(plan.checkout) : fromRegistry(plan.target, cwd));
 

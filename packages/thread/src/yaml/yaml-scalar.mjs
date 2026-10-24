@@ -6,7 +6,7 @@ const AMBIGUOUS = /^(?:true|false|null|yes|no|on|off|~)$|^[-+]?(?:\d[\d_]*\.?\d*
 
 /**
  * @param {string} value
- * @returns {boolean} whether a YAML parser reads `value` back as the same string when it is written plain
+ * @returns {boolean} whether `value` reads back the same plain
  */
 const isPlainSafe = (value) =>
   value !== ''
@@ -19,7 +19,7 @@ const isPlainSafe = (value) =>
 
 /**
  * @param {string} value a catalog range or any one-line scalar
- * @returns {string} `value` as YAML, in single quotes only when a plain scalar would break
+ * @returns {string} `value`, single-quoted only when needed
  */
 const yamlScalar = (value) => (isPlainSafe(value) ? value : `'${value.replace(/'/g, "''")}'`);
 

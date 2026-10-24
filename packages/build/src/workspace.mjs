@@ -26,7 +26,7 @@ const yamlKey = (name) => (name.startsWith('@') ? `'${name}'` : name);
 
 /**
  * @param {string} rootDir
- * @param {Record<string, string>} entries name to range, as plain strings (quoted in the file when YAML needs it)
+ * @param {Record<string, string>} entries name to plain range
  * @returns {string[]} the names added
  */
 const mergeCatalog = (rootDir, entries) => {

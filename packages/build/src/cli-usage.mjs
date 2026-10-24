@@ -127,6 +127,9 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
 
 Options:
   --root <dir>               repo or app root (default: the current directory)
+  --app <dir>                the app for dev, build, package, icons, start, add, platform, web and server
+                             in a workspace with several apps. Without it these commands use the nearest
+                             folder above the current one that holds brock.config.ts, or the workspace's only app.
   -h, --help
   -v, --version
 `;

@@ -22,6 +22,7 @@ import { runSync } from '../src/commands/sync.mjs';
 import { runServer } from '../src/commands/server.mjs';
 import { runWeb } from '../src/commands/web.mjs';
 import { runSite } from '../src/commands/site.mjs';
+import { resolveAppDir } from '../src/resolve-app-dir.mjs';
 import { OWN_PACKAGE } from '../src/modules/sync.mjs';
 import { USAGE } from '../src/cli-usage.mjs';
 import { runThread, threadVerbNames } from '@drizztdourden08/brock-thread/cli';
@@ -50,6 +51,16 @@ const COMMANDS = {
   'clang-format': (ctx) => runClangFormatCommand(ctx),
 };
 
+const APP_COMMANDS = new Set(['dev', 'build', 'package', 'icons', 'start', 'add', 'platform', 'web', 'server']);
+
+const rootDirOf = async (command, values) => {
+  const start = resolve(values.root ?? process.cwd());
+  if (!APP_COMMANDS.has(command)) return start;
+  const appDir = await resolveAppDir(start, values.app);
+  if (appDir !== process.cwd()) process.chdir(appDir);
+  return appDir;
+};
+
 const runTesseraWords = async (args) => {
   const { runTesseraCommand } = await import('../src/commands/tessera.mjs');
   return runTesseraCommand({ args, cwd: process.cwd() });
@@ -75,7 +86,7 @@ const main = async () => {
   }
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
-  const rootDir = resolve(values.root ?? process.cwd());
+  const rootDir = await rootDirOf(command, values);
   return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
 };
 

@@ -102,9 +102,14 @@ install Brock.
 - `BROCK_GLOBAL_PREFIX` replaces the npm global prefix for both the link and the lookup,
   for tests.
 
-`--root <dir>` points at an app root other than the current directory. `dev`, `build`
-and `start` check the Electron binary first and repair it when the postinstall was
-skipped or interrupted. Everything after `--` reaches electron-vite or the app unchanged.
+`--root <dir>` points at an app root other than the current directory. `dev`, `build`,
+`package`, `icons`, `start`, `add`, `platform`, `web` and `server` work from any folder inside
+the repo: they use the nearest folder above the current one that holds `brock.config.ts`,
+else the only app of the workspace, and run from that folder. With several apps pass
+`--app <dir>` (relative to the current folder or the workspace root), or the command fails and
+lists them. `dev`, `build` and `start` check the Electron binary first and re-run its install
+script when the postinstall was skipped or interrupted. If the binary is still missing they exit
+1 and print `pnpm install` for the repo root. They never run `pnpm install --force` themselves. Everything after `--` reaches electron-vite or the app unchanged.
 `brock add` installs with `pnpm add`.
 
 ## How the pieces work

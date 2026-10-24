@@ -1,8 +1,9 @@
 /* @layer tooling-scripts @kind build */
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { findWorkspaceRoot } from './workspace.mjs';
 
 const TAG = '[brock ensure-electron]';
 
@@ -76,25 +77,13 @@ const runInstallScript = (packageDir) => {
 };
 
 /**
- * @returns {string | null} an error message, or null when the reinstall ran
+ * @param {string} rootDir the app folder
+ * @returns {string} the folder where `pnpm install` repairs this app
  */
-const reinstallPackage = (rootDir, packageDir) => {
-  console.log(`${TAG} Reinstalling electron from the lockfile (this downloads about 100 MB)...`);
-  try {
-    rmSync(packageDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
-  } catch {
-    return 'Could not clear node_modules/electron. A file in it is in use. Close any instance of the app running from this tree, then retry.';
-  }
-  try {
-    execSync('pnpm install --force', { cwd: rootDir, stdio: 'inherit', shell: true });
-  } catch {
-    return '`pnpm install --force` failed. See the output above (offline? registry unreachable?).';
-  }
-  return null;
-};
+const installFolderOf = (rootDir) => findWorkspaceRoot(rootDir) ?? rootDir;
 
 /**
- * @param {string} rootDir
+ * @param {string} rootDir the app folder
  * @returns {{ ok: boolean, message: string}}
  */
 const ensureElectron = (rootDir) => {
@@ -104,14 +93,9 @@ const ensureElectron = (rootDir) => {
 
   console.log(`${TAG} ${reason}. Repairing...`);
   runInstallScript(packageDir);
-  if (brokenReason(rootDir, packageDir)) {
-    const failure = reinstallPackage(rootDir, packageDir);
-    if (failure) return { ok: false, message: failure };
-    runInstallScript(packageDir);
-  }
   const remaining = brokenReason(rootDir, packageDir);
-  if (remaining) return { ok: false, message: `Repair finished but ${remaining}. Delete node_modules and run pnpm install.` };
-  return { ok: true, message: 'Electron binary is ready.' };
+  if (!remaining) return { ok: true, message: 'Electron binary is ready.' };
+  return { ok: false, message: `${remaining}. Close any running instance of the app, then run \`pnpm install\` in ${installFolderOf(rootDir)} and retry. Brock never reinstalls the repo on its own.` };
 };
 
 export { ensureElectron, brokenReason };

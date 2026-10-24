@@ -32,6 +32,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     icon: iconNode(bucket.icon),
     shortcut: bucket.shortcut,
     show: showRuleOf(bucket),
+    switcher: bucket.switcher,
     nav: bucket.nav,
     pages: bucket.pages,
     backdrop: bucketBackdrop(bucket, entries),

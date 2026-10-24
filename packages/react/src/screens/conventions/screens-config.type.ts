@@ -40,6 +40,7 @@ interface BucketDef extends ShowRule {
   title: string;
   icon: IconName;
   menu: MenuPlacement;
+  switcher?: boolean;
   groups?: BucketGroupDef[];
   shortcut?: string;
   nav?: HubNavMode;

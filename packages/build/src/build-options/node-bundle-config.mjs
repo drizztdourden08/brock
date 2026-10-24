@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind config */
 import { resolve } from 'node:path';
 import { appAliases } from './app-aliases.mjs';
-import { NODE_BUNDLE_TARGET } from './build-options.constants.mjs';
+import { CJS_GLOBALS_BANNER, CJS_GLOBALS_DEFINE, NODE_BUNDLE_TARGET } from './build-options.constants.mjs';
 import { defineValues } from './define-values.mjs';
 
 const ELECTRON = /^electron(?:\/|$)/;
@@ -33,7 +33,7 @@ const nodeBundleConfig = (rootDir, build, { label, entry, outDir, fileName, plug
   mode: 'production',
   plugins: [noElectron(label), ...plugins],
   resolve: { alias: appAliases(rootDir, build) },
-  define: defineValues(build?.define, 'brock.config.ts'),
+  define: { ...CJS_GLOBALS_DEFINE, ...defineValues(build?.define, 'brock.config.ts') },
   ssr: { noExternal: true, target: 'node' },
   build: {
     ssr: entry,
@@ -42,7 +42,7 @@ const nodeBundleConfig = (rootDir, build, { label, entry, outDir, fileName, plug
     target: NODE_BUNDLE_TARGET,
     minify: false,
     sourcemap: false,
-    rollupOptions: { output: { format: 'es', entryFileNames: fileName, inlineDynamicImports: true } },
+    rollupOptions: { output: { format: 'es', banner: CJS_GLOBALS_BANNER, entryFileNames: fileName, inlineDynamicImports: true } },
   },
 });
 

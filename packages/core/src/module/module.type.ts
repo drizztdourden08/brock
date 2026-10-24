@@ -18,6 +18,7 @@ type WorkflowPermissions = Partial<Record<
 interface WorkflowAttest {
   paths: string[];
   stage: 'beforePackage' | 'afterPackage';
+  perFile?: boolean;
 }
 
 interface WorkflowPublish {

@@ -14,7 +14,7 @@ export { installPeers } from './modules/install-peers.mjs';
 export { MANAGED_FILES, rootOwnedTargets } from './managed/templates.mjs';
 export { appScripts } from './managed/app-scripts.mjs';
 export { findWorkspaceRoot, mergeCatalog } from './workspace.mjs';
-export { installLauncher, keepCrossDriveLinks, launcherName, linkSpec } from '@drizztdourden08/brock-thread';
+export { installLauncher, keepCrossDriveLinks, launcherName, linkSpec, readYamlScalar, yamlScalar } from '@drizztdourden08/brock-thread';
 export { releaseWorkflow } from './release/release-workflow.mjs';
 export { ensurePnpmPackageManager } from './release/pnpm-package-manager.mjs';
 export { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE } from './release/workflows.constants.mjs';

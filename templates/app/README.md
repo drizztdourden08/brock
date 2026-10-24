@@ -46,6 +46,7 @@ src/screens/credits.card.tsx  the Credits screen
 src/widgets/<id>.widget.tsx  a widget: tool panels docked, floating or in their own window (notes.widget.tsx)
 src/title-bar/<id>.action.ts  a title bar item: a button, a dropdown menu or a status tag
 src/tours/<id>.tour.ts   a guided tour, step by step (welcome.tour.ts runs on the app's first use)
+src/startup/<id>.prompt.ts   a question asked once at start-up, after the first-run tour (made when you need one)
 src/views/, src/compounds/  Tessera parts: views own state, compounds draw one app concept (brock tessera new)
 src/primitives/, src/composites/  the rare app-only primitive or composite (brock tessera new)
 src/stores/use<Thing>Store.ts, src/hooks/use<Thing>.ts  app state and shared hooks

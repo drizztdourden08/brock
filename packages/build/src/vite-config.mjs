@@ -18,6 +18,7 @@ import { metaModulesPlugin } from './meta-modules/meta-modules-plugin.mjs';
 import { screensPlugin } from './screens/screens-plugin.mjs';
 import { widgetsPlugin } from './widgets/widgets-plugin.mjs';
 import { titleBarPlugin } from './title-bar/title-bar-plugin.mjs';
+import { startupPlugin } from './startup/startup-plugin.mjs';
 import { toursPlugin } from './tours/tours-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
@@ -146,7 +147,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       define,
       plugins: [
         devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }),
-        splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }),
+        splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }), startupPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
       resolve: { alias, dedupe: SHARED_SINGLETONS },

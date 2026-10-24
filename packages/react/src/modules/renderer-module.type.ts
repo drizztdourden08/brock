@@ -10,6 +10,7 @@ import type { WidgetDef } from '../widgets/widget.type';
 import type { WidgetKitDef } from '../widgets/kits/widget-kit.type';
 import type { RendererBootTask } from '../boot/renderer-boot.type';
 import type { BeforeQuit, OnBeforeQuit } from '../quit/quit.type';
+import type { StartupPromptDef } from '../startup/startup.type';
 import type { TourDef } from '../tours/tour.type';
 import type { VolumeSource } from '../volume/volume.type';
 import type { CommandDef } from '../commands/command.type';
@@ -34,6 +35,7 @@ interface RendererModule {
   beforeQuit?: BeforeQuit;
   onBeforeQuit?: OnBeforeQuit;
   tours?: readonly TourDef[];
+  startupPrompts?: readonly StartupPromptDef[];
   volume?: VolumeSource;
   commands?: readonly CommandDef[];
 }
@@ -54,6 +56,7 @@ interface MergedModules {
   beforeQuit: BeforeQuit[];
   onBeforeQuit: OnBeforeQuit[];
   tours: TourDef[];
+  startupPrompts: StartupPromptDef[];
   volume?: VolumeSource;
   commands: CommandDef[];
 }

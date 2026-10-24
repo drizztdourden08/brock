@@ -5,6 +5,8 @@ import { SERVER_DEFAULT_ARCHES } from '../platforms/server/server.constants.mjs'
 import { noWorkflowSteps } from './collect-workflow-steps.mjs';
 import { fillTemplate } from './fill-template.mjs';
 import { jobPermissionsBlock, mergePermissions, withJobPermissions } from './lift-permissions.mjs';
+import { PUBLISH_JOB } from './publish-packages.constants.mjs';
+import { publishJobText } from './publish-packages.mjs';
 import { stepsAfter, stepsForJob } from './render-workflow-step.mjs';
 import { REVIEW_NOTE, REVIEW_RUNNER, WINDOWLESS_NOTE } from './review-job.constants.mjs';
 import { reviewJobValues } from './review-job-values.mjs';
@@ -17,6 +19,7 @@ import { DEFAULT_BRANCH, RELEASE_DIR, SET_VERSION } from './workflows.constants.
  * @typedef {import('@drizztdourden08/brock-core/module').ModuleCiStep} ModuleCiStep
  * @typedef {import('./collect-workflow-steps.mjs').CollectedSteps} CollectedSteps
  * @typedef {{ name: string, tagPrefix: string, notesDir: string }} AppOfMany
+ * @typedef {import('./publish-packages.mjs').PublishPlan} PublishPlan
  */
 
 const DEFAULT_SERVER = Object.freeze({ id: 'app', arch: SERVER_DEFAULT_ARCHES, image: null });
@@ -63,9 +66,10 @@ const jobContext = ({ appDir, prefix, systemSteps, steps, server }, workflow) =>
 
 /**
  * @param {{ jobs: Job[], postJobs: Job[] }} jobs the jobs before the release and after it
- * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext }} where
+ * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext, publish: PublishPlan | null }} where
  */
-const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx }) => {
+const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx, publish }) => {
+  const builds = `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`;
   const prepareSteps = ctx.stepsAt('beforeInstall', 'linux', null, 'prepare');
   const prepareAfterInstall = ctx.stepsAt('prepare', 'linux', null, 'prepare');
   return fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
@@ -82,7 +86,8 @@ const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx }) => {
     SET_VERSION,
     JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
     POST_JOBS: postJobs.map(jobBlock).join(''),
-    NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
+    PUBLISH_JOB: publishJobText(publish, builds),
+    NEEDS: builds,
     DOWNLOADS: jobs.flatMap((job) => job.downloads ?? []).map(downloadLine).join('\n') || '            echo "No platform builds a download."',
   });
 };
@@ -134,10 +139,19 @@ const ciText = (platformJobs, { appDir, app, baselines, branch, ctx, windowless 
 };
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, server?: JobContext['server'] }} input
+ * @param {{ app: AppOfMany | null, windowless: boolean, publish: PublishPlan | null, ciJobs: Job[], releaseJobs: Job[], postJobs: Job[] }} parts
+ * @returns {{ ci: string[], release: string[] }} the job ids of both workflows, in order
+ */
+const jobIdsOf = ({ app, windowless, publish, ciJobs, releaseJobs, postJobs }) => ({
+  ci: [...(app ? ['changes'] : []), 'quality', ...(windowless ? [] : ['review']), ...ciJobs.map((job) => job.id)],
+  release: ['prepare', ...releaseJobs.map((job) => job.id), ...(publish ? [PUBLISH_JOB] : []), 'release', ...postJobs.map((job) => job.id)],
+});
+
+/**
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, server?: JobContext['server'], publish?: PublishPlan | null }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER, publish = null }) => {
   const { platforms } = resolvePlatforms(targets);
   const ciCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'ci');
   const releaseCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'release');
@@ -148,11 +162,8 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
   const postJobs = platforms.flatMap((platform) => (platform.publishJob ? [platform.publishJob(releaseCtx)] : []));
   return {
     ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx, windowless }).trimEnd()}\n`,
-    release: `${releaseText({ jobs: releaseJobs, postJobs }, { appDir, app, branch, ctx: releaseCtx }).trimEnd()}\n`,
-    jobs: {
-      ci: [...(app ? ['changes'] : []), 'quality', ...(windowless ? [] : ['review']), ...ciJobs.map((job) => job.id)],
-      release: ['prepare', ...releaseJobs.map((job) => job.id), 'release', ...postJobs.map((job) => job.id)],
-    },
+    release: `${releaseText({ jobs: releaseJobs, postJobs }, { appDir, app, branch, ctx: releaseCtx, publish }).trimEnd()}\n`,
+    jobs: jobIdsOf({ app, windowless, publish, ciJobs, releaseJobs, postJobs }),
   };
 };
 

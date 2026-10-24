@@ -77,4 +77,15 @@ describe('the global error handlers', () => {
       'error Unhandled promise rejection: {"code":"E_SAVE"}',
     ]);
   });
+
+  it('turn the ResizeObserver loop notice into a warning and keep it off the console', () => {
+    const bus = quietBus();
+    const target = fakeTarget();
+    catchGlobalErrors(bus, target as never);
+    const preventDefault = vi.fn();
+    const message = 'ResizeObserver loop completed with undelivered notifications.';
+    target.fire('error', { error: null, message, filename: '', preventDefault });
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(bus.getEntries().map((entry) => `${entry.level} ${entry.message}`)).toEqual([`warn Browser warning: ${message}`]);
+  });
 });

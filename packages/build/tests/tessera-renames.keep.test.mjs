@@ -135,14 +135,19 @@ describe('brock migrate --tessera-from', () => {
     expect(report.tessera).toMatchObject({ pinned: '0.4.0', range: { from: '0.3.0', to: '0.4.0', next: false } });
   });
 
-  it('writes --report relative to the current directory, not --root, and prints the path', async () => {
+  it('writes --report relative to the current directory, not --root, prints the path and warns when it is outside --root', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const root = app();
     const cwd = app();
     const before = process.cwd();
     try {
       process.chdir(cwd);
       expect(await runMigrate({ rootDir: root, tesseraFrom: '0.3.0', report: 'out/run.json' })).toBe(0);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('relative to the current directory, never to --root'));
+      warn.mockClear();
+      expect(await runMigrate({ rootDir: cwd, tesseraFrom: '0.3.0', report: 'out/inside.json' })).toBe(0);
+      expect(warn).not.toHaveBeenCalled();
     } finally {
       process.chdir(before);
     }

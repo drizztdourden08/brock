@@ -89,6 +89,38 @@ describe('the View entry of the menu config', () => {
   });
 });
 
+describe('the View entries an app adds', () => {
+  const grid = { key: 'view', label: 'View', children: [{ key: 'grid', label: 'Show grid', checked: true }, 'separator' as const, { key: 'rulers', label: 'Rulers' }] };
+  const input = (more: Partial<MenuBuildInput> = {}): MenuBuildInput => ({ ...BASE, appMenu: [...BASE.appMenu, grid], ...more });
+  const idOf = (node: unknown): unknown => (typeof node === 'object' && node !== null && 'id' in node ? node.id : '|');
+  const nodeIds = (items: readonly unknown[] | undefined) => (items ?? []).map(idOf);
+
+  it('hands the children of an app item keyed view to the title bar, and keeps view a placement marker', () => {
+    const { groups, viewItems, view } = bar(input());
+    expect(nodeIds(viewItems)).toEqual(['grid', '|', 'rulers']);
+    expect(view).toBeDefined();
+    expect(groups.flatMap((group) => nodeIds(group.items))).not.toContain('view');
+  });
+
+  it('places the View menu by the config while carrying the app entries', () => {
+    const placed = bar(input({ menuConfig: { entries: { view: { group: 'end', order: -1 } } } }));
+    expect(placed.view).toEqual({ group: 'menu-end', position: 'start' });
+    expect(nodeIds(placed.viewItems)).toEqual(['grid', '|', 'rulers']);
+  });
+
+  it('sends no view items when the app adds none or hides View', () => {
+    expect(bar(BASE).viewItems).toBeUndefined();
+    expect(bar(input({ menuConfig: { entries: { view: { hidden: true } } } })).viewItems).toBeUndefined();
+  });
+
+  it('lists the app View entries in the search palette and keeps buildMenu free of the marker', () => {
+    const shell = resolveShellMenu(input());
+    const view = searchableMenu(shell.entries).find((entry) => entry !== 'separator' && entry.key === 'view');
+    expect(view !== undefined && view !== 'separator' ? keys(view.children ?? []) : []).toEqual(['grid', '|', 'rulers']);
+    expect(keys(buildMenu(input()))).not.toContain('view');
+  });
+});
+
 describe('the Pin on top and Full screen menu keys', () => {
   const rows = (input: MenuBuildInput) => tuckedRows(input.menuConfig, bar(input).tucked);
 

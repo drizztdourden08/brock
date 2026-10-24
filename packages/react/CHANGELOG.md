@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-react
 
+## 0.83.0
+
+### Minor Changes
+
+- 3dd25e5: `confirmAction` and `confirmChoice` take `alternate: { label, onSelect, tone?, closes? }`, a third button beside confirm and cancel. `tone` is `neutral` (the default, drawn as a secondary button) or `danger`. The dialog stays open after `onSelect` unless `closes` is true, which closes it and resolves `false` for `confirmAction` and `null` for `confirmChoice`. The startup prompt `ctx.confirmAction` and `ctx.confirmChoice` pass it through. `confirmSave` and its red Discard are unchanged. The confirm dialog footer now keeps every button on one row: the alternate (Discard or a neutral alternate) in a start group on the left, Cancel and the confirm button in an end group on the right, wrapping only when the dialog is too narrow. Before, the alternate sat alone on a row above Cancel and Save.
+- 7a23ca9: Title bar items take `disabledReason` beside `disabled`, and a `status` spec takes both. Brock hands them to Tessera 0.53, which makes a disabled action inert and shows the reason as its tooltip. `brock-react` now requires Tessera `^0.53.0`. `disabledReason` is a literal a lazy title bar button can keep.
+
+  `SettingItem.hint` is optional. Tessera 0.53 draws a settings row with no hint line and no gap when the hint is missing or empty, and Brock hands the row `undefined` as it is. The settings search, the palette and the build-time seeds already treat a missing hint as no text. A linked toggle with no hint draws none.
+
+### Patch Changes
+
+- 10222eb: The review no longer fails `console-errors` on the browser notice `ResizeObserver loop completed with undelivered notifications.`. A window resize can defer observer callbacks to the next frame, and nothing is lost when it does. The renderer's global error handler now logs exactly that message as a warning and keeps it off the console, and the review's console feed skips it. Core exports `isBenignBrowserError` for that test. Every other console error still fails the check. `gate-context-only-reopens` now says whether the window came back in the wrong place, with both bounds, or was not shown again in time.
+- Updated dependencies [203ad09]
+- Updated dependencies [10222eb]
+- Updated dependencies [203ad09]
+  - @drizztdourden08/brock-core@0.83.0
+
 ## 0.82.0
 
 ### Minor Changes

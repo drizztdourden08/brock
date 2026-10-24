@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-electron
 
+## 0.89.0
+
+### Patch Changes
+
+- 8b785cc: `appLaunch()` finds the entry file as the first argument that is not a flag, so an app started by Playwright or launchAppForTest with `--inspect=0` in front still records its app folder and can be started again from a helper.
+  - @drizztdourden08/brock-core@0.89.0
+
 ## 0.88.1
 
 ### Patch Changes

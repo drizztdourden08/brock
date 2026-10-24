@@ -23,6 +23,14 @@ describe('the folder operations on Electron', () => {
   });
 });
 
+describe('reveal on Electron', () => {
+  it('maps reveal onto its channel and returns the answer', async () => {
+    const api = stubApi();
+    expect(await electronDocuments().reveal(FILE)).toEqual({ revealed: true });
+    expect(api.documentReveal).toHaveBeenCalledWith(FILE);
+  });
+});
+
 describe('watching a folder on Electron', () => {
   it('sends the events of its own watch to the listener until it is unsubscribed', async () => {
     const api = stubApi();

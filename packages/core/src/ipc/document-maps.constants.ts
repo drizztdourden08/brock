@@ -8,6 +8,7 @@ const DOCUMENT_INVOKE_MAP = {
   documentList: 'document:list',
   documentRevokeFolder: 'document:revokeFolder',
   documentTrash: 'document:trash',
+  documentReveal: 'document:reveal',
   documentRename: 'document:rename',
   documentMkdir: 'document:mkdir',
   documentWatch: 'document:watch',

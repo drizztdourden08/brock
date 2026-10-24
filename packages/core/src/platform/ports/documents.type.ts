@@ -88,6 +88,11 @@ interface RememberedFolder {
   available: boolean;
 }
 
+interface DocumentRevealResult {
+  revealed: boolean;
+  reason?: string;
+}
+
 interface DocumentWriteOptions {
   recent?: boolean;
 }
@@ -131,6 +136,7 @@ interface DocumentsPort {
   forgetFolder: (path: string) => Promise<boolean>;
   read: (path: string) => Promise<Uint8Array>;
   readText: (path: string) => Promise<string>;
+  reveal: (path: string) => Promise<DocumentRevealResult>;
   write: (path: string, data: Uint8Array, options?: DocumentWriteOptions) => Promise<void>;
   writeText: (path: string, text: string, options?: DocumentWriteOptions) => Promise<void>;
   recent: () => Promise<RecentDocument[]>;
@@ -142,4 +148,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

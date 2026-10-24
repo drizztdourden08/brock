@@ -524,8 +524,8 @@ export default defineBrockConfig({
 
 `product.window.titleBar.controls` turns title bar buttons off: `{ fullscreen, pin, minimize,
 maximize }`, each `true` by default; close always stays. `maximize: false` also makes the main
-window not maximizable, and `fullscreen: false` makes it not fullscreenable and turns Alt+Enter
-off. `product.widgets.mainLabel` names the main view in the widget dock (default `Main`).
+window not maximizable, and `fullscreen: false` makes it not fullscreenable and turns F11 and
+Alt+Enter off. `product.widgets.mainLabel` names the main view in the widget dock (default `Main`).
 `product.widgets.keepFocusWithApp` (default `true`) keeps the keyboard with the app: a mouse
 click on a widget's button, tab or slider no longer leaves the focus there, so the arrows, Enter
 and Space keep driving the app. Tab still moves into a widget, and text fields keep the focus.

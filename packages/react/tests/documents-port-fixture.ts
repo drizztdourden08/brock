@@ -17,6 +17,7 @@ const stubApi = () => {
     documentList: vi.fn((_folder: string, _options?: unknown) => Promise.resolve({ entries: [{ path: FILE, name: 'a.bxel', kind: 'file', size: 2, modified: 3, link: false }], truncated: false })),
     documentRevokeFolder: vi.fn((_path: string) => Promise.resolve(true)),
     documentTrash: vi.fn((_path: string) => Promise.resolve()),
+    documentReveal: vi.fn((_path: string) => Promise.resolve({ revealed: true })),
     documentRename: vi.fn((_from: string, _to: string, _options?: unknown) => Promise.resolve()),
     documentMkdir: vi.fn((_path: string, _options?: unknown) => Promise.resolve()),
     documentWatch: vi.fn((_id: string, _folder: string, _options: unknown) => Promise.resolve()),

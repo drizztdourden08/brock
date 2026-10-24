@@ -12,6 +12,7 @@ import { makeFolder } from './make-folder';
 import { pathKey as keyOf } from './path-key';
 import { regrantFolder } from './regrant-folder';
 import { renameItem } from './rename-item';
+import { revealItem } from './reveal-item';
 import { trashItem } from './trash-item';
 import type { RememberedFolders } from './remembered-folders.type';
 import { WATCH_DEBOUNCE_MS } from './watch-limits.constants';
@@ -67,6 +68,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     }),
     recent: (profileId) => deps.recent?.(profileId) ?? Promise.resolve([]),
     trash: (path) => trashItem(folders, trash, path),
+    reveal: (path) => revealItem(resolve, deps.showItemInFolder, path),
     rename: (from, to, options) => renameItem(folders, from, to, options),
     mkdir: (path, options) => makeFolder(folders, path, options),
     watch: (folder, options, listener) => watchGranted({ folders, registry, watcher: deps.watcher ?? fsWatcher, ms: deps.watchMs ?? WATCH_DEBOUNCE_MS, max: limits.entries }, folder, options, listener),

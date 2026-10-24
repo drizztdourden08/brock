@@ -12,9 +12,9 @@ const groupListSections = <S extends object>(input: GroupListInput<S>): Settings
     const groups = section.groups.map((group) => ({
       id: group.id ?? undefined,
       title: group.title ?? undefined,
-      rows: group.items.flatMap(rowsOf),
+      rows: group.items.flatMap((item) => rowsOf(item, section)),
     }));
-    if (!defaults) return { id: section.id, title: section.title, groups };
+    if (!defaults || section.source) return { id: section.id, title: section.title, groups };
     const resettable = changedKeys(section.groups, settings, defaults, isLocked);
     return {
       id: section.id,

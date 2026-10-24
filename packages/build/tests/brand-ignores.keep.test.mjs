@@ -15,7 +15,7 @@ describe('the generated icon lines of .gitignore', () => {
     const root = tempRepo({ '.gitignore': 'node_modules/\n' });
     expect(syncBrandIgnores(root, [''])).toBe(true);
     const all = lines(root);
-    expect(all).toEqual(expect.arrayContaining(['/public/logos/icon.ico', '/public/logos/icon-256.png', '/public/logos/mark.svg', '/build/icons/']));
+    expect(all).toEqual(expect.arrayContaining(['/public/logos/icon.ico', '/public/logos/icon-256.png', '/public/logos/mark.svg', '/build/icons/', '/build/filetypes/']));
     expect(all.indexOf(START)).toBeGreaterThan(all.indexOf('node_modules/'));
     expect(all.indexOf(END)).toBeGreaterThan(all.indexOf('/build/icons/'));
     expect(syncBrandIgnores(root, [''])).toBe(false);

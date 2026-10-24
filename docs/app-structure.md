@@ -561,7 +561,7 @@ Every generated file is either committed, so a fresh checkout has it, or ignored
 | `.clang-format` at the repo root | `brock sync`, while `gate.clangFormat` names C sources | yes |
 | `.brock/profile-config.json` | the launch provision step | no |
 | `electron.vite.config.ts`, `electron-builder.config.cjs`, the lint configs, `tsconfig.json`, `bin/<repo>.mjs`, `.github/workflows/*.yml` | `brock sync` | yes |
-| `build/icons/`, `build/splash/`, `build/installer-splash.png` | `brock icons`, `brock package` | no |
+| `build/icons/`, `build/filetypes/`, `build/splash/`, `build/installer-splash.png` | `brock icons`, `brock package` | no |
 | `public/logos/` icon files (`icon.*`, `icon-32.png`, `icon-24.png`, `icon-bot.*`, `mark.svg`) | `brock icons` from `icons.brand` | no; an app's own art there is committed |
 | `build/installer/` | the app (`header.png`, `splash.png` overrides) | yes |
 | `dist/`, `release/`, `out/`, `node_modules/`, `*.tsbuildinfo` | the build, the package step, pnpm | no |

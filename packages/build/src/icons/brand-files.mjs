@@ -5,6 +5,9 @@ const DARK_GROUND_DIR = 'dark-ground';
 const BRAND_RIMS = Object.freeze({ brock: 'light' });
 const ICON_SIZES = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 const LINUX_ICON_DIR = 'build/icons/linux';
+const FILETYPES_DIR = 'filetypes';
+const FILETYPES_BUILD_DIR = 'build/filetypes';
+const FILETYPE_SIZES = [16, 32, 48, 64, 128, 256, 512];
 
 /**
  * @typedef {{ from: string, to: string }} BrandFile  Paths relative to the brand folder and the app root
@@ -34,4 +37,4 @@ const BRAND_FILES = [
  */
 const markFile = (brand) => ({ from: `${brand}.svg`, to: 'public/logos/mark.svg' });
 
-export { TESSERA_PACKAGE, BRAND_DIR, DARK_GROUND_DIR, BRAND_RIMS, BRAND_FILES, LINUX_ICON_DIR, markFile };
+export { TESSERA_PACKAGE, BRAND_DIR, DARK_GROUND_DIR, BRAND_RIMS, BRAND_FILES, LINUX_ICON_DIR, FILETYPES_DIR, FILETYPES_BUILD_DIR, FILETYPE_SIZES, markFile };

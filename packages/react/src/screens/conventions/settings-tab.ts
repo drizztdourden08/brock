@@ -13,6 +13,7 @@ const settingsTab = (entry: SettingsEntry): TabDef<object> => ({
   navIcon: iconNode(entry.meta?.icon ?? KIND_ICONS.settings),
   group: entry.group ?? entry.bucket,
   sections: (settings) => settingsSections(entry.sections, settings),
+  ...(entry.meta?.source ? { source: entry.meta.source } : {}),
 });
 
 export { settingsTab };

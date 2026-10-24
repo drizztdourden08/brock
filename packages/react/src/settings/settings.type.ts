@@ -65,6 +65,12 @@ interface SettingItemFields {
 
 type SettingItem = SettingItemFields & SettingDescription;
 
+interface SettingsValueSource {
+  get: (key: string) => unknown;
+  set: (key: string, value: unknown) => void | Promise<void>;
+  subscribe?: (listener: () => void) => () => void;
+}
+
 interface SubSection {
   id: string;
   title: string;
@@ -76,6 +82,7 @@ interface Section {
   title: string;
   items?: SettingItem[];
   subsections?: SubSection[];
+  source?: SettingsValueSource;
 }
 
 type SettingLockCause = string;
@@ -116,6 +123,7 @@ interface TabDef<S extends object> {
   group: string;
   groupId?: string;
   sections?: (settings: S) => Section[];
+  source?: SettingsValueSource;
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;
   moduleId?: string;
@@ -123,5 +131,5 @@ interface TabDef<S extends object> {
 
 export type {
   LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLockCause, SettingValues,
-  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SubSection, TabDef, TabRenderContext,
+  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsValueSource, SubSection, TabDef, TabRenderContext,
 };

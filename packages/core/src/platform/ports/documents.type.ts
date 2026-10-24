@@ -31,6 +31,11 @@ interface DocumentEntry {
   link: boolean;
 }
 
+interface DocumentListing {
+  entries: DocumentEntry[];
+  truncated: boolean;
+}
+
 interface DocumentWriteOptions {
   recent?: boolean;
 }
@@ -63,7 +68,7 @@ interface DocumentsPort {
   open: (opts?: DocumentDialogOptions) => Promise<string | null>;
   saveAs: (opts?: DocumentDialogOptions) => Promise<string | null>;
   openFolder: (opts?: DocumentFolderOptions) => Promise<string | null>;
-  list: (folder: string, options?: DocumentListOptions) => Promise<DocumentEntry[]>;
+  list: (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
   read: (path: string) => Promise<Uint8Array>;
   readText: (path: string) => Promise<string>;
   write: (path: string, data: Uint8Array, options?: DocumentWriteOptions) => Promise<void>;
@@ -77,4 +82,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderOptions, DocumentListOptions, DocumentsPort, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentsPort, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

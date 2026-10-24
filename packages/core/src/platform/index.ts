@@ -18,6 +18,6 @@ export type {
 export type { WindowCloseOptions, WindowControlsPort, Unsub } from './ports/window-controls.type';
 export { anyTypeFor } from './any-type-for';
 export type { AnyTypeScope, AnyTypeOption, PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderOptions, DocumentListOptions, DocumentsPort, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite } from './ports/documents.type';
+export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentsPort, DocumentWriteOptions, RecentDocument, RecoverableSnapshot, SnapshotMeta, SnapshotWrite } from './ports/documents.type';
 export type { DevicePort, BackEdge } from './ports/device.type';
 export type { Capabilities, PlatformPorts, ShowFlags } from '../augment';

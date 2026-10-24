@@ -1,13 +1,13 @@
 /* @layer electron-main @kind logic */
-import type { RecentDocument } from '@drizztdourden08/brock-core/platform';
 import { readOrNull } from '../storage/read-or-null';
+import type { StoredRecent } from './recent-documents.type';
 
-const isEntry = (value: unknown): value is RecentDocument => {
-  const entry = value as Partial<RecentDocument> | null;
-  return typeof entry?.path === 'string' && typeof entry.name === 'string' && typeof entry.lastOpened === 'number';
+const isEntry = (value: unknown): value is StoredRecent => {
+  const entry = value as Partial<StoredRecent> | null;
+  return typeof entry?.path === 'string' && typeof entry.name === 'string' && typeof entry.lastOpened === 'number' && typeof entry.sig === 'string';
 };
 
-const readRecentEntries = async (file: string): Promise<RecentDocument[]> => {
+const readRecentEntries = async (file: string): Promise<StoredRecent[]> => {
   const raw = await readOrNull(file);
   if (raw === null) return [];
   try {

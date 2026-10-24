@@ -4,6 +4,12 @@ interface FolderGrants {
   revoke: (path: string) => boolean;
   contain: (path: string) => Promise<string | null>;
   covers: (real: string) => boolean;
+  rootOf: (real: string) => string | null;
+  holds: (root: string) => boolean;
 }
 
-export type { FolderGrants };
+interface FolderGrantDeps {
+  protectedRoots?: () => string[];
+}
+
+export type { FolderGrantDeps, FolderGrants };

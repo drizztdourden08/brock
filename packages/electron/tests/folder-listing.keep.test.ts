@@ -6,7 +6,7 @@ import type { MainContext } from '../src/main/types/main-context.type';
 import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { mainRecent } from '../src/main/documents/main-recent';
-import { makeBase, sessionOf } from './folder-fixture';
+import { knownProfiles, makeBase, sessionOf } from './folder-fixture';
 import type { Call } from './folder-fixture';
 
 const electron = vi.hoisted(() => ({
@@ -31,6 +31,8 @@ const files = {
   readText: (path: string): Promise<string | null> => Promise.resolve(path === 'app.json' ? appState : null),
 } as MainContext['files'];
 
+const entriesOf = async (...args: Parameters<DocumentAccess['list']>) => (await access.list(...args)).entries;
+
 const names = (entries: { name: string }[]): string[] => entries.map((entry) => entry.name);
 
 beforeEach(async () => {
@@ -44,7 +46,7 @@ beforeEach(async () => {
   await writeFile(join(granted, 'notes.txt'), 'n');
   await writeFile(join(granted, 'docs', 'c.bxel'), 'c');
   await writeFile(join(granted, 'docs', 'deep', 'd.png'), 'd');
-  access = createDocumentAccess({ recent: (profileId) => mainRecent({ paths, documents: access, files, log: vi.fn() }, profileId) });
+  access = createDocumentAccess({ recent: (profileId) => mainRecent({ paths, documents: access, files, log: vi.fn(), profiles: knownProfiles }, profileId) });
   appState = JSON.stringify({ lastProfileId: null });
   call = sessionOf({ documents: access, files, paths, log: vi.fn() });
   electron.dialog.showOpenDialog.mockReset();
@@ -62,15 +64,15 @@ describe('listing a granted folder', () => {
   it('lists the folder level with kind, size and time, sorted by name', async () => {
     const stamp = new Date('2026-01-02T03:04:05Z');
     await utimes(join(granted, 'a.bxel'), stamp, stamp);
-    const entries = await access.list(granted);
+    const entries = await entriesOf(granted);
     expect(names(entries)).toEqual(['a.bxel', 'B.BXEL', 'docs', 'notes.txt']);
     expect(entries[0]).toEqual({ path: join(granted, 'a.bxel'), name: 'a.bxel', kind: 'file', size: 4, modified: stamp.getTime(), link: false });
     expect(entries[2]).toMatchObject({ name: 'docs', kind: 'folder', size: 0, link: false });
   });
 
   it('lists a subfolder, and the whole tree when recursive', async () => {
-    expect(names(await access.list(join(granted, 'docs')))).toEqual(['c.bxel', 'deep']);
-    const tree = await access.list(granted, { recursive: true });
+    expect(names(await entriesOf(join(granted, 'docs')))).toEqual(['c.bxel', 'deep']);
+    const tree = await entriesOf(granted, { recursive: true });
     expect(tree.map((entry) => entry.path)).toEqual([
       join(granted, 'a.bxel'), join(granted, 'B.BXEL'), join(granted, 'docs'), join(granted, 'docs', 'c.bxel'),
       join(granted, 'docs', 'deep'), join(granted, 'docs', 'deep', 'd.png'), join(granted, 'notes.txt'),
@@ -78,10 +80,10 @@ describe('listing a granted folder', () => {
   });
 
   it('keeps only files of the wanted extensions, with or without a dot and in any case', async () => {
-    expect(names(await access.list(granted, { extensions: ['bxel'] }))).toEqual(['a.bxel', 'B.BXEL']);
-    expect(names(await access.list(granted, { extensions: ['.BXEL', 'txt'] }))).toEqual(['a.bxel', 'B.BXEL', 'notes.txt']);
-    expect(names(await access.list(granted, { extensions: ['bxel', 'png'], recursive: true }))).toEqual(['a.bxel', 'B.BXEL', 'c.bxel', 'd.png']);
-    expect(names(await access.list(granted, { extensions: [] }))).toHaveLength(4);
+    expect(names(await entriesOf(granted, { extensions: ['bxel'] }))).toEqual(['a.bxel', 'B.BXEL']);
+    expect(names(await entriesOf(granted, { extensions: ['.BXEL', 'txt'] }))).toEqual(['a.bxel', 'B.BXEL', 'notes.txt']);
+    expect(names(await entriesOf(granted, { extensions: ['bxel', 'png'], recursive: true }))).toEqual(['a.bxel', 'B.BXEL', 'c.bxel', 'd.png']);
+    expect(names(await entriesOf(granted, { extensions: [] }))).toHaveLength(4);
   });
 
   it('refuses malformed options', async () => {
@@ -106,7 +108,7 @@ describe('listing a folder that holds links', () => {
   it('flags a link that stays inside and leaves out one that points outside', async () => {
     await symlink(join(granted, 'docs'), join(granted, 'inner'), dirLink);
     await symlink(outside, join(granted, 'portal'), dirLink);
-    const entries = await access.list(granted);
+    const entries = await entriesOf(granted);
     expect(names(entries)).toContain('inner');
     expect(names(entries)).not.toContain('portal');
     expect(entries.find((entry) => entry.name === 'inner')).toMatchObject({ kind: 'folder', link: true });
@@ -115,7 +117,7 @@ describe('listing a folder that holds links', () => {
   it('does not walk into a link, even one that stays inside', async () => {
     await symlink(join(granted, 'docs'), join(granted, 'inner'), dirLink);
     await symlink(granted, join(granted, 'docs', 'loop'), dirLink);
-    const tree = await access.list(granted, { recursive: true });
+    const tree = await entriesOf(granted, { recursive: true });
     expect(tree.filter((entry) => entry.path.includes('inner') && entry.name !== 'inner')).toEqual([]);
     expect(tree.filter((entry) => entry.path.includes('loop') && entry.name !== 'loop')).toEqual([]);
     expect(tree.length).toBeLessThan(12);
@@ -132,8 +134,8 @@ describe('listing a folder that holds links', () => {
   });
 
   it('answers the renderer over document:list under the same rule', async () => {
-    const listed = (await call('document:list', granted, { extensions: ['bxel'] })) as { name: string }[];
-    expect(names(listed)).toEqual(['a.bxel', 'B.BXEL']);
+    const listed = (await call('document:list', granted, { extensions: ['bxel'] })) as { entries: { name: string }[] };
+    expect(names(listed.entries)).toEqual(['a.bxel', 'B.BXEL']);
     await expect(call('document:list', outside)).rejects.toThrow(/not inside a granted folder/);
     await expect(call('document:list', 42)).rejects.toThrow(/absolute path/);
   });

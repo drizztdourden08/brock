@@ -12,6 +12,7 @@ import { askWithin } from '../ipc/ask-within';
 import { createNodeFileStore } from '../files/node-file-store';
 import { createDocumentAccess } from '../documents/document-access';
 import type { DocumentAccess } from '../documents/document-access.type';
+import { appOwnFolders } from '../documents/app-own-folders';
 import { mainRecent } from '../documents/main-recent';
 import { getLegacyPath } from '../paths/get-legacy-path';
 import { getUserDataPath } from '../paths/get-user-data-path';
@@ -37,7 +38,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     emitToWindow('log:entry', { channel: 'main', level, message });
   };
 
-  const documents: DocumentAccess = createDocumentAccess({ recent: (profileId) => mainRecent({ paths, documents, files, log }, profileId) });
+  const documents: DocumentAccess = createDocumentAccess({ protectedRoots: () => appOwnFolders(paths), recent: (profileId) => mainRecent({ paths, documents, files, log, profiles }, profileId) });
 
   const jobs = createJobRegistry((snapshot) => emitToWindow('job:update', snapshot), Date.now, (jobId, line) => log(`[job ${jobId}] ${line.message}`, line.level));
 

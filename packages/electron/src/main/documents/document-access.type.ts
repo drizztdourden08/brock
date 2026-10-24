@@ -1,17 +1,21 @@
 /* @layer electron-main @kind types */
-import type { DocumentEntry, DocumentListOptions, RecentDocument } from '@drizztdourden08/brock-core/platform';
+import type { DocumentListing, DocumentListOptions, RecentDocument } from '@drizztdourden08/brock-core/platform';
+import type { ListLimits } from './list-limits.type';
 
 interface DocumentAccess {
   allow: (path: string) => string;
   allowFolder: (path: string) => string;
   revokeFolder: (path: string) => boolean;
+  exact: (path: string) => boolean;
   isAllowed: (path: string) => Promise<boolean>;
   resolve: (path: string) => Promise<string>;
-  list: (folder: string, options?: DocumentListOptions) => Promise<DocumentEntry[]>;
+  list: (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
   recent: (profileId?: string) => Promise<RecentDocument[]>;
 }
 
 interface DocumentAccessDeps {
+  protectedRoots?: () => string[];
+  limits?: Partial<ListLimits>;
   recent?: (profileId?: string) => Promise<RecentDocument[]>;
 }
 

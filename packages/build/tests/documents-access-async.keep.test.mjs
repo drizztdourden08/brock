@@ -14,12 +14,12 @@ describe('the documents-access-async migration', () => {
       'const next = await   ctx.documents.isAllowed(other);',
       '',
     ].join('\n');
-    const { source: after, todos } = run(source);
-    expect(after).toBe(source);
-    expect(todos.map((todo) => todo.line)).toEqual([1, 2]);
-    expect(todos[0]?.message).toMatch(/await documents\.resolve/);
-    expect(todos[1]?.message).toMatch(/always truthy/);
-    expect(run(after).source).toBe(after);
+    const first = run(source);
+    expect(first.source).toBe(source);
+    expect(first.todos.map((todo) => todo.line)).toEqual([1, 2]);
+    expect(first.todos[0]?.message).toMatch(/await documents\.resolve/);
+    expect(first.todos[1]?.message).toMatch(/always truthy/);
+    expect(run(first.source).todos).toEqual(first.todos);
   });
 
   it('leaves a file that does not use them alone', () => {

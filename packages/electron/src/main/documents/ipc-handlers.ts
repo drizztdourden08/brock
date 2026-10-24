@@ -21,7 +21,7 @@ const documentHandlers: HandlerGroup = {
     const save = async (path: string, content: () => string | Uint8Array, [profileId, options]: readonly unknown[]): Promise<void> => {
       const full = await documents.resolve(path);
       await writeAtomic(full, content());
-      if (!isUnrecorded(options)) await tracking.saved(profileId, full);
+      if (!isUnrecorded(options)) await tracking.saved(profileId, full, documents.exact(full));
     };
 
     handle('document:open', async (_event, opts, profileId) => {

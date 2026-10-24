@@ -29,11 +29,14 @@ const makeTree = async (prefix: string): Promise<Tree> => {
   return tree;
 };
 
+const knownProfiles = { load: (id: string) => Promise.resolve({ id, name: id, created: 1, lastPlayed: 1 }) } as MainContext['profiles'];
+
 const refusedBy = (access: DocumentAccess) => (path: string): Promise<void> => expect(access.resolve(path)).rejects.toThrow(/may not use/);
 
 const sessionOf = (given: Partial<MainContext>): Call => {
   const handlers = new Map<string, Handler>();
   const ctx: Partial<MainContext> = {
+    profiles: knownProfiles,
     ...given,
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
     window: () => ({}) as BrowserWindow,
@@ -42,5 +45,5 @@ const sessionOf = (given: Partial<MainContext>): Call => {
   return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({}, ...args));
 };
 
-export { makeBase, makeTree, refusedBy, sessionOf };
+export { knownProfiles, makeBase, makeTree, refusedBy, sessionOf };
 export type { Call };

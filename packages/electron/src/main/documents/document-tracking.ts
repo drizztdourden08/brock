@@ -5,17 +5,25 @@ import { pathExists } from './path-exists';
 import { profileIdOf } from './profile-id-of';
 import { createRecentDocuments } from './recent-documents';
 import { createRecoverySnapshots } from './recovery-snapshots';
+import { createSigningKey } from './signing-key';
 import type { DocumentTracking } from './document-tracking.type';
 
-const createDocumentTracking = ({ paths, documents, log }: Pick<MainContext, 'paths' | 'documents' | 'log'>): DocumentTracking => {
+const createDocumentTracking = ({ paths, documents, log, profiles }: Pick<MainContext, 'paths' | 'documents' | 'log' | 'profiles'>): DocumentTracking => {
   const profileDir = (profileId: string): string => paths.data('profiles', profileIdOf(profileId));
-  const recent = createRecentDocuments({ profileDir, exists: pathExists, allow: documents.allow, os: osRecent });
+  const key = createSigningKey(() => paths.data('recent-signing.key'));
+  const recent = createRecentDocuments({ profileDir, exists: pathExists, allow: documents.allow, key, os: osRecent });
   const recovery = createRecoverySnapshots({ profileDir });
+
+  const profile = async (profileId: unknown): Promise<string> => {
+    const id = profileIdOf(profileId);
+    if ((await profiles.load(id)) === null) throw new Error(`"${id}" is not a profile`);
+    return id;
+  };
 
   const quietly = async (profileId: unknown, work: (id: string) => Promise<void>): Promise<void> => {
     if (typeof profileId !== 'string') return;
     try {
-      await work(profileIdOf(profileId));
+      await work(await profile(profileId));
     } catch (error) {
       log(`Document tracking:${error instanceof Error ? error.message : String(error)}`, 'warn');
     }
@@ -24,9 +32,10 @@ const createDocumentTracking = ({ paths, documents, log }: Pick<MainContext, 'pa
   return {
     recent,
     recovery,
+    profile,
     opened: (profileId, full) => quietly(profileId, (id) => recent.record(id, full)),
-    saved: (profileId, full) => quietly(profileId, async (id) => {
-      await recent.record(id, full);
+    saved: (profileId, full, listed) => quietly(profileId, async (id) => {
+      if (listed) await recent.record(id, full);
       await recovery.discardForPath(id, full);
     }),
   };

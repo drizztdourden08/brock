@@ -6,7 +6,7 @@ import type { DocumentTracking } from './document-tracking.type';
 
 const trackings = new WeakMap<DocumentAccess, DocumentTracking>();
 
-const trackingOf = (ctx: Pick<MainContext, 'paths' | 'documents' | 'log'>): DocumentTracking => {
+const trackingOf = (ctx: Pick<MainContext, 'paths' | 'documents' | 'log' | 'profiles'>): DocumentTracking => {
   const existing = trackings.get(ctx.documents);
   if (existing !== undefined) return existing;
   const created = createDocumentTracking(ctx);

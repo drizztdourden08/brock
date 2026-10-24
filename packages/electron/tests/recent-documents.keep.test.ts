@@ -18,6 +18,7 @@ const setup = () => {
     profileDir: (id) => join(dir, 'profiles', id),
     exists: pathExists,
     allow: access.allow,
+    key: () => Promise.resolve(Buffer.from('test key')),
     os,
     now: () => ++tick,
   });

@@ -1,10 +1,12 @@
 /* @layer electron-main @kind logic */
-import { isAbsolute, relative, sep } from 'path';
-import { pathKey } from './path-key';
+import { sep } from 'path';
 
-const pathInside = (root: string, target: string): boolean => {
-  const back = relative(pathKey(root), pathKey(target));
-  return back === '' || (back !== '..' && !back.startsWith(`..${sep}`) && !isAbsolute(back));
+const same = (path: string): string => path;
+
+const pathInside = (root: string, target: string, key: (path: string) => string = same): boolean => {
+  const from = key(root);
+  const to = key(target);
+  return to === from || to.startsWith(from.endsWith(sep) ? from : `${from}${sep}`);
 };
 
 export { pathInside };

@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-build
 
+## 0.82.0
+
+### Minor Changes
+
+- 39c91ec: ControllerLayout, StickPlot and PressedGrid move from Tessera to the input module. They keep their props and types, and the module exports them from `@drizztdourden08/brock-input/renderer` with `CONTROLLER_LAYOUT_VARIANTS`, `CONTROLLER_SLOT_IDS`, `ControllerExtra`, `ControllerSlots` and the prop types of each. `CalibrationPanel` and the device card now use the local copies. The controller strings (`Controller`, `Held now`, the slot names) ship with the component, so a Tessera strings override no longer reaches them. The BEM block of each part gains an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`), so an app stylesheet that reached into the old classes needs the new names. The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of the three names, and of their types, from `@drizztdourden08/tessera` and its `/composites` entry to `@drizztdourden08/brock-input/renderer`; the app needs the input module installed. The import codemod now also sees files that import only from the Tessera root.
+- b5c6c13: A release step can declare `permissions`, and `workflows.attest` attests release files. A step under `workflows.steps.release.*` takes `permissions` (GitHub permission names with `read`, `write` or `none`) and an `id`; `brock sync` lifts the permissions onto each job that runs the step, merged with the workflow's own, where write wins, and fails on a name or level it does not know. `workflows.attest: { paths, stage }` (`beforePackage` or `afterPackage`) adds `actions/attest-build-provenance`, pinned to a full commit SHA, to the `build-linux` job of the managed `release.yml`, writes each Sigstore bundle beside its file as `<file>.sigstore.json`, and lifts `id-token: write` and `attestations: write` onto that job. An app attests its release files without owning the workflow.
+
+### Patch Changes
+
+- 1a68403: Brock 0.81.0 filed the migration documents-access-async under 0.80.0, so an app that upgraded from 0.80.x to 0.81.0 never ran it; it is now filed under 0.81.0. An app already on 0.81.0 runs it with `brock migrate --run documents-access-async`, a new option that runs one migration by id at any version. A keep test now fails when a migration folder is older than the release whose changelog first names it.
+- Updated dependencies [9e2ade8]
+- Updated dependencies [b5c6c13]
+  - @drizztdourden08/brock-lint-config@0.82.0
+  - @drizztdourden08/brock-core@0.82.0
+  - @drizztdourden08/brock-thread@0.82.0
+
 ## 0.81.0
 
 ### Patch Changes

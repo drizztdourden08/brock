@@ -1,5 +1,23 @@
 # @drizztdourden08/brock-input
 
+## 0.82.0
+
+### Minor Changes
+
+- 39c91ec: ControllerLayout, StickPlot and PressedGrid move from Tessera to the input module. They keep their props and types, and the module exports them from `@drizztdourden08/brock-input/renderer` with `CONTROLLER_LAYOUT_VARIANTS`, `CONTROLLER_SLOT_IDS`, `ControllerExtra`, `ControllerSlots` and the prop types of each. `CalibrationPanel` and the device card now use the local copies. The controller strings (`Controller`, `Held now`, the slot names) ship with the component, so a Tessera strings override no longer reaches them. The BEM block of each part gains an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`), so an app stylesheet that reached into the old classes needs the new names. The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of the three names, and of their types, from `@drizztdourden08/tessera` and its `/composites` entry to `@drizztdourden08/brock-input/renderer`; the app needs the input module installed. The import codemod now also sees files that import only from the Tessera root.
+- d8d48d0: `input.mapping.list()` entries now carry `source` (`builtin`, `bundled` or `user`), the `mapping` string and `inputCount`, the number of bound inputs the line declares. Main works out the source from the bundled and user database files, so the addon is unchanged.
+
+### Patch Changes
+
+- Updated dependencies [44e91ce]
+- Updated dependencies [9e2ade8]
+- Updated dependencies [a44cf5d]
+- Updated dependencies [b5c6c13]
+- Updated dependencies [c0b1c3d]
+  - @drizztdourden08/brock-react@0.82.0
+  - @drizztdourden08/brock-electron@0.82.0
+  - @drizztdourden08/brock-core@0.82.0
+
 ## 0.81.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-electron
 
+## 0.82.0
+
+### Minor Changes
+
+- a44cf5d: Data domains under plain Node. `createDataDomains(dataDir, defs)` from `@drizztdourden08/brock-electron/node` returns the same `DataDomains` as `ctx.storage` (with a `DomainFiles` per domain): the same atomic writes, path guards and `usage()` size, for a process with no Electron, such as a headless server. `dataDir` is the folder the domains sit in (the `Data/` folder of an Electron app). The entry still reaches no module of Electron, and a keep test checks the new import graph.
+- c0b1c3d: New `@drizztdourden08/brock-electron/server` entry for apps that run without a window. It never loads Electron. `runServer(start, options?)` resolves the data folder (the `--user-data=` flag, then `BROCK_DATA_DIR`, then systemd `STATE_DIRECTORY`, then `./.user-data`), logs one line per event to stdout (errors to stderr) in the main log format, calls the `stop` that `start` returned on SIGTERM and SIGINT, and writes a heartbeat to `<data>/.brock/server-health.json` every 10 seconds. `start(host)` gets `{ dataDir, args, log, domains }` and returns `{ stop, health? }`; an optional `domains` factory in the options builds the `domains` value from the data folder. The `health` command (`main.mjs health`) reads that file and exits 0 when it is under 30 seconds old and ok, and 1 otherwise, so a container health check or a CI smoke test needs no port. `embedServer(start, ctx, options?)` in `/main` runs the same start function inside the desktop app's main process, with the data folder from `ctx.paths`, the log written through `appendMainLog`, and `stop` called when the app quits.
+
+### Patch Changes
+
+- Updated dependencies [b5c6c13]
+  - @drizztdourden08/brock-core@0.82.0
+
 ## 0.81.0
 
 ### Minor Changes

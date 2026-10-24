@@ -1,5 +1,5 @@
 /* @layer electron-main @kind test */
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readAppLaunch } from '../src/bridge';
@@ -20,6 +20,7 @@ const realArgv = process.argv;
 
 beforeEach(() => {
   fakeApp.isPackaged = false;
+  fakeApp.getAppPath = (): string => APP_PATH;
   process.argv = ['electron', APP_PATH];
 });
 
@@ -41,6 +42,19 @@ describe('appLaunch', () => {
     expect(appLaunch()).toEqual({ command: process.execPath, args: [APP_PATH], env: {} });
     fakeApp.isPackaged = true;
     expect(appLaunch()).toEqual({ command: process.execPath, args: [], env: {} });
+  });
+
+  it('starts the app folder, not dist/electron, when the app was started on its entry file as launchAppForTest does', () => {
+    const root = tempDir();
+    mkdirSync(join(root, 'dist', 'electron'), { recursive: true });
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ main: 'dist/electron/main.js' }));
+    fakeApp.getAppPath = () => join(root, 'dist', 'electron');
+    process.argv = ['electron', join(root, 'dist', 'electron', 'main.js'), '--no-focus'];
+    expect(appLaunch().args).toEqual([root]);
+    process.argv = ['electron', root];
+    fakeApp.getAppPath = () => root;
+    expect(appLaunch().args).toEqual([root]);
+    fakeApp.getAppPath = () => APP_PATH;
   });
 
   it('adds --background only when asked, and keeps the identity of this launch', () => {

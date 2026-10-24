@@ -150,7 +150,7 @@ interface MainContext {
   jobs: JobRegistry;                     // list(), cancel(id), dismiss(id)
   window: { (): BrowserWindow | null; show(): Promise<void> };  // window() is the app window or null; window.show() creates it when there is none, then restores and focuses it; in a hidden automation launch it brings the window on screen (see Window rules)
   tray: TrayControl;                     // set(spec), clear(), onItem(handler), active; off until the app asks
-  dialogs: MainDialogs;                  // confirm({ title, message, detail?, confirmLabel?, cancelLabel? }): Promise<boolean>; a native question box that needs no app window
+  dialogs: MainDialogs;                  // confirm({ title, message, detail?, confirmLabel?, cancelLabel?, showOnAutomation? }): Promise<boolean>; a native question box that needs no app window
   handle, on, emit;                      // typed against the augmented contracts; take a channel name or a defineChannels entry
   services: AppServices;                 // the app's services (see below)
   log: (message: string, level?: 'info' | 'warn' | 'error') => void;
@@ -308,7 +308,7 @@ The tray (`packages/electron/src/main/tray`):
 
 Main-side dialogs (`packages/electron/src/main/dialogs`):
 
-- `ctx.dialogs.confirm({ title, message, detail?, confirmLabel?, cancelLabel? })` asks a yes or no question with Electron's native `dialog.showMessageBox` and resolves `true` on the confirm button. The labels default to `OK` and `Cancel`; Enter confirms and Escape cancels. It is for main-side code that needs the user while the app window is hidden, such as a helper asking to approve something during a background launch with a tray.
+- `ctx.dialogs.confirm({ title, message, detail?, confirmLabel?, cancelLabel?, showOnAutomation? })` asks a yes or no question with Electron's native `dialog.showMessageBox` and resolves `true` on the confirm button. The labels default to `OK` and `Cancel`; Enter confirms and Escape cancels. It is for main-side code that needs the user while the app window is hidden, such as a helper asking to approve something during a background launch with a tray. On any automation launch it shows nothing and resolves `false`, so a test or review never blocks. `showOnAutomation: true` opts in: the dialog then shows on a plain `--no-focus` launch (a headless helper that needs a first-use prompt). It stays refused on `--review`, `--screenshot` and `--screenshot-splash` launches, which must end by themselves. The default is `false`.
 - The box is parented to the main window when that window exists, is visible and is not minimized. Otherwise it is a separate window with no parent, so it still appears in a background launch.
 - On an automation launch it shows nothing, logs that it was skipped and resolves `false`, so a hidden test run never waits on a person. The renderer keeps its own `ConfirmDialog` store for in-window questions; this one is only for main.
 

@@ -5,6 +5,7 @@ interface ConfirmDialogOptions {
   detail?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  showOnAutomation?: boolean;
 }
 
 interface MainDialogs {

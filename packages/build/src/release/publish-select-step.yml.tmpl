@@ -1,0 +1,28 @@
+
+      - name: Select packages
+        id: select
+        shell: bash
+        env:
+          REQUESTED: ${{ inputs.packages }}
+          ALLOWED: '__ALLOWED__'
+          LISTED: '__LISTED__'
+        run: |
+          REQUESTED="${REQUESTED//[[:space:]]/}"
+          if [ -z "$REQUESTED" ]; then
+            SELECTED="$ALLOWED"
+          else
+            SELECTED=","
+            IFS=',' read -ra ITEMS <<< "$REQUESTED"
+            for ITEM in "${ITEMS[@]}"; do
+              ITEM="${ITEM%/}"
+              [ -z "$ITEM" ] && continue
+              case "$ALLOWED" in
+                *",$ITEM,"*) SELECTED="$SELECTED$ITEM," ;;
+                *)
+                  echo "::error title=Unknown package::$ITEM is not in workflows.publish of brock.config.ts. Use one or more of: $LISTED."
+                  exit 1
+                  ;;
+              esac
+            done
+          fi
+          echo "folders=$SELECTED" >> "$GITHUB_OUTPUT"

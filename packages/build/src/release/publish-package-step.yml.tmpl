@@ -1,6 +1,6 @@
 
       - name: Publish __NAME__
-        working-directory: '__DIR__'
+__CONDITION__        working-directory: '__DIR__'
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

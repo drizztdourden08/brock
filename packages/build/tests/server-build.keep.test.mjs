@@ -4,6 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { appAliases } from '../src/build-options/app-aliases.mjs';
+import { CJS_GLOBALS_BANNER, CJS_GLOBALS_DEFINE } from '../src/build-options/build-options.constants.mjs';
 import { defineValues } from '../src/build-options/define-values.mjs';
 import { bundleHelperScripts } from '../src/helper-scripts/bundle-helper-scripts.mjs';
 import { helperViteConfig } from '../src/helper-scripts/helper-vite-config.mjs';
@@ -105,7 +106,7 @@ describe('the server bundle', () => {
 });
 
 describe('the helper bundle', () => {
-  it('writes the same bytes through the shared node bundle config as through the config it replaced', async () => {
+  it('writes the same bytes through the shared node bundle config as through the config it replaced plus the CommonJS globals', async () => {
     const root = fixtureApp({ helpers: { demo: 'src/helper.ts' } }, {
       'src/helper.ts': "import { shout } from 'shout';\nimport { greeting } from '@shared/greeting';\nprocess.stdout.write(shout(greeting) + __BUILD__);\n",
       'shared/greeting.ts': "export const greeting = 'hi';\n",
@@ -124,7 +125,7 @@ describe('the helper bundle', () => {
       mode: 'production',
       plugins: [],
       resolve: { alias: appAliases(root, config.build) },
-      define: defineValues(config.build.define, 'brock.config.ts'),
+      define: { ...CJS_GLOBALS_DEFINE, ...defineValues(config.build.define, 'brock.config.ts') },
       ssr: { noExternal: true, target: 'node' },
       build: {
         ssr: entry,
@@ -133,7 +134,7 @@ describe('the helper bundle', () => {
         target: 'node22',
         minify: false,
         sourcemap: false,
-        rollupOptions: { output: { format: 'es', entryFileNames: 'demo.mjs', inlineDynamicImports: true } },
+        rollupOptions: { output: { format: 'es', banner: CJS_GLOBALS_BANNER, entryFileNames: 'demo.mjs', inlineDynamicImports: true } },
       },
     };
     expect({ ...current, plugins: [], build: { ...current.build, outDir: legacy.build.outDir } }).toEqual(legacy);

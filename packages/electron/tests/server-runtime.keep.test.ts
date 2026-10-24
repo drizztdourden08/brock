@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
+import * as serverEntry from '../src/server';
 import { resolveDataDir } from '../src/server/data-dir';
 import { runServer } from '../src/server/run-server';
 import { createHarness, removeHarnessRoots } from './server-harness';
@@ -49,6 +50,18 @@ describe('the data folder', () => {
     expect(resolveDataDir([], { BROCK_DATA_DIR: 'env', STATE_DIRECTORY: '/state' }, cwd)).toBe(resolve(cwd, 'env'));
     expect(resolveDataDir([], { STATE_DIRECTORY: '/var/lib/app:/var/lib/other' }, cwd)).toBe(resolve(cwd, '/var/lib/app'));
     expect(resolveDataDir([], {}, cwd)).toBe(resolve(cwd, '.user-data'));
+  });
+
+  it('is exported from the server entry, and runServer hands its answer to start', async () => {
+    expect(serverEntry.resolveDataDir).toBe(resolveDataDir);
+    const { options, root } = await createHarness();
+    const env = { BROCK_DATA_DIR: join(root, 'from-env') };
+    const seen: string[] = [];
+    await runServer((host) => {
+      seen.push(host.dataDir);
+      return { stop: () => undefined };
+    }, { ...options, argv: [], env });
+    expect(seen).toEqual([serverEntry.resolveDataDir([], env, root)]);
   });
 
   it('skips an empty value and keeps going down the order', () => {

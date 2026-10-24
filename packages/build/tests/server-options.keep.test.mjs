@@ -6,12 +6,12 @@ import { PRODUCT } from './server-packaging-fixture.mjs';
 
 describe('the server options', () => {
   it('defaults to the pinned Node, x64 and an image from the repo owner', () => {
-    expect(serverOptions({ product: PRODUCT })).toEqual({ node: SERVER_NODE_VERSION, osPackages: [], ports: [], image: 'ghcr.io/owner/fixture-server', arch: ['x64'] });
+    expect(serverOptions({ product: PRODUCT })).toEqual({ node: SERVER_NODE_VERSION, osPackages: [], ports: [], image: 'ghcr.io/owner/fixture-server', arch: ['x64'], optionalAddons: [] });
     expect(serverOptions({ product: { ...PRODUCT, repo: undefined } }).image).toBeNull();
   });
 
   it('takes node, osPackages, ports, image and arch from brock.config.ts', () => {
-    const server = { node: '24.9.0', osPackages: ['bubblewrap'], ports: [8080], image: 'registry.example/team/app', arch: ['x64', 'arm64'] };
+    const server = { node: '24.9.0', osPackages: ['bubblewrap'], ports: [8080], image: 'registry.example/team/app', arch: ['x64', 'arm64'], optionalAddons: ['ssh2', '@scope/native'] };
     expect(serverOptions({ product: PRODUCT, server })).toEqual({ ...server });
   });
 
@@ -23,6 +23,8 @@ describe('the server options', () => {
     expect(problem({ image: 'Not Lowercase' })).toThrow('server.image is a lowercase image name');
     expect(problem({ arch: ['riscv'] })).toThrow('names "riscv"');
     expect(problem({ arch: [] })).toThrow('at least one architecture');
+    expect(problem({ optionalAddons: ['ok', 'bad name'] })).toThrow('server.optionalAddons has "bad name"');
+    expect(problem({ optionalAddons: 'ssh2' })).toThrow('server.optionalAddons is a list');
   });
 
   it('reads --arch as a comma list', () => {

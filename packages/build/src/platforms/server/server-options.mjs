@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import {
-  ACCOUNT_PATTERN, DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT, NODE_VERSION_PATTERN, RESERVED_ACCOUNT_PREFIXES, RESERVED_ACCOUNTS, SERVER_ARCHES,
+  ACCOUNT_PATTERN, DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT, NODE_VERSION_PATTERN, PACKAGE_NAME_PATTERN, RESERVED_ACCOUNT_PREFIXES, RESERVED_ACCOUNTS, SERVER_ARCHES,
   SERVER_DEFAULT_ARCHES, SERVER_LABEL, SERVER_NODE_VERSION,
 } from './server.constants.mjs';
 
@@ -35,6 +35,13 @@ const packagesOf = (value) => {
   return [...new Set(names)];
 };
 
+const addonsOf = (value) => {
+  const names = listOf(value, 'optionalAddons');
+  const bad = names.find((name) => typeof name !== 'string' || !PACKAGE_NAME_PATTERN.test(name));
+  if (bad !== undefined) fail('optionalAddons', `has ${JSON.stringify(bad)}, which is not an npm package name.`);
+  return [...new Set(names)];
+};
+
 const portsOf = (value) => {
   const ports = listOf(value, 'ports');
   const bad = ports.find((port) => !Number.isInteger(port) || port < 1 || port > MAX_PORT);
@@ -63,8 +70,14 @@ const checkAccount = (id) => {
 const archesFromFlag = (text) => archesOf(text.split(',').map((arch) => arch.trim()).filter(Boolean), 'arch (--arch)');
 
 /**
+ * @param {import('../../config.mjs').BrockConfig['server']} server the server of brock.config.ts
+ * @returns {string[]} the packages whose addon is stubbed
+ */
+const optionalAddonsOf = (server) => addonsOf(server?.optionalAddons);
+
+/**
  * @param {import('../../config.mjs').BrockConfig} config brock.config.ts
- * @returns {{ node: string, osPackages: string[], ports: number[], image: string | null, arch: ('x64' | 'arm64')[] }} the packaging options, checked, with their defaults
+ * @returns {{ node: string, osPackages: string[], ports: number[], image: string | null, arch: ('x64' | 'arm64')[], optionalAddons: string[] }} the packaging options, checked, with their defaults
  */
 const serverOptions = (config) => {
   const server = config.server ?? {};
@@ -75,7 +88,8 @@ const serverOptions = (config) => {
     ports: portsOf(server.ports),
     image: imageOf(server.image, config.product),
     arch: archesOf(server.arch, 'arch'),
+    optionalAddons: optionalAddonsOf(server),
   };
 };
 
-export { archesFromFlag, serverOptions };
+export { archesFromFlag, optionalAddonsOf, serverOptions };

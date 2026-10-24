@@ -9,9 +9,36 @@ import { bundleHelperScripts } from '../src/helper-scripts/bundle-helper-scripts
 import { helperViteConfig } from '../src/helper-scripts/helper-vite-config.mjs';
 import { bundleServer } from '../src/platforms/server/bundle-server.mjs';
 import { serverEntry } from '../src/platforms/server/server-entry.mjs';
+import { serverViteConfig } from '../src/platforms/server/server-vite-config.mjs';
 import { SERVER_CONFIG, buildRaw, cleanup, fixtureApp, realVite, serverApp } from './server-fixture.mjs';
 
 afterEach(cleanup);
+
+const packageFiles = (name, source) => ({
+  [`node_modules/${name}/package.json`]: JSON.stringify({ name, main: 'index.js' }),
+  [`node_modules/${name}/index.js`]: source,
+});
+
+const OPTIONAL_ADDON_FILES = packageFiles('optional-native', [
+  'let binding = null;',
+  "try { binding = require('./build/Release/addon.node'); } catch { binding = null; }",
+  'module.exports = { loaded: () => binding !== null };',
+  '',
+].join('\n'));
+
+const OPTIONAL_LOADER_FILES = packageFiles('optional-loader', [
+  'let binding = null;',
+  "try { binding = require('bindings')('addon'); } catch { binding = null; }",
+  'module.exports = { loaded: () => binding !== null };',
+  '',
+].join('\n'));
+
+const OPTIONAL_MAIN = [
+  "import native from 'optional-native';",
+  "import loader from 'optional-loader';",
+  'process.stdout.write(`native=${native.loaded()} loader=${loader.loaded()}\\n`);',
+  '',
+].join('\n');
 
 describe('the server bundle', () => {
   it('builds the entry into one standalone Node file with the aliases, the define and every dependency inlined', async () => {
@@ -43,6 +70,29 @@ describe('the server bundle', () => {
     await expect(buildRaw(addon)).rejects.toThrow('native addon "./native.node"');
     const loader = serverApp({ 'server/main.ts': "import bindings from 'bindings';\nconsole.log(bindings);\n" });
     await expect(buildRaw(loader)).rejects.toThrow('A native .node addon is not supported in a server app');
+  }, 60000);
+
+  it('refuses an unlisted package that loads an addon and names the package and server.optionalAddons', async () => {
+    const native = serverApp({ ...OPTIONAL_ADDON_FILES, 'server/main.ts': "import native from 'optional-native';\nconsole.log(native.loaded());\n" });
+    await expect(buildRaw(native)).rejects.toThrow('in the package "optional-native"');
+    await expect(buildRaw(native)).rejects.toThrow('server.optionalAddons');
+    const loader = serverApp({ ...OPTIONAL_LOADER_FILES, 'server/main.ts': "import loader from 'optional-loader';\nconsole.log(loader.loaded());\n" });
+    await expect(buildRaw(loader)).rejects.toThrow('in the package "optional-loader"');
+  }, 60000);
+
+  it('replaces the addon of a listed package with a module that throws, so the package catch runs and no binary is bundled', async () => {
+    const config = { ...SERVER_CONFIG, server: { optionalAddons: ['optional-native', 'optional-loader'] } };
+    const root = fixtureApp(config, { ...OPTIONAL_ADDON_FILES, ...OPTIONAL_LOADER_FILES, 'server/main.ts': OPTIONAL_MAIN });
+    expect(await bundleServer(root, config, 'test')).toBe(true);
+    const out = join(root, 'dist/server');
+    expect(readdirSync(out)).toEqual(['main.mjs']);
+    expect(execFileSync(process.execPath, [join(out, 'main.mjs')], { encoding: 'utf8', timeout: 20000 })).toBe('native=false loader=false\n');
+  }, 120000);
+
+  it('keeps refusing an addon the app itself loads, even when a package is listed', async () => {
+    const config = { ...SERVER_CONFIG, server: { optionalAddons: ['optional-native'] } };
+    const root = fixtureApp(config, { 'server/main.ts': "import native from './native.node';\nconsole.log(native);\n", 'server/native.node': 'MZ' });
+    await expect((await import(realVite)).build(serverViteConfig(root, config))).rejects.toThrow('native addon "./native.node"');
   }, 60000);
 
   it('checks the entry name and file', () => {

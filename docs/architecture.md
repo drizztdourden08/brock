@@ -857,6 +857,20 @@ Every keyboard shortcut is a command in one registry (brock-react `commands/`). 
 
 Brock's own shortcuts are commands with the same defaults as before: `brock.search` (Mod+K, works while typing), `brock.shortcuts` (Mod+/), `brock.fullscreen` (F11 and Alt+Enter, only when the window has the fullscreen control, works while typing) and `brock.back` (Alt+Left, works while typing). A screen's `shortcut` and a bucket's or page's `meta.shortcut` become `open:<route>` commands in the Screens and pages group that toggle the route, gated by dev-only, profile, show rules and `hidden` menu entries as before. Escape is not a command. Built-in chords yield to app commands. When a command from the app, a module or `commands.register` has the same default chord as a Brock command, Brock's command drops that chord and the app's command keeps it, so the app needs no override: an app that registers Alt+Enter for Properties takes it from `brock.fullscreen`, which keeps F11. The rule looks at default chords only, in every scope and zone, and follows rebinding: if the app's command is moved to another chord, Brock's chord comes back. A chord the user set on a built-in command in the keymap is never taken away, and a clash with it is reported by `commands.conflicts()` like any other. No conflict is reported for a yielded chord. One change: `Mod` now means only the platform key, so Win+K no longer opens Search on Windows.
 
+### Who gets a key
+
+- A command runs on keydown and calls `preventDefault`, so it wins over the native Edit menu on every platform.
+- `whileTyping` is on by default for a Mod chord and off for a plain key. Give an edit-key command a `zone`, or `whileTyping: false`, so text fields keep copy and paste.
+- A click on the Edit menu fires the DOM `copy`, `cut` and `paste` events, so a canvas handles `copy` itself.
+- Zones rank first, then scope, then unscoped commands.
+- Built-in chords yield to app commands (0.93). A chord the user set in the keymap never yields.
+
+```tsx
+useCommands([{ id: 'canvas.copy', label: 'Copy', chord: 'Mod+C', zone: 'canvas', run: copySelection }]);
+
+return <div tabIndex={0} {...commandZone('canvas')} onCopy={copySelectionTo} />;
+```
+
 ## Search
 
 The global palette and each hub's search read one index. Every entry has one shape: `{ id, kind, label, keywords, breadcrumb, target: { route, anchor? }, icon }`, with `breadcrumb` the labels of bucket, group, page and tab. A hub searches the same index filtered to its bucket. Both rank with `rankEntries`; `rankInScope(entries, query, bucket)` splits that one ranking into the open hub's entries and the rest, which is how the palette puts the hub first.

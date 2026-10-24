@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
 import { renderBootFiles } from '../boot/render-boot-files.mjs';
 import { clangFormatFiles } from '../gate/clang-format-files.mjs';
 import { renderHandlersFiles } from '../handlers/render-handlers.mjs';
@@ -23,6 +23,7 @@ import { renderStartupFiles } from '../startup/render-startup.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
 import { renderToolbarsFiles } from '../toolbars/render-toolbars.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
+import { sameText, writeIfChanged } from '../write-changed.mjs';
 import { renderBrockDir } from './generate.mjs';
 import { resolveModules } from './resolve.mjs';
 
@@ -46,9 +47,7 @@ const withoutTimestamp = (content) => {
  * @param {string} path @param {string} a @param {string} b
  */
 const sameContent = (path, a, b) => {
-  const left = a.replace(/\r\n/g, '\n');
-  const right = b.replace(/\r\n/g, '\n');
-  return path === MANIFEST_PATH ? withoutTimestamp(left) === withoutTimestamp(right) : left === right;
+  return path === MANIFEST_PATH ? sameText(withoutTimestamp(a), withoutTimestamp(b)) : sameText(a, b);
 };
 
 /**
@@ -87,10 +86,7 @@ const writeDrifted = (rootDir, files, check) => {
     drifted.push(path);
     if (check) continue;
     if (content === null) rmSync(target);
-    else {
-      mkdirSync(dirname(target), { recursive: true });
-      writeFileSync(target, content, 'utf8');
-    }
+    else writeIfChanged(target, content);
     written.push(path);
   }
   return { written, drifted };

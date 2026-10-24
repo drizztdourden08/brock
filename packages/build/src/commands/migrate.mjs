@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import { loadBrockConfig } from '../load-config.mjs';
 import { resolveModules } from '../modules/resolve.mjs';
 import { brockPinOf } from '../upgrade/brock-pin-of.mjs';
@@ -91,11 +91,17 @@ const withTessera = (run, { applied, ...tessera }) => {
   return { applied: [...run.applied, ...applied.map(withoutTodos)], todos, tessera };
 };
 
-const writeReport = (report, run) => {
+const isOutside = (rootDir, file) => {
+  const path = relative(rootDir, file);
+  return path.startsWith('..') || isAbsolute(path);
+};
+
+const writeReport = (report, run, rootDir) => {
   const file = resolve(process.cwd(), report);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, `${JSON.stringify(run, null, 2)}\n`, 'utf8');
   console.log(`  Report: ${file}`);
+  if (isOutside(rootDir, file)) console.warn(`brock migrate: the report is outside ${rootDir} because --report is relative to the current directory, never to --root.`);
 };
 
 /**
@@ -122,7 +128,7 @@ const runMigrate = async (ctx) => {
   }
   const run = withTessera(brock, tessera);
   printRun(run, range);
-  if (report) writeReport(report, run);
+  if (report) writeReport(report, run, rootDir);
   if (!brock.applied.some((m) => m.touched.length > 0)) return 0;
   console.log('brock migrate: migrations changed the app, so brock sync runs again to regenerate .brock.');
   return runSync({ rootDir });

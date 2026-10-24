@@ -2,7 +2,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { pinApp } from '../src/upgrade/index.mjs';
 
 const CORE = '@drizztdourden08/brock-core';
@@ -53,5 +53,29 @@ describe('pinApp', () => {
     const root = appWith({ dependencies: { [CORE]: '^0.1.0' } });
     expect(pinApp(root, '0.1.0', true)).toEqual(['brock.version']);
     expect(read(root).brock).toBeUndefined();
+  });
+
+  it('names the old range, the new range and the pin that drives it, once per package', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const root = appWith({ brock: { version: '0.1.0' }, dependencies: { [CORE]: '^0.2.0', [TESSERA]: '^1.0.0' } });
+    expect(pinApp(root, '0.1.0', false)).toEqual([`dependencies.${CORE}`]);
+    expect(warn).toHaveBeenCalledTimes(1);
+    const message = String(warn.mock.calls[0]?.[0]);
+    expect(message).toContain(`dependencies.${CORE}`);
+    expect(message).toContain('^0.2.0');
+    expect(message).toContain('^0.1.0');
+    expect(message).toContain('brock.version');
+    expect(message).toContain('brock upgrade 0.2.0');
+    warn.mockRestore();
+  });
+
+  it('says would change in check mode and stays silent when nothing differs', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    pinApp(appWith({ brock: { version: '0.1.0' }, dependencies: { [CORE]: '^0.2.0' } }), '0.1.0', true);
+    expect(String(warn.mock.calls[0]?.[0])).toContain('would change');
+    warn.mockClear();
+    pinApp(appWith({ brock: { version: '0.1.0' }, dependencies: { [CORE]: '^0.1.0' } }), '0.1.0', false);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

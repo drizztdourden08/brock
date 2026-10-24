@@ -7,6 +7,13 @@ import { parseChord } from './parse-chord';
 
 const inScope = (def: CommandDef, route: string | null): boolean => def.scope === undefined || def.scope === route;
 
+const inZone = (def: CommandDef, zones: readonly string[]): boolean => def.zone === undefined || zones.includes(def.zone);
+
+const rank = (def: CommandDef, zones: readonly string[]): number => {
+  if (def.zone !== undefined) return zones.indexOf(def.zone);
+  return zones.length + (def.scope === undefined ? 1 : 0);
+};
+
 const typingAllowed = (def: CommandDef, chord: string, mac: boolean): boolean => {
   if (def.whileTyping !== undefined) return def.whileTyping;
   const parsed = parseChord(chord, mac);
@@ -21,8 +28,8 @@ const fires = (def: CommandDef, event: ChordEvent, state: CommandState, typing: 
 };
 
 const findCommand = (event: ChordEvent, state: CommandState, lookup: CommandLookup): CommandDef | undefined => {
-  const hits = listCommands(state).filter((def) => inScope(def, lookup.route) && fires(def, event, state, lookup.typing));
-  return hits.find((def) => def.scope !== undefined) ?? hits[0];
+  const hits = listCommands(state).filter((def) => inScope(def, lookup.route) && inZone(def, lookup.zones) && fires(def, event, state, lookup.typing));
+  return hits.reduce<CommandDef | undefined>((best, def) => (best === undefined || rank(def, lookup.zones) < rank(best, lookup.zones) ? def : best), undefined);
 };
 
 export { findCommand };

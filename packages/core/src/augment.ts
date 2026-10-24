@@ -6,7 +6,7 @@ import type { OpenRequest } from './types/open.type';
 import type { BugReportPayload, BugReportReceiptWire, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
-import type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './ipc/payloads.type';
+import type { AskOutcome, EditRole, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './ipc/payloads.type';
 import type { WindowControlsPort } from './platform/ports/window-controls.type';
 import type { FileStore } from './platform/ports/file-store.type';
 import type { FilePickerPort } from './platform/ports/file-picker.type';
@@ -128,6 +128,7 @@ interface EventContract extends WidgetEventContract, DataEventContract {
 interface AskContract {
   'window:pingQuit': () => Promise<true>;
   'window:confirmQuit': () => Promise<QuitDecision>;
+  'command:runEdit': (role: EditRole) => Promise<boolean>;
 }
 
 interface IpcNamespaces {}

@@ -12,7 +12,7 @@ export type {
 } from './channels.type';
 export type { InvokeMap, SendMap, EventMap } from './maps.type';
 export type { AppIpcApi, AppIpcMaps, InvokeApi, SendApi, EventApi, IpcApi, IpcHostApi, StartupInfo, InstanceInfo } from './api.type';
-export type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './payloads.type';
+export type { AskOutcome, EditRole, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './payloads.type';
 export type { AskArgs, AskHandler, AskReply } from './ask.type';
 export type { InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces } from '../augment';
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';

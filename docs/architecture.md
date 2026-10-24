@@ -1041,7 +1041,8 @@ The updater shows the note of the chosen version (Velopack's `NotesMarkdown`, el
 ```ts
 import { createDataDomains } from '@drizztdourden08/brock-electron/node';
 import { runServer } from '@drizztdourden08/brock-electron/server';
-import { dataDomains, start } from './start';
+import { dataDomains } from './data-domains';
+import { start } from './start';
 
 void runServer(start, { domains: (dataDir) => createDataDomains(dataDir, dataDomains) });
 ```
@@ -1084,7 +1085,7 @@ An app with `server` in `targets` gets the CI job `server`, the release job `bui
 
 ### Scaffold
 
-`create-brock --platforms server` writes a windowless app from `template-server/`, and `--platforms desktop,server` writes the desktop app with the server on top. Both get `server/main.ts` and `server/start.ts` from the server platform's file step. With a window, the step also writes `electron/boot/server.task.ts`, a main boot task that calls `embedServer` on the same start function. `brock platform add server` runs the step on an existing app and skips a file that exists. The create-brock README describes the scaffold.
+`create-brock --platforms server` writes a windowless app from `template-server/`, and `--platforms desktop,server` writes the desktop app with the server on top. Both get `server/main.ts`, `server/start.ts` and `server/data-domains.ts` from the server platform's file step. With a window, the step also writes `electron/boot/server.task.ts`, a main boot task that calls `embedServer` on the same start function. `brock platform add server` runs the step on an existing app and skips a file that exists. The create-brock README describes the scaffold.
 
 ## Automated review
 

@@ -11,6 +11,7 @@ const SERVER_DIR = import.meta.dirname;
 const STARTER_FOLDER = 'starter';
 const STARTER_FILES = Object.freeze([
   Object.freeze({ from: 'main.ts.tmpl', to: 'server/main.ts' }),
+  Object.freeze({ from: 'data-domains.ts.tmpl', to: 'server/data-domains.ts' }),
   Object.freeze({ from: 'start.ts.tmpl', to: 'server/start.ts' }),
 ]);
 const STARTER_EMBED_FILE = Object.freeze({ from: 'server.task.ts.tmpl', to: 'electron/boot/server.task.ts' });

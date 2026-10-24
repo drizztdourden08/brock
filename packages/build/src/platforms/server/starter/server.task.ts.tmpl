@@ -1,7 +1,8 @@
 /* @layer electron-main @kind logic */
 import { defineBootTask, embedServer } from '@drizztdourden08/brock-electron/main';
 import { createDataDomains } from '@drizztdourden08/brock-electron/node';
-import { dataDomains, start } from '../../server/start';
+import { dataDomains } from '../../server/data-domains';
+import { start } from '../../server/start';
 
 export default defineBootTask({
   label: 'Starting the server',

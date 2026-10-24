@@ -24,10 +24,10 @@ const runStep = (rootDir, config) => runPlatformPhase({ rootDir, config, phase: 
 const read = (root, path) => readFileSync(join(root, path), 'utf8');
 
 describe('the server starter files step', () => {
-  it('writes server/main.ts and server/start.ts for a windowless app, and no boot task', async () => {
+  it('writes the three server files for a windowless app, and no boot task', async () => {
     const root = appAt();
     const { lines } = await runStep(root, configOf(['server']));
-    expect(lines.join('\n')).toContain('done: server/main.ts, server/start.ts');
+    expect(lines.join('\n')).toContain('done: server/main.ts, server/data-domains.ts, server/start.ts');
     expect(read(root, 'server/main.ts')).toContain('runServer(start');
     expect(read(root, 'server/main.ts')).toContain('createDataDomains(dataDir, dataDomains)');
     expect(read(root, 'server/start.ts')).toContain('host.log(');
@@ -40,6 +40,7 @@ describe('the server starter files step', () => {
     const task = read(root, 'electron/boot/server.task.ts');
     expect(task).toContain('embedServer(start, ctx');
     expect(task).toContain("from '../../server/start'");
+    expect(task).toContain("from '../../server/data-domains'");
     expect(existsSync(join(root, 'server/main.ts'))).toBe(true);
   });
 

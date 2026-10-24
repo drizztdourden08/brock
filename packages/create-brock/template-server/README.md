@@ -2,7 +2,7 @@
 # Brock App
 
 A blank Brock server. It has no window. `server/main.ts` calls `runServer`, and
-`server/start.ts` holds the start function and the data domains.
+`server/start.ts` holds the start function and `server/data-domains.ts` the data domains.
 
 ```
 pnpm install

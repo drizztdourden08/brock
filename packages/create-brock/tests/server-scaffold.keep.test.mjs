@@ -34,7 +34,7 @@ const has = (dir, path) => existsSync(join(dir, path));
 describe('create-brock --platforms server', () => {
   it('writes a windowless app: the entry, the managed server files and no Electron files', async () => {
     const dir = await scaffoldInto(['server']);
-    for (const path of ['server/main.ts', 'server/start.ts', 'build/server/fixture.service', 'build/server/Dockerfile', 'build/server/postinst', 'build/server/prerm', 'tsconfig.json', '.github/workflows/ci.yml', '.github/workflows/release.yml']) {
+    for (const path of ['server/main.ts', 'server/start.ts', 'server/data-domains.ts', 'build/server/fixture.service', 'build/server/Dockerfile', 'build/server/postinst', 'build/server/prerm', 'tsconfig.json', '.github/workflows/ci.yml', '.github/workflows/release.yml']) {
       expect(has(dir, path), path).toBe(true);
     }
     for (const path of ['electron', 'src', 'electron.vite.config.ts', 'electron-builder.config.cjs', '.brock/boot.main.ts', 'tessera.config.json']) {

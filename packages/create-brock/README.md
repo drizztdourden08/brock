@@ -86,11 +86,11 @@ as it is): `package.json` with no Electron, React or Tessera dependency of its o
 `targets: ['server']`, a `brock.workspace.mjs` that launches the built server, and the managed
 files of the server kind (the unit, the Dockerfile and the `.deb` scripts under `build/server/`).
 The server platform's file step then writes `server/main.ts`, which calls `runServer` with
-`createDataDomains`, and `server/start.ts`, which holds the start function and the data
-domains and logs one line. Its `pnpm-workspace.yaml` leaves Electron out of
+`createDataDomains`, `server/start.ts`, which holds the start function and logs one line, and
+`server/data-domains.ts`, which holds the data domains. Its `pnpm-workspace.yaml` leaves Electron out of
 `onlyBuiltDependencies`, so no Electron binary is downloaded.
 
-`--platforms desktop,server` scaffolds the desktop app and the same two server files, plus
+`--platforms desktop,server` scaffolds the desktop app and the same three server files, plus
 `electron/boot/server.task.ts`, a main boot task that runs `embedServer` on the same start
 function, so the desktop app carries the server in its own process. `brock platform add server`
 runs the same file step on an existing app. Each step skips a file the app already has. The

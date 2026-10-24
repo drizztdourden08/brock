@@ -18,6 +18,12 @@ type WorkflowPermissions = Partial<Record<
 interface WorkflowAttest {
   paths: string[];
   stage: 'beforePackage' | 'afterPackage';
+  perFile?: boolean;
+}
+
+interface WorkflowPublish {
+  packages: string[];
+  registry?: 'github';
 }
 
 interface WorkflowStep {
@@ -105,5 +111,5 @@ interface ResolvedModule {
 
 export type {
   BrockModuleManifest, CiWorkflowSteps, ModuleAndroidSide, ModuleCiStep, ModuleDoctorCheck, ModuleExtraResource, ModuleMigration, ReleaseWorkflowSteps, ResolvedModule,
-  WorkflowAttest, WorkflowPermissionLevel, WorkflowPermissions, WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
+  WorkflowAttest, WorkflowPermissionLevel, WorkflowPermissions, WorkflowPublish, WorkflowRunnerOs, WorkflowStep, WorkflowSteps,
 };

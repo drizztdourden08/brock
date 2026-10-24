@@ -5,6 +5,8 @@ import { fillTemplate } from './fill-template.mjs';
 import { jobPermissionsBlock, mergePermissions, withJobPermissions } from './lift-permissions.mjs';
 import { stepsAfter, stepsForJob } from './render-workflow-step.mjs';
 import { REVIEW_RUNNER } from './review-job.constants.mjs';
+import { publishJobText } from './publish-packages.mjs';
+import { PUBLISH_JOB } from './publish-packages.constants.mjs';
 import { reviewJobValues } from './review-job-values.mjs';
 import { setupSteps } from './setup-steps.mjs';
 import { DEFAULT_BRANCH, RELEASE_DIR, SET_VERSION } from './workflows.constants.mjs';
@@ -15,6 +17,7 @@ import { DEFAULT_BRANCH, RELEASE_DIR, SET_VERSION } from './workflows.constants.
  * @typedef {import('@drizztdourden08/brock-core/module').ModuleCiStep} ModuleCiStep
  * @typedef {import('./collect-workflow-steps.mjs').CollectedSteps} CollectedSteps
  * @typedef {{ name: string, tagPrefix: string, notesDir: string }} AppOfMany
+ * @typedef {import('./publish-packages.mjs').PublishPlan} PublishPlan
  */
 
 const JOB_HEAD = /^ {2}([a-z][\w-]*):\n/gm;
@@ -58,9 +61,10 @@ const jobContext = ({ appDir, prefix, systemSteps, steps }, workflow) => {
 
 /**
  * @param {Job[]} jobs
- * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext }} where
+ * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext, publish: PublishPlan | null }} where
  */
-const releaseText = (jobs, { appDir, app, branch, ctx }) => {
+const releaseText = (jobs, { appDir, app, branch, ctx, publish }) => {
+  const builds = `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`;
   const prepareSteps = ctx.stepsAt('beforeInstall', 'linux', null, 'prepare');
   const prepareAfterInstall = ctx.stepsAt('prepare', 'linux', null, 'prepare');
   return fillTemplate(RELEASE_DIR, 'release-workflow.yml.tmpl', {
@@ -76,7 +80,8 @@ const releaseText = (jobs, { appDir, app, branch, ctx }) => {
     PREPARE_AFTER_INSTALL: prepareAfterInstall,
     SET_VERSION,
     JOBS: jobs.map(jobBlock).join('').replace(/^\n/, ''),
-    NEEDS: `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`,
+    PUBLISH_JOB: publishJobText(publish, builds),
+    NEEDS: builds,
     DOWNLOADS: jobs.flatMap((job) => job.downloads ?? []).map(downloadLine).join('\n') || '            echo "No platform builds a download."',
   });
 };
@@ -116,10 +121,10 @@ const ciText = (platformJobs, { appDir, app, baselines, branch, ctx }) => {
 };
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string }} input
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, publish?: PublishPlan | null }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, publish = null }) => {
   const { platforms } = resolvePlatforms(targets);
   const ciCtx = jobContext({ appDir, prefix, systemSteps, steps }, 'ci');
   const releaseCtx = jobContext({ appDir, prefix, systemSteps, steps }, 'release');
@@ -128,10 +133,10 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
     .map((job) => ({ ...job, text: withJobPermissions(job.text, releaseCtx.liftedPermissions(job.id)) }));
   return {
     ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx }).trimEnd()}\n`,
-    release: `${releaseText(releaseJobs, { appDir, app, branch, ctx: releaseCtx }).trimEnd()}\n`,
+    release: `${releaseText(releaseJobs, { appDir, app, branch, ctx: releaseCtx, publish }).trimEnd()}\n`,
     jobs: {
       ci: [...(app ? ['changes'] : []), 'quality', 'review', ...ciJobs.map((job) => job.id)],
-      release: ['prepare', ...releaseJobs.map((job) => job.id), 'release'],
+      release: ['prepare', ...releaseJobs.map((job) => job.id), ...(publish ? [PUBLISH_JOB] : []), 'release'],
     },
   };
 };

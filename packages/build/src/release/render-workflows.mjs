@@ -7,6 +7,7 @@ import { collectWorkflowSteps } from './collect-workflow-steps.mjs';
 import { composeWorkflows, workspaceCi } from './compose-workflows.mjs';
 import { defaultBranchOf } from './default-branch.mjs';
 import { keepGithubTracked } from './keep-github-tracked.mjs';
+import { publishPlan } from './publish-packages.mjs';
 import { releaseLayout } from './release-layout.mjs';
 import { sharedSteps, sharedSystemSteps } from './shared-workflow-steps.mjs';
 import { managedWorkflows, stepSources } from './workflow-modes.mjs';
@@ -79,7 +80,8 @@ const renderWorkflows = (rootDir, config, modules, inputs = {}) => {
   const systemSteps = modules.flatMap((m) => m.manifest.ci ?? []);
   const steps = collectWorkflowSteps(stepSources(config, modules, inputs.pluginSteps ?? [], targetsOf(config)));
   const branch = defaultBranchOf(layout.repoDir);
-  const { ci, release } = composeWorkflows({ ...composeInputOf(config, layout), systemSteps, steps, branch });
+  const publish = managed.release ? publishPlan(config.workflows?.publish, layout.repoDir) : null;
+  const { ci, release } = composeWorkflows({ ...composeInputOf(config, layout), systemSteps, steps, branch, publish });
   const at = (file) => slashed(relative(rootDir, join(layout.repoDir, file)));
   const files = workflowFilesOf(layout);
   const sharedCi = sharedCiOf({ layout, config, modules }, inputs);

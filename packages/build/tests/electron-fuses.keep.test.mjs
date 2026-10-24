@@ -34,6 +34,10 @@ describe('electron fuses of the builder config', () => {
     expect(fusesOf({ helpers: { 'packs-mcp': 'src/helper/main.ts' } }).runAsNode).toBe(true);
   });
 
+  it('keeps the hidden folders of a linked package out of the asar, whose files must not change while it is written', () => {
+    expect(createBuilderConfig(PRODUCT, { rootDir: tempDir() }).files).toContain('!**/node_modules/**/.*/**');
+  });
+
   it('lets an app without helpers turn RunAsNode on, and refuses it off beside helpers', () => {
     expect(fusesOf({ fuses: { runAsNode: true } }).runAsNode).toBe(true);
     expect(fusesOf({ fuses: { runAsNode: false } }).runAsNode).toBe(false);

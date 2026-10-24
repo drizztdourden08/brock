@@ -17,7 +17,7 @@ import { helperResources } from './helper-scripts/helper-resources.mjs';
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
  */
 
-const APP_FILES = ['dist/electron/**/*', 'dist/preload/**/*', 'dist/renderer/**/*', 'package.json'];
+const APP_FILES = ['dist/electron/**/*', 'dist/preload/**/*', 'dist/renderer/**/*', 'package.json', '!**/node_modules/**/.*/**'];
 
 /**
  * @param {ProductInput['fileAssociations']} list

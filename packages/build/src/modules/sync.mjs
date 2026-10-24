@@ -8,6 +8,8 @@ import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { appScripts } from '../managed/app-scripts.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
+import { DEFAULT_TARGETS } from '../platforms/platforms.constants.mjs';
+import { shapeOf } from '../platforms/server/app-shape.mjs';
 import { platformManagedFiles } from '../platforms/platform-managed-files.mjs';
 import { renderWorkflows } from '../release/render-workflows.mjs';
 import { WORKFLOWS_DIR } from '../release/workflows.constants.mjs';
@@ -101,6 +103,24 @@ const managedFileOptions = (config) => ({ aliases: config.build?.aliases, compil
 /**
  * @param {string} rootDir
  * @param {import('../config.mjs').BrockConfig} config
+ * @returns {{ path: string, content: string | null }[]} the Electron and renderer files of a windowed app
+ */
+const rendererSideFiles = (rootDir, config) => [
+  ...renderBootFiles(rootDir),
+  ...renderHandlersFiles(rootDir),
+  ...renderReviewFiles(rootDir),
+  ...renderScreensFiles(rootDir),
+  ...renderWidgetsFiles(rootDir),
+  ...renderTitleBarFiles(rootDir),
+  ...renderToursFiles(rootDir),
+  ...renderStartupFiles(rootDir),
+  ...renderPaletteFile(rootDir, config),
+  ...renderTesseraEntryFiles(rootDir),
+];
+
+/**
+ * @param {string} rootDir
+ * @param {import('../config.mjs').BrockConfig} config
  * @param {{ check?: boolean, onMissing?: 'throw' | 'skip' } & Partial<import('../release/workspace-workflow-inputs.mjs').WorkflowInputs>} [opts]
  * @returns {SyncResult}
  */
@@ -110,19 +130,11 @@ const syncApp = (rootDir, config, opts = {}) => {
   if (onMissing === 'throw') assertResolved(missing);
   const inWorkspace = findWorkspaceRoot(rootDir) !== null;
   const workflows = renderWorkflows(rootDir, config, modules, opts);
+  const { windowless } = shapeOf(config.targets ?? DEFAULT_TARGETS);
   const files = [
-    ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }),
-    ...renderBootFiles(rootDir),
-    ...renderHandlersFiles(rootDir),
-    ...renderReviewFiles(rootDir),
-    ...renderScreensFiles(rootDir),
-    ...renderWidgetsFiles(rootDir),
-    ...renderTitleBarFiles(rootDir),
-    ...renderToursFiles(rootDir),
-    ...renderStartupFiles(rootDir),
-    ...renderPaletteFile(rootDir, config),
-    ...renderTesseraEntryFiles(rootDir),
-    ...renderManagedFiles({ inWorkspace, scripts: appScripts(rootDir), ...managedFileOptions(config) }),
+    ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }).filter((file) => !windowless || file.path === MANIFEST_PATH),
+    ...(windowless ? [] : rendererSideFiles(rootDir, config)),
+    ...renderManagedFiles({ inWorkspace, windowless, scripts: appScripts(rootDir), ...managedFileOptions(config) }),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
     ...clangFormatFiles(rootDir, config),

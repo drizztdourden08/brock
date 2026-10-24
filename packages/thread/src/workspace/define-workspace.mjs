@@ -11,7 +11,7 @@ const assertName = (name) => {
 
 const assertTargets = (targets) => {
   for (const [key, target] of Object.entries(targets)) {
-    if (typeof target?.launch !== 'function' || !target.kind) throw new Error(`brock.workspace.mjs: target "${key}" is not a launch target (use electronTarget() or serveTarget()).`);
+    if (typeof target?.launch !== 'function' || !target.kind) throw new Error(`brock.workspace.mjs: target "${key}" is not a launch target (use electronTarget(), serverTarget() or serveTarget()).`);
   }
 };
 

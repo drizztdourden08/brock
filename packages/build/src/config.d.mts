@@ -2,7 +2,7 @@
 import type { WorkflowSteps } from '@drizztdourden08/brock-core/module';
 import type { ProductInput } from '@drizztdourden08/brock-core/product';
 
-type BrockPlatform = 'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web';
+type BrockPlatform = 'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web' | 'server';
 
 /** A platform id, or a bundle: desktop is windows, macos and linux; mobile is android, and iOS once it lands. */
 type BrockTarget = BrockPlatform | 'desktop' | 'mobile';
@@ -10,6 +10,11 @@ type BrockTarget = BrockPlatform | 'desktop' | 'mobile';
 interface BrockWebOptions {
   /** false leaves manifest.webmanifest out of the web build. Default true. */
   manifest?: boolean;
+}
+
+interface BrockServerOptions {
+  /** The server entry, relative to the app folder. Default server/main.ts. It builds into dist/server/main.mjs, one file with every dependency inlined. */
+  entry?: string;
 }
 
 interface BrockReviewOptions {
@@ -104,6 +109,8 @@ interface BrockConfig {
   modules: string[];
   /** The web build, for the web target. */
   web?: BrockWebOptions;
+  /** The server, for the server target: a windowless app when it is the only target. */
+  server?: BrockServerOptions;
   /** The headless review in CI. */
   review?: BrockReviewOptions;
   /** Options of the managed Vite configs. */
@@ -128,6 +135,6 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 export { defineBrockConfig, CONFIG_FILE };
 export type {
   BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
-  BrockReviewOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
+  BrockReviewOptions, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
 };
 export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

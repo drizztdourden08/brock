@@ -22,7 +22,7 @@
 
 /**
  * @typedef {object} LaunchTarget
- * @property {'electron' | 'serve'} kind
+ * @property {'electron' | 'serve' | 'server'} kind
  * @property {(request: LaunchRequest) => Promise<import('node:child_process').ChildProcess>} launch
  * @property {(worktree: WorktreeContext, prod: boolean) => string | null} [notReady] a message when a launch cannot start
  * @property {(worktree: WorktreeContext, state: string) => string | null} [checkState] a message when the state does not exist

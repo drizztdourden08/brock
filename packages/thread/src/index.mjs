@@ -5,6 +5,7 @@ export { loadPlugins } from './plugins/load-plugins.mjs';
 export { loadWorkspace } from './workspace/load-workspace.mjs';
 export { electronTarget } from './launch/electron-target.mjs';
 export { serveTarget } from './launch/serve-target.mjs';
+export { serverTarget } from './launch/server-target.mjs';
 export { brockProfile } from './provision/brock-profile.mjs';
 export { runThread } from './cli/run-thread.mjs';
 export { followBrockPin } from './upgrade/follow-brock-pin.mjs';

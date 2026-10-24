@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { appShape } from '../platforms/server/app-shape.mjs';
 import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { prepareModules } from '../modules/prepare-modules.mjs';
@@ -14,6 +15,10 @@ import { bundleAppHelperScripts } from '../helper-scripts/bundle-helper-scripts.
  * @returns {Promise<number>} exit code
  */
 const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
+  if (appShape(rootDir).windowless) {
+    console.error(`brock ${mode}: this app has no window. Use brock server ${mode === 'dev' ? 'dev' : 'build'}.`);
+    return 1;
+  }
   const electron = ensureElectron(rootDir);
   if (!electron.ok) {
     console.error(`brock ${mode}: ${electron.message}`);

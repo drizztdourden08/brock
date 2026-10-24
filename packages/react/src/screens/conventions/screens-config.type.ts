@@ -10,6 +10,8 @@ type HubNavMode = 'auto' | 'always' | false;
 
 type HubPagesMode = 'framed' | 'bare';
 
+type PageHeaderMode = boolean | 'compact';
+
 type PageBackdrop = Backdrop | { kind: 'none' };
 
 type ScreenMenu = false | 'entry' | (string & {}) | ProductMenuEntry;
@@ -74,11 +76,11 @@ interface ScreenMeta extends ShowRule {
   path?: string;
   fill?: boolean;
   bare?: boolean;
-  showHeader?: boolean;
+  showHeader?: PageHeaderMode;
   keepMounted?: boolean;
   backdrop?: PageBackdrop;
   size?: ScreenSize;
   hero?: HeroMeta;
 }
 
-export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };

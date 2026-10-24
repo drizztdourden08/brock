@@ -19,7 +19,7 @@ const documentHandlers: HandlerGroup = {
     const { handle, window, documents } = ctx;
     const tracking = trackingOf(ctx);
     const save = async (path: string, content: () => string | Uint8Array, [profileId, options]: readonly unknown[]): Promise<void> => {
-      const full = await documents.resolve(path);
+      const full = await documents.resolve(path, 'write');
       await writeAtomic(full, content());
       if (!isUnrecorded(options)) await tracking.saved(profileId, full, documents.exact(full));
     };

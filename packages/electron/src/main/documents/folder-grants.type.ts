@@ -2,7 +2,7 @@
 interface FolderGrants {
   allow: (path: string) => string;
   revoke: (path: string) => boolean;
-  contain: (path: string) => Promise<string | null>;
+  contain: (path: string, write?: boolean) => Promise<string | null>;
   covers: (real: string) => boolean;
   rootOf: (real: string) => string | null;
   holds: (root: string) => boolean;
@@ -10,6 +10,7 @@ interface FolderGrants {
 
 interface FolderGrantDeps {
   protectedRoots?: () => string[];
+  sensitiveRoots?: () => string[];
 }
 
 export type { FolderGrantDeps, FolderGrants };

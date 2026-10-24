@@ -8,13 +8,14 @@ interface DocumentAccess {
   revokeFolder: (path: string) => boolean;
   exact: (path: string) => boolean;
   isAllowed: (path: string) => Promise<boolean>;
-  resolve: (path: string) => Promise<string>;
+  resolve: (path: string, intent?: 'read' | 'write') => Promise<string>;
   list: (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;
   recent: (profileId?: string) => Promise<RecentDocument[]>;
 }
 
 interface DocumentAccessDeps {
   protectedRoots?: () => string[];
+  sensitiveRoots?: () => string[];
   limits?: Partial<ListLimits>;
   recent?: (profileId?: string) => Promise<RecentDocument[]>;
 }

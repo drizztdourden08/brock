@@ -1,21 +1,21 @@
 /* @layer electron-main @kind logic */
-import { realpathSync } from 'fs';
-import { resolve } from 'path';
+import { realPathSyncOf } from './real-path-sync-of';
+import type { ProtectedReals } from './protected-reals.type';
 
-const realOrResolved = (path: string): string => {
-  try {
-    return realpathSync.native(path);
-  } catch {
-    return resolve(path);
-  }
-};
-
-const protectedReals = (roots: () => string[]): (() => string[]) => {
-  let cached: string[] | null = null;
-  return () => {
-    cached ??= roots().filter((root) => root !== '').map(realOrResolved);
-    return cached;
+const protectedReals = (roots: () => string[]): ProtectedReals => {
+  const known = new Map<string, { real: string; exists: boolean }>();
+  let names: string[] | null = null;
+  const refresh = (): void => {
+    names ??= roots().filter((root) => root !== '');
+    for (const name of names) {
+      if (known.get(name)?.exists !== true) known.set(name, realPathSyncOf(name));
+    }
   };
+  const current = (): string[] => {
+    if (names === null) refresh();
+    return [...known.values()].map(({ real }) => real);
+  };
+  return { refresh, current };
 };
 
 export { protectedReals };

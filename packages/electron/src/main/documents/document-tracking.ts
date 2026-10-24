@@ -10,7 +10,7 @@ import type { DocumentTracking } from './document-tracking.type';
 
 const createDocumentTracking = ({ paths, documents, log, profiles }: Pick<MainContext, 'paths' | 'documents' | 'log' | 'profiles'>): DocumentTracking => {
   const profileDir = (profileId: string): string => paths.data('profiles', profileIdOf(profileId));
-  const key = createSigningKey(() => paths.data('recent-signing.key'));
+  const key = createSigningKey(() => paths.userData('keys', 'recent-signing.key'));
   const recent = createRecentDocuments({ profileDir, exists: pathExists, allow: documents.allow, key, os: osRecent });
   const recovery = createRecoverySnapshots({ profileDir });
 

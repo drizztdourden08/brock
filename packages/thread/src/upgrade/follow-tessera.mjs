@@ -2,18 +2,18 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { jsonFile } from '../provision/json-file.mjs';
+import { readYamlScalar, yamlScalar } from '../yaml/yaml-scalar.mjs';
 import { CATALOG_SPEC, DEPENDENCY_BLOCKS, LOCAL_SPEC, TESSERA_PACKAGE } from './upgrade.constants.mjs';
 
-const CATALOG_LINE = new RegExp(String.raw`^([ \t]+['"]?${TESSERA_PACKAGE.replace('/', String.raw`\/`)}['"]?:[ \t]*)(\S+)[ \t]*$`, 'm');
-const unquoted = (spec) => spec.replace(/^['"]|['"]$/g, '');
+const CATALOG_LINE = new RegExp(String.raw`^([ \t]+['"]?${TESSERA_PACKAGE.replace('/', String.raw`\/`)}['"]?:[ \t]*)(\S.*?)[ \t]*$`, 'm');
 
 const followCatalog = (dir, range) => {
   const file = join(dir, 'pnpm-workspace.yaml');
   if (!existsSync(file)) return [];
   const text = readFileSync(file, 'utf8');
   const spec = text.match(CATALOG_LINE)?.[2];
-  if (spec === undefined || unquoted(spec) === range || LOCAL_SPEC.test(unquoted(spec))) return [];
-  writeFileSync(file, text.replace(CATALOG_LINE, `$1${range}`), 'utf8');
+  if (spec === undefined || readYamlScalar(spec) === range || LOCAL_SPEC.test(readYamlScalar(spec))) return [];
+  writeFileSync(file, text.replace(CATALOG_LINE, (_line, key) => `${key}${yamlScalar(range)}`), 'utf8');
   return [`catalog.${TESSERA_PACKAGE}`];
 };
 

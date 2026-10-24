@@ -2,7 +2,7 @@
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
-import { ensurePnpmPackageManager, keepCrossDriveLinks, mergeCatalog } from '@drizztdourden08/brock-build';
+import { ensurePnpmPackageManager, keepCrossDriveLinks, mergeCatalog, readYamlScalar, yamlScalar } from '@drizztdourden08/brock-build';
 import { TESSERA, tesseraRange } from './tessera-range.mjs';
 
 const CATALOG_SOURCES = (templateDir) => [resolve(templateDir, '../../pnpm-workspace.yaml'), join(templateDir, 'pnpm-workspace.yaml')];
@@ -27,7 +27,7 @@ const readCatalog = (file) => {
     if (/^catalog:\s*$/.test(line)) { inCatalog = true; continue; }
     if (inCatalog && /^\S/.test(line)) inCatalog = false;
     const entry = inCatalog ? /^\s+['"]?([^'":\s]+)['"]?:\s*(.+)$/.exec(line) : null;
-    if (entry) catalog[entry[1]] = entry[2].trim();
+    if (entry) catalog[entry[1]] = readYamlScalar(entry[2]);
   }
   return catalog;
 };
@@ -51,7 +51,7 @@ const yamlKey = (name) => (name.startsWith('@') ? `'${name}'` : name);
  */
 const renderWorkspaceYaml = (catalog, built) => {
   const entries = Object.entries(catalog).sort(([a], [b]) => a.localeCompare(b));
-  const lines = ['packages: []', '', 'catalog:', ...entries.map(([name, range]) => `  ${yamlKey(name)}: ${range}`), '', 'onlyBuiltDependencies:', ...built.map((name) => `  - ${name}`), ''];
+  const lines = ['packages: []', '', 'catalog:', ...entries.map(([name, range]) => `  ${yamlKey(name)}: ${yamlScalar(range)}`), '', 'onlyBuiltDependencies:', ...built.map((name) => `  - ${name}`), ''];
   return lines.join('\n');
 };
 

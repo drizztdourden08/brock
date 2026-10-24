@@ -24,7 +24,8 @@ const begin = (tour: TourDef, at?: number): void => {
 const start = (id: string, at?: number): boolean => {
   const tour = tourOf(id);
   if (tour?.load && tour.steps.length === 0) {
-    void loadTour(id).then((full) => { if (full && full.steps.length > 0) begin(full, at); });
+    state().setStarting(true);
+    void loadTour(id).then((full) => { if (full && full.steps.length > 0) begin(full, at); else state().setStarting(false); });
     return true;
   }
   if (!tour || tour.steps.length === 0) return false;

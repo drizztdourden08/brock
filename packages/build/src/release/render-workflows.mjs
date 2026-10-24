@@ -12,6 +12,7 @@ import { keepGithubTracked } from './keep-github-tracked.mjs';
 import { publishPlan } from './publish-packages.mjs';
 import { releaseLayout } from './release-layout.mjs';
 import { sharedSteps, sharedSystemSteps } from './shared-workflow-steps.mjs';
+import { testEnvOf } from './test-env-steps.mjs';
 import { managedWorkflows, stepSources } from './workflow-modes.mjs';
 import { CI_WORKFLOW_FILE, RELEASE_WORKFLOW_FILE, WORKFLOWS_DIR } from './workflows.constants.mjs';
 
@@ -57,6 +58,7 @@ const composeInputOf = (config, layout) => ({
   prefix: artifactPrefixOf(config.product),
   app: layout.app,
   baselines: config.review?.baselines === true,
+  testEnv: testEnvOf(config.workflows),
 });
 
 /**

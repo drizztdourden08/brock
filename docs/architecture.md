@@ -1068,11 +1068,24 @@ The desktop app embeds the server in its own process with `embedServer(start, ct
 
 The Node binary is bundled and pinned: system Node trails Brock's Node floor on Debian, and `ELECTRON_RUN_AS_NODE` has no Electron in a server package. Brock downloads `node-v<version>-linux-<arch>.tar.gz` from nodejs.org, checks it against its pinned sha256 and against `SHASUMS256.txt`, and caches it. `server.node` overrides the version. `server.arch` is `['x64']` unless the app also lists `arm64`. The Dockerfile is managed under `build/server/`, uses `debian:trixie-slim` and the same tarball, runs as uid 10001 under `tini`, keeps its data in the volume `/data` and uses `<id>-server health` as its `HEALTHCHECK`.
 
+### Running bubblewrap
+
+`server.osPackages: ['bubblewrap']` is all an app needs to ship it: the package lands in the `.deb` `Depends:` and is installed in the Docker image, so no Dockerfile edit is needed. Bubblewrap then needs unprivileged user namespaces from the host and from the container.
+
+- **On the host.** `user.max_user_namespaces` must be above 0. On Ubuntu 24.04 and later, AppArmor also stops an unconfined process from creating a user namespace: set `kernel.apparmor_restrict_unprivileged_userns=0`, or give `/usr/bin/bwrap` an AppArmor profile with the `userns` permission.
+- **In a container.** Docker's default seccomp profile refuses `unshare`, `setns` and `clone` with a namespace flag, and its default AppArmor profile refuses `mount`. Brock recommends these options on `docker run`, or in the `security_opt` list of a compose service:
+  - `--security-opt seccomp=<profile.json>`, Docker's default profile with `unshare`, `setns`, `clone`, `clone3`, `mount`, `umount2` and `pivot_root` allowed;
+  - `--security-opt apparmor=<profile>`, a profile that allows `userns` and `mount`, or `apparmor=unconfined` on a host where you accept that;
+  - `--security-opt systempaths=unconfined` when the sandbox mounts a fresh `/proc`, since Docker masks parts of `/proc` otherwise.
+- **What to avoid.** `--privileged` and `--cap-add SYS_ADMIN` also make it work, and they give the whole container what the sandbox exists to withhold. Keep the image's user (uid 10001), `--cap-drop ALL` and a read-only root, and open only the three options above.
+
 The managed files `build/server/<id>.service`, `Dockerfile`, `postinst` and `prerm` are written by `brock sync` and checked by `brock check`, like `deb-postinst.sh`. An app adds its own post-install step in `build/server/after-install.sh`, which is appended to postinst.
 
 ### Workflows
 
-An app with `server` in `targets` gets the CI job `server`, the release job `build-server` and the image job `publish-server-image`. The brock-build README describes them (Server workflows). The image job needs the `release` job, so no image exists for a release that failed, and it is the only job with `packages: write`.
+An app with `server` in `targets` gets the CI job `server`, the release job `build-server` and the image job `publish-server-image`. The brock-build README describes them (Server workflows). An app whose tests run bubblewrap, or another tool that needs the runner set up, sets `workflows.testEnv` in `brock.config.ts`. `linuxPackages` is a list of Debian package names (the pattern `server.osPackages` takes) that the `quality` job of the managed ci.yml installs with `apt-get install -y --no-install-recommends` before the build. `userNamespaces: true` adds the step that sets `kernel.apparmor_restrict_unprivileged_userns=0`, the step the `review` job runs too. It is a sibling of `workflows.ci` because that key takes the mode `'managed'` or `'own'`, and with `'own'` the setting has no effect. Unset, ci.yml is unchanged. In a repo of several apps the steps go in the app's own `quality` job, not in the shared `workspace` job.
+
+The image job needs the `release` job, so no image exists for a release that failed, and it is the only job with `packages: write`.
 
 ### Security notes
 

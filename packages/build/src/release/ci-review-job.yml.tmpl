@@ -8,8 +8,7 @@ __REVIEW_SETUP____REVIEW_BEFORE_BUILD__
       - name: Build
         run: pnpm --dir "$APP_DIR" exec brock build__REVIEW_AFTER_BUILD__
 
-      - name: Let Electron start its sandbox
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+__USERNS_STEP__
 
       - name: Install xvfb
         run: command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y xvfb; }

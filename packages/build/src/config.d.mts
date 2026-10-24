@@ -60,11 +60,20 @@ type BrockDefineValue = string | number | boolean | null | BrockDefineValue[] | 
 
 type BrockWorkflowMode = 'managed' | 'own';
 
+interface WorkflowTestEnv {
+  /** Debian packages the test job of the managed CI workflow installs with apt-get on its Linux runner, before the build. Names follow the pattern server.osPackages takes. */
+  linuxPackages?: string[];
+  /** Adds the step that turns off the AppArmor limit on unprivileged user namespaces to the test job, for tests that run bubblewrap or unshare. */
+  userNamespaces?: boolean;
+}
+
 interface BrockWorkflowOptions {
   /** 'own' leaves the CI workflow to the app: brock sync stops writing it and brock check stops comparing it. Default 'managed'. */
   ci?: BrockWorkflowMode;
   /** 'own' leaves the release workflow to the app, the same way. Default 'managed'. */
   release?: BrockWorkflowMode;
+  /** What the Linux test job of the managed CI workflow needs installed or switched on. Unset, the workflow is unchanged. Ignored when ci is 'own'. */
+  testEnv?: WorkflowTestEnv;
   /** The app's own steps, spliced into the managed workflows at fixed points, after the steps of the modules and plugins. */
   steps?: WorkflowSteps;
   /** Attests release files with a provenance bundle in the Linux build job of the managed release workflow. */
@@ -151,6 +160,6 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 export { defineBrockConfig, CONFIG_FILE };
 export type {
   BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
-  BrockReviewOptions, BrockServerArch, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
+  BrockReviewOptions, BrockServerArch, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions, WorkflowTestEnv,
 };
 export type { WorkflowAttest, WorkflowPublish, WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

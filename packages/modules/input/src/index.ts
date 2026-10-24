@@ -23,7 +23,7 @@ export type {
   StickCalibration, DeviceStickCalibration, TriggerCalibration, StickCalibrationStore, TriggerCalibrationStore,
   StickPoint, StickSide,
 } from './calibration.type';
-export type { MappingEntry } from './mapping/mapping-entry.type';
+export type { MappingEntry, MappingSource } from './mapping/mapping-entry.type';
 export { parseMapping } from './mapping/parse-mapping';
 export { parseMappings } from './mapping/parse-mappings';
 export { decodeGuid } from './mapping/decode-guid';

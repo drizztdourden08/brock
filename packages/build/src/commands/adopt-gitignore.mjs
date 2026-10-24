@@ -20,18 +20,7 @@ const GENERATED = [
   'dist/',
   'release/',
   '.brock-port-slot',
-  '**/build/icons/',
-  '**/build/splash/',
   '**/build/installer-splash.png',
-  '**/public/logos/icon.svg',
-  '**/public/logos/icon.ico',
-  '**/public/logos/icon-256.png',
-  '**/public/logos/icon-32.png',
-  '**/public/logos/icon-24.png',
-  '**/public/logos/icon-bot.svg',
-  '**/public/logos/icon-bot.ico',
-  '**/public/logos/icon-bot-256.png',
-  '**/public/logos/mark.svg',
 ];
 
 const SINGLE_DOT_FOLDER = /^(?:\/|\*\*\/)?(?:[^!#\s]\S*\/)?\.[^/\s*?[\]!]+\/(?:\*\*)?$/;

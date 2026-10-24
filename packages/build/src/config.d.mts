@@ -12,9 +12,21 @@ interface BrockWebOptions {
   manifest?: boolean;
 }
 
+type BrockServerArch = 'x64' | 'arm64';
+
 interface BrockServerOptions {
   /** The server entry, relative to the app folder. Default server/main.ts. It builds into dist/server/main.mjs, one file with every dependency inlined. */
   entry?: string;
+  /** The exact Node version (24.11.0 style) bundled in the tarball, the .deb and the Docker image. Default: the version Brock pins. */
+  node?: string;
+  /** Debian package names the server needs: the .deb Depends and the Docker apt-get install. */
+  osPackages?: string[];
+  /** TCP ports the server listens on: EXPOSE in the Dockerfile and the systemd unit description. */
+  ports?: number[];
+  /** The Docker image name, no tag. Default ghcr.io/<product.repo.owner>/<product.id>-server. */
+  image?: string;
+  /** The CPU architectures `brock server package` builds when --arch is not given. Default ['x64']; arm64 adds QEMU time to the image build. */
+  arch?: BrockServerArch[];
 }
 
 interface BrockReviewOptions {
@@ -135,6 +147,6 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 export { defineBrockConfig, CONFIG_FILE };
 export type {
   BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
-  BrockReviewOptions, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
+  BrockReviewOptions, BrockServerArch, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions,
 };
 export type { WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

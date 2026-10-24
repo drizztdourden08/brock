@@ -7,5 +7,24 @@ const SERVER_SOURCE = /\.(?:ts|mts|js|mjs)$/;
 const SERVER_LABEL = 'brock.config.ts server';
 const NATIVE_ADDON = /\.node(?:[?#].*)?$/;
 const NATIVE_LOADERS = new Set(['bindings', 'node-gyp-build', 'prebuild-install']);
+const SERVER_DIR = import.meta.dirname;
+const SERVER_NODE_VERSION = '24.11.0';
+const SERVER_ARCHES = Object.freeze({
+  x64: Object.freeze({ node: 'x64', deb: 'amd64', docker: 'amd64' }),
+  arm64: Object.freeze({ node: 'arm64', deb: 'arm64', docker: 'arm64' }),
+});
+const SERVER_DEFAULT_ARCHES = Object.freeze(['x64']);
+const SERVER_DOCKERFILE = 'build/server/Dockerfile';
+const SERVER_POSTINST = 'build/server/postinst';
+const SERVER_PRERM = 'build/server/prerm';
+const SERVER_HOOK = 'build/server/after-install.sh';
+const NODE_VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
+const DEBIAN_PACKAGE_PATTERN = /^[a-z0-9][a-z0-9+.-]+$/;
+const IMAGE_PATTERN = /^[a-z0-9][a-z0-9._/:-]*$/;
+const MAX_PORT = 65535;
 
-export { SERVER_ENTRY, SERVER_OUT, SERVER_FILE, DIST_SERVER, SERVER_SOURCE, SERVER_LABEL, NATIVE_ADDON, NATIVE_LOADERS };
+export {
+  SERVER_ENTRY, SERVER_OUT, SERVER_FILE, DIST_SERVER, SERVER_SOURCE, SERVER_LABEL, NATIVE_ADDON, NATIVE_LOADERS,
+  SERVER_DIR, SERVER_NODE_VERSION, SERVER_ARCHES, SERVER_DEFAULT_ARCHES, SERVER_DOCKERFILE, SERVER_POSTINST,
+  SERVER_PRERM, SERVER_HOOK, NODE_VERSION_PATTERN, DEBIAN_PACKAGE_PATTERN, IMAGE_PATTERN, MAX_PORT,
+};

@@ -1,0 +1,20 @@
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the systemd unit the .deb installs.
+[Unit]
+Description=__NAME__ server__PORTS__
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=__ID__
+Group=__ID__
+StateDirectory=__ID__
+ExecStart=/opt/__ID__/bin/__ID__-server
+Restart=on-failure
+RestartSec=5
+ProtectSystem=full
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

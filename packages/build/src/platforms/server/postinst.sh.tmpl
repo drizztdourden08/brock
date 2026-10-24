@@ -1,0 +1,18 @@
+#!/bin/sh
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the .deb post-install script, run as root by dpkg.
+# It makes the system user, runs build/server/after-install.sh if the app has one,
+# then enables and (re)starts the service.
+set -e
+if [ "$1" = "configure" ]; then
+  if ! getent passwd __ID__ >/dev/null 2>&1; then
+    useradd --system --user-group --home-dir /var/lib/__ID__ --no-create-home --shell /usr/sbin/nologin __ID__
+  fi
+__HOOK__
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload
+    systemctl enable __ID__.service
+    systemctl restart __ID__.service
+  fi
+fi
+exit 0

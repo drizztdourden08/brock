@@ -1,0 +1,16 @@
+#!/bin/sh
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the .deb pre-removal script, run as root by dpkg.
+# Data in /var/lib/__ID__ stays on remove.
+set -e
+if [ -d /run/systemd/system ]; then
+  case "$1" in
+    remove|deconfigure)
+      systemctl disable --now __ID__.service || true
+      ;;
+    upgrade)
+      systemctl stop __ID__.service || true
+      ;;
+  esac
+fi
+exit 0

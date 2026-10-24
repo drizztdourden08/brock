@@ -1,0 +1,16 @@
+# @layer tooling-scripts @kind build
+# Managed by brock sync: the server image. The build context is made by brock server package.
+FROM debian:trixie-slim
+ARG TARGETARCH
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates tini__PACKAGES__ \
+ && rm -rf /var/lib/apt/lists/* \
+ && useradd --system --uid 10001 --user-group --home-dir /data --no-create-home --shell /usr/sbin/nologin __ID__ \
+ && mkdir /data \
+ && chown 10001:10001 /data
+ADD bundle-${TARGETARCH}.tar.gz /opt/
+ENV BROCK_DATA_DIR=/data
+VOLUME /data
+USER 10001:10001__EXPOSE__
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 CMD ["/opt/__ID__/bin/__ID__-server", "health"]
+ENTRYPOINT ["tini", "--", "/opt/__ID__/bin/__ID__-server"]

@@ -20,6 +20,7 @@ interface PadNavEntry {
   id: string;
   label: string;
   connected: boolean;
+  inDiagnostics: boolean;
 }
 
 interface PadOverlayModel {

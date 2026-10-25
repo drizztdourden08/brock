@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-react
 
+## 0.94.0
+
+### Minor Changes
+
+- 675874a: `BucketDef` takes `switcher: false` (default true) to keep a bucket out of the top hub switcher. `menu: 'hidden'` only drops the app menu entry, so such a bucket still showed as a tab. A switcher-hidden bucket still opens through its menu entry, its shortcut, a search result and `open('bucket/page')`, and the switcher shows no tab as selected while it is open. `defineHub` takes the same `switcher` field.
+- ce4e429: Brock is now built and tested on Tessera `^0.59.0` (the workspace catalog). `brock-react` now takes any Tessera from `>=0.58.0 <1` as its peer, so a consumer can move to a newer Tessera minor without waiting for a Brock release. Brock is tested on the catalog version only. The release adds VirtualGrid sections, a scroll ref and marquee select, and a `.bxel` file icon. It has no MIGRATION entry, and Brock needed no code change for it.
+
+### Patch Changes
+
+- 6e8de00: Brock is now built and tested on Tessera `^0.60.0` (the workspace catalog). The `brock-react` peer range is unchanged at `>=0.58.0 <1`. The release adds a `fit` prop to Grid and moves the ControllerSilhouette anchors to match real pads. It has no MIGRATION entry, and Brock needed no code change for it.
+- Updated dependencies [aeee8c7]
+  - @drizztdourden08/brock-core@0.94.0
+
 ## 0.93.1
 
 ### Patch Changes

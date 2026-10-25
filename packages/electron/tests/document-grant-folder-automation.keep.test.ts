@@ -1,10 +1,10 @@
 /* @layer electron-main @kind test */
+import { createDialogs } from '../src/main/dialogs/create-dialogs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { rm } from 'fs/promises';
 import { join } from 'path';
 import type { MainContext } from '../src/main/types/main-context.type';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { createDialogs } from '../src/main/dialogs/create-dialogs';
 import { electronDialogMock } from './electron-dialog-mock';
 import type { Call } from './folder-fixture';
 import { flagsOf, grantSession, makeGrantTree, openHero, reads } from './folder-grant-fixture';

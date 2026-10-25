@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { isShown } from './is-shown';
-import { rememberedIn } from './region-memory';
+import { rememberedIn } from './remembered-in';
 import { ROVING_SELECTOR, TABBABLE_SELECTOR } from './regions.constants';
 
 const firstShown = (region: HTMLElement, selector: string): HTMLElement | null =>

@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { lastFocused } from './last-focused';
 import { REGION_SELECTOR } from './regions.constants';
-
-const lastFocused = new WeakMap<HTMLElement, HTMLElement>();
 
 const rememberFocus = (target: EventTarget | null): void => {
   if (!(target instanceof HTMLElement)) return;
@@ -12,6 +11,4 @@ const rememberFocus = (target: EventTarget | null): void => {
   }
 };
 
-const rememberedIn = (region: HTMLElement): HTMLElement | undefined => lastFocused.get(region);
-
-export { rememberedIn, rememberFocus };
+export { rememberFocus };

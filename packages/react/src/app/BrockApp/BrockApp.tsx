@@ -4,7 +4,6 @@ import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
 import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
 import { NO_TOURS } from '../../tours/tours.constants';
-import { useTourRegistry } from '../../tours/useTourRegistry';
 import { useAllToolbars } from '../../toolbars/useAllToolbars';
 import { useAllStartupPrompts } from '../../startup/useAllStartupPrompts';
 import { PlatformProvider } from '../../platform/PlatformProvider';
@@ -30,12 +29,10 @@ import { NO_KITS } from '../../widgets/kits/widget-kit.constants';
 import { ModuleProviders } from './sub-components/ModuleProviders';
 import { NO_MODULES, NO_SHORTCUTS, NO_TABS } from './BrockApp.constants';
 import { NO_BOOT_TASKS } from '../../boot/boot.constants';
-import { useBugReportTransport } from '../../bug-report/useBugReportTransport';
 import { useRendererLogging } from '../../log/useRendererLogging';
-import { APP_FLAGS_SOURCE } from '../../screens/show/show.constants';
-import { useShowFlagsSource } from '../../screens/show/useShowFlagsSource';
 import type { BrockAppProps } from './BrockApp.type';
 import { useAppCommands } from './behavior/useAppCommands';
+import { useAppRegistrations } from './behavior/useAppRegistrations';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
@@ -50,9 +47,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
   useAppGuards({ moduleSync: merged.beforeQuit, moduleAsync: merged.onBeforeQuit, sync: beforeQuit, async: onBeforeQuit }, profiles);
-  useTourRegistry(tours, merged.tours);
-  useBugReportTransport(bugReport);
-  useShowFlagsSource(APP_FLAGS_SOURCE, showFlags);
+  useAppRegistrations(tours, merged.tours, { bugReport, showFlags });
   const titleBarActions = useTitleBarSources(merged.titleBarActions, titleBar);
   const allBootTasks = useMemo(() => [...merged.bootTasks, ...bootTasks], [merged.bootTasks, bootTasks]);
   const allWidgets = useMemo(() => [...merged.widgets, ...widgets], [merged.widgets, widgets]);

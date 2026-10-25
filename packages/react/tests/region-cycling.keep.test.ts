@@ -1,46 +1,13 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { shellCommands } from '../src/app/BrockApp/behavior/shell-commands';
+import { describe, expect, it } from 'vitest';
 import { commands } from '../src/commands/commands';
-import { dispatchCommand } from '../src/commands/dispatch-command';
-import { focusRegion } from '../src/regions/focus-region';
-import { rememberFocus } from '../src/regions/region-memory';
+import { rememberFocus } from '../src/regions/remember-focus';
 import { REGION_COMMANDS } from '../src/regions/regions.constants';
-import { registerFresh } from './command-fixtures';
-
-const press = (init: KeyboardEventInit, target: EventTarget = document): void => {
-  document.addEventListener('keydown', (each) => dispatchCommand(each, null), { once: true });
-  target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
-};
-
-const next = (target?: EventTarget): void => press({ key: 'F6', code: 'F6' }, target);
-const previous = (): void => press({ key: 'F6', code: 'F6', shiftKey: true });
-
-const mount = (html: string): void => {
-  document.body.innerHTML = html;
-};
-
-const focusedId = (): string | undefined => document.activeElement?.id;
-
-const SHELL = `
-  <div role="banner" aria-label="Title bar"><button id="menu">Menu</button></div>
-  <nav aria-label="Screens"><button id="rail">Home</button></nav>
-  <div role="toolbar" aria-label="Tools"><button id="tool-a" tabindex="-1">A</button><button id="tool-b" tabindex="0">B</button></div>
-  <main aria-label="Main"><p>Reading only</p></main>
-`;
+import { focusedId, mount, next, previous, SHELL, useShellRegionCommands } from './region-fixtures';
 
 describe('region cycling', () => {
-  let unregister = (): void => {};
-
-  beforeEach(() => {
-    unregister = registerFresh(shellCommands(undefined));
-  });
-
-  afterEach(() => {
-    unregister();
-    document.body.replaceChildren();
-  });
+  useShellRegionCommands();
 
   it('is a command with the F6 and Shift+F6 chords, so it shows in the shortcut list and can be rebound', () => {
     expect(commands.chords(REGION_COMMANDS.next)).toEqual(['F6']);
@@ -74,7 +41,7 @@ describe('region cycling', () => {
     expect(document.activeElement?.tagName).toBe('MAIN');
   });
 
-  it('lands on the first tabbable control when none was focused before, and on the region itself when it has none', () => {
+  it('lands on the region itself when it has no tabbable control', () => {
     mount(SHELL);
     next();
     next();
@@ -92,37 +59,5 @@ describe('region cycling', () => {
     expect(focusedId()).toBe('b1');
     next();
     expect(focusedId()).toBe('a2');
-  });
-
-  it('adds an element an app marks with focusRegion to the cycle, even inside the main area', () => {
-    mount(`${SHELL.replace('<p>Reading only</p>', '<div id="canvas"><div id="surface" tabindex="0"></div></div>')}`);
-    const canvas = document.getElementById('canvas');
-    for (const [name, value] of Object.entries(focusRegion('canvas', 'Sprite canvas'))) canvas?.setAttribute(name, value);
-    next();
-    next();
-    next();
-    expect(focusedId()).toBe('tool-b');
-    next();
-    expect(focusedId()).toBe('surface');
-    next();
-    expect(focusedId()).toBe('menu');
-  });
-
-  it('works from inside a text field', () => {
-    mount(`<input id="name" />${SHELL}`);
-    const input = document.getElementById('name');
-    input?.focus();
-    next(input ?? document);
-    expect(focusedId()).toBe('menu');
-  });
-
-  it('stays inside an open modal dialog', () => {
-    mount(`${SHELL}<div role="dialog" aria-modal="true"><div role="toolbar" aria-label="Dialog tools"><button id="d1">Do</button></div><div role="region" aria-label="Details"><button id="d2">More</button></div></div>`);
-    next();
-    expect(focusedId()).toBe('d1');
-    next();
-    expect(focusedId()).toBe('d2');
-    next();
-    expect(focusedId()).toBe('d1');
   });
 });

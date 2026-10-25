@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect } from 'react';
-import { rememberFocus } from './region-memory';
+import { rememberFocus } from './remember-focus';
 
 const useRegionMemory = (): void => {
   useEffect(() => {

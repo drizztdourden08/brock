@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-input
 
+## 0.96.0
+
+### Minor Changes
+
+- 5a13543: The input module now carries the controller input foundation an app needs to build controller pages. It adds the SDL family layer (`resolveDeviceControls`, `buildDisplayContext`, the five family tables, `buildDeviceProfile` and the vibration shaping), the `controllerInputStore` with its processing step, the controller name and family caches, the controller event log, `padDisplayName`, `layoutFamilyOf`, `groupAxisControls`, `controllerCardInfo`, `groupControllerDevices` and the `useControllerDevices` and `useAppVersion` hooks. It also adds seven compounds: `ControllerStatusBar`, `ControllerPortRow`, `ControllerStatusBadge`, `ControllerCapabilityBadges`, `UnavailableControllerNotice`, `MappingPasteBox` and `RescanButton`. The new device profile type names its input API `DeviceInputApi`, so it does not clash with the existing `InputApi`. The module starts the store feed, the two caches and the event log from one renderer boot task, so nothing runs on import. The package now depends on `@iconify/react`, `@iconify-icons/lucide` and `@iconify/types`. No change is needed in an existing app, and no screen looks different yet.
+- 86159bd: The input module now adds a Controllers hub in place of the single input tester screen. The hub has the id `controllers` and sits under Advanced, outside the hub switcher. It holds a Directory page (a searchable table of every controller SDL3 knows, with Rescan), a Logs page (the connect and disconnect history) and a Diagnostics page (the guided capture wizard and its result). The pages come with the stick and trigger calibration wizards, the HID byte capture and the diagnostics report builder. The module exports `ControllerDirectory`, `ControllerLogs` and `ControllerDiagnostics`, plus `StepIndicator`, `ReportSection`, `buildReport`, `useDiagnosticsWizardState` and the other pieces an app needs to build its own report dialog around the wizard. `registerDeviceCardActions` keeps working, and is the hook an app uses to add a Report button. The Controllers hub also has a live page for each connected pad: the pad drawn with a callout for each input, the sticks and triggers with their calibration, the buttons, and the facts of the controller with its rumble tests. Its Controller box shows Run diagnostics and every action added with `registerDeviceCardActions` as icon buttons. `registerRumbleTests` adds rumble test buttons after the module's own, and `registerGlyphSource` supplies the button and pad images, which the module does not ship (with none registered the pad page draws without glyph images). The module also exports `PadOverlay`, `DpadCross`, `SvgImage`, `CONTROLLER_SLOT_IDS` and `ControllerExtra`. The capture API gains `writeDebug(name, data)` (the channel `input:capture:writeDebug`), which writes a JSON file under the data folder's `debug` folder; the diagnostics wizard and the HID calibration use it instead of an app call. The peer range for `@drizztdourden08/tessera` is now `>=0.60.0`. `brock-build` adds `<id>.page.tsx` and `<id>.live.tsx` to the module file names its structure check accepts. Upgrading: `InputTester`, `DeviceCard`, `CalibrationPanel` and its types, `ControllerLayout` with `ControllerLayoutProps`, `ControllerLayoutVariant`, `ControllerSlots` and `CONTROLLER_LAYOUT_VARIANTS` (use Tessera's `ControllerSilhouette` or the new `PadOverlay`), `inputFamilyOf`, `inputTesterScreen` and `INPUT_TESTER_SCREEN_ID` are removed, and the `input-tester` screen is gone, so the Advanced entry now opens the `controllers` hub. An app that declares its own bucket with the id `controllers` fails at start. `brock upgrade` turns each import of a removed name, a `controllers` bucket in `screens.config.ts`, an `input-tester` id and an input module override with `screens: []` into a to-do (migration `controllers-bucket`).
+
+### Patch Changes
+
+- Updated dependencies [03e9f16]
+- Updated dependencies [df9190a]
+  - @drizztdourden08/brock-react@0.96.0
+  - @drizztdourden08/brock-core@0.96.0
+  - @drizztdourden08/brock-electron@0.96.0
+
 ## 0.95.0
 
 ### Patch Changes

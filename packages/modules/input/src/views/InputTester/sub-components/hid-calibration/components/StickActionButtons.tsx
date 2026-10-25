@@ -1,5 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { Button } from '@drizztdourden08/tessera/primitives';
+import { PickingButtons } from './PickingButtons';
+import { StartPickSkipButtons } from './StartPickSkipButtons';
+import { StopButton } from './StopButton';
 import type { StickCardActionsProps } from './StickCards.type';
 
 const StickActionButtons = (props: StickCardActionsProps) => {
@@ -8,16 +11,13 @@ const StickActionButtons = (props: StickCardActionsProps) => {
 
   if (isPicking) {
     return (
-      <>
-        <Button variant="primary" size="sm" onClick={onConfirmPick} disabled={pickedCount === 0}>
-          Confirm ({pickedCount})
-        </Button>
-        <Button variant="danger" size="sm" onClick={onCancelPick}>Cancel</Button>
-      </>
+      <PickingButtons onConfirm={onConfirmPick} onCancel={onCancelPick} confirmDisabled={pickedCount === 0}>
+        Confirm ({pickedCount})
+      </PickingButtons>
     );
   }
 
-  if (isRecording) return <Button variant="danger" size="sm" onClick={onStopCircle}>Stop</Button>;
+  if (isRecording) return <StopButton onStop={onStopCircle} />;
 
   if (needsIdle) {
     return (
@@ -32,13 +32,7 @@ const StickActionButtons = (props: StickCardActionsProps) => {
 
   if (isDone) return <Button variant="tertiary" size="sm" onClick={onRedo} disabled={otherBusy}>Redo</Button>;
 
-  return (
-    <>
-      <Button variant="primary" size="sm" onClick={onStart} disabled={otherBusy}>Start</Button>
-      <Button variant="tertiary" size="sm" onClick={onPick} disabled={otherBusy}>Pick</Button>
-      <Button variant="tertiary" size="sm" onClick={onSkip} disabled={otherBusy}>Skip</Button>
-    </>
-  );
+  return <StartPickSkipButtons onStart={onStart} onPick={onPick} onSkip={onSkip} disabled={otherBusy} />;
 };
 
 export { StickActionButtons };

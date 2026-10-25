@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { Box, Text, Button } from '@drizztdourden08/tessera/primitives';
-import { SamplingProgress } from '../../calibration-parts';
+import { Box, Text } from '@drizztdourden08/tessera/primitives';
+import { NextRedoRow, SamplingProgress } from '../../calibration-parts';
 import type { TriggerRestStepProps } from '../trigger-calibration.type';
 import { TriggerBar } from './TriggerBar';
 
@@ -17,12 +17,7 @@ const TriggerRestStep = ({ cal, label, axisIndex }: TriggerRestStepProps) => (
         <Box className="cal-wizard__value-box">
           Rest value: {cal.baseValue.toFixed(3)}
         </Box>
-        <Box className="cal-wizard__row">
-          <Button variant="primary" size="sm" onClick={cal.advanceToMax}>
-            Next
-          </Button>
-          <Button variant="tertiary" size="sm" onClick={cal.resetRest}>Redo</Button>
-        </Box>
+        <NextRedoRow onNext={cal.advanceToMax} onRedo={cal.resetRest} />
       </Box>
     )}
 

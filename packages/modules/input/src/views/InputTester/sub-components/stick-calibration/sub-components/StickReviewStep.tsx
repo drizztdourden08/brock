@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback } from 'react';
-import { Box, Text, Button } from '@drizztdourden08/tessera/primitives';
-import { DeadzoneSlider } from '../../calibration-parts';
+import { Box, Text } from '@drizztdourden08/tessera/primitives';
+import { DeadzoneSlider, ReviewActions } from '../../calibration-parts';
 import type { StickReviewStepProps } from '../stick-calibration.type';
 import { applyCalibration } from '../apply-calibration';
 import { StickCircle } from './StickCircle';
@@ -28,11 +28,7 @@ const StickReviewStep = ({ cal, onComplete }: StickReviewStepProps) => {
         {calibrateLeft && <StickCircle x={previewL.x} y={previewL.y} label="L Stick (calibrated)" large showDeadzones innerDeadzone={innerDz} outerDeadzone={outerDz} />}
         {calibrateRight && <StickCircle x={previewR.x} y={previewR.y} label="R Stick (calibrated)" large showDeadzones innerDeadzone={innerDz} outerDeadzone={outerDz} />}
       </Box>
-      <Box className="cal-wizard__actions cal-wizard__actions--wide">
-        <Button variant="primary" size="sm" onClick={handleSave}>Save Calibration</Button>
-        <Button variant="tertiary" size="sm" onClick={goRange}>Back</Button>
-        <Button variant="tertiary" size="sm" onClick={restart}>Start Over</Button>
-      </Box>
+      <ReviewActions onSave={handleSave} onBack={goRange} onStartOver={restart} />
     </Box>
   );
 };

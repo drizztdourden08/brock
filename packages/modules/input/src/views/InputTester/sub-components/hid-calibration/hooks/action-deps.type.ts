@@ -18,9 +18,10 @@ import type {
   StickSide,
   TriggerSide,
 } from '../hid-calibration.type';
+import type { StickScanRefs, TriggerScanRefs } from '../scan-refs.type';
 import type { RawHidInfo } from './device-raw-info.type';
 
-interface ActionDeps {
+interface ActionDeps extends StickScanRefs, TriggerScanRefs {
   latestBytes: Uint8Array;
   gyroExcluded: Set<number>;
   stickPickMode: boolean;
@@ -44,20 +45,7 @@ interface ActionDeps {
   rightTriggerByteRef: React.RefObject<number | null>;
   activeStickRef: React.RefObject<StickSide | null>;
   activeTriggerRef: React.RefObject<TriggerSide | null>;
-  stickMinsRef: React.RefObject<Uint8Array>;
-  stickMaxsRef: React.RefObject<Uint8Array>;
-  stickCounterBytesRef: React.RefObject<Set<number>>;
-  stickSamplesRef: React.RefObject<number>;
-  stickStableCountRef: React.RefObject<number>;
-  stickLastTop2Ref: React.RefObject<string>;
-  stickBufferRef: React.RefObject<Uint8Array[]>;
   stickRecordingRef: React.RefObject<boolean>;
-  triggerMinsRef: React.RefObject<Uint8Array>;
-  triggerMaxsRef: React.RefObject<Uint8Array>;
-  triggerSamplesRef: React.RefObject<number>;
-  triggerStableCountRef: React.RefObject<number>;
-  triggerLastTopRef: React.RefObject<string>;
-  triggerBufferRef: React.RefObject<Uint8Array[]>;
   triggerRecordingRef: React.RefObject<boolean>;
   gyroMinsRef: React.RefObject<Uint8Array>;
   gyroMaxsRef: React.RefObject<Uint8Array>;

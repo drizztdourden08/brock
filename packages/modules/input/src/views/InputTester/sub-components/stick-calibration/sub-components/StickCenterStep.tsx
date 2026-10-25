@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { Box, Text, Button } from '@drizztdourden08/tessera/primitives';
-import { SamplingProgress } from '../../calibration-parts';
+import { Box, Text } from '@drizztdourden08/tessera/primitives';
+import { NextRedoRow, SamplingProgress } from '../../calibration-parts';
 import type { StickStepProps } from '../stick-calibration.type';
 import { StickRawPreview } from './StickRawPreview';
 
@@ -21,10 +21,7 @@ const StickCenterStep = ({ cal, target }: StickStepProps) => {
             {calibrateLeft && <Box>L Center: {centerValues.lx}, {centerValues.ly}</Box>}
             {calibrateRight && <Box>R Center: {centerValues.rx}, {centerValues.ry}</Box>}
           </Box>
-          <Box className="cal-wizard__row">
-            <Button variant="primary" size="sm" onClick={goToRange}>Next</Button>
-            <Button variant="tertiary" size="sm" onClick={startCenter}>Redo</Button>
-          </Box>
+          <NextRedoRow onNext={goToRange} onRedo={startCenter} />
         </Box>
       )}
       <StickRawPreview cal={cal} />

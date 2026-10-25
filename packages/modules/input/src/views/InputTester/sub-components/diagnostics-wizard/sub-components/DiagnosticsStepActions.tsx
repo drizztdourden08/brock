@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback } from 'react';
 import { Button } from '@drizztdourden08/tessera/primitives';
+import { BackNextActions } from './BackNextActions';
 import type { DiagnosticsStepActionsProps } from './diagnostics-steps.type';
 
 const DiagnosticsStepActions = (props: DiagnosticsStepActionsProps) => {
@@ -21,31 +22,31 @@ const DiagnosticsStepActions = (props: DiagnosticsStepActionsProps) => {
   if (wizard.step === 'choose-controller') {
     const capturingLayout = wizard.layoutStage === 'starting' || wizard.layoutStage === 'fetching' || wizard.layoutStage === 'stopping';
     return (
-      <>
-        {cancelAction}
-        <Button variant="secondary" onClick={wizard.goBack}>Back</Button>
-        <Button variant="primary" onClick={handleConfirm} disabled={wizard.deviceKey === null || capturingLayout}>Next</Button>
-      </>
+      <BackNextActions
+        cancelAction={cancelAction}
+        onBack={wizard.goBack}
+        onNext={handleConfirm}
+        nextDisabled={wizard.deviceKey === null || capturingLayout}
+      />
     );
   }
 
   if (wizard.step === 'byte-capture') {
     return (
-      <>
-        {cancelAction}
-        <Button variant="secondary" onClick={wizard.goBack}>Back</Button>
-        <Button variant="primary" onClick={onByteCaptureNext} disabled={capturedCount === 0}>Next</Button>
-      </>
+      <BackNextActions cancelAction={cancelAction} onBack={wizard.goBack} onNext={onByteCaptureNext} nextDisabled={capturedCount === 0} />
     );
   }
 
   if (wizard.step === 'positional-capture') {
+    const notRestored = wizard.restoreStatus !== 'done';
     return (
-      <>
-        {cancelAction}
-        <Button variant="secondary" onClick={wizard.goBack} disabled={wizard.restoreStatus !== 'done'}>Back</Button>
-        <Button variant="primary" onClick={wizard.goNext} disabled={wizard.restoreStatus !== 'done'}>Next</Button>
-      </>
+      <BackNextActions
+        cancelAction={cancelAction}
+        onBack={wizard.goBack}
+        onNext={wizard.goNext}
+        backDisabled={notRestored}
+        nextDisabled={notRestored}
+      />
     );
   }
 

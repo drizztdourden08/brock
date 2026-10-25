@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback } from 'react';
-import { Box, Text, Button } from '@drizztdourden08/tessera/primitives';
-import { DeadzoneSlider } from '../../calibration-parts';
+import { Box, Text } from '@drizztdourden08/tessera/primitives';
+import { DeadzoneSlider, ReviewActions } from '../../calibration-parts';
 import type { TriggerReviewStepProps } from '../trigger-calibration.type';
 import { TriggerBar } from './TriggerBar';
 
@@ -29,15 +29,7 @@ const TriggerReviewStep = ({ cal, onComplete }: TriggerReviewStepProps) => {
         <TriggerBar value={cal.calibratedValue()} label="Calibrated" step={cal.step} deadzone={deadzone} />
       </Box>
 
-      <Box className="cal-wizard__actions cal-wizard__actions--wide">
-        <Button variant="primary" size="sm" onClick={handleSave}>
-          Save Calibration
-        </Button>
-        <Button variant="tertiary" size="sm" onClick={goMax}>Back</Button>
-        <Button variant="tertiary" size="sm" onClick={startOver}>
-          Start Over
-        </Button>
-      </Box>
+      <ReviewActions onSave={handleSave} onBack={goMax} onStartOver={startOver} />
     </Box>
   );
 };

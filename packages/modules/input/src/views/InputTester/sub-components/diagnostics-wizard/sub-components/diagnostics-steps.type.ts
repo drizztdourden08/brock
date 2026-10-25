@@ -42,6 +42,14 @@ interface DiagnosticsStepActionsProps {
   capturedCount: number;
 }
 
+interface BackNextActionsProps {
+  cancelAction: ReactNode;
+  onBack: () => void;
+  onNext: () => void;
+  backDisabled?: boolean;
+  nextDisabled: boolean;
+}
+
 interface FlashButtonProps {
   status: FlashStatus;
   onClick: () => void;
@@ -85,7 +93,7 @@ interface SummaryStepProps {
 }
 
 export type {
-  ByteCaptureStepProps, ByteCaptureSummaryProps, ChooseControllerStepProps, DiagnosticsStepActionsProps, FlashButtonProps,
+  BackNextActionsProps, ByteCaptureStepProps, ByteCaptureSummaryProps, ChooseControllerStepProps, DiagnosticsStepActionsProps, FlashButtonProps,
   HoldStatusLineProps, IntroStepProps, LayoutCaptureOverlayProps, MatchedEntryPanelProps,
   PositionalCaptureStepProps, SummaryStepProps,
 };

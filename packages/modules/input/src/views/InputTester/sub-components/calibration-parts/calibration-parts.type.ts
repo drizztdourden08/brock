@@ -27,7 +27,18 @@ interface DeadzoneSliderProps {
   onChange: (value: number) => void;
 }
 
+interface NextRedoRowProps {
+  onNext: () => void;
+  onRedo: () => void;
+}
+
+interface ReviewActionsProps {
+  onSave: () => void;
+  onBack: () => void;
+  onStartOver: () => void;
+}
+
 export type {
   CalibrationHeaderProps, CalibrationStepDef, CalibrationStepIndicatorProps,
-  DeadzoneSliderProps, SamplingProgressProps,
+  DeadzoneSliderProps, NextRedoRowProps, ReviewActionsProps, SamplingProgressProps,
 };

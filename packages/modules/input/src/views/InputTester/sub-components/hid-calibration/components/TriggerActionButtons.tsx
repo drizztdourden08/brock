@@ -1,5 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { Button, Icon } from '@drizztdourden08/tessera/primitives';
+import { PickingButtons } from './PickingButtons';
+import { StartPickSkipButtons } from './StartPickSkipButtons';
+import { StopButton } from './StopButton';
 import type { TriggerCardActionsProps } from './TriggerCards.type';
 
 const TriggerActionButtons = (props: TriggerCardActionsProps) => {
@@ -11,14 +14,13 @@ const TriggerActionButtons = (props: TriggerCardActionsProps) => {
 
   if (isPicking) {
     return (
-      <>
-        <Button variant="primary" size="sm" onClick={onConfirmTriggerPick} disabled={triggerPickedByte === null}>Confirm</Button>
-        <Button variant="danger" size="sm" onClick={onCancelTriggerPick}>Cancel</Button>
-      </>
+      <PickingButtons onConfirm={onConfirmTriggerPick} onCancel={onCancelTriggerPick} confirmDisabled={triggerPickedByte === null}>
+        Confirm
+      </PickingButtons>
     );
   }
 
-  if (isRecording) return <Button variant="danger" size="sm" onClick={onStopTrigger}>Stop</Button>;
+  if (isRecording) return <StopButton onStop={onStopTrigger} />;
 
   if (isDone) {
     return (
@@ -36,13 +38,7 @@ const TriggerActionButtons = (props: TriggerCardActionsProps) => {
     );
   }
 
-  return (
-    <>
-      <Button variant="primary" size="sm" onClick={onStart} disabled={otherBusy}>Start</Button>
-      <Button variant="tertiary" size="sm" onClick={onPick} disabled={otherBusy}>Pick</Button>
-      <Button variant="tertiary" size="sm" onClick={onSkip} disabled={otherBusy}>Skip</Button>
-    </>
-  );
+  return <StartPickSkipButtons onStart={onStart} onPick={onPick} onSkip={onSkip} disabled={otherBusy} />;
 };
 
 export { TriggerActionButtons };

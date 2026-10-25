@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.99.0
+
+### Minor Changes
+
+- ce95881: A widget can carry a `dockWeight`, its relative height in a stack (1 when unset). A layout preset row with no entry in `sizes` takes the largest `dockWeight` among its widgets, so a definition can ask for a taller row. The `sizes` of a preset still win, and a saved layout still wins over the default. A widget opened later with `defaultSide` joins its edge stack through Tessera, which evens the stack out, so `dockWeight` does not reach it yet.
+
+### Patch Changes
+
+- 9c53bf7: Brock builds on Tessera 0.65. A toolbar end handle dragged past its lane end takes the corner from the lanes it crosses, and one more arrow press at the lane end does the same from the keyboard. A dropped toolbar lands at the pointer, snaps to its neighbours and pushes them along. In keyboard pick mode, PageUp and PageDown step through the slots of a lane. The saved layout keeps its v2 shape, so no script is needed.
+  - @drizztdourden08/brock-core@0.99.0
+
 ## 0.98.0
 
 ### Minor Changes

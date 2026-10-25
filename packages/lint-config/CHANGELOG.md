@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.99.0
+
 ## 0.98.0
 
 ## 0.97.2

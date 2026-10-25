@@ -1,6 +1,6 @@
 /* @layer renderer-components @kind hook */
 import { useEffect, useState } from 'react';
-import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../../controller-anchors';
 import type { OverlayLayout, OverlayMetrics, OverlaySlotView } from '../PadOverlay.type';
 import { LAYOUT_DELAY_MS } from '../PadOverlay.constants';
 import { cachedLayout } from './cached-layout';

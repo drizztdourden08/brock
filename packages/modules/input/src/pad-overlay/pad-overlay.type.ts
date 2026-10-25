@@ -1,5 +1,5 @@
 /* @layer renderer-lib @kind types */
-import type { ControllerSilhouetteVariant } from '../composites/ControllerSilhouette';
+import type { ControllerSilhouetteVariant } from '../controller-anchors';
 import type { ControllerSlotId } from '../pad/controller-slot.type';
 import type { InputIconSource } from '@drizztdourden08/tessera/primitives';
 import type { LabelSide, Nudge, OverlayPartKind } from '../composites/PadOverlay';

@@ -5,7 +5,7 @@ import type { PadState } from '../../pad/controller-slot.type';
 import type { ControllerInputState } from '../../runtime/controller-input-store.type';
 import type { ResolvedControl, ResolvedDevice } from '../../family';
 import type { StickPairGroup } from '../../resolved-axis-groups/resolved-axis-groups.type';
-import type { ControllerSilhouetteAnchorSet } from '../../composites/ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../controller-anchors';
 import type { OverlaySlotView, PadOverlayState } from '../../composites/PadOverlay';
 import type { PositionIcons } from '../../pad-overlay/pad-overlay.type';
 import type { DeviceCardAction } from '../../renderer/device-card-action.type';

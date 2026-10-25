@@ -1,4 +1,4 @@
-/* @layer renderer-components @kind data */
+/* @layer renderer-lib @kind constants */
 const CONTROLLER_SILHOUETTE_VARIANTS = ['offset', 'symmetric', 'nintendo', 'pad'] as const;
 
 const CONTROLLER_SILHOUETTE_ANCHOR_IDS = [

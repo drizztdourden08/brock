@@ -19,6 +19,7 @@ interface HubBodyProps extends HubProps {
 interface HubPageList {
   groups: HubGroup[];
   pages: HubPage[];
+  homeListed: boolean;
   fallbacks: ReadonlyMap<string, HubPage>;
 }
 

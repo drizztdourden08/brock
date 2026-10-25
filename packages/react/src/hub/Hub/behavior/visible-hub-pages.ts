@@ -18,8 +18,9 @@ const visibleHubPages = (def: HubDef, developerTools: boolean, show?: ShowContex
   const groups = def.groups
     .map((group) => ({ ...group, pages: group.pages.filter(shown).flatMap((page) => expandLive(page, live[page.id] ?? [])) }))
     .filter((group) => group.pages.length > 0);
+  const homeListed = shown(def.home) || groups.length === 0;
   const pages = [def.home, ...groups.flatMap((group) => group.pages).filter((page) => page.disabled !== true)];
-  return { groups, pages, fallbacks: fallbacksOf(def, groups) };
+  return { groups, pages, homeListed, fallbacks: fallbacksOf(def, groups) };
 };
 
 export { visibleHubPages };

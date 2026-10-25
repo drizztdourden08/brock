@@ -65,6 +65,7 @@ type TextAnchor = 'start' | 'middle' | 'end';
 interface PlacedLabel {
   part: PlacedPart;
   leader: readonly Point[];
+  cost: number;
   anchor: TextAnchor;
   nameAt: Point;
   detailAt: Point;

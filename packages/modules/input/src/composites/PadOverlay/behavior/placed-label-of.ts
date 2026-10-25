@@ -6,6 +6,7 @@ const placedLabelOf = (part: PlacedPart, option: LabelOption): PlacedLabel => ({
   part,
   leader: [...option.leader, option.spot.tail],
   anchor: option.spot.anchor,
+  cost: option.cost,
   nameAt: option.spot.nameAt,
   detailAt: option.spot.detailAt,
 });

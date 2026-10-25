@@ -136,7 +136,7 @@ interface AppScreensInput {
   screenTree?: ScreenTree;
   builtInTabs: TabDef<object>[];
   moduleScreens: readonly ScreenDef[];
-  moduleBuckets?: readonly ModuleBucket[];
+  moduleBuckets: readonly ModuleBucket[];
   menu?: readonly MenuEntry[];
   homeScreen?: string;
   productHome: string;

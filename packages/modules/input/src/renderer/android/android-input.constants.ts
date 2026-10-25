@@ -20,6 +20,7 @@ const UNSUPPORTED_CAPTURE: InputCaptureApi = {
   listJoysticks: () => Promise.resolve([]),
   releaseHold: () => Promise.resolve(false),
   restoreHold: () => Promise.resolve(false),
+  writeDebug: () => Promise.reject(new Error(NO_CAPTURE_MESSAGE)),
   onRaw: noUnsubscribe,
   onJoystick: noUnsubscribe,
   onHoldChanged: noUnsubscribe,

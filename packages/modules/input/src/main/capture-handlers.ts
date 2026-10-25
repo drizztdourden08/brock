@@ -3,6 +3,7 @@ import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type { RawCaptureStartResult } from '../capture.type';
 import type { InputMain } from './input-main.type';
 import type { Sdl3RawCaptureResult } from './sdl3.type';
+import { writeDebugCapture } from './write-debug-capture';
 
 const toStartResult = (result: Sdl3RawCaptureResult): RawCaptureStartResult =>
   result.success ? { ok: true } : { ok: false, reason: result.reason, ...(result.message ? { message: result.message } : {}) };
@@ -15,6 +16,7 @@ const registerCaptureHandlers = ({ handle }: Pick<MainContext, 'handle'>, { runt
   handle('input:capture:listJoysticks', () => runtime().addon.listJoysticks());
   handle('input:capture:releaseHold', () => runtime().addon.releaseGamepads());
   handle('input:capture:restoreHold', () => runtime().addon.restoreGamepads());
+  handle('input:capture:writeDebug', (_event, name, data) => writeDebugCapture(name, data));
 };
 
 export { registerCaptureHandlers };

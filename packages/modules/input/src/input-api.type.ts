@@ -35,6 +35,7 @@ interface InputCaptureApi {
   listJoysticks: () => Promise<JoystickInfo[]>;
   releaseHold: () => Promise<boolean>;
   restoreHold: () => Promise<boolean>;
+  writeDebug: (name: string, data: unknown) => Promise<string>;
   onRaw: (listener: (report: ControllerRawReport) => void) => Unsubscribe;
   onJoystick: (listener: (sample: ControllerJoystickSample) => void) => Unsubscribe;
   onHoldChanged: (listener: (held: boolean) => void) => Unsubscribe;

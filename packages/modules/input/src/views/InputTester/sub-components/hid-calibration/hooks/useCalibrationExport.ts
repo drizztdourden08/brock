@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind hook */
-import { requireHostApi } from '@drizztdourden08/brock-react';
+import { inputApi } from '../../../../../renderer/input-api';
 import { useCallback } from 'react';
 import type { HidControllerMap } from '../hid-calibration.type';
 import type { ActionDeps } from './action-deps.type';
@@ -42,7 +42,7 @@ const useCalibrationExport = (d: ActionDeps) => {
   const handleSaveDebugFile = useCallback(async (): Promise<boolean> => {
     const map = buildCalibrationMap();
     try {
-      const filePath = await requireHostApi().writeHidDebugFile(map.name || map.profileId, map);
+      const filePath = await inputApi().capture.writeDebug(map.name || map.profileId, map);
       d.addLog(`OK Saved calibration to ${filePath}`);
       return true;
     } catch (err) {

@@ -40,7 +40,7 @@ import { screenTree } from '../.brock/screens';
 | Settings | `SettingsHub`, `SettingsLayout`, `SettingsPageContext`, `createTabRegistry`, `moduleTabId`, `resolveSections`, `matchTabs` |
 | Shell | `useAboutInfo`, `useRailEntries`, `ConfirmDialog`, `ProfilesScreen`, `WorkspaceSwitch` |
 | Compounds | `AboutPanel`, `ProfilesPanel`, `ReleaseNotesPanel`, with their props types |
-| Modules | `RendererModule`, `mergeModules` |
+| Modules | `RendererModule`, `ModuleBucket`, `mergeModules` |
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toMenuGroups`, `MenuResolver` |
 | Host, log, profiles | `hostApi`, `requireHostApi`, `exposeHostNamespace`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
@@ -92,6 +92,7 @@ An app lists its buckets in `src/screens/screens.config.ts` with `defineScreens(
 - `meta: ScreenMeta` sets `title`, `icon`, `order`, `shortcut`, `devOnly`, `requiresProfile` and `keywords`.
 - `resolveScreenTree(tree, builtInTabs)` runs inside `BrockApp`: it adds the built-in and module settings tabs to the settings bucket, turns each hub into a screen with `defineHub`, derives the menu with `deriveMenu` and points the `settings` route at the settings bucket, so no separate Settings screen is registered.
 - The menu reads `BucketDef.menu`: `entry` for one entry, `submenu` for one child per page, `hidden` for none. `BucketDef.switcher: false` keeps a bucket out of the top hub switcher while its menu entry, shortcut and `open('bucket/page')` still work. The home bucket is already the Home entry. `MenuItem` takes `{ bucket, page, tab }` as a target, and `open('game/tracker/map')` opens that bucket, page and tab.
+- A module can bring a whole bucket: `RendererModule.buckets` is a list of `{ bucket, entries }`, the `BucketDef` and the same `BucketEntry` shapes the generated `.brock/screens.ts` holds (`page`, `live`, `tab`, `sub`, `custom`, each with its `meta`; `lazyComponent` keeps the pages lazy). `BrockApp` adds each one to the app's screen tree before `resolveScreenTree`: the bucket, its hub and its search entries. A bucket id the app already declares throws at start. An app with no `screenTree` gets the hubs as module screens, so the bucket still opens. With `menu: 'hidden'` and `switcher: false` the bucket adds no menu entry and no switcher tab; a module menu entry whose `screen` is the bucket id (for example in the Advanced section) places it.
 - The hero slots come from `screens/kinds/hero-frame.constants.ts`, the one place the Tessera Hero composite plugs in. The page renders the slots it fills and the frame draws one `Hero` with them.
 
 ## Widgets by convention

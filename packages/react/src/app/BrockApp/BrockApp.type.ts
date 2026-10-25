@@ -5,7 +5,7 @@ import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { MenuConfig, MenuIssue, MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
-import type { RendererModule } from '../../modules/renderer-module.type';
+import type { ModuleBucket, RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { BeforeQuit, OnBeforeQuit } from '../../quit/quit.type';
 import type { TitleBarItemEntry } from '../../title-bar/title-bar-item.type';
@@ -136,6 +136,7 @@ interface AppScreensInput {
   screenTree?: ScreenTree;
   builtInTabs: TabDef<object>[];
   moduleScreens: readonly ScreenDef[];
+  moduleBuckets: readonly ModuleBucket[];
   menu?: readonly MenuEntry[];
   homeScreen?: string;
   productHome: string;

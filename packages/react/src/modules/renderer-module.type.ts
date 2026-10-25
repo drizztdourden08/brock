@@ -5,6 +5,8 @@ import type { MenuEntry } from '../menu/menu.type';
 import type { SearchAction } from '../search/search.type';
 import type { ModulePorts } from '../platform/platform.type';
 import type { ScreenDef } from '../screens/screen.type';
+import type { BucketEntry } from '../screens/conventions/screen-tree.type';
+import type { BucketDef } from '../screens/conventions/screens-config.type';
 import type { TabDef } from '../settings/settings.type';
 import type { WidgetDef } from '../widgets/widget.type';
 import type { WidgetKitDef } from '../widgets/kits/widget-kit.type';
@@ -20,9 +22,15 @@ type TitleBarActionHook = () => WindowTitleBarAction | null;
 
 type TitleBarActionSource = WindowTitleBarAction | TitleBarActionHook;
 
+interface ModuleBucket {
+  bucket: BucketDef;
+  entries: readonly BucketEntry[];
+}
+
 interface RendererModule {
   id: string;
   screens?: ScreenDef[];
+  buckets?: readonly ModuleBucket[];
   settingsTabs?: TabDef<object>[];
   menu?: MenuEntry[];
   Provider?: ComponentType<{ children: ReactNode }>;
@@ -45,6 +53,7 @@ interface RendererModule {
 interface MergedModules {
   ids: string[];
   screens: ScreenDef[];
+  buckets: ModuleBucket[];
   settingsTabs: TabDef<object>[];
   menu: MenuEntry[];
   providers: ComponentType<{ children: ReactNode }>[];
@@ -64,4 +73,4 @@ interface MergedModules {
   commands: CommandDef[];
 }
 
-export type { MergedModules, RendererModule, TitleBarActionHook, TitleBarActionSource };
+export type { MergedModules, ModuleBucket, RendererModule, TitleBarActionHook, TitleBarActionSource };

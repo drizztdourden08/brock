@@ -17,9 +17,9 @@ const PositionalCaptureStep = (props: PositionalCaptureStepProps) => {
     <>
       <HoldStatusLine
         status={restoreStatus}
-        pendingText="Restoring the hold on every controller..."
-        doneText="The hold is back. This controller reads normally again."
-        errorText="Couldn't restore the hold. The capture below may not receive anything."
+        pendingText="Bringing your controllers back in the app..."
+        doneText="Your controllers work in the app again."
+        errorText="Could not bring your controllers back. The capture below may not receive anything."
       />
 
       {active && deviceKey === null && (

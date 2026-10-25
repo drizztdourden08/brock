@@ -41,7 +41,7 @@ The app composes `{ ...BASE_INVOKE_MAP, ...NOTES_INVOKE_MAP }` and hands the res
 ## Automation flags
 
 - An automated launch is read-only for the configuration every launch shares (window state, default profile). Main and preload read the same flag list so both processes agree.
-- `IDENTITY_FLAGS` (`--instance`, `--profile`) tag a window a person can still use. `isHeadlessLaunch` is true for any other automation flag unless `--visible` is given, and a headless launch is hidden: no window is ever shown (see the electron README).
+- `IDENTITY_FLAGS` (`--instance`, `--profile`) only pick an identity, so a launch with just those is a user launch: `isAutomationLaunch` and `isHeadlessLaunch` are false, and the dialogs, start-up prompts, tour and folder questions all run. A named instance still never writes the files every launch shares and never takes the single-instance lock; those checks read the instance name, not the automation flag. `isAutomationLaunch` is true for any other automation flag, and `isHeadlessLaunch` too unless `--visible` is given, and a headless launch is hidden: no window is ever shown (see the electron README).
 - A flag matches bare or as `--flag=value`; `flagValue` returns the value part or null.
 
 ## Platform

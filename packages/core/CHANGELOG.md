@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-core
 
+## 0.97.2
+
 ## 0.97.1
 
 ### Patch Changes

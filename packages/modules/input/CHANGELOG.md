@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-input
 
+## 0.97.2
+
+### Patch Changes
+
+- e7fe0aa: Pad callout leaders keep off the body of the pad. The layout now charges extra for every unit of a leader that runs inside the silhouette, so the nearest clear spot wins over a long diagonal across the pad, and a short second pass moves a callout to a cheaper spot when that frees room. The Menu, View and Share callouts (the start, back and misc buttons) prefer the top of the pad and look further along the top row to find a clear spot.
+- e7fe0aa: The `ControllerSilhouette` component comes from Tessera again, and the module no longer carries a copy of it. Brock keeps the anchors: `CONTROLLER_SILHOUETTE_ANCHORS`, the anchor ids, the variants and the anchor types stay exported from `@drizztdourden08/brock-input/renderer`, with the same positions, and `PadOverlay` and the pad page read them. `ControllerSilhouette`, `ControllerSilhouetteProps`, `CONTROLLER_SILHOUETTE_PATHS` and `CONTROLLER_SILHOUETTE_VIEW_BOX` are no longer exported from the module. Upgrading: import them from `@drizztdourden08/tessera/composites`. The migration `silhouette-from-tessera` rewrites those imports.
+  - @drizztdourden08/brock-core@0.97.2
+  - @drizztdourden08/brock-electron@0.97.2
+  - @drizztdourden08/brock-react@0.97.2
+
 ## 0.97.1
 
 ### Patch Changes

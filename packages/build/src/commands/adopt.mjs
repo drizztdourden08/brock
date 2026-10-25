@@ -2,7 +2,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { followBrockPin, installLauncher, keepCrossDriveLinks, launcherName, linkSpec } from '@drizztdourden08/brock-thread';
+import { followBrockPin, installLauncher, keepCrossDriveLinks, launcherName, linkSpec, resolveNotesRoot } from '@drizztdourden08/brock-thread';
 import { scopeOf } from '@drizztdourden08/standards/structure';
 import { OWN_PACKAGE } from '../modules/sync.mjs';
 import { ensurePnpmPackageManager } from '../release/pnpm-package-manager.mjs';
@@ -23,6 +23,8 @@ const LINT_CONFIG = '@drizztdourden08/brock-lint-config';
 const BUILD = '@drizztdourden08/brock-build';
 const TOOLING_PACKAGES = { [LINT_CONFIG]: 'packages/lint-config', [BUILD]: 'packages/build', [THREAD]: 'packages/thread' };
 const TOOL_DEPS = { knip: '^5.65.0', jscpd: '^4.0.5' };
+
+const notesDirOf = (rootDir) => resolveNotesRoot({ repoDir: rootDir, appDir: releaseAppDir(rootDir), rootFallback: true }).dir;
 
 const standardsFile = (path) => readFileSync(createRequire(import.meta.url).resolve(`@drizztdourden08/standards/${path}`), 'utf8');
 
@@ -57,7 +59,7 @@ onlyBuiltDependencies:
   '.npmrc': standardsFile('templates/npmrc'),
   'brock.scope': `${scope}\n`,
   [TESSERA_CONFIG_FILE]: `${JSON.stringify(tesseraConfigFor(rootDir, designPackageOf(rootDir, scope)), null, 2)}\n`,
-  [RELEASE_WORKFLOW_FILE]: releaseWorkflow(releaseAppDir(rootDir)),
+  [RELEASE_WORKFLOW_FILE]: releaseWorkflow(releaseAppDir(rootDir), undefined, notesDirOf(rootDir)),
 });
 
 const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc', TESSERA_CONFIG_FILE]);

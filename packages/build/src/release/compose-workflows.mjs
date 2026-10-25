@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { NOTES_DIR } from '../packaging/packaging.constants.mjs';
 import { resolvePlatforms } from '../platforms/resolve-platforms.mjs';
 import { shapeOf } from '../platforms/server/app-shape.mjs';
 import { SERVER_DEFAULT_ARCHES } from '../platforms/server/server.constants.mjs';
@@ -71,9 +72,9 @@ const jobContext = ({ appDir, prefix, systemSteps, steps, server }, workflow) =>
 
 /**
  * @param {{ jobs: Job[], postJobs: Job[] }} jobs the jobs before the release and after it
- * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext, publish: PublishPlan | null }} where
+ * @param {{ appDir: string, app: AppOfMany | null, branch: string, ctx: JobContext, publish: PublishPlan | null, notesDir: string }} where
  */
-const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx, publish }) => {
+const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx, publish, notesDir }) => {
   const builds = `[${['prepare', ...jobs.map((job) => job.id)].join(', ')}]`;
   const prepareSteps = ctx.stepsAt('beforeInstall', 'linux', null, 'prepare');
   const prepareAfterInstall = ctx.stepsAt('prepare', 'linux', null, 'prepare');
@@ -82,7 +83,7 @@ const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx, publish }) 
     GROUP: app ? `-${app.name}` : '',
     APP_FLAG: app ? ` --app ${app.name}` : '',
     TAG_PREFIX: app?.tagPrefix ?? 'v',
-    NOTES_DIR: app?.notesDir ?? 'release-notes',
+    NOTES_DIR: app?.notesDir ?? notesDir ?? NOTES_DIR,
     APP_DIR: appDir,
     BRANCH: branch,
     PREPARE_PERMISSIONS: jobPermissionsBlock(ctx.liftedPermissions('prepare')),
@@ -154,10 +155,10 @@ const jobIdsOf = ({ app, windowless, publish, ciJobs, releaseJobs, postJobs }) =
 });
 
 /**
- * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, baselines?: boolean, branch?: string, server?: JobContext['server'], publish?: PublishPlan | null, testEnv?: TestEnv }} input
+ * @param {{ targets: string[], appDir?: string, prefix: string, systemSteps?: ModuleCiStep[], steps?: CollectedSteps, app?: AppOfMany | null, notesDir?: string, baselines?: boolean, branch?: string, server?: JobContext['server'], publish?: PublishPlan | null, testEnv?: TestEnv }} input
  * @returns {{ ci: string, release: string, jobs: { ci: string[], release: string[] } }}
  */
-const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER, publish = null, testEnv = NO_TEST_ENV }) => {
+const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], steps = noWorkflowSteps(), app = null, notesDir, baselines = false, branch = DEFAULT_BRANCH, server = DEFAULT_SERVER, publish = null, testEnv = NO_TEST_ENV }) => {
   const { platforms } = resolvePlatforms(targets);
   const ciCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'ci');
   const releaseCtx = jobContext({ appDir, prefix, systemSteps, steps, server }, 'release');
@@ -168,7 +169,7 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
   const postJobs = platforms.flatMap((platform) => (platform.publishJob ? [platform.publishJob(releaseCtx)] : []));
   return {
     ci: `${ciText(ciJobs, { appDir, app, baselines, branch, ctx: ciCtx, windowless, testEnv }).trimEnd()}\n`,
-    release: `${releaseText({ jobs: releaseJobs, postJobs }, { appDir, app, branch, ctx: releaseCtx, publish }).trimEnd()}\n`,
+    release: `${releaseText({ jobs: releaseJobs, postJobs }, { appDir, app, branch, ctx: releaseCtx, publish, notesDir }).trimEnd()}\n`,
     jobs: jobIdsOf({ app, windowless, publish, ciJobs, releaseJobs, postJobs }),
   };
 };

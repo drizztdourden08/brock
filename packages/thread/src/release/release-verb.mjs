@@ -4,6 +4,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { flag } from '../cli/thread-args.mjs';
 import { checkNoteFile } from '../release-notes/check-note-file.mjs';
+import { findAppDir } from '../release-notes/find-app-dir.mjs';
+import { resolveNotesRoot } from '../release-notes/resolve-notes-root.mjs';
 import { highestNotesVersion, notesFileFor } from './notes-version.mjs';
 
 const WORKFLOW = 'release.yml';
@@ -11,7 +13,8 @@ const WORKFLOW = 'release.yml';
 const USAGE = [
   '  brock release [version] [--latest | --prerelease] [--full] [--app <name>]',
   '                               run the release workflow for v<version> (asks); the version defaults to the',
-  '                               highest release-notes/v*.md. Without a dispatchable .github/workflows/release.yml',
+  '                               highest release-notes/v*.md of the app folder (the repo root when only it has notes).',
+  '                               Without a dispatchable .github/workflows/release.yml',
   '                               it creates the GitHub release from the notes instead. The note must pass',
   '                               brock release-notes check first. In a repo that releases several apps,',
   '                               --app <name> runs release-<name>.yml with the notes of apps/<name>',
@@ -19,9 +22,10 @@ const USAGE = [
 
 const planOf = (ctx, options) => {
   const app = typeof options.app === 'string' ? options.app : null;
-  return app
-    ? { app, notesRoot: join(ctx.rootDir, 'apps', app), workflow: `release-${app}.yml` }
-    : { app, notesRoot: ctx.rootDir, workflow: WORKFLOW };
+  const appDir = app ? `apps/${app}` : (findAppDir(ctx.rootDir) ?? '.');
+  const notes = resolveNotesRoot({ repoDir: ctx.rootDir, appDir, rootFallback: !app });
+  if (notes.fallback) ctx.log(`No ${appDir}/release-notes; reading release-notes at the repo root.`);
+  return { app, notesRoot: join(ctx.rootDir, notes.root), workflow: app ? `release-${app}.yml` : WORKFLOW };
 };
 
 const dispatchable = (rootDir, workflow) => {

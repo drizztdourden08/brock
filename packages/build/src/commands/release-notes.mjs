@@ -10,8 +10,8 @@ import { releaseLayout } from '../release/release-layout.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 
 const USAGE = `brock release-notes check [version]
-  the note of the version being released, release-notes/v<version>.md at the repo root (in the app folder when
-  the repo releases several apps): the title names the product, a one-paragraph summary, ## sections,
+  the note of the version being released, release-notes/v<version>.md beside the app (at the repo root when
+  only the root has notes): the title names the product, a one-paragraph summary, ## sections,
   plain-English bullets. Without a version, the app's own version once the repo has a note at or below it.
   The format: @drizztdourden08/standards docs/release-notes.md`;
 
@@ -30,12 +30,12 @@ const appRootOf = (rootDir) => {
 /**
  * @param {string} appDir
  * @param {{ releaseTagPrefix?: string }} product
- * @returns {string} the folder that holds release-notes/
+ * @returns {{ notesRoot: string, atRoot: boolean }} the notes folder's parent, and if it is the repo root
  */
 const notesRootOf = (appDir, product) => {
   const layout = releaseLayout(appDir, product);
-  if (layout) return layout.app ? appDir : layout.repoDir;
-  return findWorkspaceRoot(appDir) ?? appDir;
+  if (layout) return { notesRoot: join(layout.repoDir, layout.notesRoot), atRoot: layout.notesAtRoot };
+  return { notesRoot: findWorkspaceRoot(appDir) ?? appDir, atRoot: false };
 };
 
 const started = (notesRoot, version) => {
@@ -57,7 +57,8 @@ const runReleaseNotes = async ({ rootDir, args }) => {
   const appDir = appRootOf(rootDir);
   if (!appDir) throw new Error(`No Brock app in ${rootDir}. A library checks its notes with standards release-notes check.`);
   const { product } = await loadBrockConfig(appDir);
-  const notesRoot = notesRootOf(appDir, product);
+  const { notesRoot, atRoot } = notesRootOf(appDir, product);
+  if (atRoot) console.log(`brock release-notes: ${NOTES_DIR} is not beside the app; reading ${NOTES_DIR} at the repo root.`);
   const version = given ?? JSON.parse(readFileSync(join(appDir, 'package.json'), 'utf8')).version;
   if (!given && !started(notesRoot, version)) {
     console.log(`brock release-notes: no note at or below v${version} yet; the next release needs ${NOTES_DIR}/v<version>.md.`);

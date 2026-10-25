@@ -57,6 +57,7 @@ const composeInputOf = (config, layout) => ({
   appDir: layout.appDir,
   prefix: artifactPrefixOf(config.product),
   app: layout.app,
+  notesDir: layout.notesDir,
   baselines: config.review?.baselines === true,
   testEnv: testEnvOf(config.workflows),
 });

@@ -2,6 +2,7 @@
 import { brockEslint } from '@drizztdourden08/brock-lint-config';
 
 export default brockEslint({
+  primitivesGlobs: ['packages/modules/input/src/primitives/**/*.tsx'],
   inlineStyle: [
     {
       files: ['packages/react/src/brand/WindowMascot/sub-components/WalkerLayer.tsx'],
@@ -10,6 +11,21 @@ export default brockEslint({
     {
       files: ['packages/modules/input/src/compounds/ControllerLayout/sub-components/ControllerTag.tsx'],
       why: 'Each tag sits at a position measured from the controller drawing, which no class can carry.',
+    },
+    {
+      files: [
+        'packages/modules/input/src/views/InputTester/sub-components/ControllerRawBytes.tsx',
+        'packages/modules/input/src/views/InputTester/sub-components/hid-calibration/components/ByteChangeDot.tsx',
+        'packages/modules/input/src/views/InputTester/sub-components/{input-cal-visuals,trigger-calibration/sub-components}/TriggerBar.tsx',
+      ],
+      why: 'Each raw byte cell is shaded by its live value, the change dot takes its position, width and colour from the size of the change, and a trigger bar fills to the live trigger value and marks the dead zone the user drags.',
+    },
+    {
+      files: [
+        'packages/modules/input/src/composites/PadOverlay/PadOverlay.tsx',
+        'packages/modules/input/src/composites/PadOverlay/sub-components/OverlayHalo.tsx',
+      ],
+      why: 'The overlay grows to the size measured from the pad drawing, and each halo takes its glow level from the live input.',
     },
   ],
   rawColorOffGlobs: ['packages/electron/**', 'templates/app/electron/**'],

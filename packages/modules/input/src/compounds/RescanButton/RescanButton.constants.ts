@@ -1,0 +1,4 @@
+/* @layer renderer-shell @kind constants */
+const RESCAN_LABEL = 'Rescan controllers';
+
+export { RESCAN_LABEL };

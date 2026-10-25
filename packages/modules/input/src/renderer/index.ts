@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { controllerInputBootTask } from '../controller-input/controller-input-boot-task';
 import { INPUT_TESTER_SCREEN_ID } from './input-renderer.constants';
 import { InputProvider } from './InputProvider';
 import { inputTesterScreen } from './InputTesterScreen';
@@ -10,6 +11,7 @@ const inputRenderer: RendererModule = {
   screens: [inputTesterScreen],
   menu: [{ key: INPUT_TESTER_SCREEN_ID, label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: INPUT_TESTER_SCREEN_ID }],
   Provider: InputProvider,
+  bootTasks: [controllerInputBootTask],
 };
 
 export default inputRenderer;
@@ -54,3 +56,36 @@ export { applyTriggerCalibration } from '../calibration/apply-trigger-calibratio
 export type { InputApi, InputCalibrationApi, InputCaptureApi, InputMappingApi } from '../input-api.type';
 export type { DeviceEntry, InputStatus, VibrateSegment, VibrateResult } from '../device.type';
 export type { DeviceStickCalibration, TriggerCalibration, StickPoint } from '../calibration.type';
+export { controllerInputStore } from '../controller-input/controller-input-store';
+export type { ControllerInputState, HidRawReportEvent } from '../controller-input/controller-input-store';
+export { DIAG_LOG_MAX } from '../runtime/controller-input-store.constants';
+export type {
+  ControllerDiagListener, ControllerDisconnectListener, HidRawReportListener,
+} from '../runtime/controller-input-store.type';
+export type { ControllerStateHost } from '../runtime/process-controller-state.type';
+export { controllerCardInfo } from '../runtime/controller-card-info';
+export { groupControllerDevices } from '../runtime/controller-device-groups';
+export type { ControllerDeviceGroup } from '../runtime/controller-device-groups';
+export { cellAt, itemAt } from '../checked-access';
+export { recallControllerSdlType } from '../runtime/controller-family-cache';
+export { rememberControllerSdlType } from '../runtime/controller-family-cache/remember-controller-sdl-type';
+export { recallControllerName } from '../runtime/controller-name-cache/recall-controller-name';
+export { rememberControllerName } from '../runtime/controller-name-cache/remember-controller-name';
+export { resolveDeviceFromEntry } from '../runtime/resolve-device';
+export type { DeviceSnapshotFields } from '../runtime/seed-device-cache.type';
+export { padDisplayName } from '../controller-names/pad-display-name';
+export { ANALOG_POSITIONS, SLOT_POSITIONS } from '../controller-families/controller-families.constants';
+export { layoutFamilyOf } from '../controller-families/layout-family-of';
+export type { DevicePositions, LayoutFamily } from '../controller-families/controller-families.type';
+export { groupAxisControls } from '../resolved-axis-groups/group-axis-controls';
+export type { GroupedAxisControls, StickPairGroup } from '../resolved-axis-groups/resolved-axis-groups.type';
+export { useControllerEventLog } from '../controller-event-log/useControllerEventLog';
+export { useControllerDevices } from './useControllerDevices';
+export { useAppVersion } from './useAppVersion';
+export { ControllerStatusBar } from '../compounds/ControllerStatusBar';
+export { ControllerPortRow } from '../compounds/ControllerPortRow';
+export { ControllerStatusBadge } from '../compounds/ControllerStatusBadge';
+export { ControllerCapabilityBadges } from '../compounds/ControllerCapabilityBadges';
+export { UnavailableControllerNotice } from '../compounds/UnavailableControllerNotice';
+export { MappingPasteBox } from '../compounds/MappingPasteBox';
+export { RescanButton } from '../compounds/RescanButton';

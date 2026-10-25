@@ -14,7 +14,7 @@ const entrySeed = (entry: BucketEntry): SearchFileSeed[] => {
     ...('page' in entry ? { page: entry.page } : {}),
     ...(meta?.title === undefined ? {} : { title: meta.title }),
     ...(meta?.icon === undefined ? {} : { icon: meta.icon }),
-    ...(entry.kind === 'sub' && meta?.path !== undefined ? { path: meta.path } : {}),
+    ...(entry.kind === 'sub' && entry.meta?.path !== undefined ? { path: entry.meta.path } : {}),
     keywords: normaliseKeywords(meta?.keywords),
     ...(meta?.devOnly === true ? { devOnly: true } : {}),
   }];

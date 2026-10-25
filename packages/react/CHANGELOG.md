@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-react
 
+## 0.98.0
+
+### Minor Changes
+
+- 106472e: A settings row drawn by `renderControl` keeps the standard row chrome: the title, the description, the hint, the row actions and the lock, with the custom control in the control slot like a built-in control. A setting item takes `layout: 'wide'` to draw a wide editor at the full width of the row, below the title and description, and `chrome: false` to keep the old behaviour where `renderControl` owns the whole row. A hidden hub home page stays out of the side nav like any other hidden page and the hub still opens on it by route. When the home is the only page shown, it stays in the nav as before. The side nav is drawn once two pages are listed, not counting a hidden home.
+- 40c83ac: Brock builds on Tessera 0.64 and its new toolbar dock. Docked toolbars sit in a visible bar, can share a lane and have resize handles that push their neighbours. The saved toolbar layout is now Tessera's v2 format. A layout saved by an older build is upgraded in memory when it loads and saved as v2 on the next change, so no script is needed. An older build that reads a v2 layout resets the toolbars to their defaults and leaves the widgets alone. Each docked toolbar bar is one F6 stop. Widget panels can take a corner and dividers push their neighbours, with no change to the saved widget layout.
+- 40c83ac: An app can place the toolbar host itself. `BrockApp` takes `toolbarPlacement`, `'widgets'` (the default, the dock wraps the widget host as before) or `'app'`, and with `'app'` the app mounts the exported `ToolbarHost` around its own work area, such as a canvas page. Only one host draws the toolbars; a second logs a warning once and renders only its children. A host that mounts late now keeps the layout saved for the profile: the store holds the stored layout until the toolbars are registered and reads it once, so the defaults are never saved over it. A docked toolbar is now a stop of its own for F6 and Shift+F6 even inside the main area, and the main area stays in the cycle.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.98.0
+
 ## 0.97.2
 
 ### Patch Changes

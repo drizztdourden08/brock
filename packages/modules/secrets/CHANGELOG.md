@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-secrets
 
+## 0.98.0
+
+### Patch Changes
+
+- Updated dependencies [106472e]
+- Updated dependencies [40c83ac]
+- Updated dependencies [40c83ac]
+  - @drizztdourden08/brock-react@0.98.0
+  - @drizztdourden08/brock-core@0.98.0
+  - @drizztdourden08/brock-electron@0.98.0
+
 ## 0.97.2
 
 ### Patch Changes

@@ -1,6 +1,7 @@
 /* @layer renderer-components @kind logic */
-import { END_REACH, END_ROWS, END_STEP_RATIO, LABEL_GAP, LABEL_PAD, TOP_END_REACH, TOP_PREFERRED_SLOTS, TOWARDS } from '../PadOverlay.constants';
+import { END_REACH, END_ROWS, END_STEP_RATIO, LABEL_GAP, LABEL_PAD, TOP_END_REACH, TOWARDS } from '../PadOverlay.constants';
 import type { PlacedPart } from '../PadOverlay.type';
+import { wantsTop } from './wants-top';
 import { calloutSpot } from './callout-spot';
 import { hullSpan } from './hull-span';
 import type { LabelSize, LabelSpot, Scene, Toward } from './placement.type';
@@ -20,7 +21,7 @@ const columnSpots = (x: number, toward: Toward, size: LabelSize, scene: Scene): 
 const endSpots = (part: PlacedPart, size: LabelSize, scene: Scene, fontPx: number): LabelSpot[] => {
   const step = fontPx * END_STEP_RATIO;
   const spots: LabelSpot[] = [];
-  const reach = TOP_PREFERRED_SLOTS.includes(part.slot.anchor) ? TOP_END_REACH : END_REACH;
+  const reach = wantsTop(part, scene) ? TOP_END_REACH : END_REACH;
   for (let k = -reach; k <= reach; k += 1) {
     for (const toward of TOWARDS) spots.push(...columnSpots(part.x + k * step, toward, size, scene));
   }

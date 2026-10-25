@@ -206,6 +206,8 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 The module adds a `Controllers` hub (the bucket `controllers`) and a menu entry under Advanced that opens it. The hub is hidden from the hub switcher, so the menu entry is the way in. A module contributes the bucket through `RendererModule.buckets`, and an app that declares its own bucket with the id `controllers` fails at start.
 
+The module lists the connected controllers itself at start. Its boot task loads the device list and keeps listening, and it loads the list again when the diagnostics hold is restored, so pads that were plugged in before the app opened show up with no replug. An app adds no feed or list call of its own.
+
 - **Pads.** One page per connected controller, listed under Connected in the hub nav. Four boxes: the pad drawn with a callout for each input and the glyph of the pad's family, the sticks and triggers with their readouts and calibration, the buttons, and the facts of the controller with its rumble tests. The Controller box header holds Run diagnostics and the buttons an app registers.
 - **Directory.** A searchable table of every mapping SDL3 knows, with the connected controllers first and a Rescan button at the end of the filter row. Only the table body scrolls.
 - **Logs.** The connect and disconnect history of this session, with the HID events.

@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind types */
-import type { ControllerSilhouetteAnchorSet } from '../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../controller-anchors';
 import type { ControllerSlotId } from '../../pad/controller-slot.type';
 import type { DpadPressState } from '../DpadCross';
 

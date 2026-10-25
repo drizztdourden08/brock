@@ -1,5 +1,5 @@
-/* @layer renderer-components @kind data */
-import type { ControllerSilhouetteAnchors } from '../ControllerSilhouette.type';
+/* @layer renderer-lib @kind data */
+import type { ControllerSilhouetteAnchors } from './controller-anchors.type';
 
 const CONTROLLER_SILHOUETTE_ANCHORS: ControllerSilhouetteAnchors = {
   offset: {

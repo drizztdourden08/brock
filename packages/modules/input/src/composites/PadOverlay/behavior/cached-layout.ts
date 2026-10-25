@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../../controller-anchors';
 import { LAYOUT_CACHE_SIZE } from '../PadOverlay.constants';
 import type { OverlayLayout, OverlayMetrics, OverlaySlotView } from '../PadOverlay.type';
 import { layoutOverlay } from './layout-overlay';

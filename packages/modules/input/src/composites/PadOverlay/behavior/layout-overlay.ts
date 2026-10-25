@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../../controller-anchors';
 import { LABEL_GAP } from '../PadOverlay.constants';
 import type { OverlayLayout, OverlayMetrics, OverlaySlotView } from '../PadOverlay.type';
 import { contentBounds } from './content-bounds';

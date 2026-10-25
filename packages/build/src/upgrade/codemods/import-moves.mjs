@@ -102,11 +102,11 @@ const settle = (ts, path, source, moves) => {
 };
 
 /**
- * @param {{ moves: readonly { from: string, to: string, names: ReadonlySet<string> }[], noTypescript: string, ts?: typeof import('typescript') }} spec ts: a compiler already loaded
+ * @param {{ moves: readonly { from: string, to: string, names: ReadonlySet<string> }[], noTypescript: string, ts?: typeof import('typescript'), mentions?: RegExp }} spec ts: a compiler already loaded
  * @returns {(file: { path: string, source: string }) => { source: string, todos: { line: number, message: string }[] }}  moves the named imports and re-exports to their new entry
  */
-const importMoves = ({ moves, noTypescript, ts: loaded }) => ({ path, source }) => {
-  if (moves.length === 0 || !MENTIONS.test(source)) return { source, todos: [] };
+const importMoves = ({ moves, noTypescript, ts: loaded, mentions = MENTIONS }) => ({ path, source }) => {
+  if (moves.length === 0 || !mentions.test(source)) return { source, todos: [] };
   const ts = loaded ?? loadTypescript(process.cwd());
   if (!ts) return { source, todos: [{ line: 1, message: noTypescript }] };
   return { source: settle(ts, path, source, moves), todos: [] };

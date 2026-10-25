@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorSet } from '../../../controller-anchors';
 import type { OverlaySlotView, PlacedPart } from '../PadOverlay.type';
 import { slotFrame } from './slot-frame';
 

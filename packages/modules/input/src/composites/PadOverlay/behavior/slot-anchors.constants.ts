@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind constants */
-import type { ControllerSilhouetteAnchorId } from '../../ControllerSilhouette';
+import type { ControllerSilhouetteAnchorId } from '../../../controller-anchors';
 import type { ControllerSlotId } from '../../../pad/controller-slot.type';
 import type { Point } from '../PadOverlay.type';
 

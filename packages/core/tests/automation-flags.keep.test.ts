@@ -34,7 +34,14 @@ describe('createAutomationFlags', () => {
     expect(flags.isBackgroundLaunch(['node', 'app', '--profile=a', '--instance=mcp', '--background'])).toBe(true);
     expect(flags.isBackgroundLaunch(['node', 'app', '--instance=mcp', '--background', '--screenshot=boot'])).toBe(false);
     expect(flags.isBackgroundLaunch(['node', 'app', '--instance=mcp'])).toBe(false);
-    expect(flags.isAutomationLaunch(['node', 'app', '--instance=mcp', '--background'])).toBe(true);
+    expect(flags.isAutomationLaunch(['node', 'app', '--instance=mcp', '--background'])).toBe(false);
+  });
+
+  it('does not count an identity flag alone as automation, and counts it with a real automation flag', () => {
+    expect(flags.isAutomationLaunch(['node', 'app', '--instance=probe'])).toBe(false);
+    expect(flags.isAutomationLaunch(['node', 'app', '--profile=a', '--instance=probe', '--visible', '--muted'])).toBe(false);
+    expect(flags.isAutomationLaunch(['node', 'app', '--instance=probe', '--no-focus'])).toBe(true);
+    expect(flags.isAutomationLaunch(['node', 'app', '--profile=a', '--screenshot=boot'])).toBe(true);
   });
 
   it('reads a flag value', () => {

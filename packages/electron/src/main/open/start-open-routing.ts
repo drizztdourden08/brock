@@ -13,7 +13,7 @@ const startOpenRouting = (ctx: MainContext, options: BootstrapOptions, schemes: 
   const { onOpen } = options;
   if (onOpen) openRouter.onOpen((request) => onOpen(request, ctx));
   const appImage = process.env.APPIMAGE;
-  if (process.platform === 'linux' && app.isPackaged && appImage && !ctx.flags.isAutomationLaunch()) {
+  if (process.platform === 'linux' && app.isPackaged && appImage && !ctx.flags.isAutomationLaunch() && !ctx.instance.name) {
     void installLinuxIntegration(ctx.product, appImage).catch((err: unknown) => ctx.log(`desktop entry not written: ${stackOf(err)}`, 'warn'));
   }
   void whenRevealed().then(() => openRouter.ready((request) => ctx.emit('app:open', request)));

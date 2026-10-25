@@ -57,7 +57,7 @@ Usage:
                              directory), then every release after the map's "from" replays over them
   brock release-notes check [version]
                              the release note of that version (else the app's own once the repo has notes):
-                             release-notes/v<version>.md at the repo root, its title, summary, sections and
+                             release-notes/v<version>.md beside the app, its title, summary, sections and
                              plain-English bullets; the release workflow runs it before it tags
   brock affected <app folder> [base ref]
                              true when the changes since the merge base with the ref touch the app: its own

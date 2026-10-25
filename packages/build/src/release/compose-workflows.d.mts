@@ -53,6 +53,7 @@ interface ComposeInput {
   systemSteps?: SystemStep[];
   steps?: CollectedSteps;
   app?: AppOfMany | null;
+  notesDir?: string;
   baselines?: boolean;
   branch?: string;
   server?: ServerJobOptions;

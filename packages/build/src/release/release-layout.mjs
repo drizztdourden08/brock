@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
+import { resolveNotesRoot } from '@drizztdourden08/brock-thread';
 import { appDirs } from '../commands/app-dirs.mjs';
 import { NOTES_DIR } from '../packaging/packaging.constants.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
@@ -16,7 +17,9 @@ const slashed = (path) => path.replace(/\\/g, '/');
  * @property {string} appDir the app folder from the repo root, '.' for a standalone app
  * @property {string[]} apps every Brock app of the repo, from the repo root
  * @property {{ name: string, tagPrefix: string, notesDir: string } | null} app set when the repo has several apps
+ * @property {string} notesRoot the parent of the notes folder, from the repo root
  * @property {string} notesDir the folder of the app's notes, from the repo root
+ * @property {boolean} notesAtRoot the app reads the repo root's notes
  * @property {string} tagPrefix
  */
 
@@ -28,18 +31,19 @@ const slashed = (path) => path.replace(/\\/g, '/');
 const releaseLayout = (rootDir, product) => {
   const tagPrefix = product.releaseTagPrefix ?? DEFAULT_TAG_PREFIX;
   const workspace = findWorkspaceRoot(rootDir);
-  if (!workspace) return { repoDir: rootDir, appDir: '.', apps: ['.'], app: null, notesDir: NOTES_DIR, tagPrefix };
+  if (!workspace) return { repoDir: rootDir, appDir: '.', apps: ['.'], app: null, notesRoot: '.', notesDir: NOTES_DIR, notesAtRoot: false, tagPrefix };
   if (!existsSync(join(workspace, WORKSPACE_FILE))) return null;
   const appDir = slashed(relative(workspace, rootDir));
   const apps = appDirs(workspace);
   if (!apps.includes(appDir)) return null;
-  if (apps.length < 2) return { repoDir: workspace, appDir, apps, app: null, notesDir: NOTES_DIR, tagPrefix };
+  const notes = resolveNotesRoot({ repoDir: workspace, appDir, rootFallback: apps.length < 2 });
+  const placed = { notesRoot: notes.root, notesDir: notes.dir, notesAtRoot: notes.fallback };
+  if (apps.length < 2) return { repoDir: workspace, appDir, apps, app: null, ...placed, tagPrefix };
   const name = basename(appDir);
   if (!product.releaseTagPrefix) {
     throw new Error(`${appDir}: this repo releases ${apps.length} apps, so each tags its releases apart. Set product.releaseTagPrefix in ${appDir}/brock.config.ts, e.g. '${name}-v'; the updater reads the same prefix.`);
   }
-  const notesDir = `${appDir}/${NOTES_DIR}`;
-  return { repoDir: workspace, appDir, apps, app: { name, tagPrefix, notesDir }, notesDir, tagPrefix };
+  return { repoDir: workspace, appDir, apps, app: { name, tagPrefix, notesDir: notes.dir }, ...placed, tagPrefix };
 };
 
 export { releaseLayout };

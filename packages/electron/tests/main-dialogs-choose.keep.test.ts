@@ -1,7 +1,7 @@
 /* @layer electron-main @kind test */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createDialogs } from '../src/main/dialogs/create-dialogs';
 import { automation, flags, log, parentOf, resetDialogs, showMessageBox } from './dialogs-fixture';
+import { createDialogs } from '../src/main/dialogs/create-dialogs';
 
 vi.mock('electron', async () => (await import('./electron-dialog-mock')).electronDialogMock);
 

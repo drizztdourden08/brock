@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-tools
 
+## 0.99.0
+
+### Patch Changes
+
+- Updated dependencies [ce95881]
+- Updated dependencies [9c53bf7]
+  - @drizztdourden08/brock-react@0.99.0
+  - @drizztdourden08/brock-core@0.99.0
+  - @drizztdourden08/brock-electron@0.99.0
+
 ## 0.98.0
 
 ### Patch Changes

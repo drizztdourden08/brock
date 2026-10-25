@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { getAppLog } from '../src/log/get-app-log';
 import { SettingJsonField } from '../src/settings/SettingsLayout/sub-components/SettingJsonField';
 import type { SettingJsonFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingJsonField/SettingJsonField.type';
+import { SettingWideControl } from '../src/settings/SettingsLayout/sub-components/SettingWideControl';
 import { SettingPathField } from '../src/settings/SettingsLayout/sub-components/SettingPathField';
 import type { SettingPathFieldProps } from '../src/settings/SettingsLayout/sub-components/SettingPathField/SettingPathField.type';
 import { dialogExtensions } from '../src/settings/SettingsLayout/sub-components/SettingPathField/behavior/dialog-extensions';
@@ -78,9 +79,47 @@ describe('settingRow', () => {
     expect(added[0]?.message).toContain('Settings row "mode" draws nothing');
   });
 
-  it('puts a custom control in a content row that still carries the hint for search', () => {
+});
+
+describe('a row drawn by renderControl', () => {
+  it('keeps the title, description and hint on a renderControl row and draws the control in the control slot', () => {
     const row = settingRow(AUDIO, context({ renderControl: () => 'custom' }));
+    expect(row).toMatchObject({ id: 'audio', title: 'Audio', description: 'Play sound.', hint: 'Off mutes every sound.', input: { kind: 'custom', control: 'custom' } });
+    expect(row).not.toHaveProperty('content');
+  });
+
+  it('keeps the noDescription flag and the lock on a renderControl row', () => {
+    const row = settingRow(MODE, context({ renderControl: () => 'custom', lock: 'Locked while playing.', disabled: true }));
+    expect(row).toMatchObject({ title: 'Window mode', noDescription: true, lock: 'Locked while playing.', disabled: true, input: { kind: 'custom' } });
+  });
+
+  it('wraps a wide control so it fills the row under the title', () => {
+    const row = settingRow({ ...AUDIO, layout: 'wide' }, context({ renderControl: () => 'custom' }));
+    const control = row && 'input' in row && row.input?.kind === 'custom' ? row.input.control : null;
+    expect(isValidElement<{ children: unknown }>(control) && control.type === SettingWideControl).toBe(true);
+    expect(isValidElement<{ children: unknown }>(control) ? control.props.children : null).toBe('custom');
+  });
+
+  it('leaves an inline control unwrapped', () => {
+    const row = settingRow({ ...AUDIO, layout: 'inline' }, context({ renderControl: () => 'custom' }));
+    expect(row).toMatchObject({ input: { kind: 'custom', control: 'custom' } });
+  });
+
+  it('lets chrome: false give the whole row to renderControl, still carrying the hint for search', () => {
+    const row = settingRow({ ...AUDIO, chrome: false }, context({ renderControl: () => 'custom' }));
     expect(row).toMatchObject({ id: 'audio', content: 'custom', hint: 'Off mutes every sound.' });
+    expect(row).not.toHaveProperty('input');
+  });
+
+  it('draws the row actions through the row end on a renderControl row', () => {
+    const action = { id: 'go', label: 'Go', onSelect: vi.fn() };
+    const row = settingRow({ ...AUDIO, actions: [action] }, context({ renderControl: () => 'custom' }));
+    expect(row).toMatchObject({ input: { kind: 'custom' }, actions: [{ id: 'go', label: 'Go' }] });
+  });
+
+  it('falls through to the built-in control when renderControl returns null', () => {
+    const row = settingRow(AUDIO, context({ renderControl: () => null }));
+    expect(row).toMatchObject({ input: { kind: 'toggle' } });
   });
 });
 

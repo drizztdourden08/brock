@@ -1,0 +1,6 @@
+/* @layer renderer-shell @kind style */
+.setting-wide-control {
+  inline-size: 100vw;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}

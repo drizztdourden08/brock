@@ -17,7 +17,7 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext, live: HubLiveLists):
   const { params, profile, open, close } = ctx;
   const developerTools = useDeveloperTools();
   const show = useShowContext();
-  const { groups, pages, fallbacks } = useMemo(() => visibleHubPages(def, developerTools, show, live), [def, developerTools, show, live]);
+  const { groups, pages, homeListed, fallbacks } = useMemo(() => visibleHubPages(def, developerTools, show, live), [def, developerTools, show, live]);
   const lastTabs = useScreenStateStore((s) => s.byScope[def.id]);
   const { page, tab, sub, subParams } = useMemo(() => resolveHubPage(pages, def.home, liveParams(pages, fallbacks, params), lastTabs), [pages, def.home, params, lastTabs, fallbacks]);
   useEffect(() => {
@@ -40,7 +40,7 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext, live: HubLiveLists):
   const selectTab = useCallback((id: string) => openTarget({ section: page.id, tab: id }), [openTarget, page.id]);
   const up = useCallback(() => nav.up({ section: page.id }), [page.id]);
 
-  return { groups, pages, fallbacks, page, tab, sub, subParams, context, selectPage, selectTab, up };
+  return { groups, pages, homeListed, fallbacks, page, tab, sub, subParams, context, selectPage, selectTab, up };
 };
 
 export { useHubState };

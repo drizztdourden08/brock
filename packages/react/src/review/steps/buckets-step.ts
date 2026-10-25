@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { showsHubNav } from '../../hub/Hub/behavior/shows-hub-nav';
+import { navPageCount } from '../../hub/Hub/behavior/nav-page-count';
 import { visibleHubPages } from '../../hub/Hub/behavior/visible-hub-pages';
 import { nav } from '../../navigation/nav';
 import { isShown } from '../../screens/show/is-shown';
@@ -35,12 +36,14 @@ const bucketsStep: ReviewStep = {
       await resetUi();
       const reachedVia = await openBucket(tour.env, hub);
       const opened = await waitFor(() => nav.active() === hub.id && find(SELECTORS.layer) !== null);
-      const { pages } = visibleHubPages(hub, developerTools);
-      const navShown = showsHubNav(hub.nav, pages.length);
-      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: pages.map((page) => page.label), shown: navLabels() }));
+      const list = visibleHubPages(hub, developerTools);
+      const { pages } = list;
+      const listed = pages.filter((page) => list.homeListed || page !== hub.home);
+      const navShown = showsHubNav(hub.nav, navPageCount(list));
+      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: listed.map((page) => page.label), shown: navLabels() }));
       if (opened === null) continue;
       if (navShown) tour.report(navGroupChecks(hub.id, navGroupLabels()));
-      await visitHubPages(tour, hub, pages, navShown);
+      await visitHubPages(tour, hub, listed, navShown);
       await hubBackCheck(tour, hub, pages);
     }
   },

@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { DiagnosticsRunResult } from '../../../../../renderer/diagnostics-run-result.type';
-import type { DiagnosticsWizardState } from '../diagnostics-wizard.type';
+import type { RunResultSource } from '../diagnostics-wizard.type';
 
-const diagnosticsRunResultOf = (wizard: DiagnosticsWizardState): DiagnosticsRunResult | null => {
+const diagnosticsRunResultOf = (wizard: RunResultSource): DiagnosticsRunResult | null => {
   if (wizard.deviceKey === null) return null;
   return {
     deviceKey: wizard.deviceKey,

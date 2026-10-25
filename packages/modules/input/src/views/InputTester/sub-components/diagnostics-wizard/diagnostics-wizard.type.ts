@@ -85,6 +85,8 @@ type ProblemSource = Pick<DiagnosticsWizardState, 'step' | 'releaseStatus' | 're
 
 type BusySource = Pick<DiagnosticsWizardState, 'layoutStage' | 'step' | 'restoreStatus'>;
 
+type RunResultSource = Pick<DiagnosticsWizardState, 'deviceKey' | 'capturedLayout' | 'mapping' | 'byteCapture' | 'positionalRecords'>;
+
 type AdvanceSource = Pick<DiagnosticsWizardState, 'step' | 'preselected' | 'confirmChoice' | 'goNext'>;
 
 interface DiagnosticsValues {
@@ -118,7 +120,7 @@ interface DiagnosticsFlowBodyProps {
 }
 
 export type {
-  AdvanceSource, BusySource, ProblemSource,
+  AdvanceSource, BusySource, ProblemSource, RunResultSource,
   CapturedLayout, ChooserDevice, DiagnosticsApiInput, DiagnosticsFlowBodyProps, DiagnosticsStepDefsInput, DiagnosticsValues, DiagnosticsWizardState, FinishLook,
   HoldTransitionStatus, LayoutStage, NameLookupParams, SummaryPayload,
   UseChooserSelectionParams, UseDiagnosticsWizardStateProps, UseWizardNavigationProps, UseWizardProfilesParams,

@@ -5,4 +5,6 @@ const RUN_LABEL = 'Run diagnostics';
 
 const RESULT_TITLE = 'Last result';
 
-export { PAD_PARAM, RESULT_TITLE, RUN_LABEL };
+const REPORT_ICON = 'send';
+
+export { PAD_PARAM, REPORT_ICON, RESULT_TITLE, RUN_LABEL };

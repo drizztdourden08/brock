@@ -64,7 +64,7 @@ const createWindow = (setup: WindowSetup, plan: WindowPlan): BrowserWindow => {
   if (plan.headless) keepOffScreen(win);
   setMainWindow(win);
   if (instance.name) holdTitle(win, plan.title);
-  const present = placeHiddenWindow(win, plan, !flags.isAutomationLaunch());
+  const present = placeHiddenWindow(win, plan, !flags.isAutomationLaunch() && !instance.name);
 
   attachKeyPassthrough(win);
   attachTextInteraction(win);

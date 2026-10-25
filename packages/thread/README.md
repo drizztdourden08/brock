@@ -17,6 +17,8 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> linux push [--build-only] | doctor | init
 ```
 
+A hidden launch passes `--no-focus --muted`, which makes it an automation launch (no dialogs, prompts or tour, off screen). `--visible` passes `--visible` and `--muted` (or `--sound`) and no automation flag, so the window behaves like a user launch. A worktree launch also passes `--instance=<name>`, an identity flag that does not make a launch automated.
+
 `worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `worktree create --skip-install` adds the worktree and runs its provision steps with no `pnpm install`, at the root or in a target app, for a thread that only writes a file, such as a release note. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.

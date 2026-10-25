@@ -89,7 +89,8 @@ describe('deciding to skip the window', () => {
       flags: { ...real, isAutomationLaunch: () => real.isAutomationLaunch(argv), isBackgroundLaunch: () => real.isBackgroundLaunch(argv) },
     });
     expect(await skipsWindow(launched('app', '--instance=mcp', '--background'), {})).toBe(true);
-    expect(await skipsWindow(launched('app', '--instance=mcp'), { beforeWindow: () => 'skip' })).toBe(false);
+    expect(await skipsWindow(launched('app', '--instance=mcp'), { beforeWindow: () => 'skip' })).toBe(true);
+    expect(await skipsWindow(launched('app', '--instance=mcp', '--no-focus'), { beforeWindow: () => 'skip' })).toBe(false);
     expect(await skipsWindow(launched('app', '--instance=mcp', '--background', '--no-focus'), {})).toBe(false);
   });
 

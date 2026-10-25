@@ -8,7 +8,7 @@ const createAutomationFlags = (extra: readonly string[] = []): AutomationFlags =
   const flags = [...new Set([...BASE_AUTOMATION_FLAGS, ...extra])];
   const headless = flags.filter((f) => !IDENTITY_FLAGS.includes(f));
   const argvOf = (argv?: readonly string[]): readonly string[] => argv ?? (typeof process !== 'undefined' ? process.argv : []);
-  const isAutomationLaunch = (argv?: readonly string[]): boolean => argvOf(argv).some((arg) => flags.some((f) => matches(arg, f)));
+  const isAutomationLaunch = (argv?: readonly string[]): boolean => argvOf(argv).some((arg) => headless.some((f) => matches(arg, f)));
   return {
     flags,
     isAutomationLaunch,

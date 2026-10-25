@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createToolbarLayout } from '@drizztdourden08/tessera/composites';
+import { AppStage } from '../src/app/BrockApp/sub-components/AppStage';
 import { appLogState } from '../src/log/app-log-state';
 import { createAppLog } from '../src/log/create-app-log';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
@@ -46,6 +47,15 @@ describe('the one toolbar host', () => {
     expect(document.querySelectorAll('.tools-bar')).toHaveLength(1);
     expect(document.querySelector('.toolbar-dock__centre .work-area')).not.toBeNull();
     expect(appLogState.counts.warn).toBe(0);
+  });
+
+  it('draws the registered toolbars in a host the app mounts inside its own page with placement app', () => {
+    const page = createElement(ToolbarHost, { children: createElement('b', { className: 'work-area' }) });
+    mount(createElement(AppStage, { toolbars: [TOOLS], placement: 'app', railed: false, children: page }));
+    expect(document.querySelectorAll('.toolbar-dock')).toHaveLength(1);
+    expect(document.querySelector('.brock-app__stage')).toBeNull();
+    expect(document.querySelectorAll('.toolbar-dock__bar .tools-bar')).toHaveLength(1);
+    expect(document.querySelector('.toolbar-dock__centre .work-area')).not.toBeNull();
   });
 
   it('warns once for a second host and renders only its children', () => {

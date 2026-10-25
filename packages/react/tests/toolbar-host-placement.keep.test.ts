@@ -31,14 +31,12 @@ describe('where the toolbar host is mounted', () => {
     expect(html).toContain('brock-app__stage--docked');
   });
 
-  it('leaves the widget host alone with placement app, and draws the toolbars where the app mounts its own host', () => {
-    store().setDefinitions([probe]);
+  it('leaves the widget host alone with placement app, and the app host still draws a dock around its page', () => {
     const bare = renderToStaticMarkup(createElement(AppStage, { toolbars: [probe], placement: 'app', railed: false, children: work }));
     expect(bare).toBe('<b class="work-area"></b>');
     const page = createElement(ToolbarHost, { children: work });
     const html = renderToStaticMarkup(createElement(AppStage, { toolbars: [probe], placement: 'app', railed: false, children: page }));
     expect(count(html, 'class="toolbar-dock"')).toBe(1);
-    expect(html).toContain('probe-bar');
     expect(html).toContain('<div class="toolbar-dock__centre"><b class="work-area"></b></div>');
     expect(html).not.toContain('brock-app__stage--docked');
   });

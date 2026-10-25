@@ -80,8 +80,8 @@ describe('settings row actions', () => {
     await vi.waitFor(() => expect(onSelect).toHaveBeenCalledWith({ cache: 12 }));
   });
 
-  it('keeps SettingActions for a custom control, under it in the same row', () => {
-    const row = settingRow(OWNER, { ...context(), renderControl: () => 'custom' });
+  it('keeps SettingActions under a custom control when the row gives up its chrome', () => {
+    const row = settingRow({ ...OWNER, chrome: false }, { ...context(), renderControl: () => 'custom' });
     const content = row && 'content' in row ? row.content : null;
     expect(isValidElement(content)).toBe(true);
     const children = isValidElement<{ children: unknown[] }>(content) ? content.props.children : [];

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
+import type { SettingsDescription, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
 import type { RenderControl, RunSettingActionOptions, SettingAction, SettingItem, SettingLockCause, SettingsPatch, SettingsValueSource } from '../settings.type';
 
 interface ItemGroup {
@@ -48,6 +48,21 @@ interface SettingRowContext<S extends object> {
   runner?: ActionRunner;
 }
 
+interface RowShared {
+  id: string;
+  title: string;
+  hint?: string;
+  keywords?: string;
+  lock: SettingLockCause | null;
+}
+
+interface ControlRowInput {
+  shared: RowShared & SettingsDescription;
+  settings: object;
+  disabled: boolean;
+  runner?: ActionRunner;
+}
+
 interface SettingsPageContextValue {
   variant: 'page' | 'results';
   icon: ReactNode;
@@ -56,4 +71,4 @@ interface SettingsPageContextValue {
   query: string;
 }
 
-export type { ActionRunner, BusyActions, GroupListInput, ItemGroup, ResolvedSection, RowActionScope, SettingRowContext, SettingsPageContextValue, SettingsRecord };
+export type { ActionRunner, BusyActions, ControlRowInput, GroupListInput, ItemGroup, ResolvedSection, RowActionScope, SettingRowContext, SettingsPageContextValue, SettingsRecord };

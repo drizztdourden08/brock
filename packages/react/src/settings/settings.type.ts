@@ -11,6 +11,8 @@ interface SettingChoice {
   disabled?: boolean | string;
 }
 
+type SettingLayout = 'inline' | 'wide';
+
 type SettingChoiceLook = 'segmented' | 'select' | 'radio';
 
 type SettingJsonShape = 'object' | 'array' | 'any';
@@ -59,6 +61,8 @@ interface SettingItemFields {
   keywords?: string;
   link?: string;
   control?: SettingControl;
+  layout?: SettingLayout;
+  chrome?: boolean;
   actions?: readonly SettingAction[];
   visible?: (settings: SettingValues) => boolean;
 }
@@ -130,6 +134,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLockCause, SettingValues,
+  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause, SettingValues,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsValueSource, SubSection, TabDef, TabRenderContext,
 };

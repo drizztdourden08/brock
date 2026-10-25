@@ -3,7 +3,7 @@ const REGION_ATTRIBUTE = 'data-focus-region';
 
 const MARKED_SELECTOR = `[${REGION_ATTRIBUTE}]`;
 
-const STOP_SELECTOR = '.toolbar-dock__lane';
+const STOP_SELECTOR = '.toolbar-dock__bar';
 
 const MAIN_SELECTOR = 'main, [role="main"]';
 

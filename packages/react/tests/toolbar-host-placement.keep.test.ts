@@ -2,7 +2,8 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createToolbarLayout } from '@drizztdourden08/tessera/composites';
+import { createToolbarLayout, toolbarIdsOf } from '@drizztdourden08/tessera/composites';
+import type { ToolbarLayout } from '@drizztdourden08/tessera/composites';
 import { fakeDisk, settle } from './fake-ui-views-disk';
 import { AppStage } from '../src/app/BrockApp/sub-components/AppStage';
 import { ToolbarHost } from '../src/toolbars/ToolbarHost';
@@ -50,9 +51,23 @@ describe('a toolbar host that mounts after the layout was loaded', () => {
     store().replace(SAVED);
     expect(store().layout).toEqual(createToolbarLayout([]));
     store().setDefinitions(DEFINITIONS);
-    expect(store().layout.sides.bottom).toEqual(['tools']);
+    expect(toolbarIdsOf(store().layout, 'bottom')).toEqual(['tools']);
     expect(store().layout.hidden).toEqual(expect.arrayContaining(['options', 'extra']));
     expect(store().pending).toBeNull();
+  });
+
+  it('hydrates a saved v2 layout the same way, and upgrades a saved v1 one to v2', () => {
+    store().setDefinitions(DEFINITIONS);
+    store().toggle('options');
+    const v2 = structuredClone(store().layout);
+    useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
+    store().replace(v2);
+    store().setDefinitions(DEFINITIONS);
+    expect(store().layout).toEqual(v2);
+    useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
+    store().replace(SAVED);
+    store().setDefinitions(DEFINITIONS);
+    expect(store().layout.v).toBe(2);
   });
 
   it('reads the latest profile when two load before the host mounts', () => {
@@ -66,7 +81,7 @@ describe('a toolbar host that mounts after the layout was loaded', () => {
     store().replace(SAVED);
     store().setDefinitions([]);
     store().setDefinitions(DEFINITIONS);
-    expect(store().layout.sides.bottom).toEqual(['tools']);
+    expect(toolbarIdsOf(store().layout, 'bottom')).toEqual(['tools']);
   });
 
   it('ignores registering the same list again', () => {
@@ -87,10 +102,11 @@ describe('a toolbar host that mounts after the layout was loaded', () => {
     await settle();
     expect(disk.saves).toBe(0);
     fresh.getState().setDefinitions(DEFINITIONS);
-    expect(fresh.getState().layout.sides.bottom).toEqual(['tools']);
+    expect(toolbarIdsOf(fresh.getState().layout, 'bottom')).toEqual(['tools']);
     stop();
     await settle();
-    const stored = disk.file['profile:p1'] as { toolbarLayout: { sides: { bottom: string[] } } };
-    expect(stored.toolbarLayout.sides.bottom).toEqual(['tools']);
+    const stored = disk.file['profile:p1'] as { toolbarLayout: ToolbarLayout };
+    expect(stored.toolbarLayout.v).toBe(2);
+    expect(toolbarIdsOf(stored.toolbarLayout, 'bottom')).toEqual(['tools']);
   });
 });

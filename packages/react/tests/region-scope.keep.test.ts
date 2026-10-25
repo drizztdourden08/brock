@@ -20,7 +20,7 @@ describe('what joins the region cycle', () => {
   });
 
   it('makes a docked toolbar a stop of its own even inside the main area, and keeps the main area in the cycle', () => {
-    const docked = '<div id="page"><button id="page-btn">Save</button></div><div class="toolbar-dock__lane"><div role="toolbar" aria-label="Drawing"><button id="draw">Pen</button></div></div>';
+    const docked = '<div id="page"><button id="page-btn">Save</button></div><div class="toolbar-dock__bar"><div role="toolbar" aria-label="Drawing"><button id="draw">Pen</button></div></div>';
     mount(SHELL.replace('<p>Reading only</p>', docked));
     next();
     next();

@@ -30,6 +30,14 @@ export type { ControllerExtra } from '../pad/controller-slot.type';
 export { PadOverlay } from '../composites/PadOverlay';
 export type { OverlaySlotView, PadOverlayState } from '../composites/PadOverlay';
 export { DpadCross } from '../composites/DpadCross';
+export {
+  CONTROLLER_SILHOUETTE_ANCHOR_IDS, CONTROLLER_SILHOUETTE_ANCHORS, CONTROLLER_SILHOUETTE_PATHS, CONTROLLER_SILHOUETTE_VARIANTS,
+  CONTROLLER_SILHOUETTE_VIEW_BOX, ControllerSilhouette,
+} from '../composites/ControllerSilhouette';
+export type {
+  ControllerSilhouetteAnchor, ControllerSilhouetteAnchorId, ControllerSilhouetteAnchors, ControllerSilhouetteAnchorSet,
+  ControllerSilhouetteProps, ControllerSilhouetteVariant,
+} from '../composites/ControllerSilhouette';
 export { SvgImage } from '../primitives/SvgImage';
 export { padLivePages } from '../views/ControllerPage';
 export { StickPlot } from '../compounds/StickPlot';

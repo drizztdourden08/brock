@@ -6,7 +6,7 @@ import { useGlyphSourceStore } from '../../../renderer/useGlyphSourceStore';
 import { layoutFamilyOf } from '../../../controller-families/layout-family-of';
 import { positionIconsOf } from '../../../pad-overlay/position-icons';
 import { resolveOverlay } from '../../../pad-overlay/resolve-overlay';
-import { CONTROLLER_SILHOUETTE_ANCHORS, CONTROLLER_SILHOUETTE_PATHS } from '../../../pad-overlay/silhouette.constants';
+import { CONTROLLER_SILHOUETTE_ANCHORS, CONTROLLER_SILHOUETTE_PATHS } from '../../../composites/ControllerSilhouette';
 import { vidPidKey } from '../../../pad-overlay/vid-pid-key';
 import type { PadOverlayModel } from '../ControllerPage.type';
 import { slotViewsOf } from './slot-views';

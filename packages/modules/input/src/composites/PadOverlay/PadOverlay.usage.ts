@@ -12,7 +12,7 @@ const usage = {
   ],
   a11y: ['The drawing is a labelled figure that lists the inputs held down as text.'],
   example: `import { PadOverlay } from '@drizztdourden08/brock-input/renderer';
-import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/brock-input/renderer';
 
 const Pad = ({ outline, anchors }: { outline: string; anchors: ControllerSilhouetteAnchorSet }) => (
   <PadOverlay outline={outline} anchors={anchors} slots={[]} state={{}} label="Controller" />

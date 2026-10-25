@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
 import type { OverlaySlotView, PlacedPart } from '../PadOverlay.type';
 import { slotFrame } from './slot-frame';
 

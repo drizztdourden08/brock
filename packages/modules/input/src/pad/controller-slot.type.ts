@@ -1,5 +1,25 @@
 /* @layer core @kind types */
-import type { ControllerExtra, ControllerSlotId, ControllerSlotState } from '../compounds/ControllerLayout';
+import type { ReactNode } from 'react';
+import type { CONTROLLER_SLOT_IDS } from './controller-slot-ids.constants';
+
+type ControllerSlotId = (typeof CONTROLLER_SLOT_IDS)[number];
+
+interface ControllerSlotState {
+  pressed?: boolean;
+  value?: number;
+  x?: number;
+  y?: number;
+  label?: string;
+  glyph?: ReactNode;
+}
+
+interface ControllerExtra {
+  id: string;
+  label: string;
+  glyph?: ReactNode;
+  pressed?: boolean;
+  value?: number;
+}
 
 type PadSlotState = Pick<ControllerSlotState, 'pressed' | 'value' | 'x' | 'y'>;
 
@@ -21,4 +41,6 @@ interface PadDevice {
 
 type PadStateListener = (deviceKey: string, state: PadState) => void;
 
-export type { ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadDevice, PadStateListener };
+export type {
+  ControllerExtra, ControllerSlotId, ControllerSlotState, PadSlotState, PadSlots, PadExtra, PadState, PadFamily, PadDevice, PadStateListener,
+};

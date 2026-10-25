@@ -6,7 +6,8 @@ const SCREENS_CONFIG = /(^|\/)src\/screens\/screens\.config\.ts$/;
 const REMOVED_NAMES = [
   'InputTesterScreen', 'inputTesterScreen', 'INPUT_TESTER_SCREEN_ID', 'InputTester', 'InputTesterProps', 'DeviceCard', 'DeviceCardProps',
   'CalibrationPanel', 'CalibrationPanelAction', 'CalibrationPanelProps', 'CalibrationButtons', 'CalibrationControl', 'CalibrationReading',
-  'CalibrationStickReading', 'CalibrationTriggerReading', 'inputFamilyOf',
+  'CalibrationStickReading', 'CalibrationTriggerReading', 'inputFamilyOf', 'ControllerLayout', 'ControllerLayoutProps', 'ControllerLayoutVariant',
+  'ControllerSlots', 'CONTROLLER_LAYOUT_VARIANTS',
 ];
 
 const REMOVED = new RegExp(`\\b(${REMOVED_NAMES.join('|')})\\b`, 'g');
@@ -15,7 +16,7 @@ const IMPORT_RULES = [
   {
     pattern: REMOVED,
     near: /@drizztdourden08\/brock-input/,
-    message: 'The input module no longer exports its tester pieces: the Controllers screen, InputTester, DeviceCard, CalibrationPanel and its types, and inputFamilyOf. The module now adds the Controllers hub (the id controllers) with a Directory page, a Logs page and a Diagnostics page. Open it with open(\'controllers\'). Add extra buttons with registerDeviceCardActions, and draw custom parts with StickPlot and PressedGrid.',
+    message: 'The input module no longer exports its tester pieces: the Controllers screen, InputTester, DeviceCard, CalibrationPanel and its types, inputFamilyOf and ControllerLayout. The module now adds the Controllers hub (the id controllers) with a Directory page, a Logs page and a Diagnostics page. Open it with open(\'controllers\'). Add extra buttons with registerDeviceCardActions, and draw custom parts with StickPlot and PressedGrid. ControllerLayout is gone: Tessera keeps ControllerSilhouette for a drawing of a pad, and the pad page of the module draws its own overlay.',
   },
   {
     pattern: /['"]input-tester['"]/g,
@@ -42,7 +43,7 @@ const apply = ({ path, source }) => ({
 
 const migration = Object.freeze({
   id: 'controllers-bucket',
-  summary: 'The input module adds a controllers bucket (Directory, Logs and Diagnostics pages) in place of the input-tester screen, and drops InputTester, DeviceCard, CalibrationPanel, inputFamilyOf and the tester screen exports. Imports of them, a screens.config.ts bucket with the id controllers, and an input module override with an empty screens list become to-dos.',
+  summary: 'The input module adds a controllers bucket (Directory, Logs and Diagnostics pages) in place of the input-tester screen, and drops InputTester, DeviceCard, CalibrationPanel, ControllerLayout, inputFamilyOf and the tester screen exports. Imports of them, a screens.config.ts bucket with the id controllers, and an input module override with an empty screens list become to-dos.',
   files: /(^|\/)src\/.+\.[cm]?[jt]sx?$/,
   apply,
 });

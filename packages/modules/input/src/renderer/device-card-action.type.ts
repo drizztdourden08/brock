@@ -17,9 +17,4 @@ interface ShownDeviceCardAction {
   disabled: boolean;
 }
 
-interface DeviceCardActionState {
-  groups: readonly (readonly DeviceCardAction[])[];
-  add: (actions: readonly DeviceCardAction[]) => () => void;
-}
-
-export type { DeviceCardAction, DeviceCardActionState, ShownDeviceCardAction };
+export type { DeviceCardAction, ShownDeviceCardAction };

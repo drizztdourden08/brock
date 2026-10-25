@@ -37,6 +37,17 @@ describe('controllers-bucket', () => {
     expect(todos).toEqual(['src/a.tsx:1', 'src/a.tsx:1', 'src/a.tsx:2']);
   });
 
+  it('flags imports of ControllerLayout and its types', async () => {
+    const todos = await migrate({
+      'src/a.tsx': [
+        "import { ControllerLayout, CONTROLLER_SLOT_IDS } from '@drizztdourden08/brock-input/renderer';",
+        "import type { ControllerLayoutProps, ControllerSlots } from '@drizztdourden08/brock-input/renderer';",
+        '',
+      ].join('\n'),
+    });
+    expect(todos).toEqual(['src/a.tsx:1', 'src/a.tsx:2', 'src/a.tsx:2']);
+  });
+
   it('flags the input-tester id and an input override with no screens', async () => {
     const todos = await migrate({
       'src/main.tsx': [

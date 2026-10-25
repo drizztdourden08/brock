@@ -8,7 +8,7 @@ const usage = {
     'A calibration step draws the stick large, with the range it has reached and the dead zones.',
   ],
   avoidWhen: [
-    { case: 'The whole pad is drawn with every button and both sticks in place.', use: 'ControllerLayout' },
+    { case: 'The whole pad is drawn with every button and both sticks in place.', use: 'ControllerSilhouette' },
     { case: 'Only showing which buttons are held.', use: 'PressedGrid' },
   ],
   rules: [

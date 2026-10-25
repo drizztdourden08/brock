@@ -108,4 +108,11 @@ describe('composeWorkflows with screenshot baselines', () => {
     const one = composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'a-' }).ci;
     expect(one).toContain('name: review\n          path: .user-data/Data/review/');
   });
+
+  it('points the release at the notes folder it is given, the root one by default', () => {
+    const notes = (input: object) => composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'a-', ...input }).release;
+    expect(notes({})).toContain('NOTES="release-notes/v$VERSION.md"');
+    expect(notes({ notesDir: 'apps/desktop/release-notes' })).toContain('NOTES="apps/desktop/release-notes/v$VERSION.md"');
+    expect(notes({ notesDir: 'docs/notes' })).toContain('NOTES="docs/notes/v${{ needs.prepare.outputs.version }}.md"');
+  });
 });

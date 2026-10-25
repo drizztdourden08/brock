@@ -73,9 +73,8 @@ An app with packages of its own is a pnpm workspace. Each app keeps its screens,
 ```
 my-repo/
   pnpm-workspace.yaml, brock.workspace.mjs, brock.scope, tessera.config.json, lint configs
-  release-notes/v<version>.md      the release notes, at the repo root
   .github/workflows/               managed by brock sync: ci.yml and release.yml for one app, ci-<app>.yml and release-<app>.yml each beside a workspace ci.yml for several
-  apps/<app>/                      the layout above, without the root configs
+  apps/<app>/                      the layout above, without the root configs; its release-notes/ sits here
   apps/<site>/                     a site, when one was added: see A site below
   packages/design/src/primitives, composites, compounds    shared Tessera parts
   packages/design/src/views        views two or more apps or sites use
@@ -84,7 +83,7 @@ my-repo/
   tooling/<name>/                  repo scripts that are not part of an app
 ```
 
-In a repo with `brock.workspace.mjs`, `brock sync` writes the workflows at the repo root, with `APP_DIR` set to the app, and `brock check` fails when they drift. One Brock app keeps `ci.yml` and `release.yml`, `v<version>` tags and `release-notes/` at the repo root. Several Brock apps get `ci-<app>.yml` and `release-<app>.yml` each, plus a workspace `ci.yml`; each sets `product.releaseTagPrefix` and keeps its notes in its own `release-notes/`, and a pull request builds and reviews only the apps it touches. A pnpm workspace without `brock.workspace.mjs` (Brock's own repo, whose `templates/app` is in its workspace) gets none.
+In a repo with `brock.workspace.mjs`, `brock sync` writes the workflows at the repo root, with `APP_DIR` set to the app, and `brock check` fails when they drift. One Brock app keeps `ci.yml` and `release.yml` and `v<version>` tags. Several Brock apps get `ci-<app>.yml` and `release-<app>.yml` each, plus a workspace `ci.yml`; each sets `product.releaseTagPrefix`, and a pull request builds and reviews only the apps it touches. A pnpm workspace without `brock.workspace.mjs` (Brock's own repo, whose `templates/app` is in its workspace) gets none.
 
 `tessera.config.json` names the design package and its part folders, and gives each app its own `views`: `brock adopt` writes it that way (`apps.<app>.parts.views` is `<app>/src/views`), and prints the layout it found. When the design package has `src/views`, adopt also sets the root `parts.views` to it and lists it after each app's own folder (`["apps/desktop/src/views", "packages/design/src/views"]`), sites included, so every app reaches the shared views and `tessera new view` still writes into the app's own folder first. A view goes to the design package only once a second app uses it; until then it stays in the app.
 
@@ -125,7 +124,7 @@ What Brock does not provide for a site, by decision: no server kit, no cloud fun
 
 ## Release notes
 
-Every release has `release-notes/v<version>.md` at the repo root: `# <product.name> v<version>`, a one-paragraph summary, then `##` sections (New, Changes, View, Settings, Around the app, Platforms, Under the hood, Upgrading, Fixes, plus any a repo adds through `options.releaseNotes.sections` in `standards.config.mjs`) of dash bullets, each a plain sentence for users. `brock release-notes check [version]` holds a note to the standard; the full rules are `docs/release-notes.md` in `@drizztdourden08/standards`, which binds every repo, Brock app or not. A new app ships `release-notes/v0.1.0.md` as its first note.
+Every release has `release-notes/v<version>.md` beside the app: `# <product.name> v<version>`, a one-paragraph summary, then `##` sections (New, Changes, View, Settings, Around the app, Platforms, Under the hood, Upgrading, Fixes, plus any a repo adds through `options.releaseNotes.sections` in `standards.config.mjs`) of dash bullets, each a plain sentence for users. `brock release-notes check [version]` holds a note to the standard; the full rules are `docs/release-notes.md` in `@drizztdourden08/standards`, which binds every repo, Brock app or not. A new app ships `release-notes/v0.1.0.md` as its first note. An app's release notes live in the `release-notes/` folder beside its `brock.config.ts`; when the app folder has none and the repo root has one, Brock reads the root's and prints one line saying so.
 
 ## Where each kind of code goes
 

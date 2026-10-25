@@ -29,6 +29,22 @@ describe('renderWorkflows', () => {
     expect(files[0].content).toContain('Install libusb (Linux)');
   });
 
+  it('reads the notes of a subfolder app from its own folder, from the repo root when only it has them', () => {
+    const noteLines = (root) => renderWorkflows(join(root, 'apps/desktop'), CONFIG, [])[1].content;
+    const own = noteLines(monorepo({ 'apps/desktop/release-notes/v0.1.0.md': '' }));
+    expect(own).toContain('NOTES="apps/desktop/release-notes/v$VERSION.md"');
+    expect(own).toContain('NOTES="apps/desktop/release-notes/v${{ needs.prepare.outputs.version }}.md"');
+    expect(noteLines(monorepo())).toContain('NOTES="apps/desktop/release-notes/v$VERSION.md"');
+    const moved = noteLines(monorepo({ 'release-notes/v0.1.0.md': '' }));
+    expect(moved).toContain('NOTES="release-notes/v$VERSION.md"');
+    expect(moved).not.toContain('apps/desktop/release-notes');
+  });
+
+  it('keeps the notes at the root of a standalone app', () => {
+    const root = tree({ '.git/HEAD': 'ref: refs/heads/main\n', 'brock.config.ts': '' });
+    expect(renderWorkflows(root, CONFIG, [])[1].content).toContain('NOTES="release-notes/v$VERSION.md"');
+  });
+
   it('writes none in a pnpm workspace that is not a Brock repo', () => {
     const plain = tree({ '.git/HEAD': '', 'pnpm-workspace.yaml': "packages:\n  - 'templates/*'\n", 'templates/app/brock.config.ts': '' });
     expect(renderWorkflows(join(plain, 'templates/app'), CONFIG, [])).toEqual([]);

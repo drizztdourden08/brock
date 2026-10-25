@@ -18,4 +18,6 @@ export { linkSpec } from './links/link-spec.mjs';
 export { keepCrossDriveLinks } from './links/keep-cross-drive-links.mjs';
 export { readYamlScalar, yamlScalar } from './yaml/yaml-scalar.mjs';
 export { checkNoteFile, notePath } from './release-notes/check-note-file.mjs';
+export { findAppDir } from './release-notes/find-app-dir.mjs';
+export { resolveNotesRoot } from './release-notes/resolve-notes-root.mjs';
 export { checkReleaseNote } from '@drizztdourden08/standards/release-notes';

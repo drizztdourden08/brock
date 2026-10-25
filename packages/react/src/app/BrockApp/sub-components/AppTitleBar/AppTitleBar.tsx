@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { Box } from '@drizztdourden08/tessera/primitives';
 import { WindowTitleBar } from '@drizztdourden08/tessera/composites';
 import { useMemo } from 'react';
 import { tuckedRows } from '../../../../shell/TitleBar/behavior/tucked-rows';
@@ -7,7 +8,8 @@ import { useTitleBarMenu } from '../../../../shell/TitleBar/behavior/useTitleBar
 import { useWindowControl } from '../../../../shell/TitleBar/behavior/useWindowControl';
 import { NO_ACTIONS } from '../../../../shell/TitleBar/TitleBar.constants';
 import { MenuBar } from '../../../../menu-bar/MenuBar';
-import { MENU_LABEL, TITLE_BAR_CLASS } from './AppTitleBar.constants';
+import { SHELL_LABELS } from '../../../../regions/regions.constants';
+import { BANNER_CLASS, MENU_LABEL, TITLE_BAR_CLASS } from './AppTitleBar.constants';
 import type { AppTitleBarProps } from './AppTitleBar.type';
 
 const AppTitleBar = (props: AppTitleBarProps) => {
@@ -18,7 +20,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
   const rows = useMemo(() => (viewHidden ? tuckedRows(menuConfig, tucked) : undefined), [viewHidden, menuConfig, tucked]);
 
   return (
-    <>
+    <Box role="banner" aria-label={SHELL_LABELS.titleBar} className={BANNER_CLASS}>
       <WindowTitleBar
         title={title}
         logo={logoSrc}
@@ -38,7 +40,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
         className={TITLE_BAR_CLASS}
       />
       {!hidden && menuBar !== undefined && <MenuBar menus={menuBar} />}
-    </>
+    </Box>
   );
 };
 

@@ -23,6 +23,8 @@ export * from './profiles';
 export * from './hooks';
 export * from './diagnostics';
 export * from './toast';
+export * from './announce';
+export * from './regions';
 export * from './bug-report';
 export * from './palette';
 export * from './search';

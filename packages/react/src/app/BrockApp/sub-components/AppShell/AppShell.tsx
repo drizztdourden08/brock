@@ -73,7 +73,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useReviewTour({ ready, menu: barMenu, menuOverrides: shellMenu.overrides, actions, moduleIds, review });
 
   const screens = useMemo(() => registry.list(), [registry]);
-  const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" /><WindowMascot /></BootGate>;
+  const main = <BootGate><ScreenHost home={home} square={square} className="brock-app__screens" label={product.widgets.mainLabel} /><WindowMascot /></BootGate>;
   const stage = <AppStage toolbars={toolbars} railed={railed}><WidgetHost widgets={widgets} widgetKits={widgetKits} layout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled} mainLabel={product.widgets.mainLabel} keepFocusWithApp={product.widgets.keepFocusWithApp} main={main} /></AppStage>;
 
   return (

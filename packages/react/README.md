@@ -48,6 +48,7 @@ import { screenTree } from '../.brock/screens';
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildBugReportPayload`, `resolveBugReportTarget`, `BrockAppBugReport`, `BugReportTarget`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
+| Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
@@ -125,6 +126,21 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 - A generated hub has search on: SideNavLayout's results slot shows Tessera's `SearchResults`, one group per page, and a hit jumps to its page and row. Ctrl+K (Mod+K) inside an open hub focuses its search; elsewhere it opens the palette.
 - The product brand's mascot (Flint for `brock`, Pelago for `archipelia`, Sentri for `rotp`) sits in the palette's input row, as Tessera's `CommandPalette` `mascot="auto"`, and in every hub search, drawn as `<AnimatedMascot brand="auto">`, which picks the mascot of the `data-palette` Brock sets on the page root from `product.icons.brand`. It runs on Tessera's mascot state machine: it scans while the field is empty; when nothing matches it cuts in with `alert` on each new query and settles into `worried` once the clip ends, blending between states with no remount. A brand without a mascot, or no brand, shows the plain search icon and no mascot.
 - The same brand mascot walks along the bottom of the main app viewport while a screen window is open. It starts with a long walk toward a random side, then Tessera's autonomous stage chooses more walks and animation states. It stays mounted while screen windows change, steps beside the command palette to offer a search hint, and leaves when the window closes so the game is clear.
+
+## Accessibility
+
+`BrockApp` draws the title bar as a `banner` and the screen host as the one `main`, and mounts a polite and an assertive live region. F6 and Shift+F6 (commands `brock.region.next` and `brock.region.previous`, rebindable in the keymap) cycle focus through the regions: the banner, the main area, labelled `nav`, `complementary` and `region` elements, toolbars, and any element an app marks with `focusRegion(id, label)`. Focus returns to the control that had it last in the region.
+
+```tsx
+import { announce, focusRegion } from '@drizztdourden08/brock-react';
+
+announce('Saved hero');
+announce('Connection lost', { politeness: 'assertive' });
+
+<div tabIndex={0} {...focusRegion('canvas', 'Sprite canvas')} />;
+```
+
+`announce` repeats a message reliably and ignores a blank one. The architecture guide, Accessibility, has the rules.
 
 ## Escape and home
 

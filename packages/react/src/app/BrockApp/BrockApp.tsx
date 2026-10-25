@@ -12,6 +12,7 @@ import { ScreenRegistryContext } from '../../screens/screen-registry-context';
 import type { TabDef } from '../../settings/settings.type';
 import { separateModuleTabs } from '../../settings/separate-module-tabs';
 import { SettingsStoreContext } from '../../stores/settings-context';
+import { Announcer } from '../../announce/Announcer';
 import { BrockContext } from '../brock-context';
 import type { BrockContextValue } from '../brock-context.type';
 import { useAppScreens } from './behavior/useAppScreens';
@@ -77,6 +78,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
           <ScreenRegistryContext.Provider value={registry}>
             <SettingsStoreContext.Provider value={settingsStore}>
               <ModuleProviders providers={merged.providers}>
+                <Announcer />
                 {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} widgetDisabled={widgetDisabled} /> : (
                   <AppShell
                     settingsStore={settingsStore}

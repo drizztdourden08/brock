@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-input
 
+## 0.97.0
+
+### Minor Changes
+
+- 8432d36: The module now owns the whole controller component. `ControllerSilhouette` draws the outline of a pad for an app to put its own marks on, with the same props and the same rendering as the one in Tessera. The module also owns the anchors: `CONTROLLER_SILHOUETTE_ANCHORS` gives `{ x, y, r? }` for each anchor id of each variant, and the values are the ones measured and reviewed in Relic of the Past, so the marks sit closer to the real controls. `PadOverlay`, the pad page and the family overlays read this table. It exports `ControllerSilhouette`, `ControllerSilhouetteProps`, `CONTROLLER_SILHOUETTE_ANCHORS`, `CONTROLLER_SILHOUETTE_ANCHOR_IDS`, `CONTROLLER_SILHOUETTE_VARIANTS`, `CONTROLLER_SILHOUETTE_PATHS`, `CONTROLLER_SILHOUETTE_VIEW_BOX` and the anchor types from `@drizztdourden08/brock-input/renderer`. The outline path data and view box of each variant still come from Tessera. The outline classes are now `controller-outline`. Upgrading: import `ControllerSilhouette` and the anchors from `@drizztdourden08/brock-input/renderer`; Tessera will drop them.
+
+### Patch Changes
+
+- 69d854c: The pad callouts now read better. A callout above or below the pad puts its text at the far end of the underline, away from the leader. The underline is never shorter than five characters, even for a short label such as A or LB. A face button shows the direction it sits in on the pad (Up, Right, Down or Left) on its second line, whatever the family calls the button.
+- Updated dependencies [1f3d40b]
+  - @drizztdourden08/brock-react@0.97.0
+  - @drizztdourden08/brock-core@0.97.0
+  - @drizztdourden08/brock-electron@0.97.0
+
 ## 0.96.1
 
 ### Patch Changes

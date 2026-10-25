@@ -9,7 +9,7 @@ import type { LayoutPreset } from '../../../../widgets/layout-preset.type';
 import type { WidgetContextSource, WidgetDisabledHook } from '../../../../widgets/WidgetHost/WidgetHost.type';
 import type { WidgetDef } from '../../../../widgets/widget.type';
 import type { WidgetKitDef } from '../../../../widgets/kits/widget-kit.type';
-import type { ToolbarDef } from '../../../../toolbars/toolbar.type';
+import type { ToolbarDef, ToolbarPlacement } from '../../../../toolbars/toolbar.type';
 import type { RendererBootTask } from '../../../../boot/renderer-boot.type';
 import type { AppReview } from '../../../../review/app-review.type';
 import type { StartupPromptDef } from '../../../../startup/startup.type';
@@ -28,6 +28,7 @@ interface AppShellProps<S extends object> {
   widgets?: readonly WidgetDef[];
   widgetKits?: readonly WidgetKitDef[];
   toolbars?: readonly ToolbarDef[];
+  toolbarPlacement?: ToolbarPlacement;
   widgetLayout?: LayoutPreset;
   widgetContext?: WidgetContextSource;
   widgetDisabled?: WidgetDisabledHook;

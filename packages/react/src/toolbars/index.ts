@@ -5,4 +5,5 @@ export { useAllToolbars } from './useAllToolbars';
 export { useToolbarMenuEntries } from './useToolbarMenuEntries';
 export { useToolbarLayoutStore } from './useToolbarLayoutStore';
 export { ToolbarHost } from './ToolbarHost';
-export type { ToolbarDef, ToolbarLayoutState } from './toolbar.type';
+export type { ToolbarHostProps } from './ToolbarHost/ToolbarHost.type';
+export type { ToolbarDef, ToolbarLayoutState, ToolbarPlacement } from './toolbar.type';

@@ -9,12 +9,15 @@ interface ToolbarDef extends ToolbarDefinition {
 interface ToolbarLayoutState {
   definitions: readonly ToolbarDef[];
   layout: ToolbarLayout;
+  pending: { stored: unknown } | null;
   setDefinitions: (definitions: readonly ToolbarDef[]) => void;
   replace: (stored: unknown) => void;
   setLayout: (layout: ToolbarLayout) => void;
   toggle: (id: string) => void;
   reset: () => void;
 }
+
+type ToolbarPlacement = 'widgets' | 'app';
 
 interface ToolbarMenuInput {
   definitions: readonly ToolbarDef[];
@@ -24,4 +27,4 @@ interface ToolbarMenuInput {
   reset: () => void;
 }
 
-export type { ToolbarDef, ToolbarLayoutState, ToolbarMenuInput };
+export type { ToolbarDef, ToolbarLayoutState, ToolbarMenuInput, ToolbarPlacement };

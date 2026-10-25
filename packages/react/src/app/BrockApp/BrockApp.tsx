@@ -83,7 +83,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                     moduleMenu={merged.menu}
                     titleBarActions={titleBarActions}
                     searchActions={merged.searchActions}
-                    widgets={allWidgets} widgetKits={allKits} toolbars={allToolbars}
+                    widgets={allWidgets} widgetKits={allKits} toolbars={allToolbars} toolbarPlacement={props.toolbarPlacement}
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
                     layout={layout}
                     screenGroups={screenGroups}

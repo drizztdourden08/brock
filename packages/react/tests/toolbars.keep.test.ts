@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createToolbarLayout } from '@drizztdourden08/tessera/composites';
+import { createToolbarLayout, toolbarIdsOf } from '@drizztdourden08/tessera/composites';
 import { fakeDisk, settle } from './fake-ui-views-disk';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
 import { mergeModules } from '../src/modules/merge-modules';
@@ -26,7 +26,7 @@ const itemsOf = (entry: MenuItem): MenuItem[] => (entry.children ?? []).filter((
 const entriesOf = (): MenuEntry[] => buildToolbarMenuEntries({ definitions: store().definitions, layout: store().layout, toggle: store().toggle, words: WORDS, reset: store().reset });
 
 beforeEach(() => {
-  useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]) });
+  useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
 });
 
 describe('defineToolbar', () => {
@@ -38,16 +38,17 @@ describe('defineToolbar', () => {
 describe('the toolbar layout store', () => {
   it('places each registered toolbar on its default side, and hides one that starts hidden', () => {
     store().setDefinitions(DEFINITIONS);
-    const { sides, hidden } = store().layout;
-    expect([sides.left, sides.top, hidden]).toEqual([['tools'], ['options'], ['extra']]);
+    const { hidden } = store().layout;
+    expect([toolbarIdsOf(store().layout, 'left'), toolbarIdsOf(store().layout, 'top'), hidden]).toEqual([['tools'], ['options'], ['extra']]);
   });
 
   it('loads a saved layout through migrateToolbarLayout, dropping a toolbar that no longer exists and placing a new one', () => {
     store().setDefinitions(DEFINITIONS);
     const saved = { v: 1, sides: { top: [], bottom: ['tools', 'gone'], left: [], right: [] }, hidden: [], last: {} };
     store().replace(saved);
-    expect(store().layout.sides.bottom).toEqual(['tools']);
-    expect(store().layout.sides.top).toEqual(['options']);
+    expect(toolbarIdsOf(store().layout, 'bottom')).toEqual(['tools']);
+    expect(toolbarIdsOf(store().layout, 'top')).toEqual(['options']);
+    expect(store().layout.v).toBe(2);
     expect(store().layout.hidden).toEqual(['extra']);
   });
 
@@ -163,6 +164,7 @@ describe('the toolbar layout across a restart', { timeout: 60_000 }, () => {
     const saved = first.toolbars().layout;
     const stored = disk.file['profile:p1'] as Record<string, unknown>;
     expect(stored.toolbarLayout).toEqual(saved);
+    expect(saved.v).toBe(2);
     expect(stored.widgetLayout).toEqual({ kept: true });
 
     const second = await startApp();

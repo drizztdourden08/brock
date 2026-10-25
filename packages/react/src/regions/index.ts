@@ -1,3 +1,3 @@
 /* @layer renderer-shell @kind barrel */
 export { focusRegion } from './focus-region';
-export type { FocusRegionProps } from './regions.type';
+export type { FocusRegionOptions, FocusRegionProps } from './regions.type';

@@ -1,6 +1,7 @@
 /* @layer electron-main @kind test */
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { vi } from 'vitest';
 import { createAutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { MainContext } from '../src/main/types/main-context.type';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
@@ -79,4 +80,15 @@ const openHero = (call: Call, assets: string, opts: unknown, profile?: string): 
 
 const reads = (access: DocumentAccess, path: string): Promise<boolean> => access.resolve(path).then(() => true, () => false);
 
-export { flagsOf, grantSession, makeGrantTree, openHero, reads };
+type GrantDialogs = MainContext['dialogs'];
+
+type GrantLog = MainContext['log'];
+
+type ConfirmMock = ReturnType<typeof vi.fn<GrantDialogs['confirm']>>;
+
+const confirmMock = (answer: boolean): ConfirmMock => vi.fn<GrantDialogs['confirm']>().mockResolvedValue(answer);
+
+const removeTree = (base: string): Promise<void> => rm(base, { recursive: true, force: true });
+
+export { confirmMock, flagsOf, grantSession, makeGrantTree, openHero, reads, removeTree };
+export type { Call, ConfirmMock, DocumentAccess, GrantDialogs, GrantLog };

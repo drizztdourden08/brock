@@ -1,13 +1,10 @@
 /* @layer electron-main @kind test */
 import { createDialogs } from '../src/main/dialogs/create-dialogs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { rm } from 'fs/promises';
 import { join } from 'path';
-import type { MainContext } from '../src/main/types/main-context.type';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { electronDialogMock } from './electron-dialog-mock';
-import type { Call } from './folder-fixture';
-import { flagsOf, grantSession, makeGrantTree, openHero, reads } from './folder-grant-fixture';
+import { confirmMock, flagsOf, grantSession, makeGrantTree, openHero, reads, removeTree } from './folder-grant-fixture';
+import type { Call, ConfirmMock, DocumentAccess, GrantDialogs, GrantLog } from './folder-grant-fixture';
 
 vi.mock('electron', async () => (await import('./electron-dialog-mock')).electronDialogMock);
 
@@ -18,10 +15,10 @@ let base = '';
 let assets = '';
 let access: DocumentAccess;
 let call: Call;
-let confirm: ReturnType<typeof vi.fn<MainContext['dialogs']['confirm']>>;
-let log: ReturnType<typeof vi.fn<MainContext['log']>>;
+let confirm: ConfirmMock;
+let log: ReturnType<typeof vi.fn<GrantLog>>;
 
-const launch = (argv: string[], dialogs?: MainContext['dialogs']): void => {
+const launch = (argv: string[], dialogs?: GrantDialogs): void => {
   ({ access, call } = grantSession({ base, confirm, log, dialogs, flags: flagsOf(argv) }));
 };
 
@@ -29,8 +26,8 @@ const openFile = (opts: unknown): Promise<unknown> => openHero(call, assets, opt
 
 beforeEach(async () => {
   ({ base, assets } = await makeGrantTree('brock-grant-folder-auto-'));
-  confirm = vi.fn<MainContext['dialogs']['confirm']>().mockResolvedValue(false);
-  log = vi.fn<MainContext['log']>();
+  confirm = confirmMock(false);
+  log = vi.fn<GrantLog>();
   electronDialogMock.app.isPackaged = false;
   electronDialogMock.dialog.showOpenDialog.mockReset();
   electronDialogMock.dialog.showMessageBox.mockReset();
@@ -39,7 +36,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   electronDialogMock.app.isPackaged = true;
-  await rm(base, { recursive: true, force: true });
+  await removeTree(base);
 });
 
 describe('the folder question in an automation launch', () => {

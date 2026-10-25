@@ -26,7 +26,7 @@ const itemsOf = (entry: MenuItem): MenuItem[] => (entry.children ?? []).filter((
 const entriesOf = (): MenuEntry[] => buildToolbarMenuEntries({ definitions: store().definitions, layout: store().layout, toggle: store().toggle, words: WORDS, reset: store().reset });
 
 beforeEach(() => {
-  useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]) });
+  useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
 });
 
 describe('defineToolbar', () => {

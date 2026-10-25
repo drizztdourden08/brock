@@ -50,6 +50,7 @@ import { screenTree } from '../.brock/screens';
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
 | Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
+| Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `ToolbarDef`, `ToolbarPlacement` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
@@ -101,6 +102,18 @@ An app drops one file per widget in `src/widgets`: `<id>.widget.tsx`, whose defa
 
 Brock's own widgets have the same shape: `src/widgets/built-in/logs.widget.tsx` and `performance.widget.tsx` beside their component folders, listed in `built-in-widgets.constants.ts` through `widgetsFromFiles`.
 
+## Toolbars
+
+An app registers docked toolbars with `defineToolbar` (one file per toolbar in `src/toolbars`, passed as `toolbars`). By default `BrockApp` wraps the widget host in the toolbar dock. An app that wants its toolbars around its own work area, such as a canvas page, passes `toolbarPlacement="app"` and mounts `<ToolbarHost>` where it wants them. `BrockApp` then registers the toolbars and loads the saved layout but draws no dock itself, and `ToolbarHost` draws the registered toolbars around its children.
+
+```tsx
+<BrockApp toolbars={appToolbars} toolbarPlacement="app" ... />
+
+const CanvasPage = () => <ToolbarHost><Canvas /></ToolbarHost>;
+```
+
+Only one `ToolbarHost` draws the toolbars. A second one logs a warning once and renders only its children. A host that mounts late, inside a page, still gets the layout saved for the profile. A docked toolbar is its own F6 stop, even inside the main area.
+
 ## Performance widget
 
 The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not, and it pops out like any widget. It is built from Tessera's chart parts:
@@ -130,7 +143,7 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 
 ## Accessibility
 
-`BrockApp` draws the title bar as a `banner` and the screen host as the one `main`, and mounts a polite and an assertive live region. F6 and Shift+F6 (commands `brock.region.next` and `brock.region.previous`, rebindable in the keymap) cycle focus through the regions: the banner, the main area, labelled `nav`, `complementary` and `region` elements, toolbars, and any element an app marks with `focusRegion(id, label, { role? })`, whose role defaults to `region`. Focus returns to the control that had it last in the region.
+`BrockApp` draws the title bar as a `banner` and the screen host as the one `main`, and mounts a polite and an assertive live region. F6 and Shift+F6 (commands `brock.region.next` and `brock.region.previous`, rebindable in the keymap) cycle focus through the regions: the banner, the main area, labelled `nav`, `complementary` and `region` elements, toolbars (a docked toolbar is a stop of its own even inside the main area), and any element an app marks with `focusRegion(id, label, { role? })`, whose role defaults to `region`. Focus returns to the control that had it last in the region.
 
 ```tsx
 import { announce, focusRegion } from '@drizztdourden08/brock-react';

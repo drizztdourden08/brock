@@ -3,12 +3,14 @@ const REGION_ATTRIBUTE = 'data-focus-region';
 
 const MARKED_SELECTOR = `[${REGION_ATTRIBUTE}]`;
 
+const STOP_SELECTOR = '.toolbar-dock__lane';
+
 const MAIN_SELECTOR = 'main, [role="main"]';
 
 const LANDMARK_SELECTOR =
   '[role="banner"], [role="navigation"], nav[aria-label], [role="complementary"][aria-label], [role="region"][aria-label], [role="region"][aria-labelledby], [role="toolbar"]';
 
-const REGION_SELECTOR = [MARKED_SELECTOR, MAIN_SELECTOR, LANDMARK_SELECTOR].join(', ');
+const REGION_SELECTOR = [MARKED_SELECTOR, STOP_SELECTOR, MAIN_SELECTOR, LANDMARK_SELECTOR].join(', ');
 
 const ROVING_SELECTOR = '[tabindex="0"]:not(:disabled)';
 
@@ -35,5 +37,5 @@ const SHELL_LABELS = {
 } as const;
 
 export {
-  HIDDEN_SELECTOR, MAIN_SELECTOR, MARKED_SELECTOR, MODAL_SELECTOR, REGION_COMMANDS, REGION_SELECTOR, REGION_TEXT, ROVING_SELECTOR, SHELL_LABELS, TABBABLE_SELECTOR,
+  HIDDEN_SELECTOR, MAIN_SELECTOR, MARKED_SELECTOR, MODAL_SELECTOR, REGION_COMMANDS, REGION_SELECTOR, REGION_TEXT, ROVING_SELECTOR, SHELL_LABELS, STOP_SELECTOR, TABBABLE_SELECTOR,
 };

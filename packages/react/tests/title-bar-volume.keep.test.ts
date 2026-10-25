@@ -1,12 +1,7 @@
 /* @layer renderer-shell @kind test */
 import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import type { Platform, TitleBarControls } from '@drizztdourden08/brock-core';
-import { createPlatform } from '@drizztdourden08/brock-core';
 import { AppTitleBar } from '../src/app/BrockApp/sub-components/AppTitleBar';
-import { PlatformContext } from '../src/platform/platform-context';
-import { createWebFactory } from '../src/platform/hosts/web-factory';
 import { useTitleBarActions } from '../src/shell/TitleBar/behavior/useTitleBarActions';
 import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
 import { toBarAction } from '../src/title-bar/to-bar-action';
@@ -15,8 +10,7 @@ import { volumeItems } from '../src/title-bar/volume-items';
 import { volumeChecks } from '../src/review/checks/volume-checks';
 import type { VolumeItemSnapshot } from '../src/review/review.type';
 import { volumeTitleBarItem } from '../src/volume/volume-title-bar-item';
-
-const CONTROLS: TitleBarControls = { fullscreen: true, pin: true, minimize: true, maximize: true };
+import { CONTROLS, drawOnPlatform } from './title-bar-fixtures';
 
 const spec = (patch: Partial<TitleBarVolumeSpec> = {}): TitleBarVolumeSpec => ({
   kind: 'volume', label: 'Volume', value: 0.8, muted: false, onChange: () => undefined, onMuteToggle: () => undefined, ...patch,
@@ -28,17 +22,12 @@ const volumeOf = (patch: Partial<TitleBarVolumeSpec> = {}) => {
   return action;
 };
 
-const platform = (): Platform => {
-  const web = createPlatform(createWebFactory());
-  return { ...web, capabilities: { ...web.capabilities, titleBar: true, windowChrome: true } };
-};
-
 const Bar = (props: { source: TitleBarItemSource }) => {
   const actions = useTitleBarActions(appTitleBarSources([{ id: 'sound', source: props.source }], []));
   return createElement(AppTitleBar, { title: 'Demo', menu: [], controls: CONTROLS, instanceName: null, hidden: false, actions });
 };
 
-const draw = (source: TitleBarItemSource): string => renderToStaticMarkup(createElement(PlatformContext.Provider, { value: platform() }, createElement(Bar, { source })));
+const draw = (source: TitleBarItemSource): string => drawOnPlatform(createElement(Bar, { source }));
 
 const SNAPSHOT: VolumeItemSnapshot = {
   shown: true, hoverOpens: true, focusOpens: true, slides: true, toggled: true, restored: true, width: 360, tucked: true, muteRow: true, sliderRow: true,

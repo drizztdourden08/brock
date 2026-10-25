@@ -1,12 +1,9 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { rm } from 'fs/promises';
 import { join } from 'path';
-import type { MainContext } from '../src/main/types/main-context.type';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { electronDialogMock } from './electron-dialog-mock';
-import { flagsOf, grantSession, makeGrantTree, openHero, reads } from './folder-grant-fixture';
-import type { Call } from './folder-fixture';
+import { confirmMock, flagsOf, grantSession, makeGrantTree, openHero, reads, removeTree } from './folder-grant-fixture';
+import type { Call, ConfirmMock, DocumentAccess } from './folder-grant-fixture';
 
 vi.mock('electron', async () => (await import('./electron-dialog-mock')).electronDialogMock);
 
@@ -15,7 +12,7 @@ let assets = '';
 let palettes = '';
 let access: DocumentAccess;
 let call: Call;
-let confirm: ReturnType<typeof vi.fn<MainContext['dialogs']['confirm']>>;
+let confirm: ConfirmMock;
 let automation = false;
 
 const start = (home: string[] = []): void => {
@@ -30,14 +27,14 @@ const saveFile = (opts: unknown, profile?: string): Promise<unknown> => {
 beforeEach(async () => {
   ({ base, assets, palettes } = await makeGrantTree('brock-grant-folder-'));
   automation = false;
-  confirm = vi.fn<MainContext['dialogs']['confirm']>().mockResolvedValue(true);
+  confirm = confirmMock(true);
   electronDialogMock.dialog.showOpenDialog.mockReset();
   electronDialogMock.dialog.showSaveDialog.mockReset();
   start();
 });
 
 afterEach(async () => {
-  await rm(base, { recursive: true, force: true });
+  await removeTree(base);
 });
 
 describe('granting the folder of a picked file', () => {

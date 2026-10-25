@@ -12,6 +12,10 @@ html.notch-safe .brock-app {
   padding: var(--sai-top, 0) var(--sai-right, 0) var(--sai-bottom, 0) var(--sai-left, 0);
 }
 
+.brock-app__banner {
+  flex: none;
+}
+
 .brock-app__content {
   position: relative;
   flex: 1;

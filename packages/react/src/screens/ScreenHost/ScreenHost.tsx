@@ -39,7 +39,7 @@ const chromeOf = (screen: ScreenDef, ctx: ScreenRenderContext) =>
   (isHubWindow(screen) ? freeFrameOf(screen) : { subtitle: screen.subtitle?.(ctx), extra: screen.extra?.(ctx) });
 
 const ScreenHost = (props: ScreenHostProps) => {
-  const { home, square = false, className = 'screen-host' } = props;
+  const { home, square = false, className = 'screen-host', label } = props;
   const registry = useScreenRegistry();
   const { active: activeId, params, open, close, back } = useNavigation();
   const backTarget = useBackTarget();
@@ -82,7 +82,7 @@ const ScreenHost = (props: ScreenHostProps) => {
   const covered = covers(shown, home);
 
   return (
-    <Box className={className}>
+    <Box {...(label === undefined ? {} : { as: 'main' as const, 'aria-label': label })} className={className}>
       <Box className="screen-host__home">
         {allowed(homeScreen) && (
           <RenderErrorBoundary scope={`Screen ${homeScreen.id}`} resetKey={activeId}>

@@ -1,0 +1,9 @@
+/* @layer renderer-shell @kind style */
+
+.rescan-btn__icon--spinning {
+  animation: rescan-btn-spin var(--duration-slow) linear infinite;
+}
+
+@keyframes rescan-btn-spin {
+  to { transform: rotate(360deg); }
+}

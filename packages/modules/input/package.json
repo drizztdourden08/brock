@@ -113,7 +113,10 @@
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
     "@drizztdourden08/brock-electron": "workspace:*",
-    "@drizztdourden08/brock-react": "workspace:*"
+    "@drizztdourden08/brock-react": "workspace:*",
+    "@iconify-icons/lucide": "^1.2.135",
+    "@iconify/react": "^6.0.2",
+    "@iconify/types": "^2.0.0"
   },
   "devDependencies": {
     "@drizztdourden08/tessera": "catalog:",

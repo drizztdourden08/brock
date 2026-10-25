@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind types */
-import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorSet } from '../ControllerSilhouette';
 import type { ControllerSlotId } from '../../pad/controller-slot.type';
 import type { DpadPressState } from '../DpadCross';
 

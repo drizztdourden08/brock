@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind constants */
-import type { ControllerSilhouetteAnchorId } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorId } from '../../ControllerSilhouette';
 import type { ControllerSlotId } from '../../../pad/controller-slot.type';
 import type { Point } from '../PadOverlay.type';
 

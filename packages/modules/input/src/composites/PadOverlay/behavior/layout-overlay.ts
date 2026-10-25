@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
 import { LABEL_GAP } from '../PadOverlay.constants';
 import type { OverlayLayout, OverlayMetrics, OverlaySlotView } from '../PadOverlay.type';
 import { contentBounds } from './content-bounds';

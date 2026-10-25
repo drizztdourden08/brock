@@ -1,7 +1,7 @@
 /* @layer renderer-components @kind hook */
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
-import type { ControllerSilhouetteAnchorSet } from '@drizztdourden08/tessera/composites';
+import type { ControllerSilhouetteAnchorSet } from '../../ControllerSilhouette';
 import type { FittedOverlay, OverlayMetrics, OverlaySlotView } from '../PadOverlay.type';
 import { nextBase } from './next-base';
 import { useOverlayLayout } from './useOverlayLayout';

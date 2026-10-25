@@ -40,7 +40,7 @@ const PadOverlay = ({ outline, anchors, slots, state, label, onGrownChange }: Pa
               <OverlayLabel
                 key={anchor}
                 placed={placed}
-                detail={describePart(kind, state[anchor])}
+                detail={describePart(placed.part.slot, state[anchor])}
                 active={isActive(kind, state[anchor])}
               />
             );

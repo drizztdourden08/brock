@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # brock-input
 
-Game controllers through SDL3: device list with hotplug, live button and axis state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and an InputTester screen. It is generic input. Button meaning belongs to the app.
+Game controllers through SDL3: device list with hotplug, live button and axis state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and a Controllers hub with a directory, a log and a diagnostics wizard. It is generic input. Button meaning belongs to the app.
 
 ## The SDL3 addon
 
@@ -145,7 +145,7 @@ window.api.input.capture.startJoystick(joystickId)
 
 `onState` speaks SDL's order. For a controller drawing, `window.api.input.onPadState((deviceKey, pad) => ...)` sends the same state keyed by the control's physical place. It rides the `input:state` stream, so no second event crosses the bridge. In the renderer, `usePadState(deviceKey)` gives the same `PadState`, and `padStateOf(buttons, axes)` converts a raw reading yourself.
 
-A `PadState` is `{ slots, extras }`. It feeds the module's `ControllerLayout` directly: pass `pad.slots` as `slots` and `pad.extras` as `extras`.
+A `PadState` is `{ slots, extras }`. It feeds a drawing of a pad directly, such as the module's `PadOverlay`: pass `pad.slots` as the slot states and `pad.extras` as the extras.
 
 `slots` holds the 20 silhouette places of the module's `ControllerSlotId`, with plain data. Buttons set `pressed`, triggers set `value` (0 to 1), sticks set `x` and `y` (-1 to 1, up is positive; SDL's Y is flipped for you). The state is raw: calibration is not applied.
 
@@ -181,7 +181,7 @@ The `label` is the default one in the table. A device with a `family` gets the n
 
 The ids never change, only the labels. `onPadState` and `usePadState` fill this in for you. Call `padStateOf(buttons, axes, device)` with a `DeviceEntry` (or any `{ family, hasButton }`) to do the same by hand. Without a device, or when the device sent no `hasButton`, all ten extras are listed with the default labels.
 
-`ControllerSlotId` and `ControllerSlotState` are the types of the module's `ControllerLayout`, re-exported. The slot list `CONTROLLER_SLOT_IDS` comes from the same component.
+`ControllerSlotId`, `ControllerSlotState` and `ControllerExtra` are the slot types of the pad, and `CONTROLLER_SLOT_IDS` is the slot list. They live in `src/pad/`.
 
 Each ready `DeviceEntry` has a `family` hint: `'xbox'`, `'playstation'`, `'nintendo'` or `'generic'`, from SDL's gamepad type (`padFamilyOf(sdlType)`). Xbox 360 and One are `xbox`; PS3, PS4 and PS5 are `playstation`; Switch Pro, the Joy-Cons and GameCube are `nintendo`; standard and unknown are `generic`. An unavailable entry has no family. An app uses it to pick a layout variant.
 
@@ -204,19 +204,24 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 ## Renderer side
 
-The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed (`PressedGrid`), draws both sticks (`StickPlot`) and both triggers (`StatRow` over a `ProgressBar`), runs a stick or trigger calibration in the module's `CalibrationPanel` (the stick step draws a large `StickPlot` with the measured range, the recorded center and the dead zones; the trigger step shows the peak as the bar's second value; the buttons held show in the panel while it is open), plays rumble patterns, and takes a new mapping line.
+The module adds a `Controllers` hub (the bucket `controllers`) and a menu entry under Advanced that opens it. The hub is hidden from the hub switcher, so the menu entry is the way in. A module contributes the bucket through `RendererModule.buckets`, and an app that declares its own bucket with the id `controllers` fails at start.
 
-`CalibrationPanel` is a Brock compound, exported from `@drizztdourden08/brock-input/renderer` with its types. It sits in `src/compounds/CalibrationPanel/` with its usage file, built on the module's `StickPlot` and `PressedGrid` and Tessera's `ProgressBar` and `StatRow`. It takes `title`, `instruction`, `readout`, `action` (`label`, `disabled`, `onClick`), `onCancel`, `cancelLabel` and `children` like the Tessera panel it replaces, plus `reading`, the live stick (`x`, `y`, `center`, `range`, the dead zones) or trigger (`value`, `peak`) named by its SDL control name and label, and `buttons`, the `PressedGrid` items and the ones held. Every control glyph is drawn by one sub-component, `InputGlyph`, which today writes the control's label in a key cap.
+- **Pads.** One page per connected controller, listed under Connected in the hub nav. Four boxes: the pad drawn with a callout for each input and the glyph of the pad's family, the sticks and triggers with their readouts and calibration, the buttons, and the facts of the controller with its rumble tests. The Controller box header holds Run diagnostics and the buttons an app registers.
+- **Directory.** A searchable table of every mapping SDL3 knows, with the connected controllers first and a Rescan button at the end of the filter row. Only the table body scrolls.
+- **Logs.** The connect and disconnect history of this session, with the HID events.
+- **Diagnostics.** The guided wizard: pick a controller, capture its raw bytes, press each control in place, and read the result. It also hosts the stick and trigger calibration wizards. The wizard saves its JSON to the app's data folder (`debug/<name>-<time>.json`) through `window.api.input.capture.writeDebug(name, data)`, which returns the path.
 
-`ControllerLayout`, `StickPlot` and `PressedGrid` are compounds of this module, exported from `@drizztdourden08/brock-input/renderer` with their prop types, `CONTROLLER_LAYOUT_VARIANTS`, `CONTROLLER_SLOT_IDS`, `ControllerExtra` and `ControllerSlots`. They left Tessera, which keeps `ControllerSilhouette`, `InputIcon` and the input icon sets. Each sits in `src/compounds/<Name>/` and keeps its props.
+The pages are `ControllerDirectory`, `ControllerLogs` and `ControllerDiagnostics`, exported from `@drizztdourden08/brock-input/renderer` for an app that wants them in a screen of its own. The module also exports what an app needs to build a report dialog around the wizard: `StepIndicator`, `ReportSection`, `buildReport`, `useDiagnosticsWizardState`, `useSummaryExport`, `useFlashStatus`, `DiagnosticsStepActions`, `DiagnosticsFlowBody`, `FlashButton`, `COPY_LABELS` and the report step types.
 
-- `ControllerLayout` draws a pad (`variant`: `offset`, `symmetric`, `nintendo` or `pad`) with every slot lit while held, plus a hidden list of what is held and a visible list for `extras` the outline has no place for. Its strings (`Controller`, `Held now`, the slot names) are in `ControllerLayout.constants.ts`.
+`StickPlot` and `PressedGrid` are compounds of this module, exported from `@drizztdourden08/brock-input/renderer` with their prop types, `CONTROLLER_SLOT_IDS` and `ControllerExtra`. `PadOverlay` and `DpadCross` are its composites and `SvgImage` its primitive. They left Tessera, which keeps `ControllerSilhouette`, `InputIcon` and the input icon sets. `ControllerLayout` is gone: `PadOverlay` draws the pad on the silhouette of Tessera, with a labeled callout for each part, and the per vid:pid overrides for the pads that need a nudge sit in `src/pad-overlay`.
+
+- `PadOverlay` takes `outline` and `anchors` from the silhouette of the pad, `slots` (anchor, kind, glyph image and label for each part) and `state` for what is held now.
 - `StickPlot` plots one stick (`x`, `y`) with optional dead zones, measured `range` and recorded `center`.
 - `PressedGrid` lists `items` of a pad `family` and lights the ids in `pressed`.
 
 The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
 
-An app adds its own buttons to every device card, on the module's Controllers screen too, with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook. `InputTester` and `DeviceCard` also take them as a prop (`deviceActions` and `actions`); a prop action replaces a registered one with the same `id`. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. They show as a row of buttons under the rumble row.
+An app adds its own buttons for a controller with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook; an action with the same `id` replaces the earlier one. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. The actions show as icon buttons in the header of the Controller box of the pad page, after Run diagnostics. This is the hook for a Report button.
 
 ```ts
 import { registerDeviceCardActions } from '@drizztdourden08/brock-input/renderer';
@@ -224,6 +229,27 @@ import { registerDeviceCardActions } from '@drizztdourden08/brock-input/renderer
 registerDeviceCardActions([
   { id: 'report', label: 'Report a problem', icon: 'bug', onSelect: (entry) => openReport(entry.deviceKey) },
 ]);
+```
+
+`registerRumbleTests(tests)` adds buttons to the Rumble test row of the pad page, after the module's own five pulses. Each `RumbleTest` is `{ label, steps, gapMs }` for plain pulses, or `{ label, play(deviceKey) }` to play something of the app's own and return the `VibrateResult`. It returns the unregister.
+
+```ts
+import { inputApi, registerRumbleTests } from '@drizztdourden08/brock-input/renderer';
+
+registerRumbleTests([
+  { label: 'Sword Hit', play: (deviceKey) => inputApi().vibratePattern(deviceKey, [{ durationMs: 120, intensity: 0.8 }], 0) },
+]);
+```
+
+`registerGlyphSource(source)` supplies the images of the pad page, which the module does not ship. A `GlyphSource` has `button(glyph)`, which returns the image URL for a button glyph id (`generic-btn` is the fallback id), and `controller(family)`, which returns the brand image of a pad family (`xbox`, `playstation` or `nintendo`). Both may return `null` or `undefined`, and the latest source that answers wins. With no source registered the pad page still draws, without glyph images. It returns the unregister.
+
+```ts
+import { registerGlyphSource } from '@drizztdourden08/brock-input/renderer';
+
+registerGlyphSource({
+  button: (glyph) => buttonImages[glyph],
+  controller: (family) => padImages[family],
+});
 ```
 
 The stores are exported for an app screen of its own: `useControllerDevicesStore`, `useControllerState(deviceKey)` and `useCalibrationStore`. `applyStickCalibration` and `applyTriggerCalibration` turn a raw reading into a calibrated one.

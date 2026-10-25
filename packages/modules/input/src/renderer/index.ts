@@ -2,37 +2,36 @@
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { controllerInputBootTask } from '../controller-input/controller-input-boot-task';
-import { INPUT_TESTER_SCREEN_ID } from './input-renderer.constants';
 import { InputProvider } from './InputProvider';
-import { inputTesterScreen } from './InputTesterScreen';
+import { controllersBucket } from './controllers-bucket';
 
 const inputRenderer: RendererModule = {
   id: 'input',
-  screens: [inputTesterScreen],
-  menu: [{ key: INPUT_TESTER_SCREEN_ID, label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: INPUT_TESTER_SCREEN_ID }],
+  buckets: [controllersBucket],
+  menu: [{ key: 'controllers', label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: 'controllers' }],
   Provider: InputProvider,
   bootTasks: [controllerInputBootTask],
 };
 
 export default inputRenderer;
-export { inputRenderer, inputTesterScreen, INPUT_TESTER_SCREEN_ID, InputProvider };
+export { inputRenderer, InputProvider };
 export { inputApi } from './input-api';
 export { isInputAvailable } from './is-input-available';
 export { noopInputApi } from '../noop-input-api';
-export { InputTester } from './InputTester';
-export type { InputTesterProps } from './InputTester';
-export { DeviceCard } from './DeviceCard';
-export type { DeviceCardProps } from './DeviceCard';
 export { registerDeviceCardActions } from './register-device-card-actions';
 export { useDeviceCardActions } from './useDeviceCardActions';
 export type { DeviceCardAction } from './device-card-action.type';
-export { CalibrationPanel, inputFamilyOf } from '../compounds/CalibrationPanel';
-export type {
-  CalibrationButtons, CalibrationControl, CalibrationPanelAction, CalibrationPanelProps, CalibrationReading, CalibrationStickReading,
-  CalibrationTriggerReading,
-} from '../compounds/CalibrationPanel';
-export { ControllerLayout, CONTROLLER_LAYOUT_VARIANTS, CONTROLLER_SLOT_IDS } from '../compounds/ControllerLayout';
-export type { ControllerExtra, ControllerLayoutProps, ControllerLayoutVariant, ControllerSlots } from '../compounds/ControllerLayout';
+export { registerRumbleTests } from './register-rumble-tests';
+export type { RumbleTest } from './rumble-test.type';
+export { registerGlyphSource } from './register-glyph-source';
+export type { GlyphSource } from './glyph-source.type';
+export { CONTROLLER_SLOT_IDS } from '../pad/controller-slot-ids.constants';
+export type { ControllerExtra } from '../pad/controller-slot.type';
+export { PadOverlay } from '../composites/PadOverlay';
+export type { OverlaySlotView, PadOverlayState } from '../composites/PadOverlay';
+export { DpadCross } from '../composites/DpadCross';
+export { SvgImage } from '../primitives/SvgImage';
+export { padLivePages } from '../views/ControllerPage';
 export { StickPlot } from '../compounds/StickPlot';
 export type { StickPlotPoint, StickPlotProps, StickPlotRange, StickPlotSize } from '../compounds/StickPlot';
 export { PressedGrid } from '../compounds/PressedGrid';
@@ -89,3 +88,24 @@ export { ControllerCapabilityBadges } from '../compounds/ControllerCapabilityBad
 export { UnavailableControllerNotice } from '../compounds/UnavailableControllerNotice';
 export { MappingPasteBox } from '../compounds/MappingPasteBox';
 export { RescanButton } from '../compounds/RescanButton';
+export { StepIndicator } from '../views/InputTester/sub-components/controller-report/sub-components/StepIndicator';
+export { ReportSection } from '../views/InputTester/sub-components/controller-report/sub-components/ReportSection';
+export type {
+  DetectionContext, FiledControllerReport, ReportSectionProps, ReportStep, StepIndicatorProps, SubmitStatus,
+} from '../views/InputTester/sub-components/controller-report/controller-report.type';
+export { buildReport } from '../views/InputTester/sub-components/hid-calibration/diagnostics/report-builder';
+export type { GamepadDiagnosticsReport } from '../views/InputTester/sub-components/hid-calibration/diagnostics';
+export { useDiagnosticsWizardState } from '../views/InputTester/sub-components/diagnostics-wizard/behavior/useDiagnosticsWizardState';
+export type { DiagnosticsWizardState } from '../views/InputTester/sub-components/diagnostics-wizard/behavior/useDiagnosticsWizardState';
+export { useSummaryExport } from '../views/InputTester/sub-components/diagnostics-wizard/behavior/useSummaryExport';
+export { useFlashStatus } from '../views/InputTester/sub-components/hid-calibration/hooks/useFlashStatus';
+export { COPY_LABELS } from '../views/InputTester/sub-components/diagnostics-wizard/diagnostics-wizard.constants';
+export { DiagnosticsStepActions } from '../views/InputTester/sub-components/diagnostics-wizard/sub-components/DiagnosticsStepActions';
+export { FlashButton } from '../views/InputTester/sub-components/diagnostics-wizard/sub-components/FlashButton';
+export { DiagnosticsFlowBody } from '../views/InputTester/sub-components/diagnostics-wizard/DiagnosticsFlowBody';
+export type { HidControllerMap } from '../views/InputTester/sub-components/HidCalibrationWizard';
+export type { HidWizardHandle } from '../views/InputTester/sub-components/HidCalibrationWizard.type';
+export type { PositionalCaptureRecord } from '../views/InputTester/sub-components/diagnostics-wizard/positional-capture/positional-capture.type';
+export { ControllerDirectory } from '../views/ControllerDirectory';
+export { ControllerLogs } from '../views/ControllerLogs';
+export { ControllerDiagnostics } from '../views/ControllerDiagnostics';

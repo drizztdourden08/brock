@@ -40,6 +40,7 @@ const buildInputApi = ({ invoke, subscribe }: BridgeTools): InputApi => ({
     listJoysticks: () => invoke('input:capture:listJoysticks'),
     releaseHold: () => invoke('input:capture:releaseHold'),
     restoreHold: () => invoke('input:capture:restoreHold'),
+    writeDebug: (name, data) => invoke('input:capture:writeDebug', name, data),
     onRaw: (listener) => subscribe('input:raw', listener),
     onJoystick: (listener) => subscribe('input:joystick', listener),
     onHoldChanged: (listener) => subscribe('input:holdChanged', listener),

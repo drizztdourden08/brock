@@ -34,6 +34,7 @@ declare module '@drizztdourden08/brock-core/augment' {
     'input:capture:listJoysticks': () => Promise<JoystickInfo[]>;
     'input:capture:releaseHold': () => Promise<boolean>;
     'input:capture:restoreHold': () => Promise<boolean>;
+    'input:capture:writeDebug': (name: string, data: unknown) => Promise<string>;
   }
 
   interface EventContract {

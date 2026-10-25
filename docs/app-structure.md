@@ -516,7 +516,7 @@ The keys:
 | A bucket, a page of a bucket | `bucket:<bucket>`, `bucket:<bucket>:<page>` |
 | A card | `screen:<id>` |
 | A submenu made by a `meta.menu` path | `menu:/<label>/<label>`, lower case |
-| A module entry or an app `menu` prop entry | the `key` it gives, such as `input-tester` for the input module |
+| A module entry or an app `menu` prop entry | the `key` it gives, such as `controllers` for the input module |
 | View | `view`: every field but `parent`, since View stays at the top level |
 | Pin on top, Full screen, while View is hidden | `window-pin`, `window-fullscreen`: every field but `parent`, plus `activeLabel` |
 
@@ -599,7 +599,7 @@ Fixed on this branch:
 
 What this branch leaves alone, and why:
 
-- **Module renderer parts.** `updater` (`UpdateDialog`), `input` (`DeviceCard`, `InputTester`, `StickCalibrationPanel`, `TriggerCalibrationPanel`, the loose `InputTesterScreen.tsx`) and `display` (`DisplaySettingsTab`) keep component folders straight in `src/renderer/`, and `port-kit` has a generic `src/renderer/components/`. Sorting them into `compounds/` and `views/` changes their public import paths and brings them under the usage-file check, so it is a module release of its own.
+- **Module renderer parts.** `updater` (`UpdateDialog`) and `display` (`DisplaySettingsTab`) keep component folders straight in `src/renderer/`, and `port-kit` has a generic `src/renderer/components/`. Sorting them into `compounds/` and `views/` changes their public import paths and brings them under the usage-file check, so it is a module release of its own.
 - **`brock-react` `src/shell/`.** `About`, `ScreenRail` and `TitleBar` are PascalCase folders whose component moved to Tessera; only constants, types and behavior remain. Renaming them touches exported names.
 - **Stores, hooks and views are not checked.** `brock structure` does not yet look for stores outside `src/stores` or components outside the Tessera part folders; a check would flag most existing apps at once, so it should land with a migration that lists the moves.
 - **Tests in the template.** The template ships no `tests/` folder or test script, so the `tests/<area>/<name>.keep.test.ts` rule is only written down here.

@@ -25,6 +25,7 @@ const capture: InputCaptureApi = {
   listJoysticks: none,
   releaseHold: no,
   restoreHold: no,
+  writeDebug: () => Promise.reject(new Error(OFF_MESSAGE)),
   onRaw: listen,
   onJoystick: listen,
   onHoldChanged: listen,

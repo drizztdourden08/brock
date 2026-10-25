@@ -8,7 +8,7 @@ const usage = {
     'A calibration step shows the buttons held, so a stray press shows before it spoils the reading.',
   ],
   avoidWhen: [
-    { case: 'The buttons sit in their place on a drawing of the pad.', use: 'ControllerLayout' },
+    { case: 'The buttons sit in their place on a drawing of the pad.', use: 'ControllerSilhouette' },
     { case: 'Showing where a stick points.', use: 'StickPlot' },
     { case: 'A set of choices the user picks from.', use: 'SegmentedControl' },
   ],

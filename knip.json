@@ -98,6 +98,9 @@
     "packages/modules/input": {
       "entry": [
         "src/compounds/*/*.usage.ts",
+        "src/composites/*/*.usage.ts",
+        "src/primitives/*/*.usage.ts",
+        "src/views/*/*.usage.ts",
         "tests/**/*.test.ts"
       ],
       "project": [

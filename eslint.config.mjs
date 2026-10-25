@@ -9,10 +9,6 @@ export default brockEslint({
       why: 'The mascot follows live window and palette bounds, which change as either surface moves or resizes.',
     },
     {
-      files: ['packages/modules/input/src/compounds/ControllerLayout/sub-components/ControllerTag.tsx'],
-      why: 'Each tag sits at a position measured from the controller drawing, which no class can carry.',
-    },
-    {
       files: [
         'packages/modules/input/src/views/InputTester/sub-components/ControllerRawBytes.tsx',
         'packages/modules/input/src/views/InputTester/sub-components/hid-calibration/components/ByteChangeDot.tsx',

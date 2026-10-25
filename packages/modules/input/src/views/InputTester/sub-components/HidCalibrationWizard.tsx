@@ -37,9 +37,9 @@ const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardPro
 
   return (
     <Box className="hid-cal">
-      <Box className="hid-cal__header">
-        <Text as="h3" className="hid-cal__title">Byte capture for {wiz.profile?.name ?? 'Controller'}</Text>
-        {!hideOwnActions && (
+      {!hideOwnActions && (
+        <Box className="hid-cal__header">
+          <Text as="h3" className="hid-cal__title">Byte capture for {wiz.profile?.name ?? 'Controller'}</Text>
           <WizardHeaderActions
             copyStatus={copyStatus}
             saveStatus={saveStatus}
@@ -49,8 +49,8 @@ const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardPro
             onFinish={wiz.handleFinish}
             onCancel={onCancel}
           />
-        )}
-      </Box>
+        </Box>
+      )}
 
       <InstructionsPanel />
       <LiveParserOutput profile={wiz.profile} state={wiz.liveParsedState} />

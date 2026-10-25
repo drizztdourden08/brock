@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
-import type { RefObject } from 'react';
+import type { ReactNode, RefObject } from 'react';
+import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { DeviceEntry } from '../../../../device.type';
 import type { ResolvedDevice } from '../../../../family';
 import type { HidControllerMap, HidWizardHandle } from '../HidCalibrationWizard';
@@ -52,6 +53,7 @@ interface SummaryPayload {
 
 interface UseWizardNavigationProps {
   hasByteCapability: boolean;
+  hasChooser: boolean;
   step: WizardStep;
   setStep: (step: WizardStep) => void;
 }
@@ -61,6 +63,7 @@ interface UseChooserSelectionParams {
   step: WizardStep;
   chooserDevices: readonly ChooserDevice[];
   initialDeviceKey?: string | null;
+  preselected: boolean;
 }
 
 interface UseWizardProfilesParams {
@@ -73,9 +76,40 @@ interface UseDiagnosticsWizardStateProps {
   open: boolean;
   onComplete?: (map: HidControllerMap) => void;
   initialDeviceKey?: string | null;
+  preselected?: boolean;
 }
 
 type DiagnosticsWizardState = ReturnType<typeof useDiagnosticsWizardState>;
+
+type ProblemSource = Pick<DiagnosticsWizardState, 'step' | 'releaseStatus' | 'restoreStatus' | 'preselected' | 'deviceKey'>;
+
+type BusySource = Pick<DiagnosticsWizardState, 'layoutStage' | 'step' | 'restoreStatus'>;
+
+type AdvanceSource = Pick<DiagnosticsWizardState, 'step' | 'preselected' | 'confirmChoice' | 'goNext'>;
+
+interface DiagnosticsValues {
+  deviceKey: string | null;
+}
+
+interface FinishLook {
+  label: string;
+  icon: IconName;
+}
+
+interface DiagnosticsApiInput {
+  wizard: DiagnosticsWizardState;
+  capturedCount: number;
+  summaryActions: ReactNode;
+  finishLook: FinishLook;
+  onByteCaptureNext: () => void;
+  onFinish: () => void;
+}
+
+interface DiagnosticsStepDefsInput {
+  steps: readonly WizardStepInfo[];
+  summaryActions: ReactNode;
+  finishLook: FinishLook;
+}
 
 interface DiagnosticsFlowBodyProps {
   wizard: DiagnosticsWizardState;
@@ -84,7 +118,8 @@ interface DiagnosticsFlowBodyProps {
 }
 
 export type {
-  CapturedLayout, ChooserDevice, DiagnosticsFlowBodyProps, DiagnosticsWizardState,
+  AdvanceSource, BusySource, ProblemSource,
+  CapturedLayout, ChooserDevice, DiagnosticsApiInput, DiagnosticsFlowBodyProps, DiagnosticsStepDefsInput, DiagnosticsValues, DiagnosticsWizardState, FinishLook,
   HoldTransitionStatus, LayoutStage, NameLookupParams, SummaryPayload,
   UseChooserSelectionParams, UseDiagnosticsWizardStateProps, UseWizardNavigationProps, UseWizardProfilesParams,
   WizardStep, WizardStepInfo,

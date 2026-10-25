@@ -50,6 +50,15 @@ interface BackNextActionsProps {
   nextDisabled: boolean;
 }
 
+interface SummaryActionsProps {
+  restartLabel: string;
+  onRestart: () => void;
+  saveStatus: FlashStatus;
+  onSave: () => void;
+  copyStatus: FlashStatus;
+  onCopy: () => void;
+}
+
 interface FlashButtonProps {
   status: FlashStatus;
   onClick: () => void;
@@ -95,5 +104,5 @@ interface SummaryStepProps {
 export type {
   BackNextActionsProps, ByteCaptureStepProps, ByteCaptureSummaryProps, ChooseControllerStepProps, DiagnosticsStepActionsProps, FlashButtonProps,
   HoldStatusLineProps, IntroStepProps, LayoutCaptureOverlayProps, MatchedEntryPanelProps,
-  PositionalCaptureStepProps, SummaryStepProps,
+  PositionalCaptureStepProps, SummaryActionsProps, SummaryStepProps,
 };

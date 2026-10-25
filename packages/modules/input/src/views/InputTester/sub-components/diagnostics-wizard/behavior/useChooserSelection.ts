@@ -4,7 +4,7 @@ import type { ChooserDevice, UseChooserSelectionParams } from '../diagnostics-wi
 import { pickDeviceKey } from './pick-device-key';
 
 const useChooserSelection = (params: UseChooserSelectionParams) => {
-  const { open, step, chooserDevices, initialDeviceKey } = params;
+  const { open, step, chooserDevices, initialDeviceKey, preselected } = params;
   const [deviceKey, setDeviceKey] = useState<string | null>(null);
 
   const selectedChooser: ChooserDevice | null = useMemo(
@@ -15,8 +15,8 @@ const useChooserSelection = (params: UseChooserSelectionParams) => {
   useEffect(() => {
     if (!open || (step !== 'intro' && step !== 'choose-controller')) return;
     if (deviceKey && chooserDevices.some((d) => d.deviceKey === deviceKey)) return;
-    setDeviceKey(pickDeviceKey(chooserDevices, initialDeviceKey));
-  }, [open, step, chooserDevices, deviceKey, initialDeviceKey]);
+    setDeviceKey(pickDeviceKey(chooserDevices, initialDeviceKey, preselected));
+  }, [open, step, chooserDevices, deviceKey, initialDeviceKey, preselected]);
 
   return { deviceKey, setDeviceKey, selectedChooser };
 };

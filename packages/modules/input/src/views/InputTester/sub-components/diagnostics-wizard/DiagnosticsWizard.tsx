@@ -1,61 +1,60 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useRef, useState } from 'react';
-import { Box, Button } from '@drizztdourden08/tessera/primitives';
+import { Wizard } from '@drizztdourden08/tessera/composites';
+import { Box } from '@drizztdourden08/tessera/primitives';
 import type { HidWizardHandle } from '../HidCalibrationWizard';
-import { StepIndicator } from '../controller-report/sub-components/StepIndicator';
+import { diagnosticsRunResultOf } from './behavior/diagnostics-run-result-of';
+import { useDiagnosticsWizardApi } from './behavior/useDiagnosticsWizardApi';
 import { useDiagnosticsWizardState } from './behavior/useDiagnosticsWizardState';
-import { useSummaryExport } from './behavior/useSummaryExport';
-import { useFlashStatus } from '../hid-calibration/hooks/useFlashStatus';
-import { COPY_LABELS, SAVE_LABELS } from './diagnostics-wizard.constants';
+import { useSummaryHandlers } from './behavior/useSummaryHandlers';
+import { DEFAULT_FINISH, RESTART_LABEL, RESTART_SAME_LABEL } from './diagnostics-wizard.constants';
 import { DiagnosticsFlowBody } from './DiagnosticsFlowBody';
-import { DiagnosticsStepActions } from './sub-components/DiagnosticsStepActions';
-import { FlashButton } from './sub-components/FlashButton';
+import { SummaryActions } from './sub-components/SummaryActions';
 import type { DiagnosticsWizardProps } from './DiagnosticsWizard.type';
 import './DiagnosticsWizard.css';
 
 const DiagnosticsWizard = (props: DiagnosticsWizardProps) => {
-  const { onClose, onComplete, initialDeviceKey } = props;
-  const wizard = useDiagnosticsWizardState({ open: true, onComplete, initialDeviceKey });
+  const { onClose, onComplete, initialDeviceKey, preselected = false, onReport, reportLook = DEFAULT_FINISH } = props;
+  const wizard = useDiagnosticsWizardState({ open: true, onComplete, initialDeviceKey, preselected });
   const wizardRef = useRef<HidWizardHandle>(null);
   const [capturedCount, setCapturedCount] = useState(0);
-  const { handleCopyJson, handleSaveToDisk } = useSummaryExport(wizard.byteCapture, wizard.positionalRecords);
-  const [copyStatus, flashCopy] = useFlashStatus();
-  const [saveStatus, flashSave] = useFlashStatus();
-  const { finishAndClose, goNext } = wizard;
+  const summary = useSummaryHandlers(wizard);
+  const { finishAndClose, goNext, restart } = wizard;
 
   const handleClose = useCallback(() => finishAndClose(onClose), [finishAndClose, onClose]);
-
+  const handleFinish = useCallback(() => {
+    const result = diagnosticsRunResultOf(wizard);
+    if (onReport && result) onReport(result);
+    handleClose();
+  }, [wizard, onReport, handleClose]);
   const handleByteCaptureNext = useCallback(() => {
     wizardRef.current?.finish();
     goNext();
   }, [goNext]);
 
-  const handleSave = useCallback(() => handleSaveToDisk().then(flashSave), [handleSaveToDisk, flashSave]);
-  const handleCopy = useCallback(() => handleCopyJson().then(flashCopy), [handleCopyJson, flashCopy]);
-
-  const cancel = <Button variant="danger" onClick={handleClose}>Cancel</Button>;
-
-  const actions = wizard.step === 'summary' ? (
-    <>
-      <Button variant="secondary" onClick={wizard.restart}>Restart on another controller</Button>
-      <FlashButton status={saveStatus} onClick={handleSave} labels={SAVE_LABELS} />
-      <FlashButton status={copyStatus} onClick={handleCopy} labels={COPY_LABELS} />
-      <Button variant="primary" onClick={handleClose}>Close</Button>
-    </>
-  ) : (
-    <DiagnosticsStepActions
-      wizard={wizard}
-      cancelAction={cancel}
-      onByteCaptureNext={handleByteCaptureNext}
-      capturedCount={capturedCount}
-    />
-  );
+  const api = useDiagnosticsWizardApi({
+    wizard,
+    capturedCount,
+    finishLook: reportLook,
+    onByteCaptureNext: handleByteCaptureNext,
+    onFinish: handleFinish,
+    summaryActions: (
+      <SummaryActions
+        restartLabel={preselected ? RESTART_SAME_LABEL : RESTART_LABEL}
+        onRestart={restart}
+        saveStatus={summary.saveStatus}
+        onSave={summary.handleSave}
+        copyStatus={summary.copyStatus}
+        onCopy={summary.handleCopy}
+      />
+    ),
+  });
 
   return (
     <Box className="diagnostics-wizard">
-      <StepIndicator labels={wizard.stepLabels} current={wizard.stepIndex} />
-      <DiagnosticsFlowBody wizard={wizard} wizardRef={wizardRef} onCapturedCountChange={setCapturedCount} />
-      <Box className="diagnostics-wizard__actions">{actions}</Box>
+      <Wizard wizard={api} onExit={handleClose}>
+        <DiagnosticsFlowBody wizard={wizard} wizardRef={wizardRef} onCapturedCountChange={setCapturedCount} />
+      </Wizard>
     </Box>
   );
 };

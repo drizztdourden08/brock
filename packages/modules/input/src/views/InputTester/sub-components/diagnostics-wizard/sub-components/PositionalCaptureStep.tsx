@@ -48,7 +48,7 @@ const PositionalCaptureStep = (props: PositionalCaptureStepProps) => {
             prereqsDone
             includeStickTriggerIds
             showAxisSubStep={false}
-            stepTitle={`Positional capture (${capture.capturedCount}/${capture.items.length})`}
+            stepTitle={`Answered ${capture.capturedCount} of ${capture.items.length}`}
             onStartButtons={capture.onStartButtons}
             onSkip={capture.onSkip}
             onGoBack={capture.onGoBack}

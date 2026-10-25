@@ -18,7 +18,8 @@ import { useWizardNavigation } from './useWizardNavigation';
 import { useWizardProfiles } from './useWizardProfiles';
 
 const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
-  const { open, onComplete, initialDeviceKey } = props;
+  const { open, onComplete, initialDeviceKey, preselected = false } = props;
+  const hasChooser = !preselected;
   const [step, setStep] = useState<WizardStep>('intro');
   const [runGeneration, setRunGeneration] = useState(0);
   const results = useCaptureResults(onComplete);
@@ -30,7 +31,7 @@ const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
 
   const layoutCapture = useLayoutCapture();
   const addedNames = useAddedDeviceNames();
-  const { deviceKey, setDeviceKey, selectedChooser } = useChooserSelection({ open, step, chooserDevices, initialDeviceKey });
+  const { deviceKey, setDeviceKey, selectedChooser } = useChooserSelection({ open, step, chooserDevices, initialDeviceKey, preselected });
   const liveDeviceEntry = useDeviceEntry(deviceKey);
   const facts = selectedChooserFacts(selectedChooser);
   const { hasByteCapability } = facts;
@@ -45,7 +46,7 @@ const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
     selectedChooser, liveDeviceEntry, capturedLayout: layoutCapture.layout,
   });
 
-  const { stepIndex, stepLabels, goNext, goBack } = useWizardNavigation({ hasByteCapability, step, setStep });
+  const { steps, stepIndex, stepLabels, goNext, goBack } = useWizardNavigation({ hasByteCapability, hasChooser, step, setStep });
 
   const confirmChoice = useCallback(async () => {
     if (!deviceKey) return;
@@ -64,7 +65,7 @@ const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
   }, [layoutCapture, setDeviceKey, clearResults]);
 
   return {
-    step, stepIndex, stepLabels,
+    step, steps, stepIndex, stepLabels, preselected,
     deviceKey, setDeviceKey, chooserDevices, addedNames, selectedChooser, mapping, profile, resolvedDevice, hasByteCapability,
     hasGyro: facts.hasGyro, vendorIdHex: facts.vendorIdHex, productIdHex: facts.productIdHex,
     releaseStatus, restoreStatus: restoreTransition.status, activeSdlId,

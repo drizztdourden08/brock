@@ -8,4 +8,15 @@ interface DialogsInput {
   log: (message: string) => void;
 }
 
-export type { DialogsInput };
+interface BoxSpec {
+  kind: 'confirm' | 'choose';
+  title: string;
+  message: string;
+  detail?: string;
+  buttons: string[];
+  defaultId: number;
+  cancelId: number;
+  showOnAutomation?: boolean;
+}
+
+export type { BoxSpec, DialogsInput };

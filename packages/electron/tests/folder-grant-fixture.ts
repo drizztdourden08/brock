@@ -65,7 +65,7 @@ const grantSession = ({ base, confirm, flags, home = [], dialogs, log = () => un
     paths,
     profiles: GRANT_PROFILES,
     log,
-    dialogs: dialogs ?? { confirm },
+    dialogs: dialogs ?? { confirm, choose: () => Promise.reject(new Error('choose is not used here')) },
     flags,
     product: { name: 'Bxel' } as MainContext['product'],
   });

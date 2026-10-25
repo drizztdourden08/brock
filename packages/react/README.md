@@ -48,7 +48,7 @@ import { screenTree } from '../.brock/screens';
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |
 | Bug report, diagnostics | `BugReportDialog`, `BugReportButton`, `bugReport`, `buildBugReportPayload`, `resolveBugReportTarget`, `BrockAppBugReport`, `BugReportTarget`, `buildIssueUrl`, `buildIssueBody`, `useDebugText`, `buildDebugText`, `runtimeLabels`, `formatLogLine`, `useAppVersion` |
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
-| Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionProps` |
+| Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
@@ -129,7 +129,7 @@ The palette and every hub search read one index of `SearchEntry { id, kind, labe
 
 ## Accessibility
 
-`BrockApp` draws the title bar as a `banner` and the screen host as the one `main`, and mounts a polite and an assertive live region. F6 and Shift+F6 (commands `brock.region.next` and `brock.region.previous`, rebindable in the keymap) cycle focus through the regions: the banner, the main area, labelled `nav`, `complementary` and `region` elements, toolbars, and any element an app marks with `focusRegion(id, label)`. Focus returns to the control that had it last in the region.
+`BrockApp` draws the title bar as a `banner` and the screen host as the one `main`, and mounts a polite and an assertive live region. F6 and Shift+F6 (commands `brock.region.next` and `brock.region.previous`, rebindable in the keymap) cycle focus through the regions: the banner, the main area, labelled `nav`, `complementary` and `region` elements, toolbars, and any element an app marks with `focusRegion(id, label, { role? })`, whose role defaults to `region`. Focus returns to the control that had it last in the region.
 
 ```tsx
 import { announce, focusRegion } from '@drizztdourden08/brock-react';

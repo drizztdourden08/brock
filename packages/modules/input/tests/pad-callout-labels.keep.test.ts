@@ -1,9 +1,14 @@
 /* @layer renderer-components @kind test */
+import { CONTROLLER_SILHOUETTE_PATHS } from '@drizztdourden08/tessera/composites';
 import { describe, expect, it } from 'vitest';
+import { bodyLength } from '../src/composites/PadOverlay/behavior/body-length';
 import { calloutSpot } from '../src/composites/PadOverlay/behavior/callout-spot';
 import { describePart } from '../src/composites/PadOverlay/behavior/describe-part';
 import { labelSize } from '../src/composites/PadOverlay/behavior/label-size';
-import type { OverlayMetrics, OverlaySlotView } from '../src/composites/PadOverlay/PadOverlay.type';
+import { layoutOverlay } from '../src/composites/PadOverlay/behavior/layout-overlay';
+import { outlinePoints } from '../src/composites/PadOverlay/behavior/outline-points';
+import type { OverlayMetrics, OverlaySlotView, Point } from '../src/composites/PadOverlay/PadOverlay.type';
+import { CONTROLLER_SILHOUETTE_ANCHORS } from '../src/controller-anchors';
 import { FAMILY_OVERLAYS } from '../src/pad-overlay/family-overlays.constants';
 
 const CHAR = 7;
@@ -78,5 +83,72 @@ describe('face button second line', () => {
   it('leaves other inputs without a second line and gives a face button room for one', () => {
     expect(describePart(slotOf('LB'), undefined)).toBeUndefined();
     expect(labelSize(slotOf('A', 'face.east'), metrics).down).toBeGreaterThan(labelSize(slotOf('LB'), metrics).down);
+  });
+});
+
+const FONT_PX = 13;
+const LAYOUT_METRICS: OverlayMetrics = {
+  width: 640,
+  height: 420,
+  fontPx: FONT_PX,
+  measure: { name: (text) => text.length * FONT_PX * 0.6, detail: (text) => text.length * FONT_PX * 0.6 },
+};
+
+type Family = keyof typeof FAMILY_OVERLAYS;
+
+const labelOf = (family: Family, anchor: OverlaySlotView['anchor']) => {
+  const { variant, slots } = FAMILY_OVERLAYS[family];
+  const outline = CONTROLLER_SILHOUETTE_PATHS[variant];
+  const layout = layoutOverlay(slots.map((slot) => ({ ...slot })), CONTROLLER_SILHOUETTE_ANCHORS[variant], outline, LAYOUT_METRICS);
+  const { origin, scale } = layout.frame;
+  const points = outlinePoints(outline).map((point) => ({ x: origin.x + point.x * scale, y: origin.y + point.y * scale }));
+  const edges = points.map((point, index): readonly [Point, Point] => [point, points[(index + 1) % points.length] ?? point]);
+  const label = layout.labels.find((placed) => placed.part.slot.anchor === anchor);
+  if (!label) throw new Error(`no label for ${anchor}`);
+  const segments = label.leader.slice(1).map((point, index): readonly [Point, Point] => [label.leader[index] ?? point, point]);
+  return {
+    elbowY: label.leader.at(-2)?.y ?? Infinity,
+    inside: bodyLength(segments, { outline: points, outlineEdges: edges }),
+    top: Math.min(...points.map((point) => point.y)),
+  };
+};
+
+describe('body length of a leader', () => {
+  const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
+  const edges = square.map((point, index): readonly [Point, Point] => [point, square[(index + 1) % square.length] ?? point]);
+  const body = { outline: square, outlineEdges: edges };
+
+  it('counts only the part of a segment that runs inside the outline', () => {
+    expect(bodyLength([[{ x: -5, y: 5 }, { x: 15, y: 5 }]], body)).toBeCloseTo(10);
+    expect(bodyLength([[{ x: 5, y: 5 }, { x: 5, y: 25 }]], body)).toBeCloseTo(5);
+    expect(bodyLength([[{ x: 20, y: 5 }, { x: 30, y: 5 }]], body)).toBe(0);
+  });
+});
+
+describe('pad leaders and meta callouts', () => {
+  const metaAnchors = ['meta.menu', 'meta.view', 'meta.capture'] as const;
+
+  it('puts Menu, View and Share above an Xbox layout', () => {
+    for (const anchor of metaAnchors) {
+      const { elbowY, top } = labelOf('xbox', anchor);
+      expect(elbowY).toBeLessThan(top);
+    }
+  });
+
+  it('keeps the Xbox meta leaders from running far through the body', () => {
+    for (const anchor of metaAnchors) expect(labelOf('xbox', anchor).inside).toBeLessThan(110);
+  });
+
+  it('keeps the right stick and the PS button leaders short inside the body', () => {
+    expect(labelOf('xbox', 'stick.right').inside).toBeLessThan(50);
+    expect(labelOf('playstation', 'stick.right').inside).toBeLessThan(20);
+    expect(labelOf('playstation', 'meta.guide').inside).toBeLessThan(40);
+  });
+
+  it('puts the PlayStation Share and Options callouts above', () => {
+    for (const anchor of ['meta.view', 'meta.menu'] as const) {
+      const { elbowY, top } = labelOf('playstation', anchor);
+      expect(elbowY).toBeLessThan(top);
+    }
   });
 });

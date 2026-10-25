@@ -61,6 +61,8 @@ interface Scene {
   spans: Map<string, Span | null>;
 }
 
+type Body = Pick<Scene, 'outline' | 'outlineEdges'>;
+
 interface GrowRows {
   top: number;
   bottom: number;
@@ -94,6 +96,6 @@ interface Placement {
 }
 
 export type {
-  Axis, Budget, Choice, Circle, Domains, FitInput, GrowRows, LabelOption, LabelSize, LabelSpot, Occupied, Placement, Rect, Scene,
+  Axis, Body, Budget, Choice, Circle, Domains, FitInput, GrowRows, LabelOption, LabelSize, LabelSpot, Occupied, Placement, Rect, Scene,
   Segment, Span, Toward, Zone,
 };

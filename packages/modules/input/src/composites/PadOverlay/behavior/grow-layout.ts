@@ -2,7 +2,7 @@
 import { GROW_EXTRA_ROWS, GROW_ROWS } from '../PadOverlay.constants';
 import type { OverlayLayout } from '../PadOverlay.type';
 import { attemptLayout } from './attempt-layout';
-import { leaderLength } from './leader-length';
+import { layoutCost } from './layout-cost';
 import type { FitInput, GrowRows } from './placement.type';
 
 const growSteps = (): GrowRows[] => {
@@ -19,7 +19,7 @@ const growLayout = (input: FitInput, scale: number): OverlayLayout | null => {
     const layout = attemptLayout(input, scale, grow);
     if (!layout.clear) continue;
     if (!best) limit = rows + GROW_EXTRA_ROWS;
-    const score = leaderLength(layout) + layout.frame.height;
+    const score = layoutCost(layout) + layout.frame.height;
     if (!best || score < best.score) best = { layout, score };
   }
   return best?.layout ?? null;

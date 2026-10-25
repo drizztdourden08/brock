@@ -2,6 +2,7 @@
 import type { PlacedLabel } from '../PadOverlay.type';
 import { optionFits } from './option-fits';
 import { placedLabelOf } from './placed-label-of';
+import { refineLabels } from './refine-labels';
 import { searchLabels } from './search-labels';
 import type { Choice, LabelOption, Occupied, Placement, Scene } from './placement.type';
 
@@ -25,7 +26,12 @@ const ordersOf = (options: readonly LabelOption[][]): number[][] => {
   return [byCount, byCost, indices, [...byCount].reverse()];
 };
 
-const missing = (chosen: readonly Choice[]): number => chosen.filter((pick) => pick === null).length;
+const refined = (picks: readonly Choice[], options: readonly LabelOption[][]): Choice[] => {
+  const full = picks.flatMap((pick) => (pick ? [pick] : []));
+  return full.length === picks.length ? refineLabels(options, full) : [...picks];
+};
+
+const missing =(chosen: readonly Choice[]): number => chosen.filter((pick) => pick === null).length;
 
 const placeLabels = (scene: Scene, options: readonly LabelOption[][]): Placement => {
   let best: Choice[] | null = searchLabels(options);
@@ -34,7 +40,7 @@ const placeLabels = (scene: Scene, options: readonly LabelOption[][]): Placement
     if (!best || missing(chosen) < missing(best)) best = chosen;
     if (missing(best) === 0) break;
   }
-  const picks = best ?? [];
+  const picks = refined(best ?? [], options);
   const labels: PlacedLabel[] = picks.flatMap((pick, index) => {
     const part = scene.parts[index];
     const option = pick ?? options[index]?.[0];

@@ -19,6 +19,14 @@ const joined = (axis: SplitAxis, parts: readonly SizedNode[]): LayoutNode | null
   return { kind: 'split', axis, children: parts.map((part) => part.node), sizes: shares(parts.map((part) => part.size)) };
 };
 
+const rowWeight = (cells: readonly LayoutCell[], definitions: readonly WidgetDef[]): number | undefined => {
+  const weights = cells.flat().flatMap((id) => {
+    const weight = getWidgetDefinition(definitions, id)?.dockWeight;
+    return weight !== undefined && weight > 0 ? [weight] : [];
+  });
+  return weights.length > 0 ? Math.max(...weights) : undefined;
+};
+
 const builder = (definitions: readonly WidgetDef[]) => {
   const placed = new Set<string>();
   const take = (id: string): boolean => {
@@ -31,19 +39,21 @@ const builder = (definitions: readonly WidgetDef[]) => {
     if (ids.includes(LAYOUT_MAIN)) return MAIN_NODE;
     return ids.length > 0 ? createPane(ids) : null;
   };
-  const row = (cells: readonly LayoutCell[], widths: readonly number[] = []): LayoutNode | null =>
-    joined('row', cells.flatMap((entry, index) => {
-      const node = cell(entry);
-      return node ? [{ node, size: widths[index] }] : [];
+  const row = (cells: readonly LayoutCell[], widths: readonly number[] = []): SizedNode | null => {
+    const node = joined('row', cells.flatMap((entry, index) => {
+      const made = cell(entry);
+      return made ? [{ node: made, size: widths[index] }] : [];
     }));
+    return node ? { node, size: rowWeight(cells, definitions) } : null;
+  };
   return { row, hasMain: () => placed.has(LAYOUT_MAIN) };
 };
 
 const presetDock = (preset: LayoutPreset, definitions: readonly WidgetDef[]): LayoutNode => {
   const build = builder(definitions);
   const rows = preset.rows.flatMap((cells, index) => {
-    const node = build.row(cells, preset.widths?.[index]);
-    return node ? [{ node, size: preset.sizes?.[index] }] : [];
+    const made = build.row(cells, preset.widths?.[index]);
+    return made ? [{ node: made.node, size: preset.sizes?.[index] ?? made.size }] : [];
   });
   const withMain = build.hasMain() ? rows : [...rows, { node: MAIN_NODE, size: undefined }];
   return joined('column', withMain) ?? MAIN_NODE;

@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-catalog
 
+## 0.97.0
+
+### Patch Changes
+
+- Updated dependencies [1f3d40b]
+  - @drizztdourden08/brock-react@0.97.0
+  - @drizztdourden08/brock-core@0.97.0
+  - @drizztdourden08/brock-electron@0.97.0
+
 ## 0.96.1
 
 ### Patch Changes

@@ -8,7 +8,7 @@ import { writeDebugCapture } from './write-debug-capture';
 const toStartResult = (result: Sdl3RawCaptureResult): RawCaptureStartResult =>
   result.success ? { ok: true } : { ok: false, reason: result.reason, ...(result.message ? { message: result.message } : {}) };
 
-const registerCaptureHandlers = ({ handle }: Pick<MainContext, 'handle'>, { runtime }: InputMain): void => {
+const registerCaptureHandlers = ({ handle, paths }: Pick<MainContext, 'handle' | 'paths'>,{ runtime }: InputMain): void => {
   handle('input:capture:startRaw', (_event, vendorId, productId) => toStartResult(runtime().addon.startRawCapture(vendorId, productId)));
   handle('input:capture:stopRaw', () => { runtime().addon.stopRawCapture(); });
   handle('input:capture:startJoystick', (_event, joystickId) => runtime().addon.startJoystickCapture(joystickId));
@@ -16,7 +16,7 @@ const registerCaptureHandlers = ({ handle }: Pick<MainContext, 'handle'>, { runt
   handle('input:capture:listJoysticks', () => runtime().addon.listJoysticks());
   handle('input:capture:releaseHold', () => runtime().addon.releaseGamepads());
   handle('input:capture:restoreHold', () => runtime().addon.restoreGamepads());
-  handle('input:capture:writeDebug', (_event, name, data) => writeDebugCapture(name, data));
+  handle('input:capture:writeDebug', (_event, name, data) => writeDebugCapture(paths, name, data));
 };
 
 export { registerCaptureHandlers };

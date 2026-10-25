@@ -1,0 +1,39 @@
+/* @layer renderer-shell @kind style */
+.hid-cal__live-parser {
+  background: var(--c-surface);
+  border: var(--border-width-thin) solid var(--c-info);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.hid-cal__live-parser--none {
+  color: var(--c-warning);
+  font-size: var(--text-sm);
+}
+
+.hid-cal__live-parser-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.hid-cal__live-parser-chip {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-thin) solid var(--c-border);
+  color: var(--c-text-dim);
+}
+
+.hid-cal__live-parser-chip--on {
+  border-color: var(--c-secondary-bright);
+  color: var(--c-secondary-bright);
+  background: var(--c-secondary-dim);
+}
+
+.hid-cal__live-parser-chip--unmapped {
+  border-style: dashed;
+  opacity: var(--opacity-glow);
+}

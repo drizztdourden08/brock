@@ -5,8 +5,23 @@
   align-items: center;
 }
 
+.input-cal__log {
+  padding: var(--space-md);
+  background: var(--c-bg);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-md);
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
 .input-cal__log.hid-cal__log-box {
   max-height: calc(150 * var(--size-1));
+}
+
+.input-cal__log-entry {
+  line-height: 1.6;
+  color: var(--c-text-muted);
 }
 
 .input-cal__log-entry.hid-cal__log-line {

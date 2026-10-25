@@ -11,6 +11,8 @@ import { WizardByteSection } from './hid-calibration/components/WizardByteSectio
 import { WizardMappingSection } from './hid-calibration/components/WizardMappingSection';
 import { WizardPrereqSection } from './hid-calibration/components/WizardPrereqSection';
 import type { HidCalibrationWizardProps, HidWizardHandle } from './HidCalibrationWizard.type';
+import '../theme/hid-calibration.css';
+import './HidCalibrationWizard.css';
 
 const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardProps>((props, ref) => {
   const { onComplete, onCancel, deviceKey, hideOwnActions = false, onCapturedCountChange, initialProfile, capturedEntry, initialProfileId, initialHasGyro } = props;

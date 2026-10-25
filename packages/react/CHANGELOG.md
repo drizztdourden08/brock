@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.95.0
+
+### Minor Changes
+
+- 8a93950: The shell gets landmarks, region cycling and an announcer. The title bar is a `banner` and the screen host is the one `main` (named by `product.widgets.mainLabel`). F6 and Shift+F6 move focus to the next and previous region and wrap; they are the commands `brock.region.next` and `brock.region.previous`, so they show in the shortcut list and can be rebound. A region is a landmark, a toolbar or any element marked with the new `focusRegion(id, label)`, and focus lands on the control that had it last. `announce(message, { politeness? })` writes to a polite or an assertive visually hidden live region mounted by `BrockApp`, and says the same message again when repeated.
+
+### Patch Changes
+
+- 7e3cae1: Brock is now built and tested on Tessera `^0.61.0` (the workspace catalog). The `brock-react` peer range is unchanged at `>=0.58.0 <1`. The release lifts the brock grey so faint and muted text reads at 4.5:1 or more on every surface. It has no MIGRATION entry, and Brock needed no code change for it.
+  - @drizztdourden08/brock-core@0.95.0
+
 ## 0.94.0
 
 ### Minor Changes

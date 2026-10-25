@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-thread
 
+## 0.95.0
+
 ## 0.94.0
 
 ### Patch Changes

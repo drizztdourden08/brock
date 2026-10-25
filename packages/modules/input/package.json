@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-input",
   "version": "0.95.0",
-  "description": "Brock input module: SDL3 controllers with hotplug and live state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and the InputTester screen.",
+  "description": "Brock input module: SDL3 controllers with hotplug and live state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and the Controllers hub.",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {
@@ -46,7 +46,7 @@
   ],
   "brock": {
     "id": "input",
-    "description": "SDL3 controllers, the mapping database, calibration, rumble and the InputTester screen.",
+    "description": "SDL3 controllers, the mapping database, calibration, rumble and the Controllers hub.",
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",
     "renderer": "./src/renderer/index.ts",
@@ -127,7 +127,7 @@
     "zustand": "catalog:"
   },
   "peerDependencies": {
-    "@drizztdourden08/tessera": ">=0.50.0",
+    "@drizztdourden08/tessera": ">=0.60.0",
     "electron": ">=38",
     "react": "^19.0.0",
     "zustand": "^5.0.0"

@@ -89,6 +89,7 @@ export default defineExtension({
       { pattern: /^[a-z][a-z0-9-]*\.tour\.ts$/, label: '<id>.tour.ts' },
       { pattern: /^[a-z][a-z0-9-]*\.toolbar\.tsx$/, label: '<id>.toolbar.tsx' },
       { pattern: /^[a-z][a-z0-9-]*\.prompt\.ts$/, label: '<id>.prompt.ts' },
+      { pattern: /^[a-z][a-z0-9-]*\.page\.tsx$/, label: '<id>.page.tsx' },
       { pattern: /^[a-z][a-z0-9-]*\.(?:task|widget|overlay|kit|step|action|tour|toolbar|prompt)\.constants\.ts$/, label: '<id>.<kind>.constants.ts' },
     ],
     ownedDirs: conventionOwned,

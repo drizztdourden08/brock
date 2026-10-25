@@ -161,7 +161,7 @@ The prose checks run on comments, strings, Markdown, other text files and pull r
 - **Title bar:** buttons are actions. Search, Report a bug and Check for updates are standard; a module adds its own through `titleBarActions`. `product.window.titleBar.controls` turns window buttons off.
 - **Brand:** `product.icons.brand` picks the Tessera brand and `product.icons.rim` (`light` or `dark`) the rimmed logo set; `brock icons` copies them.
 - **Widgets:** declare them with `defineWidget`. Popping out, syncing with the main window, groups, snapping and resizing are Brock's; never add window code of your own.
-- **Built-in compounds:** `AboutPanel`, `ReleaseNotesPanel` and `ProfilesPanel` come from brock-react, `CalibrationPanel` from `brock-input/renderer`. Use them; do not copy them.
+- **Built-in compounds:** `AboutPanel`, `ReleaseNotesPanel` and `ProfilesPanel` come from brock-react. Use them; do not copy them.
 - **Boot and splash:** boot tasks are `src/boot/*.task.ts` and `electron/boot/*.task.ts`; the splash and the installer come from `brock.config.ts`.
 - **Review:** `<app> launch main none --review` must pass, and so must the packaged run after `pnpm build` (`--prod --review`).
 

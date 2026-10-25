@@ -10,7 +10,6 @@ const usage = {
   avoidWhen: [
     { case: 'The whole pad is drawn with every button and both sticks in place.', use: 'ControllerLayout' },
     { case: 'Only showing which buttons are held.', use: 'PressedGrid' },
-    { case: 'A whole calibration step with title, instruction and buttons.', use: 'CalibrationPanel' },
   ],
   rules: [
     'Pass x and y from -1 to 1 with y up; the dot rests at the center when both are zero.',

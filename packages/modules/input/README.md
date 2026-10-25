@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # brock-input
 
-Game controllers through SDL3: device list with hotplug, live button and axis state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and an InputTester screen. It is generic input. Button meaning belongs to the app.
+Game controllers through SDL3: device list with hotplug, live button and axis state, the gamecontrollerdb mapping database, stick and trigger calibration, rumble, and a Controllers hub with a directory, a log and a diagnostics wizard. It is generic input. Button meaning belongs to the app.
 
 ## The SDL3 addon
 
@@ -204,9 +204,13 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 ## Renderer side
 
-The module adds a `Controllers` screen (`input-tester`) and a menu entry that opens it. The screen lists every device, lights each button as it is pressed (`PressedGrid`), draws both sticks (`StickPlot`) and both triggers (`StatRow` over a `ProgressBar`), runs a stick or trigger calibration in the module's `CalibrationPanel` (the stick step draws a large `StickPlot` with the measured range, the recorded center and the dead zones; the trigger step shows the peak as the bar's second value; the buttons held show in the panel while it is open), plays rumble patterns, and takes a new mapping line.
+The module adds a `Controllers` hub (the bucket `controllers`) and a menu entry under Advanced that opens it. The hub is hidden from the hub switcher, so the menu entry is the way in. A module contributes the bucket through `RendererModule.buckets`, and an app that declares its own bucket with the id `controllers` fails at start.
 
-`CalibrationPanel` is a Brock compound, exported from `@drizztdourden08/brock-input/renderer` with its types. It sits in `src/compounds/CalibrationPanel/` with its usage file, built on the module's `StickPlot` and `PressedGrid` and Tessera's `ProgressBar` and `StatRow`. It takes `title`, `instruction`, `readout`, `action` (`label`, `disabled`, `onClick`), `onCancel`, `cancelLabel` and `children` like the Tessera panel it replaces, plus `reading`, the live stick (`x`, `y`, `center`, `range`, the dead zones) or trigger (`value`, `peak`) named by its SDL control name and label, and `buttons`, the `PressedGrid` items and the ones held. Every control glyph is drawn by one sub-component, `InputGlyph`, which today writes the control's label in a key cap.
+- **Directory.** A searchable table of every mapping SDL3 knows, with the connected controllers first and a Rescan button at the end of the filter row. Only the table body scrolls.
+- **Logs.** The connect and disconnect history of this session, with the HID events.
+- **Diagnostics.** The guided wizard: pick a controller, capture its raw bytes, press each control in place, and read the result. It also hosts the stick and trigger calibration wizards. The wizard saves its JSON through the app's `writeHidDebugFile` call.
+
+The pages are `ControllerDirectory`, `ControllerLogs` and `ControllerDiagnostics`, exported from `@drizztdourden08/brock-input/renderer` for an app that wants them in a screen of its own. The module also exports what an app needs to build a report dialog around the wizard: `StepIndicator`, `ReportSection`, `buildReport`, `useDiagnosticsWizardState`, `useSummaryExport`, `useFlashStatus`, `DiagnosticsStepActions`, `DiagnosticsFlowBody`, `FlashButton`, `COPY_LABELS` and the report step types.
 
 `ControllerLayout`, `StickPlot` and `PressedGrid` are compounds of this module, exported from `@drizztdourden08/brock-input/renderer` with their prop types, `CONTROLLER_LAYOUT_VARIANTS`, `CONTROLLER_SLOT_IDS`, `ControllerExtra` and `ControllerSlots`. They left Tessera, which keeps `ControllerSilhouette`, `InputIcon` and the input icon sets. Each sits in `src/compounds/<Name>/` and keeps its props.
 
@@ -216,7 +220,7 @@ The module adds a `Controllers` screen (`input-tester`) and a menu entry that op
 
 The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
 
-An app adds its own buttons to every device card, on the module's Controllers screen too, with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook. `InputTester` and `DeviceCard` also take them as a prop (`deviceActions` and `actions`); a prop action replaces a registered one with the same `id`. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. They show as a row of buttons under the rumble row.
+An app adds its own buttons for a controller with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook; an action with the same `id` replaces the earlier one. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. This is the hook for a Report button.
 
 ```ts
 import { registerDeviceCardActions } from '@drizztdourden08/brock-input/renderer';

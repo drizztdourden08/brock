@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind style */
+.controller-report__section {
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.controller-report__section-text {
+  margin-top: var(--space-sm);
+  max-height: calc(14 * var(--text-base));
+  overflow: auto;
+  font-size: var(--text-xs);
+  white-space: pre-wrap;
+}

@@ -58,7 +58,9 @@ describe('ctx.dialogs.confirm', () => {
     await dialogs.confirm({ ...options, detail: 'It will read your notes.', confirmLabel: 'Allow', cancelLabel: 'Deny' });
     expect(showMessageBox).toHaveBeenLastCalledWith(expect.objectContaining({ detail: 'It will read your notes.', buttons: ['Allow', 'Deny'] }));
   });
+});
 
+describe('ctx.dialogs.confirm on an automation launch', () => {
   it('resolves false without showing anything on an automation launch, and logs it', async () => {
     const parent = parentOf({ visible: true, minimized: false, destroyed: false });
     expect(await createDialogs({ flags: automation, window: () => parent, log }).confirm(options)).toBe(false);

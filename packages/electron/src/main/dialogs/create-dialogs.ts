@@ -15,7 +15,6 @@ const visibleParent = (window: () => BrowserWindow | null): BrowserWindow | null
 
 const endsItself = (flags: AutomationFlags): boolean => NON_BLOCKING_FLAGS.some((flag) => flags.hasFlag(flag));
 
-/** Shows the box and answers the index of the button picked. A skipped box and a closed box answer `cancelId`. */
 const ask = async ({ flags, window, log }: DialogsInput, spec: BoxSpec): Promise<number> => {
   const { kind, title, message, detail, buttons, defaultId, cancelId, showOnAutomation } = spec;
   if (flags.isAutomationLaunch() && !(showOnAutomation === true && !endsItself(flags))) {

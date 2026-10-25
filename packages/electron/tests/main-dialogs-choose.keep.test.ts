@@ -5,11 +5,10 @@ import { automation, flags, log, parentOf, resetDialogs, showMessageBox } from '
 
 vi.mock('electron', async () => (await import('./electron-dialog-mock')).electronDialogMock);
 
-const choices = [
-  { id: 'read', label: 'Read only' },
-  { id: 'write', label: 'Allow edits' },
-  { id: 'never', label: 'Never' },
-];
+const read = { id: 'read', label: 'Read only' };
+const write = { id: 'write', label: 'Allow edits' };
+const never = { id: 'never', label: 'Never' };
+const choices = [read, write, never];
 const options = { title: 'Pair it?', message: 'The assistant wants access.', choices, defaultId: 'read', cancelId: 'never' };
 const dialogs = createDialogs({ flags, window: () => null, log });
 
@@ -53,9 +52,9 @@ describe('ctx.dialogs.choose', () => {
   });
 
   it.each([
-    ['one choice', { choices: [choices[0]!], defaultId: 'read', cancelId: 'read' }, '2 to 4 choices'],
+    ['one choice', { choices: [read], defaultId: 'read', cancelId: 'read' }, '2 to 4 choices'],
     ['five choices', { choices: [...choices, { id: 'a', label: 'A' }, { id: 'b', label: 'B' }] }, '2 to 4 choices'],
-    ['duplicate ids', { choices: [choices[0]!, choices[0]!], defaultId: 'read', cancelId: 'read' }, 'duplicate'],
+    ['duplicate ids', { choices: [read, read], defaultId: 'read', cancelId: 'read' }, 'duplicate'],
     ['an unknown defaultId', { defaultId: 'nope' }, 'defaultId "nope"'],
     ['an unknown cancelId', { cancelId: 'nope' }, 'cancelId "nope"'],
   ])('throws on %s, before anything is shown', async (_name, patch, message) => {

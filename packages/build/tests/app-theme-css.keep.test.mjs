@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -10,6 +10,7 @@ import { themePalette } from '../src/look/theme-palette.mjs';
 import { readTokenCss } from '../src/splash/read-token-css.mjs';
 
 const TESSERA = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
+const BROCK_DIM = JSON.parse(readFileSync(join(TESSERA, 'tokens.json'), 'utf8')).palettes.brock.dark.textDim;
 const SCHEMA = './node_modules/@drizztdourden08/tessera/tessera.config.schema.json';
 const made = [];
 
@@ -88,7 +89,7 @@ describe('the brand palette', () => {
 
   it('tells the splash whether theme.css brings colours, or a dark ground, of its own, and reads the dim text of the palette', () => {
     const plain = loadLookSources(appWith({ 'src/theme.css': OVERRIDE_ONLY }), { icons: { brand: 'brock' } });
-    expect(plain).toMatchObject({ themeSeeds: false, themeDark: false, inks: { dim: '#8a8b8d' } });
+    expect(plain).toMatchObject({ themeSeeds: false, themeDark: false, inks: { dim: BROCK_DIM } });
     const own = loadLookSources(appWith({ 'src/theme.css': ':root { --p-primary: #123456; --p-gradient-dark-from: #101010; }\n' }), {});
     expect(own).toMatchObject({ themeSeeds: true, themeDark: true, inks: { dim: '#9a9aa4' } });
   });

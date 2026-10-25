@@ -1,0 +1,13 @@
+/* @layer renderer-shell @kind style */
+
+.brock-announcer {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  overflow: hidden;
+  pointer-events: none;
+  block-size: var(--size-1);
+  inline-size: var(--size-1);
+}

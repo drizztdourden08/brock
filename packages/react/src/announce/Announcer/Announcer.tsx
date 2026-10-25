@@ -2,7 +2,7 @@
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { ANNOUNCER_CLASS } from '../announce.constants';
 import { useAnnounceStore } from '../useAnnounceStore';
-import '@drizztdourden08/tessera/visually-hidden.css';
+import './Announcer.css';
 
 const Announcer = () => {
   const polite = useAnnounceStore((state) => state.polite);

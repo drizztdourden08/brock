@@ -126,7 +126,7 @@ describe('the cargo lane config', () => {
 
 describe('the clippy default', () => {
   it('ships the thresholds of the TypeScript rules', () => {
-    expect(readFileSync(join(CLIPPY_DEFAULT_DIR, 'clippy.toml'), 'utf8')).toBe('too-many-lines-threshold = 60\ncognitive-complexity-threshold = 10\n');
+    expect(readFileSync(join(CLIPPY_DEFAULT_DIR, 'clippy.toml'), 'utf8').replace(/\r\n/g, '\n')).toBe('too-many-lines-threshold = 60\ncognitive-complexity-threshold = 10\n');
   });
 
   it('points clippy at it when the repo has no clippy.toml, and leaves a repo file alone', async () => {

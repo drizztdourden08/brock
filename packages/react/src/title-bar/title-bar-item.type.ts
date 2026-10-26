@@ -56,6 +56,12 @@ type TitleBarItemHook = () => TitleBarItemSpec | null;
 
 type TitleBarItemSource = TitleBarItemSpec | TitleBarItemHook;
 
+interface TitleBarActionsMenu {
+  id?: string;
+  label: string;
+  icon: IconName;
+}
+
 interface TitleBarItemEntry {
   id: string;
   source: TitleBarItemSource;
@@ -67,6 +73,6 @@ interface TitleBarItemMeta {
 }
 
 export type {
-  TitleBarButtonLook, TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
+  TitleBarActionsMenu, TitleBarButtonLook, TitleBarButtonSpec, TitleBarItemEntry, TitleBarItemHook, TitleBarItemMeta, TitleBarItemSource, TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec,
   TitleBarStatusSpec, TitleBarVolumeSpec,
 };

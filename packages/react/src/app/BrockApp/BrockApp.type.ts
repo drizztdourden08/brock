@@ -8,7 +8,7 @@ import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
 import type { ModuleBucket, RendererModule } from '../../modules/renderer-module.type';
 import type { RendererBootTask } from '../../boot/renderer-boot.type';
 import type { BeforeQuit, OnBeforeQuit } from '../../quit/quit.type';
-import type { TitleBarItemEntry } from '../../title-bar/title-bar-item.type';
+import type { TitleBarActionsMenu, TitleBarItemEntry } from '../../title-bar/title-bar-item.type';
 import type { ResolvedScreenTree, ScreenTree } from '../../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../../screens/screen-registry.type';
 import type { ScreenDef } from '../../screens/screen.type';
@@ -74,6 +74,7 @@ interface BrockAppProps<S extends object> {
   beforeQuit?: BeforeQuit;
   onBeforeQuit?: OnBeforeQuit;
   titleBar?: readonly TitleBarItemEntry[];
+  titleBarMenu?: TitleBarActionsMenu;
   review?: AppReview;
   tours?: readonly TourDef[];
   toolbars?: readonly ToolbarDef[];
@@ -92,6 +93,7 @@ interface MenuBuildInput {
   appMenu: readonly MenuEntry[];
   moduleMenu: readonly MenuEntry[];
   widgets: readonly MenuItem[];
+  toolbars?: readonly MenuItem[];
   homeScreen: string;
   homeLocked?: boolean;
   singleProfile?: boolean;

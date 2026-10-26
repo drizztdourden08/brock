@@ -5,7 +5,7 @@ import type { MenuItem } from '../menu/menu.type';
 import { byOrder } from '../screens/conventions/by-order';
 import { UNORDERED } from '../screens/conventions/screens.constants';
 import { menuPlacementOf } from './menu-placement-of';
-import { WIDGET_KEY_PREFIX } from './widget.constants';
+import { WIDGET_KEY_PREFIX, WIDGETS_DEVELOPER_KEY } from './widget.constants';
 import type { WidgetDef } from './widget.type';
 
 const buildWidgetMenuEntries = (
@@ -25,6 +25,7 @@ const buildWidgetMenuEntries = (
       checked: isWidgetOpen(layout, def.id),
       onClick: () => toggle(def.id),
       ...(def.devOnly === true ? { devOnly: true } : {}),
+      ...(def.menu?.developer === true && isDev ? { parent: WIDGETS_DEVELOPER_KEY } : {}),
       ...menuPlacementOf(def.menu),
     }));
 

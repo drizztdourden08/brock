@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-react
 
+## 0.105.0
+
+### Minor Changes
+
+- e345020: Run a process as a job. `ctx.processes.define(id, { label, parse, resolve, progress?, successCodes?, elevate?, cancel? })` registers a program the renderer may start by id with `jobs.runProcess(id, args)`, and `ctx.processes.run(id, spec, options)` runs one from main. The renderer sends only the id and one value; the app's `parse` checks it and `resolve` builds the argument array, so the renderer never names a program, an argument list, a directory or an environment. The program is spawned with `shell: false`, `windowsHide: true`, an absolute command, a plain argument array and an environment that starts from a short allowlist plus what the app adds. Its stdout and stderr lines go to the job log (cleaned, with each line cut at 4096 characters), an optional `progress` parser turns a line into a fraction or a label, and the job is done on exit code 0 or a listed code and failed otherwise, with the code and the last 20 lines in the outcome. The renderer call is accepted only from the top frame of the main window at the app origin (`fromAppFrame`, also exported for other handlers). Commands are checked hard: on Windows a normalised drive letter `.exe` or `.com`, with scripts, data streams, network and device paths and command interpreters such as `cmd`, `powershell` and `msiexec` refused unless the definition allows them, and `spec.env` may not set `NODE_OPTIONS`, `ELECTRON_*`, `LD_PRELOAD`, `DYLD_*` or `PATH` unless allowed. Log lines lose OSC and C1 sequences and bidi overrides, `redact` and `log: false` keep secrets out of the log, and each job update carries at most 64 KiB of the log. `timeoutMs` force-kills a long run. Cancel stops the whole process tree (`taskkill /T`, then `/F`, on Windows; SIGTERM then SIGKILL to the process group elsewhere), one process runs per job id, and a quit kills every running process. An outcome is `cancelled` only when the kill ended the process. If the kill is refused or the process outlives it (an installer that raised its own rights), the outcome is `detached` and the id stays busy until the process exits; an `elevate: 'installer'` job is not cancellable unless the definition says so. `elevate: 'installer'` only notes that the program may show its own system prompt; Brock never raises rights. Core caps the log in each job update and gains the `ProcessJobOutcome` type and the `job:runProcess` channel (`runProcessJob` on the host API); react gains `jobs.runProcess`.
+- 0806572: Brock moves to Tessera 0.68. A docked toolbar has a context menu: a right click, Shift+F10 or the Menu key opens Show labels, Move to (Top, Bottom, Left, Right) and Hide toolbar. They are three new commands, `toolbar.labels`, `toolbar.moveTo` and `toolbar.hide`, that take the toolbar id (and the side) as `args`, and the Toolbars menu now holds the same entries in a sub-menu for each shown toolbar. The labels flag and the side are saved in the toolbar layout, and `useToolbarLayoutStore` gains `hide`, `setLabels` and `moveToSide`. Pass `slot.labels` to Tessera's `Toolbar` as `labels`. `ToolbarHost` draws each toolbar inside a `display: contents` element that carries the zone `brock.toolbar` (`TOOLBAR_ZONE`); the command ids are `TOOLBAR_COMMANDS`.
+
+  Context menu items carry `data-menu-entry` (the command id, else the label), and an entry `reason` is now also the item's `aria-description`. Focus returns to the opener through Tessera's `ContextMenu`, so Brock's own focus code is gone. `contextMenuHandler(zone, data?)` returns an `onContextMenu` handler for the Tessera parts that report a right click with an id, such as `DocumentTabs` `onTabContextMenu` and `StatusBar` `onItemContextMenu`.
+
+### Patch Changes
+
+- Updated dependencies [e345020]
+  - @drizztdourden08/brock-core@0.105.0
+
 ## 0.104.0
 
 ### Minor Changes

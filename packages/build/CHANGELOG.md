@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-build
 
+## 0.105.0
+
+### Patch Changes
+
+- ce76906: `defineBrockVitestConfig` works from a workspace root. It takes react, react-dom, zustand and Tessera, and the JSX runtime, from the app that has them (`{ appDir }` as the third argument, else the root when it holds a `brock.config.ts`, else the first workspace package that depends on brock-react), and leaves out a shared package that is not installed. A single app is unchanged.
+- Updated dependencies [e345020]
+- Updated dependencies [bfb285b]
+  - @drizztdourden08/brock-core@0.105.0
+  - @drizztdourden08/brock-thread@0.105.0
+  - @drizztdourden08/brock-lint-config@0.105.0
+
 ## 0.104.0
 
 ### Patch Changes

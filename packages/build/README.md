@@ -22,7 +22,9 @@ brock sync [--check]       regenerate the managed files, or report drift with --
 brock check                sync --check, for CI
                            at a repo root with brock.workspace.mjs, both run once per electron target's app
 brock gate                 the app's own gate steps (gate in brock.config.ts): the clang-format check of
-                           gate.clangFormat, then each gate.scripts script; every step runs, exit 1 when one failed
+                           gate.clangFormat, each gate.scripts script, then the cargo lane while a Cargo.toml
+                           is at the repo root; every step runs, exit 1 when one failed. A repo with no app
+                           reads gate from brock.workspace.mjs
 brock clang-format [--check]
                            rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
                            the files that differ with --check
@@ -145,7 +147,7 @@ The steps that need the whole tree stay whole-tree: the typecheck (tsc), jscpd, 
 - `optimize-deps/`: `optimizeDepsPlugin` sets the renderer `optimizeDeps` on the dev server (never on a build): `rendererOptimizeDeps` joins React, the renderer entries of Tessera and of the installed Brock packages (their exports, less `main`, `preload`, `node`, `worker`, `cli`, `config` and file subpaths), and `crawlRendererDeps`, which reads every file under `src/` and the linked packages it imports (64 files at a time) and keeps each import that resolves into `node_modules`, written `<linked> > <dep>` when the app root cannot reach it. Under `electron-vite dev` the read starts when the config loads, so it runs while main and preload build. The plugin also sets `BROCK_DEV_DEPS_METADATA` to the optimizer's `_metadata.json`, which brock-electron reads to keep the Chromium cache.
 - `build-options/`: `appAliases` turns `build.aliases` into the alias map of every Vite side, `nodePolyfillPlugins` loads `vite-plugin-node-polyfills` from the app, and `withAliasPaths` adds the aliases to the managed `tsconfig.json`.
 - `dev-only/`: `devOnlyPlugin` sits first in main, the renderer, its workers and the web build. In a `production` build it loads each generated `.brock/<name>.dev.ts` as `devRegistryStub`, the same exports as empty lists, so no dev-only screen or handler group reaches the bundle, and it stops the build when any other module reaches a `.dev` file of the app.
-- `gate/`: `gateSteps` turns `gate` of `brock.config.ts` into steps, `runGate` runs them all and returns the failed ones, `clangFormatFiles` is the managed `.clang-format` for sync, `cSources` lists the C files, `findClangFormat` picks the binary and `runClangFormat` checks or rewrites in batches of 40 files.
+- `gate/`: `gateSteps` turns `gate` of `brock.config.ts` into steps, `runGate` runs them all and returns the failed ones, `cargoSteps` builds the cargo lane (with `findCargo`, `cargoRoot`, `scanRust` and `runRustComments` behind it) and `workspaceGate` reads `gate` for a repo with no app, `clangFormatFiles` is the managed `.clang-format` for sync, `cSources` lists the C files, `findClangFormat` picks the binary and `runClangFormat` checks or rewrites in batches of 40 files.
 - `builder-config.mjs` works on the raw product input and fills the defaults it needs (`artifactPrefix`, `fileAssociations`, `protocols`) the same way `defineProduct` does. It passes `protocols` to electron-builder (Info.plist `CFBundleURLTypes`, the `.desktop` `x-scheme-handler`), gives each file type a mime type (`application/x-<ext>` when none is set, since Linux needs one) and ships each file type's `build/<icon>.ico` as `resources/file-icons/<ext>.ico` on Windows, where the registry entry points. The managed `deb-postinst.sh` refreshes the mime and desktop databases for a product that declares a protocol or a file type, and the stub's `BROCK_REGISTERS_OS` has a portable install run `--os-integration=register`. With `icons.brand` set it points electron-builder at the copied set (`win.icon: build/icons/icon.ico`, `mac.icon: build/icons/icon.png`, `linux.icon: build/icons/linux`, `directories.buildResources: build`); without it the `ico`, `png512` and `png256` fields map to win, mac and linux as written.
 - `icons/`: Brock owns no icon art. `copyBrandIcons` resolves `@drizztdourden08/tessera/package.json` from the app root, takes `brand/<brand>/` beside it and copies the set (`icon.ico`, `icon.png` from the 1024, `png/icon-<size>.png`, the same sizes as `linux/<size>x<size>.png` (the names electron-builder reads from an icon folder), `maskable-512.png`, `android/*`, `splash/*`) into `build/`, plus `icon.svg`, `icon.ico` and `icon-256.png` into `public/logos/` for the About screen and the window icon, `icon-32.png` and `icon-24.png` for the title bar (`product.logos.app` defaults to `./logos/icon-32.png` with a brand, so the 20 px logo is not a 256 px image scaled down), and `brand/dark-ground/<brand>.svg`, the mark without its tile in the colours Tessera draws it on the dark splash ground, as `public/logos/mark.svg` for the splash page and the boot failure splash.
 - `icons.rim` (`'light'`) picks Tessera's rimmed set: `brand/light-rim/<brand>/` and `brand/light-rim/<brand>.svg`, which mirror the plain layout, carry a thin outline in the rim colour and are never tiled. It defaults to `'light'` for the `brock` brand, the light rim on dark surfaces, and to no rim for any other brand. `brandRim` resolves it from the raw config, `brandFolder` names the folder, and every reader takes it: `brock icons` (with `dev` and `build`), so the window icon, `public/logos`, `build/icons` and the bot variant all come from that tree (the splash mark comes from `brand/dark-ground/` whatever the rim), and the installer's downloader mark (`mark/mark-256.png`, else `<brand>.svg`); the Setup splash takes the same files from `brand/dark-ground/`. `icons/bot/` then writes the instance variant a named instance shows: `icon-bot.svg`, `icon-bot-256.png` and `icon-bot.ico`, the brand icon with a bot badge in the corner, drawn with pngjs and a small ICO writer. A brand folder with a `bot/` set of its own (`icon.svg`, `png/icon-256.png`, `icon.ico`) is copied instead. A file whose destination already holds the same bytes is skipped, so switching to a rim recopies the set and redraws the bot variant; `--force` copies all. `dev` and `build` run the same copy first, so a fresh clone gets its logos on the first run. A missing Tessera package or brand folder fails with the path it looked for.
@@ -696,6 +698,51 @@ gate: {
   released for every LLVM release, where the older `clang-format` npm wrapper has not had a release
   since 2023. `BROCK_CLANG_FORMAT` names another binary instead. With neither, the C check fails, names
   the package and says where a clang-format of the machine (the `PATH`, the Visual Studio C++ tools) is.
+- `cargo`: the Rust lane, `{ enabled?: boolean, path?: string, clippyArgs?: string[] }`.
+
+### The cargo lane
+
+The lane runs after the other steps, when a `Cargo.toml` with a `[workspace]` or `[package]`
+table sits at the repo root (the workspace root, else the app). `cargo.path` names another
+folder, relative to the repo root, and fails the gate when it holds no such `Cargo.toml`.
+`cargo.enabled: false` turns the lane off. Two apps that share a repo root run the lane once.
+These steps run, every one of them, each reported with its name and counted in the failures:
+
+1. `rust comment check`: Rust follows the same no-comment rule as the TypeScript. In every `.rs`
+   file under the root (not `target`, `node_modules` or dot-folders) a `//` comment fails with
+   its `file:line`, and so does a trailing comment and any `/* */` block comment, doc blocks
+   included. Only `///` (docs on an item) and `//!` (module docs) pass, and a `// SAFETY:`
+   comment passes when it sits directly above a line with `unsafe`. Strings, raw strings and
+   char literals are not read as comments.
+2. `cargo fmt --all -- --check`
+3. `cargo clippy --workspace --all-targets -- -D warnings -W clippy::too_many_lines -W clippy::cognitive_complexity`,
+   then `cargo.clippyArgs`. The two `-W` lints are off by default in clippy; they hold a
+   function to 60 lines and a cognitive complexity of 10. The thresholds come from a
+   `clippy.toml` that Brock ships (`too-many-lines-threshold = 60`,
+   `cognitive-complexity-threshold = 10`) and applies through `CLIPPY_CONF_DIR`, only while
+   the cargo root has no `clippy.toml` or `.clippy.toml` of its own. A repo file wins whole:
+   it must then set both thresholds itself. `clippyArgs` are lint flags and go after the
+   `--`, for example `['-A', 'clippy::module_name_repetitions']`.
+4. `cargo test --workspace`
+
+Each cargo step is spawned without a shell, with the argument list above, in the cargo root.
+If `cargo` is not on `PATH` the lane does not skip: it fails with a message that says to
+install Rust or to set `cargo.enabled: false`, after the comment check, which needs no cargo.
+`BROCK_CARGO` names another cargo (a `.js` or `.mjs` file runs under Node). One concern per
+module file stays a review rule; the gate does not check it. `jscpd` is not a gate step: it
+runs in the repo's `lint` script, so a Rust repo adds `"rust"` to `format` in its
+`.jscpd.json`, with the same `threshold: 0`. CI needs a Rust toolchain with `rustfmt` and
+`clippy` installed before the gate step.
+
+A repo with no Brock app, such as a Cargo workspace with a plain Vite app, runs `brock gate`
+too. It needs `@drizztdourden08/brock-build` as a dev dependency and nothing else: no
+`brock.config.ts`. At the repo root, `brock gate` first looks for an app (a `brock.config.ts`
+at the root or in a workspace package, or an electron target of `brock.workspace.mjs`). With
+none, it takes the `gate` key of `brock.workspace.mjs` (`export default defineWorkspace({ name,
+gate: { scripts: ['lint', 'test'], cargo: { clippyArgs: [] } } })`), or an empty gate when the
+root has a `Cargo.toml`. `scripts` run with `pnpm run` from the root `package.json`, so
+the TypeScript gates of such a repo are its own scripts. With no `Cargo.toml` and no `gate`,
+the command fails and says so. Import `defineWorkspace` from `@drizztdourden08/brock-build` (or `@drizztdourden08/brock-thread`).
 
 Erasable TypeScript only: Node imports this file directly, so no enums, no parameter
 properties, no extensionless relative imports.

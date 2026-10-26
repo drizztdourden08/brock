@@ -19,19 +19,20 @@ const workspaceRoot = (skip) => {
   return root;
 };
 
+const expectRendered = (skip) => {
+  const result = runVitest(workspaceRoot(skip));
+  expect(`${result.stdout}${result.stderr}`).not.toContain('Cannot find package');
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('1 passed');
+};
+
 describe('the vitest config of a workspace root', () => {
   it('renders brock-react from the app that has react, with nothing installed at the root', () => {
-    const result = runVitest(workspaceRoot());
-    expect(`${result.stdout}${result.stderr}`).not.toContain('Cannot find package');
-    expect(result.status).toBe(0);
-    expect(result.stdout).toContain('1 passed');
+    expectRendered();
   }, 150_000);
 
   it('still renders when the app lacks Tessera', () => {
-    const result = runVitest(workspaceRoot(['@drizztdourden08/tessera']));
-    expect(`${result.stdout}${result.stderr}`).not.toContain('Cannot find package');
-    expect(result.status).toBe(0);
-    expect(result.stdout).toContain('1 passed');
+    expectRendered(['@drizztdourden08/tessera']);
   }, 150_000);
 
   it('leaves a shared package that is not installed out of the config', async () => {

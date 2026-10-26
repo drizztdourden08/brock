@@ -9,7 +9,9 @@ Usage:
                              when .brock is missing or older than its inputs, then checks the renderer entry
   brock check                sync --check, for CI
   brock gate                 the app's own gate steps from brock.config.ts gate: the clang-format check of
-                             gate.clangFormat, then each gate.scripts script; CI and upgrade run it too
+                             gate.clangFormat, each gate.scripts script, then the cargo lane while a Cargo.toml
+                             is at the repo root; a repo with no app reads gate from brock.workspace.mjs;
+                             CI and upgrade run it too
   brock clang-format [--check]
                              rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
                              the files that differ with --check

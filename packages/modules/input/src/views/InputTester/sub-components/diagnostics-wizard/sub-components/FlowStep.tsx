@@ -33,6 +33,8 @@ const FlowStep = (props: DiagnosticsFlowBodyProps) => {
         restoreStatus={wizard.restoreStatus}
         deviceKey={wizard.deviceKey}
         resolvedDevice={wizard.resolvedDevice}
+        autoCapture={wizard.autoCapture}
+        onAutoCaptureChange={wizard.setAutoCapture}
         onRecordsChange={wizard.handleRecordsChange}
       />
     );

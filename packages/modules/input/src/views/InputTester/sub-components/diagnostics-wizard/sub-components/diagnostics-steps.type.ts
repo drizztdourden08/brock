@@ -92,6 +92,8 @@ interface PositionalCaptureStepProps {
   restoreStatus: HoldTransitionStatus;
   deviceKey: string | null;
   resolvedDevice: ResolvedDevice | null;
+  autoCapture: boolean;
+  onAutoCaptureChange: (on: boolean) => void;
   onRecordsChange: (records: PositionalCaptureRecord[]) => void;
 }
 

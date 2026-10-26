@@ -22,6 +22,7 @@ const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
   const hasChooser = !preselected;
   const [step, setStep] = useState<WizardStep>('intro');
   const [runGeneration, setRunGeneration] = useState(0);
+  const [autoCapture, setAutoCapture] = useState(true);
   const results = useCaptureResults(onComplete);
   const { clearResults } = results;
 
@@ -65,7 +66,7 @@ const useDiagnosticsWizardState = (props: UseDiagnosticsWizardStateProps) => {
   }, [layoutCapture, setDeviceKey, clearResults]);
 
   return {
-    step, steps, stepIndex, stepLabels, preselected,
+    step, steps, stepIndex, stepLabels, preselected, autoCapture, setAutoCapture,
     deviceKey, setDeviceKey, chooserDevices, addedNames, selectedChooser, mapping, profile, resolvedDevice, hasByteCapability,
     hasGyro: facts.hasGyro, vendorIdHex: facts.vendorIdHex, productIdHex: facts.productIdHex,
     releaseStatus, restoreStatus: restoreTransition.status, activeSdlId,

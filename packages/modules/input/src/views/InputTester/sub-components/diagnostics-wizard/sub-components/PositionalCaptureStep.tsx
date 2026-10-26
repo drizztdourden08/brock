@@ -1,15 +1,15 @@
 /* @layer renderer-shell @kind component */
 import { useEffect } from 'react';
-import { Text } from '@drizztdourden08/tessera/primitives';
+import { Checkbox, Text } from '@drizztdourden08/tessera/primitives';
 import { ButtonMapping } from '../../hid-calibration/components';
 import { usePositionalOneByOne } from '../positional-capture/usePositionalOneByOne';
 import type { PositionalCaptureStepProps } from './diagnostics-steps.type';
 import { HoldStatusLine } from './HoldStatusLine';
 
 const PositionalCaptureStep = (props: PositionalCaptureStepProps) => {
-  const { restoreStatus, deviceKey, resolvedDevice, onRecordsChange } = props;
+  const { restoreStatus, deviceKey, resolvedDevice, autoCapture, onAutoCaptureChange, onRecordsChange } = props;
   const active = restoreStatus === 'done';
-  const capture = usePositionalOneByOne({ deviceKey, active, resolvedDevice });
+  const capture = usePositionalOneByOne({ deviceKey, active, resolvedDevice, autoCapture, onAutoCaptureChange });
 
   useEffect(() => { onRecordsChange(capture.records); }, [capture.records, onRecordsChange]);
 
@@ -35,6 +35,7 @@ const PositionalCaptureStep = (props: PositionalCaptureStepProps) => {
             labels. Provide it on the controller and this records which physical position
             fired.
           </Text>
+          <Checkbox label="Auto-capture" checked={capture.autoCapture} onChange={capture.onAutoCaptureToggle} />
           <ButtonMapping
             items={capture.items}
             buttonItems={capture.items}

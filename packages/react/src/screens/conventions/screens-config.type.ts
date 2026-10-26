@@ -47,6 +47,7 @@ interface BucketDef extends ShowRule {
   pages?: HubPagesMode;
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
+  top?: string[];
 }
 
 interface SettingsPlacement {

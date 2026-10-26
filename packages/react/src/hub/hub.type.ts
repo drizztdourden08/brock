@@ -146,6 +146,7 @@ interface HubDef {
   pages?: HubPagesMode;
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
+  top?: string[];
 }
 
 export type { HubDef, HubGroup, HubLiveLists, HubLiveSource, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget, LiveBadge, LiveMeta, LivePage, UseLivePages };

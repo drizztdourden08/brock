@@ -43,6 +43,17 @@ describe('resolving entries from commands', () => {
     expect(nodes[1]).toMatchObject({ kind: 'confirm', confirm: 'Sure?' });
   });
 
+  it('passes a tone to the drawn item, for a command and a plain entry, and none when unset', () => {
+    const nodes = resolveEntries([
+      { command: 'canvas.copy', tone: 'danger' },
+      { label: 'Delete layer', tone: 'danger', run: () => undefined },
+      { command: 'canvas.front' },
+    ], view());
+    expect(nodes[0]).toMatchObject({ tone: 'danger' });
+    expect(nodes[1]).toMatchObject({ label: 'Delete layer', tone: 'danger' });
+    expect(nodes[2]).not.toHaveProperty('tone');
+  });
+
   it('marks each node with data-menu-entry: the command id, else the label', () => {
     const [copy, , , arrange] = resolveEntries([{ command: 'canvas.copy', label: 'Copy sprite 4' }, 'separator', { label: 'Open folder', run: () => undefined }, { label: 'Arrange', items: ['canvas.front'] }], view());
     expect(copy).toMatchObject({ data: { 'data-menu-entry': 'canvas.copy' } });

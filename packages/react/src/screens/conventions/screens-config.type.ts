@@ -95,6 +95,7 @@ interface ScreenMeta extends ShowRule {
   source?: SettingsValueSource;
   preview?: (settings: object) => ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
+  previewLabel?: string;
 }
 
 export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSearchRow, ScreenSize, ScreensConfig, SettingsPlacement };

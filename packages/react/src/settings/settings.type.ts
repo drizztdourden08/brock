@@ -117,6 +117,7 @@ interface SettingsLayoutProps<S extends object> extends SettingsControlProps<S> 
   emptyMessage?: string;
   preview?: ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
+  previewLabel?: string;
 }
 
 interface TabRenderContext<S extends object> extends SettingsControlProps<S> {
@@ -134,6 +135,7 @@ interface TabDef<S extends object> {
   source?: SettingsValueSource;
   preview?: (settings: S) => ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
+  previewLabel?: string;
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;
   moduleId?: string;

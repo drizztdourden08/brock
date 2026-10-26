@@ -9,4 +9,4 @@ export { chordKeys } from './chord-keys';
 export { isMac } from './is-mac';
 export { useIsMac } from './useIsMac';
 export { KeymapPage } from './KeymapPage';
-export type { ChordInput, ChordList, CommandConflict, CommandDef, PlatformChords } from './command.type';
+export type { ChordInput, ChordList, CommandConflict, CommandContext, CommandDef, CommandTrigger, PlatformChords } from './command.type';

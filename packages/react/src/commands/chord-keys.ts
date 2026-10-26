@@ -7,6 +7,7 @@ import { parseChord } from './parse-chord';
 
 const keycapOf = (key: string): ShortcutKey => {
   if (key === 'Escape') return 'esc';
+  if (key === 'ContextMenu') return 'menu';
   if (key.length === 1 || FUNCTION_KEY.test(key)) return key as ShortcutKey;
   return key.toLowerCase() as ShortcutKey;
 };

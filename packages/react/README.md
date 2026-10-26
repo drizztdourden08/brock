@@ -32,6 +32,7 @@ import { screenTree } from '../.brock/screens';
 | Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer` |
 | Commands | `defineCommand`, `commands` (`register`, `run`, `chords`, `matches`, `remap`, `reset`, `conflicts`), `useCommands`, `useCommandChords`, `formatChord`, `chordKeys`, `useIsMac`, `isMac`, `KeymapPage`, `CommandDef`, `ChordInput` |
+| Context menu | `useContextMenu`, `contextMenuZone`, `openContextMenu`, `listContextMenus`, `blockContextMenus`, `ContextMenuHost`, `ContextMenuEntry`, `ContextMenuConfig`, `ContextMenuContext` |
 | Screen conventions | `defineScreens`, `buildScreenTree`, `resolveScreenTree`, `deriveMenu`, `ScreensConfig`, `BucketDef`, `ScreenMeta`, `ScreenEntry`, `ScreenTree`, `CardProps`, `PageProps`, `HeroProps`, `HeroSlots` |
 | Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React), `joinRoute`, `resolveRoute`, `routeAliases` |
 | Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useWidgetPrefStore` |
@@ -156,6 +157,20 @@ announce('Connection lost', { politeness: 'assertive' });
 ```
 
 `announce` repeats a message reliably and ignores a blank one. The architecture guide, Accessibility, has the rules.
+
+## Context menu
+
+`useContextMenu(id, source)` gives an element or a command zone a menu built from registered commands, and `{...contextMenuZone(id, { data?, typing?, focusable? })}` marks the element the app already renders, with no wrapper. An entry is a command id, `'separator'`, `{ command, label?, args? }`, a plain `{ label, run }`, or a sub-menu `{ label, items }`. The label, icon, shortcut (the current chord), enabled state and action come from the command, and `checked`, `hidden`, `disabled`, `reason` and `kind` can be set on the entry. The builder runs once per open and gets `{ point, target, trigger, data }`; so does `CommandDef.run(context?)` when the menu runs it. A config adds `anchor`, `shouldOpen`, `openOn`, `beforeOpen`, `label` and `inherit: 'parent'`. Right click, long press, Shift+F10 and the Menu key open it, the keys through the rebindable command `brock.context-menu`. The browser menu stays where no menu is declared, in a `data-native-menu` element and in a text field, unless the field is marked `typing: true`.
+
+```tsx
+import { commandZone, contextMenuZone, useContextMenu } from '@drizztdourden08/brock-react';
+
+useContextMenu('canvas', { entries: () => ['canvas.copy', 'separator', { command: 'canvas.grid', checked: gridOn }] });
+
+<div tabIndex={0} {...commandZone('canvas')} {...contextMenuZone('canvas')} />;
+```
+
+`openContextMenu(id, data)`, `listContextMenus()` and `blockContextMenus(flag)` serve tests and the app's drag state. The architecture guide, Context menus, has the rules.
 
 ## Escape and home
 

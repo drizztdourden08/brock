@@ -39,8 +39,15 @@ describe('resolving entries from commands', () => {
       { command: 'canvas.front', kind: 'confirm', confirm: 'Sure?' },
     ], view());
     expect(nodes).toHaveLength(2);
-    expect(nodes[0]).toMatchObject({ label: 'Copy sprite 4', kind: 'radio', checked: false, description: 'Nothing selected' });
+    expect(nodes[0]).toMatchObject({ label: 'Copy sprite 4', kind: 'radio', checked: false, description: 'Nothing selected', ariaDescription: 'Nothing selected' });
     expect(nodes[1]).toMatchObject({ kind: 'confirm', confirm: 'Sure?' });
+  });
+
+  it('marks each node with data-menu-entry: the command id, else the label', () => {
+    const [copy, , , arrange] = resolveEntries([{ command: 'canvas.copy', label: 'Copy sprite 4' }, 'separator', { label: 'Open folder', run: () => undefined }, { label: 'Arrange', items: ['canvas.front'] }], view());
+    expect(copy).toMatchObject({ data: { 'data-menu-entry': 'canvas.copy' } });
+    expect(resolveEntries([{ label: 'Open folder', run: () => undefined }], view())[0]).toMatchObject({ data: { 'data-menu-entry': 'Open folder' } });
+    expect(arrange).toMatchObject({ data: { 'data-menu-entry': 'Arrange' }, children: [{ data: { 'data-menu-entry': 'canvas.front' } }] });
   });
 
   it('allows a plain entry with no command that gets the context', () => {

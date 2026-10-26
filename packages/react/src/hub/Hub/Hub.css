@@ -1,5 +1,9 @@
 /* @layer renderer-shell @kind style */
 
+.hub__plain-body {
+  scrollbar-gutter: stable;
+}
+
 .hub__kept {
   display: contents;
 }
@@ -9,6 +13,7 @@
 }
 
 .hub__solo {
+  scrollbar-gutter: stable;
   display: flex;
   flex: 1;
   flex-direction: column;

@@ -62,6 +62,22 @@ export default defineReviewStep({
 
 `capture('list')` in the step `sessions` writes `NN-sessions-list.png`. Each check id is reported with the step name, so ids only need to be unique inside a step. A step that finishes gets a passing `step-ran` check; one that throws gets a failing one, and the tour resets the UI (closes menus, dialogs and screens) before the next step either way.
 
+## Window sizes
+
+A step can ask for another window size with `sizes`. Each entry is `'narrow'`, the 600 by 720 window the shell uses for its own narrow captures, or `{ name, width, height }`. The step runs once per entry: the main window is set to that size, `run` executes, and the window goes back to the size it had, even when `run` throws. The `name` is added to the end of every capture and check id, so a step that captures a layout twice reports `layout-narrow` and `layout-wide`, and writes `NN-<step>-<capture>-narrow.png`. A step without `sizes` runs at the window's own size.
+
+```ts
+export default defineReviewStep({
+  sizes: ['narrow', { name: 'wide', width: 1500, height: 900 }],
+  run: async (tour) => {
+    await tour.openScreen('editor');
+    await tour.capture('layout');
+  },
+});
+```
+
+The resize goes through the review's window probe, which sets the bounds of the main window in main. It works in a hidden `--review --no-focus` launch and never shows the window. A launch with no main window bounds fails a `window-<name>` check and skips that run.
+
 ## The tour helpers
 
 `run(tour)` gets the same tour the built-in steps use, plus the DOM helpers they call:

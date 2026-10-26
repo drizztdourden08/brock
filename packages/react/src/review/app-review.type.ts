@@ -23,8 +23,17 @@ interface AppReviewTour extends StepTour, ReviewKit {
   api: IpcApi;
 }
 
+interface ReviewStepWindow {
+  name: string;
+  width: number;
+  height: number;
+}
+
+type ReviewStepSize = 'narrow' | ReviewStepWindow;
+
 interface ReviewStepDef {
   run: (tour: AppReviewTour) => Promise<void>;
+  sizes?: readonly ReviewStepSize[];
 }
 
 type ReviewSeedDef = ReviewStepDef;
@@ -47,4 +56,4 @@ interface AppReview {
 
 type FixtureTour = Pick<AppReviewTour, 'check'> & { platform: { files: Pick<Platform['files'], 'writeBytes'> } };
 
-export type { AppReview, AppReviewFixture, AppReviewStepEntry, AppReviewTour, FixtureTour, ReviewKit, ReviewSeedDef, ReviewStepDef };
+export type { AppReview, AppReviewFixture, AppReviewStepEntry, AppReviewTour, FixtureTour, ReviewKit, ReviewSeedDef, ReviewStepDef, ReviewStepSize, ReviewStepWindow };

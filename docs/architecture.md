@@ -1201,6 +1201,8 @@ Main captures the splash mid-boot as step 00 of every review (`00-splash.png`, o
 
 Main writes `Data/review/<name>/report.json` and `report.md` with the steps and their screenshots (`NN-<step>.png`), every check with pass or fail and a reason, and the console errors, failed loads and main log warnings seen during the run. It prints the `report.json` path and exits 0 when every check passes, 1 otherwise. Main starts the watchdog at launch: when no tour progress (a capture or a check) arrives within 60 s, for example because the renderer failed to load, or the tour later makes no progress for 30 s, a partial report is written and the process exits 1; the first case adds a failed `tour-started` check. Main exits 5 s after the report even when something holds the quit. The tour code is its own chunk, loaded only on a review launch.
 
+An app step sets its own window size with `sizes` on `defineReviewStep` (`'narrow'` or `{ name, width, height }`, docs/review-steps.md, Window sizes). It reuses the shell's narrow mechanism: the renderer reads the main window bounds through the review widget probe (`reviewWidgetProbe`, `kind: 'main'`), main calls `setBounds` on the main window, the step runs once per size, and the saved bounds are put back after it, even when it throws. The window stays hidden on a `--no-focus` launch. The size name ends every capture and check id of that run.
+
 ### Screenshot baselines
 
 The review can hold every capture to a stored image, so a change that moves a pixel fails it. `--review-bless` stores the run's captures as the baselines; `--review-baselines` compares the captures with them. Both only act beside `--review`: `<app> launch main none --review --review-bless`, then `<app> launch main none --review --review-baselines`.

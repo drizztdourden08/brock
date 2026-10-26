@@ -12,6 +12,7 @@ import type { MenuBuildInput } from '../BrockApp.type';
 import { filterDevEntries } from './filter-dev-entries';
 import { foldSectionMenus } from './fold-section-menus';
 import { groupSections } from './group-sections';
+import { withToolbars } from './with-toolbars';
 
 const screensNamed = (entries: readonly MenuEntry[]): Set<string> => {
   const ids = new Set<string>();
@@ -30,7 +31,7 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
   entries.filter((entry) => entry === 'separator' || entry.section === undefined);
 
 const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
-  const { appMenu, moduleMenu, widgets, homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
+  const { appMenu, moduleMenu, widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
   const filter = (entries: readonly MenuEntry[]): MenuEntry[] => (filtered ? filterDevEntries(entries, developerTools, show) : [...entries]);
   const tourEntry = input.tours ? tourMenu.entry(input.tours.list, tourMenu.section([...appMenu, ...moduleMenu]), input.tours.start) : null;
   const standard: MenuItem[] = [
@@ -43,11 +44,12 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const app = filter(withRoutes(foldSectionMenus(appMenu, [...moduleMenu, ...standard])));
   const modules = filter(withRoutes([...moduleMenu, ...standard]));
   const named = screensNamed([...app, ...modules]);
-  const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && item.screen !== homeScreen);
+  const showHome = input.menuConfig?.home !== false;
+  const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && (!showHome || item.screen !== homeScreen));
   const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !(input.singleProfile && item.screen === PROFILES_SCREEN));
   return {
-    main: [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }, ...topEntries, ...unsectioned(app)],
-    sections: groupSections([...app, ...modules]),
+    main: [...(showHome ? [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }] : []), ...topEntries, ...unsectioned(app)],
+    sections: withToolbars(groupSections([...app, ...modules]), toolbars),
     modules: unsectioned(modules),
     end: [...[...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed), { ...QUIT_ENTRY, onClick: onQuit }],
   };

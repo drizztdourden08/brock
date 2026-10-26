@@ -80,12 +80,23 @@ describe('buildMenu', () => {
     const items = menu.flatMap((entry) => (entry === 'separator' ? [] : [entry, ...(entry.children ?? [])]));
     expect(items.filter((entry) => entry !== 'separator' && !entry.icon)).toEqual([]);
   });
+});
 
-  it('adds Take the tour under Advanced, or under Help when the app has a Help group', () => {
+describe('the Take the tour entry', () => {
+  it('adds Take the tour at the top level, before Credits and About, with or without a Help group', () => {
     const tours = { list: [{ id: 'welcome', title: 'Welcome' }], start: noop };
-    expect(keys(item(buildMenu({ ...BASE, tours }), 'section:advanced')?.children ?? [])).toContain('take-the-tour');
-    const help = buildMenu({ ...BASE, tours, appMenu: [{ key: 'docs', label: 'Docs', section: 'help' }] });
-    expect(keys(item(help, 'section:help')?.children ?? [])).toEqual(['docs', 'take-the-tour']);
+    const plain = buildMenu({ ...BASE, tours });
+    expect(keys(plain)).toEqual(['home', 'profiles', '|', 'section:advanced', '|', 'take-the-tour', 'about', 'quit']);
+    expect(keys(item(plain, 'section:advanced')?.children ?? [])).not.toContain('take-the-tour');
+    const help = buildMenu({ ...BASE, tours, appMenu: [{ key: 'docs', label: 'Docs', section: 'help', onClick: noop }] });
+    expect(keys(help)).toEqual(['home', 'profiles', '|', 'section:help', 'section:advanced', '|', 'take-the-tour', 'about', 'quit']);
+    expect(keys(item(help, 'section:help')?.children ?? [])).toEqual(['docs']);
+  });
+
+  it('lists several tours in a sub-menu of the top level entry, and adds nothing without tours', () => {
+    const tours = { list: [{ id: 'a', title: 'A' }, { id: 'b', title: 'B' }], start: noop };
+    expect(keys(item(buildMenu({ ...BASE, tours }), 'take-the-tour')?.children ?? [])).toEqual(['tour:a', 'tour:b']);
+    expect(item(buildMenu({ ...BASE, tours: { list: [], start: noop } }), 'take-the-tour')).toBeUndefined();
   });
 });
 

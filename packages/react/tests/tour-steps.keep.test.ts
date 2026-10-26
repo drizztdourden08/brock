@@ -96,10 +96,10 @@ describe('toGuidedSteps targets and entry', () => {
 describe('the Take the tour entry', () => {
   it('starts the only tour, or lists them when there are several', () => {
     const start = vi.fn();
-    tourMenu.entry([WELCOME], 'advanced', start)?.onClick?.();
+    tourMenu.entry([WELCOME], start)?.onClick?.();
     expect(start).toHaveBeenCalledWith('welcome');
-    expect(tourMenu.entry([WELCOME, SESSIONS], 'advanced', start)?.children?.length).toBe(2);
-    expect(tourMenu.entry([], 'advanced', start)).toBeNull();
+    expect(tourMenu.entry([WELCOME, SESSIONS], start)?.children?.length).toBe(2);
+    expect(tourMenu.entry([], start)).toBeNull();
   });
 });
 

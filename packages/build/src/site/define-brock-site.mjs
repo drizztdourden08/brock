@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind config */
 import { defineValues } from '../build-options/define-values.mjs';
 import { ownCompilerOptions } from '../build-options/tsconfig-compiler-options.mjs';
+import { routesOf } from './site-route-options.mjs';
 import { DEFAULT_API_PATH, SITE_CONFIG_FILE, SITE_NAME_RULE } from './site.constants.mjs';
 
 /**
@@ -20,7 +21,7 @@ import { DEFAULT_API_PATH, SITE_CONFIG_FILE, SITE_NAME_RULE } from './site.const
  * @property {{ id: string, name: string, brand: string | null }} site
  * @property {{ offset: number, base: number | null }} ports offset 1 to 9 in the port block
  * @property {SiteApi | null} api
- * @property {{ nodePolyfills: boolean | Record<string, unknown>, aliases: Record<string, string>, define: Record<string, string> }} build define: each name and its value as a JSON expression
+ * @property {{ nodePolyfills: boolean | Record<string, unknown>, aliases: Record<string, string>, define: Record<string, string>, routes: { path: string, title: string, description: string | null }[] }} build define: each name and its value as a JSON expression
  * @property {{ compilerOptions: Record<string, unknown> }} tsconfig merged over the managed tsconfig.json
  */
 
@@ -67,7 +68,7 @@ const defineBrockSite = (input) => {
     site: siteOf(site),
     ports: { offset: offsetOf(ports.offset, 'ports.offset'), base: ports.base ?? null },
     api: apiOf(api),
-    build: { nodePolyfills: build.nodePolyfills ?? false, aliases: aliasesOf(build.aliases), define: defineValues(build.define, SITE_CONFIG_FILE) },
+    build: { nodePolyfills: build.nodePolyfills ?? false, aliases: aliasesOf(build.aliases), define: defineValues(build.define, SITE_CONFIG_FILE), routes: routesOf(build.routes) },
     tsconfig: { compilerOptions: { ...ownCompilerOptions(tsconfig.compilerOptions, SITE_CONFIG_FILE) } },
   };
 };

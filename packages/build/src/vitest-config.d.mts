@@ -6,7 +6,11 @@ interface BrockVitestConfig {
   [key: string]: unknown;
 }
 
-declare const defineBrockVitestConfig: (rootDir: string, overrides?: BrockVitestConfig) => Promise<BrockVitestConfig>;
+interface BrockVitestOptions {
+  appDir?: string;
+}
+
+declare const defineBrockVitestConfig: (rootDir: string, overrides?: BrockVitestConfig, options?: BrockVitestOptions) => Promise<BrockVitestConfig>;
 
 export { defineBrockVitestConfig };
-export type { BrockVitestConfig };
+export type { BrockVitestConfig, BrockVitestOptions };

@@ -19,6 +19,7 @@ const BASE_RETURNS: Returns = {
   openFolder: () => ({ success: false, error: 'Not available on this host' }),
   revealPath: () => ({ success: false, error: 'Not available on this host' }),
   saveFile: () => ({ saved: false }),
+  runProcessJob: () => ({ status: 'rejected', error: 'Not available on this host' }),
 };
 
 export { BASE_LIST_METHODS, BASE_RETURNS };

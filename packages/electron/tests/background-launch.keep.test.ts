@@ -35,7 +35,7 @@ vi.mock('../src/main/logs/append-main-log', () => ({ appendMainLog: (): void => 
 
 const NO_TARGETS = { schemes: [], extensions: [] };
 const flags = createAutomationFlags();
-const context = (overrides: Partial<MainContext> = {}): MainContext => ({ flags, log: vi.fn(), tray: { clear: vi.fn() }, ...overrides }) as Partial<MainContext> as MainContext;
+const context = (overrides: Partial<MainContext> = {}): MainContext => ({ flags, log: vi.fn(), tray: { clear: vi.fn() }, processes: { cancelAll: vi.fn() }, ...overrides }) as Partial<MainContext> as MainContext;
 
 const fire = (name: string, ...args: unknown[]): void => shared.handlers.get(name)?.(...args);
 

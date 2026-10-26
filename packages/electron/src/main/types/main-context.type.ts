@@ -10,6 +10,7 @@ import type { OpenRequest } from '@drizztdourden08/brock-core/types';
 import type { ChannelArg, HandleFn, OnFn } from '../ipc/handle.type';
 import type { AskFn, AskWithinFn } from '../ipc/ask.type';
 import type { JobRegistry, StartJob } from '@drizztdourden08/brock-core/jobs';
+import type { ProcessJobs } from '../jobs/process/process-job.type';
 import type { DataDomains } from '../storage/domain-files.type';
 import type { BugReportOptions } from '../bug-report/bug-report.type';
 import type { FileWriteGuard } from '../files/file-guard.type';
@@ -45,6 +46,7 @@ interface MainContext {
   storage: DataDomains;
   job: StartJob;
   jobs: JobRegistry;
+  processes: ProcessJobs;
   window: MainWindowControl;
   tray: TrayControl;
   dialogs: MainDialogs;

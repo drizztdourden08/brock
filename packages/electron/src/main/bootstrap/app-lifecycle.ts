@@ -15,6 +15,7 @@ const installAppLifecycle = ({ ctx, modules, onWillQuit, recreateWindow }: Lifec
   app.on('will-quit', () => {
     for (const module of modules) module.onWillQuit?.(ctx);
     onWillQuit?.(ctx);
+    ctx.processes.cancelAll();
     ctx.tray.clear();
     disposeServices(ctx);
   });

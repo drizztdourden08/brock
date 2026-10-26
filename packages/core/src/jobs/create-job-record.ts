@@ -1,7 +1,8 @@
 /* @layer core @kind logic */
 import type { JobLogLine, JobSnapshot, JobState } from '../types/job.type';
 import type { EmitJob, JobRecord, JobRecordInput } from './job-handle.type';
-import { JOB_EMIT_MS } from './jobs.constants';
+import { JOB_EMIT_LOG_BYTES, JOB_EMIT_MS } from './jobs.constants';
+import { tailLog } from './tail-log';
 
 const initialSnapshot = ({ id, steps, options, at }: JobRecordInput): JobSnapshot => ({
   id,
@@ -25,7 +26,7 @@ const createNotifier = (snapshot: JobSnapshot, emit: EmitJob): ((urgent: boolean
   const flush = (): void => {
     if (timer) clearTimeout(timer);
     timer = null;
-    emit({ ...snapshot, steps: snapshot.steps.map((step) => ({ ...step })), log: [...snapshot.log] });
+    emit({ ...snapshot, steps: snapshot.steps.map((step) => ({ ...step })), log: tailLog(snapshot.log, JOB_EMIT_LOG_BYTES) });
   };
   return (urgent) => {
     if (urgent) flush();

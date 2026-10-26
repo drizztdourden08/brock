@@ -23,6 +23,7 @@ import { showMainWindow } from '../background/show-main-window';
 import { createDialogs } from '../dialogs/create-dialogs';
 import { createTrayControl } from '../tray/create-tray-control';
 import { createJobRegistry } from '@drizztdourden08/brock-core/jobs';
+import { createProcessJobs } from '../jobs/process/create-process-jobs';
 import { createDataDomains } from '../storage/create-data-domains';
 import { servicesProxy } from '../services/services-proxy';
 import { openRouter } from '../open/open-router';
@@ -70,6 +71,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     storage,
     job: jobs.start,
     jobs,
+    processes: createProcessJobs({ job: jobs.start, jobs, context: () => context }),
     window,
     tray: createTrayControl({ productName: product.name, icon, show: showMainWindow, quit: () => app.quit(), log }),
     dialogs: createDialogs({ flags, window, log }),

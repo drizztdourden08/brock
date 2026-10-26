@@ -11,3 +11,4 @@ export type {
   BugReportPayload, BugReportReceipt, BugReportReceiptWire, BugReportTransport, BugReportTransportInfo,
 } from './bug-report.type';
 export type { JobDuplicatePolicy, JobLogLevel, JobLogLine, JobOptions, JobSnapshot, JobState, JobStepDef, JobStepState, JobStepWire } from './job.type';
+export type { ProcessJobOutcome } from './process-job.type';

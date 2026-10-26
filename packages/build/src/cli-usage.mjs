@@ -64,6 +64,13 @@ Usage:
                              files, a workspace package it depends on, or a file outside every package (CI)
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
+  brock lint [--changed | --all] [--no-cache] [files...] [-- eslint args]
+                             eslint with a V8 heap ceiling (2048 MB, BROCK_LINT_MEMORY_MB; an NODE_OPTIONS heap flag wins)
+                             and a content cache under node_modules/.cache/brock (not in CI). Local runs lint only the
+                             files changed since the merge base with the default branch plus untracked files; CI or
+                             --all lints the whole tree; files named on the command line lint just those. A changed
+                             eslint, tsconfig, package or lint-config file lints the whole tree. Prints one line
+                             naming the mode and the file count. jscpd, knip and structure stay whole-tree steps
   brock knip [args]          knip with every git-ignored path under ignore, so it also works in a worktree
                              inside a dot-folder; a dependency an app declares for the Brock and workspace
                              packages it bundles counts as used, built or not; every word after knip reaches it

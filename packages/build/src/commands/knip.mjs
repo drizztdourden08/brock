@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { knipConfigFor } from '@drizztdourden08/standards/knip';
+import { heavyNodeEnv } from '../lint/heavy-env.mjs';
 import { knipBin } from './knip-bin.mjs';
 import { knipScope } from './knip-scope.mjs';
 
@@ -35,7 +36,7 @@ const runKnip = (ctx) => {
     return 1;
   }
   const knipArgs = [bin, ...configArgs(rootDir), '--preprocessor', PREPROCESSOR, ...args];
-  return spawnSync(process.execPath, knipArgs, { cwd: rootDir, stdio: 'inherit' }).status ?? 1;
+  return spawnSync(process.execPath, knipArgs, { cwd: rootDir, env: heavyNodeEnv(), stdio: 'inherit' }).status ?? 1;
 };
 
 export { runKnip };

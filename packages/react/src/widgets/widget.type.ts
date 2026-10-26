@@ -19,7 +19,6 @@ interface WidgetDef extends WidgetDefinition {
   taskbar?: boolean;
   order?: number;
   defaultOpen?: boolean;
-  dockWeight?: number;
   context?: string;
   kit?: string;
   tools?: () => ReactNode;

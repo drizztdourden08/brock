@@ -32,6 +32,10 @@
       "types": "./src/vite-config.d.mts",
       "default": "./src/vite-config.mjs"
     },
+    "./vitest": {
+      "types": "./src/vitest-config.d.mts",
+      "default": "./src/vitest-config.mjs"
+    },
     "./vite-web": {
       "types": "./src/vite-web-config.d.mts",
       "default": "./src/vite-web-config.mjs"

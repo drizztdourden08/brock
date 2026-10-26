@@ -11,6 +11,7 @@ build step.
 | `/vite` | `defineBrockViteConfig(rootDir, overrides?)`: the electron-vite config (main and preload from `electron/`, renderer from `src/` with `index.html` and `splash.html`, the splash preload beside the app preload, React plugin, react deduped, `@drizztdourden08/*` bundled instead of externalized) |
 | `/vite-web` | `defineBrockWebConfig(rootDir, overrides?)`: the renderer alone for the web and Android targets (relative base, `dist/web`, the web app manifest) |
 | `/builder` | `createBuilderConfig(product, { rootDir })` and `loadBuilderConfig(rootDir)` for electron-builder |
+| `/vitest` | `defineBrockVitestConfig(rootDir, overrides?)`: the vitest config for an app that tests Brock source (see Unit tests) |
 | `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs?, userData? })` for app e2e tests, `waitForAppPage(app, timeoutMs?)`, `pageKindOf(url)`, `readDockLayout(page)`, `widgetWindows(app)`, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
 | `.` | Everything above plus `syncApp`, `resolveModules`, `ensureElectron` and the built-in module registry |
 
@@ -195,6 +196,12 @@ To move a pin, take a release at least two weeks old, read the commit its tag po
 ## Ports and the dev server
 
 The Vite factory reads `product.ports.base` (or `derivePortBase(product.id)` when unset) and the checkout's port slot, and sets the renderer `server.port` to `base + 10 x slot` with `strictPort` from `product.ports.strict`, true by default. `devServerPort(rootDir, product)` returns that pair. The scheme lives in brock-thread (`/ports`); `portFor`, `portSlotOf`, `derivePortBase` and `PORT_OFFSETS` are re-exported here.
+
+## Unit tests
+
+Brock packages ship TypeScript and TSX source, so an app's vitest compiles brock-react, brock-core and Tessera itself. Vitest's esbuild uses the classic JSX transform when no tsconfig sits beside a file, and a package under `node_modules` is not compiled at all by default, so importing brock-react in a test failed with `React is not defined`. `defineBrockVitestConfig` from `/vitest` fixes both: esbuild `jsx: 'automatic'` with `jsxImportSource: 'react'`, `test.server.deps.inline` for every `@drizztdourden08/*` package, react, react-dom, zustand and Tessera deduped, and the `@app` and `build.aliases` aliases of `brock.config.ts`.
+
+An app whose `package.json` has a `test` script gets a managed `vitest.config.ts` from `brock sync` (`brock check` reports drift). A `vitest.config.ts` the app wrote itself, without the managed header, is left alone: call the factory there, `export default defineBrockVitestConfig(import.meta.dirname, { test: { include: [...] } })`. A repo root that runs vitest over several packages does the same, and the factory needs no `brock.config.ts` there.
 
 ## App e2e tests
 

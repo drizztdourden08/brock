@@ -9,6 +9,7 @@ import {
   DEFAULT_CONSOLE_GLOBS,
   slopRules,
 } from '@drizztdourden08/standards/eslint';
+import { allowWords } from './allow-words.mjs';
 import { dataBlocks } from './data-blocks.mjs';
 import { dataFiles } from './data-files.mjs';
 import { verbatimText } from './verbatim-text.mjs';
@@ -25,6 +26,7 @@ const brockEslint = (opts = {}) => {
   const entries = dataFiles(rootDir);
   return standardsEslint({
     ...opts,
+    allow: allowWords(opts),
     ignores: ['**/.brock/**', ...(opts.ignores ?? [])],
     presets: ['react-app', ...(opts.presets ?? [])],
     extensions: [brockLint, ...(opts.extensions ?? [])],

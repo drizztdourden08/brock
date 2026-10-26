@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-thread",
-  "version": "0.97.2",
+  "version": "0.102.0",
   "description": "The thread lifecycle every Brock repo runs: worktrees, isolated launches, publish verbs, plugins.",
   "type": "module",
   "license": "UNLICENSED",

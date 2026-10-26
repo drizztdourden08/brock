@@ -21,6 +21,8 @@ A hidden launch passes `--no-focus --muted`, which makes it an automation launch
 
 `worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `worktree create --skip-install` adds the worktree and runs its provision steps with no `pnpm install`, at the root or in a target app, for a thread that only writes a file, such as a release note. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
 
+`worktree refresh` (and `finish` and `remove`) stop on uncommitted changes, but not on the untracked files the worktree setup writes itself: `CLAUDE.md`, `.ai-config.json`, `.mcp.json`, `.brock-port-slot` and `.user-data/` (the list is in `src/worktree/generated-files.constants.mjs`). A tracked file with changes, even a tracked `CLAUDE.md`, and any other untracked file still block.
+
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 
 Without `--target`, `launch` picks the target whose app folder holds the folder it runs from (`pnpm --dir apps/desktop exec brock launch main none` launches `apps/desktop`), else the first target of `brock.workspace.mjs`.

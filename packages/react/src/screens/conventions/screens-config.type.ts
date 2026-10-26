@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind types */
+import type { ReactNode } from 'react';
 import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
 import type { HeroSize } from '@drizztdourden08/tessera/composites';
 import type { IconName, Backdrop } from '@drizztdourden08/tessera/primitives';
-import type { SettingsValueSource } from '../../settings/settings.type';
+import type { SettingsPreviewPlacement, SettingsValueSource } from '../../settings/settings.type';
 import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
@@ -47,6 +48,7 @@ interface BucketDef extends ShowRule {
   pages?: HubPagesMode;
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
+  top?: string[];
 }
 
 interface SettingsPlacement {
@@ -64,6 +66,12 @@ interface HeroMeta {
   size?: HeroSize;
 }
 
+interface ScreenSearchRow {
+  label: string;
+  keywords?: string[];
+  anchor?: string;
+}
+
 interface ScreenMeta extends ShowRule {
   title?: string;
   icon?: IconName;
@@ -73,6 +81,7 @@ interface ScreenMeta extends ShowRule {
   devOnly?: boolean;
   requiresProfile?: boolean;
   keywords?: string[];
+  searchRows?: ScreenSearchRow[];
   menu?: ScreenMenu;
   header?: PageHeaderMeta;
   path?: string;
@@ -84,6 +93,8 @@ interface ScreenMeta extends ShowRule {
   size?: ScreenSize;
   hero?: HeroMeta;
   source?: SettingsValueSource;
+  preview?: (settings: object) => ReactNode;
+  previewPlacement?: SettingsPreviewPlacement;
 }
 
-export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSearchRow, ScreenSize, ScreensConfig, SettingsPlacement };

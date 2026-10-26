@@ -27,6 +27,12 @@ const contentOf = (source, file) => {
   return {};
 };
 
+/** @param {Record<string, unknown>} content @param {Record<string, unknown>} meta */
+const withRows = (content, meta) => {
+  const own = Array.isArray(content.entries) ? content.entries : [];
+  return { ...content, entries: [...own, ...(entrySeeds(meta.searchRows) ?? [])] };
+};
+
 /**
  * @param {string} rootDir
  * @param {import('../scan-screens.mjs').ScreenFile} file
@@ -46,7 +52,7 @@ const fileSeed = (rootDir, file) => {
     path: file.kind === 'sub' ? text(meta.path) : undefined,
     keywords: normaliseKeywords(meta.keywords),
     devOnly: meta.devOnly === true ? true : undefined,
-    ...contentOf(source, file),
+    ...withRows(contentOf(source, file), meta),
   });
 };
 

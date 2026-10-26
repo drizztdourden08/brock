@@ -14,7 +14,7 @@
     "start": "node dist/server/main.mjs",
     "sync": "brock sync",
     "typecheck": "tsc --noEmit",
-    "lint": "pnpm typecheck && eslint . && brock prose && brock knip && jscpd .",
+    "lint": "pnpm typecheck && brock lint && brock prose && brock knip && jscpd .",
     "lint:md": "markdownlint-cli2",
     "structure": "brock structure --check",
     "deadcode": "brock knip",

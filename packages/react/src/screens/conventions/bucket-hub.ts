@@ -37,6 +37,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     pages: bucket.pages,
     backdrop: bucketBackdrop(bucket, entries),
     requiresProfile: bucket.requiresProfile,
+    top: bucket.top,
     home,
     groups: hero ? groups : withoutPage(groups, home),
     search: { placeholder: `Search ${bucket.title}` },

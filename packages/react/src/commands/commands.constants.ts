@@ -11,6 +11,7 @@ const KEY_TOKENS: Readonly<Record<string, string>> = {
   esc: 'Escape', escape: 'Escape', enter: 'Enter', return: 'Enter', space: 'Space', ' ': 'Space', tab: 'Tab', backspace: 'Backspace', delete: 'Delete', del: 'Delete',
   insert: 'Insert', home: 'Home', end: 'End', pageup: 'PageUp', pagedown: 'PageDown', pgup: 'PageUp', pgdn: 'PageDown',
   up: 'Up', arrowup: 'Up', down: 'Down', arrowdown: 'Down', left: 'Left', arrowleft: 'Left', right: 'Right', arrowright: 'Right',
+  contextmenu: 'ContextMenu', menu: 'ContextMenu',
   comma: ',', period: '.', slash: '/', backslash: '\\', plus: '+', minus: '-', equal: '=', semicolon: ';', quote: '\'', backquote: '`', bracketleft: '[', bracketright: ']',
 };
 
@@ -49,6 +50,7 @@ const BROCK_COMMANDS = {
   shortcuts: 'brock.shortcuts',
   fullscreen: 'brock.fullscreen',
   back: 'brock.back',
+  contextMenu: 'brock.context-menu',
 } as const;
 
 const COMMAND_RANKS = { brock: 0, app: 1, routes: 2, runtime: 3 } as const;

@@ -22,7 +22,8 @@ const dockBack = (
   if (where === 'float') return floatInMain(layout, id, context.main, definition);
   const origin = where === undefined ? backToOrigin(layout, id) : null;
   dockOrigins.forget(id);
-  return origin ?? dockOnEdge(layout, id, where ?? definition?.defaultSide ?? 'right');
+  const weightOf = (other: string): number | undefined => getWidgetDefinition(context.definitions, other)?.dockWeight;
+  return origin ?? dockOnEdge(layout, id, where ?? definition?.defaultSide ?? 'right', { weight: definition?.dockWeight, weightOf });
 };
 
 export { dockBack };

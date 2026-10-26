@@ -2,7 +2,7 @@
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
 import { chordsOf } from './chords-of';
 import { COMMAND_RANKS } from './commands.constants';
-import type { ChordEvent, CommandConflict, CommandDef } from './command.type';
+import type { ChordEvent, CommandConflict, CommandContext, CommandDef } from './command.type';
 import { findConflicts } from './find-conflicts';
 import { listCommands } from './list-commands';
 import { matchesChord } from './matches-chord';
@@ -30,10 +30,10 @@ const commands = {
     return setCommandSource(`runtime-${registered}`, COMMAND_RANKS.runtime, defs);
   },
   list: (): CommandDef[] => listCommands(useCommandStore.getState()),
-  run: (id: string): boolean => {
+  run: (id: string, context?: CommandContext): boolean => {
     const def = find(id);
     if (def === undefined || def.when?.() === false) return false;
-    def.run();
+    def.run(context);
     return true;
   },
   chords: (id: string): readonly string[] => {

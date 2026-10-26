@@ -44,3 +44,5 @@ export { resolveLiveControlState } from './family/live-control-state';
 export type { LiveControlState } from './family/live-control-state.type';
 export { buildDeviceProfile, buildDeviceProfileFromResolved, buildDeviceProfileFromSdlType } from './device-profile';
 export type { DeviceProfile, DeviceProfileAxis, DeviceProfileButton, DeviceProfileIdentity } from './device-profile';
+export { resolveDeviceFromEntry } from './runtime/resolve-device';
+export { recallControllerSdlType } from './runtime/controller-family-cache';

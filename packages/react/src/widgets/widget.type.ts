@@ -10,10 +10,10 @@ interface WidgetMenuPlacement {
   parent?: string;
   group?: ProductMenuGroup;
   order?: number;
+  developer?: boolean;
 }
 
 interface WidgetDef extends WidgetDefinition {
-  icon?: string;
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;

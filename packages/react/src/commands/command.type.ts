@@ -11,6 +11,16 @@ interface PlatformChords {
 
 type ChordInput = ChordList | PlatformChords;
 
+type CommandTrigger = 'pointer' | 'keyboard' | 'longpress';
+
+interface CommandContext {
+  point: { x: number; y: number };
+  target: Element | null;
+  trigger: CommandTrigger;
+  data: unknown;
+  args?: unknown;
+}
+
 interface CommandDef {
   id: string;
   label: string;
@@ -21,10 +31,11 @@ interface CommandDef {
   zone?: string;
   whileTyping?: boolean;
   when?: () => boolean;
-  run: () => void;
+  checked?: () => boolean;
+  run: (context?: CommandContext) => void;
 }
 
-type CommandData = Omit<CommandDef, 'run' | 'when'> & { gated: boolean };
+type CommandData = Omit<CommandDef, 'run' | 'when' | 'checked'> & { gated: boolean; checkable: boolean };
 
 interface ParsedChord {
   ctrl: boolean;
@@ -81,5 +92,5 @@ interface KeymapRowInput {
 }
 
 export type {
-  ChordEvent, ChordInput, ChordList, ChordLookup, CommandConflict, CommandData, CommandDef, CommandGroup, CommandGroupsView, HeldModifier, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
+  ChordEvent, ChordInput, ChordList, ChordLookup, CommandConflict, CommandContext, CommandData, CommandTrigger, CommandDef, CommandGroup, CommandGroupsView, HeldModifier, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
 };

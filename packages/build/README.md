@@ -44,6 +44,8 @@ brock adopt [--scope @x] [--local <brockRepo>] [--force]
 brock structure [--check] [--scope @x]
                            verify the folder standard: package names, barrels, folder names, depth
                            (the checks of @drizztdourden08/standards with Brock's extension, standards.extension.mjs)
+brock lint [--changed | --all] [--no-cache] [files...] [-- eslint args]
+                           eslint, cheap by default (see The lint step)
 brock migrate --run <id> [--report <file>]
                            run one Brock migration by id, at any version, without the Tessera replay
 brock migrate --from <version> [--to <version>] [--tessera-from <version>] [--report <file>]
@@ -111,6 +113,16 @@ lists them. `dev`, `build` and `start` check the Electron binary first and re-ru
 script when the postinstall was skipped or interrupted. If the binary is still missing they exit
 1 and print `pnpm install` for the repo root. They never run `pnpm install --force` themselves. Everything after `--` reaches electron-vite or the app unchanged.
 `brock add` installs with `pnpm add`.
+
+## The lint step
+
+`brock lint` is the eslint step of an app's `lint` script (`brock lint && stylelint ... && brock prose && brock knip && jscpd .`). It runs the eslint of the app, with the config the app already has, and costs less than `eslint .` in three ways.
+
+- **Changed files by default.** A run with `CI` unset lints the files changed since the merge base with the default branch (`origin/HEAD`, else `origin/main`, `origin/master`, `main`, `master`; `BROCK_LINT_BASE` names another), including uncommitted and untracked files, and skips deleted ones. `CI` set or `--all` lints the whole tree. `--changed` forces changed mode under CI. Files named on the command line lint just those. `--all` and `--changed` together are an error. The whole tree is linted anyway when a changed file is an `eslint.config.*`, `standards.config.*` or `standards.extension.*` file, a `tsconfig*.json`, a `package.json`, a lockfile, `pnpm-workspace.yaml`, `.npmrc` or anything under `lint-config/`, because any of those can change every result, and when more than 300 files changed. The first line names the mode and the file count, for example `brock lint: changed mode, 12 files changed since 1a2b3c4d (merge base with origin/main)` or `brock lint: full tree (CI is set), 2410 files`.
+- **A content cache.** Local runs add `--cache --cache-strategy content` with the cache under `node_modules/.cache/brock` (`BROCK_LINT_CACHE_DIR` moves it; full and changed runs keep separate files). CI and `--no-cache` skip it. eslint decides a cache hit from the file and the config alone, so a type-aware or cross-file rule can keep an old result after another file changed; the CI run is uncached and is the gate.
+- **A memory ceiling.** The eslint child, and `brock knip`, start with `NODE_OPTIONS` gaining `--max-old-space-size=2048`. `BROCK_LINT_MEMORY_MB` sets another size. A heap flag already in `NODE_OPTIONS` wins and nothing is added.
+
+The steps that need the whole tree stay whole-tree: the typecheck (tsc), jscpd, knip, prose and `brock structure`. They compare files with each other, so a changed-files list would hide the findings that matter. Type-aware rules share one TypeScript project service per run (`projectService` in `@drizztdourden08/standards`), so eslint does not build a program per file.
 
 ## How the pieces work
 

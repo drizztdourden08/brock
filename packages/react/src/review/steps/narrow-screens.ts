@@ -10,7 +10,7 @@ import { settle } from '../dom/settle';
 import { waitFor } from '../dom/wait-for';
 import { NARROW_WINDOW, SELECTORS } from '../review.constants';
 import type { StepTour } from '../review.type';
-import { probe } from '../widgets/probe';
+import { withWindowSize } from './with-window-size';
 
 const reviewNarrow = async (tour: StepTour, screen: ScreenDef): Promise<void> => {
   nav.open(screen.id);
@@ -27,13 +27,10 @@ const reviewNarrow = async (tour: StepTour, screen: ScreenDef): Promise<void> =>
 };
 
 const narrowScreens = async (tour: StepTour, screens: readonly ScreenDef[]): Promise<void> => {
-  const start = (await probe({ kind: 'main' })).bounds;
-  if (start === null || screens.length === 0) return;
-  await probe({ kind: 'main', bounds: { ...start, ...NARROW_WINDOW } });
-  await settle();
-  for (const screen of screens) await reviewNarrow(tour, screen);
-  await probe({ kind: 'main', bounds: start });
-  await settle();
+  if (screens.length === 0) return;
+  await withWindowSize(NARROW_WINDOW, async () => {
+    for (const screen of screens) await reviewNarrow(tour, screen);
+  });
 };
 
 export { narrowScreens };

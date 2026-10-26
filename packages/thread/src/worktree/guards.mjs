@@ -2,8 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { basename, resolve } from 'node:path';
 import { git, remoteBranch, tryGit } from '../git.mjs';
-
-const USER_DATA_LINE = '?? .user-data/';
+import { isGeneratedUntracked } from './is-generated-untracked.mjs';
 
 const assertNotProtected = (worktreePath, main) => {
   if (resolve(worktreePath) === resolve(main)) throw new Error('Refusing to remove the main checkout.');
@@ -17,7 +16,7 @@ const assertNotInside = (worktreePath, alias) => {
 const assertClean = (worktreePath, verb = 'remove') => {
   const porcelain = git(['status', '--porcelain'], worktreePath);
   if (!porcelain) return;
-  const lines = porcelain.split('\n').filter((line) => line.trim() !== USER_DATA_LINE);
+  const lines = porcelain.split('\n').filter((line) => !isGeneratedUntracked(line));
   if (lines.length === 0) return;
   throw new Error(`Refusing to ${verb}: uncommitted changes in ${worktreePath}:\n${lines.slice(0, 10).join('\n')}`);
 };

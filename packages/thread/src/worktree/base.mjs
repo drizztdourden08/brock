@@ -4,8 +4,9 @@ import { git, tryGit } from '../git.mjs';
 import { resolveWorktreeName } from './current.mjs';
 import { isWorktreeName, worktreePathFor } from './paths.mjs';
 import { threadBase } from './thread-base.mjs';
+import { qualifyName } from './qualify-name.mjs';
 
-const isWorktree = (word, workspace) => isWorktreeName(word) && existsSync(worktreePathFor(word, workspace));
+const isWorktree = (word, workspace, options) => isWorktreeName(word) && existsSync(worktreePathFor(qualifyName(word, workspace, options), workspace));
 
 const standingIn = () => {
   try {
@@ -15,11 +16,11 @@ const standingIn = () => {
   }
 };
 
-const resolveRequest = (positional, workspace) => {
+const resolveRequest = (positional, workspace, options) => {
   const [first, second] = positional;
   if (second !== undefined) return { name: first, next: second };
   if (first === undefined) return { name: resolveWorktreeName([]), next: null };
-  if (isWorktree(first, workspace)) return { name: first, next: null };
+  if (isWorktree(first, workspace, options)) return { name: first, next: null };
   const current = standingIn();
   if (!current) throw new Error(`No worktree named "${first}". Name the worktree before the new base, or run this from inside one.`);
   return { name: current, next: first };
@@ -45,7 +46,8 @@ const reportBase = ({ branch, name, ctx }) => {
 const baseVerb = {
   usage: '  brock worktree base [name] [<new base>]',
   run: async (positional, options, ctx) => {
-    const { name, next } = resolveRequest(positional, ctx.workspace);
+    const { name: asked, next } = resolveRequest(positional, ctx.workspace, options);
+    const name = qualifyName(asked, ctx.workspace, options);
     const path = worktreePathFor(name, ctx.workspace);
     if (!existsSync(path)) throw new Error(`No worktree at ${path}.`);
     const branch = git(['rev-parse', '--abbrev-ref', 'HEAD'], path);

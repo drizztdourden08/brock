@@ -4,6 +4,7 @@ import { git, gitLoud } from '../git.mjs';
 import { checkPublishStyle } from '../pr/style.mjs';
 import { resolveWorktreeName } from './current.mjs';
 import { worktreePathFor } from './paths.mjs';
+import { qualifyName } from './qualify-name.mjs';
 
 const MAX_LISTED = 15;
 const NO_VERIFY = /^-{1,2}n(o-verify)?$/;
@@ -33,7 +34,7 @@ const commitVerb = {
   usage: '  brock worktree commit [name] --message "<text>" | --message-file <path>',
   run: async (positional, options, ctx) => {
     assertHooksRun(positional, options);
-    const name = resolveWorktreeName(positional);
+    const name = qualifyName(resolveWorktreeName(positional), ctx.workspace, options);
     const message = messageFrom(options, commitVerb.usage);
     checkPublishStyle(message, 'The commit message', ctx.workspace);
     const path = worktreePathFor(name, ctx.workspace);

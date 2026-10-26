@@ -8,7 +8,7 @@ const pushVerb = {
   asks: true,
   run: async (positional, options, ctx) => {
     const { log } = ctx;
-    const { name, path, branch } = prBranch.target(positional, ctx);
+    const { name, path, branch } = prBranch.target(positional, options, ctx);
     prBranch.warnIfDirty(path, log);
     const { upstream, count } = prBranch.unpushedCount(path, branch);
     if (upstream && count === 0) {

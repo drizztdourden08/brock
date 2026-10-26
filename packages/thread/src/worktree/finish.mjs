@@ -7,6 +7,7 @@ import { clearUserData } from './clear-user-data.mjs';
 import { removeTree } from './remove-tree.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
+import { qualifyName } from './qualify-name.mjs';
 
 const reportSurvivor = ({ gone, inside, worktree, alias }) => {
   const { name, path, main, log } = worktree;
@@ -21,7 +22,7 @@ const reportSurvivor = ({ gone, inside, worktree, alias }) => {
 const finishVerb = {
   usage: '  brock worktree finish [name]',
   run: async (positional, options, ctx) => {
-    const name = resolveWorktreeName(positional);
+    const name = qualifyName(resolveWorktreeName(positional), ctx.workspace, options);
     const worktree = createWorktreeContext(name, ctx);
     const { path, main, log } = worktree;
     if (!existsSync(path)) throw new Error(`No worktree at ${path}.`);

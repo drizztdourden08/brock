@@ -3,10 +3,11 @@ import { git, remoteBranch } from '../git.mjs';
 import { resolveWorktreeName } from '../worktree/current.mjs';
 import { isGeneratedUntracked } from '../worktree/is-generated-untracked.mjs';
 import { worktreePathFor } from '../worktree/paths.mjs';
+import { qualifyName } from '../worktree/qualify-name.mjs';
 
-const target = (positional, ctx) => {
+const target = (positional, options, ctx) => {
   const { workspace } = ctx;
-  const name = resolveWorktreeName(positional);
+  const name = qualifyName(resolveWorktreeName(positional), workspace, options);
   const path = worktreePathFor(name, workspace);
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD'], path);
   if (branch === 'HEAD') throw new Error(`"${name}" is on a detached HEAD. Check out a branch before publishing from it.`);

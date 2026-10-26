@@ -4,7 +4,7 @@
 The thread lifecycle every Brock repo runs: one git worktree per piece of work, launched in isolation, committed through the repo hooks and published through two verbs that ask.
 
 ```
-<repo> worktree create <name> [--from <ref>] [--base <branch>] [--skip-install]
+<repo> worktree create <name> [--prefix <text>] [--from <ref>] [--base <branch>] [--skip-install]
 <repo> worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]]
 <repo> launch main <state|none> [--visible] [--review]
 <repo> worktree refresh <name> [--reset] [--rebase [ref]]
@@ -22,6 +22,8 @@ A hidden launch passes `--no-focus --muted`, which makes it an automation launch
 `worktree create` and `upgrade` start the new worktree from `origin/<base>` after a fetch (the thread base, see Thread bases), or from the local base branch when it is ahead of origin. When the two have diverged they stop and say so; `--from <ref>` picks the start by hand. `worktree create --skip-install` adds the worktree and runs its provision steps with no `pnpm install`, at the root or in a target app, for a thread that only writes a file, such as a release note. `launch` runs `brock sync --if-stale` in the app first, so a fresh checkout whose `.brock` is ignored or old launches with its generated files, and it stops with the sync's message instead of starting a renderer whose entry imports a missing file.
 
 `worktree refresh` (and `finish` and `remove`) stop on uncommitted changes, but not on the untracked files the worktree setup writes itself: `CLAUDE.md`, `.ai-config.json`, `.mcp.json`, `.brock-port-slot` and `.user-data/` (the list is in `src/worktree/generated-files.constants.mjs`). A tracked file with changes, even a tracked `CLAUDE.md`, and any other untracked file still block.
+
+`worktree create` puts a prefix before the name when one is set, so two coordination boards that share one checkout do not collide on worktree names (`rotp` and `rotp-web` both asking for `fix-menu`). The prefix comes from `--prefix <text>`, else the `BROCK_WORKTREE_PREFIX` environment variable, else `worktrees: { prefix: 'web' }` in `defineWorkspace` (`brock.workspace.mjs`), and none means today's names. It is letters, digits and dashes, starting with a letter or digit; a trailing dash is added (`web` and `web-` both give `web-`) and capitals are lowercased. `worktree create feat` then makes the folder `.worktrees/web-feat` on the branch `agent/web-feat`; a name that already starts with the prefix (`web-feat`) is used as given, so the prefix is never doubled. The other verbs (`refresh`, `commit`, `finish`, `remove`, `base`, `launch`, `pr`) take the name with or without the prefix, and a worktree made before the prefix was set is still found by its bare name. `--instance` and the port slot use the full name. `--prefix` is read by every worktree verb, so pass it there when the prefix is not in the config or the environment.
 
 `main` names the main checkout. `launch main` runs the app from the repo root with its own `.user-data`, provisioned on the first launch, so a freshly scaffolded app runs before any worktree exists. No worktree verb accepts `main` as a name.
 

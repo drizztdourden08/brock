@@ -1,17 +1,16 @@
 /* @layer renderer-components @kind logic */
 import { GROW_EXTRA_ROWS, GROW_ROWS } from '../PadOverlay.constants';
-import type { OverlayLayout } from '../PadOverlay.type';
 import { attemptLayout } from './attempt-layout';
 import { layoutCost } from './layout-cost';
-import type { FitInput, GrowRows } from './placement.type';
+import type { FitInput, Fitted, GrowRows } from './placement.type';
 
 const growSteps = (): GrowRows[] => {
   const rows = Array.from({ length: GROW_ROWS + 1 }, (_, count) => count);
   return rows.flatMap((top) => rows.map((bottom) => ({ top, bottom }))).sort((a, b) => a.top + a.bottom - (b.top + b.bottom));
 };
 
-const growLayout = (input: FitInput, scale: number): OverlayLayout | null => {
-  let best: { layout: OverlayLayout; score: number } | null = null;
+const growLayout = (input: FitInput, scale: number): Fitted | null => {
+  let best: { fitted: Fitted; score: number } | null = null;
   let limit = Infinity;
   for (const grow of growSteps()) {
     const rows = grow.top + grow.bottom;
@@ -20,9 +19,9 @@ const growLayout = (input: FitInput, scale: number): OverlayLayout | null => {
     if (!layout.clear) continue;
     if (!best) limit = rows + GROW_EXTRA_ROWS;
     const score = layoutCost(layout) + layout.frame.height;
-    if (!best || score < best.score) best = { layout, score };
+    if (!best || score < best.score) best = { fitted: { layout, scale, grow }, score };
   }
-  return best?.layout ?? null;
+  return best?.fitted ?? null;
 };
 
 export { growLayout };

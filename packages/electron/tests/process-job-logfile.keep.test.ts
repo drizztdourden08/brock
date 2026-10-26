@@ -60,6 +60,9 @@ describe('process job log file', () => {
     expect(outcome).not.toHaveProperty('logFile');
   });
 
+});
+
+describe('process job log file bounds', () => {
   it('keeps the start and the end of an oversized log and notes what was left out', async () => {
     const outcome = await fx.processes.run('big', { command: fx.command, args: fx.argv('flood', '2000') }, { label: 'Big', logFile: { maxBytes: 1000 } });
     const text = logFileOf(outcome as { logFile?: string });

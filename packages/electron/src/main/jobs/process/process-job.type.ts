@@ -129,6 +129,6 @@ interface Stopper {
 
 export type {
   EnvScan, ExitFacts, Killable, KillResult, PreparedProcessJob, ProcessAllow, ProcessAuthorize, ProcessJobDef, ProcessJobs, ProcessJobsDeps,
-  ProcessLog, ProcessLogFileOptions, ProcessLogInput, ProcessProgressHint, ProcessProgressParser, ProcessRunInput, ProcessRunOptions, ProcessSpec,
+  ProcessLog, ProcessLogInput, ProcessProgressHint, ProcessProgressParser, ProcessRunInput, ProcessRunOptions, ProcessSpec,
   ProcessStartInput, ProcessStream, Stopper, StopperInput,
 };

@@ -222,7 +222,7 @@ tour needs goes beside it in `<id>.tour.constants.ts`, the file lint names for i
 splash, once the first profile is open. The app marks its first use in `app.json`, not in a
 profile, so a profile made later never starts it again, and an install that already had
 profiles never gets a first-run tour added in a later version.
-Menu > Advanced > Take the tour (Help when the app has a Help group) and the search
+Menu > Take the tour (a top level entry) and the search
 palette start any tour; `tours.start(id)`, `tours.stop()` and `useTour()` drive them from
 code. A finished tour is kept for the whole app and does not come back by itself. The arrow
 keys and Enter step through, Escape closes, and the title bar stays usable. The review

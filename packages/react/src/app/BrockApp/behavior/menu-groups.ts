@@ -34,7 +34,7 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
 const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const { appMenu, moduleMenu, widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
   const filter = (entries: readonly MenuEntry[]): MenuEntry[] => (filtered ? filterDevEntries(entries, developerTools, show) : [...entries]);
-  const tourEntry = input.tours ? tourMenu.entry(input.tours.list, tourMenu.section([...appMenu, ...moduleMenu]), input.tours.start) : null;
+  const tourEntry = input.tours ? tourMenu.entry(input.tours.list, input.tours.start) : null;
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
     ...(tourEntry ? [tourEntry] : []),

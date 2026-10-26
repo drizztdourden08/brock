@@ -31,6 +31,7 @@ import { useTitleBarHidden } from '../../behavior/useTitleBarHidden';
 import { useTitleBarShown } from '../../behavior/useTitleBarShown';
 import { NO_MODULE_IDS } from '../../BrockApp.constants';
 import { useBarControls } from '../../behavior/useBarControls';
+import { AppBackground } from '../AppBackground';
 import { AppRail } from '../AppRail';
 import { AppStage } from '../AppStage';
 import { AppTitleBar } from '../AppTitleBar';
@@ -42,7 +43,7 @@ import { useBootPreload } from '../../../../lazy/useBootPreload';
 import type { AppShellProps } from './AppShell.type';
 
 const AppShell = <S extends object>(props: AppShellProps<S>) => {
-  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, toolbars, toolbarPlacement, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, startupPrompts, volume, restoreNavigation, menuBar } = props;
+  const { settingsStore, bootTasks, log, moduleIds = NO_MODULE_IDS, moduleMenu, titleBarActions = NO_ACTION_SOURCES, searchActions, widgets, widgetKits, toolbars, toolbarPlacement, background, widgetLayout, widgetContext, widgetDisabled, layout = 'menu', screenGroups, review, startupPrompts, volume, restoreNavigation, menuBar } = props;
   const { product, home, homeScreen, logoSrc } = useBrock();
   const titleBar = useTitleBarShown(product.window.titleBar.mobile);
   const controls = useBarControls(product.window.titleBar.controls);
@@ -59,8 +60,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
   useSaveFailureToast(settingsStore);
   useShellInput();
   useProfileViews(settingsStore, volume, restoreNavigation);
-  useIpcLogBridge(log);
-  useAppOpenBridge();
+  useIpcLogBridge(log); useAppOpenBridge();
 
   const shellMenu = useShellMenu(moduleMenu, railed);
   useBootPreload(registry, [home, homeScreen]);
@@ -93,6 +93,7 @@ const AppShell = <S extends object>(props: AppShellProps<S>) => {
           />
         )}
         <Box className={`brock-app__content${railed ? ' brock-app__content--rail' : ''}`}>
+          <AppBackground>{background}</AppBackground>
           {railed && <AppRail screens={screens} home={home} groups={screenGroups} />}
           {stage}
         </Box>

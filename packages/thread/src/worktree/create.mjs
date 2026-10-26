@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs';
 import { tryGit } from '../git.mjs';
 import { assertName } from './paths.mjs';
+import { qualifyName } from './qualify-name.mjs';
 import { addWorktree } from './add-worktree.mjs';
 import { installDependencies } from './install.mjs';
 import { threadBase } from './thread-base.mjs';
@@ -36,9 +37,9 @@ const recordBase = ({ worktree, how, from, asked, ctx }) => {
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const createVerb = {
-  usage: '  brock worktree create <name> [--from <ref>] [--base <branch>] [--skip-install]',
+  usage: '  brock worktree create <name> [--prefix <text>] [--from <ref>] [--base <branch>] [--skip-install]',
   run: async (positional, options, ctx) => {
-    const [name] = positional;
+    const name = qualifyName(positional[0], ctx.workspace, options, { create: true });
     assertName(name);
     const worktree = createWorktreeContext(name, ctx, options);
     const from = typeof options.from === 'string' ? options.from : null;

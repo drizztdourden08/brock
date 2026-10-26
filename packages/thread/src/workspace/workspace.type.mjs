@@ -71,6 +71,7 @@
  * @property {string} branchPrefix `agent/`
  * @property {string[]} protectedBranches
  * @property {string} worktreesDir relative to the main checkout, `.worktrees`
+ * @property {{ prefix?: string }} worktrees `prefix` for worktree names, `web-`
  * @property {{ prStyle: 'house' | 'none' }} publish
  */
 

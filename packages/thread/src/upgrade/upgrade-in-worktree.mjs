@@ -6,6 +6,7 @@ import { createVerb } from '../worktree/create.mjs';
 import { commitVerb } from '../worktree/commit.mjs';
 import { excludeLocally } from '../worktree/exclude-worktrees.mjs';
 import { worktreePathFor } from '../worktree/paths.mjs';
+import { qualifyName } from '../worktree/qualify-name.mjs';
 import { bumpApp } from './bump-app.mjs';
 import { changelogBetween } from './changelog-between.mjs';
 import { gateSteps } from './gate-steps.mjs';
@@ -74,7 +75,7 @@ const prepareApps = (worktree, plan, ctx) => {
  * @returns {Promise<number>} 0 green, 1 red
  */
 const upgradeInWorktree = async (plan, { review }, ctx) => {
-  const name = worktreeNameFor(plan.target);
+  const name = qualifyName(worktreeNameFor(plan.target), ctx.workspace, {}, { create: true });
   ctx.log(`Upgrading Brock ${plan.current ?? 'unknown'} to ${plan.target} in the worktree ${name}.`);
   if (plan.mode === 'link') ctx.log(`Brock is linked to ${plan.checkout}, so the upgrade follows that checkout: sync, migrations and the gate.`);
   await createVerb.run([name], {}, ctx);

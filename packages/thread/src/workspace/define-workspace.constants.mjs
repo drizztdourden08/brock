@@ -4,6 +4,7 @@ const WORKSPACE_DEFAULTS = Object.freeze({
   branchPrefix: 'agent/',
   protectedBranches: ['main', 'master', 'gh-pages'],
   worktreesDir: '.worktrees',
+  worktrees: {},
   targets: {},
   provision: [],
   build: { staleDirs: [], steps: [] },

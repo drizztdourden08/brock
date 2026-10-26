@@ -35,7 +35,7 @@ const statusVerb = {
   usage: '  brock pr status [name]                        read-only',
   run: async (positional, options, ctx) => {
     const { workspace, log } = ctx;
-    const { name, path, branch } = prBranch.target(positional, ctx);
+    const { name, path, branch } = prBranch.target(positional, options, ctx);
     const { base } = threadBase.baseOf(branch, path, workspace);
     const out = tryGh(['pr', 'view', branch, '--json', FIELDS], path);
     if (!out) {

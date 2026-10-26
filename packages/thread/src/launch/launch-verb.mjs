@@ -3,7 +3,7 @@ import { flag } from '../cli/thread-args.mjs';
 import { launchContext } from './launch-context.mjs';
 import { targetForCwd } from './target-for-cwd.mjs';
 
-const OWN_OPTIONS = new Set(['target', 'visible', 'sound', 'prod']);
+const OWN_OPTIONS = new Set(['prefix', 'target', 'visible', 'sound', 'prod']);
 const USAGE = 'launch <name|main> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]';
 
 const passthroughOf = (options, extra) => [
@@ -61,7 +61,7 @@ const run = async (positional, options, ctx) => {
   if (!name || !state) throw new Error(`Usage: ${ctx.workspace.name} ${USAGE}`);
   const target = pickTarget(ctx, options.target);
   const prod = flag(options, 'prod');
-  const worktree = await launchContext(name, ctx);
+  const worktree = await launchContext(name, ctx, options);
   const refusal = target.notReady?.(worktree, prod) ?? target.checkState?.(worktree, state) ?? null;
   if (refusal) throw new Error(refusal);
   await runBuildSteps(ctx, worktree, prod || target.kind !== 'electron');

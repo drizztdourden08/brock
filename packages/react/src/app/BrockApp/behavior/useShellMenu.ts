@@ -38,9 +38,8 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
   const registry = useScreenRegistry();
   const developerTools = useDeveloperTools();
   const hasCredits = registry.has(CREDITS_SCREEN);
-  const widgetEntries = useWidgetMenuEntries();
-  const toolbarEntries = useToolbarMenuEntries();
-  const widgets = useMemo(() => [...widgetEntries, ...toolbarEntries], [widgetEntries, toolbarEntries]);
+  const widgets = useWidgetMenuEntries();
+  const toolbars = useToolbarMenuEntries();
   const tourList = useTourStore((s) => s.tours);
   const hasProfile = useProfilesStore((s) => s.active !== null);
   const homeLocked = !hasProfile && registry.get(homeScreen)?.requiresProfile !== false;
@@ -51,6 +50,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       appMenu: menu,
       moduleMenu,
       widgets,
+      toolbars,
       homeScreen,
       homeLocked,
       singleProfile: product.singleProfile,
@@ -68,7 +68,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
     const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords);
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
+  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

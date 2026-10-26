@@ -65,3 +65,26 @@ describe('product.singleProfile', () => {
     expect(createBuiltInScreens({}).some((screen) => screen.id === PROFILES_SCREEN)).toBe(true);
   });
 });
+
+const runInitial = (initialProfile: string): Promise<void> => profilesTask.run({ report: vi.fn(), product: { initialProfile } } as never) as Promise<void>;
+
+describe('product.initialProfile', () => {
+  it('creates and activates the named profile on the first launch without opening the picker', async () => {
+    await runInitial('Main');
+    expect(disk.profiles.map((p) => p.name)).toEqual(['Main']);
+    expect(useProfilesStore.getState().active?.name).toBe('Main');
+    expect(useNavigationStore.getState().active).toBeNull();
+  });
+
+  it('leaves an existing profile alone', async () => {
+    disk.profiles.push({ id: 'p1', name: 'Mine', created: 0, lastPlayed: 0 });
+    await runInitial('Main');
+    expect(disk.profiles.map((p) => p.name)).toEqual(['Mine']);
+    expect(useProfilesStore.getState().active?.name).toBe('Mine');
+  });
+
+  it('keeps the Profiles screen and menu entry', () => {
+    expect(createBuiltInScreens({}).some((screen) => screen.id === PROFILES_SCREEN)).toBe(true);
+    expect(keys(false)).toContain('profiles');
+  });
+});

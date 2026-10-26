@@ -158,6 +158,7 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 
 ## IPC typing and protocols
 
+- A `ctx.handle` handler that throws an `AppError` (from brock-core) sends its `code` and `data` to the renderer: `handle` rejects with the message plus an encoded tail, the generated preload methods clean Electron's prefix and keep the tail, and `isAppError(error, 'code')` decodes it. Other errors cross as a message only. Data over 8192 characters of JSON is dropped and `dataDropped` is true. See Coded errors in `docs/architecture.md`.
 - `handle`, `on` and `emit` constrain the channel to a key of the augmented contract and infer the arguments and return type, so a misspelled channel or a wrong handler signature is a compile error. `emit` is fire and forget: the render frame can be mid-disposal during a reload, which makes `webContents.send` throw, and the renderer re-subscribes on load, so a send dropped in that gap is safe to ignore.
 - Custom schemes must be declared privileged before the app is ready, once, in one call; the product's schemes and every module's are merged and a scheme listed twice keeps the first entry.
 - A product scheme with `dir` is served from `Data/<dir>` by `serveDirectoryScheme` once the app is ready; a module scheme with `dir` too.

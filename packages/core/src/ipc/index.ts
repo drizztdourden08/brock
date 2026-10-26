@@ -6,6 +6,12 @@ export { ask } from './ask-channel';
 export { event } from './event-channel';
 export { invoke } from './invoke-channel';
 export { send } from './send-channel';
+export { AppError } from './app-error';
+export { isAppError } from './is-app-error';
+export { toAppError } from './to-app-error';
+export { encodeAppError } from './encode-app-error';
+export { decodeAppError } from './decode-app-error';
+export type { AppErrorOptions, AppErrorShape, AppErrorWire, JsonValue } from './app-error.type';
 export type {
   AnyChannel, AskChannel, AskContractOf, MappedChannelKind, ChannelApi, ChannelDecl, ChannelDecls, ChannelKind, ChannelMaps, ChannelRef, DefinedChannels, EventChannel, EventContractOf, InvokeChannel, InvokeContractOf, InvokeSignature,
   SendChannel, SendContractOf, VoidSignature,

@@ -1,0 +1,41 @@
+/* @layer renderer-shell @kind style */
+.settings-preview-layout {
+  container: settings-preview / inline-size;
+}
+
+.settings-preview-layout__grid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'preview'
+    'rows';
+}
+
+.settings-preview-layout__preview {
+  grid-area: preview;
+  min-inline-size: 0;
+}
+
+.settings-preview-layout__rows {
+  grid-area: rows;
+  min-inline-size: 0;
+}
+
+@container settings-preview (width >= 56rem) {
+  .settings-preview-layout__grid--end {
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--size-320));
+    grid-template-areas: 'rows preview';
+  }
+
+  .settings-preview-layout__grid--start {
+    grid-template-columns: minmax(0, var(--size-320)) minmax(0, 1fr);
+    grid-template-areas: 'preview rows';
+  }
+
+  .settings-preview-layout__preview {
+    position: sticky;
+    inset-block-start: 0;
+    align-self: start;
+  }
+}

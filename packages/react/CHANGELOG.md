@@ -1,5 +1,30 @@
 # @drizztdourden08/brock-react
 
+## 0.103.0
+
+### Minor Changes
+
+- 6481c2d: A hub can fill the top group of its side nav. `top` on a bucket in `screens.config.ts`, or on a `defineHub` def, is a list of page ids that Brock passes to Tessera's SideNav as `config.top`: they sit under Home in that order with one divider after the block. A page in `top` leaves its regular group, and a group left with no page is not drawn. A hidden or unknown id is skipped. `buildHubNav` takes the list as a fourth argument.
+
+### Patch Changes
+
+- 6481c2d: Brock builds on Tessera 0.67. A widget's `dockWeight` now reaches Tessera, so docked widgets that share an edge are sized by weight, every widget keeps its weight when another one joins, and `defaultDockedSize` resizes the column a widget joins. This covers a widget opened from the Widgets menu, a widget kit member, a layout preset and a widget docked back from its own window. A widget's `icon` is now an icon name, and Tessera draws it before the label in the widget title bar and the tab chip, also in a popped widget window. A docked toolbar's `slot` carries `menuSide`, which an app can pass to Tessera's `Toolbar` so a left bar opens its menus to the right. The corner handles between stacked widgets no longer cover the title bar buttons of the widget below.
+
+  The app review expects the widget title bar buttons at the larger of the xs height and Tessera's minimum hit area, which is 24 px since Tessera 0.67.
+
+  - @drizztdourden08/brock-core@0.103.0
+
+## 0.102.0
+
+### Minor Changes
+
+- ca5ed20: Add an app context menu built from commands, drawn with Tessera's `ContextMenu` and with no wrapper element. `useContextMenu(id, source)` declares a menu for an element or a command zone, and `contextMenuZone(id, { data?, typing?, focusable? })` marks an element the app already renders. An entry is a command id, `'separator'`, `{ command, label?, args? }`, a plain `{ label, run }` or a sub-menu (two levels); the label, icon, shortcut, enabled state and action come from the command registry, so a rebound command shows its new chord. Entries can also set `checked`, `hidden`, `disabled`, `reason`, `kind` and `confirm`. The builder runs once per open and gets `{ point, target, trigger, data }`, and `CommandDef.run` now takes that context as an optional argument (`commands.run(id, context?)`); `CommandDef` gains an optional `checked`. A config adds `anchor`, `shouldOpen` (decided on pointerdown), `openOn: 'release-without-drag'`, `beforeOpen`, `label` and `inherit: 'parent'`. The menu opens on right click, on a long press, and on Shift+F10 and the Menu key through the new rebindable command `brock.context-menu`, which fires only while the focus sits in a declared menu. The browser menu stays where no menu is declared, in a `data-native-menu` element and in a text field unless it opts in. The menu closes on scroll, wheel, resize, blur, a route change and focus leaving, and `blockContextMenus(true)` holds it back during a drag. `openContextMenu` and `listContextMenus` serve tests. The `ContextMenu` chord token (the Menu key) is known to the chord parser and shows as a Menu keycap.
+- 03fae52: A settings page can show a preview beside its rows. A `TabDef` (or the `meta` of a `.settings.ts` page) takes `preview: (settings) => ReactNode` and `previewPlacement: 'start' | 'end'` (default `'end'`). In a wide page the preview takes a second column; in a narrow one it stacks above the rows. `<BrockApp background={node}>` draws one node behind the widget host and the docked panels, above the window background, and lets pointer events through.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.102.0
+
 ## 0.101.0
 
 ### Minor Changes

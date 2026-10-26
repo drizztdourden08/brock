@@ -80,6 +80,26 @@ describe('the Home entry', () => {
   });
 });
 
+describe('the Profiles entry', () => {
+  it('is in the menu by default', () => {
+    expect(keysOf(buildMenu(shell()))).toContain('profiles');
+    expect(keysOf(buildMenu(shell({ menuConfig: { profiles: true } })))).toContain('profiles');
+  });
+
+  it('is left out with menu.profiles false, and Home and Settings stay', () => {
+    const hidden = keysOf(buildMenu(shell({ menuConfig: { profiles: false } })));
+    expect(hidden).not.toContain('profiles');
+    expect(hidden).toContain('home');
+    expect(hidden).toContain('settings');
+  });
+
+  it('is left out together with Home when both are off', () => {
+    const hidden = keysOf(buildMenu(shell({ menuConfig: { home: false, profiles: false } })));
+    expect(hidden).not.toContain('profiles');
+    expect(hidden).not.toContain('home');
+  });
+});
+
 const flag = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
 
 const ITEMS: TitleBarItemEntry[] = [

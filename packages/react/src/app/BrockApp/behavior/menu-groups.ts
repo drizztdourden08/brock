@@ -9,6 +9,7 @@ import {
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
 import { tourMenu } from '../../../tours/tour-menu-entry';
 import type { MenuBuildInput } from '../BrockApp.type';
+import { hiddenMenuKeys } from './hidden-menu-keys';
 import { filterDevEntries } from './filter-dev-entries';
 import { foldSectionMenus } from './fold-section-menus';
 import { groupSections } from './group-sections';
@@ -44,9 +45,10 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const app = filter(withRoutes(foldSectionMenus(appMenu, [...moduleMenu, ...standard])));
   const modules = filter(withRoutes([...moduleMenu, ...standard]));
   const named = screensNamed([...app, ...modules]);
-  const showHome = input.menuConfig?.home !== false;
+  const hidden = hiddenMenuKeys(input.menuConfig);
+  const showHome = !hidden.has(HOME_ENTRY.key);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && (!showHome || item.screen !== homeScreen));
-  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !(input.singleProfile && item.screen === PROFILES_SCREEN));
+  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN));
   return {
     main: [...(showHome ? [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }] : []), ...topEntries, ...unsectioned(app)],
     sections: withToolbars(groupSections([...app, ...modules]), toolbars),

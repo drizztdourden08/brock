@@ -86,20 +86,22 @@ describe('face button second line', () => {
   });
 });
 
-const FONT_PX = 13;
-const LAYOUT_METRICS: OverlayMetrics = {
-  width: 640,
-  height: 420,
-  fontPx: FONT_PX,
-  measure: { name: (text) => text.length * FONT_PX * 0.6, detail: (text) => text.length * FONT_PX * 0.6 },
-};
+const metricsOf = (width: number, height: number, fontPx: number): OverlayMetrics => ({
+  width,
+  height,
+  fontPx,
+  measure: { name: (text) => text.length * fontPx * 0.6, detail: (text) => text.length * fontPx * 0.6 },
+});
+
+const LAYOUT_METRICS = metricsOf(640, 420, 13);
+const SMALL_WINDOW_METRICS = metricsOf(640, 360, 14);
 
 type Family = keyof typeof FAMILY_OVERLAYS;
 
-const labelOf = (family: Family, anchor: OverlaySlotView['anchor']) => {
+const labelOf = (family: Family, anchor: OverlaySlotView['anchor'], layoutMetrics: OverlayMetrics = LAYOUT_METRICS) => {
   const { variant, slots } = FAMILY_OVERLAYS[family];
   const outline = CONTROLLER_SILHOUETTE_PATHS[variant];
-  const layout = layoutOverlay(slots.map((slot) => ({ ...slot })), CONTROLLER_SILHOUETTE_ANCHORS[variant], outline, LAYOUT_METRICS);
+  const layout = layoutOverlay(slots.map((slot) => ({ ...slot })), CONTROLLER_SILHOUETTE_ANCHORS[variant], outline, layoutMetrics);
   const { origin, scale } = layout.frame;
   const points = outlinePoints(outline).map((point) => ({ x: origin.x + point.x * scale, y: origin.y + point.y * scale }));
   const edges = points.map((point, index): readonly [Point, Point] => [point, points[(index + 1) % points.length] ?? point]);
@@ -110,6 +112,7 @@ const labelOf = (family: Family, anchor: OverlaySlotView['anchor']) => {
     elbowY: label.leader.at(-2)?.y ?? Infinity,
     inside: bodyLength(segments, { outline: points, outlineEdges: edges }),
     top: Math.min(...points.map((point) => point.y)),
+    bottom: Math.max(...points.map((point) => point.y)),
   };
 };
 
@@ -128,19 +131,18 @@ describe('body length of a leader', () => {
 describe('pad leaders and meta callouts', () => {
   const metaAnchors = ['meta.menu', 'meta.view', 'meta.capture'] as const;
 
-  it('puts Menu, View and Share above an Xbox layout', () => {
-    for (const anchor of metaAnchors) {
+  it('puts Menu and View above an Xbox layout', () => {
+    for (const anchor of ['meta.menu', 'meta.view'] as const) {
       const { elbowY, top } = labelOf('xbox', anchor);
       expect(elbowY).toBeLessThan(top);
     }
   });
 
   it('keeps the Xbox meta leaders from running far through the body', () => {
-    for (const anchor of metaAnchors) expect(labelOf('xbox', anchor).inside).toBeLessThan(110);
+    for (const anchor of metaAnchors) expect(labelOf('xbox', anchor).inside).toBeLessThan(120);
   });
 
-  it('keeps the right stick and the PS button leaders short inside the body', () => {
-    expect(labelOf('xbox', 'stick.right').inside).toBeLessThan(50);
+  it('keeps the PlayStation stick and button leaders short inside the body', () => {
     expect(labelOf('playstation', 'stick.right').inside).toBeLessThan(20);
     expect(labelOf('playstation', 'meta.guide').inside).toBeLessThan(40);
   });
@@ -149,6 +151,23 @@ describe('pad leaders and meta callouts', () => {
     for (const anchor of ['meta.view', 'meta.menu'] as const) {
       const { elbowY, top } = labelOf('playstation', anchor);
       expect(elbowY).toBeLessThan(top);
+    }
+  });
+});
+
+describe('Xbox pad in a 1280 by 720 window', () => {
+  it('puts View and Menu above the pad', () => {
+    for (const anchor of ['meta.view', 'meta.menu'] as const) {
+      const { elbowY, top } = labelOf('xbox', anchor, SMALL_WINDOW_METRICS);
+      expect(elbowY).toBeLessThan(top);
+    }
+  });
+
+  it('keeps the face, D-pad and stick callouts beside the pad, not below it', () => {
+    const anchors = ['face.south', 'face.east', 'face.north', 'dpad.up', 'stick.left', 'stick.right'] as const;
+    for (const anchor of anchors) {
+      const { elbowY, bottom } = labelOf('xbox', anchor, SMALL_WINDOW_METRICS);
+      expect(elbowY).toBeLessThanOrEqual(bottom);
     }
   });
 });

@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind types */
-import type { Bounds, OverlayFrame, OverlayMetrics, PlacedLabel, PlacedPart, Point, TextAnchor } from '../PadOverlay.type';
+import type { Bounds, OverlayFrame, OverlayLayout, OverlayMetrics, PlacedLabel, PlacedPart, Point, TextAnchor } from '../PadOverlay.type';
 
 interface Rect {
   left: number;
@@ -63,12 +63,26 @@ interface Scene {
 
 type Body = Pick<Scene, 'outline' | 'outlineEdges'>;
 
+interface Regroup {
+  domains: readonly (readonly LabelOption[])[];
+  rest: readonly number[];
+  budget: Budget;
+  best: { cost: number; picks: LabelOption[] };
+}
+
 interface GrowRows {
   top: number;
   bottom: number;
 }
 
+interface Fitted {
+  layout: OverlayLayout;
+  scale: number;
+  grow: GrowRows;
+}
+
 interface FitInput {
+  polish?: boolean;
   raw: readonly PlacedPart[];
   bounds: Bounds;
   points: readonly Point[];
@@ -96,6 +110,6 @@ interface Placement {
 }
 
 export type {
-  Axis, Body, Budget, Choice, Circle, Domains, FitInput, GrowRows, LabelOption, LabelSize, LabelSpot, Occupied, Placement, Rect, Scene,
+  Axis, Body, Budget, Choice, Circle, Domains, FitInput, Fitted, GrowRows, LabelOption, LabelSize, LabelSpot, Occupied, Placement, Rect, Regroup, Scene,
   Segment, Span, Toward, Zone,
 };

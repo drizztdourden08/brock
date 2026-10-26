@@ -1,5 +1,25 @@
 # @drizztdourden08/brock-thread
 
+## 0.106.2
+
+## 0.106.1
+
+## 0.106.0
+
+### Patch Changes
+
+- af32761: Add a cargo lane to `brock gate`. While a `Cargo.toml` with a `[workspace]` or `[package]` table sits at the repo root, the gate checks the Rust comments, then runs `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets` and `cargo test --workspace`, each reported like the other steps. Clippy runs with `-D warnings` and with the `too_many_lines` and `cognitive_complexity` lints on, held to 60 lines and a complexity of 10 by a `clippy.toml` that Brock applies when the repo has none of its own. The comment check fails any `//` or `/* */` comment in a `.rs` file with its `file:line`, and allows `///`, `//!` and a `// SAFETY:` line directly above `unsafe`. A missing cargo fails the lane with a clear message. `gate.cargo` turns the lane off (`enabled: false`), moves it (`path`) or adds clippy flags (`clippyArgs`). A repo with no Brock app can now run `brock gate`: it reads `gate` from `brock.workspace.mjs`, or runs the cargo lane alone when the root has a `Cargo.toml`.
+
+## 0.105.0
+
+### Minor Changes
+
+- bfb285b: Worktree names can carry a prefix, so two coordination boards that share one checkout stop colliding. Set `worktrees: { prefix: 'web' }` in `defineWorkspace`, the `BROCK_WORKTREE_PREFIX` environment variable, or pass `--prefix` to `worktree create`. `--prefix` wins over the variable, and the variable over the config. `worktree create feat` then makes the folder `web-feat` on the branch `agent/web-feat`, and a name that already starts with the prefix is left as it is. Every worktree verb, `launch` and `pr` accept the name with or without the prefix, and still reach a worktree made before the prefix by its bare name. With no prefix nothing changes.
+
+## 0.104.0
+
+## 0.103.0
+
 ## 0.102.0
 
 ## 0.101.0

@@ -3,10 +3,11 @@
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { blockContextMenus } from '../src/context-menu/block-context-menus';
+import { contextMenuHandler } from '../src/context-menu/context-menu-handler';
 import { listContextMenus } from '../src/context-menu/list-context-menus';
 import { openContextMenu } from '../src/context-menu/open-context-menu';
 import { useContextMenuStore } from '../src/context-menu/useContextMenuStore';
-import { byId, contextmenu, item, mountMenus, openPoint, opened, pointer, ran, rerenderMenus, rightClick, seen, unmountMenus } from './context-menu-harness';
+import { byId, contextmenu, item, mountMenus, openPoint, opened, pointer, ran, rectOf, rerenderMenus, rightClick, seen, unmountMenus } from './context-menu-harness';
 
 beforeEach(mountMenus);
 afterEach(unmountMenus);
@@ -93,6 +94,8 @@ describe('the open menu', () => {
     expect(document.querySelector('[role="separator"]')).not.toBeNull();
     expect(item('Show grid')?.getAttribute('aria-checked')).toBe('true');
     expect(item('Arrange')).toBeDefined();
+    expect(item('Copy pixels')?.getAttribute('data-menu-entry')).toBe('canvas.copy');
+    expect(item('Arrange')?.getAttribute('data-menu-entry')).toBe('Arrange');
     const off = item('Paste pixels');
     expect(off?.hasAttribute('disabled') === true || off?.getAttribute('aria-disabled') === 'true').toBe(true);
   });
@@ -152,6 +155,19 @@ describe('blocking and helpers', () => {
     expect(openContextMenu('row', { id: 9 })).toBe(true);
     expect(opened()?.context.data).toEqual({ id: 9 });
     expect(openContextMenu('nowhere')).toBe(false);
+  });
+
+  it('opens a zone from a part hook with the part data, at the pointer or under the part', () => {
+    const forward = (event: Event): void => contextMenuHandler('list', { id: 3 })(event as never);
+    byId('row').addEventListener('contextmenu', forward, { once: true });
+    expect(contextmenu(byId('row'), 5, 6).defaultPrevented).toBe(true);
+    expect(openPoint()).toEqual({ x: 5, y: 6 });
+    expect(opened()?.context).toMatchObject({ data: { id: 3 }, trigger: 'pointer' });
+    act(() => useContextMenuStore.getState().hide());
+    rectOf('row', 12, 34).addEventListener('keydown', forward, { once: true });
+    act(() => { byId('row').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ContextMenu' })); });
+    expect(openPoint()).toEqual({ x: 12, y: 34 });
+    expect(opened()?.context).toMatchObject({ data: { id: 3 }, trigger: 'keyboard' });
   });
 
   it('lists every registered menu with its command ids and the ids that do not exist', () => {

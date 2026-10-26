@@ -13,7 +13,7 @@ import { menuConfigProblems, menuConfigWarnings } from '../menu/menu-config-prob
 import { syncApp } from '../modules/sync.mjs';
 import { workflowInputs } from '../release/workspace-workflow-inputs.mjs';
 import { workflowProblems } from '../release/workflow-problems.mjs';
-import { writeGuide } from '../tessera/write-guide.mjs';
+import { guideProblems, writeGuide } from '../tessera/write-guide.mjs';
 import { syncTargets } from './sync-targets.mjs';
 
 const reportProblems = (problems, header) => {
@@ -65,6 +65,11 @@ const syncOne = async (appDir, check) => {
   return check ? Math.max(code, problems) : code;
 };
 
+const reportGuide = (problems) => {
+  for (const problem of problems) console.error(`brock check: ${problem}`);
+  return problems.length > 0 ? 1 : 0;
+};
+
 const syncIfStale = async (appDir) => {
   const problem = await ensureSynced(appDir, 'brock sync');
   if (!problem) return 0;
@@ -99,6 +104,7 @@ const runSync = async ({ rootDir, check = false, ifStale = false }) => {
   if (!check) await syncIconIgnores(repoRoot);
   code = Math.max(code, await syncSites(repoRoot, { check }));
   if (!check) await writeGuide(rootDir);
+  else code = Math.max(code, reportGuide(await guideProblems(rootDir, { label: 'brock check' })));
   return code;
 };
 

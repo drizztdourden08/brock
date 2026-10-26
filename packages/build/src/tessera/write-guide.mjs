@@ -1,9 +1,9 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { runTesseraCommand } from '../commands/tessera.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
-import { settleLineEndings } from '../write-changed.mjs';
+import { sameText, settleLineEndings } from '../write-changed.mjs';
 import { guidePartsFiles } from './guide-parts-files.mjs';
 import { guideRunDirs } from './guide-run-dirs.mjs';
 import { hasGuideParts } from './has-guide-parts.mjs';
@@ -43,4 +43,29 @@ const writeGuide = async (rootDir, { label = 'brock sync', missingOnly = false }
   for (const file of parts) settleLineEndings(file, before.get(file));
 };
 
-export { writeGuide };
+const restore = (file, before) => {
+  if (before === null) rmSync(file, { force: true });
+  else if (!existsSync(file) || readFileSync(file, 'utf8') !== before) writeFileSync(file, before, 'utf8');
+};
+
+/**
+ * @param {string} rootDir  The app or workspace root
+ * @param {{ label?: string }} [options]
+ * @returns {Promise<string[]>}  one problem per parts file that differs
+ */
+const guideProblems = async (rootDir, { label = 'brock check' } = {}) => {
+  const configDir = configDirOf(rootDir);
+  if (!hasGuideParts(configDir)) return [];
+  const parts = guidePartsFiles(configDir);
+  const before = new Map(parts.map((file) => [file, existsSync(file) ? readFileSync(file, 'utf8') : null]));
+  for (const cwd of guideRunDirs(configDir)) await runGuideIn(configDir, cwd, label);
+  const problems = parts.filter((file) => {
+    const wanted = existsSync(file) ? readFileSync(file, 'utf8') : null;
+    const had = before.get(file);
+    return wanted !== null && (had === null || !sameText(had, wanted));
+  }).map((file) => `${relative(configDir, file).replace(/\\/g, '/')} does not list the parts of the app; run brock sync to write it`);
+  for (const file of parts) restore(file, before.get(file));
+  return problems;
+};
+
+export { guideProblems, writeGuide };

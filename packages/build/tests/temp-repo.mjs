@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
@@ -16,7 +16,7 @@ const writeAt = (root, path, content) => {
  * @returns {string} a temp folder holding them
  */
 const tempRepo = (files) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-repo-'));
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'brock-repo-')));
   roots.push(root);
   Object.entries(files).forEach(([path, content]) => writeAt(root, path, content));
   return root;

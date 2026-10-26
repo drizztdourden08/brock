@@ -18,6 +18,7 @@ const DATA_INVOKE_MAP = {
   domainRemove: 'domain:remove',
   domainSize: 'domain:size',
   listJobs: 'job:list',
+  runProcessJob: 'job:runProcess',
 } as const satisfies Record<string, keyof DataInvokeContract>;
 
 const DATA_SEND_MAP = {

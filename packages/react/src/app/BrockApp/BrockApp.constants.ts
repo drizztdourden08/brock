@@ -28,8 +28,10 @@ const MOUSE_BACK_BUTTON = 3;
 const HOME_ENTRY: Omit<MenuItem, 'screen'> = { key: 'home', label: 'Home', icon: 'house', fresh: true };
 const HOME_LOCKED: Pick<MenuItem, 'disabled' | 'description'> = { disabled: true, description: PROFILE_FIRST };
 
+const PROFILES_ENTRY: MenuItem = { key: 'profiles', label: 'Profiles', icon: 'users', screen: PROFILES_SCREEN };
+
 const TOP_ENTRIES: readonly MenuItem[] = [
-  { key: 'profiles', label: 'Profiles', icon: 'users', screen: PROFILES_SCREEN },
+  PROFILES_ENTRY,
   { key: 'settings', label: 'Settings', icon: 'settings', screen: 'settings' },
 ];
 
@@ -43,5 +45,5 @@ const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
 export {
   ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MENU_OVERRIDES, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
-  PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION, WIDGETS_SECTION_KEY,
+  PROFILES_ENTRY, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION, WIDGETS_SECTION_KEY,
 };

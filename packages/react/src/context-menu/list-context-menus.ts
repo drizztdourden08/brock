@@ -21,11 +21,12 @@ const entriesFor = (zone: string, config: ContextMenuConfig): readonly ContextMe
 };
 
 const listContextMenus = (): ListedContextMenu[] => {
-  const known = new Set(commands.list().map((def) => def.id));
-  return Object.entries(useContextMenuStore.getState().menus).map(([zone, config]) => {
+  const registered = new Set(commands.list().map((def) => def.id));
+  const { known, menus } = useContextMenuStore.getState();
+  return Object.entries({ ...known, ...menus }).map(([zone, config]) => {
     const entries = entriesFor(zone, config);
     const ids = commandIds(entries);
-    return { zone, entries, commands: ids, missing: ids.filter((id) => !known.has(id)) };
+    return { zone, entries, commands: ids, missing: ids.filter((id) => !registered.has(id)), mounted: zone in menus };
   });
 };
 

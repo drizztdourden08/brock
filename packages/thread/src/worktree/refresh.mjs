@@ -6,6 +6,7 @@ import { guards } from './guards.mjs';
 import { clearUserData } from './clear-user-data.mjs';
 import { threadBase } from './thread-base.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
+import { qualifyName } from './qualify-name.mjs';
 
 const rebaseTarget = (options, base) => {
   if (options.rebase === undefined) return null;
@@ -33,7 +34,7 @@ const resetUserData = async (worktree, ctx) => {
 const refreshVerb = {
   usage: '  brock worktree refresh <name> [--reset] [--rebase [ref]]',
   run: async (positional, options, ctx) => {
-    const [name] = positional;
+    const name = qualifyName(positional[0], ctx.workspace, options);
     if (!name) throw new Error(`Usage:\n${refreshVerb.usage}`);
     const worktree = createWorktreeContext(name, ctx);
     if (!existsSync(worktree.path)) throw new Error(`No worktree at ${worktree.path}. Run: ${ctx.workspace.name} worktree create ${name}`);

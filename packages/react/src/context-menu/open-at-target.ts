@@ -33,8 +33,7 @@ const openAtTarget = (request: OpenRequest): OpenResult => {
   if (first.config.beforeOpen?.(context) === false) return 'cancelled';
   const entries = buildEntries(matches, context);
   reportMenuSize(first.zone, entries);
-  const active = document.activeElement;
-  useContextMenuStore.getState().show({ entries, point, context, label: labelOf(first, context), restore: active instanceof HTMLElement ? active : null });
+  useContextMenuStore.getState().show({ entries, point, context, label: labelOf(first, context) });
   return 'opened';
 };
 

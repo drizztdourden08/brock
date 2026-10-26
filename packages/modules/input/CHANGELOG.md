@@ -1,5 +1,67 @@
 # @drizztdourden08/brock-input
 
+## 0.106.2
+
+### Patch Changes
+
+- Updated dependencies [e4effa7]
+  - @drizztdourden08/brock-react@0.106.2
+  - @drizztdourden08/brock-core@0.106.2
+  - @drizztdourden08/brock-electron@0.106.2
+
+## 0.106.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.1
+- @drizztdourden08/brock-electron@0.106.1
+- @drizztdourden08/brock-react@0.106.1
+
+## 0.106.0
+
+### Patch Changes
+
+- Updated dependencies [5ea3165]
+- Updated dependencies [eea3aca]
+- Updated dependencies [eea3aca]
+- Updated dependencies [eea3aca]
+  - @drizztdourden08/brock-react@0.106.0
+  - @drizztdourden08/brock-core@0.106.0
+  - @drizztdourden08/brock-electron@0.106.0
+
+## 0.105.0
+
+### Patch Changes
+
+- Updated dependencies [e345020]
+- Updated dependencies [0806572]
+  - @drizztdourden08/brock-core@0.105.0
+  - @drizztdourden08/brock-electron@0.105.0
+  - @drizztdourden08/brock-react@0.105.0
+
+## 0.104.0
+
+### Patch Changes
+
+- 1429105: Pad callouts prefer the sides over the area below the pad at small sizes. A callout below the pad now costs more the further it sits from its button, and a layout that grows past the card height pays for each extra pixel, so the pad shrinks to leave room at the sides instead of growing a tall frame with long leaders under it. The layout tries a few pad sizes and keeps the cheapest. View, Menu and Share still prefer a spot above the highest button, with View first, then Menu, then Share, and the best arrangement of those three is chosen before the other callouts are placed. A short search moves a few crowded callouts together when that lowers the total cost. Meta buttons low on the pad, such as the SNES Select and Start, keep their nearest spot.
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+- Updated dependencies [8387f89]
+- Updated dependencies [8387f89]
+  - @drizztdourden08/brock-core@0.104.0
+  - @drizztdourden08/brock-electron@0.104.0
+  - @drizztdourden08/brock-react@0.104.0
+
+## 0.103.0
+
+### Patch Changes
+
+- Updated dependencies [6481c2d]
+- Updated dependencies [6481c2d]
+  - @drizztdourden08/brock-react@0.103.0
+  - @drizztdourden08/brock-core@0.103.0
+  - @drizztdourden08/brock-electron@0.103.0
+
 ## 0.102.0
 
 ### Patch Changes

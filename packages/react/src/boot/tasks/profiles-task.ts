@@ -12,7 +12,17 @@ const openPicker = (reason: string): string => {
   return reason;
 };
 
-const pickProfile = async (): Promise<string> => {
+const createFirst = async (name: string, label: string): Promise<string> => {
+  const store = useProfilesStore.getState();
+  const profile = await store.create({ name });
+  store.setActive(profile);
+  return `${label} ${profile.name}`;
+};
+
+const noProfile = (initialProfile: string | undefined): Promise<string> | string =>
+  initialProfile === undefined ? openPicker('No profiles yet') : createFirst(initialProfile, 'Initial profile');
+
+const pickProfile = async (initialProfile: string | undefined): Promise<string> => {
   const store = useProfilesStore.getState();
   const profiles = await store.refresh();
   const { lastProfileId } = useProfilesStore.getState();
@@ -29,7 +39,7 @@ const pickProfile = async (): Promise<string> => {
   }
 
   const [first] = profiles;
-  if (first === undefined) return openPicker('No profiles yet');
+  if (first === undefined) return noProfile(initialProfile);
   if (profiles.length === 1) {
     store.setActive(first);
     return `Profile ${first.name}`;
@@ -43,16 +53,16 @@ const pickProfile = async (): Promise<string> => {
 const implicitProfile = async (): Promise<string> => {
   const store = useProfilesStore.getState();
   const [existing] = await store.refresh();
-  const profile = existing ?? (await store.create({ name: DEFAULT_PROFILE_NAME }));
-  store.setActive(profile);
-  return `Single profile ${profile.name}`;
+  if (existing === undefined) return createFirst(DEFAULT_PROFILE_NAME, 'Single profile');
+  store.setActive(existing);
+  return `Single profile ${existing.name}`;
 };
 
 const profilesTask: RendererBootTask = {
   id: 'profiles',
   label: 'Reading profiles',
   run: async ({ report, product }) => {
-    const outcome = await (product.singleProfile === true ? implicitProfile() : pickProfile());
+    const outcome = await (product.singleProfile === true ? implicitProfile() : pickProfile(product.initialProfile));
     getAppLog().log('app', outcome);
     report(1, outcome);
   },

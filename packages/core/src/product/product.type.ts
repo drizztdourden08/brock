@@ -137,6 +137,7 @@ interface ProductMenuEntry {
 
 interface ProductMenu {
   home?: boolean;
+  profiles?: boolean;
   entries?: Readonly<Record<string, ProductMenuEntry>>;
 }
 
@@ -180,6 +181,7 @@ interface ProductConfig {
   homeScreen: string;
   profilesRoute?: string;
   singleProfile?: boolean;
+  initialProfile?: string;
   ports?: ProductPorts;
   widgets: ProductWidgets;
   installer: InstallerConfig;

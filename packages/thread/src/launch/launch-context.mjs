@@ -5,6 +5,7 @@ import { userDataStep } from '../provision/user-data.mjs';
 import { ensurePortSlot } from '../ports/ensure-port-slot.mjs';
 import { assertName, MAIN_CHECKOUT } from '../worktree/paths.mjs';
 import { createWorktreeContext } from '../worktree/worktree-context.mjs';
+import { qualifyName } from '../worktree/qualify-name.mjs';
 
 const provisionMain = async (worktree, ctx) => {
   if (existsSync(worktree.userData)) return;
@@ -15,11 +16,12 @@ const provisionMain = async (worktree, ctx) => {
 /**
  * @param {string} name a worktree name, or `main` for the main checkout
  * @param {import('../workspace/workspace.type.mjs').ThreadContext} ctx
+ * @param {Record<string, string | boolean>} [options]
  * @returns {Promise<import('../workspace/workspace.type.mjs').WorktreeContext>}
  */
-const launchContext = async (name, ctx) => {
+const launchContext = async (name, ctx, options = {}) => {
   if (name !== MAIN_CHECKOUT) {
-    const worktree = createWorktreeContext(assertName(name), ctx);
+    const worktree = createWorktreeContext(assertName(qualifyName(name, ctx.workspace, options)), ctx);
     if (existsSync(worktree.path)) ensurePortSlot(worktree);
     return worktree;
   }

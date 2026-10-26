@@ -3,6 +3,7 @@ import { contexts } from '../contexts/contexts';
 import { nav } from '../navigation/nav';
 import { useProfilesStore } from '../stores/useProfilesStore';
 import { widgets } from '../widgets/widgets';
+import { prepareStepMenu } from './prepare-step-menu';
 import type { TourContextChange, TourStepContext, TourStepDef } from './tour.type';
 
 const openWidget = (id: string): void => {
@@ -33,6 +34,7 @@ const prepareStep = async (tourId: string, step: TourStepDef, index: number, sig
     contexts.set(name, data === undefined ? { active } : { active, data });
   }
   await step.before?.(stepContext(tourId, step, index, signal));
+  await prepareStepMenu(step, signal);
 };
 
 export { prepareStep };

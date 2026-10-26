@@ -1,5 +1,76 @@
 # @drizztdourden08/brock-react
 
+## 0.106.2
+
+### Patch Changes
+
+- e4effa7: Brock's own screen scrollers keep a stable scrollbar gutter. The page body, the info card, a hub with no nav, a plain hub page and the release notes panel now reserve the scrollbar width all the time, so content no longer reflows (and a lobby no longer flips between one and two columns) when the scrollbar comes and goes.
+  - @drizztdourden08/brock-core@0.106.2
+
+## 0.106.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.1
+
+## 0.106.0
+
+### Minor Changes
+
+- 5ea3165: Four small additions for Bxel. A context menu entry takes `tone: 'danger'` and passes it to the drawn item. `SettingsPreviewLayout` and its props type are exported from the barrel, so a page outside settings can use the two column preview layout. The preview column is now a `complementary` landmark named by a `label` prop (default "Preview", `previewLabel` on `SettingsLayout`, `TabDef` and `meta`), and the rows column a `region` named "Settings"; both are F6 stops. `listContextMenus()` now lists every registered menu, mounted or not, with a `mounted` flag on each, and the new `defineContextMenu(id, source)` registers a menu at module scope so a test can inspect its entries before any zone mounts.
+- eea3aca: Pass the tour intro panel through to Tessera. A tour step gains `intro`, `art` and `reveal`, with the meaning they have on a Tessera guided step: `intro: true` draws the wide welcome panel, `art` is its picture and `reveal` runs before Tessera looks for a target that is not drawn yet. A `.tour.ts` file has no JSX, so `art` also accepts the token `'product-mark'`, which Brock turns into the product mark (the brand mark, else the product logo), and `{ icon: '<name>' }`, which becomes a Tessera icon. A `ReactNode` still works in a `.tour.tsx` file. A step without these fields is unchanged.
+- eea3aca: A tour step can light an entry in a submenu. `target: { menuEntry }` takes a path, `{ menuEntry: ['Advanced', 'Take the tour'] }`, and a plain label is now searched for in the submenus too. Brock opens each parent submenu in order with a click, as a pointer would, before the step lights the entry, and the submenus close with the menu when the step ends. An entry that is not there leaves the step centred.
+
+### Patch Changes
+
+- eea3aca: The review tours wait for the walking mascot to stop before they check that it keeps off the lit part. The wait reads the mascot's position until it holds still for a few polls, up to 3 seconds, and the step fails with the reason when it never stops. It replaces the single fixed 700 ms pause, which a long walk to a page-sized hole outlasted.
+  - @drizztdourden08/brock-core@0.106.0
+
+## 0.105.0
+
+### Minor Changes
+
+- e345020: Run a process as a job. `ctx.processes.define(id, { label, parse, resolve, progress?, successCodes?, elevate?, cancel? })` registers a program the renderer may start by id with `jobs.runProcess(id, args)`, and `ctx.processes.run(id, spec, options)` runs one from main. The renderer sends only the id and one value; the app's `parse` checks it and `resolve` builds the argument array, so the renderer never names a program, an argument list, a directory or an environment. The program is spawned with `shell: false`, `windowsHide: true`, an absolute command, a plain argument array and an environment that starts from a short allowlist plus what the app adds. Its stdout and stderr lines go to the job log (cleaned, with each line cut at 4096 characters), an optional `progress` parser turns a line into a fraction or a label, and the job is done on exit code 0 or a listed code and failed otherwise, with the code and the last 20 lines in the outcome. The renderer call is accepted only from the top frame of the main window at the app origin (`fromAppFrame`, also exported for other handlers). Commands are checked hard: on Windows a normalised drive letter `.exe` or `.com`, with scripts, data streams, network and device paths and command interpreters such as `cmd`, `powershell` and `msiexec` refused unless the definition allows them, and `spec.env` may not set `NODE_OPTIONS`, `ELECTRON_*`, `LD_PRELOAD`, `DYLD_*` or `PATH` unless allowed. Log lines lose OSC and C1 sequences and bidi overrides, `redact` and `log: false` keep secrets out of the log, and each job update carries at most 64 KiB of the log. `timeoutMs` force-kills a long run. Cancel stops the whole process tree (`taskkill /T`, then `/F`, on Windows; SIGTERM then SIGKILL to the process group elsewhere), one process runs per job id, and a quit kills every running process. An outcome is `cancelled` only when the kill ended the process. If the kill is refused or the process outlives it (an installer that raised its own rights), the outcome is `detached` and the id stays busy until the process exits; an `elevate: 'installer'` job is not cancellable unless the definition says so. `elevate: 'installer'` only notes that the program may show its own system prompt; Brock never raises rights. Core caps the log in each job update and gains the `ProcessJobOutcome` type and the `job:runProcess` channel (`runProcessJob` on the host API); react gains `jobs.runProcess`.
+- 0806572: Brock moves to Tessera 0.68. A docked toolbar has a context menu: a right click, Shift+F10 or the Menu key opens Show labels, Move to (Top, Bottom, Left, Right) and Hide toolbar. They are three new commands, `toolbar.labels`, `toolbar.moveTo` and `toolbar.hide`, that take the toolbar id (and the side) as `args`, and the Toolbars menu now holds the same entries in a sub-menu for each shown toolbar. The labels flag and the side are saved in the toolbar layout, and `useToolbarLayoutStore` gains `hide`, `setLabels` and `moveToSide`. Pass `slot.labels` to Tessera's `Toolbar` as `labels`. `ToolbarHost` draws each toolbar inside a `display: contents` element that carries the zone `brock.toolbar` (`TOOLBAR_ZONE`); the command ids are `TOOLBAR_COMMANDS`.
+
+  Context menu items carry `data-menu-entry` (the command id, else the label), and an entry `reason` is now also the item's `aria-description`. Focus returns to the opener through Tessera's `ContextMenu`, so Brock's own focus code is gone. `contextMenuHandler(zone, data?)` returns an `onContextMenu` handler for the Tessera parts that report a right click with an id, such as `DocumentTabs` `onTabContextMenu` and `StatusBar` `onItemContextMenu`.
+
+### Patch Changes
+
+- Updated dependencies [e345020]
+  - @drizztdourden08/brock-core@0.105.0
+
+## 0.104.0
+
+### Minor Changes
+
+- 6e3ed14: Add `product.menu.profiles`, true by default. With `false` the Profiles entry leaves the main menu, as `product.menu.home: false` does for Home. Profiles themselves keep working: the profile switcher, the command palette and the shortcuts are unchanged. The review does not expect the Profiles entry then.
+
+  Add `product.initialProfile`, a profile name such as `Default`. On the first start, when no profile exists, the `profiles` boot task creates a profile with that name and activates it without opening the profile picker. The Profiles screen and switching stay available, unlike `singleProfile`. With a profile already on disk nothing changes.
+
+- 8387f89: A first-run tour step can light three more shell parts with `target: { shell }`. `'page'` is the screen host alone, without the rail, the title bar or the docked widgets. `'rail'` is the screens rail. `'hero'` is the Home hero, or the hero of the open hub when Home has none. `'screen'` is unchanged. A part that is not on screen leaves the step centred, like any other missing part.
+- 8387f89: A first-run tour step can light the page tab strip with `target: { shell: 'tabs' }`. A step also takes `openMenu`, which opens a title bar menu before the step lights its target and closes it when the step ends: `'menu'` is the app menu, and any other id is the title bar action menu with that id. A new target, `{ menuEntry: 'Take the tour' }`, lights the entry of an open menu by its label.
+
+### Patch Changes
+
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+  - @drizztdourden08/brock-core@0.104.0
+
+## 0.103.0
+
+### Minor Changes
+
+- 6481c2d: A hub can fill the top group of its side nav. `top` on a bucket in `screens.config.ts`, or on a `defineHub` def, is a list of page ids that Brock passes to Tessera's SideNav as `config.top`: they sit under Home in that order with one divider after the block. A page in `top` leaves its regular group, and a group left with no page is not drawn. A hidden or unknown id is skipped. `buildHubNav` takes the list as a fourth argument.
+
+### Patch Changes
+
+- 6481c2d: Brock builds on Tessera 0.67. A widget's `dockWeight` now reaches Tessera, so docked widgets that share an edge are sized by weight, every widget keeps its weight when another one joins, and `defaultDockedSize` resizes the column a widget joins. This covers a widget opened from the Widgets menu, a widget kit member, a layout preset and a widget docked back from its own window. A widget's `icon` is now an icon name, and Tessera draws it before the label in the widget title bar and the tab chip, also in a popped widget window. A docked toolbar's `slot` carries `menuSide`, which an app can pass to Tessera's `Toolbar` so a left bar opens its menus to the right. The corner handles between stacked widgets no longer cover the title bar buttons of the widget below.
+
+  The app review expects the widget title bar buttons at the larger of the xs height and Tessera's minimum hit area, which is 24 px since Tessera 0.67.
+
+  - @drizztdourden08/brock-core@0.103.0
+
 ## 0.102.0
 
 ### Minor Changes

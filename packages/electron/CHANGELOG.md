@@ -1,5 +1,52 @@
 # @drizztdourden08/brock-electron
 
+## 0.106.2
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.2
+
+## 0.106.1
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.1
+
+## 0.106.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.0
+
+## 0.105.0
+
+### Minor Changes
+
+- e345020: Run a process as a job. `ctx.processes.define(id, { label, parse, resolve, progress?, successCodes?, elevate?, cancel? })` registers a program the renderer may start by id with `jobs.runProcess(id, args)`, and `ctx.processes.run(id, spec, options)` runs one from main. The renderer sends only the id and one value; the app's `parse` checks it and `resolve` builds the argument array, so the renderer never names a program, an argument list, a directory or an environment. The program is spawned with `shell: false`, `windowsHide: true`, an absolute command, a plain argument array and an environment that starts from a short allowlist plus what the app adds. Its stdout and stderr lines go to the job log (cleaned, with each line cut at 4096 characters), an optional `progress` parser turns a line into a fraction or a label, and the job is done on exit code 0 or a listed code and failed otherwise, with the code and the last 20 lines in the outcome. The renderer call is accepted only from the top frame of the main window at the app origin (`fromAppFrame`, also exported for other handlers). Commands are checked hard: on Windows a normalised drive letter `.exe` or `.com`, with scripts, data streams, network and device paths and command interpreters such as `cmd`, `powershell` and `msiexec` refused unless the definition allows them, and `spec.env` may not set `NODE_OPTIONS`, `ELECTRON_*`, `LD_PRELOAD`, `DYLD_*` or `PATH` unless allowed. Log lines lose OSC and C1 sequences and bidi overrides, `redact` and `log: false` keep secrets out of the log, and each job update carries at most 64 KiB of the log. `timeoutMs` force-kills a long run. Cancel stops the whole process tree (`taskkill /T`, then `/F`, on Windows; SIGTERM then SIGKILL to the process group elsewhere), one process runs per job id, and a quit kills every running process. An outcome is `cancelled` only when the kill ended the process. If the kill is refused or the process outlives it (an installer that raised its own rights), the outcome is `detached` and the id stays busy until the process exits; an `elevate: 'installer'` job is not cancellable unless the definition says so. `elevate: 'installer'` only notes that the program may show its own system prompt; Brock never raises rights. Core caps the log in each job update and gains the `ProcessJobOutcome` type and the `job:runProcess` channel (`runProcessJob` on the host API); react gains `jobs.runProcess`.
+
+### Patch Changes
+
+- Updated dependencies [e345020]
+  - @drizztdourden08/brock-core@0.105.0
+
+## 0.104.0
+
+### Minor Changes
+
+- 632c810: A handler registered through `ctx.handle` can throw an `AppError` (`new AppError(message, { code, data? })`) and the renderer reads the code and data back with `isAppError(error, 'code')`, where before only the message crossed. The error rejects as usual with the human message plus an encoded tail that the preload keeps and `isAppError` decodes. `data` must be JSON-safe (checked when the error is made) and is dropped with `dataDropped: true` past 8192 characters of JSON. A plain error behaves as before, and no stack crosses. `AppError`, `isAppError`, `toAppError`, `encodeAppError` and `decodeAppError` come from `@drizztdourden08/brock-core/ipc`.
+
+### Patch Changes
+
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+  - @drizztdourden08/brock-core@0.104.0
+
+## 0.103.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.103.0
+
 ## 0.102.0
 
 ### Patch Changes

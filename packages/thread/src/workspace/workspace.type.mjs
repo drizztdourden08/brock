@@ -71,6 +71,7 @@
  * @property {string} branchPrefix `agent/`
  * @property {string[]} protectedBranches
  * @property {string} worktreesDir relative to the main checkout, `.worktrees`
+ * @property {{ prefix?: string }} worktrees `prefix` for worktree names, `web-`
  * @property {{ prStyle: 'house' | 'none' }} publish
  */
 
@@ -82,6 +83,7 @@
  * @property {{ staleDirs: string[], steps: BuildStep[] }} build
  * @property {(string | Plugin)[]} plugins
  * @property {{ ci?: 'managed' | 'own', release?: 'managed' | 'own' }} [workflows] the shared ci.yml
+ * @property {{ scripts?: string[], cargo?: { enabled?: boolean, path?: string, clippyArgs?: string[] } }} [gate] the gate of a repo with no Brock app
  */
 
 /** @typedef {WorkspaceGit & WorkspaceSlots} Workspace */

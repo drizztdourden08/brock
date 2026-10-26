@@ -83,6 +83,11 @@ painted, then the splash fades out while the app fades in.
 root owns the lint configs, except `.markdownlint-cli2.mjs`: an app whose `package.json` has a
 `lint:md` script gets its own copy, so that script works in the app folder under `pnpm -r`.
 
+An app that adds a `test` script (vitest) gets a managed `vitest.config.ts` too. It compiles brock-react
+with the automatic JSX runtime, so a test can import `@drizztdourden08/brock-react` and render its
+components. To change it, write your own `vitest.config.ts` around `defineBrockVitestConfig` from
+`@drizztdourden08/brock-build/vitest`; `brock sync` leaves a file without the managed header alone.
+
 Dependency versions are `catalog:` entries resolved from `pnpm-workspace.yaml`; change a
 version there and it applies everywhere.
 

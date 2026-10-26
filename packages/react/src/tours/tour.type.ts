@@ -1,15 +1,15 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { TourStepMascot, TourTarget } from '@drizztdourden08/tessera/composites';
-import type { AnchoredPlacement } from '@drizztdourden08/tessera/primitives';
+import type { TourEnterContext, TourStepMascot, TourTarget } from '@drizztdourden08/tessera/composites';
+import type { AnchoredPlacement, IconName } from '@drizztdourden08/tessera/primitives';
 import type { AppContext } from '../contexts/contexts.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 
-type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen';
+type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen' | 'page' | 'rail' | 'hero' | 'tabs';
 
-type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string };
+type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string } | { readonly menuEntry: string | readonly string[] };
 
-type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown }>;
+type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown } | { readonly menuEntry: string | readonly string[] }>;
 
 type TourAdvanceOn =
   | { readonly click: string | BrockTourTarget }
@@ -34,14 +34,24 @@ interface TourStepContext {
   setContext: (name: string, value: AppContext) => void;
 }
 
+type TourArtIcon = { readonly icon: IconName };
+
+type TourArtToken = 'product-mark';
+
+type TourStepArt = Exclude<ReactNode, string> | TourArtToken | TourArtIcon;
+
 interface TourStepDef {
   readonly id: string;
   readonly title: string;
   readonly body: ReactNode;
   readonly target?: BrockTourTarget;
+  readonly intro?: boolean;
+  readonly art?: TourStepArt;
+  readonly reveal?: (context: TourEnterContext) => void | Promise<void>;
   readonly placement?: AnchoredPlacement;
   readonly mascot?: TourStepMascot;
   readonly open?: string;
+  readonly openMenu?: string;
   readonly widget?: string;
   readonly context?: string | TourContextChange;
   readonly before?: (ctx: TourStepContext) => void | Promise<void>;
@@ -142,5 +152,5 @@ interface TourApi {
 
 export type {
   ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
-  TourLoader, TourShell, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
+  TourArtIcon, TourStepArt, TourLoader, TourShell, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

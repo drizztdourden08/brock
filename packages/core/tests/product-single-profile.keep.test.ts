@@ -13,3 +13,10 @@ describe('product.singleProfile', () => {
     expect(defineProduct({ ...BASE, singleProfile: true }).singleProfile).toBe(true);
   });
 });
+
+describe('product.initialProfile', () => {
+  it('is left out by default and kept when set', () => {
+    expect(defineProduct(BASE)).not.toHaveProperty('initialProfile');
+    expect(defineProduct({ ...BASE, initialProfile: 'Default' }).initialProfile).toBe('Default');
+  });
+});

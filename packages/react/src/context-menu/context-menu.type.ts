@@ -1,6 +1,9 @@
 /* @layer renderer-shell @kind types */
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import type { MenuItem } from '@drizztdourden08/tessera/composites';
 import type { CommandContext, CommandDef, CommandState, CommandTrigger } from '../commands/command.type';
+
+type ContextMenuEvent = ReactMouseEvent<HTMLElement> | ReactKeyboardEvent<HTMLElement>;
 
 interface ContextMenuPoint {
   x: number;
@@ -11,7 +14,10 @@ type ContextMenuContext = Omit<CommandContext, 'args'>;
 
 type ContextMenuFlag = boolean | (() => boolean);
 
+type ContextMenuTone = NonNullable<MenuItem['tone']>;
+
 interface ContextMenuItemState {
+  tone?: ContextMenuTone;
   hidden?: ContextMenuFlag;
   disabled?: boolean;
   reason?: string;
@@ -77,17 +83,18 @@ interface ContextMenuAttributes {
 interface ContextMenuOpen {
   entries: readonly ContextMenuEntry[];
   point: ContextMenuPoint;
-  restore: HTMLElement | null;
   context: ContextMenuContext;
   label: string;
 }
 
 interface ContextMenuState {
   menus: Readonly<Record<string, ContextMenuConfig>>;
+  known: Readonly<Record<string, ContextMenuConfig>>;
   open: ContextMenuOpen | null;
   blocked: boolean;
   setMenu: (zone: string, config: ContextMenuConfig) => void;
   clearMenu: (zone: string) => void;
+  define: (zone: string, config: ContextMenuConfig) => void;
   show: (open: ContextMenuOpen) => void;
   hide: () => void;
   block: (blocked: boolean) => void;
@@ -125,10 +132,11 @@ interface ListedContextMenu {
   entries: readonly ContextMenuEntry[];
   commands: readonly string[];
   missing: readonly string[];
+  mounted: boolean;
 }
 
 interface OpenContextMenuProps {
-  open: ContextMenuOpen;
+  open: ContextMenuOpen | null;
 }
 
 interface PointerDown {
@@ -154,7 +162,7 @@ interface PointerGesture {
 }
 
 export type {
-  ContextMenuAction, ContextMenuAnchor, ContextMenuAttributes, ContextMenuCommand, ContextMenuConfig, ContextMenuContext, ContextMenuEntries, ContextMenuEntry, ContextMenuFlag, ContextMenuItemState,
-  ContextMenuPoint, ContextMenuSource, ContextMenuState, ContextMenuSubmenu, ContextMenuView, ContextMenuZoneOptions, ListedContextMenu, OpenContextMenuProps, OpenOptions,
+  ContextMenuAction, ContextMenuAnchor, ContextMenuAttributes, ContextMenuCommand, ContextMenuConfig, ContextMenuContext, ContextMenuEntries, ContextMenuEvent, ContextMenuEntry, ContextMenuFlag, ContextMenuItemState,
+  ContextMenuPoint, ContextMenuSource, ContextMenuState, ContextMenuSubmenu, ContextMenuTone, ContextMenuView, ContextMenuZoneOptions, ListedContextMenu, OpenContextMenuProps, OpenOptions,
   OpenRequest, OpenResult, PointerDown, PointerGesture, ZoneMatch,
 };

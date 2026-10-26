@@ -2,11 +2,13 @@
 
 .brock-info-card {
   flex: 1;
+  scrollbar-gutter: stable;
   min-height: 0;
 }
 
 .brock-page-body {
   flex: 1;
+  scrollbar-gutter: stable;
   min-height: 0;
   padding: var(--space-xl);
 }

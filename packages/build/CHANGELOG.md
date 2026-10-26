@@ -1,5 +1,67 @@
 # @drizztdourden08/brock-build
 
+## 0.106.2
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.106.2
+- @drizztdourden08/brock-lint-config@0.106.2
+- @drizztdourden08/brock-thread@0.106.2
+
+## 0.106.1
+
+### Patch Changes
+
+- a264149: `brock sync --check` now checks the committed `guide.parts` file. It runs `tessera guide`, compares the file it writes with the committed one (CRLF against LF does not count), names the file when it differs and tells you to run `brock sync`, then puts the committed file back. Before, only `brock sync` and `brock build` wrote that file, so a stale one passed the check and showed up as a dirty tree after the next build.
+  - @drizztdourden08/brock-core@0.106.1
+  - @drizztdourden08/brock-lint-config@0.106.1
+  - @drizztdourden08/brock-thread@0.106.1
+
+## 0.106.0
+
+### Minor Changes
+
+- af32761: Add a cargo lane to `brock gate`. While a `Cargo.toml` with a `[workspace]` or `[package]` table sits at the repo root, the gate checks the Rust comments, then runs `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets` and `cargo test --workspace`, each reported like the other steps. Clippy runs with `-D warnings` and with the `too_many_lines` and `cognitive_complexity` lints on, held to 60 lines and a complexity of 10 by a `clippy.toml` that Brock applies when the repo has none of its own. The comment check fails any `//` or `/* */` comment in a `.rs` file with its `file:line`, and allows `///`, `//!` and a `// SAFETY:` line directly above `unsafe`. A missing cargo fails the lane with a clear message. `gate.cargo` turns the lane off (`enabled: false`), moves it (`path`) or adds clippy flags (`clippyArgs`). A repo with no Brock app can now run `brock gate`: it reads `gate` from `brock.workspace.mjs`, or runs the cargo lane alone when the root has a `Cargo.toml`.
+- a5e8521: `defineBrockSite` takes `build.routes`, a list of `{ path, title, description? }`. After the Vite build, each route gets a copy of `dist/index.html` at `dist/<path>/index.html` with its own `<title>`, `<meta name="description">`, `og:title` and `og:description` (the Open Graph tags are changed only where the page already has them). Static hosts such as GitHub Pages serve `/privacy/` only when that file exists, so a single-page site no longer answers 404 on its legal pages. A path is letters, digits and dashes in segments split by `/`, with no leading or trailing slash and no dots; a bad or repeated path fails the build with a message naming the route. Title and description are escaped as HTML text. Asset URLs stay valid from the nested folder: absolute and base-prefixed URLs are kept, and a relative base (`./`) is rewritten to climb out of the folder. A site with no routes builds as before.
+
+### Patch Changes
+
+- Updated dependencies [af32761]
+- Updated dependencies [00e4059]
+  - @drizztdourden08/brock-thread@0.106.0
+  - @drizztdourden08/brock-lint-config@0.106.0
+  - @drizztdourden08/brock-core@0.106.0
+
+## 0.105.0
+
+### Patch Changes
+
+- ce76906: `defineBrockVitestConfig` works from a workspace root. It takes react, react-dom, zustand and Tessera, and the JSX runtime, from the app that has them (`{ appDir }` as the third argument, else the root when it holds a `brock.config.ts`, else the first workspace package that depends on brock-react), and leaves out a shared package that is not installed. A single app is unchanged.
+- Updated dependencies [e345020]
+- Updated dependencies [bfb285b]
+  - @drizztdourden08/brock-core@0.105.0
+  - @drizztdourden08/brock-thread@0.105.0
+  - @drizztdourden08/brock-lint-config@0.105.0
+
+## 0.104.0
+
+### Patch Changes
+
+- e1ce954: An app test can import brock-react again. `@drizztdourden08/brock-build/vitest` exports `defineBrockVitestConfig`, which sets the automatic JSX runtime and compiles every `@drizztdourden08/*` package instead of loading it as is, and `brock sync` writes it as a managed `vitest.config.ts` for an app with a `test` script. A `vitest.config.ts` you wrote yourself is left alone; wrap it in the factory. Run `brock sync` after updating.
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+  - @drizztdourden08/brock-core@0.104.0
+  - @drizztdourden08/brock-lint-config@0.104.0
+  - @drizztdourden08/brock-thread@0.104.0
+
+## 0.103.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.103.0
+- @drizztdourden08/brock-lint-config@0.103.0
+- @drizztdourden08/brock-thread@0.103.0
+
 ## 0.102.0
 
 ### Patch Changes

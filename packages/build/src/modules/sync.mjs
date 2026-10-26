@@ -7,6 +7,7 @@ import { renderHandlersFiles } from '../handlers/render-handlers.mjs';
 import { renderLaunchers } from '../launcher/render-launchers.mjs';
 import { appScripts } from '../managed/app-scripts.mjs';
 import { renderManagedFiles } from '../managed/templates.mjs';
+import { withoutHandWritten } from '../managed/without-hand-written.mjs';
 import { pinApp } from '../upgrade/pin-app.mjs';
 import { DEFAULT_TARGETS } from '../platforms/platforms.constants.mjs';
 import { shapeOf } from '../platforms/server/app-shape.mjs';
@@ -132,7 +133,7 @@ const syncApp = (rootDir, config, opts = {}) => {
   const files = [
     ...renderBrockDir({ brockVersion: OWN_PACKAGE.version, modules, generatedAt: new Date().toISOString() }).filter((file) => !windowless || file.path === MANIFEST_PATH),
     ...(windowless ? [] : rendererSideFiles(rootDir, config)),
-    ...renderManagedFiles({ inWorkspace, windowless, scripts: appScripts(rootDir), ...managedFileOptions(config) }),
+    ...withoutHandWritten(rootDir, renderManagedFiles({ inWorkspace, windowless, scripts: appScripts(rootDir), ...managedFileOptions(config) })),
     ...renderLaunchers(rootDir),
     ...platformManagedFiles({ rootDir, config, modules }),
     ...clangFormatFiles(rootDir, config),

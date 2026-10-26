@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetLayoutStore } from '../widgets/useWidgetLayoutStore';
+import { menuEntryOf } from './menu-entry-of';
 import { POPPED_WIDGET_PART, QUOTED, SHELL_TARGETS } from './tours.constants';
 import type { BrockTourTarget, NamedTourTarget, TourSpotSlice, TourStepDef } from './tour.type';
 
@@ -18,6 +19,7 @@ const selectorOf = (target: NamedTourTarget): string => {
 const resolveTourTarget = (target: BrockTourTarget | undefined, root: ParentNode = document): HTMLElement | null => {
   if (!target) return null;
   if ('current' in target) return target.current;
+  if ('menuEntry' in target) return menuEntryOf(target.menuEntry, root);
   if ('widget' in target && isPopped(target.widget)) return null;
   return root.querySelector<HTMLElement>(selectorOf(target));
 };

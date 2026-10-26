@@ -5,11 +5,11 @@ import type { AnchoredPlacement } from '@drizztdourden08/tessera/primitives';
 import type { AppContext } from '../contexts/contexts.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 
-type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen';
+type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen' | 'page' | 'rail' | 'hero' | 'tabs';
 
-type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string };
+type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string } | { readonly menuEntry: string };
 
-type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown }>;
+type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown } | { readonly menuEntry: string }>;
 
 type TourAdvanceOn =
   | { readonly click: string | BrockTourTarget }
@@ -42,6 +42,7 @@ interface TourStepDef {
   readonly placement?: AnchoredPlacement;
   readonly mascot?: TourStepMascot;
   readonly open?: string;
+  readonly openMenu?: string;
   readonly widget?: string;
   readonly context?: string | TourContextChange;
   readonly before?: (ctx: TourStepContext) => void | Promise<void>;

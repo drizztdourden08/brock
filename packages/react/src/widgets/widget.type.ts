@@ -14,13 +14,11 @@ interface WidgetMenuPlacement {
 }
 
 interface WidgetDef extends WidgetDefinition {
-  icon?: string;
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;
   order?: number;
   defaultOpen?: boolean;
-  dockWeight?: number;
   context?: string;
   kit?: string;
   tools?: () => ReactNode;

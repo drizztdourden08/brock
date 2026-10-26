@@ -124,7 +124,7 @@ describe('the toolbar host', () => {
 
   it('draws each toolbar through its own render, with the slot the dock gives it', () => {
     const probe = defineToolbar({ id: 'probe', label: 'Probe', defaultSide: 'left', render: (slot) => createElement('i', { className: 'probe-bar', 'data-side': slot.side }) });
-    const slot = { orientation: 'vertical', handle: {}, side: 'left' } as const;
+    const slot = { orientation: 'vertical', handle: {}, side: 'left', menuSide: 'right' } as const;
     expect(renderToStaticMarkup(createElement('div', null, toolbarRenderer([TOOLS, probe])('probe', slot)))).toContain('<i class="probe-bar" data-side="left"></i>');
     expect(toolbarRenderer([TOOLS, probe])('missing', slot)).toBeNull();
   });

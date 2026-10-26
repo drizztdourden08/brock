@@ -1,11 +1,11 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { guideProblems } from '../src/tessera/write-guide.mjs';
+import { tempTree } from './temp-tree.mjs';
 
-const made = [];
+const { tempDir, put, cleanup } = tempTree('brock-guide-problems-');
 
 const FAKE_CLI = [
   "import { writeFileSync } from 'node:fs';",
@@ -18,28 +18,21 @@ const FAKE_CLI = [
   '',
 ].join('\n');
 
-const put = (root) => ([file, text]) => {
-  const target = join(root, file);
-  mkdirSync(dirname(target), { recursive: true });
-  writeFileSync(target, typeof text === 'string' ? text : JSON.stringify(text));
-};
-
 const app = (parts) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-guide-problems-'));
-  made.push(root);
+  const root = tempDir();
   Object.entries({
     'package.json': { name: 'acme', devDependencies: { '@drizztdourden08/tessera': '^0.25.0' } },
     'tessera.config.json': { guide: { parts: 'parts.ts' } },
     'node_modules/@drizztdourden08/tessera/package.json': { name: '@drizztdourden08/tessera', type: 'module', exports: { './cli': './cli.mjs' } },
     'node_modules/@drizztdourden08/tessera/cli.mjs': FAKE_CLI,
     ...(parts === null ? {} : { 'parts.ts': parts }),
-  }).forEach(put(root));
+  }).forEach(([file, text]) => put(root, file, typeof text === 'string' ? text : JSON.stringify(text)));
   return root;
 };
 
 afterEach(() => {
   vi.restoreAllMocks();
-  for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
+  cleanup();
 });
 
 describe('guideProblems', () => {

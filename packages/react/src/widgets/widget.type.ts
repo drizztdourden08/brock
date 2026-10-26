@@ -10,6 +10,7 @@ interface WidgetMenuPlacement {
   parent?: string;
   group?: ProductMenuGroup;
   order?: number;
+  developer?: boolean;
 }
 
 interface WidgetDef extends WidgetDefinition {

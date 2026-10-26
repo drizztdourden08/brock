@@ -11,6 +11,7 @@ import { runGateCommand } from '../src/commands/gate.mjs';
 import { runDev } from '../src/commands/dev.mjs';
 import { runDoctorCommand } from '../src/commands/doctor.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
+import { runLint } from '../src/commands/lint.mjs';
 import { runMigrate } from '../src/commands/migrate.mjs';
 import { runPackage } from '../src/commands/package.mjs';
 import { runPlatform } from '../src/commands/platform.mjs';
@@ -39,6 +40,7 @@ const COMMANDS = {
   adopt: (ctx) => runAdopt(ctx),
   structure: (ctx) => runStructure(ctx),
   prose: (ctx) => runProse(ctx),
+  lint: (ctx) => runLint(ctx),
   migrate: (ctx) => runMigrate(ctx),
   platform: (ctx) => runPlatform(ctx),
   doctor: (ctx) => runDoctorCommand(ctx),
@@ -87,7 +89,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = await rootDirOf(command, values);
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], scope: values.scope, local: values.local, force: values.force, all: values.all, changed: values.changed, noCache: values['no-cache'], full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
 };
 
 main().then(

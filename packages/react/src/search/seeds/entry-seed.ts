@@ -5,7 +5,7 @@ import { entryPlace } from './entry-place';
 import { metaSeed } from './meta-seed';
 
 const entrySeed = (entry: BucketEntry): SearchFileSeed[] => {
-  if (entry.kind === 'backdrop' || entry.kind === 'settings') return [];
+  if (entry.kind === 'backdrop') return [];
   return [{
     kind: entry.kind,
     id: entry.id,

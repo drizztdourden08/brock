@@ -132,6 +132,7 @@ The options panel (`PerformanceSettings`) sets the refresh, 0.5, 1, 2 or 5 s (1 
 
 The palette and every hub search read one index of `SearchEntry { id, kind, label, keywords, breadcrumb, target: { route, anchor? }, icon }`.
 
+- `meta.keywords` find a page of any kind in search. `meta.searchRows: { label, keywords?, anchor? }[]` adds rows of the page's own: each opens the page and, with an `anchor`, scrolls to the element wrapped in `<SearchAnchor anchor="...">`. Both must be literals.
 - `.brock/search.ts` calls `buildSearchIndex(config, seeds)` with seeds the build read from the screen files: buckets, pages, tabs, cards, settings sections and rows, and each custom page's `searchEntries`. It imports no screen file, so page code stays lazy. `screens.ts` hands the result to `buildScreenTree` and it reaches `BrockApp` as `screenTree.search`.
 - `useSearchIndex(enabled, menu, actions)` merges it with the live sources: module screens and settings tabs, the widget registry, the menu, the registered actions and the `useSearchEntries` entries. Entries with the same id or the same target appear once, the build index first.
 - `useSearchEntries(entries, route?)` adds `SearchEntrySeed` entries while the caller is mounted, pointing at the page open when it mounted (or `route`). Pass a stable list.

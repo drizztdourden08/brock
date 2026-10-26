@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { BugReportDialog } from '../../bug-report/BugReportDialog/BugReportDialog';
+import { ContextMenuHost } from '../../context-menu/ContextMenuHost';
 import { PaletteHost } from '../../palette/PaletteHost/PaletteHost';
 import { ConfirmDialog } from '../../shell/ConfirmDialog/ConfirmDialog';
 import { ShortcutsHelpDialog } from '../../shortcuts-help/ShortcutsHelpDialog';
@@ -14,6 +15,7 @@ const StandardOverlays = (props: StandardOverlaysProps) => {
       {menu !== undefined && <PaletteHost menu={menu} actions={actions} />}
       <BugReportDialog />
       <ShortcutsHelpDialog />
+      <ContextMenuHost />
       <ToastHost />
     </>
   );

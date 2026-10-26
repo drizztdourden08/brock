@@ -14,6 +14,7 @@ const settingsTab = (entry: SettingsEntry): TabDef<object> => ({
   group: entry.group ?? entry.bucket,
   sections: (settings) => settingsSections(entry.sections, settings),
   ...(entry.meta?.source ? { source: entry.meta.source } : {}),
+  ...(entry.meta?.preview ? { preview: entry.meta.preview, previewPlacement: entry.meta.previewPlacement } : {}),
 });
 
 export { settingsTab };

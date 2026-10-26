@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.102.0
+
+### Minor Changes
+
+- ca5ed20: Add an app context menu built from commands, drawn with Tessera's `ContextMenu` and with no wrapper element. `useContextMenu(id, source)` declares a menu for an element or a command zone, and `contextMenuZone(id, { data?, typing?, focusable? })` marks an element the app already renders. An entry is a command id, `'separator'`, `{ command, label?, args? }`, a plain `{ label, run }` or a sub-menu (two levels); the label, icon, shortcut, enabled state and action come from the command registry, so a rebound command shows its new chord. Entries can also set `checked`, `hidden`, `disabled`, `reason`, `kind` and `confirm`. The builder runs once per open and gets `{ point, target, trigger, data }`, and `CommandDef.run` now takes that context as an optional argument (`commands.run(id, context?)`); `CommandDef` gains an optional `checked`. A config adds `anchor`, `shouldOpen` (decided on pointerdown), `openOn: 'release-without-drag'`, `beforeOpen`, `label` and `inherit: 'parent'`. The menu opens on right click, on a long press, and on Shift+F10 and the Menu key through the new rebindable command `brock.context-menu`, which fires only while the focus sits in a declared menu. The browser menu stays where no menu is declared, in a `data-native-menu` element and in a text field unless it opts in. The menu closes on scroll, wheel, resize, blur, a route change and focus leaving, and `blockContextMenus(true)` holds it back during a drag. `openContextMenu` and `listContextMenus` serve tests. The `ContextMenu` chord token (the Menu key) is known to the chord parser and shows as a Menu keycap.
+- 03fae52: A settings page can show a preview beside its rows. A `TabDef` (or the `meta` of a `.settings.ts` page) takes `preview: (settings) => ReactNode` and `previewPlacement: 'start' | 'end'` (default `'end'`). In a wide page the preview takes a second column; in a narrow one it stacks above the rows. `<BrockApp background={node}>` draws one node behind the widget host and the docked panels, above the window background, and lets pointer events through.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.102.0
+
 ## 0.101.0
 
 ### Minor Changes

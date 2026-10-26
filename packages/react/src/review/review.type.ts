@@ -183,6 +183,7 @@ interface PerformanceSnapshot {
 
 interface ControlSizeSnapshot {
   xs: number;
+  hit: number;
   sm: number;
   widgetButtons: readonly number[];
   barButtons: readonly number[];

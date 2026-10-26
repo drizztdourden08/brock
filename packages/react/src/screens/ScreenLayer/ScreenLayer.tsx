@@ -8,8 +8,8 @@ import './ScreenLayer.css';
 
 const bodyOf = (props: ScreenLayerProps): ReactNode => {
   const { header = 'page', size, children } = props;
-  if (header === 'page') return <ScrollArea className="brock-page-body">{children}</ScrollArea>;
-  return size === 'info' ? <ScrollArea className="brock-info-card">{children}</ScrollArea> : children;
+  if (header === 'page') return <ScrollArea className="brock-page-body" gutter="stable">{children}</ScrollArea>;
+  return size === 'info' ? <ScrollArea className="brock-info-card" gutter="stable">{children}</ScrollArea> : children;
 };
 
 const actionsOf = ({ subtitle, extra }: ScreenLayerProps): ReactNode => (

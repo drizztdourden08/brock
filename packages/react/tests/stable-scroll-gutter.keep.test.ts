@@ -2,20 +2,16 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const css = (path: string): string => readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
-const rule = (source: string, selector: string): string => {
-  const start = source.indexOf(`${selector} {`);
-  return start < 0 ? '' : source.slice(start, source.indexOf('}', start));
-};
+const source = (path: string): string => readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 
 describe('screen scrollers', () => {
   it.each([
-    ['screens/ScreenLayer/ScreenLayer.css', '.brock-page-body'],
-    ['screens/ScreenLayer/ScreenLayer.css', '.brock-info-card'],
-    ['hub/Hub/Hub.css', '.hub__solo'],
-    ['hub/Hub/Hub.css', '.hub__plain-body'],
-    ['compounds/ReleaseNotesPanel/ReleaseNotesPanel.css', '.release-notes-panel__content'],
-  ])('keep a stable scrollbar gutter in %s %s', (file, selector) => {
-    expect(rule(css(file), selector)).toContain('scrollbar-gutter: stable');
+    ['screens/ScreenLayer/ScreenLayer.tsx', 'brock-page-body'],
+    ['screens/ScreenLayer/ScreenLayer.tsx', 'brock-info-card'],
+    ['hub/Hub/sub-components/HubBody/HubBody.tsx', 'hub__solo'],
+    ['hub/Hub/sub-components/HubPlainPage/HubPlainPage.tsx', 'screen-page__body'],
+    ['compounds/ReleaseNotesPanel/ReleaseNotesPanel.tsx', 'release-notes-panel__content'],
+  ])('ask for a stable scrollbar gutter in %s on %s', (file, className) => {
+    expect(source(file)).toMatch(new RegExp(`<ScrollArea className="[^"]*${className}[^"]*" gutter="stable"`));
   });
 });

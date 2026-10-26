@@ -53,7 +53,7 @@ const HubBody = (props: HubBodyProps) => {
     </>
   );
 
-  if (!showsHubNav(def.nav, navPageCount({ pages, homeListed }))) return bare ? <Box className="hub__solo">{content}</Box> : <ScrollArea className="hub__solo">{content}</ScrollArea>;
+  if (!showsHubNav(def.nav, navPageCount({ pages, homeListed }))) return bare ? <Box className="hub__solo">{content}</Box> : <ScrollArea className="hub__solo" gutter="stable">{content}</ScrollArea>;
   return (
     <SideNavLayout paneScroll={bare ? 'none' : 'page'} nav={{ config: navConfig, activeId: page.id, onSelect: openPage, search, storageKey: hubNavKey(def.id) }} results={search ? results : undefined}>
       {content}

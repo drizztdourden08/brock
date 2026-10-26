@@ -472,6 +472,16 @@ An invoke goes from a renderer to main. An ask goes the other way: main puts a t
 - The promise rejects and never hangs. Timeout: `ask "<channel>" timed out after <ms> ms`. No handler in that window (a renderer still booting, or a screen not mounted): `no handler is registered for "<channel>"`. The window or its renderer process goes away: `the window closed before it answered`, or `the window is closed` when it already was. A handler that throws or rejects: its own message. A reload drops the handlers and any ask in flight, which then ends by timeout.
 - Arguments and replies cross as structured clone, so they must be plain data.
 
+### Coded errors
+
+`ipcMain.handle` carries only an error's message to the renderer. To report a typed failure, a handler registered through `ctx.handle` throws an `AppError` from `@drizztdourden08/brock-core/ipc`: `throw new AppError('Install failed', { code: 'install-failed', data: { step: 'unpack' } })`. The renderer catches it with `isAppError(error, 'install-failed')`, which narrows to an error that has `code`, `data` and `dataDropped`.
+
+- Encoding: `ctx.handle` turns the `AppError` into an ordinary rejection whose message is the human message, a fixed marker and a JSON `{ code, data?, dataDropped? }`. The call still rejects, so every existing caller and every direct `ipcRenderer.invoke` keeps working; a resolved `{ ok: false }` envelope would have changed what a successful call can look like. The generated preload methods catch the rejection, drop Electron's `Error invoking remote method` prefix and rethrow a plain error with the same encoded message. `contextBridge` copies only the message of an error, so the renderer decodes it: `isAppError` and `toAppError` rebuild the code and data on the error in place and set its `message` to the human text.
+- Any other error behaves as before: only its message crosses, and Electron logs its stack in main. A stack never crosses for either kind.
+- `code` is a short token (letters, digits, `_ . : -`, at most 64). `data` must be JSON-safe: plain objects, arrays, strings, finite numbers, booleans and null, nested at most 12 deep. The `AppError` constructor throws a `TypeError` for anything else (an `Error`, a function, `NaN`, a class instance, a cycle), so the mistake shows at the throw site.
+- Data whose JSON is longer than 8192 characters is dropped on the wire; the code and message still cross and `dataDropped` is true. A message is cut at 2000 characters.
+- `AppError`, `isAppError`, `toAppError`, `encodeAppError` and `decodeAppError` live in brock-core, so main, preload and renderer share them. The bridge's `BridgeError` is separate and stays on the helper bridge.
+
 ## Renderer
 
 ```tsx

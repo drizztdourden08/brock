@@ -14,7 +14,6 @@ interface WidgetMenuPlacement {
 }
 
 interface WidgetDef extends WidgetDefinition {
-  icon?: string;
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;

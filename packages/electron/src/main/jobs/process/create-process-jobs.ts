@@ -20,6 +20,7 @@ const optionsOf = (def: ProcessRunOptions): ProcessRunOptions => ({
   timeoutMs: def.timeoutMs,
   redact: def.redact,
   log: def.log,
+  logFile: def.logFile,
   allow: def.allow,
 });
 

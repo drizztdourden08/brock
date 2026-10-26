@@ -13,6 +13,10 @@ interface ProcessSpec {
   env?: Readonly<Record<string, string>>;
 }
 
+interface ProcessLogFileOptions {
+  maxBytes?: number;
+}
+
 interface ProcessProgressHint {
   fraction?: number;
   label?: string;
@@ -37,6 +41,7 @@ interface ProcessRunOptions {
   timeoutMs?: number;
   redact?: (line: string) => string;
   log?: boolean;
+  logFile?: false | ProcessLogFileOptions;
   allow?: ProcessAllow;
 }
 
@@ -56,9 +61,21 @@ interface ProcessJobs {
 
 interface ProcessTrack {
   track?: (forceKill: () => void) => () => void;
+  logDir?: string;
 }
 
 type ProcessRunInput = ProcessRunOptions & ProcessTrack;
+
+interface ProcessLog {
+  write: (line: string) => void;
+  close: () => string | undefined;
+}
+
+interface ProcessLogInput {
+  dir: string;
+  id: string;
+  maxBytes: number;
+}
 
 interface ExitFacts {
   code: number | null;
@@ -112,5 +129,6 @@ interface Stopper {
 
 export type {
   EnvScan, ExitFacts, Killable, KillResult, PreparedProcessJob, ProcessAllow, ProcessAuthorize, ProcessJobDef, ProcessJobs, ProcessJobsDeps,
-  ProcessProgressHint, ProcessProgressParser, ProcessRunInput, ProcessRunOptions, ProcessSpec, ProcessStartInput, ProcessStream, Stopper, StopperInput,
+  ProcessLog, ProcessLogFileOptions, ProcessLogInput, ProcessProgressHint, ProcessProgressParser, ProcessRunInput, ProcessRunOptions, ProcessSpec,
+  ProcessStartInput, ProcessStream, Stopper, StopperInput,
 };

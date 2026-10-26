@@ -16,6 +16,7 @@ import { WindowGuide } from '../WindowGuide';
 import { usePoppedDisabled } from './behavior/usePoppedDisabled';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
+import { useWindowTabs } from './behavior/useWindowTabs';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
 import { useWidgetTourClick } from './behavior/useWidgetTourClick';
 import { useWidgetWindowEscape } from './behavior/useWidgetWindowEscape';
@@ -39,8 +40,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   useWidgetTourClick(id);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
-  const label = definition?.label ?? id;
-  const tabs = useMemo(() => [{ id, label }], [id, label]);
+  const tabs = useWindowTabs(id, definition);
   const popIn = useCallback(() => hostApi()?.dockBackWidget(id), [id]);
   const close = useCallback(() => hostApi()?.dockBackWidget(id, 'close'), [id]);
   const options = (
@@ -72,7 +72,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         disabled={off.disabled}
         onOpenSettings={off.onOpenSettings}
       >
-        <WidgetBody id={id} label={label}>{definition?.render()}</WidgetBody>
+        <WidgetBody id={id} label={tabs[0]?.label ?? id}>{definition?.render()}</WidgetBody>
       </Widget>
       <WindowGuide />
       <WidgetTourSpot id={id} />

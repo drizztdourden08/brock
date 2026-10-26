@@ -3,6 +3,8 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { SettingsPreviewLayout as Exported } from '../src';
+import type { SettingsPreviewLayoutProps } from '../src';
 import { SettingsLayout } from '../src/settings/SettingsLayout/SettingsLayout';
 import { SettingsPreviewLayout } from '../src/settings/SettingsLayout/sub-components/SettingsPreviewLayout';
 import { HubTabContent } from '../src/settings/SettingsHub/sub-components/HubTabContent';
@@ -29,6 +31,22 @@ describe('settings preview column', () => {
   it('adds no wrapper when a page has no preview', () => {
     expect(layout()).not.toContain('settings-preview-layout');
     expect(renderToStaticMarkup(createElement(SettingsPreviewLayout, null, 'rows'))).toBe('rows');
+  });
+
+  it('is exported from the barrel for pages outside settings', () => {
+    const props: SettingsPreviewLayoutProps = { preview: 'p', placement: 'start', label: 'Canvas', children: 'rows' };
+    const html = renderToStaticMarkup(createElement(Exported, props));
+    expect(Exported).toBe(SettingsPreviewLayout);
+    expect(html).toContain('settings-preview-layout__grid--start');
+    expect(html).toContain('rows');
+  });
+
+  it('labels the preview column as a landmark, "Preview" by default, and the label can change', () => {
+    const column = (html: string) => /<div class="settings-preview-layout__preview"[^>]*>/.exec(html)?.[0] ?? '';
+    expect(column(layout({ preview: 'p' }))).toContain('role="complementary"');
+    expect(column(layout({ preview: 'p' }))).toContain('aria-label="Preview"');
+    expect(column(layout({ preview: 'p', previewLabel: 'Sprite sheet' }))).toContain('aria-label="Sprite sheet"');
+    expect(column(renderToStaticMarkup(createElement(SettingsPreviewLayout, { preview: 'p', label: 'Live view', children: 'rows' })))).toContain('aria-label="Live view"');
   });
 
   it('stacks by default and goes two columns only inside a wide container', () => {

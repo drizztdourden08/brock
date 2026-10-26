@@ -14,7 +14,7 @@ const HubTabContent = <S extends object>(props: HubTabContentProps<S>) => {
     return <SettingsPage icon={page.icon} title={page.title} backdrop={page.backdrop}>{tab.render({ tab, ...control })}</SettingsPage>;
   }
   if (tab.render) return <>{tab.render({ tab, ...control })}</>;
-  return <SettingsLayout sections={sections} preview={tab.preview?.(control.settings)} previewPlacement={tab.previewPlacement} {...control} />;
+  return <SettingsLayout sections={sections} preview={tab.preview?.(control.settings)} previewPlacement={tab.previewPlacement} previewLabel={tab.previewLabel} {...control} />;
 };
 
 export { HubTabContent };

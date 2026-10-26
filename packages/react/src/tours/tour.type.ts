@@ -5,7 +5,7 @@ import type { AnchoredPlacement } from '@drizztdourden08/tessera/primitives';
 import type { AppContext } from '../contexts/contexts.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 
-type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen';
+type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen' | 'page' | 'rail' | 'hero';
 
 type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string };
 

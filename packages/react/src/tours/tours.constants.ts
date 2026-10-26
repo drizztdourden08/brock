@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { TourAdvance } from '@drizztdourden08/tessera/composites';
+import { SHELL_LABELS } from '../regions/regions.constants';
 import type { AppTourState, TourDef, TourProgress, TourShellPart } from './tour.type';
 
 const NO_TOURS: readonly TourDef[] = [];
@@ -12,6 +13,9 @@ const SHELL_TARGETS: Readonly<Record<TourShellPart, string>> = {
   'report-bug': '.window-title-bar [data-bar-item="action:report-bug"]',
   'title-bar': '.window-title-bar',
   'screen': '.screen-layer:not(.screen-layer--hidden) .screen-layer__card',
+  'page': '.brock-app__screens',
+  'rail': `nav.side-nav--rail[aria-label="${SHELL_LABELS.screens}"]`,
+  'hero': '.screen-host__home .hero, .screen-layer:not(.screen-layer--hidden) .hero',
 };
 
 const QUOTED = /["\\]/g;

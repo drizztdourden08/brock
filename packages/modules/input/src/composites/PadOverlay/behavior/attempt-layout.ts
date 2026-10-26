@@ -11,7 +11,7 @@ const attemptLayout = (input: FitInput, scale: number, grow: GrowRows): OverlayL
     const size = input.sizes.get(part.slot.anchor);
     return size ? labelOptions(index, size, scene, input.metrics.fontPx) : [];
   });
-  const { labels, clear } = placeLabels(scene, options);
+  const { labels, clear } = placeLabels(scene, options, input.polish === true);
   return { frame: scene.frame, parts: [...scene.parts], labels, clear };
 };
 

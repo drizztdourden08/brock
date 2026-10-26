@@ -1,17 +1,22 @@
 /* @layer renderer-components @kind logic */
-import type { ControllerSlotId } from '../../../pad/controller-slot.type';
-import { BEND_COST, BODY_COST, END_COST, TOP_MISS_COST, TOP_PREFERRED_SLOTS } from '../PadOverlay.constants';
+import { BELOW_RATE, BEND_COST, BODY_COST, END_COST, GLYPH_REACH, TOP_MISS_COSTS, TOP_PREFERRED_SLOTS } from '../PadOverlay.constants';
+import type { PlacedPart } from '../PadOverlay.type';
 import { bodyLength } from './body-length';
 import type { LabelSpot, Scene, Segment } from './placement.type';
+import { wantsTop } from './wants-top';
 
 const lengthOf = (segments: readonly Segment[]): number => segments.reduce((sum, [a, b]) => sum + Math.hypot(b.x - a.x, b.y - a.y), 0);
 
-const zoneCost = (spot: LabelSpot, slot: ControllerSlotId): number => {
-  if (TOP_PREFERRED_SLOTS.includes(slot)) return spot.zone === 'above' ? 0 : TOP_MISS_COST;
-  return spot.zone === 'above' || spot.zone === 'below' ? END_COST : 0;
+const partsTop = (scene: Scene): number => Math.min(...scene.parts.map((part) => part.y - part.radius * GLYPH_REACH[part.slot.kind]));
+
+const zoneCost = (spot: LabelSpot, part: PlacedPart, scene: Scene): number => {
+  const below = spot.zone === 'below' ? BELOW_RATE * Math.max(0, spot.elbow.y - part.y) : 0;
+  if (wantsTop(part, scene)) return spot.zone === 'above' && spot.elbow.y <= partsTop(scene) ? 0 : (TOP_MISS_COSTS[part.slot.anchor] ?? 0) + below;
+  if (TOP_PREFERRED_SLOTS.includes(part.slot.anchor)) return 0;
+  return spot.zone === 'above' ? END_COST : below;
 };
 
-const leaderCost = (segments: readonly Segment[], spot: LabelSpot, slot: ControllerSlotId, scene: Scene): number =>
-  lengthOf(segments) + (segments.length - 1) * BEND_COST + zoneCost(spot, slot) + bodyLength(segments, scene) * BODY_COST;
+const leaderCost = (segments: readonly Segment[], spot: LabelSpot, part: PlacedPart, scene: Scene): number =>
+  lengthOf(segments) + (segments.length - 1) * BEND_COST + zoneCost(spot, part, scene) + bodyLength(segments, scene) * BODY_COST;
 
 export { leaderCost };

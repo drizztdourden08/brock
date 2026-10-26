@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-build
 
+## 0.104.0
+
+### Patch Changes
+
+- e1ce954: An app test can import brock-react again. `@drizztdourden08/brock-build/vitest` exports `defineBrockVitestConfig`, which sets the automatic JSX runtime and compiles every `@drizztdourden08/*` package instead of loading it as is, and `brock sync` writes it as a managed `vitest.config.ts` for an app with a `test` script. A `vitest.config.ts` you wrote yourself is left alone; wrap it in the factory. Run `brock sync` after updating.
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+  - @drizztdourden08/brock-core@0.104.0
+  - @drizztdourden08/brock-lint-config@0.104.0
+  - @drizztdourden08/brock-thread@0.104.0
+
 ## 0.103.0
 
 ### Patch Changes

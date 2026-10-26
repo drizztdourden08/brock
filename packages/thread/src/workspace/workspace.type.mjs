@@ -83,6 +83,7 @@
  * @property {{ staleDirs: string[], steps: BuildStep[] }} build
  * @property {(string | Plugin)[]} plugins
  * @property {{ ci?: 'managed' | 'own', release?: 'managed' | 'own' }} [workflows] the shared ci.yml
+ * @property {{ scripts?: string[], cargo?: { enabled?: boolean, path?: string, clippyArgs?: string[] } }} [gate] the gate of a repo with no Brock app
  */
 
 /** @typedef {WorkspaceGit & WorkspaceSlots} Workspace */

@@ -3,6 +3,7 @@ import type { DataDomainDef, DomainUsage } from '../platform/ports/storage.type'
 import type { DataExportFormat, DataExportResult, DataImportMode, DataImportPlan, DataImportResult, DomainCleanResult, DomainEntry } from '../platform/ports/data-domain.type';
 import type { Result } from '../result/result.type';
 import type { JobSnapshot } from '../types/job.type';
+import type { ProcessJobOutcome } from '../types/process-job.type';
 
 interface DataInvokeContract {
   'storage:listDomains': () => Promise<DataDomainDef[]>;
@@ -23,6 +24,7 @@ interface DataInvokeContract {
   'domain:size': (domain: string, path: string) => Promise<number>;
 
   'job:list': () => Promise<JobSnapshot[]>;
+  'job:runProcess': (id: string, args?: unknown) => Promise<ProcessJobOutcome>;
 }
 
 interface DataSendContract {

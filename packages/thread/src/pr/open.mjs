@@ -49,7 +49,7 @@ const openVerb = {
   asks: true,
   run: async (positional, options, ctx) => {
     const { workspace, log } = ctx;
-    const { name, path, branch } = prBranch.target(positional, ctx);
+    const { name, path, branch } = prBranch.target(positional, options, ctx);
     const base = typeof options.base === 'string' ? threadBase.branchName(options.base) : threadBase.baseOf(branch, path, workspace).base;
     const title = typeof options.title === 'string' ? options.title : null;
     if (!title) throw new Error(`Usage:\n${openVerb.usage}`);

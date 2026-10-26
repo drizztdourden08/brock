@@ -10,6 +10,7 @@ import { clearUserData } from './clear-user-data.mjs';
 import { removeTree } from './remove-tree.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
+import { qualifyName } from './qualify-name.mjs';
 
 const normalized = (path) => resolve(path).replace(/\\/g, '/').toLowerCase();
 
@@ -39,7 +40,7 @@ const removeRegistered = async (worktree, ctx) => {
 const removeVerb = {
   usage: '  brock worktree remove <name>',
   run: async (positional, options, ctx) => {
-    const [name] = positional;
+    const name = qualifyName(positional[0], ctx.workspace, options);
     if (!name) throw new Error(`Usage:\n${removeVerb.usage}`);
     const worktree = createWorktreeContext(name, ctx);
     if (!existsSync(worktree.path)) throw new Error(`No worktree at ${worktree.path}.`);

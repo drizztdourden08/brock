@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { StartJob } from '@drizztdourden08/brock-core/jobs';
+import type { ProcessJobOutcome } from '@drizztdourden08/brock-core/types';
 import { hostApi } from '../host/host-api';
 import { rendererJobs } from './renderer-jobs';
 import { useJobStore } from './useJobStore';
@@ -21,6 +22,8 @@ const jobs = {
     else hostApi()?.dismissJob(id);
     useJobStore.getState().remove(id);
   },
+  runProcess: (id: string, args?: unknown): Promise<ProcessJobOutcome> =>
+    hostApi()?.runProcessJob(id, args) ?? Promise.resolve<ProcessJobOutcome>({ status: 'rejected', error: 'Not available on this host' }),
   get: (id: string) => useJobStore.getState().jobs[id] ?? null,
 };
 

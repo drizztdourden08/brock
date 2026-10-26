@@ -19,7 +19,7 @@ const labelOptions = (own: number, size: LabelSize, scene: Scene, fontPx: number
   const options = spots.flatMap((spot) => leaderRoutes(part, spot.elbow).flatMap((leader) => {
     const segments = segmentsOf(leader);
     if (!routeClear(segments, own, spot.rect, scene)) return [];
-    return [{ spot, leader, segments, cost: leaderCost(segments, spot, part.slot.anchor, scene) }];
+    return [{ spot, leader, segments, cost: leaderCost(segments, spot, part, scene) }];
   }));
   return options.sort((a, b) => a.cost - b.cost).slice(0, OPTION_LIMIT);
 };

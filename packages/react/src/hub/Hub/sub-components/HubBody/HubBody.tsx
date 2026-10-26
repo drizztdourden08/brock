@@ -29,7 +29,7 @@ const HubBody = (props: HubBodyProps) => {
   const { query, setQuery, clear } = useHubSearch();
 
   const preload = useRoutePreloader();
-  const navConfig = useMemo(() => buildHubNav(homeListed ? def.home : undefined, groups, (id) => preload(joinRoute(def.id, id))), [homeListed, def.home, def.id, groups, preload]);
+  const navConfig = useMemo(() => buildHubNav(homeListed ? def.home : undefined, groups, (id) => preload(joinRoute(def.id, id)), def.top), [homeListed, def.home, def.id, def.top, groups, preload]);
   const search = useMemo(() => (def.search
     ? { value: query, onChange: setQuery, placeholder: def.search.placeholder ?? DEFAULT_SEARCH_PLACEHOLDER }
     : undefined), [def.search, query, setQuery]);

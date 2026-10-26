@@ -79,6 +79,7 @@ interface BrockAppProps<S extends object> {
   tours?: readonly TourDef[];
   toolbars?: readonly ToolbarDef[];
   toolbarPlacement?: ToolbarPlacement;
+  background?: ReactNode;
   startupPrompts?: readonly StartupPromptDef[];
   bugReport?: BrockAppBugReport;
   sessionLog?: boolean;

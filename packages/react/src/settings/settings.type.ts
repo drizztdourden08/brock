@@ -91,6 +91,8 @@ interface Section {
 
 type SettingLockCause = string;
 
+type SettingsPreviewPlacement = 'start' | 'end';
+
 type SettingsPatch<S> = (patch: Partial<S>) => void;
 
 type RenderControl<S> = (key: string, settings: S, onChange: SettingsPatch<S>) => ReactNode | null;
@@ -113,6 +115,8 @@ interface SettingsControlProps<S extends object> {
 interface SettingsLayoutProps<S extends object> extends SettingsControlProps<S> {
   sections: Section[];
   emptyMessage?: string;
+  preview?: ReactNode;
+  previewPlacement?: SettingsPreviewPlacement;
 }
 
 interface TabRenderContext<S extends object> extends SettingsControlProps<S> {
@@ -128,6 +132,8 @@ interface TabDef<S extends object> {
   groupId?: string;
   sections?: (settings: S) => Section[];
   source?: SettingsValueSource;
+  preview?: (settings: S) => ReactNode;
+  previewPlacement?: SettingsPreviewPlacement;
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;
   moduleId?: string;
@@ -135,5 +141,5 @@ interface TabDef<S extends object> {
 
 export type {
   LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause, SettingValues,
-  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsValueSource, SubSection, TabDef, TabRenderContext,
+  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SubSection, TabDef, TabRenderContext,
 };

@@ -189,12 +189,18 @@ describe('updaterChecks', () => {
   });
 });
 
-const SIZES: ControlSizeSnapshot = { xs: 20, sm: 28, widgetButtons: [20, 20, 20], barButtons: [28, 28] };
+const SIZES: ControlSizeSnapshot = { xs: 20, hit: 20, sm: 28, widgetButtons: [20, 20, 20], barButtons: [28, 28] };
 
 describe('controlSizeChecks', () => {
   it('passes xs widget title bar buttons beside sm window title bar actions', () => {
     expect(failed(controlSizeChecks(SIZES))).toEqual([]);
     expect(failed(controlSizeChecks({ ...SIZES, widgetButtons: [20.4], barButtons: [] }))).toEqual([]);
+  });
+
+  it('expects the minimum hit area when it is larger than xs', () => {
+    const hit = { ...SIZES, hit: 24, widgetButtons: [24, 24, 24] };
+    expect(failed(controlSizeChecks(hit))).toEqual([]);
+    expect(failed(controlSizeChecks({ ...hit, widgetButtons: [24, 28] }))).toEqual(['widget-title-buttons-xs']);
   });
 
   it('fails a widget title bar button drawn at sm and names its height', () => {

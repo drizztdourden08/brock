@@ -82,7 +82,7 @@ describe('the Toolbars menu', () => {
     const [menu] = entriesOf();
     expect(menu).toMatchObject({ key: 'toolbars', label: 'Toolbars' });
     const items = itemsOf(menu as MenuItem);
-    expect(items.map((item) => item.key)).toEqual(['toolbar-tools', 'toolbar-options', 'toolbar-extra', 'toolbars-reset']);
+    expect(items.map((item) => item.key)).toEqual(['toolbar-tools', 'toolbar-options', 'toolbar-extra', 'toolbar-tools-options', 'toolbar-options-options', 'toolbars-reset']);
     expect(items.slice(0, 3).map((item) => item.checked)).toEqual([true, true, false]);
     expect(items.at(-1)).toMatchObject({ label: 'Reset toolbars', confirm: true });
   });

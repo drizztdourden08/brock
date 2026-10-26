@@ -1,5 +1,20 @@
 # @drizztdourden08/brock-build
 
+## 0.106.0
+
+### Minor Changes
+
+- af32761: Add a cargo lane to `brock gate`. While a `Cargo.toml` with a `[workspace]` or `[package]` table sits at the repo root, the gate checks the Rust comments, then runs `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets` and `cargo test --workspace`, each reported like the other steps. Clippy runs with `-D warnings` and with the `too_many_lines` and `cognitive_complexity` lints on, held to 60 lines and a complexity of 10 by a `clippy.toml` that Brock applies when the repo has none of its own. The comment check fails any `//` or `/* */` comment in a `.rs` file with its `file:line`, and allows `///`, `//!` and a `// SAFETY:` line directly above `unsafe`. A missing cargo fails the lane with a clear message. `gate.cargo` turns the lane off (`enabled: false`), moves it (`path`) or adds clippy flags (`clippyArgs`). A repo with no Brock app can now run `brock gate`: it reads `gate` from `brock.workspace.mjs`, or runs the cargo lane alone when the root has a `Cargo.toml`.
+- a5e8521: `defineBrockSite` takes `build.routes`, a list of `{ path, title, description? }`. After the Vite build, each route gets a copy of `dist/index.html` at `dist/<path>/index.html` with its own `<title>`, `<meta name="description">`, `og:title` and `og:description` (the Open Graph tags are changed only where the page already has them). Static hosts such as GitHub Pages serve `/privacy/` only when that file exists, so a single-page site no longer answers 404 on its legal pages. A path is letters, digits and dashes in segments split by `/`, with no leading or trailing slash and no dots; a bad or repeated path fails the build with a message naming the route. Title and description are escaped as HTML text. Asset URLs stay valid from the nested folder: absolute and base-prefixed URLs are kept, and a relative base (`./`) is rewritten to climb out of the folder. A site with no routes builds as before.
+
+### Patch Changes
+
+- Updated dependencies [af32761]
+- Updated dependencies [00e4059]
+  - @drizztdourden08/brock-thread@0.106.0
+  - @drizztdourden08/brock-lint-config@0.106.0
+  - @drizztdourden08/brock-core@0.106.0
+
 ## 0.105.0
 
 ### Patch Changes

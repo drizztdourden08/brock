@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.106.0
+
+### Patch Changes
+
+- 00e4059: Honour `prose.allow` in `brockEslint`. Words listed under `prose: { allow }` now reach `local/no-slop-identifiers` and the slop rules, joined with any top-level `allow`, so a field name such as `claudeId` can be allowed in either shape.
+
 ## 0.105.0
 
 ## 0.104.0

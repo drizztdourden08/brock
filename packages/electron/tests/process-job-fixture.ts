@@ -17,6 +17,10 @@ if (mode === 'lines') {
   console.log('alpha');
   console.error('bravo');
   console.log('x'.repeat(10000));
+} else if (mode === 'flood') {
+  for (let i = 1; i <= Number(arg); i++) console.log('line-' + i);
+  console.log('END');
+  process.exitCode = 3;
 } else if (mode === 'half') {
   console.log('PROGRESS 50 half way');
   hold();
@@ -38,6 +42,7 @@ if (mode === 'lines') {
 
 interface ProcessFixture {
   dir: string;
+  logDir: string;
   command: string;
   argv: (...rest: string[]) => string[];
   jobs: JobRegistry;
@@ -52,13 +57,14 @@ const createProcessFixture = (): ProcessFixture => {
   const dir = mkdtempSync(join(tmpdir(), 'brock-process-'));
   const script = join(dir, 'child.mjs');
   writeFileSync(script, CHILD_SOURCE);
-  const context = { paths: { userData: () => dir } } as Partial<MainContext> as MainContext;
+  const context = { paths: { userData: () => dir, data: (...segments: string[]) => join(dir, 'Data', ...segments) } } as Partial<MainContext> as MainContext;
   const jobs = createJobRegistry(() => undefined);
   const processes = createProcessJobs({ job: jobs.start, jobs, context: () => context });
   const snapshot = (id: string): JobSnapshot | undefined => jobs.list().find((job) => job.id === id);
   const lines = (id: string): JobLogLine[] => snapshot(id)?.log ?? [];
   return {
     dir,
+    logDir: join(dir, 'Data', 'debug', 'process-logs'),
     command: process.execPath,
     argv: (...rest) => [script, ...rest],
     jobs,

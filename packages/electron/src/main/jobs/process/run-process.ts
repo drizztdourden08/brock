@@ -9,14 +9,16 @@ import { cleanLine } from './clean-line';
 import { createStopper } from './create-stopper';
 import { exitOutcome } from './exit-outcome';
 import { killProcessTree } from './kill-process-tree';
+import { openProcessLog } from './open-process-log';
 import {
   PROCESS_DETACHED_MESSAGE, PROCESS_EXIT_WAIT_MS, PROCESS_GRACE_MS, PROCESS_LINE_MAX_CHARS, PROCESS_TAIL_LINES,
 } from './process-job.constants';
-import type { ProcessRunInput, ProcessSpec, ProcessStream } from './process-job.type';
+import type { ProcessLog, ProcessRunInput, ProcessSpec, ProcessStream } from './process-job.type';
 import { redactLine } from './redact-line';
 import { reportProgress } from './report-progress';
 import { settleJob } from './settle-job';
 import { spawnFailure } from './spawn-failure';
+import { withLogFile } from './with-log-file';
 
 const startChild = (spec: ProcessSpec): ChildProcess =>
   spawn(spec.command, [...spec.args], {
@@ -28,12 +30,13 @@ const startChild = (spec: ProcessSpec): ChildProcess =>
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
-const lineHandler = (job: JobHandle, options: ProcessRunInput, tail: string[]) => (stream: ProcessStream, raw: string): void => {
+const lineHandler = (job: JobHandle, options: ProcessRunInput, tail: string[], log: ProcessLog | null) => (stream: ProcessStream, raw: string): void => {
   const cleaned = cleanLine(raw, PROCESS_LINE_MAX_CHARS);
   if (!cleaned) return;
   const line = redactLine(options.redact, cleaned);
   if (options.log !== false) {
     tail.push(line);
+    log?.write(line);
     if (tail.length > PROCESS_TAIL_LINES) tail.shift();
     job.log(line, stream === 'stderr' ? 'warn' : 'info');
   }
@@ -42,6 +45,7 @@ const lineHandler = (job: JobHandle, options: ProcessRunInput, tail: string[]) =
 
 const launch = (child: ChildProcess, job: JobHandle, options: ProcessRunInput, resolve: (outcome: ProcessJobOutcome) => void): void => {
   const tail: string[] = [];
+  const log = openProcessLog(job.id, options);
   const closers: (() => void)[] = [];
   const exit: { code: number | null; signal: NodeJS.Signals | null } = { code: null, signal: null };
   let finished = false;
@@ -49,14 +53,15 @@ const launch = (child: ChildProcess, job: JobHandle, options: ProcessRunInput, r
     if (finished) return;
     finished = true;
     for (const close of closers) close();
-    settleJob(job, outcome);
-    resolve(outcome);
+    const final = withLogFile(outcome, log?.close());
+    settleJob(job, final);
+    resolve(final);
   };
   const detached: ProcessJobOutcome = { status: 'detached', exitCode: null, tail, error: PROCESS_DETACHED_MESSAGE };
   const graceMs = options.cancel?.graceMs ?? PROCESS_GRACE_MS;
   const stopper = createStopper({ child, signal: job.signal, graceMs, timeoutMs: options.timeoutMs, giveUp: () => finish(detached) });
   const untrack = options.track?.(() => void killProcessTree(child, true));
-  closers.push(attachOutput(child, lineHandler(job, options, tail)));
+  closers.push(attachOutput(child, lineHandler(job, options, tail, log)));
   const settleExit = (): void => finish(exitOutcome(options, { ...exit, killed: stopper.killed(), timedOut: stopper.timedOut(), tail }));
   child.on('error', (error) => {
     if (child.pid !== undefined) return;

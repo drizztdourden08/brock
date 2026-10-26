@@ -45,13 +45,13 @@ const packageStepOf = (rootDir, resolver) => (from, spec) => {
  * @param {string} rootDir the app root
  * @param {Record<string, string>} aliases import prefixes and their absolute folders
  * @param {ReturnType<import('./package-entry.mjs').createResolver>} resolver
+ * @param {Set<string>} [seen] filled with every file the crawl read
  * @returns {Promise<string[]>} the node_modules imports of the renderer
  */
-const crawlRendererDeps = async (rootDir, aliases, resolver) => {
+const crawlRendererDeps = async (rootDir, aliases, resolver, seen = new Set()) => {
   const localFile = localFileOf(resolver, aliases);
   const packageStep = packageStepOf(rootDir, resolver);
   const include = new Set();
-  const seen = new Set();
   const queue = sourceFilesUnder(join(rootDir, 'src')).map((file) => ({ file, chain: [] }));
   const follow = (from, spec) => {
     const local = localFile(from.file, spec);

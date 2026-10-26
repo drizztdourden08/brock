@@ -7,7 +7,6 @@ import { automationFlags } from './automation-flags.mjs';
 import { buildIfStale } from './build-if-stale.mjs';
 import { DIST_MAIN, distProblem } from './dist-problem.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
-import { ensureAppIcons } from './ensure-app-icons.mjs';
 import { ensureAppSynced } from './ensure-app-synced.mjs';
 import { notReadyWith, targetDirs } from './launch-readiness.mjs';
 import { reviewDataDir } from './review-data.mjs';
@@ -66,7 +65,6 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
     const args = appArgs(request, reviewDataDir(request.passthrough, dirs.userData(worktree)), states);
     const appDir = dirs.app(worktree);
     ensureAppSynced(appDir, worktree.log);
-    ensureAppIcons(appDir, worktree.log);
     return Promise.resolve(prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
   };
   return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData, productionProblem), checkState: checkStateWith(states) };

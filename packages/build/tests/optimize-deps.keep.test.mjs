@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, symlinkSync } from 'node:fs';
+import { mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { optimizeDepsPlugin } from '../src/optimize-deps/optimize-deps-plugin.mjs';
@@ -98,6 +98,20 @@ describe('the computed renderer optimizeDeps', () => {
     expect(result.include).not.toContain('@scope/lib > zod');
     expect(result.exclude).toEqual(['js-yaml', 'zod']);
     expect(result.entries).toEqual(['src/other.html']);
+  });
+
+  it('reuses the last crawl while no file it read changed, and crawls again after an edit', async () => {
+    const root = fixtureApp();
+    await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    const cacheFile = join(root, 'node_modules/.vite/brock-renderer-deps.json');
+    const cache = JSON.parse(readFileSync(cacheFile, 'utf8'));
+    writeFileSync(cacheFile, JSON.stringify({ ...cache, specs: ['kept-from-cache'] }));
+    expect((await rendererOptimizeDeps(root, aliasesOf(root), undefined)).include).toEqual(['kept-from-cache']);
+    putPackage(root, 'new-dep', { main: './index.js' }, { 'index.js': '' });
+    put(root, 'src/shared.ts', "export { pick } from 'small-dep/pick';\nexport { added } from 'new-dep';\nexport const shared = 1;\n");
+    const { include } = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(include).toContain('new-dep');
+    expect(include).not.toContain('kept-from-cache');
   });
 
   it('refuses an unknown key and a list that is not of specifiers', () => {

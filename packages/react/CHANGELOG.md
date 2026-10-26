@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-react
 
+## 0.104.0
+
+### Minor Changes
+
+- 6e3ed14: Add `product.menu.profiles`, true by default. With `false` the Profiles entry leaves the main menu, as `product.menu.home: false` does for Home. Profiles themselves keep working: the profile switcher, the command palette and the shortcuts are unchanged. The review does not expect the Profiles entry then.
+
+  Add `product.initialProfile`, a profile name such as `Default`. On the first start, when no profile exists, the `profiles` boot task creates a profile with that name and activates it without opening the profile picker. The Profiles screen and switching stay available, unlike `singleProfile`. With a profile already on disk nothing changes.
+
+- 8387f89: A first-run tour step can light three more shell parts with `target: { shell }`. `'page'` is the screen host alone, without the rail, the title bar or the docked widgets. `'rail'` is the screens rail. `'hero'` is the Home hero, or the hero of the open hub when Home has none. `'screen'` is unchanged. A part that is not on screen leaves the step centred, like any other missing part.
+- 8387f89: A first-run tour step can light the page tab strip with `target: { shell: 'tabs' }`. A step also takes `openMenu`, which opens a title bar menu before the step lights its target and closes it when the step ends: `'menu'` is the app menu, and any other id is the title bar action menu with that id. A new target, `{ menuEntry: 'Take the tour' }`, lights the entry of an open menu by its label.
+
+### Patch Changes
+
+- Updated dependencies [632c810]
+- Updated dependencies [6e3ed14]
+  - @drizztdourden08/brock-core@0.104.0
+
 ## 0.103.0
 
 ### Minor Changes

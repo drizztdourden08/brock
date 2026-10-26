@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-core
 
+## 0.104.0
+
+### Minor Changes
+
+- 632c810: A handler registered through `ctx.handle` can throw an `AppError` (`new AppError(message, { code, data? })`) and the renderer reads the code and data back with `isAppError(error, 'code')`, where before only the message crossed. The error rejects as usual with the human message plus an encoded tail that the preload keeps and `isAppError` decodes. `data` must be JSON-safe (checked when the error is made) and is dropped with `dataDropped: true` past 8192 characters of JSON. A plain error behaves as before, and no stack crosses. `AppError`, `isAppError`, `toAppError`, `encodeAppError` and `decodeAppError` come from `@drizztdourden08/brock-core/ipc`.
+- 6e3ed14: Add `product.menu.profiles`, true by default. With `false` the Profiles entry leaves the main menu, as `product.menu.home: false` does for Home. Profiles themselves keep working: the profile switcher, the command palette and the shortcuts are unchanged. The review does not expect the Profiles entry then.
+
+  Add `product.initialProfile`, a profile name such as `Default`. On the first start, when no profile exists, the `profiles` boot task creates a profile with that name and activates it without opening the profile picker. The Profiles screen and switching stay available, unlike `singleProfile`. With a profile already on disk nothing changes.
+
 ## 0.103.0
 
 ## 0.102.0

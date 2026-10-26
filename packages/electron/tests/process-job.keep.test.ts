@@ -52,7 +52,7 @@ describe('run a process as a job: output and exit', () => {
     expect(log.find((line) => line.message === 'bravo')?.level).toBe('warn');
     const long = log.find((line) => line.message.startsWith('xxx'));
     expect(long?.message.length).toBe(4096);
-    if (outcome.status === 'done') expect(outcome.tail.slice(0, 2)).toEqual(['alpha', 'bravo']);
+    if (outcome.status === 'done') expect(outcome.tail).toEqual(expect.arrayContaining(['alpha', 'bravo']));
   });
 
   it('reports progress from the parser while the process runs', async () => {

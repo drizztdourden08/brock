@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { ReactNode } from 'react';
 import type { AppLogBus } from '../../../../log/app-log.type';
 import type { MenuEntry } from '../../../../menu/menu.type';
 import type { TitleBarActionSource } from '../../../../modules/renderer-module.type';
@@ -29,6 +30,7 @@ interface AppShellProps<S extends object> {
   widgetKits?: readonly WidgetKitDef[];
   toolbars?: readonly ToolbarDef[];
   toolbarPlacement?: ToolbarPlacement;
+  background?: ReactNode;
   widgetLayout?: LayoutPreset;
   widgetContext?: WidgetContextSource;
   widgetDisabled?: WidgetDisabledHook;

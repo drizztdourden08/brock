@@ -16,6 +16,7 @@ const heightsOf = (scope: ParentNode, selector: string): number[] =>
 
 const readControlSizes = (widget: Element): ControlSizeSnapshot => ({
   xs: tokenHeight('--control-h-xs'),
+  hit: tokenHeight('--hit-area-min'),
   sm: tokenHeight('--control-h-sm'),
   widgetButtons: heightsOf(widget, SELECTORS.widgetTitleButton),
   barButtons: heightsOf(document, SELECTORS.barActionButton),

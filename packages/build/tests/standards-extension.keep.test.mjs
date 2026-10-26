@@ -75,7 +75,7 @@ describe('the brock-app extension', () => {
       'src/widgets/room.widget.tsx',
       'src/widgets/session-layout.ts',
     ]);
-    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, tools, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, defaultFloatingSize, padding, fill, chrome, context, kit, menu)');
+    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, tools, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, dockWeight, defaultFloatingSize, padding, fill, chrome, context, kit, menu)');
     expect(findings).toContain('src/widgets/logs.widget.tsx: "logs" is a built-in Brock widget id; pick another');
   });
 

@@ -4,8 +4,10 @@ import type { TitleBarItemEntry } from './title-bar-item.type';
 
 const NO_TITLE_BAR_ITEMS: readonly TitleBarItemEntry[] = [];
 
+const DEFAULT_ACTIONS_MENU_ID = 'app-actions';
+
 const VOLUME_RANGE = { min: 0, max: 1, step: 0.01 } as const;
 
 const STANDARD_ACTION_COMMANDS: Readonly<Record<string, string>> = { search: BROCK_COMMANDS.search };
 
-export { NO_TITLE_BAR_ITEMS, STANDARD_ACTION_COMMANDS, VOLUME_RANGE };
+export { DEFAULT_ACTIONS_MENU_ID, NO_TITLE_BAR_ITEMS, STANDARD_ACTION_COMMANDS, VOLUME_RANGE };

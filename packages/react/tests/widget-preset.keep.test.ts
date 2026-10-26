@@ -54,6 +54,27 @@ describe('presetLayout', () => {
     expect(shape(presetLayout(preset, SESSION).dock)).toEqual({ column: [['players'], 'main'], sizes: [0.5, 0.5] });
   });
 
+  it('sizes the rows from the dockWeight of their widgets and lets the preset sizes win', () => {
+    const weighted = [
+      defineWidget({ id: 'tall', label: 'Tall', render: () => null, dockWeight: 3 }),
+      defineWidget({ id: 'short', label: 'Short', render: () => null, dockWeight: 1 }),
+    ];
+    const preset = defineLayoutPreset({ rows: [['tall'], ['short'], ['main']] });
+    expect(shape(presetLayout(preset, weighted).dock)).toEqual({ column: [['tall'], ['short'], 'main'], sizes: [0.5, 0.17, 0.33] });
+    const sized = defineLayoutPreset({ rows: [['tall'], ['short'], ['main']], sizes: [1, 1, 2] });
+    expect(shape(presetLayout(sized, weighted).dock)).toEqual({ column: [['tall'], ['short'], 'main'], sizes: [0.25, 0.25, 0.5] });
+  });
+
+  it('weights a row of tabbed widgets by its heaviest member', () => {
+    const weighted = [
+      defineWidget({ id: 'a', label: 'A', render: () => null, dockWeight: 1 }),
+      defineWidget({ id: 'b', label: 'B', render: () => null, dockWeight: 4 }),
+      defineWidget({ id: 'c', label: 'C', render: () => null, dockWeight: 1 }),
+    ];
+    const preset = defineLayoutPreset({ rows: [[['a', 'b']], ['c'], ['main']] });
+    expect(shape(presetLayout(preset, weighted).dock)).toEqual({ column: [['a', 'b'], ['c'], 'main'], sizes: [0.53, 0.13, 0.33] });
+  });
+
   it('opens a defaultOpen widget the preset does not place on its default side', () => {
     const layout = presetLayout(THREE_ROWS, DEFINITIONS);
     expect(placementOf(layout, 'notes')).toBe('docked');

@@ -65,7 +65,7 @@ onlyBuiltDependencies:
 const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc', TESSERA_CONFIG_FILE]);
 
 const SCRIPTS = {
-  lint: 'eslint . && stylelint "**/*.css" --ignore-path .gitignore --allow-empty-input && brock prose && brock knip && jscpd .',
+  lint: 'brock lint && stylelint "**/*.css" --ignore-path .gitignore --allow-empty-input && brock prose && brock knip && jscpd .',
   'lint:md': 'markdownlint-cli2',
   structure: 'brock structure --check',
   prose: 'brock prose',

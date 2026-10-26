@@ -1,5 +1,77 @@
 # @drizztdourden08/brock-react
 
+## 0.103.0
+
+### Minor Changes
+
+- 6481c2d: A hub can fill the top group of its side nav. `top` on a bucket in `screens.config.ts`, or on a `defineHub` def, is a list of page ids that Brock passes to Tessera's SideNav as `config.top`: they sit under Home in that order with one divider after the block. A page in `top` leaves its regular group, and a group left with no page is not drawn. A hidden or unknown id is skipped. `buildHubNav` takes the list as a fourth argument.
+
+### Patch Changes
+
+- 6481c2d: Brock builds on Tessera 0.67. A widget's `dockWeight` now reaches Tessera, so docked widgets that share an edge are sized by weight, every widget keeps its weight when another one joins, and `defaultDockedSize` resizes the column a widget joins. This covers a widget opened from the Widgets menu, a widget kit member, a layout preset and a widget docked back from its own window. A widget's `icon` is now an icon name, and Tessera draws it before the label in the widget title bar and the tab chip, also in a popped widget window. A docked toolbar's `slot` carries `menuSide`, which an app can pass to Tessera's `Toolbar` so a left bar opens its menus to the right. The corner handles between stacked widgets no longer cover the title bar buttons of the widget below.
+
+  The app review expects the widget title bar buttons at the larger of the xs height and Tessera's minimum hit area, which is 24 px since Tessera 0.67.
+
+  - @drizztdourden08/brock-core@0.103.0
+
+## 0.102.0
+
+### Minor Changes
+
+- ca5ed20: Add an app context menu built from commands, drawn with Tessera's `ContextMenu` and with no wrapper element. `useContextMenu(id, source)` declares a menu for an element or a command zone, and `contextMenuZone(id, { data?, typing?, focusable? })` marks an element the app already renders. An entry is a command id, `'separator'`, `{ command, label?, args? }`, a plain `{ label, run }` or a sub-menu (two levels); the label, icon, shortcut, enabled state and action come from the command registry, so a rebound command shows its new chord. Entries can also set `checked`, `hidden`, `disabled`, `reason`, `kind` and `confirm`. The builder runs once per open and gets `{ point, target, trigger, data }`, and `CommandDef.run` now takes that context as an optional argument (`commands.run(id, context?)`); `CommandDef` gains an optional `checked`. A config adds `anchor`, `shouldOpen` (decided on pointerdown), `openOn: 'release-without-drag'`, `beforeOpen`, `label` and `inherit: 'parent'`. The menu opens on right click, on a long press, and on Shift+F10 and the Menu key through the new rebindable command `brock.context-menu`, which fires only while the focus sits in a declared menu. The browser menu stays where no menu is declared, in a `data-native-menu` element and in a text field unless it opts in. The menu closes on scroll, wheel, resize, blur, a route change and focus leaving, and `blockContextMenus(true)` holds it back during a drag. `openContextMenu` and `listContextMenus` serve tests. The `ContextMenu` chord token (the Menu key) is known to the chord parser and shows as a Menu keycap.
+- 03fae52: A settings page can show a preview beside its rows. A `TabDef` (or the `meta` of a `.settings.ts` page) takes `preview: (settings) => ReactNode` and `previewPlacement: 'start' | 'end'` (default `'end'`). In a wide page the preview takes a second column; in a narrow one it stacks above the rows. `<BrockApp background={node}>` draws one node behind the widget host and the docked panels, above the window background, and lets pointer events through.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.102.0
+
+## 0.101.0
+
+### Minor Changes
+
+- b0d5e5e: Toolbars is now a level 1 menu next to Widgets, with the same key and contents. `product.menu.home: false` leaves the Home entry out of the menu. `<BrockApp titleBarMenu={{ label, icon }}>` puts the app's title bar items into one dropdown button, keeping chords, disabled state and the disabled reason inside it.
+
+  The built-in Logs and Performance widgets now sit in the Developer group of the Widgets menu while developer tools are on, and stay in the plain list while they are off. A widget meta takes `menu: { developer: true }` for the same behaviour.
+
+### Patch Changes
+
+- Updated dependencies [b0d5e5e]
+  - @drizztdourden08/brock-core@0.101.0
+
+## 0.100.0
+
+### Minor Changes
+
+- 148e7f2: An app review step can now set the window size. `defineReviewStep` takes `sizes`, a list of `'narrow'` (the 600 by 720 window the shell uses for its own narrow captures) or `{ name, width, height }`. The step runs once per size: the main window is resized through the review probe, which works in a hidden launch, the step runs, and the window goes back to its old size even when the step throws. The size name is added to the end of every capture and check id, so one step can capture a layout narrow and wide.
+- e24df4e: Search now finds a page by the keywords of its meta for every kind of page, and a page can declare rows of its own. A module settings page was left out of the index, and the hub page list dropped the keywords of a built-in page. Both are fixed. A new `searchRows` field in the page meta, a list of `{ label, keywords?, anchor? }`, adds one result per row: it opens the page and, with an anchor, scrolls to that element. `brock structure --check` now reports a `keywords` or `searchRows` value in a page meta that the build cannot read as a literal.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.100.0
+
+## 0.99.0
+
+### Minor Changes
+
+- ce95881: A widget can carry a `dockWeight`, its relative height in a stack (1 when unset). A layout preset row with no entry in `sizes` takes the largest `dockWeight` among its widgets, so a definition can ask for a taller row. The `sizes` of a preset still win, and a saved layout still wins over the default. A widget opened later with `defaultSide` joins its edge stack through Tessera, which evens the stack out, so `dockWeight` does not reach it yet.
+
+### Patch Changes
+
+- 9c53bf7: Brock builds on Tessera 0.65. A toolbar end handle dragged past its lane end takes the corner from the lanes it crosses, and one more arrow press at the lane end does the same from the keyboard. A dropped toolbar lands at the pointer, snaps to its neighbours and pushes them along. In keyboard pick mode, PageUp and PageDown step through the slots of a lane. The saved layout keeps its v2 shape, so no script is needed.
+  - @drizztdourden08/brock-core@0.99.0
+
+## 0.98.0
+
+### Minor Changes
+
+- 106472e: A settings row drawn by `renderControl` keeps the standard row chrome: the title, the description, the hint, the row actions and the lock, with the custom control in the control slot like a built-in control. A setting item takes `layout: 'wide'` to draw a wide editor at the full width of the row, below the title and description, and `chrome: false` to keep the old behaviour where `renderControl` owns the whole row. A hidden hub home page stays out of the side nav like any other hidden page and the hub still opens on it by route. When the home is the only page shown, it stays in the nav as before. The side nav is drawn once two pages are listed, not counting a hidden home.
+- 40c83ac: Brock builds on Tessera 0.64 and its new toolbar dock. Docked toolbars sit in a visible bar, can share a lane and have resize handles that push their neighbours. The saved toolbar layout is now Tessera's v2 format. A layout saved by an older build is upgraded in memory when it loads and saved as v2 on the next change, so no script is needed. An older build that reads a v2 layout resets the toolbars to their defaults and leaves the widgets alone. Each docked toolbar bar is one F6 stop. Widget panels can take a corner and dividers push their neighbours, with no change to the saved widget layout.
+- 40c83ac: An app can place the toolbar host itself. `BrockApp` takes `toolbarPlacement`, `'widgets'` (the default, the dock wraps the widget host as before) or `'app'`, and with `'app'` the app mounts the exported `ToolbarHost` around its own work area, such as a canvas page. Only one host draws the toolbars; a second logs a warning once and renders only its children. A host that mounts late now keeps the layout saved for the profile: the store holds the stored layout until the toolbars are registered and reads it once, so the defaults are never saved over it. A docked toolbar is now a stop of its own for F6 and Shift+F6 even inside the main area, and the main area stays in the cycle.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.98.0
+
 ## 0.97.2
 
 ### Patch Changes

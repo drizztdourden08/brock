@@ -1,9 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { git, remoteBranch } from '../git.mjs';
 import { resolveWorktreeName } from '../worktree/current.mjs';
+import { isGeneratedUntracked } from '../worktree/is-generated-untracked.mjs';
 import { worktreePathFor } from '../worktree/paths.mjs';
-
-const USER_DATA_LINE = '?? .user-data/';
 
 const target = (positional, ctx) => {
   const { workspace } = ctx;
@@ -18,7 +17,7 @@ const target = (positional, ctx) => {
 };
 
 const warnIfDirty = (path, log) => {
-  const dirty = git(['status', '--porcelain'], path).split('\n').filter((line) => line && line.trim() !== USER_DATA_LINE);
+  const dirty = git(['status', '--porcelain'], path).split('\n').filter((line) => line && !isGeneratedUntracked(line));
   if (dirty.length === 0) return;
   log(`${dirty.length} uncommitted change(s) in this worktree are NOT part of what goes up. Commit them first if they belong in this branch.`);
 };

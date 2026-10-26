@@ -21,6 +21,15 @@ html.notch-safe .brock-app {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  isolation: isolate;
+}
+
+.brock-app__background {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .brock-app__content--rail {

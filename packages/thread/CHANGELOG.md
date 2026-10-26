@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-thread
 
+## 0.103.0
+
+## 0.102.0
+
+## 0.101.0
+
+## 0.100.0
+
+## 0.99.0
+
+### Patch Changes
+
+- 6ee68c2: `worktree refresh` no longer refuses a fresh worktree because of the files the setup writes itself. Untracked `CLAUDE.md`, `.ai-config.json`, `.mcp.json`, `.brock-port-slot` and `.user-data/` do not count as local changes, for `refresh`, `finish`, `remove` and the dirty warning of `pr push`. A tracked file with changes, or any other untracked file, still blocks.
+
+## 0.98.0
+
 ## 0.97.2
 
 ## 0.97.1

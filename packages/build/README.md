@@ -735,7 +735,7 @@ none, it takes the `gate` key of `brock.workspace.mjs` (`export default defineWo
 gate: { scripts: ['lint', 'test'], cargo: { clippyArgs: [] } } })`), or an empty gate when the
 root has a `Cargo.toml`. `scripts` run with `pnpm run` from the root `package.json`, so
 the TypeScript gates of such a repo are its own scripts. With no `Cargo.toml` and no `gate`,
-the command fails and says so.
+the command fails and says so. Import `defineWorkspace` from `@drizztdourden08/brock-build` (or `@drizztdourden08/brock-thread`).
 
 Erasable TypeScript only: Node imports this file directly, so no enums, no parameter
 properties, no extensionless relative imports.

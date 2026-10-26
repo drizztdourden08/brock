@@ -98,6 +98,7 @@ describe('the lint plan and its one line', () => {
   it('has nothing to lint when nothing changed', () => {
     const root = repoOnFeatureBranch();
     git(root, 'checkout', '-f', 'main');
+    git(root, 'clean', '-fdq');
     const plan = planLint({ cwd: root, changed: true, env: { BROCK_LINT_BASE: 'main' } });
     expect(plan.targets).toEqual([]);
     expect(plan.line).toMatch('0 files changed');

@@ -14,7 +14,10 @@ type ContextMenuContext = Omit<CommandContext, 'args'>;
 
 type ContextMenuFlag = boolean | (() => boolean);
 
+type ContextMenuTone = NonNullable<MenuItem['tone']>;
+
 interface ContextMenuItemState {
+  tone?: ContextMenuTone;
   hidden?: ContextMenuFlag;
   disabled?: boolean;
   reason?: string;
@@ -86,10 +89,12 @@ interface ContextMenuOpen {
 
 interface ContextMenuState {
   menus: Readonly<Record<string, ContextMenuConfig>>;
+  known: Readonly<Record<string, ContextMenuConfig>>;
   open: ContextMenuOpen | null;
   blocked: boolean;
   setMenu: (zone: string, config: ContextMenuConfig) => void;
   clearMenu: (zone: string) => void;
+  define: (zone: string, config: ContextMenuConfig) => void;
   show: (open: ContextMenuOpen) => void;
   hide: () => void;
   block: (blocked: boolean) => void;
@@ -127,6 +132,7 @@ interface ListedContextMenu {
   entries: readonly ContextMenuEntry[];
   commands: readonly string[];
   missing: readonly string[];
+  mounted: boolean;
 }
 
 interface OpenContextMenuProps {
@@ -157,6 +163,6 @@ interface PointerGesture {
 
 export type {
   ContextMenuAction, ContextMenuAnchor, ContextMenuAttributes, ContextMenuCommand, ContextMenuConfig, ContextMenuContext, ContextMenuEntries, ContextMenuEvent, ContextMenuEntry, ContextMenuFlag, ContextMenuItemState,
-  ContextMenuPoint, ContextMenuSource, ContextMenuState, ContextMenuSubmenu, ContextMenuView, ContextMenuZoneOptions, ListedContextMenu, OpenContextMenuProps, OpenOptions,
+  ContextMenuPoint, ContextMenuSource, ContextMenuState, ContextMenuSubmenu, ContextMenuTone, ContextMenuView, ContextMenuZoneOptions, ListedContextMenu, OpenContextMenuProps, OpenOptions,
   OpenRequest, OpenResult, PointerDown, PointerGesture, ZoneMatch,
 };

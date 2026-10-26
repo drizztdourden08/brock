@@ -11,6 +11,7 @@ const itemState = (entry: ContextMenuItemState, def?: CommandDef): Partial<MenuI
     disabled: entry.disabled === true || def?.when?.() === false,
     ...defined('description', entry.reason),
     ...defined('ariaDescription', entry.reason),
+    ...defined('tone', entry.tone),
     ...defined('kind', entry.kind ?? (checked === undefined ? undefined : 'check')),
     ...defined('checked', checked),
     ...defined('confirm', entry.confirm),

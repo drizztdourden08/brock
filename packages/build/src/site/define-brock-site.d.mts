@@ -7,11 +7,23 @@ interface SiteApiInput {
   stripPath?: boolean;
 }
 
+interface SiteRouteInput {
+  path: string;
+  title: string;
+  description?: string;
+}
+
+interface SiteRoute {
+  path: string;
+  title: string;
+  description: string | null;
+}
+
 interface BrockSiteInput {
   site: { id: string; name?: string; brand?: string };
   ports: { offset: number; base?: number };
   api?: string | SiteApiInput;
-  build?: { nodePolyfills?: boolean | Record<string, unknown>; aliases?: Record<string, string>; define?: Record<string, unknown> };
+  build?: { nodePolyfills?: boolean | Record<string, unknown>; aliases?: Record<string, string>; define?: Record<string, unknown>; routes?: SiteRouteInput[] };
   tsconfig?: { compilerOptions?: Record<string, unknown> };
 }
 
@@ -21,11 +33,11 @@ interface BrockSite {
   site: { id: string; name: string; brand: string | null };
   ports: { offset: number; base: number | null };
   api: { path: string; target: SiteApiTarget; changeOrigin: boolean; stripPath: boolean } | null;
-  build: { nodePolyfills: boolean | Record<string, unknown>; aliases: Record<string, string>; define: Record<string, string> };
+  build: { nodePolyfills: boolean | Record<string, unknown>; aliases: Record<string, string>; define: Record<string, string>; routes: SiteRoute[] };
   tsconfig: { compilerOptions: Record<string, unknown> };
 }
 
 declare const defineBrockSite: (input: BrockSiteInput) => BrockSite;
 
 export { defineBrockSite };
-export type { BrockSite, BrockSiteInput, SiteApiInput, SiteApiTarget };
+export type { BrockSite, BrockSiteInput, SiteApiInput, SiteApiTarget, SiteRoute, SiteRouteInput };

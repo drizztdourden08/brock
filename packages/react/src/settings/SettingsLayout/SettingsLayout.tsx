@@ -16,7 +16,7 @@ import { SettingsPageContext } from './behavior/settings-page-context';
 import { SettingsPreviewLayout } from './sub-components/SettingsPreviewLayout';
 
 const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
-  const { sections, settings, defaults, onChange, renderControl, isDisabled, lockCauseOf, lockOverlay, emptyMessage, preview, previewPlacement } = props;
+  const { sections, settings, defaults, onChange, renderControl, isDisabled, lockCauseOf, lockOverlay, emptyMessage, preview, previewPlacement, previewLabel } = props;
   const page = useContext(SettingsPageContext);
   const { panels } = useTesseraStrings();
   const query = page?.variant === 'results' ? page.query : '';
@@ -46,7 +46,7 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
     );
 
   if (page?.variant === 'results') return resolved.length > 0 ? body : null;
-  const framed = <SettingsPreviewLayout preview={preview} placement={previewPlacement}>{body}</SettingsPreviewLayout>;
+  const framed = <SettingsPreviewLayout preview={preview} placement={previewPlacement} label={previewLabel}>{body}</SettingsPreviewLayout>;
   if (!page) return framed;
   return (
     <SettingsPage icon={page.icon} title={page.title} backdrop={page.backdrop} anchors={anchors}>

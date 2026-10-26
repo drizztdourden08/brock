@@ -10,7 +10,8 @@ import type { ReviewStep, StepTour } from '../review.type';
 import { tourLayout } from './read-tour-layout';
 import { tourReading } from './read-tour-step';
 import { checkPoppedTour } from './tour-popped-check';
-import { TOUR_SETTLE_MS, TOUR_STEP_WAIT_MS } from './tours-step.constants';
+import { TOUR_MASCOT_WAIT_MS, TOUR_SETTLE_MS, TOUR_STEP_WAIT_MS } from './tours-step.constants';
+import { waitMascotStill } from './wait-mascot-still';
 
 const pad = (index: number): string => String(index + 1).padStart(2, '0');
 
@@ -19,6 +20,11 @@ const layoutChecks = (tour: StepTour, name: string): void => {
   if (kept !== null) tour.check(`${name}-title-bar`, kept, 'the title bar stays live and undimmed', 'the title bar is inert or under the veil');
   tour.check(`${name}-bubble-on-screen`, tourLayout.bubbleOnScreen(), 'its bubble fits in the window', 'its bubble leaves the window');
   tour.check(`${name}-mascot-clear`, tourLayout.mascotOffHole(), 'the mascot keeps off the lit part', 'the mascot stands on the lit part');
+};
+
+const mascotSettles = async (tour: StepTour, name: string): Promise<void> => {
+  const still = await waitMascotStill();
+  tour.check(`${name}-mascot-still`, still, 'the mascot stops walking', `the mascot was still moving after ${TOUR_MASCOT_WAIT_MS} ms`);
 };
 
 const targetCheck = (tour: StepTour, name: string, step: TourStepDef, at: TourShown): void => {
@@ -35,6 +41,7 @@ const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<bo
   tour.check(name, at !== null, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
   if (at) targetCheck(tour, name, step, at);
   await delay(TOUR_SETTLE_MS);
+  if (at) await mascotSettles(tour, name);
   if (at) layoutChecks(tour, name);
   await tour.capture(`tour-${def.id}-${pad(index)}-${step.id}`);
   if (!at) return false;

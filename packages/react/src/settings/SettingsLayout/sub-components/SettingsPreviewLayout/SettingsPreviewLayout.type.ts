@@ -5,6 +5,8 @@ import type { SettingsPreviewPlacement } from '../../../settings.type';
 interface SettingsPreviewLayoutProps {
   preview?: ReactNode;
   placement?: SettingsPreviewPlacement;
+  label?: string;
+  rowsLabel?: string;
   children: ReactNode;
 }
 

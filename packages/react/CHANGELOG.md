@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-react
 
+## 0.106.0
+
+### Minor Changes
+
+- 5ea3165: Four small additions for Bxel. A context menu entry takes `tone: 'danger'` and passes it to the drawn item. `SettingsPreviewLayout` and its props type are exported from the barrel, so a page outside settings can use the two column preview layout. The preview column is now a `complementary` landmark named by a `label` prop (default "Preview", `previewLabel` on `SettingsLayout`, `TabDef` and `meta`), and the rows column a `region` named "Settings"; both are F6 stops. `listContextMenus()` now lists every registered menu, mounted or not, with a `mounted` flag on each, and the new `defineContextMenu(id, source)` registers a menu at module scope so a test can inspect its entries before any zone mounts.
+- eea3aca: Pass the tour intro panel through to Tessera. A tour step gains `intro`, `art` and `reveal`, with the meaning they have on a Tessera guided step: `intro: true` draws the wide welcome panel, `art` is its picture and `reveal` runs before Tessera looks for a target that is not drawn yet. A `.tour.ts` file has no JSX, so `art` also accepts the token `'product-mark'`, which Brock turns into the product mark (the brand mark, else the product logo), and `{ icon: '<name>' }`, which becomes a Tessera icon. A `ReactNode` still works in a `.tour.tsx` file. A step without these fields is unchanged.
+- eea3aca: A tour step can light an entry in a submenu. `target: { menuEntry }` takes a path, `{ menuEntry: ['Advanced', 'Take the tour'] }`, and a plain label is now searched for in the submenus too. Brock opens each parent submenu in order with a click, as a pointer would, before the step lights the entry, and the submenus close with the menu when the step ends. An entry that is not there leaves the step centred.
+
+### Patch Changes
+
+- eea3aca: The review tours wait for the walking mascot to stop before they check that it keeps off the lit part. The wait reads the mascot's position until it holds still for a few polls, up to 3 seconds, and the step fails with the reason when it never stops. It replaces the single fixed 700 ms pause, which a long walk to a page-sized hole outlasted.
+  - @drizztdourden08/brock-core@0.106.0
+
 ## 0.105.0
 
 ### Minor Changes

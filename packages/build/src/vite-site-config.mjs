@@ -4,6 +4,7 @@ import { appTools } from './app-tools.mjs';
 import { servedDirs } from './served-dirs.mjs';
 import { loadSite } from './site/load-site.mjs';
 import { sitePlugin } from './site/site-plugin.mjs';
+import { siteRoutesPlugin } from './site/site-routes-plugin.mjs';
 import { sitePolyfills } from './site/site-polyfills.mjs';
 import { siteServer } from './site/site-server.mjs';
 import { SITE_OUT_DIR } from './site/site.constants.mjs';
@@ -11,6 +12,8 @@ import { sourceDependencies } from './vite-config.mjs';
 import { SHARED_SINGLETONS } from './vite.constants.mjs';
 
 const aliasesOf = (siteDir, aliases) => Object.fromEntries(Object.entries(aliases).map(([prefix, dir]) => [prefix, resolve(siteDir, dir)]));
+
+const routesPlugins = (routes = []) => (routes.length > 0 ? [siteRoutesPlugin({ routes })] : []);
 
 /**
  * @param {string} siteDir the site folder (the one holding brock.site.ts)
@@ -29,7 +32,7 @@ const defineBrockSiteConfig = async (siteDir, overrides = {}) => {
     publicDir: resolve(siteDir, 'public'),
     envDir: siteDir,
     define: site.build.define ?? {},
-    plugins: [react(), sitePlugin({ siteDir, site: site.site }), ...(await sitePolyfills(siteDir, site.build.nodePolyfills))],
+    plugins: [react(), sitePlugin({ siteDir, site: site.site }), ...(await sitePolyfills(siteDir, site.build.nodePolyfills)), ...routesPlugins(site.build.routes)],
     resolve: { alias: { '@app': src, ...aliasesOf(siteDir, site.build.aliases) }, dedupe: SHARED_SINGLETONS },
     server: { port, strictPort, proxy, fs },
     preview: { port, strictPort, proxy },

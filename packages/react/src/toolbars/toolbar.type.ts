@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { ToolbarDefinition, ToolbarLayout, ToolbarMenuWords, ToolbarSlot } from '@drizztdourden08/tessera/composites';
+import type { ToolbarDefinition, ToolbarLayout, ToolbarMenuWords, ToolbarSide, ToolbarSlot } from '@drizztdourden08/tessera/composites';
 
 interface ToolbarDef extends ToolbarDefinition {
   render: (slot: ToolbarSlot) => ReactNode;
@@ -14,7 +14,15 @@ interface ToolbarLayoutState {
   replace: (stored: unknown) => void;
   setLayout: (layout: ToolbarLayout) => void;
   toggle: (id: string) => void;
+  hide: (id: string) => void;
+  setLabels: (id: string, on: boolean) => void;
+  moveToSide: (id: string, side: ToolbarSide) => void;
   reset: () => void;
+}
+
+interface ToolbarMoveArgs {
+  id: string;
+  side: ToolbarSide;
 }
 
 type ToolbarPlacement = 'widgets' | 'app';
@@ -27,4 +35,4 @@ interface ToolbarMenuInput {
   reset: () => void;
 }
 
-export type { ToolbarDef, ToolbarLayoutState, ToolbarMenuInput, ToolbarPlacement };
+export type { ToolbarDef, ToolbarLayoutState, ToolbarMenuInput, ToolbarMoveArgs, ToolbarPlacement };

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { create } from 'zustand';
-import { createToolbarLayout, migrateToolbarLayout, toggleToolbar } from '@drizztdourden08/tessera/composites';
+import { createToolbarLayout, hideToolbar, migrateToolbarLayout, moveToolbarToSide, setToolbarLabels, toggleToolbar } from '@drizztdourden08/tessera/composites';
 import type { ToolbarLayoutState } from './toolbar.type';
 
 const useToolbarLayoutStore = create<ToolbarLayoutState>()((set) => ({
@@ -18,6 +18,9 @@ const useToolbarLayoutStore = create<ToolbarLayoutState>()((set) => ({
     : { pending: null, layout: migrateToolbarLayout(stored, state.definitions) })),
   setLayout: (layout) => set({ layout, pending: null }),
   toggle: (id) => set((state) => ({ layout: toggleToolbar(state.layout, id, state.definitions) })),
+  hide: (id) => set((state) => ({ layout: hideToolbar(state.layout, id) })),
+  setLabels: (id, on) => set((state) => ({ layout: setToolbarLabels(state.layout, id, on) })),
+  moveToSide: (id, side) => set((state) => ({ layout: moveToolbarToSide(state.layout, id, side) })),
   reset: () => set((state) => ({ layout: createToolbarLayout(state.definitions), pending: null })),
 }));
 

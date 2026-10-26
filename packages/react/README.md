@@ -32,7 +32,7 @@ import { screenTree } from '../.brock/screens';
 | Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer` |
 | Commands | `defineCommand`, `commands` (`register`, `run`, `chords`, `matches`, `remap`, `reset`, `conflicts`), `useCommands`, `useCommandChords`, `formatChord`, `chordKeys`, `useIsMac`, `isMac`, `KeymapPage`, `CommandDef`, `ChordInput` |
-| Context menu | `useContextMenu`, `contextMenuZone`, `openContextMenu`, `listContextMenus`, `blockContextMenus`, `ContextMenuHost`, `ContextMenuEntry`, `ContextMenuConfig`, `ContextMenuContext` |
+| Context menu | `useContextMenu`, `contextMenuZone`, `contextMenuHandler`, `openContextMenu`, `listContextMenus`, `blockContextMenus`, `ContextMenuHost`, `ContextMenuEntry`, `ContextMenuConfig`, `ContextMenuContext` |
 | Screen conventions | `defineScreens`, `buildScreenTree`, `resolveScreenTree`, `deriveMenu`, `ScreensConfig`, `BucketDef`, `ScreenMeta`, `ScreenEntry`, `ScreenTree`, `CardProps`, `PageProps`, `HeroProps`, `HeroSlots` |
 | Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React), `joinRoute`, `resolveRoute`, `routeAliases` |
 | Stores | `createSettingsStore`, `useSettings`, `useSettingsStore`, `useSettingValue`, `createSessionStore`, `resetAllSessionStores`, `useProfiles`, `useProfilesStore`, `useDialogStore`, `dialogs`, `useWidgetPrefStore` |
@@ -51,7 +51,7 @@ import { screenTree } from '../.brock/screens';
 | Toasts | `toast`, `dismissToast`, `ToastHost` |
 | Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
-| Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `ToolbarDef`, `ToolbarPlacement` |
+| Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `TOOLBAR_COMMANDS`, `TOOLBAR_ZONE`, `ToolbarDef`, `ToolbarPlacement` |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
@@ -116,6 +116,8 @@ const CanvasPage = () => <ToolbarHost><Canvas /></ToolbarHost>;
 
 Only one `ToolbarHost` draws the toolbars. A second one logs a warning once and renders only its children. A host that mounts late, inside a page, still gets the layout saved for the profile. A docked toolbar is its own F6 stop, even inside the main area.
 
+A right click, Shift+F10 or the Menu key on a docked toolbar opens a context menu with Show labels, Move to (Top, Bottom, Left, Right) and Hide toolbar. They are the commands `toolbar.labels`, `toolbar.moveTo` and `toolbar.hide`, which take the toolbar id (and the side) as `args`, and the Toolbars menu holds the same entries for each shown toolbar. The labels flag and the side are saved in the toolbar layout. Pass `slot.labels` to Tessera's `Toolbar` as `labels` so the toggle takes effect.
+
 ## Performance widget
 
 The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not (in the Developer group of that menu while developer tools are on), and it pops out like any widget. It is built from Tessera's chart parts:
@@ -171,7 +173,7 @@ useContextMenu('canvas', { entries: () => ['canvas.copy', 'separator', { command
 <div tabIndex={0} {...commandZone('canvas')} {...contextMenuZone('canvas')} />;
 ```
 
-`openContextMenu(id, data)`, `listContextMenus()` and `blockContextMenus(flag)` serve tests and the app's drag state. The architecture guide, Context menus, has the rules.
+`openContextMenu(id, data)`, `listContextMenus()` and `blockContextMenus(flag)` serve tests and the app's drag state. A `reason` on an entry is also its `aria-description`, and each drawn item carries `data-menu-entry` (the command id, else the label). For a Tessera part that reports its own right click, such as `DocumentTabs` `onTabContextMenu(tabId, event)` or `StatusBar` `onItemContextMenu(itemId, event)`, `contextMenuHandler(zone, data?)` returns the handler that opens the zone with the part's data: `onTabContextMenu={(tabId, event) => contextMenuHandler('tabs', { tabId })(event)}`. The architecture guide, Context menus, has the rules.
 
 ## Escape and home
 

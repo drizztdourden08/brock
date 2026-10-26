@@ -1,6 +1,9 @@
 /* @layer renderer-shell @kind types */
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import type { MenuItem } from '@drizztdourden08/tessera/composites';
 import type { CommandContext, CommandDef, CommandState, CommandTrigger } from '../commands/command.type';
+
+type ContextMenuEvent = ReactMouseEvent<HTMLElement> | ReactKeyboardEvent<HTMLElement>;
 
 interface ContextMenuPoint {
   x: number;
@@ -77,7 +80,6 @@ interface ContextMenuAttributes {
 interface ContextMenuOpen {
   entries: readonly ContextMenuEntry[];
   point: ContextMenuPoint;
-  restore: HTMLElement | null;
   context: ContextMenuContext;
   label: string;
 }
@@ -128,7 +130,7 @@ interface ListedContextMenu {
 }
 
 interface OpenContextMenuProps {
-  open: ContextMenuOpen;
+  open: ContextMenuOpen | null;
 }
 
 interface PointerDown {
@@ -154,7 +156,7 @@ interface PointerGesture {
 }
 
 export type {
-  ContextMenuAction, ContextMenuAnchor, ContextMenuAttributes, ContextMenuCommand, ContextMenuConfig, ContextMenuContext, ContextMenuEntries, ContextMenuEntry, ContextMenuFlag, ContextMenuItemState,
+  ContextMenuAction, ContextMenuAnchor, ContextMenuAttributes, ContextMenuCommand, ContextMenuConfig, ContextMenuContext, ContextMenuEntries, ContextMenuEvent, ContextMenuEntry, ContextMenuFlag, ContextMenuItemState,
   ContextMenuPoint, ContextMenuSource, ContextMenuState, ContextMenuSubmenu, ContextMenuView, ContextMenuZoneOptions, ListedContextMenu, OpenContextMenuProps, OpenOptions,
   OpenRequest, OpenResult, PointerDown, PointerGesture, ZoneMatch,
 };

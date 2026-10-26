@@ -8,7 +8,7 @@ const ContextMenuHost = () => {
   useContextMenuPointer();
   const open = useContextMenuStore((state) => state.open);
   useContextMenuClose(open !== null);
-  return open === null ? null : <OpenContextMenu open={open} />;
+  return <OpenContextMenu open={open} />;
 };
 
 export { ContextMenuHost };

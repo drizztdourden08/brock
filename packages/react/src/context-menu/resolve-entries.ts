@@ -4,6 +4,7 @@ import { chordKeys } from '../commands/chord-keys';
 import { chordsOf } from '../commands/chords-of';
 import { commands } from '../commands/commands';
 import { CONTEXT_MENU_SEPARATOR, MAX_SUBMENU_DEPTH } from './context-menu.constants';
+import { entryData } from './entry-data';
 import type { ContextMenuAction, ContextMenuCommand, ContextMenuEntry, ContextMenuSubmenu, ContextMenuView } from './context-menu.type';
 import { flagOf } from './flag-of';
 import { itemState } from './item-state';
@@ -21,6 +22,7 @@ const commandItem = (entry: ContextMenuCommand, view: ContextMenuView, path: str
   return [{
     id: `${path}:${def.id}`,
     label: entry.label ?? def.label,
+    ...entryData(def.id),
     ...(def.icon === undefined ? {} : { icon: def.icon }),
     ...shortcutOf(def.id, view),
     ...itemState(entry, def),
@@ -31,6 +33,7 @@ const commandItem = (entry: ContextMenuCommand, view: ContextMenuView, path: str
 const actionItem = (entry: ContextMenuAction, view: ContextMenuView, path: string): MenuNode[] => [{
   id: path,
   label: entry.label,
+  ...entryData(entry.label),
   ...(entry.icon === undefined ? {} : { icon: entry.icon }),
   ...itemState(entry),
   onSelect: () => entry.run(view.context),
@@ -40,7 +43,7 @@ const submenuItem = (entry: ContextMenuSubmenu, view: ContextMenuView, path: str
   if (depth >= MAX_SUBMENU_DEPTH) return [];
   const children = resolveEntries(entry.items, view, path, depth + 1);
   if (children.length === 0) return [];
-  return [{ id: path, label: entry.label, ...(entry.icon === undefined ? {} : { icon: entry.icon }), disabled: entry.disabled === true, children }];
+  return [{ id: path, label: entry.label, ...entryData(entry.label), ...(entry.icon === undefined ? {} : { icon: entry.icon }), disabled: entry.disabled === true, children }];
 };
 
 const resolveEntry = (entry: ContextMenuEntry, view: ContextMenuView, path: string, depth: number): MenuNode[] => {

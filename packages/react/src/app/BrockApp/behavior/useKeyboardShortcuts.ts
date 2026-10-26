@@ -8,6 +8,7 @@ import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import type { ScreenDef } from '../../../screens/screen.type';
 import { isScreenAllowed } from '../../../screens/is-screen-allowed';
+import { useToolbarSurface } from '../../../toolbars/useToolbarSurface';
 import { touringHolds } from '../../../tours/touring-key';
 import { useBrock } from '../../useBrock';
 import { useDeveloperTools } from '../../useDeveloperTools';
@@ -23,6 +24,7 @@ const useKeyboardShortcuts = (): void => {
   const escapes = useEscapeStack();
   useShellCommands();
   useRouteCommands();
+  useToolbarSurface();
   useKeymapSync();
 
   useEffect(() => {

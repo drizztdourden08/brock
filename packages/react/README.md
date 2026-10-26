@@ -116,7 +116,7 @@ Only one `ToolbarHost` draws the toolbars. A second one logs a warning once and 
 
 ## Performance widget
 
-The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not, and it pops out like any widget. It is built from Tessera's chart parts:
+The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not (in the Developer group of that menu while developer tools are on), and it pops out like any widget. It is built from Tessera's chart parts:
 
 - **Tiles:** a `StatTile` each for frame rate, CPU, memory and event loop lag, with the latest value, the change since the previous sample and its trend, and a `Sparkline` of the last 60 samples (a low frame rate band, a lag band above 50 ms).
 - **Gauges:** the app's CPU, its share of system memory and the JS heap against its limit, each a `Gauge` with warning and danger zones. They take the largest size that fits side by side.

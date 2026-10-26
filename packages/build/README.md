@@ -71,6 +71,13 @@ brock site add <name> [--brand <brand>] [--api <url | port offset>]
 brock site dev | build | preview [-- vite args]
                            in a site folder: Vite with the site's port and /api proxy, its build into dist, a preview
 brock site list            every site of the repo with its port and /api target
+                           brock.site.ts takes build.routes: [{ path: 'privacy', title: 'Privacy', description: '...' }];
+                           after the build each route gets a copy of dist/index.html at dist/<path>/index.html with its
+                           own title, description, og:title and og:description (a static host such as GitHub Pages
+                           serves /privacy/ only when that file exists). A path is letters, digits and dashes in
+                           segments split by /, no leading slash, no dots; a bad one fails the build. Asset URLs
+                           keep working from the folder (absolute and base-prefixed ones as they are, base './' is
+                           rewritten with ../ per level). No routes, no extra page
 brock tessera <args...>    Tessera's own command line, such as tessera new compound SaveSlot, run in the
                            current folder so it finds tessera.config.json from there; every word after
                            tessera reaches it, --help too; Tessera comes from the app's or repo's node_modules

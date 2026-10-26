@@ -82,6 +82,8 @@ describe('isAppError', () => {
     expect(isAppError(crossed, 'install-failed')).toBe(true);
     expect(crossed.message).toBe('Install failed');
     expect(toAppError(crossed)?.data).toEqual({ step: 'unpack' });
+    expect(isAppError(crossed, 'other')).toBe(false);
+    expect(isAppError(crossed, 'install-failed')).toBe(true);
   });
 
   it('is false for plain errors and non-errors', () => {

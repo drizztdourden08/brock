@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SOURCE_SCOPE } from '../vite.constants.mjs';
+import { cachedCrawl } from './crawl-cache.mjs';
 import { crawlRendererDeps } from './crawl-deps.mjs';
 import { ALWAYS_INCLUDED, NON_RENDERER_ENTRIES, OPTION_KEYS, SOURCE_FILE, TESSERA_PACKAGE } from './optimize-deps.constants.mjs';
 import { createResolver, exportsMap, splitSpecifier } from './package-entry.mjs';
@@ -61,6 +62,18 @@ const optimizeDepsOptions = (options) => {
   return Object.fromEntries(OPTION_KEYS.map((key) => [key, stringList(options[key], key)]));
 };
 
+const crawlKnownDeps = (rootDir, aliases) => async () => {
+  const resolver = createResolver();
+  const installedEntries = installedEntriesOf(rootDir, resolver);
+  const seen = new Set();
+  const specs = [
+    ...ALWAYS_INCLUDED.filter((spec) => resolvableFromRoot(rootDir, resolver, spec)),
+    ...[TESSERA_PACKAGE, ...scopedDependencies(rootDir)].flatMap(installedEntries),
+    ...await crawlRendererDeps(rootDir, aliases, resolver, seen),
+  ];
+  return { specs, files: [...seen, ...resolver.manifests()] };
+};
+
 /**
  * @param {string} rootDir the app root
  * @param {Record<string, string>} aliases import prefixes and their absolute folders
@@ -69,13 +82,7 @@ const optimizeDepsOptions = (options) => {
  */
 const rendererOptimizeDeps = async (rootDir, aliases, options) => {
   const { include, exclude, entries, worker } = optimizeDepsOptions(options);
-  const resolver = createResolver();
-  const installedEntries = installedEntriesOf(rootDir, resolver);
-  const known = [
-    ...ALWAYS_INCLUDED.filter((spec) => resolvableFromRoot(rootDir, resolver, spec)),
-    ...[TESSERA_PACKAGE, ...scopedDependencies(rootDir)].flatMap(installedEntries),
-    ...await crawlRendererDeps(rootDir, aliases, resolver),
-  ].filter((spec) => !isExcluded(spec, exclude));
+  const known = (await cachedCrawl(rootDir, aliases, crawlKnownDeps(rootDir, aliases))).filter((spec) => !isExcluded(spec, exclude));
   return {
     include: [...new Set([...known, ...include, ...worker])].sort(),
     ...(exclude.length > 0 ? { exclude } : {}),

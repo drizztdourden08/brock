@@ -7,6 +7,7 @@ Usage:
   brock sync [--check | --if-stale]
                              regenerate the managed files, or report drift with --check; --if-stale syncs only
                              when .brock is missing or older than its inputs, then checks the renderer entry
+                             and copies the brand icons that changed
   brock check                sync --check, for CI
   brock gate                 the app's own gate steps from brock.config.ts gate: the clang-format check of
                              gate.clangFormat, each gate.scripts script, then the cargo lane while a Cargo.toml

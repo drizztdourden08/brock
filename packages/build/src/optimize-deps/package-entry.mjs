@@ -67,9 +67,12 @@ const entryTarget = (pkg, subpath) => {
 };
 
 const createResolver = () => {
+  const manifests = new Set();
   const packageAt = memo((candidate) => {
-    const pkg = readJson(join(candidate, 'package.json'));
+    const file = join(candidate, 'package.json');
+    const pkg = readJson(file);
     if (!pkg) return null;
+    manifests.add(file);
     const real = realpathSync.native(candidate);
     return { dir: real, pkg, linked: !NODE_MODULES_SEGMENT.test(real) };
   });
@@ -89,7 +92,7 @@ const createResolver = () => {
     const file = typeof target === 'string' ? resolveFile(join(found.dir, target)) : null;
     return file && !DECLARATION_FILE.test(file) ? file : null;
   };
-  return { findPackage, resolveFile, entryFile };
+  return { findPackage, resolveFile, entryFile, manifests: () => [...manifests] };
 };
 
 export { createResolver, exportsMap, splitSpecifier };

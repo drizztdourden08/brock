@@ -16,9 +16,20 @@ const SHELL_TARGETS: Readonly<Record<TourShellPart, string>> = {
   'page': '.brock-app__screens',
   'rail': `nav.side-nav--rail[aria-label="${SHELL_LABELS.screens}"]`,
   'hero': '.screen-host__home .hero, .screen-layer:not(.screen-layer--hidden) .hero',
+  'tabs': '.screen-host__home .settings-page__tabs, .screen-layer:not(.screen-layer--hidden) .settings-page__tabs',
 };
 
 const QUOTED = /["\\]/g;
+
+const APP_MENU_ID = 'menu';
+
+const MENU_LABEL_SELECTOR = '[role="menu"] .dropdown__label';
+
+const MENU_ITEM_SELECTOR = '[role^="menuitem"]';
+
+const MENU_OPEN_ATTRIBUTE = 'aria-expanded';
+
+const MENU_TRIGGER_PART = '.dropdown-trigger';
 
 const TITLE_BAR_SELECTOR = SHELL_TARGETS['title-bar'];
 
@@ -53,6 +64,6 @@ const TOUR_STEP_KEYS: Readonly<Record<TourAdvance, readonly string[]>> = {
 };
 
 export {
-  CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOUR_STATE, NO_TOURS, PROFILE_TOURS_FIELD, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
+  APP_MENU_ID, MENU_ITEM_SELECTOR, MENU_LABEL_SELECTOR, MENU_OPEN_ATTRIBUTE, MENU_TRIGGER_PART, CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FALLBACK_SECTION, FIRST_RUN_DELAY_MS, HELP_SECTION, NO_TOUR_STATE, NO_TOURS, PROFILE_TOURS_FIELD, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
   TOUR_KEYWORDS, TOUR_MENU_KEY, TOUR_MENU_LABEL, TOUR_SEARCH_GROUP,
 };

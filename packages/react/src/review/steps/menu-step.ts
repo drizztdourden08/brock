@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { HOME_ENTRY } from '../../app/BrockApp/BrockApp.constants';
+import { hiddenMenuKeys } from '../../app/BrockApp/behavior/hidden-menu-keys';
 import { VIEW_MENU_KEY } from '../../menu/menu-config.constants';
 import { viewHidden } from '../../menu/view-hidden';
 import { menuChecks } from '../checks/menu-checks';
@@ -24,7 +24,7 @@ const menuStep: ReviewStep = {
     await openMenu();
     const snapshot = withoutTuckedRows(readMenu(), product.menu);
     const titleBar = { actions, controls, viewLabel: product.menu?.entries?.[VIEW_MENU_KEY]?.label, viewHidden: viewHidden(product.menu) };
-    const expected = menuExpectation(menu, homeScreen, titleBar, new Set([...menuOverrides.map((record) => record.key), ...(product.menu?.home === false ? [HOME_ENTRY.key] : [])]));
+    const expected = menuExpectation(menu, homeScreen, titleBar, new Set([...menuOverrides.map((record) => record.key), ...hiddenMenuKeys(product.menu)]));
     tour.report(menuChecks(snapshot, expected));
     if (!snapshot.open) return;
     await tour.capture('menu');

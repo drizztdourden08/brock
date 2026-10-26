@@ -137,6 +137,7 @@ interface ProductMenuEntry {
 
 interface ProductMenu {
   home?: boolean;
+  profiles?: boolean;
   entries?: Readonly<Record<string, ProductMenuEntry>>;
 }
 

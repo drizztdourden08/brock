@@ -46,7 +46,7 @@ describe('defineBrockSite', () => {
 
   it('fills the defaults and reads the api as a URL or a port offset', () => {
     expect(defineBrockSite(site)).toEqual({
-      site: { id: 'docs', name: 'docs', brand: null }, ports: { offset: 1, base: null }, api: null, build: { nodePolyfills: false, aliases: {}, define: {} },
+      site: { id: 'docs', name: 'docs', brand: null }, ports: { offset: 1, base: null }, api: null, build: { nodePolyfills: false, aliases: {}, define: {}, routes: [] },
       tsconfig: { compilerOptions: {} },
     });
     expect(defineBrockSite({ ...site, api: 'https://api.example.com' }).api).toEqual({ path: '/api', target: { url: 'https://api.example.com' }, changeOrigin: false, stripPath: false });

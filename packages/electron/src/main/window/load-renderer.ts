@@ -1,9 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
 import { basename } from 'path';
-import { is } from '@electron-toolkit/utils';
-
-const devServerUrl = (): string | null => (is.dev ? (process.env['ELECTRON_RENDERER_URL'] ?? null) : null);
+import { devServerUrl } from './dev-server-url';
 
 const loadRendererPage = (win: BrowserWindow, filePath: string, query: Record<string, string> = {}): void => {
   const server = devServerUrl();

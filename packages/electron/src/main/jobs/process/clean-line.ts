@@ -1,16 +1,15 @@
 /* @layer electron-main @kind logic */
-import { TERMINAL_ESCAPE } from './process-job.constants';
+import { HIDDEN_CODE_RANGES, TERMINAL_SEQUENCES } from './process-job.constants';
 
-const printable = (char: string): boolean => {
-  const code = char.charCodeAt(0);
-  return char === '\t' || (code >= 32 && code !== 127);
+const shown = (char: string): boolean => {
+  const code = char.codePointAt(0) ?? 0;
+  return !HIDDEN_CODE_RANGES.some(([from, to]) => code >= from && code <= to);
 };
 
-const withoutEscapes = (raw: string): string =>
-  raw.split(TERMINAL_ESCAPE).map((part, index) => (index === 0 ? part : part.replace(/^\[[0-9;?]*[A-Za-z]/, ''))).join('');
+const withoutSequences = (raw: string): string => TERMINAL_SEQUENCES.reduce((text, pattern) => text.replace(pattern, ''), raw);
 
 const cleanLine = (raw: string, max: number): string => {
-  const text = [...withoutEscapes(raw)].filter(printable).join('').trimEnd();
+  const text = [...withoutSequences(raw)].filter(shown).join('').trimEnd();
   return text.length > max ? `${text.slice(0, max)} [line cut]` : text;
 };
 

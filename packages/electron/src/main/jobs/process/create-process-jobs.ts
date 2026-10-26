@@ -1,16 +1,26 @@
 /* @layer electron-main @kind logic */
 import type { ProcessJobOutcome } from '@drizztdourden08/brock-core/types';
 import { checkProcessSpec } from './check-process-spec';
-import { PROCESS_ERROR_MAX_CHARS, PROCESS_ID_PATTERN, PROCESS_STEP_ID } from './process-job.constants';
+import { checkRunOptions } from './check-run-options';
+import { PROCESS_ERROR_MAX_CHARS, PROCESS_ID_PATTERN } from './process-job.constants';
 import type { PreparedProcessJob, ProcessJobDef, ProcessJobs, ProcessJobsDeps, ProcessRunOptions, ProcessSpec } from './process-job.type';
-import { runProcess } from './run-process';
+import { startProcessJob } from './start-process-job';
 
 const rejected = (error: string): ProcessJobOutcome => ({ status: 'rejected', error: error.slice(0, PROCESS_ERROR_MAX_CHARS) });
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
-const optionsOf = ({ label, progress, successCodes, elevate, cancel }: ProcessRunOptions): ProcessRunOptions => ({
-  label, progress, successCodes, elevate, cancel,
+const optionsOf = (def: ProcessRunOptions): ProcessRunOptions => ({
+  label: def.label,
+  progress: def.progress,
+  successCodes: def.successCodes,
+  elevate: def.elevate,
+  cancel: def.cancel,
+  cancellable: def.cancellable,
+  timeoutMs: def.timeoutMs,
+  redact: def.redact,
+  log: def.log,
+  allow: def.allow,
 });
 
 const createProcessJobs = (deps: ProcessJobsDeps): ProcessJobs => {
@@ -21,39 +31,44 @@ const createProcessJobs = (deps: ProcessJobsDeps): ProcessJobs => {
   const define = <A>(id: string, def: ProcessJobDef<A>): void => {
     if (!PROCESS_ID_PATTERN.test(id)) throw new Error(`"${id}" is not a valid process job id`);
     if (defs.has(id)) throw new Error(`process job "${id}" is already defined`);
+    const problem = checkRunOptions(def);
+    if (problem) throw new Error(problem);
     defs.set(id, {
       options: optionsOf(def),
       prepare: async (raw) => def.resolve(def.parse(raw), deps.context()),
     });
   };
 
-  const begin = (id: string, spec: ProcessSpec, options: ProcessRunOptions): Promise<ProcessJobOutcome> => {
-    const job = deps.job(id, [{ id: PROCESS_STEP_ID, label: options.label }], { title: options.label, cancellable: true });
-    job.step(PROCESS_STEP_ID);
+  const begin = (id: string, spec: ProcessSpec, options: ProcessRunOptions, tracked: { value: boolean }): Promise<ProcessJobOutcome> => {
     const track = (kill: () => void): (() => void) => {
+      tracked.value = true;
       kills.set(id, kill);
-      return () => kills.delete(id);
+      return () => {
+        kills.delete(id);
+        busy.delete(id);
+      };
     };
-    const cwd = spec.cwd ?? deps.context().paths.userData();
-    return runProcess(job, { ...spec, cwd }, { ...options, track });
+    return startProcessJob(deps, { id, spec, options, track });
   };
 
   const run: ProcessJobs['run'] = async (id, spec, options) => {
     if (busy.has(id)) return rejected(`job "${id}" is already running`);
-    const problem = checkProcessSpec(spec);
+    const problem = checkProcessSpec(spec, options.allow) ?? checkRunOptions(options);
     if (problem) return rejected(problem);
     busy.add(id);
+    const tracked = { value: false };
     try {
-      return await begin(id, spec, options);
+      return await begin(id, spec, options, tracked);
     } catch (error) {
       return rejected(messageOf(error));
     } finally {
-      busy.delete(id);
+      if (!tracked.value) busy.delete(id);
     }
   };
 
-  const start: ProcessJobs['start'] = async (id, raw) => {
+  const start: ProcessJobs['start'] = async (id, raw, authorize) => {
     const prepared = typeof id === 'string' ? defs.get(id) : undefined;
+    if (authorize && !authorize({ anyWindow: prepared?.options.allow?.otherWindows === true })) return rejected('Not allowed from this window.');
     if (!prepared) return rejected('No such process job.');
     if (busy.has(id)) return rejected(`job "${id}" is already running`);
     let spec: ProcessSpec;

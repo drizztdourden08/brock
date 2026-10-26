@@ -5,15 +5,20 @@ import { splitLines } from './split-lines';
 import type { ProcessStream } from './process-job.type';
 
 const attachOutput = (child: ChildProcess, onLine: (stream: ProcessStream, line: string) => void): (() => void) => {
-  const splitters = PROCESS_STREAMS.map((stream) => {
+  const closers = PROCESS_STREAMS.map((stream) => {
     const splitter = splitLines((line) => onLine(stream, line), PROCESS_LINE_MAX_CHARS);
     const source = child[stream];
+    const onData = (text: string): void => splitter.push(text);
     source?.setEncoding('utf8');
-    source?.on('data', (text: string) => splitter.push(text));
-    return splitter;
+    source?.on('data', onData);
+    return () => {
+      splitter.end();
+      source?.off('data', onData);
+      source?.destroy();
+    };
   });
   return () => {
-    for (const splitter of splitters) splitter.end();
+    for (const close of closers) close();
   };
 };
 

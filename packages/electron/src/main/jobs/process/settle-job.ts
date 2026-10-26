@@ -4,7 +4,7 @@ import type { ProcessJobOutcome } from '@drizztdourden08/brock-core/types';
 
 const settleJob = (job: JobHandle, outcome: ProcessJobOutcome): void => {
   if (outcome.status === 'done') job.done();
-  else if (outcome.status === 'failed') job.fail(new Error(outcome.error));
+  else if (outcome.status === 'failed' || outcome.status === 'detached') job.fail(new Error(outcome.error));
 };
 
 export { settleJob };

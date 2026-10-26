@@ -6,14 +6,17 @@ import type { ProcessJobOutcome } from '@drizztdourden08/brock-core/types';
 import { attachOutput } from './attach-output';
 import { buildProcessEnv } from './build-process-env';
 import { cleanLine } from './clean-line';
-import { killProcessTree } from './kill-process-tree';
+import { createStopper } from './create-stopper';
 import { exitOutcome } from './exit-outcome';
-import { PROCESS_GRACE_MS, PROCESS_LINE_MAX_CHARS, PROCESS_TAIL_LINES } from './process-job.constants';
+import { killProcessTree } from './kill-process-tree';
+import {
+  PROCESS_DETACHED_MESSAGE, PROCESS_EXIT_WAIT_MS, PROCESS_GRACE_MS, PROCESS_LINE_MAX_CHARS, PROCESS_TAIL_LINES,
+} from './process-job.constants';
 import type { ProcessRunInput, ProcessSpec, ProcessStream } from './process-job.type';
+import { redactLine } from './redact-line';
 import { reportProgress } from './report-progress';
 import { settleJob } from './settle-job';
 import { spawnFailure } from './spawn-failure';
-import { watchCancel } from './watch-cancel';
 
 const startChild = (spec: ProcessSpec): ChildProcess =>
   spawn(spec.command, [...spec.args], {
@@ -26,33 +29,54 @@ const startChild = (spec: ProcessSpec): ChildProcess =>
   });
 
 const lineHandler = (job: JobHandle, options: ProcessRunInput, tail: string[]) => (stream: ProcessStream, raw: string): void => {
-  const line = cleanLine(raw, PROCESS_LINE_MAX_CHARS);
-  if (!line) return;
-  tail.push(line);
-  if (tail.length > PROCESS_TAIL_LINES) tail.shift();
-  job.log(line, stream === 'stderr' ? 'warn' : 'info');
+  const cleaned = cleanLine(raw, PROCESS_LINE_MAX_CHARS);
+  if (!cleaned) return;
+  const line = redactLine(options.redact, cleaned);
+  if (options.log !== false) {
+    tail.push(line);
+    if (tail.length > PROCESS_TAIL_LINES) tail.shift();
+    job.log(line, stream === 'stderr' ? 'warn' : 'info');
+  }
   reportProgress(job, options.progress, line, stream);
 };
 
 const launch = (child: ChildProcess, job: JobHandle, options: ProcessRunInput, resolve: (outcome: ProcessJobOutcome) => void): void => {
   const tail: string[] = [];
-  const cleanups: (() => void)[] = [];
+  const closers: (() => void)[] = [];
+  const exit: { code: number | null; signal: NodeJS.Signals | null } = { code: null, signal: null };
   let finished = false;
   const finish = (outcome: ProcessJobOutcome): void => {
     if (finished) return;
     finished = true;
-    for (const cleanup of cleanups) cleanup();
+    for (const close of closers) close();
     settleJob(job, outcome);
     resolve(outcome);
   };
-  const giveUp = (): void => finish({ status: 'cancelled', exitCode: null, tail });
+  const detached: ProcessJobOutcome = { status: 'detached', exitCode: null, tail, error: PROCESS_DETACHED_MESSAGE };
   const graceMs = options.cancel?.graceMs ?? PROCESS_GRACE_MS;
-  cleanups.push(watchCancel({ pid: child.pid, signal: job.signal, graceMs, giveUp }));
-  const untrack = options.track?.(() => killProcessTree(child.pid, true));
-  if (untrack) cleanups.push(untrack);
-  cleanups.push(attachOutput(child, lineHandler(job, options, tail)));
-  child.on('error', (error) => finish(spawnFailure(options, error, tail)));
-  child.once('close', (code, signal) => finish(exitOutcome(options, { code, signal, cancelled: job.signal.aborted, tail })));
+  const stopper = createStopper({ child, signal: job.signal, graceMs, timeoutMs: options.timeoutMs, giveUp: () => finish(detached) });
+  const untrack = options.track?.(() => void killProcessTree(child, true));
+  closers.push(attachOutput(child, lineHandler(job, options, tail)));
+  const settleExit = (): void => finish(exitOutcome(options, { ...exit, killed: stopper.killed(), timedOut: stopper.timedOut(), tail }));
+  child.on('error', (error) => {
+    if (child.pid !== undefined) return;
+    stopper.dispose();
+    untrack?.();
+    finish(spawnFailure(options, error, tail));
+  });
+  child.once('exit', (code, signal) => {
+    exit.code = code;
+    exit.signal = signal;
+    stopper.dispose();
+    untrack?.();
+    const wait = setTimeout(settleExit, PROCESS_EXIT_WAIT_MS);
+    closers.push(() => clearTimeout(wait));
+  });
+  child.once('close', (code, signal) => {
+    exit.code = code;
+    exit.signal = signal;
+    settleExit();
+  });
 };
 
 const runProcess = (job: JobHandle, spec: ProcessSpec, options: ProcessRunInput): Promise<ProcessJobOutcome> =>

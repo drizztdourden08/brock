@@ -5,6 +5,12 @@ const PROCESS_ENV_ALLOW: readonly string[] = [
   'COMMONPROGRAMFILES', 'COMMONPROGRAMFILES(X86)', 'PROCESSOR_ARCHITECTURE', 'NUMBER_OF_PROCESSORS', 'LANG', 'LC_ALL', 'TZ',
 ];
 
+const PROCESS_ENV_DENY_NAMES: readonly string[] = ['NODE_OPTIONS', 'LD_PRELOAD', 'PATH'];
+
+const PROCESS_ENV_DENY_PREFIXES: readonly string[] = ['ELECTRON_', 'DYLD_'];
+
+const PROCESS_INTERPRETERS: readonly string[] = ['cmd', 'powershell', 'pwsh', 'msiexec', 'rundll32', 'wscript', 'cscript', 'mshta'];
+
 const PROCESS_TAIL_LINES = 20;
 
 const PROCESS_LINE_MAX_CHARS = 4096;
@@ -12,6 +18,12 @@ const PROCESS_LINE_MAX_CHARS = 4096;
 const PROCESS_GRACE_MS = 5000;
 
 const PROCESS_GIVE_UP_MS = 5000;
+
+const PROCESS_EXIT_WAIT_MS = 1000;
+
+const TASKKILL_GONE = 128;
+
+const PROCESS_ENV_MESSAGE = 'The environment must map plain names to plain strings.';
 
 const PROCESS_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
 
@@ -27,9 +39,29 @@ const PROCESS_STREAMS = ['stdout', 'stderr'] as const;
 
 const PROCESS_ENV_NAME = /^[A-Za-z_][A-Za-z0-9_()]*$/;
 
+const PROCESS_WINDOWS_DRIVE = /^[A-Za-z]:\\/;
+
+const PROCESS_WINDOWS_PROGRAM = /\.(exe|com)$/i;
+
+const PROCESS_WINDOWS_PREFIX = /^(\\\\[?.]\\)?[A-Za-z]:/;
+
+const PROCESS_DETACHED_MESSAGE = 'The installer runs with administrator rights and could not be stopped. It may still finish or roll back on its own.';
+
 const TERMINAL_ESCAPE = String.fromCharCode(27);
 
+const TERMINAL_BELL = String.fromCharCode(7);
+
+const TERMINAL_SEQUENCES: readonly RegExp[] = [
+  new RegExp(`${TERMINAL_ESCAPE}\\][^${TERMINAL_BELL}${TERMINAL_ESCAPE}]*(?:${TERMINAL_BELL}|${TERMINAL_ESCAPE}\\\\)?`, 'g'),
+  new RegExp(`${TERMINAL_ESCAPE}\\[[0-9;?]*[ -/]*[@-~]`, 'g'),
+  new RegExp(`${TERMINAL_ESCAPE}.?`, 'g'),
+];
+
+const HIDDEN_CODE_RANGES: readonly (readonly [number, number])[] = [[0, 8], [10, 31], [127, 159], [0x202a, 0x202e], [0x2066, 0x2069]];
+
 export {
-  PROCESS_ARG_MAX_CHARS, PROCESS_ARGS_MAX, PROCESS_ENV_ALLOW, PROCESS_ERROR_MAX_CHARS, PROCESS_GIVE_UP_MS, PROCESS_GRACE_MS,
-  PROCESS_ENV_NAME, PROCESS_ID_PATTERN, PROCESS_LINE_MAX_CHARS, PROCESS_STEP_ID, PROCESS_STREAMS, PROCESS_TAIL_LINES, TERMINAL_ESCAPE,
+  HIDDEN_CODE_RANGES, PROCESS_ARG_MAX_CHARS, PROCESS_ARGS_MAX, PROCESS_DETACHED_MESSAGE, PROCESS_ENV_ALLOW, PROCESS_ENV_DENY_NAMES,
+  PROCESS_ENV_DENY_PREFIXES, PROCESS_ENV_MESSAGE, PROCESS_ENV_NAME, PROCESS_ERROR_MAX_CHARS, PROCESS_EXIT_WAIT_MS, PROCESS_GIVE_UP_MS, PROCESS_GRACE_MS,
+  PROCESS_ID_PATTERN, PROCESS_INTERPRETERS, PROCESS_LINE_MAX_CHARS, PROCESS_STEP_ID, PROCESS_STREAMS, PROCESS_TAIL_LINES,
+  PROCESS_WINDOWS_DRIVE, PROCESS_WINDOWS_PREFIX, PROCESS_WINDOWS_PROGRAM, TASKKILL_GONE, TERMINAL_SEQUENCES,
 };

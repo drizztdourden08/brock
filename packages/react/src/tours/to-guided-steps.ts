@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { ReactNode } from 'react';
 import type { TourStep, TourTarget } from '@drizztdourden08/tessera/composites';
+import { tourArt } from './tour-art';
 import { prepareStep } from './prepare-step';
 import { tourTargets } from './resolve-tour-target';
 import { stepAdvance } from './step-advance';
@@ -15,6 +16,12 @@ const lazyTarget = (target: BrockTourTarget): TourTarget => ({
 const hintOf = (step: TourStepDef, relayed: boolean, clickHint: ReactNode): ReactNode =>
   step.hint ?? (relayed ? clickHint : undefined);
 
+const introOf = (step: TourStepDef): Pick<TourStep, 'intro' | 'art' | 'reveal'> => ({
+  ...(step.intro === undefined ? {} : { intro: step.intro }),
+  ...(step.art === undefined ? {} : { art: tourArt(step.art) }),
+  ...(step.reveal ? { reveal: step.reveal } : {}),
+});
+
 const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, clickHint: ReactNode): TourStep => {
   const lit = tourTargets.litOf(step);
   const relayed = tourTargets.poppedClick(step) !== null;
@@ -28,6 +35,7 @@ const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, clickHint
     body: step.body,
     ...(lit && !popped ? { target: lazyTarget(lit) } : {}),
     ...(click && advance === 'click' ? { clickTarget: lazyTarget(click) } : {}),
+    ...introOf(step),
     ...(step.placement ? { placement: step.placement } : {}),
     ...(step.mascot ? { mascot: step.mascot } : {}),
     ...(hint === undefined ? {} : { hint }),

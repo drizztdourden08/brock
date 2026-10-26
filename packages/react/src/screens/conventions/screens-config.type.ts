@@ -64,6 +64,12 @@ interface HeroMeta {
   size?: HeroSize;
 }
 
+interface ScreenSearchRow {
+  label: string;
+  keywords?: string[];
+  anchor?: string;
+}
+
 interface ScreenMeta extends ShowRule {
   title?: string;
   icon?: IconName;
@@ -73,6 +79,7 @@ interface ScreenMeta extends ShowRule {
   devOnly?: boolean;
   requiresProfile?: boolean;
   keywords?: string[];
+  searchRows?: ScreenSearchRow[];
   menu?: ScreenMenu;
   header?: PageHeaderMeta;
   path?: string;
@@ -86,4 +93,4 @@ interface ScreenMeta extends ShowRule {
   source?: SettingsValueSource;
 }
 
-export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSize, ScreensConfig, SettingsPlacement };
+export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSearchRow, ScreenSize, ScreensConfig, SettingsPlacement };

@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ScreensConfig } from '../src/screens/conventions/screens-config.type';
 import { buildSearchIndex } from '../src/search/build-search-index';
+import { entrySeed } from '../src/search/seeds/entry-seed';
 import { buildCatalog } from '../src/search/catalog/build-catalog';
 import { entriesInBucket } from '../src/search/entries-in-bucket';
 import { liveEntry } from '../src/search/live-entry';
@@ -139,5 +140,46 @@ describe('buildCatalog with the index', () => {
   it('turns widget menu toggles into widget entries', () => {
     const widgets = [{ key: 'widget-logs', label: 'Logs', checked: false, onClick: () => undefined }];
     expect(buildCatalog(input({ widgets })).find((entry) => entry.id === 'widget:logs')?.kind).toBe('widget');
+  });
+});
+
+const ROW_SEEDS: SearchFileSeed[] = [
+  { kind: 'page', bucket: 'game', id: 'engine', title: 'Engine', keywords: ['version', 'upgrade'], entries: [{ label: 'Installed build', keywords: ['patch'], anchor: 'build' }] },
+  { kind: 'settings', bucket: 'game', id: 'about', title: 'About', keywords: ['version'] },
+  { kind: 'page', bucket: 'game', id: 'version-notes', title: 'Version notes' },
+  { kind: 'page-meta', bucket: 'data', id: 'tracker', title: 'Tracker', keywords: ['atlas'], entries: [{ label: 'Zoom level', anchor: 'zoom' }] },
+  { kind: 'tab', bucket: 'data', page: 'tracker', id: 'map' },
+  { kind: 'sub', bucket: 'game', page: 'engine', id: 'notes', title: 'Notes', path: 'notes', entries: [{ label: 'Changelog', anchor: 'log' }] },
+  { kind: 'hero', bucket: 'game', id: 'home', entries: [{ label: 'Welcome back', anchor: 'welcome' }] },
+];
+
+describe('page keywords and declared rows', () => {
+  const rows = buildSearchIndex(CONFIG, ROW_SEEDS);
+
+  it('finds a page of every kind by a keyword of its meta', () => {
+    const ids = rankEntries(rows, 'version').map((entry) => entry.id);
+    expect(ids).toContain('screen:game/engine');
+    expect(ids).toContain('screen:game/about');
+    expect(rankEntries(rows, 'atlas').map((entry) => entry.id)).toContain('screen:data/tracker');
+  });
+
+  it('ranks a title match above a keyword match', () => {
+    const ids = rankEntries(rows, 'version').map((entry) => entry.id);
+    expect(ids.indexOf('screen:game/version-notes')).toBeLessThan(ids.indexOf('screen:game/engine'));
+  });
+
+  it('turns a declared row into a result that opens the page at its anchor', () => {
+    const found = rankEntries(rows, 'patch')[0];
+    expect(found).toMatchObject({ kind: 'entry', label: 'Installed build', breadcrumb: ['Game', 'Engine'], target: { route: 'game/engine', anchor: 'build' } });
+    expect(rows.find((entry) => entry.label === 'Zoom level')).toMatchObject({ target: { route: 'data/tracker', anchor: 'zoom' } });
+    expect(rows.find((entry) => entry.label === 'Changelog')).toMatchObject({ target: { route: 'game/engine/notes', anchor: 'log' } });
+    expect(rows.find((entry) => entry.label === 'Welcome back')).toMatchObject({ target: { route: 'game', anchor: 'welcome' } });
+  });
+
+  it('seeds a module settings page and its meta rows from the screen entries', () => {
+    const seeds = entrySeed({ kind: 'settings', id: 'about', bucket: 'game', sections: [], meta: { keywords: ['Version'], searchRows: [{ label: 'Build id', keywords: ['Hash'], anchor: 'id' }] } });
+    const index = buildSearchIndex(CONFIG, seeds);
+    expect(index.find((entry) => entry.id === 'screen:game/about')).toMatchObject({ kind: 'page', keywords: ['version'] });
+    expect(index.find((entry) => entry.label === 'Build id')).toMatchObject({ keywords: ['hash'], target: { route: 'game/about', anchor: 'id' } });
   });
 });

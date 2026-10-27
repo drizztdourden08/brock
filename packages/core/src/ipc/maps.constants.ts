@@ -8,6 +8,7 @@ const BASE_INVOKE_MAP = {
   getUserDataPath: 'app:getUserDataPath',
   getAppVersion: 'app:getVersion',
   takeOpenRequests: 'app:takeOpens',
+  takeRestartHandoff: 'app:takeHandoff',
   getSystemDiagnostics: 'diagnostics:getSystem',
   getProcessDiagnostics: 'diagnostics:getProcesses',
   getBugReportTransport: 'bugReport:transport',

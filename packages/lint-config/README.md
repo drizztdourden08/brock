@@ -23,6 +23,10 @@ export default brockMarkdownlint({ ignores: ['vendor/**'] });
 { "extends": "@drizztdourden08/brock-lint-config/tsconfig/react.json", "include": ["src"] }
 ```
 
+### The default `rootDir`
+
+`brockEslint` lists the data and verbatim files from `rootDir`, and their globs are read relative to the folder of the eslint.config file. When `rootDir` is not passed, it is that folder, whatever folder ESLint runs from: the folder of the eslint.config file that called `brockEslint`, else the nearest folder at or above the current one that holds an `eslint.config.*` file, else the current folder. So `pnpm -r lint` running `eslint .` in `apps/web` under a root config still marks the `@kind verbatim` files. Pass `rootDir: import.meta.dirname` only to point somewhere else. A `rootDir` you pass always wins.
+
 ## What it adds to standards
 
 `brockEslint` is `standardsEslint` with the `react-app` preset and Brock's extension, `standards.extension.mjs`, which the package also declares in its `package.json`, so installing it is enough:

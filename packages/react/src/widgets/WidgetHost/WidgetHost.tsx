@@ -18,7 +18,7 @@ import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useLegacyWidgetContext } from './behavior/useLegacyWidgetContext';
-import { useContextTitles } from './behavior/useContextTitles';
+import { useContextSublabels } from './behavior/useContextSublabels';
 import { useWidgetGates } from './behavior/useWidgetGates';
 import { useDisabledWidgets } from './behavior/useDisabledWidgets';
 import { openSettingTarget } from '../../search/open-setting-target';
@@ -57,7 +57,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   const stage = useKitStage({
     definitions, layout, onLayoutChange: setLayout, contextActive: gates.contextActive, pageOpen: gates.pageOpen, onPopOut: popOut, externalDrag, children: content, settingsContent,
   }, extraOf);
-  const titled = useContextTitles(stage.props.definitions);
+  const labelled = useContextSublabels(stage.props.definitions);
   const shown = useMemo(() => (stage.open ? stage.popped : poppedShown(layout, gates)), [stage.open, stage.popped, layout, gates]);
   const staged = <>{main}{stage.layer}</>;
 
@@ -75,7 +75,7 @@ const WidgetHost = (props: WidgetHostProps) => {
   return (
     <WidgetManager
       {...stage.props}
-      definitions={titled}
+      definitions={labelled}
       main={staged}
       mainLabel={mainLabel}
       mainGrip="dragging"

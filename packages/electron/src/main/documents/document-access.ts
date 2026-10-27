@@ -22,7 +22,7 @@ import { watchGranted } from './watch-granted';
 const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => {
   const allowed = new Map<string, string>();
   const registry = createWatchRegistry();
-  const folders = createFolderGrants({ protectedRoots: deps.protectedRoots, sensitiveRoots: deps.sensitiveRoots, onRevoke: registry.stopRoot });
+  const folders = createFolderGrants({ protectedRoots: deps.protectedRoots, sensitiveRoots: deps.sensitiveRoots, tempRoot: deps.tempRoot, onRevoke: registry.stopRoot });
   const limits = { ...LIST_LIMITS, ...deps.limits };
   const memory = (): RememberedFolders => {
     if (deps.memory === undefined) throw new Error('Remembered folders are not available here');
@@ -46,7 +46,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
 
   return {
     allow,
-    allowFolder: folders.allow,
+    allowFolder: folders.allow, createTempFolder: folders.made.make, forgetTempFolders: folders.made.clear,
     revokeFolder: folders.revoke,
     folderRefusal: (path) => {
       try {

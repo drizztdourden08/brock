@@ -8,6 +8,8 @@ import type { WatchFn } from './watch-folder.type';
 interface DocumentAccess {
   allow: (path: string) => string;
   allowFolder: (path: string) => string;
+  createTempFolder: (prefix?: string) => string;
+  forgetTempFolders: () => void;
   revokeFolder: (path: string) => boolean;
   folderRefusal: (path: string) => string | null;
   exact: (path: string) => boolean;
@@ -29,6 +31,7 @@ interface DocumentAccess {
 interface DocumentAccessDeps {
   protectedRoots?: () => string[];
   sensitiveRoots?: () => SensitiveRoots;
+  tempRoot?: () => string;
   limits?: Partial<ListLimits>;
   recent?: (profileId?: string) => Promise<RecentDocument[]>;
   memory?: () => RememberedFolders;

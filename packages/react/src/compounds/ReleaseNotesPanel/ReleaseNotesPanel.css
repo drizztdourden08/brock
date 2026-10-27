@@ -18,7 +18,6 @@
 }
 
 .release-notes-panel__content {
-  scrollbar-gutter: stable;
   max-height: calc(var(--size-320) + var(--size-32) - var(--size-2));
   background: var(--c-sunken);
 }

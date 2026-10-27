@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-react
 
+## 0.110.0
+
+### Minor Changes
+
+- bec17ba: Three APIs let an assistant read and drive the app. `settingsCatalog()` lists every settings tab with its sections and items (key, label, description, control, choices, value source, current value), and `settings.set(key, value)` writes one app setting after checking the key and the value. `nav.routes()` lists the screens, hubs, pages and tabs that `nav.open` accepts. `dialogs.current()` returns the open confirm dialog with its choices, and `dialogs.answer(choice)` answers it like a click, so a confirm left open never hangs a run.
+- bd0197f: The command registry can say why a command is unavailable and can be driven by an assistant. A command gains `reason()` (why it is off right now) and `meta` (plain app data, such as an args schema, returned by `commands.list()`), and `run` may return a promise. New `commands.describe(id)` returns `{ enabled, reason, checked }` with the gates applied. `commands.run` now returns a promise of `{ ok: true }` or `{ ok: false, why: 'unknown' | 'disabled' | 'gated', reason }` and waits for a promise from `run`; it used to return a boolean, so a caller that read the result must read `.ok` after awaiting. `CommandTrigger` gains `'assistant'`. A command with a `reason` shows greyed out in menus.
+- 03ba117: Widgets and toolbars have a stable API for code that drives the layout, such as an assistant. `widgets.list()` returns a plain snapshot of every widget: visible, docked side, size and index, floating rect, popped, and whether its context is active. New calls: `widgets.dock(id, { side, size, index })`, `float(id, rect)`, `resize(id, size or rect)`, `focus(id)`, `presets()`, `applyPreset(name)` (plus `registerPresets` to name presets) and `subscribe(listener)`. The new `toolbars` object does the same for toolbars: `list`, `show`, `hide`, `moveToSide(id, side, row)`, `labels(id, on)`, `reset` and `subscribe`. An unknown id throws an error that names the known ones.
+
+### Patch Changes
+
+- Updated dependencies [28179da]
+  - @drizztdourden08/brock-core@0.110.0
+
 ## 0.109.1
 
 ### Patch Changes

@@ -150,6 +150,13 @@ Every handler and module receives `{ product, isDev, flags, instance, paths: { u
 - The storage summary is the immediate entry count plus the recursive byte size per domain; unreadable entries are skipped; the rows come from `BootstrapOptions.dataDomains`.
 - `Data/ui-views.json` is one JSON map shared by every profile; the renderer debounces before calling, so the handlers are a plain read and write.
 
+## Restart with a handoff
+
+- `restartApp({ handoff?, window? })` (from `@drizztdourden08/brock-electron/main`) relaunches the app with the arguments of this launch and exits. `window` is `'same'` (default), `'show'` or `'background'` and sets `--background` to match. Flush your own state first: the quit handlers do not run.
+- `handoff` is a JSON value of at most 64 KB. A bad value throws before the relaunch. It is written to `restart-handoff.json` in the user data folder with the private-file helper (mode 600, or the user's own access list on Windows).
+- `takeRestartHandoff()` reads it on the next boot and deletes it in the same call, so a second read returns `null`. A blob older than 60 seconds, from the future, over the limit or malformed is deleted and ignored. The renderer reads it once with `api.takeRestartHandoff()` (`app:takeHandoff`); whoever reads first gets it.
+- The blob is not a secret store, only a short handoff between two runs of the app. Never put a password or a long-lived token in it.
+
 ## Named instances
 
 - `--instance=NAME` identifies the window (title, icon, title-bar badge) and selects the profile of the same name so parallel launches never share profile data; `--profile=NAME` selects a profile by id or display name and defaults to the instance name. The name becomes a profile folder, so it is lowercased and must match `^[a-z0-9][a-z0-9-]{0,38}$`; an invalid name is logged and ignored.

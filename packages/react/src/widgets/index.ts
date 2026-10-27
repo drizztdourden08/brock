@@ -5,6 +5,7 @@ export { widgetsFromFiles } from './widgets-from-files';
 export { widgets } from './widgets';
 export { defineLayoutPreset } from './define-layout-preset';
 export type { LayoutCell, LayoutColumn, LayoutPane, LayoutPreset, LayoutRow, LayoutRowDef, RevisionMode } from './layout-preset.type';
+export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSnapshot } from './widget-snapshot.type';
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';

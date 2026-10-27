@@ -27,6 +27,18 @@ interface ToolbarMoveArgs {
 
 type ToolbarPlacement = 'widgets' | 'app';
 
+interface ToolbarSnapshot {
+  id: string;
+  label: string;
+  shown: boolean;
+  side: ToolbarSide | null;
+  row: number | null;
+  index: number | null;
+  labels: boolean;
+}
+
+type ToolbarListener = (snapshot: readonly ToolbarSnapshot[]) => void;
+
 interface ToolbarMenuInput {
   definitions: readonly ToolbarDef[];
   layout: ToolbarLayout;
@@ -35,4 +47,4 @@ interface ToolbarMenuInput {
   reset: () => void;
 }
 
-export type { ToolbarDef, ToolbarLayoutState, ToolbarMenuInput, ToolbarMoveArgs, ToolbarPlacement };
+export type { ToolbarDef, ToolbarLayoutState, ToolbarListener, ToolbarMenuInput, ToolbarMoveArgs, ToolbarPlacement, ToolbarSnapshot };

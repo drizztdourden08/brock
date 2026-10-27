@@ -143,6 +143,36 @@ Only one `ToolbarHost` draws the toolbars. A second one logs a warning once and 
 
 A right click, Shift+F10 or the Menu key on a docked toolbar opens a context menu with Show labels, Move to (Top, Bottom, Left, Right) and Hide toolbar. They are the commands `toolbar.labels`, `toolbar.moveTo` and `toolbar.hide`, which take the toolbar id (and the side) as `args`, and the Toolbars menu holds the same entries for each shown toolbar. The labels flag and the side are saved in the toolbar layout. Pass `slot.labels` to Tessera's `Toolbar` as `labels` so the toggle takes effect.
 
+## Widgets and toolbars API
+
+`widgets` and `toolbars` are plain facades over the layout stores, for code that drives the layout without a mouse, such as an assistant over MCP. Every list is a plain snapshot, every id is checked, and an unknown id throws an `Error` that names the known ids. They add no store.
+
+```ts
+widgets.list();                                    // WidgetSnapshot[]
+widgets.dock('notes', { side: 'left', size: 320, index: 0 });
+widgets.float('notes', { x: 80, y: 60, width: 420, height: 300 });
+widgets.resize('notes', 360);                      // docked: pixels; floating: { width, height, x?, y? }
+widgets.focus('notes');                            // opens it if closed, then makes it the active tab or the top window
+widgets.presets();                                 // ['default', ...registered names]
+widgets.applyPreset('review');
+const stop = widgets.subscribe((snapshot) => {});  // fires when a snapshot differs from the last one
+
+toolbars.list();                                   // ToolbarSnapshot[]
+toolbars.show('tools');
+toolbars.hide('tools');
+toolbars.moveToSide('tools', 'left', 0);           // row is optional
+toolbars.labels('tools', false);
+toolbars.reset();
+const stopBars = toolbars.subscribe((snapshot) => {});
+```
+
+- `WidgetSnapshot`: `id`, `label`, `visible` (open in the layout), `placement` (`'docked'`, `'floating'`, `'popped'` or `null`), `side` (`'left'`, `'right'`, `'top'`, `'bottom'` or `null`), `size` (pixels across the edge, the width on the left and right, the height on the top and bottom), `index` (the pane's place among the panes on that side, first is 0), `tab` (the place inside a tabbed pane), `rect` (the floating rectangle in pixels, else `null`), `popped`, `context` and `available` (the widget shows now: its context is active, or it is always visible). `side`, `size`, `index` and `tab` are `null` unless docked.
+- `dock(id, { side, size?, index? })` docks the widget, opening it if it was closed, floating or popped. `size` is in pixels across the edge. `index` puts the widget's pane before the pane at that place on the side, and a number past the end means last. `float(id, rect)` floats it; `x` and `y` are optional and default to the main area's corner. `resize(id, size | rect)` takes a number for a docked widget and a rect for a floating one, and rejects a closed or popped widget. `focus(id)` has no effect on a popped widget, which keeps its own window.
+- Presets: the app's own `layout` preset is named `default`. `widgets.registerPresets({ name: defineLayoutPreset(...) })` adds named presets and returns a function that removes them. `applyPreset(name)` replaces the layout, as Reset layout does for `default`, and throws on an unknown name. `registerPresets` rejects `default`.
+- `ToolbarSnapshot`: `id`, `label`, `shown`, `side`, `row` (the lane on that side), `index` (the place in the row) and `labels`; the placement fields are `null` while hidden. `show` and `moveToSide` throw when the side has no room. `moveToSide` shows a hidden toolbar first.
+- These calls reach the normal layout. A widget of a widget kit is not listed, and a call naming one throws; use `widgetKits` for it. A call on a normal widget closes an open kit first, like `widgets.open`.
+- `subscribe` is called with the new snapshot only when it differs from the last one sent. Widget snapshots follow the layout and the contexts; a pure window resize does not fire one.
+
 ## Performance widget
 
 The built-in `performance` widget is the debug view for a bug report. It starts closed and sits in the Widgets menu for everyone, developer tools or not (in the Developer group of that menu while developer tools are on), and it pops out like any widget. It is built from Tessera's chart parts:

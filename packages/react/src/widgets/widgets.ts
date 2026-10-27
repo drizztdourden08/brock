@@ -1,11 +1,31 @@
 /* @layer renderer-shell @kind logic */
+import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
+import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { forcedWidgets } from './forced-widgets';
+import { kitRoute } from './kits/kit-route';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
 import { widgetBodyHolds } from './widget-body-holds';
+import { applyPreset } from './widget-apply-preset';
+import { dockEdit } from './widget-dock-edit';
+import { floatEdit } from './widget-float-edit';
+import { focusEdit } from './widget-focus-edit';
+import { knownWidget } from './widget-known';
+import { listWidgets } from './widget-list';
+import { presetNames } from './widget-preset-names';
+import { registerPresets } from './widget-register-presets';
+import { resizeEdit } from './widget-resize-edit';
+import { subscribeWidgets } from './widget-subscribe';
+import type { WidgetDockOptions, WidgetFloatRect } from './widget-snapshot.type';
 import { widgetVisible } from './widget-visible';
 
 const opening = (change: (id: string) => void) => (id: string): void => {
   change(id);
+  widgetBodyHolds.widgets([id]);
+};
+
+const editing = (id: string, edit: (layout: WidgetLayout) => WidgetLayout): void => {
+  kitRoute.leave();
+  useWidgetLayoutStore.getState().change(edit);
   widgetBodyHolds.widgets([id]);
 };
 
@@ -17,6 +37,29 @@ const widgets = {
   reset: (): void => useWidgetLayoutStore.getState().reset(),
   force: (ids: readonly string[]): void => forcedWidgets.force(ids),
   isVisible: widgetVisible,
+  list: listWidgets,
+  dock: (id: string, options: WidgetDockOptions): void => {
+    const def = knownWidget(id);
+    const { definitions } = useWidgetLayoutStore.getState();
+    editing(id, (layout) => dockEdit(layout, def, options, definitions));
+  },
+  float: (id: string, rect: WidgetFloatRect): void => {
+    knownWidget(id);
+    editing(id, (layout) => floatEdit(layout, id, rect));
+  },
+  resize: (id: string, to: number | WidgetFloatRect): void => {
+    knownWidget(id);
+    editing(id, (layout) => resizeEdit(layout, id, to));
+  },
+  focus: (id: string): void => {
+    knownWidget(id);
+    if (!isWidgetOpen(useWidgetLayoutStore.getState().layout, id)) useWidgetLayoutStore.getState().open(id);
+    editing(id, (layout) => focusEdit(layout, id));
+  },
+  presets: presetNames,
+  applyPreset,
+  registerPresets,
+  subscribe: subscribeWidgets,
 };
 
 export { widgets };

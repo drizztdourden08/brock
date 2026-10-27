@@ -2,6 +2,6 @@
 import type { CommandData, CommandDef } from './command.type';
 
 const commandShape = (defs: readonly CommandDef[]): string =>
-  JSON.stringify(defs.map(({ run: _run, when, checked, ...data }): CommandData => ({ ...data, gated: when !== undefined, checkable: checked !== undefined })));
+  JSON.stringify(defs.map(({ run: _run, when, reason, checked, ...data }): CommandData => ({ ...data, gated: when !== undefined, reasoned: reason !== undefined, checkable: checked !== undefined })));
 
 export { commandShape };

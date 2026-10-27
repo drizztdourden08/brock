@@ -119,9 +119,9 @@ describe('the dispatcher', () => {
     expect(ran).toEqual(['editor-undo', 'undo']);
   });
 
-  it('skips a command whose when returns false', () => {
+  it('skips a command whose when returns false', async () => {
     expect(pressIn(document.createElement('div'), { key: 'l' })).toBe(false);
-    expect(commands.run('locked')).toBe(false);
+    expect((await commands.run('locked')).ok).toBe(false);
   });
 });
 

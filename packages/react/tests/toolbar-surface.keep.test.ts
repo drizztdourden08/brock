@@ -6,6 +6,7 @@ import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createToolbarLayout, toolbarIdsOf } from '@drizztdourden08/tessera/composites';
 import { commands } from '../src/commands/commands';
+import type { CommandRunResult } from '../src/commands/command.type';
 import { useCommandStore } from '../src/commands/useCommandStore';
 import { ContextMenuHost } from '../src/context-menu/ContextMenuHost';
 import type { ContextMenuCommand, ContextMenuSubmenu } from '../src/context-menu/context-menu.type';
@@ -33,7 +34,8 @@ const TOOLS = make('tools', 'left');
 const OPTIONS = make('options', 'top');
 const store = () => useToolbarLayoutStore.getState();
 const context = { point: { x: 0, y: 0 }, target: null, trigger: 'pointer', data: 'tools' } as const;
-const run = (id: string, args?: unknown): boolean => commands.run(id, { ...context, args });
+const runAsync = (id: string, args?: unknown): Promise<CommandRunResult> => commands.run(id, { ...context, args });
+const run = (id: string, args?: unknown): void => { void runAsync(id, args); };
 
 const Surface = () => {
   useToolbarSurface();
@@ -76,8 +78,8 @@ describe('the toolbar commands', () => {
     store().setDefinitions([TOOLS, OPTIONS]);
   });
 
-  it('hides a toolbar from its id', () => {
-    expect(run('toolbar.hide', 'options')).toBe(true);
+  it('hides a toolbar from its id', async () => {
+    await expect(runAsync('toolbar.hide', 'options')).resolves.toEqual({ ok: true });
     expect(store().layout.hidden).toContain('options');
   });
 

@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuItem, MenuNode } from '@drizztdourden08/tessera/composites';
 import { commands } from '../commands/commands';
+import { commandBlock } from '../commands/command-block';
 import type { CommandDef } from '../commands/command.type';
 import { MENU_SEPARATOR } from '../menu/menu.constants';
 import { hasItem } from './has-item';
@@ -12,9 +13,9 @@ const itemOf = (def: CommandDef, view: MenuBarView): MenuItem => ({
   label: def.label,
   icon: def.icon,
   shortcut: view.chords(def.id)?.[0],
-  disabled: def.when?.() === false,
+  disabled: commandBlock(def) !== null,
   onSelect: () => {
-    commands.run(def.id);
+    void commands.run(def.id);
   },
 });
 

@@ -2,7 +2,7 @@
 import { commands } from '../commands/commands';
 
 const runToolbarCommand = (command: string, args: unknown): void => {
-  commands.run(command, { point: { x: 0, y: 0 }, target: null, trigger: 'pointer', data: undefined, args });
+  void commands.run(command, { point: { x: 0, y: 0 }, target: null, trigger: 'pointer', data: undefined, args });
 };
 
 export { runToolbarCommand };

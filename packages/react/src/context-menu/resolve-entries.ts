@@ -26,7 +26,7 @@ const commandItem = (entry: ContextMenuCommand, view: ContextMenuView, path: str
     ...(def.icon === undefined ? {} : { icon: def.icon }),
     ...shortcutOf(def.id, view),
     ...itemState(entry, def),
-    onSelect: () => { commands.run(def.id, { ...view.context, args: entry.args }); },
+    onSelect: () => { void commands.run(def.id, { ...view.context, args: entry.args }); },
   }];
 };
 

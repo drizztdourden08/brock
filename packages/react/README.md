@@ -31,7 +31,7 @@ import { screenTree } from '../.brock/screens';
 | App | `BrockApp`, `useBrock`, `useProduct`, `useDeveloperTools`, `useConfirmDialog`, `buildMenu` |
 | Escape | `escapeLayers`, `useEscapeLayer`, `resolveEscape` |
 | Screens | `defineScreen`, `createScreenRegistry`, `useScreenRegistry`, `ScreenHost`, `ScreenLayer` |
-| Commands | `defineCommand`, `commands` (`register`, `run`, `chords`, `matches`, `remap`, `reset`, `conflicts`), `useCommands`, `useCommandChords`, `formatChord`, `chordKeys`, `useIsMac`, `isMac`, `KeymapPage`, `CommandDef`, `ChordInput` |
+| Commands | `defineCommand`, `commands` (`register`, `list`, `describe`, `run`, `chords`, `matches`, `remap`, `reset`, `conflicts`), `useCommands`, `useCommandChords`, `formatChord`, `chordKeys`, `useIsMac`, `isMac`, `KeymapPage`, `CommandDef`, `ChordInput` |
 | Context menu | `useContextMenu`, `defineContextMenu`, `contextMenuZone`, `contextMenuHandler`, `openContextMenu`, `listContextMenus`, `blockContextMenus`, `ContextMenuHost`, `ContextMenuEntry`, `ContextMenuConfig`, `ContextMenuContext` |
 | Screen conventions | `defineScreens`, `buildScreenTree`, `resolveScreenTree`, `deriveMenu`, `ScreensConfig`, `BucketDef`, `ScreenMeta`, `ScreenEntry`, `ScreenTree`, `CardProps`, `PageProps`, `HeroProps`, `HeroSlots` |
 | Navigation | `useNavigation`, `useNavigationStore`, `nav` (for code outside React), `joinRoute`, `resolveRoute`, `routeAliases` |
@@ -215,6 +215,17 @@ announce('Connection lost', { politeness: 'assertive' });
 ```
 
 `announce` repeats a message reliably and ignores a blank one. The architecture guide, Accessibility, has the rules.
+
+## Commands
+
+Every shortcut and menu action is a `CommandDef` in one registry. Besides `id`, `label`, `chord`, `scope`, `zone` and `run`, a command can set:
+
+- `when()`: the gate. Returning `false` turns the command off everywhere it shows (chord, menus, palette, keymap list) and `commands.run` refuses it with `why: 'gated'`. Apps use it for a profile, a mode, a dev-only switch or a missing document.
+- `reason()`: why the command is unavailable right now, as a plain sentence, or `null` when it is fine. A `when` that returns `false` reports it as the reason of the refusal (a default sentence if there is none). A `reason` that returns a string while `when` allows the command makes it `disabled`: menus show it greyed out and `commands.run` refuses it with `why: 'disabled'`.
+- `meta`: plain, serialisable app data (an args schema, the effect of the command). Brock never reads it; `commands.list()` hands it back as set.
+- `run(context?)` may return a promise.
+
+`commands.describe(id)` returns `{ enabled, reason, checked }` with the gates applied (an unknown id is not enabled and says so). `commands.run(id, context?)` returns `Promise<{ ok: true } | { ok: false, why: 'unknown' | 'disabled' | 'gated', reason }>` and resolves after a promise from `run` settles; the command itself starts synchronously, so a caller that ignores the result behaves as before. The context `trigger` is `'pointer'`, `'keyboard'`, `'longpress'` or `'assistant'`, the last for a command an assistant runs for the user. Scope and zone only pick which chord fires; `commands.run` does not check them.
 
 ## Context menu
 

@@ -8,7 +8,7 @@ const dispatchCommand = (event: KeyboardEvent, route: string | null): boolean =>
   const def = findCommand(event, useCommandStore.getState(), { route, typing: isTyping(event.target), zones: activeZones() });
   if (def === undefined) return false;
   event.preventDefault();
-  def.run();
+  void def.run();
   return true;
 };
 

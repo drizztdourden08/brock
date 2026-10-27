@@ -11,7 +11,7 @@ const withCommand = (item: MenuItem, lookup: ChordLookup): MenuItem => {
   const chords = id === undefined ? undefined : lookup(id);
   if (id === undefined || chords === undefined) return item;
   const runs = item.command !== undefined && item.onClick === undefined && item.screen === undefined;
-  return { ...item, shortcut: chords[0], ...(runs ? { onClick: () => { commands.run(id); } } : {}) };
+  return { ...item, shortcut: chords[0], ...(runs ? { onClick: () => { void commands.run(id); } } : {}) };
 };
 
 const withCommandChords = (entries: readonly MenuEntry[], lookup: ChordLookup): MenuEntry[] =>

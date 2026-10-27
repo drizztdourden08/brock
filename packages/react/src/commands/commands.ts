@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind logic */
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
 import { chordsOf } from './chords-of';
-import { COMMAND_RANKS } from './commands.constants';
-import type { ChordEvent, CommandConflict, CommandContext, CommandDef } from './command.type';
+import { COMMAND_RANKS, UNKNOWN_REASON } from './commands.constants';
+import { commandBlock } from './command-block';
+import type { ChordEvent, CommandConflict, CommandContext, CommandDef, CommandDescription, CommandRunResult } from './command.type';
 import { findConflicts } from './find-conflicts';
 import { listCommands } from './list-commands';
 import { matchesChord } from './matches-chord';
@@ -30,11 +31,19 @@ const commands = {
     return setCommandSource(`runtime-${registered}`, COMMAND_RANKS.runtime, defs);
   },
   list: (): CommandDef[] => listCommands(useCommandStore.getState()),
-  run: (id: string, context?: CommandContext): boolean => {
+  describe: (id: string): CommandDescription => {
     const def = find(id);
-    if (def === undefined || def.when?.() === false) return false;
-    def.run(context);
-    return true;
+    if (def === undefined) return { enabled: false, reason: UNKNOWN_REASON, checked: false };
+    const block = commandBlock(def);
+    return { enabled: block === null, reason: block?.reason ?? null, checked: def.checked?.() === true };
+  },
+  run: async (id: string, context?: CommandContext): Promise<CommandRunResult> => {
+    const def = find(id);
+    if (def === undefined) return { ok: false, why: 'unknown', reason: UNKNOWN_REASON };
+    const block = commandBlock(def);
+    if (block !== null) return { ok: false, ...block };
+    await def.run(context);
+    return { ok: true };
   },
   chords: (id: string): readonly string[] => {
     const def = find(id);

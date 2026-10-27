@@ -1,5 +1,17 @@
 # @drizztdourden08/brock-electron
 
+## 0.108.0
+
+### Minor Changes
+
+- caf5a4f: An elevated installer job (`elevate: 'installer'`) can now be cancelled by default, so its Cancel button works. Cancel tries the normal stop first and ignores a refusal. If the installer exits during a short wait (2 s, then a forced kill and 3 s more), the outcome is `cancelled`. If it is still running, the job stops waiting and ends as `detached` with "The installer keeps running on its own. Brock stopped waiting for it." The output streams and the log file are closed and the child no longer holds the app open. `cancellable: false` still turns cancel off. The `detached` status is now documented on `ProcessJobOutcome`.
+
+### Patch Changes
+
+- b0c03a0: A dev app now stops at once when the interface fails to load, for example on a module error after a Tessera mismatch. The splash shows the error with Open logs, Retry and Quit instead of waiting 120 s for the watchdog. Launch, dev, build and start also stop with one clear line when the app's Tessera does not fit what brock-react needs, and brock doctor checks the same.
+- Updated dependencies [caf5a4f]
+  - @drizztdourden08/brock-core@0.108.0
+
 ## 0.107.1
 
 ### Patch Changes

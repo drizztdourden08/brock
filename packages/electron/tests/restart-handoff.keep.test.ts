@@ -82,6 +82,9 @@ describe('the restart handoff blob', () => {
     expect(takeHandoff(file, () => T0)).toBeNull();
   });
 
+});
+
+describe('the restart handoff limits', () => {
   it('refuses to write a value over 64 KB and writes nothing', () => {
     expect(() => writeHandoff(file, 'x'.repeat(HANDOFF_MAX_BYTES + 1))).toThrow(/larger than 65536/);
     expect(existsSync(file)).toBe(false);

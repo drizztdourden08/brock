@@ -7,6 +7,7 @@ import { bootState } from './boot-state';
 import { ABORTED_LOAD, INTERFACE_TASK } from './reveal.constants';
 import { rendererHeartbeat } from './renderer-heartbeat';
 import { reportBootFailure } from './report-boot-failure';
+import { watchRendererErrors } from './watch-renderer-errors';
 
 const attachAppWindow = (win: BrowserWindow, present: () => void): void => {
   bootState.app = win;
@@ -24,6 +25,7 @@ const attachAppWindow = (win: BrowserWindow, present: () => void): void => {
     if (!isMainFrame || code === ABORTED_LOAD) return;
     reportBootFailure({ ...INTERFACE_TASK, side: 'renderer', message: `${url} did not load: ${description} (${code})`, timedOut: false });
   });
+  watchRendererErrors(webContents);
   webContents.on('did-start-loading', rendererHeartbeat);
   webContents.on('dom-ready', rendererHeartbeat);
   webContents.on('did-finish-load', rendererHeartbeat);

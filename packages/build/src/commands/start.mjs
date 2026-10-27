@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, normalize } from 'node:path';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { tesseraMismatch } from '../freshness/tessera-mismatch.mjs';
 import { halfBuildReason } from '../freshness/half-build-reason.mjs';
 import { resolveElectronBinary, runInherit } from '../run.mjs';
 import { runBuild } from './build.mjs';
@@ -31,6 +32,11 @@ const runStart = async ({ rootDir, passthrough = [] }) => {
   const electron = ensureElectron(rootDir);
   if (!electron.ok) {
     console.error(`brock start: ${electron.message}`);
+    return 1;
+  }
+  const mismatch = tesseraMismatch(rootDir);
+  if (mismatch) {
+    console.error(`brock start: ${mismatch.line}`);
     return 1;
   }
   await ensureSynced(rootDir, 'brock start');

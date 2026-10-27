@@ -8,6 +8,7 @@ import { writeGuide } from '../tessera/write-guide.mjs';
 import { MANIFEST_FILE } from './freshness.constants.mjs';
 import { rendererEntryProblem } from './renderer-entry-problem.mjs';
 import { syncStaleReason } from './sync-stale-reason.mjs';
+import { tesseraMismatch } from './tessera-mismatch.mjs';
 
 /**
  * @param {string} appDir
@@ -15,6 +16,8 @@ import { syncStaleReason } from './sync-stale-reason.mjs';
  * @returns {Promise<string | null>} a reason to stop before the renderer starts, or null
  */
 const ensureSynced = async (appDir, label) => {
+  const mismatch = tesseraMismatch(appDir);
+  if (mismatch) return mismatch.line;
   const reason = syncStaleReason(appDir);
   if (reason) {
     console.log(`${label}: running brock sync first, since ${reason}.`);

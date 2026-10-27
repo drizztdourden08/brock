@@ -19,6 +19,7 @@ export { confirmChoice } from './confirm-choice';
 export { confirmDelete } from './confirm-delete';
 export { confirmSave } from './confirm-save';
 export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState } from './dialog.type';
+export type { DialogAnswerChoice, DialogAnswerFailure, DialogAnswerKind, DialogAnswerResult, DialogView } from './dialog-view.type';
 export { useScreenStateStore } from './useScreenStateStore';
 export type { ScreenStates, ScreenStateSetter, ScreenStateState, ScreenViews } from './screen-state.type';
 export { useWidgetPrefStore } from './useWidgetPrefStore';

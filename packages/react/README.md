@@ -272,6 +272,16 @@ A tab is `{ id, label, navIcon, group, sections(settings) | render(ctx), source?
 - The shell shows one confirm dialog at a time; `dialogs` is the imperative surface for code outside React; `confirmAction` is the one confirmation API, and `dialogs.confirmDelete` is deprecated: a thin call to `confirmAction` with a red Delete button that runs `onConfirm` on confirm; `dismiss` runs the config's `onCancel`.
 - Every store made with `createSessionStore` is tracked, and `resetAllSessionStores()` returns each to its initial state when a new profile is selected. Widget preference values must survive a JSON round-trip; the widget-pref store is a session store, so a new profile starts empty and the host hydrates it from disk and saves on change.
 
+## Assistant control
+
+Plain functions for code outside React, such as an MCP server that lets an assistant drive the app. They work once `BrockApp` is mounted and return empty or `not-ready` results before that. Details are in `docs/architecture.md`.
+
+- `settingsCatalog()` (also `settings.catalog()`) lists every registered settings tab with its sections, subsections and items: key, label, description, control kind and choices (or `min`, `max`, `step`), the value source (`'app'` or `'custom'`), whether it can be set, whether it is visible now, and the current value (not for a password).
+- `settings.set(key, value)` writes one app setting after checking it. It returns `{ ok: true }` or `{ ok: false, why: 'not-ready' | 'unknown' | 'scope' | 'invalid', reason }`. An unknown key, a key from a custom value source, a choice that is not offered or is disabled, a number outside its range or a value of the wrong type is refused and nothing changes.
+- `nav.routes()` lists the screens, hubs, hub pages, tabs and sub-page patterns that `nav.open` accepts, as `{ route, title, kind, screen, section, tab }`. Hidden and developer-only entries are left out.
+- `dialogs.current()` returns the open Brock confirm dialog as `{ id, title, message, variant, selected?, choices }`, or null. Each choice is `{ id, label, kind }` with ids `confirm`, `cancel`, `alternate` (when the dialog has one) and `option:<value>` for the options of `confirmChoice`.
+- `dialogs.answer(choice)` answers it as if the user clicked that button and returns `{ ok: true, id, choice }`, or `{ ok: false, why: 'none' | 'unknown', reason }`. An unknown choice is refused and the dialog stays open. Native OS dialogs are not covered.
+
 ## Compounds
 
 Brock's own compounds sit in `src/compounds/<Name>/`, the `parts.compounds` folders of the root `tessera.config.json`. Each was made with `brock tessera new compound` and carries a `<Name>.usage.ts` that says when to use it; `brock structure` fails without it, and `brock tessera check` checks the sentences, the example and the props hash.

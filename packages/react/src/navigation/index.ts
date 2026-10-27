@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind barrel */
 export { useNavigationStore } from './useNavigationStore';
 export { nav } from './nav';
+export type { NavRoute, NavRouteKind } from './nav-routes.type';
 export { joinRoute } from './join-route';
 export { resolveRoute } from './resolve-route';
 export { routeAliases } from './route-aliases';

@@ -7,6 +7,7 @@ export { event } from './event-channel';
 export { invoke } from './invoke-channel';
 export { send } from './send-channel';
 export { AppError } from './app-error';
+export { isJsonValue } from './is-json-value';
 export { isAppError } from './is-app-error';
 export { toAppError } from './to-app-error';
 export { encodeAppError } from './encode-app-error';

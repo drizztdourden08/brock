@@ -66,6 +66,9 @@ export type { BugReportOptions, DebugFile, DebugZipEntry, MainBugReportTransport
 export { lanAddresses } from './network/lan-addresses';
 export { helperLaunch } from './bridge/helper-launch';
 export { appLaunch } from './bridge/app-launch';
+export { restartApp } from './restart/restart-app';
+export { takeRestartHandoff } from './restart/take-restart-handoff';
+export type { RestartOptions, RestartWindow } from './restart/restart.type';
 export { relayAsk } from './bridge/relay-ask';
 export type { AppLaunch, AppLaunchOptions } from './bridge/app-launch.type';
 export type { AppBridge, AppBridgeOptions, HelperLaunch, RelayAskOptions } from './bridge/app-bridge.type';

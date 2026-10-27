@@ -6,6 +6,7 @@ import type { OpenRequest } from './types/open.type';
 import type { BugReportPayload, BugReportReceiptWire, BugReportTransportInfo } from './types/bug-report.type';
 import type { PlaySession } from './types/session.type';
 import type { Result } from './result/result.type';
+import type { JsonValue } from './ipc/app-error.type';
 import type { AskOutcome, ImportProgress, LogEntryWire, PickedFileWire, QuitDecision, SaveFileResultWire } from './ipc/payloads.type';
 import type { WindowControlsPort } from './platform/ports/window-controls.type';
 import type { FileStore } from './platform/ports/file-store.type';
@@ -36,6 +37,7 @@ interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, Docum
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'app:takeOpens': () => Promise<OpenRequest[]>;
+  'app:takeHandoff': () => Promise<JsonValue | null>;
   'diagnostics:getSystem': () => Promise<SystemDiagnostics>;
   'diagnostics:getProcesses': () => Promise<ProcessDiagnostics>;
   'bugReport:transport': () => Promise<BugReportTransportInfo | null>;

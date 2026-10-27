@@ -93,6 +93,51 @@ describe('the boot watchdog', () => {
   });
 });
 
+describe('a load error before the interface reports in', () => {
+  const consoleError = (app: FakeWindow, message: string, level = 'error'): void => { app.webContents.emit('console-message', { level, message, sourceId: 'x', lineNumber: 1 }); };
+
+  it('stops the boot at once and shows the error on the splash, without waiting for the watchdog', () => {
+    const { app, splash } = boot();
+    consoleError(app, "Uncaught SyntaxError: The requested module '/@fs/deps/tessera.js' does not provide an export named 'moveToolbarToSide'");
+    expect(bootState.failure).toMatchObject({ task: 'interface', timedOut: false });
+    expect(bootState.failure?.message).toBe("The interface failed to load: SyntaxError: The requested module '/@fs/deps/tessera.js' does not provide an export named 'moveToolbarToSide'");
+    expect(splashChannels(splash).at(-1)).toBe(SPLASH_CHANNELS.failure);
+    expect(bootState.watchdog).toBeNull();
+  });
+
+  it('counts an unhandled rejection and a failed dynamic import', () => {
+    const first = boot();
+    consoleError(first.app, 'Uncaught (in promise) TypeError: x is not a function');
+    expect(bootState.failure?.message).toBe('The interface failed to load: TypeError: x is not a function');
+    const second = boot();
+    consoleError(second.app, 'Failed to fetch dynamically imported module: http://localhost:5173/src/screen.tsx');
+    expect(bootState.failure?.message).toContain('Failed to fetch dynamically imported module');
+  });
+
+  it('keeps a failure that a later heartbeat cannot clear', () => {
+    const { app } = boot();
+    consoleError(app, 'Uncaught Error: boom');
+    send('boot:progress', { done: 1, total: 2, label: 'Loading', detail: null });
+    expect(bootState.failure).not.toBeNull();
+  });
+
+  it('ignores ordinary console errors, warnings and anything after the interface is ready', () => {
+    const { app } = boot();
+    consoleError(app, 'Failed to load resource: net::ERR_FAILED');
+    consoleError(app, 'Uncaught Error: warned', 'warning');
+    expect(bootState.failure).toBeNull();
+    send('boot:ready');
+    consoleError(app, 'Uncaught Error: late');
+    expect(bootState.failure).toBeNull();
+  });
+
+  it('still lets the watchdog catch a true hang', async () => {
+    boot();
+    await vi.advanceTimersByTimeAsync(WATCHDOG);
+    expect(bootState.failure).toMatchObject({ watchdog: true });
+  });
+});
+
 describe('watchdogMsOf', () => {
   it('waits 120 s in development and 8 s packaged by default', () => {
     expect(DEV_WATCHDOG_MS).toBe(120_000);

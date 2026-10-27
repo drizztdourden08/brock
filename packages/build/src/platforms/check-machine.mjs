@@ -11,7 +11,7 @@ import { resolvePlatforms } from './resolve-platforms.mjs';
  */
 const checkMachine = ({ rootDir, targets, modules = [] }) => {
   const { platforms, unsupported } = resolvePlatforms(targets);
-  const ctx = { host: process.platform, env: process.env, probe, modules: resolveModules(rootDir, modules).modules };
+  const ctx = { rootDir, host: process.platform, env: process.env, probe, modules: resolveModules(rootDir, modules).modules };
   const report = doctorReport(runDoctor(platforms, ctx));
   const notYet = unsupported.map((id) => `  ${id}: not supported yet, so nothing is checked for it`);
   return { ok: report.ok, lines: [...report.lines.slice(0, -2), ...notYet, ...report.lines.slice(-2)], platforms: platforms.map((p) => p.id), unsupported };

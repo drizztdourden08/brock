@@ -15,6 +15,7 @@
 
 /**
  * @typedef {object} DoctorContext
+ * @property {string} [rootDir] the app folder
  * @property {NodeJS.Platform} host
  * @property {NodeJS.ProcessEnv} env
  * @property {(command: string, args: string[]) => { ok: boolean, out: string }} probe

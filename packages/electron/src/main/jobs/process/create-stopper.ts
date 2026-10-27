@@ -5,7 +5,7 @@ import type { Stopper, StopperInput } from './process-job.type';
 
 const stillRunning = (child: StopperInput['child']): boolean => child.exitCode === null && child.signalCode === null;
 
-const createStopper = ({ child, signal, graceMs, timeoutMs, giveUp }: StopperInput): Stopper => {
+const createStopper = ({ child, signal, graceMs, timeoutMs, giveUpMs = PROCESS_GIVE_UP_MS, giveUp }: StopperInput): Stopper => {
   const state = { killed: false, timedOut: false };
   const timers: ReturnType<typeof setTimeout>[] = [];
   const later = (ms: number, action: () => void): void => {
@@ -21,12 +21,12 @@ const createStopper = ({ child, signal, graceMs, timeoutMs, giveUp }: StopperInp
   const onAbort = (): void => {
     hit(false);
     later(graceMs, () => hit(true));
-    later(graceMs + PROCESS_GIVE_UP_MS, giveUp);
+    later(graceMs + giveUpMs, giveUp);
   };
   const onTimeout = (): void => {
     state.timedOut = true;
     hit(true);
-    later(PROCESS_GIVE_UP_MS, giveUp);
+    later(giveUpMs, giveUp);
   };
   if (timeoutMs !== undefined) later(timeoutMs, onTimeout);
   if (signal.aborted) onAbort();

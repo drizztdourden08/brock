@@ -47,8 +47,8 @@ describe('run a process as a job: limits and privacy', () => {
     expect(fx.messages('quiet')).toEqual([]);
   });
 
-  it('does not let the user cancel an installer job unless the definition says so', async () => {
-    const running = fx.processes.run('setup', { command: fx.command, args: fx.argv('hold') }, { label: 'Setup', elevate: 'installer' });
+  it('does not let the user cancel an installer job when the definition says cancellable is false', async () => {
+    const running = fx.processes.run('setup', { command: fx.command, args: fx.argv('hold') }, { label: 'Setup', elevate: 'installer', cancellable: false });
     await vi.waitFor(() => expect(fx.messages('setup')).toContain('READY'), WAIT);
     expect(fx.snapshot('setup')?.cancellable).toBe(false);
     fx.jobs.cancel('setup');

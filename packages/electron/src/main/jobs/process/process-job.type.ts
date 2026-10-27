@@ -118,6 +118,7 @@ interface StopperInput {
   signal: AbortSignal;
   graceMs: number;
   timeoutMs: number | undefined;
+  giveUpMs?: number;
   giveUp: () => void;
 }
 

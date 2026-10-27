@@ -75,6 +75,48 @@ describe('presetLayout', () => {
     expect(shape(presetLayout(preset, weighted).dock)).toEqual({ column: [['a', 'b'], ['c'], 'main'], sizes: [0.53, 0.13, 0.33] });
   });
 
+});
+
+describe('presetLayout columns and rows under the main view', () => {
+  it('stacks a column cell inside a row and sizes its members', () => {
+    const preset = defineLayoutPreset({
+      rows: [[['players', 'hints'], 'main', { column: ['room', ['log', 'console']], sizes: [3, 1] }]],
+      widths: [[1, 2, 1]],
+    });
+    expect(shape(presetLayout(preset, SESSION).dock)).toEqual({
+      row: [['players', 'hints'], 'main', { column: [['room'], ['log', 'console']], sizes: [0.75, 0.25] }],
+      sizes: [0.25, 0.5, 0.25],
+    });
+  });
+
+  it('weights the members of a column by dockWeight and drops unknown and repeated ids from it', () => {
+    const weighted = [
+      defineWidget({ id: 'a', label: 'A', render: () => null, dockWeight: 3 }),
+      defineWidget({ id: 'b', label: 'B', render: () => null, dockWeight: 1 }),
+    ];
+    const preset = defineLayoutPreset({ rows: [['main', { column: ['a', 'ghost', 'b'] }], [{ column: ['ghost', 'a'] }]] });
+    expect(shape(presetLayout(preset, weighted).dock)).toEqual({ row: ['main', { column: [['a'], ['b']], sizes: [0.75, 0.25] }], sizes: [0.5, 0.5] });
+  });
+
+  it('puts a row marked under main beneath the main view only', () => {
+    const preset = defineLayoutPreset({
+      rows: [[['players'], 'main', ['hints']], { cells: [['log', 'console']], under: 'main' }],
+      sizes: [1, 0.25],
+    });
+    expect(shape(presetLayout(preset, SESSION).dock)).toEqual({
+      row: [['players'], { column: ['main', ['log', 'console']], sizes: [0.75, 0.25] }, ['hints']],
+      sizes: [0.33, 0.33, 0.33],
+    });
+  });
+
+  it('gives an under row a default share and attaches it to a main view the preset adds itself', () => {
+    const preset = defineLayoutPreset({ rows: [['players'], { cells: ['log'], under: 'main' }] });
+    expect(shape(presetLayout(preset, SESSION).dock)).toEqual({
+      column: [['players'], { column: ['main', ['log']], sizes: [0.7, 0.3] }],
+      sizes: [0.5, 0.5],
+    });
+  });
+
   it('opens a defaultOpen widget the preset does not place on its default side', () => {
     const layout = presetLayout(THREE_ROWS, DEFINITIONS);
     expect(placementOf(layout, 'notes')).toBe('docked');

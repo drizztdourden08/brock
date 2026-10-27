@@ -3,6 +3,8 @@ import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
 import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import { forcedWidgets } from './forced-widgets';
+import { layoutRevision } from './layout-revision';
+import { applyLayoutRevision } from './offer-layout-revision';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
 import { profileViews } from './profile-views';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
@@ -33,12 +35,13 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
   forcedWidgets.rearm();
   useWidgetPrefStore.getState().hydrate(sanePrefs(views.widgetPrefs));
   bound.profileId = profileId;
+  applyLayoutRevision(profileId, views, () => bound.profileId);
 };
 
 const watchWidgets = (): (() => void) => {
   const offLayout = useWidgetLayoutStore.subscribe((state, prev) => {
     const id = bound.profileId;
-    if (id && state.layout !== prev.layout) void profileViews.patch(id, { widgetLayout: state.layout });
+    if (id && state.layout !== prev.layout) void profileViews.patch(id, { widgetLayout: state.layout, ...layoutRevision.field() });
   });
   const offToolbars = useToolbarLayoutStore.subscribe((state, prev) => {
     const id = bound.profileId;

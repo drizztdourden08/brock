@@ -92,6 +92,7 @@ interface WidgetLayoutReading {
 
 interface ProfileViews {
   widgetLayout?: unknown;
+  widgetLayoutRevision?: unknown;
   widgetPrefs?: WidgetPrefs;
   widgetKits?: unknown;
   toolbarLayout?: unknown;

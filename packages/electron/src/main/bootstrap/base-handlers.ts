@@ -20,6 +20,7 @@ import { dataDomainHandlers } from '../storage/ipc-handlers';
 import { transferHandlers } from '../storage/transfer-handlers';
 import { jobHandlers } from '../jobs/ipc-handlers';
 import { openHandlers } from '../open/ipc-handlers';
+import { restartHandlers } from '../restart/ipc-handlers';
 import { bugReportHandlers } from '../bug-report/ipc-handlers';
 import { askHandlers } from '../ipc/ask-handlers';
 
@@ -29,6 +30,7 @@ const baseHandlers = (): HandlerGroup[] => [
   aspectRatioHandlers,
   appHandlers,
   openHandlers,
+  restartHandlers,
   dialogHandlers,
   fileHandlers,
   documentHandlers,

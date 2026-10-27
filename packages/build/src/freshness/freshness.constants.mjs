@@ -7,8 +7,10 @@ const DIST_MAIN = 'dist/electron/main.js';
 const DIST_RENDERER = 'dist/renderer/index.html';
 const BUILD_OUTPUTS = [DIST_MAIN, 'dist/preload/preload.mjs', DIST_RENDERER];
 const BUILD_INPUTS = ['brock.config.ts', 'package.json', 'tsconfig.json', 'electron.vite.config.ts', 'src', 'electron', 'server', 'public'];
+const BRAND_RECORD_FILE = 'node_modules/.vite/brock-brand-icons.json';
+const BRAND_RECORD_VERSION = 1;
 const NOT_SOURCES = new Set(['node_modules', 'dist', 'release', 'out', 'coverage']);
 
 export {
-  BUILD_INPUTS, BUILD_OUTPUTS, DIST_MAIN, DIST_RENDERER, GENERATED_IMPORT, MANIFEST_FILE, NOT_SOURCES, RENDERER_ENTRY, SYNC_INPUTS,
+  BRAND_RECORD_FILE, BRAND_RECORD_VERSION, BUILD_INPUTS, BUILD_OUTPUTS, DIST_MAIN, DIST_RENDERER, GENERATED_IMPORT, MANIFEST_FILE, NOT_SOURCES, RENDERER_ENTRY, SYNC_INPUTS,
 };

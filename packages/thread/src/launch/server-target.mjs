@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildIfStale } from './build-if-stale.mjs';
-import { ensureAppSynced } from './ensure-app-synced.mjs';
+import { launchSynced } from './ensure-app-synced.mjs';
 import { notReadyWith, targetDirs } from './launch-readiness.mjs';
 import { brockBin } from './run-brock.mjs';
 import { checkStateWith, stateFlags } from './state-hooks.mjs';
@@ -45,12 +45,11 @@ const productionProblem = (appDir) => buildIfStale(appDir) ?? (existsSync(join(a
  */
 const serverTarget = ({ app = '.', userData = '.user-data', states = null } = {}) => {
   const dirs = targetDirs(app, userData);
-  const launch = (request) => {
+  const launch = async (request) => {
     const { worktree, prod } = request;
     const args = appArgs(request, dirs.userData(worktree), states);
     const appDir = dirs.app(worktree);
-    ensureAppSynced(appDir, worktree.log);
-    return Promise.resolve(prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
+    return launchSynced(appDir, worktree.log, () => prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
   };
   return { kind: 'server', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData, productionProblem), checkState: stateRefusal(states) };
 };

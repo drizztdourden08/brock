@@ -4,9 +4,8 @@ import { CONFIG_FILE } from '../config.mjs';
 import { isSiteDir } from '../site/load-site.mjs';
 import { repoRootOf, siteDirs } from '../site/site-dirs.mjs';
 import { syncSites } from '../site/sync-sites.mjs';
-import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { syncIfStaleLater } from '../freshness/sync-if-stale.mjs';
 import { syncBrandIgnores } from '../icons/brand-ignores.mjs';
-import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { wordmarkHeightWarnings } from '../installer/wordmark-height-warnings.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { moduleTypeProblem } from '../managed/module-type-problem.mjs';
@@ -72,13 +71,12 @@ const reportGuide = (problems) => {
 };
 
 const syncIfStale = async (appDir) => {
-  const problem = await ensureSynced(appDir, 'brock sync');
+  const { problem, guide } = await syncIfStaleLater(appDir);
+  await guide();
   if (problem) {
     console.error(`brock sync: ${problem}`);
     return 1;
   }
-  const copied = copyBrandIcons(appDir, await loadBrockConfig(appDir));
-  if (copied?.written.length) console.log(`brock sync: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
   return 0;
 };
 

@@ -7,9 +7,9 @@ import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
 import { makeTree } from './folder-fixture';
 
-vi.mock('electron', () => ({ app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined }, dialog: {} }));
+vi.mock('electron', () => ({ dialog: {}, app: {} }));
 
-const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
+const dirLink: 'junction' | 'dir' = process.platform === 'win32' ? 'junction' : 'dir';
 
 let base = '';
 let home = '';

@@ -5,7 +5,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 
 const contextOf = (value: unknown): AppContext | null => {
   if (!isRecord(value) || typeof value.active !== 'boolean') return null;
-  return 'data' in value ? { active: value.active, data: value.data } : { active: value.active };
+  const base: AppContext = 'data' in value ? { active: value.active, data: value.data } : { active: value.active };
+  return typeof value.label === 'string' ? { ...base, label: value.label } : base;
 };
 
 const readContexts = (value: unknown): AppContexts => {

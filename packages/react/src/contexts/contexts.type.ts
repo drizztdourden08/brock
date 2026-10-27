@@ -2,6 +2,7 @@
 interface AppContext<T = unknown> {
   active: boolean;
   data?: T;
+  label?: string;
 }
 
 type AppContexts = Record<string, AppContext>;

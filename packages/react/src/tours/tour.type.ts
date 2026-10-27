@@ -5,9 +5,20 @@ import type { AnchoredPlacement, IconName } from '@drizztdourden08/tessera/primi
 import type { AppContext } from '../contexts/contexts.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 
-type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen' | 'page' | 'rail' | 'hero' | 'tabs';
+type TourShellPart = 'menu' | 'search' | 'report-bug' | 'title-bar' | 'screen' | 'page' | 'rail' | 'hero' | 'tabs' | 'primary' | 'back' | 'menu-panel';
 
-type BrockTourTarget = TourTarget | { readonly shell: TourShellPart } | { readonly widget: string } | { readonly setting: string } | { readonly menuEntry: string | readonly string[] };
+interface TourShellTarget {
+  readonly shell: TourShellPart;
+  readonly entry?: string;
+}
+
+type TourResetPart = 'search' | 'filters' | 'tab' | 'selection';
+
+type TourResetParts = Readonly<Partial<Record<TourResetPart, boolean>>>;
+
+type TourResetHandler = (parts: Readonly<Record<TourResetPart, boolean>>) => void;
+
+type BrockTourTarget = TourTarget | TourShellTarget | { readonly widget: string } | { readonly setting: string } | { readonly menuEntry: string | readonly string[] };
 
 type NamedTourTarget = Exclude<BrockTourTarget, { readonly current: unknown } | { readonly menuEntry: string | readonly string[] }>;
 
@@ -57,6 +68,7 @@ interface TourStepDef {
   readonly before?: (ctx: TourStepContext) => void | Promise<void>;
   readonly advanceOn?: TourAdvanceOn;
   readonly hint?: ReactNode;
+  readonly reset?: true | TourResetParts;
 }
 
 type TourTrigger = 'first-run' | 'manual';
@@ -151,6 +163,6 @@ interface TourApi {
 }
 
 export type {
-  ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourShellPart,
+  ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourResetHandler, TourResetPart, TourResetParts, TourShellPart, TourShellTarget,
   TourArtIcon, TourStepArt, TourLoader, TourShell, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

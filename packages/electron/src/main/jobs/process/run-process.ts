@@ -11,7 +11,7 @@ import { exitOutcome } from './exit-outcome';
 import { killProcessTree } from './kill-process-tree';
 import { openProcessLog } from './open-process-log';
 import {
-  PROCESS_DETACHED_MESSAGE, PROCESS_EXIT_WAIT_MS, PROCESS_GRACE_MS, PROCESS_LINE_MAX_CHARS, PROCESS_TAIL_LINES,
+  PROCESS_DETACHED_MESSAGE, PROCESS_EXIT_WAIT_MS, PROCESS_GIVE_UP_MS, PROCESS_GRACE_MS, PROCESS_INSTALLER_GIVE_UP_MS, PROCESS_INSTALLER_GRACE_MS, PROCESS_LINE_MAX_CHARS, PROCESS_TAIL_LINES,
 } from './process-job.constants';
 import type { ProcessLog, ProcessRunInput, ProcessSpec, ProcessStream } from './process-job.type';
 import { redactLine } from './redact-line';
@@ -58,8 +58,14 @@ const launch = (child: ChildProcess, job: JobHandle, options: ProcessRunInput, r
     resolve(final);
   };
   const detached: ProcessJobOutcome = { status: 'detached', exitCode: null, tail, error: PROCESS_DETACHED_MESSAGE };
-  const graceMs = options.cancel?.graceMs ?? PROCESS_GRACE_MS;
-  const stopper = createStopper({ child, signal: job.signal, graceMs, timeoutMs: options.timeoutMs, giveUp: () => finish(detached) });
+  const installer = options.elevate === 'installer';
+  const graceMs = options.cancel?.graceMs ?? (installer ? PROCESS_INSTALLER_GRACE_MS : PROCESS_GRACE_MS);
+  const giveUpMs = installer ? PROCESS_INSTALLER_GIVE_UP_MS : PROCESS_GIVE_UP_MS;
+  const detach = (): void => {
+    child.unref();
+    finish(detached);
+  };
+  const stopper = createStopper({ child, signal: job.signal, graceMs, timeoutMs: options.timeoutMs, giveUpMs, giveUp: detach });
   const untrack = options.track?.(() => void killProcessTree(child, true));
   closers.push(attachOutput(child, lineHandler(job, options, tail, log)));
   const settleExit = (): void => finish(exitOutcome(options, { ...exit, killed: stopper.killed(), timedOut: stopper.timedOut(), tail }));

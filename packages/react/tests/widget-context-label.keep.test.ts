@@ -10,7 +10,7 @@ import { contexts } from '../src/contexts/contexts';
 import { INITIAL_CONTEXTS } from '../src/contexts/contexts.constants';
 import { useContextsStore } from '../src/contexts/useContextsStore';
 import { defineWidget } from '../src/widgets/define-widget';
-import { useContextTitles } from '../src/widgets/WidgetHost/behavior/useContextTitles';
+import { useContextSublabels } from '../src/widgets/WidgetHost/behavior/useContextSublabels';
 import { WidgetWindow } from '../src/widgets/WidgetWindow';
 
 vi.mock('../src/overlays/StandardOverlays/StandardOverlays', () => ({ StandardOverlays: () => null }));
@@ -27,7 +27,7 @@ let root: Root | null = null;
 
 const Dock = () =>
   createElement(WidgetManager, {
-    definitions: useContextTitles(definitions), layout, onLayoutChange: noop, contextActive: () => true, main: null, children: { players: 'p', logs: 'l' },
+    definitions: useContextSublabels(definitions), layout, onLayoutChange: noop, contextActive: () => true, main: null, children: { players: 'p', logs: 'l' },
   });
 
 const draw = (element: ReturnType<typeof createElement>): void => {
@@ -36,7 +36,8 @@ const draw = (element: ReturnType<typeof createElement>): void => {
   act(() => root?.render(element));
 };
 
-const titles = (): string[] => [...document.querySelectorAll('.widget__title')].map((node) => node.textContent);
+const titles = (): string[] => [...document.querySelectorAll('.title-strip__title')].map((node) => node.textContent);
+const sublabels = (): string[] => [...document.querySelectorAll('.title-strip__sublabel')].map((node) => node.textContent);
 
 afterEach(() => {
   act(() => root?.unmount());
@@ -45,19 +46,21 @@ afterEach(() => {
   useContextsStore.setState({ contexts: INITIAL_CONTEXTS });
 });
 
-describe('a context label in a docked widget title', () => {
-  it('reads the context label after the title, and leaves other widgets alone', () => {
+describe('a context label as a docked widget sublabel', () => {
+  it('shows the context label beside the title, and leaves other widgets alone', () => {
     contexts.set('session', { active: true, label: 'Sunday run' });
     draw(createElement(Dock));
-    expect(titles()).toContain('Players, Sunday run');
+    expect(titles()).toContain('Players');
     expect(titles()).toContain('Logs');
+    expect(sublabels()).toEqual(['Sunday run']);
   });
 
-  it('keeps the plain title with no label or a blank label', () => {
+  it('shows no sublabel with no label or a blank label', () => {
     contexts.set('session', { active: true });
     draw(createElement(Dock));
-    expect(titles()).toContain('Players');
+    expect(sublabels()).toEqual([]);
     act(() => contexts.set('session', { active: true, label: '  ' }));
+    expect(sublabels()).toEqual([]);
     expect(titles()).toContain('Players');
   });
 
@@ -65,24 +68,26 @@ describe('a context label in a docked widget title', () => {
     contexts.set('session', { active: true, label: 'Sunday run' });
     draw(createElement(Dock));
     act(() => contexts.set('session', { active: true, label: 'Monday run' }));
-    expect(titles()).toContain('Players, Monday run');
+    expect(sublabels()).toEqual(['Monday run']);
     act(() => contexts.set('session', { active: true }));
-    expect(titles()).toContain('Players');
+    expect(sublabels()).toEqual([]);
   });
 });
 
-describe('a context label in a popped widget window title', () => {
-  it('reads the relayed label after the title and follows a change', () => {
+describe('a context label as a popped widget window sublabel', () => {
+  it('shows the relayed label beside the title and follows a change', () => {
     contexts.set('session', { active: true, label: 'Sunday run' });
     draw(createElement(WidgetWindow, { id: 'players', widgets: [players] }));
-    expect(titles()).toEqual(['Players, Sunday run']);
+    expect(titles()).toEqual(['Players']);
+    expect(sublabels()).toEqual(['Sunday run']);
     act(() => useContextsStore.getState().hydrate({ session: { active: true, label: 'Monday run' } }));
-    expect(titles()).toEqual(['Players, Monday run']);
+    expect(sublabels()).toEqual(['Monday run']);
   });
 
-  it('keeps the plain title with no label', () => {
+  it('shows no sublabel with no label', () => {
     contexts.set('session', { active: true });
     draw(createElement(WidgetWindow, { id: 'players', widgets: [players] }));
     expect(titles()).toEqual(['Players']);
+    expect(sublabels()).toEqual([]);
   });
 });

@@ -7,6 +7,8 @@ const NO_TOURS: readonly TourDef[] = [];
 
 const EMPTY_PROGRESS: TourProgress = { completed: [], started: [], last: {} };
 
+const OPEN_SCREEN = '.screen-layer:not(.screen-layer--hidden)';
+
 const SHELL_TARGETS: Readonly<Record<TourShellPart, string>> = {
   'menu': '.window-title-bar__start .dropdown-trigger',
   'search': '.window-title-bar [data-bar-item="action:search"]',
@@ -17,9 +19,16 @@ const SHELL_TARGETS: Readonly<Record<TourShellPart, string>> = {
   'rail': `nav.side-nav--rail[aria-label="${SHELL_LABELS.screens}"]`,
   'hero': '.screen-host__home .hero, .screen-layer:not(.screen-layer--hidden) .hero',
   'tabs': '.screen-host__home .settings-page__tabs, .screen-layer:not(.screen-layer--hidden) .settings-page__tabs',
+  'primary': `${OPEN_SCREEN} .header-actions .btn--primary`,
+  'back': `${OPEN_SCREEN} .content-header__back`,
+  'menu-panel': '.dropdown-menu:not(.dropdown-menu--sub)',
 };
 
-const QUOTED = /["\\]/g;
+const RAIL_ENTRY_SELECTOR = `${OPEN_SCREEN} nav.side-nav .side-nav__item`;
+
+const RESET_FRAME_FALLBACK_MS = 100;
+
+const QUOTED =/["\\]/g;
 
 const APP_MENU_ID = 'menu';
 
@@ -76,6 +85,6 @@ const TOUR_STEP_KEYS: Readonly<Record<TourAdvance, readonly string[]>> = {
 };
 
 export {
-  APP_MENU_ID, MENU_CONTROLS_ATTRIBUTE, MENU_ITEM_SELECTOR, MENU_LABEL_PART, MENU_PANEL_SELECTOR, MENU_POPUP_ATTRIBUTE, SUB_MENU_PART, SUB_MENU_POLL_MS, SUB_MENU_WAIT_MS, MENU_LABEL_SELECTOR, MENU_OPEN_ATTRIBUTE, MENU_TRIGGER_PART, CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, FIRST_RUN_DELAY_MS, NO_TOUR_STATE, NO_TOURS, PROFILE_TOURS_FIELD, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
+  APP_MENU_ID, MENU_CONTROLS_ATTRIBUTE, MENU_ITEM_SELECTOR, MENU_LABEL_PART, MENU_PANEL_SELECTOR, MENU_POPUP_ATTRIBUTE, SUB_MENU_PART, SUB_MENU_POLL_MS, SUB_MENU_WAIT_MS, MENU_LABEL_SELECTOR, MENU_OPEN_ATTRIBUTE, MENU_TRIGGER_PART, CLOSE_TOUR_KEY, EMPTY_PROGRESS, TOUR_STEP_KEYS, POPPED_WIDGET_PART, QUOTED, RAIL_ENTRY_SELECTOR, RESET_FRAME_FALLBACK_MS, FIRST_RUN_DELAY_MS, NO_TOUR_STATE, NO_TOURS, PROFILE_TOURS_FIELD, SHELL_TARGETS, TITLE_BAR_SELECTOR, TOUR_ICON,
   TOUR_ART_ICON_SIZE, TOUR_KEYWORDS, TOUR_MENU_KEY, TOUR_MENU_LABEL, TOUR_SEARCH_GROUP,
 };

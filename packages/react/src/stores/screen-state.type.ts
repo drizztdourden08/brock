@@ -6,6 +6,7 @@ type ScreenStates = Record<string, Record<string, unknown>>;
 interface ScreenStateState {
   byScope: ScreenStates;
   put: (scope: string, key: string, value: unknown) => void;
+  drop: (scope: string, keys: readonly string[]) => void;
   hydrate: (states: ScreenStates) => void;
 }
 

@@ -2,6 +2,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { SideNavLayout } from '@drizztdourden08/tessera/composites';
 import { usePlatform } from '../../platform/usePlatform';
+import { useTourReset } from '../../tours/useTourReset';
 import { SettingsPageContext } from '../SettingsLayout/behavior/settings-page-context';
 import type { SettingsPageContextValue } from '../SettingsLayout/SettingsLayout.type';
 import { useHubNav } from './behavior/useHubNav';
@@ -27,6 +28,11 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
     setInternalTab(id);
     onTabChange?.(id);
   }, [clear, onTabChange]);
+
+  useTourReset((parts) => {
+    if (parts.search) clear();
+    if (parts.tab && home) openTab(home.id);
+  });
 
   const active = visibleTabs.find((tab) => tab.id === activeId) ?? home;
   const pageContext = useMemo<SettingsPageContextValue | null>(

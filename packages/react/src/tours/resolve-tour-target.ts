@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { useWidgetLayoutStore } from '../widgets/useWidgetLayoutStore';
 import { menuEntryOf } from './menu-entry-of';
-import { POPPED_WIDGET_PART, QUOTED, SHELL_TARGETS } from './tours.constants';
+import { POPPED_WIDGET_PART, QUOTED, RAIL_ENTRY_SELECTOR, SHELL_TARGETS } from './tours.constants';
 import type { BrockTourTarget, NamedTourTarget, TourSpotSlice, TourStepDef } from './tour.type';
 
 const attribute = (name: string, value: string): string => `[${name}="${value.replace(QUOTED, '\\$&')}"]`;
@@ -9,7 +9,7 @@ const attribute = (name: string, value: string): string => `[${name}="${value.re
 const isPopped = (id: string): boolean => useWidgetLayoutStore.getState().layout.popped.some((entry) => entry.id === id);
 
 const selectorOf = (target: NamedTourTarget): string => {
-  if ('shell' in target) return SHELL_TARGETS[target.shell];
+  if ('shell' in target) return target.shell === 'rail' && target.entry !== undefined ? `${RAIL_ENTRY_SELECTOR}${attribute('aria-label', target.entry)}` : SHELL_TARGETS[target.shell];
   if ('widget' in target) return attribute('data-widget-id', target.widget);
   if ('setting' in target) return attribute('data-setting-key', target.setting);
   if ('tour' in target) return attribute('data-tour', target.tour);

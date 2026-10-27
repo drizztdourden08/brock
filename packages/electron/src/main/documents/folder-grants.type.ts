@@ -1,7 +1,10 @@
 /* @layer electron-main @kind types */
+import type { MadeFolders } from './made-folders.type';
+
 interface FolderGrants {
   allow: (path: string) => string;
   vet: (path: string) => string;
+  made: MadeFolders;
   adopt: (real: string) => string;
   revoke: (path: string) => boolean;
   contain: (path: string, write?: boolean) => Promise<string | null>;
@@ -22,6 +25,7 @@ interface FolderGrantDeps {
   protectedRoots?: () => string[];
   sensitiveRoots?: () => SensitiveRoots;
   onRevoke?: (root: string) => void;
+  tempRoot?: () => string;
 }
 
 export type { FolderGrantDeps, FolderGrants, SensitiveRoots };

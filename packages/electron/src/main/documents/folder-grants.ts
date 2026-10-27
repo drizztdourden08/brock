@@ -3,6 +3,7 @@ import { realpathSync, statSync } from 'fs';
 import { absolutePath } from './absolute-path';
 import { containLink } from './contain-link';
 import { containNew } from './contain-new';
+import { createMadeFolders } from './made-folders';
 import { NETWORK_PATH } from './folder-grants.constants';
 import { grantRefusal } from './grant-refusal';
 import type { FolderGrantDeps, FolderGrants } from './folder-grants.type';
@@ -17,9 +18,10 @@ import { writeDenied } from './write-denied';
 
 const isNetwork = (path: string): boolean => process.platform === 'win32' && NETWORK_PATH.test(path);
 
-const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensitiveFolders, onRevoke }: FolderGrantDeps = {}): FolderGrants => {
+const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensitiveFolders, onRevoke, tempRoot }: FolderGrantDeps = {}): FolderGrants => {
   const roots = new Set<string>();
   const spellings = new Map<string, string>();
+  const made = createMadeFolders(tempRoot);
   const guarded = protectedReals(protectedRoots);
   const sensitiveHome = protectedReals(() => sensitiveRoots().home);
   const sensitiveTrees = protectedReals(() => sensitiveRoots().trees);
@@ -35,7 +37,9 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
     const real = realpathSync.native(full);
     if (!statSync(real).isDirectory()) throw new Error(`"${real}" is not a folder`);
     for (const guard of [guarded, sensitiveHome, sensitiveTrees]) guard.refresh();
-    const refusal = grantRefusal(real, { own: guarded.current(), home: sensitiveHome.current(), trees: sensitiveTrees.current() });
+    const trees = sensitiveTrees.current();
+    const reachable = made.holds(real) ? trees.filter((tree) => pathInside(real, tree, pathKey)) : trees;
+    const refusal = grantRefusal(real, { own: guarded.current(), home: sensitiveHome.current(), trees: reachable });
     if (refusal !== null) throw new Error(refusal);
     return real;
   };
@@ -75,7 +79,7 @@ const createFolderGrants = ({ protectedRoots = () => [], sensitiveRoots = sensit
 
   const holdsProtected = (real: string): boolean => guarded.current().some((guard) => pathInside(real, guard, pathKey));
 
-  return { allow, adopt, vet, revoke, contain, containNew: (path) => containNew(contain, path), containLink: (path) => containLink(contain, path), holdsProtected, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };
+  return { allow, made, adopt, vet, revoke, contain, containNew: (path) => containNew(contain, path), containLink: (path) => containLink(contain, path), holdsProtected, covers: (real) => rootOf(real) !== null, rootOf, holds: (root) => roots.has(root) };
 };
 
 export { createFolderGrants };

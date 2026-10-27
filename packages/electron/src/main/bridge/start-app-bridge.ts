@@ -6,6 +6,7 @@ import { BRIDGE_PROTOCOL, BRIDGE_STALE_OPEN } from './bridge.constants';
 import { clearStaleDiscovery } from './clear-stale-discovery';
 import { removeDiscovery } from './remove-discovery';
 import { startBridgeServer } from './start-bridge-server';
+import { sweepStaleLaunchFiles } from './sweep-stale-launch-files';
 import { writeAppLaunch } from './write-app-launch';
 import { writeBridgeDiscovery } from './write-bridge-discovery';
 
@@ -36,6 +37,12 @@ const startAppBridge = async (ctx: MainContext, options: AppBridgeOptions, { fil
   } catch (error) {
     ctx.log(`bridge: the app launch file was not written: ${error instanceof Error ? error.message : String(error)}`, 'warn');
   }
+  void sweepStaleLaunchFiles(file).then(
+    (removed) => {
+      if (removed > 0) ctx.log(`bridge: removed ${removed} stale launch files`);
+    },
+    () => undefined,
+  );
   ctx.log(`bridge open; its discovery file is ${file}`);
   return { server, stop };
 };

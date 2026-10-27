@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { ensureElectron } from '../ensure-electron.mjs';
-import { ensureSynced } from '../freshness/ensure-synced.mjs';
+import { ensureSynced, ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { appShape } from '../platforms/server/app-shape.mjs';
 import { copyBrandIcons } from '../icons/copy-brand-icons.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
@@ -24,9 +24,11 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
     console.error(`brock ${mode}: ${electron.message}`);
     return 1;
   }
-  const problem = await ensureSynced(rootDir, `brock ${mode}`);
-  if (problem) {
-    console.error(`brock ${mode}: ${problem}`);
+  const synced = mode === 'dev'
+    ? await ensureSyncedLater(rootDir, 'brock dev')
+    : { problem: await ensureSynced(rootDir, 'brock build'), guide: () => Promise.resolve() };
+  if (synced.problem) {
+    console.error(`brock ${mode}: ${synced.problem}`);
     return 1;
   }
   const config = await loadBrockConfig(rootDir);
@@ -34,7 +36,10 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
   if (copied?.written.length) console.log(`brock ${mode}: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
   await prepareModules(rootDir, config.modules);
   writeGeneratedLists(rootDir, mode);
-  return bundleAppHelperScripts(rootDir, config, `brock ${mode}`).then((bundled) => (bundled ? runBin(rootDir, 'electron-vite', [mode, ...passthrough]) : 1));
+  const guide = synced.guide().catch((error) => console.warn(`brock ${mode}: the Tessera guide did not finish: ${error?.message ?? error}`));
+  const code = await bundleAppHelperScripts(rootDir, config, `brock ${mode}`).then((bundled) => (bundled ? runBin(rootDir, 'electron-vite', [mode, ...passthrough]) : 1));
+  await guide;
+  return code;
 };
 
 export { runElectronVite };

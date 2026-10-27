@@ -57,6 +57,7 @@
       "types": "./src/look/app-theme-css.d.mts",
       "default": "./src/look/app-theme-css.mjs"
     },
+    "./sync-if-stale": "./src/freshness/sync-if-stale.mjs",
     "./package.json": "./package.json"
   },
   "files": [

@@ -100,9 +100,9 @@ describe('defineBrockViteConfig', () => {
     const root = fixtureApp({ build: { aliases: { '@shared': '../shared' }, nodePolyfills: { globals: { Buffer: true, process: true } } } });
     const config = await defineBrockViteConfig(root);
     for (const side of ['main', 'preload', 'renderer']) expect(config[side].resolve.alias).toMatchObject({ '@app': resolve(root, 'src'), '@shared': resolve(root, '../shared') });
-    expect(pluginNames(config.renderer.plugins)).toEqual(expect.arrayContaining(['brock-dev-only', 'react-stub', 'node-polyfills-stub']));
-    expect(pluginNames(config.main.plugins)).toEqual(['brock-dev-only', 'brock-esm-shim-placement']);
-    expect(pluginNames(config.preload.plugins)).toEqual(['brock-esm-shim-placement']);
+    expect(pluginNames(config.renderer.plugins)).toEqual(expect.arrayContaining(['brock-dev-only', 'react-stub', 'node-polyfills-stub', 'brock:shared-deps-cache']));
+    expect(pluginNames(config.main.plugins)).toEqual(['brock:build-reuse-main', 'brock-dev-only', 'brock-esm-shim-placement']);
+    expect(pluginNames(config.preload.plugins)).toEqual(['brock:build-reuse-preload', 'brock-esm-shim-placement']);
     expect(config.renderer.worker.format).toBe(WORKER_FORMAT);
     expect(pluginNames(config.renderer.worker.plugins())).toEqual(['brock-dev-only', 'node-polyfills-stub']);
     expect(config.renderer.publicDir).toBe(resolve(root, 'public'));

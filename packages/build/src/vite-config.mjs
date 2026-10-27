@@ -7,6 +7,7 @@ import { appAliases } from './build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
 import { defineValues } from './build-options/define-values.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
+import { buildReusePlugin } from './build-reuse/build-reuse-plugin.mjs';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { esmShimPlacement } from './build-options/esm-shim-placement.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
@@ -24,6 +25,7 @@ import { toolbarsPlugin } from './toolbars/toolbars-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
 import { optimizeDepsPlugin } from './optimize-deps/optimize-deps-plugin.mjs';
+import { sharedDepsCachePlugin } from './shared-deps-cache/shared-deps-cache-plugin.mjs';
 import { SHARED_SINGLETONS, SOURCE_SCOPE, SOURCE_SPECS, SPLASH_PRELOAD } from './vite.constants.mjs';
 
 const readScope = (dir) => {
@@ -123,7 +125,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const base = {
     main: {
       define,
-      plugins: [devOnlyPlugin({ rootDir }), esmShimPlacement()],
+      plugins: [buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
@@ -133,7 +135,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     },
     preload: {
       define,
-      plugins: [esmShimPlacement()],
+      plugins: [buildReusePlugin({ rootDir, target: 'preload' }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
@@ -147,7 +149,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       publicDir: resolve(rootDir, 'public'),
       define,
       plugins: [
-        devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }),
+        devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps }), sharedDepsCachePlugin({ rootDir }),
         splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }), toolbarsPlugin({ rootDir }), startupPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },

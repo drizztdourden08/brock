@@ -56,6 +56,8 @@ interface BrockOptimizeDepsOptions {
   entries?: string[];
   /** Dependencies only a renderer Web Worker imports (fs, crypto, path through build.nodePolyfills, js-yaml), pre-bundled at start instead of when the worker first loads. */
   worker?: string[];
+  /** true serves the Brock packages the app links from outside its workspace as source, with hot reload. Default false: they are pre-bundled, and re-bundled on the next start once their files change. `brock dev --live-brock` or BROCK_LIVE_BROCK=1 does the same for one run. */
+  liveBrock?: boolean;
 }
 
 type BrockDefineValue = string | number | boolean | null | BrockDefineValue[] | { [key: string]: BrockDefineValue };

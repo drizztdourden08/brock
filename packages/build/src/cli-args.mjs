@@ -9,6 +9,7 @@ const OPTIONS = {
   force: { type: 'boolean', default: false },
   check: { type: 'boolean', default: false },
   'if-stale': { type: 'boolean', default: false },
+  'live-brock': { type: 'boolean', default: false },
   full: { type: 'boolean', default: false },
   all: { type: 'boolean', default: false },
   changed: { type: 'boolean', default: false },

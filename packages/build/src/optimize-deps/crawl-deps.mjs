@@ -26,43 +26,68 @@ const localFileOf = (resolver, aliases) => (file, spec) => {
 };
 
 /**
+ * @typedef {{ file: string, chain: string[], inside?: boolean }} CrawlStep inside: in a pre-bundled package
+ * @typedef {(name: string, found: { dir: string, linked: boolean }) => boolean} BundledTest whether a linked package is pre-bundled
+ */
+
+/**
  * @param {string} rootDir the app root
  * @param {ReturnType<import('./package-entry.mjs').createResolver>} resolver
- * @returns {(from: { file: string, chain: string[] }, spec: string) => { include?: string, next?: { file: string, chain: string[] } } | null} a dep or a linked file
+ * @param {BundledTest} bundled
+ * @returns {(from: CrawlStep, spec: string) => { include?: string, next?: CrawlStep } | null} a dep, a linked file, or both for a pre-bundled package
  */
-const packageStepOf = (rootDir, resolver) => (from, spec) => {
+const packageStepOf = (rootDir, resolver, bundled) => (from, spec) => {
   const { name, subpath } = splitSpecifier(spec);
   const found = resolver.findPackage(dirname(from.file), name);
   const entry = found ? resolver.entryFile(found, subpath) : null;
   if (!entry) return null;
-  if (found.linked) return { next: { file: entry, chain: [...from.chain, name] } };
+  const chain = [...from.chain, name];
+  if (found.linked && bundled(name, found)) return { include: [...from.chain, spec].join(' > '), next: { file: entry, chain, inside: true } };
+  if (found.linked) return { next: { file: entry, chain, inside: from.inside } };
   const fromRoot = resolver.findPackage(rootDir, name);
   if (fromRoot && !fromRoot.linked && resolver.entryFile(fromRoot, subpath)) return { include: spec };
   return from.chain.length > 0 ? { include: [...from.chain, spec].join(' > ') } : null;
 };
 
 /**
+ * @typedef {object} CrawlOptions
+ * @property {Set<string>} [seen] filled with every file the crawl read
+ * @property {BundledTest} [bundled] linked packages included whole, still read
+ * @property {string[]} [bundledEntries] pre-bundled entry files to read too
+ * @property {Set<string>} [bundledFiles] filled with every file a pre-bundled package carries
+ */
+
+/**
  * @param {string} rootDir the app root
  * @param {Record<string, string>} aliases import prefixes and their absolute folders
  * @param {ReturnType<import('./package-entry.mjs').createResolver>} resolver
- * @param {Set<string>} [seen] filled with every file the crawl read
+ * @param {CrawlOptions} [options]
  * @returns {Promise<string[]>} the node_modules imports of the renderer
  */
-const crawlRendererDeps = async (rootDir, aliases, resolver, seen = new Set()) => {
+const crawlRendererDeps = async (rootDir, aliases, resolver, { seen = new Set(), bundled = () => false, bundledEntries = [], bundledFiles = new Set() } = {}) => {
   const localFile = localFileOf(resolver, aliases);
-  const packageStep = packageStepOf(rootDir, resolver);
+  const packageStep = packageStepOf(rootDir, resolver, bundled);
   const include = new Set();
-  const queue = sourceFilesUnder(join(rootDir, 'src')).map((file) => ({ file, chain: [] }));
+  const visited = new Set();
+  const queue = [...sourceFilesUnder(join(rootDir, 'src')).map((file) => ({ file, chain: [] })), ...bundledEntries.map((file) => ({ file, chain: [], inside: true }))];
   const follow = (from, spec) => {
     const local = localFile(from.file, spec);
-    if (local) queue.push({ file: local, chain: from.chain });
+    if (local) queue.push({ ...from, file: local });
     if (local !== undefined || !isPackageSpecifier(spec)) return;
     const step = packageStep(from, spec);
     if (step?.next) queue.push(step.next);
-    if (step?.include) include.add(step.include);
+    if (step?.include && !from.inside) include.add(step.include);
+  };
+  const isNew = (from) => {
+    const key = `${from.inside ? 1 : 0}${from.file}`;
+    if (visited.has(key)) return false;
+    visited.add(key);
+    seen.add(from.file);
+    if (from.inside) bundledFiles.add(from.file);
+    return true;
   };
   while (queue.length > 0) {
-    const batch = queue.splice(0, READ_BATCH).filter((from) => !seen.has(from.file) && seen.add(from.file));
+    const batch = queue.splice(0, READ_BATCH).filter(isNew);
     const read = await Promise.all(batch.map(async (from) => ({ from, specs: await specifiersOf(from.file) })));
     for (const { from, specs } of read) for (const spec of specs) follow(from, spec);
   }

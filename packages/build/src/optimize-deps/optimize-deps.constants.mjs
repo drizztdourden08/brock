@@ -11,15 +11,19 @@ const ASSET_SPECIFIER = /\.(?:css|less|s[ac]ss|styl|svg|png|jpe?g|gif|webp|avif|
 const DYNAMIC_IMPORT = /\bimport\s*\(\s*['"]([^'"\n]+)['"]\s*\)/g;
 const RESOLVE_SUFFIXES = ['', '.ts', '.tsx', '.mts', '.js', '.jsx', '.mjs', '/index.ts', '/index.tsx', '/index.js', '/index.mjs'];
 const NODE_MODULES_SEGMENT = /[\\/]node_modules[\\/]/;
-const OPTION_KEYS = ['include', 'exclude', 'entries', 'worker'];
+const LIST_OPTION_KEYS = ['include', 'exclude', 'entries', 'worker'];
+const LIVE_BROCK_KEY = 'liveBrock';
+const OPTION_KEYS = [...LIST_OPTION_KEYS, LIVE_BROCK_KEY];
+const LIVE_BROCK_ENV = 'BROCK_LIVE_BROCK';
+const STAMP_PLUGIN = 'brock-linked-sources';
 const READ_BATCH = 64;
 const DEPS_METADATA_ENV = 'BROCK_DEV_DEPS_METADATA';
 const ELECTRON_VITE_MODE_ENV = 'NODE_ENV_ELECTRON_VITE';
 const CRAWL_CACHE_FILE = 'node_modules/.vite/brock-renderer-deps.json';
-const CRAWL_CACHE_VERSION = 1;
+const CRAWL_CACHE_VERSION = 2;
 const INSTALL_STAMPS = ['package.json', 'pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'node_modules/.modules.yaml'];
 
 export {
-  ALWAYS_INCLUDED, ASSET_SPECIFIER, CRAWL_CACHE_FILE, CRAWL_CACHE_VERSION, DECLARATION_FILE, DEPS_METADATA_ENV, DYNAMIC_IMPORT, ELECTRON_VITE_MODE_ENV, ENTRY_CONDITIONS, INSTALL_STAMPS, NODE_MODULES_SEGMENT, NON_RENDERER_ENTRIES, OPTION_KEYS, READ_BATCH, RESOLVE_SUFFIXES,
-  SKIPPED_DIRS, SOURCE_FILE, TESSERA_PACKAGE, TEST_FILE,
+  ALWAYS_INCLUDED, ASSET_SPECIFIER, CRAWL_CACHE_FILE, CRAWL_CACHE_VERSION, DECLARATION_FILE, DEPS_METADATA_ENV, DYNAMIC_IMPORT, ELECTRON_VITE_MODE_ENV, ENTRY_CONDITIONS, INSTALL_STAMPS, LIST_OPTION_KEYS, LIVE_BROCK_ENV, LIVE_BROCK_KEY, NODE_MODULES_SEGMENT, NON_RENDERER_ENTRIES, OPTION_KEYS, READ_BATCH, RESOLVE_SUFFIXES,
+  SKIPPED_DIRS, SOURCE_FILE, STAMP_PLUGIN, TESSERA_PACKAGE, TEST_FILE,
 };

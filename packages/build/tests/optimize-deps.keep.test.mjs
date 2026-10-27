@@ -105,7 +105,7 @@ describe('the computed renderer optimizeDeps', () => {
     await rendererOptimizeDeps(root, aliasesOf(root), undefined);
     const cacheFile = join(root, 'node_modules/.vite/brock-renderer-deps.json');
     const cache = JSON.parse(readFileSync(cacheFile, 'utf8'));
-    writeFileSync(cacheFile, JSON.stringify({ ...cache, specs: ['kept-from-cache'] }));
+    writeFileSync(cacheFile, JSON.stringify({ ...cache, result: { ...cache.result, specs: ['kept-from-cache'] } }));
     expect((await rendererOptimizeDeps(root, aliasesOf(root), undefined)).include).toEqual(['kept-from-cache']);
     putPackage(root, 'new-dep', { main: './index.js' }, { 'index.js': '' });
     put(root, 'src/shared.ts', "export { pick } from 'small-dep/pick';\nexport { added } from 'new-dep';\nexport const shared = 1;\n");
@@ -115,10 +115,59 @@ describe('the computed renderer optimizeDeps', () => {
   });
 
   it('refuses an unknown key and a list that is not of specifiers', () => {
-    expect(optimizeDepsOptions(undefined)).toEqual({ include: [], exclude: [], entries: [], worker: [] });
+    expect(optimizeDepsOptions(undefined)).toEqual({ include: [], exclude: [], entries: [], worker: [], liveBrock: false });
+    expect(() => optimizeDepsOptions({ liveBrock: 'yes' })).toThrow(/liveBrock takes true or false/);
     expect(() => optimizeDepsOptions({ includes: ['x'] })).toThrow(/includes is not an option/);
     expect(() => optimizeDepsOptions({ worker: 'fs' })).toThrow(/build\.optimizeDeps\.worker takes a list/);
-    expect(() => optimizeDepsOptions(['x'])).toThrow(/takes \{ include, exclude, entries, worker \}/);
+    expect(() => optimizeDepsOptions(['x'])).toThrow(/takes \{ include, exclude, entries, worker, liveBrock \}/);
+  });
+});
+
+const linkedBrockApp = () => {
+  const root = fixtureApp();
+  const brock = tempDir();
+  put(brock, 'package.json', json({ name: '@drizztdourden08/brock-live', exports: { '.': './src/index.ts', './renderer': './src/renderer/index.ts', './main': './src/main/index.ts' } }));
+  put(brock, 'src/index.ts', "import { z } from 'zod';\nexport const live = z;\n");
+  put(brock, 'src/renderer/index.ts', 'export const renderer = 1;\n');
+  put(brock, 'src/main/index.ts', 'export const main = 1;\n');
+  putPackage(brock, 'zod', { exports: { '.': './index.js' } }, { 'index.js': '' });
+  symlinkSync(brock, join(root, 'node_modules/@drizztdourden08/brock-live'), 'junction');
+  put(root, 'package.json', json({ name: 'fixture-app', type: 'module', dependencies: { '@drizztdourden08/brock-live': 'link:../brock' } }));
+  put(root, 'src/live.ts', "import { live } from '@drizztdourden08/brock-live';\nexport const used = live;\n");
+  return { root, brock };
+};
+
+describe('linked Brock packages', () => {
+  afterEach(() => {
+    delete process.env.BROCK_LIVE_BROCK;
+  });
+
+  it('pre-bundles one from outside the app workspace, with its renderer entries, under a stamp of its files', async () => {
+    const { root, brock } = linkedBrockApp();
+    const first = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(first.include).toContain('@drizztdourden08/brock-live');
+    expect(first.include).toContain('@drizztdourden08/brock-live/renderer');
+    expect(first.include).not.toContain('@drizztdourden08/brock-live/main');
+    expect(first.include).not.toContain('@drizztdourden08/brock-live > zod');
+    const [stamp] = first.esbuildOptions.plugins;
+    expect(stamp.name).toMatch(/^brock-linked-sources:[0-9a-f]{16}$/);
+    put(brock, 'src/renderer/index.ts', 'export const renderer = 2;\nexport const more = 3;\n');
+    const second = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(second.esbuildOptions.plugins[0].name).not.toBe(stamp.name);
+    put(brock, 'src/main/index.ts', 'export const main = 2;\nexport const more = 3;\n');
+    const third = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(third.esbuildOptions.plugins[0].name).toBe(second.esbuildOptions.plugins[0].name);
+  });
+
+  it('serves it as source and follows its imports with liveBrock or BROCK_LIVE_BROCK=1', async () => {
+    const { root } = linkedBrockApp();
+    const fromConfig = await rendererOptimizeDeps(root, aliasesOf(root), { liveBrock: true });
+    expect(fromConfig.include).toContain('@drizztdourden08/brock-live > zod');
+    expect(fromConfig.include).not.toContain('@drizztdourden08/brock-live');
+    expect(fromConfig.esbuildOptions).toBeUndefined();
+    process.env.BROCK_LIVE_BROCK = '1';
+    const fromEnv = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(fromEnv.include).toEqual(fromConfig.include);
   });
 });
 

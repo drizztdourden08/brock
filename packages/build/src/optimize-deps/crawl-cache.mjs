@@ -26,9 +26,9 @@ const readCache = (file) => {
 const sameList = (a, b) => Array.isArray(a) && a.length === b.length && a.every((item, index) => item === b[index]);
 
 const isCurrent = (cache, key) => cache?.version === CRAWL_CACHE_VERSION
-  && cache.aliases === key.aliases
+  && cache.inputs === key.inputs
   && sameList(cache.sources, key.sources)
-  && Array.isArray(cache.specs)
+  && cache.result !== undefined
   && Object.entries(cache.stamps ?? {}).every(([file, stamp]) => stampOf(file) === stamp);
 
 const writeCache = (file, content) => {
@@ -42,20 +42,21 @@ const writeCache = (file, content) => {
 };
 
 /**
+ * @template T
  * @param {string} rootDir the app root
- * @param {Record<string, string>} aliases import prefixes and their absolute folders
- * @param {() => Promise<{ specs: string[], files: string[] }>} crawl the full crawl, with every file it read
- * @returns {Promise<string[]>} the last specs, or a new crawl's once a read file changed
+ * @param {unknown} inputs what the crawl depends on beside the files it reads, as JSON
+ * @param {() => Promise<{ result: T, files: string[] }>} crawl the full crawl, with every file it read
+ * @returns {Promise<T>} the last result while nothing it read changed
  */
-const cachedCrawl = async (rootDir, aliases, crawl) => {
+const cachedCrawl = async (rootDir, inputs, crawl) => {
   const file = join(rootDir, CRAWL_CACHE_FILE);
-  const key = { aliases: JSON.stringify(aliases), sources: sourceFilesUnder(join(rootDir, 'src')).sort() };
+  const key = { inputs: JSON.stringify(inputs), sources: sourceFilesUnder(join(rootDir, 'src')).sort() };
   const cache = readCache(file);
-  if (isCurrent(cache, key)) return cache.specs;
-  const { specs, files } = await crawl();
+  if (isCurrent(cache, key)) return cache.result;
+  const { result, files } = await crawl();
   const stamps = Object.fromEntries([...files, ...installFiles(rootDir)].map((path) => [path, stampOf(path)]));
-  writeCache(file, { version: CRAWL_CACHE_VERSION, ...key, specs, stamps });
-  return specs;
+  writeCache(file, { version: CRAWL_CACHE_VERSION, ...key, result, stamps });
+  return result;
 };
 
 export { cachedCrawl };

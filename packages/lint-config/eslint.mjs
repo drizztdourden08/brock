@@ -10,6 +10,7 @@ import {
   slopRules,
 } from '@drizztdourden08/standards/eslint';
 import { allowWords } from './allow-words.mjs';
+import { configRoot } from './config-root.mjs';
 import { dataBlocks } from './data-blocks.mjs';
 import { dataFiles } from './data-files.mjs';
 import { verbatimText } from './verbatim-text.mjs';
@@ -22,7 +23,7 @@ const { rawControls: RAW_CONTROLS } = brockLint.eslint.options;
  * @returns {import('eslint').Linter.Config[]}
  */
 const brockEslint = (opts = {}) => {
-  const rootDir = opts.rootDir ?? process.cwd();
+  const rootDir = opts.rootDir ?? configRoot();
   const entries = dataFiles(rootDir);
   return standardsEslint({
     ...opts,

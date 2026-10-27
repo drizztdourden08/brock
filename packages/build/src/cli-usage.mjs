@@ -18,8 +18,11 @@ Usage:
                              the files that differ with --check
   brock add <id | spec> [--local <brockRepo>]
                              install a module package (or link it from a Brock checkout), record its id, sync
-  brock dev [args]           electron-vite dev; unknown options and anything after -- reach it; syncs first
-                             when .brock is missing or stale, and stops when the renderer entry misses a file
+  brock dev [--live-brock] [args]
+                             electron-vite dev; unknown options and anything after -- reach it; syncs first
+                             when .brock is missing or stale, and stops when the renderer entry misses a file;
+                             --live-brock serves linked Brock packages as source, with hot reload, instead of
+                             pre-bundling them
   brock build [--if-stale] [args]
                              electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set;
                              --if-stale builds only when dist is missing, half built or older than the app's sources

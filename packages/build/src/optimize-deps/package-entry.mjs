@@ -92,7 +92,7 @@ const createResolver = () => {
     const file = typeof target === 'string' ? resolveFile(join(found.dir, target)) : null;
     return file && !DECLARATION_FILE.test(file) ? file : null;
   };
-  return { findPackage, resolveFile, entryFile, manifests: () => [...manifests] };
+  return { findPackage, packageAt, resolveFile, entryFile, manifests: () => [...manifests] };
 };
 
 export { createResolver, exportsMap, splitSpecifier };

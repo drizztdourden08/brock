@@ -25,7 +25,7 @@ const readStore = (file) => {
 
 /**
  * @param {string} file
- * @param {{ key: string, files: Record<string, string>, outputs: { fileName: string, base64: string }[] }} content
+ * @param {{ key: string, files: Record<string, string>, dirs: Record<string, string>, outputs: { fileName: string, base64: string }[] }} content
  * @returns {boolean} whether it was written
  */
 const writeStore = (file, content) => {
@@ -50,7 +50,7 @@ const storeIsCurrent = (store, key, stamp = stampOf) => {
   if (!store || store.version !== REUSE_VERSION || store.key !== key) return false;
   if (!Array.isArray(store.outputs) || store.outputs.length === 0) return false;
   if (!store.files || Object.keys(store.files).length === 0) return false;
-  return Object.entries(store.files).every(([file, recorded]) => recorded !== null && stamp(file) === recorded);
+  return Object.entries({ ...store.files, ...store.dirs }).every(([path, recorded]) => recorded !== null && stamp(path) === recorded);
 };
 
 export { readStore, storeFile, storeIsCurrent, writeStore };

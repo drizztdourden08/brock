@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute, join, relative } from 'node:path';
 import { PNPM_LOCKFILE } from './shared-deps-cache.constants.mjs';
 
 /**
@@ -36,11 +36,18 @@ const optimizerPart = (optimizeDeps) => ({
   },
 });
 
-const resolvePart = (resolve, portable) => (portable ? { ...resolve, alias: undefined } : resolve);
+const portablePath = (root, value) => (typeof value === 'string' && isAbsolute(value) ? relative(root, value).split('\\').join('/') : value);
+
+const aliasEntries = (alias) => (Array.isArray(alias) ? alias : Object.entries(alias ?? {}).map(([find, replacement]) => ({ find, replacement })));
+
+const resolvePart = (resolve, root, portable) => {
+  if (!portable) return resolve;
+  return { ...resolve, alias: aliasEntries(resolve.alias).map(({ find, replacement }) => ({ find, replacement: portablePath(root, replacement) })) };
+};
 
 /**
  * @param {import('vite').ResolvedConfig} config
- * @param {{ portable?: boolean }} [options] portable drops the root and the alias folders
+ * @param {{ portable?: boolean }} [options] portable drops the root, keeps aliases relative to it
  * @returns {string} Vite's own config hash, rebuilt from the resolved config
  */
 const configHashOf = (config, { portable = false } = {}) => {
@@ -48,7 +55,7 @@ const configHashOf = (config, { portable = false } = {}) => {
   return getHash(JSON.stringify({
     define: config.keepProcessEnv ? null : process.env.NODE_ENV || config.mode,
     root: portable ? '' : config.root,
-    resolve: resolvePart(client.resolve ?? config.resolve, portable),
+    resolve: resolvePart(client.resolve ?? config.resolve, config.root, portable),
     assetsInclude: config.assetsInclude,
     plugins: config.plugins.map((plugin) => plugin.name),
     optimizeDeps: optimizerPart(client.optimizeDeps ?? config.optimizeDeps),

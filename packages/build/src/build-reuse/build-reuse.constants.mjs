@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind constants */
-const REUSE_VERSION = 1;
+const REUSE_VERSION = 2;
 const REUSE_DIR = 'node_modules/.vite/brock-build-reuse';
 const MODE_ENV = 'NODE_ENV_ELECTRON_VITE';
 const DEV_MODE = 'development';

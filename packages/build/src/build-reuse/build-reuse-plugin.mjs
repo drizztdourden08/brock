@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { DEV_MODE, MODE_ENV, VIRTUAL_PREFIX } from './build-reuse.constants.mjs';
+import { configKey } from './config-key.mjs';
 import { moduleStamps } from './module-stamps.mjs';
 import { reuseKey } from './reuse-key.mjs';
 import { readStore, storeFile, storeIsCurrent, writeStore } from './reuse-store.mjs';
@@ -26,6 +27,7 @@ const buildReusePlugin = ({ rootDir, target }) => {
   let logger = null;
   let reusing = null;
   let key = '';
+  let configPart = {};
   let startedAt = 0;
   const file = storeFile(rootDir, target);
   return {
@@ -34,11 +36,12 @@ const buildReusePlugin = ({ rootDir, target }) => {
     configResolved: (config) => {
       enabled = config.command === 'build' && process.env[MODE_ENV] === DEV_MODE;
       logger = config.logger;
+      configPart = enabled ? configKey(config, rootDir) : {};
     },
     options(options) {
       if (!enabled) return null;
       startedAt = Date.now();
-      key = reuseKey(rootDir, target);
+      key = reuseKey(rootDir, target, configPart);
       const store = readStore(file);
       reusing = storeIsCurrent(store, key) ? store : null;
       return reusing ? { ...options, input: stubInput(options.input) } : null;
@@ -58,7 +61,7 @@ const buildReusePlugin = ({ rootDir, target }) => {
     writeBundle(_options, bundle) {
       if (!enabled || reusing) return;
       const outputs = outputsOf(bundle);
-      if (outputs) writeStore(file, { key, files: moduleStamps(this.getModuleIds(), startedAt), outputs });
+      if (outputs) writeStore(file, { key, ...moduleStamps(this.getModuleIds(), startedAt, undefined, [rootDir]), outputs });
     },
   };
 };

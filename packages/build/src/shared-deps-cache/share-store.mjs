@@ -2,7 +2,7 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { dependencyVersions, readMetadata } from './deps-metadata.mjs';
+import { cacheFilesPresent, dependencyVersions, readMetadata } from './deps-metadata.mjs';
 import { DEPS_FOLDER, KEEP_ENTRIES, METADATA_FILE, SHARE_FILE, SHARE_VERSION, SHARED_CACHE_ENV, SHARED_CACHE_FOLDERS, STALE_TEMP_MS } from './shared-deps-cache.constants.mjs';
 import { getHash } from './vite-hash.mjs';
 
@@ -111,6 +111,7 @@ const seedDeps = ({ root, key, depsDir, store, hashes }) => {
   const shared = join(entry, DEPS_FOLDER);
   const metadata = readMetadata(shared);
   if (!share || !metadata) return 'missing';
+  if (!cacheFilesPresent(metadata, shared)) return 'rejected';
   const versions = dependencyVersions(metadata, depsDir, store);
   if (!versions || !sameVersions(share.versions, versions)) return 'rejected';
   return copyFromShare(shared, depsDir, metadata, hashes) ? 'seeded' : 'rejected';

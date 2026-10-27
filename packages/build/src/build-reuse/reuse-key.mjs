@@ -22,9 +22,10 @@ const versionOf = (rootDir, name) => {
 /**
  * @param {string} rootDir the app root
  * @param {string} target main or preload
+ * @param {Record<string, unknown>} [configPart] what configKey gave
  * @returns {string} a hash of the build code, tools, config and installs
  */
-const reuseKey = (rootDir, target) => {
+const reuseKey = (rootDir, target, configPart = {}) => {
   const workspace = findWorkspaceRoot(rootDir);
   const dirs = [...new Set(workspace ? [rootDir, workspace] : [rootDir])];
   const parts = {
@@ -34,6 +35,7 @@ const reuseKey = (rootDir, target) => {
     build: treeStamp(BUILD_SRC),
     vite: versionOf(rootDir, 'vite'),
     electronVite: versionOf(rootDir, 'electron-vite'),
+    config: configPart,
     files: dirs.flatMap((dir) => KEY_FILES.map((name) => `${join(dir, name)}=${stampOf(join(dir, name))}`)),
   };
   return createHash('sha256').update(JSON.stringify(parts)).digest('hex');

@@ -55,4 +55,12 @@ const dependencyVersions = (metadata, depsDir, store) => {
   return versions;
 };
 
-export { dependencyVersions, readMetadata };
+/**
+ * @param {Record<string, any>} metadata
+ * @param {string} depsDir the folder the files sit in
+ * @returns {boolean} true when every pre-bundled file and chunk is there
+ */
+const cacheFilesPresent = (metadata, depsDir) => [...Object.values(metadata.optimized), ...Object.values(metadata.chunks ?? {})]
+  .every((info) => typeof info?.file === 'string' && existsSync(resolve(depsDir, info.file)));
+
+export { cacheFilesPresent, dependencyVersions, readMetadata };

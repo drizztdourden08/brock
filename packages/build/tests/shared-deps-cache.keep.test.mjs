@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, readFileSync, readdirSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
@@ -67,6 +67,15 @@ describe('configHashOf', () => {
   it('does not depend on the order or the repeats of the include list', () => {
     const base = makeConfig(tempDir());
     expect(configHashOf({ ...base, optimizeDeps: { include: ['picker', 'react', 'picker'] } })).toBe(configHashOf(base));
+  });
+
+  it('keeps the alias targets in the portable hash, relative to the root', () => {
+    const base = makeConfig(tempDir());
+    const aliased = (replacement) => ({ ...base, resolve: { ...base.resolve, alias: [{ find: '@app', replacement }] } });
+    const same = configHashOf(aliased(join(base.root, 'ui')), { portable: true });
+    expect(configHashOf(aliased(join(base.root, 'other')), { portable: true })).not.toBe(same);
+    const moved = makeConfig(tempDir());
+    expect(configHashOf({ ...moved, resolve: { ...moved.resolve, alias: [{ find: '@app', replacement: join(moved.root, 'ui') }] } }, { portable: true })).toBe(same);
   });
 });
 
@@ -156,6 +165,13 @@ describe('seedDeps', () => {
     expect(publishDeps(inputFor(app(), shared))).toBe('published');
     const bare = app({ version: '2.0.0', withCache: false });
     expect(seedDeps(inputFor(bare, shared))).toBe('rejected');
+  });
+
+  it('rejects a seed when a pre-bundled file is missing from the shared copy', () => {
+    const shared = tempDir();
+    expect(publishDeps(inputFor(app(), shared))).toBe('published');
+    rmSync(join(shared, 'key1/deps/picker.js'));
+    expect(seedDeps(inputFor(app({ withCache: false }), shared))).toBe('rejected');
   });
 
   it('finds nothing to seed from when the key has no entry', () => {

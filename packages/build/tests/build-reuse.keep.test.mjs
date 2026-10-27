@@ -1,40 +1,27 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, readFileSync, rmSync, utimesSync } from 'node:fs';
-import { join } from 'node:path';
-import { build } from 'vite';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { buildReusePlugin } from '../src/build-reuse/build-reuse-plugin.mjs';
+import { afterEach, describe, expect, it } from 'vitest';
 import { moduleStamps } from '../src/build-reuse/module-stamps.mjs';
 import { reuseKey } from '../src/build-reuse/reuse-key.mjs';
 import { storeIsCurrent } from '../src/build-reuse/reuse-store.mjs';
 import { stubInput } from '../src/build-reuse/stub-input.mjs';
+import { age } from './reuse-test-files.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-build-reuse-');
 
-const HOUR = 3_600_000;
-
-const age = (root, path, ms = 2 * HOUR) => {
-  const when = new Date(Date.now() - ms);
-  utimesSync(join(root, path), when, when);
-};
-
-beforeEach(() => {
-  process.env.NODE_ENV_ELECTRON_VITE = 'development';
-});
-
-afterEach(() => {
-  delete process.env.NODE_ENV_ELECTRON_VITE;
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('storeIsCurrent', () => {
   const stamps = { '/a.ts': '10:5', '/b.ts': '20:7' };
-  const store = { version: 1, key: 'k', files: stamps, outputs: [{ fileName: 'main.js', base64: '' }] };
-  const stampFrom = (table) => (file) => table[file] ?? null;
+  const store = { version: 2, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
+  const stampFrom = (table) => (file) => ({ ...table, '/d': '5:5' })[file] ?? null;
 
   it('accepts a bundle whose key and every module file stamp are unchanged', () => {
     expect(storeIsCurrent(store, 'k', stampFrom(stamps))).toBe(true);
+  });
+
+  it('rejects a bundle whose module folder changed', () => {
+    expect(storeIsCurrent({ ...store, dirs: { '/d': '4:4' } }, 'k', stampFrom(stamps))).toBe(false);
   });
 
   it('rejects a changed key, a changed file, a removed file and a file touched during the build', () => {
@@ -57,12 +44,12 @@ describe('moduleStamps', () => {
   const stamp = (file) => table[file] ?? null;
 
   it('keeps real files, drops virtual and relative ids, and strips queries', () => {
-    const stamps = moduleStamps(['/src/old.ts?raw', '\0vite/preload-helper', 'relative/file.ts', '/src/gone.ts'], 100_000, stamp);
+    const { files: stamps } = moduleStamps(['/src/old.ts?raw', '\0vite/preload-helper', 'relative/file.ts', '/src/gone.ts'], 100_000, stamp);
     expect(stamps).toEqual({ '/src/old.ts': '1000:5' });
   });
 
   it('marks a file touched while the build ran, so the next start builds again', () => {
-    expect(moduleStamps(['/src/new.ts'], 100_000, stamp)).toEqual({ '/src/new.ts': null });
+    expect(moduleStamps(['/src/new.ts'], 100_000, stamp).files).toEqual({ '/src/new.ts': null });
   });
 });
 
@@ -95,76 +82,5 @@ describe('reuseKey', () => {
     const before = reuseKey(root, 'main');
     put(root, 'pnpm-lock.yaml', 'lockfileVersion: 9\n');
     expect(reuseKey(root, 'main')).not.toBe(before);
-  });
-});
-
-const messages = [];
-const customLogger = { info: (message) => messages.push(message), warn: () => undefined, warnOnce: () => undefined, error: () => undefined, clearScreen: () => undefined, hasErrorLogged: () => false, hasWarned: false };
-
-const project = () => {
-  const root = tempDir();
-  put(root, 'package.json', '{"name":"app","type":"module"}');
-  put(root, 'electron/main.js', "import { greet } from './greet.js';\nconsole.log(greet());\n");
-  put(root, 'electron/greet.js', "export const greet = () => 'hello one';\n");
-  age(root, 'package.json');
-  age(root, 'electron/main.js');
-  age(root, 'electron/greet.js');
-  return root;
-};
-
-const run = (root) => build({
-  root,
-  configFile: false,
-  logLevel: 'info',
-  customLogger,
-  plugins: [buildReusePlugin({ rootDir: root, target: 'main' })],
-  build: { outDir: join(root, 'dist/electron'), emptyOutDir: true, minify: false, lib: { entry: { main: join(root, 'electron/main.js') }, formats: ['es'] } },
-});
-
-const written = (root) => readFileSync(join(root, 'dist/electron/main.js'), 'utf8');
-
-describe('buildReusePlugin', () => {
-  it('writes the last bundle again, without reading source, while no input changed', async () => {
-    const root = project();
-    await run(root);
-    expect(written(root)).toContain('hello one');
-    const first = written(root);
-    expect(existsSync(join(root, 'node_modules/.vite/brock-build-reuse/main.json'))).toBe(true);
-    rmSync(join(root, 'dist'), { recursive: true, force: true });
-    messages.length = 0;
-    await run(root);
-    expect(messages.some((message) => message.includes('reused the main bundle'))).toBe(true);
-    expect(written(root)).toBe(first);
-  });
-
-  it('builds again when a module file changes, and reuses that new bundle after', async () => {
-    const root = project();
-    await run(root);
-    put(root, 'electron/greet.js', "export const greet = () => 'hello two';\n");
-    age(root, 'electron/greet.js', 5 * HOUR);
-    messages.length = 0;
-    await run(root);
-    expect(messages.some((message) => message.includes('reused'))).toBe(false);
-    expect(written(root)).toContain('hello two');
-    await run(root);
-    expect(messages.some((message) => message.includes('reused the main bundle'))).toBe(true);
-    expect(written(root)).toContain('hello two');
-  });
-
-  it('builds again when the config key changes', async () => {
-    const root = project();
-    await run(root);
-    put(root, 'brock.config.ts', 'export default { define: { A: 1 } };');
-    age(root, 'brock.config.ts');
-    messages.length = 0;
-    await run(root);
-    expect(messages.some((message) => message.includes('reused'))).toBe(false);
-  });
-
-  it('never reuses outside a dev start', async () => {
-    const root = project();
-    process.env.NODE_ENV_ELECTRON_VITE = 'production';
-    await run(root);
-    expect(existsSync(join(root, 'node_modules/.vite/brock-build-reuse/main.json'))).toBe(false);
   });
 });

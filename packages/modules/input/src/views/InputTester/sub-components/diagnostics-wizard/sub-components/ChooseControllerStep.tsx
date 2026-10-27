@@ -17,12 +17,12 @@ const ChooseControllerStep = (props: ChooseControllerStepProps) => {
   })), [devices, addedNames]);
 
   if (devices.length === 0) {
-    return <EmptyState message="No controllers." />;
+    return <EmptyState message="No controller detected on the system yet. Plug one in and it appears here." />;
   }
 
   return (
     <>
-      <Text as="p">Pick a controller.</Text>
+      <Text as="p">Pick which detected controller this run captures.</Text>
       <RadioGroup
         value={selectedDeviceKey ?? options[0]?.value ?? ''}
         options={options}

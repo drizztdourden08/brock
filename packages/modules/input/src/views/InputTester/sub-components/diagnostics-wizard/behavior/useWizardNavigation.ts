@@ -4,9 +4,9 @@ import { visibleSteps } from './wizard-steps';
 import type { UseWizardNavigationProps } from '../diagnostics-wizard.type';
 
 const useWizardNavigation = (props: UseWizardNavigationProps) => {
-  const { hasByteCapability, step, setStep } = props;
+  const { hasByteCapability, hasChooser, step, setStep } = props;
 
-  const steps = useMemo(() => visibleSteps(hasByteCapability), [hasByteCapability]);
+  const steps = useMemo(() => visibleSteps(hasByteCapability, hasChooser), [hasByteCapability, hasChooser]);
   const stepIndex = steps.findIndex((s) => s.step === step);
   const stepLabels = useMemo(() => steps.map((s) => s.label), [steps]);
 

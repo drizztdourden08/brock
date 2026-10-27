@@ -24,6 +24,7 @@ const useControllerDevicesStore = create<ControllerDevicesStore>()((set) => {
     rescanPending: false,
 
     refresh: async () => {
+      if (!isInputAvailable()) return;
       const api = inputApi();
       listen();
       const revision = devicesRevision;

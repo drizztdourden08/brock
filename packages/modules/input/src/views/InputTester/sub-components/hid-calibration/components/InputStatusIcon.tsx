@@ -4,7 +4,7 @@ import type { InputStatus } from '../hid-calibration.type';
 
 const InputStatusIcon = ({ status }: { status: InputStatus }) => {
   if (status === 'captured') return <Icon name="check" />;
-  if (status === 'skipped') return <Icon name="x" />;
+  if (status === 'skipped') return <Icon name="circle-x" />;
   if (status === 'active') return <Icon name="play" />;
   return <>-</>;
 };

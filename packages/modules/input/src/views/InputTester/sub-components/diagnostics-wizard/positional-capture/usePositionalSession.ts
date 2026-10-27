@@ -1,17 +1,18 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useEffect, useState } from 'react';
 import type { InputItem } from '../../hid-calibration/hid-calibration.type';
-import { buildPositionalTargets } from './build-positional-targets';
 import { buildRecord } from './build-record';
 import { describeRecord } from './describe-record';
 import type { PositionalCaptureRecord, UsePositionalOneByOneProps } from './positional-capture.type';
 import { startAxisRanges } from './start-axis-ranges';
 import { toInputItem } from './to-input-item';
 import { usePositionalRefs } from './usePositionalRefs';
+import { useStableTargets } from './useStableTargets';
 
 const usePositionalSession = (props: Pick<UsePositionalOneByOneProps, 'active' | 'resolvedDevice'>) => {
   const { active, resolvedDevice } = props;
   const refs = usePositionalRefs();
+  const stableTargets = useStableTargets(resolvedDevice);
   const [items, setItems] = useState<InputItem[]>([]);
   const [records, setRecords] = useState<PositionalCaptureRecord[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -23,14 +24,13 @@ const usePositionalSession = (props: Pick<UsePositionalOneByOneProps, 'active' |
 
   useEffect(() => {
     if (!active) return;
-    const targets = buildPositionalTargets(resolvedDevice);
-    refs.targetsRef.current = targets;
+    refs.targetsRef.current = stableTargets;
     refs.trimmedRef.current = false;
-    setItems(targets.map(toInputItem));
+    setItems(stableTargets.map(toInputItem));
     setRecords([]);
     refs.activeIndexRef.current = -1; setActiveIndex(-1);
     setInputPhaseActiveWrapped(false);
-  }, [active, resolvedDevice, refs, setInputPhaseActiveWrapped]);
+  }, [active, stableTargets, refs, setInputPhaseActiveWrapped]);
 
   const activateIndex = useCallback((idx: number) => {
     refs.activeIndexRef.current = idx; setActiveIndex(idx);

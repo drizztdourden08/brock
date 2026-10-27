@@ -21,6 +21,8 @@ export { noopInputApi } from '../noop-input-api';
 export { registerDeviceCardActions } from './register-device-card-actions';
 export { useDeviceCardActions } from './useDeviceCardActions';
 export type { DeviceCardAction } from './device-card-action.type';
+export type { DiagnosticsRunResult } from './diagnostics-run-result.type';
+export { REPORT_ACTION_ID } from './input-renderer.constants';
 export { registerRumbleTests } from './register-rumble-tests';
 export type { RumbleTest } from './rumble-test.type';
 export { registerGlyphSource } from './register-glyph-source';

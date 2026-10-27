@@ -11,6 +11,8 @@ import { WizardByteSection } from './hid-calibration/components/WizardByteSectio
 import { WizardMappingSection } from './hid-calibration/components/WizardMappingSection';
 import { WizardPrereqSection } from './hid-calibration/components/WizardPrereqSection';
 import type { HidCalibrationWizardProps, HidWizardHandle } from './HidCalibrationWizard.type';
+import '../theme/hid-calibration.css';
+import './HidCalibrationWizard.css';
 
 const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardProps>((props, ref) => {
   const { onComplete, onCancel, deviceKey, hideOwnActions = false, onCapturedCountChange, initialProfile, capturedEntry, initialProfileId, initialHasGyro } = props;
@@ -35,9 +37,9 @@ const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardPro
 
   return (
     <Box className="hid-cal">
-      <Box className="hid-cal__header">
-        <Text as="h3" className="hid-cal__title">Byte capture for {wiz.profile?.name ?? 'Controller'}</Text>
-        {!hideOwnActions && (
+      {!hideOwnActions && (
+        <Box className="hid-cal__header">
+          <Text as="h3" className="hid-cal__title">Byte capture for {wiz.profile?.name ?? 'Controller'}</Text>
           <WizardHeaderActions
             copyStatus={copyStatus}
             saveStatus={saveStatus}
@@ -47,8 +49,8 @@ const HidCalibrationWizard = forwardRef<HidWizardHandle, HidCalibrationWizardPro
             onFinish={wiz.handleFinish}
             onCancel={onCancel}
           />
-        )}
-      </Box>
+        </Box>
+      )}
 
       <InstructionsPanel />
       <LiveParserOutput profile={wiz.profile} state={wiz.liveParsedState} />

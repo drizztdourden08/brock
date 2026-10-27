@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.109.1
+
+### Patch Changes
+
+- 8688cc3: A context label now shows as Tessera's `sublabel` instead of text added to the title. A Players widget bound to a context labelled Sunday run keeps the title Players and shows Sunday run after it as a muted label with its own ellipsis, in a docked, floating or popped widget. A clipped title shows in full in a tooltip. Upgrade: the Tessera peer range is now `>=0.82.0 <1`, since `sublabel` needs Tessera 0.82.
+  - @drizztdourden08/brock-core@0.109.1
+
 ## 0.109.0
 
 ### Minor Changes

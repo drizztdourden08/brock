@@ -25,6 +25,23 @@ interface PositionalCaptureRecord {
   mismatch: boolean;
 }
 
+type CellState = 'done' | 'skipped' | 'current' | 'pending';
+
+type CallMode = 'act' | 'done' | 'idle';
+
+interface CallInput {
+  current: InputItem | null;
+  instruction: string;
+  answered: number;
+  total: number;
+  paused: boolean;
+}
+
+interface RecordOutcome {
+  kind: 'match' | 'mismatch' | 'skipped';
+  text: string;
+}
+
 type AxisRanges = { min: number; max: number }[];
 
 interface UsePositionalOneByOneProps {
@@ -67,6 +84,6 @@ interface SampleParams {
 }
 
 export type {
-  AutoCaptureParams, AxisRanges, PositionalCaptureRecord, PositionalRefs, PositionalSession, PositionalTarget,
+  AutoCaptureParams, AxisRanges, CallInput, CallMode, CellState, RecordOutcome, PositionalCaptureRecord, PositionalRefs, PositionalSession, PositionalTarget,
   SampleParams, UsePositionalOneByOneProps,
 };

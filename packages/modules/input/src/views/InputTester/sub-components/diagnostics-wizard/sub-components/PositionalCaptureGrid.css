@@ -1,0 +1,10 @@
+/* @layer renderer-shell @kind style */
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--size-1) * 240), 1fr));
+  grid-auto-rows: var(--size-40);
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

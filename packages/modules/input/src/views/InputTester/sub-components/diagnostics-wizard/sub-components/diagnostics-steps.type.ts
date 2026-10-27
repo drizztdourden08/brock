@@ -5,7 +5,8 @@ import type { ResolvedDevice } from '../../../../../family';
 import type { DeviceEntry } from '../../../../../device.type';
 import type { HidControllerMap } from '../../HidCalibrationWizard';
 import type { FlashStatus } from '../../hid-calibration/hooks/flash-status.type';
-import type { PositionalCaptureRecord } from '../positional-capture/positional-capture.type';
+import type { InputItem } from '../../hid-calibration/hid-calibration.type';
+import type { CallInput, PositionalCaptureRecord } from '../positional-capture/positional-capture.type';
 import type {
   ChooserDevice, DiagnosticsWizardState, HoldTransitionStatus, LayoutStage, NameLookupParams,
 } from '../diagnostics-wizard.type';
@@ -97,6 +98,30 @@ interface PositionalCaptureStepProps {
   onRecordsChange: (records: PositionalCaptureRecord[]) => void;
 }
 
+interface PositionalCaptureCellProps {
+  item: InputItem;
+  index: number;
+  isCurrent: boolean;
+  onSelect: (index: number) => void;
+  onClear: (index: number) => void;
+}
+
+interface PositionalCaptureGridProps {
+  items: InputItem[];
+  activeIndex: number;
+  inputPhaseActive: boolean;
+  onSelect: (index: number) => void;
+  onClear: (index: number) => void;
+}
+
+interface PositionalCaptureCallProps {
+  call: CallInput;
+}
+
+interface PositionalSummaryTableProps {
+  records: PositionalCaptureRecord[];
+}
+
 interface SummaryStepProps {
   byteCapture: HidControllerMap | null;
   hasByteCapability: boolean;
@@ -106,5 +131,6 @@ interface SummaryStepProps {
 export type {
   BackNextActionsProps, ByteCaptureStepProps, ByteCaptureSummaryProps, ChooseControllerStepProps, DiagnosticsStepActionsProps, FlashButtonProps,
   HoldStatusLineProps, IntroStepProps, LayoutCaptureOverlayProps, MatchedEntryPanelProps,
-  PositionalCaptureStepProps, SummaryActionsProps, SummaryStepProps,
+  PositionalCaptureCallProps, PositionalCaptureCellProps, PositionalCaptureGridProps, PositionalCaptureStepProps,
+  PositionalSummaryTableProps, SummaryActionsProps, SummaryStepProps,
 };

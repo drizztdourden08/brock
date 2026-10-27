@@ -1,0 +1,99 @@
+/* @layer renderer-shell @kind style */
+.pos-call {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(calc(var(--size-1) * 120), calc(var(--size-1) * 200));
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  transition: var(--transition-normal);
+}
+
+.pos-call[data-mode="act"] {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+.pos-call[data-mode="done"] {
+  border-color: var(--c-success);
+  background: var(--c-success-soft);
+}
+
+.pos-call__icon {
+  display: grid;
+  place-items: center;
+  inline-size: var(--size-40);
+  block-size: var(--size-40);
+  border-radius: var(--radius-round);
+  font-size: var(--text-xl);
+  color: var(--c-text-muted);
+  background: var(--c-layer);
+}
+
+.pos-call[data-mode="act"] .pos-call__icon {
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+  animation: pos-call-nudge var(--duration-armed-loop) var(--ease-in-out) infinite;
+}
+
+.pos-call[data-mode="done"] .pos-call__icon {
+  color: var(--c-on-success);
+  background: var(--c-success);
+}
+
+.pos-call__text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.pos-call__eyebrow {
+  color: var(--c-text-muted);
+}
+
+.pos-call[data-mode="act"] .pos-call__eyebrow {
+  color: var(--c-primary-bright);
+}
+
+.pos-call__headline {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+
+.pos-call__detail {
+  font-size: var(--text-sm);
+  color: var(--c-text-dim);
+}
+
+.pos-call__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  text-align: end;
+}
+
+.pos-call__count {
+  font-size: var(--text-sm);
+  color: var(--c-text-dim);
+}
+
+@keyframes pos-call-nudge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pos-call[data-mode="act"] .pos-call__icon {
+    animation: none;
+  }
+}

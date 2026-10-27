@@ -87,3 +87,16 @@
   color: var(--c-text-dim);
   font-size: var(--text-sm);
 }
+
+.pos-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.pos-actions > * {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}

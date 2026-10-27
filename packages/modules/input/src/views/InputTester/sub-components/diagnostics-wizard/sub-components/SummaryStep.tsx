@@ -3,10 +3,12 @@ import { Box, Text } from '@drizztdourden08/tessera/primitives';
 import { ReportSection } from '../../controller-report/sub-components/ReportSection';
 import { ByteCaptureSummary } from './ByteCaptureSummary';
 import type { SummaryStepProps } from './diagnostics-steps.type';
+import { PositionalSummaryTable } from './PositionalSummaryTable';
 
 const SummaryStep = (props: SummaryStepProps) => {
   const { byteCapture, hasByteCapability, positionalRecords } = props;
-  const captured = positionalRecords.filter((r) => r.status === 'captured');
+  const records = positionalRecords.filter(Boolean);
+  const captured = records.filter((r) => r.status === 'captured');
   const mismatches = captured.filter((r) => r.mismatch);
 
   return (
@@ -18,13 +20,14 @@ const SummaryStep = (props: SummaryStepProps) => {
 
       <Box className="diagnostics-wizard__summary-col">
         <Text as="h4">Positional capture</Text>
-        {captured.length > 0 ? (
+        {records.length > 0 ? (
           <>
             <Text as="p">
-              {captured.length} of {positionalRecords.length} input(s) answered.
+              {captured.length} of {records.length} input(s) answered.
               {mismatches.length > 0 && ` ${mismatches.length} fired at a different position than the preset expects.`}
             </Text>
-            <ReportSection label="Positional capture JSON" text={JSON.stringify(positionalRecords, null, 2)} />
+            <PositionalSummaryTable records={records} />
+            <ReportSection label="Positional capture JSON" text={JSON.stringify(records, null, 2)} />
           </>
         ) : (
           <Text as="p" className="diagnostics-wizard__summary-empty">No positional capture was recorded.</Text>

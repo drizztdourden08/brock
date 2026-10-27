@@ -33,6 +33,7 @@ import { useRendererLogging } from '../../log/useRendererLogging';
 import type { BrockAppProps } from './BrockApp.type';
 import { useAppCommands } from './behavior/useAppCommands';
 import { useAppRegistrations } from './behavior/useAppRegistrations';
+import { useControlSources } from './behavior/useControlSources';
 import './BrockApp.css';
 
 const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
@@ -60,6 +61,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs] as TabDef<object>[]), [settings.tabs, merged.settingsTabs]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, moduleBuckets: merged.buckets, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
   const settingsControls = useSettingsControls(settings);
+  useControlSources({ tabs, settings: settingsStore, screens: registry, tree });
 
   const context = useMemo<BrockContextValue>(() => ({
     product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,

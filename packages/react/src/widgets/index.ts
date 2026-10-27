@@ -4,7 +4,7 @@ export { registerWidgets } from './register-widgets';
 export { widgetsFromFiles } from './widgets-from-files';
 export { widgets } from './widgets';
 export { defineLayoutPreset } from './define-layout-preset';
-export type { LayoutCell, LayoutPreset } from './layout-preset.type';
+export type { LayoutCell, LayoutColumn, LayoutPane, LayoutPreset, LayoutRow, LayoutRowDef, RevisionMode } from './layout-preset.type';
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';

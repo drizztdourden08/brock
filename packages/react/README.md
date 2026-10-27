@@ -106,6 +106,29 @@ A widget that sets `context: 'session'` in its definition or `meta` shows only w
 
 Brock's own widgets have the same shape: `src/widgets/built-in/logs.widget.tsx` and `performance.widget.tsx` beside their component folders, listed in `built-in-widgets.constants.ts` through `widgetsFromFiles`.
 
+## Layout presets
+
+`src/widgets/layout.ts` default-exports `defineLayoutPreset({ rows, sizes?, widths?, revision?, onRevision? })`, the layout a profile starts from and Reset layout returns to. `rows` run top to bottom; a row is a list of cells from left to right, and a cell is a widget id, a list of ids tabbed in one pane, `'main'` (the main view), or a column.
+
+```ts
+export default defineLayoutPreset({
+  revision: 2,
+  rows: [
+    [['network', 'room'], 'main', { column: ['players', 'hints'], sizes: [0.6, 0.4] }],
+    [['log', 'console', 'spoiler']],
+  ],
+  sizes: [0.7, 0.3],
+  widths: [[0.22, 0.56, 0.22]],
+});
+```
+
+- Column: `{ column: [pane, ...], sizes? }` stacks panes top to bottom in one cell. Each member is an id or a list of ids tabbed in one pane. `sizes` are relative weights; a member without one takes the `dockWeight` of its widgets, then the average. A column left with one pane is that pane.
+- Under the main view: write the row as `{ cells: [...], under: 'main' }`. It is not stacked full width. It sits under the main view only, so the cells beside the main view keep the full height. Its `sizes` entry is its share of the main view's height as a fraction (default 0.3); the main view keeps the rest, at least 0.1. Several under rows stack in order.
+- Revision: `revision` is a whole number, 1 when unset. A profile stores the revision its saved layout was built from (`widgetLayoutRevision` in its views); a saved layout with none counts as revision 1. Raise `revision` when the default layout changes in a way existing profiles should get.
+- A profile whose saved revision is lower than the preset's gets a toast once: "The default layout has a new version." with a Reset button. Reset puts the layout back to the preset. Closing the toast keeps the profile's layout and stores the new revision, so it does not ask again. Reset layout from the Widgets menu also stores the current revision.
+- `onRevision: 'apply'` skips the toast and resets the profile to the new layout at load. The default is `'offer'`.
+- A profile with no saved layout starts from the preset and stores its revision with the first save.
+
 ## Toolbars
 
 An app registers docked toolbars with `defineToolbar` (one file per toolbar in `src/toolbars`, passed as `toolbars`). By default `BrockApp` wraps the widget host in the toolbar dock. An app that wants its toolbars around its own work area, such as a canvas page, passes `toolbarPlacement="app"` and mounts `<ToolbarHost>` where it wants them. `BrockApp` then registers the toolbars and loads the saved layout but draws no dock itself, and `ToolbarHost` draws the registered toolbars around its children.

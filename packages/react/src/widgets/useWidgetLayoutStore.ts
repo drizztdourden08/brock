@@ -5,6 +5,7 @@ import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { dockOrigins } from './dock-origins';
 import { dropWindowGroups } from './drop-window-groups';
 import { kitRoute } from './kits/kit-route';
+import { layoutRevision } from './layout-revision';
 import { presetLayout } from './preset-layout';
 import type { WidgetDef, WidgetLayoutState } from './widget.type';
 
@@ -30,6 +31,7 @@ const useWidgetLayoutStore = create<WidgetLayoutState>()((set, get) => {
     setPreset: (preset) => set({ preset }),
     reset: () => {
       kitRoute.leave();
+      layoutRevision.adopt(layoutRevision.ofPreset(get().preset));
       set((state) => moved(state.layout, presetLayout(state.preset, state.definitions)));
     },
     replace: (stored) => set((state) => ({ layout: loaded(stored, state) })),

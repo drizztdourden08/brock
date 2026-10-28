@@ -1,33 +1,62 @@
 /* @layer electron-main @kind logic */
 import { createHash } from 'crypto';
 import { clipboard, nativeImage } from 'electron';
-import type { ClipboardBackend } from './clipboard-backend.type';
-import { SAMPLE_BYTES, SAMPLE_PIXELS } from './fingerprint.constants';
+import type { ClipboardBackend, ClipboardImage } from './clipboard-backend.type';
+import { IMAGE_EVERY, SAMPLE_BYTES, SAMPLE_PIXELS } from './fingerprint.constants';
+import { pngSize } from './png-size';
 
 const sample = (bytes: Uint8Array): string => `${bytes.length}:${createHash('sha1').update(bytes.subarray(0, SAMPLE_BYTES)).digest('hex')}`;
 
+const bufferOf = (type: string): Uint8Array => {
+  try {
+    return clipboard.readBuffer(type);
+  } catch {
+    return new Uint8Array(0);
+  }
+};
+
+const hasImage = (): boolean => clipboard.availableFormats().some((format) => format.startsWith('image/'));
+
+const rawPng = (): ClipboardImage | null => {
+  const raw = bufferOf('image/png');
+  if (raw.length === 0) return null;
+  const size = pngSize(raw);
+  if (size === null) throw new Error('The clipboard image is not a whole PNG within the size limits');
+  return { ...size, png: () => raw };
+};
+
+const decodedImage = (): ClipboardImage | null => {
+  if (!hasImage()) return null;
+  const image = clipboard.readImage();
+  if (image.isEmpty()) return null;
+  const { width, height } = image.getSize();
+  return { width, height, png: () => image.toPNG() };
+};
+
+const decodedPart = (): string => {
+  const image = clipboard.readImage();
+  const { width, height } = image.getSize();
+  const pixels = width * height <= SAMPLE_PIXELS ? sample(image.toBitmap()) : 'large';
+  return `${width}x${height}:${pixels}`;
+};
+
 const electronClipboard = (ownPrefix: string): ClipboardBackend => {
-  const imageNow = (): Electron.NativeImage | null => {
-    if (!clipboard.availableFormats().some((format) => format.startsWith('image/'))) return null;
-    const image = clipboard.readImage();
-    return image.isEmpty() ? null : image;
+  let polls = 0;
+  let decoded = '';
+  let seenFormats = '';
+
+  const imageSignal = (names: string): string => {
+    if (!hasImage()) return '';
+    const raw = bufferOf('image/png');
+    if (raw.length > 0) return sample(raw);
+    if (names !== seenFormats || polls % IMAGE_EVERY === 0) decoded = decodedPart();
+    return decoded;
   };
 
   return {
     readText: () => clipboard.readText(),
-    readBuffer: (type) => {
-      try {
-        return clipboard.readBuffer(type);
-      } catch {
-        return new Uint8Array(0);
-      }
-    },
-    readImage: () => {
-      const image = imageNow();
-      if (image === null) return null;
-      const { width, height } = image.getSize();
-      return { width, height, png: () => image.toPNG() };
-    },
+    readBuffer: bufferOf,
+    readImage: () => rawPng() ?? decodedImage(),
     write: ({ text, png, privates }) => {
       if (text === undefined && png === undefined) clipboard.clear();
       else clipboard.write({ ...(text === undefined ? {} : { text }), ...(png === undefined ? {} : { image: nativeImage.createFromBuffer(Buffer.from(png)) }) });
@@ -35,14 +64,12 @@ const electronClipboard = (ownPrefix: string): ClipboardBackend => {
     },
     fingerprint: () => {
       const formats = clipboard.availableFormats();
-      const parts = [formats.join('|'), sample(Buffer.from(clipboard.readText()))];
-      const image = formats.some((format) => format.startsWith('image/')) ? clipboard.readImage() : null;
-      if (image !== null && !image.isEmpty()) {
-        const { width, height } = image.getSize();
-        parts.push(`${width}x${height}`, width * height <= SAMPLE_PIXELS ? sample(image.toBitmap()) : 'large');
-      }
-      for (const format of formats) if (format.startsWith(ownPrefix)) parts.push(sample(clipboard.readBuffer(format)));
-      return parts.join('#');
+      const names = formats.join('|');
+      polls += 1;
+      const image = imageSignal(names);
+      seenFormats = names;
+      const own = formats.filter((format) => format.startsWith(ownPrefix)).map((format) => sample(bufferOf(format)));
+      return [names, sample(Buffer.from(clipboard.readText())), image, ...own].join('#');
     },
   };
 };

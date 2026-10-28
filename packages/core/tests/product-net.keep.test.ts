@@ -47,9 +47,11 @@ describe('private clipboard types', () => {
     expect(isPrivateClipboardType('bxel', 'application/x-bxel-')).toBe(false);
     expect(isPrivateClipboardType('bxel', 'application/x-bxel-Clip')).toBe(false);
     expect(isPrivateClipboardType('bxel', 'text/plain')).toBe(false);
+    expect(isPrivateClipboardType('bxel', 'application/x-bxel-pro-clip')).toBe(false);
+    expect(isPrivateClipboardType('bxel-pro', 'application/x-bxel-pro-clip')).toBe(true);
   });
 
   it('refuses a name that is not plain', () => {
-    for (const name of ['', 'Clip', '-clip', 'a/b', 'a b', '..', 'x'.repeat(64)]) expect(() => privateClipboardType('bxel', name), name).toThrow(/plain clipboard type name/);
+    for (const name of ['', 'Clip', '-clip', 'a/b', 'a b', '..', 'x'.repeat(64), 'pro-clip']) expect(() => privateClipboardType('bxel', name), name).toThrow(/plain clipboard type name/);
   });
 });

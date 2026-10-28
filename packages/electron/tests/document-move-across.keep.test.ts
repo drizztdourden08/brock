@@ -2,8 +2,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
 import type * as FsPromises from 'fs/promises';
-import { mkdir, readFile, rm, symlink } from 'fs/promises';
+import { mkdir, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { unchangedSinceCopy } from '../src/main/documents/unchanged-since-copy';
 import { makeBase } from './folder-fixture';
 import { names, openWorld, put } from './folder-ops-fixture';
 import type { OpsWorld } from './folder-ops-fixture';
@@ -181,5 +182,40 @@ describe('rename across drives that refuse a link', () => {
     await expect(access.rename(join(granted, 'tree'), join(second, 'tree'))).rejects.toThrow(/link/);
     expect(await readFile(join(granted, 'tree', 'a.txt'), 'utf8')).toBe('A');
     expect(await names(second)).toEqual([]);
+  });
+});
+
+describe('rename across drives when the source changes after the copy', () => {
+  it('leaves a file that was edited after it was copied, and says so', async () => {
+    const { access, granted } = world;
+    const from = join(granted, 'sub', 'in.txt');
+    faults.crossDevice.add(from);
+    marked.mockImplementationOnce(() => writeFile(from, 'edited after the copy'));
+    await expect(access.rename(from, join(second, 'moved.txt'))).rejects.toThrow(/changed after the copy or could not be removed and were left in place/);
+    expect(await readFile(from, 'utf8')).toBe('edited after the copy');
+    expect(await readFile(join(second, 'moved.txt'), 'utf8')).toBe('inside');
+  });
+
+  it('removes the files that did not change and keeps the one that did', async () => {
+    const { access, granted } = world;
+    await put(join(granted, 'tree', 'a.txt'), 'A');
+    await put(join(granted, 'tree', 'b.txt'), 'B');
+    faults.crossDevice.add(join(granted, 'tree'));
+    marked.mockImplementationOnce(() => writeFile(join(granted, 'tree', 'a.txt'), 'A is now longer'));
+    await expect(access.rename(join(granted, 'tree'), join(second, 'tree'))).rejects.toThrow(/left in place/);
+    expect(await readFile(join(granted, 'tree', 'a.txt'), 'utf8')).toBe('A is now longer');
+    expect(existsSync(join(granted, 'tree', 'b.txt'))).toBe(false);
+    expect(await readFile(join(second, 'tree', 'a.txt'), 'utf8')).toBe('A');
+    expect(await readFile(join(second, 'tree', 'b.txt'), 'utf8')).toBe('B');
+  });
+
+  it('keeps a file whose size and time are the same but whose bytes are not', async () => {
+    const { granted } = world;
+    const file = join(granted, 'sub', 'in.txt');
+    const now = await stat(file);
+    const copied = { size: now.size, mtimeMs: now.mtimeMs, digest: 'not the digest of the bytes' };
+    expect(await unchangedSinceCopy(file, copied)).toBe(false);
+    expect(await unchangedSinceCopy(file, undefined)).toBe(false);
+    expect(await unchangedSinceCopy(join(granted, 'gone.txt'), copied)).toBe(false);
   });
 });

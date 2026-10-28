@@ -3,6 +3,7 @@ interface NetHop {
   status: number;
   contentType: string | null;
   contentLength: number | null;
+  encoded: boolean;
   location: string | null;
   body: AsyncIterable<Uint8Array> | null;
   close: () => void;

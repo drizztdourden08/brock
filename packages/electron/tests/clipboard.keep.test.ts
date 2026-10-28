@@ -1,6 +1,8 @@
 /* @layer electron-main @kind test */
-import { describe, expect, it } from 'vitest';
-import { fakeClipboard, pngOf, sessionOf, wireOf } from './clipboard-fixture';
+import { describe, expect, it, vi } from 'vitest';
+import { eventOf, fakeClipboard, pngOf, senderOf, sessionOf, wireOf } from './clipboard-fixture';
+
+vi.mock('../src/main/window/dev-server-url', () => ({ devServerUrl: () => null }));
 
 const own = 'application/x-bxel-clip';
 
@@ -43,7 +45,7 @@ describe('clipboard write refusals', () => {
   };
 
   it('refuses a type outside text, PNG and the product namespace', async () => {
-    for (const type of ['text/html', 'image/jpeg', 'application/x-other-clip', 'application/x-bxel', 'application/x-bxel-', 'application/x-bxelx-clip', 'IMAGE/PNG', 'Text/Plain', 'x', '', '__proto__', 'application/x-bxel-Clip', 'application/x-bxel-../x']) {
+    for (const type of ['text/html', 'image/jpeg', 'application/x-other-clip', 'application/x-bxel', 'application/x-bxel-', 'application/x-bxelx-clip', 'IMAGE/PNG', 'Text/Plain', 'x', '', '__proto__', 'application/x-bxel-Clip', 'application/x-bxel-../x', 'application/x-bxel-pro-clip', 'application/x-bxel-a-b']) {
       await refuse({ [type]: wireOf(Uint8Array.from([1])) }, /not allowed/);
     }
   });
@@ -131,5 +133,53 @@ describe('clipboard read refusals', () => {
     await expect(call('clipboard:read', ['image/png'])).rejects.toThrow(/over the size limit/);
     board.memory.size = { width: 9000, height: 9000 };
     await expect(call('clipboard:read', ['image/png'])).rejects.toThrow(/over the size limit/);
+  });
+});
+
+describe('clipboard product namespace', () => {
+  it('keeps bxel apart from a product whose id starts with bxel-', async () => {
+    const bxel = sessionOf(fakeClipboard(), 'bxel');
+    const pro = sessionOf(fakeClipboard(), 'bxel-pro');
+    const bytes = wireOf(Uint8Array.from([1]));
+    await expect(bxel.call('clipboard:write', { 'application/x-bxel-pro-clip': bytes })).rejects.toThrow(/not allowed/);
+    await expect(bxel.call('clipboard:read', ['application/x-bxel-pro-clip'])).rejects.toThrow(/not allowed/);
+    await expect(pro.call('clipboard:write', { 'application/x-bxel-pro-clip': bytes })).resolves.toBeUndefined();
+    await expect(pro.call('clipboard:write', { 'application/x-bxel-clip': bytes })).rejects.toThrow(/not allowed/);
+    await expect(pro.call('clipboard:read', ['application/x-bxel-clip'])).rejects.toThrow(/not allowed/);
+  });
+});
+
+describe('clipboard channels check the frame', () => {
+  const calls: [string, ...unknown[]][] = [
+    ['clipboard:readText'],
+    ['clipboard:read', ['text/plain']],
+    ['clipboard:write', { 'text/plain': 'x' }],
+    ['clipboard:watch', 'w'],
+    ['clipboard:unwatch', 'w'],
+  ];
+
+  it('refuses a call with no frame, from a sub frame and from a page that is not the app', async () => {
+    const board = fakeClipboard();
+    const session = sessionOf(board);
+    const sender = senderOf();
+    const events = [
+      eventOf(sender, null),
+      eventOf(sender, { origin: 'file://', url: 'file:///other.html' }),
+      eventOf(sender, { origin: 'https://evil.example', url: 'https://evil.example/' }),
+      eventOf(sender, { origin: 'null', url: 'data:text/html,hi' }),
+    ];
+    for (const event of events) {
+      for (const [channel, ...args] of calls) await expect(session.callFrom(event, channel, ...args), channel).rejects.toThrow(/Only the app window/);
+    }
+    expect(board.memory.text).toBe('');
+    expect(board.reads).toEqual([]);
+    expect(sender.sent).toEqual([]);
+  });
+
+  it('accepts the app frame of any window', async () => {
+    const session = sessionOf(fakeClipboard());
+    const widget = senderOf();
+    await expect(session.callFrom(eventOf(widget), 'clipboard:write', { 'text/plain': 'x' })).resolves.toBeUndefined();
+    await expect(session.callFrom(eventOf(widget), 'clipboard:readText')).resolves.toBe('x');
   });
 });

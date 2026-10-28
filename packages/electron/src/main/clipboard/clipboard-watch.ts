@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import type { ClipboardWatch, ClipboardWatchDeps } from './clipboard-watch.type';
+import type { ClipboardOwner, ClipboardWatch, ClipboardWatchDeps } from './clipboard-watch.type';
 
 const startTimer = (tick: () => void, ms: number): unknown => {
   const timer = setInterval(tick, ms);
@@ -7,51 +7,71 @@ const startTimer = (tick: () => void, ms: number): unknown => {
   return timer;
 };
 
-const createClipboardWatch = ({ fingerprint, changed, pollMs, max, setTimer = startTimer, clearTimer = (timer) => clearInterval(timer as NodeJS.Timeout) }: ClipboardWatchDeps): ClipboardWatch => {
-  const ids = new Set<string>();
+const readSafely = (read: () => string): string | null => {
+  try {
+    return read();
+  } catch {
+    return null;
+  }
+};
+
+const createClipboardWatch = ({ fingerprint, channel, pollMs, max, setTimer = startTimer, clearTimer = (timer) => clearInterval(timer as NodeJS.Timeout) }: ClipboardWatchDeps): ClipboardWatch => {
+  const owners = new Map<ClipboardOwner, Set<string>>();
   let timer: unknown = null;
   let last = '';
 
-  const tick = (): void => {
-    let now: string;
-    try {
-      now = fingerprint();
-    } catch {
-      return;
-    }
-    if (now === last) return;
-    last = now;
-    changed();
-  };
+  const size = (): number => [...owners.values()].reduce((sum, ids) => sum + ids.size, 0);
 
-  const stop = (): void => {
-    if (timer === null) return;
+  const stopWhenIdle = (): void => {
+    if (owners.size > 0 || timer === null) return;
     clearTimer(timer);
     timer = null;
   };
 
+  const prune = (): void => {
+    for (const owner of [...owners.keys()]) if (owner.isDestroyed()) owners.delete(owner);
+    stopWhenIdle();
+  };
+
+  const tell = (): void => {
+    for (const owner of owners.keys()) owner.send(channel);
+  };
+
+  const tick = (): void => {
+    prune();
+    if (timer === null) return;
+    const now = readSafely(fingerprint);
+    if (now === null || now === last) return;
+    last = now;
+    tell();
+  };
+
+  const start = (): void => {
+    if (timer !== null) return;
+    last = readSafely(fingerprint) ?? '';
+    timer = setTimer(tick, pollMs);
+  };
+
   return {
-    add: (id) => {
+    add: (owner, id) => {
+      const ids = owners.get(owner) ?? new Set<string>();
       if (ids.has(id)) return;
-      if (ids.size >= max) throw new Error(`At most ${max} clipboard watchers can be open`);
+      if (size() >= max) throw new Error(`At most ${max} clipboard watchers can be open`);
       ids.add(id);
-      if (timer !== null) return;
-      try {
-        last = fingerprint();
-      } catch {
-        last = '';
-      }
-      timer = setTimer(tick, pollMs);
+      owners.set(owner, ids);
+      start();
     },
-    remove: (id) => {
-      ids.delete(id);
-      if (ids.size === 0) stop();
+    remove: (owner, id) => {
+      const ids = owners.get(owner);
+      ids?.delete(id);
+      if (ids?.size === 0) owners.delete(owner);
+      stopWhenIdle();
     },
-    clear: () => {
-      ids.clear();
-      stop();
+    drop: (owner) => {
+      owners.delete(owner);
+      stopWhenIdle();
     },
-    size: () => ids.size,
+    size,
   };
 };
 

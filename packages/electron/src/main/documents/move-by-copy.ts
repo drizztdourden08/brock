@@ -2,6 +2,7 @@
 import type { Stats } from 'fs';
 import { rm } from 'fs/promises';
 import { commitCopy } from './commit-copy';
+import { SHOWN } from './move-by-copy.constants';
 import { removeCopied } from './remove-copied';
 import { sameTree } from './same-tree';
 import { stageCopy } from './stage-copy';
@@ -16,10 +17,14 @@ const moveByCopy = async (source: string, info: Stats, target: string, overwrite
     throw new Error(`"${source}" changed while it was being copied, so nothing was moved`);
   }
   await commitCopy(staged, info, target, overwrite);
+  let kept: string[];
   try {
-    await removeCopied(source, info, staged.entries);
+    kept = await removeCopied(source, info, staged);
   } catch (error) {
     throw new Error(`"${source}" was copied to "${target}" and checked, but it could not be fully removed (${reasonOf(error)}). The copy is complete; nothing was lost.`, { cause: error });
+  }
+  if (kept.length > 0) {
+    throw new Error(`"${source}" was copied to "${target}" and checked, but ${kept.length} item(s) changed after the copy or could not be removed and were left in place: ${kept.slice(0, SHOWN).join(', ')}`);
   }
 };
 

@@ -4,6 +4,7 @@ import type { MainContext } from '../src/main/types/main-context.type';
 import { registerClipboard } from '../src/main/clipboard/register-clipboard';
 
 type Handler = (event: unknown, ...args: unknown[]) => unknown;
+type Listener = (details: { isMainFrame: boolean; isSameDocument: boolean }) => void;
 
 const u32 = (value: number): number[] => [(value >>> 24) & 255, (value >>> 16) & 255, (value >>> 8) & 255, value & 255];
 
@@ -56,35 +57,69 @@ const fakeClipboard = (): FakeClipboard => {
   return board;
 };
 
+const APP_FRAME = { origin: 'file://', url: 'file:///app/index.html' };
+
+interface FakeSender {
+  mainFrame: typeof APP_FRAME;
+  sent: string[];
+  destroyed: boolean;
+  isDestroyed: () => boolean;
+  send: (channel: string, ...args: unknown[]) => void;
+  extras: unknown[][];
+  on: (name: string, listener: (...args: never[]) => void) => void;
+  fire: (name: string, ...args: unknown[]) => void;
+}
+
+const senderOf = (): FakeSender => {
+  const listeners = new Map<string, ((...args: unknown[]) => void)[]>();
+  const sender: FakeSender = {
+    mainFrame: APP_FRAME,
+    sent: [],
+    extras: [],
+    destroyed: false,
+    isDestroyed: () => sender.destroyed,
+    send: (channel, ...args) => {
+      sender.sent.push(channel);
+      sender.extras.push(args);
+    },
+    on: (name, listener) => listeners.set(name, [...(listeners.get(name) ?? []), listener as (...args: unknown[]) => void]),
+    fire: (name, ...args) => (listeners.get(name) ?? []).forEach((listener) => listener(...args)),
+  };
+  return sender;
+};
+
+const eventOf = (sender: FakeSender, frame: unknown = sender.mainFrame): { sender: FakeSender; senderFrame: unknown } => ({ sender, senderFrame: frame });
+
 interface Session {
   call: (channel: string, ...args: unknown[]) => Promise<unknown>;
+  callFrom: (event: unknown, channel: string, ...args: unknown[]) => Promise<unknown>;
+  sender: FakeSender;
   emitted: string[];
   extras: unknown[][];
-  navigate: () => void;
+  navigate: (sender?: FakeSender) => void;
 }
 
 const sessionOf = (board: ClipboardBackend, productId = 'bxel'): Session => {
   const handlers = new Map<string, Handler>();
-  const emitted: string[] = [];
-  const extras: unknown[][] = [];
-  const listeners: ((details: { isMainFrame: boolean; isSameDocument: boolean }) => void)[] = [];
-  const sender = { on: (_name: string, listener: (typeof listeners)[number]) => listeners.push(listener) };
-  const ctx: Pick<MainContext, 'handle' | 'product' | 'emit'> = {
+  const sender = senderOf();
+  const ctx: Pick<MainContext, 'handle' | 'product'> = {
     product: { id: productId } as MainContext['product'],
-    emit: ((channel: string, ...args: unknown[]) => {
-      emitted.push(channel);
-      extras.push(args);
-    }) as MainContext['emit'],
     handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
   };
   registerClipboard(ctx, board);
+  const callFrom = (event: unknown, channel: string, ...args: unknown[]): Promise<unknown> => Promise.resolve().then(() => handlers.get(channel)?.(event, ...args));
   return {
-    call: (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({ sender }, ...args)),
-    emitted,
-    extras,
-    navigate: () => listeners.forEach((listener) => listener({ isMainFrame: true, isSameDocument: false })),
+    call: (channel, ...args) => callFrom(eventOf(sender), channel, ...args),
+    callFrom,
+    sender,
+    get emitted() {
+      return sender.sent;
+    },
+    get extras() {
+      return sender.extras;
+    },
+    navigate: (who = sender) => who.fire('did-start-navigation', { isMainFrame: true, isSameDocument: false } satisfies Parameters<Listener>[0]),
   };
 };
 
-export { fakeClipboard, pngOf, sessionOf, wireOf };
-
+export { eventOf, fakeClipboard, pngOf, senderOf, sessionOf, wireOf };

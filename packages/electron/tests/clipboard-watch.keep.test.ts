@@ -1,6 +1,8 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeClipboard, sessionOf } from './clipboard-fixture';
+import { eventOf, fakeClipboard, senderOf, sessionOf } from './clipboard-fixture';
+
+vi.mock('../src/main/window/dev-server-url', () => ({ devServerUrl: () => null }));
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -49,19 +51,89 @@ describe('clipboard change watch', () => {
     vi.advanceTimersByTime(5000);
     expect(fingerprint.mock.calls.length).toBe(during);
   });
-
 });
 
-describe('clipboard change watch limits', () => {
-  it('stops polling after a reload of the window', async () => {
-    const board = fakeClipboard();
+describe('clipboard watch ownership', () => {
+  const polls = (board: ReturnType<typeof fakeClipboard>): number => {
     const fingerprint = vi.spyOn(board, 'fingerprint');
-    const { call, navigate } = sessionOf(board);
-    await call('clipboard:watch', 'a');
-    navigate();
-    const before = fingerprint.mock.calls.length;
     vi.advanceTimersByTime(5000);
-    expect(fingerprint.mock.calls.length).toBe(before);
+    return fingerprint.mock.calls.length;
+  };
+
+  it('drops a window watches when it navigates, and keeps the others', async () => {
+    const board = fakeClipboard();
+    const main = sessionOf(board);
+    const widget = senderOf();
+    await main.call('clipboard:watch', 'a');
+    await main.callFrom(eventOf(widget), 'clipboard:watch', 'a');
+    main.navigate();
+    board.write({ text: 'x', privates: [] });
+    vi.advanceTimersByTime(600);
+    expect(main.sender.sent).toEqual([]);
+    expect(widget.sent).toEqual(['clipboard:changed']);
+    main.navigate(widget);
+    expect(polls(board)).toBe(0);
+  });
+
+  it('drops the watches of a window that is destroyed or whose process is gone', async () => {
+    for (const name of ['destroyed', 'render-process-gone']) {
+      const board = fakeClipboard();
+      const session = sessionOf(board);
+      await session.call('clipboard:watch', 'a');
+      session.sender.fire(name);
+      expect(polls(board), name).toBe(0);
+    }
+  });
+
+  it('stops polling for a window that is destroyed without an event', async () => {
+    const board = fakeClipboard();
+    const session = sessionOf(board);
+    await session.call('clipboard:watch', 'a');
+    session.sender.destroyed = true;
+    board.write({ text: 'x', privates: [] });
+    vi.advanceTimersByTime(600);
+    expect(session.sender.sent).toEqual([]);
+    expect(polls(board)).toBe(0);
+  });
+
+  it('ignores a navigation inside the same document', async () => {
+    const board = fakeClipboard();
+    const session = sessionOf(board);
+    await session.call('clipboard:watch', 'a');
+    session.sender.fire('did-start-navigation', { isMainFrame: true, isSameDocument: true });
+    session.sender.fire('did-start-navigation', { isMainFrame: false, isSameDocument: false });
+    board.write({ text: 'x', privates: [] });
+    vi.advanceTimersByTime(600);
+    expect(session.sender.sent).toEqual(['clipboard:changed']);
+  });
+});
+
+describe('clipboard watch between windows and limits', () => {
+  it('tells each window that owns a watch, a widget window included, and no other', async () => {
+    const board = fakeClipboard();
+    const main = sessionOf(board);
+    const widget = senderOf();
+    const bystander = senderOf();
+    await main.call('clipboard:watch', 'a');
+    await main.callFrom(eventOf(widget), 'clipboard:watch', 'a');
+    board.write({ text: 'x', privates: [] });
+    vi.advanceTimersByTime(600);
+    expect(main.sender.sent).toEqual(['clipboard:changed']);
+    expect(widget.sent).toEqual(['clipboard:changed']);
+    expect(bystander.sent).toEqual([]);
+  });
+
+  it('lets one window unwatch without touching another window that uses the same id', async () => {
+    const board = fakeClipboard();
+    const main = sessionOf(board);
+    const widget = senderOf();
+    await main.call('clipboard:watch', 'same');
+    await main.callFrom(eventOf(widget), 'clipboard:watch', 'same');
+    await main.callFrom(eventOf(widget), 'clipboard:unwatch', 'same');
+    board.write({ text: 'x', privates: [] });
+    vi.advanceTimersByTime(600);
+    expect(main.sender.sent).toEqual(['clipboard:changed']);
+    expect(widget.sent).toEqual([]);
   });
 
   it('limits the number of watchers and refuses a bad id', async () => {

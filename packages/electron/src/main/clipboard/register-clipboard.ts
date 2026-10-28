@@ -1,32 +1,51 @@
 /* @layer electron-main @kind logic */
+import type { WebContents } from 'electron';
 import { CLIPBOARD_TEXT } from '@drizztdourden08/brock-core/platform';
 import type { MainContext } from '../types/main-context.type';
+import { assertAppFrame } from '../ipc/assert-app-frame';
 import type { ClipboardBackend } from './clipboard-backend.type';
-import { CLIPBOARD_LIMITS } from './clipboard-limits.constants';
+import { CLIPBOARD_CHANGED, CLIPBOARD_LIMITS } from './clipboard-limits.constants';
 import { createClipboardWatch } from './clipboard-watch';
 import { readClipboard } from './read-clipboard';
 import { watchIdOf } from './watch-id-of';
 import { writeClipboard } from './write-clipboard';
 
-const registerClipboard = ({ handle, product, emit }: Pick<MainContext, 'handle' | 'product' | 'emit'>, backend: ClipboardBackend): void => {
-  const watch = createClipboardWatch({ fingerprint: backend.fingerprint, changed: () => emit('clipboard:changed'), pollMs: CLIPBOARD_LIMITS.pollMs, max: CLIPBOARD_LIMITS.watchers });
-  const reloading = new WeakSet();
+const registerClipboard = ({ handle, product }: Pick<MainContext, 'handle' | 'product'>, backend: ClipboardBackend): void => {
+  const watch = createClipboardWatch({ fingerprint: () => backend.fingerprint(), channel: CLIPBOARD_CHANGED, pollMs: CLIPBOARD_LIMITS.pollMs, max: CLIPBOARD_LIMITS.watchers });
+  const hooked = new WeakSet<WebContents>();
 
-  handle('clipboard:readText', () => {
+  const hook = (sender: WebContents): void => {
+    if (hooked.has(sender)) return;
+    hooked.add(sender);
+    sender.on('did-start-navigation', (details) => {
+      if (details.isMainFrame && !details.isSameDocument) watch.drop(sender);
+    });
+    sender.on('render-process-gone', () => watch.drop(sender));
+    sender.on('destroyed', () => watch.drop(sender));
+  };
+
+  handle('clipboard:readText', (event) => {
+    assertAppFrame(event);
     const text = readClipboard(backend, product.id, [CLIPBOARD_TEXT])[CLIPBOARD_TEXT];
     return typeof text === 'string' ? text : '';
   });
-  handle('clipboard:write', (_event, entries) => writeClipboard(backend, product.id, entries));
-  handle('clipboard:read', (_event, types) => readClipboard(backend, product.id, types));
-  handle('clipboard:watch', (event, id) => {
-    watch.add(watchIdOf(id));
-    if (reloading.has(event.sender)) return;
-    reloading.add(event.sender);
-    event.sender.on('did-start-navigation', (details) => {
-      if (details.isMainFrame && !details.isSameDocument) watch.clear();
-    });
+  handle('clipboard:write', (event, entries) => {
+    assertAppFrame(event);
+    writeClipboard(backend, product.id, entries);
   });
-  handle('clipboard:unwatch', (_event, id) => watch.remove(watchIdOf(id)));
+  handle('clipboard:read', (event, types) => {
+    assertAppFrame(event);
+    return readClipboard(backend, product.id, types);
+  });
+  handle('clipboard:watch', (event, id) => {
+    assertAppFrame(event);
+    watch.add(event.sender, watchIdOf(id));
+    hook(event.sender);
+  });
+  handle('clipboard:unwatch', (event, id) => {
+    assertAppFrame(event);
+    watch.remove(event.sender, watchIdOf(id));
+  });
 };
 
 export { registerClipboard };

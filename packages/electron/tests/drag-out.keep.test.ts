@@ -79,11 +79,19 @@ describe('drag out refusals', () => {
     expect(started).toEqual([]);
   });
 
-  it('drags the real path of a link that stays inside the grant, never the link', async () => {
+  it('refuses a link, even one that stays inside the grant', async () => {
     const { granted } = world;
     await symlink(join(granted, 'sub'), join(granted, 'shortcut'), dirLink);
-    await run([join(granted, 'shortcut')]);
-    expect(started).toEqual([[join(granted, 'sub')]]);
+    await expect(run([join(granted, 'shortcut')])).rejects.toThrow(/is a link/);
+    expect(started).toEqual([]);
+  });
+
+  it('refuses a folder that holds a link, at any depth', async () => {
+    const { granted } = world;
+    await put(join(granted, 'tree', 'deep', 'a.txt'));
+    await symlink(join(granted, 'sub'), join(granted, 'tree', 'deep', 'loop'), dirLink);
+    await expect(run([join(granted, 'tree')])).rejects.toThrow(/cannot be dragged out.*link/);
+    expect(started).toEqual([]);
   });
 
   it('refuses the app own folders', async () => {

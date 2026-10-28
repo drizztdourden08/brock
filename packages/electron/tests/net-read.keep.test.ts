@@ -15,7 +15,7 @@ const body = (...parts: number[][]): AsyncIterable<Uint8Array> => ({
   },
 });
 
-const answer = (extra: Partial<NetHop> = {}): NetHop => ({ status: 200, contentType: 'application/json', contentLength: null, location: null, body: body([123, 125]), close: vi.fn(), ...extra });
+const answer = (extra: Partial<NetHop> = {}): NetHop => ({ status: 200, contentType: 'application/json', contentLength: null, encoded: false, location: null, body: body([123, 125]), close: vi.fn(), ...extra });
 
 const sequence = (...hops: NetHop[]): { transport: NetTransport; urls: string[] } => {
   const urls: string[] = [];
@@ -182,6 +182,25 @@ describe('net.read answers', () => {
     await refuse(answer({ body: body(ones(1200)) }), /over 1000 bytes/, { maxBytes: 999999 });
     const fits = await netRead(config, sequence(answer({ body: body(ones(1000)) })).transport, 'https://lospec.com/x', { maxBytes: 999999 });
     expect(fits.bytes.byteLength).toBe(1000);
+  });
+
+});
+
+describe('net.read failures', () => {
+  const refuse = (hop: NetHop, message: RegExp): Promise<void> => expect(netRead(config, sequence(hop).transport, 'https://lospec.com/x', undefined)).rejects.toThrow(message);
+
+  it('refuses a body that ends short of its length header, unless the answer was encoded', async () => {
+    await refuse(answer({ contentLength: 5, body: body([1, 2, 3]) }), /ended after 3 of 5 bytes/);
+    const encoded = await netRead(config, sequence(answer({ contentLength: 5, encoded: true, body: body([1, 2, 3]) })).transport, 'https://lospec.com/x', undefined);
+    expect(encoded.bytes.byteLength).toBe(3);
+    const whole = await netRead(config, sequence(answer({ contentLength: 3, body: body([1, 2, 3]) })).transport, 'https://lospec.com/x', undefined);
+    expect(whole.bytes.byteLength).toBe(3);
+  });
+
+  it('rejects when the body stream fails part way, and closes the answer', async () => {
+    const hop = answer({ body: { [Symbol.asyncIterator]: () => ({ next: () => Promise.reject(new Error('net.read stopped: the connection was cut')) }) } });
+    await refuse(hop, /connection was cut/);
+    expect(hop.close).toHaveBeenCalled();
   });
 
   it('passes a failing transport on', async () => {

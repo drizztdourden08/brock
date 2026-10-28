@@ -24,4 +24,4 @@ interface ClipboardBackend {
   fingerprint: () => string;
 }
 
-export type { ClipboardBackend, ClipboardBundle };
+export type { ClipboardBackend, ClipboardBundle, ClipboardImage };

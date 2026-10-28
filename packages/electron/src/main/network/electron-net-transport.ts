@@ -13,6 +13,8 @@ const lengthOf = (value: string | null): number | null => {
   return Number.isFinite(length) && length >= 0 ? length : null;
 };
 
+const encodedBy = (encoding: string | null): boolean => encoding !== null && encoding.trim().toLowerCase() !== 'identity';
+
 const electronNetTransport: NetTransport = (url, signal) =>
   new Promise<NetHop>((resolve, reject) => {
     const request = net.request({ url, method: 'GET', redirect: 'manual', credentials: 'omit' });
@@ -21,7 +23,7 @@ const electronNetTransport: NetTransport = (url, signal) =>
     request.on('abort', () => reject(new Error('net.read was cancelled or timed out')));
     request.on('error', reject);
     request.on('redirect', (status, _method, location) => {
-      resolve({ status, contentType: null, contentLength: null, location, body: null, close: () => undefined });
+      resolve({ status, contentType: null, contentLength: null, encoded: false, location, body: null, close: () => undefined });
       request.abort();
     });
     request.on('response', (response) => {
@@ -30,6 +32,7 @@ const electronNetTransport: NetTransport = (url, signal) =>
         status: response.statusCode,
         contentType: headerOf(headers, 'content-type'),
         contentLength: lengthOf(headerOf(headers, 'content-length')),
+        encoded: encodedBy(headerOf(headers, 'content-encoding')),
         location: headerOf(headers, 'location'),
         body: chunksOf(response),
         close: () => {

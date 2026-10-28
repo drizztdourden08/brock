@@ -1,7 +1,12 @@
 /* @layer electron-main @kind types */
+interface ClipboardOwner {
+  isDestroyed: () => boolean;
+  send: (channel: string) => void;
+}
+
 interface ClipboardWatchDeps {
   fingerprint: () => string;
-  changed: () => void;
+  channel: string;
   pollMs: number;
   max: number;
   setTimer?: (tick: () => void, ms: number) => unknown;
@@ -9,10 +14,10 @@ interface ClipboardWatchDeps {
 }
 
 interface ClipboardWatch {
-  add: (id: string) => void;
-  remove: (id: string) => void;
-  clear: () => void;
+  add: (owner: ClipboardOwner, id: string) => void;
+  remove: (owner: ClipboardOwner, id: string) => void;
+  drop: (owner: ClipboardOwner) => void;
   size: () => number;
 }
 
-export type { ClipboardWatch, ClipboardWatchDeps };
+export type { ClipboardOwner, ClipboardWatch, ClipboardWatchDeps };

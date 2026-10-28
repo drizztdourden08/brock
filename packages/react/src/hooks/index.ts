@@ -6,7 +6,7 @@ export type { SafeAreaInsets } from './safe-area-insets.type';
 export { useWidgetPref } from './useWidgetPref';
 export { useWidgetState } from './useWidgetState';
 export { useWidgetStateReady } from './useWidgetStateReady';
-export type { WidgetStateUpdate } from './widget-state.type';
+export type { WidgetStateOptions, WidgetStateUpdate } from './widget-state.type';
 export { useNow } from './useNow';
 export { useCopyText } from './useCopyText';
 export { COPIED_RESET_MS } from './copy-text.constants';

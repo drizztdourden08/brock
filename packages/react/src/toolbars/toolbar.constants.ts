@@ -9,9 +9,11 @@ const TOOLBARS_MENU_KEY = 'toolbars';
 const TOOLBARS_MENU_ICON = 'panel-top';
 const RESET_TOOLBARS_KEY = 'toolbars-reset';
 const RESET_TOOLBARS_ENTRY: Omit<MenuItem, 'onClick'> = { key: RESET_TOOLBARS_KEY, label: 'Reset toolbars', icon: 'rotate-ccw', confirm: true };
-const TOOLBAR_COMMANDS = { hide: 'toolbar.hide', labels: 'toolbar.labels', moveTo: 'toolbar.moveTo' } as const;
+const TOOLBAR_COMMANDS = { hide: 'toolbar.hide', labels: 'toolbar.labels', moveTo: 'toolbar.moveTo', focusMode: 'brock.focus_mode' } as const;
 const TOOLBAR_GROUP = 'Toolbars';
 const TOOLBAR_ZONE = 'brock.toolbar';
+const TOOLBAR_ITEM_ZONE = 'brock.toolbar-item';
+const TOOLBAR_ID_ATTRIBUTE = 'data-toolbar-id';
 const TOOLBAR_SIDE_ORDER: readonly ToolbarSide[] = ['top', 'bottom', 'left', 'right'];
 const TOOLBAR_SIDE_WORDS: Readonly<Record<ToolbarSide, string>> = { top: 'Top', bottom: 'Bottom', left: 'Left', right: 'Right' };
 const TOOLBAR_TEXT = {
@@ -20,8 +22,9 @@ const TOOLBAR_TEXT = {
   hide: 'Hide toolbar',
   moveTo: 'Move to',
   noRoom: 'No room on that side',
+  focusMode: 'Focus mode',
 } as const;
 
 export {
-  NO_TOOLBARS, RESET_TOOLBARS_ENTRY, TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_KEY_PREFIX, TOOLBAR_SIDE_ORDER, TOOLBAR_SIDE_WORDS, TOOLBAR_TEXT, TOOLBAR_ZONE, TOOLBARS_MENU_ICON, TOOLBARS_MENU_KEY,
+  NO_TOOLBARS, RESET_TOOLBARS_ENTRY, TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_ID_ATTRIBUTE, TOOLBAR_ITEM_ZONE, TOOLBAR_KEY_PREFIX, TOOLBAR_SIDE_ORDER, TOOLBAR_SIDE_WORDS, TOOLBAR_TEXT, TOOLBAR_ZONE, TOOLBARS_MENU_ICON, TOOLBARS_MENU_KEY,
 };

@@ -19,12 +19,15 @@ import { widgetMainRect } from '../widget-main-rect';
 import { usePopOutWindows } from './behavior/usePopOutWindows';
 import { useLegacyWidgetContext } from './behavior/useLegacyWidgetContext';
 import { useContextSublabels } from './behavior/useContextSublabels';
+import { useWidgetTitles } from './behavior/useWidgetTitles';
 import { useWidgetGates } from './behavior/useWidgetGates';
 import { useDisabledWidgets } from './behavior/useDisabledWidgets';
 import { openSettingTarget } from '../../search/open-setting-target';
 import { useKitSplit } from './behavior/useKitSplit';
 import { useKitStage } from './behavior/useKitStage';
 import { useWidgetContent } from './behavior/useWidgetContent';
+import { useWorkspaceRules } from '../workspaces/useWorkspaceRules';
+import { useKitAutoOpen } from '../kits/useKitAutoOpen';
 import { useWidgetPersistence } from './behavior/useWidgetPersistence';
 import { useWidgetLayoutGlobal } from './behavior/useWidgetLayoutGlobal';
 import { useWidgetRelayPublisher } from './behavior/useWidgetRelayPublisher';
@@ -57,13 +60,15 @@ const WidgetHost = (props: WidgetHostProps) => {
   const stage = useKitStage({
     definitions, layout, onLayoutChange: setLayout, contextActive: gates.contextActive, pageOpen: gates.pageOpen, onPopOut: popOut, externalDrag, children: content, settingsContent,
   }, extraOf);
-  const labelled = useContextSublabels(stage.props.definitions);
+  const labelled = useWidgetTitles(useContextSublabels(stage.props.definitions));
   const shown = useMemo(() => (stage.open ? stage.popped : poppedShown(layout, gates)), [stage.open, stage.popped, layout, gates]);
   const staged = <>{main}{stage.layer}</>;
 
   useEffect(() => useWidgetLayoutStore.getState().setPreset(preset), [preset]);
   useEffect(() => dragRelease.watch(window), []);
   useWidgetPersistence(profileId);
+  useWorkspaceRules();
+  useKitAutoOpen();
   usePopOutWindows(shown, extraOf);
   useWidgetRelayPublisher(settingsStore);
   useWidgetLayoutGlobal();

@@ -3,11 +3,14 @@ import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
 import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import { forcedWidgets } from './forced-widgets';
+import { forgetFocusMode } from './forget-focus-mode';
+import { useFocusModeStore } from './useFocusModeStore';
 import { layoutRevision } from './layout-revision';
 import { applyLayoutRevision } from './offer-layout-revision';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
 import { profileViews } from './profile-views';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { useWorkspaceStore } from './workspaces/useWorkspaceStore';
 import { FLUSH_EVENTS } from './widget.constants';
 
 const bound: { profileId: string | null } = { profileId: null };
@@ -20,10 +23,13 @@ const sanePrefs = (stored: unknown): WidgetPrefs =>
 
 const loadWidgets = async (profileId: string | null, live: () => boolean = () => true): Promise<void> => {
   bound.profileId = null;
+  forgetFocusMode();
+  useWorkspaceStore.getState().forget();
   if (!profileId) {
     useWidgetLayoutStore.getState().replace(null);
     useWidgetKitStore.getState().replace(null);
     useToolbarLayoutStore.getState().replace(null);
+    useWorkspaceStore.getState().hydrate(null);
     forcedWidgets.rearm();
     return;
   }
@@ -32,6 +38,7 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
   useWidgetLayoutStore.getState().replace(views.widgetLayout);
   useToolbarLayoutStore.getState().replace(views.toolbarLayout);
   useWidgetKitStore.getState().replace(views.widgetKits);
+  useWorkspaceStore.getState().hydrate(views.workspaces);
   forcedWidgets.rearm();
   useWidgetPrefStore.getState().hydrate(sanePrefs(views.widgetPrefs));
   bound.profileId = profileId;
@@ -41,11 +48,21 @@ const loadWidgets = async (profileId: string | null, live: () => boolean = () =>
 const watchWidgets = (): (() => void) => {
   const offLayout = useWidgetLayoutStore.subscribe((state, prev) => {
     const id = bound.profileId;
-    if (id && state.layout !== prev.layout) void profileViews.patch(id, { widgetLayout: state.layout, ...layoutRevision.field() });
+    if (!id || useFocusModeStore.getState().on || state.layout === prev.layout) return;
+    const { active } = useWorkspaceStore.getState();
+    if (active === null) void profileViews.patch(id, { widgetLayout: state.layout, ...layoutRevision.field() });
+    else useWorkspaceStore.getState().put(active, { widgetLayout: state.layout, toolbarLayout: useToolbarLayoutStore.getState().layout });
   });
   const offToolbars = useToolbarLayoutStore.subscribe((state, prev) => {
     const id = bound.profileId;
-    if (id && state.layout !== prev.layout) void profileViews.patch(id, { toolbarLayout: state.layout });
+    if (!id || useFocusModeStore.getState().on || state.layout === prev.layout) return;
+    const { active } = useWorkspaceStore.getState();
+    if (active === null) void profileViews.patch(id, { toolbarLayout: state.layout });
+    else useWorkspaceStore.getState().put(active, { widgetLayout: useWidgetLayoutStore.getState().layout, toolbarLayout: state.layout });
+  });
+  const offWorkspaces = useWorkspaceStore.subscribe((state, prev) => {
+    const id = bound.profileId;
+    if (id && state.views !== prev.views) void profileViews.patch(id, { workspaces: state.views });
   });
   const offPrefs =useWidgetPrefStore.subscribe((state, prev) => {
     const id = bound.profileId;
@@ -61,6 +78,7 @@ const watchWidgets = (): (() => void) => {
     offToolbars();
     offPrefs();
     offKits();
+    offWorkspaces();
     for (const name of FLUSH_EVENTS) window.removeEventListener(name, profileViews.flush);
     profileViews.flush();
   };

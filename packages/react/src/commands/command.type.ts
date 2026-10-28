@@ -165,5 +165,5 @@ interface CommandBinding {
 
 export type {
   ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordEvent, ChordInput, ChordList, ChordLookup, CommandBinding, CommandBlock, CommandConflict, CommandDescription, CommandHold, CommandRunResult, CommandContext, CommandData, CommandTrigger,
-  CommandDef, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords, CommandSource,
+  CommandDef, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
 };

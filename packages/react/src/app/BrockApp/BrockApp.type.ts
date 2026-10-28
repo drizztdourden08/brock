@@ -98,6 +98,7 @@ interface MenuBuildInput {
   homeScreen: string;
   homeLocked?: boolean;
   singleProfile?: boolean;
+  settingsTitle?: string;
   hasCredits: boolean;
   developerTools: boolean;
   show?: ShowContext;

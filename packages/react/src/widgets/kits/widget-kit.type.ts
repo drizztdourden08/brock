@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { ShowRule } from '../../screens/show/show.type';
 import type { LayoutPreset } from '../layout-preset.type';
 import type { WidgetDef, WidgetMenuPlacement } from '../widget.type';
 
@@ -23,6 +24,7 @@ interface WidgetKitDef {
   order?: number;
   devOnly?: boolean;
   requires?: KitRequirement;
+  when?: ShowRule;
   layout?: LayoutPreset;
   overlays?: readonly KitOverlayDef[];
   menu?: WidgetMenuPlacement;

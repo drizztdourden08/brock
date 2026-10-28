@@ -5,6 +5,7 @@ const DOCUMENT_INVOKE_MAP = {
   documentOpen: 'document:open',
   documentSaveAs: 'document:saveAs',
   documentOpenFolder: 'document:openFolder',
+  documentVetDrop: 'document:vetDrop',
   documentList: 'document:list',
   documentRevokeFolder: 'document:revokeFolder',
   documentTrash: 'document:trash',

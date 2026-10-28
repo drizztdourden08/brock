@@ -40,7 +40,7 @@ const ENTRIES: ScreenEntry[] = [
 ];
 
 const tree = buildScreenTree(CONFIG, ENTRIES);
-const ctxWith = (flags: ShowFlagValues): ShowContext => ({ profile: null, host: 'web', formFactor: 'desktop', flags });
+const ctxWith = (flags: ShowFlagValues): ShowContext => ({ profile: null, host: 'web', formFactor: 'desktop', flags, params: {} });
 const labels = (entries: readonly MenuEntry[]): string[] => entries.flatMap((entry) => (entry === 'separator' ? [] : [entry.label, ...labels(entry.children ?? [])]));
 
 afterEach(showHarness.resetShow);

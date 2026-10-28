@@ -36,6 +36,7 @@ const TREE: ResolvedScreenTree = {
   menu: [],
   shortcuts: [],
   settingsAlias: (params) => ({ active: 'settings', params }),
+  aliases: {},
   search: [],
 };
 

@@ -4,6 +4,8 @@ import type { LeafRect, Rect, WidgetLayout } from '@drizztdourden08/tessera/comp
 import { DEFAULT_CONTEXT } from '../contexts/contexts.constants';
 import { useContextsStore } from '../contexts/useContextsStore';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { useWidgetTitleStore } from './useWidgetTitleStore';
+import { widgetAvailable } from './widget-available';
 import { widgetSideOf } from './widget-side-of';
 import { floatArea } from './widget-float-area';
 import { NO_DOCK } from './widget-list.constants';
@@ -33,14 +35,14 @@ const snapshotOf = (def: WidgetDef, layout: WidgetLayout, leaves: readonly LeafR
   const floating = layout.floating.find((entry) => entry.id === def.id);
   return {
     id: def.id,
-    label: def.label,
+    label: useWidgetTitleStore.getState().titles[def.id] ?? def.label,
     visible: placement !== null,
     placement,
     ...(placement === 'docked' ? dockedOf(layout, leaves, def.id) : NO_DOCK),
     rect: floating ? rounded(floatingRect(floating, floatArea())) : null,
     popped: placement === 'popped',
     context,
-    available: frameOf(layout, def.id, def).show === 'always' || useContextsStore.getState().contexts[context]?.active === true,
+    available: frameOf(layout, def.id, def).show === 'always' || widgetAvailable(def, useContextsStore.getState().contexts, null),
   };
 };
 

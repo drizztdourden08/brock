@@ -2,21 +2,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
 import type * as FsPromises from 'fs/promises';
-import { mkdir, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
+import { readFile, rm, stat, symlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { unchangedSinceCopy } from '../src/main/documents/unchanged-since-copy';
 import { makeBase } from './folder-fixture';
-import { names, openWorld, put } from './folder-ops-fixture';
-import type { OpsWorld } from './folder-ops-fixture';
+import { dirLink, names, put, putDeepTree, putPair, withOpsWorld } from './folder-ops-fixture';
+import { markOfTheWeb as marked } from './mark-of-the-web-mock';
+import type { DocumentAccess } from '../src/main/documents/document-access.type';
 
 const faults = vi.hoisted(() => ({
   crossDevice: new Set<string>(),
   unlinkFails: new Set<string>(),
 }));
 
-const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
-
-vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
+vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web-mock'));
 
 vi.mock('fs/promises', async (importOriginal) => {
   const actual = await importOriginal<typeof FsPromises>();
@@ -33,25 +32,27 @@ vi.mock('fs/promises', async (importOriginal) => {
   };
 });
 
-const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
-
-let world: OpsWorld;
+const world = withOpsWorld('brock-move-');
 let second = '';
 
 beforeEach(async () => {
-  world = await openWorld('brock-move-');
   second = await makeBase('brock-move-second-');
   world.access.allowFolder(second);
   faults.crossDevice.clear();
   faults.unlinkFails.clear();
-  marked.mockReset();
-  marked.mockResolvedValue();
 });
 
 afterEach(async () => {
-  await rm(world.base, { recursive: true, force: true });
   await rm(second, { recursive: true, force: true });
 });
+
+const freshAccess = async (): Promise<DocumentAccess> => {
+  const { createDocumentAccess } = await import('../src/main/documents/document-access');
+  const fresh = createDocumentAccess({ sensitiveRoots: () => ({ home: [], trees: [] }), protectedRoots: () => [world.appDir] });
+  fresh.allowFolder(world.granted);
+  fresh.allowFolder(second);
+  return fresh;
+};
 
 const leftovers = async (dir: string): Promise<string[]> => (await names(dir)).filter((name) => name.includes('brock-copy'));
 
@@ -90,9 +91,7 @@ describe('rename across drives', () => {
 
   it('copies a folder tree, verifies it and removes the original from the deepest entry up', async () => {
     const { access, granted } = world;
-    await put(join(granted, 'tree', 'a', 'one.txt'), '1');
-    await put(join(granted, 'tree', 'two.txt'), '2');
-    await mkdir(join(granted, 'tree', 'empty'));
+    await putDeepTree(granted);
     faults.crossDevice.add(join(granted, 'tree'));
     await access.rename(join(granted, 'tree'), join(second, 'tree'));
     expect(await readFile(join(second, 'tree', 'a', 'one.txt'), 'utf8')).toBe('1');
@@ -124,10 +123,7 @@ describe('rename across drives that fail', () => {
     faults.crossDevice.add(from);
     vi.resetModules();
     vi.doMock('../src/main/documents/file-digest', () => ({ fileDigest: () => Promise.resolve('different') }));
-    const { createDocumentAccess } = await import('../src/main/documents/document-access');
-    const fresh = createDocumentAccess({ sensitiveRoots: () => ({ home: [], trees: [] }), protectedRoots: () => [world.appDir] });
-    fresh.allowFolder(granted);
-    fresh.allowFolder(second);
+    const fresh = await freshAccess();
     await expect(fresh.rename(from, join(second, 'moved.txt'))).rejects.toThrow(/did not match/);
     vi.doUnmock('../src/main/documents/file-digest');
     expect(await readFile(from, 'utf8')).toBe('inside');
@@ -141,10 +137,7 @@ describe('rename across drives that fail', () => {
     faults.crossDevice.add(join(granted, 'tree'));
     vi.resetModules();
     vi.doMock('../src/main/documents/same-tree', () => ({ sameTree: () => Promise.resolve(false) }));
-    const { createDocumentAccess } = await import('../src/main/documents/document-access');
-    const fresh = createDocumentAccess({ sensitiveRoots: () => ({ home: [], trees: [] }), protectedRoots: () => [world.appDir] });
-    fresh.allowFolder(granted);
-    fresh.allowFolder(second);
+    const fresh = await freshAccess();
     await expect(fresh.rename(join(granted, 'tree'), join(second, 'tree'))).rejects.toThrow(/changed while it was being copied/);
     vi.doUnmock('../src/main/documents/same-tree');
     expect(await readFile(join(granted, 'tree', 'a.txt'), 'utf8')).toBe('A');
@@ -153,8 +146,7 @@ describe('rename across drives that fail', () => {
 
   it('reports a partial removal and keeps the finished copy', async () => {
     const { access, granted } = world;
-    await put(join(granted, 'tree', 'a.txt'), 'A');
-    await put(join(granted, 'tree', 'b.txt'), 'B');
+    await putPair(granted);
     faults.crossDevice.add(join(granted, 'tree'));
     faults.unlinkFails.add(join(granted, 'tree', 'a.txt'));
     await expect(access.rename(join(granted, 'tree'), join(second, 'tree'))).rejects.toThrow(/was copied to .* and checked, but it could not be fully removed/);
@@ -198,8 +190,7 @@ describe('rename across drives when the source changes after the copy', () => {
 
   it('removes the files that did not change and keeps the one that did', async () => {
     const { access, granted } = world;
-    await put(join(granted, 'tree', 'a.txt'), 'A');
-    await put(join(granted, 'tree', 'b.txt'), 'B');
+    await putPair(granted);
     faults.crossDevice.add(join(granted, 'tree'));
     marked.mockImplementationOnce(() => writeFile(join(granted, 'tree', 'a.txt'), 'A is now longer'));
     await expect(access.rename(join(granted, 'tree'), join(second, 'tree'))).rejects.toThrow(/left in place/);

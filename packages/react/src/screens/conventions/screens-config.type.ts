@@ -4,11 +4,12 @@ import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
 import type { HeroSize } from '@drizztdourden08/tessera/composites';
 import type { IconName, Backdrop } from '@drizztdourden08/tessera/primitives';
 import type { SettingsPreviewPlacement, SettingsValueSource } from '../../settings/settings.type';
+import type { HubHeaderDef } from '../../hub/hub.type';
 import type { ShowRule } from '../show/show.type';
 
 type MenuPlacement = 'entry' | 'submenu' | 'hidden';
 
-type HubNavMode = 'auto' | 'always' | false;
+type HubNavMode = 'auto' | 'always' | 'rail' | false;
 
 type HubPagesMode = 'framed' | 'bare';
 
@@ -49,6 +50,8 @@ interface BucketDef extends ShowRule {
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
   top?: string[];
+  header?: HubHeaderDef;
+  params?: string[];
 }
 
 interface SettingsPlacement {
@@ -60,6 +63,7 @@ interface ScreensConfig {
   buckets: BucketDef[];
   home: string;
   settings?: SettingsPlacement;
+  aliases?: Record<string, string>;
 }
 
 interface HeroMeta {

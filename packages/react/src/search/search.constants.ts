@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { SETTINGS_TITLE } from '../screens/conventions/screens.constants';
 import type { FieldWeights, SearchKind } from './search.type';
 
 const LABEL_WEIGHTS: FieldWeights = { exact: 100, prefix: 60, wordStart: 40, substring: 20 };
@@ -7,7 +8,7 @@ const DESCRIPTION_WEIGHTS: FieldWeights = { exact: 10, prefix: 8, wordStart: 6, 
 const BREADCRUMB_WEIGHTS: FieldWeights = { exact: 15, prefix: 10, wordStart: 8, substring: 4 };
 const KIND_BOOST: Record<SearchKind, number> = { screen: 6, page: 6, tab: 5, section: 2, setting: 1, entry: 1, widget: 2, action: 2 };
 const SETTINGS_SCREEN = 'settings';
-const SETTINGS_BREADCRUMB = 'Settings';
+const SETTINGS_BREADCRUMB = SETTINGS_TITLE;
 const ANCHOR_BUDGET_MS = 1500;
 const ANCHOR_FLASH_MS = 1200;
 const ANCHOR_FLASH_CLASS = 'search-hit';

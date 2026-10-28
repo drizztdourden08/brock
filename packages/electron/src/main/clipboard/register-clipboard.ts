@@ -3,6 +3,7 @@ import type { WebContents } from 'electron';
 import { CLIPBOARD_TEXT } from '@drizztdourden08/brock-core/platform';
 import type { MainContext } from '../types/main-context.type';
 import { assertAppFrame } from '../ipc/assert-app-frame';
+import { dropWhenGone } from '../ipc/drop-when-gone';
 import type { ClipboardBackend } from './clipboard-backend.type';
 import { CLIPBOARD_CHANGED, CLIPBOARD_LIMITS } from './clipboard-limits.constants';
 import { createClipboardWatch } from './clipboard-watch';
@@ -17,11 +18,7 @@ const registerClipboard = ({ handle, product }: Pick<MainContext, 'handle' | 'pr
   const hook = (sender: WebContents): void => {
     if (hooked.has(sender)) return;
     hooked.add(sender);
-    sender.on('did-start-navigation', (details) => {
-      if (details.isMainFrame && !details.isSameDocument) watch.drop(sender);
-    });
-    sender.on('render-process-gone', () => watch.drop(sender));
-    sender.on('destroyed', () => watch.drop(sender));
+    dropWhenGone(sender, () => watch.drop(sender));
   };
 
   handle('clipboard:readText', (event) => {

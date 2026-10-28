@@ -1,6 +1,9 @@
 /* @layer renderer-shell @kind logic */
+import { subscribeSnapshots } from '../widgets/subscribe-snapshots';
 import { isToolbarShown, moveToolbar, moveToolbarToSide } from '@drizztdourden08/tessera/composites';
 import type { ToolbarLayout, ToolbarSide } from '@drizztdourden08/tessera/composites';
+import { useShowFlagsStore } from '../screens/show/useShowFlagsStore';
+import { toolbarAvailable } from './toolbar-available';
 import { toolbarLabelsOn } from './toolbar-labels-on';
 import { TOOLBAR_SIDE_ORDER } from './toolbar.constants';
 import type { ToolbarDef, ToolbarListener, ToolbarSnapshot } from './toolbar.type';
@@ -33,6 +36,7 @@ const list = (): ToolbarSnapshot[] => {
     shown: isToolbarShown(layout, def.id),
     ...placeOf(layout, def.id),
     labels: toolbarLabelsOn(layout, def.id),
+    available: toolbarAvailable(def),
   }));
 };
 
@@ -64,16 +68,8 @@ const labels = (id: string, on: boolean): void => {
   store().setLabels(id, on);
 };
 
-const subscribe = (listener: ToolbarListener): (() => void) => {
-  let last = JSON.stringify(list());
-  return useToolbarLayoutStore.subscribe(() => {
-    const next = list();
-    const key = JSON.stringify(next);
-    if (key === last) return;
-    last = key;
-    listener(next);
-  });
-};
+const subscribe = (listener: ToolbarListener): (() => void) =>
+  subscribeSnapshots(list, [(on) => useToolbarLayoutStore.subscribe(on), (on) => useShowFlagsStore.subscribe(on)], listener);
 
 const toolbars = { list, show, hide, moveToSide, labels, reset: (): void => store().reset(), subscribe };
 

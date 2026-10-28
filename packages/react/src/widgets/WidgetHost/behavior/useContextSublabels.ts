@@ -8,7 +8,7 @@ const useContextSublabels = (definitions: readonly WidgetDef[]): readonly Widget
   const contexts = useContextsStore((s) => s.contexts);
   return useMemo(() => {
     const labelled = definitions.map((def) => {
-      const sublabel = contextLabelOf(contexts, def.context);
+      const sublabel = (def.contexts ?? (def.context ? [def.context] : [])).map((name) => contextLabelOf(contexts, name)).find((label) => label !== undefined);
       return sublabel ? { ...def, sublabel } : def;
     });
     return labelled.some((def, index) => def !== definitions[index]) ? labelled : definitions;

@@ -5,7 +5,7 @@ import { defineWidget } from './define-widget';
 import type { WidgetDef, WidgetFile } from './widget.type';
 
 const widgetFromFile = ({ id, component, meta = {} }: WidgetFile): WidgetDef => {
-  const { settings, tools, label, ...rest } = meta;
+  const { settings, tools, empty, label, ...rest } = meta;
   return defineWidget({
     ...rest,
     id,
@@ -13,6 +13,7 @@ const widgetFromFile = ({ id, component, meta = {} }: WidgetFile): WidgetDef => 
     render: () => createElement(component),
     ...(settings ? { settings: () => createElement(settings) } : {}),
     ...(tools ? { tools: () => createElement(tools) } : {}),
+    ...(empty ? { empty: () => createElement(empty) } : {}),
   });
 };
 

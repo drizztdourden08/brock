@@ -1,29 +1,15 @@
 /* @layer electron-main @kind test */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, symlink } from 'fs/promises';
+import { mkdir, readFile, symlink } from 'fs/promises';
 import { join } from 'path';
 import { loose } from './folder-fixture';
-import { dots, names, openWorld, put } from './folder-ops-fixture';
-import type { OpsWorld } from './folder-ops-fixture';
+import { dirLink, dots, names, put, withOpsWorld } from './folder-ops-fixture';
+import { markOfTheWeb as marked } from './mark-of-the-web-mock';
 
-const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
+vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web-mock'));
 
-vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
-
-const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
-
-let world: OpsWorld;
-
-beforeEach(async () => {
-  world = await openWorld('brock-rename-');
-  marked.mockReset();
-  marked.mockResolvedValue();
-});
-
-afterEach(async () => {
-  await rm(world.base, { recursive: true, force: true });
-});
+const world = withOpsWorld('brock-rename-');
 
 describe('rename', () => {
   it('renames a file and a folder inside the grant, and moves a file to another folder', async () => {

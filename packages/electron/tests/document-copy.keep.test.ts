@@ -1,29 +1,15 @@
 /* @layer electron-main @kind test */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, symlink, writeFile } from 'fs/promises';
+import { mkdir, readFile, symlink, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { dots, names, openWorld, put } from './folder-ops-fixture';
-import type { OpsWorld } from './folder-ops-fixture';
+import { dirLink, dots, names, put, putDeepTree, withOpsWorld } from './folder-ops-fixture';
+import { markOfTheWeb as marked } from './mark-of-the-web-mock';
 import { loose, sessionOf } from './folder-fixture';
 
-const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
+vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web-mock'));
 
-vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
-
-const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
-
-let world: OpsWorld;
-
-beforeEach(async () => {
-  world = await openWorld('brock-copy-');
-  marked.mockReset();
-  marked.mockResolvedValue();
-});
-
-afterEach(async () => {
-  await rm(world.base, { recursive: true, force: true });
-});
+const world = withOpsWorld('brock-copy-');
 
 describe('copy', () => {
   it('copies a file inside the grant and leaves the original', async () => {
@@ -37,9 +23,7 @@ describe('copy', () => {
 
   it('copies a folder tree with its files and empty folders', async () => {
     const { access, granted } = world;
-    await put(join(granted, 'tree', 'a', 'one.txt'), '1');
-    await put(join(granted, 'tree', 'two.txt'), '2');
-    await mkdir(join(granted, 'tree', 'empty'));
+    await putDeepTree(granted);
     await access.copy(join(granted, 'tree'), join(granted, 'twin'));
     expect(await readFile(join(granted, 'twin', 'a', 'one.txt'), 'utf8')).toBe('1');
     expect(await readFile(join(granted, 'twin', 'two.txt'), 'utf8')).toBe('2');
@@ -101,9 +85,9 @@ describe('copy refusals', () => {
     const { access, granted, outside } = world;
     const inside = join(granted, 'sub', 'in.txt');
     const cases: [string, string][] = [
-      [join(outside, 'secret.txt'), join(granted, 'x.txt')],
-      [inside, join(outside, 'x.txt')],
       [inside, dots(granted, 'outside', 'x.txt')],
+      [inside, join(outside, 'x.txt')],
+      [join(outside, 'secret.txt'), join(granted, 'x.txt')],
       [dots(granted, 'outside', 'secret.txt'), join(granted, 'x.txt')],
       ['relative.txt', join(granted, 'x.txt')],
       [inside, 'relative.txt'],

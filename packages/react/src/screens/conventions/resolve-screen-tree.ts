@@ -3,6 +3,7 @@ import { defineHub } from '../../hub/define-hub';
 import type { HubDef } from '../../hub/hub.type';
 import { separateModuleTabs } from '../../settings/separate-module-tabs';
 import type { TabDef } from '../../settings/settings.type';
+import { configAliases } from './config-aliases';
 import { deriveMenu } from './derive-menu';
 import { placeSettingsTabs } from './place-settings-tabs';
 import { settingsAlias } from './settings-alias';
@@ -31,6 +32,7 @@ const resolveScreenTree = (tree: ScreenTree, appAndModuleTabs: readonly TabDef<o
     menu: deriveMenu(config, hubs, tree.screens),
     shortcuts: [{ shortcut: SETTINGS_SHORTCUT, target: SETTINGS_ALIAS }, ...tree.shortcuts],
     settingsAlias: settingsAlias(owner, tabs, config.settings?.page),
+    aliases: configAliases(config.aliases),
     search: tree.search,
   };
 };

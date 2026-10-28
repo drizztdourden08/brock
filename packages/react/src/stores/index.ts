@@ -25,3 +25,6 @@ export type { ScreenStates, ScreenStateSetter, ScreenStateState, ScreenViews } f
 export { useWidgetPrefStore } from './useWidgetPrefStore';
 export type { WidgetPrefs, WidgetPrefState } from './widget-pref.type';
 export { uiViews } from './ui-views';
+export { useScopedStateStore } from './useScopedStateStore';
+export type { ScopedStateState, ScopedValues } from './scoped-state.type';
+export type { ScopeLimits, ScopeOptions, UiViewScope } from './ui-views-scope.type';

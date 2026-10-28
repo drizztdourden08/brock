@@ -35,6 +35,15 @@ interface DocumentPicker {
   (opts?: DocumentDialogOptions): Promise<string | null>;
 }
 
+type DocumentDropKind = 'file' | 'folder';
+
+interface DocumentDropResult {
+  path: string;
+  kind: DocumentDropKind | null;
+  granted: boolean;
+  reason?: string;
+}
+
 interface DocumentFolderOptions {
   title?: string;
   defaultPath?: string;
@@ -149,4 +158,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentDialogOptions, DocumentDropKind, DocumentDropResult, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { gitLoud } from '../git.mjs';
+import { gitLoud, LONG_PATHS } from '../git.mjs';
+import { deleteTree } from './delete-tree.mjs';
 import { guards } from './guards.mjs';
 import { findLinks } from './find-links.mjs';
 import { registeredWorktrees } from './paths.mjs';
@@ -16,13 +17,14 @@ const normalized = (path) => resolve(path).replace(/\\/g, '/').toLowerCase();
 
 const isRemnant = (worktreePath, main) => !registeredWorktrees(main).some((path) => normalized(path) === normalized(worktreePath));
 
-const removeRemnant = (worktree) => {
+const removeRemnant = async (worktree) => {
   const { path, main, log } = worktree;
   const links = findLinks(path);
   if (links.length > 0) throw new Error(`Refusing: ${links.length} link(s) inside the remnant (${links.slice(0, 5).join(', ')}).`);
   log('Unregistered remnant (a previous remove failed mid-delete); deleting the directory.');
-  rmSync(path, { recursive: true, force: true });
-  gitLoud(['worktree', 'prune'], main);
+  const failure = await deleteTree(path, path);
+  if (failure) throw new Error(`Could not delete ${failure.path} (${failure.code}); something holds it open. Close it and run the same remove again.`);
+  gitLoud([...LONG_PATHS, 'worktree', 'prune'], main);
   log(`Remnant "${worktree.name}" deleted. Its branch (if any) was left alone; review with git branch.`);
 };
 
@@ -31,7 +33,7 @@ const removeRegistered = async (worktree, ctx) => {
   const { branch, base, landed } = assertReleasable(worktree, ctx, 'remove');
   if (await clearUserData(worktree, ctx)) log('.user-data deleted.');
   log(`Removing worktree at ${path}.`);
-  if (removeTree(path, main, log)) log(`"${name}" removed.`);
+  if (await removeTree(path, main, log)) log(`"${name}" removed.`);
   else log(`"${name}" is unregistered but its directory survived; something still holds ${path} open. Run the same remove again once it is closed.`);
   settleBranch({ name, branch, base, landed, ctx });
 };
@@ -47,7 +49,7 @@ const removeVerb = {
     guards.assertNotProtected(worktree.path, worktree.main);
     guards.assertNotInside(worktree.path, ctx.workspace.name);
     guards.assertNotRunning(name);
-    if (isRemnant(worktree.path, worktree.main)) removeRemnant(worktree);
+    if (isRemnant(worktree.path, worktree.main)) await removeRemnant(worktree);
     else await removeRegistered(worktree, ctx);
   },
 };

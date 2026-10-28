@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { gitLoud, tryGit } from '../git.mjs';
+import { gitLoud, LONG_PATHS, tryGit } from '../git.mjs';
 import { pickBase } from './pick-base.mjs';
 import { resumeBranch } from './resume-branch.mjs';
 import { excludeWorktrees } from './exclude-worktrees.mjs';
@@ -33,7 +33,7 @@ const addWorktree = ({ name, path, from, base, ctx }) => {
   if (resumeBranch({ main, path, branch, from, log })) return 'resumed';
   const start = from ?? pickBase({ main, branch: base ?? workspace.base, fetched, log });
   log(`Adding worktree at ${path} on ${branch} from ${start}.`);
-  gitLoud(['worktree', 'add', '--no-track', '-b', branch, path, start], main);
+  gitLoud([...LONG_PATHS, 'worktree', 'add', '--no-track', '-b', branch, path, start], main);
   return 'cut';
 };
 

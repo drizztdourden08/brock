@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { gitLoud, remoteBranch, tryGit } from '../git.mjs';
+import { gitLoud, LONG_PATHS, remoteBranch, tryGit } from '../git.mjs';
 
 const localBranch = (branch, cwd) => Boolean(tryGit(['rev-parse', '--verify', '--quiet', `refs/heads/${branch}`], cwd));
 
@@ -19,11 +19,11 @@ const resumeBranch = ({ main, path, branch, from, log }) => {
   }
   if (local) {
     log(`Branch ${branch} already exists; attaching the worktree to it at ${path}.`);
-    gitLoud(['worktree', 'add', path, branch], main);
+    gitLoud([...LONG_PATHS, 'worktree', 'add', path, branch], main);
     return true;
   }
   log(`Branch ${branch} exists on origin only; checking it out at ${path}.`);
-  gitLoud(['worktree', 'add', '--track', '-b', branch, path, remote], main);
+  gitLoud([...LONG_PATHS, 'worktree', 'add', '--track', '-b', branch, path, remote], main);
   return true;
 };
 

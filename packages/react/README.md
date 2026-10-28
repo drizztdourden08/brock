@@ -52,7 +52,7 @@ import { screenTree } from '../.brock/screens';
 | Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `TOOLBAR_COMMANDS`, `TOOLBAR_ZONE`, `ToolbarDef`, `ToolbarPlacement` |
-| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `keepsWidgetFocus`, `WIDGET_KEEPS_FOCUS`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
 
@@ -110,6 +110,30 @@ An app drops one file per widget in `src/widgets`: `<id>.widget.tsx`, whose defa
 A widget that sets `context: 'session'` in its definition or `meta` shows only while that context is active (`contexts.set('session', { active, data, label })`, `useSetAppContext`). The optional `label` is a short string, such as the name of a session tab: every widget bound to that context shows it as a muted sublabel after the title (`Players` then `Sunday run`), docked, floating and popped, and it follows a changed label. A blank or missing label shows no sublabel.
 
 Brock's own widgets have the same shape: `src/widgets/built-in/logs.widget.tsx` and `performance.widget.tsx` beside their component folders, listed in `built-in-widgets.constants.ts` through `widgetsFromFiles`.
+
+### Focus in widgets
+
+`WidgetHost` keeps the keyboard with the app: a mouse click on a docked or floating widget's button, tab or slider is blurred, because a focused widget control would otherwise swallow the arrows, Enter and Space meant for the main surface. Text fields keep the focus. See Widget focus in docs/architecture.md for the full rules.
+
+A list row that handles keys itself (F2 to rename, the arrows, Delete) would lose its focus right after a click. Mark it to opt out:
+
+```tsx
+import { keepsWidgetFocus } from '@drizztdourden08/brock-react';
+
+<li tabIndex={0} onKeyDown={onRowKey} {...keepsWidgetFocus()}>Layer 1</li>
+```
+
+`keepsWidgetFocus()` returns `{ 'data-widget-keeps-focus': '' }`; the attribute name is `WIDGET_KEEPS_FOCUS`. The marker works on the element or any ancestor inside the widget. Mark the row, not the whole widget.
+
+To drive a widget row in an e2e test, focus it by keyboard. The guard only blurs focus a pointer press caused, and any key that is not a bare modifier clears that pending press:
+
+```ts
+await page.keyboard.press('Tab');   // Tab into the widget, or call row.focus() when no press is pending
+await row.focus();
+await page.keyboard.press('F2');
+```
+
+A `click()` on an unmarked row is a pointer press, so its focus is dropped.
 
 ## Layout presets
 

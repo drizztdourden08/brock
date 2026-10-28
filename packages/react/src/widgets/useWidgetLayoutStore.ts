@@ -1,16 +1,17 @@
 /* @layer renderer-shell @kind hook */
 import { create } from 'zustand';
-import { createDefaultLayout, getWidgetDefinition, isWidgetOpen, migrateLayout, openWidget, popOutWidget, removeEverywhere } from '@drizztdourden08/tessera/composites';
+import { createDefaultLayout, getWidgetDefinition, isWidgetOpen, migrateLayout, popOutWidget, removeEverywhere } from '@drizztdourden08/tessera/composites';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import { dockOrigins } from './dock-origins';
 import { dropWindowGroups } from './drop-window-groups';
 import { kitRoute } from './kits/kit-route';
 import { layoutRevision } from './layout-revision';
+import { openOrdered } from './open-ordered';
 import { presetLayout } from './preset-layout';
 import type { WidgetDef, WidgetLayoutState } from './widget.type';
 
 const toggled = (layout: WidgetLayout, id: string, definitions: readonly WidgetDef[]): WidgetLayout =>
-  (isWidgetOpen(layout, id) ? removeEverywhere(layout, id) : openWidget(layout, id, definitions));
+  (isWidgetOpen(layout, id) ? removeEverywhere(layout, id) : openOrdered(layout, id, definitions));
 
 const moved = (prev: WidgetLayout, next: WidgetLayout): { layout: WidgetLayout } => {
   dockOrigins.record(prev, next);
@@ -41,7 +42,7 @@ const useWidgetLayoutStore = create<WidgetLayoutState>()((set, get) => {
     open: (id) => {
       if (kitRoute.member(id, 'openMember') || !normal(id)) return;
       kitRoute.leave();
-      set((state) => ({ layout: openWidget(state.layout, id, state.definitions) }));
+      set((state) => ({ layout: openOrdered(state.layout, id, state.definitions) }));
     },
     close: (id) => {
       if (!kitRoute.member(id, 'closeMember')) set((state) => ({ layout: removeEverywhere(state.layout, id) }));
@@ -49,7 +50,7 @@ const useWidgetLayoutStore = create<WidgetLayoutState>()((set, get) => {
     toggle: (id) => {
       if (kitRoute.member(id, 'toggleMember') || !normal(id)) return;
       const left = kitRoute.leave();
-      set((state) => ({ layout: left ? openWidget(state.layout, id, state.definitions) : toggled(state.layout, id, state.definitions) }));
+      set((state) => ({ layout: left ? openOrdered(state.layout, id, state.definitions) : toggled(state.layout, id, state.definitions) }));
     },
     popOut: (id) => {
       if (kitRoute.member(id, 'popOutMember') || getWidgetDefinition(get().definitions, id)?.popOut !== true) return;

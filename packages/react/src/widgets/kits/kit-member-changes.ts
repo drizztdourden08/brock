@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import { getWidgetDefinition, isWidgetOpen, openWidget, popOutWidget, removeEverywhere } from '@drizztdourden08/tessera/composites';
+import { getWidgetDefinition, isWidgetOpen, popOutWidget, removeEverywhere } from '@drizztdourden08/tessera/composites';
+import { openOrdered } from '../open-ordered';
 import { kitViewOf } from './kit-view-of';
 import { memberKitOf } from './member-kit-of';
 import type { KitLayoutChange, KitSource, KitView, KitViews, WidgetKitState } from './widget-kit.type';
@@ -12,9 +13,9 @@ const withView = (state: KitSource, id: string, patch: (view: KitView) => KitVie
 const withLayout = (state: KitSource, id: string, change: KitLayoutChange): KitViews | Record<string, never> =>
   withView(state, id, (view) => ({ ...view, layout: change(view.layout) }));
 
-const opened = (state: KitSource, id: string): KitLayoutChange => (layout) => (isWidgetOpen(layout, id) ? layout : openWidget(layout, id, state.members));
+const opened = (state: KitSource, id: string): KitLayoutChange => (layout) => (isWidgetOpen(layout, id) ? layout : openOrdered(layout, id, state.members));
 
-const toggled = (state: KitSource, id: string): KitLayoutChange => (layout) => (isWidgetOpen(layout, id) ? removeEverywhere(layout, id) : openWidget(layout, id, state.members));
+const toggled = (state: KitSource, id: string): KitLayoutChange => (layout) => (isWidgetOpen(layout, id) ? removeEverywhere(layout, id) : openOrdered(layout, id, state.members));
 
 const poppedOut = (state: KitSource, id: string): KitLayoutChange => (layout) => (getWidgetDefinition(state.members, id)?.popOut === true ? popOutWidget(layout, id) : layout);
 

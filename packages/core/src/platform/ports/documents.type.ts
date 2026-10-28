@@ -65,6 +65,10 @@ interface DocumentRenameOptions {
   overwrite?: boolean;
 }
 
+interface DocumentCopyOptions {
+  overwrite?: boolean;
+}
+
 interface DocumentMkdirOptions {
   recursive?: boolean;
 }
@@ -130,6 +134,7 @@ interface DocumentsPort {
   revokeFolder: (path: string) => Promise<boolean>;
   trash: (path: string) => Promise<void>;
   rename: (from: string, to: string, options?: DocumentRenameOptions) => Promise<void>;
+  copy: (from: string, to: string, options?: DocumentCopyOptions) => Promise<void>;
   mkdir: (path: string, options?: DocumentMkdirOptions) => Promise<void>;
   watch: (folder: string, options: DocumentWatchOptions, listener: DocumentWatchListener) => Promise<() => void>;
   rememberedFolders: () => Promise<RememberedFolder[]>;
@@ -149,4 +154,4 @@ interface DocumentsPort {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentCopyOptions, DocumentDialogOptions, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

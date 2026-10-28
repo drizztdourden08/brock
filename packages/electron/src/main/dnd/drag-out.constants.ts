@@ -1,0 +1,6 @@
+/* @layer electron-main @kind constants */
+const DRAG_OUT_MAX = 100;
+
+const BLANK_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+export { BLANK_ICON, DRAG_OUT_MAX };

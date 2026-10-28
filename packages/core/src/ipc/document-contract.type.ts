@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { DocumentDialogOptions, DocumentPick, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentWatchEvent, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
+import type { DocumentCopyOptions, DocumentDialogOptions, DocumentPick, DocumentFolderOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentWatchEvent, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotWrite } from '../platform/ports/documents.type';
 
 interface DocumentInvokeContract {
   'document:open': (opts?: DocumentDialogOptions, profileId?: string) => Promise<string | DocumentPick | null>;
@@ -10,6 +10,7 @@ interface DocumentInvokeContract {
   'document:trash': (path: string) => Promise<void>;
   'document:reveal': (path: string) => Promise<DocumentRevealResult>;
   'document:rename': (from: string, to: string, options?: DocumentRenameOptions) => Promise<void>;
+  'document:copy': (from: string, to: string, options?: DocumentCopyOptions) => Promise<void>;
   'document:mkdir': (path: string, options?: DocumentMkdirOptions) => Promise<void>;
   'document:watch': (id: string, folder: string, options: DocumentWatchOptions) => Promise<void>;
   'document:unwatch': (id: string) => Promise<void>;

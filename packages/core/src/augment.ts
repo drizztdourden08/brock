@@ -18,6 +18,9 @@ import type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } fr
 import type { DataEventContract, DataInvokeContract, DataSendContract } from './ipc/data-contract.type';
 import type { DocumentEventContract, DocumentInvokeContract } from './ipc/document-contract.type';
 import type { DocumentsPort } from './platform/ports/documents.type';
+import type { ClipboardPort } from './platform/ports/clipboard.type';
+import type { NetPort } from './platform/ports/net.type';
+import type { PlatformEventContract, PlatformInvokeContract } from './ipc/platform-contract.type';
 
 interface BaseProfile {
   id: string;
@@ -33,7 +36,7 @@ type Profile = BaseProfile & ProfileExtension;
 type CreateProfileOptions = { name: string; initialConfig?: Record<string, unknown> } & ProfileCreateExtension;
 type ProfilePatch = { name?: string } & ProfilePatchExtension;
 
-interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, DocumentInvokeContract {
+interface InvokeContract extends WidgetInvokeContract, DataInvokeContract, DocumentInvokeContract, PlatformInvokeContract {
   'app:getUserDataPath': () => Promise<string>;
   'app:getVersion': () => Promise<string>;
   'app:takeOpens': () => Promise<OpenRequest[]>;
@@ -118,7 +121,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'ask:reply': (id: number, outcome: AskOutcome) => void;
 }
 
-interface EventContract extends WidgetEventContract, DataEventContract, DocumentEventContract {
+interface EventContract extends WidgetEventContract, DataEventContract, DocumentEventContract, PlatformEventContract {
   'window:maximized': (maximized: boolean) => void;
   'window:fullscreen': (fullscreen: boolean) => void;
   'log:entry': (entry: LogEntryWire) => void;
@@ -154,6 +157,8 @@ interface PlatformPorts {
   filePicker: FilePickerPort;
   device: DevicePort;
   documents?: DocumentsPort;
+  clipboard?: ClipboardPort;
+  net?: NetPort;
 }
 
 export type {

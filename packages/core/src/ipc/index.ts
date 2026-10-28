@@ -25,6 +25,8 @@ export type { InvokeContract, SendContract, EventContract, AskContract, IpcNames
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract } from './widget-contract.type';
 export type { DataEventContract, DataInvokeContract, DataSendContract } from './data-contract.type';
 export type { DocumentEventContract, DocumentInvokeContract } from './document-contract.type';
+export type { PlatformEventContract, PlatformInvokeContract } from './platform-contract.type';
+export { PLATFORM_EVENT_MAP, PLATFORM_INVOKE_MAP } from './platform-maps.constants';
 export type {
   PoppedWidgetPatch, PoppedWidgetWire, StoredPinMode, WidgetDockBack, WidgetEdge, WidgetFrameWire, WidgetPinMode, WidgetPrefsWire, WidgetProbeFacts, WidgetProbeRequest, WidgetProbeResult,
   WidgetSettingsWire, WidgetSlice, WidgetSnapLink, WidgetWindowBounds, WidgetWindowInfo, WidgetWindowOpen, WidgetWindowPoint,

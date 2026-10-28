@@ -2,6 +2,7 @@
 import { realpathSync } from 'fs';
 import { absolutePath } from './absolute-path';
 import type { DocumentAccess, DocumentAccessDeps } from './document-access.type';
+import { copyItem } from './copy-item';
 import { createFolderGrants } from './folder-grants';
 import { listFolder } from './list-folder';
 import { LIST_LIMITS } from './list-limits.constants';
@@ -70,6 +71,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     trash: (path) => trashItem(folders, trash, path),
     reveal: (path) => revealItem(resolve, deps.showItemInFolder, path),
     rename: (from, to, options) => renameItem(folders, from, to, options),
+    copy: (from, to, options) => copyItem(folders, resolve, from, to, options),
     mkdir: (path, options) => makeFolder(folders, path, options),
     watch: (folder, options, listener) => watchGranted({ folders, registry, watcher: deps.watcher ?? fsWatcher, ms: deps.watchMs ?? WATCH_DEBOUNCE_MS, max: limits.entries }, folder, options, listener),
     rememberFolder: async (profileId, path) => {

@@ -1,5 +1,5 @@
 /* @layer electron-main @kind types */
-import type { DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentWatchListener, DocumentWatchOptions, RecentDocument, RememberedFolder } from '@drizztdourden08/brock-core/platform';
+import type { DocumentCopyOptions, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentWatchListener, DocumentWatchOptions, RecentDocument, RememberedFolder } from '@drizztdourden08/brock-core/platform';
 import type { SensitiveRoots } from './folder-grants.type';
 import type { ListLimits } from './list-limits.type';
 import type { RememberedFolders } from './remembered-folders.type';
@@ -20,6 +20,7 @@ interface DocumentAccess {
   recent: (profileId?: string) => Promise<RecentDocument[]>;
   trash: (path: string) => Promise<void>;
   rename: (from: string, to: string, options?: DocumentRenameOptions) => Promise<void>;
+  copy: (from: string, to: string, options?: DocumentCopyOptions) => Promise<void>;
   mkdir: (path: string, options?: DocumentMkdirOptions) => Promise<void>;
   watch: (folder: string, options: DocumentWatchOptions | undefined, listener: DocumentWatchListener) => Promise<() => void>;
   rememberFolder: (profileId: string, path: string) => Promise<void>;

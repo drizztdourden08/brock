@@ -14,6 +14,8 @@ import { sessionHandlers } from '../handlers/session-handlers';
 import { uiViewsHandlers } from '../handlers/ui-views-handlers';
 import { diagnosticsHandlers } from '../diagnostics/ipc-handlers';
 import { networkHandlers } from '../network/ipc-handlers';
+import { clipboardHandlers } from '../clipboard/ipc-handlers';
+import { dndHandlers } from '../dnd/ipc-handlers';
 import { sessionLogHandlers } from '../handlers/session-log-handlers';
 import { screenshotHandlers } from '../handlers/screenshot-handlers';
 import { dataDomainHandlers } from '../storage/ipc-handlers';
@@ -45,6 +47,8 @@ const baseHandlers = (): HandlerGroup[] => [
   diagnosticsHandlers,
   bugReportHandlers,
   networkHandlers,
+  clipboardHandlers,
+  dndHandlers,
   sessionLogHandlers,
   screenshotHandlers,
   askHandlers,

@@ -21,7 +21,7 @@ const entriesFor = (zone: string, config: ContextMenuConfig): readonly ContextMe
 };
 
 const listContextMenus = (): ListedContextMenu[] => {
-  const registered = new Set(commands.list().map((def) => def.id));
+  const registered = new Set(commands.list({ includeHidden: true }).map((def) => def.id));
   const { known, menus } = useContextMenuStore.getState();
   return Object.entries({ ...known, ...menus }).map(([zone, config]) => {
     const entries = entriesFor(zone, config);

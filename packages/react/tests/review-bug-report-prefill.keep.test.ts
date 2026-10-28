@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { bugReport } from '../src/bug-report/bug-report';
 import { useBugReportStore } from '../src/bug-report/useBugReportStore';
-import { REVIEW_REPORT_TITLE } from '../src/review/review.constants';
+import { REVIEW_REPORT_TITLE, WAIT_CEILING_MS } from '../src/review/review.constants';
 import type { ReviewOutcome, StepTour } from '../src/review/review.type';
 import { recordingTour } from './review-outcomes';
 
@@ -32,7 +32,10 @@ const { bugReportPrefill } = await import('../src/review/steps/bug-report-prefil
 
 const runStep = async (): Promise<ReviewOutcome | undefined> => {
   const { tour, checks } = recordingTour();
-  await bugReportPrefill(tour);
+  vi.useFakeTimers();
+  const running = bugReportPrefill(tour);
+  await vi.advanceTimersByTimeAsync(WAIT_CEILING_MS * 2);
+  await running;
   return checks.find((check) => check.id === 'bug-report-prefill-cleared');
 };
 
@@ -41,6 +44,7 @@ const defaultOnOpen = (title: string): (() => void) => useBugReportStore.subscri
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   field.typed = null;
   useBugReportStore.setState({ open: false, prefill: null, prefillIsDefault: false });
 });

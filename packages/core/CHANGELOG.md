@@ -1,5 +1,19 @@
 # @drizztdourden08/brock-core
 
+## 0.113.0
+
+### Minor Changes
+
+- 230f42b: Typed drag and drop between widgets, and state kept per project or document.
+
+  Drag and drop: `dnd.type<T>(name)` makes a drag type, `dnd.source(element, { type, payload })` makes an element draggable, and `dnd.target(element, { accepts, onDrop, canDrop?, feedback?, index? })` takes the drop. The payload is passed as it is and typed by the drag type. A target gets `enter`, `over`, `leave` and `drop` feedback and a `data-drop` attribute, and `index` reports a position for list-like targets. `useDragSource`, `useDropTarget` and `useDragSession` are the React forms. A target that accepts `dnd.files` also takes files dropped from the desktop: the renderer sends the paths to main (`document:vetDrop`), main checks them with the folder-grant rules and grants what passes, and the app only sees the paths main answered. It works between docked and floating widgets, which share a window; a popped widget window is another renderer and is not covered. `dnd.dragOut(paths)` is a seam that answers false until the main process side lands.
+
+  Scoped state: `uiViews.scope(key, { maxKeys? })` keeps named values per project or document in the ui views, with a size cap (200 names per scope and 50 scopes by default, `uiViews.scopeLimits` changes them) that drops the oldest. `useWidgetState(key, initial, { scope })` keeps a widget value in a scope, and `useWidgetStateReady(scope)` says when it has loaded. The `scope:` key prefix is now reserved for scopes.
+
+### Patch Changes
+
+- f9645ba: The built-in review no longer fails on a loaded machine because a clock window ran out. Waits in the review now end on the signal they wait for: a change in the page, a layout that has stopped moving, a store change, or a window event from main for popped widget windows (new `review:windows` event). Each wait keeps one generous ceiling of 30 s, used only to fail a stuck check, and the failure now says what it waited for. This replaces the 3 s `waitFor`, the 8 s popped window wait, the fixed pauses before captures (settle, tour steps, performance samples, popped widget paint, widget options, the dev gate quiet period) and the 1 s capture prepare limit of the baseline run. The mascot still check counts frames instead of polling. The review idle watchdog now hears from every wait and step (new `review:alive` message), so only a silent step trips it, and its limit is 45 s. The review start limit follows boot progress: main tasks, the renderer boot, the page loading and each request the page finishes restart the 60 s silence window, so a first dev launch that is warming Vite no longer fails. A boot that makes no progress at all still stops at 60 s, and a hard ceiling of 5 minutes stays. The frame check of the review now reads the title of a bare cornerTitle window from `aria-labelledby` or the corner chip when the header and `aria-label` give none. A review step can now declare `timeoutMs` on `defineReviewStep` for a long silent operation such as an engine setup or an install: it replaces the idle limit for that step only and main caps it at 30 minutes.
+
 ## 0.112.0
 
 ## 0.111.0

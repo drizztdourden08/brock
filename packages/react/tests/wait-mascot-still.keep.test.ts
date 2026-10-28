@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { WAIT_CEILING_MS } from '../src/review/review.constants';
 import { waitMascotStill } from '../src/review/steps/wait-mascot-still';
 
 const stage = (place: () => number): void => {
@@ -31,7 +32,7 @@ describe('waitMascotStill', () => {
   it('fails at the bound for a mascot that never stops', async () => {
     stage(() => performance.now());
     const done = waitMascotStill();
-    await vi.advanceTimersByTimeAsync(4000);
+    await vi.advanceTimersByTimeAsync(WAIT_CEILING_MS);
     expect(await done).toBe(false);
   });
 

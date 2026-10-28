@@ -1,9 +1,9 @@
 /* @layer electron-main @kind logic */
-import { PREPARE_TIMEOUT_MS } from './review-baselines.constants';
+import { PREPARE_CEILING_MS } from './review-baselines.constants';
 
 const withinTime = <T>(work: Promise<T>): Promise<T | null> => Promise.race([
   work.catch(() => null),
-  new Promise<null>((resolve) => { setTimeout(() => resolve(null), PREPARE_TIMEOUT_MS).unref(); }),
+  new Promise<null>((resolve) => { setTimeout(() => resolve(null), PREPARE_CEILING_MS).unref(); }),
 ]);
 
 export { withinTime };

@@ -42,6 +42,7 @@ const WIDGET_EVENT_MAP = {
   onWidgetTourAdvance: 'widget:tourAdvanced',
   onWidgetSettingTarget: 'widget:settingTarget',
   onReviewWidgetPref: 'review:widgetPref',
+  onReviewWindows: 'review:windows',
 } as const satisfies Record<string, keyof WidgetEventContract>;
 
 export { WIDGET_EVENT_MAP, WIDGET_INVOKE_MAP, WIDGET_SEND_MAP };

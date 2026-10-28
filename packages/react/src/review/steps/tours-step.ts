@@ -3,14 +3,13 @@ import { nav } from '../../navigation/nav';
 import { tours } from '../../tours/tours';
 import { tourTargets } from '../../tours/resolve-tour-target';
 import type { TourDef, TourShown, TourStepDef } from '../../tours/tour.type';
-import { delay } from '../dom/delay';
+import { quietLayout } from '../dom/quiet-layout';
 import { press } from '../dom/press-key';
 import { waitFor } from '../dom/wait-for';
 import type { ReviewStep, StepTour } from '../review.type';
 import { tourLayout } from './read-tour-layout';
 import { tourReading } from './read-tour-step';
 import { checkPoppedTour } from './tour-popped-check';
-import { TOUR_MASCOT_WAIT_MS, TOUR_SETTLE_MS, TOUR_STEP_WAIT_MS } from './tours-step.constants';
 import { waitMascotStill } from './wait-mascot-still';
 
 const pad = (index: number): string => String(index + 1).padStart(2, '0');
@@ -24,7 +23,7 @@ const layoutChecks = (tour: StepTour, name: string): void => {
 
 const mascotSettles = async (tour: StepTour, name: string): Promise<void> => {
   const still = await waitMascotStill();
-  tour.check(`${name}-mascot-still`, still, 'the mascot stops walking', `the mascot was still moving after ${TOUR_MASCOT_WAIT_MS} ms`);
+  tour.check(`${name}-mascot-still`, still, 'the mascot stops walking', 'the mascot never stopped walking');
 };
 
 const targetCheck = (tour: StepTour, name: string, step: TourStepDef, at: TourShown): void => {
@@ -37,16 +36,16 @@ const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<bo
   const step = def.steps[index];
   if (!step) return false;
   const name = `tour-${def.id}-${step.id}`;
-  const at = await waitFor(() => tourReading.shown(def.id, index), TOUR_STEP_WAIT_MS);
+  const at = await waitFor(() => tourReading.shown(def.id, index), undefined, `step ${index + 1} of tour "${def.id}" to show its bubble`);
   tour.check(name, at !== null, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
   if (at) targetCheck(tour, name, step, at);
-  await delay(TOUR_SETTLE_MS);
+  await quietLayout();
   if (at) await mascotSettles(tour, name);
   if (at) layoutChecks(tour, name);
   await tour.capture(`tour-${def.id}-${pad(index)}-${step.id}`);
   if (!at) return false;
   const how = tourReading.advance(step);
-  const moved = (await waitFor(() => tourReading.movedOn(def.id, index), TOUR_STEP_WAIT_MS)) !== null;
+  const moved = (await waitFor(() => tourReading.movedOn(def.id, index), undefined, `tour "${def.id}" to go on from step ${index + 1}`)) !== null;
   tour.check(`${name}-advances`, moved, `it goes on after ${how}`, `it did not go on after ${how}`);
   return moved;
 };
@@ -64,7 +63,7 @@ const walkTour = async (tour: StepTour, listed: TourDef): Promise<void> => {
 const escapeCloses = async (tour: StepTour, def: TourDef): Promise<void> => {
   nav.open(tour.env.homeScreen);
   tours.start(def.id, 0);
-  await waitFor(() => tourReading.shown(def.id, 0), TOUR_STEP_WAIT_MS);
+  await waitFor(() => tourReading.shown(def.id, 0), undefined, `tour "${def.id}" to show its first bubble`);
   const open = nav.active();
   press({ key: 'Escape' });
   const closed = (await waitFor(() => tourReading.layer() === null && !tours.isOpen())) !== null;

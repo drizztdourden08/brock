@@ -62,6 +62,7 @@ interface ContextMenuConfig {
   openOn?: 'press' | 'release-without-drag';
   beforeOpen?: (context: ContextMenuContext) => boolean | void;
   inherit?: 'parent';
+  selection?: (where: { target: Element; data: unknown }) => Iterable<string>;
 }
 
 type ContextMenuSource = ContextMenuEntries | ContextMenuConfig;
@@ -118,6 +119,7 @@ interface OpenRequest {
   point: ContextMenuPoint | null;
   trigger: CommandTrigger;
   data?: unknown;
+  selection?: Iterable<string>;
 }
 
 type OpenResult = 'opened' | 'cancelled' | 'none';
@@ -125,6 +127,7 @@ type OpenResult = 'opened' | 'cancelled' | 'none';
 interface OpenOptions {
   point?: ContextMenuPoint;
   trigger?: CommandTrigger;
+  selection?: Iterable<string>;
 }
 
 interface ListedContextMenu {

@@ -2,6 +2,8 @@
 import { realpathSync } from 'fs';
 import { absolutePath } from './absolute-path';
 import type { DocumentAccess, DocumentAccessDeps } from './document-access.type';
+import { copyItem } from './copy-item';
+import { folderRefusalOf } from './folder-refusal-of';
 import { createFolderGrants } from './folder-grants';
 import { listFolder } from './list-folder';
 import { LIST_LIMITS } from './list-limits.constants';
@@ -48,14 +50,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     allow,
     allowFolder: folders.allow, createTempFolder: folders.made.make, forgetTempFolders: folders.made.clear,
     revokeFolder: folders.revoke,
-    folderRefusal: (path) => {
-      try {
-        folders.vet(path);
-        return null;
-      } catch (error) {
-        return error instanceof Error ? error.message : String(error);
-      }
-    },
+    folderRefusal: (path) => folderRefusalOf(folders, path),
     exact: (path) => allowed.has(keyOf(absolutePath(path))),
     isAllowed: (path) => resolve(path).then(() => true, () => false),
     resolve,
@@ -70,6 +65,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     trash: (path) => trashItem(folders, trash, path),
     reveal: (path) => revealItem(resolve, deps.showItemInFolder, path),
     rename: (from, to, options) => renameItem(folders, from, to, options),
+    copy: (from, to, options) => copyItem({ folders, resolveSource: resolve }, from, to, options),
     mkdir: (path, options) => makeFolder(folders, path, options),
     watch: (folder, options, listener) => watchGranted({ folders, registry, watcher: deps.watcher ?? fsWatcher, ms: deps.watchMs ?? WATCH_DEBOUNCE_MS, max: limits.entries }, folder, options, listener),
     rememberFolder: async (profileId, path) => {

@@ -11,6 +11,7 @@ const DOCUMENT_INVOKE_MAP = {
   documentTrash: 'document:trash',
   documentReveal: 'document:reveal',
   documentRename: 'document:rename',
+  documentCopy: 'document:copy',
   documentMkdir: 'document:mkdir',
   documentWatch: 'document:watch',
   documentUnwatch: 'document:unwatch',

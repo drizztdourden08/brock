@@ -8,6 +8,7 @@ import { usePaletteStore } from '../../usePaletteStore';
 import type { PaletteItem, PaletteModel } from '../PaletteHost.type';
 import { PaletteConfirm } from '../sub-components/PaletteConfirm';
 import { paletteGroups } from './palette-groups';
+import { pickGroups } from './pick-groups';
 import { usePaletteScope } from './usePaletteScope';
 import { useStandardActions } from './useStandardActions';
 import { withConfirmActions } from './with-confirm-actions';
@@ -16,6 +17,7 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   const open = usePaletteStore((s) => s.open);
   const query = usePaletteStore((s) => s.query);
   const asking = usePaletteStore((s) => s.asking);
+  const picking = usePaletteStore((s) => s.picking);
   const setQuery = usePaletteStore((s) => s.setQuery);
   const close = usePaletteStore((s) => s.hide);
   const ask = usePaletteStore((s) => s.ask);
@@ -37,7 +39,10 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   }, [settle]);
 
   const preload = useRoutePreloader();
-  const ranked = useMemo(() => paletteGroups(catalog, query, scope, preload), [catalog, query, scope, preload]);
+  const ranked = useMemo(
+    () => (picking === null ? paletteGroups(catalog, query, scope, preload) : pickGroups(picking, query)),
+    [catalog, query, scope, preload, picking],
+  );
   const groups = useMemo(() => withConfirmActions(
     ranked,
     (item) => createElement(PaletteConfirm, { item, armed: asking === item.id, onArm: () => ask(item.id), onConfirm: () => runNow(item), onSettle: () => cancel(item) }),

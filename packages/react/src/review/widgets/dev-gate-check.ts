@@ -1,13 +1,13 @@
 /* @layer renderer-shell @kind logic */
 import { widgets } from '../../widgets/widgets';
-import { delay } from '../dom/delay';
+import { settle } from '../dom/settle';
 import type { StepTour } from '../review.type';
 import { poppedWindowOf } from '../steps/popped-window-of';
 import { poppedEntry } from './popped-entry';
 import { windowOpen } from './window-open';
 import { withDeveloperTools } from './with-developer-tools';
 import { withReviewWidget } from './with-review-widget';
-import { DEV_WIDGET_ID, GATE_QUIET_MS } from './widget-review.constants';
+import { DEV_WIDGET_ID } from './widget-review.constants';
 
 const gone = async (id: string): Promise<boolean> => (await windowOpen(id, false)) && poppedEntry(id) === null;
 
@@ -21,7 +21,7 @@ const checkDevGate = async (tour: StepTour): Promise<void> => {
       const closed = await gone(id);
       tour.check('gate-dev-only-closed', closed, 'turning developer tools off closed the popped devOnly widget and its window', 'turning developer tools off left the popped devOnly widget open');
       await switchTo(true);
-      await delay(GATE_QUIET_MS);
+      await settle();
       const stays = (await poppedWindowOf(id)) === null && poppedEntry(id) === null;
       tour.check('gate-dev-only-stays-closed', stays, 'turning developer tools back on left the closed devOnly widget closed', 'turning developer tools back on reopened the devOnly widget');
     });

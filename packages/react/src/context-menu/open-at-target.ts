@@ -29,7 +29,8 @@ const openAtTarget = (request: OpenRequest): OpenResult => {
   if (first === undefined || nativeHeld(request.target)) return 'none';
   if (useContextMenuStore.getState().blocked || document.querySelector(MODAL_SELECTOR) !== null) return 'cancelled';
   const { point, data } = placeOf(request, first);
-  const context: ContextMenuContext = { point, target: request.target, trigger: request.trigger, data };
+  const keys = request.selection ?? first.config.selection?.({ target: request.target, data });
+  const context: ContextMenuContext = { point, target: request.target, trigger: request.trigger, data, ...(keys === undefined ? {} : { selection: new Set(keys) }) };
   if (first.config.beforeOpen?.(context) === false) return 'cancelled';
   const entries = buildEntries(matches, context);
   reportMenuSize(first.zone, entries);

@@ -7,6 +7,7 @@ import {
   PORT_BASE_MAX, PORT_BASE_MIN, REVERSE_DNS, SLUG, UNSAFE_FILE_CHARS,
 } from './define-product.constants';
 import { assertOsIntegration } from './assert-os-integration';
+import { resolveNet } from './resolve-net';
 import { resolveWordmark } from './resolve-wordmark';
 
 const toEnvPrefix = (id: string): string => id.replace(/[^a-z0-9]+/gi, '_').toUpperCase();
@@ -109,7 +110,7 @@ const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets =
   keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
 });
 
-const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, menu, mascot, tray }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'initialProfile' | 'boot' | 'menu' | 'mascot' | 'tray'> => ({
+const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, menu, mascot, tray, net }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'initialProfile' | 'boot' | 'menu' | 'mascot' | 'tray' | 'net'> => ({
   ...(profilesRoute ? { profilesRoute } : {}),
   ...(singleProfile ? { singleProfile } : {}),
   ...(initialProfile ? { initialProfile } : {}),
@@ -117,6 +118,7 @@ const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, men
   ...(menu ? { menu } : {}),
   ...(mascot !== undefined ? { mascot } : {}),
   ...(tray ? { tray } : {}),
+  ...(net ? { net: resolveNet(net) } : {}),
 });
 
 const defineProduct = (input: ProductInput): ProductConfig => {

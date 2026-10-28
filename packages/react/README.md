@@ -52,7 +52,7 @@ import { screenTree } from '../.brock/screens';
 | Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `TOOLBAR_COMMANDS`, `TOOLBAR_ZONE`, `ToolbarDef`, `ToolbarPlacement` |
-| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
+| Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `keepsWidgetFocus`, `WIDGET_KEEPS_FOCUS`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail
 
@@ -110,6 +110,30 @@ An app drops one file per widget in `src/widgets`: `<id>.widget.tsx`, whose defa
 A widget that sets `context: 'session'` in its definition or `meta` shows only while that context is active (`contexts.set('session', { active, data, label })`, `useSetAppContext`). The optional `label` is a short string, such as the name of a session tab: every widget bound to that context shows it as a muted sublabel after the title (`Players` then `Sunday run`), docked, floating and popped, and it follows a changed label. A blank or missing label shows no sublabel.
 
 Brock's own widgets have the same shape: `src/widgets/built-in/logs.widget.tsx` and `performance.widget.tsx` beside their component folders, listed in `built-in-widgets.constants.ts` through `widgetsFromFiles`.
+
+### Focus in widgets
+
+`WidgetHost` keeps the keyboard with the app: a mouse click on a docked or floating widget's button, tab or slider is blurred, because a focused widget control would otherwise swallow the arrows, Enter and Space meant for the main surface. Text fields keep the focus. See Widget focus in docs/architecture.md for the full rules.
+
+A list row that handles keys itself (F2 to rename, the arrows, Delete) would lose its focus right after a click. Mark it to opt out:
+
+```tsx
+import { keepsWidgetFocus } from '@drizztdourden08/brock-react';
+
+<li tabIndex={0} onKeyDown={onRowKey} {...keepsWidgetFocus()}>Layer 1</li>
+```
+
+`keepsWidgetFocus()` returns `{ 'data-widget-keeps-focus': '' }`; the attribute name is `WIDGET_KEEPS_FOCUS`. The marker works on the element or any ancestor inside the widget. Mark the row, not the whole widget.
+
+To drive a widget row in an e2e test, focus it by keyboard. The guard only blurs focus a pointer press caused, and any key that is not a bare modifier clears that pending press:
+
+```ts
+await page.keyboard.press('Tab');   // Tab into the widget, or call row.focus() when no press is pending
+await row.focus();
+await page.keyboard.press('F2');
+```
+
+A `click()` on an unmarked row is a pointer press, so its focus is dropped.
 
 ## Layout presets
 
@@ -250,7 +274,16 @@ Every shortcut and menu action is a `CommandDef` in one registry. Besides `id`, 
 - `meta`: plain, serialisable app data (an args schema, the effect of the command). Brock never reads it; `commands.list()` hands it back as set.
 - `run(context?)` may return a promise.
 
-`commands.describe(id)` returns `{ enabled, reason, checked }` with the gates applied (an unknown id is not enabled and says so). `commands.run(id, context?)` returns `Promise<{ ok: true } | { ok: false, why: 'unknown' | 'disabled' | 'gated', reason }>` and resolves after a promise from `run` settles; the command itself starts synchronously, so a caller that ignores the result behaves as before. The context `trigger` is `'pointer'`, `'keyboard'`, `'longpress'` or `'assistant'`, the last for a command an assistant runs for the user. Scope and zone only pick which chord fires; `commands.run` does not check them.
+- `visible()`: the structural switch. A command that does not apply on this surface (a map command on a sprite) returns `false` and is hidden: its chord does nothing, `commands.list()` and the app menu, the context menu and the palette search leave it out, and `commands.run` refuses it with `why: 'hidden'`. Use `when` for a state the person can fix, `visible` for a surface that never fits. `commands.list({ includeHidden: true })` returns hidden commands too.
+- `only`: names the surface a command is for (`'map'`, `'sprite'`). Two commands on one chord with different `only` values are not a conflict, and a hidden command that has `only` stays on the Keyboard page, labelled "Only in map", so the person can rebind it. The page also says which other command the same keys mean on another surface.
+- `hold: { release(context), tapMs? }`: a hold command. `run` is called on key down; key repeat is ignored; `release` is called once when the key goes up, when a required modifier goes up, when the window loses focus or goes hidden, and when the shortcut listeners are removed. The release context is the press context plus `heldMs`, `tap` (`true` when the key went up within `tapMs`, or when `commands.run` ran the command from a menu) and `cause` (`'keyup'`, `'blur'`, `'run'` or `'dispose'`). The Keyboard page says "Hold the key" on such a command. `commands.heldModifiers(event?)` returns the modifiers (`'ctrl'`, `'alt'`, `'shift'`, `'meta'`) held now, kept from key and pointer events and cleared on blur, so a pointer drag can read Shift or Alt; with an event it reads that event.
+- `args`: an `ArgSchema`, a record of fields `{ type: 'string' | 'number' | 'boolean', label?, options?: [{ value, label }], min?, max?, optional? }`. `commands.run` checks `context.args` against it and refuses a bad value with `why: 'invalid'` and a sentence. `commands.bind(id, args, chords)` binds chords to fixed arguments (returns a problem sentence or `null`), `commands.unbind(id, args)` removes it and `commands.bindings(id?)` lists them. A binding is saved in the keymap setting under the key `<id>#<args as JSON>`, shows on the Keyboard page as its own row named `<label>: <option label>`, and runs the command with those arguments. A menu entry with `command` whose schema has a required field with `options` and no value yet opens a value picker in the palette (`runWithPicker(id)` does the same from code).
+
+`commands.describe(id)` returns `{ enabled, visible, reason, checked }` with the gates applied (an unknown id is not enabled and says so). `commands.run(id, context?)` returns `Promise<{ ok: true } | { ok: false, why: 'unknown' | 'hidden' | 'disabled' | 'gated' | 'invalid', reason }>` and resolves after a promise from `run` settles; the command itself starts synchronously, so a caller that ignores the result behaves as before. The context `trigger` is `'pointer'`, `'keyboard'`, `'longpress'` or `'assistant'`, the last for a command an assistant runs for the user. Scope and zone only pick which chord fires; `commands.run` does not check them.
+
+An app menu entry with `command` reads the gates of that command: it is left out when the command is hidden, and it is disabled with the command's reason as its description otherwise (`useCommandDescribe()` re-reads when a gate changes). A menu-bar entry skips a hidden command too.
+
+`palette.open({ query?, scope? })` opens the search palette with a query and a scope (a hub id) already set; `palette.open()` keeps what is there. `palette.pick({ title, options, onPick })` opens it as a value picker over a list. Closing the palette clears the query, the scope and the picker.
 
 ## Context menu
 
@@ -263,6 +296,8 @@ useContextMenu('canvas', { entries: () => ['canvas.copy', 'separator', { command
 
 <div tabIndex={0} {...commandZone('canvas')} {...contextMenuZone('canvas')} />;
 ```
+
+A command entry takes its disabled state, its description (the command's `reason`, unless the entry sets its own) and its hidden state (`visible()`) from the command. A menu can act on a set: the context carries `selection`, a `Set` of keys, from `openContextMenu(id, data, { selection })`, from `contextMenu.openAt` or from the config's `selection({ target, data })`, and a command entry hands it to `CommandDef.run(context)`. `contextMenu.openAt(element, data?, { point?, trigger?, selection? })` opens the menu of the nearest zone above an element, under that element or at `point`, with the data and selection given; `contextMenu.open` is `openContextMenu` and `contextMenu.close()` closes.
 
 `openContextMenu(id, data)`, `listContextMenus()` and `blockContextMenus(flag)` serve tests and the app's drag state. `listContextMenus()` lists every registered menu with `mounted: boolean`, including menus whose component has unmounted; `defineContextMenu(id, source)` registers one at module scope so a test sees it before any zone mounts (it lists the menu and does not open it). An entry takes `tone: 'danger'` for a destructive action. A `reason` on an entry is also its `aria-description`, and each drawn item carries `data-menu-entry` (the command id, else the label). For a Tessera part that reports its own right click, such as `DocumentTabs` `onTabContextMenu(tabId, event)` or `StatusBar` `onItemContextMenu(itemId, event)`, `contextMenuHandler(zone, data?)` returns the handler that opens the zone with the part's data: `onTabContextMenu={(tabId, event) => contextMenuHandler('tabs', { tabId })(event)}`. The architecture guide, Context menus, has the rules.
 

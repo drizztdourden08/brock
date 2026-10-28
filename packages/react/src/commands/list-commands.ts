@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { boundCommands } from './bound-commands';
 import { COMMAND_RANKS } from './commands.constants';
 import type { CommandDef } from './command.type';
 import { defaultChords } from './default-chords';
@@ -17,11 +18,12 @@ const yielding = (def: CommandDef, taken: ReadonlySet<string>, state: ListState)
 const listCommands = (state: ListState): CommandDef[] => {
   const seen = new Set<string>();
   const ranked = [...state.sources].sort((a, b) => a.rank - b.rank);
-  const defs = ranked.flatMap((source) => source.defs).filter((def) => {
+  const unique = ranked.flatMap((source) => source.defs).filter((def) => {
     if (seen.has(def.id)) return false;
     seen.add(def.id);
     return true;
   });
+  const defs = [...unique, ...boundCommands(unique, state.overrides)];
   const builtIn = new Set(state.sources.filter((source) => source.rank === COMMAND_RANKS.brock).flatMap((source) => source.defs));
   const taken = appChords(defs, builtIn, state);
   return defs.map((def) => (builtIn.has(def) ? yielding(def, taken, state) : def));

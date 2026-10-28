@@ -24,6 +24,7 @@ const createElectronDocuments = (): DocumentsPort => {
     trash: (path) => api.documentTrash(path),
     reveal: (path) => api.documentReveal(path),
     rename: (from, to, options) => api.documentRename(from, to, options),
+    copy: (from, to, options) => api.documentCopy(from, to, options),
     mkdir: (path, options) => api.documentMkdir(path, options),
     watch: (folder, options, listener) => watchFolder(api, folder, options, listener),
     rememberedFolders: () => withProfile([], (profileId) => api.documentRememberedFolders(profileId)),

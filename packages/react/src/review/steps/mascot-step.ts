@@ -33,12 +33,12 @@ const mascotStep: ReviewStep = {
       const moved = firstX === undefined ? null : await waitFor(() => {
         const x = readWalker().actor?.left;
         return x !== undefined && Math.abs(x - firstX) > 16;
-      }, 8000);
+      });
       tour.check('mascot-walks', moved !== null, 'the mascot walks along the app bottom', 'the mascot did not move along the app bottom');
       await tour.capture('mascot-window');
       press({ key: 'k', ctrlKey: true });
       await waitFor(() => find(SELECTORS.walkerBeside) && readWalker().hint);
-      await waitFor(() => mascotApart(readWalker()), 8000);
+      await waitFor(() => mascotApart(readWalker()));
       tour.report(paletteChecks(readWalker()));
       await tour.capture('mascot-palette');
       await escapeCloses(tour, 'mascot-palette', () => find(SELECTORS.palette) === null);

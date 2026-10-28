@@ -14,7 +14,7 @@ import type { StepTour } from '../review.type';
 import { probe } from '../widgets/probe';
 import { windowOpen } from '../widgets/window-open';
 import { tourReading } from './read-tour-step';
-import { POPPED_TOUR_ID, TOUR_SELECTORS, TOUR_STEP_WAIT_MS } from './tours-step.constants';
+import { POPPED_TOUR_ID, TOUR_SELECTORS } from './tours-step.constants';
 
 const poppedTour = (id: string): TourDef => defineTour({
   id: POPPED_TOUR_ID,
@@ -33,13 +33,13 @@ const clickPopped = async (tour: StepTour, id: string): Promise<void> => {
   tour.check('tour-popped-widget-asks', asks, 'the bubble hides Next and asks for a click on the popped widget', 'the bubble shows Next or no click hint for the popped widget');
   const selector = useTourStore.getState().spot?.selector;
   const clicked = selector !== undefined && (await probe({ kind: 'click', id, selector })).facts?.clicked === true;
-  const moved = clicked && (await waitFor(() => tourReading.movedOn(POPPED_TOUR_ID, 0), TOUR_STEP_WAIT_MS)) !== null;
+  const moved = clicked && (await waitFor(() => tourReading.movedOn(POPPED_TOUR_ID, 0), undefined, 'the popped tour to go on from its first step')) !== null;
   tour.check('tour-popped-widget-click', moved, `a click in the "${id}" window moved the tour on in the main window`, `a click in the "${id}" window did not move the tour on`);
 };
 
 const lightPopped = async (tour: StepTour, id: string): Promise<void> => {
   tours.start(POPPED_TOUR_ID, 0);
-  const shown = (await waitFor(() => tourReading.shown(POPPED_TOUR_ID, 0), TOUR_STEP_WAIT_MS)) !== null;
+  const shown = (await waitFor(() => tourReading.shown(POPPED_TOUR_ID, 0), undefined, 'the popped tour to show its first bubble')) !== null;
   const lit = shown && await spotLit(id, true);
   tour.check('tour-popped-widget-lit', lit, `a step on "${id}" lights it in its own window while the bubble stays in the main window`, `a step on the popped "${id}" did not light it in its window`);
   await settle();

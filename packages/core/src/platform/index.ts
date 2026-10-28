@@ -17,7 +17,13 @@ export type {
 } from './ports/data-domain.type';
 export type { WindowCloseOptions, WindowControlsPort, Unsub } from './ports/window-controls.type';
 export { anyTypeFor } from './any-type-for';
+export { CLIPBOARD_PNG, CLIPBOARD_TEXT } from './clipboard-types.constants';
+export { privateClipboardType } from './private-clipboard-type';
+export { isPrivateClipboardType } from './is-private-clipboard-type';
+export { privateClipboardPrefix } from './private-clipboard-prefix';
+export type { ClipboardEntries, ClipboardPort, ClipboardValue, ClipboardWireEntries, ClipboardWireValue } from './ports/clipboard.type';
+export type { NetPort, NetReadOptions, NetReadResult, NetReadWire } from './ports/net.type';
 export type { AnyTypeScope, AnyTypeOption, PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';
-export type { DocumentDialogOptions, DocumentDropKind, DocumentDropResult, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite } from './ports/documents.type';
+export type { DocumentCopyOptions, DocumentFileOperations, DocumentDialogOptions, DocumentDropKind, DocumentDropResult, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite } from './ports/documents.type';
 export type { DevicePort, BackEdge } from './ports/device.type';
 export type { Capabilities, PlatformPorts, ShowFlags } from '../augment';

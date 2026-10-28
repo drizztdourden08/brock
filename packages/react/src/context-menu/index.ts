@@ -3,6 +3,7 @@ export { contextMenuZone } from './context-menu-zone';
 export { useContextMenu } from './useContextMenu';
 export { defineContextMenu } from './define-context-menu';
 export { openContextMenu } from './open-context-menu';
+export { contextMenu } from './context-menu-api';
 export { contextMenuHandler } from './context-menu-handler';
 export { listContextMenus } from './list-context-menus';
 export { blockContextMenus } from './block-context-menus';

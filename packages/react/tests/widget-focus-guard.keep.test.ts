@@ -15,6 +15,7 @@ const PAGE = `
     <select id="widget-select"><option>One</option><option>Two</option></select>
     <input id="widget-text" type="text">
     <p id="widget-text-line">Some text</p>
+    <ul><li id="widget-row" tabindex="0" data-widget-keeps-focus=""><span id="widget-row-label">Layer 1</span></li></ul>
   </div>
   <div class="listbox-drop control-menu" data-widget-options="">
     <button id="options-row" aria-controls="options-sub">Shortcuts</button>
@@ -136,6 +137,31 @@ describe('the widget focus guard', () => {
   it('leaves a press on plain widget text alone, so the text stays selectable', () => {
     mount();
     expect(pressDown(byId('widget-text-line'))).toBe(false);
+  });
+
+});
+
+describe('the widget focus guard opt-out and keyboard focus', () => {
+  it('keeps the focus on a row marked data-widget-keeps-focus after a click, and an unmarked button still loses it', () => {
+    mount();
+    const row = byId('widget-row');
+    expect(click(byId('widget-row-label'))).toBe(false);
+    expect(document.activeElement).toBe(row);
+    row.focus();
+    release(row);
+    expect(document.activeElement).toBe(row);
+    click(byId('widget-button'));
+    expect(document.activeElement).not.toBe(byId('widget-button'));
+  });
+
+  it('never blurs a widget control that a keyboard user focused after a key press', () => {
+    mount();
+    click(byId('widget-button'));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+    byId('widget-button').focus();
+    expect(document.activeElement).toBe(byId('widget-button'));
+    byId('widget-button').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(document.activeElement).toBe(byId('widget-button'));
   });
 
 });

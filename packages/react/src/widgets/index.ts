@@ -13,6 +13,8 @@ export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSnapshot
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';
+export { keepsWidgetFocus } from './keeps-widget-focus';
+export { WIDGET_KEEPS_FOCUS } from './keeps-widget-focus.constants';
 export { buildWidgetMenuEntries } from './build-widget-menu-entries';
 export { useWidgetMenuEntries } from './useWidgetMenuEntries';
 export { useWindowKind } from './useWindowKind';

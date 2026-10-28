@@ -113,6 +113,7 @@ interface ResolvedScreenTree {
   menu: MenuEntry[];
   shortcuts: RouteShortcut[];
   settingsAlias: RouteAlias;
+  aliases: Record<string, RouteAlias>;
   search: readonly SearchEntry[];
 }
 

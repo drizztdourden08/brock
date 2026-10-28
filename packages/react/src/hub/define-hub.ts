@@ -3,12 +3,16 @@ import { createElement } from 'react';
 import { defineScreen } from '../screens/define-screen';
 import { ScreenSubtitle } from '../shell/ScreenSubtitle';
 import type { ScreenDef } from '../screens/screen.type';
+import { stickyParams } from '../navigation/sticky-params';
 import { Hub } from './Hub';
+import { HubHeader } from './Hub/sub-components/HubHeader';
 import { HubSwitch } from './Hub/sub-components/HubSwitch';
 import { HUB_DEFS } from './hub.constants';
 import type { HubDef } from './hub.type';
 
 const defineHub = (def: HubDef): ScreenDef => {
+  stickyParams.set(def.id, def.params);
+  const status = def.header ? createElement(HubHeader, { hub: def }) : createElement(ScreenSubtitle);
   const screen = defineScreen({
     id: def.id,
     title: def.title,
@@ -17,7 +21,7 @@ const defineHub = (def: HubDef): ScreenDef => {
     shortcut: def.shortcut,
     show: def.show,
     ...(def.requiresProfile === undefined ? {} : { requiresProfile: def.requiresProfile }),
-    floating: (ctx) => createElement(HubSwitch, { current: def.id, onSelect: (id: string) => ctx.open(id), status: createElement(ScreenSubtitle) }),
+    floating: (ctx) => createElement(HubSwitch, { current: def.id, onSelect: (id: string) => ctx.open(id), status }),
     render: (ctx) => createElement(Hub, { def, ctx }),
     preload: def.home.preload,
   });

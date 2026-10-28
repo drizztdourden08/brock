@@ -10,6 +10,7 @@ interface HubTarget {
   hub?: string;
   section?: string;
   tab?: string;
+  params?: ScreenParams;
 }
 
 interface HubRenderContext {
@@ -22,6 +23,11 @@ interface HubRenderContext {
   open: (target: HubTarget) => void;
   close: () => void;
   profile: Profile | null;
+}
+
+interface HubHeaderDef {
+  render: (ctx: HubRenderContext) => ReactNode;
+  actions?: (ctx: HubRenderContext) => ReactNode;
 }
 
 interface HubTab {
@@ -113,6 +119,12 @@ interface HubPage {
   keywords?: readonly string[];
 }
 
+interface HubContextState {
+  byHub: Readonly<Record<string, HubRenderContext>>;
+  put: (id: string, context: HubRenderContext) => void;
+  drop: (id: string) => void;
+}
+
 interface HubGroup {
   id: string;
   label: string;
@@ -147,6 +159,8 @@ interface HubDef {
   backdrop?: PageBackdrop;
   requiresProfile?: boolean;
   top?: string[];
+  header?: HubHeaderDef;
+  params?: string[];
 }
 
-export type { HubDef, HubGroup, HubLiveLists, HubLiveSource, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget, LiveBadge, LiveMeta, LivePage, UseLivePages };
+export type { HubContextState, HubDef, HubGroup, HubHeaderDef, HubLiveLists, HubLiveSource, HubPage, HubPageHeader, HubPrimaryAction, HubRenderContext, HubSearch, HubSearchHit, HubSubPage, HubTab, HubTarget, LiveBadge, LiveMeta, LivePage, UseLivePages };

@@ -8,6 +8,7 @@ import { findLinks } from './find-links.mjs';
 import { registeredWorktrees } from './paths.mjs';
 import { assertReleasable } from './release-checks.mjs';
 import { clearUserData } from './clear-user-data.mjs';
+import { isPathArgument, removeLeftover } from './remove-leftover.mjs';
 import { removeTree } from './remove-tree.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
@@ -40,8 +41,9 @@ const removeRegistered = async (worktree, ctx) => {
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const removeVerb = {
-  usage: '  brock worktree remove <name>',
+  usage: '  brock worktree remove <name | path>',
   run: async (positional, options, ctx) => {
+    if (positional[0] && isPathArgument(positional[0])) return removeLeftover(positional[0], ctx);
     const name = qualifyName(positional[0], ctx.workspace, options);
     if (!name) throw new Error(`Usage:\n${removeVerb.usage}`);
     const worktree = createWorktreeContext(name, ctx);

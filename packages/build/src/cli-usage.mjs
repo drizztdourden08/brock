@@ -114,7 +114,7 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
   brock worktree launch <name> <state|none> [--target <key>] [--prod] [--visible [--sound]] [passthrough...]
   brock worktree refresh <name> [--reset] [--rebase [ref]]
   brock worktree commit [name] --message "<text>" | --message-file <path>
-  brock worktree finish [name] | remove <name>
+  brock worktree finish [name] | remove <name | path>
   brock worktree base [name] [<new base>]
                              the branch the thread starts from, rebases on, opens its PR into and lands on
   brock launch <name> <state|none> [...]

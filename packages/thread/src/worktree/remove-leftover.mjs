@@ -4,6 +4,7 @@ import { isAbsolute, relative, resolve } from 'node:path';
 import { LONG_PATHS, tryGit } from '../git.mjs';
 import { deleteTree } from './delete-tree.mjs';
 import { registeredWorktrees } from './paths.mjs';
+import { samePath } from './same-path.mjs';
 
 const isPathArgument = (argument) => isAbsolute(argument) || /[\\/]/.test(argument);
 
@@ -12,16 +13,14 @@ const isBelow = (folder, path) => {
   return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
 };
 
-const sameFolder = (a, b) => relative(a, b) === '';
-
 const assertLeftover = ({ path, folder, main }) => {
   if (!isBelow(folder, path)) throw new Error(`Refusing ${path}: it is not inside the worktrees folder ${folder}.`);
   if (!existsSync(path)) throw new Error(`No folder at ${path}.`);
-  if (registeredWorktrees(main).some((registered) => sameFolder(registered, path))) {
+  if (registeredWorktrees(main).some((registered) => samePath(registered, path))) {
     throw new Error(`${path} is a registered worktree. Remove it by name: worktree remove ${path.split(/[\\/]/).pop()}`);
   }
   const cwd = resolve(process.cwd());
-  if (sameFolder(path, cwd) || isBelow(path, cwd)) throw new Error(`Refusing ${path}: this session is running inside it. cd elsewhere and run it again.`);
+  if (samePath(path, cwd) || isBelow(path, cwd)) throw new Error(`Refusing ${path}: this session is running inside it. cd elsewhere and run it again.`);
 };
 
 /**

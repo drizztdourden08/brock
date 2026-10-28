@@ -1,6 +1,5 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { gitLoud, LONG_PATHS } from '../git.mjs';
 import { deleteTree } from './delete-tree.mjs';
 import { guards } from './guards.mjs';
@@ -10,13 +9,12 @@ import { assertReleasable } from './release-checks.mjs';
 import { clearUserData } from './clear-user-data.mjs';
 import { isPathArgument, removeLeftover } from './remove-leftover.mjs';
 import { removeTree } from './remove-tree.mjs';
+import { samePath } from './same-path.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 import { qualifyName } from './qualify-name.mjs';
 
-const normalized = (path) => resolve(path).replace(/\\/g, '/').toLowerCase();
-
-const isRemnant = (worktreePath, main) => !registeredWorktrees(main).some((path) => normalized(path) === normalized(worktreePath));
+const isRemnant = (worktreePath, main) => !registeredWorktrees(main).some((path) => samePath(path, worktreePath));
 
 const removeRemnant = async (worktree) => {
   const { path, main, log } = worktree;

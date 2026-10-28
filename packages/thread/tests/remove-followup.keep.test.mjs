@@ -125,6 +125,16 @@ describe('removeLeftover', () => {
     expect(existsSync(dir)).toBe(true);
   });
 
+  it('refuses a listed folder written with other slashes or another drive letter case', async () => {
+    const dir = join(main, '.worktrees', 'listed');
+    run(main, 'worktree', 'add', '-q', '-b', 'agent/listed', dir);
+    const variants = [dir.replace(/\\/g, '/'), dir.replace(/^([a-z]):/i, (_, drive) => `${drive.toLowerCase()}:`), dir.replace(/^([a-z]):/i, (_, drive) => `${drive.toUpperCase()}:`)];
+    for (const variant of variants) {
+      await expect(removeLeftover(variant, ctx())).rejects.toThrow(/registered worktree/);
+    }
+    expect(existsSync(dir)).toBe(true);
+  });
+
   it('refuses a folder that does not exist', async () => {
     mkdirSync(join(main, '.worktrees'));
     await expect(removeLeftover(join(main, '.worktrees', 'nope'), ctx())).rejects.toThrow(/No folder/);

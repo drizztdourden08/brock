@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind types */
-import type { DropTargetOptions } from './dnd.type';
+import type { DndElement, DragPoint, DropTargetOptions } from './dnd.type';
 
 interface TargetEntry {
-  element: Element;
+  element: DndElement;
   options: DropTargetOptions<unknown>;
   names: ReadonlySet<string>;
 }
@@ -13,4 +13,11 @@ interface Hover {
   index: number | null;
 }
 
-export type { Hover, TargetEntry };
+interface Probe {
+  point: DragPoint;
+  type: string;
+  payload: unknown;
+  source: DndElement | null;
+}
+
+export type { Hover, Probe, TargetEntry };

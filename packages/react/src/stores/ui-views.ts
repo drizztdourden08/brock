@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { BROCK_VIEWS_PREFIX } from './ui-views.constants';
 import { uiViewsFile } from './ui-views-file';
-import { configureScopes, scope } from './ui-views-scope';
+import { scopeLimits } from './scope-limits';
+import { scope } from './ui-views-scope';
 import { UI_VIEWS_SCOPE_PREFIX } from './ui-views-scope.constants';
 
 const appKey = (key: string): string => {
@@ -20,6 +21,6 @@ const write = async (key: string, value: unknown): Promise<void> => uiViewsFile.
 
 const remove = async (key: string): Promise<void> => uiViewsFile.set(appKey(key), undefined);
 
-const uiViews = { read, write, remove, scope, scopeLimits: configureScopes, flush: uiViewsFile.flush };
+const uiViews = { read, write, remove, scope, scopeLimits: scopeLimits.configure, flush: uiViewsFile.flush };
 
 export { uiViews };

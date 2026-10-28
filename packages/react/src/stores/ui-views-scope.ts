@@ -1,10 +1,9 @@
 /* @layer renderer-shell @kind logic */
 import { isRecord } from '../collections/is-record';
-import { DEFAULT_SCOPE_MAX_KEYS, DEFAULT_SCOPE_MAX_SCOPES, UI_VIEWS_SCOPE_PREFIX } from './ui-views-scope.constants';
-import type { ScopeLimits, ScopeOptions, ScopeRecord, UiViewScope } from './ui-views-scope.type';
+import { scopeLimits } from './scope-limits';
+import { UI_VIEWS_SCOPE_PREFIX } from './ui-views-scope.constants';
+import type { ScopeOptions, ScopeRecord, UiViewScope } from './ui-views-scope.type';
 import { uiViewsFile } from './ui-views-file';
-
-const limits: ScopeLimits = { maxKeys: DEFAULT_SCOPE_MAX_KEYS, maxScopes: DEFAULT_SCOPE_MAX_SCOPES };
 
 let lastStamp = 0;
 
@@ -13,22 +12,13 @@ const stamp = (): number => {
   return lastStamp;
 };
 
-const positive = (name: string, value: number): number => {
-  if (!Number.isInteger(value) || value < 1) throw new Error(`The scope limit ${name} must be a whole number of at least 1`);
-  return value;
-};
-
-const configureScopes = (next: Partial<ScopeLimits>): ScopeLimits => {
-  if (next.maxKeys !== undefined) limits.maxKeys = positive('maxKeys', next.maxKeys);
-  if (next.maxScopes !== undefined) limits.maxScopes = positive('maxScopes', next.maxScopes);
-  return { ...limits };
-};
+const emptyRecord = (): ScopeRecord => ({ at: 0, order: [], values: {} });
 
 const recordOf = (raw: unknown): ScopeRecord => {
-  if (!isRecord(raw) || !isRecord(raw.values) || !Array.isArray(raw.order)) return { at: 0, order: [], values: {} };
-  const values = raw.values;
-  const order = raw.order.filter((name): name is string => typeof name === 'string' && name in values);
-  return { at: typeof raw.at === 'number' ? raw.at : 0, order, values };
+  if (!isRecord(raw)) return emptyRecord();
+  const { values, order, at } = raw;
+  if (!isRecord(values) || !Array.isArray(order)) return emptyRecord();
+  return { at: typeof at === 'number' ? at : 0, order: order.filter((name): name is string => typeof name === 'string' && name in values), values };
 };
 
 const storeKeyOf = (key: string): string => {
@@ -38,9 +28,9 @@ const storeKeyOf = (key: string): string => {
 
 const trimScopes = (all: Record<string, unknown>, keep: string): Promise<void>[] => {
   const held = Object.keys(all).filter((name) => name.startsWith(UI_VIEWS_SCOPE_PREFIX));
-  if (held.length <= limits.maxScopes) return [];
+  if (held.length <= scopeLimits.current.maxScopes) return [];
   const oldest = held.filter((name) => name !== keep).sort((a, b) => recordOf(all[a]).at - recordOf(all[b]).at);
-  return oldest.slice(0, held.length - limits.maxScopes).map((name) => uiViewsFile.set(name, undefined));
+  return oldest.slice(0, held.length - scopeLimits.current.maxScopes).map((name) => uiViewsFile.set(name, undefined));
 };
 
 const evict = (record: ScopeRecord, cap: number): void => {
@@ -60,7 +50,7 @@ const inTurn = (job: () => Promise<void>): Promise<void> => {
 
 const scope = (key: string, options: ScopeOptions = {}): UiViewScope => {
   const storeKey = storeKeyOf(key);
-  const cap = (): number => positive('maxKeys', options.maxKeys ?? limits.maxKeys);
+  const cap = (): number => scopeLimits.positive('maxKeys', options.maxKeys ?? scopeLimits.current.maxKeys);
 
   const load = async (): Promise<ScopeRecord> => recordOf((await uiViewsFile.load())[storeKey]);
 
@@ -102,4 +92,4 @@ const scope = (key: string, options: ScopeOptions = {}): UiViewScope => {
   };
 };
 
-export { configureScopes, scope };
+export { scope };

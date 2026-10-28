@@ -6,6 +6,12 @@ interface DragType<T> {
   readonly payload?: T;
 }
 
+interface DndElement extends EventTarget {
+  setAttribute: (name: string, value: string) => void;
+  removeAttribute: (name: string) => void;
+  contains: (other: Node | null) => boolean;
+}
+
 interface DragPoint {
   x: number;
   y: number;
@@ -26,12 +32,12 @@ interface DropInfo {
   type: string;
   point: DragPoint;
   index: number | null;
-  source: Element | null;
+  source: DndElement | null;
 }
 
 interface DragEnd {
   dropped: boolean;
-  target: Element | null;
+  target: DndElement | null;
 }
 
 interface DragSourceOptions<T> {
@@ -47,7 +53,7 @@ interface DropTargetOptions<T> {
   onDrop: (payload: T, info: DropInfo) => void;
   canDrop?: (payload: T, info: DropInfo) => boolean;
   feedback?: (feedback: DropFeedback<T>) => void;
-  index?: (point: DragPoint, element: Element) => number | null;
+  index?: (point: DragPoint, element: DndElement) => number | null;
 }
 
 interface DroppedFile {
@@ -76,4 +82,4 @@ interface DragOutHost {
   start: (paths: readonly string[]) => Promise<boolean>;
 }
 
-export type { DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, RejectedFile };
+export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, RejectedFile };

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dnd } from '../src/dnd/dnd';
-import { setDragOutHost } from '../src/dnd/drag-out';
+import { setDragOutHost } from '../src/dnd/set-drag-out-host';
 import type { DropFeedback } from '../src/dnd/dnd.type';
 
 class FakeElement extends EventTarget {
@@ -50,8 +50,8 @@ describe('a typed drag between two widgets', () => {
     const seen: DropFeedback<{ id: string }>[] = [];
     const drops: unknown[] = [];
     const ended: unknown[] = [];
-    dnd.source(source as unknown as Element, { type: Asset, payload: () => ({ id: 'sprite-7' }), onEnd: (end) => ended.push(end.dropped) });
-    dnd.target(target as unknown as Element, {
+    dnd.source(source, { type: Asset, payload: () => ({ id: 'sprite-7' }), onEnd: (end) => ended.push(end.dropped) });
+    dnd.target(target, {
       accepts: Asset,
       onDrop: (payload, info) => drops.push([payload, info.index, info.type]),
       feedback: (feedback) => seen.push(feedback),
@@ -77,14 +77,16 @@ describe('a typed drag between two widgets', () => {
     expect(dnd.session()).toBeNull();
     expect(root.attributes.has('data-dragging')).toBe(false);
   });
+});
 
+describe('targets that refuse or compete', () => {
   it('marks a target that does not accept the type and never drops on it', () => {
     const source = new FakeElement();
     const target = new FakeElement();
     const seen: string[] = [];
     const onDrop = vi.fn();
-    dnd.source(source as unknown as Element, { type: Asset, payload: { id: 'a' } });
-    dnd.target(target as unknown as Element, { accepts: Layer, onDrop, feedback: (f) => seen.push(`${f.phase}:${f.accepted}`) });
+    dnd.source(source, { type: Asset, payload: { id: 'a' } });
+    dnd.target(target, { accepts: Layer, onDrop, feedback: (f) => seen.push(`${f.phase}:${f.accepted}`) });
     stack = [target];
     press(source);
     move(30, 30);
@@ -100,9 +102,9 @@ describe('a typed drag between two widgets', () => {
     const outer = new FakeElement();
     const innerDrop = vi.fn();
     const outerDrop = vi.fn();
-    dnd.source(source as unknown as Element, { type: Layer, payload: 3 });
-    dnd.target(inner as unknown as Element, { accepts: Layer, canDrop: (layer) => layer > 5, onDrop: innerDrop });
-    dnd.target(outer as unknown as Element, { accepts: [Layer], onDrop: outerDrop });
+    dnd.source(source, { type: Layer, payload: 3 });
+    dnd.target(inner, { accepts: Layer, canDrop: (layer) => layer > 5, onDrop: innerDrop });
+    dnd.target(outer, { accepts: [Layer], onDrop: outerDrop });
     stack = [inner, outer];
     press(source);
     move(20, 20);
@@ -110,13 +112,15 @@ describe('a typed drag between two widgets', () => {
     expect(innerDrop).not.toHaveBeenCalled();
     expect(outerDrop).toHaveBeenCalledWith(3, expect.objectContaining({ type: 'layer' }));
   });
+});
 
+describe('cancelling and thresholds', () => {
   it('cancels on Escape and leaves nothing marked', () => {
     const source = new FakeElement();
     const target = new FakeElement();
     const onDrop = vi.fn();
-    dnd.source(source as unknown as Element, { type: Asset, payload: { id: 'a' } });
-    dnd.target(target as unknown as Element, { accepts: Asset, onDrop });
+    dnd.source(source, { type: Asset, payload: { id: 'a' } });
+    dnd.target(target, { accepts: Asset, onDrop });
     stack = [target];
     press(source);
     move(30, 30);
@@ -131,8 +135,8 @@ describe('a typed drag between two widgets', () => {
     const source = new FakeElement();
     const target = new FakeElement();
     const onDrop = vi.fn();
-    const stopSource = dnd.source(source as unknown as Element, { type: Asset, payload: { id: 'a' } });
-    dnd.target(target as unknown as Element, { accepts: Asset, onDrop });
+    const stopSource = dnd.source(source, { type: Asset, payload: { id: 'a' } });
+    dnd.target(target, { accepts: Asset, onDrop });
     stack = [target];
     press(source, 10, 10);
     move(11, 11);

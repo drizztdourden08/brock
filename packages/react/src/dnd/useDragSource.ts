@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import type { DragSourceOptions } from './dnd.type';
+import type { DndElement, DragSourceOptions } from './dnd.type';
 import { dragSource } from './drag-source';
 
-const useDragSource = <T,>(ref: RefObject<Element | null>, options: DragSourceOptions<T>): void => {
+const useDragSource = <T,>(ref: RefObject<DndElement | null>, options: DragSourceOptions<T>): void => {
   const latest = useRef(options);
   latest.current = options;
 

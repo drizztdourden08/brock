@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
-import type { DragPoint, DropInfo } from './dnd.type';
-import type { Hover, TargetEntry } from './target-entry.type';
+import type { DropInfo } from './dnd.type';
+import type { Hover, Probe, TargetEntry } from './target-entry.type';
 
-const entries = new Map<Element, TargetEntry>();
+const entries = new Map<object, TargetEntry>();
 
 const add = (entry: TargetEntry): (() => void) => {
   entries.set(entry.element, entry);
@@ -11,27 +11,27 @@ const add = (entry: TargetEntry): (() => void) => {
   };
 };
 
-const infoOf = (entry: TargetEntry, point: DragPoint, type: string, source: Element | null): DropInfo => ({
-  type,
-  point,
-  index: entry.options.index?.(point, entry.element) ?? null,
-  source,
+const infoOf = (entry: TargetEntry, probe: Probe): DropInfo => ({
+  type: probe.type,
+  point: probe.point,
+  index: entry.options.index?.(probe.point, entry.element) ?? null,
+  source: probe.source,
 });
 
-const judge = (entry: TargetEntry, point: DragPoint, type: string, payload: unknown, source: Element | null): Hover => {
-  const info = infoOf(entry, point, type, source);
-  const accepted = entry.names.has(type) && (entry.options.canDrop?.(payload, info) ?? true);
+const judge = (entry: TargetEntry, probe: Probe): Hover => {
+  const info = infoOf(entry, probe);
+  const accepted = entry.names.has(probe.type) && (entry.options.canDrop?.(probe.payload, info) ?? true);
   return { entry, accepted, index: info.index };
 };
 
-const stackAt = (point: DragPoint): Element[] => (typeof document.elementsFromPoint === 'function' ? document.elementsFromPoint(point.x, point.y) : []);
+const stackAt = (probe: Probe): object[] => (typeof document.elementsFromPoint === 'function' ? document.elementsFromPoint(probe.point.x, probe.point.y) : []);
 
-const find = (point: DragPoint, type: string, payload: unknown, source: Element | null): Hover | null => {
+const find = (probe: Probe): Hover | null => {
   let first: Hover | null = null;
-  for (const element of stackAt(point)) {
+  for (const element of stackAt(probe)) {
     const entry = entries.get(element);
     if (!entry) continue;
-    const hover = judge(entry, point, type, payload, source);
+    const hover = judge(entry, probe);
     if (hover.accepted) return hover;
     first ??= hover;
   }

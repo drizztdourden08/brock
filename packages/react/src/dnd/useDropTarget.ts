@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import type { DropTargetOptions } from './dnd.type';
+import type { DndElement, DropTargetOptions } from './dnd.type';
 import { dropTarget } from './drop-target';
 
-const useDropTarget = <T,>(ref: RefObject<Element | null>, options: DropTargetOptions<T>): void => {
+const useDropTarget = <T,>(ref: RefObject<DndElement | null>, options: DropTargetOptions<T>): void => {
   const latest = useRef(options);
   latest.current = options;
   const accepts = Array.isArray(options.accepts) ? options.accepts : [options.accepts];

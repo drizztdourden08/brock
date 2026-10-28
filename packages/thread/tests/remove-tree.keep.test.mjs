@@ -4,7 +4,9 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { rm } from 'node:fs/promises';
 import { deleteTree } from '../src/worktree/delete-tree.mjs';
+import { ignoredFolders } from '../src/worktree/ignored-folders.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 
 const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -56,6 +58,15 @@ describe('removeTree', () => {
     expect(run(main, 'worktree', 'list')).not.toContain('wt');
   });
 
+  it('removes a worktree with an ignored folder inside another ignored folder', async () => {
+    mkdirSync(join(tree, 'dist', 'inner', 'deeper'), { recursive: true });
+    writeFileSync(join(tree, 'dist', 'inner', 'deeper', 'a.js'), 'a\n');
+    mkdirSync(join(tree, 'node_modules', 'dist'), { recursive: true });
+    expect(ignoredFolders(tree)).toEqual([join(tree, 'dist'), join(tree, 'node_modules')]);
+    expect(await removeTree(tree, main, log)).toBe(true);
+    expect(existsSync(tree)).toBe(false);
+  });
+
   it('removes a link inside node_modules without following it', async () => {
     mkdirSync(join(tree, 'node_modules'), { recursive: true });
     symlinkSync(outside, join(tree, 'node_modules', 'linked'), 'junction');
@@ -90,6 +101,17 @@ describe('deleteTree', () => {
     symlinkSync(outside, join(tree, 'via'), 'junction');
     await expect(deleteTree(tree, join(tree, 'via', 'keep.txt'))).rejects.toThrow(/resolves outside/);
     expect(existsSync(join(outside, 'keep.txt'))).toBe(true);
+  });
+
+  it('skips a folder whose parent was deleted first', async () => {
+    mkdirSync(join(tree, 'apps', 'desktop', 'public'), { recursive: true });
+    await rm(join(tree, 'apps'), { recursive: true, force: true });
+    expect(await deleteTree(tree, join(tree, 'apps', 'desktop', 'public'))).toBeNull();
+  });
+
+  it('skips a folder whose parent is now a file', async () => {
+    writeFileSync(join(tree, 'apps'), 'file\n');
+    expect(await deleteTree(tree, join(tree, 'apps', 'public'))).toBeNull();
   });
 
   it('treats a folder that is already gone as deleted', async () => {

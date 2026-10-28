@@ -8,10 +8,12 @@ import { flagOf } from './flag-of';
 
 const itemState = (entry: ContextMenuItemState, def?: CommandDef): Partial<MenuItem> => {
   const checked = flagOf(entry.checked ?? def?.checked);
+  const block = def === undefined ? null : commandBlock(def);
+  const reason = entry.reason ?? block?.reason;
   return {
-    disabled: entry.disabled === true || (def !== undefined && commandBlock(def) !== null),
-    ...defined('description', entry.reason),
-    ...defined('ariaDescription', entry.reason),
+    disabled: entry.disabled === true || block !== null,
+    ...defined('description', reason),
+    ...defined('ariaDescription', reason),
     ...defined('tone', entry.tone),
     ...defined('kind', entry.kind ?? (checked === undefined ? undefined : 'check')),
     ...defined('checked', checked),

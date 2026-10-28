@@ -3,6 +3,7 @@ import type { MenuItem, MenuNode } from '@drizztdourden08/tessera/composites';
 import { chordKeys } from '../commands/chord-keys';
 import { chordsOf } from '../commands/chords-of';
 import { commands } from '../commands/commands';
+import { commandVisible } from '../commands/command-visible';
 import { CONTEXT_MENU_SEPARATOR, MAX_SUBMENU_DEPTH } from './context-menu.constants';
 import { entryData } from './entry-data';
 import type { ContextMenuAction, ContextMenuCommand, ContextMenuEntry, ContextMenuSubmenu, ContextMenuView } from './context-menu.type';
@@ -18,7 +19,7 @@ const shortcutOf = (id: string, view: ContextMenuView): Pick<MenuItem, 'shortcut
 
 const commandItem = (entry: ContextMenuCommand, view: ContextMenuView, path: string): MenuNode[] => {
   const def = view.defs.get(entry.command);
-  if (def === undefined) return [];
+  if (def === undefined || !commandVisible(def)) return [];
   return [{
     id: `${path}:${def.id}`,
     label: entry.label ?? def.label,

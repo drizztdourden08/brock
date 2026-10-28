@@ -8,12 +8,26 @@ import type { CommandDef, KeymapRowInput } from '../../command.type';
 import { formatChord } from '../../format-chord';
 import { KEYMAP_STRINGS } from '../KeymapPage.constants';
 
+const notes = (def: CommandDef, extra: readonly string[], input: KeymapRowInput): string[] => {
+  const { state, shared, labelOf } = input;
+  const sameKeys = shared
+    .filter((each) => each.ids.includes(def.id))
+    .flatMap((each) => each.ids.filter((id) => id !== def.id));
+  return [
+    ...(def.only === undefined ? [] : [`${KEYMAP_STRINGS.only} ${def.only}.`]),
+    ...(sameKeys.length === 0 ? [] : [`${KEYMAP_STRINGS.sameKeys} ${[...new Set(sameKeys)].map(labelOf).join(', ')}.`]),
+    ...(extra.length > 0 ? [`${KEYMAP_STRINGS.also} ${extra.map((chord) => formatChord(chord, state.mac)).join(', ')}.`] : []),
+    ...(def.hold === undefined ? [] : [KEYMAP_STRINGS.hold]),
+  ];
+};
+
 const keymapRow = (def: CommandDef, input: KeymapRowInput): SettingsItem => {
   const { state, clashes, labelOf } = input;
   const { mac } = state;
   const [first = '', ...extra] = chordsOf(def, state);
   const others = clashes.filter((clash) => clash.ids.includes(def.id)).flatMap((clash) => clash.ids).filter((id) => id !== def.id);
-  const description = extra.length > 0 ? { description: `${KEYMAP_STRINGS.also} ${extra.map((chord) => formatChord(chord, mac)).join(', ')}.` } : { noDescription: true as const };
+  const lines = notes(def, extra, input);
+  const description = lines.length > 0 ? { description: lines.join(' ') } : { noDescription: true as const };
   return {
     id: def.id,
     title: def.label,

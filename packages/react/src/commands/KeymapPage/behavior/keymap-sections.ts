@@ -3,6 +3,7 @@ import type { SettingsSectionData } from '@drizztdourden08/tessera/composites';
 import { commands } from '../../commands';
 import type { CommandGroupsView } from '../../command.type';
 import { findConflicts } from '../../find-conflicts';
+import { findShared } from '../../find-shared';
 import { listCommands } from '../../list-commands';
 import { KEYMAP_SECTION_PREFIX, KEYMAP_STRINGS } from '../KeymapPage.constants';
 import { keymapRow } from './keymap-row';
@@ -23,7 +24,7 @@ const resetAllSection = (changed: number): SettingsSectionData => ({
 
 const keymapSections = ({ groups, state }: CommandGroupsView): SettingsSectionData[] => {
   const all = new Map(listCommands(state).map((def) => [def.id, def.label]));
-  const input = { state, clashes: findConflicts(state), labelOf: (id: string) => all.get(id) ?? id };
+  const input = { state, clashes: findConflicts(state), shared: findShared(state), labelOf: (id: string) => all.get(id) ?? id };
   const changed = (ids: readonly string[]): number => ids.filter((id) => state.overrides[id] !== undefined).length;
   return [
     ...groups.map((group): SettingsSectionData => ({

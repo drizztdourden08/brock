@@ -7,6 +7,7 @@ import type { ReviewStepRecord } from '@drizztdourden08/brock-core/review';
 import { writeCapture } from '../handlers/write-capture';
 import { awaitCaptureHolds } from './await-capture-holds';
 import { prepareCapture } from './baselines/prepare-capture';
+import { windowQuiet } from './baselines/window-quiet';
 import { untilStable } from './baselines/until-stable';
 import type { ReviewSession } from './review-session.type';
 
@@ -16,7 +17,7 @@ const captureReviewStep = async (session: ReviewSession, win: BrowserWindow, rec
   const key = baselineKeys(session.run().steps).get(record.file) ?? record.file;
   const { selectors } = resolveBaselineRule(session.baselines.config, key);
   session.addMasks(record.file, await prepareCapture(win.webContents, selectors));
-  const { png, stable } = await untilStable(async () => (await win.webContents.capturePage()).toPNG());
+  const { png, stable } = await untilStable(async () => (await win.webContents.capturePage()).toPNG(), () => windowQuiet(win.webContents));
   if (!stable) session.markUnsettled(record.file);
   const outPath = join(session.dir, record.file);
   await mkdir(session.dir, { recursive: true });

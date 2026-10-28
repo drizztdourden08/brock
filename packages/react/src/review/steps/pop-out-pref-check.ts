@@ -19,13 +19,13 @@ const checkPoppedPref = async (tour: StepTour, id: string): Promise<void> => {
   const relayed = await until(async () => {
     await api.reviewSetWidgetPref(id, REVIEW_PREF_KEY, token);
     return appPref(id) === token;
-  });
+  }, `a pref set in the "${id}" window to reach the app`);
   tour.check('pop-out-pref-relayed', relayed, `a pref set in the "${id}" window reached the app`, `a pref set in the "${id}" window never reached the app`);
   api.dockBackWidget(id);
-  const docked = await until(async () => (await poppedWindowOf(id)) === null && placementOf(useWidgetLayoutStore.getState().layout, id) === 'docked');
+  const docked = await until(async () => (await poppedWindowOf(id)) === null && placementOf(useWidgetLayoutStore.getState().layout, id) === 'docked', `the "${id}" window to dock back`);
   tour.check('pop-out-docks-back', docked, `the "${id}" window docked back into the app`, `the "${id}" window did not dock back`);
   profileViews.flush();
-  const saved = await until(async () => (await storedWidgetPref(id, REVIEW_PREF_KEY)) === token);
+  const saved = await until(async () => (await storedWidgetPref(id, REVIEW_PREF_KEY)) === token, `the "${id}" pref to be saved with the profile`);
   const kept = relayed && appPref(id) === token && saved;
   tour.check('pop-out-pref-kept', kept, 'the pref stayed set after the dock back and was saved with the profile', 'the pref was lost after the dock back or never saved with the profile');
   useWidgetPrefStore.getState().replaceWidget(id, before);

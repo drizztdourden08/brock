@@ -4,6 +4,7 @@ import { join } from 'path';
 import type { MainContext } from '../types/main-context.type';
 import type { ReviewSession } from '../review/review-session.type';
 import { awaitCaptureHolds } from '../review/await-capture-holds';
+import { windowQuiet } from '../review/baselines/window-quiet';
 import { captureReviewStep } from '../review/capture-review-step';
 import { stableGroupCapture } from '../review/baselines/stable-group-capture';
 import { composeCapture } from './compose-capture';
@@ -21,6 +22,7 @@ const widgetReviewHandlers = (ctx: MainContext, session: ReviewSession, stillWor
     stillWorking();
     const target = widgetWindowControl.windowOf(id);
     if (!target) return null;
+    await windowQuiet(target.webContents);
     const record = session.nextStep(step);
     await captureReviewStep(session, target, record);
     return record.file;

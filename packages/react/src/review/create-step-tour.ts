@@ -1,11 +1,15 @@
 /* @layer renderer-shell @kind logic */
 import { requireHostApi } from '../host/require-host-api';
 import { outcome } from './checks/outcome';
+import { currentStep } from './dom/current-step';
+import { reviewAlive } from './dom/review-alive';
 import { settle } from './dom/settle';
 import type { ReviewEnv, ReviewOutcome, StepTour } from './review.type';
 
 const createStepTour = (env: ReviewEnv, step: string): StepTour => {
   const api = requireHostApi();
+  currentStep.name = step;
+  reviewAlive(true);
   const report = (outcomes: readonly ReviewOutcome[]): void => {
     for (const { id, pass, reason } of outcomes) api.reviewCheck({ id, step, pass, reason });
   };

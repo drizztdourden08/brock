@@ -14,7 +14,9 @@ import { whenRevealed } from '../boot/when-revealed';
 import { createReviewSession } from '../review/create-review-session';
 import { finishReview } from '../review/finish-review';
 import { captureReviewSplash } from '../review/capture-review-splash';
-import { REVIEW_IDLE_MS, REVIEW_START_MS } from '../review/review.constants';
+import { createReviewWatchdog } from '../review/create-review-watchdog';
+import type { ReviewWatchdog, ReviewWatchdogTrip } from '../review/review-watchdog.type';
+import { REVIEW_BOOT_CAP_MS, REVIEW_IDLE_MS, REVIEW_START_MS } from '../review/review.constants';
 import { watchReviewWindow } from '../review/watch-review-window';
 import { widgetReviewHandlers } from '../widgets/widget-review-handlers';
 
@@ -35,26 +37,27 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
   const splashShot = captureReviewSplash(session, cleared);
 
   let done = false;
-  let idle: ReturnType<typeof setTimeout> | null = null;
+  let watchdog: ReviewWatchdog | null = null;
   const finish = (finished: boolean): void => {
     if (done) return;
     done = true;
-    if (idle) clearTimeout(idle);
+    watchdog?.stop();
     untap();
     session.setBoot({ ...bootState.timeline });
     void splashShot().then(() => finishReview(session, finished));
   };
 
-  const neverStarted = (): void => {
-    const seconds = Math.round(REVIEW_START_MS / 1000);
-    session.addCheck({ id: 'tour-started', step: GLOBAL_STEP, pass: false, reason: `no tour progress within ${seconds} s of launch: the renderer did not load or the boot never finished` });
+  const tripped = ({ kind, ms }: ReviewWatchdogTrip): void => {
+    const seconds = Math.round(ms / 1000);
+    if (kind === 'silent-boot') session.addCheck({ id: 'tour-started', step: GLOBAL_STEP, pass: false, reason: `no boot progress for ${seconds} s: the renderer did not load or the boot stalled` });
+    if (kind === 'boot-cap') session.addCheck({ id: 'tour-started', step: GLOBAL_STEP, pass: false, reason: `the boot made progress but no tour began within ${seconds} s of launch` });
     finish(false);
   };
 
-  const stillWorking = (): void => {
-    if (idle) clearTimeout(idle);
-    idle = setTimeout(() => finish(false), REVIEW_IDLE_MS);
-  };
+  const guard = createReviewWatchdog({ startMs: REVIEW_START_MS, idleMs: REVIEW_IDLE_MS, bootCapMs: REVIEW_BOOT_CAP_MS, onTrip: tripped });
+  watchdog = guard;
+  const stillWorking = guard.working;
+  bootEvents.on('activity', guard.bootActivity);
 
   ctx.handle('review:capture', async (_event, step) => {
     stillWorking();
@@ -71,10 +74,10 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     stillWorking();
     session.addCheck(check);
   });
+  ctx.on('review:alive', stillWorking);
   ctx.on('review:finish', () => finish(true));
   widgetReviewHandlers(ctx, session, stillWorking);
   bootEvents.once('failed', () => finish(false));
-  idle = setTimeout(neverStarted, REVIEW_START_MS);
   ctx.log(`review "${name}" armed; the report goes to ${session.dir}`);
 };
 

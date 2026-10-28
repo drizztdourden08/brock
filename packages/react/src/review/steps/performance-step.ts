@@ -3,7 +3,6 @@ import { requireHostApi } from '../../host/require-host-api';
 import { PERFORMANCE_WIDGET_ID } from '../../widgets/built-in/PerformanceWidget/PerformanceWidget.constants';
 import { widgets } from '../../widgets/widgets';
 import { performanceChecks } from '../checks/performance-checks';
-import { delay } from '../dom/delay';
 import { find } from '../dom/find';
 import { readPerformance } from '../dom/read-performance';
 import { settle } from '../dom/settle';
@@ -12,9 +11,9 @@ import { closeMenu } from '../menu/close-menu';
 import { menuPathTo } from '../menu/menu-path-to';
 import { pickMenuPath } from '../menu/pick-menu-path';
 import {
-  FPS_VALUE, PERFORMANCE_LIVE_MS, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PERFORMANCE_WINDOW_SIZES, SELECTORS,
+  FPS_VALUE, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PERFORMANCE_WINDOW_SIZES, SELECTORS,
 } from '../review.constants';
-import type { ReviewStep, StepTour } from '../review.type';
+import type { PerformanceReading, ReviewStep, StepTour } from '../review.type';
 import { probe } from '../widgets/probe';
 import { windowOpen } from '../widgets/window-open';
 
@@ -22,6 +21,10 @@ const ready = (root: HTMLElement): boolean => {
   const reading = readPerformance(root);
   return FPS_VALUE.test(reading.tiles[PERFORMANCE_TILES.frameRate] ?? '') && PERFORMANCE_PROCESSES.every((label) => reading.legend.includes(label));
 };
+
+const refreshed = (before: PerformanceReading, now: PerformanceReading): boolean =>
+  now.sparklines.some((line, index) => before.sparklines[index] !== undefined && before.sparklines[index] !== line)
+  && Object.keys(now.tiles).some((label) => before.tiles[label] !== undefined && before.tiles[label] !== now.tiles[label]);
 
 const capturePoppedOut = async (tour: StepTour): Promise<void> => {
   const id = PERFORMANCE_WIDGET_ID;
@@ -31,7 +34,6 @@ const capturePoppedOut = async (tour: StepTour): Promise<void> => {
   const own = opened ? (await probe({ kind: 'window', id })).bounds : null;
   for (const size of own ? PERFORMANCE_WINDOW_SIZES : []) {
     if (own) await probe({ kind: 'resize', id, bounds: { ...own, ...size.bounds } });
-    await delay(PERFORMANCE_LIVE_MS);
     await requireHostApi().reviewCaptureWidget(id, size.name);
   }
   widgets.close(id);
@@ -51,9 +53,9 @@ const performanceStep: ReviewStep = {
     tour.check('performance-widget-opens', shown !== null, `${route} showed the performance widget`, `${route} did not show the performance widget`);
     if (shown === null) return;
     await closeMenu();
-    await waitFor(() => ready(shown), PERFORMANCE_LIVE_MS * 2);
+    await waitFor(() => ready(shown), undefined, 'the performance widget to show its first readings');
     const before = readPerformance(shown);
-    await delay(PERFORMANCE_LIVE_MS);
+    await waitFor(() => refreshed(before, readPerformance(shown)), undefined, 'the performance widget to refresh its readings');
     const inBody = shown.closest(SELECTORS.widgetBody) !== null;
     tour.report(performanceChecks({ before, after: readPerformance(shown), sampling: shown.dataset.sampling === 'on', inBody }));
     await settle();

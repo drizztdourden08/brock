@@ -1,7 +1,6 @@
 /* @layer electron-main @kind logic */
 import type { WebContents } from 'electron';
 import type { MaskRect } from '@drizztdourden08/brock-core/review';
-import { SETTLE_FRAME_MS } from './review-baselines.constants';
 import { withinTime } from './within-time';
 
 const probe = (selectors: readonly string[]): string => `(async () => {
@@ -11,10 +10,7 @@ const probe = (selectors: readonly string[]): string => `(async () => {
       if (timing && timing.endTime === Infinity) { motion.pause(); motion.currentTime = 0; } else { motion.finish(); }
     } catch { motion.pause(); }
   }
-  await Promise.race([
-    new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
-    new Promise((done) => setTimeout(done, ${SETTLE_FRAME_MS})),
-  ]);
+  if (document.visibilityState === 'visible') await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
   const rects = [];
   for (const selector of ${JSON.stringify(selectors)}) {
     let found = [];

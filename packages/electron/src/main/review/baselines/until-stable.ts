@@ -1,12 +1,12 @@
 /* @layer electron-main @kind logic */
-import { STABLE_GAP_MS, STABLE_TRIES } from './review-baselines.constants';
+import { STABLE_TRIES } from './review-baselines.constants';
 
-const pause = (ms: number): Promise<void> => new Promise((resolve) => { setTimeout(resolve, ms); });
+const nextTurn = (): Promise<void> => new Promise((resolve) => { setImmediate(resolve); });
 
-const untilStable = async (take: () => Promise<Buffer | null>): Promise<{ png: Buffer | null; stable: boolean }> => {
+const untilStable = async (take: () => Promise<Buffer | null>, between: () => Promise<void> = nextTurn): Promise<{ png: Buffer | null; stable: boolean }> => {
   let last = await take();
   for (let tries = 1; tries < STABLE_TRIES && last; tries += 1) {
-    await pause(STABLE_GAP_MS);
+    await between();
     const next = await take();
     if (next?.equals(last)) return { png: next, stable: true };
     last = next;

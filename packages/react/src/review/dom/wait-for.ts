@@ -1,16 +1,11 @@
 /* @layer renderer-shell @kind logic */
-import { POLL_MS, WAIT_MS } from '../review.constants';
-import { delay } from './delay';
+import { WAIT_CEILING_MS } from '../review.constants';
+import { awaitSignal } from './await-signal';
+import { domWake } from './dom-wake';
+import { sourceOf } from './source-of';
+import { storeWake } from './store-wake';
 
-const waitFor = async <T>(probe: () => T | null | undefined | false, timeoutMs = WAIT_MS): Promise<T | null> => {
-  const deadline = performance.now() + timeoutMs;
-  let value = probe();
-  while (!value && performance.now() < deadline) {
-    await delay(POLL_MS);
-    value = probe();
-  }
-  if (!value) return null;
-  return value;
-};
+const waitFor = <T>(probe: () => T | null | undefined | false, timeoutMs = WAIT_CEILING_MS, what = `the page to satisfy ${sourceOf(probe)}`): Promise<T | null> =>
+  awaitSignal(probe, { what, ceilingMs: timeoutMs, wakeOn: [domWake, storeWake] });
 
 export { waitFor };

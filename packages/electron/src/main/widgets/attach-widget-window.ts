@@ -9,6 +9,7 @@ import { dragInSignal } from './drag-in-signal';
 import { endMove } from './end-move';
 import { endResize } from './end-resize';
 import { followCluster } from './follow-cluster';
+import { tellReviewWindows } from '../review/tell-review-windows';
 import { modifierRelease } from './modifier-release';
 import { onWillResize } from './on-will-resize';
 import { resizeSession } from './resize-session';
@@ -71,6 +72,9 @@ const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowE
   win.on('move', () => followLive(id, entry));
   win.on('focus', raise);
   win.on('show', raise);
+  win.on('show', tellReviewWindows);
+  win.on('hide', tellReviewWindows);
+  win.once('ready-to-show', tellReviewWindows);
   win.on('close', () => entry.report.flush());
   win.on('closed', () => {
     endResize(id);
@@ -79,6 +83,7 @@ const attachWidgetWindow = (id: string, win: BrowserWindow, entry: WidgetWindowE
     entry.report.cancel();
     widgetWindowControl.unregister(id, win);
     tellClosed(id, entry);
+    tellReviewWindows();
   });
   watchDragIn(id, win, entry);
   watchModifiers(win);

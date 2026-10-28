@@ -5,6 +5,6 @@ import { poppedWindowOf } from '../steps/popped-window-of';
 const windowOpen = (id: string, open: boolean): Promise<boolean> => until(async () => {
   const info = await poppedWindowOf(id);
   return open ? info?.visible === true : info === null;
-});
+}, `the "${id}" window to ${open ? 'be shown' : 'close'}`);
 
 export { windowOpen };

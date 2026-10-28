@@ -6,8 +6,11 @@ import type { NetHop, NetTransport } from '../src/main/network/net-transport.typ
 
 const config: ProductNet = { hosts: ['lospec.com', 'cdn.lospec.com'], contentTypes: ['application/json', 'text/*', 'image/png'], maxBytes: 1000 };
 
+const ones = (count: number): number[] => Array.from({ length: count }, () => 1);
+
 const body = (...parts: number[][]): AsyncIterable<Uint8Array> => ({
   async *[Symbol.asyncIterator]() {
+    await Promise.resolve();
     for (const part of parts) yield Uint8Array.from(part);
   },
 });
@@ -170,14 +173,14 @@ describe('net.read answers', () => {
   });
 
   it('stops a body that grows past the cap even when no length was sent or it lied', async () => {
-    await refuse(answer({ contentLength: null, body: body(new Array(600).fill(1), new Array(600).fill(1)) }), /over 1000 bytes/);
-    await refuse(answer({ contentLength: 10, body: body(new Array(1500).fill(1)) }), /over 1000 bytes/);
+    await refuse(answer({ contentLength: null, body: body(ones(600), ones(600)) }), /over 1000 bytes/);
+    await refuse(answer({ contentLength: 10, body: body(ones(1500)) }), /over 1000 bytes/);
   });
 
   it('takes the smaller of the product cap and the caller cap', async () => {
-    await refuse(answer({ body: body(new Array(60).fill(1)) }), /over 50 bytes/, { maxBytes: 50 });
-    await refuse(answer({ body: body(new Array(1200).fill(1)) }), /over 1000 bytes/, { maxBytes: 999999 });
-    const fits = await netRead(config, sequence(answer({ body: body(new Array(1000).fill(1)) })).transport, 'https://lospec.com/x', { maxBytes: 999999 });
+    await refuse(answer({ body: body(ones(60)) }), /over 50 bytes/, { maxBytes: 50 });
+    await refuse(answer({ body: body(ones(1200)) }), /over 1000 bytes/, { maxBytes: 999999 });
+    const fits = await netRead(config, sequence(answer({ body: body(ones(1000)) })).transport, 'https://lospec.com/x', { maxBytes: 999999 });
     expect(fits.bytes.byteLength).toBe(1000);
   });
 

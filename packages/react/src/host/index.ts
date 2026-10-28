@@ -12,5 +12,5 @@ export { isReviewLaunch } from './is-review-launch';
 export { openExternal } from './open-external';
 export { dragOut } from './drag-out';
 export { pointerSupport } from './pointer-support';
-export type { PointerSupport } from './pointer-support';
+export type { PointerSupport } from './pointer-support.type';
 export { writeClipboard } from './write-clipboard';

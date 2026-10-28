@@ -25,17 +25,23 @@ const vetPng = (value: unknown): Uint8Array => {
   return bytes;
 };
 
-const vetClipboardWrite = (productId: string, entries: unknown): ClipboardBundle => {
+const vetEntry = (bundle: ClipboardBundle, productId: string, type: string, value: unknown): void => {
+  if (type === CLIPBOARD_TEXT) bundle.text = vetText(value);
+  else if (type === CLIPBOARD_PNG) bundle.png = vetPng(value);
+  else if (isPrivateClipboardType(productId, type)) bundle.privates.push({ type, data: vetBytes(value, type) });
+  else throw refusedType(productId, type);
+};
+
+const pairsOf = (entries: unknown): [string, unknown][] => {
   if (typeof entries !== 'object' || entries === null || Array.isArray(entries)) throw new Error('A clipboard write needs an object of types');
   const pairs = Object.entries(entries);
   if (pairs.length === 0 || pairs.length > CLIPBOARD_LIMITS.entries) throw new Error(`A clipboard write needs 1 to ${CLIPBOARD_LIMITS.entries} types`);
+  return pairs;
+};
+
+const vetClipboardWrite = (productId: string, entries: unknown): ClipboardBundle => {
   const bundle: ClipboardBundle = { privates: [] };
-  for (const [type, value] of pairs) {
-    if (type === CLIPBOARD_TEXT) bundle.text = vetText(value);
-    else if (type === CLIPBOARD_PNG) bundle.png = vetPng(value);
-    else if (isPrivateClipboardType(productId, type)) bundle.privates.push({ type, data: vetBytes(value, type) });
-    else throw refusedType(productId, type);
-  }
+  for (const [type, value] of pairsOf(entries)) vetEntry(bundle, productId, type, value);
   const total = (bundle.png?.length ?? 0) + bundle.privates.reduce((sum, item) => sum + item.data.length, 0);
   if (total > CLIPBOARD_LIMITS.entryBytes) throw new Error(`A clipboard write is over the ${CLIPBOARD_LIMITS.entryBytes} byte limit`);
   return bundle;

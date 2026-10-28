@@ -8,7 +8,8 @@ const root = join(__dirname, '..', 'src');
 const sources = (dir: string): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    return statSync(path).isDirectory() ? sources(path) : /\.ts$/.test(name) ? [path] : [];
+    if (statSync(path).isDirectory()) return sources(path);
+    return /\.ts$/.test(name) ? [path] : [];
   });
 
 const FLAGS = /(?:disable-features|disable-blink-features|disable-gpu|disable-input|disable-pointer)[^\n]*/g;

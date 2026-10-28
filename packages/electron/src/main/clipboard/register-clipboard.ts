@@ -10,7 +10,7 @@ import { writeClipboard } from './write-clipboard';
 
 const registerClipboard = ({ handle, product, emit }: Pick<MainContext, 'handle' | 'product' | 'emit'>, backend: ClipboardBackend): void => {
   const watch = createClipboardWatch({ fingerprint: backend.fingerprint, changed: () => emit('clipboard:changed'), pollMs: CLIPBOARD_LIMITS.pollMs, max: CLIPBOARD_LIMITS.watchers });
-  const reloading = new WeakSet<object>();
+  const reloading = new WeakSet();
 
   handle('clipboard:readText', () => {
     const text = readClipboard(backend, product.id, [CLIPBOARD_TEXT])[CLIPBOARD_TEXT];

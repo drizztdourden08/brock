@@ -69,14 +69,14 @@ const sessionOf = (board: ClipboardBackend, productId = 'bxel'): Session => {
   const extras: unknown[][] = [];
   const listeners: ((details: { isMainFrame: boolean; isSameDocument: boolean }) => void)[] = [];
   const sender = { on: (_name: string, listener: (typeof listeners)[number]) => listeners.push(listener) };
-  const ctx = {
-    product: { id: productId },
-    emit: (channel: string, ...args: unknown[]) => {
+  const ctx: Pick<MainContext, 'handle' | 'product' | 'emit'> = {
+    product: { id: productId } as MainContext['product'],
+    emit: ((channel: string, ...args: unknown[]) => {
       emitted.push(channel);
       extras.push(args);
-    },
-    handle: (channel: string, fn: Handler) => handlers.set(channel, fn),
-  } as unknown as MainContext;
+    }) as MainContext['emit'],
+    handle: ((channel: string, fn: Handler) => handlers.set(channel, fn)) as MainContext['handle'],
+  };
   registerClipboard(ctx, board);
   return {
     call: (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({ sender }, ...args)),
@@ -87,4 +87,4 @@ const sessionOf = (board: ClipboardBackend, productId = 'bxel'): Session => {
 };
 
 export { fakeClipboard, pngOf, sessionOf, wireOf };
-export type { FakeClipboard };
+

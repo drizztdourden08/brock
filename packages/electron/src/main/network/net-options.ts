@@ -1,11 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { ProductNet } from '@drizztdourden08/brock-core/product';
 import { NET_TYPE } from '@drizztdourden08/brock-core/product';
-
-interface NetLimits {
-  maxBytes: number;
-  types: string[] | undefined;
-}
+import type { NetLimits } from './net-options.type';
 
 const typesOf = (value: unknown): string[] | undefined => {
   if (value === undefined) return undefined;

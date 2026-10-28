@@ -1,10 +1,6 @@
 /* @layer electron-main @kind logic */
 import { CLIPBOARD_LIMITS, PNG_END, PNG_HEADER_BYTES, PNG_SIGNATURE } from './clipboard-limits.constants';
-
-interface PngSize {
-  width: number;
-  height: number;
-}
+import type { PngSize } from './png-size.type';
 
 const startsWith = (bytes: Uint8Array, at: number, expected: number[]): boolean => expected.every((value, index) => bytes[at + index] === value);
 
@@ -21,4 +17,3 @@ const pngSize = (bytes: Uint8Array): PngSize | null => {
 };
 
 export { pngSize };
-export type { PngSize };

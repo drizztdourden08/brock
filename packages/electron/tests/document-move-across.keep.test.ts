@@ -1,6 +1,7 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
+import type * as FsPromises from 'fs/promises';
 import { mkdir, readFile, rm, symlink } from 'fs/promises';
 import { join } from 'path';
 import { makeBase } from './folder-fixture';
@@ -17,7 +18,7 @@ const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
 vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
 
 vi.mock('fs/promises', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('fs/promises')>();
+  const actual = await importOriginal<typeof FsPromises>();
   return {
     ...actual,
     rename: (from: string, to: string) => {
@@ -113,6 +114,9 @@ describe('rename across drives', () => {
     expect(existsSync(from)).toBe(false);
   });
 
+});
+
+describe('rename across drives that fail', () => {
   it('keeps the original and leaves no copy when the copy does not verify', async () => {
     const { granted } = world;
     const from = join(granted, 'sub', 'in.txt');
@@ -158,6 +162,9 @@ describe('rename across drives', () => {
     expect(await readFile(join(granted, 'tree', 'a.txt'), 'utf8')).toBe('A');
   });
 
+});
+
+describe('rename across drives that refuse a link', () => {
   it('refuses a link, since a copy never carries one', async () => {
     const { access, granted } = world;
     await symlink(join(granted, 'sub'), join(granted, 'shortcut'), dirLink);

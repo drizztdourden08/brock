@@ -131,6 +131,9 @@ describe('copy refusals', () => {
     expect(await readFile(join(granted, 'sub', 'in.txt'), 'utf8')).toBe('inside');
   });
 
+});
+
+describe('copy refusals for links and names', () => {
   it('refuses a target that a link leads outside, even with overwrite', async () => {
     const { access, granted, outside } = world;
     await symlink(outside, join(granted, 'out'), dirLink);

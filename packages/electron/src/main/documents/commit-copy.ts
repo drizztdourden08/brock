@@ -9,9 +9,9 @@ import type { StagedCopy } from './stage-copy.type';
 const commitCopy = async (staged: StagedCopy, info: Stats, target: string, overwrite: boolean): Promise<void> => {
   try {
     if ((await pathPresent(target)) && (!overwrite || info.isDirectory())) throw new Error(`"${target}" already exists`);
-    await rename(staged.temp, target);
+    await rename(staged.staging, target);
   } catch (error) {
-    await rm(staged.temp, { recursive: true, force: true });
+    await rm(staged.staging, { recursive: true, force: true });
     throw error;
   }
   if (info.isFile()) await markOfTheWeb(target);

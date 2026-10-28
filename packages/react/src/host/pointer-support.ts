@@ -1,9 +1,5 @@
 /* @layer renderer-shell @kind logic */
-interface PointerSupport {
-  pointerEvents: boolean;
-  coalesced: boolean;
-  pressure: boolean;
-}
+import type { PointerSupport } from './pointer-support.type';
 
 const pointerSupport = (): PointerSupport => {
   const pointerEvents = typeof PointerEvent !== 'undefined';
@@ -15,4 +11,3 @@ const pointerSupport = (): PointerSupport => {
 };
 
 export { pointerSupport };
-export type { PointerSupport };

@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe('clipboard change watch', () => {
-  it('does not poll until something subscribes', async () => {
+  it('does not poll until something subscribes', () => {
     const board = fakeClipboard();
     const fingerprint = vi.spyOn(board, 'fingerprint');
     const { emitted } = sessionOf(board);
@@ -50,6 +50,9 @@ describe('clipboard change watch', () => {
     expect(fingerprint.mock.calls.length).toBe(during);
   });
 
+});
+
+describe('clipboard change watch limits', () => {
   it('stops polling after a reload of the window', async () => {
     const board = fakeClipboard();
     const fingerprint = vi.spyOn(board, 'fingerprint');

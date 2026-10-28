@@ -41,7 +41,7 @@ describe('clipboard port', () => {
     expect(await clipboard.readText()).toBe('hex');
   });
 
-  it('subscribes main only while a listener is open and tells it with no content', async () => {
+  it('subscribes main only while a listener is open and tells it with no content', () => {
     const api = stubApi();
     const clipboard = createElectronFactory().ports.clipboard?.();
     if (!clipboard) throw new Error('the Electron host has no clipboard port');

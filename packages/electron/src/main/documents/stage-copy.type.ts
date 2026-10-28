@@ -2,7 +2,7 @@
 import type { TreeEntry } from './tree-entries.type';
 
 interface StagedCopy {
-  temp: string;
+  staging: string;
   entries: TreeEntry[];
 }
 

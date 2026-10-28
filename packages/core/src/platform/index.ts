@@ -18,7 +18,9 @@ export type {
 export type { WindowCloseOptions, WindowControlsPort, Unsub } from './ports/window-controls.type';
 export { anyTypeFor } from './any-type-for';
 export { CLIPBOARD_PNG, CLIPBOARD_TEXT } from './clipboard-types.constants';
-export { isPrivateClipboardType, privateClipboardType } from './private-clipboard-type';
+export { privateClipboardType } from './private-clipboard-type';
+export { isPrivateClipboardType } from './is-private-clipboard-type';
+export { privateClipboardPrefix } from './private-clipboard-prefix';
 export type { ClipboardEntries, ClipboardPort, ClipboardValue, ClipboardWireEntries, ClipboardWireValue } from './ports/clipboard.type';
 export type { NetPort, NetReadOptions, NetReadResult, NetReadWire } from './ports/net.type';
 export type { AnyTypeScope, AnyTypeOption, PickedFile, PickFileOptions, PickPathOptions, SaveFileRequest, SaveFileResult, FilePickerPort } from './ports/file-picker.type';

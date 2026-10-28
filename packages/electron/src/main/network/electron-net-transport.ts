@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import { net } from 'electron';
 import type { NetHop, NetTransport } from './net-transport.type';
+import { chunksOf } from './response-chunks';
 
 const headerOf = (headers: Record<string, string | string[]>, name: string): string | null => {
   const value = headers[name];
@@ -30,7 +31,7 @@ const electronNetTransport: NetTransport = (url, signal) =>
         contentType: headerOf(headers, 'content-type'),
         contentLength: lengthOf(headerOf(headers, 'content-length')),
         location: headerOf(headers, 'location'),
-        body: response as unknown as AsyncIterable<Uint8Array>,
+        body: chunksOf(response),
         close: () => {
           signal.removeEventListener('abort', stop);
           request.abort();

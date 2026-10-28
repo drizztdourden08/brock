@@ -3,7 +3,7 @@ import { lstat } from 'fs/promises';
 import { absolutePath } from './absolute-path';
 import { commitCopy } from './commit-copy';
 import { entryMoveGuard } from './entry-move-guard';
-import type { FolderGrants } from './folder-grants.type';
+import type { CopyDeps } from './copy-item.type';
 import { newTarget } from './new-target';
 import { optionFlag } from './option-flag';
 import { pathInside } from './path-inside';
@@ -11,7 +11,7 @@ import { pathKey } from './path-key';
 import { pathPresent } from './path-present';
 import { stageCopy } from './stage-copy';
 
-const copyItem = async (folders: FolderGrants, resolveSource: (path: string) => Promise<string>, from: string, to: string, options: unknown): Promise<void> => {
+const copyItem = async ({ folders, resolveSource }: CopyDeps, from: string, to: string, options: unknown): Promise<void> => {
   const source = await resolveSource(from);
   if (folders.holdsProtected(source)) throw new Error(`"${source}" holds one of the app's own folders and may not be copied`);
   const info = await lstat(source).catch(() => null);

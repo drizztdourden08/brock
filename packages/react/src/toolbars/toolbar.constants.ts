@@ -1,15 +1,16 @@
 /* @layer renderer-shell @kind constants */
-import type { ToolbarSide } from '@drizztdourden08/tessera/composites';
+import type { ToolbarColumns, ToolbarSide } from '@drizztdourden08/tessera/composites';
 import type { MenuItem } from '../menu/menu.type';
 import type { ToolbarDef } from './toolbar.type';
 
 const NO_TOOLBARS: readonly ToolbarDef[] = [];
+const NO_HIDDEN_ITEMS: readonly string[] = [];
 const TOOLBAR_KEY_PREFIX = 'toolbar-';
 const TOOLBARS_MENU_KEY = 'toolbars';
 const TOOLBARS_MENU_ICON = 'panel-top';
 const RESET_TOOLBARS_KEY = 'toolbars-reset';
 const RESET_TOOLBARS_ENTRY: Omit<MenuItem, 'onClick'> = { key: RESET_TOOLBARS_KEY, label: 'Reset toolbars', icon: 'rotate-ccw', confirm: true };
-const TOOLBAR_COMMANDS = { hide: 'toolbar.hide', labels: 'toolbar.labels', moveTo: 'toolbar.moveTo', focusMode: 'brock.focus_mode' } as const;
+const TOOLBAR_COMMANDS = { hide: 'toolbar.hide', labels: 'toolbar.labels', moveTo: 'toolbar.moveTo', item: 'toolbar.item', columns: 'toolbar.columns', focusMode: 'brock.focus_mode' } as const;
 const TOOLBAR_GROUP = 'Toolbars';
 const TOOLBAR_ZONE = 'brock.toolbar';
 const TOOLBAR_ITEM_ZONE = 'brock.toolbar-item';
@@ -23,8 +24,18 @@ const TOOLBAR_TEXT = {
   moveTo: 'Move to',
   noRoom: 'No room on that side',
   focusMode: 'Focus mode',
+  items: 'Items',
+  columns: 'Columns',
+  showItem: 'Show item',
+  hideItem: 'Hide item',
 } as const;
+const TOOLBAR_COLUMN_CHOICES: readonly { value: ToolbarColumns; label: string }[] = [
+  { value: 1, label: '1 column' },
+  { value: 2, label: '2 columns' },
+  { value: 'auto', label: 'Auto' },
+];
+const TOOLBAR_DEFAULT_COLUMNS: ToolbarColumns = 1;
 
 export {
-  NO_TOOLBARS, RESET_TOOLBARS_ENTRY, TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_ID_ATTRIBUTE, TOOLBAR_ITEM_ZONE, TOOLBAR_KEY_PREFIX, TOOLBAR_SIDE_ORDER, TOOLBAR_SIDE_WORDS, TOOLBAR_TEXT, TOOLBAR_ZONE, TOOLBARS_MENU_ICON, TOOLBARS_MENU_KEY,
+  NO_HIDDEN_ITEMS, NO_TOOLBARS, RESET_TOOLBARS_ENTRY, TOOLBAR_COLUMN_CHOICES, TOOLBAR_COMMANDS, TOOLBAR_DEFAULT_COLUMNS, TOOLBAR_GROUP, TOOLBAR_ID_ATTRIBUTE, TOOLBAR_ITEM_ZONE, TOOLBAR_KEY_PREFIX, TOOLBAR_SIDE_ORDER, TOOLBAR_SIDE_WORDS, TOOLBAR_TEXT, TOOLBAR_ZONE, TOOLBARS_MENU_ICON, TOOLBARS_MENU_KEY,
 };

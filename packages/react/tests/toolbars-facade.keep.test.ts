@@ -24,9 +24,9 @@ beforeEach(() => {
 describe('toolbars.list', () => {
   it('lists each toolbar with its side, row, index and labels flag', () => {
     expect(toolbars.list()).toEqual([
-      { id: 'tools', label: 'TOOLS', shown: true, side: 'left', row: 0, index: 0, labels: true, available: true },
-      { id: 'options', label: 'OPTIONS', shown: true, side: 'top', row: 0, index: 0, labels: true, available: true },
-      { id: 'extra', label: 'EXTRA', shown: false, side: null, row: null, index: null, labels: true, available: true },
+      { id: 'tools', label: 'TOOLS', shown: true, side: 'left', row: 0, index: 0, labels: true, hiddenItems: [], columns: null, available: true },
+      { id: 'options', label: 'OPTIONS', shown: true, side: 'top', row: 0, index: 0, labels: true, hiddenItems: [], columns: null, available: true },
+      { id: 'extra', label: 'EXTRA', shown: false, side: null, row: null, index: null, labels: true, hiddenItems: [], columns: null, available: true },
     ]);
   });
 });

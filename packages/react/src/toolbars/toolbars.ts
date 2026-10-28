@@ -1,11 +1,12 @@
 /* @layer renderer-shell @kind logic */
 import { subscribeSnapshots } from '../widgets/subscribe-snapshots';
 import { isToolbarShown, moveToolbar, moveToolbarToSide } from '@drizztdourden08/tessera/composites';
-import type { ToolbarLayout, ToolbarSide } from '@drizztdourden08/tessera/composites';
+import type { ToolbarColumns, ToolbarLayout, ToolbarSide } from '@drizztdourden08/tessera/composites';
 import { useShowFlagsStore } from '../screens/show/useShowFlagsStore';
 import { toolbarAvailable } from './toolbar-available';
+import { toolbarHiddenItems } from './toolbar-hidden-items';
 import { toolbarLabelsOn } from './toolbar-labels-on';
-import { TOOLBAR_SIDE_ORDER } from './toolbar.constants';
+import { TOOLBAR_COLUMN_CHOICES, TOOLBAR_SIDE_ORDER } from './toolbar.constants';
 import type { ToolbarDef, ToolbarListener, ToolbarSnapshot } from './toolbar.type';
 import { useToolbarLayoutStore } from './useToolbarLayoutStore';
 
@@ -36,6 +37,8 @@ const list = (): ToolbarSnapshot[] => {
     shown: isToolbarShown(layout, def.id),
     ...placeOf(layout, def.id),
     labels: toolbarLabelsOn(layout, def.id),
+    hiddenItems: [...toolbarHiddenItems(layout, def.id)],
+    columns: layout.columns?.[def.id] ?? null,
     available: toolbarAvailable(def),
   }));
 };
@@ -68,9 +71,23 @@ const labels = (id: string, on: boolean): void => {
   store().setLabels(id, on);
 };
 
+const items = (id: string, hidden: readonly string[]): void => {
+  const known = knownToolbar(id).items?.map((item) => item.id);
+  const unknown = known === undefined ? undefined : hidden.find((item) => !known.includes(item));
+  const names = known?.join(', ') ?? '';
+  if (unknown !== undefined) throw new Error(`Unknown item "${unknown}" in toolbar "${id}". Known items: ${names === '' ? 'none' : names}.`);
+  store().setItems(id, hidden);
+};
+
+const columns = (id: string, count: ToolbarColumns | null): void => {
+  knownToolbar(id);
+  if (count !== null && !TOOLBAR_COLUMN_CHOICES.some((choice) => choice.value === count)) throw new Error('columns must be 1, 2, "auto" or null.');
+  store().setColumns(id, count ?? undefined);
+};
+
 const subscribe = (listener: ToolbarListener): (() => void) =>
   subscribeSnapshots(list, [(on) => useToolbarLayoutStore.subscribe(on), (on) => useShowFlagsStore.subscribe(on)], listener);
 
-const toolbars = { list, show, hide, moveToSide, labels, reset: (): void => store().reset(), subscribe };
+const toolbars = { list, show, hide, moveToSide, labels, items, columns, reset: (): void => store().reset(), subscribe };
 
 export { toolbars };

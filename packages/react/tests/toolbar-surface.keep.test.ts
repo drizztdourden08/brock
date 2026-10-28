@@ -109,7 +109,8 @@ describe('the toolbar context menu entries', () => {
   });
 
   it('lists labels, a Move to radio group with the current side checked, and Hide', () => {
-    const [labels, move, separator, hide] = toolbarContextEntries(context) as [ContextMenuCommand, ContextMenuSubmenu, string, ContextMenuCommand];
+    const [labels, columns, move, separator, hide] = toolbarContextEntries(context) as [ContextMenuCommand, ContextMenuSubmenu, ContextMenuSubmenu, string, ContextMenuCommand];
+    expect(columns.label).toBe('Columns');
     expect(labels).toMatchObject({ command: 'toolbar.labels', args: 'tools', checked: true });
     expect(separator).toBe('separator');
     expect(hide).toMatchObject({ command: 'toolbar.hide', args: 'tools' });

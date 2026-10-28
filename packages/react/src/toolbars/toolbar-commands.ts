@@ -1,8 +1,11 @@
 /* @layer renderer-shell @kind logic */
 import type { CommandContext, CommandDef } from '../commands/command.type';
 import { layout } from '../widgets/layout-facade';
+import { isToolbarColumnsArgs } from './is-toolbar-columns-args';
+import { isToolbarItemArgs } from './is-toolbar-item-args';
 import { isToolbarMoveArgs } from './is-toolbar-move-args';
 import { toolbarLabelsOn } from './toolbar-labels-on';
+import { toolbarToggledItems } from './toolbar-toggled-items';
 import { TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_TEXT } from './toolbar.constants';
 import { useToolbarLayoutStore } from './useToolbarLayoutStore';
 
@@ -33,6 +36,25 @@ const toolbarCommands: readonly CommandDef[] = [
     group: TOOLBAR_GROUP,
     run: (context) => {
       layout.focusMode(typeof context?.args === 'boolean' ? context.args : undefined);
+    },
+  },
+  {
+    id: TOOLBAR_COMMANDS.item,
+    label: TOOLBAR_TEXT.showItem,
+    group: TOOLBAR_GROUP,
+    run: (context) => {
+      if (!isToolbarItemArgs(context?.args)) return;
+      const { id, item } = context.args;
+      const store = useToolbarLayoutStore.getState();
+      store.setItems(id, toolbarToggledItems(store.layout, id, item));
+    },
+  },
+  {
+    id: TOOLBAR_COMMANDS.columns,
+    label: TOOLBAR_TEXT.columns,
+    group: TOOLBAR_GROUP,
+    run: (context) => {
+      if (isToolbarColumnsArgs(context?.args)) useToolbarLayoutStore.getState().setColumns(context.args.id, context.args.columns);
     },
   },
   {

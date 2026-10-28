@@ -146,7 +146,7 @@ describe('workspace rules and menu', { timeout: 60_000 }, () => {
     await app.widgetPersistence.load('p1');
     app.workspaces.activate('manual');
     expect(app.workspaces.list().map((each) => [each.id, each.active, each.matches])).toEqual([['anim', false, false], ['map', false, false], ['manual', true, false]]);
-    const flagged = { profile: null, host: 'web' as const, formFactor: 'desktop' as const, flags: { kind: 'map' } };
+    const flagged = { profile: null, host: 'web' as const, formFactor: 'desktop' as const, flags: { kind: 'map' }, params: {} };
     expect(app.chosenWorkspace(app.defs, flagged)).toBe('map');
     expect(app.chosenWorkspace(app.defs, { ...flagged, flags: {} })).toBeNull();
     app.stop();

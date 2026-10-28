@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-thread
 
+## 0.114.0
+
+### Patch Changes
+
+- b14e0f1: Make `worktree finish` and `worktree remove` work on Windows when `node_modules` holds paths past 260 characters. Git runs with long paths on, the ignored folders are deleted first through Node (links are removed, never followed, and nothing outside the worktree is touched), and a locked file is retried and then reported instead of hanging.
+
 ## 0.113.0
 
 ## 0.112.0

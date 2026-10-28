@@ -6,4 +6,5 @@ export { PaletteHost } from './PaletteHost';
 export type { PaletteHostProps } from './PaletteHost';
 export { SearchButton } from './SearchButton';
 export type { SearchButtonProps } from './SearchButton';
-export type { PaletteState } from './palette.type';
+export { runWithPicker } from './run-with-picker';
+export type { PaletteOpenOptions, PalettePick, PaletteState } from './palette.type';

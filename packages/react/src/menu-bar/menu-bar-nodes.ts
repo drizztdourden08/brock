@@ -2,6 +2,7 @@
 import type { MenuItem, MenuNode } from '@drizztdourden08/tessera/composites';
 import { commands } from '../commands/commands';
 import { commandBlock } from '../commands/command-block';
+import { commandVisible } from '../commands/command-visible';
 import type { CommandDef } from '../commands/command.type';
 import { MENU_SEPARATOR } from '../menu/menu.constants';
 import { hasItem } from './has-item';
@@ -23,7 +24,7 @@ const nodeOf = (entry: MenuBarEntry, path: string, view: MenuBarView): MenuNode 
   if (entry === MENU_BAR_SEPARATOR) return MENU_SEPARATOR;
   if (typeof entry === 'string') {
     const def = view.defs.get(entry);
-    return def === undefined ? null : itemOf(def, view);
+    return def === undefined || !commandVisible(def) ? null : itemOf(def, view);
   }
   const id = `${path}/${entry.label}`;
   const children = menuBarNodes(entry.entries, id, view);

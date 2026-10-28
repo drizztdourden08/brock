@@ -13,6 +13,7 @@ import { visibleMenu } from '../../../menu/visible-menu';
 import { withPreload } from '../../../menu/with-preload';
 import { withCommandChords } from '../../../menu/with-command-chords';
 import { useChordLookup } from '../../../commands/useChordLookup';
+import { useCommandDescribe } from '../../../commands/useCommandDescribe';
 import { routePreloader } from '../../../lazy/route-preloader';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
@@ -45,6 +46,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
   const hasProfile = useProfilesStore((s) => s.active !== null);
   const homeLocked = !hasProfile && registry.get(homeScreen)?.requiresProfile !== false;
   const chords = useChordLookup();
+  const describe = useCommandDescribe();
 
   const shell = useMemo(() => {
     const resolved = resolveShellMenu({
@@ -67,10 +69,10 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
     });
-    const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords);
+    const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords, describe);
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, screenTree, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
+  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, screenTree, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords, describe]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

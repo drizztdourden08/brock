@@ -60,12 +60,12 @@ describe('run, describe and meta', () => {
   });
 
   it('describes enabled, reason and checked with the gates applied', () => {
-    expect(commands.describe('gate')).toEqual({ enabled: true, reason: null, checked: false });
+    expect(commands.describe('gate')).toEqual({ visible: true, enabled: true, reason: null, checked: false });
     ready = false;
-    expect(commands.describe('gate')).toEqual({ enabled: false, reason: 'Needs a document.', checked: false });
-    expect(commands.describe('busy')).toEqual({ enabled: false, reason: 'A job is running.', checked: false });
+    expect(commands.describe('gate')).toEqual({ visible: true, enabled: false, reason: 'Needs a document.', checked: false });
+    expect(commands.describe('busy')).toEqual({ visible: true, enabled: false, reason: 'A job is running.', checked: false });
     on = true;
-    expect(commands.describe('toggle')).toEqual({ enabled: true, reason: null, checked: true });
+    expect(commands.describe('toggle')).toEqual({ visible: true, enabled: true, reason: null, checked: true });
   });
 
   it('passes meta through list and hands the assistant trigger to run', async () => {

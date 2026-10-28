@@ -2,13 +2,13 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { paneOf, placementOf } from '@drizztdourden08/tessera/composites';
-import { INITIAL_CONTEXTS } from '../src/contexts/contexts.constants';
 import { useContextsStore } from '../src/contexts/useContextsStore';
 import { defineLayoutPreset } from '../src/widgets/define-layout-preset';
 import { defineWidget } from '../src/widgets/define-widget';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { widgetMainRect } from '../src/widgets/widget-main-rect';
 import { widgets } from '../src/widgets/widgets';
+import { resetWidgetStage } from './widget-stage-fixture';
 import type { WidgetSnapshot } from '../src/widgets/widget-snapshot.type';
 
 const make = (id: string, extra: Partial<Parameters<typeof defineWidget>[0]> = {}) => defineWidget({ id, label: id.toUpperCase(), render: () => null, popOut: true, ...extra });
@@ -24,11 +24,7 @@ const entry = (id: string) => {
 const near = (value: number | null, wanted: number): boolean => value !== null && Math.abs(value - wanted) <= 12;
 
 beforeEach(() => {
-  widgetMainRect.current = { x: 0, y: 0, width: 1000, height: 600 };
-  store().setPreset(null);
-  store().replace(null);
-  store().setDefinitions(DEFINITIONS);
-  useContextsStore.setState({ contexts: INITIAL_CONTEXTS });
+  resetWidgetStage(DEFINITIONS);
 });
 
 afterEach(() => {

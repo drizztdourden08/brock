@@ -35,10 +35,11 @@ const UNDER_MAIN_MIN = 0.1;
 const REVISION_OFFER_MESSAGE = 'The default layout has a new version. Reset to get it, or close this to keep your layout.';
 const REVISION_RESET_LABEL = 'Reset';
 const RESET_LAYOUT_ENTRY: Omit<MenuItem, 'onClick'> = { key: 'widgets-reset-layout', label: 'Reset layout', icon: 'rotate-ccw', confirm: true };
+const WIDGET_SETTINGS_TAB = { id: 'widget-options', label: 'Widgets', icon: 'panel-top', group: 'App', groupId: 'app' } as const;
 const WIDGETS_DEVELOPER_KEY = 'widgets-developer';
 const WIDGETS_DEVELOPER_ENTRY: Omit<MenuItem, 'children'> = { key: WIDGETS_DEVELOPER_KEY, label: 'Developer', icon: 'braces', devOnly: true };
 
 export {
   CONTEXT_DEFAULTS, DOCK_STAGE_SELECTOR, DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOAT_SNAP_PX, FLOATING_MIN, FLUSH_EVENTS, LAYOUT_MAIN, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, RESET_LAYOUT_ENTRY, REVIEW_OPTIONS_SLICE, REVISION_OFFER_MESSAGE, REVISION_RESET_LABEL, UNDER_MAIN_MIN, UNDER_MAIN_SHARE, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
-  WIDGET_LAYOUT_GLOBAL, WIDGET_QUERY_KEY, WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY,
+  WIDGET_LAYOUT_GLOBAL, WIDGET_QUERY_KEY, WIDGET_SETTINGS_TAB, WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY,
 };

@@ -1,10 +1,14 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { Profile, ProductMenuGroup, WidgetWindowOpen } from '@drizztdourden08/brock-core';
-import type { ExternalDrag, ScreenPoint, WidgetDefinition, WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { ExternalDrag, ScreenPoint, ToolbarLayout, WidgetDefinition, WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import type { SettingItem } from '../settings/settings.type';
+import type { ShowRule } from '../screens/show/show.type';
 import type { ScreenViews } from '../stores/screen-state.type';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import type { LayoutPreset } from './layout-preset.type';
+
+type WidgetPrefItem = SettingItem & { default?: unknown };
 
 interface WidgetMenuPlacement {
   parent?: string;
@@ -20,14 +24,18 @@ interface WidgetDef extends WidgetDefinition {
   order?: number;
   defaultOpen?: boolean;
   context?: string;
+  contexts?: readonly string[];
+  when?: ShowRule;
   kit?: string;
   tools?: () => ReactNode;
+  empty?: () => ReactNode;
+  prefs?: readonly WidgetPrefItem[];
   menu?: WidgetMenuPlacement;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
 
-type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings' | 'tools'>> & { settings?: ComponentType; tools?: ComponentType };
+type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings' | 'tools' | 'empty'>> & { settings?: ComponentType; tools?: ComponentType; empty?: ComponentType };
 
 interface WidgetFile {
   id: string;
@@ -51,6 +59,16 @@ interface WidgetLayoutState {
   close: (id: string) => void;
   toggle: (id: string) => void;
   popOut: (id: string) => void;
+}
+
+interface WidgetTitleState {
+  titles: Record<string, string>;
+  set: (id: string, text: string | null) => void;
+}
+
+interface FocusModeState {
+  on: boolean;
+  saved: { widgets: WidgetLayout; toolbars: ToolbarLayout; kit: string | null } | null;
 }
 
 interface ForcedWidgetState {
@@ -95,6 +113,7 @@ interface ProfileViews {
   widgetLayoutRevision?: unknown;
   widgetPrefs?: WidgetPrefs;
   widgetKits?: unknown;
+  workspaces?: unknown;
   toolbarLayout?: unknown;
   screens?: ScreenViews;
   volume?: unknown;
@@ -138,5 +157,5 @@ interface LayoutHolder {
 }
 
 export type {
-  DockOrigin, ForcedWidgetState, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WindowKind,
+  DockOrigin, FocusModeState, ForcedWidgetState, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WidgetTitleState, WindowKind,
 };

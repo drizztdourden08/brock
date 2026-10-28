@@ -1,5 +1,11 @@
 # @drizztdourden08/create-brock
 
+## 0.115.3
+
+### Patch Changes
+
+- @drizztdourden08/brock-build@0.115.3
+
 ## 0.115.2
 
 ### Patch Changes

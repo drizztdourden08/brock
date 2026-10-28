@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-tools
 
+## 0.114.0
+
+### Patch Changes
+
+- Updated dependencies [4632077]
+- Updated dependencies [14bdeb6]
+- Updated dependencies [4571f23]
+  - @drizztdourden08/brock-core@0.114.0
+  - @drizztdourden08/brock-electron@0.114.0
+  - @drizztdourden08/brock-react@0.114.0
+
 ## 0.113.0
 
 ### Patch Changes

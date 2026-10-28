@@ -40,7 +40,7 @@ const AboutSample = ({ onClose }: { onClose: () => void }) => (
   </InfoScreen>
 );
 `,
-  propsHash: '9128812a42bb9e64',
+  propsHash: 'a24947e4281d1eab',
 } satisfies ComponentUsage;
 
 export { usage };

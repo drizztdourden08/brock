@@ -9,4 +9,4 @@ export { toolbarItemZone } from './toolbar-item-zone';
 export { ToolbarHost } from './ToolbarHost';
 export { TOOLBAR_COMMANDS, TOOLBAR_ZONE } from './toolbar.constants';
 export type { ToolbarHostProps } from './ToolbarHost/ToolbarHost.type';
-export type { ToolbarDef, ToolbarLayoutState, ToolbarListener, ToolbarPlacement, ToolbarSnapshot } from './toolbar.type';
+export type { ToolbarDef, ToolbarItemRef, ToolbarLayoutState, ToolbarListener, ToolbarPlacement, ToolbarSnapshot } from './toolbar.type';

@@ -19,6 +19,43 @@ interface CommandContext {
   trigger: CommandTrigger;
   data: unknown;
   args?: unknown;
+  selection?: ReadonlySet<string>;
+}
+
+type ArgValue = string | number | boolean;
+
+interface ArgOption {
+  value: ArgValue;
+  label: string;
+}
+
+interface ArgField {
+  type: 'string' | 'number' | 'boolean';
+  label?: string;
+  options?: readonly ArgOption[];
+  min?: number;
+  max?: number;
+  optional?: boolean;
+}
+
+type ArgSchema = Readonly<Record<string, ArgField>>;
+
+interface BoundArgs {
+  id: string;
+  args: Readonly<Record<string, ArgValue>>;
+}
+
+type HoldCause = 'keyup' | 'blur' | 'run' | 'dispose';
+
+interface HoldContext extends CommandContext {
+  heldMs: number;
+  tap: boolean;
+  cause: HoldCause;
+}
+
+interface CommandHold {
+  release: (context: HoldContext) => void;
+  tapMs?: number;
 }
 
 interface CommandDef {
@@ -31,26 +68,39 @@ interface CommandDef {
   zone?: string;
   whileTyping?: boolean;
   when?: () => boolean;
+  visible?: () => boolean;
+  only?: string;
   reason?: () => string | null;
   checked?: () => boolean;
+  hold?: CommandHold;
+  args?: ArgSchema;
+  bound?: BoundArgs;
   meta?: Readonly<Record<string, unknown>>;
   run: (context?: CommandContext) => void | Promise<void>;
 }
 
-type CommandRunResult = { ok: true } | { ok: false; why: 'unknown' | 'disabled' | 'gated'; reason: string };
+type CommandRunResult = { ok: true } | { ok: false; why: 'unknown' | 'hidden' | 'disabled' | 'gated' | 'invalid'; reason: string };
 
 interface CommandDescription {
   enabled: boolean;
+  visible: boolean;
   reason: string | null;
   checked: boolean;
 }
 
 interface CommandBlock {
-  why: 'disabled' | 'gated';
+  why: 'hidden' | 'disabled' | 'gated';
   reason: string;
 }
 
-type CommandData = Omit<CommandDef, 'run' | 'when' | 'reason' | 'checked'> & { gated: boolean; reasoned: boolean; checkable: boolean };
+type CommandData = Omit<CommandDef, 'run' | 'when' | 'visible' | 'reason' | 'checked' | 'hold'> & {
+  gated: boolean;
+  hideable: boolean;
+  reasoned: boolean;
+  checkable: boolean;
+  holdable: boolean;
+  holdTapMs?: number;
+};
 
 interface ParsedChord {
   ctrl: boolean;
@@ -103,9 +153,17 @@ interface CommandGroupsView {
 interface KeymapRowInput {
   state: Omit<CommandState, 'persist'>;
   clashes: readonly CommandConflict[];
+  shared: readonly CommandConflict[];
   labelOf: (id: string) => string;
 }
 
+interface CommandBinding {
+  id: string;
+  args: Readonly<Record<string, ArgValue>>;
+  chords: readonly string[];
+}
+
 export type {
-  ChordEvent, ChordInput, ChordList, ChordLookup, CommandBlock, CommandConflict, CommandDescription, CommandRunResult, CommandContext, CommandData, CommandTrigger, CommandDef, CommandGroup, CommandGroupsView, HeldModifier, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
+  ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordEvent, ChordInput, ChordList, ChordLookup, CommandBinding, CommandBlock, CommandConflict, CommandDescription, CommandHold, CommandRunResult, CommandContext, CommandData, CommandTrigger,
+  CommandDef, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
 };

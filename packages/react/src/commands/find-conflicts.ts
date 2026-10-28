@@ -5,7 +5,7 @@ import { listCommands } from './list-commands';
 
 const shares = (a: string | undefined, b: string | undefined): boolean => a === undefined || b === undefined || a === b;
 
-const overlaps = (a: CommandDef, b: CommandDef): boolean => shares(a.scope, b.scope) && shares(a.zone, b.zone);
+const overlaps = (a: CommandDef, b: CommandDef): boolean => shares(a.scope, b.scope) && shares(a.zone, b.zone) && shares(a.only, b.only);
 
 const findConflicts = (state: Omit<CommandState, 'persist'>): CommandConflict[] => {
   const byChord = new Map<string, CommandDef[]>();

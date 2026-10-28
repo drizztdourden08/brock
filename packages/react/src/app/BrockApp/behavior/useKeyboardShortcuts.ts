@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useEscapeStack } from '@drizztdourden08/tessera/primitives';
 import { dispatchCommand } from '../../../commands/dispatch-command';
+import { listenHolds } from '../../../commands/hold-listeners';
 import { useKeymapSync } from '../../../commands/useKeymapSync';
 import { useNavigationStore } from '../../../navigation/useNavigationStore';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
@@ -26,6 +27,7 @@ const useKeyboardShortcuts = (): void => {
   useRouteCommands();
   useToolbarSurface();
   useKeymapSync();
+  useEffect(() => listenHolds(), []);
 
   useEffect(() => {
     const allowed = (screen: ScreenDef | undefined): screen is ScreenDef =>

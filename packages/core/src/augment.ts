@@ -117,6 +117,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'debug:appendSessionLog': (lines: string[]) => void;
   'capture:holds': (count: number) => void;
   'review:check': (check: ReviewCheck) => void;
+  'review:alive': (stepLimitMs?: number | null) => void;
   'review:finish': () => void;
   'ask:reply': (id: number, outcome: AskOutcome) => void;
 }

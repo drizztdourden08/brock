@@ -3,7 +3,7 @@ import { frameOf, getWidgetDefinition, setFrame } from '@drizztdourden08/tessera
 import type { WidgetVisibility } from '@drizztdourden08/tessera/composites';
 import { nav } from '../../navigation/nav';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
-import { ABOUT_SCREEN, POP_OUT_WAIT_MS } from '../review.constants';
+import { ABOUT_SCREEN } from '../review.constants';
 import type { StepTour } from '../review.type';
 import { poppedEntry } from './popped-entry';
 import { windowOpen } from './window-open';
@@ -31,7 +31,7 @@ const checkContextGate = async (tour: StepTour, id: string): Promise<void> => {
   const back = closed && await windowOpen(id, true);
   const now = back ? (await probe({ kind: 'window', id })).bounds : null;
   const same = sameRect(now, remembered);
-  const missed = back ? `the "${id}" window came back at ${JSON.stringify(now)}, not at ${JSON.stringify(remembered)}` : `the "${id}" window was not shown again within ${POP_OUT_WAIT_MS} ms of the page closing`;
+  const missed = back ? `the "${id}" window came back at ${JSON.stringify(now)}, not at ${JSON.stringify(remembered)}` : `the "${id}" window was not shown again after the page closed`;
   tour.check('gate-context-only-reopens', same, `the "${id}" window came back where it was once the page closed`, missed);
   showAs(id, show);
   if (page !== null) nav.open(page);

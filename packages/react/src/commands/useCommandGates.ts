@@ -2,6 +2,6 @@
 import { create } from 'zustand';
 import type { GateState } from './command-gates.type';
 
-const useCommandGates = create<GateState>()(() => ({ gates: {} }));
+const useCommandGates = create<GateState>()(() => ({ gates: {}, views: {} }));
 
 export { useCommandGates };

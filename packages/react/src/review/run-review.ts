@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { requireHostApi } from '../host/require-host-api';
 import { createStepTour } from './create-step-tour';
+import { declareStepLimit } from './dom/declare-step-limit';
 import { settle } from './dom/settle';
 import { appSteps } from './app/app-steps';
 import { seedSteps } from './app/seed-steps';
@@ -13,6 +14,7 @@ const runReview = async (env: ReviewEnv): Promise<void> => {
   const steps = [...STEPS_BEFORE_SEED, ...seedSteps(env.review), ...STEPS_AFTER_SEED, ...appSteps(env.review, BUILT_IN_STEP_NAMES)];
   for (const step of steps) {
     const tour = createStepTour(env, step.name);
+    if (step.timeoutMs !== undefined) declareStepLimit(step.timeoutMs);
     try {
       await step.run(tour);
     } catch (err) {

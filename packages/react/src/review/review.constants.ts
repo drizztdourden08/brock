@@ -4,10 +4,11 @@ import type { MenuItem } from '../menu/menu.type';
 import { LOGS_WIDGET_ID } from '../widgets/built-in/LogsWidget/LogsWidget.constants';
 import { PERFORMANCE_WIDGET_ID } from '../widgets/built-in/PerformanceWidget/PerformanceWidget.constants';
 
-const SETTLE_MS = 300;
-const WAIT_MS = 3000;
+const WAIT_CEILING_MS = 30_000;
+const HEARTBEAT_MS = 500;
+const ALIVE_PING_MS = 1000;
+const QUIET_FRAMES = 4;
 const REVIEW_SCROLL_PX = 120;
-const POLL_MS = 50;
 const REVIEW_PROFILE_NAME = 'Review';
 const REVIEW_REPORT_TITLE = 'Review prefill';
 const SECTION_KEY_PREFIX = 'section:';
@@ -20,7 +21,6 @@ const VERSION_LABEL = 'Version';
 const PROFILES_SCREEN = 'profiles';
 const LOGS_WIDGET_KEY = `widget-${LOGS_WIDGET_ID}`;
 const PERFORMANCE_WIDGET_KEY = `widget-${PERFORMANCE_WIDGET_ID}`;
-const PERFORMANCE_LIVE_MS = 2500;
 const PERFORMANCE_TILES = { frameRate: 'Frame rate', cpu: 'CPU', memory: 'Memory', lag: 'Event loop lag' } as const;
 const PERFORMANCE_GAUGES: readonly string[] = ['CPU', 'Memory'];
 const PERFORMANCE_PROCESSES: readonly string[] = ['Main', 'Renderer'];
@@ -41,8 +41,6 @@ const SEARCH_TOP = 5;
 const SEARCH_SETTINGS_PAGES = 4;
 const SEARCH_HIT_CLASS = 'search-hit';
 const SEARCH_MISS = 'qzxjvw';
-const POP_OUT_WAIT_MS = 8000;
-const POPPED_PAINT_MS = 1500;
 const REVIEW_PREF_KEY = 'reviewProbe';
 
 const HERO_SLOT_SELECTORS = {
@@ -88,6 +86,7 @@ const SELECTORS = {
   layerTitle: '.screen-window__header :is(.window-header__title, .content-header__title)',
   layerClose: '.screen-window__header :is(.window-header__close, .screen-window__close), .screen-window__corner-close',
   layerDialog: '[role="dialog"]',
+  cornerTitle: '.screen-window__corner-text',
   hubWindowBack: '.screen-layer:not(.screen-layer--hidden) .window-header__back',
   pageHead: '.content-header',
   pageIcon: '.content-header__icon',
@@ -163,6 +162,6 @@ const RESET_CLOSERS = [
 ] as const;
 
 export {
-  ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, MENU_OVERRIDE_CAPTURES, NARROW_WINDOW, NO_KEYS, NO_ROUTES, OVERFLOW_SLACK, PERFORMANCE_GAUGES, PERFORMANCE_LIVE_MS, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PATH_JOIN, PERFORMANCE_WINDOW_SIZES, POLL_MS, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_SCROLL_PX, REVIEW_PROFILE_NAME, REVIEW_REPORT_TITLE, SECTION_KEY_PREFIX,
-  HERO_SLOT_SELECTORS, POP_OUT_WAIT_MS, POPPED_PAINT_MS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SETTLE_MS, SIZE_TOLERANCE, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_MS,
+  ALIVE_PING_MS, HEARTBEAT_MS, QUIET_FRAMES, ABOUT_SCREEN, BAR_ITEM_ATTRIBUTE, BAR_ITEM_PREFIX, BOOT_OVERLAYS, BUILT_IN_ENTRIES, FPS_VALUE, LOGS_WIDGET_KEY, MENU_OVERRIDE_CAPTURES, NARROW_WINDOW, NO_KEYS, NO_ROUTES, OVERFLOW_SLACK, PERFORMANCE_GAUGES, PERFORMANCE_PROCESSES, PERFORMANCE_TILES, PERFORMANCE_WIDGET_KEY, PATH_JOIN, PERFORMANCE_WINDOW_SIZES, PROFILES_SCREEN, RESET_CLOSERS, REVIEW_PREF_KEY, REVIEW_SCROLL_PX, REVIEW_PROFILE_NAME, REVIEW_REPORT_TITLE, SECTION_KEY_PREFIX,
+  HERO_SLOT_SELECTORS, SEARCH_HIT_CLASS, SEARCH_MISS, SEARCH_SETTINGS_PAGES, SEARCH_TOP, SELECTORS, SIZE_TOLERANCE, UPDATER_MODULE_ID, UPDATE_MENU_LABEL, VERSION_LABEL, WAIT_CEILING_MS,
 };

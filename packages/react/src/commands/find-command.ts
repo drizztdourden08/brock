@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { chordsOf } from './chords-of';
+import { commandVisible } from './command-visible';
 import type { ChordEvent, CommandDef, CommandLookup, CommandState } from './command.type';
 import { listCommands } from './list-commands';
 import { matchesChord } from './matches-chord';
@@ -24,7 +25,7 @@ const fires = (def: CommandDef, event: ChordEvent, state: CommandState, typing: 
   const chord = chordsOf(def, state).find((each) => matchesChord(event, each, state.mac));
   if (chord === undefined) return false;
   if (typing && !typingAllowed(def, chord, state.mac)) return false;
-  return def.when?.() !== false;
+  return def.when?.() !== false && commandVisible(def);
 };
 
 const findCommand = (event: ChordEvent, state: CommandState, lookup: CommandLookup): CommandDef | undefined => {

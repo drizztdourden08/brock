@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import { BrowserWindow } from 'electron';
 import type { WidgetWindowOpen } from '@drizztdourden08/brock-core';
+import { tellReviewWindows } from '../review/tell-review-windows';
 import { keepOffScreen } from '../window/keep-off-screen';
 import { loadRendererPage } from '../window/load-renderer';
 import { applyWindowSecurity } from '../window/security';
@@ -33,6 +34,7 @@ const openWidgetWindow = (setup: WidgetWindowSetup, id: string, popped?: WidgetW
   if (setup.headless) keepOffScreen(win);
   applyWindowSecurity(win, setup.security);
   attachWidgetWindow(id, win, entry);
+  tellReviewWindows();
   alignToLink(entry);
   widgetReveal.opened(win);
   win.once('ready-to-show', () => widgetReveal.ready(entry));

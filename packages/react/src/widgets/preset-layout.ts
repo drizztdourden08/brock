@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import { MAIN_NODE, createDefaultLayout, createPane, getWidgetDefinition, openWidget, widgetsIn } from '@drizztdourden08/tessera/composites';
+import { MAIN_NODE, createDefaultLayout, createPane, getWidgetDefinition, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { LayoutNode, SplitAxis, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import { openOrdered } from './open-ordered';
 import { LAYOUT_MAIN, UNDER_MAIN_MIN, UNDER_MAIN_SHARE } from './widget.constants';
 import type { LayoutCell, LayoutColumn, LayoutPane, LayoutPreset, LayoutRowDef, SizedNode } from './layout-preset.type';
 import type { WidgetDef } from './widget.type';
@@ -97,7 +98,7 @@ const presetLayout = (preset: LayoutPreset | null, definitions: readonly WidgetD
   const placed = new Set(widgetsIn(base.dock));
   return definitions
     .filter((def) => def.defaultOpen === true && !placed.has(def.id))
-    .reduce((layout, def) => openWidget(layout, def.id, definitions), base);
+    .reduce((layout, def) => openOrdered(layout, def.id, definitions), base);
 };
 
 export { presetLayout };

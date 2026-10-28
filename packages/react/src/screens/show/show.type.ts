@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { FormFactor, HostShell, Profile, ShowFlags } from '@drizztdourden08/brock-core';
+import type { ScreenParams } from '../../navigation/navigation.type';
 
 type ShowFlagValues = Readonly<Partial<ShowFlags> & Record<string, unknown>>;
 
@@ -8,6 +9,7 @@ interface ShowContext {
   host: HostShell;
   formFactor: FormFactor;
   flags: ShowFlagValues;
+  params: Readonly<ScreenParams>;
 }
 
 interface ShowRule {

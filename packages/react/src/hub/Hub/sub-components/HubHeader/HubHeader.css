@@ -1,0 +1,19 @@
+/* @layer renderer-shell @kind style */
+
+.hub-header {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.hub-header__main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.hub-header__actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}

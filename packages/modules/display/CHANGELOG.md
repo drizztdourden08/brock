@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-display
 
+## 0.112.0
+
+### Patch Changes
+
+- Updated dependencies [ea2ca87]
+  - @drizztdourden08/brock-react@0.112.0
+  - @drizztdourden08/brock-core@0.112.0
+  - @drizztdourden08/brock-electron@0.112.0
+
 ## 0.111.0
 
 ### Patch Changes

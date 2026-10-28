@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { ToolbarDock } from '@drizztdourden08/tessera/composites';
 import { toolbarRenderer } from '../toolbar-renderer';
+import { useAvailableToolbars } from '../useAvailableToolbars';
 import { useRegisterToolbars } from '../useRegisterToolbars';
 import { useToolbarLayoutStore } from '../useToolbarLayoutStore';
 import { useHostClaim } from './behavior/useHostClaim';
@@ -14,10 +15,11 @@ const ToolbarHost = ({ toolbars, children }: ToolbarHostProps) => {
   const setLayout = useToolbarLayoutStore((s) => s.setLayout);
   useRegisterToolbars(owns ? toolbars : undefined);
   const definitions = toolbars ?? registered;
-  const renderToolbar = useMemo(() => toolbarRenderer(definitions), [definitions]);
+  const available = useAvailableToolbars(definitions);
+  const renderToolbar = useMemo(() => toolbarRenderer(available), [available]);
   if (!owns) return <>{children}</>;
   return (
-    <ToolbarDock layout={layout} onLayoutChange={setLayout} definitions={definitions} renderToolbar={renderToolbar}>
+    <ToolbarDock layout={layout} onLayoutChange={setLayout} definitions={available} renderToolbar={renderToolbar}>
       {children}
     </ToolbarDock>
   );

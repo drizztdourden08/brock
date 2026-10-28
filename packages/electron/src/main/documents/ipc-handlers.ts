@@ -16,6 +16,7 @@ import { textOf } from './text-of';
 import { toDialogOptions } from './to-dialog-options';
 import { toFolderDialogOptions } from './to-folder-dialog-options';
 import { trackingOf } from './tracking-of';
+import { vetDrop } from './vet-drop';
 
 const documentHandlers: HandlerGroup = {
   id: 'document',
@@ -59,6 +60,7 @@ const documentHandlers: HandlerGroup = {
       return real;
     });
 
+    handle('document:vetDrop', (_event, paths) => vetDrop(documents, paths));
     handle('document:list', (_event, folder, options) => documents.list(folder, options));
     handle('document:read', async (_event, path) => toArrayBuffer(await readFile(await documents.resolve(path))));
     handle('document:readText', async (_event, path) => readFile(await documents.resolve(path), 'utf8'));

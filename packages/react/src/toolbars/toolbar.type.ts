@@ -1,9 +1,13 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { ToolbarDefinition, ToolbarLayout, ToolbarMenuWords, ToolbarSide, ToolbarSlot } from '@drizztdourden08/tessera/composites';
+import type { ContextMenuEntry } from '../context-menu/context-menu.type';
+import type { ShowRule } from '../screens/show/show.type';
 
 interface ToolbarDef extends ToolbarDefinition {
   render: (slot: ToolbarSlot) => ReactNode;
+  when?: ShowRule;
+  contextEntries?: (itemId: string) => readonly ContextMenuEntry[];
 }
 
 interface ToolbarLayoutState {
@@ -35,6 +39,7 @@ interface ToolbarSnapshot {
   row: number | null;
   index: number | null;
   labels: boolean;
+  available: boolean;
 }
 
 type ToolbarListener = (snapshot: readonly ToolbarSnapshot[]) => void;

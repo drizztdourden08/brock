@@ -9,11 +9,14 @@ const deepLink = (id: string, params: ScreenParams): ResolvedRoute => {
   return { active, params: { ...params, section, tab } };
 };
 
+const throughAlias = (routed: ResolvedRoute): ResolvedRoute => (routed.active.includes(ROUTE_SEPARATOR) ? deepLink(routed.active, routed.params) : routed);
+
 const resolveRoute = (id: string, params: ScreenParams, aliasOf: (name: string) => RouteAlias | undefined): ResolvedRoute => {
   const alias = aliasOf(id);
-  if (!alias) return deepLink(id, params);
-  const routed = alias(params);
-  return routed.active.includes(ROUTE_SEPARATOR) ? deepLink(routed.active, routed.params) : routed;
+  if (alias) return throughAlias(alias(params));
+  const link = deepLink(id, params);
+  const head = link.active === id ? undefined : aliasOf(link.active);
+  return head ? throughAlias(head(link.params)) : link;
 };
 
 export { resolveRoute };

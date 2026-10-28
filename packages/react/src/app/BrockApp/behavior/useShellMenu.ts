@@ -16,6 +16,7 @@ import { useChordLookup } from '../../../commands/useChordLookup';
 import { routePreloader } from '../../../lazy/route-preloader';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
+import { settingsTitleOf } from '../../../screens/conventions/settings-title-of';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
 import { tours } from '../../../tours/tours';
@@ -30,7 +31,7 @@ import { resolveShellMenu } from './resolve-shell-menu';
 import { stripScreenEntries } from './strip-screen-entries';
 
 const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): ShellMenu => {
-  const { menu: givenMenu, homeScreen, product } = useBrock();
+  const { menu: givenMenu, homeScreen, product, screenTree } = useBrock();
   const menu = useMenuHooks(givenMenu);
   const moduleMenu = useMenuHooks(givenModuleMenu);
   const show = useShowContext();
@@ -54,6 +55,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       homeScreen,
       homeLocked,
       singleProfile: product.singleProfile,
+      settingsTitle: settingsTitleOf(screenTree),
       hasCredits,
       developerTools,
       show,
@@ -68,7 +70,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
     const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords);
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
+  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, screenTree, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

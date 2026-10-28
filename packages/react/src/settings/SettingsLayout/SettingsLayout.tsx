@@ -33,7 +33,7 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
     const values = source ? readSource(source, section.groups.flatMap((group) => group.items.map((entry) => entry.key))) as S : settings;
     const patch = source ? sourcePatch<S>(source, refresh) : onChange;
     const lock = source ? (lockCauseOf?.(item.key, values) ?? null) : lockOf(item.key);
-    return settingRows(item, { settings: values, onChange: patch, renderControl, disabled: isDisabled?.(item.key, values) ?? false, lock, runner });
+    return settingRows(item, { settings: values, defaults: source ? undefined : defaults, onChange: patch, renderControl, disabled: isDisabled?.(item.key, values) ?? false, lock, runner });
   };
 
   const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, rowsOf });

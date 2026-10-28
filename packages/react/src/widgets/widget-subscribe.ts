@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { useContextsStore } from '../contexts/useContextsStore';
+import { useShowFlagsStore } from '../screens/show/useShowFlagsStore';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { useWidgetTitleStore } from './useWidgetTitleStore';
 import { listWidgets } from './widget-list';
 import type { WidgetListener } from './widget-snapshot.type';
 
@@ -13,7 +15,7 @@ const subscribeWidgets = (listener: WidgetListener): (() => void) => {
     last = key;
     listener(next);
   };
-  const stops = [useWidgetLayoutStore.subscribe(notify), useContextsStore.subscribe(notify)];
+  const stops = [useWidgetLayoutStore.subscribe(notify), useContextsStore.subscribe(notify), useWidgetTitleStore.subscribe(notify), useShowFlagsStore.subscribe(notify)];
   return () => {
     for (const stop of stops) stop();
   };

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { CommandContext, CommandDef } from '../commands/command.type';
+import { layout } from '../widgets/focus-mode';
 import { isToolbarMoveArgs } from './is-toolbar-move-args';
 import { toolbarLabelsOn } from './toolbar-labels-on';
 import { TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_TEXT } from './toolbar.constants';
@@ -24,6 +25,14 @@ const toolbarCommands: readonly CommandDef[] = [
     run: (context) => {
       const id = idOf(context);
       if (id !== null) useToolbarLayoutStore.getState().setLabels(id, !toolbarLabelsOn(useToolbarLayoutStore.getState().layout, id));
+    },
+  },
+  {
+    id: TOOLBAR_COMMANDS.focusMode,
+    label: TOOLBAR_TEXT.focusMode,
+    group: TOOLBAR_GROUP,
+    run: (context) => {
+      layout.focusMode(typeof context?.args === 'boolean' ? context.args : undefined);
     },
   },
   {

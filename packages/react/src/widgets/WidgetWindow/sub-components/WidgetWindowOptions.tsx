@@ -2,7 +2,7 @@
 import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-core';
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
 import { hostApi } from '../../../host/host-api';
-import { WidgetIdContext } from '../../widget-id-context';
+import { widgetOptionsOf } from '../../widget-options-of';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
 
 const noop = (): void => undefined;
@@ -42,7 +42,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
       onShowChange={(value) => setFrame({ show: value })}
       onReset={reset}
     >
-      {definition?.settings && <WidgetIdContext.Provider value={id}>{definition.settings()}</WidgetIdContext.Provider>}
+      {widgetOptionsOf(definition)}
     </WidgetOptions>
   );
 };

@@ -14,6 +14,7 @@ import { listWidgets } from './widget-list';
 import { presetNames } from './widget-preset-names';
 import { registerPresets } from './widget-register-presets';
 import { resizeEdit } from './widget-resize-edit';
+import { setWidgetTitle } from './widget-set-title';
 import { subscribeWidgets } from './widget-subscribe';
 import type { WidgetDockOptions, WidgetFloatRect } from './widget-snapshot.type';
 import { widgetVisible } from './widget-visible';
@@ -56,6 +57,7 @@ const widgets = {
     if (!isWidgetOpen(useWidgetLayoutStore.getState().layout, id)) useWidgetLayoutStore.getState().open(id);
     editing(id, (layout) => focusEdit(layout, id));
   },
+  setTitle: setWidgetTitle,
   presets: presetNames,
   applyPreset,
   registerPresets,

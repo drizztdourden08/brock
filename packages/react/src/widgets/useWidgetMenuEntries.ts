@@ -9,6 +9,7 @@ import { useKitMenuEntries } from './kits/useKitMenuEntries';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
 import { resetLayoutEntry } from './reset-layout-entry';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { useWorkspaceMenuEntries } from './workspaces/useWorkspaceMenuEntries';
 
 const useWidgetMenuEntries = (): MenuItem[] => {
   const developerTools = useDeveloperTools();
@@ -19,11 +20,12 @@ const useWidgetMenuEntries = (): MenuItem[] => {
   const reset = useWidgetLayoutStore((s) => s.reset);
   const kits = useKitMenuEntries();
   const kitOpen = useWidgetKitStore((s) => s.active !== null);
+  const workspaceEntries = useWorkspaceMenuEntries();
   return useMemo(() => {
     const own = buildWidgetMenuEntries(definitions, layout, toggle, developerTools);
     const shown = kitOpen ? own.map((entry) => ({ ...entry, checked: false })) : own;
-    return [...arrangeWidgetMenu([...shown, ...kits], entries, developerTools), resetLayoutEntry(reset)];
-  }, [definitions, layout, toggle, developerTools, kits, kitOpen, reset, entries]);
+    return [...arrangeWidgetMenu([...shown, ...kits, ...workspaceEntries], entries, developerTools), resetLayoutEntry(reset)];
+  }, [definitions, layout, toggle, developerTools, kits, kitOpen, workspaceEntries, reset, entries]);
 };
 
 export { useWidgetMenuEntries };

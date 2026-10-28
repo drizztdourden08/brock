@@ -5,6 +5,7 @@ export { useAllToolbars } from './useAllToolbars';
 export { useToolbarMenuEntries } from './useToolbarMenuEntries';
 export { useToolbarLayoutStore } from './useToolbarLayoutStore';
 export { toolbars } from './toolbars';
+export { toolbarItemZone } from './toolbar-item-zone';
 export { ToolbarHost } from './ToolbarHost';
 export { TOOLBAR_COMMANDS, TOOLBAR_ZONE } from './toolbar.constants';
 export type { ToolbarHostProps } from './ToolbarHost/ToolbarHost.type';

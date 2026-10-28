@@ -3,6 +3,10 @@ export { defineWidget } from './define-widget';
 export { registerWidgets } from './register-widgets';
 export { widgetsFromFiles } from './widgets-from-files';
 export { widgets } from './widgets';
+export { layout } from './focus-mode';
+export { defineWorkspace, registerWorkspaces, workspaces, useWorkspaceMenuEntries, buildWorkspaceMenuEntries } from './workspaces';
+export type { WorkspaceDef, WorkspaceListener, WorkspaceSnapshot } from './workspaces';
+export { widgetSettingsTab } from './widget-settings-tab';
 export { defineLayoutPreset } from './define-layout-preset';
 export type { LayoutCell, LayoutColumn, LayoutPane, LayoutPreset, LayoutRow, LayoutRowDef, RevisionMode } from './layout-preset.type';
 export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSnapshot } from './widget-snapshot.type';
@@ -25,4 +29,4 @@ export type { KitOverlayDef, KitOverlayFile, KitOverlayMeta, KitRequirement, Wid
 export type { WidgetContextSource, WidgetDisabledHook, WidgetDisabledOf, WidgetHostProps } from './WidgetHost';
 export { LogsWidget, LOGS_WIDGET_ID } from './built-in/LogsWidget';
 export { PerformanceWidget, PERFORMANCE_WIDGET_ID } from './built-in/PerformanceWidget';
-export type { ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetLayoutState, WidgetRegistryState, WindowKind } from './widget.type';
+export type { ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutState, WidgetRegistryState, WindowKind } from './widget.type';

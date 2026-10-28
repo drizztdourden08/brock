@@ -6,6 +6,7 @@ import { PROFILE_FIRST } from '../../menu/menu.constants';
 import type { MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { MenuItem } from '../../menu/menu.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
+import { SETTINGS_TITLE } from '../../screens/conventions/screens.constants';
 import type { ScreenDef } from '../../screens/screen.type';
 import type { TabDef } from '../../settings/settings.type';
 
@@ -28,11 +29,13 @@ const MOUSE_BACK_BUTTON = 3;
 const HOME_ENTRY: Omit<MenuItem, 'screen'> = { key: 'home', label: 'Home', icon: 'house', fresh: true };
 const HOME_LOCKED: Pick<MenuItem, 'disabled' | 'description'> = { disabled: true, description: PROFILE_FIRST };
 
+const SETTINGS_ENTRY_KEY = 'settings';
+
 const PROFILES_ENTRY: MenuItem = { key: 'profiles', label: 'Profiles', icon: 'users', screen: PROFILES_SCREEN };
 
 const TOP_ENTRIES: readonly MenuItem[] = [
   PROFILES_ENTRY,
-  { key: 'settings', label: 'Settings', icon: 'settings', screen: 'settings' },
+  { key: SETTINGS_ENTRY_KEY, label: SETTINGS_TITLE, icon: 'settings', screen: 'settings' },
 ];
 
 const CREDITS_ENTRY: MenuItem = { key: 'credits', label: 'Credits', icon: 'file-text', screen: CREDITS_SCREEN };
@@ -45,5 +48,5 @@ const TESSERA_OVERRIDES: TesseraOverrides = { writeText: clipboardWriter };
 
 export {
   ABOUT_ENTRY, CHROMELESS_WINDOW_MODES, CREDITS_ENTRY, CREDITS_SCREEN, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, LEVELS, MOUSE_BACK_BUTTON, NO_BACKGROUND, NO_MENU, NO_MENU_OVERRIDES, NO_MODULE_IDS, NO_MODULES, NO_SCREENS, NO_SHORTCUTS, NO_TABS,
-  PROFILES_ENTRY, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION, WIDGETS_SECTION_KEY,
+  PROFILES_ENTRY, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, SETTINGS_ENTRY_KEY, TESSERA_OVERRIDES, TOP_ENTRIES, WIDGETS_SECTION, WIDGETS_SECTION_KEY,
 };

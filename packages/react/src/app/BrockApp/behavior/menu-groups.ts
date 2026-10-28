@@ -3,7 +3,7 @@ import type { MenuGroups } from '../../../menu/menu-config.type';
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { withRoutes } from '../../../menu/with-routes';
 import {
-  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, TOP_ENTRIES,
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, SETTINGS_ENTRY_KEY, TOP_ENTRIES,
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
@@ -48,7 +48,8 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const hidden = hiddenMenuKeys(input.menuConfig);
   const showHome = !hidden.has(HOME_ENTRY.key);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && (!showHome || item.screen !== homeScreen));
-  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN));
+  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN))
+    .map((item) => (item.key === SETTINGS_ENTRY_KEY && input.settingsTitle !== undefined ? { ...item, label: input.settingsTitle } : item));
   return {
     main: [...(showHome ? [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }] : []), ...topEntries, ...unsectioned(app)],
     sections: withToolbars(groupSections([...app, ...modules]), toolbars),

@@ -26,7 +26,7 @@ const useHubState = (def: HubDef, ctx: ScreenRenderContext, live: HubLiveLists):
   useSubParent(sub === null ? null : page.id, params);
 
   const openTarget = useCallback((target: HubTarget) => {
-    open(target.hub ?? def.id, { section: target.section, tab: target.tab });
+    open(target.hub ?? def.id, { ...target.params, section: target.section, tab: target.tab });
   }, [open, def.id]);
 
   const context = useMemo<HubRenderContext>(

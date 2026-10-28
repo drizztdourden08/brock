@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { keepSticky } from './keep-sticky';
 import { HISTORY_LIMIT, NO_PARAMS } from './navigation.constants';
 import type { NavigationHistory, NavigationSnapshot, NavigationStep as Step, ResolvedRoute, ScreenParams } from './navigation.type';
 
@@ -46,12 +47,13 @@ const backStep = (state: NavigationSnapshot): Step | null => {
   const trail = history[active] ?? [];
   const previous = trail.at(-1);
   if (previous !== undefined) return { params: previous, history: { ...history, [active]: trail.slice(0, -1) }, parent: null };
-  return parent === null ? null : { params: parent, parent: null };
+  return parent === null ? null : { params: keepSticky(state, { active, params: parent }).params, parent: null };
 };
 
-const upStep = (state: NavigationSnapshot, parent: ScreenParams): Step | null => {
+const upStep = (state: NavigationSnapshot, given: ScreenParams): Step | null => {
   const { active, history } = state;
   if (active === null) return null;
+  const parent = keepSticky(state, { active, params: given }).params;
   const trail = history[active] ?? [];
   const previous = trail.at(-1);
   if (previous !== undefined && sameParams(previous, parent)) return { params: previous, history: { ...history, [active]: trail.slice(0, -1) }, parent: null };

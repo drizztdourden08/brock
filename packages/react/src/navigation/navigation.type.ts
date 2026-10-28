@@ -58,6 +58,12 @@ interface RouteAliasRegistry {
   get: (name: string) => RouteAlias | undefined;
 }
 
+interface StickyParamsRegistry {
+  set: (screen: string, keys: readonly string[] | undefined) => void;
+  keys: (screen: string | null) => readonly string[];
+  pick: (screen: string | null, params: ScreenParams) => ScreenParams;
+}
+
 interface RouteShortcut {
   shortcut: string;
   target: string;
@@ -72,5 +78,5 @@ interface LeaveGuardRegistry {
 
 export type {
   ClosedScreen, LeaveGuard, LeaveGuardRegistry, NavigationHistory, NavigationSnapshot, NavigationState, NavigationStep, OpenOptions, ResolvedRoute, RouteAlias, RouteAliasRegistry, RouteShortcut, SavedNavigation, ScreenParams,
-  UseNavigationResult,
+  StickyParamsRegistry, UseNavigationResult,
 };

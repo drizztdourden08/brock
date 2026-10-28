@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { create } from 'zustand';
 import { EMPTY_NAVIGATION as EMPTY, NO_PARAMS } from './navigation.constants';
+import { keepSticky } from './keep-sticky';
 import { navigationSteps } from './navigation-steps';
 import type { NavigationState } from './navigation.type';
 import { resolveRoute } from './resolve-route';
@@ -10,7 +11,7 @@ import { whenLeft } from './when-left';
 const useNavigationStore = create<NavigationState>()((set, get) => ({
   ...EMPTY,
   open: (id, params = NO_PARAMS, options = {}) => {
-    const target = resolveRoute(id, params, routeAliases.get);
+    const target = keepSticky(get(), resolveRoute(id, params, routeAliases.get), options.fresh);
     if (navigationSteps.isHere(get(), target)) return;
     whenLeft(() => set(navigationSteps.open(get(), target, options.fresh)));
   },

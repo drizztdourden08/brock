@@ -14,9 +14,10 @@ import { listWidgets } from './widget-list';
 import { presetNames } from './widget-preset-names';
 import { registerPresets } from './widget-register-presets';
 import { resizeEdit } from './widget-resize-edit';
+import type { SizedLayout } from './widget-resize-edit.type';
 import { setWidgetTitle } from './widget-set-title';
 import { subscribeWidgets } from './widget-subscribe';
-import type { WidgetDockOptions, WidgetFloatRect } from './widget-snapshot.type';
+import type { WidgetDockOptions, WidgetFloatRect, WidgetSized } from './widget-snapshot.type';
 import { widgetVisible } from './widget-visible';
 
 const opening = (change: (id: string) => void) => (id: string): void => {
@@ -30,6 +31,16 @@ const editing = (id: string, edit: (layout: WidgetLayout) => WidgetLayout): void
   widgetBodyHolds.widgets([id]);
 };
 
+const sized = (id: string, edit: (layout: WidgetLayout) => SizedLayout): WidgetSized => {
+  let reason: string | null = null;
+  editing(id, (layout) => {
+    const done = edit(layout);
+    reason = done.reason;
+    return done.layout;
+  });
+  return { size: listWidgets().find((each) => each.id === id)?.size ?? null, reason };
+};
+
 const widgets = {
   open: opening((id) => useWidgetLayoutStore.getState().open(id)),
   close: (id: string): void => useWidgetLayoutStore.getState().close(id),
@@ -39,18 +50,18 @@ const widgets = {
   force: (ids: readonly string[]): void => forcedWidgets.force(ids),
   isVisible: widgetVisible,
   list: listWidgets,
-  dock: (id: string, options: WidgetDockOptions): void => {
+  dock: (id: string, options: WidgetDockOptions): WidgetSized => {
     const def = knownWidget(id);
     const { definitions } = useWidgetLayoutStore.getState();
-    editing(id, (layout) => dockEdit(layout, def, options, definitions));
+    return sized(id, (layout) => dockEdit(layout, def, options, definitions));
   },
   float: (id: string, rect: WidgetFloatRect): void => {
     knownWidget(id);
     editing(id, (layout) => floatEdit(layout, id, rect));
   },
-  resize: (id: string, to: number | WidgetFloatRect): void => {
+  resize: (id: string, to: number | WidgetFloatRect): WidgetSized => {
     knownWidget(id);
-    editing(id, (layout) => resizeEdit(layout, id, to));
+    return sized(id, (layout) => resizeEdit(layout, id, to));
   },
   focus: (id: string): void => {
     knownWidget(id);

@@ -22,8 +22,13 @@ interface WidgetDockOptions {
   index?: number;
 }
 
+interface WidgetSized {
+  size: number | null;
+  reason: string | null;
+}
+
 type WidgetFloatRect = Partial<Pick<Rect, 'x' | 'y'>> & Pick<Rect, 'width' | 'height'>;
 
 type WidgetListener = (snapshot: readonly WidgetSnapshot[]) => void;
 
-export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSnapshot };
+export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSized, WidgetSnapshot };

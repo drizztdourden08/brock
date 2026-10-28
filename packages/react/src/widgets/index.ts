@@ -9,7 +9,7 @@ export type { WorkspaceDef, WorkspaceListener, WorkspaceSnapshot } from './works
 export { widgetSettingsTabs } from './widget-settings-tabs';
 export { defineLayoutPreset } from './define-layout-preset';
 export type { LayoutCell, LayoutColumn, LayoutPane, LayoutPreset, LayoutRow, LayoutRowDef, RevisionMode } from './layout-preset.type';
-export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSnapshot } from './widget-snapshot.type';
+export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSized, WidgetSnapshot } from './widget-snapshot.type';
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';

@@ -9,10 +9,8 @@ import { LONG_PATHS, tryGit } from '../git.mjs';
 const ignoredFolders = (root) => {
   const listed = tryGit([...LONG_PATHS, 'ls-files', '--others', '--ignored', '--exclude-standard', '--directory', '-z'], root);
   if (!listed) return [];
-  return listed
-    .split('\0')
-    .filter((entry) => entry.endsWith('/') && entry !== '.git/')
-    .map((entry) => resolve(root, entry));
+  const folders = [...new Set(listed.split('\0').filter((entry) => entry.endsWith('/') && entry !== '.git/'))].sort();
+  return folders.filter((entry, index) => !folders.slice(0, index).some((parent) => entry.startsWith(parent))).map((entry) => resolve(root, entry));
 };
 
 export { ignoredFolders };

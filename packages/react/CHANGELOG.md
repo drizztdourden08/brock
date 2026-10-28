@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-react
 
+## 0.112.0
+
+### Minor Changes
+
+- ea2ca87: Each settings row now has its own reset. When a settings tab has defaults and the item is not locked, the row gets `changed` (the value differs from its default) and `onReset`, which restores only that key, nested keys included, through the same patch as any other edit. A locked item, an item with no default, and rows of a source section get neither. The section reset stays as it was.
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.112.0
+
 ## 0.111.0
 
 ### Patch Changes

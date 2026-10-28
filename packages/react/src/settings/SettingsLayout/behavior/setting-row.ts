@@ -6,6 +6,7 @@ import type { SettingRowContext } from '../SettingsLayout.type';
 import { LinkedToggle } from '../sub-components/LinkedToggle';
 import { controlRow } from './control-row';
 import { rowActions } from './row-actions';
+import { rowReset } from './row-reset';
 import { settingInput } from './setting-input';
 import { warnMissingControl } from './warn-missing-control';
 import { withActions } from './with-actions';
@@ -14,6 +15,12 @@ const descriptionOf = (item: SettingItem): SettingsDescription =>
   (item.noDescription === true ? { noDescription: true } : { description: item.description });
 
 const settingRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<S>): SettingsSectionRow | null => {
+  const row = buildRow(item, ctx);
+  const reset = row && !('content' in row) ? rowReset(item, ctx) : null;
+  return row && reset ? { ...row, ...reset } : row;
+};
+
+const buildRow = <S extends object>(item: SettingItem, ctx: SettingRowContext<S>): SettingsSectionRow | null => {
   const { settings, onChange, renderControl, disabled, lock, runner } = ctx;
   const values = settings as SettingValues;
   const value = values[item.key];

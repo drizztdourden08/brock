@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
+import { WIDGET_KEEPS_FOCUS } from '../../keeps-widget-focus.constants';
+
 const WIDGET_SCOPE = '[data-widget-id], [data-pane-id], [data-floating-id], [data-widget-options], .dock-divider';
 
 const OPTIONS_SUB_PANEL = '.control-menu__sub-panel[id]';
@@ -12,7 +14,9 @@ const TYPING = [
 
 const PRESSED = 'input[type="range"], select';
 
-const KEEPS_FOCUS = `${TYPING}, ${PRESSED}`;
+const MARKED = `[${WIDGET_KEEPS_FOCUS}]`;
+
+const KEEPS_FOCUS = `${TYPING}, ${PRESSED}, ${MARKED}`;
 
 const CONTROL = [
   'button', 'a[href]', 'summary', 'input', '[role="button"]', '[role="tab"]', '[role="switch"]', '[role="checkbox"]', '[role="radio"]',
@@ -21,4 +25,4 @@ const CONTROL = [
 
 const MODIFIER_KEYS: ReadonlySet<string> = new Set(['Shift', 'Control', 'Alt', 'Meta']);
 
-export { CONTROL, KEEPS_FOCUS, MODIFIER_KEYS, OPTIONS_SUB_PANEL, OPTIONS_SUB_ROWS, TYPING, WIDGET_SCOPE };
+export { CONTROL, KEEPS_FOCUS, MARKED, MODIFIER_KEYS, OPTIONS_SUB_PANEL, OPTIONS_SUB_ROWS, TYPING, WIDGET_SCOPE };

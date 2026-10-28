@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { insideWidgets } from './inside-widgets';
-import { CONTROL, KEEPS_FOCUS, MODIFIER_KEYS, TYPING } from './useWidgetsNeverFocus.constants';
+import { CONTROL, KEEPS_FOCUS, MARKED, MODIFIER_KEYS, TYPING } from './useWidgetsNeverFocus.constants';
 
 const blurElement = (element: Element): void => {
   if (element instanceof HTMLElement || element instanceof SVGElement) element.blur();
@@ -11,7 +11,7 @@ const guardWidgetFocus = (doc: Document): (() => void) => {
   const fromWidgetPress = (): boolean => press.pointer && press.inWidgets;
   const dropFocus = (): void => {
     const active = doc.activeElement;
-    if (fromWidgetPress() && insideWidgets(active) && active.closest(TYPING) === null) blurElement(active);
+    if (fromWidgetPress() && insideWidgets(active) && active.closest(TYPING) === null && active.closest(MARKED) === null) blurElement(active);
   };
   const onPointerDown = (event: PointerEvent): void => {
     press.pointer = true;

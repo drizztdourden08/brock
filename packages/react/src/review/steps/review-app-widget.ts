@@ -5,10 +5,8 @@ import { requireHostApi } from '../../host/require-host-api';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
 import { widgets } from '../../widgets/widgets';
 import type { WidgetDef } from '../../widgets/widget.type';
-import { delay } from '../dom/delay';
 import { find } from '../dom/find';
 import { waitFor } from '../dom/wait-for';
-import { POPPED_PAINT_MS } from '../review.constants';
 import type { StepTour } from '../review.type';
 import { windowOpen } from '../widgets/window-open';
 
@@ -35,7 +33,6 @@ const reviewPopped = async (tour: StepTour, def: WidgetDef): Promise<void> => {
   const { id } = def;
   widgets.popOut(id);
   const opened = await windowOpen(id, true);
-  if (opened) await delay(POPPED_PAINT_MS);
   const file = opened ? await requireHostApi().reviewCaptureWidget(id, `widget-${id}-popped`) : null;
   tour.check(`app-widget-${id}-pops`, file !== null, `the "${id}" widget opened in its own window and was captured`, `the "${id}" widget did not open in its own window`);
   widgets.close(id);

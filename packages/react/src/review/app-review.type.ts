@@ -34,6 +34,7 @@ type ReviewStepSize = 'narrow' | ReviewStepWindow;
 interface ReviewStepDef {
   run: (tour: AppReviewTour) => Promise<void>;
   sizes?: readonly ReviewStepSize[];
+  timeoutMs?: number;
 }
 
 type ReviewSeedDef = ReviewStepDef;

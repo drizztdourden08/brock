@@ -88,6 +88,7 @@ const BASE_SEND_MAP = {
   appendSessionLog: 'debug:appendSessionLog',
   captureHolds: 'capture:holds',
   reviewCheck: 'review:check',
+  reviewAlive: 'review:alive',
   reviewFinish: 'review:finish',
   ...WIDGET_SEND_MAP,
   ...DATA_SEND_MAP,

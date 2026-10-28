@@ -34,6 +34,7 @@ interface BootState {
 
 interface BootEventMap {
   progress: [side: BootSide];
+  activity: [];
   presenting: [];
   revealed: [];
   failed: [failure: BootFailureRecord];

@@ -13,14 +13,14 @@ const checkPopOut = async (tour: StepTour): Promise<void> => {
     return;
   }
   widgets.popOut(id);
-  const opened = await until(async () => (await poppedWindowOf(id)) !== null);
+  const opened = await until(async () => (await poppedWindowOf(id)) !== null, `the "${id}" window to open`);
   tour.check('pop-out-opens', opened, `"${id}" opened in its own window`, `"${id}" did not open in its own window`);
   if (!opened) return;
   const info = await poppedWindowOf(id);
   tour.check('pop-out-unfocused', info?.focused === false, `the "${id}" window did not take the focus`, `the "${id}" window took the focus`);
   await checkPoppedPref(tour, id);
   widgets.close(id);
-  const closed = await until(async () => (await poppedWindowOf(id)) === null);
+  const closed = await until(async () => (await poppedWindowOf(id)) === null, `the "${id}" window to close`);
   const gone = closed && !widgets.isVisible(id);
   tour.check('pop-out-closes', gone, `closing "${id}" left no window and no layout entry`, `closing "${id}" left its window or its layout entry`);
 };

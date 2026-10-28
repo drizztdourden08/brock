@@ -1,14 +1,12 @@
 /* @layer renderer-shell @kind logic */
-import { POLL_MS, POP_OUT_WAIT_MS } from '../review.constants';
-import { delay } from './delay';
+import { WAIT_CEILING_MS } from '../review.constants';
+import { awaitSignal } from './await-signal';
+import { domWake } from './dom-wake';
+import { sourceOf } from './source-of';
+import { storeWake } from './store-wake';
+import { windowWake } from './window-wake';
 
-const until = async (probe: () => Promise<boolean>, timeoutMs = POP_OUT_WAIT_MS): Promise<boolean> => {
-  const deadline = performance.now() + timeoutMs;
-  while (performance.now() < deadline) {
-    if (await probe()) return true;
-    await delay(POLL_MS);
-  }
-  return false;
-};
+const until = async (probe: () => Promise<boolean>, what = `the page to satisfy ${sourceOf(probe)}`, timeoutMs = WAIT_CEILING_MS): Promise<boolean> =>
+  (await awaitSignal(probe, { what, ceilingMs: timeoutMs, wakeOn: [windowWake, storeWake, domWake] })) === true;
 
 export { until };

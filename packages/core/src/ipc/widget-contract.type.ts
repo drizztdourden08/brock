@@ -45,6 +45,7 @@ interface WidgetEventContract {
   'widget:tourAdvanced': (step: string) => void;
   'widget:settingTarget': (target: string) => void;
   'review:widgetPref': (key: string, value: unknown) => void;
+  'review:windows': () => void;
 }
 
 export type { WidgetEventContract, WidgetInvokeContract, WidgetSendContract };

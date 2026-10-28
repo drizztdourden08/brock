@@ -33,6 +33,7 @@ interface StepTour {
 
 interface ReviewStep {
   name: string;
+  timeoutMs?: number;
   run: (tour: StepTour) => Promise<void>;
 }
 

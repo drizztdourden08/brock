@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { BrowserWindow } from 'electron';
 import { isBenignBrowserError } from '@drizztdourden08/brock-core/log';
+import { bootEvents } from '../boot/boot-events';
 import { FAILED_STATUS } from './review.constants';
 import type { ReviewSession } from './review-session.type';
 
@@ -14,6 +15,7 @@ const watchReviewWindow = (win: BrowserWindow, session: ReviewSession): void => 
   });
   const { webRequest } = webContents.session;
   webRequest.onCompleted((details) => {
+    bootEvents.emit('activity');
     if (details.statusCode >= FAILED_STATUS) session.addFailedLoad(`${details.url}: HTTP ${details.statusCode}`);
     else session.markLoaded(details.url);
   });

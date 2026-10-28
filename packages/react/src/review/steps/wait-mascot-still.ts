@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind logic */
-import { delay } from '../dom/delay';
+import { reviewAlive } from '../dom/review-alive';
 import { find } from '../dom/find';
-import { POLL_MS } from '../review.constants';
-import { TOUR_MASCOT_STILL_SAMPLES, TOUR_MASCOT_WAIT_MS, TOUR_SELECTORS } from './tours-step.constants';
+import { reportCeiling } from '../dom/report-ceiling';
+import { WAIT_CEILING_MS } from '../review.constants';
+import { TOUR_MASCOT_STILL_SAMPLES, TOUR_SELECTORS } from './tours-step.constants';
 
 const placeOf = (): string | null => {
   const mascot = find(TOUR_SELECTORS.mascot);
@@ -11,18 +12,30 @@ const placeOf = (): string | null => {
   return `${box.left}:${box.top}:${box.width}:${box.height}`;
 };
 
-const waitMascotStill = async (): Promise<boolean> => {
-  const deadline = performance.now() + TOUR_MASCOT_WAIT_MS;
+const waitMascotStill = (): Promise<boolean> => new Promise((resolve) => {
   let last = placeOf();
   let still = 1;
-  while (last !== null && still < TOUR_MASCOT_STILL_SAMPLES) {
-    if (performance.now() >= deadline) return false;
-    await delay(POLL_MS);
+  if (last === null) {
+    resolve(true);
+    return;
+  }
+  const ceiling = setTimeout(() => {
+    reportCeiling('the tour mascot to stop walking', WAIT_CEILING_MS);
+    resolve(false);
+  }, WAIT_CEILING_MS);
+  const frame = (): void => {
+    reviewAlive();
     const now = placeOf();
     still = now === last ? still + 1 : 1;
     last = now;
-  }
-  return true;
-};
+    if (now === null || still >= TOUR_MASCOT_STILL_SAMPLES) {
+      clearTimeout(ceiling);
+      resolve(true);
+      return;
+    }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+});
 
 export { waitMascotStill };

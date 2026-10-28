@@ -78,6 +78,22 @@ export default defineReviewStep({
 
 The resize goes through the review's window probe, which sets the bounds of the main window in main. It works in a hidden `--review --no-focus` launch and never shows the window. A launch with no main window bounds fails a `window-<name>` check and skips that run.
 
+## A long operation
+
+Main's watchdog ends the review when a step is silent for 45 s. Waits and `capture` report activity on their own, so a step that waits with `tour.waitFor` is never counted silent. A step that runs one long call with nothing in between (engine setup, a game install) declares its own limit with `timeoutMs` on `defineReviewStep`:
+
+```ts
+export default defineReviewStep({
+  timeoutMs: 120_000,
+  run: async (tour) => {
+    await installEngine();
+    tour.check('engine-installed', true, 'the engine installed', '');
+  },
+});
+```
+
+`timeoutMs` is how long the step may stay silent before the review stops it. It replaces the 45 s limit for this step only, and the next step starts with the default again. Main caps it at 30 minutes. A step that does not declare it keeps the default. `tour.waitFor` still gives up after its own ceiling, so a long wait inside such a step passes its own `timeoutMs` as the second argument.
+
 ## The tour helpers
 
 `run(tour)` gets the same tour the built-in steps use, plus the DOM helpers they call:
@@ -92,8 +108,8 @@ The resize goes through the review's window probe, which sets the bounds of the 
 | `hover(element)` | a mouseover |
 | `typeText(input, text)` | sets an input or textarea the way React sees typing |
 | `press({ key, ctrlKey? })` | a key down and up on the focused element |
-| `waitFor(probe, timeoutMs?)` | polls until `probe()` is truthy (3 s by default), else `null` |
-| `settle()` | two frames and a short pause, for transitions |
+| `waitFor(probe, timeoutMs?)` | waits for the page, a store or a window event until `probe()` is truthy (30 s ceiling by default), else `null` |
+| `settle()` | waits until the layout has stopped moving, for transitions |
 | `delay(ms)` | a plain wait |
 | `openScreen(id)` | opens a screen through its menu entry, else `nav.open` |
 | `openWidget(id)` | opens a widget and waits until it is drawn |
@@ -102,7 +118,7 @@ The resize goes through the review's window probe, which sets the bounds of the 
 | `platform`, `api` | the platform ports and `window.api` |
 | `id` | the step's own name |
 
-Main's watchdog ends the review when nothing is captured or checked for 30 s, so a long seed reports a check between slow calls.
+A seed or step that is silent for more than 45 s needs `timeoutMs` (see A long operation).
 
 ## Captures and baselines
 

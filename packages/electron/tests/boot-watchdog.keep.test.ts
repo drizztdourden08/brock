@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MainContext } from '../src/main/types/main-context.type';
 import { attachAppWindow } from '../src/main/boot/attach-app-window';
+import { bootEvents } from '../src/main/boot/boot-events';
 import { bootState } from '../src/main/boot/boot-state';
 import { bootHandlers } from '../src/main/boot/ipc-handlers';
 import { DEV_WATCHDOG_MS, WATCHDOG_ENV, WATCHDOG_MS } from '../src/main/boot/reveal.constants';
@@ -58,6 +59,18 @@ describe('the boot watchdog', () => {
     expect(bootState.revealed).toBe(true);
     expect(app.isVisible()).toBe(true);
     expect(splash.isDestroyed()).toBe(true);
+  });
+
+  it('announces boot activity for renderer progress and for the page loading, so the review start limit follows the boot', () => {
+    const { app } = boot();
+    const seen = vi.fn();
+    bootEvents.on('activity', seen);
+    send('boot:progress', { done: 1, total: 3, label: 'Loading settings', detail: null });
+    const afterProgress = seen.mock.calls.length;
+    expect(afterProgress).toBeGreaterThan(0);
+    app.webContents.emit('did-finish-load');
+    expect(seen.mock.calls.length).toBeGreaterThan(afterProgress);
+    bootEvents.off('activity', seen);
   });
 
   it('takes boot progress after it fired as a sign of life and goes back to the progress', async () => {

@@ -4,7 +4,9 @@ import type {
 } from '@drizztdourden08/brock-core';
 import { anyTypeFor, osFromProcess } from '@drizztdourden08/brock-core';
 import { requireHostApi } from '../../host/require-host-api';
+import { createElectronClipboard } from './electron-clipboard';
 import { createElectronDocuments } from './electron-documents';
+import { createElectronNet } from './electron-net';
 import { toArrayBuffer } from './to-array-buffer';
 
 const createDevice = (): DevicePort => ({
@@ -106,6 +108,8 @@ const createElectronFactory =(): PlatformFactory => {
       filePicker: createFilePicker,
       device: createDevice,
       documents: createElectronDocuments,
+      clipboard: createElectronClipboard,
+      net: createElectronNet,
     },
   };
 };

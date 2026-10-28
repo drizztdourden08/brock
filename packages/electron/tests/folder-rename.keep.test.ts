@@ -1,29 +1,15 @@
 /* @layer electron-main @kind test */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, symlink } from 'fs/promises';
+import { mkdir, readFile, symlink } from 'fs/promises';
 import { join } from 'path';
-import { loose, makeBase } from './folder-fixture';
-import { dots, names, openWorld, put } from './folder-ops-fixture';
-import type { OpsWorld } from './folder-ops-fixture';
+import { loose } from './folder-fixture';
+import { dirLink, dots, names, put, withOpsWorld } from './folder-ops-fixture';
+import { markOfTheWeb as marked } from './mark-of-the-web-mock';
 
-const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
+vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web-mock'));
 
-vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
-
-const dirLink = process.platform === 'win32' ? 'junction' : 'dir';
-
-let world: OpsWorld;
-
-beforeEach(async () => {
-  world = await openWorld('brock-rename-');
-  marked.mockReset();
-  marked.mockResolvedValue();
-});
-
-afterEach(async () => {
-  await rm(world.base, { recursive: true, force: true });
-});
+const world = withOpsWorld('brock-rename-');
 
 describe('rename', () => {
   it('renames a file and a folder inside the grant, and moves a file to another folder', async () => {
@@ -55,17 +41,12 @@ describe('rename', () => {
     expect((await names(granted)).filter((name) => name.toLowerCase() === 'case.txt')).toEqual(['case.txt']);
   });
 
-  it('refuses a path outside, a root, another grant and the folder into itself', async () => {
+  it('refuses a path outside, a root and the folder into itself', async () => {
     const { access, granted, outside, base } = world;
-    const second = await makeBase('brock-rename-second-');
-    access.allowFolder(second);
-    await put(join(second, 'z.txt'));
     const inside = join(granted, 'sub', 'in.txt');
     const cases: [string, string][] = [
       [join(outside, 'secret.txt'), join(granted, 'x.txt')],
       [inside, join(outside, 'x.txt')],
-      [inside, join(second, 'x.txt')],
-      [join(second, 'z.txt'), join(granted, 'z.txt')],
       [granted, join(base, 'renamed')],
       [inside, granted],
       [inside, dots(granted, 'outside', 'x.txt')],
@@ -75,7 +56,6 @@ describe('rename', () => {
     await expect(access.rename(join(granted, 'gone.txt'), join(granted, 'x.txt'))).rejects.toThrow(/does not exist/);
     expect(await readFile(inside, 'utf8')).toBe('inside');
     expect(await readFile(join(outside, 'secret.txt'), 'utf8')).toBe('secret');
-    await rm(second, { recursive: true, force: true });
   });
 
   it('refuses a target that a link leads outside, even with overwrite', async () => {

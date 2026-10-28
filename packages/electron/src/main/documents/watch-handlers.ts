@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { WebContents } from 'electron';
 import type { MainContext } from '../types/main-context.type';
+import { dropWhenGone } from '../ipc/drop-when-gone';
 import { MAX_WATCH_ID } from './watch-limits.constants';
 
 const registerWatchHandlers = ({ handle, documents }: Pick<MainContext, 'handle' | 'documents'>): void => {
@@ -16,11 +17,7 @@ const registerWatchHandlers = ({ handle, documents }: Pick<MainContext, 'handle'
   const hook = (sender: WebContents): void => {
     if (hooked.has(sender)) return;
     hooked.add(sender);
-    sender.on('did-start-navigation', (details) => {
-      if (details.isMainFrame && !details.isSameDocument) stopAll(sender);
-    });
-    sender.on('render-process-gone', () => stopAll(sender));
-    sender.on('destroyed', () => stopAll(sender));
+    dropWhenGone(sender, () => stopAll(sender));
   };
 
   const ownedBy = (sender: WebContents): Map<string, () => void> => {

@@ -156,6 +156,18 @@ interface ProductTray {
   menu?: readonly TrayMenuItem[];
 }
 
+interface ProductNet {
+  hosts: string[];
+  contentTypes: string[];
+  maxBytes: number;
+}
+
+interface ProductNetInput {
+  hosts: string[];
+  contentTypes?: string[];
+  maxBytes?: number;
+}
+
 interface ProductConfig {
   id: string;
   name: string;
@@ -189,12 +201,14 @@ interface ProductConfig {
   menu?: ProductMenu;
   mascot?: false | ProductMascot;
   tray?: ProductTray;
+  net?: ProductNet;
 }
 
 type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };
 
 type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
-  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets' | 'icons'>> & {
+  Partial<Omit<ProductConfig, 'id' | 'name' | 'appId' | 'author' | 'window' | 'logos' | 'installer' | 'widgets' | 'icons' | 'net'>> & {
+    net?: ProductNetInput;
     icons?: ProductIconsInput;
     window?: WindowInput;
     logos?: Partial<ProductLogos>;
@@ -204,6 +218,6 @@ type ProductInput = Pick<ProductConfig, 'id' | 'name' | 'appId' | 'author'> &
 
 export type {
   ProductAuthor, ProductRepo, SplashConfig, TitleBarConfig, TitleBarControls, WindowConfig, WindowInput, PrivilegedScheme, DeepLinkProtocol, FileAssociation,
-  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup, ProductMascot, ProductTray, TrayMenuItem,
+  ProductIconRim, ProductIcons, ProductIconsInput, ProductWordmark, ProductWordmarkInput, ProductWordmarkRendering, ProductLogos, ProductPorts, ProductWidgets, ProductBoot, ProductConfig, ProductInput, ProductMenu, ProductMenuEntry, ProductMenuGroup, ProductMascot, ProductNet, ProductNetInput, ProductTray, TrayMenuItem,
   InstallScope, InstallerShortcuts, InstallerConfig, InstallerInput, LinuxCategory,
 };

@@ -48,11 +48,12 @@ const needsWholeTree = (files) => {
 
 /**
  * @param {string} cwd the folder eslint runs in
- * @returns {number | null} tracked and untracked files here
+ * @returns {string[] | null} sorted tracked and untracked files on disk
  */
-const treeFileCount = (cwd) => {
+const treeFiles = (cwd) => {
   const listed = git(cwd, ['ls-files', '--cached', '--others', '--exclude-standard']);
-  return listed === null ? null : lines(listed).length;
+  if (listed === null) return null;
+  return [...new Set(lines(listed))].filter((file) => existsSync(join(cwd, file))).sort();
 };
 
-export { changedFiles, needsWholeTree, treeFileCount };
+export { changedFiles, needsWholeTree, treeFiles };

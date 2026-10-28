@@ -82,11 +82,11 @@ describe('the lint plan and its one line', () => {
     expect(plan.line).toMatch(/^brock lint: changed mode, 3 files changed since [0-9a-f]{8} \(merge base with main\)$/);
   });
 
-  it('lints the whole tree in CI and says how many files it holds', () => {
+  it('lints the whole tree in CI and says how many files it holds, deleted ones left out', () => {
     const root = repoOnFeatureBranch();
     const plan = planLint({ cwd: root, env: { CI: '1' } });
     expect(plan.targets).toEqual(['.']);
-    expect(plan.line).toBe('brock lint: full tree (CI is set), 4 files');
+    expect(plan.line).toBe('brock lint: full tree (CI is set), 3 files in 1 batch');
   });
 
   it('falls back to the whole tree when the changes cannot be listed', () => {

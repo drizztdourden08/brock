@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-catalog
 
+## 0.115.0
+
+### Patch Changes
+
+- Updated dependencies [ec5960e]
+  - @drizztdourden08/brock-react@0.115.0
+  - @drizztdourden08/brock-core@0.115.0
+  - @drizztdourden08/brock-electron@0.115.0
+
 ## 0.114.0
 
 ### Patch Changes

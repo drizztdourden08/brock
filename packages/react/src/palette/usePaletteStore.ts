@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind hook */
 import { create } from 'zustand';
 import type { PaletteState } from './palette.type';
-import { PALETTE_CLOSED } from './usePaletteStore.constants';
+import { PALETTE_CLOSED } from './palette-store.constants';
 
 const usePaletteStore = create<PaletteState>()((set) => ({
   ...PALETTE_CLOSED,

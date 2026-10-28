@@ -7,8 +7,6 @@ import { createToolbarLayout, isToolbarShown, isWidgetOpen } from '@drizztdourde
 import { PlatformProvider } from '../src/platform/PlatformProvider';
 import { INITIAL_CONTEXTS } from '../src/contexts/contexts.constants';
 import { useContextsStore } from '../src/contexts/useContextsStore';
-import { useShowFlagsStore } from '../src/screens/show/useShowFlagsStore';
-import type { ShowContext } from '../src/screens/show/show.type';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 import { WidgetFace } from '../src/widgets/WidgetFace';
@@ -26,14 +24,11 @@ import { widgetSettingsTabs } from '../src/widgets/widget-settings-tabs';
 import { widgetMainRect } from '../src/widgets/widget-main-rect';
 import { widgets } from '../src/widgets/widgets';
 import { useWidgetPrefStore } from '../src/stores/useWidgetPrefStore';
+import { mode, availableIn, setMode } from './rule-mode-fixture';
 import { showHarness } from './show-harness';
+import { resetWidgetStage } from './widget-stage-fixture';
 
 const make = (id: string, extra: Partial<Parameters<typeof defineWidget>[0]> = {}) => defineWidget({ id, label: id.toUpperCase(), render: () => null, ...extra });
-const mode = (name: string) => ({ when: ({ flags }: ShowContext): boolean => flags.mode === name });
-const setMode = (name: string | null): void => {
-  act(() => useShowFlagsStore.getState().put('test', name === null ? {} : { mode: name }));
-};
-
 const SHEET = make('sheet', { when: mode('sheet') });
 const MULTI = make('multi', { contexts: ['surface', 'map'] });
 const BOTH = make('both', { contexts: ['surface'], when: mode('sheet') });
@@ -44,15 +39,10 @@ const PREFS = make('layers', {
 const EMPTY = make('tiles', { context: 'tiles', empty: () => createElement('p', null, 'Open a tileset'), render: () => createElement('p', null, 'Tiles') });
 const DEFINITIONS = [SHEET, MULTI, BOTH, PLAIN, PREFS, EMPTY];
 const store = () => useWidgetLayoutStore.getState();
-const availableIn = (snapshot: readonly { id: string; available: boolean }[], id: string): boolean => snapshot.find((each) => each.id === id)?.available ?? false;
 const faced = () => createElement(PlatformProvider, null, createElement(WidgetFace, { def: EMPTY }));
 
 beforeEach(() => {
-  widgetMainRect.current = { x: 0, y: 0, width: 1000, height: 600 };
-  store().setPreset(null);
-  store().replace(null);
-  store().setDefinitions(DEFINITIONS);
-  useContextsStore.setState({ contexts: INITIAL_CONTEXTS });
+  resetWidgetStage(DEFINITIONS);
   useWidgetTitleStore.setState({ titles: {} });
   useWidgetPrefStore.setState({ byWidget: {} });
   useForcedWidgetStore.setState({ ids: [], pending: [] });

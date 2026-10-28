@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { subscribeSnapshots } from '../widgets/subscribe-snapshots';
 import { isToolbarShown, moveToolbar, moveToolbarToSide } from '@drizztdourden08/tessera/composites';
 import type { ToolbarLayout, ToolbarSide } from '@drizztdourden08/tessera/composites';
 import { useShowFlagsStore } from '../screens/show/useShowFlagsStore';
@@ -67,20 +68,8 @@ const labels = (id: string, on: boolean): void => {
   store().setLabels(id, on);
 };
 
-const subscribe = (listener: ToolbarListener): (() => void) => {
-  let last = JSON.stringify(list());
-  const check = (): void => {
-    const next = list();
-    const key = JSON.stringify(next);
-    if (key === last) return;
-    last = key;
-    listener(next);
-  };
-  const stops = [useToolbarLayoutStore.subscribe(check), useShowFlagsStore.subscribe(check)];
-  return () => {
-    for (const stop of stops) stop();
-  };
-};
+const subscribe = (listener: ToolbarListener): (() => void) =>
+  subscribeSnapshots(list, [(on) => useToolbarLayoutStore.subscribe(on), (on) => useShowFlagsStore.subscribe(on)], listener);
 
 const toolbars = { list, show, hide, moveToSide, labels, reset: (): void => store().reset(), subscribe };
 

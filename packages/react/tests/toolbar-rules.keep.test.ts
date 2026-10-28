@@ -1,10 +1,7 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
-import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createToolbarLayout } from '@drizztdourden08/tessera/composites';
-import { useShowFlagsStore } from '../src/screens/show/useShowFlagsStore';
-import type { ShowContext } from '../src/screens/show/show.type';
 import { availableToolbars } from '../src/toolbars/available-toolbars';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
 import { toolbarIdOf } from '../src/toolbars/toolbar-id-of';
@@ -12,13 +9,8 @@ import { toolbarItemEntries } from '../src/toolbars/toolbar-item-entries';
 import { toolbarItemZone } from '../src/toolbars/toolbar-item-zone';
 import { toolbars } from '../src/toolbars/toolbars';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
+import { mode, availableIn, setMode } from './rule-mode-fixture';
 import { showHarness } from './show-harness';
-
-const mode = (name: string) => ({ when: ({ flags }: ShowContext): boolean => flags.mode === name });
-const setMode = (name: string | null): void => {
-  act(() => useShowFlagsStore.getState().put('test', name === null ? {} : { mode: name }));
-};
-const availableIn = (snapshot: readonly { id: string; available: boolean }[], id: string): boolean => snapshot.find((each) => each.id === id)?.available ?? false;
 
 afterEach(() => {
   showHarness.resetShow();

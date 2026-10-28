@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { subscribeSnapshots } from '../subscribe-snapshots';
 import { useShowFlagsStore } from '../../screens/show/useShowFlagsStore';
 import { chosenWorkspace } from './chosen-workspace';
 import { useWorkspaceStore } from './useWorkspaceStore';
@@ -12,20 +13,8 @@ const list = (): WorkspaceSnapshot[] => {
   return defs.map((def) => ({ id: def.id, label: def.label, active: active === def.id, matches: chosen === def.id, saved: views[def.id] !== undefined }));
 };
 
-const subscribe = (listener: WorkspaceListener): (() => void) => {
-  let last = JSON.stringify(list());
-  const check = (): void => {
-    const next = list();
-    const key = JSON.stringify(next);
-    if (key === last) return;
-    last = key;
-    listener(next);
-  };
-  const stops = [useWorkspaceStore.subscribe(check), useShowFlagsStore.subscribe(check)];
-  return () => {
-    for (const stop of stops) stop();
-  };
-};
+const subscribe = (listener: WorkspaceListener): (() => void) =>
+  subscribeSnapshots(list, [(on) => useWorkspaceStore.subscribe(on), (on) => useShowFlagsStore.subscribe(on)], listener);
 
 const workspaces = {
   list,

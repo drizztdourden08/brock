@@ -39,8 +39,14 @@ interface RowActionScope {
   runner?: ActionRunner;
 }
 
+interface SettingsRowReset {
+  changed: boolean;
+  onReset: () => void;
+}
+
 interface SettingRowContext<S extends object> {
   settings: S;
+  defaults?: S;
   onChange: SettingsPatch<S>;
   renderControl?: RenderControl<S>;
   disabled: boolean;
@@ -71,4 +77,4 @@ interface SettingsPageContextValue {
   query: string;
 }
 
-export type { ActionRunner, BusyActions, ControlRowInput, GroupListInput, ItemGroup, ResolvedSection, RowActionScope, SettingRowContext, SettingsPageContextValue, SettingsRecord };
+export type { ActionRunner, BusyActions, ControlRowInput, GroupListInput, ItemGroup, ResolvedSection, RowActionScope, SettingRowContext, SettingsPageContextValue, SettingsRecord, SettingsRowReset };

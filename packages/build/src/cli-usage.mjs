@@ -71,7 +71,9 @@ Usage:
   brock prose                run the writing gate over every tracked text file the other linters skip
                              (json, yaml, toml, html, svg, txt, config files)
   brock lint [--changed | --all] [--no-cache] [files...] [-- eslint args]
-                             eslint with a V8 heap ceiling (2048 MB, BROCK_LINT_MEMORY_MB; an NODE_OPTIONS heap flag wins)
+                             eslint with a V8 heap ceiling (4096 MB per batch on a full-tree run, 2048 MB otherwise,
+                             BROCK_LINT_MEMORY_MB; a NODE_OPTIONS heap flag wins). A full-tree run lints
+                             1000 files per eslint process (BROCK_LINT_BATCH_SIZE), exit code the worst of all
                              and a content cache under node_modules/.cache/brock (not in CI). Local runs lint only the
                              files changed since the merge base with the default branch plus untracked files; CI or
                              --all lints the whole tree; files named on the command line lint just those. A changed

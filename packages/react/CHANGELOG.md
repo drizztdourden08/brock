@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.115.4
+
+### Patch Changes
+
+- 6128007: Build against Tessera 0.90. Its dock corner turn lives in the seam divider, with no separate pointer target near widget controls. Apps can bump Tessera to 0.90 for it; 0.87 still works.
+  - @drizztdourden08/brock-core@0.115.4
+
 ## 0.115.3
 
 ### Patch Changes

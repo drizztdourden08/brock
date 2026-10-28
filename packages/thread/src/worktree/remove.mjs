@@ -1,6 +1,5 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { gitLoud, LONG_PATHS } from '../git.mjs';
 import { deleteTree } from './delete-tree.mjs';
 import { guards } from './guards.mjs';
@@ -8,14 +7,14 @@ import { findLinks } from './find-links.mjs';
 import { registeredWorktrees } from './paths.mjs';
 import { assertReleasable } from './release-checks.mjs';
 import { clearUserData } from './clear-user-data.mjs';
+import { isPathArgument, removeLeftover } from './remove-leftover.mjs';
 import { removeTree } from './remove-tree.mjs';
+import { samePath } from './same-path.mjs';
 import { settleBranch } from './settle-branch.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 import { qualifyName } from './qualify-name.mjs';
 
-const normalized = (path) => resolve(path).replace(/\\/g, '/').toLowerCase();
-
-const isRemnant = (worktreePath, main) => !registeredWorktrees(main).some((path) => normalized(path) === normalized(worktreePath));
+const isRemnant = (worktreePath, main) => !registeredWorktrees(main).some((path) => samePath(path, worktreePath));
 
 const removeRemnant = async (worktree) => {
   const { path, main, log } = worktree;
@@ -40,8 +39,9 @@ const removeRegistered = async (worktree, ctx) => {
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const removeVerb = {
-  usage: '  brock worktree remove <name>',
+  usage: '  brock worktree remove <name | path>',
   run: async (positional, options, ctx) => {
+    if (positional[0] && isPathArgument(positional[0])) return removeLeftover(positional[0], ctx);
     const name = qualifyName(positional[0], ctx.workspace, options);
     if (!name) throw new Error(`Usage:\n${removeVerb.usage}`);
     const worktree = createWorktreeContext(name, ctx);

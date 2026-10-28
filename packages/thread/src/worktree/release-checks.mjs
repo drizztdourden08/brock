@@ -3,6 +3,14 @@ import { git } from '../git.mjs';
 import { branchLanded } from './branch-merged.mjs';
 import { guards } from './guards.mjs';
 import { threadBase } from './thread-base.mjs';
+import { isUpgradeThrowaway } from './upgrade-throwaway.mjs';
+
+const THROWAWAY = Object.freeze({ landed: true, via: 'an upgrade throwaway branch' });
+
+const settledLanding = ({ branch, base, main, workspace }) => {
+  const landed = branchLanded(branch, main, base);
+  return !landed.landed && isUpgradeThrowaway({ branch, base, cwd: main, workspace }) ? THROWAWAY : landed;
+};
 
 /**
  * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
@@ -17,7 +25,7 @@ const assertReleasable = (worktree, ctx, verb) => {
   guards.assertClean(path, verb);
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD'], path);
   const { base } = threadBase.baseOf(branch, main, workspace);
-  const landed = branchLanded(branch, main, base);
+  const landed = settledLanding({ branch, base, main, workspace });
   if (!landed.landed) guards.assertPushed({ worktreePath: path, branch, base, alias: workspace.name });
   guards.assertNoStash(path, name);
   return { branch, base, landed };

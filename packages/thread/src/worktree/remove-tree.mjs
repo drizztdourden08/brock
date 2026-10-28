@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
-import { gitLoud, LONG_PATHS, tryGit } from '../git.mjs';
+import { git, LONG_PATHS, tryGit } from '../git.mjs';
 import { deleteTree } from './delete-tree.mjs';
 import { ignoredFolders } from './ignored-folders.mjs';
 
@@ -18,7 +18,8 @@ const clearIgnored = async (path) => {
   return failures;
 };
 
-const reportLocked = (failures, log) => {
+const reportLocked = (failures, gitError, log) => {
+  if (gitError) log(gitError);
   for (const { path, code } of failures.slice(0, 5)) log(`Could not delete ${path} (${code}); something holds it open.`);
 };
 
@@ -31,16 +32,18 @@ const reportLocked = (failures, log) => {
 const removeTree = async (path, main, log) => {
   assertTrackedClean(path);
   const failures = await clearIgnored(path);
+  let gitError = '';
   try {
-    gitLoud([...LONG_PATHS, 'worktree', 'remove', path], main);
-  } catch {
-    log('git could not delete it in one pass. Retrying the directory directly.');
+    git([...LONG_PATHS, 'worktree', 'remove', path], main);
+  } catch (error) {
+    gitError = String(error.stderr ?? error.message).trim();
     const failure = await deleteTree(path, path);
     if (failure) failures.push(failure);
   }
   tryGit([...LONG_PATHS, 'worktree', 'prune'], main);
   const gone = !existsSync(path);
-  if (!gone) reportLocked(failures, log);
+  if (gone && gitError) log('Git could not remove the folder in one pass, so Brock deleted it directly.');
+  if (!gone) reportLocked(failures, gitError, log);
   return gone;
 };
 

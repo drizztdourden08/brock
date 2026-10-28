@@ -16,7 +16,7 @@ import { finishReview } from '../review/finish-review';
 import { captureReviewSplash } from '../review/capture-review-splash';
 import { createReviewWatchdog } from '../review/create-review-watchdog';
 import type { ReviewWatchdog, ReviewWatchdogTrip } from '../review/review-watchdog.type';
-import { REVIEW_BOOT_CAP_MS, REVIEW_IDLE_MS, REVIEW_START_MS } from '../review/review.constants';
+import { REVIEW_BOOT_CAP_MS, REVIEW_IDLE_MS, REVIEW_START_MS, REVIEW_STEP_MAX_MS } from '../review/review.constants';
 import { watchReviewWindow } from '../review/watch-review-window';
 import { widgetReviewHandlers } from '../widgets/widget-review-handlers';
 
@@ -54,7 +54,7 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     finish(false);
   };
 
-  const guard = createReviewWatchdog({ startMs: REVIEW_START_MS, idleMs: REVIEW_IDLE_MS, bootCapMs: REVIEW_BOOT_CAP_MS, onTrip: tripped });
+  const guard = createReviewWatchdog({ startMs: REVIEW_START_MS, idleMs: REVIEW_IDLE_MS, bootCapMs: REVIEW_BOOT_CAP_MS, stepMaxMs: REVIEW_STEP_MAX_MS, onTrip: tripped });
   watchdog = guard;
   const stillWorking = guard.working;
   bootEvents.on('activity', guard.bootActivity);
@@ -74,7 +74,7 @@ const armReviewFlag = (ctx: MainContext, windowIcon: string | undefined): void =
     stillWorking();
     session.addCheck(check);
   });
-  ctx.on('review:alive', stillWorking);
+  ctx.on('review:alive', (_event, stepLimitMs) => guard.working(stepLimitMs));
   ctx.on('review:finish', () => finish(true));
   widgetReviewHandlers(ctx, session, stillWorking);
   bootEvents.once('failed', () => finish(false));

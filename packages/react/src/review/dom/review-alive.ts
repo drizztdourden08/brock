@@ -4,11 +4,11 @@ import { ALIVE_PING_MS } from '../review.constants';
 
 let lastPing = Number.NEGATIVE_INFINITY;
 
-const reviewAlive = (force = false): void => {
+const reviewAlive = (force = false, stepLimitMs?: number | null): void => {
   const now = performance.now();
   if (!force && now >= lastPing && now - lastPing < ALIVE_PING_MS) return;
   lastPing = now;
-  hostApi()?.reviewAlive();
+  hostApi()?.reviewAlive(stepLimitMs);
 };
 
 export { reviewAlive };

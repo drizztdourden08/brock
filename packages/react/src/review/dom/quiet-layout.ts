@@ -6,6 +6,10 @@ const finiteMotion = (): boolean => typeof document.getAnimations === 'function'
   && document.getAnimations().some((motion) => Number.isFinite(motion.effect?.getComputedTiming().endTime ?? Number.POSITIVE_INFINITY) && motion.playState === 'running');
 
 const quietLayout = (ceilingMs = WAIT_CEILING_MS): Promise<void> => new Promise((resolve) => {
+  if (typeof document === 'undefined') {
+    resolve();
+    return;
+  }
   let quiet = 0;
   let finished = false;
   const stirred = (): void => { quiet = 0; };

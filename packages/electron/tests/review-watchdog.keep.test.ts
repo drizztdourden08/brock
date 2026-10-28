@@ -6,9 +6,10 @@ import type { ReviewWatchdogTrip } from '../src/main/review/review-watchdog.type
 const START = 60_000;
 const IDLE = 45_000;
 const CAP = 300_000;
+const STEP_MAX = 1_800_000;
 
 const trips: ReviewWatchdogTrip[] = [];
-const make = () => createReviewWatchdog({ startMs: START, idleMs: IDLE, bootCapMs: CAP, onTrip: (trip) => trips.push(trip) });
+const make = () => createReviewWatchdog({ startMs: START, idleMs: IDLE, bootCapMs: CAP, stepMaxMs: STEP_MAX, onTrip: (trip) => trips.push(trip) });
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -81,5 +82,44 @@ describe('the review watchdog once the tour runs', () => {
     dog.stop();
     await vi.advanceTimersByTimeAsync(CAP);
     expect(trips).toEqual([]);
+  });
+});
+
+describe('a step that declares a long operation', () => {
+  const TWO_MINUTES = 120_000;
+
+  it('is not stopped at the default idle limit, and is stopped after its own limit', async () => {
+    const dog = make();
+    dog.working(TWO_MINUTES);
+    await vi.advanceTimersByTimeAsync(IDLE + 1000);
+    expect(trips).toEqual([]);
+    await vi.advanceTimersByTimeAsync(TWO_MINUTES - IDLE - 1000);
+    expect(trips).toEqual([{ kind: 'idle', ms: TWO_MINUTES }]);
+  });
+
+  it('keeps its limit through plain pings and drops it when the next step starts', async () => {
+    const dog = make();
+    dog.working(TWO_MINUTES);
+    await vi.advanceTimersByTimeAsync(60_000);
+    dog.working();
+    await vi.advanceTimersByTimeAsync(TWO_MINUTES - 1);
+    expect(trips).toEqual([]);
+    dog.working(null);
+    await vi.advanceTimersByTimeAsync(IDLE);
+    expect(trips).toEqual([{ kind: 'idle', ms: IDLE }]);
+  });
+
+  it('caps the declared limit at the step maximum', async () => {
+    const dog = make();
+    dog.working(STEP_MAX * 10);
+    await vi.advanceTimersByTimeAsync(STEP_MAX);
+    expect(trips).toEqual([{ kind: 'idle', ms: STEP_MAX }]);
+  });
+
+  it('ignores a limit that is not a positive number', async () => {
+    const dog = make();
+    dog.working(-5);
+    await vi.advanceTimersByTimeAsync(IDLE);
+    expect(trips).toEqual([{ kind: 'idle', ms: IDLE }]);
   });
 });

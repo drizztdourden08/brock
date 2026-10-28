@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BrowserWindow } from 'electron';
 import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
+import { REVIEW_HOLD_MS } from '../src/main/review/review.constants';
 import type { MainContext } from '../src/main/types/main-context.type';
 
 const shots = vi.hoisted(() => ({ taken: [] as string[], quits: 0, exits: [] as number[], logs: [] as string[] }));
@@ -191,9 +192,9 @@ describe('review captures', () => {
     expect(checks).toEqual([]);
     captureHolds.set(2);
     const late = awaitCaptureHolds(session, 'settings');
-    await vi.advanceTimersByTimeAsync(10_000);
+    await vi.advanceTimersByTimeAsync(REVIEW_HOLD_MS);
     await late;
-    expect(checks).toEqual([{ id: 'capture-holds', step: 'settings', pass: false, reason: '2 screenshot hold(s) still open after 10 s; captured what there was' }]);
+    expect(checks).toEqual([{ id: 'capture-holds', step: 'settings', pass: false, reason: `2 screenshot hold(s) still open after ${REVIEW_HOLD_MS / 1000} s; captured what there was` }]);
     captureHolds.set(0);
   });
 });

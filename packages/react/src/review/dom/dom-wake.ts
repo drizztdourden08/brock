@@ -3,6 +3,7 @@ import { SETTLING_EVENTS } from './dom-wake.constants';
 import type { WakeSource } from './wake.type';
 
 const domWake: WakeSource = (wake) => {
+  if (typeof document === 'undefined') return () => undefined;
   const stops: (() => void)[] = [];
   if (typeof MutationObserver !== 'undefined') {
     const mutations = new MutationObserver(wake);

@@ -8,12 +8,13 @@ interface ReviewWatchdogOptions {
   startMs: number;
   idleMs: number;
   bootCapMs: number;
+  stepMaxMs: number;
   onTrip: (trip: ReviewWatchdogTrip) => void;
 }
 
 interface ReviewWatchdog {
   bootActivity: () => void;
-  working: () => void;
+  working: (stepLimitMs?: number | null) => void;
   stop: () => void;
 }
 

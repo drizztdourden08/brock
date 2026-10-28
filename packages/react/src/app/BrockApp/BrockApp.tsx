@@ -23,7 +23,7 @@ import { useTitleBarSources } from './behavior/useTitleBarSources';
 import { useSettingsControls } from './behavior/useSettingsControls';
 import { AppShell } from './sub-components/AppShell';
 import { WidgetWindow } from '../../widgets/WidgetWindow';
-import { widgetSettingsTab } from '../../widgets/widget-settings-tab';
+import { widgetSettingsTabs } from '../../widgets/widget-settings-tabs';
 import { widgetWindowId } from '../../widgets/widget-window-id';
 import { NO_WIDGETS } from '../../widgets/widget.constants';
 import { NO_KITS } from '../../widgets/kits/widget-kit.constants';
@@ -59,8 +59,7 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const allStartupPrompts = useAllStartupPrompts(merged.startupPrompts, props.startupPrompts);
   const settingsStore = useProfileSettingsStore(settings, developerTools);
 
-  const widgetTab = useMemo(() => widgetSettingsTab(allWidgets), [allWidgets]);
-  const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs, ...(widgetTab ? [widgetTab] : [])] as TabDef<object>[]), [settings.tabs, merged.settingsTabs, widgetTab]);
+  const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs, ...widgetSettingsTabs(allWidgets)] as TabDef<object>[]), [settings.tabs, merged.settingsTabs, allWidgets]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, moduleBuckets: merged.buckets, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
   const settingsControls = useSettingsControls(settings);
   useControlSources({ tabs, settings: settingsStore, screens: registry, tree });

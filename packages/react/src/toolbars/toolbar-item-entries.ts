@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { ContextMenuContext, ContextMenuEntry } from '../context-menu/context-menu.type';
 import { toolbarContextEntries } from './toolbar-context-entries';
-import { toolbarIdOf } from './toolbar-item-zone';
+import { toolbarIdOf } from './toolbar-id-of';
 import { useToolbarLayoutStore } from './useToolbarLayoutStore';
 
 const toolbarItemEntries = (context: ContextMenuContext): ContextMenuEntry[] => {

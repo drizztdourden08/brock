@@ -3,7 +3,7 @@ import { useWidgetPrefStore } from '../stores/useWidgetPrefStore';
 import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import { forcedWidgets } from './forced-widgets';
-import { forgetFocusMode } from './focus-mode';
+import { forgetFocusMode } from './forget-focus-mode';
 import { useFocusModeStore } from './useFocusModeStore';
 import { layoutRevision } from './layout-revision';
 import { applyLayoutRevision } from './offer-layout-revision';

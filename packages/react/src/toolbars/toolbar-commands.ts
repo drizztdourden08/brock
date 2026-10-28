@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { CommandContext, CommandDef } from '../commands/command.type';
-import { layout } from '../widgets/focus-mode';
+import { layout } from '../widgets/layout-facade';
 import { isToolbarMoveArgs } from './is-toolbar-move-args';
 import { toolbarLabelsOn } from './toolbar-labels-on';
 import { TOOLBAR_COMMANDS, TOOLBAR_GROUP, TOOLBAR_TEXT } from './toolbar.constants';

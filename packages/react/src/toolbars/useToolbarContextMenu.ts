@@ -2,7 +2,8 @@
 import { useContextMenu } from '../context-menu/useContextMenu';
 import { toolbarContextEntries } from './toolbar-context-entries';
 import { toolbarItemEntries } from './toolbar-item-entries';
-import { toolbarItemLabel, toolbarMenuLabel } from './toolbar-menu-label';
+import { toolbarItemLabel } from './toolbar-item-label';
+import { toolbarMenuLabel } from './toolbar-menu-label';
 import { TOOLBAR_ITEM_ZONE, TOOLBAR_ZONE } from './toolbar.constants';
 
 const useToolbarContextMenu = (): void => {

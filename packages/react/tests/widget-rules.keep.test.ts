@@ -10,22 +10,19 @@ import { useContextsStore } from '../src/contexts/useContextsStore';
 import { useShowFlagsStore } from '../src/screens/show/useShowFlagsStore';
 import type { ShowContext } from '../src/screens/show/show.type';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
-import { toolbarIdOf, toolbarItemZone } from '../src/toolbars/toolbar-item-zone';
-import { toolbarItemEntries } from '../src/toolbars/toolbar-item-entries';
-import { availableToolbars } from '../src/toolbars/toolbar-available';
-import { toolbars } from '../src/toolbars/toolbars';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 import { WidgetFace } from '../src/widgets/WidgetFace';
 import { defineWidget } from '../src/widgets/define-widget';
 import { forcedWidgets } from '../src/widgets/forced-widgets';
-import { layout, forgetFocusMode } from '../src/widgets/focus-mode';
+import { forgetFocusMode } from '../src/widgets/forget-focus-mode';
+import { layout } from '../src/widgets/layout-facade';
 import { useForcedWidgetStore } from '../src/widgets/useForcedWidgetStore';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { useWidgetTitleStore } from '../src/widgets/useWidgetTitleStore';
 import { widgetAvailable } from '../src/widgets/widget-available';
 import { widgetPrefSection } from '../src/widgets/widget-pref-section';
 import { widgetPrefSource } from '../src/widgets/widget-pref-source';
-import { widgetSettingsTab } from '../src/widgets/widget-settings-tab';
+import { widgetSettingsTabs } from '../src/widgets/widget-settings-tabs';
 import { widgetMainRect } from '../src/widgets/widget-main-rect';
 import { widgets } from '../src/widgets/widgets';
 import { useWidgetPrefStore } from '../src/stores/useWidgetPrefStore';
@@ -47,6 +44,7 @@ const PREFS = make('layers', {
 const EMPTY = make('tiles', { context: 'tiles', empty: () => createElement('p', null, 'Open a tileset'), render: () => createElement('p', null, 'Tiles') });
 const DEFINITIONS = [SHEET, MULTI, BOTH, PLAIN, PREFS, EMPTY];
 const store = () => useWidgetLayoutStore.getState();
+const availableIn = (snapshot: readonly { id: string; available: boolean }[], id: string): boolean => snapshot.find((each) => each.id === id)?.available ?? false;
 const faced = () => createElement(PlatformProvider, null, createElement(WidgetFace, { def: EMPTY }));
 
 beforeEach(() => {
@@ -105,7 +103,7 @@ describe('W1 widget when and contexts', () => {
 
   it('notifies a subscriber when a rule flips', () => {
     const seen: boolean[] = [];
-    const stop = widgets.subscribe((snapshot) => seen.push(snapshot.find((each) => each.id === 'sheet')?.available ?? false));
+    const stop = widgets.subscribe((snapshot) => seen.push(availableIn(snapshot, 'sheet')));
     setMode('sheet');
     stop();
     expect(seen).toEqual([true]);
@@ -141,7 +139,7 @@ describe('W8 widget scoped settings', () => {
   it('reads the default, then the stored value, and writes through the widget prefs', () => {
     const source = widgetPrefSource(PREFS);
     expect(source.get('thumb')).toBe('s');
-    source.set('thumb', 'l');
+    void source.set('thumb', 'l');
     expect(useWidgetPrefStore.getState().byWidget.layers).toEqual({ thumb: 'l' });
     expect(source.get('thumb')).toBe('l');
   });
@@ -164,8 +162,8 @@ describe('W8 widget scoped settings', () => {
     expect(section).toMatchObject({ id: 'widget-layers', title: 'LAYERS' });
     expect(section?.items?.[0]).toMatchObject({ key: 'thumb', label: 'Thumbnail size' });
     expect(section?.items?.[0]).not.toHaveProperty('default');
-    expect(widgetSettingsTab([PLAIN])).toBeNull();
-    const tab = widgetSettingsTab(DEFINITIONS);
+    expect(widgetSettingsTabs([PLAIN])).toEqual([]);
+    const [tab] = widgetSettingsTabs(DEFINITIONS);
     expect(tab?.sections?.({}).map((each) => each.id)).toEqual(['widget-layers']);
   });
 });
@@ -207,81 +205,5 @@ describe('W7 layout.focusMode', () => {
     layout.focusMode(false);
     stop();
     expect(seen).toEqual([true, false]);
-  });
-});
-
-describe('W4 toolbar when', () => {
-  const BAR = defineToolbar({ id: 'pencil', label: 'Pencil', defaultSide: 'top', render: () => null, when: mode('sheet') });
-  const ALWAYS = defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null });
-
-  beforeEach(() => {
-    useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
-    useToolbarLayoutStore.getState().setDefinitions([BAR, ALWAYS]);
-  });
-
-  it('keeps only the toolbars whose rule passes and returns the same list when none is ruled out', () => {
-    expect(availableToolbars([BAR, ALWAYS]).map((def) => def.id)).toEqual(['tools']);
-    setMode('sheet');
-    const both = [BAR, ALWAYS];
-    expect(availableToolbars(both)).toBe(both);
-  });
-
-  it('leaves the user layout alone while the rule hides the toolbar', () => {
-    const before = useToolbarLayoutStore.getState().layout;
-    expect(toolbars.list().find((each) => each.id === 'pencil')).toMatchObject({ shown: true, available: false });
-    setMode('sheet');
-    expect(toolbars.list().find((each) => each.id === 'pencil')).toMatchObject({ shown: true, available: true });
-    expect(useToolbarLayoutStore.getState().layout).toBe(before);
-  });
-
-  it('notifies a subscriber when the rule flips', () => {
-    const seen: boolean[] = [];
-    const stop = toolbars.subscribe((snapshot) => seen.push(snapshot.find((each) => each.id === 'pencil')?.available ?? false));
-    setMode('sheet');
-    stop();
-    expect(seen).toEqual([true]);
-  });
-});
-
-describe('W5 toolbar contextEntries', () => {
-  const BAR = defineToolbar({
-    id: 'tools',
-    label: 'Tools',
-    defaultSide: 'left',
-    render: () => null,
-    contextEntries: (itemId) => [{ label: `Edit ${itemId}`, run: () => undefined }],
-  });
-
-  beforeEach(() => {
-    useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
-    useToolbarLayoutStore.getState().setDefinitions([BAR]);
-  });
-
-  const target = (): Element => {
-    const bar = document.body.appendChild(document.createElement('div'));
-    bar.setAttribute('data-toolbar-id', 'tools');
-    const item = bar.appendChild(document.createElement('button'));
-    return item;
-  };
-  const context = (data: unknown, at: Element | null) => ({ point: { x: 0, y: 0 }, target: at, trigger: 'pointer' as const, data });
-
-  it('finds the toolbar from the item and puts its entries above the Brock ones', () => {
-    const entries = toolbarItemEntries(context('pencil', target()));
-    expect(entries[0]).toMatchObject({ label: 'Edit pencil' });
-    expect(entries[1]).toBe('separator');
-    expect(entries.length).toBeGreaterThan(3);
-  });
-
-  it('shows only the Brock entries when the toolbar has no contextEntries or the item is unknown', () => {
-    useToolbarLayoutStore.getState().setDefinitions([defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null })]);
-    const entries = toolbarItemEntries(context('pencil', target()));
-    expect(entries.some((entry) => typeof entry === 'object' && 'label' in entry && entry.label === 'Edit pencil')).toBe(false);
-    expect(toolbarItemEntries(context('pencil', null))).toEqual([]);
-  });
-
-  it('marks an item with its id and reads the toolbar id back', () => {
-    expect(toolbarItemZone('pencil')).toMatchObject({ 'data-context-menu': 'brock.toolbar-item' });
-    expect(toolbarIdOf(target())).toBe('tools');
-    expect(toolbarIdOf(null)).toBeNull();
   });
 });

@@ -25,8 +25,6 @@ const leave = (): void => {
   if (saved.kit !== null) useWidgetKitStore.getState().open(saved.kit);
 };
 
-const forgetFocusMode = (): void => useFocusModeStore.setState({ on: false, saved: null });
-
 const focusMode = (on?: boolean): boolean => {
   const next = on ?? !useFocusModeStore.getState().on;
   if (next) enter();
@@ -34,12 +32,4 @@ const focusMode = (on?: boolean): boolean => {
   return useFocusModeStore.getState().on;
 };
 
-const layout = {
-  focusMode,
-  isFocusMode: (): boolean => useFocusModeStore.getState().on,
-  subscribeFocusMode: (listener: (on: boolean) => void): (() => void) => useFocusModeStore.subscribe((state, prev) => {
-    if (state.on !== prev.on) listener(state.on);
-  }),
-};
-
-export { forgetFocusMode, layout };
+export { focusMode };

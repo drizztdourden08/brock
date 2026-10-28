@@ -1,14 +1,14 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useMemo, useRef } from 'react';
 import { isShown } from '../../screens/show/is-shown';
-import { useShowContext } from '../../screens/show/useShowContext';
+import { useRuleContext } from '../useRuleContext';
 import { useWorkspaceStore } from '../workspaces/useWorkspaceStore';
 import { useWidgetKitStore } from './useWidgetKitStore';
 
 const useKitAutoOpen = (): void => {
   const kits = useWidgetKitStore((s) => s.kits);
   const ready = useWorkspaceStore((s) => s.ready);
-  const show = useShowContext();
+  const show = useRuleContext();
   const wanted = useMemo(() => kits.find((kit) => kit.when !== undefined && isShown(kit.when, show))?.id ?? null, [kits, show]);
   const opened = useRef<string | null>(null);
   useEffect(() => {

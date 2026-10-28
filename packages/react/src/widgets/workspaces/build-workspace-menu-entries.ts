@@ -3,14 +3,7 @@ import type { MenuItem } from '../../menu/menu.type';
 import { byOrder } from '../../screens/conventions/by-order';
 import { UNORDERED } from '../../screens/conventions/screens.constants';
 import { WORKSPACE_KEY_PREFIX, WORKSPACE_MENU, WORKSPACE_WORDS } from './workspace.constants';
-import type { WorkspaceDef } from './workspace.type';
-
-interface WorkspaceMenuInput {
-  defs: readonly WorkspaceDef[];
-  active: string | null;
-  activate: (id: string | null) => void;
-  reset: (id?: string | null) => void;
-}
+import type { WorkspaceMenuInput } from './build-workspace-menu-entries.type';
 
 const buildWorkspaceMenuEntries = ({ defs, active, activate, reset }: WorkspaceMenuInput): MenuItem[] => {
   if (defs.length === 0) return [];

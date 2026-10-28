@@ -2,7 +2,8 @@
 import { useShowFlagsStore } from '../../screens/show/useShowFlagsStore';
 import { chosenWorkspace } from './chosen-workspace';
 import { useWorkspaceStore } from './useWorkspaceStore';
-import { activateWorkspace, resetWorkspace } from './workspace-activate';
+import { activateWorkspace } from './workspace-activate';
+import { resetWorkspace } from './workspace-reset';
 import type { WorkspaceListener, WorkspaceSnapshot } from './workspace.type';
 
 const list = (): WorkspaceSnapshot[] => {

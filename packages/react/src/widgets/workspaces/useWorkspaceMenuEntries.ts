@@ -4,7 +4,8 @@ import type { MenuItem } from '../../menu/menu.type';
 import { buildWorkspaceMenuEntries } from './build-workspace-menu-entries';
 import { useWorkspaceRegistryStore } from './useWorkspaceRegistryStore';
 import { useWorkspaceStore } from './useWorkspaceStore';
-import { activateWorkspace, resetWorkspace } from './workspace-activate';
+import { activateWorkspace } from './workspace-activate';
+import { resetWorkspace } from './workspace-reset';
 
 const useWorkspaceMenuEntries = (): MenuItem[] => {
   const defs = useWorkspaceRegistryStore((s) => s.registered);

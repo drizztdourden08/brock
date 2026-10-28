@@ -62,16 +62,18 @@ describe('workspaces', { timeout: 60_000 }, () => {
   });
 
   it('keeps a workspace layout through a switch, and the standard layout is not overwritten by it', async () => {
-    const { disk } = fakeDisk({});
+    const { disk, listeners } = fakeDisk({});
     const app = await startApp();
     await app.widgetPersistence.load('p1');
     app.widgets().open('a');
     await settle();
+    listeners.get('pagehide')?.();
     const standardOnDisk = (disk.file['profile:p1'] as Record<string, unknown>).widgetLayout;
 
     app.workspaces.activate('anim');
     app.widgets().open('b');
     await settle();
+    listeners.get('pagehide')?.();
     expect((disk.file['profile:p1'] as Record<string, unknown>).widgetLayout).toEqual(standardOnDisk);
 
     app.workspaces.activate('map');
@@ -83,14 +85,18 @@ describe('workspaces', { timeout: 60_000 }, () => {
     app.stop();
   });
 
+});
+
+describe('workspaces across a restart', { timeout: 60_000 }, () => {
   it('comes back after a restart', async () => {
-    const { disk } = fakeDisk({});
+    const { disk, listeners } = fakeDisk({});
     const first = await startApp();
     await first.widgetPersistence.load('p1');
     first.workspaces.activate('anim');
     first.widgets().open('a');
     first.bars().hide('options');
     await settle();
+    listeners.get('pagehide')?.();
     const animLayout = first.widgets().layout;
     first.stop();
     expect(Object.keys((disk.file['profile:p1'] as { workspaces: object }).workspaces)).toEqual(['anim']);
@@ -121,6 +127,9 @@ describe('workspaces', { timeout: 60_000 }, () => {
     app.stop();
   });
 
+});
+
+describe('workspace rules and menu', { timeout: 60_000 }, () => {
   it('throws for an unknown workspace and does nothing before the views are loaded', async () => {
     fakeDisk({});
     const app = await startApp();

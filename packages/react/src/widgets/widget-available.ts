@@ -4,9 +4,7 @@ import { DEFAULT_CONTEXT } from '../contexts/contexts.constants';
 import { isShown } from '../screens/show/is-shown';
 import type { ShowContext } from '../screens/show/show.type';
 import { widgetContextsOf } from './widget-contexts-of';
-import type { WidgetDef } from './widget.type';
-
-type WidgetRuleParts = Pick<WidgetDef, 'context' | 'contexts' | 'when'>;
+import type { WidgetRuleParts } from './widget-available.type';
 
 const contextOn = (contexts: AppContexts, name: string, legacy: boolean | null): boolean =>
   (name === DEFAULT_CONTEXT && legacy !== null ? legacy : contexts[name]?.active === true);

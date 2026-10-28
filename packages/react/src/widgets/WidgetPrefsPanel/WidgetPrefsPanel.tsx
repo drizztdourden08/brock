@@ -2,9 +2,9 @@
 import { useMemo } from 'react';
 import { SettingsLayout } from '../../settings/SettingsLayout';
 import { widgetPrefSection } from '../widget-pref-section';
+import { NO_SETTINGS } from './WidgetPrefsPanel.constants';
 import type { WidgetPrefsPanelProps } from './WidgetPrefsPanel.type';
 
-const NO_SETTINGS = {};
 const ignore = (): void => undefined;
 
 const WidgetPrefsPanel = ({ def }: WidgetPrefsPanelProps) => {

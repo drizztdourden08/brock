@@ -13,8 +13,8 @@ beforeEach(() => {
   fx = createProcessFixture();
 });
 
-afterEach(() => {
-  fx.dispose();
+afterEach(async () => {
+  await fx.dispose();
 });
 
 const defineEcho = (): void => {

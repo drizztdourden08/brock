@@ -32,6 +32,7 @@ const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8',
 
 let home = '';
 let saved;
+let savedProject;
 let repo = '';
 const lines = [];
 const log = (message) => lines.push(message);
@@ -48,6 +49,8 @@ const commitFile = (name, text) => {
 
 beforeEach(() => {
   saved = process.env.COORD_HOME;
+  savedProject = process.env.COORD_PROJECT;
+  delete process.env.COORD_PROJECT;
   home = mkdtempSync(join(tmpdir(), 'brock-ci-home-'));
   process.env.COORD_HOME = home;
   repo = mkdtempSync(join(tmpdir(), 'brock-ci-repo-'));
@@ -61,6 +64,8 @@ beforeEach(() => {
 afterEach(() => {
   if (saved === undefined) delete process.env.COORD_HOME;
   else process.env.COORD_HOME = saved;
+  if (savedProject === undefined) delete process.env.COORD_PROJECT;
+  else process.env.COORD_PROJECT = savedProject;
   for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 

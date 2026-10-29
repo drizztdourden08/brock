@@ -16,6 +16,13 @@ vi.mock('electron', () => {
   return { app: fakeApp };
 });
 
+const aclBypass = vi.hoisted(() => ({ on: false }));
+vi.mock('../src/main/bridge/read-private-file', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../src/main/bridge/read-private-file')>();
+  const { readFileSync: plainRead } = await import('fs');
+  return { readPrivateFile: (file: string): string => (aclBypass.on ? plainRead(file, 'utf8') : original.readPrivateFile(file)) };
+});
+
 const realArgv = process.argv;
 
 beforeEach(() => {
@@ -25,6 +32,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  aclBypass.on = false;
   process.argv = realArgv;
   closeOpened();
 });
@@ -102,9 +110,13 @@ describe('the app launch file', () => {
   });
 
   it('allows only the arguments and the empty env that main writes', () => {
+    // This test is about the content rules. Each real read of a private file starts PowerShell on
+    // Windows to check its access list, which made a dozen cases outlast the suite timeout under
+    // load. The access list check has its own cases above, so here the reads skip it.
+    aclBypass.on = true;
     const file = join(tempDir(), 'bridge.json');
     const read = (args: string[], env: Record<string, string> = {}) => {
-      writePrivateFile(bridgeLaunchFile(file), JSON.stringify({ command: process.execPath, args, env }));
+      writeFileSync(bridgeLaunchFile(file), JSON.stringify({ command: process.execPath, args, env }));
       return () => readAppLaunch({ file });
     };
     expect(read([APP_PATH, '--user-data=/d', '--instance=a', '--profile=b', '--background'])()).toMatchObject({ args: [APP_PATH, '--user-data=/d', '--instance=a', '--profile=b', '--background'] });

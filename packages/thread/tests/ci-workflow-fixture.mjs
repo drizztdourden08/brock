@@ -89,9 +89,11 @@ const byName = (steps) => Object.fromEntries(steps.map((step) => [step.name, ste
  * @returns {{ repo: () => string }} a fresh repo for each test
  */
 const fixtureRepo = () => {
-  const state = { home: '', saved: undefined, repo: '' };
+  const state = { home: '', saved: undefined, savedProject: undefined, repo: '' };
   beforeEach(() => {
     state.saved = process.env.COORD_HOME;
+    state.savedProject = process.env.COORD_PROJECT;
+    delete process.env.COORD_PROJECT;
     state.home = mkdtempSync(join(tmpdir(), 'brock-ciw-home-'));
     process.env.COORD_HOME = state.home;
     state.repo = mkdtempSync(join(tmpdir(), 'brock-ciw-repo-'));
@@ -106,6 +108,8 @@ const fixtureRepo = () => {
   afterEach(() => {
     if (state.saved === undefined) delete process.env.COORD_HOME;
     else process.env.COORD_HOME = state.saved;
+    if (state.savedProject === undefined) delete process.env.COORD_PROJECT;
+    else process.env.COORD_PROJECT = state.savedProject;
     rmSync(state.home, { recursive: true, force: true });
     rmSync(state.repo, { recursive: true, force: true });
     rmSync(ciWorktreesFolder(state.repo), { recursive: true, force: true });

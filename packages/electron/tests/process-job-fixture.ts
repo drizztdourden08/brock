@@ -1,5 +1,6 @@
 /* @layer electron-main @kind test */
-import { mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { mkdtempSync, writeFileSync } from 'fs';
+import { rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { createJobRegistry } from '@drizztdourden08/brock-core/jobs';
@@ -50,7 +51,7 @@ interface ProcessFixture {
   snapshot: (id: string) => JobSnapshot | undefined;
   messages: (id: string) => string[];
   lines: (id: string) => JobLogLine[];
-  dispose: () => void;
+  dispose: () => Promise<void>;
 }
 
 const createProcessFixture = (): ProcessFixture => {
@@ -72,9 +73,13 @@ const createProcessFixture = (): ProcessFixture => {
     snapshot,
     lines,
     messages: (id) => lines(id).map((line) => line.message),
-    dispose: () => {
+    // Cancelling is asynchronous: the kill is a separate taskkill process, and the job keeps its log
+    // file open until the child's streams close. Only the event loop can finish that, so the delete
+    // is the asynchronous rm, which yields between retries while the tree exits. A blocking rmSync
+    // would hold the loop and fail with EPERM on the folder the tree still holds.
+    dispose: async () => {
       processes.cancelAll();
-      rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      await rm(dir, { recursive: true, force: true, maxRetries: 15, retryDelay: 50 });
     },
   };
 };

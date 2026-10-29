@@ -13,29 +13,30 @@ afterEach(cleanup);
 
 describe('storeIsCurrent', () => {
   const stamps = { '/a.ts': '10:5', '/b.ts': '20:7' };
-  const store = { version: 2, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
+  const store = { version: 3, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
   const stampFrom = (table) => (file) => ({ ...table, '/d': '5:5' })[file] ?? null;
+  const checkWith = (table) => ({ stamp: stampFrom(table) });
 
   it('accepts a bundle whose key and every module file stamp are unchanged', () => {
-    expect(storeIsCurrent(store, 'k', stampFrom(stamps))).toBe(true);
+    expect(storeIsCurrent(store, 'k', checkWith(stamps))).toBe(true);
   });
 
   it('rejects a bundle whose module folder changed', () => {
-    expect(storeIsCurrent({ ...store, dirs: { '/d': '4:4' } }, 'k', stampFrom(stamps))).toBe(false);
+    expect(storeIsCurrent({ ...store, dirs: { '/d': '4:4' } }, 'k', checkWith(stamps))).toBe(false);
   });
 
   it('rejects a changed key, a changed file, a removed file and a file touched during the build', () => {
-    expect(storeIsCurrent(store, 'other', stampFrom(stamps))).toBe(false);
-    expect(storeIsCurrent(store, 'k', stampFrom({ ...stamps, '/b.ts': '21:7' }))).toBe(false);
-    expect(storeIsCurrent(store, 'k', stampFrom({ '/a.ts': '10:5' }))).toBe(false);
-    expect(storeIsCurrent({ ...store, files: { ...stamps, '/c.ts': null } }, 'k', stampFrom({ ...stamps, '/c.ts': '1:1' }))).toBe(false);
+    expect(storeIsCurrent(store, 'other', checkWith(stamps))).toBe(false);
+    expect(storeIsCurrent(store, 'k', checkWith({ ...stamps, '/b.ts': '21:7' }))).toBe(false);
+    expect(storeIsCurrent(store, 'k', checkWith({ '/a.ts': '10:5' }))).toBe(false);
+    expect(storeIsCurrent({ ...store, files: { ...stamps, '/c.ts': null } }, 'k', checkWith({ ...stamps, '/c.ts': '1:1' }))).toBe(false);
   });
 
   it('rejects a missing store, another format and a store with no files or no outputs', () => {
-    expect(storeIsCurrent(null, 'k', stampFrom(stamps))).toBe(false);
-    expect(storeIsCurrent({ ...store, version: 0 }, 'k', stampFrom(stamps))).toBe(false);
-    expect(storeIsCurrent({ ...store, files: {} }, 'k', stampFrom({}))).toBe(false);
-    expect(storeIsCurrent({ ...store, outputs: [] }, 'k', stampFrom(stamps))).toBe(false);
+    expect(storeIsCurrent(null, 'k', checkWith(stamps))).toBe(false);
+    expect(storeIsCurrent({ ...store, version: 0 }, 'k', checkWith(stamps))).toBe(false);
+    expect(storeIsCurrent({ ...store, files: {} }, 'k', checkWith({}))).toBe(false);
+    expect(storeIsCurrent({ ...store, outputs: [] }, 'k', checkWith(stamps))).toBe(false);
   });
 });
 

@@ -202,6 +202,26 @@ describe('shareDeps', () => {
     expect(shareDeps({ config: wider.config, rootDir: wider.root, sharedRoot: shared })).toBe('missing');
   });
 
+  it('seeds a worktree whose packages live in a shared store elsewhere, pointing each source into that store', () => {
+    const shared = tempDir();
+    const first = app();
+    expect(shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared })).toBe('published');
+    const store = tempDir();
+    put(store, 'lock.yaml', LOCKFILE);
+    put(store, 'picker@1.0.0/node_modules/picker/package.json', JSON.stringify({ name: 'picker', version: '1.0.0' }));
+    put(store, 'picker@1.0.0/node_modules/picker/index.js', 'export default 1;');
+    const clone = tempDir();
+    put(clone, 'package.json', '{"name":"app"}');
+    put(clone, 'src/index.html', '');
+    put(clone, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
+    put(clone, 'node_modules/.pnpm/lock.yaml', LOCKFILE);
+    put(clone, 'node_modules/.modules.yaml', `nodeLinker: isolated\nvirtualStoreDir: ${store}\n`);
+    const config = makeConfig(clone);
+    expect(shareDeps({ config, rootDir: clone, sharedRoot: shared })).toBe('seeded');
+    const src = metadataOf(clone).optimized.picker.src;
+    expect(join(clone, 'node_modules/.vite/deps', src)).toBe(join(store, 'picker@1.0.0/node_modules/picker/index.js'));
+  });
+
   it('does nothing without a pnpm lockfile', () => {
     const root = tempDir();
     put(root, 'package.json', '{}');

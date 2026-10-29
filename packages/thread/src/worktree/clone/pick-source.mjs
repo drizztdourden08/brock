@@ -27,7 +27,7 @@ const installedAt = (dir) => statSync(join(dir, 'node_modules', MODULES_STATE), 
  * @param {string} dir a checkout whose install rewrote its lockfile
  * @param {Buffer} wanted the new worktree's lockfile
  * @param {string} target the new worktree
- * @returns {boolean} true when both commits hold that lockfile and the same install inputs
+ * @returns {boolean} true when commit and install inputs match
  */
 const sameCommittedInstall = (dir, wanted, target) => {
   const committed = tryGit(['show', `HEAD:${LOCKFILE}`], dir);

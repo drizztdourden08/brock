@@ -99,6 +99,11 @@ describe('cloneInstall', () => {
     expect(existsSync(join(target, 'node_modules'))).toBe(false);
   });
 
+  it('treats a lockfile git checked out with CRLF line ends as the same lockfile', async () => {
+    const source = installedCheckout();
+    expect(await clone(freshCheckout(LOCKFILE.replace(/\n/g, '\r\n')), source)).not.toBeNull();
+  });
+
   it('builds the shared store once and reuses it for the next checkout', async () => {
     const source = installedCheckout();
     const first = await clone(freshCheckout(), source);

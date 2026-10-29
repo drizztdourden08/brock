@@ -5,9 +5,11 @@ import { registeredWorktrees } from '../paths.mjs';
 import { LOCKFILE, MODULES_STATE } from './clone.constants.mjs';
 import { modulesState } from './modules-state.mjs';
 
+const sameLines = (bytes) => Buffer.from(bytes.toString('utf8').replace(/\r\n/g, '\n'));
+
 const readLockfile = (dir) => {
   try {
-    return readFileSync(join(dir, LOCKFILE));
+    return sameLines(readFileSync(join(dir, LOCKFILE)));
   } catch {
     return null;
   }
@@ -31,13 +33,13 @@ const pickSource = ({ target, main, worktrees = registeredWorktrees(main) }) => 
   const usable = (dir) => resolve(dir) !== resolve(target);
   const matches = (dir) => ({ dir, state: modulesState(dir) });
   const mainState = usable(main) ? matches(main) : null;
-  if (mainState?.state?.lockfile.equals(wanted)) return { source: mainState, reason: '' };
+  if (mainState?.state && sameLines(mainState.state.lockfile).equals(wanted)) return { source: mainState, reason: '' };
   const siblings = worktrees
     .filter((dir) => usable(dir) && resolve(dir) !== resolve(main))
     .sort((a, b) => installedAt(b) - installedAt(a));
   for (const dir of siblings) {
     const found = matches(dir);
-    if (found.state?.lockfile.equals(wanted)) return { source: found, reason: '' };
+    if (found.state && sameLines(found.state.lockfile).equals(wanted)) return { source: found, reason: '' };
   }
   return { source: null, reason: 'no checkout has an install of this exact lockfile' };
 };

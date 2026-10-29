@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/build-cache",
-  "version": "0.0.0",
+  "version": "0.115.4",
   "description": "A per-user cache of compiled @drizztdourden08 package versions and Electron binaries, shared by every project and worktree on the machine. Imports no Brock or Tessera package.",
   "type": "module",
   "license": "UNLICENSED",

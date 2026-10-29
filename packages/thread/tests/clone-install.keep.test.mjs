@@ -103,6 +103,9 @@ describe('cloneInstall', () => {
     expect(existsSync(join(target, 'node_modules'))).toBe(false);
   });
 
+});
+
+describe('cloneInstall source pick', () => {
   it('clones from a checkout whose own install rewrote its committed lockfile, and only when the install inputs match', async () => {
     const source = installedCheckout();
     put(source, '.npmrc', 'auto-install-peers=true\n');

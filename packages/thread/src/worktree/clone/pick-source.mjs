@@ -24,7 +24,7 @@ const sameFile = (one, two) => {
 const installedAt = (dir) => statSync(join(dir, 'node_modules', MODULES_STATE), { throwIfNoEntry: false })?.mtimeMs ?? 0;
 
 /**
- * @param {string} dir a checkout whose lockfile was rewritten by its own install, as a pnpmfile or a drive link does
+ * @param {string} dir a checkout whose install rewrote its lockfile
  * @param {Buffer} wanted the new worktree's lockfile
  * @param {string} target the new worktree
  * @returns {boolean} true when both commits hold that lockfile and the same install inputs
@@ -39,7 +39,7 @@ const sameCommittedInstall = (dir, wanted, target) => {
  * @param {{ dir: string, state: import('./modules-state.mjs').ModulesState | null }} found
  * @param {Buffer} wanted the new worktree's lockfile
  * @param {string} target the new worktree
- * @returns {boolean} true when the new worktree would install what that checkout has
+ * @returns {boolean} true when both install the same packages
  */
 const installsTheSame = ({ dir, state }, wanted, target) => {
   if (!state) return false;

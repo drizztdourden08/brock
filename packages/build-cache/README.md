@@ -11,6 +11,7 @@ import { cacheRoot, listEntries } from '@drizztdourden08/build-cache';
 
 - `buildCachePlugin({ rootDir, when })` serves installed `@drizztdourden08` packages to a Node build from the cache: each version is compiled once with esbuild, copied to `<rootDir>/node_modules/.build-cache/node_modules/<name>/` and imported at runtime instead of bundled. `when(config)` picks the builds that use it; the default is a development SSR build. Brock's Vite factory wires it into the Electron main build of `electron-vite dev`.
 - `restoreElectron(packageDir)` copies the Electron binary of the installed version from the cache, checked against its hash, and returns `restored`, `ready`, `missing` or `skipped`. `storeElectron(packageDir)` adds an installed binary to the cache when it has none.
+- `restoreViteDeps(input)` copies a stored renderer dependency pre-bundle of Vite into `node_modules/.vite/deps` with this worktree's hashes in `_metadata.json`, and returns `restored`, `ready` or `missing`. `storeViteDeps(input)` adds the folder Vite built, and `storeViteDepsDetached(input)` does it from a process of its own that waits for Vite to finish. They import from `@drizztdourden08/build-cache/vite-deps`; the caller computes the hashes and the key.
 - `listEntries(cacheRoot())` reads every entry and its manifest.
 
 The cache never deletes an entry; Argus prunes it.

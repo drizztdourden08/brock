@@ -1,13 +1,12 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
-import { readMetadata } from './deps-metadata.mjs';
-import { DEPS_FOLDER } from './shared-deps-cache.constants.mjs';
-import { publishDeps, seedDeps, shareKey, sharedCacheRoot } from './share-store.mjs';
-import { configHashOf, lockfileOf, viteHashes } from './vite-hash.mjs';
+import { join } from 'node:path';
+import { restoreViteDeps, storeViteDepsDetached } from '@drizztdourden08/build-cache/vite-deps';
+import { DEPS_FOLDER, KEY_LENGTH, KEY_VERSION, REPORTED } from './shared-deps-cache.constants.mjs';
+import { configHashOf, getHash, lockfileOf, viteHashes } from './vite-hash.mjs';
 
-const viteVersionOf = (rootDir) => {
+const viteVersionOf =(rootDir) => {
   try {
     return JSON.parse(readFileSync(createRequire(join(rootDir, 'package.json')).resolve('vite/package.json'), 'utf8')).version ?? null;
   } catch {
@@ -16,19 +15,28 @@ const viteVersionOf = (rootDir) => {
 };
 
 /**
- * @param {{ config: import('vite').ResolvedConfig, rootDir: string, sharedRoot?: string }} input the dev server config and the app root
- * @returns {'no-lockfile' | 'no-vite' | 'published' | 'present' | 'seeded' | 'missing' | 'rejected' | 'skipped'} what happened
+ * @param {{ vite: string, lockfile: { content: string }, configHash: string }} parts what the pre-bundle depends on
+ * @returns {string} the build key worktrees with the same inputs share
  */
-const shareDeps = ({ config, rootDir, sharedRoot = sharedCacheRoot() }) => {
-  const lockfile = lockfileOf(config.root);
-  const vite = viteVersionOf(rootDir);
-  if (!lockfile) return 'no-lockfile';
-  if (!vite) return 'no-vite';
-  const hashes = viteHashes(config, lockfile);
-  const depsDir = join(config.cacheDir, DEPS_FOLDER);
-  const key = shareKey({ vite, lockfile, configHash: configHashOf(config, { portable: true }) });
-  const input = { root: sharedRoot, key, depsDir, store: dirname(lockfile.path), hashes };
-  return readMetadata(depsDir) ? publishDeps(input) : seedDeps(input);
+const depsBuildKey = ({ vite, lockfile, configHash }) => {
+  const parts = JSON.stringify({ version: KEY_VERSION, vite, platform: `${process.platform}-${process.arch}`, lockfile: getHash(lockfile.content, 40), configHash });
+  return `${process.platform}-${process.arch}-${getHash(parts, KEY_LENGTH)}`;
 };
 
-export { shareDeps };
+/**
+ * @param {{ config: import('vite').ResolvedConfig, rootDir: string, store?: typeof storeViteDepsDetached }} input the dev server config and the app root
+ * @returns {'no-lockfile' | 'no-vite' | 'seeded' | 'present' | 'missing'} seeded: the folder came from the build cache
+ */
+const shareDeps = ({ config, rootDir, store = storeViteDepsDetached }) => {
+  const lockfile = lockfileOf(config.root);
+  const version = viteVersionOf(rootDir);
+  if (!lockfile) return 'no-lockfile';
+  if (!version) return 'no-vite';
+  const buildKey = depsBuildKey({ vite: version, lockfile, configHash: configHashOf(config, { portable: true }) });
+  const input = { depsDir: join(config.cacheDir, DEPS_FOLDER), installRoot: lockfile.installRoot, version, buildKey, hashes: viteHashes(config, lockfile) };
+  const outcome = restoreViteDeps(input);
+  if (outcome !== 'restored') store(input);
+  return REPORTED[outcome];
+};
+
+export { depsBuildKey, shareDeps };

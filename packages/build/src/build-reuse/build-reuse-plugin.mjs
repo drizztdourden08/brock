@@ -88,7 +88,7 @@ const buildReusePlugin = ({ rootDir, target }) => {
       snapshot = repoSnapshot(rootDir);
       preflight = sharedEnvKey(rootDir, target, identityOf(rootDir, snapshot));
       const store = readStore(file);
-      reusing = storeIsCurrent(store, key, { snapshot }) ? store : null;
+      reusing = storeIsCurrent(store, key, { snapshot, rootDir }) ? store : null;
       return reusing ? { ...options, input: stubInput(options.input) } : null;
     },
     buildStart() {

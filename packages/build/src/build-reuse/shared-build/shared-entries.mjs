@@ -14,10 +14,10 @@ const idWith = ({ root, identity }, buildKey) => ({ root, kind: KIND.APP_BUILD, 
 
 /**
  * @param {EntryScope} scope
- * @param {Pick<import('../module-keys.mjs').ModuleKeys, 'repo' | 'repoDirs' | 'files' | 'dirs'>} keys the sources the build read
+ * @param {Pick<import('../module-keys.mjs').ModuleKeys, 'repo' | 'repoDirs' | 'placed' | 'files' | 'dirs'>} keys the sources the build read
  * @returns {import('@drizztdourden08/build-cache/store').EntryId} the entry for exactly these sources
  */
-const entryIdFor = (scope, keys) => idWith(scope, `${prefixOf(scope)}${hashValue({ repo: keys.repo, repoDirs: keys.repoDirs, files: keys.files, dirs: keys.dirs })}`);
+const entryIdFor = (scope, keys) => idWith(scope, `${prefixOf(scope)}${hashValue({ repo: keys.repo, repoDirs: keys.repoDirs, placed: keys.placed, files: keys.files, dirs: keys.dirs })}`);
 
 /**
  * @param {EntryScope} scope

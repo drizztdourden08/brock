@@ -19,16 +19,16 @@ const owningManifest = (file, cache) => {
   return found;
 };
 
-const stampAt = (path, startedAt, stamp) => {
+const stampAt = (path, startedAt, stamp, identify) => {
   const value = stamp(path);
   if (value === null) return undefined;
-  return Number(value.split(':')[0]) >= startedAt - DIRTY_WINDOW_MS ? null : value;
+  return Number(value.split(':')[0]) >= startedAt - DIRTY_WINDOW_MS ? null : identify(path, value);
 };
 
-const stampAll = (paths, startedAt, stamp) => {
+const stampAll = (paths, startedAt, stamp, identify) => {
   const stamps = {};
   for (const path of paths) {
-    const value = stampAt(path, startedAt, stamp);
+    const value = stampAt(path, startedAt, stamp, identify);
     if (value !== undefined) stamps[path] = value;
   }
   return stamps;
@@ -38,16 +38,16 @@ const stampAll = (paths, startedAt, stamp) => {
  * @param {Iterable<string>} ids the module ids a build read
  * @param {number} startedAt when the build began, in ms
  * @param {(file: string) => string | null} [stamp] reads a file stamp
- * @param {string[]} [skipDirs] folders that change on every start
+ * @param {{ skipDirs?: string[], file?: (path: string, stamp: string) => string | null, dir?: (path: string, stamp: string) => string | null }} [options] skipDirs, and what to keep per file or folder
  * @returns {{ files: Record<string, string | null>, dirs: Record<string, string | null> }} stamps of modules, manifests and folders
  */
-const moduleStamps = (ids, startedAt, stamp = stampOf, skipDirs = []) => {
+const moduleStamps = (ids, startedAt, stamp = stampOf, { skipDirs = [], file: ofFile = (_path, value) => value, dir: ofDir = (_path, value) => value } = {}) => {
   const files = realFilesOf(ids);
   const cache = new Map();
   const manifests = new Set(files.map((file) => owningManifest(file, cache)).filter(Boolean));
   return {
-    files: stampAll([...files, ...manifests], startedAt, stamp),
-    dirs: stampAll(new Set(files.map((file) => dirname(file)).filter((dir) => !skipDirs.some((skip) => resolve(skip) === resolve(dir)))), startedAt, stamp),
+    files: stampAll([...files, ...manifests], startedAt, stamp, ofFile),
+    dirs: stampAll(new Set(files.map((file) => dirname(file)).filter((dir) => !skipDirs.some((skip) => resolve(skip) === resolve(dir)))), startedAt, stamp, ofDir),
   };
 };
 

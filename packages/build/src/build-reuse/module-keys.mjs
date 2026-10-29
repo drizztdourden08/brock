@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { dirname, isAbsolute, relative } from 'node:path';
+import { contentStampOf, listingStampOf, stampOf } from './file-stamp.mjs';
 import { moduleStamps } from './module-stamps.mjs';
-import { stampOf } from './file-stamp.mjs';
+import { placedOf } from './placed-packages.mjs';
 
 const fileOf = (id) => id.replace(/[?#].*$/, '');
 
@@ -15,8 +16,9 @@ const inside = (root, file) => {
  * @typedef {object} ModuleKeys
  * @property {Record<string, string>} repo content keys of the files inside the repository
  * @property {Record<string, string>} repoDirs a key of the names in each of their folders
- * @property {Record<string, string | null>} files stamps of the other files outside node_modules
- * @property {Record<string, string | null>} dirs stamps of their folders
+ * @property {Record<string, { contentHash: string, from: string | null }>} placed compiled packages copied from the build cache
+ * @property {Record<string, string | null>} files content keys of the other files outside node_modules
+ * @property {Record<string, string | null>} dirs name-list keys of their folders
  */
 
 /**
@@ -26,7 +28,7 @@ const inside = (root, file) => {
  * @returns {ModuleKeys} what the next start compares
  */
 const moduleKeys = (ids, startedAt, { snapshot, packages = null, stamp = stampOf, skipDirs = [] }) => {
-  const real = [...new Set([...ids].filter((id) => !id.startsWith('\0')).map(fileOf))].filter((file) => !inside(packages, file));
+  const { placed, rest: real } = placedOf([...new Set([...ids].filter((id) => !id.startsWith(String.fromCharCode(0))).map(fileOf))].filter((file) => !inside(packages, file)));
   const inRepo = new Set(snapshot ? real.filter((file) => snapshot.relOf(file) !== null) : []);
   const repo = {};
   const repoDirs = {};
@@ -40,7 +42,7 @@ const moduleKeys = (ids, startedAt, { snapshot, packages = null, stamp = stampOf
     const manifest = snapshot.manifestOf(dir);
     if (manifest) repo[manifest] = snapshot.keyOf(manifest);
   }
-  return { repo, repoDirs, ...moduleStamps(real.filter((file) => !inRepo.has(file)), startedAt, stamp, skipDirs) };
+  return { repo, repoDirs, placed, ...moduleStamps(real.filter((file) => !inRepo.has(file)), startedAt, stamp, { skipDirs, file: contentStampOf, dir: listingStampOf }) };
 };
 
 /**

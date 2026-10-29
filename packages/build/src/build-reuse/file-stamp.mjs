@@ -24,6 +24,38 @@ const stampOf = (file) => {
   return stat ? `${stat.mtimeMs}:${stat.size}` : null;
 };
 
+const hashed = new Map();
+
+/**
+ * @param {string} file
+ * @returns {string | null} a SHA-1 of its bytes, null when missing
+ */
+const contentStampOf = (file) => {
+  const stat = statSync(file, { throwIfNoEntry: false });
+  if (!stat) return null;
+  const at = `${file}|${stat.mtimeMs}|${stat.size}`;
+  if (!hashed.has(at)) {
+    try {
+      hashed.set(at, `c:${createHash('sha1').update(readFileSync(file)).digest('hex')}`);
+    } catch {
+      return null;
+    }
+  }
+  return hashed.get(at);
+};
+
+/**
+ * @param {string} dir
+ * @returns {string | null} a hash of the names in it, null when missing
+ */
+const listingStampOf = (dir) => {
+  try {
+    return `l:${createHash('sha1').update(readdirSync(dir).sort().join('/')).digest('hex')}`;
+  } catch {
+    return null;
+  }
+};
+
 /**
  * @param {string} dir
  * @returns {string} file count, newest mtime and total size
@@ -53,4 +85,4 @@ const treeStamp = (dir) => {
   return `${count}:${newest}:${size}`;
 };
 
-export { contentOf, stampOf, treeStamp };
+export { contentOf, contentStampOf, listingStampOf, stampOf, treeStamp };

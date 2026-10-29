@@ -2,7 +2,8 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { REUSE_DIR, REUSE_VERSION } from './build-reuse.constants.mjs';
-import { stampOf } from './file-stamp.mjs';
+import { contentStampOf, listingStampOf } from './file-stamp.mjs';
+import { placedStale } from './placed-packages.mjs';
 import { repoKeysCurrent } from './module-keys.mjs';
 
 /**
@@ -26,7 +27,7 @@ const readStore = (file) => {
 
 /**
  * @param {string} file
- * @param {{ key: string, repo: Record<string, string>, repoDirs: Record<string, string>, files: Record<string, string | null>, dirs: Record<string, string | null>, outputs: { fileName: string, base64: string }[], preflight?: string }} content
+ * @param {{ key: string, repo: Record<string, string>, repoDirs: Record<string, string>, placed?: Record<string, unknown>, files: Record<string, string | null>, dirs: Record<string, string | null>, outputs: { fileName: string, base64: string }[], preflight?: string }} content
  * @returns {boolean} whether it was written
  */
 const writeStore = (file, content) => {
@@ -45,16 +46,22 @@ const countOf = (table) => Object.keys(table ?? {}).length;
 
 const holdsBundle = (store) => Array.isArray(store.outputs) && store.outputs.length > 0 && countOf(store.files) + countOf(store.repo) > 0;
 
+const tableCurrent = (table, read) => Object.entries(table ?? {}).every(([path, recorded]) => recorded !== null && read(path) === recorded);
+
+const placedCurrent = (placed, rootDir, cacheDir) => countOf(placed) === 0 || (Boolean(rootDir) && placedStale(placed, rootDir, cacheDir) === null);
+
+const stampsCurrent = (store, stamp) => tableCurrent(store.files, stamp ?? contentStampOf) && tableCurrent(store.dirs, stamp ?? listingStampOf);
+
 /**
  * @param {object | null} store what readStore gave
  * @param {string} key the key of the build about to run
- * @param {{ stamp?: (file: string) => string | null, snapshot?: import('./repo-snapshot.mjs').RepoSnapshot | null }} [check] reads file stamps and repository keys
- * @returns {boolean} true while every key and stamp matches
+ * @param {{ stamp?: (file: string) => string | null, snapshot?: import('./repo-snapshot.mjs').RepoSnapshot | null, rootDir?: string, cacheDir?: string }} [check] reads file keys; rootDir is needed for compiled packages
+ * @returns {boolean} true while every key matches
  */
-const storeIsCurrent = (store, key, { stamp = stampOf, snapshot = null } = {}) => {
+const storeIsCurrent = (store, key, { stamp, snapshot = null, rootDir = null, cacheDir } = {}) => {
   if (!store || store.version !== REUSE_VERSION || store.key !== key) return false;
   if (!holdsBundle(store) || !repoKeysCurrent(store, snapshot)) return false;
-  return Object.entries({ ...store.files, ...store.dirs }).every(([path, recorded]) => recorded !== null && stamp(path) === recorded);
+  return placedCurrent(store.placed, rootDir, cacheDir) && stampsCurrent(store, stamp);
 };
 
 export { readStore, storeFile, storeIsCurrent, writeStore };

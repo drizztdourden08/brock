@@ -13,7 +13,7 @@ afterEach(cleanup);
 
 describe('storeIsCurrent', () => {
   const stamps = { '/a.ts': '10:5', '/b.ts': '20:7' };
-  const store = { version: 3, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
+  const store = { version: 4, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
   const stampFrom = (table) => (file) => ({ ...table, '/d': '5:5' })[file] ?? null;
   const checkWith = (table) => ({ stamp: stampFrom(table) });
 

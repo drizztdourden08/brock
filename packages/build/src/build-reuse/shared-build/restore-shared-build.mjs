@@ -10,13 +10,13 @@ import { firstStale } from './stale-file.mjs';
 
 const NO_ENTRY = 'no entry in the build cache';
 
-const findCurrent = (scope, snapshot) => {
+const findCurrent = (scope, snapshot, rootDir) => {
   let reason = NO_ENTRY;
   let first = true;
   for (const id of variantIds(scope)) {
     const entry = readEntry(id, { verify: false });
     if (!entry) continue;
-    const stale = firstStale(entry.manifest, snapshot);
+    const stale = firstStale(entry.manifest, snapshot, { rootDir, root: scope.root });
     if (stale === null) {
       const verified = readEntry(id);
       if (verified) return { entry: verified };
@@ -31,14 +31,14 @@ const findCurrent = (scope, snapshot) => {
 
 const localIsCurrent = (rootDir, target, envKey, snapshot) => {
   const store = readStore(storeFile(rootDir, target));
-  return store?.preflight === envKey && storeIsCurrent(store, store.key, { snapshot });
+  return store?.preflight === envKey && storeIsCurrent(store, store.key, { snapshot, rootDir });
 };
 
 const restoreTarget = ({ rootDir, target, snapshot, root }) => {
   const identity = identityOf(rootDir, snapshot);
   const envKey = sharedEnvKey(rootDir, target, identity);
   if (localIsCurrent(rootDir, target, envKey, snapshot)) return { target, status: 'local' };
-  const { entry, reason } = findCurrent({ root, identity, target, envKey }, snapshot);
+  const { entry, reason } = findCurrent({ root, identity, target, envKey }, snapshot, rootDir);
   if (!entry) return { target, status: 'miss', reason };
   applyEntry({ entry, rootDir, target });
   return { target, status: 'cache' };

@@ -12,7 +12,7 @@ const outDirOf = (rootDir, outDir) => {
   return rel === '' || rel.startsWith('..') || isAbsolute(rel) ? null : rel.split(String.fromCharCode(92)).join('/');
 };
 
-const sourcesOf = ({ repo, repoDirs, files, dirs }) => ({ repo, repoDirs, files, dirs });
+const sourcesOf = ({ repo, repoDirs, placed, files, dirs }) => ({ repo, repoDirs, placed, files, dirs });
 
 /**
  * @typedef {object} SharedStoreInput

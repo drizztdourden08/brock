@@ -50,4 +50,4 @@ const lines = () => {
 
 const outFile = (root) => join(root, 'dist/electron/main.js');
 
-export { cloneOf, git, lines, outFile, put, repo, reuseLogger, useSharedCache };
+export { cloneOf, git, lines, outFile, put, repo, reuseLogger, tempDir, useSharedCache };

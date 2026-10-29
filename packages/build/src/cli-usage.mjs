@@ -125,6 +125,10 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
                              same as worktree launch; hidden (no window shown) and muted unless --visible
   brock pr push | open | status [name]
                              push and open ask: work leaves the machine
+  brock pr merge --local PR-n [--head <b> --base <b>] [--keep-branch]
+                             merge a local pull request with git here once its required checks pass
+  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all]
+                             run the CI steps locally in a temp worktree and write ~/.coord/ci/<project>/<run>.json
   brock mobile push          web build, cap sync, gradle, adb install and start
   brock mobile build [--release] [--out <file>]
                              web build, cap sync, gradle assembleDebug (or a signed assembleRelease)

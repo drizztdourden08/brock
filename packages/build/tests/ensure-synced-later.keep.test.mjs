@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { utimesSync } from 'node:fs';
+import { readFileSync, utimesSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ensureSynced, ensureSyncedLater } from '../src/freshness/ensure-synced.mjs';
@@ -38,5 +38,17 @@ describe('ensureSyncedLater', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     expect(await ensureSynced(syncedApp(), 'brock start')).toBeNull();
     expect(logged(log)).toContain('brock start: guide/ is missing, running tessera guide.');
+  });
+});
+
+describe('ensureSynced with sync switched off', () => {
+  it('leaves a stale .brock alone, so a gate run never writes the managed files', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const root = syncedApp();
+    const earlier = new Date(Date.now() - 60_000);
+    utimesSync(join(root, '.brock/manifest.json'), earlier, earlier);
+    expect(await ensureSynced(root, 'brock build', { sync: false })).toBeNull();
+    expect(logged(log).some((line) => line.includes('running brock sync'))).toBe(false);
+    expect(readFileSync(join(root, '.brock/manifest.json'), 'utf8')).toBe('{}');
   });
 });

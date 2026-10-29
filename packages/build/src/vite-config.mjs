@@ -12,6 +12,7 @@ import { DEV_MODE, MODE_ENV } from './build-reuse/build-reuse.constants.mjs';
 import { buildCachePlugin } from '@drizztdourden08/build-cache/vite';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { esmShimPlacement } from './build-options/esm-shim-placement.mjs';
+import { mainProcessGuard } from './build-options/main-process-guard.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { devServerPort } from './dev-server-port.mjs';
@@ -121,7 +122,7 @@ const splashPreloadEntry = (rootDir) => {
  */
 const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const { mergeConfig, workspaceRootOf, react } = await appTools(rootDir);
-  const { product, build } = await loadBrockConfig(rootDir);
+  const { product, build, mainProcess } = await loadBrockConfig(rootDir);
   const src = resolve(rootDir, 'src');
   const alias = appAliases(rootDir, build);
   const polyfills = await nodePolyfillPlugins(rootDir, build);
@@ -135,7 +136,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const base = {
     main: {
       define,
-      plugins: [packageCache, buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
+      plugins: [mainProcessGuard({ rootDir, bundle: 'main process bundle', options: mainProcess }), packageCache, buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
@@ -145,7 +146,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
     },
     preload: {
       define,
-      plugins: [buildReusePlugin({ rootDir, target: 'preload' }), esmShimPlacement()],
+      plugins: [mainProcessGuard({ rootDir, bundle: 'preload bundle', options: mainProcess }), buildReusePlugin({ rootDir, target: 'preload' }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,

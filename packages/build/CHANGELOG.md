@@ -1,5 +1,40 @@
 # @drizztdourden08/brock-build
 
+## 0.116.0
+
+### Minor Changes
+
+- 0b1dafe: Use the per-user build cache, so a fresh worktree stops rebuilding and re-extracting what the machine already has.
+
+  - The Electron main build of `brock dev` and `worktree launch` no longer compiles installed `@drizztdourden08` packages. Each version is compiled once per machine, copied to `node_modules/.build-cache` and imported at runtime. Linked packages, UI packages and anything that depends on one stay compiled in as before. Production builds, the preload and the renderer are unchanged.
+  - `brock dev`, `brock start` and `worktree launch` copy the Electron binary from the cache into a fresh install, checked against its hash, instead of extracting it again, and add each new version to the cache from a detached process, so a short command never cuts the copy.
+  - `brock cache list` prints the cache entries. Brock never deletes from the cache; Argus prunes it.
+  - `worktree create` starts `brock prewarm` in the background after the install: it syncs the app, restores Electron, builds main and preload for dev and pre-bundles the renderer dependencies, so the first launch finds them ready. Every launch (`worktree launch`, dev or prod, `brock dev`, `brock build` and `brock start`) that starts while it runs waits for it instead of doing the same work twice, and says when it starts waiting and how the prewarm ended. The prewarm keeps a record with a heartbeat in `node_modules/.vite/brock-prewarm.json`, so a crashed one never holds a launch; its log is `node_modules/.vite/brock-prewarm.log`.
+  - `worktree create` installs a workspace once. It ran `pnpm install` again in the app folder, once per target, even when the root install had already filled it.
+
+- 94a75a8: The main process and preload builds now fail when their module graph reaches renderer-only code, and the error prints the import chain from the entry to the forbidden module.
+
+  - Forbidden by default: every Tessera package, `react`, `react-dom`, `@drizztdourden08/brock-react` and the renderer folders of `src` (`screens`, `widgets`, `views`, `compounds`, `composites`, `primitives`, `stores`, `hooks`, `title-bar`, `tours`, `toolbars`, `startup`, `main.tsx`, `index.html`). Type-only imports do not count.
+  - The new `mainProcess` option of `brock.config.ts` adds to the list and lists exceptions: `mainProcess: { forbid?: string[], allow?: string[] }`. Each entry is a package name (its subpaths are covered) or a path glob relative to the app folder. `allow` wins over the defaults and over `forbid`.
+  - The check runs in `brock build`, `brock dev` and `brock start`, since all three use `defineBrockViteConfig`. An app that already imports renderer code from main now fails until it cuts the import or lists it in `mainProcess.allow`.
+
+### Patch Changes
+
+- bffd46a: `brock build --no-sync` builds from the committed `.brock` files and never runs `brock sync` first, so a gate run no longer rewrites the managed files of the app it builds.
+- 69a411c: `brock help` now lists `brock ci` and `brock pr merge --local`. Both worked before, but the help did not show them.
+- d994968: `brock structure --check` accepts the widget meta fields added in 0.113.0: `contexts`, `when`, `empty` and `prefs`, and `when` on a widget kit. Before, a widget that used one of them was reported as having an unknown field.
+- Updated dependencies [0b1dafe]
+- Updated dependencies [0092808]
+- Updated dependencies [dc45306]
+- Updated dependencies [907c265]
+- Updated dependencies [b686ea7]
+- Updated dependencies [8fc2d6b]
+- Updated dependencies [824083a]
+  - @drizztdourden08/brock-thread@0.116.0
+  - @drizztdourden08/build-cache@0.116.0
+  - @drizztdourden08/brock-core@0.116.0
+  - @drizztdourden08/brock-lint-config@0.116.0
+
 ## 0.115.5
 
 ### Patch Changes

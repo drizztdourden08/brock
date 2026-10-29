@@ -2,8 +2,9 @@
 import { pushVerb } from './push.mjs';
 import { openVerb } from './open.mjs';
 import { statusVerb } from './status.mjs';
+import { mergeVerb } from './merge.mjs';
 
-const SUB_VERBS = Object.freeze({ push: pushVerb, open: openVerb, status: statusVerb });
+const SUB_VERBS = Object.freeze({ push: pushVerb, open: openVerb, status: statusVerb, merge: mergeVerb });
 
 const USAGE = [
   ...Object.values(SUB_VERBS).map((verb) => verb.usage),

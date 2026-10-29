@@ -6,6 +6,7 @@ import { mobileVerb } from '../mobile/mobile-verb.mjs';
 import { linuxVerb } from '../linux/linux-verb.mjs';
 import { releaseVerb } from '../release/release-verb.mjs';
 import { upgradeVerb } from '../upgrade/upgrade-verb.mjs';
+import { ciVerb } from '../ci/ci-verb.mjs';
 
 const CORE_VERBS = Object.freeze({
   worktree: worktreeVerb,
@@ -15,6 +16,7 @@ const CORE_VERBS = Object.freeze({
   linux: linuxVerb,
   release: releaseVerb,
   upgrade: upgradeVerb,
+  ci: ciVerb,
 });
 
 export { CORE_VERBS };

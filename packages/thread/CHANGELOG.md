@@ -1,5 +1,39 @@
 # @drizztdourden08/brock-thread
 
+## 0.116.0
+
+### Minor Changes
+
+- 0b1dafe: Use the per-user build cache, so a fresh worktree stops rebuilding and re-extracting what the machine already has.
+
+  - The Electron main build of `brock dev` and `worktree launch` no longer compiles installed `@drizztdourden08` packages. Each version is compiled once per machine, copied to `node_modules/.build-cache` and imported at runtime. Linked packages, UI packages and anything that depends on one stay compiled in as before. Production builds, the preload and the renderer are unchanged.
+  - `brock dev`, `brock start` and `worktree launch` copy the Electron binary from the cache into a fresh install, checked against its hash, instead of extracting it again, and add each new version to the cache from a detached process, so a short command never cuts the copy.
+  - `brock cache list` prints the cache entries. Brock never deletes from the cache; Argus prunes it.
+  - `worktree create` starts `brock prewarm` in the background after the install: it syncs the app, restores Electron, builds main and preload for dev and pre-bundles the renderer dependencies, so the first launch finds them ready. Every launch (`worktree launch`, dev or prod, `brock dev`, `brock build` and `brock start`) that starts while it runs waits for it instead of doing the same work twice, and says when it starts waiting and how the prewarm ended. The prewarm keeps a record with a heartbeat in `node_modules/.vite/brock-prewarm.json`, so a crashed one never holds a launch; its log is `node_modules/.vite/brock-prewarm.log`.
+  - `worktree create` installs a workspace once. It ran `pnpm install` again in the app folder, once per target, even when the root install had already filled it.
+
+- dc45306: The local CI now runs the same steps as the GitHub workflow. `brock ci` reads the repo's `.github/workflows/ci.yml` (`--workflow <file>` picks another) and runs every job: `run:` steps in order with their env, working directory and shell (Git Bash, pwsh, cmd), `needs:` order, `if:` on `github.event_name` from `--trigger`, and the matrix entries that match this machine. The common actions are mapped (checkout, setup-node, pnpm/action-setup and cache are no-ops; upload-artifact copies its files beside the record), secrets are empty and a pnpm install is the offline one. Anything the runner cannot do is recorded `skipped-local` with the reason. Each record step is named `<job> / <step>` and carries a `job` field; `publish.requiredChecks` matches a job or a step name. Repos without a workflow keep the `gate.scripts` path. The package now depends on `yaml`.
+- 8fc2d6b: Development can now stay on the machine. A local mode switch (`~/.coord/remote.json`, local when the file is missing) makes the thread verbs stop calling `gh` and stop fetching or pushing: `pr push`, `pr open` and `release` print what they would do and that it waits for replay. A new `ci` verb (`<repo> ci`, also `brock ci`) runs the repo's gate steps in a temporary worktree at a commit with an offline install and writes one check-run record per run to `~/.coord/ci/<project>/`, with a log file per step. A new `pr merge --local PR-n` merges a pull request with git, only when the newest check run of its head commit has every required step passing. `publish.requiredChecks` in `brock.workspace.mjs` names the required steps.
+- 824083a: Add `brock release --local [--channel latest]`, the release step with no GitHub. It cuts `release/local-<version>`, runs `changeset version`, holds back until the release note passes (exit 2, then run it again), packs every changed public package with `pnpm pack` into `~/.coord/releases/<project>/<channel>/<version>/` with `notes.md` and `release.json` (written last), and opens a local pull request record. It never merges. The last line printed is the `release.json` path.
+
+### Patch Changes
+
+- 907c265: Make every delete in brock-thread safe against links, so removing a worktree can never delete files of the main checkout.
+
+  - Every delete goes through one function. It deletes only strictly inside the folder its caller owns, by path and by real path. It removes a symlink or a junction as a link and never follows it. It refuses a main checkout and a folder with a `.git` folder inside.
+  - `worktree remove`, `worktree finish`, the leftover and remnant removal, the `.user-data` delete and the `ci` temporary worktree removal remove every link in the worktree first, before `git worktree remove` runs. Git for Windows follows a junction when it deletes a folder.
+  - The git calls of a removal ignore `GIT_DIR`, `GIT_WORK_TREE` and the other variables that name a repository.
+  - `ci` keeps its temporary worktree in `<parent>/.brock-ci/<repo folder>`, outside the checkout. A step whose working directory leaves it is not run. A run that deleted a tracked file of the main checkout fails with a `DATA LOSS` summary.
+
+- b686ea7: `brock ci <name>` now takes a job name or a step name, so `brock ci lint` runs the lint step. An unknown name lists the jobs and steps.
+
+  A queued run now waits up to 240 minutes for the run ahead of it (was 30). A full gate takes about 30 minutes, so three queued PRs timed out.
+
+  `brock ci --pr PR-n` without `--commit` now checks the head branch of that pull request. Before, it checked the current checkout, so a PR check ran on the base branch.
+
+- Updated dependencies [0092808]
+  - @drizztdourden08/build-cache@0.116.0
+
 ## 0.115.5
 
 ## 0.115.4

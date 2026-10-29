@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { latestRunFor, newRunId, readRecords, writeRecord } from '../src/ci/check-record.mjs';
 import { ciDir, recordFile } from '../src/ci/ci-paths.mjs';
 import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
@@ -31,7 +31,6 @@ jobs:
 const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 let home = '';
-let saved;
 let repo = '';
 const lines = [];
 const log = (message) => lines.push(message);
@@ -47,9 +46,9 @@ const commitFile = (name, text) => {
 };
 
 beforeEach(() => {
-  saved = process.env.COORD_HOME;
+  vi.stubEnv('COORD_PROJECT', undefined);
   home = mkdtempSync(join(tmpdir(), 'brock-ci-home-'));
-  process.env.COORD_HOME = home;
+  vi.stubEnv('COORD_HOME', home);
   repo = mkdtempSync(join(tmpdir(), 'brock-ci-repo-'));
   lines.length = 0;
   git(repo, 'init', '-q', '-b', 'main');
@@ -59,8 +58,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  if (saved === undefined) delete process.env.COORD_HOME;
-  else process.env.COORD_HOME = saved;
+  vi.unstubAllEnvs();
   for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 

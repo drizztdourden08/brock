@@ -28,7 +28,7 @@ const writeGuideLater = async (appDir, label) => {
 /**
  * @param {string} appDir
  * @param {string} label the command, for the log lines
- * @param {{ sync?: boolean }} [opts] `sync: false` builds from the committed `.brock` files and never writes them
+ * @param {{ sync?: boolean }} [opts] false sync keeps the committed .brock files
  * @returns {Promise<{ problem: string | null, guide: () => Promise<void> }>} a reason to stop, and the guide to run later
  */
 const ensureSyncedLater = async (appDir, label, { sync = true } = {}) => {
@@ -42,7 +42,7 @@ const ensureSyncedLater = async (appDir, label, { sync = true } = {}) => {
 /**
  * @param {string} appDir
  * @param {string} label the command, for the log lines
- * @param {{ sync?: boolean }} [opts] `sync: false` builds from the committed `.brock` files and never writes them
+ * @param {{ sync?: boolean }} [opts] false sync keeps the committed .brock files
  * @returns {Promise<string | null>} a reason to stop before the renderer starts, or null
  */
 const ensureSynced = async (appDir, label, opts) => {

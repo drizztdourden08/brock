@@ -13,7 +13,7 @@ const addCiWorktree = ({ main, worktreesDir, runId, sha }) => {
   const path = join(main, worktreesDir, `ci-${runId.slice(9, 15)}${runId.slice(-4)}`);
   mkdirSync(join(main, worktreesDir), { recursive: true });
   excludeWorktrees(main, worktreesDir);
-  gitLoud([...LONG_PATHS, 'worktree', 'add', '--detach', path, sha], main);
+  gitLoud([...LONG_PATHS, 'worktree', 'add', '--quiet', '--detach', path, sha], main);
   return path;
 };
 

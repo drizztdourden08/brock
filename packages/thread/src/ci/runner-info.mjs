@@ -1,10 +1,10 @@
 /* @layer tooling-scripts @kind logic */
-import { execFileSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { hostname, platform, release } from 'node:os';
 
 const pnpmVersion = () => {
   try {
-    return execFileSync('pnpm', ['--version'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], shell: process.platform === 'win32' }).trim();
+    return execSync('pnpm --version', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return 'unknown';
   }

@@ -13,7 +13,7 @@
  * @property {string[]} modules Brock module ids, in load order
  * @property {{ manifest?: boolean }} [web] manifest false drops the web app manifest
  * @property {{ baselines?: boolean }} [review] baselines true: CI compares captures
- * @property {{ forbid?: string[], allow?: string[] }} [mainProcess] more imports main and preload may not reach, and the exceptions
+ * @property {{ forbid?: string[], allow?: string[] }} [mainProcess] imports main and preload may not reach
  */
 
 /**

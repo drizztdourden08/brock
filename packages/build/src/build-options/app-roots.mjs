@@ -12,7 +12,7 @@ const realOf = (dir) => {
 
 /**
  * @param {string} rootDir the app folder
- * @returns {string[]} the folder as written and its real path, when they differ (pnpm links)
+ * @returns {string[]} the folder, and its real path when different
  */
 const appRoots = (rootDir) => [...new Set([resolve(rootDir), realOf(resolve(rootDir))])];
 

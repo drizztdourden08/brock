@@ -3,8 +3,8 @@ import { chainLabeler, chainsMessage, forbiddenChains } from './main-process-cha
 import { mainProcessRules } from './main-process-rules.mjs';
 
 /**
- * @param {{ rootDir: string, bundle: string, options?: { forbid?: string[], allow?: string[] } }} input bundle is what is built, such as "main process bundle"; options is mainProcess of brock.config.ts
- * @returns {import('vite').Plugin} fails the build when the module graph reaches renderer-only code
+ * @param {{ rootDir: string, bundle: string, options?: { forbid?: string[], allow?: string[] } }} input bundle and options from brock.config.ts
+ * @returns {import('vite').Plugin} fails the build on renderer-only code
  */
 const mainProcessGuard = ({ rootDir, bundle, options }) => {
   const rules = mainProcessRules(rootDir, options);

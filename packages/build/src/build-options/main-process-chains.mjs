@@ -21,6 +21,14 @@ const chainLabeler = (rootDir) => {
   };
 };
 
+const enqueueImports = (info, { parent, queue }) => {
+  for (const next of [...info.importedIds, ...info.dynamicallyImportedIds]) {
+    if (parent.has(next)) continue;
+    parent.set(next, info.id);
+    queue.push(next);
+  }
+};
+
 /**
  * @param {object} input
  * @param {Pick<import('rollup').PluginContext, 'getModuleIds' | 'getModuleInfo'>} input.graph the finished module graph
@@ -28,7 +36,7 @@ const chainLabeler = (rootDir) => {
  * @param {Set<string>} input.blocked the module ids those imports resolved to, not entered again
  * @param {{ forbidsModule: (id: string) => boolean }} input.rules what a module may not be
  * @param {(id: string) => string} input.label names a module id
- * @returns {string[][]} one chain of names per forbidden target, entry first, the shortest found
+ * @returns {string[][]} one chain of names per forbidden target
  */
 const forbiddenChains = ({ graph, specifiers, blocked, rules, label }) => {
   const ids = [...graph.getModuleIds()];
@@ -45,11 +53,7 @@ const forbiddenChains = ({ graph, specifiers, blocked, rules, label }) => {
       continue;
     }
     for (const specifier of specifiers.get(id) ?? []) if (!found.has(specifier)) found.set(specifier, [...chainTo(id), specifier]);
-    for (const next of [...info.importedIds, ...info.dynamicallyImportedIds]) {
-      if (parent.has(next)) continue;
-      parent.set(next, id);
-      queue.push(next);
-    }
+    enqueueImports(info, { parent, queue });
   }
   return [...found.values()];
 };

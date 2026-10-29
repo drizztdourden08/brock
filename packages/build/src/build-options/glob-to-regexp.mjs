@@ -9,7 +9,7 @@ const TOKENS = [
 ];
 
 /**
- * @param {string} glob a path glob with / separators: ** crosses folders, * and ? stay in one
+ * @param {string} glob a path glob; ** crosses folders, * and ? do not
  * @returns {RegExp} matches the path it names and everything under it
  */
 const globToRegExp = (glob) => {

@@ -70,6 +70,9 @@ describe('the main process guard', () => {
     expect(await failureOf(root)).toContain('electron/main.ts -> electron/services/a.ts -> electron/services/b.ts -> src/views/Panel.ts');
   });
 
+});
+
+describe('the main process guard options', () => {
   it('prints the chain to a forbidden package reached through a shared package', async () => {
     const root = appWith({ 'electron/main.ts': "import { shared } from '@fix/shared';\nexport default shared;\n" });
     installPackage(root, '@fix/shared', { 'index.js': "import { design } from '@fix/design';\nexport const shared = design;\n" });

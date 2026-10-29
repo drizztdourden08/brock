@@ -79,8 +79,10 @@ declare const readPins: (nativeDir: string) => AddonPins;
 declare const ensureModeOf: (argv: readonly string[]) => EnsureMode;
 declare const cachedPrebuiltOf: (asset: PrebuiltAsset, platformArch: string, env: Record<string, string | undefined>) => string | null;
 declare const storePrebuilt: (asset: PrebuiltAsset, platformArch: string, archive: string, env: Record<string, string | undefined>) => Promise<boolean>;
+declare const rememberInstalled: (job: AddonJob) => Promise<'stored' | 'present' | 'unmatched' | 'failed'>;
+declare const restoreInstalledAddon: (asset: PrebuiltAsset, platformArch: string, outDir: string, env: Record<string, string | undefined>) => boolean;
 
-export { ensureAddon, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf, cachedPrebuiltOf, storePrebuilt };
+export { ensureAddon, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf, cachedPrebuiltOf, storePrebuilt, rememberInstalled, restoreInstalledAddon };
 export type {
   AddonPins, AddonPaths, AddonMarker, AddonStateInput, PrebuiltAsset, AddonJob, EnsureAddonRequest,
   AddonState, FetchOutcome, BuildOutcome, EnsureMode, EnsureResult,

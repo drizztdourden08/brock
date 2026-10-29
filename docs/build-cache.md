@@ -25,6 +25,9 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
   addon-prebuilt/<asset name>/<release tag>/<platform>-<arch>/
     manifest.json           carries archiveSha256
     files/                  the verified .tar.gz of the SDL3 addon, as the release publishes it
+  addon-installed/<asset name>/<release tag>/<platform>-<arch>/
+    manifest.json           carries files (each path with its sha256) and source
+    files/                  the extracted addon files as ensure-addon installs them
   .tmp/                     entries being built or deleted, and leftovers of a process that was cut off
 ```
 
@@ -89,4 +92,5 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 - The Electron binary. `brock dev`, `brock start`, `brock prewarm` and `<repo> worktree launch` restore it with `restoreElectron` instead of extracting it again. After the first install of a version, `storeElectronDetached` adds it to the cache from a process of its own, so a short command never cuts the copy in half.
 - The renderer dependency pre-bundle. The `brock:shared-deps-cache` plugin of Brock's renderer config, on the dev server only, so `brock dev`, `brock prewarm` and `<repo> worktree launch` (which starts `brock prewarm`) all use it. Before Vite reads `node_modules/.vite/deps` the plugin restores a matching entry with `restoreViteDeps`. When it restored nothing it starts `storeViteDepsDetached`, which adds the folder Vite builds. A worktree that already has a current `deps` folder seeds the entry from it.
 - The SDL3 addon of `@drizztdourden08/brock-input` (`addon-prebuilt`, imported through `@drizztdourden08/build-cache/store`). Its postinstall and `brock` prepare step look for the release archive here first, check its SHA-256 against `archiveSha256`, and unpack it with no network. In local mode (`~/.coord/remote.json` absent or set to local, `COORD_HOME` moves it) a miss never downloads: one line says so and the usual fallback runs (a source build, or the addon already on disk). In remote mode, or on GitHub Actions, a miss downloads the archive as before and stores it once its `.sha256` sidecar matched. An archive whose digest differs reads as a miss.
+- The same addon as extracted files (`addon-installed`). Every install that ends with a current addon on disk (its marker matches the pins and the platform) stores one, unless an intact entry exists, and `pnpm --filter @drizztdourden08/brock-input addon:seed -- <installed brock-input folder>` stores one from a copy that already has the addon. In local mode a miss of the archive restores from it: every file is checked against its SHA-256 in the manifest, then copied to the addon folder. A file that differs reads as a miss.
 - `brock cache list` prints every entry with its size and when it was last used.

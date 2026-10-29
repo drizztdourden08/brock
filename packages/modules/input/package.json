@@ -18,7 +18,8 @@
   "scripts": {
     "postinstall": "node bin/ensure-addon.mjs --postinstall",
     "addon:build": "node bin/ensure-addon.mjs --force",
-    "addon:prepare": "node bin/ensure-addon.mjs"
+    "addon:prepare": "node bin/ensure-addon.mjs",
+    "addon:seed": "node bin/seed-addon.mjs"
   },
   "exports": {
     ".": "./src/index.ts",

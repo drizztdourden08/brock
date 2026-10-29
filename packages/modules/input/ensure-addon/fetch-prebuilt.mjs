@@ -3,6 +3,7 @@ import { existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { downloadFile } from './download-file.mjs';
 import { extractArchive } from './extract-archive.mjs';
+import { restoreInstalledAddon } from './installed-cache.mjs';
 import { isLocalMode } from './local-mode.mjs';
 import { cachedPrebuiltOf, storePrebuilt } from './prebuilt-cache.mjs';
 import { prebuiltAssetOf } from './prebuilt-asset-of.mjs';
@@ -24,6 +25,15 @@ const download = async ({ paths, env, log }, asset) => {
   return 'installed';
 };
 
+const offlineOutcome = ({ paths, env, log }, asset) => {
+  if (restoreInstalledAddon(asset, paths.platformArch, paths.outDir, env)) {
+    log(`Restored the installed ${asset.name} from the build cache.`);
+    return 'installed';
+  }
+  log(`${asset.name} is not cached and local mode forbids downloading it.`);
+  return 'offline';
+};
+
 /**
  * @param {Omit<import('./index.d.mts').AddonJob, 'force'>} job
  * @returns {Promise<import('./index.d.mts').FetchOutcome>} offline: not cached, local mode
@@ -38,10 +48,7 @@ const fetchPrebuilt = async (job) => {
       unpack(cached, paths.outDir, asset.name);
       return 'installed';
     }
-    if (isLocalMode(env)) {
-      log(`${asset.name} is not cached and local mode forbids downloading it.`);
-      return 'offline';
-    }
+    if (isLocalMode(env)) return offlineOutcome(job, asset);
     return await download(job, asset);
   } catch (err) {
     log(`Could not install the prebuilt for ${paths.platformArch}: ${err instanceof Error ? err.message : String(err)}`);

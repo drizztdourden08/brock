@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { addonPathsOf } from './addon-paths-of.mjs';
 import { buildAddon } from './build-addon.mjs';
 import { fetchPrebuilt } from './fetch-prebuilt.mjs';
+import { rememberInstalled } from './installed-cache.mjs';
 import { readAddonState } from './read-addon-state.mjs';
 import { readJson } from './read-json.mjs';
 import { readPins } from './read-pins.mjs';
@@ -53,6 +54,17 @@ const refresh = async (job, state, allowBuild) => {
   return fallback(job, allowBuild);
 };
 
+const run = async (job, mode) => {
+  const { paths, env } = job;
+  if (mode === 'force') return forceBuild(job);
+  if (mode === 'postinstall' && (env.CI || hasLocalBuild(paths))) return 'skipped';
+  const state = readAddonState(paths, job.pins);
+  if (state === 'current') return 'current';
+  return refresh(job, state, mode === 'prepare');
+};
+
+const WORKING = new Set(['installed', 'built', 'current', 'kept', 'skipped']);
+
 /**
  * @param {import('./index.d.mts').EnsureAddonRequest} request
  * @returns {Promise<import('./index.d.mts').EnsureResult>}
@@ -60,11 +72,9 @@ const refresh = async (job, state, allowBuild) => {
 const ensureAddon = async ({ packageDir, mode, env, log }) => {
   const paths = addonPathsOf(packageDir, undefined, env);
   const job = { paths, pins: readPins(paths.nativeDir), force: mode === 'force', log, env };
-  if (mode === 'force') return forceBuild(job);
-  if (mode === 'postinstall' && (env.CI || hasLocalBuild(paths))) return 'skipped';
-  const state = readAddonState(paths, job.pins);
-  if (state === 'current') return 'current';
-  return refresh(job, state, mode === 'prepare');
+  const result = await run(job, mode);
+  if (WORKING.has(result) && await rememberInstalled(job) === 'stored') log('Kept a copy of the installed addon in the build cache.');
+  return result;
 };
 
 export { ensureAddon };

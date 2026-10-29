@@ -1,6 +1,6 @@
 /* @layer electron-main @kind logic */
 import { randomBytes } from 'crypto';
-import { readFile, rm } from 'fs/promises';
+import { promises } from 'fs';
 import { tmpdir } from 'os';
 import { basename, dirname, join } from 'path';
 import type { AsyncSystemToolRun } from './bridge.type';
@@ -22,12 +22,12 @@ const fastAccessCheck = async (file: string, run: AsyncSystemToolRun): Promise<b
       run('icacls.exe', [name, '/save', saved, '/c'], { cwd }),
       run('cmd.exe', ['/d', '/c', 'dir', '/q', name], { cwd }),
     ]);
-    const sddl = (await readFile(saved)).toString('utf16le');
+    const sddl = (await promises.readFile(saved)).toString('utf16le');
     return fileOwnerIs(listing.toString('latin1'), accountOf(), name) && sddlIsPrivate(sddl, user.sid);
   } catch {
     return false;
   } finally {
-    await rm(saved, { force: true });
+    await promises.rm(saved, { force: true });
   }
 };
 

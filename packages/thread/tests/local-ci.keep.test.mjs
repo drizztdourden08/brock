@@ -3,13 +3,14 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { latestRunFor, newRunId, readRecords, writeRecord } from '../src/ci/check-record.mjs';
 import { ciDir, recordFile } from '../src/ci/ci-paths.mjs';
+import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 import { planSteps } from '../src/ci/ci-plan.mjs';
 import { runCi } from '../src/ci/run-ci.mjs';
 import { acquireRunLock } from '../src/ci/run-lock.mjs';
-import { workflowJobs } from '../src/ci/workflow-jobs.mjs';
+import { readWorkflow } from '../src/ci/workflow-jobs.mjs';
 import { mergeBlocker } from '../src/pr/merge-gate.mjs';
 import { mergeVerb } from '../src/pr/merge.mjs';
 
@@ -30,7 +31,6 @@ jobs:
 const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 let home = '';
-let saved;
 let repo = '';
 const lines = [];
 const log = (message) => lines.push(message);
@@ -46,9 +46,9 @@ const commitFile = (name, text) => {
 };
 
 beforeEach(() => {
-  saved = process.env.COORD_HOME;
+  vi.stubEnv('COORD_PROJECT', undefined);
   home = mkdtempSync(join(tmpdir(), 'brock-ci-home-'));
-  process.env.COORD_HOME = home;
+  vi.stubEnv('COORD_HOME', home);
   repo = mkdtempSync(join(tmpdir(), 'brock-ci-repo-'));
   lines.length = 0;
   git(repo, 'init', '-q', '-b', 'main');
@@ -58,10 +58,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  if (saved === undefined) delete process.env.COORD_HOME;
-  else process.env.COORD_HOME = saved;
-  rmSync(home, { recursive: true, force: true });
-  rmSync(repo, { recursive: true, force: true });
+  vi.unstubAllEnvs();
+  for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 
 describe('check-run records', () => {
@@ -87,13 +85,13 @@ describe('check-run records', () => {
 });
 
 describe('the step plan', () => {
-  it('reads the gate scripts from the workflow, installs first and records other jobs as skipped-local', () => {
+  it('reads the gate scripts from the workflow, installs first and plans the other jobs step by step', () => {
     const plan = planSteps({ workspace, workflowText: WORKFLOW });
-    expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade']);
+    expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade / echo hi']);
     expect(plan[0].command).toBe('pnpm install --offline --frozen-lockfile');
     expect(plan[1].command).toBe('pnpm run lint');
-    expect(plan.at(-1).skip).toMatch(/skipped-local/);
-    expect(plan.map((step) => step.required)).toEqual([true, true, true, true, true, false]);
+    expect(plan.at(-1)).toMatchObject({ job: 'upgrade', command: 'echo hi', shell: 'pwsh' });
+    expect(plan.map((step) => step.required)).toEqual([true, true, true, true, true, true]);
   });
 
   it('prefers gate.scripts of the workspace and honours requiredChecks', () => {
@@ -103,14 +101,14 @@ describe('the step plan', () => {
 
   it('falls back to brock gate, narrows to a job or to named steps, and refuses unknown names', () => {
     expect(planSteps({ workspace }).map((step) => step.command)).toEqual(['pnpm install --offline --frozen-lockfile', 'pnpm exec brock gate']);
-    expect(planSteps({ workspace, workflowText: WORKFLOW, job: 'upgrade' }).map((step) => step.name)).toEqual(['upgrade']);
+    expect(planSteps({ workspace, workflowText: WORKFLOW, job: 'upgrade' }).map((step) => step.name)).toEqual(['upgrade / echo hi']);
     expect(planSteps({ workspace, workflowText: WORKFLOW, only: ['lint'] }).map((step) => step.name)).toEqual(['install', 'lint']);
     expect(() => planSteps({ workspace, workflowText: WORKFLOW, only: ['nope'] })).toThrow(/No step named "nope"/);
     expect(() => planSteps({ workspace, workflowText: WORKFLOW, job: 'nope' })).toThrow(/No job "nope"/);
   });
 
   it('reads jobs and unquotes a quoted scripts value', () => {
-    expect(workflowJobs(WORKFLOW.replace('lint lint:md structure test', "'lint test'"))).toEqual([{ id: 'gate', scripts: ['lint', 'test'] }, { id: 'upgrade', scripts: null }]);
+    expect(readWorkflow(WORKFLOW.replace('lint lint:md structure test', "'lint test'")).jobs.map((job) => job.scripts)).toEqual([['lint', 'test'], null]);
   });
 });
 

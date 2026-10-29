@@ -2,17 +2,18 @@
 import { tryGit } from '../git.mjs';
 import { usageFor } from '../cli/usage-for.mjs';
 import { newRunId } from './check-record.mjs';
-import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE } from './ci.constants.mjs';
+import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
 import { planSteps } from './ci-plan.mjs';
 import { projectOf } from './project-of.mjs';
 import { runCi } from './run-ci.mjs';
 
 const USAGE = [
-  '  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all] [--trigger push|pr|manual|release]',
-  '           [--only <step>[,<step>]] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
+  '  brock ci [check] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
+  '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
-  '                               (default HEAD) and write ~/.coord/ci/<project>/<runId>.json. The first line',
-  '                               printed is the record path. Exit 0 pass, 1 a step failed, 2 usage or setup error.',
+  '                               (default HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
+  '                               of the workflow file (default ci.yml). The first line printed is the record path.',
+  '                               Exit 0 pass, 1 a step failed, 2 usage or setup error.',
 ].join('\n');
 
 const PR_ID = /^PR-\d+$/;
@@ -54,6 +55,19 @@ const waitOf = (options) => {
   return minutes * 60000;
 };
 
+const workflowPath = (options) => {
+  const named = stringOption(options, 'workflow');
+  if (!named) return WORKFLOW_FILE;
+  return named.includes('/') ? named : `${WORKFLOWS_DIR}/${named}`;
+};
+
+const workflowOf = (options, sha, cwd) => {
+  const path = workflowPath(options);
+  const text = tryGit(['show', `${sha}:${path}`], cwd);
+  if (text === null && typeof options.workflow === 'string') throw new Error(`There is no workflow file ${path} at ${sha.slice(0, 9)}.`);
+  return text;
+};
+
 const commitOf = (options, cwd) => {
   const spec = stringOption(options, 'commit', 'HEAD');
   const sha = tryGit(['rev-parse', '--verify', '--quiet', `${spec}^{commit}`], cwd);
@@ -67,14 +81,14 @@ const resolveRequest = (positional, options, ctx) => {
   const { spec, sha } = commitOf(options, cwd);
   const pr = prOf(options);
   const only = listOf(options.only);
-  const workflowText = tryGit(['show', `${sha}:${WORKFLOW_FILE}`], cwd);
-  const plan = planSteps({ workspace: ctx.workspace, workflowText, job: stringOption(options, 'job', 'all'), only });
+  const trigger = triggerOf(options, pr);
+  const plan = planSteps({ workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), job: stringOption(options, 'job', 'all'), only, trigger });
   return {
     project: projectOf(options, ctx.workspace),
     sha,
     branch: branchOf(sha, spec, options, cwd),
     pr,
-    trigger: triggerOf(options, pr),
+    trigger,
     plan,
     partial: Boolean(only),
     waitMs: waitOf(options),

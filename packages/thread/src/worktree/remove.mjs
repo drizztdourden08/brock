@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { gitLoud, LONG_PATHS } from '../git.mjs';
 import { deleteTree } from './delete-tree.mjs';
 import { guards } from './guards.mjs';
@@ -21,7 +22,7 @@ const removeRemnant = async (worktree) => {
   const links = findLinks(path);
   if (links.length > 0) throw new Error(`Refusing: ${links.length} link(s) inside the remnant (${links.slice(0, 5).join(', ')}).`);
   log('Unregistered remnant (a previous remove failed mid-delete); deleting the directory.');
-  const failure = await deleteTree(path, path);
+  const failure = await deleteTree({ owner: dirname(path), target: path, mains: [main] });
   if (failure) throw new Error(`Could not delete ${failure.path} (${failure.code}); something holds it open. Close it and run the same remove again.`);
   gitLoud([...LONG_PATHS, 'worktree', 'prune'], main);
   log(`Remnant "${worktree.name}" deleted. Its branch (if any) was left alone; review with git branch.`);

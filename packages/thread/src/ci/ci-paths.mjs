@@ -26,4 +26,12 @@ const slug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^
  */
 const stepLogFile = (project, runId, index, name) => join(ciDir(project), `${runId}.${String(index + 1).padStart(2, '0')}-${slug(name)}.log`);
 
-export { ciDir, recordFile, stepLogFile };
+/**
+ * @param {string} project
+ * @param {string} runId
+ * @param {string} name the artifact's name
+ * @returns {string} the folder that holds an uploaded artifact
+ */
+const artifactDir = (project, runId, name) => join(ciDir(project), `${runId}.artifacts`, slug(name));
+
+export { artifactDir, ciDir, recordFile, stepLogFile };

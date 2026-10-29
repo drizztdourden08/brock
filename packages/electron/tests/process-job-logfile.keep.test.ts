@@ -11,8 +11,8 @@ beforeEach(() => {
   fx = createProcessFixture();
 });
 
-afterEach(() => {
-  fx.dispose();
+afterEach(async () => {
+  await fx.dispose();
 });
 
 const logFileOf = (outcome: { logFile?: string }): string => {

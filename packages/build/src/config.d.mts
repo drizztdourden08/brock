@@ -31,6 +31,13 @@ interface BrockServerOptions {
   optionalAddons?: string[];
 }
 
+interface BrockMainProcessOptions {
+  /** More packages (by name, with their subpaths) or path globs (relative to the app folder, containing * or starting with ./) the main process and the preload may not reach, on top of Tessera, react, react-dom, brock-react and the renderer folders of src. The build fails with the import chain when they do. */
+  forbid?: string[];
+  /** Exceptions to the forbidden list, in the same two forms: a package or subpath ('@drizztdourden08/tessera/tokens') or a path glob. */
+  allow?: string[];
+}
+
 interface BrockReviewOptions {
   /** true makes the CI review job compare its captures with tests/baselines/linux, and adds the bless input. */
   baselines?: boolean;
@@ -142,6 +149,8 @@ interface BrockConfig {
   server?: BrockServerOptions;
   /** The headless review in CI. */
   review?: BrockReviewOptions;
+  /** What the main process and the preload bundles may not import: the build fails when their module graph reaches renderer-only code. */
+  mainProcess?: BrockMainProcessOptions;
   /** Options of the managed Vite configs. */
   build?: BrockBuildOptions;
   /** The app's own gate steps: brock gate runs them, and so do the CI quality job and upgrade. */
@@ -163,7 +172,7 @@ declare const defineBrockConfig: (cfg: BrockConfig) => BrockConfig;
 
 export { defineBrockConfig, CONFIG_FILE };
 export type {
-  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
+  BrockBuildOptions, BrockConfig, BrockDefineValue, BrockExtraResource, BrockFileAssociationOptions, BrockFuseOptions, BrockGateOptions, BrockMainProcessOptions, BrockOptimizeDepsOptions, BrockPackagingOptions, BrockPlatform,
   BrockReviewOptions, BrockServerArch, BrockServerOptions, BrockTarget, BrockTsconfigOptions, BrockWebOptions, BrockWorkflowMode, BrockWorkflowOptions, WorkflowTestEnv,
 };
 export type { WorkflowAttest, WorkflowPublish, WorkflowStep, WorkflowSteps } from '@drizztdourden08/brock-core/module';

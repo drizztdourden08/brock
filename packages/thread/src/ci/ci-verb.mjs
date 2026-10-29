@@ -1,0 +1,103 @@
+/* @layer tooling-scripts @kind logic */
+import { tryGit } from '../git.mjs';
+import { usageFor } from '../cli/usage-for.mjs';
+import { newRunId } from './check-record.mjs';
+import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE } from './ci.constants.mjs';
+import { planSteps } from './ci-plan.mjs';
+import { projectOf } from './project-of.mjs';
+import { runCi } from './run-ci.mjs';
+
+const USAGE = [
+  '  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all] [--trigger push|pr|manual|release]',
+  '           [--only <step>[,<step>]] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
+  '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
+  '                               (default HEAD) and write ~/.coord/ci/<project>/<runId>.json. The first line',
+  '                               printed is the record path. Exit 0 pass, 1 a step failed, 2 usage or setup error.',
+].join('\n');
+
+const PR_ID = /^PR-\d+$/;
+
+const stringOption = (options, name, fallback = null) => (typeof options[name] === 'string' ? options[name] : fallback);
+
+const branchOf = (sha, spec, options, cwd) => {
+  if (typeof options.branch === 'string') return options.branch;
+  if (spec === 'HEAD') {
+    const name = tryGit(['rev-parse', '--abbrev-ref', 'HEAD'], cwd);
+    return name && name !== 'HEAD' ? name : null;
+  }
+  const named = tryGit(['name-rev', '--name-only', '--no-undefined', '--refs=refs/heads/*', sha], cwd);
+  return named ? named.replace(/[~^].*$/, '') : null;
+};
+
+const listOf = (value) => (typeof value === 'string' ? value.split(',').map((item) => item.trim()).filter(Boolean) : null);
+
+const assertWords = (positional) => {
+  if (positional.length > 1 || (positional.length === 1 && positional[0] !== 'check')) throw new Error(`Unknown word "${positional.join(' ')}".`);
+};
+
+const triggerOf = (options, pr) => {
+  const fallback = pr ? 'pr' : 'manual';
+  const trigger = stringOption(options, 'trigger', fallback);
+  if (!TRIGGERS.includes(trigger)) throw new Error(`--trigger is one of ${TRIGGERS.join(', ')}, got "${trigger}".`);
+  return trigger;
+};
+
+const prOf = (options) => {
+  const pr = stringOption(options, 'pr');
+  if (pr && !PR_ID.test(pr)) throw new Error(`--pr takes a pull request id like PR-3, got "${pr}".`);
+  return pr;
+};
+
+const waitOf = (options) => {
+  const minutes = Number(options['wait-minutes'] ?? DEFAULT_WAIT_MINUTES);
+  if (!Number.isFinite(minutes) || minutes < 0) throw new Error('--wait-minutes takes minutes, like 30.');
+  return minutes * 60000;
+};
+
+const commitOf = (options, cwd) => {
+  const spec = stringOption(options, 'commit', 'HEAD');
+  const sha = tryGit(['rev-parse', '--verify', '--quiet', `${spec}^{commit}`], cwd);
+  if (!sha) throw new Error(`"${spec}" is not a commit in this repository.`);
+  return { spec, sha };
+};
+
+const resolveRequest = (positional, options, ctx) => {
+  assertWords(positional);
+  const cwd = process.cwd();
+  const { spec, sha } = commitOf(options, cwd);
+  const pr = prOf(options);
+  const only = listOf(options.only);
+  const workflowText = tryGit(['show', `${sha}:${WORKFLOW_FILE}`], cwd);
+  const plan = planSteps({ workspace: ctx.workspace, workflowText, job: stringOption(options, 'job', 'all'), only });
+  return {
+    project: projectOf(options, ctx.workspace),
+    sha,
+    branch: branchOf(sha, spec, options, cwd),
+    pr,
+    trigger: triggerOf(options, pr),
+    plan,
+    partial: Boolean(only),
+    waitMs: waitOf(options),
+  };
+};
+
+/** @type {import('../workspace/workspace.type.mjs').Verb} */
+const ciVerb = {
+  usage: USAGE,
+  run: async (positional, options, ctx) => {
+    if (options.help === true) {
+      console.log(usageFor(USAGE, ctx.workspace));
+      return EXIT.pass;
+    }
+    let request;
+    try {
+      request = resolveRequest(positional, options, ctx);
+    } catch (error) {
+      console.error(`[${ctx.workspace.name}] x ${usageFor(`${error.message}\n\n${USAGE}`, ctx.workspace)}`);
+      return EXIT.setup;
+    }
+    return runCi({ ctx, request, runId: newRunId(), announce: (file) => console.log(file) });
+  },
+};
+
+export { ciVerb };

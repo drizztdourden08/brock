@@ -116,6 +116,7 @@ interface BootstrapOptions {
   security?: SecurityOptions;
   screenshotTimeoutMs?: number;
   bridge?: AppBridgeOptions;
+  ecNullDigestShim?: boolean;
 }
 
 export type {

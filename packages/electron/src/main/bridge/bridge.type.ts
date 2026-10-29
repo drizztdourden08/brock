@@ -136,8 +136,10 @@ interface SystemToolOptions {
 
 type SystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) => Buffer;
 
+type AsyncSystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) => Promise<Buffer>;
+
 export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionLink, BridgeConnectionListener, BridgeDiscovery, BridgeErrorOptions, BridgeEvent,
   BridgeHandler, BridgeHello, BridgeReply, BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions,
-  BridgeRequestRoute, BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, WindowsUser,
+  BridgeRequestRoute, BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, AsyncSystemToolRun, WindowsUser,
 };

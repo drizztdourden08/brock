@@ -26,7 +26,7 @@ const readStore = (file) => {
 
 /**
  * @param {string} file
- * @param {{ key: string, repo: Record<string, string>, repoDirs: Record<string, string>, files: Record<string, string | null>, dirs: Record<string, string | null>, outputs: { fileName: string, base64: string }[] }} content
+ * @param {{ key: string, repo: Record<string, string>, repoDirs: Record<string, string>, files: Record<string, string | null>, dirs: Record<string, string | null>, outputs: { fileName: string, base64: string }[], preflight?: string }} content
  * @returns {boolean} whether it was written
  */
 const writeStore = (file, content) => {

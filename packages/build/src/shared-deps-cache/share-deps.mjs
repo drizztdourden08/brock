@@ -39,4 +39,4 @@ const shareDeps = ({ config, rootDir, store = storeViteDepsDetached }) => {
   return REPORTED[outcome];
 };
 
-export { depsBuildKey, shareDeps };
+export { depsBuildKey, shareDeps, viteVersionOf };

@@ -2,9 +2,8 @@
 import { execFileSync } from 'node:child_process';
 import { cpSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { build } from 'vite';
 import { describe, expect, it } from 'vitest';
-import { buildReusePlugin } from '../src/build-reuse/build-reuse-plugin.mjs';
+import { buildMain } from './main-bundle-build.mjs';
 import { reuseLogger, useDevelopmentMode, writeMainApp } from './reuse-test-files.mjs';
 import { tempTree } from './temp-tree.mjs';
 
@@ -26,14 +25,7 @@ const repo = () => {
   return root;
 };
 
-const run = (root) => build({
-  root,
-  configFile: false,
-  logLevel: 'info',
-  customLogger,
-  plugins: [buildReusePlugin({ rootDir: root, target: 'main' })],
-  build: { outDir: join(root, 'dist/electron'), emptyOutDir: true, minify: false, lib: { entry: { main: join(root, 'electron/main.js') }, formats: ['es'] } },
-});
+const run = (root) => buildMain(root, customLogger);
 
 const reused = () => messages.some((message) => message.includes('reused the main bundle'));
 

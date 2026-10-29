@@ -46,6 +46,6 @@ The records in `node_modules/.vite/brock-build-reuse` (format 3) no longer key f
 - Other files (a linked Brock or Tessera checkout) keep their path, time and size stamps.
 - The key itself hashes the content of `package.json`, `brock.config.ts`, the lockfiles and env files, and replaces the app and workspace folders with tokens in the config part.
 
-A record written in one checkout is therefore valid in another checkout of the same tree. A build that sees a repository file change while it runs writes no record.
+A record written in one checkout is therefore valid in another checkout of the same tree. The build cache keeps these records for every worktree on the machine, not only for clones: see "The app build entry" in [build-cache.md](build-cache.md). A build that sees a repository file change while it runs writes no record.
 
 The shared renderer dependency cache (`~/.brock/cache/vite-deps`, format 2) stores each dependency source relative to the package store, so a cloned worktree whose packages live in the shared store can be seeded too. The renderer dev server is allowed to serve files from the package store wherever `.modules.yaml` puts it.

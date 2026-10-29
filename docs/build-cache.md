@@ -22,6 +22,9 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
   vite-deps/renderer/<viteVersion>/<buildKey>/
     manifest.json
     files/                  a copy of node_modules/.vite/deps: _metadata.json, one .js per dependency, chunks
+  app-build/<package name>/<app version>/<target>-<platform>-<arch>-<envKey>-<sourceKey>/
+    manifest.json           carries target, preflight, outDir and the keys of every source the build read
+    files/record.json       the main or preload bundle, as the in-worktree reuse record keeps it
   addon-prebuilt/<asset name>/<release tag>/<platform>-<arch>/
     manifest.json           carries archiveSha256
     files/                  the verified .tar.gz of the SDL3 addon, as the release publishes it
@@ -70,6 +73,26 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 - A store waits, in a process of its own, for a `deps` folder whose `_metadata.json` has exactly the three hashes the launching process computed. A folder that Vite wrote with other hashes (the formula and Vite disagree) is never stored. The copy is dropped when `_metadata.json` changed while it was copied. The wait ends after three minutes.
 - A restore does nothing when `deps` already carries the right hashes. A store does nothing when the entry is there and its files hash to `contentHash`.
 
+## The app build entry
+
+`app-build` holds the dev `main` and `preload` bundles of one Brock app, so a fresh worktree skips the build. It is the in-worktree build reuse (`packages/build/src/build-reuse`) shared across worktrees. One entry holds one bundle (`<target>` is `main` or `preload`).
+
+- `<package name>` and `<app version>` are the app's `package.json` name and version.
+- `<envKey>` (16 characters) is everything but the source files: the app path inside its workspace, the package name, platform and architecture, the mode (`development`), Node's version, the Brock build code (its version when installed, a hash of its sources when linked), the Vite and electron-vite versions, the content of `package.json`, `brock.config.ts`, `electron.vite.config.ts` and the files they import, the lockfiles (`node_modules/.pnpm/lock.yaml` is the installed dependency versions), the `.env` files and the `VITE_*` variables. It is computed without loading Vite.
+- `<sourceKey>` hashes the `repo`, `repoDirs`, `files` and `dirs` tables the build recorded: Git blob ids (or content hashes for a changed or ignored file) of every repository file in the main or preload graph, the names in each of their folders, and the stamps of the files outside the repository. Entries with the same `<envKey>` and other sources live side by side; a lookup checks the newest eight.
+- `manifest.json` repeats those tables, so a lookup reads manifests only and compares them with the Git index, the Git status and the lockfile. The first stale file is named in the log. `files/record.json` is read on a hit only.
+- The out folder's path is stored relative to the app. A bundle that names the worktree (for example a file URL of the cached packages under `node_modules`) has the root replaced by a token, and the token by the restoring worktree's root. A bundle that still names the worktree in another spelling is not stored.
+
+**Hit.** `brock prewarm` and `brock dev` (before `electron-vite dev`) call `restoreSharedBuild`. It reads Git and the cache only: Vite and electron-vite are never imported (a test asserts it). On a hit it writes the bundle into the out folder and the record into `node_modules/.vite/brock-build-reuse`, then touches the entry. A worktree whose own record already carries the same `preflight` key and current source keys counts as a hit with no copy. `brock prewarm` then loads nothing else when the renderer pre-bundle of this Vite version is also in the cache; otherwise it loads Vite for the renderer only. The log line is `reused the main and preload builds from the build cache in N ms, Vite not loaded.`
+
+**Miss.** The log line says why: `no entry in the build cache`, or `changed file <path>` for the first file that differs from the newest entry (a dirty file counts). Vite then builds as before, and the build reuse plugin stores the result once its own record is written. The bundles are about a megabyte, so the store runs in the build process and never fails the build. A reused record is stored too when the cache lacks it.
+
+**Still checked in the worktree.** A restored record is used only if the in-worktree reuse key (`reuseKey`, from the resolved Vite config) equals the stored one. `NODE_ENV` and the resolved `define`, `env` and `build` options are compared there, not in `<envKey>`. When they differ, `electron-vite dev` builds once, as before.
+
+**Import guard.** `main-process-guard` runs inside every build and fails it when renderer-only code reaches main or preload. A stored bundle was built with the guard, and `<sourceKey>` covers every source in its graph, so a hit needs no new check.
+
+An `app-build` entry is never named by a lockfile, so Argus keeps it by `lastUsedAt` and the grace period alone.
+
 ## How entries are written and read
 
 - A new entry is built in `<root>/.tmp/<uuid>/`, its manifest written last, then the folder is renamed to its final path. A reader never sees half an entry. When two processes race, the first rename wins and the other uses it.
@@ -90,6 +113,7 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 
 - The Electron main process of a Brock app in `electron-vite dev`. Brock's Vite factory adds `buildCachePlugin` (`@drizztdourden08/build-cache/vite`), which compiles each installed `@drizztdourden08` package once per machine and imports it at runtime instead of bundling it. Linked packages (a `link:` or `workspace:` dependency, a Tessera override), packages installed in more than one version, UI packages (they depend on React and stay in the renderer) and any package that depends on one of those stay compiled in as before. The preload, the renderer and production builds are unchanged.
 - The Electron binary. `brock dev`, `brock start`, `brock prewarm` and `<repo> worktree launch` restore it with `restoreElectron` instead of extracting it again. After the first install of a version, `storeElectronDetached` adds it to the cache from a process of its own, so a short command never cuts the copy in half.
+- The dev main and preload bundles (`app-build`), through `restoreSharedBuild` and the build reuse plugin. See the section above.
 - The renderer dependency pre-bundle. The `brock:shared-deps-cache` plugin of Brock's renderer config, on the dev server only, so `brock dev`, `brock prewarm` and `<repo> worktree launch` (which starts `brock prewarm`) all use it. Before Vite reads `node_modules/.vite/deps` the plugin restores a matching entry with `restoreViteDeps`. When it restored nothing it starts `storeViteDepsDetached`, which adds the folder Vite builds. A worktree that already has a current `deps` folder seeds the entry from it.
 - The SDL3 addon of `@drizztdourden08/brock-input` (`addon-prebuilt`, imported through `@drizztdourden08/build-cache/store`). Its postinstall and `brock` prepare step look for the release archive here first, check its SHA-256 against `archiveSha256`, and unpack it with no network. In local mode (`~/.coord/remote.json` absent or set to local, `COORD_HOME` moves it) a miss never downloads: one line says so and the usual fallback runs (a source build, or the addon already on disk). In remote mode, or on GitHub Actions, a miss downloads the archive as before and stores it once its `.sha256` sidecar matched. An archive whose digest differs reads as a miss.
 - The same addon as extracted files (`addon-installed`). Every install that ends with a current addon on disk (its marker matches the pins and the platform) stores one, unless an intact entry exists, and `pnpm --filter @drizztdourden08/brock-input addon:seed -- <installed brock-input folder>` stores one from a copy that already has the addon. In local mode a miss of the archive restores from it: every file is checked against its SHA-256 in the manifest, then copied to the addon folder. A file that differs reads as a miss.

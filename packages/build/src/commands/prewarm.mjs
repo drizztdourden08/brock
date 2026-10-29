@@ -2,9 +2,11 @@
 import { beginJob } from '@drizztdourden08/build-cache/jobs';
 import { cloneStoreProblem, prewarmRecord } from '@drizztdourden08/brock-thread';
 import { DEV_MODE, MODE_ENV } from '../build-reuse/build-reuse.constants.mjs';
+import { restoreSharedBuild } from '../build-reuse/shared-build/restore-shared-build.mjs';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { importFromApp } from '../import-from-app.mjs';
+import { depsEntryExists } from '../shared-deps-cache/deps-entry-exists.mjs';
 
 const TAG = 'brock prewarm:';
 
@@ -33,10 +35,16 @@ const warm = async (rootDir, started) => {
   if (synced.problem) return synced.problem;
   const electron = ensureElectron(rootDir);
   if (!electron.ok) console.warn(`${TAG} ${electron.message}`);
+  const shared = restoreSharedBuild(rootDir, { log: (line) => console.log(`${TAG} ${line}`) });
+  if (shared.hit && depsEntryExists(rootDir)) {
+    console.log(`${TAG} renderer dependencies come from the build cache when the app starts; ready in ${seconds(started)}.`);
+    return null;
+  }
   const [electronVite, vite] = await Promise.all([importFromApp(rootDir, 'electron-vite'), importFromApp(rootDir, 'vite')]);
   const { main, preload, renderer } = (await electronVite.resolveConfig({ root: rootDir }, 'serve', DEV_MODE)).config ?? {};
-  for (const side of [main, preload].filter(Boolean)) await vite.build(side);
-  console.log(`${TAG} main and preload built in ${seconds(started)}.`);
+  const sides = { main, preload };
+  for (const name of shared.missed.filter((side) => sides[side])) await vite.build(sides[name]);
+  if (shared.missed.length > 0) console.log(`${TAG} ${shared.missed.join(' and ')} built in ${seconds(started)}.`);
   const count = renderer ? await optimizeRenderer(vite, renderer) : 0;
   console.log(`${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
   return null;

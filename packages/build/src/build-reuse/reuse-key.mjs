@@ -4,9 +4,10 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hashTree } from '@drizztdourden08/build-cache/store';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { KEY_FILES, REUSE_VERSION } from './build-reuse.constants.mjs';
-import { contentOf, treeStamp } from './file-stamp.mjs';
+import { contentOf } from './file-stamp.mjs';
 import { portableValue } from './portable-value.mjs';
 
 const BUILD_SRC = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -21,13 +22,22 @@ const versionOf = (rootDir, name) => {
   }
 };
 
-const buildStamp = () => {
-  if (!BUILD_SRC.includes(INSTALLED)) return treeStamp(BUILD_SRC);
+const sourceStamp = () => `source:${hashTree(BUILD_SRC).contentHash}`;
+
+const computeStamp = () => {
+  if (!BUILD_SRC.includes(INSTALLED)) return sourceStamp();
   try {
     return `installed@${JSON.parse(readFileSync(join(dirname(BUILD_SRC), 'package.json'), 'utf8')).version}`;
   } catch {
-    return treeStamp(BUILD_SRC);
+    return sourceStamp();
   }
+};
+
+let stamped = null;
+
+const buildStamp = () => {
+  stamped ??= computeStamp();
+  return stamped;
 };
 
 /**

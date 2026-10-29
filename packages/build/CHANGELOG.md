@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-build
 
+## 0.116.0
+
+### Patch Changes
+
+- d994968: `brock structure --check` accepts the widget meta fields added in 0.113.0: `contexts`, `when`, `empty` and `prefs`, and `when` on a widget kit. Before, a widget that used one of them was reported as having an unknown field.
+  - @drizztdourden08/brock-core@0.116.0
+  - @drizztdourden08/brock-lint-config@0.116.0
+  - @drizztdourden08/brock-thread@0.116.0
+
 ## 0.115.5
 
 ### Patch Changes

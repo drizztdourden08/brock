@@ -6,11 +6,11 @@ import { startRun } from './start-run';
 const disabled = (options: DragSourceOptions<unknown>): boolean => (typeof options.disabled === 'function' ? options.disabled() : options.disabled === true);
 
 const erased = <T,>(options: DragSourceOptions<T>): DragSourceOptions<unknown> => ({
-  type: options.type,
-  payload: options.payload,
-  disabled: options.disabled,
-  onStart: options.onStart ? (payload) => options.onStart?.(payload as T) : undefined,
-  onEnd: options.onEnd,
+  get type() { return options.type; },
+  get payload() { return options.payload; },
+  get disabled() { return options.disabled; },
+  onStart: (payload) => options.onStart?.(payload as T),
+  onEnd: (end) => options.onEnd?.(end),
 });
 
 const dragSource = <T,>(element: DndElement, options: DragSourceOptions<T>): (() => void) => {
@@ -19,9 +19,12 @@ const dragSource = <T,>(element: DndElement, options: DragSourceOptions<T>): (()
     if ((event as PointerEvent).button !== 0 || disabled(loose)) return;
     startRun(element, loose, event);
   };
+  const onNativeDrag = (event: Event): void => event.preventDefault();
   element.addEventListener('pointerdown', onDown);
+  element.addEventListener('dragstart', onNativeDrag);
   return () => {
     element.removeEventListener('pointerdown', onDown);
+    element.removeEventListener('dragstart', onNativeDrag);
     cancelRunOf(element);
   };
 };

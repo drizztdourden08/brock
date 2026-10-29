@@ -9,11 +9,11 @@ const namesOf = (accepts: DropTargetOptions<unknown>['accepts']): ReadonlySet<st
   new Set((Array.isArray(accepts) ? accepts : [accepts]).map((type: { name: string }) => type.name));
 
 const erased = <T,>(options: DropTargetOptions<T>): DropTargetOptions<unknown> => ({
-  accepts: options.accepts,
+  get accepts() { return options.accepts; },
   onDrop: (payload, info) => options.onDrop(payload as T, info),
-  canDrop: options.canDrop ? (payload, info) => options.canDrop?.(payload as T, info) ?? true : undefined,
-  feedback: options.feedback ? (feedback) => options.feedback?.(feedback as DropFeedback<T>) : undefined,
-  index: options.index,
+  canDrop: (payload, info) => options.canDrop?.(payload as T, info) ?? true,
+  feedback: (feedback) => options.feedback?.(feedback as DropFeedback<T>),
+  index: (point, el) => options.index?.(point, el) ?? null,
 });
 
 const dropTarget = <T,>(element: DndElement, options: DropTargetOptions<T>): (() => void) => {

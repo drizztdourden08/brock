@@ -2,7 +2,7 @@
 import { realpathSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { virtualStoreOf } from './shared-deps-cache/virtual-store-of.mjs';
+import { virtualStoreOf } from '@drizztdourden08/build-cache/vite-deps';
 
 const packageDirOf = (appRequire, name) => {
   try {
@@ -22,7 +22,7 @@ const servedDirs = (rootDir, sources, workspaceRootOf) => {
   const appRequire = createRequire(join(rootDir, 'package.json'));
   const linked = sources.map((name) => packageDirOf(appRequire, name)).filter((dir) => dir !== null);
   const workspace = workspaceRootOf(rootDir);
-  const packages = virtualStoreOf(join(workspace, 'node_modules', '.pnpm', 'lock.yaml'));
+  const packages = virtualStoreOf(workspace);
   return [...new Set([workspace, ...linked, packages])];
 };
 

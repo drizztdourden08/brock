@@ -17,23 +17,31 @@ const replacer = (_key, value) => (typeof value === 'function' || value instance
 
 /**
  * @param {string} root the folder Vite resolves the renderer from
- * @returns {{ path: string, content: string } | null} the pnpm lockfile Vite hashes
+ * @returns {{ path: string, content: string, installRoot: string } | null} the pnpm lockfile Vite hashes and its install folder
  */
 const lockfileOf = (root) => {
   for (let dir = root; ; dir = dirname(dir)) {
     const path = join(dir, PNPM_LOCKFILE);
-    if (statSync(path, { throwIfNoEntry: false })?.isFile()) return { path, content: readFileSync(path, 'utf8') };
+    if (statSync(path, { throwIfNoEntry: false })?.isFile()) return { path, content: readFileSync(path, 'utf8'), installRoot: dir };
     if (dirname(dir) === dir) return null;
   }
 };
 
+const rolldownPart = (options) => ({
+  ...options,
+  plugins: undefined,
+  onLog: undefined,
+  onwarn: undefined,
+  checks: undefined,
+  output: { ...options?.output, plugins: undefined },
+});
+
+const esbuildPart = (options) => ({ ...options, plugins: options?.plugins?.map((plugin) => plugin.name) });
+
 const optimizerPart = (optimizeDeps) => ({
   include: sortedUnique(optimizeDeps.include),
   exclude: sortedUnique(optimizeDeps.exclude),
-  esbuildOptions: {
-    ...optimizeDeps.esbuildOptions,
-    plugins: optimizeDeps.esbuildOptions?.plugins?.map((plugin) => plugin.name),
-  },
+  ...('rolldownOptions' in optimizeDeps ? { rolldownOptions: rolldownPart(optimizeDeps.rolldownOptions) } : { esbuildOptions: esbuildPart(optimizeDeps.esbuildOptions) }),
 });
 
 const portablePath = (root, value) => (typeof value === 'string' && isAbsolute(value) ? relative(root, value).split('\\').join('/') : value);
@@ -52,13 +60,15 @@ const resolvePart = (resolve, root, portable) => {
  */
 const configHashOf = (config, { portable = false } = {}) => {
   const client = config.environments?.client ?? config;
+  const pick = (key) => client[key] ?? config[key];
   return getHash(JSON.stringify({
     define: config.keepProcessEnv ? null : process.env.NODE_ENV || config.mode,
     root: portable ? '' : config.root,
-    resolve: resolvePart(client.resolve ?? config.resolve, config.root, portable),
+    resolve: resolvePart(pick('resolve'), config.root, portable),
     assetsInclude: config.assetsInclude,
-    plugins: config.plugins.map((plugin) => plugin.name),
-    optimizeDeps: optimizerPart(client.optimizeDeps ?? config.optimizeDeps),
+    plugins: pick('plugins').map((plugin) => plugin.name),
+    optimizeDeps: optimizerPart(pick('optimizeDeps')),
+    optimizeDepsPluginNames: pick('optimizeDepsPluginNames'),
   }, replacer));
 };
 

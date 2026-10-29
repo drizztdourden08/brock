@@ -1,20 +1,20 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 
 /**
- * @param {string} lockfilePath the installed lockfile, <root>/node_modules/.pnpm/lock.yaml
+ * @param {string} installRoot the folder whose node_modules pnpm filled
  * @returns {string} the folder that holds the installed packages
  */
-const virtualStoreOf = (lockfilePath) => {
-  const modulesDir = dirname(dirname(lockfilePath));
+const virtualStoreOf = (installRoot) => {
+  const modulesDir = join(installRoot, 'node_modules');
   try {
     const named = /^virtualStoreDir:\s*(.+)$/m.exec(readFileSync(join(modulesDir, '.modules.yaml'), 'utf8'))?.[1]?.trim().replace(/^(['"])(.*)\1$/, '$2');
     if (named) return isAbsolute(named) ? named : resolve(modulesDir, named);
   } catch {
-    return dirname(lockfilePath);
+    return join(modulesDir, '.pnpm');
   }
-  return dirname(lockfilePath);
+  return join(modulesDir, '.pnpm');
 };
 
 export { virtualStoreOf };

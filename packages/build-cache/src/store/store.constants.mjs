@@ -5,7 +5,7 @@ const SCHEMA = 1;
 const MANIFEST_FILE = 'manifest.json';
 const FILES_DIR = 'files';
 const TEMP_DIR = '.tmp';
-const KIND = Object.freeze({ PACKAGE: 'package', ELECTRON: 'electron' });
+const KIND = Object.freeze({ PACKAGE: 'package', ELECTRON: 'electron', VITE_DEPS: 'vite-deps' });
 const SEGMENT = /^[\w.+@-]+$/;
 const SKIPPED_FOLDERS = new Set(['node_modules', '.git']);
 

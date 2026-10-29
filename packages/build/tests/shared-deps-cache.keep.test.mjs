@@ -1,18 +1,61 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
-import { shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
-import { publishDeps, seedDeps, shareKey } from '../src/shared-deps-cache/share-store.mjs';
+import { listEntries } from '@drizztdourden08/build-cache';
+import { storeViteDeps } from '@drizztdourden08/build-cache/vite-deps';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { depsBuildKey, shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
 import { configHashOf, viteHashes } from '../src/shared-deps-cache/vite-hash.mjs';
-import { depsFixture } from './shared-deps-fixture.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-shared-deps-');
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllEnvs();
+});
 
-const { LOCKFILE, metadataFor, makeConfig, app, metadataOf } = depsFixture({ tempDir, put });
+const LOCKFILE = 'lockfileVersion: 9\npackages:\n  picker@1.0.0: {}\n';
+const SRC = '../../.pnpm/picker@1.0.0/node_modules/picker/index.js';
+
+const makeConfig = (root, overrides = {}) => ({
+  command: 'serve',
+  mode: 'development',
+  root: join(root, 'src'),
+  cacheDir: join(root, 'node_modules/.vite'),
+  keepProcessEnv: false,
+  assetsInclude: () => false,
+  plugins: [{ name: 'vite:react' }, { name: 'brock:optimize-deps' }],
+  resolve: { alias: [{ find: '@app', replacement: join(root, 'src') }], dedupe: ['react'] },
+  optimizeDeps: { include: ['react', 'picker'] },
+  ...overrides,
+});
+
+const app = ({ lockfile = LOCKFILE, withCache = true, installed = true } = {}) => {
+  const root = tempDir();
+  put(root, 'package.json', '{"name":"app"}');
+  put(root, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
+  put(root, 'node_modules/.pnpm/lock.yaml', lockfile);
+  if (installed) put(root, 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js', 'export default 1;');
+  const config = makeConfig(root);
+  if (withCache) {
+    const metadata = { ...viteHashes(config, { content: lockfile }), browserHash: 'b1', optimized: { picker: { src: SRC, file: 'picker.js', fileHash: 'f1', needsInterop: false } }, chunks: {} };
+    put(root, 'node_modules/.vite/deps/_metadata.json', JSON.stringify(metadata));
+    put(root, 'node_modules/.vite/deps/picker.js', 'export default 1;');
+    put(root, 'node_modules/.vite/deps/package.json', '{"type":"module"}');
+  }
+  return { root, config };
+};
+
+const depsOf = (root) => join(root, 'node_modules/.vite/deps');
+const metadataOf = (root) => JSON.parse(readFileSync(join(depsOf(root), '_metadata.json'), 'utf8'));
+const entriesOf = (cache) => listEntries(cache).filter(({ manifest }) => manifest?.kind === 'vite-deps');
+
+const publish = async (first) => {
+  const stored = [];
+  shareDeps({ config: first.config, rootDir: first.root, store: (input) => stored.push(input) });
+  return storeViteDeps(stored[0]);
+};
 
 describe('configHashOf', () => {
   it('names the worktree unless portable, and always names the optimizer inputs', () => {
@@ -22,6 +65,8 @@ describe('configHashOf', () => {
     expect(configHashOf(one, { portable: true })).toBe(configHashOf(two, { portable: true }));
     expect(configHashOf({ ...one, optimizeDeps: { include: ['react', 'bar'] } }, { portable: true })).not.toBe(configHashOf(one, { portable: true }));
     expect(configHashOf({ ...one, plugins: [{ name: 'other' }] }, { portable: true })).not.toBe(configHashOf(one, { portable: true }));
+    vi.stubEnv('NODE_ENV', '');
+    expect(configHashOf({ ...one, mode: 'production' }, { portable: true })).not.toBe(configHashOf(one, { portable: true }));
   });
 
   it('does not depend on the order or the repeats of the include list', () => {
@@ -39,153 +84,105 @@ describe('configHashOf', () => {
   });
 });
 
-describe('shareKey', () => {
+describe('depsBuildKey', () => {
   const parts = { vite: '7.3.7', lockfile: { content: LOCKFILE }, configHash: 'abc' };
 
-  it('moves with the lockfile content, the Vite version and the optimizer config, and nothing else', () => {
-    expect(shareKey({ ...parts })).toBe(shareKey({ ...parts, lockfile: { content: LOCKFILE } }));
-    expect(shareKey({ ...parts, lockfile: { content: `${LOCKFILE}  bar@2.0.0: {}\n` } })).not.toBe(shareKey(parts));
-    expect(shareKey({ ...parts, vite: '7.3.8' })).not.toBe(shareKey(parts));
-    expect(shareKey({ ...parts, configHash: 'abd' })).not.toBe(shareKey(parts));
-  });
-});
-
-const inputFor = ({ root, config }, shared, lockfile = LOCKFILE) => {
-  const hashes = viteHashes(config, { content: lockfile });
-  return { root: shared, key: 'key1', depsDir: join(root, 'node_modules/.vite/deps'), store: join(root, 'node_modules/.pnpm'), hashes };
-};
-
-describe('publishDeps', () => {
-  it('copies a current cache into the shared folder once, and seeds an empty worktree from it with that worktree hashes', () => {
-    const shared = tempDir();
-    const first = app();
-    expect(publishDeps(inputFor(first, shared))).toBe('published');
-    expect(publishDeps(inputFor(first, shared))).toBe('present');
-    expect(existsSync(join(shared, 'key1/deps/picker.js'))).toBe(true);
-
-    const second = app({ withCache: false });
-    const input = inputFor(second, shared);
-    expect(seedDeps(input)).toBe('seeded');
-    const seeded = metadataOf(second.root);
-    expect(seeded.hash).toBe(input.hashes.hash);
-    expect(seeded.configHash).toBe(input.hashes.configHash);
-    expect(seeded.optimized.picker.src).toBe('../../.pnpm/picker@1.0.0/node_modules/picker/index.js');
-    expect(readFileSync(join(second.root, 'node_modules/.vite/deps/picker.js'), 'utf8')).toBe('export default 1;');
-    expect(readdirSync(join(second.root, 'node_modules/.vite')).filter((name) => name.includes('seed'))).toEqual([]);
+  it('gives the same key for the same inputs and starts with the platform', () => {
+    expect(depsBuildKey({ ...parts, lockfile: { content: LOCKFILE } })).toBe(depsBuildKey(parts));
+    expect(depsBuildKey(parts)).toMatch(new RegExp(`^${process.platform}-${process.arch}-[0-9a-f]{16}$`));
   });
 
-  it('does not publish a cache whose hashes are not the ones Vite would write for this config', () => {
-    const shared = tempDir();
-    const stale = app();
-    const input = inputFor(stale, shared);
-    writeFileSync(join(input.depsDir, '_metadata.json'), metadataFor({ ...input.hashes, configHash: 'zzzzzzzz' }));
-    expect(publishDeps(input)).toBe('skipped');
-    expect(existsSync(join(shared, 'key1'))).toBe(false);
-  });
-
-  it('does not publish a cache that reaches outside the pnpm store', () => {
-    const shared = tempDir();
-    const linked = app();
-    const input = inputFor(linked, shared);
-    put(linked.root, 'node_modules/zod/package.json', '{"name":"zod","version":"3.0.0"}');
-    put(linked.root, 'node_modules/zod/index.js', '');
-    const src = '../../zod/index.js';
-    writeFileSync(join(input.depsDir, '_metadata.json'), metadataFor(input.hashes, { optimized: { zod: { src, file: 'zod.js', fileHash: 'z1', needsInterop: false } } }));
-    expect(publishDeps(input)).toBe('skipped');
-  });
-
-  it('keeps only the newest entries', () => {
-    const shared = tempDir();
-    const source = app();
-    for (let index = 0; index < 9; index += 1) {
-      expect(publishDeps({ ...inputFor(source, shared), key: `key${index}` })).toBe('published');
-      const when = new Date(Date.now() - (9 - index) * 60_000);
-      utimesSync(join(shared, `key${index}`), when, when);
-    }
-    const kept = readdirSync(shared).sort();
-    expect(kept).toHaveLength(6);
-    expect(kept).not.toContain('key0');
-    expect(kept).toContain('key8');
-  });
-});
-
-describe('seedDeps', () => {
-  it('rejects a seed when a dependency is at another version here', () => {
-    const shared = tempDir();
-    expect(publishDeps(inputFor(app(), shared))).toBe('published');
-    const other = app({ version: '1.0.1', withCache: false });
-    put(other.root, 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/package.json', JSON.stringify({ name: 'picker', version: '1.0.1' }));
-    put(other.root, 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js', '');
-    expect(seedDeps(inputFor(other, shared))).toBe('rejected');
-    expect(existsSync(join(other.root, 'node_modules/.vite/deps'))).toBe(false);
-  });
-
-  it('rejects a seed when a dependency is not installed here', () => {
-    const shared = tempDir();
-    expect(publishDeps(inputFor(app(), shared))).toBe('published');
-    const bare = app({ version: '2.0.0', withCache: false });
-    expect(seedDeps(inputFor(bare, shared))).toBe('rejected');
-  });
-
-  it('rejects a seed when a pre-bundled file is missing from the shared copy', () => {
-    const shared = tempDir();
-    expect(publishDeps(inputFor(app(), shared))).toBe('published');
-    rmSync(join(shared, 'key1/deps/picker.js'));
-    expect(seedDeps(inputFor(app({ withCache: false }), shared))).toBe('rejected');
-  });
-
-  it('finds nothing to seed from when the key has no entry', () => {
-    expect(seedDeps(inputFor(app({ withCache: false }), tempDir()))).toBe('missing');
+  it('moves with the lockfile content, the Vite version and the optimizer config', () => {
+    expect(depsBuildKey({ ...parts, lockfile: { content: `${LOCKFILE}  bar@2.0.0: {}\n` } })).not.toBe(depsBuildKey(parts));
+    expect(depsBuildKey({ ...parts, vite: '7.3.8' })).not.toBe(depsBuildKey(parts));
+    expect(depsBuildKey({ ...parts, configHash: 'abd' })).not.toBe(depsBuildKey(parts));
   });
 });
 
 describe('shareDeps', () => {
-  it('publishes a current cache, then seeds a second worktree with the same lockfile', () => {
-    const shared = tempDir();
+  it('stores a current pre-bundle, then restores it in a second worktree with that worktree hashes', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
     const first = app();
-    expect(shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared })).toBe('published');
+    expect(await publish(first)).toBe('stored');
+    expect(entriesOf(cache)).toHaveLength(1);
+
     const second = app({ withCache: false });
-    expect(shareDeps({ config: second.config, rootDir: second.root, sharedRoot: shared })).toBe('seeded');
-    expect(metadataOf(second.root).hash).toBe(viteHashes(second.config, { content: LOCKFILE }).hash);
-    expect(shareDeps({ config: second.config, rootDir: second.root, sharedRoot: shared })).toBe('present');
+    const store = vi.fn();
+    expect(shareDeps({ config: second.config, rootDir: second.root, store })).toBe('seeded');
+    expect(store).not.toHaveBeenCalled();
+    const restored = metadataOf(second.root);
+    const hashes = viteHashes(second.config, { content: LOCKFILE });
+    expect([restored.hash, restored.configHash, restored.lockfileHash]).toEqual([hashes.hash, hashes.configHash, hashes.lockfileHash]);
+    expect(restored.browserHash).toBe('b1');
+    expect(restored.optimized.picker.src).toBe(join(second.root, 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js'));
+    expect(readFileSync(join(depsOf(second.root), 'picker.js'), 'utf8')).toBe('export default 1;');
+    expect(readdirSync(join(second.root, 'node_modules/.vite')).filter((name) => name.includes('restore'))).toEqual([]);
+    expect(shareDeps({ config: second.config, rootDir: second.root, store })).toBe('present');
   });
 
-  it('shares nothing between worktrees with different lockfiles or different optimizer includes', () => {
+  it('restores into a worktree whose packages live in a shared store, pointing the source into that store', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
+    expect(await publish(app())).toBe('stored');
+    const second = app({ withCache: false, installed: false });
     const shared = tempDir();
-    const first = app();
-    shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared });
-    const lockfile = `${LOCKFILE}  bar@2.0.0: {}\n`;
-    const newer = app({ lockfile, withCache: false });
-    expect(shareDeps({ config: newer.config, rootDir: newer.root, sharedRoot: shared })).toBe('missing');
+    put(shared, 'store/picker@1.0.0/node_modules/picker/index.js', 'export default 1;');
+    put(second.root, 'node_modules/.modules.yaml', `virtualStoreDir: ${join(shared, 'store')}
+`);
+    expect(shareDeps({ config: second.config, rootDir: second.root, store: vi.fn() })).toBe('seeded');
+    expect(metadataOf(second.root).optimized.picker.src).toBe(join(shared, 'store/picker@1.0.0/node_modules/picker/index.js'));
+  });
+
+  it('asks for a store when it restored nothing, and replaces a stale pre-bundle only from a hit', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
+    const stale = app();
+    writeFileSync(join(depsOf(stale.root), '_metadata.json'), JSON.stringify({ hash: 'old', configHash: 'old', lockfileHash: 'old', optimized: {}, chunks: {} }));
+    const store = vi.fn();
+    expect(shareDeps({ config: stale.config, rootDir: stale.root, store })).toBe('missing');
+    expect(store).toHaveBeenCalledTimes(1);
+    expect(metadataOf(stale.root).hash).toBe('old');
+
+    const fresh = app();
+    expect(await publish(fresh)).toBe('stored');
+    expect(shareDeps({ config: stale.config, rootDir: stale.root, store })).toBe('seeded');
+    expect(metadataOf(stale.root).hash).toBe(viteHashes(stale.config, { content: LOCKFILE }).hash);
+  });
+
+});
+
+describe('shareDeps misses', () => {
+  it('reads another lockfile, another optimizer include or an uninstalled dependency as a miss', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
+    await publish(app());
+    const miss = (worktree) => shareDeps({ config: worktree.config, rootDir: worktree.root, store: () => 'started' });
+    expect(miss(app({ lockfile: `${LOCKFILE}  bar@2.0.0: {}\n`, withCache: false }))).toBe('missing');
     const wider = app({ withCache: false });
     wider.config.optimizeDeps = { include: ['react', 'picker', 'extra'] };
-    expect(shareDeps({ config: wider.config, rootDir: wider.root, sharedRoot: shared })).toBe('missing');
+    expect(miss(wider)).toBe('missing');
+    const bare = app({ withCache: false, installed: false });
+    expect(miss(bare)).toBe('missing');
+    expect(existsSync(depsOf(bare.root))).toBe(false);
   });
 
-  it('seeds a worktree whose packages live in a shared store elsewhere, pointing each source into that store', () => {
-    const shared = tempDir();
-    const first = app();
-    expect(shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared })).toBe('published');
-    const { root: clone, config } = app({ withCache: false, withPackages: false });
-    const store = join(app({ withCache: false }).root, 'node_modules/.pnpm');
-    put(clone, 'node_modules/.modules.yaml', `nodeLinker: isolated\nvirtualStoreDir: ${store}\n`);
-    expect(shareDeps({ config, rootDir: clone, sharedRoot: shared })).toBe('seeded');
-    expect(join(clone, 'node_modules/.vite/deps', metadataOf(clone).optimized.picker.src)).toBe(join(store, 'picker@1.0.0/node_modules/picker/index.js'));
+  it('reads a corrupt entry as a miss and never breaks the launch', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
+    await publish(app());
+    const [{ dir }] = entriesOf(cache);
+    writeFileSync(join(dir, 'files', 'picker.js'), 'export default 2;');
+    const second = app({ withCache: false });
+    expect(shareDeps({ config: second.config, rootDir: second.root, store: () => 'started' })).toBe('missing');
+    expect(existsSync(depsOf(second.root))).toBe(false);
+    writeFileSync(join(dir, 'manifest.json'), '{ not json');
+    expect(shareDeps({ config: second.config, rootDir: second.root, store: () => 'started' })).toBe('missing');
   });
 
   it('does nothing without a pnpm lockfile', () => {
     const root = tempDir();
     put(root, 'package.json', '{}');
-    put(root, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
-    mkdirSync(join(root, 'src'), { recursive: true });
-    expect(shareDeps({ config: makeConfig(root), rootDir: root, sharedRoot: tempDir() })).toBe('no-lockfile');
-  });
-
-  it('leaves the folder of an unrelated stale cache alone', () => {
-    const shared = tempDir();
-    const stale = app();
-    writeFileSync(join(stale.root, 'node_modules/.vite/deps/_metadata.json'), metadataFor({ hash: 'old', configHash: 'old', lockfileHash: 'old' }));
-    expect(shareDeps({ config: stale.config, rootDir: stale.root, sharedRoot: shared })).toBe('skipped');
-    expect(metadataOf(stale.root).hash).toBe('old');
+    expect(shareDeps({ config: makeConfig(root), rootDir: root, store: () => 'started' })).toBe('no-lockfile');
   });
 });

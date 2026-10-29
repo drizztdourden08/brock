@@ -6,6 +6,7 @@ import { CLONE_RECORD, INSTALLED_LOCKFILE, KEPT_DOT_ENTRIES, MODULES_STATE, WORK
 import { lockfileImporters } from './lockfile-importers.mjs';
 import { mirrorTree } from './mirror-tree.mjs';
 import { isInside, pathMapper, textRewriter } from './path-map.mjs';
+import { recordStoreUser } from './store-users.mjs';
 
 const TEXT_FILES = new Set([MODULES_STATE, WORKSPACE_STATE]);
 
@@ -39,10 +40,11 @@ const installedImporters = (source, state) => lockfileImporters(state.lockfile.t
 const addCounts = (total, counts) => Object.fromEntries(Object.entries(counts).map(([key, value]) => [key, (total[key] ?? 0) + value]));
 
 /**
- * @param {{ source: string, target: string, state: import('./modules-state.mjs').ModulesState, store: string }} input
+ * @param {{ source: string, target: string, state: import('./modules-state.mjs').ModulesState, store: string, repo: string }} input
  * @returns {Promise<{ importers: number, links: number, rewritten: number, missing: string[] }>} what it placed, and links to nothing
  */
-const cloneModules = async ({ source, target, state, store }) => {
+const cloneModules = async ({ source, target, state, store, repo }) => {
+  recordStoreUser({ store, worktree: target, repo });
   const missing = [];
   const rules = modulesRules({ source, target, virtualStore: state.virtualStore, store }, missing);
   const importers = installedImporters(source, state);

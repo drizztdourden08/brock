@@ -24,7 +24,7 @@ const cloneStoreProblem = (appDir) => {
   const entry = entryOf(record.store);
   const damage = storeDamage(entry);
   if (damage.length === 0) return null;
-  return `shared store damaged, rebuild it: ${entry} lost or emptied ${damage.length} package folder(s) (first: ${damage[0]}). Run \`brock worktree create\` for this lockfile from a healthy checkout, which rebuilds the store, or run pnpm install here.`;
+  return `shared store damaged, rebuild it: ${entry} lost or emptied ${damage.length} package folder(s) (first: ${damage[0]}). The damaged entry is left in place. The next \`brock worktree create\` for this lockfile builds a fresh store; recreate this worktree to use it.`;
 };
 
 export { cloneStoreProblem };

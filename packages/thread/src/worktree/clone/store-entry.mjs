@@ -62,6 +62,23 @@ const readStoreRecord = (dir) => {
 };
 
 /**
+ * @param {string} root the store root
+ * @param {string} key
+ * @returns {{ dir: string, record: Record<string, any> }[]} the entries built for this key, newest first
+ */
+const entriesFor = (root, key) => {
+  try {
+    return readdirSync(root, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name !== '.tmp')
+      .map((entry) => ({ dir: join(root, entry.name), record: readStoreRecord(join(root, entry.name)) }))
+      .filter((item) => item.record?.key === key)
+      .sort((a, b) => String(b.record.builtAt).localeCompare(String(a.record.builtAt)));
+  } catch {
+    return [];
+  }
+};
+
+/**
  * @param {string} dir a store entry
  * @param {string | null} key the key it must have been built for, null for any
  * @returns {string[]} packages missing or emptied, or the record itself
@@ -84,4 +101,11 @@ const storeDamage = (dir, key = null) => {
  */
 const storeIsComplete = (dir, key) => storeDamage(dir, key).length === 0;
 
-export { describeStore, entryOf, PACKAGES, storeDamage, storeIsComplete };
+/**
+ * @param {string} root the store root
+ * @param {string} key
+ * @returns {string | null} the newest entry for the key that is whole
+ */
+const findStore = (root, key) => entriesFor(root, key).find((item) => storeIsComplete(item.dir, key))?.dir ?? null;
+
+export { describeStore, entriesFor, entryOf, findStore, PACKAGES, storeDamage, storeIsComplete };

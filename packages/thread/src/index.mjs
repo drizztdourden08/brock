@@ -23,4 +23,3 @@ export { resolveNotesRoot } from './release-notes/resolve-notes-root.mjs';
 export { checkReleaseNote } from '@drizztdourden08/standards/release-notes';
 export { afterPrewarm, prewarmRecord } from './launch/prewarm.mjs';
 export { cloneStoreProblem } from './worktree/clone/check-clone-store.mjs';
-export { pruneStore } from './worktree/clone/prune-store.mjs';

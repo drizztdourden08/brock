@@ -53,7 +53,7 @@ const cloneInstall = async ({ target, main, log, worktrees }) => {
   const { state } = source;
   try {
     const store = await ensureVirtualStore({ source: source.dir, state, log, mains });
-    const placed = await cloneModules({ source: source.dir, target, state, store });
+    const placed = await cloneModules({ source: source.dir, target, state, store, repo: main });
     const problem = problemWith({ target, state, store, placed });
     if (problem) {
       await undo({ target, state, mains });

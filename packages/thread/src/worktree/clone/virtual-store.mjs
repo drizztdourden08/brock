@@ -8,7 +8,7 @@ import { mirrorTree } from './mirror-tree.mjs';
 import { modulesState } from './modules-state.mjs';
 import { isInside, pathMapper, textRewriter } from './path-map.mjs';
 import { modulesStoreRoot } from './store-dir.mjs';
-import { describeStore, entryOf, PACKAGES, storeIsComplete } from './store-entry.mjs';
+import { describeStore, entriesFor, entryOf, findStore, PACKAGES, storeIsComplete } from './store-entry.mjs';
 
 /**
  * @param {import('./modules-state.mjs').ModulesState} state
@@ -73,15 +73,6 @@ const discard = async ({ root, partial, mains, log }) => {
   }
 };
 
-const commit = async ({ root, partial, dir, key, mains, log }) => {
-  try {
-    renameSync(partial, dir);
-  } catch (error) {
-    await discard({ root, partial, mains, log });
-    if (!storeIsComplete(dir, key)) throw error;
-  }
-};
-
 const buildStore = async ({ source, state, entry, partial }) => {
   const dir = join(entry, ...PACKAGES);
   const where = { source, virtualStore: state.virtualStore, dir };
@@ -95,19 +86,16 @@ const assertSourceUnchanged = (source, key) => {
   if (!after || storeKey(after) !== key) throw new Error(`${source} was installed again while its store was copied; the copy is dropped.`);
 };
 
-const reusableStore = async ({ source, state, key, root, mains, log }) => {
+const reusableStore = ({ source, state, key, root, log }) => {
   const own = entryOf(state.virtualStore);
   if (existsSync(join(own, STORE_RECORD))) {
     if (!storeIsComplete(own, key)) throw new Error(`the shared store behind ${source} (${own}) is damaged.`);
     return state.virtualStore;
   }
-  const entry = join(root, key);
-  if (storeIsComplete(entry, key)) return join(entry, ...PACKAGES);
-  if (existsSync(entry)) {
-    log(`The shared store ${entry} is damaged; rebuilding it.`);
-    const failure = await deleteTree({ owner: root, target: entry, mains });
-    if (failure) throw new Error(`Could not remove the damaged store ${failure.path} (${failure.code}).`);
-  }
+  const found = findStore(root, key);
+  if (found) return join(found, ...PACKAGES);
+  const damaged = entriesFor(root, key).map((item) => item.dir);
+  if (damaged.length > 0) log(`The shared store ${damaged[0]} is damaged and stays where it is; building a new one next to it.`);
   return null;
 };
 
@@ -118,9 +106,9 @@ const reusableStore = async ({ source, state, key, root, mains, log }) => {
 const ensureVirtualStore = async ({ source, state, log, mains }) => {
   const key = storeKey(state);
   const root = modulesStoreRoot(source);
-  const reused = await reusableStore({ source, state, key, root, mains, log });
+  const reused = reusableStore({ source, state, key, root, log });
   if (reused) return reused;
-  const entry = join(root, key);
+  const entry = join(root, `${key}-${randomUUID().slice(0, 8)}`);
   const partial = join(root, '.tmp', `${key}-${randomUUID()}`);
   mkdirSync(dirname(partial), { recursive: true });
   log(`Building the shared package store ${entry} from ${state.virtualStore} (once for this lockfile).`);
@@ -130,7 +118,7 @@ const ensureVirtualStore = async ({ source, state, log, mains }) => {
     assertSourceUnchanged(source, key);
     const manifest = describeStore(partial);
     writeFileSync(join(partial, STORE_RECORD), JSON.stringify({ layout: STORE_LAYOUT, key, source, builtAt: new Date().toISOString(), counts, manifest }));
-    await commit({ root, partial, dir: entry, key, mains, log });
+    renameSync(partial, entry);
     log(`Shared package store ready in ${Math.round((Date.now() - started) / 1000)} s: ${counts.linked} hardlinks, ${counts.copied} copies, ${counts.links} links.`);
     return join(entry, ...PACKAGES);
   } catch (error) {

@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { cloneStoreProblem } from '../src/worktree/clone/check-clone-store.mjs';
@@ -15,7 +15,7 @@ const clone = (target, source) => cloneInstall({ target, main: source, log: (lin
 const DEP = 'node_modules/.pnpm/dep@1.0.0/node_modules/dep';
 
 describe('the shared store survives damage', () => {
-  it('reads an emptied package folder as damage, tells a cloned worktree so, and rebuilds the store for the next clone', async () => {
+  it('reads an emptied package folder as damage, tells a cloned worktree so, leaves the entry where it is and links the next clone to a fresh one', async () => {
     const source = installedCheckout();
     const first = freshCheckout();
     const { store } = await clone(first, source);
@@ -26,11 +26,30 @@ describe('the shared store survives damage', () => {
     expect(storeDamage(entry)).toContain('dep@1.0.0');
     expect(cloneStoreProblem(first)).toContain('shared store damaged, rebuild it');
     const second = freshCheckout();
-    expect(await clone(second, source)).not.toBeNull();
-    expect(logs.some((line) => line.includes('damaged; rebuilding'))).toBe(true);
-    expect(readFileSync(join(entry, DEP, 'package.json'), 'utf8')).toContain('"dep"');
-    expect(storeDamage(entry)).toEqual([]);
-    expect(cloneStoreProblem(first)).toBeNull();
+    const next = await clone(second, source);
+    expect(next.store).not.toBe(store);
+    expect(logs.some((line) => line.includes('stays where it is'))).toBe(true);
+    expect(existsSync(entry)).toBe(true);
+    expect(storeDamage(entry)).toContain('dep@1.0.0');
+    expect(readFileSync(join(next.store, '..', '..', DEP, 'package.json'), 'utf8')).toContain('"dep"');
+    expect(storeDamage(join(next.store, '..', '..'))).toEqual([]);
+    const third = await clone(freshCheckout(), source);
+    expect(third.store).toBe(next.store);
+  });
+
+  it('records each clone as a user of its store entry, once per worktree', async () => {
+    const source = installedCheckout();
+    const target = freshCheckout();
+    const { store } = await clone(target, source);
+    const users = join(store, '..', '..', 'users');
+    const [name] = readdirSync(users);
+    expect(readdirSync(users)).toHaveLength(1);
+    expect(name).toMatch(/^[0-9a-f]{40}\.json$/);
+    const record = JSON.parse(readFileSync(join(users, name), 'utf8'));
+    expect(record).toMatchObject({ worktree: realpathSync(target), repo: source });
+    expect(typeof record.createdAt).toBe('string');
+    await clone(freshCheckout(), source);
+    expect(readdirSync(users)).toHaveLength(2);
   });
 
   it('falls back to a real install when a project node_modules of the source is empty', async () => {

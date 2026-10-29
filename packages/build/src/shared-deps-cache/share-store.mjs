@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { cacheFilesPresent, dependencyVersions, readMetadata } from './deps-metadata.mjs';
 import { DEPS_FOLDER, KEEP_ENTRIES, METADATA_FILE, SHARE_FILE, SHARE_VERSION, SHARED_CACHE_ENV, SHARED_CACHE_FOLDERS, STALE_TEMP_MS } from './shared-deps-cache.constants.mjs';
+import { fromStoreRelative, toStoreRelative } from './store-relative.mjs';
 import { getHash } from './vite-hash.mjs';
 
 /** @returns {string} the per-user folder for the shared caches */
@@ -51,11 +52,12 @@ const touch = (path) => {
   }
 };
 
-const copyIntoShare = (entry, depsDir, versions) => {
+const copyIntoShare = ({ entry, depsDir, store, metadata }, versions) => {
   const partial = `${entry}.${process.pid}.tmp`;
   try {
     mkdirSync(partial, { recursive: true });
     cpSync(depsDir, join(partial, DEPS_FOLDER), { recursive: true });
+    writeFileSync(join(partial, DEPS_FOLDER, METADATA_FILE), JSON.stringify(toStoreRelative(metadata, depsDir, store), null, 2));
     writeFileSync(join(partial, SHARE_FILE), JSON.stringify({ version: SHARE_VERSION, versions }));
     renameSync(partial, entry);
     return true;
@@ -80,7 +82,7 @@ const publishDeps = ({ root, key, depsDir, store, hashes }) => {
     return 'present';
   }
   const versions = dependencyVersions(metadata, depsDir, store);
-  if (!versions || !copyIntoShare(entry, depsDir, versions)) return 'skipped';
+  if (!versions || !copyIntoShare({ entry, depsDir, store, metadata }, versions)) return 'skipped';
   prune(root, entry);
   return 'published';
 };
@@ -109,9 +111,10 @@ const seedDeps = ({ root, key, depsDir, store, hashes }) => {
   const entry = join(root, key);
   const share = readShare(entry);
   const shared = join(entry, DEPS_FOLDER);
-  const metadata = readMetadata(shared);
-  if (!share || !metadata) return 'missing';
-  if (!cacheFilesPresent(metadata, shared)) return 'rejected';
+  const stored = readMetadata(shared);
+  if (!share || !stored) return 'missing';
+  if (!cacheFilesPresent(stored, shared)) return 'rejected';
+  const metadata = fromStoreRelative(stored, depsDir, store);
   const versions = dependencyVersions(metadata, depsDir, store);
   if (!versions || !sameVersions(share.versions, versions)) return 'rejected';
   return copyFromShare(shared, depsDir, metadata, hashes) ? 'seeded' : 'rejected';

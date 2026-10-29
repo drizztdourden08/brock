@@ -1,11 +1,12 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { readMetadata } from './deps-metadata.mjs';
 import { DEPS_FOLDER } from './shared-deps-cache.constants.mjs';
 import { publishDeps, seedDeps, shareKey, sharedCacheRoot } from './share-store.mjs';
 import { configHashOf, lockfileOf, viteHashes } from './vite-hash.mjs';
+import { virtualStoreOf } from './virtual-store-of.mjs';
 
 const viteVersionOf = (rootDir) => {
   try {
@@ -27,7 +28,7 @@ const shareDeps = ({ config, rootDir, sharedRoot = sharedCacheRoot() }) => {
   const hashes = viteHashes(config, lockfile);
   const depsDir = join(config.cacheDir, DEPS_FOLDER);
   const key = shareKey({ vite, lockfile, configHash: configHashOf(config, { portable: true }) });
-  const input = { root: sharedRoot, key, depsDir, store: dirname(lockfile.path), hashes };
+  const input = { root: sharedRoot, key, depsDir, store: virtualStoreOf(lockfile.path), hashes };
   return readMetadata(depsDir) ? publishDeps(input) : seedDeps(input);
 };
 

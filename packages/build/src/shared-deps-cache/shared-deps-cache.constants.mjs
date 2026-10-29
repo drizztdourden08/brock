@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind constants */
-const SHARE_VERSION = 1;
+const SHARE_VERSION = 2;
 const SHARED_CACHE_ENV = 'BROCK_DEPS_CACHE_DIR';
 const SHARED_CACHE_FOLDERS = ['.brock', 'cache', 'vite-deps'];
 const DEPS_FOLDER = 'deps';

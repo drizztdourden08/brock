@@ -2,13 +2,15 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { KEY_FILES, REUSE_VERSION } from './build-reuse.constants.mjs';
-import { stampOf, treeStamp } from './file-stamp.mjs';
+import { contentOf, treeStamp } from './file-stamp.mjs';
+import { portableValue } from './portable-value.mjs';
 
 const BUILD_SRC = dirname(dirname(fileURLToPath(import.meta.url)));
+const INSTALLED = `${sep}node_modules${sep}`;
 
 const versionOf = (rootDir, name) => {
   try {
@@ -19,7 +21,17 @@ const versionOf = (rootDir, name) => {
   }
 };
 
+const buildStamp = () => {
+  if (!BUILD_SRC.includes(INSTALLED)) return treeStamp(BUILD_SRC);
+  try {
+    return `installed@${JSON.parse(readFileSync(join(dirname(BUILD_SRC), 'package.json'), 'utf8')).version}`;
+  } catch {
+    return treeStamp(BUILD_SRC);
+  }
+};
+
 /**
+ * Keys on content and on paths relative to the app, so a checkout of the same tree elsewhere gets the same key.
  * @param {string} rootDir the app root
  * @param {string} target main or preload
  * @param {Record<string, unknown>} [configPart] what configKey gave
@@ -27,16 +39,16 @@ const versionOf = (rootDir, name) => {
  */
 const reuseKey = (rootDir, target, configPart = {}) => {
   const workspace = findWorkspaceRoot(rootDir);
-  const dirs = [...new Set(workspace ? [rootDir, workspace] : [rootDir])];
+  const dirs = [[rootDir, '<app>'], ...(workspace && workspace !== rootDir ? [[workspace, '<workspace>']] : [])];
   const parts = {
     version: REUSE_VERSION,
     target,
     node: process.version,
-    build: treeStamp(BUILD_SRC),
+    build: buildStamp(),
     vite: versionOf(rootDir, 'vite'),
     electronVite: versionOf(rootDir, 'electron-vite'),
-    config: configPart,
-    files: dirs.flatMap((dir) => KEY_FILES.map((name) => `${join(dir, name)}=${stampOf(join(dir, name))}`)),
+    config: portableValue(configPart, dirs),
+    files: dirs.flatMap(([dir, token]) => KEY_FILES.map((name) => `${token}/${name}=${contentOf(join(dir, name))}`)),
   };
   return createHash('sha256').update(JSON.stringify(parts)).digest('hex');
 };

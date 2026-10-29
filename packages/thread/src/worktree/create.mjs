@@ -6,6 +6,7 @@ import { assertName } from './paths.mjs';
 import { qualifyName } from './qualify-name.mjs';
 import { addWorktree } from './add-worktree.mjs';
 import { installDependencies } from './install.mjs';
+import { cloneArtefacts } from './clone/clone-artefacts.mjs';
 import { threadBase } from './thread-base.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 import { userDataStep } from '../provision/user-data.mjs';
@@ -19,9 +20,25 @@ const runProvision = async (worktree, ctx) => {
   }
 };
 
+const electronAppDirs = (worktree, ctx) => [...new Set(Object.values(ctx.targets).filter((target) => target.kind === 'electron').map((target) => target.appDir(worktree)))];
+
 const prewarmApps = (worktree, ctx) => {
-  const dirs = Object.values(ctx.targets).filter((target) => target.kind === 'electron').map((target) => target.appDir(worktree));
-  for (const dir of new Set(dirs)) startPrewarm(dir, ctx.log);
+  for (const dir of electronAppDirs(worktree, ctx)) startPrewarm(dir, ctx.log);
+};
+
+/**
+ * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
+ * @param {{ source: string } | null} cloned where node_modules came from
+ * @param {import('../workspace/workspace.type.mjs').ThreadContext} ctx
+ * @returns {boolean} true when the build records came over too, so a prewarm has nothing left to do
+ */
+const cloneOutputs = (worktree, cloned, ctx) => {
+  if (!cloned) return false;
+  const appDirs = Object.values(ctx.targets).map((target) => target.appDir?.(worktree)).filter(Boolean);
+  const copied = cloneArtefacts({ source: cloned.source, target: worktree.path, appDirs });
+  const tree = copied.sameTree ? `${copied.outputs} generated output(s) as well, the tree matches` : 'generated outputs left to the first launch, the tree differs';
+  ctx.log(`Build records: ${copied.keyed} copied from ${cloned.source}; ${tree}.`);
+  return copied.keyed > 0;
 };
 
 const recoveredBase = (branch, main) => (threadBase.storedBase(branch, main) ? null : threadBase.openPrBase(branch, main));
@@ -44,7 +61,7 @@ const recordBase = ({ worktree, how, from, asked, ctx }) => {
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const createVerb = {
-  usage: '  brock worktree create <name> [--prefix <text>] [--from <ref>] [--base <branch>] [--skip-install]',
+  usage: '  brock worktree create <name> [--prefix <text>] [--from <ref>] [--base <branch>] [--skip-install | --no-clone]',
   run: async (positional, options, ctx) => {
     const name = qualifyName(positional[0], ctx.workspace, options, { create: true });
     assertName(name);
@@ -55,9 +72,10 @@ const createVerb = {
     if (existsSync(worktree.path)) ctx.log(`${worktree.path} already exists; provisioning only.`);
     else how = addWorktree({ name, path: worktree.path, from, base: asked, ctx });
     recordBase({ worktree, how, from, asked, ctx });
-    installDependencies(worktree, options, ctx);
+    const cloned = await installDependencies(worktree, options, ctx);
+    const warm = cloneOutputs(worktree, cloned, ctx);
     await runProvision(worktree, ctx);
-    if (!flag(options, 'skip-install')) prewarmApps(worktree, ctx);
+    if (!flag(options, 'skip-install') && !warm) prewarmApps(worktree, ctx);
     ctx.log(`"${name}" is ready.`);
     ctx.log(`Worktree: ${worktree.path}`);
     ctx.log(`Launch: ${ctx.workspace.name} worktree launch ${name} none [--visible]`);

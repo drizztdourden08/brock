@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { flag } from '../cli/thread-args.mjs';
 import { tryGit } from '../git.mjs';
+import { cloneInstall } from './clone/clone-install.mjs';
 
 const installable = (dir) => existsSync(join(dir, 'package.json')) && !existsSync(join(dir, 'node_modules'));
 
@@ -31,25 +32,33 @@ const installIn = (dir, log) => {
 const appDirsOf = (worktree, targets) =>
   Object.values(targets).map((target) => target.appDir?.(worktree)).filter((dir) => dir && dir !== worktree.path);
 
+const cloneFirst = (worktree, options, ctx) => {
+  if (flag(options, 'no-clone') || !installable(worktree.path)) return Promise.resolve(null);
+  return cloneInstall({ target: worktree.path, main: ctx.rootDir, log: ctx.log });
+};
+
 /**
+ * Links node_modules from a checkout installed from the same lockfile when one exists, else runs pnpm.
  * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
- * @param {Record<string, string | boolean>} options
+ * @param {Record<string, string | boolean>} options --skip-install leaves node_modules alone, --no-clone always runs pnpm
  * @param {import('../workspace/workspace.type.mjs').ThreadContext} ctx
- * @returns {void}
+ * @returns {Promise<{ source: string, store: string } | null>} the checkout node_modules came from, null when pnpm ran or nothing was needed
  */
-const installDependencies = (worktree, options, ctx) => {
+const installDependencies = async (worktree, options, ctx) => {
   if (flag(options, 'skip-install')) {
     ctx.log('--skip-install: leaving node_modules as it is.');
-    return;
+    return null;
   }
   const dirs = [...new Set([worktree.path, ...appDirsOf(worktree, ctx.targets)])];
   if (!dirs.some(installable)) {
     ctx.log('Nothing to install: no package.json without node_modules at the root or in a target app.');
-    return;
+    return null;
   }
+  const cloned = await cloneFirst(worktree, options, ctx);
   for (const dir of dirs) {
     if (installable(dir)) installIn(dir, ctx.log);
   }
+  return cloned;
 };
 
 export { installDependencies };

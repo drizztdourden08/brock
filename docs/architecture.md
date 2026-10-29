@@ -424,7 +424,7 @@ const bridge = connectBridge({ app: 'bxel' });
 const docs = await bridge.request(BRIDGE.listDocs, '*.bxel');
 ```
 
-`request` is typed from the route. The client connects on the first request, reads the discovery file again on each reconnect (so it follows a restarted app), and rejects with a plain message when the app is not running, the file is stale, a reply is an error, the endpoint does not finish the handshake within `handshakeMs` (2 s), or the request runs past `timeoutMs` (30 s). `close()` ends the connection. The same entry exports `startBridgeServer`, `writeBridgeDiscovery`, `readBridgeDiscovery`, `bridgeDiscoveryFile` and `BridgeError`, so a helper's tests can stand up a fake app.
+`request` is typed from the route. The client connects on the first request, reads the discovery file again on each reconnect (so it follows a restarted app), and rejects with a plain message when the app is not running, the file is stale, a reply is an error, the endpoint does not finish the handshake within `handshakeMs` (2 s), or the request runs past `timeoutMs` (30 s). `close()` ends the connection. The same entry exports `startBridgeServer`, `writeBridgeDiscovery`, `readBridgeDiscovery` (and `readBridgeDiscoveryAsync`, which does not block the event loop on the Windows access check; it tries `icacls` for the access list and `dir /q` for the owner first and falls back to the PowerShell check on any doubt, and a file accepted once is not checked again in the process until its size, times or file id change), `bridgeDiscoveryFile` and `BridgeError`, so a helper's tests can stand up a fake app.
 
 The wire is one JSON object per line, in both directions, and it starts with a handshake that proves both ends know the secret without ever sending it:
 

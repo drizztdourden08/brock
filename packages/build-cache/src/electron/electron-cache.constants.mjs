@@ -2,6 +2,12 @@
 const DIST_DIR = 'dist';
 const PATH_FILE = 'path.txt';
 const VERSION_FILE = 'version';
-const PLATFORM_OVERRIDES = ['ELECTRON_INSTALL_PLATFORM', 'ELECTRON_INSTALL_ARCH', 'npm_config_platform', 'npm_config_arch', 'ELECTRON_OVERRIDE_DIST_PATH'];
+const OVERRIDE_ENV = 'ELECTRON_OVERRIDE_DIST_PATH';
+const PLATFORM_SOURCES = { env: ['ELECTRON_INSTALL_PLATFORM', 'npm_config_platform'], npmrc: 'platform' };
+const ARCH_SOURCES = { env: ['ELECTRON_INSTALL_ARCH', 'npm_config_arch'], npmrc: 'arch' };
+const NPMRC_FILE = '.npmrc';
+const RESTORE_LOCK = '.build-cache-restore.lock';
+const LOCK_STALE_MS = 10 * 60 * 1000;
+const LOCK_POLL_MS = 250;
 
-export { DIST_DIR, PATH_FILE, PLATFORM_OVERRIDES, VERSION_FILE };
+export { ARCH_SOURCES, DIST_DIR, LOCK_POLL_MS, LOCK_STALE_MS, NPMRC_FILE, OVERRIDE_ENV, PATH_FILE, PLATFORM_SOURCES, RESTORE_LOCK, VERSION_FILE };

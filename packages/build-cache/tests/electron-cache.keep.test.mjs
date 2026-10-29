@@ -42,12 +42,12 @@ describe('electron cache', () => {
     expect(existsSync(join(fresh, 'dist'))).toBe(false);
   });
 
-  it('misses another version and skips a cross-platform install', async () => {
+  it('misses another version and skips an Electron that runs from elsewhere', async () => {
     const root = tempDir();
     await storeElectron(electronPackage(true), { root });
     const other = electronPackage(false);
     writeFileSync(join(other, 'package.json'), JSON.stringify({ name: 'electron', version: '43.0.0' }));
     expect(restoreElectron(other, { root })).toBe('missing');
-    expect(electronEntryId(root, other, { ELECTRON_INSTALL_ARCH: 'arm64' })).toBeNull();
+    expect(electronEntryId(root, other, { ELECTRON_OVERRIDE_DIST_PATH: 'X:/elsewhere' })).toBeNull();
   });
 });

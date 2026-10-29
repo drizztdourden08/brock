@@ -10,4 +10,5 @@ export { packageClosure } from './packages/package-closure.mjs';
 export { packageBuildKey } from './packages/compile-package.mjs';
 export { servePackage } from './packages/serve-package.mjs';
 export { buildCachePlugin } from './vite/build-cache-plugin.mjs';
-export { restoreElectron, storeElectron } from './electron/electron-cache.mjs';
+export { restoreElectron, storeElectron, storeElectronDetached } from './electron/electron-cache.mjs';
+export { announceJob, beginJob, jobState, waitForJob } from './jobs/background-job.mjs';

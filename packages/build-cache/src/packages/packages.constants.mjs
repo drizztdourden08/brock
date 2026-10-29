@@ -1,5 +1,7 @@
 /* @layer tooling-scripts @kind constants */
 const DEFAULT_SCOPE = '@drizztdourden08/';
+const LAYOUT_VERSION = 1;
+const INPUT_KEY_LENGTH = 12;
 const PLACED_FOLDER = ['node_modules', '.build-cache', 'node_modules'];
 const PLACED_MARKER = '.build-cache.json';
 const CODE_FILE = /\.(?:[cm]?[jt]sx?)$/;
@@ -11,4 +13,4 @@ const ASSET_LOADERS = Object.freeze({
   '.txt': 'text', '.md': 'text',
 });
 
-export { ASSET_LOADERS, CODE_FILE, DEFAULT_SCOPE, EXPORT_CONDITIONS, PLACED_FOLDER, PLACED_MARKER, UI_DEPENDENCIES };
+export { ASSET_LOADERS, CODE_FILE, DEFAULT_SCOPE, INPUT_KEY_LENGTH, LAYOUT_VERSION, EXPORT_CONDITIONS, PLACED_FOLDER, PLACED_MARKER, UI_DEPENDENCIES };

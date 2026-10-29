@@ -3,14 +3,14 @@ import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { build, version as esbuildVersion } from 'esbuild';
 import { hashValue } from '../store/hash-tree.mjs';
-import { ASSET_LOADERS } from './packages.constants.mjs';
+import { ASSET_LOADERS, LAYOUT_VERSION } from './packages.constants.mjs';
 
 /**
  * @param {{ platform: 'node' | 'browser', target: string, define?: Record<string, string> }} input what changes the output
  * @returns {{ settings: Record<string, unknown>, buildKey: string }} the full settings and their short key
  */
 const packageBuildKey = ({ platform, target, define = {} }) => {
-  const settings = { compiler: `esbuild@${esbuildVersion}`, format: 'esm', platform, target, define, jsx: 'automatic' };
+  const settings = { layout: LAYOUT_VERSION, compiler: `esbuild@${esbuildVersion}`, format: 'esm', platform, target, define, jsx: 'automatic' };
   return { settings, buildKey: `${platform}-${hashValue(settings)}` };
 };
 

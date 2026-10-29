@@ -18,7 +18,8 @@
   "exports": {
     ".": "./src/index.mjs",
     "./vite": "./src/vite/build-cache-plugin.mjs",
-    "./electron": "./src/electron/electron-cache.mjs"
+    "./electron": "./src/electron/electron-cache.mjs",
+    "./jobs": "./src/jobs/background-job.mjs"
   },
   "files": [
     "src",

@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-input
 
+## 0.115.5
+
+### Patch Changes
+
+- f5e4d4b: The pad drawing in the Live input box shows the button glyphs again when no glyph source is registered. The face buttons, shoulders, triggers, View, Menu and Xbox now draw Tessera's own input icons in place of empty rings. A glyph image from `registerGlyphSource` still wins when one answers.
+- Updated dependencies [c35a272]
+  - @drizztdourden08/brock-react@0.115.5
+  - @drizztdourden08/brock-core@0.115.5
+  - @drizztdourden08/brock-electron@0.115.5
+
 ## 0.115.4
 
 ### Patch Changes

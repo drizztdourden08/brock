@@ -20,7 +20,7 @@
     "structure": "brock structure --check",
     "test": "vitest run --passWithNoTests",
     "app:dev": "pnpm --filter ./templates/app dev",
-    "app:build": "pnpm --filter ./templates/app build",
+    "app:build": "pnpm --filter ./templates/app build --no-sync",
     "storylite": "storylite dev --port 9500",
     "prose": "brock prose",
     "deadcode": "brock knip",

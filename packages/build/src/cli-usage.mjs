@@ -23,9 +23,10 @@ Usage:
                              when .brock is missing or stale, and stops when the renderer entry misses a file;
                              --live-brock serves linked Brock packages as source, with hot reload, instead of
                              pre-bundling them
-  brock build [--if-stale] [args]
+  brock build [--if-stale] [--no-sync] [args]
                              electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set;
-                             --if-stale builds only when dist is missing, half built or older than the app's sources
+                             --if-stale builds only when dist is missing, half built or older than the app's sources;
+                             --no-sync builds from the committed .brock files and never writes the app's managed files
   brock package [--full] [--channel <name>]
                              build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
                              the update package and a delta when the previous release was downloaded there.

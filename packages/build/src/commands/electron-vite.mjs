@@ -12,10 +12,10 @@ import { bundleAppHelperScripts } from '../helper-scripts/bundle-helper-scripts.
 
 /**
  * @param {'dev' | 'build'} mode
- * @param {{ rootDir: string, passthrough?: string[]}} ctx
+ * @param {{ rootDir: string, noSync?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
-const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
+const runElectronVite = async (mode, { rootDir, noSync = false, passthrough = [] }) => {
   if (appShape(rootDir).windowless) {
     console.error(`brock ${mode}: this app has no window. Use brock server ${mode === 'dev' ? 'dev' : 'build'}.`);
     return 1;
@@ -26,9 +26,10 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
     console.error(`brock ${mode}: ${electron.message}`);
     return 1;
   }
+  const syncOpts = { sync: !noSync };
   const synced = mode === 'dev'
-    ? await ensureSyncedLater(rootDir, 'brock dev')
-    : { problem: await ensureSynced(rootDir, 'brock build'), guide: () => Promise.resolve() };
+    ? await ensureSyncedLater(rootDir, 'brock dev', syncOpts)
+    : { problem: await ensureSynced(rootDir, 'brock build', syncOpts), guide: () => Promise.resolve() };
   if (synced.problem) {
     console.error(`brock ${mode}: ${synced.problem}`);
     return 1;

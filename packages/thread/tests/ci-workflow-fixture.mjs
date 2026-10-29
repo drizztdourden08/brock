@@ -4,6 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach } from 'vitest';
+import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 
 const WORKFLOW = `name: fixture
 env:
@@ -107,6 +108,7 @@ const fixtureRepo = () => {
     else process.env.COORD_HOME = state.saved;
     rmSync(state.home, { recursive: true, force: true });
     rmSync(state.repo, { recursive: true, force: true });
+    rmSync(ciWorktreesFolder(state.repo), { recursive: true, force: true });
   });
   return { repo: () => state.repo };
 };

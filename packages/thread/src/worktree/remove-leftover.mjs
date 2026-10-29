@@ -34,7 +34,7 @@ const removeLeftover = async (argument, ctx) => {
   const path = resolve(argument);
   assertLeftover({ path, folder, main });
   log(`${path} is not a registered worktree; deleting the folder.`);
-  const failure = await deleteTree(folder, path);
+  const failure = await deleteTree({ owner: folder, target: path, mains: [main] });
   if (failure) throw new Error(`Could not delete ${failure.path} (${failure.code}); something holds it open. Close it and run the same remove again.`);
   tryGit([...LONG_PATHS, 'worktree', 'prune'], main);
   log('Folder deleted. No branch was touched; review with git branch.');

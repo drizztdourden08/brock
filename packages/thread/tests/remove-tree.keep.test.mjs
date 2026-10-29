@@ -87,35 +87,35 @@ describe('removeTree', () => {
 describe('deleteTree', () => {
   it('removes a link target itself and leaves what it points to', async () => {
     symlinkSync(outside, join(tree, 'link'), 'junction');
-    expect(await deleteTree(tree, join(tree, 'link'))).toBeNull();
+    expect(await deleteTree({ owner: tree, target: join(tree, 'link') })).toBeNull();
     expect(existsSync(join(tree, 'link'))).toBe(false);
     expect(existsSync(join(outside, 'keep.txt'))).toBe(true);
   });
 
   it('refuses a path outside the worktree', async () => {
-    await expect(deleteTree(tree, outside)).rejects.toThrow(/outside/);
+    await expect(deleteTree({ owner: tree, target: outside })).rejects.toThrow(/outside/);
     expect(existsSync(join(outside, 'keep.txt'))).toBe(true);
   });
 
   it('refuses a path that reaches outside through a link in its folder', async () => {
     symlinkSync(outside, join(tree, 'via'), 'junction');
-    await expect(deleteTree(tree, join(tree, 'via', 'keep.txt'))).rejects.toThrow(/resolves outside/);
+    await expect(deleteTree({ owner: tree, target: join(tree, 'via', 'keep.txt') })).rejects.toThrow(/resolves outside/);
     expect(existsSync(join(outside, 'keep.txt'))).toBe(true);
   });
 
   it('skips a folder whose parent was deleted first', async () => {
     mkdirSync(join(tree, 'apps', 'desktop', 'public'), { recursive: true });
     await rm(join(tree, 'apps'), { recursive: true, force: true });
-    expect(await deleteTree(tree, join(tree, 'apps', 'desktop', 'public'))).toBeNull();
+    expect(await deleteTree({ owner: tree, target: join(tree, 'apps', 'desktop', 'public') })).toBeNull();
   });
 
   it('skips a folder whose parent is now a file', async () => {
     writeFileSync(join(tree, 'apps'), 'file\n');
-    expect(await deleteTree(tree, join(tree, 'apps', 'public'))).toBeNull();
+    expect(await deleteTree({ owner: tree, target: join(tree, 'apps', 'public') })).toBeNull();
   });
 
   it('treats a folder that is already gone as deleted', async () => {
-    const result = await deleteTree(tree, join(tree, 'missing'));
+    const result = await deleteTree({ owner: tree, target: join(tree, 'missing') });
     expect(result).toBeNull();
   });
 });

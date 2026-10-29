@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { latestRunFor, newRunId, readRecords, writeRecord } from '../src/ci/check-record.mjs';
 import { ciDir, recordFile } from '../src/ci/ci-paths.mjs';
+import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 import { planSteps } from '../src/ci/ci-plan.mjs';
 import { runCi } from '../src/ci/run-ci.mjs';
 import { acquireRunLock } from '../src/ci/run-lock.mjs';
@@ -60,8 +61,7 @@ beforeEach(() => {
 afterEach(() => {
   if (saved === undefined) delete process.env.COORD_HOME;
   else process.env.COORD_HOME = saved;
-  rmSync(home, { recursive: true, force: true });
-  rmSync(repo, { recursive: true, force: true });
+  for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 
 describe('check-run records', () => {

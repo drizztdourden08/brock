@@ -6,8 +6,9 @@ import { copyArtifact } from './artifact-copy.mjs';
 import { newRecord, stepRecord } from './record-shape.mjs';
 import { writeRecord } from './check-record.mjs';
 import { artifactDir, recordFile } from './ci-paths.mjs';
-import { addCiWorktree, dropCiWorktree } from './ci-worktree.mjs';
+import { addCiWorktree, dropCiWorktree, isInsideWorktree } from './ci-worktree.mjs';
 import { OFFLINE_NOTE } from './ci.constants.mjs';
+import { watchMainCheckout } from './main-guard.mjs';
 import { acquireRunLock } from './run-lock.mjs';
 import { noteInLog, runStep, stopTree } from './run-step.mjs';
 import { summarize } from './summarize.mjs';
@@ -80,6 +81,9 @@ const runOne = async ({ step, planned, session, log }) => {
   if (planned.noop) {
     writeFileSync(step.log, `${step.command}\n`);
     settle(step, { pass: true, code: 0, note: planned.noop });
+  } else if (!isInsideWorktree(session.path, step.cwd)) {
+    writeFileSync(step.log, `${step.command}\n`);
+    settle(step, { pass: false, code: 1, note: `The working directory ${step.cwd} is outside the temporary worktree ${session.path}, so the step was not run.` });
   } else if (planned.upload) keepArtifact(step, planned, session);
   else await spawnStep(step, planned, session);
   step.durationMs = Date.now() - started;
@@ -125,7 +129,7 @@ const openSession = ({ ctx, request, runId }) => {
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
-  return { file, record, plan, save, control, onSignal, release: null, path: null };
+  return { file, record, plan, save, control, onSignal, release: null, path: null, lost: null };
 };
 
 const execute = async ({ ctx, request, runId, session }) => {
@@ -136,13 +140,23 @@ const execute = async ({ ctx, request, runId, session }) => {
   record.startedAt = now();
   save();
   if (record.steps.some((step) => step.status === 'pending')) {
-    session.path = addCiWorktree({ main: ctx.rootDir, worktreesDir: ctx.workspace.worktreesDir, runId, sha: request.sha });
+    session.lost = watchMainCheckout(ctx.rootDir);
+    session.path = addCiWorktree({ main: ctx.rootDir, runId, sha: request.sha });
     for (const [index, step] of record.steps.entries()) step.cwd = resolve(session.path, session.plan[index].workdir ?? '');
     save();
     await runSteps({ session, log: ctx.log });
   }
   record.status = finishedWith(record);
   record.summary = summarize(record);
+};
+
+const noteLoss = (session, log) => {
+  const lost = session.lost?.();
+  if (!lost) return;
+  session.record.status = 'fail';
+  session.record.summary = `${lost} ${session.record.summary}`;
+  session.save();
+  log(lost);
 };
 
 const closeSession = async ({ ctx, session }) => {
@@ -158,6 +172,7 @@ const closeSession = async ({ ctx, session }) => {
       save();
     }
   }
+  noteLoss(session, ctx.log);
   session.release?.();
 };
 

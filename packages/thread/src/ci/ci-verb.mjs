@@ -3,16 +3,17 @@ import { tryGit } from '../git.mjs';
 import { usageFor } from '../cli/usage-for.mjs';
 import { newRunId } from './check-record.mjs';
 import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
-import { planSteps } from './ci-plan.mjs';
+import { planSteps, targetOf } from './ci-plan.mjs';
 import { projectOf } from './project-of.mjs';
 import { runCi } from './run-ci.mjs';
 
 const USAGE = [
-  '  brock ci [check] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
+  '  brock ci [check] [<job>|<step>] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
   '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
   '                               (default HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
-  '                               of the workflow file (default ci.yml). The first line printed is the record path.',
+  '                               of the workflow file (default ci.yml). A job or step name runs only that one,',
+  '                               like --job or --only. The first line printed is the record path.',
   '                               Exit 0 pass, 1 a step failed, 2 usage or setup error.',
 ].join('\n');
 
@@ -32,8 +33,10 @@ const branchOf = (sha, spec, options, cwd) => {
 
 const listOf = (value) => (typeof value === 'string' ? value.split(',').map((item) => item.trim()).filter(Boolean) : null);
 
-const assertWords = (positional) => {
-  if (positional.length > 1 || (positional.length === 1 && positional[0] !== 'check')) throw new Error(`Unknown word "${positional.join(' ')}".`);
+const wordOf = (positional) => {
+  const words = positional[0] === 'check' ? positional.slice(1) : positional;
+  if (words.length > 1) throw new Error(`Give at most one job or step name, got "${words.join(' ')}".`);
+  return words[0] ?? null;
 };
 
 const triggerOf = (options, pr) => {
@@ -76,13 +79,14 @@ const commitOf = (options, cwd) => {
 };
 
 const resolveRequest = (positional, options, ctx) => {
-  assertWords(positional);
+  const word = wordOf(positional);
   const cwd = process.cwd();
   const { spec, sha } = commitOf(options, cwd);
   const pr = prOf(options);
-  const only = listOf(options.only);
   const trigger = triggerOf(options, pr);
-  const plan = planSteps({ workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), job: stringOption(options, 'job', 'all'), only, trigger });
+  const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger };
+  const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));
+  const plan = planSteps({ ...base, job, only });
   return {
     project: projectOf(options, ctx.workspace),
     sha,

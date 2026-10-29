@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { describe, expect, it } from 'vitest';
-import { planSteps } from '../src/ci/ci-plan.mjs';
+import { planSteps, targetOf } from '../src/ci/ci-plan.mjs';
 import { eventNameOf, expand, judge } from '../src/ci/workflow-expr.mjs';
 import { inNeedsOrder, readWorkflow } from '../src/ci/workflow-jobs.mjs';
 import { matrixEntries } from '../src/ci/workflow-matrix.mjs';
@@ -96,6 +96,16 @@ describe('the plan of a workflow', () => {
     expect(plan({ job: 'later' }).map((step) => step.name)).toEqual(['later / node tools/mark.mjs later']);
     expect(plan({ job: 'matrixed' })).toHaveLength(3);
     expect(planSteps({ workspace: { ...workspace, gate: { scripts: ['lint'] } } }).map((step) => step.name)).toEqual(['install', 'lint']);
+  });
+
+  it('reads a free word as a job name or a step name', () => {
+    const gate = planSteps({ workspace: { ...workspace, gate: { scripts: ['lint', 'test'] } } });
+    expect(targetOf(gate, 'lint', 'all', null)).toEqual({ job: 'all', only: ['lint'] });
+    expect(targetOf(gate, 'gate', 'all', null)).toEqual({ job: 'gate', only: null });
+    expect(targetOf(plan(), 'Needs a sha', 'all', ['later / node tools/mark.mjs later']).only).toHaveLength(2);
+    expect(targetOf(plan(), null, 'later', null)).toEqual({ job: 'later', only: null });
+    expect(() => targetOf(gate, 'gate', 'other', null)).toThrow(/Give only one/);
+    expect(() => targetOf(gate, 'nope', 'all', null)).toThrow(/Jobs: gate, all\. Steps: install, lint, test\./);
   });
 });
 

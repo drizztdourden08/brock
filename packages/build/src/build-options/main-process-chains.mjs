@@ -31,7 +31,7 @@ const enqueueImports = (info, { parent, queue }) => {
 
 /**
  * @param {object} input
- * @param {Pick<import('rollup').PluginContext, 'getModuleIds' | 'getModuleInfo'>} input.graph the finished module graph
+ * @param {Pick<import('vite').Rollup.PluginContext, 'getModuleIds' | 'getModuleInfo'>} input.graph the finished module graph
  * @param {Map<string, Set<string>>} input.specifiers per importer, the forbidden package imports it wrote
  * @param {Set<string>} input.blocked the module ids those imports resolved to, not entered again
  * @param {{ forbidsModule: (id: string) => boolean }} input.rules what a module may not be

@@ -77,6 +77,19 @@ describe('buildReusePlugin in a git checkout', () => {
     expect(readFileSync(join(copy, 'dist/electron/main.js'), 'utf8')).toContain('hello two');
   });
 
+  it('builds again when a git-ignored generated module changes', async () => {
+    const root = repo();
+    put(root, '.gitignore', 'node_modules/\ndist/\nelectron/gen.js\n');
+    put(root, 'electron/gen.js', "export const greet = () => 'generated one';\n");
+    put(root, 'electron/main.js', "import { greet } from './gen.js';\nconsole.log(greet());\n");
+    await run(root);
+    put(root, 'electron/gen.js', "export const greet = () => 'generated two';\n");
+    messages.length = 0;
+    await run(root);
+    expect(reused()).toBe(false);
+    expect(readFileSync(join(root, 'dist/electron/main.js'), 'utf8')).toContain('generated two');
+  });
+
   it('builds again when an untracked file appears beside a module and shadows its import', async () => {
     const root = repo();
     put(root, 'electron/main.js', "import { greet } from './greet';\nconsole.log(greet());\n");

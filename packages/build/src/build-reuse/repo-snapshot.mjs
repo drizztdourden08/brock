@@ -74,7 +74,7 @@ const repoSnapshot = (dir) => {
   const hashed = new Map();
   const dirs = namesByDir(new Set([...index.keys(), ...[...status].filter(([, code]) => code === '??').map(([rel]) => rel)]));
   const keyOf = (rel) => {
-    if (!status.has(rel)) return index.get(rel) ?? GONE;
+    if (!status.has(rel) && index.has(rel)) return index.get(rel);
     if (!hashed.has(rel)) hashed.set(rel, contentKey(join(top, rel)));
     return hashed.get(rel);
   };

@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind test */
+import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -100,6 +101,24 @@ describe('cloneInstall', () => {
     const target = freshCheckout(`${LOCKFILE} `);
     expect(await clone(target, source)).toBeNull();
     expect(existsSync(join(target, 'node_modules'))).toBe(false);
+  });
+
+  it('clones from a checkout whose own install rewrote its committed lockfile, and only when the install inputs match', async () => {
+    const source = installedCheckout();
+    put(source, '.npmrc', 'auto-install-peers=true\n');
+    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
+    git('init', '-q');
+    git('add', 'pnpm-lock.yaml', '.npmrc');
+    git('commit', '-q', '-m', 'lockfile');
+    const rewritten = `${LOCKFILE}pnpmfileChecksum: sha256-x\n`;
+    put(source, 'pnpm-lock.yaml', rewritten);
+    put(source, 'node_modules/.pnpm/lock.yaml', rewritten);
+    const same = freshCheckout();
+    put(same, '.npmrc', 'auto-install-peers=true\n');
+    expect(await clone(same, source)).not.toBeNull();
+    const other = freshCheckout();
+    put(other, '.npmrc', 'auto-install-peers=false\n');
+    expect(await clone(other, source)).toBeNull();
   });
 
   it('treats a lockfile git checked out with CRLF line ends as the same lockfile', async () => {

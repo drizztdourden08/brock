@@ -77,11 +77,11 @@ describe('reuseKey', () => {
     expect(reuseKey(root, 'main')).not.toBe(before);
   });
 
-  it('changes when the lockfile appears', () => {
+  it('changes when the installed lockfile appears', () => {
     const root = tempDir();
     put(root, 'package.json', '{"name":"app"}');
     const before = reuseKey(root, 'main');
-    put(root, 'pnpm-lock.yaml', 'lockfileVersion: 9\n');
+    put(root, 'node_modules/.pnpm/lock.yaml', 'lockfileVersion: 9\n');
     expect(reuseKey(root, 'main')).not.toBe(before);
   });
 });

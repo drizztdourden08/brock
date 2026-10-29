@@ -9,11 +9,13 @@ const MODULES_STATE = '.modules.yaml';
 const WORKSPACE_STATE = '.pnpm-workspace-state-v1.json';
 const INSTALLED_LOCKFILE = 'lock.yaml';
 const LOCKFILE = 'pnpm-lock.yaml';
+const INSTALL_INPUTS = ['.pnpmfile.cjs', 'pnpm-workspace.yaml', '.npmrc', 'package.json'];
 const STATE_KEYS = ['layoutVersion', 'nodeLinker', 'hoistPattern', 'publicHoistPattern', 'included', 'skipped', 'injectedDeps'];
 const KEPT_DOT_ENTRIES = new Set(['.bin', MODULES_STATE, WORKSPACE_STATE]);
 
 export {
   CLONE_RECORD,
+  INSTALL_INPUTS,
   INSTALLED_LOCKFILE,
   KEPT_DOT_ENTRIES,
   LOCKFILE,

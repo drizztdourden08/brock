@@ -1,15 +1,15 @@
 /* @layer tooling-scripts @kind logic */
 import { spawn } from 'node:child_process';
-import { copyFileSync, cpSync, existsSync, readFileSync, renameSync, rmSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, readFileSync, realpathSync, renameSync, rmSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { commitEntry, discardEntry } from '../store/commit-entry.mjs';
 import { cacheRoot } from '../store/cache-root.mjs';
 import { hashTree } from '../store/hash-tree.mjs';
 import { readEntry, touchEntry } from '../store/read-entry.mjs';
 import { CACHE_ENV, KIND } from '../store/store.constants.mjs';
-import { DIST_DIR, OVERRIDE_ENV, PATH_FILE, VERSION_FILE } from './electron-cache.constants.mjs';
+import { DIST_DIR, OVERRIDE_ENV, PATH_FILE, SHARED_STORE_RECORD, VERSION_FILE } from './electron-cache.constants.mjs';
 import { electronTarget } from './electron-target.mjs';
 import { withRestoreLock } from './restore-lock.mjs';
 
@@ -21,6 +21,23 @@ const readText = (file) => {
   } catch {
     return null;
   }
+};
+
+/**
+ * @param {string} packageDir the installed electron package folder
+ * @returns {boolean} true when it sits in a shared package store
+ */
+const insideSharedStore = (packageDir) => {
+  let dir;
+  try {
+    dir = realpathSync.native(packageDir);
+  } catch {
+    return false;
+  }
+  for (; dirname(dir) !== dir; dir = dirname(dir)) {
+    if (existsSync(join(dir, SHARED_STORE_RECORD))) return true;
+  }
+  return false;
 };
 
 const versionOf = (packageDir) => {
@@ -86,7 +103,7 @@ const copyIn = (entry, root, packageDir, version) => {
  */
 const restoreElectron = (packageDir, { root = cacheRoot() } = {}) => {
   const id = electronEntryId(root, packageDir);
-  if (!id) return 'skipped';
+  if (!id || insideSharedStore(packageDir)) return 'skipped';
   if (distIsReady(packageDir, id.version)) return 'ready';
   return withRestoreLock(packageDir, () => {
     if (distIsReady(packageDir, id.version)) return 'ready';
@@ -138,4 +155,4 @@ const storeElectronDetached = (packageDir, { root = cacheRoot() } = {}) => {
   child.unref();
 };
 
-export { distIsReady, electronEntryId, restoreElectron, storeElectron, storeElectronDetached };
+export { distIsReady, electronEntryId, insideSharedStore, restoreElectron, storeElectron, storeElectronDetached };

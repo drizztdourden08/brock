@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { restoreElectron, storeElectronDetached } from '@drizztdourden08/build-cache/electron';
+import { insideSharedStore, restoreElectron, storeElectronDetached } from '@drizztdourden08/build-cache/electron';
 import { findWorkspaceRoot } from './workspace.mjs';
 
 const TAG = '[brock ensure-electron]';
@@ -102,6 +102,7 @@ const ensureElectron = (rootDir) => {
   const reason = brokenReason(rootDir, packageDir);
   if (!reason) return ready(packageDir);
 
+  if (insideSharedStore(packageDir)) return { ok: false, message: `${reason}. The electron package sits in the shared package store (${packageDir}), which no worktree repairs or writes to. Recreate this worktree with brock worktree create --no-clone to get a package of its own.` };
   console.log(`${TAG} ${reason}. Repairing...`);
   runInstallScript(packageDir);
   const remaining = brokenReason(rootDir, packageDir);

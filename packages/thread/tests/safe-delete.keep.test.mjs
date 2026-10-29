@@ -1,5 +1,4 @@
 /* @layer tooling-scripts @kind test */
-import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
@@ -9,9 +8,9 @@ import { watchMainCheckout } from '../src/ci/main-guard.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 import { ignoredFolders } from '../src/worktree/ignored-folders.mjs';
 import { deleteTree } from '../src/worktree/delete-tree.mjs';
+import { initRepo, run } from './git-fixture.mjs';
 
 const LINK = 'junction';
-const run = (cwd, ...args) => String(execFileSync('git', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] })).trim();
 
 let main = '';
 let base = '';
@@ -28,11 +27,7 @@ beforeEach(() => {
   writeFileSync(engineFile(), 'export {};\n');
   writeFileSync(join(main, 'apps', 'desktop', 'package.json'), '{}\n');
   writeFileSync(join(main, '.gitignore'), 'node_modules/\n');
-  run(main, 'init', '-q', '-b', 'main');
-  run(main, 'config', 'user.name', 't');
-  run(main, 'config', 'user.email', 't@t');
-  run(main, 'add', '.');
-  run(main, 'commit', '-q', '-m', 'init');
+  initRepo(main);
   mkdirSync(join(main, 'node_modules', '.bin'), { recursive: true });
   writeFileSync(join(main, 'node_modules', '.bin', 'tool'), 'tool\n');
   mkdirSync(join(main, 'apps', 'desktop', 'node_modules', '@demo'), { recursive: true });

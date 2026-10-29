@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { join } from 'node:path';
 import { configImportStamps } from './config-imports.mjs';
-import { stampOf } from './file-stamp.mjs';
+import { contentOf } from './file-stamp.mjs';
 
 const CONFIG_ENTRIES = ['brock.config.ts', 'electron.vite.config.ts'];
 
@@ -21,8 +21,8 @@ const configKey = (config, rootDir) => {
     env: config.env,
     define: config.define,
     build: { sourcemap, minify, target, outDir },
-    envFiles: envDir ? envFilesOf(config.mode).map((name) => `${join(envDir, name)}=${stampOf(join(envDir, name))}`) : [],
-    imports: configImportStamps(rootDir, CONFIG_ENTRIES),
+    envFiles: envDir ? envFilesOf(config.mode).map((name) => `${join(envDir, name)}=${contentOf(join(envDir, name))}`) : [],
+    imports: Object.fromEntries(Object.keys(configImportStamps(rootDir, CONFIG_ENTRIES)).map((file) => [file, contentOf(file)])),
   };
 };
 

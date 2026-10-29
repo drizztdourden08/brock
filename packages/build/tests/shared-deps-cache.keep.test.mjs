@@ -121,6 +121,19 @@ describe('shareDeps', () => {
     expect(shareDeps({ config: second.config, rootDir: second.root, store })).toBe('present');
   });
 
+  it('restores into a worktree whose packages live in a shared store, pointing the source into that store', async () => {
+    const cache = tempDir();
+    vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
+    expect(await publish(app())).toBe('stored');
+    const second = app({ withCache: false, installed: false });
+    const shared = tempDir();
+    put(shared, 'store/picker@1.0.0/node_modules/picker/index.js', 'export default 1;');
+    put(second.root, 'node_modules/.modules.yaml', `virtualStoreDir: ${join(shared, 'store')}
+`);
+    expect(shareDeps({ config: second.config, rootDir: second.root, store: vi.fn() })).toBe('seeded');
+    expect(metadataOf(second.root).optimized.picker.src).toBe(join(shared, 'store/picker@1.0.0/node_modules/picker/index.js'));
+  });
+
   it('asks for a store when it restored nothing, and replaces a stale pre-bundle only from a hit', async () => {
     const cache = tempDir();
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);

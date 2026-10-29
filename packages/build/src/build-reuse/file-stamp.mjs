@@ -1,6 +1,19 @@
 /* @layer tooling-scripts @kind logic */
-import { readdirSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+
+/**
+ * @param {string} file
+ * @returns {string | null} a short hash of its bytes, null when missing
+ */
+const contentOf = (file) => {
+  try {
+    return createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 24);
+  } catch {
+    return null;
+  }
+};
 
 /**
  * @param {string} file
@@ -40,4 +53,4 @@ const treeStamp = (dir) => {
   return `${count}:${newest}:${size}`;
 };
 
-export { stampOf, treeStamp };
+export { contentOf, stampOf, treeStamp };

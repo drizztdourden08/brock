@@ -97,6 +97,10 @@ describe('the plan of a workflow', () => {
     expect(plan({ job: 'matrixed' })).toHaveLength(3);
     expect(planSteps({ workspace: { ...workspace, gate: { scripts: ['lint'] } } }).map((step) => step.name)).toEqual(['install', 'lint']);
   });
+});
+
+describe('the free word of brock ci', () => {
+  const plan = () => planSteps({ workspace, workflowText: WORKFLOW, platform: 'win32', trigger: 'manual' });
 
   it('reads a free word as a job name or a step name', () => {
     const gate = planSteps({ workspace: { ...workspace, gate: { scripts: ['lint', 'test'] } } });

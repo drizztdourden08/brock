@@ -64,7 +64,6 @@ const chooseOnly = (steps, only) => {
 const jobsOf = (steps) => [...new Set(steps.map((step) => step.jobId))];
 
 /**
- * Reads the free word of `brock ci <word>`: a job name narrows to that job, a step name to that step.
  * @param {object[]} steps the full plan, from planSteps with no job or step chosen
  * @param {string | null} word
  * @param {string} job the --job value

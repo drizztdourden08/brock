@@ -73,10 +73,6 @@ const createProcessFixture = (): ProcessFixture => {
     snapshot,
     lines,
     messages: (id) => lines(id).map((line) => line.message),
-    // Cancelling is asynchronous: the kill is a separate taskkill process, and the job keeps its log
-    // file open until the child's streams close. Only the event loop can finish that, so the delete
-    // is the asynchronous rm, which yields between retries while the tree exits. A blocking rmSync
-    // would hold the loop and fail with EPERM on the folder the tree still holds.
     dispose: async () => {
       processes.cancelAll();
       await rm(dir, { recursive: true, force: true, maxRetries: 15, retryDelay: 50 });

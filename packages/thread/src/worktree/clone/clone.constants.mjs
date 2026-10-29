@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind constants */
 const CLONE_RECORD = '.brock-clone.json';
 const STORE_RECORD = '.brock-store.json';
-const STORE_LAYOUT = 3;
+const STORE_LAYOUT = 4;
 const STORE_USERS = 'users';
 const STORE_ENV = 'BROCK_MODULES_STORE_DIR';
 const STORE_HOME_FOLDERS = ['.brock', 'cache', 'node-modules'];

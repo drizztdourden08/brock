@@ -21,10 +21,11 @@ const countIn = (dir) => {
   }
 };
 
+const scopedCount = (dir) => readdirSync(dir, { withFileTypes: true }).reduce((sum, child) => sum + 1 + (child.isDirectory() ? countIn(join(dir, child.name)) : 0), 0);
+
 const innerCount = (dir, entry) => {
   if (!entry.isDirectory()) return 0;
-  if (!entry.name.startsWith('@')) return countIn(join(dir, entry.name));
-  return readdirSync(join(dir, entry.name)).reduce((sum, name) => sum + countIn(join(dir, entry.name, name)), 0);
+  return entry.name.startsWith('@') ? scopedCount(join(dir, entry.name)) : countIn(join(dir, entry.name));
 };
 
 const shapeOf = (nodeModules) => {

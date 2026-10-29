@@ -103,3 +103,20 @@ describe('what a clone may take links from', () => {
     expect(found.map((item) => item.path)).toEqual([join(home, 'node_modules', 'bad')]);
   });
 });
+
+describe('the store manifest', () => {
+  it('judges a store whole right after it is built, even with links between scoped packages, and flags an emptied package', async () => {
+    const source = installedCheckout();
+    const store = join(source, 'node_modules/.pnpm');
+    put(source, 'node_modules/.pnpm/scoped@1.0.0/node_modules/@scope/scoped/index.js', 'module.exports = 1;');
+    link(source, 'node_modules/.pnpm/dep@1.0.0/node_modules/@scope/scoped', join(store, 'scoped@1.0.0/node_modules/@scope/scoped'));
+    const result = await clone(freshCheckout(), source);
+    expect(result).not.toBeNull();
+    const entry = join(result.store, '..', '..');
+    expect(storeDamage(entry)).toEqual([]);
+    expect(readdirSync(storeRootOf()).filter((name) => name !== '.tmp')).toHaveLength(1);
+    expect(await clone(freshCheckout(), source)).toMatchObject({ store: result.store });
+    rmSync(join(entry, 'node_modules/.pnpm/scoped@1.0.0/node_modules/@scope/scoped/index.js'));
+    expect(storeDamage(entry)).toContain('scoped@1.0.0');
+  });
+});

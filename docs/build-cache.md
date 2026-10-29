@@ -56,7 +56,7 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 
 - A new entry is built in `<root>/.tmp/<uuid>/`, its manifest written last, then the folder is renamed to its final path. A reader never sees half an entry. When two processes race, the first rename wins and the other uses it.
 - A reader treats a missing folder, an unreadable manifest, another `schema`, `kind`, `name`, `version` or `buildKey`, another `inputHash`, or files that do not hash to `contentHash` as a miss. The writer then moves the broken folder into `.tmp/` and commits a new entry in its place.
-- A package entry is checked against its hash on every use. An Electron entry is checked in full before a store counts it as present, so a damaged entry is replaced, and its copy is hashed against `distHash` on every restore.
+- A package entry is checked against its hash on every use. An Electron entry is checked in full before a store counts it as present, so a damaged entry is replaced, and its copy is hashed against `distHash` on every restore. A mismatch discards the entry, so the next store builds it again.
 - Nothing runs from the cache folder. A package entry is copied to `<app>/node_modules/.build-cache/node_modules/<name>/`, and an Electron entry to the installed `electron` package (`dist/` and `path.txt`, under a lock file in that package, so two launches never restore into it at once). Deleting an entry never breaks a running app or a worktree that already has its copy.
 
 ## The rule Argus applies
@@ -70,4 +70,4 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 
 ## Who writes it
 
-`buildCachePlugin` (`@drizztdourden08/build-cache/vite`) adds package entries during a Node build, and `restoreElectron` and `storeElectron` (`@drizztdourden08/build-cache/electron`) read and add Electron entries. `storeElectronDetached` runs the store in a process of its own, so a short command never cuts a copy in half. Brock wires them into `brock dev`, `brock start` and `worktree launch` in a follow-up change.
+`buildCachePlugin` (`@drizztdourden08/build-cache/vite`) adds package entries during a Node build, and `restoreElectron` and `storeElectron` (`@drizztdourden08/build-cache/electron`) read and add Electron entries. `storeElectronDetached` runs the store in a process of its own when no entry is there yet, so a short command never cuts a copy in half. Brock wires them into `brock dev`, `brock start` and `worktree launch` in a follow-up change.

@@ -54,7 +54,8 @@ const installsTheSame = ({ dir, state }, wanted, target) => {
   if (!state) return false;
   const installed = sameLines(state.lockfile);
   if (installed.equals(wanted)) return true;
-  return installed.equals(readLines(join(dir, LOCKFILE)) ?? Buffer.alloc(0)) && sameCommittedInstall(dir, wanted, target);
+  const working = readLines(join(dir, LOCKFILE)) ?? Buffer.alloc(0);
+  return (working.equals(installed) || working.equals(wanted)) && sameCommittedInstall(dir, wanted, target);
 };
 
 /**

@@ -122,6 +122,10 @@ describe('cloneInstall source pick', () => {
     const other = freshCheckout();
     put(other, '.npmrc', 'auto-install-peers=false\n');
     expect(await clone(other, source)).toBeNull();
+    put(source, 'pnpm-lock.yaml', LOCKFILE);
+    const restored = freshCheckout();
+    put(restored, '.npmrc', 'auto-install-peers=true\n');
+    expect(await clone(restored, source)).not.toBeNull();
   });
 
   it('copies a git-ignored local pnpmfile of the source along, so a later install resolves the same way', async () => {

@@ -47,7 +47,7 @@ const isRequired = (step, checks) => {
 const chooseJob = (steps, job) => {
   if (job === 'all') return steps;
   const known = [...new Set(steps.flatMap((step) => [step.jobId, step.job]))];
-  if (!known.includes(job)) throw new Error(`No job "${job}" here. Known jobs: ${[...new Set(steps.map((step) => step.jobId))].join(', ')}, all.`);
+  if (!known.includes(job)) throw new Error(`No job "${job}" here. Known jobs: ${jobsOf(steps).join(', ')}, all.`);
   return steps.filter((step) => step.job === job || step.jobId === job);
 };
 
@@ -59,6 +59,25 @@ const chooseOnly = (steps, only) => {
   if (unknown.length) throw new Error(`No step named ${unknown.map((name) => `"${name}"`).join(', ')}. Steps: ${steps.map((step) => step.name).join(', ')}.`);
   const wanted = steps.some((step) => named(step, only) && !step.skip);
   return steps.filter((step) => named(step, only) || (step.name === INSTALL_STEP.name && wanted));
+};
+
+const jobsOf = (steps) => [...new Set(steps.map((step) => step.jobId))];
+
+/**
+ * @param {object[]} steps the full plan, from planSteps with no job or step chosen
+ * @param {string | null} word
+ * @param {string} job the --job value
+ * @param {string[] | null} only the --only names
+ * @returns {{ job: string, only: string[] | null }}
+ */
+const targetOf = (steps, word, job, only) => {
+  if (!word) return { job, only };
+  if (steps.some((step) => step.job === word || step.jobId === word)) {
+    if (job !== 'all' && job !== word) throw new Error(`"${word}" is a job and --job says "${job}". Give only one.`);
+    return { job: word, only };
+  }
+  if (steps.some((step) => named(step, [word]))) return { job, only: [...(only ?? []), word] };
+  throw new Error(`"${word}" is not a job or a step here. Jobs: ${jobsOf(steps).join(', ')}, all. Steps: ${[...new Set(steps.map(shortName))].join(', ')}.`);
 };
 
 const EMPTY_WORKFLOW = Object.freeze({ env: {}, shell: null, workdir: null, jobs: [] });
@@ -82,4 +101,4 @@ const planSteps = ({ workspace, workflowText = null, job = 'all', only = null, t
   return chooseOnly(chooseJob(unique(steps), job), only).map((step) => ({ ...step, required: isRequired(step, checks) }));
 };
 
-export { planSteps };
+export { planSteps, targetOf };

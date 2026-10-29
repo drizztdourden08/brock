@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-electron
 
+## 0.116.0
+
+### Patch Changes
+
+- fa11268: Opening a bridge link on Windows no longer freezes the process for two seconds or more. The check that the discovery file is private to the user used to run PowerShell and block the event loop. It now runs off the loop, tries a quick check first (icacls for the access list, dir for the owner) and falls back to the full PowerShell check on any doubt. A file that was accepted and has not changed since is not checked again in the same process. The checks are as strict as before. New `readBridgeDiscoveryAsync` and `readAppLaunchAsync` exports from the bridge entry do the same without blocking; the sync ones still work.
+- 017158c: Sigstore and TUF signature checks work in the Electron main process again. Electron has no default digest for EC keys, so `crypto.verify(null, ...)` failed there while it works in Node. Brock now gives that call the SHA-256 digest OpenSSL would pick, for P-256, P-384 and P-521 keys only; every other call goes through untouched. Turn it off with the `ecNullDigestShim: false` bootstrap option or `BROCK_NO_EC_DIGEST_SHIM=1`.
+  - @drizztdourden08/brock-core@0.116.0
+
 ## 0.115.5
 
 ### Patch Changes

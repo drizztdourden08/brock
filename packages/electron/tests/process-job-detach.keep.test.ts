@@ -44,10 +44,10 @@ beforeEach(() => {
   fx = createProcessFixture();
 });
 
-afterEach(() => {
+afterEach(async () => {
   fx.processes.cancelAll();
   vi.useRealTimers();
-  fx.dispose();
+  await fx.dispose();
 });
 
 const startInstaller = (options: { cancellable?: boolean } = {}) => {

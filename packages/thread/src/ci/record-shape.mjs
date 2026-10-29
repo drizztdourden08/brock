@@ -26,13 +26,15 @@ const newRecord = ({ runId, request, main }) => ({
 });
 
 /**
- * @param {{ name: string, command: string, required: boolean, skip?: string }} planned
+ * @param {{ name: string, command: string, job: string, shell?: string, required: boolean, skip?: string }} planned
  * @param {{ project: string, runId: string, index: number }} place
  * @returns {object} the step as the record holds it
  */
 const stepRecord = (planned, { project, runId, index }) => ({
   name: planned.name,
+  job: planned.job,
   command: planned.command,
+  ...(planned.shell ? { shell: planned.shell } : {}),
   cwd: null,
   status: planned.skip ? 'skipped-local' : 'pending',
   required: planned.required,

@@ -6,8 +6,8 @@ import type { ProcessFixture } from './process-job-fixture';
 
 let fx: ProcessFixture;
 
-afterEach(() => {
-  fx.dispose();
+afterEach(async () => {
+  await fx.dispose();
 });
 
 beforeEach(() => {

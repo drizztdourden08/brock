@@ -21,6 +21,7 @@ vi.mock('../src/gh.mjs', () => ({
   ghLoud: (args) => gh.calls.push(args),
 }));
 
+delete process.env.COORD_PROJECT;
 process.env.COORD_HOME = mkdtempSync(join(tmpdir(), 'brock-remote-'));
 writeFileSync(join(process.env.COORD_HOME, 'remote.json'), '{"mode":"remote"}');
 

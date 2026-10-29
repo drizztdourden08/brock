@@ -30,6 +30,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
+    "@drizztdourden08/build-cache": "workspace:*",
     "@drizztdourden08/standards": ">=0.11.0 <1"
   }
 }

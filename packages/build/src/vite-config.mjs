@@ -8,6 +8,8 @@ import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
 import { defineValues } from './build-options/define-values.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { buildReusePlugin } from './build-reuse/build-reuse-plugin.mjs';
+import { DEV_MODE, MODE_ENV } from './build-reuse/build-reuse.constants.mjs';
+import { buildCachePlugin } from '@drizztdourden08/build-cache/vite';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { esmShimPlacement } from './build-options/esm-shim-placement.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
@@ -95,6 +97,12 @@ const externalDependenciesOf = (rootDir, sources) => {
 };
 
 /**
+ * @param {import('vite').ResolvedConfig} config
+ * @returns {boolean} an electron-vite dev build, served from the cache
+ */
+const isDevBuild = (config) => config.command === 'build' && process.env[MODE_ENV] === DEV_MODE;
+
+/**
  * @param {string} rootDir
  * @returns {Record<string, string>}  The splash preload entry, if any
  */
@@ -120,17 +128,19 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const sources = sourceDependencies(rootDir);
   const external = externalDependenciesOf(rootDir, sources);
   const externalizeDeps = { exclude: sources, include: [...external.keys()] };
+  const packageCache = buildCachePlugin({ rootDir, when: isDevBuild });
   const rollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external)] };
+  const mainRollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external, packageCache.api.runtimeImports)] };
   const define = defineValues(build?.define, 'brock.config.ts');
   const base = {
     main: {
       define,
-      plugins: [buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
+      plugins: [packageCache, buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/electron'),
-        rollupOptions: { ...rollupOptions, input: { main: resolve(rootDir, 'electron/main.ts') } },
+        rollupOptions: { ...mainRollupOptions, input: { main: resolve(rootDir, 'electron/main.ts') } },
       },
     },
     preload: {

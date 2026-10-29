@@ -5,6 +5,7 @@ import { runAdd } from '../src/commands/add.mjs';
 import { runAffected } from '../src/commands/affected.mjs';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
+import { runCache } from '../src/commands/cache.mjs';
 import { runCheck } from '../src/commands/check.mjs';
 import { runClangFormatCommand } from '../src/commands/clang-format.mjs';
 import { runGateCommand } from '../src/commands/gate.mjs';
@@ -34,6 +35,7 @@ const COMMANDS = {
   add: (ctx) => runAdd(ctx),
   dev: (ctx) => runDev(ctx),
   build: (ctx) => runBuild(ctx),
+  cache: (ctx) => runCache(ctx),
   package: (ctx) => runPackage(ctx),
   icons: (ctx) => runIcons(ctx),
   start: (ctx) => runStart(ctx),

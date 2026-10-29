@@ -89,6 +89,8 @@ Usage:
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+  brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,
+                             its size and when it was last used; read only, Argus prunes it (docs/build-cache.md)
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
   brock server build | dev   the server entry (server.entry, default server/main.ts) as one Node file with every
                              dependency inlined, dist/server/main.mjs; dev rebuilds on change and restarts it with

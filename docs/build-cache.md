@@ -68,6 +68,8 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 - A folder under `.tmp/` whose modification time is more than a day old was left by a process that was cut off and may be deleted.
 - To delete an entry, rename the whole `<buildKey>` folder into `.tmp/<anything unique>` first, then remove it there, so a crash never leaves a manifest beside partial files. Never delete a single file inside an entry. Remove a `<version>` or `<name>` folder once it holds no entry.
 
-## Who writes it
+## What uses it
 
-`buildCachePlugin` (`@drizztdourden08/build-cache/vite`) adds package entries during a Node build, and `restoreElectron` and `storeElectron` (`@drizztdourden08/build-cache/electron`) read and add Electron entries. `storeElectronDetached` runs the store in a process of its own when no entry is there yet, so a short command never cuts a copy in half. Brock wires them into `brock dev`, `brock start` and `worktree launch` in a follow-up change.
+- The Electron main process of a Brock app in `electron-vite dev`. Brock's Vite factory adds `buildCachePlugin` (`@drizztdourden08/build-cache/vite`), which compiles each installed `@drizztdourden08` package once per machine and imports it at runtime instead of bundling it. Linked packages (a `link:` or `workspace:` dependency, a Tessera override), packages installed in more than one version, UI packages (they depend on React and stay in the renderer) and any package that depends on one of those stay compiled in as before. The preload, the renderer and production builds are unchanged.
+- The Electron binary. `brock dev`, `brock start`, `brock prewarm` and `<repo> worktree launch` restore it with `restoreElectron` instead of extracting it again. After the first install of a version, `storeElectronDetached` adds it to the cache from a process of its own, so a short command never cuts the copy in half.
+- `brock cache list` prints every entry with its size and when it was last used.

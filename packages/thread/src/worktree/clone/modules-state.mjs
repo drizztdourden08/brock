@@ -40,7 +40,7 @@ const blocksOf = (text) => {
 
 /**
  * @param {string} root a checkout or a workspace root
- * @returns {ModulesState | null} what pnpm installed there, null when it is not a complete pnpm install
+ * @returns {ModulesState | null} what pnpm installed there
  */
 const modulesState = (root) => {
   const text = readText(join(root, 'node_modules', MODULES_STATE))?.toString('utf8');

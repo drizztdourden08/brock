@@ -13,8 +13,14 @@ const LOCKFILE = "lockfileVersion: '9.0'\n\nimporters:\n\n  .:\n    dependencies
 const made = [];
 let storeRoot = '';
 
+const tempFolder = (prefix) => {
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)));
+  made.push(dir);
+  return dir;
+};
+
 beforeEach(() => {
-  storeRoot = temp('brock-store-');
+  storeRoot = tempFolder('brock-store-');
   process.env.BROCK_MODULES_STORE_DIR = storeRoot;
 });
 
@@ -22,12 +28,6 @@ afterEach(() => {
   delete process.env.BROCK_MODULES_STORE_DIR;
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
-
-function temp(prefix) {
-  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)));
-  made.push(dir);
-  return dir;
-}
 
 const put = (root, path, content = '') => {
   mkdirSync(dirname(join(root, path)), { recursive: true });
@@ -39,9 +39,9 @@ const link = (root, path, target) => {
   symlinkSync(target, join(root, path), LINK);
 };
 
-/** A checkout laid out the way pnpm installs a one-package workspace. */
+
 const installedCheckout = () => {
-  const source = temp('brock-source-');
+  const source = tempFolder('brock-source-');
   const store = join(source, 'node_modules', '.pnpm');
   put(source, 'pnpm-lock.yaml', LOCKFILE);
   put(source, 'packages/pkg/package.json', '{"name":"@ws/pkg"}');
@@ -59,7 +59,7 @@ const installedCheckout = () => {
 };
 
 const freshCheckout = (lockfile = LOCKFILE) => {
-  const target = temp('brock-target-');
+  const target = tempFolder('brock-target-');
   put(target, 'pnpm-lock.yaml', lockfile);
   put(target, 'packages/pkg/package.json', '{"name":"@ws/pkg"}');
   return target;

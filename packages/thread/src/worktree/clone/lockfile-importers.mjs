@@ -2,7 +2,7 @@
 
 /**
  * @param {string} lockfile the text of a pnpm lockfile
- * @returns {string[]} the project folders it installs, relative to the workspace root ('.' for the root)
+ * @returns {string[]} the project folders it installs
  */
 const lockfileImporters = (lockfile) => {
   const found = [];

@@ -31,7 +31,6 @@ const buildStamp = () => {
 };
 
 /**
- * Keys on content and on paths relative to the app, so a checkout of the same tree elsewhere gets the same key.
  * @param {string} rootDir the app root
  * @param {string} target main or preload
  * @param {Record<string, unknown>} [configPart] what configKey gave

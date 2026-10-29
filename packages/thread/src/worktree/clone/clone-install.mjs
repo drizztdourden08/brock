@@ -13,9 +13,8 @@ const undo = (target, state) => {
 };
 
 /**
- * Fills a new worktree's node_modules from a checkout installed from the same lockfile, without running pnpm.
  * @param {{ target: string, main: string, log: (message: string) => void, worktrees?: string[] }} input
- * @returns {Promise<{ source: string, store: string } | null>} where it came from, null when a real install is needed
+ * @returns {Promise<{ source: string, store: string } | null>} where it came from
  */
 const cloneInstall = async ({ target, main, log, worktrees }) => {
   const started = Date.now();

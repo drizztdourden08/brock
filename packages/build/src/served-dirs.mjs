@@ -16,7 +16,7 @@ const packageDirOf = (appRequire, name) => {
  * @param {string} rootDir the app root
  * @param {string[]} sources the source packages the renderer compiles
  * @param {(root: string) => string} workspaceRootOf vite's searchForWorkspaceRoot
- * @returns {string[]} the workspace, every linked source package and the installed packages, wherever pnpm keeps them
+ * @returns {string[]} the workspace, linked sources, the package store
  */
 const servedDirs = (rootDir, sources, workspaceRootOf) => {
   const appRequire = createRequire(join(rootDir, 'package.json'));

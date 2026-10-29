@@ -22,8 +22,6 @@ const installedAt = (dir) => statSync(join(dir, 'node_modules', MODULES_STATE), 
  */
 
 /**
- * The checkout a new worktree clones from: the main checkout when its install matches the new lockfile byte for byte,
- * else the newest sibling worktree that does.
  * @param {{ target: string, main: string, worktrees?: string[] }} input
  * @returns {{ source: CloneSource | null, reason: string }} the source, or why there is none
  */

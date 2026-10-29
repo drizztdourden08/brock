@@ -13,14 +13,13 @@ const inside = (root, file) => {
 
 /**
  * @typedef {object} ModuleKeys
- * @property {Record<string, string>} repo content keys of the files inside the repository, by path relative to its root
+ * @property {Record<string, string>} repo content keys of the files inside the repository
  * @property {Record<string, string>} repoDirs a key of the names in each of their folders
- * @property {Record<string, string | null>} files stamps of the files outside the repository and outside node_modules
+ * @property {Record<string, string | null>} files stamps of the other files outside node_modules
  * @property {Record<string, string | null>} dirs stamps of their folders
  */
 
 /**
- * Files in pnpm's package store are left out: the installed lockfile in the reuse key stands for them.
  * @param {Iterable<string>} ids the module ids a build read
  * @param {number} startedAt when the build began, in ms
  * @param {{ snapshot: import('./repo-snapshot.mjs').RepoSnapshot | null, packages?: string | null, stamp?: (file: string) => string | null, skipDirs?: string[] }} how packages is the package store
@@ -47,7 +46,7 @@ const moduleKeys = (ids, startedAt, { snapshot, packages = null, stamp = stampOf
 /**
  * @param {ModuleKeys} keys
  * @param {import('./repo-snapshot.mjs').RepoSnapshot | null} snapshot
- * @returns {boolean} true while every repository file and folder still has its key
+ * @returns {boolean} true while every repository key still matches
  */
 const repoKeysCurrent = (keys, snapshot) => {
   const files = Object.entries(keys.repo ?? {});

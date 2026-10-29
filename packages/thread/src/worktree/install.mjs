@@ -38,11 +38,10 @@ const cloneFirst = (worktree, options, ctx) => {
 };
 
 /**
- * Links node_modules from a checkout installed from the same lockfile when one exists, else runs pnpm.
  * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
- * @param {Record<string, string | boolean>} options --skip-install leaves node_modules alone, --no-clone always runs pnpm
+ * @param {Record<string, string | boolean>} options --skip-install leaves node_modules alone
  * @param {import('../workspace/workspace.type.mjs').ThreadContext} ctx
- * @returns {Promise<{ source: string, store: string } | null>} the checkout node_modules came from, null when pnpm ran or nothing was needed
+ * @returns {Promise<{ source: string, store: string } | null>} the checkout node_modules came from
  */
 const installDependencies = async (worktree, options, ctx) => {
   if (flag(options, 'skip-install')) {

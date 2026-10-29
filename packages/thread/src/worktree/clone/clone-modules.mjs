@@ -12,7 +12,7 @@ const TEXT_FILES = new Set(['.modules.yaml', '.pnpm-workspace-state-v1.json']);
 /**
  * @param {{ source: string, target: string, virtualStore: string, store: string }} where
  * @param {string[]} missing collects links whose new target does not exist
- * @returns {import('./mirror-tree.mjs').MirrorRules} package links go to the shared store, workspace links to the new checkout
+ * @returns {import('./mirror-tree.mjs').MirrorRules} package links go to the shared store
  */
 const modulesRules = ({ source, target, virtualStore, store }, missing) => {
   const pairs = [[virtualStore, store], [source, target]];
@@ -32,7 +32,6 @@ const modulesRules = ({ source, target, virtualStore, store }, missing) => {
 const addCounts = (total, counts) => Object.fromEntries(Object.entries(counts).map(([key, value]) => [key, (total[key] ?? 0) + value]));
 
 /**
- * Lays out a checkout's node_modules for a new checkout of the same lockfile: links only, into the shared store.
  * @param {{ source: string, target: string, state: import('./modules-state.mjs').ModulesState, store: string }} input
  * @returns {Promise<{ importers: number, links: number, rewritten: number, missing: string[] }>} what it placed, and links to nothing
  */

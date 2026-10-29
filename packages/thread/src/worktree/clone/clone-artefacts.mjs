@@ -16,7 +16,7 @@ const copyInto = (from, to) => {
  * @param {string} source
  * @param {string} target
  * @param {string[]} scope folders relative to the root, '.' for all of it
- * @returns {boolean} true when the source's tracked files under scope equal the target's commit and nothing untracked sits there
+ * @returns {boolean} true when the source matches the target commit there
  */
 const treeMatches = (source, target, scope) => {
   const head = tryGit(['rev-parse', 'HEAD'], target);
@@ -33,7 +33,6 @@ const ignoredIn = (source) => (tryGit([...LONG_PATHS, 'ls-files', '--others', '-
 const covers = (wanted) => (entry) => wanted.some((path) => entry === path || entry.startsWith(`${path}/`));
 
 /**
- * Copies the generated files a launch would otherwise rebuild: content-keyed records always, other outputs only when the tree matches.
  * @param {{ source: string, target: string, appDirs: string[] }} input appDirs are the target's app folders
  * @returns {{ keyed: number, outputs: number, sameTree: boolean }} how many entries came over
  */

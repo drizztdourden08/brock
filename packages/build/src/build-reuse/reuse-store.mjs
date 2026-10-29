@@ -43,17 +43,17 @@ const writeStore = (file, content) => {
 
 const countOf = (table) => Object.keys(table ?? {}).length;
 
+const holdsBundle = (store) => Array.isArray(store.outputs) && store.outputs.length > 0 && countOf(store.files) + countOf(store.repo) > 0;
+
 /**
  * @param {object | null} store what readStore gave
  * @param {string} key the key of the build about to run
  * @param {{ stamp?: (file: string) => string | null, snapshot?: import('./repo-snapshot.mjs').RepoSnapshot | null }} [check] reads file stamps and repository keys
- * @returns {boolean} true while the key, every repository file key and every outside file stamp match
+ * @returns {boolean} true while every key and stamp matches
  */
 const storeIsCurrent = (store, key, { stamp = stampOf, snapshot = null } = {}) => {
   if (!store || store.version !== REUSE_VERSION || store.key !== key) return false;
-  if (!Array.isArray(store.outputs) || store.outputs.length === 0) return false;
-  if (countOf(store.files) + countOf(store.repo) === 0) return false;
-  if (!repoKeysCurrent(store, snapshot)) return false;
+  if (!holdsBundle(store) || !repoKeysCurrent(store, snapshot)) return false;
   return Object.entries({ ...store.files, ...store.dirs }).every(([path, recorded]) => recorded !== null && stamp(path) === recorded);
 };
 

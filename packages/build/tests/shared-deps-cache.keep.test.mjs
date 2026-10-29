@@ -1,58 +1,18 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
 import { publishDeps, seedDeps, shareKey } from '../src/shared-deps-cache/share-store.mjs';
 import { configHashOf, viteHashes } from '../src/shared-deps-cache/vite-hash.mjs';
+import { depsFixture } from './shared-deps-fixture.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-shared-deps-');
 
 afterEach(cleanup);
 
-const LOCKFILE = 'lockfileVersion: 9\npackages:\n  picker@1.0.0: {}\n';
-
-const metadataFor = (hashes, extra = {}) => JSON.stringify({
-  ...hashes,
-  browserHash: 'b1',
-  optimized: { picker: { src: '../../.pnpm/picker@1.0.0/node_modules/picker/index.js', file: 'picker.js', fileHash: 'f1', needsInterop: false } },
-  chunks: {},
-  ...extra,
-});
-
-const makeConfig = (root, overrides = {}) => ({
-  command: 'serve',
-  mode: 'development',
-  root: join(root, 'src'),
-  cacheDir: join(root, 'node_modules/.vite'),
-  keepProcessEnv: false,
-  assetsInclude: () => false,
-  plugins: [{ name: 'vite:react' }, { name: 'brock:optimize-deps' }],
-  resolve: { alias: [{ find: '@app', replacement: join(root, 'src') }], dedupe: ['react'] },
-  optimizeDeps: { include: ['react', 'picker'] },
-  ...overrides,
-});
-
-const app = ({ version = '1.0.0', lockfile = LOCKFILE, withCache = true } = {}) => {
-  const root = tempDir();
-  put(root, 'package.json', '{"name":"app"}');
-  put(root, 'src/index.html', '');
-  put(root, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
-  put(root, 'node_modules/.pnpm/lock.yaml', lockfile);
-  put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/package.json`, JSON.stringify({ name: 'picker', version }));
-  put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/index.js`, 'export default 1;');
-  const config = makeConfig(root);
-  if (withCache) {
-    const hashes = viteHashes(config, { content: lockfile });
-    put(root, 'node_modules/.vite/deps/_metadata.json', metadataFor(hashes));
-    put(root, 'node_modules/.vite/deps/picker.js', 'export default 1;');
-    put(root, 'node_modules/.vite/deps/package.json', '{"type":"module"}');
-  }
-  return { root, config };
-};
-
-const metadataOf = (root) => JSON.parse(readFileSync(join(root, 'node_modules/.vite/deps/_metadata.json'), 'utf8'));
+const { LOCKFILE, metadataFor, makeConfig, app, metadataOf } = depsFixture({ tempDir, put });
 
 describe('configHashOf', () => {
   it('names the worktree unless portable, and always names the optimizer inputs', () => {
@@ -206,20 +166,13 @@ describe('shareDeps', () => {
     const shared = tempDir();
     const first = app();
     expect(shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared })).toBe('published');
+    const { root: clone, config } = app({ withCache: false });
     const store = tempDir();
-    put(store, 'lock.yaml', LOCKFILE);
-    put(store, 'picker@1.0.0/node_modules/picker/package.json', JSON.stringify({ name: 'picker', version: '1.0.0' }));
-    put(store, 'picker@1.0.0/node_modules/picker/index.js', 'export default 1;');
-    const clone = tempDir();
-    put(clone, 'package.json', '{"name":"app"}');
-    put(clone, 'src/index.html', '');
-    put(clone, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
-    put(clone, 'node_modules/.pnpm/lock.yaml', LOCKFILE);
+    cpSync(join(clone, 'node_modules/.pnpm'), store, { recursive: true });
+    rmSync(join(clone, 'node_modules/.pnpm/picker@1.0.0'), { recursive: true });
     put(clone, 'node_modules/.modules.yaml', `nodeLinker: isolated\nvirtualStoreDir: ${store}\n`);
-    const config = makeConfig(clone);
     expect(shareDeps({ config, rootDir: clone, sharedRoot: shared })).toBe('seeded');
-    const src = metadataOf(clone).optimized.picker.src;
-    expect(join(clone, 'node_modules/.vite/deps', src)).toBe(join(store, 'picker@1.0.0/node_modules/picker/index.js'));
+    expect(join(clone, 'node_modules/.vite/deps', metadataOf(clone).optimized.picker.src)).toBe(join(store, 'picker@1.0.0/node_modules/picker/index.js'));
   });
 
   it('does nothing without a pnpm lockfile', () => {

@@ -54,14 +54,13 @@ const namesByDir = (paths) => {
 /**
  * @typedef {object} RepoSnapshot
  * @property {string} top the repository root
- * @property {(file: string) => string | null} relOf a file relative to the root with / separators, null when outside
- * @property {(rel: string) => string} keyOf the blob id of a clean tracked file, else a hash of its content, else 'gone'
- * @property {(rel: string) => string} dirKeyOf a hash of the tracked and untracked names directly in a folder
+ * @property {(file: string) => string | null} relOf a file relative to the root with / separators
+ * @property {(rel: string) => string} keyOf the blob id of a clean tracked file
+ * @property {(rel: string) => string} dirKeyOf a hash of the file names in a folder
  * @property {(rel: string) => string | null} manifestOf the nearest package.json at or above a folder
  */
 
 /**
- * What git knows of a checkout: content keys that do not depend on file times or on where the checkout is.
  * @param {string} dir a folder inside the repository
  * @returns {RepoSnapshot | null} null outside git
  */

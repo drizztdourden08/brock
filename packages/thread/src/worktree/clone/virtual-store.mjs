@@ -9,7 +9,7 @@ import { modulesStoreRoot } from './store-dir.mjs';
 
 /**
  * @param {import('./modules-state.mjs').ModulesState} state
- * @returns {string} the store entry name: layout, platform, settings and the installed lockfile
+ * @returns {string} the store entry name
  */
 const storeKey = (state) => createHash('sha256')
   .update(JSON.stringify({ layout: STORE_LAYOUT, platform: process.platform, arch: process.arch, settings: state.settings }))
@@ -39,7 +39,7 @@ const HOISTED = `node_modules${sep}`;
 
 /**
  * @param {{ source: string, virtualStore: string, dir: string }} where
- * @returns {import('./mirror-tree.mjs').MirrorRules} links into the store move with it; a hoisted workspace package is left out
+ * @returns {import('./mirror-tree.mjs').MirrorRules} links into the store move with it
  */
 const storeRules = ({ source, virtualStore, dir }) => {
   const toStore = pathMapper([[virtualStore, dir]]);
@@ -70,7 +70,6 @@ const commit = (partial, dir) => {
 };
 
 /**
- * Builds, once per installed lockfile, a shared copy of a checkout's virtual store that no install ever writes into.
  * @param {{ source: string, state: import('./modules-state.mjs').ModulesState, log: (message: string) => void }} input
  * @returns {Promise<string>} the store entry a clone links to
  */

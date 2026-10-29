@@ -6,8 +6,8 @@ const spellings = (path) => [...new Set([path, path.split('\\').join('/')])].sor
 
 /**
  * @param {unknown} value a config part, any depth
- * @param {[string, string][]} roots each folder and the token that stands for it, the most specific first
- * @returns {unknown} the same value with every spelling of the folders replaced, so two checkouts of one tree agree
+ * @param {[string, string][]} roots each folder and the token that stands for it
+ * @returns {unknown} the same value with every spelling of the folders replaced
  */
 const portableValue = (value, roots) => {
   const rules = roots.flatMap(([root, token]) => spellings(root).map((form) => [new RegExp(escape(form), 'gi'), token]));

@@ -52,7 +52,6 @@ const mirrorDir = async (paths, rules, counts) => {
 };
 
 /**
- * Copies a folder tree: files as hardlinks (a copy when the volume refuses one), links remapped, chosen files rewritten.
  * @param {string} from
  * @param {string} to
  * @param {MirrorRules} rules

@@ -13,7 +13,7 @@ const isInside = (root, path) => {
 
 /**
  * @param {[string, string][]} pairs from and to folders, the most specific first
- * @returns {(path: string) => string} moves a path under a from folder to the same place under its to folder
+ * @returns {(path: string) => string} moves a path from one folder to the other
  */
 const pathMapper = (pairs) => (path) => {
   const pair = pairs.find(([from]) => isInside(from, path));

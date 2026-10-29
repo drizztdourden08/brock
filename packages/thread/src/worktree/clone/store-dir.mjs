@@ -6,9 +6,8 @@ import { STORE_ENV, STORE_HOME_FOLDERS, STORE_VOLUME_FOLDERS } from './clone.con
 const volumeOf = (path) => parse(resolve(path)).root.toLowerCase();
 
 /**
- * The shared package folders live on the volume of the checkout, so their files can be hardlinks.
  * @param {string} near a checkout the store will serve
- * @returns {string} BROCK_MODULES_STORE_DIR, else ~/.brock/cache/node-modules on the same volume, else <volume>/.brock-store/node-modules
+ * @returns {string} the store root on the volume of the checkout
  */
 const modulesStoreRoot = (near) => {
   if (process.env[STORE_ENV]) return resolve(process.env[STORE_ENV]);

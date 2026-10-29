@@ -30,7 +30,7 @@ const prewarmApps = (worktree, ctx) => {
  * @param {import('../workspace/workspace.type.mjs').WorktreeContext} worktree
  * @param {{ source: string } | null} cloned where node_modules came from
  * @param {import('../workspace/workspace.type.mjs').ThreadContext} ctx
- * @returns {boolean} true when the build records came over too, so a prewarm has nothing left to do
+ * @returns {boolean} true when the build records came over too
  */
 const cloneOutputs = (worktree, cloned, ctx) => {
   if (!cloned) return false;

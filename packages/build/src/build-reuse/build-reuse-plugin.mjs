@@ -25,7 +25,7 @@ const outputsOf = (bundle) => {
 
 /**
  * @param {string} rootDir the app root
- * @returns {string | null} pnpm's package store for the app, wherever .modules.yaml puts it
+ * @returns {string | null} pnpm's package store for the app
  */
 const packageStoreOf = (rootDir) => {
   const workspace = findWorkspaceRoot(rootDir) ?? rootDir;
@@ -36,7 +36,7 @@ const packageStoreOf = (rootDir) => {
 /**
  * @param {Record<string, any>} store the bundle being reused
  * @param {import('./repo-snapshot.mjs').RepoSnapshot | null} snapshot
- * @returns {string[]} every file the bundle read, so watch mode rebuilds when one changes
+ * @returns {string[]} every file the bundle read
  */
 const watchedFiles = (store, snapshot) => [
   ...Object.keys(store.files ?? {}),
@@ -47,7 +47,7 @@ const watchedFiles = (store, snapshot) => [
  * @param {import('./module-keys.mjs').ModuleKeys} keys taken from the snapshot at the start of the build
  * @param {import('./repo-snapshot.mjs').RepoSnapshot | null} snapshot
  * @param {string} rootDir
- * @returns {boolean} true when no repository file the build read changed while it ran
+ * @returns {boolean} true when no file it read changed during the build
  */
 const unchangedSince = (keys, snapshot, rootDir) => !snapshot || repoKeysCurrent(keys, repoSnapshot(rootDir));
 

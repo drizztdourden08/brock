@@ -4,6 +4,7 @@ import { usageFor } from '../cli/usage-for.mjs';
 import { newRunId } from './check-record.mjs';
 import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
 import { planSteps, targetOf } from './ci-plan.mjs';
+import { resolveLocalPr } from '../pr/local-pr.mjs';
 import { projectOf } from './project-of.mjs';
 import { runCi } from './run-ci.mjs';
 
@@ -11,7 +12,7 @@ const USAGE = [
   '  brock ci [check] [<job>|<step>] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
   '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
-  '                               (default HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
+  '                               (default the head of --pr, else HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
   '                               of the workflow file (default ci.yml). A job or step name runs only that one,',
   '                               like --job or --only. The first line printed is the record path.',
   '                               Exit 0 pass, 1 a step failed, 2 usage or setup error.',
@@ -71,8 +72,9 @@ const workflowOf = (options, sha, cwd) => {
   return text;
 };
 
-const commitOf = (options, cwd) => {
-  const spec = stringOption(options, 'commit', 'HEAD');
+const commitOf = (options, pr, cwd) => {
+  const fallback = pr && typeof options.commit !== 'string' ? resolveLocalPr({ id: pr, options: {}, base: null, cwd }).head : 'HEAD';
+  const spec = stringOption(options, 'commit', fallback);
   const sha = tryGit(['rev-parse', '--verify', '--quiet', `${spec}^{commit}`], cwd);
   if (!sha) throw new Error(`"${spec}" is not a commit in this repository.`);
   return { spec, sha };
@@ -81,8 +83,8 @@ const commitOf = (options, cwd) => {
 const resolveRequest = (positional, options, ctx) => {
   const word = wordOf(positional);
   const cwd = process.cwd();
-  const { spec, sha } = commitOf(options, cwd);
   const pr = prOf(options);
+  const { spec, sha } = commitOf(options, pr, cwd);
   const trigger = triggerOf(options, pr);
   const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger };
   const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));

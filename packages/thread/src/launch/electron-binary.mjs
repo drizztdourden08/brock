@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { restoreElectron, storeElectron } from '@drizztdourden08/build-cache/electron';
+import { restoreElectron, storeElectronDetached } from '@drizztdourden08/build-cache/electron';
 
 const binaryOf = (requireFromApp) => {
   try {
@@ -33,10 +33,10 @@ const restoreFromCache = (packageDir, log) => {
 
 /**
  * @param {string} packageDir the installed electron package
- * @returns {void} stores this binary in the build cache, unawaited
+ * @returns {void} stores this binary in the cache, detached
  */
 const keepInCache = (packageDir) => {
-  storeElectron(packageDir).catch(() => {});
+  storeElectronDetached(packageDir);
 };
 
 /**

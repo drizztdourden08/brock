@@ -1,34 +1,47 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { afterPrewarm, runningPrewarm } from '../src/launch/prewarm.mjs';
+import { announceJob } from '@drizztdourden08/build-cache/jobs';
+import { afterPrewarm, prewarmRecord } from '../src/launch/prewarm.mjs';
 
 const made = [];
 afterEach(() => {
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-const appWith = (record) => {
+const app = () => {
   const dir = mkdtempSync(join(tmpdir(), 'brock-prewarm-'));
   made.push(dir);
-  mkdirSync(join(dir, 'node_modules', '.vite'), { recursive: true });
-  if (record) writeFileSync(join(dir, 'node_modules', '.vite', 'brock-prewarm.json'), JSON.stringify(record));
   return dir;
 };
 
-describe('prewarm', () => {
-  it('sees a live pre-bundle, and ignores a finished, stale or missing one', () => {
-    expect(runningPrewarm(appWith({ pid: process.pid, startedAt: Date.now() }))).toBe(process.pid);
-    expect(runningPrewarm(appWith({ pid: process.pid, startedAt: Date.now() - 60 * 60 * 1000 }))).toBeNull();
-    expect(runningPrewarm(appWith({ pid: 999_999_999, startedAt: Date.now() }))).toBeNull();
-    expect(runningPrewarm(appWith(null))).toBeNull();
+const finishLater = (file, state) => setTimeout(() => {
+  const record = JSON.parse(readFileSync(file, 'utf8'));
+  writeFileSync(file, JSON.stringify({ ...record, state, reason: 'sync failed' }));
+}, 50);
+
+describe('afterPrewarm', () => {
+  it('lets a launch go at once when no prewarm runs', async () => {
+    const lines = [];
+    expect(await afterPrewarm(app(), (line) => lines.push(line))).toBe(false);
+    expect(lines).toEqual([]);
   });
 
-  it('lets a launch go at once when nothing runs', async () => {
+  it('waits for a running prewarm and reports how it ended', async () => {
+    const dir = app();
+    announceJob(prewarmRecord(dir), { pid: process.pid });
+    finishLater(prewarmRecord(dir), 'failed');
     const lines = [];
-    await afterPrewarm(appWith({ pid: 999_999_999, startedAt: Date.now() }), (line) => lines.push(line));
-    expect(lines).toEqual([]);
+    expect(await afterPrewarm(dir, (line) => lines.push(line))).toBe(true);
+    expect(lines[0]).toMatch(/is running \(pid \d+, started \d+ s ago\); waiting for it/);
+    expect(lines[1]).toMatch(/failed \(sync failed\); going ahead without it/);
+  });
+
+  it('does not wait on a prewarm whose heartbeat stopped', async () => {
+    const dir = app();
+    announceJob(prewarmRecord(dir), { pid: process.pid, now: () => Date.now() - 60_000 });
+    expect(await afterPrewarm(dir, () => {})).toBe(false);
   });
 });

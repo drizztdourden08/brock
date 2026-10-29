@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { restoreElectron, storeElectron } from '@drizztdourden08/build-cache/electron';
+import { restoreElectron, storeElectronDetached } from '@drizztdourden08/build-cache/electron';
 import { findWorkspaceRoot } from './workspace.mjs';
 
 const TAG = '[brock ensure-electron]';
@@ -85,10 +85,10 @@ const installFolderOf = (rootDir) => findWorkspaceRoot(rootDir) ?? rootDir;
 
 /**
  * @param {string} packageDir the installed electron package
- * @returns {{ ok: true, message: string }} and stores the binary in the build cache
+ * @returns {{ ok: true, message: string }} and stores the binary in the cache, detached
  */
 const ready = (packageDir) => {
-  storeElectron(packageDir).catch(() => {});
+  storeElectronDetached(packageDir);
   return { ok: true, message: 'Electron binary is ready.' };
 };
 

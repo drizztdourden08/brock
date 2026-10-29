@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { execFileSync, spawn } from 'node:child_process';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -94,6 +94,14 @@ describe('vite deps restore', () => {
     expect(restoreViteDeps(inputOf(damaged, { root }))).toBe('missing');
     expect(restoreViteDeps(inputOf(worktree({ withDeps: false }), { root: tempDir() }))).toBe('missing');
     expect(() => readFileSync(join(damaged.depsDir, '_metadata.json'))).toThrow();
+  });
+
+  it('refuses to restore through a .vite folder that is a link out of the install', async () => {
+    const root = tempDir();
+    await stored(root);
+    const linked = worktree({ withDeps: false });
+    symlinkSync(tempDir(), join(linked.installRoot, 'node_modules/.vite'), process.platform === 'win32' ? 'junction' : 'dir');
+    expect(restoreViteDeps(inputOf(linked, { root }))).toBe('missing');
   });
 
   it('keeps entries for another build key apart', async () => {

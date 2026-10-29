@@ -1,8 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { spawn } from 'node:child_process';
-import { cpSync, existsSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cacheRoot } from '../store/cache-root.mjs';
 import { commitEntry } from '../store/commit-entry.mjs';
@@ -24,6 +24,18 @@ const idOf = ({ root = cacheRoot(), version, buildKey }) => ({ root, kind: KIND.
 const accepted = (depsDir, hashes) => {
   const metadata = readMetadata(depsDir);
   return Boolean(metadata) && matchesHashes(metadata, hashes) && filesPresent(metadata, depsDir);
+};
+
+const nearestExisting = (dir) => (existsSync(dir) || dirname(dir) === dir ? dir : nearestExisting(dirname(dir)));
+
+const insideInstall = ({ depsDir, installRoot }) => {
+  try {
+    const owner = realpathSync(installRoot);
+    const parent = realpathSync(nearestExisting(dirname(depsDir)));
+    return parent === owner || parent.startsWith(`${owner}${sep}`);
+  } catch {
+    return false;
+  }
 };
 
 const replaceDir = (partial, depsDir) => {
@@ -61,6 +73,7 @@ const copyIn = (entry, { depsDir, installRoot, hashes }) => {
  */
 const restoreViteDeps = (input) => {
   if (accepted(input.depsDir, input.hashes)) return 'ready';
+  if (!insideInstall(input)) return 'missing';
   const entry = readEntry(idOf(input));
   return entry ? copyIn(entry, input) : 'missing';
 };

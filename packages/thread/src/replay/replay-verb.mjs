@@ -8,9 +8,10 @@ import { requireGo, runPlan } from './replay-run.mjs';
 
 const USAGE = [
   '  brock replay plan [--project <key>] [--integration <branch>] [--remote-base <branch>] [--json]',
-  '                               print, in order, every action replay would take; it runs nothing. 1. push the integration branch',
-  '                               (default local/main) to origin/<remote base> after a fast-forward check; 2. for each merged local PR',
-  '                               not replayed, push its head and open a GitHub PR that says "merged locally as PR-n at <sha>";',
+  '                               print, in order, every action replay would take; it runs nothing. 1. for each merged local PR',
+  '                               not replayed, oldest first, push its head and open a GitHub PR that says "merged locally as PR-n at <sha>";',
+  '                               2. push the integration branch (default local/main) to origin/<remote base> after a fast-forward check,',
+  '                               so GitHub marks those PRs merged on its own;',
   '                               3. for each pending release in ~/.coord/releases, oldest first: verify every tarball against its',
   '                               sha512, npm publish the same tarball to the registry .npmrc names for its scope, gh release create',
   '  brock replay run --go [same options]',

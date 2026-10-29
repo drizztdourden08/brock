@@ -31,8 +31,8 @@ const openPr = (item, { exec, cwd }) => {
 
 const STEPS = { 'push-base': pushBase, pr: openPr, release: replayRelease };
 
-const recordHint = (item, url) => {
-  const replay = { state: 'done', at: new Date().toISOString(), url };
+const recordHint = (item, state, url) => {
+  const replay = { state, at: new Date().toISOString(), url };
   return `  coord pr has no verb to set replay yet. Record on ${item.id}: replay ${JSON.stringify(replay)}`;
 };
 
@@ -40,6 +40,7 @@ const stepResult = (item, context) => {
   try {
     return STEPS[item.kind](item, context);
   } catch (error) {
+    if (item.kind === 'pr') context.log(recordHint(item, 'failed', null));
     if (error instanceof ReleaseStop) throw error;
     throw stop(`${item.title} failed: ${String(error.stderr || error.message).trim().split('\n')[0]}`, 1);
   }
@@ -54,7 +55,7 @@ const runItem = (item, context) => {
   log(`${item.order}. ${item.title}`);
   const { url } = stepResult(item, context);
   log(`  done${url ? `: ${url}` : ''}`);
-  if (item.kind === 'pr') log(recordHint(item, url));
+  if (item.kind === 'pr') log(recordHint(item, 'done', url));
 };
 
 /**

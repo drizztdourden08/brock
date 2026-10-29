@@ -76,12 +76,12 @@ const releaseItem = (release, cwd) => {
 
 /**
  * @param {{ cwd: string, project: string, integration: string, remoteBase: string, exec: Function }} request
- * @returns {object[]} the ordered actions: base push, merged PRs, releases
+ * @returns {object[]} the ordered actions: merged PRs, base push, releases
  */
 const buildPlan = (request) => {
   const prs = pendingPrs(request).map((pr) => prItem(pr, request.remoteBase));
   const releases = pendingReleases(request.project).map((release) => releaseItem(release, request.cwd));
-  return [baseItem(request), ...prs, ...releases].map((item, index) => ({ order: index + 1, ...item }));
+  return [...prs, baseItem(request), ...releases].map((item, index) => ({ order: index + 1, ...item }));
 };
 
 const noteOf = (item) => {

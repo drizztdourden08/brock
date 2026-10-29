@@ -47,14 +47,14 @@ describe('replay plan', () => {
     expect(verb('plan', {}, remote)).toBe(0);
     const titles = lines.filter((line) => /^\d+\. /.test(line));
     expect(titles.map((line) => line.replace(/^(\d+)\. (\S+ \S+).*$/, '$1 $2'))).toEqual([
-      '1 Push local/main',
+      '1 Open a',
       '2 Open a',
-      '3 Open a',
+      '3 Push local/main',
       '4 Publish v1.0.0',
       '5 Publish v1.1.0',
     ]);
-    expect(titles[1]).toContain('PR-1');
-    expect(titles[2]).toContain('PR-2');
+    expect(titles[0]).toContain('PR-1');
+    expect(titles[1]).toContain('PR-2');
     expect(lines.join('\n')).toContain('merged locally as PR-1 at 1f1f');
     expect(lines.join('\n')).toContain('npm publish');
     expect(lines.join('\n')).toContain('--registry https://npm.example.test');
@@ -67,7 +67,7 @@ describe('replay plan', () => {
     const remote = makeRemote({ prs: PRS });
     expect(verb('plan', { json: true }, remote)).toBe(0);
     const plan = JSON.parse(lines.join('\n'));
-    expect(plan.map((item) => item.kind)).toEqual(['push-base', 'pr', 'pr', 'release']);
+    expect(plan.map((item) => item.kind)).toEqual(['pr', 'pr', 'push-base', 'release']);
   });
 
   it('flags a base that is not a fast-forward of origin', () => {
@@ -122,10 +122,10 @@ describe('replay run', () => {
     expect(verb('run', { go: true }, remote)).toBe(0);
     expect(mutating(remote.state.calls).map((call) => call.slice(0, 3).join(' '))).toEqual([
       'git push origin',
-      'git push origin',
       'gh pr create',
       'git push origin',
       'gh pr create',
+      'git push origin',
       `npm publish ${join(release.dir, release.tarball)}`,
       'gh release create',
     ]);
@@ -164,5 +164,8 @@ describe('replay run', () => {
     const remote = makeRemote({ prs: PRS, failOn: 'pr create --head feat/change-1' });
     expect(verb('run', { go: true }, remote)).toBe(1);
     expect(remote.state.calls.some((call) => call[0] === 'npm')).toBe(false);
+    expect(remote.state.calls.some((call) => call[2] === 'local/main:refs/heads/main')).toBe(false);
+    expect(lines.join('\n')).toContain('Record on PR-1: replay {"state":"failed"');
+    expect(remote.state.origin).toBe('b'.repeat(40));
   });
 });

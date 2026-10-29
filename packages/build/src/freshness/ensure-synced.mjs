@@ -28,12 +28,13 @@ const writeGuideLater = async (appDir, label) => {
 /**
  * @param {string} appDir
  * @param {string} label the command, for the log lines
+ * @param {{ sync?: boolean }} [opts] `sync: false` builds from the committed `.brock` files and never writes them
  * @returns {Promise<{ problem: string | null, guide: () => Promise<void> }>} a reason to stop, and the guide to run later
  */
-const ensureSyncedLater = async (appDir, label) => {
+const ensureSyncedLater = async (appDir, label, { sync = true } = {}) => {
   const mismatch = tesseraMismatch(appDir);
   if (mismatch) return { problem: mismatch.line, guide: () => Promise.resolve() };
-  const reason = syncStaleReason(appDir);
+  const reason = sync ? syncStaleReason(appDir) : null;
   if (reason) await syncNow(appDir, label, reason);
   return { problem: rendererEntryProblem(appDir), guide: () => writeGuideLater(appDir, label) };
 };
@@ -41,12 +42,13 @@ const ensureSyncedLater = async (appDir, label) => {
 /**
  * @param {string} appDir
  * @param {string} label the command, for the log lines
+ * @param {{ sync?: boolean }} [opts] `sync: false` builds from the committed `.brock` files and never writes them
  * @returns {Promise<string | null>} a reason to stop before the renderer starts, or null
  */
-const ensureSynced = async (appDir, label) => {
+const ensureSynced = async (appDir, label, opts) => {
   const mismatch = tesseraMismatch(appDir);
   if (mismatch) return mismatch.line;
-  const { guide } = await ensureSyncedLater(appDir, label);
+  const { guide } = await ensureSyncedLater(appDir, label, opts);
   await guide();
   return rendererEntryProblem(appDir);
 };

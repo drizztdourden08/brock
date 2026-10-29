@@ -11,7 +11,7 @@ const MESSAGES = Object.freeze({
   failed: 'The build cache could not take the addon; nothing stored.',
 });
 
-const target = process.argv[2];
+const target = process.argv.slice(2).find((arg) => arg !== '--');
 if (!target) {
   console.error(`${LOG_TAG} Usage: node bin/seed-addon.mjs <path to an installed @drizztdourden08/brock-input folder>`);
   process.exitCode = 1;

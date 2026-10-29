@@ -1,0 +1,31 @@
+{
+  "name": "@drizztdourden08/build-cache",
+  "version": "0.0.0",
+  "description": "A per-user cache of compiled @drizztdourden08 package versions and Electron binaries, shared by every project and worktree on the machine. Imports no Brock or Tessera package.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/build-cache"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./vite": "./src/vite/build-cache-plugin.mjs",
+    "./electron": "./src/electron/electron-cache.mjs"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {
+    "esbuild": "^0.25.12"
+  }
+}

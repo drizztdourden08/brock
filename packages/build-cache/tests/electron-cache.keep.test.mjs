@@ -40,6 +40,7 @@ describe('electron cache', () => {
     writeFileSync(join(filesDir, 'dist', 'electron.exe'), 'tampered');
     expect(restoreElectron(fresh, { root })).toBe('missing');
     expect(existsSync(join(fresh, 'dist'))).toBe(false);
+    expect(existsSync(filesDir)).toBe(false);
   });
 
   it('misses another version and skips an Electron that runs from elsewhere', async () => {

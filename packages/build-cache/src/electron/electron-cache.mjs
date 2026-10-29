@@ -4,7 +4,7 @@ import { copyFileSync, cpSync, existsSync, readFileSync, renameSync, rmSync } fr
 import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { commitEntry } from '../store/commit-entry.mjs';
+import { commitEntry, discardEntry } from '../store/commit-entry.mjs';
 import { cacheRoot } from '../store/cache-root.mjs';
 import { hashTree } from '../store/hash-tree.mjs';
 import { readEntry, touchEntry } from '../store/read-entry.mjs';
@@ -56,13 +56,16 @@ const distIsReady = (packageDir, version) => {
   return readText(join(packageDir, DIST_DIR, VERSION_FILE))?.replace(/^v/, '') === version;
 };
 
-const copyIn = (entry, packageDir, version) => {
+const copyIn = (entry, root, packageDir, version) => {
   const dist = join(packageDir, DIST_DIR);
   const partial = `${dist}.${process.pid}.tmp`;
   try {
     rmSync(partial, { recursive: true, force: true });
     cpSync(join(entry.filesDir, DIST_DIR), partial, { recursive: true, verbatimSymlinks: true });
-    if (hashTree(partial).contentHash !== entry.manifest.distHash) return 'missing';
+    if (hashTree(partial).contentHash !== entry.manifest.distHash) {
+      discardEntry(entry.dir, root);
+      return 'missing';
+    }
     if (distIsReady(packageDir, version)) return 'ready';
     rmSync(dist, { recursive: true, force: true });
     renameSync(partial, dist);
@@ -88,7 +91,7 @@ const restoreElectron = (packageDir, { root = cacheRoot() } = {}) => {
   return withRestoreLock(packageDir, () => {
     if (distIsReady(packageDir, id.version)) return 'ready';
     const entry = readEntry(id, { verify: false });
-    return entry?.manifest.distHash ? copyIn(entry, packageDir, id.version) : 'missing';
+    return entry?.manifest.distHash ? copyIn(entry, root, packageDir, id.version) : 'missing';
   });
 };
 
@@ -124,6 +127,13 @@ const storeElectron = async (packageDir, { root = cacheRoot() } = {}) => {
  * @returns {void} stores in a detached process that outlives this one
  */
 const storeElectronDetached = (packageDir, { root = cacheRoot() } = {}) => {
+  const id = electronEntryId(root, packageDir);
+  if (!id || !distIsReady(packageDir, id.version)) return;
+  const present = readEntry(id, { verify: false });
+  if (present?.manifest.distHash) {
+    touchEntry(present);
+    return;
+  }
   const child = spawn(process.execPath, [STORE_CLI, packageDir], { detached: true, stdio: 'ignore', windowsHide: true, env: { ...process.env, [CACHE_ENV]: root } });
   child.unref();
 };

@@ -10,7 +10,7 @@ import { FILES_DIR, MANIFEST_FILE, SCHEMA, TEMP_DIR } from './store.constants.mj
 const OWN_VERSION = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version;
 const BUILT_BY = `@drizztdourden08/build-cache@${OWN_VERSION}`;
 
-const moveAside = (dir, root) => {
+const discardEntry = (dir, root) => {
   if (!existsSync(dir)) return;
   const stale = join(root, TEMP_DIR, `stale-${randomUUID()}`);
   renameSync(dir, stale);
@@ -34,7 +34,7 @@ const commitEntry = async ({ fill, inputHash, buildSettings, ...id }, now = () =
     const manifest = { schema: SCHEMA, kind: id.kind, name: id.name, version: id.version, buildKey: id.buildKey, contentHash, sizeBytes, builtAt: at, lastUsedAt: at, builtBy: BUILT_BY, inputHash, buildSettings, ...extra };
     writeFileSync(join(building, MANIFEST_FILE), `${JSON.stringify(manifest, null, 2)}\n`);
     mkdirSync(dirname(dir), { recursive: true });
-    if (!readEntry(id, { inputHash })) moveAside(dir, id.root);
+    if (!readEntry(id, { inputHash })) discardEntry(dir, id.root);
     try {
       renameSync(building, dir);
     } catch (error) {
@@ -50,4 +50,4 @@ const commitEntry = async ({ fill, inputHash, buildSettings, ...id }, now = () =
   }
 };
 
-export { commitEntry };
+export { commitEntry, discardEntry };

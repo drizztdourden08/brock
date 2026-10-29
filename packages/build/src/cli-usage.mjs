@@ -89,6 +89,8 @@ Usage:
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+  brock prewarm              pre-bundle the renderer dependencies of brock dev now, so the first launch finds
+                             them ready; worktree create starts it in the background after the install
   brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,
                              its size and when it was last used; read only, Argus prunes it (docs/build-cache.md)
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts

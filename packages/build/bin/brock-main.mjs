@@ -6,6 +6,7 @@ import { runAffected } from '../src/commands/affected.mjs';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
 import { runCache } from '../src/commands/cache.mjs';
+import { runPrewarm } from '../src/commands/prewarm.mjs';
 import { runCheck } from '../src/commands/check.mjs';
 import { runClangFormatCommand } from '../src/commands/clang-format.mjs';
 import { runGateCommand } from '../src/commands/gate.mjs';
@@ -36,6 +37,7 @@ const COMMANDS = {
   dev: (ctx) => runDev(ctx),
   build: (ctx) => runBuild(ctx),
   cache: (ctx) => runCache(ctx),
+  prewarm: (ctx) => runPrewarm(ctx),
   package: (ctx) => runPackage(ctx),
   icons: (ctx) => runIcons(ctx),
   start: (ctx) => runStart(ctx),
@@ -55,7 +57,7 @@ const COMMANDS = {
   'clang-format': (ctx) => runClangFormatCommand(ctx),
 };
 
-const APP_COMMANDS = new Set(['dev', 'build', 'package', 'icons', 'start', 'add', 'platform', 'web', 'server']);
+const APP_COMMANDS = new Set(['dev', 'prewarm', 'build', 'package', 'icons', 'start', 'add', 'platform', 'web', 'server']);
 
 const rootDirOf = async (command, values) => {
   const start = resolve(values.root ?? process.cwd());

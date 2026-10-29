@@ -8,6 +8,7 @@ import { buildIfStale } from './build-if-stale.mjs';
 import { DIST_MAIN, distProblem } from './dist-problem.mjs';
 import { ensureElectronBinary } from './electron-binary.mjs';
 import { launchSynced } from './ensure-app-synced.mjs';
+import { afterPrewarm } from './prewarm.mjs';
 import { notReadyWith, targetDirs } from './launch-readiness.mjs';
 import { reviewDataDir } from './review-data.mjs';
 import { checkStateWith, stateFlags } from './state-hooks.mjs';
@@ -64,6 +65,7 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
     const { worktree, prod } = request;
     const args = appArgs(request, reviewDataDir(request.passthrough, dirs.userData(worktree)), states);
     const appDir = dirs.app(worktree);
+    if (!prod) await afterPrewarm(appDir, worktree.log);
     return launchSynced(appDir, worktree.log, () => prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
   };
   return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData, productionProblem), checkState: checkStateWith(states) };

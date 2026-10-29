@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { git, pushBranch } from '../git.mjs';
 import { ghLoud, tryGh } from '../gh.mjs';
 import { flag } from '../cli/thread-args.mjs';
+import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { prBranch } from './branch.mjs';
 import { checkPublishStyle } from './style.mjs';
 import { threadBase } from '../worktree/thread-base.mjs';
@@ -56,6 +57,12 @@ const openVerb = {
     const body = bodyFrom(options);
     checkPublishStyle(title, 'The PR title', workspace);
     checkPublishStyle(body, 'The PR body', workspace);
+    if (isLocalMode()) {
+      log(`Would push "${branch}" and open a PR into ${base} titled "${title}" on GitHub.`);
+      log(deferredNote('opening the PR'));
+      log(`The local record is a board pull request; merge it with: ${workspace.name} pr merge --local PR-n`);
+      return;
+    }
     const open = existingPr(branch, path);
     if (open) {
       log(`"${branch}" already has PR #${open.number}: ${open.url}`);

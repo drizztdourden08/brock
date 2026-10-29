@@ -3,6 +3,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { flag } from '../cli/thread-args.mjs';
+import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { checkNoteFile } from '../release-notes/check-note-file.mjs';
 import { findAppDir } from '../release-notes/find-app-dir.mjs';
 import { resolveNotesRoot } from '../release-notes/resolve-notes-root.mjs';
@@ -65,6 +66,11 @@ const run = async (positional, options, ctx) => {
   const findings = checkNoteFile({ rootDir: plan.notesRoot, version: tag });
   if (findings.length) throw new Error([`${notes} does not follow the release note standard yet:`, ...findings].join('\n  '));
   if (!plan.app && tagExists(ctx.rootDir, tag)) throw new Error(`Tag ${tag} already exists. Pick a new version.`);
+  if (isLocalMode()) {
+    ctx.log(`Would release ${tag} from ${notes} on GitHub.`);
+    ctx.log(deferredNote('the GitHub release'));
+    return;
+  }
   if (dispatchable(ctx.rootDir, plan.workflow)) dispatch(ctx, tag, { options, workflow: plan.workflow });
   else if (plan.app) throw new Error(`No .github/workflows/${plan.workflow}. Run brock sync in apps/${plan.app}.`);
   else createRelease(ctx, tag, join(plan.notesRoot, notes));

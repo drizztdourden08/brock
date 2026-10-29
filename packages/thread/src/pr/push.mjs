@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { pushBranch } from '../git.mjs';
+import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { prBranch } from './branch.mjs';
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
@@ -10,6 +11,11 @@ const pushVerb = {
     const { log } = ctx;
     const { name, path, branch } = prBranch.target(positional, options, ctx);
     prBranch.warnIfDirty(path, log);
+    if (isLocalMode()) {
+      log(`Would push "${branch}" to origin.`);
+      log(deferredNote('the push'));
+      return;
+    }
     const { upstream, count } = prBranch.unpushedCount(path, branch);
     if (upstream && count === 0) {
       log(`"${branch}" is already up to date on ${upstream}. Nothing to push.`);

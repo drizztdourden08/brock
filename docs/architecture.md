@@ -1103,6 +1103,12 @@ The main checkout is slot 0. `<repo> worktree create` gives each thread worktree
 
 Without `ports`, the base comes from the app id: an FNV-1a hash of the id picks one of 140 bases from 20000 to 47800 in steps of 200, below the Windows dynamic range. `create-brock` writes that base into `brock.config.ts`, so it is visible and can be changed.
 
+## Local mode
+
+Development runs on this machine and GitHub is used only on the owner's go. The switch is `~/.coord/remote.json` (`{ "mode": "local" | "remote" }`, missing means `local`), read by every tool on each use. In `local` mode `brock-thread` never calls `gh` and never fetches or pushes: its `gh` and `git` helpers refuse those calls, and `pr push`, `pr open` and `release` print what they would do and that it waits for replay.
+
+Two things replace what the remote gave. `<repo> ci` (also `brock ci`) is the CI: it runs the steps of the repo's gate, read from `gate.scripts` in `brock.workspace.mjs`, else from the `scripts:` that `.github/workflows/ci.yml` passes to the shared gate, else from `brock gate`, in a detached temporary worktree at a commit with an offline install, and writes one record per run to `~/.coord/ci/<project>/<runId>.json` with a log file per step beside it. One run per repo runs at a time. `<repo> pr merge --local PR-n` is branch protection: it merges the head into the base with git only when the newest check run of the head commit has every required step passing (`publish.requiredChecks` in `brock.workspace.mjs`, default every gate step). The record shape, the exit codes and the merge rules are in the brock-thread README. Replay on the owner's go pushes the branches, then the pull requests, then the releases, and is a separate step.
+
 ## Sites
 
 Brock supports desktop, mobile and web versions of an app, and a mix of them in one repo; every one of them draws with Tessera. The default setup is the app alone. `brock site add <name>` adds a site: a separate single-page web app at `apps/<name>` in the same pnpm workspace, such as a community site or a store beside the desktop app. The layout, the config and each step are in [app-structure.md](app-structure.md), A site.

@@ -12,6 +12,8 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> worktree finish [name] | remove <name | path>
 <repo> worktree base [name] [<new base>]
 <repo> pr push | open | status [name]
+<repo> pr merge --local PR-n
+<repo> ci [check] [--commit <sha>] [--pr PR-n]
 <repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]
 <repo> mobile push | build [--release] [--out <file>] | keystore
 <repo> linux push [--build-only] | doctor | init
@@ -79,6 +81,42 @@ linux: {
 `setup-vm.sh` (its path is printed by `linux init`) sets a VM or a WSL distro up once: the build tools, rsync, Node 24 with pnpm, .NET 8 with vpk, the Electron runtime libraries and sshd. You run it in the VM yourself, and you authorize your key once with the line `linux init` prints; that is the only time the VM password is typed, by you, into ssh.
 
 A repository describes itself in `brock.workspace.mjs` through `defineWorkspace`: its name (which is also the command's name), base branch, launch targets (`electronTarget`, `serveTarget`), provision steps and plugins. `workflows: { ci: 'own' }` there leaves the shared workspace `ci.yml` of a repo of several apps to the repo (docs/architecture.md, Workflows, App steps). A plugin adds verbs, targets and steps through `definePlugin`, and `workflows`: steps `brock sync` splices into the managed CI and release workflows of the repo's apps, in the shape of `workflows.steps` of `brock.config.ts` (docs/architecture.md, Workflows, App steps).
+
+## Local mode
+
+Owner order, 2026-10-29: development stays on this machine and GitHub is used only on the owner's go. The switch is `~/.coord/remote.json`, `{ "mode": "local" | "remote" }` (the folder is `COORD_HOME` when set). A missing, unreadable or odd file means `local`. `coord remote status|local|remote` shows and sets it.
+
+In `local` mode this package never calls `gh` and never runs `git fetch`, `push`, `pull`, `ls-remote` or `clone`: the two helpers every verb goes through (`src/gh.mjs`, `src/git.mjs`) refuse them. `pr push`, `pr open` and `release` print what they would do on GitHub and that it waits for replay, and send nothing. `pr status` prints the commits ahead of the base and the newest local check run of the commit. `worktree create` starts from the local base without a fetch. In `remote` mode every verb works as before.
+
+```
+<repo> ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all] [--trigger push|pr|manual|release]
+          [--only <step>[,<step>]] [--project <key>] [--branch <name>] [--wait-minutes <n>]
+<repo> pr merge --local PR-n [--head <branch> --base <branch>] [--keep-branch]
+```
+
+`ci` is the local CI. It makes a detached temporary worktree at the commit (default `HEAD`) inside the repo's worktrees folder, runs `pnpm install --offline --frozen-lockfile` there (never the network; when the pnpm store cannot supply a package the step fails with a plain reason), then runs each step in order and stops at the first failure. `brock ci` runs the same verb. The temporary worktree is removed at the end with the same safe removal as `worktree remove`; if that refuses (tracked changes) it is left and the record says so.
+
+The steps are the ones GitHub runs, read from one place each: the `gate.scripts` of `brock.workspace.mjs`, else the `scripts:` that the repo's `.github/workflows/ci.yml` hands to the shared gate, else `brock gate`. A job of `ci.yml` that cannot run here (another operating system, or the GitHub registry) is one step recorded `skipped-local` and replayed on push. `publish: { requiredChecks: ['lint', 'test'] }` in `brock.workspace.mjs` names the steps a merge needs; the default is every gate step. `--job` runs one job of `ci.yml` (`gate` is the gate job), `--only` runs the named steps plus the install (the record is then marked `partial` and a merge refuses it).
+
+Exit codes: 0 pass (or only skipped-local steps), 1 a step failed or the run was cancelled, 2 a usage or setup error, and then no record is written. The first line printed is the record path. One run per repo at a time: a second run writes a `queued` record, waits on `~/.coord/ci/<project>/.lock` (`--wait-minutes`, default 30) and starts when the first ends. The lock of a dead process is taken over. The project is `--project`, else `COORD_PROJECT`, else the workspace name.
+
+Each run writes `~/.coord/ci/<project>/<runId>.json`, where `<runId>` is a sortable timestamp plus four hex digits (`20261029T154233123Z-a3f9`). The file is written whole (a temp file, then a rename) when the run is queued, when it starts, before and after every step, and at the end. Argus reads the folder; nothing is pushed to it.
+
+```json
+{
+  "kind": "check-run", "id": "20261029T154233123Z-a3f9", "project": "brock", "repo": "X:/brock",
+  "branch": "agent/x", "commit": "<sha>", "pr": "PR-3", "trigger": "manual", "mode": "local",
+  "status": "queued | running | pass | fail | cancelled | skipped-local",
+  "startedAt": "", "finishedAt": "",
+  "steps": [{ "name": "lint", "command": "pnpm run lint", "cwd": "", "status": "pending | running | pass | fail | not-run | cancelled | skipped-local",
+              "required": true, "startedAt": "", "exitCode": 0, "durationMs": 0, "log": "<path>", "note": "" }],
+  "runner": { "host": "", "os": "", "node": "", "pnpm": "" }, "summary": ""
+}
+```
+
+Each step's whole output is in `~/.coord/ci/<project>/<runId>.<NN>-<step>.log`, beside the record; `log` is that path. `note` appears on a skipped-local step and on a failed install.
+
+`pr merge --local PR-n` is what `coord pr merge` calls in the project root. It reads the pull request from `coord pr list --json`; until `coord pr` exists, `--head <branch> --base <branch>` name it. It refuses, with a plain reason and exit 1, unless the newest check run of the head commit has finished, is not partial, and has every required step passing. Then it merges the head into the base where the base is checked out (a fast-forward when the base has not moved, else a merge commit; the work tree must have no tracked changes). On a conflict it aborts the merge, leaves the base as it was and lists the files. A head branch that is fully merged is deleted (`--keep-branch` keeps it). The last line printed is the merge commit.
 
 ## A repo that is not a Brock app
 

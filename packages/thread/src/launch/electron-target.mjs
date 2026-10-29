@@ -65,7 +65,7 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
     const { worktree, prod } = request;
     const args = appArgs(request, reviewDataDir(request.passthrough, dirs.userData(worktree)), states);
     const appDir = dirs.app(worktree);
-    if (!prod) await afterPrewarm(appDir, worktree.log);
+    await afterPrewarm(appDir, worktree.log);
     return launchSynced(appDir, worktree.log, () => prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
   };
   return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData, productionProblem), checkState: checkStateWith(states) };

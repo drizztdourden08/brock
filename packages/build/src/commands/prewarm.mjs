@@ -1,4 +1,6 @@
 /* @layer tooling-scripts @kind logic */
+import { beginJob } from '@drizztdourden08/build-cache/jobs';
+import { prewarmRecord } from '@drizztdourden08/brock-thread';
 import { DEV_MODE, MODE_ENV } from '../build-reuse/build-reuse.constants.mjs';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
@@ -20,17 +22,13 @@ const optimizeRenderer = async (vite, renderer) => {
 };
 
 /**
- * @param {{ rootDir: string }} ctx the app folder
- * @returns {Promise<number>} 0 once main, preload and renderer are warm
+ * @param {string} rootDir the app folder
+ * @param {number} started when the prewarm began
+ * @returns {Promise<string | null>} why it failed, or null
  */
-const runPrewarm = async ({ rootDir }) => {
-  process.env[MODE_ENV] = DEV_MODE;
-  const started = Date.now();
+const warm = async (rootDir, started) => {
   const synced = await ensureSyncedLater(rootDir, 'brock prewarm');
-  if (synced.problem) {
-    console.error(`${TAG} ${synced.problem}`);
-    return 1;
-  }
+  if (synced.problem) return synced.problem;
   const electron = ensureElectron(rootDir);
   if (!electron.ok) console.warn(`${TAG} ${electron.message}`);
   const [electronVite, vite] = await Promise.all([importFromApp(rootDir, 'electron-vite'), importFromApp(rootDir, 'vite')]);
@@ -39,7 +37,20 @@ const runPrewarm = async ({ rootDir }) => {
   console.log(`${TAG} main and preload built in ${seconds(started)}.`);
   const count = renderer ? await optimizeRenderer(vite, renderer) : 0;
   console.log(`${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
-  return 0;
+  return null;
+};
+
+/**
+ * @param {{ rootDir: string }} ctx the app folder
+ * @returns {Promise<number>} 0 once main, preload and renderer are warm
+ */
+const runPrewarm = async ({ rootDir }) => {
+  process.env[MODE_ENV] = DEV_MODE;
+  const end = beginJob(prewarmRecord(rootDir));
+  const failed = await warm(rootDir, Date.now()).catch((error) => error?.message ?? String(error));
+  end(failed ? { failed } : {});
+  if (failed) console.error(`${TAG} ${failed}`);
+  return failed ? 1 : 0;
 };
 
 export { runPrewarm };

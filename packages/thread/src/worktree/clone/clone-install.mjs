@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { rmSync } from 'node:fs';
+import { copyFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { cloneModules } from './clone-modules.mjs';
 import { lockfileImporters } from './lockfile-importers.mjs';
@@ -31,6 +31,8 @@ const cloneInstall = async ({ target, main, log, worktrees }) => {
       log(`node_modules: ${placed.missing.length} link(s) of the copy lead nowhere (first: ${placed.missing[0]}); running a real install.`);
       return null;
     }
+    for (const name of source.local ?? []) copyFileSync(join(source.dir, name), join(target, name));
+    if (source.local?.length) log(`node_modules: copied ${source.local.join(', ')}, which ${source.dir} keeps out of git, so a later install resolves the same way.`);
     log(`node_modules: linked from ${source.dir} in ${seconds(started)} (${placed.importers} project(s), ${placed.links} links, packages in ${store}).`);
     return { source: source.dir, store };
   } catch (error) {

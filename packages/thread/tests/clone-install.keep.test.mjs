@@ -124,6 +124,22 @@ describe('cloneInstall source pick', () => {
     expect(await clone(other, source)).toBeNull();
   });
 
+  it('copies a git-ignored local pnpmfile of the source along, so a later install resolves the same way', async () => {
+    const source = installedCheckout();
+    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
+    git('init', '-q');
+    put(source, '.gitignore', '/.pnpmfile.cjs\nnode_modules/\n');
+    git('add', 'pnpm-lock.yaml', '.gitignore');
+    git('commit', '-q', '-m', 'lockfile');
+    put(source, '.pnpmfile.cjs', 'module.exports = {};\n');
+    put(source, 'pnpm-lock.yaml', `${LOCKFILE}pnpmfileChecksum: sha256-x\n`);
+    put(source, 'node_modules/.pnpm/lock.yaml', `${LOCKFILE}pnpmfileChecksum: sha256-x\n`);
+    const target = freshCheckout();
+    put(target, '.gitignore', '/.pnpmfile.cjs\nnode_modules/\n');
+    expect(await clone(target, source)).not.toBeNull();
+    expect(readFileSync(join(target, '.pnpmfile.cjs'), 'utf8')).toBe('module.exports = {};\n');
+  });
+
   it('treats a lockfile git checked out with CRLF line ends as the same lockfile', async () => {
     const source = installedCheckout();
     expect(await clone(freshCheckout(LOCKFILE.replace(/\n/g, '\r\n')), source)).not.toBeNull();

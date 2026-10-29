@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tryGit } from '../../git.mjs';
 import { registeredWorktrees } from '../paths.mjs';
@@ -21,6 +21,15 @@ const sameFile = (one, two) => {
   return a === null ? b === null : b !== null && a.equals(b);
 };
 
+const localOnly = (dir, name, target) => existsSync(join(dir, name)) && !existsSync(join(target, name)) && tryGit(['check-ignore', '-q', name], dir) !== null;
+
+/**
+ * @param {string} dir the source checkout
+ * @param {string} target the new worktree
+ * @returns {string[]} install inputs kept out of git
+ */
+const localInputs = (dir, target) => INSTALL_INPUTS.filter((name) => localOnly(dir, name, target));
+
 const installedAt = (dir) => statSync(join(dir, 'node_modules', MODULES_STATE), { throwIfNoEntry: false })?.mtimeMs ?? 0;
 
 /**
@@ -32,7 +41,7 @@ const installedAt = (dir) => statSync(join(dir, 'node_modules', MODULES_STATE), 
 const sameCommittedInstall = (dir, wanted, target) => {
   const committed = tryGit(['show', `HEAD:${LOCKFILE}`], dir);
   if (committed === null || !sameLines(Buffer.from(`${committed}\n`)).equals(wanted)) return false;
-  return INSTALL_INPUTS.every((name) => sameFile(join(dir, name), join(target, name)));
+  return INSTALL_INPUTS.every((name) => sameFile(join(dir, name), join(target, name)) || localOnly(dir, name, target));
 };
 
 /**
@@ -52,6 +61,7 @@ const installsTheSame = ({ dir, state }, wanted, target) => {
  * @typedef {object} CloneSource
  * @property {string} dir the checkout to copy from
  * @property {import('./modules-state.mjs').ModulesState} state what pnpm installed there
+ * @property {string[]} local ignored install inputs to copy along
  */
 
 /**
@@ -68,7 +78,7 @@ const pickSource = ({ target, main, worktrees = registeredWorktrees(main) }) => 
   ];
   for (const dir of candidates) {
     const found = { dir, state: modulesState(dir) };
-    if (installsTheSame(found, wanted, target)) return { source: found, reason: '' };
+    if (installsTheSame(found, wanted, target)) return { source: { ...found, local: localInputs(dir, target) }, reason: '' };
   }
   return { source: null, reason: 'no checkout has an install of this exact lockfile' };
 };

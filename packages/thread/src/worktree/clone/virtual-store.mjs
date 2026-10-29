@@ -1,12 +1,14 @@
 /* @layer tooling-scripts @kind logic */
 import { createHash, randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, sep } from 'node:path';
 import { deleteTree } from '../delete-tree.mjs';
 import { STORE_LAYOUT, STORE_RECORD } from './clone.constants.mjs';
 import { mirrorTree } from './mirror-tree.mjs';
+import { modulesState } from './modules-state.mjs';
 import { isInside, pathMapper, textRewriter } from './path-map.mjs';
 import { modulesStoreRoot } from './store-dir.mjs';
+import { describeStore, entryOf, PACKAGES, storeIsComplete } from './store-entry.mjs';
 
 /**
  * @param {import('./modules-state.mjs').ModulesState} state
@@ -17,24 +19,6 @@ const storeKey = (state) => createHash('sha256')
   .update(state.lockfile)
   .digest('hex')
   .slice(0, 24);
-
-const readRecord = (dir) => {
-  try {
-    return JSON.parse(readFileSync(join(dir, STORE_RECORD), 'utf8'));
-  } catch {
-    return null;
-  }
-};
-
-/**
- * @param {string} dir a store entry
- * @param {string} key
- * @returns {boolean} true when the entry was committed whole for this key
- */
-const storeIsComplete = (dir, key) => {
-  const record = readRecord(dir);
-  return record?.layout === STORE_LAYOUT && record.key === key;
-};
 
 const HOISTED = `node_modules${sep}`;
 
@@ -49,9 +33,8 @@ const storeRules = ({ source, virtualStore, dir }) => {
   return {
     mapLink: (target, rel) => {
       if (isInside(virtualStore, target)) return toStore(target);
-      if (!isInside(source, target)) return target;
-      if (rel.startsWith(HOISTED)) return null;
-      throw new Error(`${rel} in ${virtualStore} links into the checkout (${target}); it cannot be shared.`);
+      if (isInside(source, target) && rel.startsWith(HOISTED)) return null;
+      throw new Error(`${rel} in ${virtualStore} links to ${target}, outside the store; it cannot be shared.`);
     },
     skip: (rel) => rel === STORE_RECORD,
     rewrite: (rel) => {
@@ -68,9 +51,10 @@ const storeRules = ({ source, virtualStore, dir }) => {
 const rootRules = ({ source, virtualStore, dir }) => {
   const toStore = pathMapper([[virtualStore, dir]]);
   return {
-    mapLink: (target) => {
+    mapLink: (target, rel) => {
       if (isInside(virtualStore, target)) return toStore(target);
-      return isInside(source, target) ? null : target;
+      if (isInside(source, target)) return null;
+      throw new Error(`node_modules/${rel} in ${source} links to ${target}, outside the store; it cannot be shared.`);
     },
     skip: (rel) => !rel.includes(sep) && rel.startsWith('.'),
   };
@@ -89,18 +73,14 @@ const discard = async ({ root, partial, mains, log }) => {
   }
 };
 
-const commit = async ({ root, partial, dir, mains, log }) => {
+const commit = async ({ root, partial, dir, key, mains, log }) => {
   try {
     renameSync(partial, dir);
   } catch (error) {
     await discard({ root, partial, mains, log });
-    if (!existsSync(dir)) throw error;
+    if (!storeIsComplete(dir, key)) throw error;
   }
 };
-
-const PACKAGES = ['node_modules', '.pnpm'];
-
-const entryOf = (virtualStore) => dirname(dirname(virtualStore));
 
 const buildStore = async ({ source, state, entry, partial }) => {
   const dir = join(entry, ...PACKAGES);
@@ -110,24 +90,47 @@ const buildStore = async ({ source, state, entry, partial }) => {
   return counts;
 };
 
+const assertSourceUnchanged = (source, key) => {
+  const after = modulesState(source);
+  if (!after || storeKey(after) !== key) throw new Error(`${source} was installed again while its store was copied; the copy is dropped.`);
+};
+
+const reusableStore = async ({ source, state, key, root, mains, log }) => {
+  const own = entryOf(state.virtualStore);
+  if (existsSync(join(own, STORE_RECORD))) {
+    if (!storeIsComplete(own, key)) throw new Error(`the shared store behind ${source} (${own}) is damaged.`);
+    return state.virtualStore;
+  }
+  const entry = join(root, key);
+  if (storeIsComplete(entry, key)) return join(entry, ...PACKAGES);
+  if (existsSync(entry)) {
+    log(`The shared store ${entry} is damaged; rebuilding it.`);
+    const failure = await deleteTree({ owner: root, target: entry, mains });
+    if (failure) throw new Error(`Could not remove the damaged store ${failure.path} (${failure.code}).`);
+  }
+  return null;
+};
+
 /**
  * @param {{ source: string, state: import('./modules-state.mjs').ModulesState, log: (message: string) => void, mains: string[] }} input
  * @returns {Promise<string>} the package folder a clone links to
  */
 const ensureVirtualStore = async ({ source, state, log, mains }) => {
   const key = storeKey(state);
-  if (storeIsComplete(entryOf(state.virtualStore), key)) return state.virtualStore;
   const root = modulesStoreRoot(source);
+  const reused = await reusableStore({ source, state, key, root, mains, log });
+  if (reused) return reused;
   const entry = join(root, key);
-  if (storeIsComplete(entry, key)) return join(entry, ...PACKAGES);
   const partial = join(root, '.tmp', `${key}-${randomUUID()}`);
   mkdirSync(dirname(partial), { recursive: true });
   log(`Building the shared package store ${entry} from ${state.virtualStore} (once for this lockfile).`);
   const started = Date.now();
   try {
     const counts = await buildStore({ source, state, entry, partial });
-    writeFileSync(join(partial, STORE_RECORD), JSON.stringify({ layout: STORE_LAYOUT, key, source, builtAt: new Date().toISOString(), counts }));
-    await commit({ root, partial, dir: entry, mains, log });
+    assertSourceUnchanged(source, key);
+    const manifest = describeStore(partial);
+    writeFileSync(join(partial, STORE_RECORD), JSON.stringify({ layout: STORE_LAYOUT, key, source, builtAt: new Date().toISOString(), counts, manifest }));
+    await commit({ root, partial, dir: entry, key, mains, log });
     log(`Shared package store ready in ${Math.round((Date.now() - started) / 1000)} s: ${counts.linked} hardlinks, ${counts.copied} copies, ${counts.links} links.`);
     return join(entry, ...PACKAGES);
   } catch (error) {

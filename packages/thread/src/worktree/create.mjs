@@ -5,6 +5,7 @@ import { tryGit } from '../git.mjs';
 import { assertName } from './paths.mjs';
 import { qualifyName } from './qualify-name.mjs';
 import { addWorktree } from './add-worktree.mjs';
+import { lockClone } from './clone-lock.mjs';
 import { installDependencies } from './install.mjs';
 import { cloneArtefacts } from './clone/clone-artefacts.mjs';
 import { threadBase } from './thread-base.mjs';
@@ -73,6 +74,7 @@ const createVerb = {
     else how = addWorktree({ name, path: worktree.path, from, base: asked, ctx });
     recordBase({ worktree, how, from, asked, ctx });
     const cloned = await installDependencies(worktree, options, ctx);
+    if (cloned) lockClone(worktree.path, ctx.rootDir, ctx.log);
     const warm = cloneOutputs(worktree, cloned, ctx);
     await runProvision(worktree, ctx);
     if (!flag(options, 'skip-install') && !warm) prewarmApps(worktree, ctx);

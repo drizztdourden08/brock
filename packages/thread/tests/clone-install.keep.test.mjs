@@ -1,78 +1,14 @@
 /* @layer tooling-scripts @kind test */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, symlinkSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readdirSync, readFileSync, readlinkSync, realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { cloneInstall } from '../src/worktree/clone/clone-install.mjs';
 import { isInside } from '../src/worktree/clone/path-map.mjs';
 import { deleteTree } from '../src/worktree/delete-tree.mjs';
+import { freshCheckout, installedCheckout, link, LOCKFILE, put, useCloneFixture } from './clone-fixture.mjs';
 
-const LINK = process.platform === 'win32' ? 'junction' : 'dir';
-const LOCKFILE = "lockfileVersion: '9.0'\n\nimporters:\n\n  .:\n    dependencies:\n      dep:\n        specifier: ^1.0.0\n        version: 1.0.0\n";
-
-const made = [];
-let storeRoot = '';
-
-const tempFolder = (prefix) => {
-  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)));
-  made.push(dir);
-  return dir;
-};
-
-beforeEach(() => {
-  storeRoot = tempFolder('brock-store-');
-  process.env.BROCK_MODULES_STORE_DIR = storeRoot;
-});
-
-const drop = async (dir) => {
-  const parent = dirname(dir);
-  for (const target of [join(dir, '.git'), dir]) {
-    const failure = await deleteTree({ owner: parent, target, mains: [] });
-    if (failure) throw new Error(`${failure.path} stayed (${failure.code})`);
-  }
-};
-
-afterEach(async () => {
-  delete process.env.BROCK_MODULES_STORE_DIR;
-  for (const dir of made.splice(0)) await drop(dir);
-});
-
-const put = (root, path, content = '') => {
-  mkdirSync(dirname(join(root, path)), { recursive: true });
-  writeFileSync(join(root, path), content);
-};
-
-const link = (root, path, target) => {
-  mkdirSync(dirname(join(root, path)), { recursive: true });
-  symlinkSync(target, join(root, path), LINK);
-};
-
-
-const installedCheckout = () => {
-  const source = tempFolder('brock-source-');
-  const store = join(source, 'node_modules', '.pnpm');
-  put(source, 'pnpm-lock.yaml', LOCKFILE);
-  put(source, 'packages/pkg/package.json', '{"name":"@ws/pkg"}');
-  put(source, 'node_modules/.modules.yaml', `layoutVersion: 5\nnodeLinker: isolated\nvirtualStoreDir: ${store}\n`);
-  put(source, 'node_modules/.pnpm/lock.yaml', LOCKFILE);
-  put(source, 'node_modules/.pnpm/dep@1.0.0/node_modules/dep/package.json', '{"name":"dep","version":"1.0.0"}');
-  put(source, 'node_modules/.pnpm/sub@1.0.0/node_modules/sub/index.js', 'module.exports = 1;');
-  link(source, 'node_modules/.pnpm/dep@1.0.0/node_modules/sub', join(store, 'sub@1.0.0/node_modules/sub'));
-  link(source, 'node_modules/.pnpm/node_modules/sub', join(store, 'sub@1.0.0/node_modules/sub'));
-  link(source, 'node_modules/.pnpm/node_modules/@ws/pkg', join(source, 'packages/pkg'));
-  link(source, 'node_modules/dep', join(store, 'dep@1.0.0/node_modules/dep'));
-  link(source, 'node_modules/@ws/pkg', join(source, 'packages/pkg'));
-  put(source, 'node_modules/.bin/dep.CMD', `@SET "NODE_PATH=${join(store, 'dep@1.0.0', 'node_modules')}"\n`);
-  return source;
-};
-
-const freshCheckout = (lockfile = LOCKFILE) => {
-  const target = tempFolder('brock-target-');
-  put(target, 'pnpm-lock.yaml', lockfile);
-  put(target, 'packages/pkg/package.json', '{"name":"@ws/pkg"}');
-  return target;
-};
+const storeRootOf = useCloneFixture();
 
 const linksUnder = (dir, found = []) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -113,7 +49,7 @@ describe('cloneInstall', () => {
     expect(existsSync(join(target, 'packages/pkg/package.json'))).toBe(true);
     expect(existsSync(join(source, 'packages/pkg/package.json'))).toBe(true);
     expect(existsSync(join(source, 'node_modules/.pnpm/dep@1.0.0/node_modules/dep/package.json'))).toBe(true);
-    expect(existsSync(join(storeRoot, readdirSync(storeRoot).find((name) => name !== '.tmp'), 'node_modules/.pnpm/dep@1.0.0/node_modules/dep/package.json'))).toBe(true);
+    expect(existsSync(join(storeRootOf(), readdirSync(storeRootOf()).find((name) => name !== '.tmp'), 'node_modules/.pnpm/dep@1.0.0/node_modules/dep/package.json'))).toBe(true);
   });
 
   it('runs no copy when the new lockfile differs by one byte', async () => {
@@ -174,7 +110,7 @@ describe('cloneInstall source pick', () => {
     const first = await clone(freshCheckout(), source);
     const second = await clone(freshCheckout(), source);
     expect(second.store).toBe(first.store);
-    expect(readdirSync(storeRoot).filter((name) => name !== '.tmp')).toHaveLength(1);
+    expect(readdirSync(storeRootOf()).filter((name) => name !== '.tmp')).toHaveLength(1);
   });
 
   it('removing a cloned worktree leaves the shared store whole', async () => {

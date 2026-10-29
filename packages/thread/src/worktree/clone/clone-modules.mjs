@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, sep } from 'node:path';
 import { CLONE_RECORD, INSTALLED_LOCKFILE, KEPT_DOT_ENTRIES, MODULES_STATE, WORKSPACE_STATE } from './clone.constants.mjs';
 import { lockfileImporters } from './lockfile-importers.mjs';
@@ -29,6 +29,13 @@ const modulesRules = ({ source, target, virtualStore, store }, missing) => {
   };
 };
 
+const installedImporters = (source, state) => lockfileImporters(state.lockfile.toString('utf8')).filter((rel) => {
+  const dir = join(source, rel, 'node_modules');
+  if (!existsSync(dir)) return false;
+  if (readdirSync(dir).length === 0) throw new Error(`${dir} is empty; the install of ${source} is damaged.`);
+  return true;
+});
+
 const addCounts = (total, counts) => Object.fromEntries(Object.entries(counts).map(([key, value]) => [key, (total[key] ?? 0) + value]));
 
 /**
@@ -38,7 +45,7 @@ const addCounts = (total, counts) => Object.fromEntries(Object.entries(counts).m
 const cloneModules = async ({ source, target, state, store }) => {
   const missing = [];
   const rules = modulesRules({ source, target, virtualStore: state.virtualStore, store }, missing);
-  const importers = lockfileImporters(state.lockfile.toString('utf8')).filter((rel) => existsSync(join(source, rel, 'node_modules')));
+  const importers = installedImporters(source, state);
   let total = {};
   for (const rel of importers) total = addCounts(total, await mirrorTree(join(source, rel, 'node_modules'), join(target, rel, 'node_modules'), rules));
   const pnpmDir = join(target, 'node_modules', '.pnpm');

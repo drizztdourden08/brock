@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { beginJob } from '@drizztdourden08/build-cache/jobs';
-import { prewarmRecord } from '@drizztdourden08/brock-thread';
+import { cloneStoreProblem, prewarmRecord } from '@drizztdourden08/brock-thread';
 import { DEV_MODE, MODE_ENV } from '../build-reuse/build-reuse.constants.mjs';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
@@ -27,6 +27,8 @@ const optimizeRenderer = async (vite, renderer) => {
  * @returns {Promise<string | null>} why it failed, or null
  */
 const warm = async (rootDir, started) => {
+  const damaged = cloneStoreProblem(rootDir);
+  if (damaged) console.warn(`${TAG} ${damaged}`);
   const synced = await ensureSyncedLater(rootDir, 'brock prewarm');
   if (synced.problem) return synced.problem;
   const electron = ensureElectron(rootDir);

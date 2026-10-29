@@ -18,6 +18,16 @@
 
 `BROCK_MODULES_STORE_DIR` when it is set. Else `~/.brock/cache/node-modules` when the home folder is on the volume of the checkout, else `<volume>/.brock-store/node-modules` (`X:\.brock-store\node-modules`). It must sit on the checkout's volume so its files can be hardlinks. A store is built in `<root>/.tmp/<key>-<uuid>`, its `.brock-store.json` written last, then renamed into place; two creates that race both build and the first rename wins.
 
+## Guards
+
+- **Source.** A checkout is refused as a source when its `node_modules` (or the `node_modules` of any project of its lockfile) is a link, or when its virtual store is neither inside the checkout nor in a shared store entry.
+- **What the store may hold.** Only links that stay inside its own entry. Any other link stops the copy and the worktree gets a real install. After the links are placed, every link of the new `node_modules` is resolved: it must lie inside the store entry, inside the new worktree, or in a folder that is not inside any git checkout. Else the copy is undone.
+- **Integrity.** `.brock-store.json` records, per package folder, how many entries the folder holds. A store is reused only when every package still matches, so an emptied package folder counts as damage. A damaged entry is deleted (links first) and built again by the next create. A cloned worktree says `shared store damaged, rebuild it` at `brock start` and `brock prewarm`. A source `node_modules` that is empty, a source reinstalled while its store was copied, and a store entry that is not whole after a lost rename race all fall back to a real install.
+- **Lock.** A cloned worktree is locked with `git worktree lock` (reason: cloned node_modules; remove with brock worktree remove). A plain `git worktree remove` would follow the links into the shared store. `worktree remove` removes the links as links first, lifts its own lock only, and then removes the folder.
+- **Electron.** `brock start` and `brock prewarm` never repair or restore an Electron package that sits in a shared store (a `.brock-store.json` above its real path): it is reported, not written.
+- **Deletes.** Every delete in the clone path goes through `deleteTree`.
+- **Pruning.** `brock cache prune-store [--dry-run]` deletes the store entries no worktree names in its `.brock-clone.json`. It refuses a root that overlaps the build cache, a checkout or the home folder, or that holds anything that is not a store entry. Nothing calls it on its own; Argus decides when.
+
 ## Why a pnpm install never writes into the store
 
 A cloned worktree's `.modules.yaml` names the shared store as its virtual store. A plain `pnpm install` in that worktree sees a virtual store other than its own `node_modules/.pnpm`, so it asks to remove `node_modules` and install from scratch (and stops with `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` with no terminal). It never adds or removes packages inside the shared store. Removing `node_modules`, or the whole worktree with `worktree remove`, deletes the links only.

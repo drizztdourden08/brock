@@ -1,10 +1,13 @@
 /* @layer tooling-scripts @kind logic */
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tryGit } from '../../git.mjs';
 import { registeredWorktrees } from '../paths.mjs';
-import { INSTALL_INPUTS, LOCKFILE, MODULES_STATE } from './clone.constants.mjs';
+import { INSTALL_INPUTS, LOCKFILE, MODULES_STATE, STORE_RECORD } from './clone.constants.mjs';
+import { lockfileImporters } from './lockfile-importers.mjs';
 import { modulesState } from './modules-state.mjs';
+import { isInside } from './path-map.mjs';
+import { entryOf } from './store-entry.mjs';
 
 const sameLines = (bytes) => Buffer.from(bytes.toString('utf8').replace(/\r\n/g, '\n'));
 
@@ -58,6 +61,35 @@ const installsTheSame = ({ dir, state }, wanted, target) => {
   return (working.equals(installed) || working.equals(wanted)) && sameCommittedInstall(dir, wanted, target);
 };
 
+const isLink = (path) => {
+  try {
+    return lstatSync(path).isSymbolicLink();
+  } catch {
+    return false;
+  }
+};
+
+const realOrNull = (path) => {
+  try {
+    return realpathSync.native(path);
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * @param {{ dir: string, state: import('./modules-state.mjs').ModulesState }} found
+ * @returns {boolean} true when no node_modules is a link and packages are its own
+ */
+const ownsInstall = ({ dir, state }) => {
+  const importers = ['.', ...lockfileImporters(state.lockfile.toString('utf8'))];
+  if (importers.some((rel) => isLink(join(dir, rel, 'node_modules')))) return false;
+  const real = realOrNull(state.virtualStore);
+  const home = realOrNull(dir);
+  if (!real || !home) return false;
+  return isInside(home, real) || existsSync(join(entryOf(state.virtualStore), STORE_RECORD));
+};
+
 /**
  * @typedef {object} CloneSource
  * @property {string} dir the checkout to copy from
@@ -79,7 +111,7 @@ const pickSource = ({ target, main, worktrees = registeredWorktrees(main) }) => 
   ];
   for (const dir of candidates) {
     const found = { dir, state: modulesState(dir) };
-    if (installsTheSame(found, wanted, target)) return { source: { ...found, local: localInputs(dir, target) }, reason: '' };
+    if (installsTheSame(found, wanted, target) && ownsInstall(found)) return { source: { ...found, local: localInputs(dir, target) }, reason: '' };
   }
   return { source: null, reason: 'no checkout has an install of this exact lockfile' };
 };

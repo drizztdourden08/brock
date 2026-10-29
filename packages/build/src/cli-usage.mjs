@@ -94,6 +94,9 @@ Usage:
                              them ready; worktree create starts it in the background after the install
   brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,
                              its size and when it was last used; read only, Argus prunes it (docs/build-cache.md)
+  brock cache prune-store [--dry-run]
+                             delete the shared node_modules stores that no worktree uses (kept: every store a
+                             worktree's .brock-clone.json names); a command only, nothing calls it on its own
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
   brock server build | dev   the server entry (server.entry, default server/main.ts) as one Node file with every
                              dependency inlined, dist/server/main.mjs; dev rebuilds on change and restarts it with

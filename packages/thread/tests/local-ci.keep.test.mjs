@@ -9,7 +9,7 @@ import { ciDir, recordFile } from '../src/ci/ci-paths.mjs';
 import { planSteps } from '../src/ci/ci-plan.mjs';
 import { runCi } from '../src/ci/run-ci.mjs';
 import { acquireRunLock } from '../src/ci/run-lock.mjs';
-import { workflowJobs } from '../src/ci/workflow-jobs.mjs';
+import { readWorkflow } from '../src/ci/workflow-jobs.mjs';
 import { mergeBlocker } from '../src/pr/merge-gate.mjs';
 import { mergeVerb } from '../src/pr/merge.mjs';
 
@@ -87,13 +87,13 @@ describe('check-run records', () => {
 });
 
 describe('the step plan', () => {
-  it('reads the gate scripts from the workflow, installs first and records other jobs as skipped-local', () => {
+  it('reads the gate scripts from the workflow, installs first and plans the other jobs step by step', () => {
     const plan = planSteps({ workspace, workflowText: WORKFLOW });
-    expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade']);
+    expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade / echo hi']);
     expect(plan[0].command).toBe('pnpm install --offline --frozen-lockfile');
     expect(plan[1].command).toBe('pnpm run lint');
-    expect(plan.at(-1).skip).toMatch(/skipped-local/);
-    expect(plan.map((step) => step.required)).toEqual([true, true, true, true, true, false]);
+    expect(plan.at(-1)).toMatchObject({ job: 'upgrade', command: 'echo hi', shell: 'pwsh' });
+    expect(plan.map((step) => step.required)).toEqual([true, true, true, true, true, true]);
   });
 
   it('prefers gate.scripts of the workspace and honours requiredChecks', () => {
@@ -103,14 +103,14 @@ describe('the step plan', () => {
 
   it('falls back to brock gate, narrows to a job or to named steps, and refuses unknown names', () => {
     expect(planSteps({ workspace }).map((step) => step.command)).toEqual(['pnpm install --offline --frozen-lockfile', 'pnpm exec brock gate']);
-    expect(planSteps({ workspace, workflowText: WORKFLOW, job: 'upgrade' }).map((step) => step.name)).toEqual(['upgrade']);
+    expect(planSteps({ workspace, workflowText: WORKFLOW, job: 'upgrade' }).map((step) => step.name)).toEqual(['upgrade / echo hi']);
     expect(planSteps({ workspace, workflowText: WORKFLOW, only: ['lint'] }).map((step) => step.name)).toEqual(['install', 'lint']);
     expect(() => planSteps({ workspace, workflowText: WORKFLOW, only: ['nope'] })).toThrow(/No step named "nope"/);
     expect(() => planSteps({ workspace, workflowText: WORKFLOW, job: 'nope' })).toThrow(/No job "nope"/);
   });
 
   it('reads jobs and unquotes a quoted scripts value', () => {
-    expect(workflowJobs(WORKFLOW.replace('lint lint:md structure test', "'lint test'"))).toEqual([{ id: 'gate', scripts: ['lint', 'test'] }, { id: 'upgrade', scripts: null }]);
+    expect(readWorkflow(WORKFLOW.replace('lint lint:md structure test', "'lint test'")).jobs.map((job) => job.scripts)).toEqual([['lint', 'test'], null]);
   });
 });
 

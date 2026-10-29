@@ -1,15 +1,21 @@
 /* @layer tooling-scripts @kind logic */
 import { writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { resolve } from 'node:path';
+import { copyArtifact } from './artifact-copy.mjs';
 import { newRecord, stepRecord } from './record-shape.mjs';
 import { writeRecord } from './check-record.mjs';
-import { recordFile } from './ci-paths.mjs';
+import { artifactDir, recordFile } from './ci-paths.mjs';
 import { addCiWorktree, dropCiWorktree } from './ci-worktree.mjs';
 import { OFFLINE_NOTE } from './ci.constants.mjs';
 import { acquireRunLock } from './run-lock.mjs';
 import { noteInLog, runStep, stopTree } from './run-step.mjs';
 import { summarize } from './summarize.mjs';
+import { eventNameOf } from './workflow-expr.mjs';
 
 const now = () => new Date().toISOString();
+
+const RUNNER_OS = Object.freeze({ win32: 'Windows', linux: 'Linux', darwin: 'macOS' });
 
 const finishedWith = (record) => {
   if (record.steps.some((step) => step.status === 'cancelled')) return 'cancelled';
@@ -22,33 +28,78 @@ const stepStatus = (code, cancelled) => {
   return code === 0 ? 'pass' : 'fail';
 };
 
-const runOne = async ({ step, cwd, control, save, log }) => {
-  step.status = 'running';
-  step.startedAt = now();
-  save();
-  const started = Date.now();
-  const code = await runStep({ command: step.command, cwd, logFile: step.log, onChild: (child) => { control.child = child; } });
+const workflowEnv = (planned, { root, record }) => ({
+  GITHUB_WORKSPACE: root.replace(/\\/g, '/'),
+  GITHUB_EVENT_NAME: eventNameOf(record.trigger),
+  RUNNER_OS: RUNNER_OS[process.platform] ?? process.platform,
+  RUNNER_TEMP: tmpdir(),
+  ...planned.env,
+});
+
+const settle = (step, { pass, code, note }) => {
+  step.exitCode = code;
+  step.status = pass ? 'pass' : 'fail';
+  if (note) {
+    step.note = note;
+    noteInLog(step.log, note);
+  }
+};
+
+const keepArtifact = (step, planned, session) => {
+  const dir = artifactDir(session.record.project, session.record.id, planned.upload.name);
+  const kept = copyArtifact(planned.upload, { root: session.path, dir });
+  step.artifact = kept.artifact;
+  writeFileSync(step.log, `${[kept.text, ...kept.artifact.files].join('\n')}\n`);
+  settle(step, { pass: kept.pass, code: kept.pass ? 0 : 1, note: kept.text });
+};
+
+const spawnStep = async (step, planned, session) => {
+  const { control, record } = session;
+  const code = await runStep({
+    command: step.command,
+    cwd: step.cwd,
+    logFile: step.log,
+    shell: planned.shell ?? null,
+    env: planned.env ? workflowEnv(planned, { root: session.path, record }) : {},
+    onChild: (child) => { control.child = child; },
+  });
   control.child = null;
   step.exitCode = code;
-  step.durationMs = Date.now() - started;
   step.status = stepStatus(code, control.cancelled);
   if (step.status === 'fail' && step.name === 'install') {
     step.note = OFFLINE_NOTE;
     noteInLog(step.log, OFFLINE_NOTE);
   }
-  save();
-  log(`${step.name}: ${step.status} (${(step.durationMs / 1000).toFixed(1)}s, exit ${code})`);
 };
 
-const runSteps = async ({ record, cwd, control, save, log }) => {
-  let stopped = null;
-  for (const step of record.steps) {
+const runOne = async ({ step, planned, session, log }) => {
+  step.status = 'running';
+  step.startedAt = now();
+  session.save();
+  const started = Date.now();
+  if (planned.noop) {
+    writeFileSync(step.log, `${step.command}\n`);
+    settle(step, { pass: true, code: 0, note: planned.noop });
+  } else if (planned.upload) keepArtifact(step, planned, session);
+  else await spawnStep(step, planned, session);
+  step.durationMs = Date.now() - started;
+  session.save();
+  log(`${step.name}: ${step.status} (${(step.durationMs / 1000).toFixed(1)}s, exit ${step.exitCode})`);
+};
+
+const blockedBy = (planned, failed) => (planned.needs ?? []).some((need) => failed.bases.has(need)) || (failed.jobs.has(planned.job) && !planned.always);
+
+const runSteps = async ({ session, log }) => {
+  const failed = { jobs: new Set(), bases: new Set() };
+  for (const [index, step] of session.record.steps.entries()) {
     if (step.status !== 'pending') continue;
-    if (control.cancelled) step.status = 'cancelled';
-    else if (stopped) step.status = 'not-run';
-    else {
-      await runOne({ step, cwd, control, save, log });
-      if (step.status !== 'pass') stopped = step;
+    const planned = session.plan[index];
+    if (session.control.cancelled) step.status = 'cancelled';
+    else if (blockedBy(planned, failed)) step.status = 'not-run';
+    else await runOne({ step, planned, session, log });
+    if (step.status !== 'pass') {
+      failed.jobs.add(planned.job);
+      failed.bases.add(planned.jobId ?? planned.job);
     }
   }
 };
@@ -74,7 +125,7 @@ const openSession = ({ ctx, request, runId }) => {
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
-  return { file, record, save, control, onSignal, release: null, path: null };
+  return { file, record, plan, save, control, onSignal, release: null, path: null };
 };
 
 const execute = async ({ ctx, request, runId, session }) => {
@@ -86,9 +137,9 @@ const execute = async ({ ctx, request, runId, session }) => {
   save();
   if (record.steps.some((step) => step.status === 'pending')) {
     session.path = addCiWorktree({ main: ctx.rootDir, worktreesDir: ctx.workspace.worktreesDir, runId, sha: request.sha });
-    for (const step of record.steps) step.cwd = session.path;
+    for (const [index, step] of record.steps.entries()) step.cwd = resolve(session.path, session.plan[index].workdir ?? '');
     save();
-    await runSteps({ record, cwd: session.path, control, save, log: ctx.log });
+    await runSteps({ session, log: ctx.log });
   }
   record.status = finishedWith(record);
   record.summary = summarize(record);

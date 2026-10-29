@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { afterPrewarm } from '@drizztdourden08/brock-thread';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSynced, ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { appShape } from '../platforms/server/app-shape.mjs';
@@ -19,6 +20,7 @@ const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
     console.error(`brock ${mode}: this app has no window. Use brock server ${mode === 'dev' ? 'dev' : 'build'}.`);
     return 1;
   }
+  await afterPrewarm(rootDir, (line) => console.log(`brock ${mode}: ${line}`));
   const electron = ensureElectron(rootDir);
   if (!electron.ok) {
     console.error(`brock ${mode}: ${electron.message}`);

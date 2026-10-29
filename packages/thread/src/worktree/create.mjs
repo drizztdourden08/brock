@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
+import { flag } from '../cli/thread-args.mjs';
 import { tryGit } from '../git.mjs';
 import { assertName } from './paths.mjs';
 import { qualifyName } from './qualify-name.mjs';
@@ -9,12 +10,18 @@ import { threadBase } from './thread-base.mjs';
 import { createWorktreeContext } from './worktree-context.mjs';
 import { userDataStep } from '../provision/user-data.mjs';
 import { portSlotStep } from '../ports/port-slot-step.mjs';
+import { startPrewarm } from '../launch/prewarm.mjs';
 
 const runProvision = async (worktree, ctx) => {
   for (const step of [userDataStep(), portSlotStep(), ...ctx.provision]) {
     ctx.log(`Provision: ${step.name}`);
     await step.run(worktree);
   }
+};
+
+const prewarmApps = (worktree, ctx) => {
+  const dirs = Object.values(ctx.targets).filter((target) => target.kind === 'electron').map((target) => target.appDir(worktree));
+  for (const dir of new Set(dirs)) startPrewarm(dir, ctx.log);
 };
 
 const recoveredBase = (branch, main) => (threadBase.storedBase(branch, main) ? null : threadBase.openPrBase(branch, main));
@@ -50,6 +57,7 @@ const createVerb = {
     recordBase({ worktree, how, from, asked, ctx });
     installDependencies(worktree, options, ctx);
     await runProvision(worktree, ctx);
+    if (!flag(options, 'skip-install')) prewarmApps(worktree, ctx);
     ctx.log(`"${name}" is ready.`);
     ctx.log(`Worktree: ${worktree.path}`);
     ctx.log(`Launch: ${ctx.workspace.name} worktree launch ${name} none [--visible]`);

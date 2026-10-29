@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { restoreElectron, storeElectronDetached } from '@drizztdourden08/build-cache/electron';
 import { findWorkspaceRoot } from './workspace.mjs';
 
 const TAG = '[brock ensure-electron]';
@@ -83,18 +84,28 @@ const runInstallScript = (packageDir) => {
 const installFolderOf = (rootDir) => findWorkspaceRoot(rootDir) ?? rootDir;
 
 /**
+ * @param {string} packageDir the installed electron package
+ * @returns {{ ok: true, message: string }} and stores the binary in the cache, detached
+ */
+const ready = (packageDir) => {
+  storeElectronDetached(packageDir);
+  return { ok: true, message: 'Electron binary is ready.' };
+};
+
+/**
  * @param {string} rootDir the app folder
  * @returns {{ ok: boolean, message: string}}
  */
 const ensureElectron = (rootDir) => {
   const packageDir = locatePackage(rootDir);
+  if (restoreElectron(packageDir) === 'restored') console.log(`${TAG} copied the Electron binary from the build cache.`);
   const reason = brokenReason(rootDir, packageDir);
-  if (!reason) return { ok: true, message: 'Electron binary is ready.' };
+  if (!reason) return ready(packageDir);
 
   console.log(`${TAG} ${reason}. Repairing...`);
   runInstallScript(packageDir);
   const remaining = brokenReason(rootDir, packageDir);
-  if (!remaining) return { ok: true, message: 'Electron binary is ready.' };
+  if (!remaining) return ready(packageDir);
   return { ok: false, message: `${remaining}. Close any running instance of the app, then run \`pnpm install\` in ${installFolderOf(rootDir)} and retry. Brock never reinstalls the repo on its own.` };
 };
 

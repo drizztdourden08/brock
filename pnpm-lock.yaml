@@ -206,6 +206,9 @@ importers:
       '@drizztdourden08/brock-thread':
         specifier: workspace:*
         version: link:../thread
+      '@drizztdourden08/build-cache':
+        specifier: workspace:*
+        version: link:../build-cache
       '@drizztdourden08/standards':
         specifier: '>=0.11.0 <1'
         version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
@@ -237,6 +240,12 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+
+  packages/build-cache:
+    dependencies:
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
 
   packages/cli:
     dependencies:
@@ -512,6 +521,9 @@ importers:
 
   packages/thread:
     dependencies:
+      '@drizztdourden08/build-cache':
+        specifier: workspace:*
+        version: link:../build-cache
       '@drizztdourden08/standards':
         specifier: '>=0.11.0 <1'
         version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
@@ -830,6 +842,9 @@ packages:
       react: ^19.0.0
       react-dom: ^19.0.0
       typescript: '>=5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@electron-internal/extract-zip@1.0.5':
     resolution: {integrity: sha512-+bqFCP98pLI0Tt0XQo1TmlXtwjWchISndDOxCkEcIuUgXWpBnLyRI+2DU+mesvnMMX6L1XDqYNA0lXNDHd/yiA==}
@@ -5317,6 +5332,7 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
       react-markdown: 10.1.0(@types/react@19.3.0)(react@19.3.0)
       remark-gfm: 4.0.1
+    optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
       - '@types/react'

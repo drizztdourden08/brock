@@ -17,7 +17,8 @@
   },
   "exports": {
     ".": "./src/index.mjs",
-    "./vite": "./src/vite/build-cache-plugin.mjs",
+    "./store": "./src/store/store-api.mjs",
+    "./vite":"./src/vite/build-cache-plugin.mjs",
     "./electron": "./src/electron/electron-cache.mjs",
     "./jobs": "./src/jobs/background-job.mjs",
     "./vite-deps": "./src/vite-deps/vite-deps-cache.mjs"

@@ -22,6 +22,9 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
   vite-deps/renderer/<viteVersion>/<buildKey>/
     manifest.json
     files/                  a copy of node_modules/.vite/deps: _metadata.json, one .js per dependency, chunks
+  addon-prebuilt/<asset name>/<release tag>/<platform>-<arch>/
+    manifest.json           carries archiveSha256
+    files/                  the verified .tar.gz of the SDL3 addon, as the release publishes it
   .tmp/                     entries being built or deleted, and leftovers of a process that was cut off
 ```
 
@@ -85,4 +88,5 @@ The root is `BROCK_BUILD_CACHE_DIR` when that variable is set, else `~/.brock/ca
 - The Electron main process of a Brock app in `electron-vite dev`. Brock's Vite factory adds `buildCachePlugin` (`@drizztdourden08/build-cache/vite`), which compiles each installed `@drizztdourden08` package once per machine and imports it at runtime instead of bundling it. Linked packages (a `link:` or `workspace:` dependency, a Tessera override), packages installed in more than one version, UI packages (they depend on React and stay in the renderer) and any package that depends on one of those stay compiled in as before. The preload, the renderer and production builds are unchanged.
 - The Electron binary. `brock dev`, `brock start`, `brock prewarm` and `<repo> worktree launch` restore it with `restoreElectron` instead of extracting it again. After the first install of a version, `storeElectronDetached` adds it to the cache from a process of its own, so a short command never cuts the copy in half.
 - The renderer dependency pre-bundle. The `brock:shared-deps-cache` plugin of Brock's renderer config, on the dev server only, so `brock dev`, `brock prewarm` and `<repo> worktree launch` (which starts `brock prewarm`) all use it. Before Vite reads `node_modules/.vite/deps` the plugin restores a matching entry with `restoreViteDeps`. When it restored nothing it starts `storeViteDepsDetached`, which adds the folder Vite builds. A worktree that already has a current `deps` folder seeds the entry from it.
+- The SDL3 addon of `@drizztdourden08/brock-input` (`addon-prebuilt`, imported through `@drizztdourden08/build-cache/store`). Its postinstall and `brock` prepare step look for the release archive here first, check its SHA-256 against `archiveSha256`, and unpack it with no network. In local mode (`~/.coord/remote.json` absent or set to local, `COORD_HOME` moves it) a miss never downloads: one line says so and the usual fallback runs (a source build, or the addon already on disk). In remote mode, or on GitHub Actions, a miss downloads the archive as before and stores it once its `.sha256` sidecar matched. An archive whose digest differs reads as a miss.
 - `brock cache list` prints every entry with its size and when it was last used.

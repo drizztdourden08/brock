@@ -368,6 +368,9 @@ importers:
       '@drizztdourden08/brock-react':
         specifier: workspace:*
         version: link:../../react
+      '@drizztdourden08/build-cache':
+        specifier: workspace:*
+        version: link:../../build-cache
       '@iconify-icons/lucide':
         specifier: ^1.2.135
         version: 1.2.136

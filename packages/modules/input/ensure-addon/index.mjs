@@ -7,3 +7,4 @@ export { prebuiltAssetOf } from './prebuilt-asset-of.mjs';
 export { buildKeyOf } from './build-key-of.mjs';
 export { readPins } from './read-pins.mjs';
 export { ensureModeOf } from './ensure-mode-of.mjs';
+export { cachedPrebuiltOf, storePrebuilt } from './prebuilt-cache.mjs';

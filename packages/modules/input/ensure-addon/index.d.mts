@@ -53,6 +53,7 @@ interface AddonJob {
   pins: AddonPins;
   force: boolean;
   log: (message: string) => void;
+  env: Record<string, string | undefined>;
 }
 
 interface EnsureAddonRequest {
@@ -63,7 +64,7 @@ interface EnsureAddonRequest {
 }
 
 type AddonState = 'current' | 'missing' | 'version-changed' | 'sources-edited';
-type FetchOutcome = 'installed' | 'absent' | 'failed';
+type FetchOutcome = 'installed' | 'absent' | 'offline' | 'failed';
 type BuildOutcome = 'built' | 'no-toolchain' | 'locked' | 'failed';
 type EnsureMode = 'postinstall' | 'prepare' | 'force';
 type EnsureResult = 'skipped' | 'current' | 'installed' | 'built' | 'kept' | 'unavailable' | 'failed';
@@ -76,8 +77,10 @@ declare const prebuiltAssetOf: (pins: AddonPins, platformArch: string) => Prebui
 declare const buildKeyOf: (versions: Omit<AddonPins, 'buildKey'>) => string;
 declare const readPins: (nativeDir: string) => AddonPins;
 declare const ensureModeOf: (argv: readonly string[]) => EnsureMode;
+declare const cachedPrebuiltOf: (asset: PrebuiltAsset, platformArch: string, env: Record<string, string | undefined>) => string | null;
+declare const storePrebuilt: (asset: PrebuiltAsset, platformArch: string, archive: string, env: Record<string, string | undefined>) => Promise<boolean>;
 
-export { ensureAddon, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf };
+export { ensureAddon, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf, cachedPrebuiltOf, storePrebuilt };
 export type {
   AddonPins, AddonPaths, AddonMarker, AddonStateInput, PrebuiltAsset, AddonJob, EnsureAddonRequest,
   AddonState, FetchOutcome, BuildOutcome, EnsureMode, EnsureResult,

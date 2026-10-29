@@ -59,7 +59,7 @@ const refresh = async (job, state, allowBuild) => {
  */
 const ensureAddon = async ({ packageDir, mode, env, log }) => {
   const paths = addonPathsOf(packageDir, undefined, env);
-  const job = { paths, pins: readPins(paths.nativeDir), force: mode === 'force', log };
+  const job = { paths, pins: readPins(paths.nativeDir), force: mode === 'force', log, env };
   if (mode === 'force') return forceBuild(job);
   if (mode === 'postinstall' && (env.CI || hasLocalBuild(paths))) return 'skipped';
   const state = readAddonState(paths, job.pins);

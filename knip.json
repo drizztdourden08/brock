@@ -108,6 +108,7 @@
         "tests/**/*.ts"
       ],
       "ignoreDependencies": [
+        "@drizztdourden08/build-cache",
         "cmake-js",
         "node-addon-api"
       ]

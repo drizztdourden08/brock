@@ -111,6 +111,7 @@
     }
   },
   "dependencies": {
+    "@drizztdourden08/build-cache": "workspace:*",
     "@drizztdourden08/brock-core": "workspace:*",
     "@drizztdourden08/brock-electron": "workspace:*",
     "@drizztdourden08/brock-react": "workspace:*",

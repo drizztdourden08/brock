@@ -55,6 +55,7 @@ interface HubPrimaryAction {
 }
 
 interface HubPageHeader {
+  secondary?: HubPrimaryAction;
   primary?: HubPrimaryAction;
   search?: { placeholder?: string };
 }

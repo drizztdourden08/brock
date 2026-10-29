@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-thread",
-  "version": "0.115.4",
+  "version": "0.115.5",
   "description": "The thread lifecycle every Brock repo runs: worktrees, isolated launches, publish verbs, plugins.",
   "type": "module",
   "license": "UNLICENSED",
@@ -30,6 +30,8 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@drizztdourden08/standards": ">=0.11.0 <1"
+    "@drizztdourden08/build-cache": "workspace:*",
+    "@drizztdourden08/standards": ">=0.11.0 <1",
+    "yaml": "^2.9.1"
   }
 }

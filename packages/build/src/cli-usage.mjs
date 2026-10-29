@@ -23,9 +23,10 @@ Usage:
                              when .brock is missing or stale, and stops when the renderer entry misses a file;
                              --live-brock serves linked Brock packages as source, with hot reload, instead of
                              pre-bundling them
-  brock build [--if-stale] [args]
+  brock build [--if-stale] [--no-sync] [args]
                              electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set;
-                             --if-stale builds only when dist is missing, half built or older than the app's sources
+                             --if-stale builds only when dist is missing, half built or older than the app's sources;
+                             --no-sync builds from the committed .brock files and never writes the app's managed files
   brock package [--full] [--channel <name>]
                              build, then electron-builder --dir for this OS, then vpk pack into release/velopack:
                              the update package and a delta when the previous release was downloaded there.
@@ -89,6 +90,10 @@ Usage:
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
                              JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+  brock prewarm              pre-bundle the renderer dependencies of brock dev now, so the first launch finds
+                             them ready; worktree create starts it in the background after the install
+  brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,
+                             its size and when it was last used; read only, Argus prunes it (docs/build-cache.md)
   brock web build | dev      the renderer alone with a relative base into dist/web, from vite.web.config.ts
   brock server build | dev   the server entry (server.entry, default server/main.ts) as one Node file with every
                              dependency inlined, dist/server/main.mjs; dev rebuilds on change and restarts it with
@@ -121,6 +126,10 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
                              same as worktree launch; hidden (no window shown) and muted unless --visible
   brock pr push | open | status [name]
                              push and open ask: work leaves the machine
+  brock pr merge --local PR-n [--head <b> --base <b>] [--keep-branch]
+                             merge a local pull request with git here once its required checks pass
+  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all]
+                             run the CI steps locally in a temp worktree and write ~/.coord/ci/<project>/<run>.json
   brock mobile push          web build, cap sync, gradle, adb install and start
   brock mobile build [--release] [--out <file>]
                              web build, cap sync, gradle assembleDebug (or a signed assembleRelease)

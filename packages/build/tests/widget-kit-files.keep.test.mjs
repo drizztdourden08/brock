@@ -80,7 +80,7 @@ describe('kit files in src/widgets', () => {
     expect(checkWidgets(root)).toEqual([
       'src/widgets/lost.widget.tsx: meta.kit names "shadow", but there is no src/widgets/shadow.kit.ts',
       'src/widgets/broken.kit.ts: no default export; a kit file default-exports its WidgetKitMeta ({ label, icon, devOnly, requires, layout })',
-      'src/widgets/odd.kit.ts: kit.colour is not a kit field (label, icon, order, devOnly, requires, layout, menu)',
+      'src/widgets/odd.kit.ts: kit.colour is not a kit field (label, icon, order, devOnly, requires, layout, menu, when)',
       'src/widgets/loose.overlay.tsx: no meta; an overlay exports meta = { kit } naming the kit it belongs to',
     ]);
   });

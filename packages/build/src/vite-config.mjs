@@ -8,8 +8,11 @@ import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
 import { defineValues } from './build-options/define-values.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { buildReusePlugin } from './build-reuse/build-reuse-plugin.mjs';
+import { DEV_MODE, MODE_ENV } from './build-reuse/build-reuse.constants.mjs';
+import { buildCachePlugin } from '@drizztdourden08/build-cache/vite';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { esmShimPlacement } from './build-options/esm-shim-placement.mjs';
+import { mainProcessGuard } from './build-options/main-process-guard.mjs';
 import { findWorkspaceRoot } from './workspace.mjs';
 import { declaredExternalsPlugin } from './declared-externals.mjs';
 import { devServerPort } from './dev-server-port.mjs';
@@ -95,6 +98,12 @@ const externalDependenciesOf = (rootDir, sources) => {
 };
 
 /**
+ * @param {import('vite').ResolvedConfig} config
+ * @returns {boolean} an electron-vite dev build, served from the cache
+ */
+const isDevBuild = (config) => config.command === 'build' && process.env[MODE_ENV] === DEV_MODE;
+
+/**
  * @param {string} rootDir
  * @returns {Record<string, string>}  The splash preload entry, if any
  */
@@ -113,29 +122,31 @@ const splashPreloadEntry = (rootDir) => {
  */
 const defineBrockViteConfig = async (rootDir, overrides = {}) => {
   const { mergeConfig, workspaceRootOf, react } = await appTools(rootDir);
-  const { product, build } = await loadBrockConfig(rootDir);
+  const { product, build, mainProcess } = await loadBrockConfig(rootDir);
   const src = resolve(rootDir, 'src');
   const alias = appAliases(rootDir, build);
   const polyfills = await nodePolyfillPlugins(rootDir, build);
   const sources = sourceDependencies(rootDir);
   const external = externalDependenciesOf(rootDir, sources);
   const externalizeDeps = { exclude: sources, include: [...external.keys()] };
+  const packageCache = buildCachePlugin({ rootDir, when: isDevBuild });
   const rollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external)] };
+  const mainRollupOptions = { plugins: [declaredExternalsPlugin(rootDir, external, packageCache.api.runtimeImports)] };
   const define = defineValues(build?.define, 'brock.config.ts');
   const base = {
     main: {
       define,
-      plugins: [buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
+      plugins: [mainProcessGuard({ rootDir, bundle: 'main process bundle', options: mainProcess }), packageCache, buildReusePlugin({ rootDir, target: 'main' }), devOnlyPlugin({ rootDir }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,
         outDir: resolve(rootDir, 'dist/electron'),
-        rollupOptions: { ...rollupOptions, input: { main: resolve(rootDir, 'electron/main.ts') } },
+        rollupOptions: { ...mainRollupOptions, input: { main: resolve(rootDir, 'electron/main.ts') } },
       },
     },
     preload: {
       define,
-      plugins: [buildReusePlugin({ rootDir, target: 'preload' }), esmShimPlacement()],
+      plugins: [mainProcessGuard({ rootDir, bundle: 'preload bundle', options: mainProcess }), buildReusePlugin({ rootDir, target: 'preload' }), esmShimPlacement()],
       resolve: { alias, dedupe: SHARED_SINGLETONS },
       build: {
         externalizeDeps,

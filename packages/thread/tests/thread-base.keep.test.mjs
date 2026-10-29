@@ -21,6 +21,10 @@ vi.mock('../src/gh.mjs', () => ({
   ghLoud: (args) => gh.calls.push(args),
 }));
 
+delete process.env.COORD_PROJECT;
+process.env.COORD_HOME = mkdtempSync(join(tmpdir(), 'brock-remote-'));
+writeFileSync(join(process.env.COORD_HOME, 'remote.json'), '{"mode":"remote"}');
+
 const GM = 'agent/grand-merge';
 
 const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();

@@ -13,6 +13,7 @@ packages/electron        main-process bootstrap, window, handlers; the preload b
 packages/react           BrockApp shell, stores kit, screen registry, settings engine, shell views
 packages/build           Vite and electron-builder factories, the brock CLI
 packages/thread          the thread lifecycle: worktrees, launch targets, pr verbs, plugins
+packages/build-cache     the per-user cache of compiled package versions and Electron binaries (docs/build-cache.md)
 packages/plugins/snes    the SNES PC-port bundle: wasm core, ROM, save states, fixture vault
 packages/create-brock    the scaffolder
 packages/modules/*       optional modules: updater, secrets, input, display, port-kit

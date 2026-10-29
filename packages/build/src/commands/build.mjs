@@ -5,7 +5,7 @@ import { runElectronVite } from './electron-vite.mjs';
 import { runServer } from './server.mjs';
 
 /**
- * @param {{ rootDir: string, passthrough?: string[]}} ctx
+ * @param {{ rootDir: string, noSync?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
 const buildApp = async (ctx) => {
@@ -16,7 +16,7 @@ const buildApp = async (ctx) => {
 };
 
 /**
- * @param {{ rootDir: string, ifStale?: boolean, passthrough?: string[]}} ctx
+ * @param {{ rootDir: string, ifStale?: boolean, noSync?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
 const runBuild = (ctx) => {

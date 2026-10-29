@@ -5,9 +5,9 @@ import { PageActionsContext } from '../page-actions-context';
 import type { PageActionsProps } from './PageActions.type';
 
 const PageActions = (props: PageActionsProps) => {
-  const { search, primary, children } = props;
+  const { search, secondary, primary, children } = props;
   const put = useContext(PageActionsContext);
-  const node = <HeaderActions search={search} primary={primary}>{children}</HeaderActions>;
+  const node = <HeaderActions search={search} secondary={secondary} primary={primary}>{children}</HeaderActions>;
   useLayoutEffect(() => {
     put(node);
   });

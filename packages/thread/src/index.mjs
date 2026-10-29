@@ -21,3 +21,4 @@ export { checkNoteFile, notePath } from './release-notes/check-note-file.mjs';
 export { findAppDir } from './release-notes/find-app-dir.mjs';
 export { resolveNotesRoot } from './release-notes/resolve-notes-root.mjs';
 export { checkReleaseNote } from '@drizztdourden08/standards/release-notes';
+export { afterPrewarm, prewarmRecord } from './launch/prewarm.mjs';

@@ -19,6 +19,9 @@ vi.mock('../src/gh.mjs', () => ({
   ghLoud: () => {},
 }));
 
+process.env.COORD_HOME = mkdtempSync(join(tmpdir(), 'brock-remote-'));
+writeFileSync(join(process.env.COORD_HOME, 'remote.json'), '{"mode":"remote"}');
+
 const ENV = 'BROCK_WORKTREE_PREFIX';
 const WHO = { GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t' };
 

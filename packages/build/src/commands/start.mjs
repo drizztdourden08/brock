@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { afterPrewarm } from '@drizztdourden08/brock-thread';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, normalize } from 'node:path';
 import { ensureElectron } from '../ensure-electron.mjs';
@@ -24,6 +25,7 @@ const mainOf = (rootDir) => {
  * @returns {Promise<number>} exit code
  */
 const runStart = async ({ rootDir, passthrough = [] }) => {
+  await afterPrewarm(rootDir, (line) => console.log(`brock start: ${line}`));
   const entry = join(rootDir, MAIN_ENTRY);
   if (!existsSync(entry)) {
     console.error(`brock start: ${MAIN_ENTRY} not found. Run \`brock build\` first.`);

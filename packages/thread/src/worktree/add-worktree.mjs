@@ -2,6 +2,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { gitLoud, LONG_PATHS, tryGit } from '../git.mjs';
+import { isLocalMode } from '../local/remote-mode.mjs';
 import { pickBase } from './pick-base.mjs';
 import { resumeBranch } from './resume-branch.mjs';
 import { excludeWorktrees } from './exclude-worktrees.mjs';
@@ -10,6 +11,10 @@ import { threadBase } from './thread-base.mjs';
 const hasOrigin = (main) => tryGit(['remote', 'get-url', 'origin'], main) !== null;
 
 const fetchOrigin = (main, log) => {
+  if (isLocalMode()) {
+    log('Local mode: skipping the fetch; the thread starts from the local base.');
+    return false;
+  }
   if (!hasOrigin(main)) {
     log('No origin remote; skipping the fetch.');
     return false;

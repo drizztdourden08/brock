@@ -1,5 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { tryGh } from '../gh.mjs';
+import { tryGit } from '../git.mjs';
+import { latestRunFor } from '../ci/check-record.mjs';
+import { projectOf } from '../ci/project-of.mjs';
+import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { threadBase } from '../worktree/thread-base.mjs';
 import { prBranch } from './branch.mjs';
 
@@ -30,6 +34,15 @@ const reportPr = (pr, base, log) => {
   log(`  checks     ${summarizeChecks(pr.statusCheckRollup)}`);
 };
 
+const reportLocal = ({ branch, base, path, options, workspace, log }) => {
+  const sha = tryGit(['rev-parse', 'HEAD'], path);
+  const ahead = tryGit(['rev-list', '--count', `${base}..HEAD`], path);
+  const run = sha ? latestRunFor(projectOf(options, workspace), sha) : null;
+  log(`"${branch}" is ${ahead ?? '?'} commit(s) ahead of ${base} (local).`);
+  log(`  checks     ${run ? `${run.status}, run ${run.id}: ${run.summary}` : `no check run for this commit yet (${workspace.name} ci)`}`);
+  log(deferredNote('the GitHub pull request status'));
+};
+
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const statusVerb = {
   usage: '  brock pr status [name]                        read-only',
@@ -37,6 +50,7 @@ const statusVerb = {
     const { workspace, log } = ctx;
     const { name, path, branch } = prBranch.target(positional, options, ctx);
     const { base } = threadBase.baseOf(branch, path, workspace);
+    if (isLocalMode()) return reportLocal({ branch, base, path, options, workspace, log });
     const out = tryGh(['pr', 'view', branch, '--json', FIELDS], path);
     if (!out) {
       log(`No open PR for "${branch}". Open one into ${base} with: ${workspace.name} pr open ${name} --title "<title>"`);

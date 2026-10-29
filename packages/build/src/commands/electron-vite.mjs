@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { afterPrewarm } from '@drizztdourden08/brock-thread';
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSynced, ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { appShape } from '../platforms/server/app-shape.mjs';
@@ -11,22 +12,24 @@ import { bundleAppHelperScripts } from '../helper-scripts/bundle-helper-scripts.
 
 /**
  * @param {'dev' | 'build'} mode
- * @param {{ rootDir: string, passthrough?: string[]}} ctx
+ * @param {{ rootDir: string, noSync?: boolean, passthrough?: string[]}} ctx
  * @returns {Promise<number>} exit code
  */
-const runElectronVite = async (mode, { rootDir, passthrough = [] }) => {
+const runElectronVite = async (mode, { rootDir, noSync = false, passthrough = [] }) => {
   if (appShape(rootDir).windowless) {
     console.error(`brock ${mode}: this app has no window. Use brock server ${mode === 'dev' ? 'dev' : 'build'}.`);
     return 1;
   }
+  await afterPrewarm(rootDir, (line) => console.log(`brock ${mode}: ${line}`));
   const electron = ensureElectron(rootDir);
   if (!electron.ok) {
     console.error(`brock ${mode}: ${electron.message}`);
     return 1;
   }
+  const syncOpts = { sync: !noSync };
   const synced = mode === 'dev'
-    ? await ensureSyncedLater(rootDir, 'brock dev')
-    : { problem: await ensureSynced(rootDir, 'brock build'), guide: () => Promise.resolve() };
+    ? await ensureSyncedLater(rootDir, 'brock dev', syncOpts)
+    : { problem: await ensureSynced(rootDir, 'brock build', syncOpts), guide: () => Promise.resolve() };
   if (synced.problem) {
     console.error(`brock ${mode}: ${synced.problem}`);
     return 1;

@@ -42,12 +42,14 @@ const installDependencies = (worktree, options, ctx) => {
     ctx.log('--skip-install: leaving node_modules as it is.');
     return;
   }
-  const dirs = [worktree.path, ...appDirsOf(worktree, ctx.targets)].filter(installable);
-  if (dirs.length === 0) {
+  const dirs = [...new Set([worktree.path, ...appDirsOf(worktree, ctx.targets)])];
+  if (!dirs.some(installable)) {
     ctx.log('Nothing to install: no package.json without node_modules at the root or in a target app.');
     return;
   }
-  for (const dir of dirs) installIn(dir, ctx.log);
+  for (const dir of dirs) {
+    if (installable(dir)) installIn(dir, ctx.log);
+  }
 };
 
 export { installDependencies };

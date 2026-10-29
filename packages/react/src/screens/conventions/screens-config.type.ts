@@ -28,6 +28,7 @@ interface PagePrimaryAction {
 }
 
 interface PageHeaderMeta {
+  secondary?: PagePrimaryAction;
   primary?: PagePrimaryAction;
   search?: { placeholder?: string };
 }

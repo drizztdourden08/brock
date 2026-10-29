@@ -14,10 +14,11 @@ const targetOf = (open: string, route: string): string => (open.includes(ROUTE_S
 const useHeaderActions = (header: HubPageHeader | undefined, route: string, slotted: ReactNode): ReactNode => {
   const [query, setQuery] = useScreenState(PAGE_SEARCH_KEY, '');
   return useMemo(() => {
-    const { primary, search } = header ?? {};
-    if (primary === undefined && search === undefined && slotted == null) return undefined;
+    const { primary, secondary, search } = header ?? {};
+    if (primary === undefined && secondary === undefined && search === undefined && slotted == null) return undefined;
     return createElement(HeaderActions, {
       search: search && { value: query, onChange: setQuery, placeholder: search.placeholder },
+      secondary: secondary && { label: secondary.label, icon: secondary.icon, onClick: () => nav.open(targetOf(secondary.open, route)) },
       primary: primary && { label: primary.label, icon: primary.icon, onClick: () => nav.open(targetOf(primary.open, route)) },
     }, slotted);
   }, [header, route, slotted, query, setQuery]);

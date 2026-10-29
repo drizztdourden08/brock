@@ -10,6 +10,8 @@ import { bridgeProof } from '../src/main/bridge/bridge-proof';
 import { createLineReader } from '../src/main/bridge/line-reader';
 import { runSystemTool } from '../src/main/bridge/run-system-tool';
 
+const HANDSHAKE_CEILING_AFTER_SYNC_ACL_CHECKS_MS = 30_000;
+
 const ROUTES = {
   add: invoke<(a: number, b: number) => Promise<number>>()('test:add'),
   echo: invoke<(text: string) => Promise<string>>()('test:echo'),
@@ -49,7 +51,7 @@ const writeOpenFile = (file: string, text: string): void => {
 };
 
 const serve = async (options: Partial<BridgeServerOptions> = {}): Promise<{ server: BridgeServer; file: string }> => {
-  const server = await startBridgeServer({ app: 'bridge-test', handshakeMs: 2000, ...options });
+  const server = await startBridgeServer({ app: 'bridge-test', handshakeMs: HANDSHAKE_CEILING_AFTER_SYNC_ACL_CHECKS_MS, ...options });
   opened.servers.push(server);
   server.handle(ROUTES.add, (a, b) => a + b);
   server.handle(ROUTES.echo, (text) => text);
@@ -58,7 +60,7 @@ const serve = async (options: Partial<BridgeServerOptions> = {}): Promise<{ serv
 };
 
 const client = (file: string, timeoutMs?: number): BridgeClient => {
-  const made = connectBridge({ file, timeoutMs });
+  const made = connectBridge({ file, timeoutMs, handshakeMs: HANDSHAKE_CEILING_AFTER_SYNC_ACL_CHECKS_MS });
   opened.clients.push(made);
   return made;
 };

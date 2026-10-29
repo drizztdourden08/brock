@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { connect } from 'net';
 import type { BridgeLink, BridgeLinkEvents, BridgeLinkLimits } from './bridge-client.type';
-import type { BridgeServerMessage } from './bridge.type';
+import type { BridgeDiscovery, BridgeServerMessage } from './bridge.type';
 import { BRIDGE_IMPOSTOR, BRIDGE_PROTOCOL } from './bridge.constants';
 import { bridgeProof } from './bridge-proof';
 import { createLineReader } from './line-reader';
@@ -9,11 +9,10 @@ import { parseHello } from './parse-hello';
 import { parseJson } from './parse-json';
 import { asReply } from './parse-reply';
 import { parseServerMessage } from './parse-server-message';
-import { readBridgeDiscovery } from './read-bridge-discovery';
+import { readBridgeDiscoveryAsync } from './read-bridge-discovery-async';
 import { secretMatches } from './secret-matches';
 
-const openBridgeLink = (file: string, { maxBytes, handshakeMs }: BridgeLinkLimits, events: BridgeLinkEvents): Promise<BridgeLink> => new Promise((resolve, reject) => {
-  const discovery = readBridgeDiscovery(file);
+const dialBridge = (discovery: BridgeDiscovery, { maxBytes, handshakeMs }: BridgeLinkLimits, events: BridgeLinkEvents): Promise<BridgeLink> => new Promise((resolve, reject) => {
   const clientNonce = bridgeProof.nonce();
   const socket = connect({ path: discovery.endpoint });
   const state = { key: null as string | null, ready: false, seq: 0, reason: new Error('the app closed the bridge') };
@@ -60,5 +59,7 @@ const openBridgeLink = (file: string, { maxBytes, handshakeMs }: BridgeLinkLimit
     events.onClose(state.reason);
   });
 });
+
+const openBridgeLink = async (file: string, limits: BridgeLinkLimits, events: BridgeLinkEvents): Promise<BridgeLink> => dialBridge(await readBridgeDiscoveryAsync(file), limits, events);
 
 export { openBridgeLink };

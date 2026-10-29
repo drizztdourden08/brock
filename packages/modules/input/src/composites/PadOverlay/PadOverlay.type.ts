@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind types */
 import type { ControllerSilhouetteAnchorSet } from '../../controller-anchors';
+import type { InputIconSource } from '@drizztdourden08/tessera/primitives';
 import type { ControllerSlotId } from '../../pad/controller-slot.type';
 import type { DpadPressState } from '../DpadCross';
 
@@ -28,6 +29,7 @@ interface OverlaySlotView {
   anchor: ControllerSlotId;
   kind: OverlayPartKind;
   glyph: string;
+  icon?: InputIconSource;
   label: string;
   side?: LabelSide;
   nudge?: Nudge;

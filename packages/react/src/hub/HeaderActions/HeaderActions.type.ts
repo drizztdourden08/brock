@@ -15,6 +15,7 @@ interface HeaderPrimary {
 
 interface HeaderActionsProps {
   search?: HeaderSearch;
+  secondary?: HeaderPrimary;
   primary?: HeaderPrimary;
   children?: ReactNode;
 }

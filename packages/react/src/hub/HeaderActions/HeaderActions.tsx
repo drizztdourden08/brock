@@ -4,7 +4,7 @@ import type { HeaderActionsProps } from './HeaderActions.type';
 import './HeaderActions.css';
 
 const HeaderActions = (props: HeaderActionsProps) => {
-  const { search, primary, children } = props;
+  const { search, secondary, primary, children } = props;
   return (
     <Box className="header-actions">
       {search && (
@@ -18,6 +18,7 @@ const HeaderActions = (props: HeaderActionsProps) => {
         />
       )}
       {children}
+      {secondary && <Button variant="secondary" size="sm" icon={secondary.icon} onClick={secondary.onClick}>{secondary.label}</Button>}
       {primary && <Button variant="primary" size="sm" icon={primary.icon} onClick={primary.onClick}>{primary.label}</Button>}
     </Box>
   );

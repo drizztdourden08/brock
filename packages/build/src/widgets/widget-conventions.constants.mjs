@@ -13,9 +13,9 @@ const BUILT_IN_WIDGET_IDS = ['logs', 'performance'];
 
 const META_KEYS = [
   'label', 'icon', 'order', 'popOut', 'devOnly', 'taskbar', 'settings', 'tools', 'defaultOpen',
-  'defaultVisibility', 'defaultSide', 'defaultDockedSize', 'dockWeight', 'defaultFloatingSize', 'padding', 'fill', 'chrome', 'context', 'kit', 'menu',
+  'defaultVisibility', 'defaultSide', 'defaultDockedSize', 'dockWeight', 'defaultFloatingSize', 'padding', 'fill', 'chrome', 'context', 'contexts', 'when', 'empty', 'prefs', 'kit', 'menu',
 ];
-const KIT_KEYS = ['label', 'icon', 'order', 'devOnly', 'requires', 'layout', 'menu'];
+const KIT_KEYS = ['label', 'icon', 'order', 'devOnly', 'requires', 'layout', 'menu', 'when'];
 const MENU_PLACEMENT_KEYS = ['parent', 'group', 'order'];
 const OVERLAY_KEYS = ['kit', 'label', 'order'];
 

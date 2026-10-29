@@ -1,9 +1,11 @@
 /* @layer electron-main @kind logic */
+import nodeCrypto from 'node:crypto';
 import { app } from 'electron';
 import type { ProductConfig } from '@drizztdourden08/brock-core/product';
 import type { BootstrapOptions } from '../types/main-context.type';
 import type { WindowSetup } from '../window/window-setup.type';
 import type { ReadyInput } from './bootstrap-app.type';
+import { installEcNullDigest } from '../compat/install-ec-null-digest';
 import { installCrashForensics } from '../crash-forensics/install';
 import { noteSync } from '../crash-forensics/note-sync';
 import { stackOf } from '../crash-forensics/stack-of';
@@ -97,6 +99,10 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   const { flags, portableData, userDataOverride } = start;
   const modules = options.modules ?? [];
   installCrashForensics();
+  installEcNullDigest(nodeCrypto, {
+    enabled: options.ecNullDigestShim,
+    onInstalled: (message) => noteSync('log', message),
+  });
   const instance = parseInstanceConfig();
   if (options.security?.externalProtocols) externalProtocols.allowed = new Set(options.security.externalProtocols);
   const paths = resolvePaths(options.paths);

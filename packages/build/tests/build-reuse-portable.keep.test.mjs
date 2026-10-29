@@ -3,31 +3,22 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { build } from 'vite';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { buildReusePlugin } from '../src/build-reuse/build-reuse-plugin.mjs';
+import { reuseLogger, useDevelopmentMode, writeMainApp } from './reuse-test-files.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-build-reuse-portable-');
 
-beforeEach(() => {
-  process.env.NODE_ENV_ELECTRON_VITE = 'development';
-});
+useDevelopmentMode(cleanup);
 
-afterEach(() => {
-  delete process.env.NODE_ENV_ELECTRON_VITE;
-  cleanup();
-});
-
-const messages = [];
-const customLogger = { info: (message) => messages.push(message), warn: () => undefined, warnOnce: () => undefined, error: () => undefined, clearScreen: () => undefined, hasErrorLogged: () => false, hasWarned: false };
+const { messages, customLogger } = reuseLogger();
 
 const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd, stdio: 'pipe' });
 
 const repo = () => {
   const root = tempDir();
-  put(root, 'package.json', '{"name":"app","type":"module"}');
-  put(root, 'electron/main.js', "import { greet } from './greet.js';\nconsole.log(greet());\n");
-  put(root, 'electron/greet.js', "export const greet = () => 'hello one';\n");
+  writeMainApp(put, root);
   put(root, '.gitignore', 'node_modules/\ndist/\n');
   git(root, 'init', '-q');
   git(root, 'add', '-A');

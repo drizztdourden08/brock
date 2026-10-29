@@ -1,14 +1,13 @@
 /* @layer tooling-scripts @kind test */
-import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { CLONE_LOCK_REASON, lockClone, lockReasonOf } from '../src/worktree/clone-lock.mjs';
 import { deleteTree } from '../src/worktree/delete-tree.mjs';
+import { initRepo, run } from './git-fixture.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 
-const run = (cwd, ...args) => String(execFileSync('git', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] })).trim();
 
 let base = '';
 let main = '';
@@ -24,11 +23,7 @@ beforeEach(() => {
   mkdirSync(join(main, 'packages', 'engine'), { recursive: true });
   writeFileSync(join(main, 'packages', 'engine', 'index.js'), 'export {};\n');
   writeFileSync(join(main, '.gitignore'), 'node_modules/\n');
-  run(main, 'init', '-q', '-b', 'main');
-  run(main, 'config', 'user.name', 't');
-  run(main, 'config', 'user.email', 't@t');
-  run(main, 'add', '.');
-  run(main, 'commit', '-q', '-m', 'init');
+  initRepo(main);
   run(main, 'worktree', 'add', '-q', '--detach', worktree, 'HEAD');
 });
 

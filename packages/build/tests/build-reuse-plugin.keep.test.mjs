@@ -2,30 +2,20 @@
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { build } from 'vite';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { buildReusePlugin } from '../src/build-reuse/build-reuse-plugin.mjs';
-import { age, HOUR } from './reuse-test-files.mjs';
+import { age, HOUR, reuseLogger, useDevelopmentMode, writeMainApp } from './reuse-test-files.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-build-reuse-plugin-');
 
-beforeEach(() => {
-  process.env.NODE_ENV_ELECTRON_VITE = 'development';
-});
+useDevelopmentMode(cleanup);
 
-afterEach(() => {
-  delete process.env.NODE_ENV_ELECTRON_VITE;
-  cleanup();
-});
-
-const messages = [];
-const customLogger = { info: (message) => messages.push(message), warn: () => undefined, warnOnce: () => undefined, error: () => undefined, clearScreen: () => undefined, hasErrorLogged: () => false, hasWarned: false };
+const { messages, customLogger } = reuseLogger();
 
 const project = () => {
   const root = tempDir();
-  put(root, 'package.json', '{"name":"app","type":"module"}');
-  put(root, 'electron/main.js', "import { greet } from './greet.js';\nconsole.log(greet());\n");
-  put(root, 'electron/greet.js', "export const greet = () => 'hello one';\n");
+  writeMainApp(put, root);
   age(root, 'package.json');
   age(root, 'electron/main.js');
   age(root, 'electron/greet.js');

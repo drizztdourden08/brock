@@ -2,12 +2,12 @@
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, sep } from 'node:path';
-import { CLONE_RECORD, INSTALLED_LOCKFILE, KEPT_DOT_ENTRIES } from './clone.constants.mjs';
+import { CLONE_RECORD, INSTALLED_LOCKFILE, KEPT_DOT_ENTRIES, MODULES_STATE, WORKSPACE_STATE } from './clone.constants.mjs';
 import { lockfileImporters } from './lockfile-importers.mjs';
 import { mirrorTree } from './mirror-tree.mjs';
 import { isInside, pathMapper, textRewriter } from './path-map.mjs';
 
-const TEXT_FILES = new Set(['.modules.yaml', '.pnpm-workspace-state-v1.json']);
+const TEXT_FILES = new Set([MODULES_STATE, WORKSPACE_STATE]);
 
 /**
  * @param {{ source: string, target: string, virtualStore: string, store: string }} where

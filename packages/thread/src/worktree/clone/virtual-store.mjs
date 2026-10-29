@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { createHash, randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, sep } from 'node:path';
+import { deleteTree } from '../delete-tree.mjs';
 import { STORE_LAYOUT, STORE_RECORD } from './clone.constants.mjs';
 import { mirrorTree } from './mirror-tree.mjs';
 import { isInside, pathMapper, textRewriter } from './path-map.mjs';
@@ -75,11 +76,24 @@ const rootRules = ({ source, virtualStore, dir }) => {
   };
 };
 
-const commit = (partial, dir) => {
+/**
+ * @param {{ root: string, partial: string, mains: string[], log: (message: string) => void }} input
+ * @returns {Promise<void>} the half copy is gone, links removed as links
+ */
+const discard = async ({ root, partial, mains, log }) => {
+  try {
+    const failure = await deleteTree({ owner: root, target: partial, mains });
+    if (failure) log(`The unfinished store copy ${failure.path} stayed (${failure.code}); it is safe to remove later.`);
+  } catch (error) {
+    log(`The unfinished store copy ${partial} stayed: ${error?.message ?? error}`);
+  }
+};
+
+const commit = async ({ root, partial, dir, mains, log }) => {
   try {
     renameSync(partial, dir);
   } catch (error) {
-    rmSync(partial, { recursive: true, force: true });
+    await discard({ root, partial, mains, log });
     if (!existsSync(dir)) throw error;
   }
 };
@@ -97,10 +111,10 @@ const buildStore = async ({ source, state, entry, partial }) => {
 };
 
 /**
- * @param {{ source: string, state: import('./modules-state.mjs').ModulesState, log: (message: string) => void }} input
+ * @param {{ source: string, state: import('./modules-state.mjs').ModulesState, log: (message: string) => void, mains: string[] }} input
  * @returns {Promise<string>} the package folder a clone links to
  */
-const ensureVirtualStore = async ({ source, state, log }) => {
+const ensureVirtualStore = async ({ source, state, log, mains }) => {
   const key = storeKey(state);
   if (storeIsComplete(entryOf(state.virtualStore), key)) return state.virtualStore;
   const root = modulesStoreRoot(source);
@@ -113,13 +127,13 @@ const ensureVirtualStore = async ({ source, state, log }) => {
   try {
     const counts = await buildStore({ source, state, entry, partial });
     writeFileSync(join(partial, STORE_RECORD), JSON.stringify({ layout: STORE_LAYOUT, key, source, builtAt: new Date().toISOString(), counts }));
-    commit(partial, entry);
+    await commit({ root, partial, dir: entry, mains, log });
     log(`Shared package store ready in ${Math.round((Date.now() - started) / 1000)} s: ${counts.linked} hardlinks, ${counts.copied} copies, ${counts.links} links.`);
     return join(entry, ...PACKAGES);
   } catch (error) {
-    rmSync(partial, { recursive: true, force: true });
+    await discard({ root, partial, mains, log });
     throw error;
   }
 };
 
-export { ensureVirtualStore, storeIsComplete, storeKey };
+export { ensureVirtualStore };

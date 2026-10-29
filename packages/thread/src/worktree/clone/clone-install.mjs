@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
-import { copyFileSync, rmSync } from 'node:fs';
+import { copyFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { deleteTree } from '../delete-tree.mjs';
 import { cloneModules } from './clone-modules.mjs';
 import { lockfileImporters } from './lockfile-importers.mjs';
 import { pickSource } from './pick-source.mjs';
@@ -8,8 +9,15 @@ import { ensureVirtualStore } from './virtual-store.mjs';
 
 const seconds = (since) => `${((Date.now() - since) / 1000).toFixed(1)} s`;
 
-const undo = (target, state) => {
-  for (const rel of lockfileImporters(state.lockfile.toString('utf8'))) rmSync(join(target, rel, 'node_modules'), { recursive: true, force: true });
+/**
+ * @param {{ target: string, state: import('./modules-state.mjs').ModulesState, mains: string[] }} input
+ * @returns {Promise<void>} the copy is gone, links removed as links
+ */
+const undo = async ({ target, state, mains }) => {
+  for (const rel of lockfileImporters(state.lockfile.toString('utf8'))) {
+    const failure = await deleteTree({ owner: target, target: join(target, rel, 'node_modules'), mains });
+    if (failure) throw new Error(`Could not undo the copy: ${failure.path} stayed (${failure.code}).`);
+  }
 };
 
 /**
@@ -23,11 +31,12 @@ const cloneInstall = async ({ target, main, log, worktrees }) => {
     log(`node_modules: ${reason}; running a real install.`);
     return null;
   }
+  const mains = [main, source.dir];
   try {
-    const store = await ensureVirtualStore({ source: source.dir, state: source.state, log });
+    const store = await ensureVirtualStore({ source: source.dir, state: source.state, log, mains });
     const placed = await cloneModules({ source: source.dir, target, state: source.state, store });
     if (placed.missing.length > 0) {
-      undo(target, source.state);
+      await undo({ target, state: source.state, mains });
       log(`node_modules: ${placed.missing.length} link(s) of the copy lead nowhere (first: ${placed.missing[0]}); running a real install.`);
       return null;
     }
@@ -36,7 +45,7 @@ const cloneInstall = async ({ target, main, log, worktrees }) => {
     log(`node_modules: linked from ${source.dir} in ${seconds(started)} (${placed.importers} project(s), ${placed.links} links, packages in ${store}).`);
     return { source: source.dir, store };
   } catch (error) {
-    undo(target, source.state);
+    await undo({ target, state: source.state, mains });
     log(`node_modules: the copy failed (${error?.message ?? error}); running a real install.`);
     return null;
   }

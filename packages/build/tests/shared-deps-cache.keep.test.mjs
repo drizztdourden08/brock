@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
@@ -166,10 +166,8 @@ describe('shareDeps', () => {
     const shared = tempDir();
     const first = app();
     expect(shareDeps({ config: first.config, rootDir: first.root, sharedRoot: shared })).toBe('published');
-    const { root: clone, config } = app({ withCache: false });
-    const store = tempDir();
-    cpSync(join(clone, 'node_modules/.pnpm'), store, { recursive: true });
-    rmSync(join(clone, 'node_modules/.pnpm/picker@1.0.0'), { recursive: true });
+    const { root: clone, config } = app({ withCache: false, withPackages: false });
+    const store = join(app({ withCache: false }).root, 'node_modules/.pnpm');
     put(clone, 'node_modules/.modules.yaml', `nodeLinker: isolated\nvirtualStoreDir: ${store}\n`);
     expect(shareDeps({ config, rootDir: clone, sharedRoot: shared })).toBe('seeded');
     expect(join(clone, 'node_modules/.vite/deps', metadataOf(clone).optimized.picker.src)).toBe(join(store, 'picker@1.0.0/node_modules/picker/index.js'));

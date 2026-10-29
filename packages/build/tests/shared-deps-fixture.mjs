@@ -31,14 +31,16 @@ const depsFixture = ({ tempDir, put }) => {
     ...overrides,
   });
 
-  const app = ({ version = '1.0.0', lockfile = LOCKFILE, withCache = true } = {}) => {
+  const app = ({ version = '1.0.0', lockfile = LOCKFILE, withCache = true, withPackages = true } = {}) => {
     const root = tempDir();
     put(root, 'package.json', '{"name":"app"}');
     put(root, 'src/index.html', '');
     put(root, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
     put(root, 'node_modules/.pnpm/lock.yaml', lockfile);
-    put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/package.json`, JSON.stringify({ name: 'picker', version }));
-    put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/index.js`, 'export default 1;');
+    if (withPackages) {
+      put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/package.json`, JSON.stringify({ name: 'picker', version }));
+      put(root, `node_modules/.pnpm/picker@${version}/node_modules/picker/index.js`, 'export default 1;');
+    }
     const config = makeConfig(root);
     if (withCache) {
       const hashes = viteHashes(config, { content: lockfile });

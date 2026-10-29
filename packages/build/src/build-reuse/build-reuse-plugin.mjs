@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { virtualStoreOf } from '../shared-deps-cache/virtual-store-of.mjs';
+import { virtualStoreOf } from '@drizztdourden08/build-cache/vite-deps';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { DEV_MODE, MODE_ENV, VIRTUAL_PREFIX } from './build-reuse.constants.mjs';
 import { configKey } from './config-key.mjs';
@@ -30,7 +30,7 @@ const outputsOf = (bundle) => {
 const packageStoreOf = (rootDir) => {
   const workspace = findWorkspaceRoot(rootDir) ?? rootDir;
   const lockfile = join(workspace, 'node_modules', '.pnpm', 'lock.yaml');
-  return existsSync(lockfile) ? virtualStoreOf(lockfile) : null;
+  return existsSync(lockfile) ? virtualStoreOf(workspace) : null;
 };
 
 /**

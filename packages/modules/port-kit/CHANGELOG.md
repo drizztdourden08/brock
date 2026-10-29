@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.116.0
+
+### Patch Changes
+
+- Updated dependencies [a162748]
+- Updated dependencies [bc9ba38]
+  - @drizztdourden08/brock-electron@0.116.0
+  - @drizztdourden08/brock-react@0.116.0
+  - @drizztdourden08/brock-core@0.116.0
+
 ## 0.115.5
 
 ### Patch Changes

@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
-import { METADATA_FILE, ROOT_MARK } from './vite-deps.constants.mjs';
+import { METADATA_FILE, PACKAGES_MARK, ROOT_MARK } from './vite-deps.constants.mjs';
+import { virtualStoreOf } from './virtual-store-of.mjs';
 
 /**
  * @typedef {{ lockfileHash: string, configHash: string, hash: string }} DepsHashes what Vite writes into _metadata.json and compares on start
@@ -49,12 +50,22 @@ const inside = (root, path) => {
 /**
  * @param {Record<string, any>} metadata as Vite wrote it
  * @param {{ depsDir: string, installRoot: string }} where the folder it was written in and the install folder
- * @returns {Record<string, any>} src paths inside the install folder as @root paths
+ * @returns {Record<string, any>} src paths in the store or install folder as @root paths
  */
-const portableMetadata = (metadata, { depsDir, installRoot }) => mapSources(metadata, (src) => {
-  const path = resolve(depsDir, src);
-  return inside(installRoot, path) ? `${ROOT_MARK}${relative(installRoot, path).split('\\').join('/')}` : path;
-});
+const portableMetadata = (metadata, { depsDir, installRoot }) => {
+  const packages = virtualStoreOf(installRoot);
+  const posix = (path) => path.split(String.fromCharCode(92)).join('/');
+  return mapSources(metadata, (src) => {
+    const path = resolve(depsDir, src);
+    if (inside(packages, path)) return `${ROOT_MARK}${PACKAGES_MARK}${posix(relative(packages, path))}`;
+    return inside(installRoot, path) ? `${ROOT_MARK}${posix(relative(installRoot, path))}` : path;
+  });
+};
+
+const localSource = (src, installRoot) => {
+  const rest = src.slice(ROOT_MARK.length);
+  return rest.startsWith(PACKAGES_MARK) ? join(virtualStoreOf(installRoot), rest.slice(PACKAGES_MARK.length)) : join(installRoot, rest);
+};
 
 /**
  * @param {Record<string, any>} metadata a portable one
@@ -62,7 +73,7 @@ const portableMetadata = (metadata, { depsDir, installRoot }) => mapSources(meta
  * @returns {Record<string, any>} absolute `src` paths and this worktree's hashes
  */
 const localMetadata = (metadata, { installRoot, hashes }) => ({
-  ...mapSources(metadata, (src) => (src.startsWith(ROOT_MARK) ? join(installRoot, src.slice(ROOT_MARK.length)) : src)),
+  ...mapSources(metadata, (src) => (src.startsWith(ROOT_MARK) ? localSource(src, installRoot) : src)),
   ...hashes,
 });
 

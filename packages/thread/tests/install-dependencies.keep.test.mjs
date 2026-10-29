@@ -24,8 +24,8 @@ const workspace = () => {
   return root;
 };
 
-describe('installDependencies', () => {
-  it('installs a workspace once when the root install also fills the app, even with two targets on one app', () => {
+describe('installDependencies', async () => {
+  it('installs a workspace once when the root install also fills the app, even with two targets on one app', async () => {
     const root = workspace();
     exec.mockImplementation((_command, _args, { cwd }) => {
       mkdirSync(join(cwd, 'node_modules'), { recursive: true });
@@ -33,16 +33,16 @@ describe('installDependencies', () => {
     });
     const appDir = () => join(root, 'apps', 'desktop');
     const ctx = { targets: { desktop: { appDir }, server: { appDir } }, log: () => {} };
-    installDependencies({ path: root }, {}, ctx);
+    await installDependencies({ path: root }, { 'no-clone': true }, ctx);
     expect(exec.mock.calls.map(([, , options]) => options.cwd)).toEqual([root]);
   });
 
-  it('still installs an app the root install left without node_modules, once', () => {
+  it('still installs an app the root install left without node_modules, once', async () => {
     const root = workspace();
     exec.mockImplementation((_command, _args, { cwd }) => mkdirSync(join(cwd, 'node_modules'), { recursive: true }));
     const appDir = () => join(root, 'apps', 'desktop');
     const ctx = { targets: { desktop: { appDir }, server: { appDir } }, log: () => {} };
-    installDependencies({ path: root }, {}, ctx);
+    await installDependencies({ path: root }, { 'no-clone': true }, ctx);
     expect(exec.mock.calls.map(([, , options]) => options.cwd)).toEqual([root, join(root, 'apps', 'desktop')]);
   });
 });

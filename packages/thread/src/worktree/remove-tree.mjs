@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { gitAt, LONG_PATHS, tryGitAt } from '../git.mjs';
+import { unlockClone } from './clone-lock.mjs';
 import { assertNotCheckout, deleteTree, isStrictlyInside } from './delete-tree.mjs';
 import { ignoredFolders } from './ignored-folders.mjs';
 import { removeLinksFirst } from './links-first.mjs';
@@ -46,6 +47,7 @@ const removeTree = async (path, main, log, owner = dirname(resolve(path))) => {
   assertTrackedClean(full);
   const links = removeLinksFirst(full);
   if (links > 0) log(`Removed ${links} link(s) as links first, so nothing they point to is touched.`);
+  if (unlockClone(full, main)) log('Lifted the clone lock; the links are gone, so git can remove the folder.');
   const failures = await clearIgnored(full, main);
   let gitError = '';
   try {

@@ -30,6 +30,18 @@ describe('ensure-electron', () => {
     expect(commands.join('\n')).not.toMatch(/pnpm|--force/);
   });
 
+  it('neither repairs nor writes a package that sits in a shared package store', () => {
+    const root = brockWorkspace({
+      '.brock-store.json': '{}',
+      'node_modules/electron/package.json': ELECTRON_PACKAGE,
+      'node_modules/electron/install.js': '\n',
+    });
+    const result = ensureElectron(root);
+    expect(result.ok).toBe(false);
+    expect(result.message).toContain('shared package store');
+    expect(exec).not.toHaveBeenCalled();
+  });
+
   it('names the app folder as the install folder when the app is the repo', () => {
     const root = brockWorkspace({ 'node_modules/electron/package.json': ELECTRON_PACKAGE });
     const result = ensureElectron(root);

@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { electronEntryId, restoreElectron, storeElectron } from '../src/electron/electron-cache.mjs';
+import { electronEntryId, insideSharedStore, restoreElectron, storeElectron } from '../src/electron/electron-cache.mjs';
 import { entryPaths } from '../src/store/entry-path.mjs';
 import { cacheTestTree } from './cache-test-tree.mjs';
 
@@ -20,6 +20,19 @@ const electronPackage = (withDist) => {
 };
 
 describe('electron cache', () => {
+  it('never restores into a package that sits in a shared package store', async () => {
+    const root = tempDir();
+    await storeElectron(electronPackage(true), { root });
+    const entry = tempDir();
+    put(entry, { '.brock-store.json': '{}' });
+    const inStore = join(entry, 'node_modules', '.pnpm', 'electron@42.1.0', 'node_modules', 'electron');
+    put(inStore, { 'package.json': JSON.stringify({ name: 'electron', version: VERSION }), 'install.js': '\n' });
+    expect(insideSharedStore(inStore)).toBe(true);
+    expect(restoreElectron(inStore, { root })).toBe('skipped');
+    expect(existsSync(join(inStore, 'dist'))).toBe(false);
+    expect(insideSharedStore(electronPackage(false))).toBe(false);
+  });
+
   it('stores a ready binary once, then restores it into a fresh install at another path', async () => {
     const root = tempDir();
     const ready = electronPackage(true);

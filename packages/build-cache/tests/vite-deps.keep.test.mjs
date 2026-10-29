@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind test */
 import { execFileSync, spawn } from 'node:child_process';
 import { readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { listEntries } from '../src/store/list-entries.mjs';
@@ -20,18 +20,23 @@ afterEach(() => {
 const STORE_CLI = fileURLToPath(new URL('../src/vite-deps/store-vite-deps-cli.mjs', import.meta.url));
 const HASHES = { lockfileHash: 'aaaaaaaa', configHash: 'bbbbbbbb', hash: 'cccccccc' };
 
-const worktree = ({ hashes = HASHES, withDeps = true } = {}) => {
+const worktree = ({ hashes = HASHES, withDeps = true, shared = false } = {}) => {
   const installRoot = tempDir();
-  put(installRoot, { 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js': 'export default 1;', 'node_modules/outside.js': 'export default 2;' });
+  const packages = shared ? join(tempDir(), 'store') : join(installRoot, 'node_modules/.pnpm');
+  const picker = join(packages, 'picker@1.0.0/node_modules/picker/index.js');
+  put(installRoot, { 'node_modules/outside.js': 'export default 2;' });
+  put(packages, { 'picker@1.0.0/node_modules/picker/index.js': 'export default 1;' });
+  if (shared) put(installRoot, { 'node_modules/.modules.yaml': `virtualStoreDir: ${packages}
+` });
   const depsDir = join(installRoot, 'node_modules/.vite/deps');
   if (withDeps) {
     const optimized = {
-      picker: { src: '../../.pnpm/picker@1.0.0/node_modules/picker/index.js', file: 'picker.js', fileHash: 'f1', needsInterop: false },
+      picker: { src: relative(depsDir, picker).split(sep).join('/'), file: 'picker.js', fileHash: 'f1', needsInterop: false },
       outside: { src: '../../outside.js', file: 'outside.js', fileHash: 'f2', needsInterop: false },
     };
     put(depsDir, { '_metadata.json': JSON.stringify({ ...hashes, browserHash: 'b1', optimized, chunks: { 'chunk-1': { file: 'chunk-1.js' } } }), 'picker.js': 'one', 'outside.js': 'two', 'chunk-1.js': 'three', 'package.json': '{"type":"module"}' });
   }
-  return { installRoot, depsDir };
+  return { installRoot, depsDir, packages };
 };
 
 const inputOf = (tree, extra = {}) => ({ ...tree, version: '7.3.7', buildKey: 'linux-x64-abc', hashes: HASHES, ...extra });
@@ -79,6 +84,24 @@ describe('vite deps restore', () => {
     expect(metadata.optimized.picker.src).toBe(join(other.installRoot, 'node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js'));
     expect(readFileSync(join(other.depsDir, 'chunk-1.js'), 'utf8')).toBe('three');
     expect(restoreViteDeps(inputOf(other, { root, hashes }))).toBe('ready');
+  });
+
+  it('restores into a worktree whose packages live in a shared store, pointing the source into that store', async () => {
+    const root = tempDir();
+    await stored(root);
+    const cloned = worktree({ withDeps: false, shared: true });
+    expect(restoreViteDeps(inputOf(cloned, { root }))).toBe('restored');
+    const metadata = JSON.parse(readFileSync(join(cloned.depsDir, '_metadata.json'), 'utf8'));
+    expect(metadata.optimized.picker.src).toBe(join(cloned.packages, 'picker@1.0.0/node_modules/picker/index.js'));
+  });
+
+  it('stores a pre-bundle made in a shared-store worktree with the same portable sources, and restores it into a normal one', async () => {
+    const root = tempDir();
+    expect(await storeViteDeps(inputOf(worktree({ shared: true }), { root }))).toBe('stored');
+    const [{ dir }] = entries(root);
+    expect(JSON.parse(readFileSync(join(dir, 'files', '_metadata.json'), 'utf8')).optimized.picker.src).toBe('@root/node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js');
+    const plain = worktree({ withDeps: false });
+    expect(restoreViteDeps(inputOf(plain, { root }))).toBe('restored');
   });
 
   it('reads a missing source, a damaged file or a broken manifest as a miss and leaves no half folder', async () => {

@@ -1,12 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { randomBytes } from 'node:crypto';
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { writeFileAtomic } from '../local/atomic-write.mjs';
 import { ciDir } from './ci-paths.mjs';
-
-const RENAME_TRIES = 6;
-
-const pause = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 
 /**
  * @param {Date} [now]
@@ -19,20 +16,7 @@ const newRunId = (now = new Date()) => `${now.toISOString().replace(/[-:.]/g, ''
  * @param {object} record
  * @returns {void}
  */
-const writeRecord = (file, record) => {
-  mkdirSync(dirname(file), { recursive: true });
-  const staged = `${file}.${process.pid}.tmp`;
-  writeFileSync(staged, `${JSON.stringify(record, null, 2)}\n`);
-  for (let attempt = 1; ; attempt += 1) {
-    try {
-      renameSync(staged, file);
-      return;
-    } catch (error) {
-      if (attempt === RENAME_TRIES) throw error;
-      pause(40 * attempt);
-    }
-  }
-};
+const writeRecord = (file, record) => writeFileAtomic(file, `${JSON.stringify(record, null, 2)}\n`);
 
 /**
  * @param {string} project

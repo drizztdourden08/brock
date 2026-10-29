@@ -77,14 +77,17 @@ const linksUnder = (dir, found = []) => {
 const clone = (target, source) => cloneInstall({ target, main: source, log: () => undefined, worktrees: [] });
 
 describe('cloneInstall', () => {
-  it('links node_modules from a checkout of the same lockfile, every link outside the source checkout', async () => {
+  it('links node_modules from a checkout of the same lockfile, every link outside the source checkout, root packages above the store', async () => {
     const source = installedCheckout();
     const target = freshCheckout();
     const result = await clone(target, source);
     expect(result?.source).toBe(source);
     expect(readFileSync(join(target, 'node_modules/dep/package.json'), 'utf8')).toContain('"dep"');
     expect(realpathSync(join(target, 'node_modules/@ws/pkg'))).toBe(join(target, 'packages', 'pkg'));
-    for (const { path, target: to } of [...linksUnder(join(target, 'node_modules')), ...linksUnder(result.store)]) {
+    const entry = dirname(dirname(result.store));
+    expect(existsSync(join(entry, 'node_modules/dep/package.json'))).toBe(true);
+    expect(existsSync(join(entry, 'node_modules/@ws/pkg'))).toBe(false);
+    for (const { path, target: to } of [...linksUnder(join(target, 'node_modules')), ...linksUnder(entry)]) {
       expect(isInside(source, to) && !isInside(target, to), `${path} -> ${to}`).toBe(false);
     }
     expect(readFileSync(join(target, 'node_modules/.bin/dep.CMD'), 'utf8')).not.toContain(source);

@@ -527,6 +527,9 @@ importers:
       '@drizztdourden08/standards':
         specifier: '>=0.11.0 <1'
         version: 0.12.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)
+      yaml:
+        specifier: ^2.9.1
+        version: 2.9.1
 
   templates/app:
     dependencies:

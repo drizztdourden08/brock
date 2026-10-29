@@ -21,6 +21,33 @@ const git = (args, cwd) => {
   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 };
 
+const REPO_ENV = Object.freeze(['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR', 'GIT_OBJECT_DIRECTORY', 'GIT_PREFIX']);
+
+/**
+ * @returns {NodeJS.ProcessEnv} the environment, no variable names a repo
+ */
+const repoFreeEnv = () => Object.fromEntries(Object.entries(process.env).filter(([key]) => !REPO_ENV.includes(key.toUpperCase())));
+
+/**
+ * @param {string[]} args
+ * @param {string} cwd the repository git answers for, never the env
+ * @returns {string} the trimmed output
+ */
+const gitAt = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoFreeEnv() }).trim();
+
+/**
+ * @param {string[]} args
+ * @param {string} cwd
+ * @returns {string | null} the trimmed output, null when git failed
+ */
+const tryGitAt = (args, cwd) => {
+  try {
+    return gitAt(args, cwd);
+  } catch {
+    return null;
+  }
+};
+
 const tryGit = (args, cwd) => {
   try {
     return git(args, cwd);
@@ -44,4 +71,4 @@ const remoteBranch = (branch, cwd) => {
 
 const pushBranch = (branch, cwd) => gitLoud(['push', '--set-upstream', 'origin', branch], cwd);
 
-export { git, gitLoud, LONG_PATHS, pushBranch, remoteBranch, tryGit };
+export { git, gitAt, gitLoud, LONG_PATHS, pushBranch, remoteBranch, tryGit, tryGitAt };

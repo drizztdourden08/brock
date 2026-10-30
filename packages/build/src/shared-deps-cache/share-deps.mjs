@@ -32,11 +32,11 @@ const shareDeps = ({ config, rootDir, store = storeViteDepsDetached }) => {
   const version = viteVersionOf(rootDir);
   if (!lockfile) return 'no-lockfile';
   if (!version) return 'no-vite';
-  const buildKey = depsBuildKey({ vite: version, lockfile, configHash: configHashOf(config, { portable: true }) });
+  const buildKey = depsBuildKey({ vite: version, lockfile, configHash: configHashOf(config, { portable: true, installRoot: lockfile.installRoot }) });
   const input = { depsDir: join(config.cacheDir, DEPS_FOLDER), installRoot: lockfile.installRoot, version, buildKey, hashes: viteHashes(config, lockfile) };
   const outcome = restoreViteDeps(input);
   if (outcome !== 'restored') store(input);
   return REPORTED[outcome];
 };
 
-export { depsBuildKey, shareDeps, viteVersionOf };
+export { depsBuildKey, shareDeps };

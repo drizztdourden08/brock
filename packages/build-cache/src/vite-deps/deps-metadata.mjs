@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
-import { isAbsolute, join, relative, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { METADATA_FILE, PACKAGES_MARK, ROOT_MARK } from './vite-deps.constants.mjs';
+import { below, storeRelativeOf } from './store-paths.mjs';
 import { virtualStoreOf } from './virtual-store-of.mjs';
 
 /**
@@ -42,23 +43,19 @@ const mapSources = (metadata, map) => ({
   optimized: Object.fromEntries(Object.entries(metadata.optimized).map(([id, info]) => [id, typeof info?.src === 'string' ? { ...info, src: map(info.src) } : info])),
 });
 
-const inside = (root, path) => {
-  const rel = relative(root, path);
-  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
-};
-
 /**
  * @param {Record<string, any>} metadata as Vite wrote it
  * @param {{ depsDir: string, installRoot: string }} where the folder it was written in and the install folder
  * @returns {Record<string, any>} src paths in the store or install folder as @root paths
  */
 const portableMetadata = (metadata, { depsDir, installRoot }) => {
-  const packages = virtualStoreOf(installRoot);
-  const posix = (path) => path.split(String.fromCharCode(92)).join('/');
+  const inStore = storeRelativeOf(installRoot);
   return mapSources(metadata, (src) => {
     const path = resolve(depsDir, src);
-    if (inside(packages, path)) return `${ROOT_MARK}${PACKAGES_MARK}${posix(relative(packages, path))}`;
-    return inside(installRoot, path) ? `${ROOT_MARK}${posix(relative(installRoot, path))}` : path;
+    const packaged = inStore(path);
+    if (packaged !== null) return `${ROOT_MARK}${PACKAGES_MARK}${packaged}`;
+    const local = below(installRoot, path);
+    return local === null ? path : `${ROOT_MARK}${local}`;
   });
 };
 

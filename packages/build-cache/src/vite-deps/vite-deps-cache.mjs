@@ -131,4 +131,5 @@ const storeViteDepsDetached = (input) => {
 };
 
 export { restoreViteDeps, storeViteDeps, storeViteDepsDetached };
+export { storeRelativeOf } from './store-paths.mjs';
 export { virtualStoreOf } from './virtual-store-of.mjs';

@@ -1,8 +1,9 @@
 /* @layer tooling-scripts @kind logic */
 import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
-import { dirname, isAbsolute, join, relative } from 'node:path';
-import { PNPM_LOCKFILE } from './shared-deps-cache.constants.mjs';
+import { dirname, isAbsolute, join, relative, sep } from 'node:path';
+import { storeRelativeOf } from '@drizztdourden08/build-cache/vite-deps';
+import { PNPM_LOCKFILE, STORE_TOKEN } from './shared-deps-cache.constants.mjs';
 
 /**
  * @param {string} text
@@ -44,27 +45,45 @@ const optimizerPart = (optimizeDeps) => ({
   ...('rolldownOptions' in optimizeDeps ? { rolldownOptions: rolldownPart(optimizeDeps.rolldownOptions) } : { esbuildOptions: esbuildPart(optimizeDeps.esbuildOptions) }),
 });
 
-const portablePath = (root, value) => (typeof value === 'string' && isAbsolute(value) ? relative(root, value).split('\\').join('/') : value);
+const FS_PREFIX = '/@fs/';
+const WINDOWS_DRIVE = /^[A-Za-z]:/;
+
+const fsPathOf = (value) => {
+  if (!value.startsWith(FS_PREFIX)) return value;
+  const rest = value.slice(FS_PREFIX.length);
+  return WINDOWS_DRIVE.test(rest) ? rest : `/${rest}`;
+};
+
+const portablePathOf = (root, installRoot) => {
+  const inStore = installRoot ? storeRelativeOf(installRoot) : () => null;
+  return (value) => {
+    if (typeof value !== 'string' || !isAbsolute(value)) return value;
+    const path = fsPathOf(value);
+    const packaged = inStore(path);
+    return packaged === null ? relative(root, path).split(sep).join('/') : `${STORE_TOKEN}/${packaged}`;
+  };
+};
 
 const aliasEntries = (alias) => (Array.isArray(alias) ? alias : Object.entries(alias ?? {}).map(([find, replacement]) => ({ find, replacement })));
 
-const resolvePart = (resolve, root, portable) => {
-  if (!portable) return resolve;
-  return { ...resolve, alias: aliasEntries(resolve.alias).map(({ find, replacement }) => ({ find, replacement: portablePath(root, replacement) })) };
+const resolvePart = (resolve, portablePath) => {
+  if (!portablePath) return resolve;
+  return { ...resolve, alias: aliasEntries(resolve.alias).map(({ find, replacement }) => ({ find, replacement: portablePath(replacement) })) };
 };
 
 /**
  * @param {import('vite').ResolvedConfig} config
- * @param {{ portable?: boolean }} [options] portable drops the root, keeps aliases relative to it
+ * @param {{ portable?: boolean, installRoot?: string }} [options] portable: no root, store paths as tokens
  * @returns {string} Vite's own config hash, rebuilt from the resolved config
  */
-const configHashOf = (config, { portable = false } = {}) => {
+const configHashOf = (config, { portable = false, installRoot } = {}) => {
   const client = config.environments?.client ?? config;
   const pick = (key) => client[key] ?? config[key];
+  const portablePath = portable ? portablePathOf(config.root, installRoot) : null;
   return getHash(JSON.stringify({
     define: config.keepProcessEnv ? null : process.env.NODE_ENV || config.mode,
     root: portable ? '' : config.root,
-    resolve: resolvePart(pick('resolve'), config.root, portable),
+    resolve: resolvePart(pick('resolve'), portablePath),
     assetsInclude: config.assetsInclude,
     plugins: pick('plugins').map((plugin) => plugin.name),
     optimizeDeps: optimizerPart(pick('optimizeDeps')),

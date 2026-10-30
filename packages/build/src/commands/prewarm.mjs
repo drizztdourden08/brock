@@ -6,7 +6,7 @@ import { restoreSharedBuild } from '../build-reuse/shared-build/restore-shared-b
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { importFromApp } from '../import-from-app.mjs';
-import { depsEntryExists } from '../shared-deps-cache/deps-entry-exists.mjs';
+import { depsReady } from '../shared-deps-cache/shared-deps-cache-plugin.mjs';
 
 const TAG = 'brock prewarm:';
 
@@ -15,10 +15,12 @@ const seconds = (since) => `${Math.round((Date.now() - since) / 1000)} s`;
 /**
  * @param {any} vite the app's vite
  * @param {Record<string, any>} renderer the renderer config of electron-vite dev
- * @returns {Promise<number>} how many dependencies were pre-bundled
+ * @returns {Promise<number | null>} bundled count; null when restored
  */
 const optimizeRenderer = async (vite, renderer) => {
-  const metadata = await vite.optimizeDeps(await vite.resolveConfig(renderer, 'serve', DEV_MODE));
+  const config = await vite.resolveConfig(renderer, 'serve', DEV_MODE);
+  if (depsReady(config)) return null;
+  const metadata = await vite.optimizeDeps(config);
   await vite.resolveConfig(renderer, 'serve', DEV_MODE);
   return Object.keys(metadata?.optimized ?? {}).length;
 };
@@ -36,17 +38,13 @@ const warm = async (rootDir, started) => {
   const electron = ensureElectron(rootDir);
   if (!electron.ok) console.warn(`${TAG} ${electron.message}`);
   const shared = restoreSharedBuild(rootDir, { log: (line) => console.log(`${TAG} ${line}`) });
-  if (shared.hit && depsEntryExists(rootDir)) {
-    console.log(`${TAG} renderer dependencies come from the build cache when the app starts; ready in ${seconds(started)}.`);
-    return null;
-  }
   const [electronVite, vite] = await Promise.all([importFromApp(rootDir, 'electron-vite'), importFromApp(rootDir, 'vite')]);
   const { main, preload, renderer } = (await electronVite.resolveConfig({ root: rootDir }, 'serve', DEV_MODE)).config ?? {};
   const sides = { main, preload };
   for (const name of shared.missed.filter((side) => sides[side])) await vite.build(sides[name]);
   if (shared.missed.length > 0) console.log(`${TAG} ${shared.missed.join(' and ')} built in ${seconds(started)}.`);
   const count = renderer ? await optimizeRenderer(vite, renderer) : 0;
-  console.log(`${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
+  console.log(count === null ? `${TAG} renderer dependencies are in place from the build cache; ready in ${seconds(started)}.` : `${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
   return null;
 };
 

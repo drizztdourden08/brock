@@ -6,6 +6,7 @@ import * as vite from 'vite';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { depsBuildKey, shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
 import { configHashOf, lockfileOf, viteHashes } from '../src/shared-deps-cache/vite-hash.mjs';
+import { serveConfig } from './store-install.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-deps-vite-');
@@ -29,15 +30,7 @@ const worktree = () => {
   return root;
 };
 
-const resolved = (root) => vite.resolveConfig({
-  root: join(root, 'src'),
-  configFile: false,
-  logLevel: 'silent',
-  cacheDir: join(root, 'node_modules/.vite'),
-  resolve: { alias: { '@app': join(root, 'src') } },
-  optimizeDeps: { include: ['dummy-dep'] },
-  plugins: [{ name: 'fixture' }],
-}, 'serve', 'development');
+const resolved = (root) => serveConfig(root, [{ name: 'fixture' }]);
 
 const metadataOf = (root) => JSON.parse(readFileSync(join(root, 'node_modules/.vite/deps/_metadata.json'), 'utf8'));
 

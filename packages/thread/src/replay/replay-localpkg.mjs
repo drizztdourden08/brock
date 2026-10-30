@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
+import { coordHome } from '../local/coord-home.mjs';
 import { attempt } from './replay-exec.mjs';
 
 const FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
@@ -8,11 +9,24 @@ const EXACT = /^v?\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/;
 
 const slash = (path) => String(path).replace(/\\/g, '/').toLowerCase();
 
+const HOOK_MARKER = 'localpkg: generated';
+
 /**
- * @param {string[]} args localpkg arguments
- * @returns {{ command: string, args: string[] }} localpkg, or node on LOCALPKG_BIN
+ * @param {Function} exec the runner seam
+ * @param {string} cwd the repo root
+ * @returns {{ command: string, prefix: string[] } | null} LOCALPKG_BIN, else localpkg on the PATH
  */
-const localpkgCall = (args) => (process.env.LOCALPKG_BIN ? { command: 'node', args: [process.env.LOCALPKG_BIN, ...args] } : { command: 'localpkg', args });
+const resolveBinary = (exec, cwd) => {
+  if (process.env.LOCALPKG_BIN) return { command: 'node', prefix: [process.env.LOCALPKG_BIN] };
+  return attempt(exec, 'localpkg', ['help'], cwd) === null ? null : { command: 'localpkg', prefix: [] };
+};
+
+/**
+ * @param {{ command: string, prefix: string[] } | null} binary
+ * @param {string[]} args localpkg arguments
+ * @returns {{ command: string, args: string[] }} the call, with the bare name when no binary resolved
+ */
+const localpkgCall = (binary, args) => ({ command: binary?.command ?? 'localpkg', args: [...(binary?.prefix ?? []), ...args] });
 
 const readManifest = (cwd, relative) => {
   const file = join(cwd, relative);
@@ -29,14 +43,27 @@ const manifestsOf = (exec, cwd) => {
   return [...names].map((name) => readManifest(cwd, name)).filter(Boolean);
 };
 
-/**
- * @param {Function} exec the runner seam
- * @param {string} cwd the repo root
- * @returns {{ builds: object[], consumers: object[] }} localpkg status, empty when unreadable
- */
-const localpkgStatus = (exec, cwd) => {
+const readJson = (file) => {
   try {
-    const { command, args } = localpkgCall(['status', '--json']);
+    return JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    return {};
+  }
+};
+
+const stateFiles = () => {
+  const home = process.env.LOCALPKG_HOME || join(coordHome(), 'localpkg');
+  const index = readJson(join(home, 'index.json')).packages ?? {};
+  const consumers = readJson(join(home, 'consumers.json'));
+  return {
+    builds: Object.entries(index).map(([name, entry]) => ({ name, ...entry })),
+    consumers: Object.keys(consumers).map((root) => ({ root })),
+  };
+};
+
+const statusByBinary = (exec, cwd, binary) => {
+  try {
+    const { command, args } = localpkgCall(binary, ['status', '--json']);
     const parsed = JSON.parse(attempt(exec, command, args, cwd));
     return { builds: parsed.builds ?? [], consumers: parsed.consumers ?? [] };
   } catch {
@@ -44,12 +71,33 @@ const localpkgStatus = (exec, cwd) => {
   }
 };
 
+const hookPresent = (cwd) => {
+  try {
+    return readFileSync(join(cwd, '.pnpmfile.cjs'), 'utf8').includes(HOOK_MARKER);
+  } catch {
+    return false;
+  }
+};
+
 /**
- * @param {{ consumers: object[] }} status
+ * @param {Function} exec the runner seam
+ * @param {string} cwd the repo root
+ * @param {object | null} binary the resolved localpkg
+ * @returns {{ builds: object[], consumers: object[], hook: boolean }} the state files, the binary status and the hook file
+ */
+const localpkgStatus = (exec, cwd, binary) => {
+  const files = stateFiles();
+  const live = binary ? statusByBinary(exec, cwd, binary) : { builds: [], consumers: [] };
+  const builds = new Map([...files.builds, ...live.builds].map((build) => [build.name, build]));
+  return { builds: [...builds.values()], consumers: [...files.consumers, ...live.consumers], hook: hookPresent(cwd) };
+};
+
+/**
+ * @param {{ consumers: object[], hook: boolean }} status
  * @param {string} cwd the repo root
  * @returns {boolean} true when localpkg is on for this repo
  */
-const isConsumer = (status, cwd) => status.consumers.some((entry) => slash(entry.root) === slash(cwd));
+const isConsumer = (status, cwd) => status.hook || status.consumers.some((entry) => slash(entry.root) === slash(cwd));
 
 const versionNeeded = (spec, built) => (EXACT.test(spec) ? spec.replace(/^v/, '') : built);
 
@@ -71,4 +119,4 @@ const neededVersions = ({ exec, cwd, status }) => {
   return [...needs.values()];
 };
 
-export { isConsumer, localpkgCall, localpkgStatus, neededVersions };
+export { isConsumer, localpkgCall, localpkgStatus, neededVersions, resolveBinary };

@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { stop } from '../release/local/release-stop.mjs';
 import { attempt, lastLine } from './replay-exec.mjs';
 import { lockProblem } from './replay-guard.mjs';
-import { isConsumer, localpkgCall, localpkgStatus, neededVersions } from './replay-localpkg.mjs';
+import { isConsumer, localpkgCall, localpkgStatus, neededVersions, resolveBinary } from './replay-localpkg.mjs';
 import { registryOf } from './replay-sources.mjs';
 
 const MESSAGE = 'chore: lockfile for the replayed versions';
@@ -26,29 +26,37 @@ const checkNeed = (exec, cwd, need) => {
 
 const viewCommand = (need) => `npm view ${need.name}@${need.version} version --registry ${need.registry ?? '(none in .npmrc)'}`;
 
-const offCall = (cwd) => localpkgCall(['off', cwd, '--no-install']);
+const offCall = (binary, cwd) => localpkgCall(binary, ['off', cwd, '--no-install']);
 
-const commandsOf = (needs, cwd) => [
+const commandsOf = (needs, off) => [
   ...needs.map(viewCommand),
-  [offCall(cwd).command, ...offCall(cwd).args].join(' '),
+  [off.command, ...off.args].join(' '),
   'pnpm install --no-frozen-lockfile',
   `verify ${LOCK} holds no file: outside the repo and no .coord/localpkg`,
   `git add -- ${LOCK}`,
   `git commit -m "${MESSAGE}" -- ${LOCK}`,
 ];
 
+const blockReason = ({ binary, missing }) => {
+  if (!binary) return 'localpkg is not found: LOCALPKG_BIN is unset and localpkg is not on the PATH. Set LOCALPKG_BIN to the localpkg script.';
+  return missing.length > 0 ? `${missing.join(', ')} not on the registry yet. Replay its repo first.` : null;
+};
+
 /**
  * @param {{ exec: Function, cwd: string, integration: string }} request
  * @returns {object | null} the lockfile step, null without localpkg work
  */
 const lockfileItem = ({ exec, cwd, integration }) => {
-  const status = localpkgStatus(exec, cwd);
+  const binary = resolveBinary(exec, cwd);
+  const status = localpkgStatus(exec, cwd, binary);
   const found = neededVersions({ exec, cwd, status });
   if (!isConsumer(status, cwd) && found.length === 0) return null;
   const needs = found.map((need) => checkNeed(exec, cwd, need));
   const missing = needs.filter((need) => !need.present).map((need) => `${need.name}@${need.version}`);
-  const blocked = missing.length > 0 ? { blocked: `${missing.join(', ')} not on the registry yet. Replay its repo first.` } : {};
-  return { kind: 'lockfile', id: 'lockfile', title: 'Regenerate pnpm-lock.yaml for the replayed versions', commands: commandsOf(needs, cwd), integration, needs, ...blocked };
+  const off = offCall(binary, cwd);
+  const reason = blockReason({ binary, missing });
+  const blocked = reason ? { blocked: reason } : {};
+  return { kind: 'lockfile', id: 'lockfile', title: 'Regenerate pnpm-lock.yaml for the replayed versions', commands: commandsOf(needs, off), integration, needs, off, ...blocked };
 };
 
 /**
@@ -59,8 +67,7 @@ const lockfileItem = ({ exec, cwd, integration }) => {
 const runLockfile = (item, { exec, cwd, log }) => {
   const branch = lastLine(attempt(exec, 'git', ['rev-parse', '--abbrev-ref', 'HEAD'], cwd));
   if (branch !== item.integration) throw stop(`The lockfile commit goes on ${item.integration}, but ${branch ?? 'no branch'} is checked out.`, 1);
-  const off = offCall(cwd);
-  exec(off.command, off.args, { cwd });
+  exec(item.off.command, item.off.args, { cwd });
   exec('pnpm', ['install', '--no-frozen-lockfile'], { cwd });
   const problem = lockProblem(readFileSync(join(cwd, LOCK), 'utf8'), cwd);
   if (problem) throw stop(`${LOCK} still holds ${problem} after the install.`, 1);

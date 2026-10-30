@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind test */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { makeRelease, makeRemote, mutating, pr, useReplayWorld, write } from './replay-fixture.mjs';
 
 const t = useReplayWorld({ LOCALPKG_BIN: 'localpkg.mjs' });
@@ -66,6 +66,37 @@ describe('replay plan lockfile step', () => {
     expect(verb('run', { go: true }, remote)).toBe(1);
     expect(t.errors.join('\n')).toContain('@acme/lib@2.0.0');
     expect(sequence(remote).some((call) => call.startsWith('pnpm') || call.includes(' off '))).toBe(false);
+    expect(mutating(remote.state.calls)).toEqual([]);
+  });
+});
+
+describe('replay lockfile step without the localpkg binary', () => {
+  const blindRemote = () => {
+    vi.stubEnv('LOCALPKG_BIN', '');
+    return makeRemote({ prs: PRS, failOn: 'localpkg' });
+  };
+
+  const consumerBySignal = {
+    'the consumers file': () => write(join(t.world.home, 'localpkg', 'consumers.json'), JSON.stringify({ [t.world.repo.replace(/[\\]/g, '/')]: { since: 'x' } })),
+    'the generated pnpmfile': () => write(join(t.world.repo, '.pnpmfile.cjs'), '// localpkg: generated\nmodule.exports = {};\n'),
+  };
+
+  it.each(Object.keys(consumerBySignal))('shows the step BLOCKED, not absent, for a consumer found by %s', (signal) => {
+    consumerBySignal[signal]();
+    const remote = blindRemote();
+    expect(verb('plan', { json: true }, remote)).toBe(0);
+    const plan = JSON.parse(t.lines.join('\n'));
+    expect(plan.map((item) => item.kind)).toEqual(['lockfile', 'pr', 'push-base']);
+    expect(plan[0].blocked).toContain('LOCALPKG_BIN');
+  });
+
+  it('stops the run before any command', () => {
+    setMode('remote');
+    consumerBySignal['the generated pnpmfile']();
+    const remote = blindRemote();
+    expect(verb('run', { go: true }, remote)).toBe(1);
+    expect(t.errors.join('\n')).toContain('LOCALPKG_BIN');
+    expect(sequence(remote).some((call) => call.startsWith('pnpm'))).toBe(false);
     expect(mutating(remote.state.calls)).toEqual([]);
   });
 });

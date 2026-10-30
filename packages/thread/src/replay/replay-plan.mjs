@@ -1,6 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { join } from 'node:path';
 import { attempt } from './replay-exec.mjs';
+import { guardItem } from './replay-guard.mjs';
+import { lockfileItem } from './replay-lockfile.mjs';
 import { pendingPrs, pendingReleases, registryOf } from './replay-sources.mjs';
 
 const REMOTE = 'origin';
@@ -76,12 +78,14 @@ const releaseItem = (release, cwd) => {
 
 /**
  * @param {{ cwd: string, project: string, integration: string, remoteBase: string, exec: Function }} request
- * @returns {object[]} the ordered actions: merged PRs, base push, releases
+ * @returns {object[]} the ordered actions, lockfile and guard first
  */
 const buildPlan = (request) => {
   const prs = pendingPrs(request).map((pr) => prItem(pr, request.remoteBase));
   const releases = pendingReleases(request.project).map((release) => releaseItem(release, request.cwd));
-  return [...prs, baseItem(request), ...releases].map((item, index) => ({ order: index + 1, ...item }));
+  const refs = [request.integration, ...prs.map((pr) => pr.ref)];
+  const guards = [lockfileItem(request), guardItem({ ...request, refs })].filter(Boolean);
+  return [...guards, ...prs, baseItem(request), ...releases].map((item, index) => ({ order: index + 1, ...item }));
 };
 
 const noteOf = (item) => {

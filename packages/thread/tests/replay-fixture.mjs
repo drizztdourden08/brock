@@ -1,8 +1,10 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { digestOf } from '../src/release/local/release-store.mjs';
+import { replayVerb } from '../src/replay/replay-verb.mjs';
 
 const LOCAL = 'a'.repeat(40);
 const ORIGIN = 'b'.repeat(40);
@@ -65,7 +67,18 @@ const notFound = () => {
 
 const publishedKey = (file) => `@acme/atlas@${/atlas-(.+)\.tgz$/.exec(file)[1]}`;
 
+const localHandlers = (state) => [
+  ['node', (args) => (args[1] === 'status' ? (state.status ?? notFound()) : '')],
+  ['pnpm install', (_args, opts) => write(join(opts.cwd, 'pnpm-lock.yaml'), state.lockText)],
+  ['git log', () => state.commits.join('\n')],
+  ['git diff-tree', (args) => state.files[args.at(-1)] ?? ''],
+  ['git show', (args) => state.blobs[args[1]] ?? notFound()],
+  ['git status', () => (state.lockDirty ? ' M pnpm-lock.yaml' : '')],
+  ['git rev-parse --abbrev-ref', () => state.branch],
+];
+
 const handlersOf = (state, { prs, notFastForward }) => [
+  ...localHandlers(state),
   ['coord', () => JSON.stringify(prs)],
   ['git rev-parse', (args) => (args[3].startsWith('origin') ? state.origin : LOCAL)],
   ['git merge-base', () => (notFastForward ? notFound() : '')],
@@ -79,18 +92,39 @@ const handlersOf = (state, { prs, notFastForward }) => [
 ];
 
 const makeRemote = ({ prs, notFastForward = false, failOn = null }) => {
-  const state = { calls: [], origin: ORIGIN, published: {}, prUrls: {}, releaseUrls: {} };
+  const state = { calls: [], origin: ORIGIN, published: {}, prUrls: {}, releaseUrls: {}, commits: [], files: {}, blobs: {}, branch: 'local/main', lockDirty: true, lockText: '' };
   const handlers = handlersOf(state, { prs, notFastForward });
-  const exec = (command, args) => {
+  const exec = (command, args, opts = {}) => {
     state.calls.push([command, ...args]);
     const line = [command, ...args].join(' ');
     if (failOn && line.includes(failOn)) throw new Error(`stub failure: ${line}`);
     const found = handlers.find(([prefix]) => line.startsWith(prefix));
-    return found ? found[1](args) : '';
+    return found ? found[1](args, opts) : '';
   };
   return { state, exec };
 };
 
 const mutating = (calls) => calls.filter((call) => call.some((word) => MUTATING.has(word)) && call[0] !== 'coord');
 
-export { makeRelease, makeRemote, makeWorld, mutating, pr, write };
+const useReplayWorld = (env = {}) => {
+  const t = { world: null, lines: [], errors: [] };
+  t.verb = (sub, options, remote) =>
+    replayVerb.run([sub], options, { rootDir: t.world.repo, workspace: { name: 'atlas', base: 'main' }, log: (line) => t.lines.push(line), exec: remote.exec });
+  t.setMode = (mode) => write(join(t.world.home, 'remote.json'), JSON.stringify({ mode }));
+  beforeEach(() => {
+    Object.assign(t, { world: makeWorld(), lines: [], errors: [] });
+    vi.stubEnv('COORD_HOME', t.world.home);
+    vi.stubEnv('COORD_PROJECT', 'atlas');
+    for (const [name, value] of Object.entries(env)) vi.stubEnv(name, value);
+    vi.spyOn(console, 'error').mockImplementation((line) => t.errors.push(line));
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    rmSync(t.world.root, { recursive: true, force: true });
+  });
+  return t;
+};
+
+export { makeRelease, makeRemote, mutating, pr, useReplayWorld, write };

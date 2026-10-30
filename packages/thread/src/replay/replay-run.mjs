@@ -2,6 +2,8 @@
 import { remoteMode } from '../local/remote-mode.mjs';
 import { ReleaseStop, stop } from '../release/local/release-stop.mjs';
 import { attempt, lastLine } from './replay-exec.mjs';
+import { assertNoLocalLockfile } from './replay-guard.mjs';
+import { runLockfile } from './replay-lockfile.mjs';
 import { replayRelease, verifyTarballs } from './replay-release.mjs';
 
 const REMOTE = 'origin';
@@ -29,7 +31,7 @@ const openPr = (item, { exec, cwd }) => {
   return { url: lastLine(out) };
 };
 
-const STEPS = { 'push-base': pushBase, pr: openPr, release: replayRelease };
+const STEPS = { lockfile: runLockfile, 'push-base': pushBase, pr: openPr, release: replayRelease };
 
 const recordHint = (item, state, url) => {
   const replay = { state, at: new Date().toISOString(), url };
@@ -50,13 +52,22 @@ const runItem = (item, context) => {
   const { log } = context;
   if (item.upToDate) {
     log(`${item.order}. ${item.title}: skipped. ${item.upToDate}`);
-    return;
+    return {};
   }
   log(`${item.order}. ${item.title}`);
-  const { url } = stepResult(item, context);
-  log(`  done${url ? `: ${url}` : ''}`);
-  if (item.kind === 'pr') log(recordHint(item, 'done', url));
+  const result = stepResult(item, context);
+  log(`  done${result.url ? `: ${result.url}` : ''}`);
+  if (item.kind === 'pr') log(recordHint(item, 'done', result.url));
+  return result;
 };
+
+const guardRequest = (plan, { exec, cwd }) => {
+  const base = plan.find((item) => item.kind === 'push-base');
+  const refs = [base.integration, ...plan.filter((item) => item.kind === 'pr').map((item) => item.ref)];
+  return { exec, cwd, remoteBase: base.remoteBase, refs };
+};
+
+const afterLockfile = (item, committed) => (committed && item.kind === 'push-base' ? { ...item, upToDate: undefined } : item);
 
 /**
  * @param {{ plan: object[], options: Record<string, string | boolean>, exec: Function, cwd: string, log: (line: string) => void }} input
@@ -67,7 +78,10 @@ const runPlan = ({ plan, options, exec, cwd, log }) => {
   const blocked = plan.find((item) => item.blocked);
   if (blocked) throw stop(`${blocked.title}: ${blocked.blocked}`, 1);
   for (const item of plan.filter((entry) => entry.kind === 'release')) verifyTarballs(item);
-  for (const item of plan) runItem(item, { exec, cwd, log });
+  const context = { exec, cwd, log };
+  const committed = plan.filter((item) => item.kind === 'lockfile').map((item) => runItem(item, context)).some((result) => result.committed);
+  assertNoLocalLockfile(guardRequest(plan, context));
+  for (const item of plan.filter((entry) => entry.kind !== 'lockfile')) runItem(afterLockfile(item, committed), context);
   log('Replay finished.');
 };
 

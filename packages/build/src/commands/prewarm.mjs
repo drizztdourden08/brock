@@ -6,6 +6,7 @@ import { restoreSharedBuild } from '../build-reuse/shared-build/restore-shared-b
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { importFromApp } from '../import-from-app.mjs';
+import { lockfileEntryExists } from '../shared-deps-cache/lockfile-entry-exists.mjs';
 import { depsReady } from '../shared-deps-cache/shared-deps-cache-plugin.mjs';
 
 const TAG = 'brock prewarm:';
@@ -27,6 +28,21 @@ const optimizeRenderer = async (vite, renderer) => {
 
 /**
  * @param {string} rootDir the app folder
+ * @param {{ missed: string[] }} shared what the build reuse left to build
+ * @param {number} started when the prewarm began
+ */
+const buildAndOptimize = async (rootDir, shared, started) => {
+  const [electronVite, vite] = await Promise.all([importFromApp(rootDir, 'electron-vite'), importFromApp(rootDir, 'vite')]);
+  const { main, preload, renderer } = (await electronVite.resolveConfig({ root: rootDir }, 'serve', DEV_MODE)).config ?? {};
+  const sides = { main, preload };
+  for (const name of shared.missed.filter((side) => sides[side])) await vite.build(sides[name]);
+  if (shared.missed.length > 0) console.log(`${TAG} ${shared.missed.join(' and ')} built in ${seconds(started)}.`);
+  const count = renderer ? await optimizeRenderer(vite, renderer) : 0;
+  console.log(count === null ? `${TAG} renderer dependencies are in place from the build cache; ready in ${seconds(started)}.` : `${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
+};
+
+/**
+ * @param {string} rootDir the app folder
  * @param {number} started when the prewarm began
  * @returns {Promise<string | null>} why it failed, or null
  */
@@ -38,13 +54,11 @@ const warm = async (rootDir, started) => {
   const electron = ensureElectron(rootDir);
   if (!electron.ok) console.warn(`${TAG} ${electron.message}`);
   const shared = restoreSharedBuild(rootDir, { log: (line) => console.log(`${TAG} ${line}`) });
-  const [electronVite, vite] = await Promise.all([importFromApp(rootDir, 'electron-vite'), importFromApp(rootDir, 'vite')]);
-  const { main, preload, renderer } = (await electronVite.resolveConfig({ root: rootDir }, 'serve', DEV_MODE)).config ?? {};
-  const sides = { main, preload };
-  for (const name of shared.missed.filter((side) => sides[side])) await vite.build(sides[name]);
-  if (shared.missed.length > 0) console.log(`${TAG} ${shared.missed.join(' and ')} built in ${seconds(started)}.`);
-  const count = renderer ? await optimizeRenderer(vite, renderer) : 0;
-  console.log(count === null ? `${TAG} renderer dependencies are in place from the build cache; ready in ${seconds(started)}.` : `${TAG} ${count} renderer dependencies pre-bundled; ready in ${seconds(started)}.`);
+  if (shared.hit && lockfileEntryExists(rootDir)) {
+    console.log(`${TAG} renderer dependencies come from the build cache when the app starts; ready in ${seconds(started)}.`);
+    return null;
+  }
+  await buildAndOptimize(rootDir, shared, started);
   return null;
 };
 

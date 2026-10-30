@@ -98,7 +98,7 @@ const storeViteDeps = async (input) => {
   try {
     await commitEntry({
       ...id,
-      buildSettings: { layout: LAYOUT },
+      buildSettings: { layout: LAYOUT, lockfileHash: hashes.lockfileHash },
       fill: async (filesDir) => {
         await cp(depsDir, filesDir, { recursive: true });
         if (!unchanged(depsDir, before) || !unchanged(filesDir, before) || !filesPresent(metadata, filesDir)) throw new Error('build-cache: the dependency folder changed while it was copied');
@@ -131,5 +131,6 @@ const storeViteDepsDetached = (input) => {
 };
 
 export { restoreViteDeps, storeViteDeps, storeViteDepsDetached };
+export { hasViteDeps } from './deps-lookup.mjs';
 export { storeRelativeOf } from './store-paths.mjs';
 export { virtualStoreOf } from './virtual-store-of.mjs';

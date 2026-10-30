@@ -5,6 +5,7 @@ import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { listEntries } from '../src/store/list-entries.mjs';
+import { hasViteDeps } from '../src/vite-deps/deps-lookup.mjs';
 import { restoreViteDeps, storeViteDeps, storeViteDepsDetached } from '../src/vite-deps/vite-deps-cache.mjs';
 import { cacheTestTree } from './cache-test-tree.mjs';
 
@@ -49,7 +50,10 @@ describe('vite deps store', () => {
     expect(await storeViteDeps(input)).toBe('stored');
     expect(await storeViteDeps(input)).toBe('present');
     const [{ dir, manifest }] = entries(root);
-    expect(manifest).toMatchObject({ kind: 'vite-deps', name: 'renderer', version: '7.3.7', buildKey: 'linux-x64-abc' });
+    expect(manifest).toMatchObject({ kind: 'vite-deps', name: 'renderer', version: '7.3.7', buildKey: 'linux-x64-abc', buildSettings: { lockfileHash: HASHES.lockfileHash } });
+    expect(hasViteDeps({ root, version: '7.3.7', lockfileHash: HASHES.lockfileHash })).toBe(true);
+    expect(hasViteDeps({ root, version: '7.3.7', lockfileHash: 'zzzzzzzz' })).toBe(false);
+    expect(hasViteDeps({ root, version: '7.3.8', lockfileHash: HASHES.lockfileHash })).toBe(false);
     const stored = JSON.parse(readFileSync(join(dir, 'files', '_metadata.json'), 'utf8'));
     expect(stored.optimized.picker.src).toBe('@root/node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js');
     expect(stored.optimized.outside.src).toBe('@root/node_modules/outside.js');

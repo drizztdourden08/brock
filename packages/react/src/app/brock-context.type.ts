@@ -5,7 +5,7 @@ import type { RouteShortcut } from '../navigation/navigation.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { SettingsControlProps, TabDef } from '../settings/settings.type';
 
-type SettingsControlsValue = Pick<SettingsControlProps<object>, 'renderControl' | 'isDisabled' | 'lockCauseOf' | 'lockOverlay'>;
+type SettingsControlsValue = Pick<SettingsControlProps<object>, 'defaults' | 'renderControl' | 'isDisabled' | 'lockCauseOf' | 'lockOverlay'>;
 
 interface BrockContextValue {
   product: ProductConfig;

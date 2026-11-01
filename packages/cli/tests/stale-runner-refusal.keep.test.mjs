@@ -32,6 +32,9 @@ const staleBuild = () => {
   const dir = folder();
   write(join(dir, 'package.json'), JSON.stringify({ name: '@drizztdourden08/brock-build', version: '0.1.0' }));
   write(join(dir, 'bin', 'brock.mjs'), '');
+  const thread = join(dir, 'node_modules', THREAD);
+  write(join(thread, 'package.json'), JSON.stringify({ name: THREAD, version: '0.1.0', main: 'bin/brock-thread.mjs' }));
+  write(join(thread, 'bin', 'brock-thread.mjs'), '');
   return join(dir, 'bin', 'brock.mjs');
 };
 
@@ -56,7 +59,7 @@ describe('K5 local mode with a stale runner', { tags: ['critical'] }, () => {
     expect(runnerPackage(threadPackage(folder(), false))).toEqual({ label: 'brock-thread 0.116.0', hasLocalMode: false });
   });
 
-  it('counts a brock-build with no brock-thread beside it as stale', () => {
+  it('counts a brock-build whose brock-thread has no local mode as stale', () => {
     expect(runnerPackage(staleBuild())).toEqual({ label: 'brock-build 0.1.0', hasLocalMode: false });
   });
 

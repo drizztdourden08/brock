@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import { readdir, rm } from 'fs/promises';
+import { rm } from 'fs/promises';
 import { join } from 'path';
 import type { RecoverableSnapshot } from '@drizztdourden08/brock-core/platform';
 import { assertSafeName } from '@drizztdourden08/brock-core/storage';
@@ -8,20 +8,14 @@ import { writeAtomic } from '../storage/write-atomic';
 import { pathExists } from './path-exists';
 import { pathKey } from './path-key';
 import { readRecoveryMeta } from './recovery-meta';
-import { META_EXT, RECOVERY_DIR, SNAPSHOT_EXT } from './recovery-snapshots.constants';
+import { namesIn } from './names-in';
+import { recoveryFolder } from './recovery-folder';
+import { META_EXT, SNAPSHOT_EXT } from './recovery-snapshots.constants';
 import type { RecoveryDeps, RecoverySnapshots } from './recovery-snapshots.type';
-
-const namesIn = async (dir: string): Promise<string[]> => {
-  try {
-    return await readdir(dir);
-  } catch {
-    return [];
-  }
-};
 
 const createRecoverySnapshots = (deps: RecoveryDeps): RecoverySnapshots => {
   const now = deps.now ?? Date.now;
-  const dirOf = (profileId: string): string => join(deps.profileDir(profileId), RECOVERY_DIR);
+  const dirOf = (profileId: string): string => recoveryFolder(deps.profileDir(profileId));
   const dataFile = (profileId: string, key: string): string => join(dirOf(profileId), `${assertSafeName(key, 'snapshot key')}${SNAPSHOT_EXT}`);
   const metaFile = (profileId: string, key: string): string => join(dirOf(profileId), `${assertSafeName(key, 'snapshot key')}${META_EXT}`);
 

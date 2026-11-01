@@ -1,41 +1,23 @@
 /* @layer tooling-scripts @kind logic */
 import { writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { copyArtifact } from './artifact-copy.mjs';
 import { newRecord, stepRecord } from './record-shape.mjs';
-import { writeRecord } from './check-record.mjs';
+import { readRecords, writeRecord } from './check-record.mjs';
 import { artifactDir, recordFile } from './ci-paths.mjs';
 import { addCiWorktree, dropCiWorktree, isInsideWorktree } from './ci-worktree.mjs';
-import { OFFLINE_NOTE } from './ci.constants.mjs';
+import { releaseLocalpkg, useLocalpkg } from './localpkg-worktree.mjs';
 import { watchMainCheckout } from './main-guard.mjs';
 import { acquireRunLock } from './run-lock.mjs';
-import { noteInLog, runStep, stopTree } from './run-step.mjs';
+import { finishedWith } from './run-status.mjs';
+import { noteInLog } from './run-step.mjs';
+import { spawnStep } from './step-spawn.mjs';
+import { runBudgetMs } from './step-timeouts.mjs';
+import { stopTree } from './stop-tree.mjs';
 import { summarize } from './summarize.mjs';
-import { eventNameOf } from './workflow-expr.mjs';
+import { applyCache } from './tree-cache.mjs';
 
 const now = () => new Date().toISOString();
-
-const RUNNER_OS = Object.freeze({ win32: 'Windows', linux: 'Linux', darwin: 'macOS' });
-
-const finishedWith = (record) => {
-  if (record.steps.some((step) => step.status === 'cancelled')) return 'cancelled';
-  if (record.steps.some((step) => step.status === 'fail')) return 'fail';
-  return record.steps.some((step) => step.status === 'pass') ? 'pass' : 'skipped-local';
-};
-
-const stepStatus = (code, cancelled) => {
-  if (cancelled) return 'cancelled';
-  return code === 0 ? 'pass' : 'fail';
-};
-
-const workflowEnv = (planned, { root, record }) => ({
-  GITHUB_WORKSPACE: root.replace(/\\/g, '/'),
-  GITHUB_EVENT_NAME: eventNameOf(record.trigger),
-  RUNNER_OS: RUNNER_OS[process.platform] ?? process.platform,
-  RUNNER_TEMP: tmpdir(),
-  ...planned.env,
-});
 
 const settle = (step, { pass, code, note }) => {
   step.exitCode = code;
@@ -52,25 +34,6 @@ const keepArtifact = (step, planned, session) => {
   step.artifact = kept.artifact;
   writeFileSync(step.log, `${[kept.text, ...kept.artifact.files].join('\n')}\n`);
   settle(step, { pass: kept.pass, code: kept.pass ? 0 : 1, note: kept.text });
-};
-
-const spawnStep = async (step, planned, session) => {
-  const { control, record } = session;
-  const code = await runStep({
-    command: step.command,
-    cwd: step.cwd,
-    logFile: step.log,
-    shell: planned.shell ?? null,
-    env: planned.env ? workflowEnv(planned, { root: session.path, record }) : {},
-    onChild: (child) => { control.child = child; },
-  });
-  control.child = null;
-  step.exitCode = code;
-  step.status = stepStatus(code, control.cancelled);
-  if (step.status === 'fail' && step.name === 'install') {
-    step.note = OFFLINE_NOTE;
-    noteInLog(step.log, OFFLINE_NOTE);
-  }
 };
 
 const runOne = async ({ step, planned, session, log }) => {
@@ -118,10 +81,11 @@ const openSession = ({ ctx, request, runId }) => {
   const { project, plan } = request;
   const file = recordFile(project, runId);
   const record = newRecord({ runId, request, main: ctx.rootDir });
-  record.steps = plan.map((step, index) => stepRecord(step, { project, runId, index }));
+  record.steps = plan.map((step, index) => stepRecord(step, { project, runId, index, local: request.localpkg }));
   const save = () => writeRecord(file, record);
+  const reused = request.cache && request.tree ? applyCache(record, plan, readRecords(project)) : 0;
   save();
-  for (const step of record.steps) if (step.status === 'skipped-local') writeFileSync(step.log, `${step.note}\n`);
+  for (const step of record.steps) if (step.status === 'skipped-local' || step.cachedFrom) writeFileSync(step.log, `${step.note}\n`);
   const control = { cancelled: false, child: null };
   const onSignal = () => {
     control.cancelled = true;
@@ -129,19 +93,30 @@ const openSession = ({ ctx, request, runId }) => {
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
-  return { file, record, plan, save, control, onSignal, release: null, path: null, lost: null };
+  return { file, record, plan, save, control, onSignal, reused, timeouts: request.timeouts ?? {}, release: null, path: null, lost: null, localpkg: request.localpkg ?? null };
+};
+
+const lockFor = async ({ ctx, request, runId, session }) => {
+  const { record, control } = session;
+  const todo = session.plan.filter((_, index) => record.steps[index].status === 'pending');
+  const hung = (holder) => ctx.log(`The run ${holder?.runId} is past its own timeout, so it is treated as hung and stopped (pid ${holder?.pid}).`);
+  const queued = (other) => ctx.log(`Queued behind ${other?.runId ?? 'another run'}.`);
+  const budgetMs = runBudgetMs(todo, { overrides: session.timeouts, trigger: record.trigger });
+  return acquireRunLock({ project: request.project, runId, timeoutMs: request.waitMs, budgetMs, cancelled: () => control.cancelled, onWait: queued, onHung: hung });
 };
 
 const execute = async ({ ctx, request, runId, session }) => {
-  const { record, save, control } = session;
-  const queuedBehind = (other) => ctx.log(`Queued behind ${other?.runId ?? 'another run'}.`);
-  session.release = await acquireRunLock({ project: request.project, runId, timeoutMs: request.waitMs, cancelled: () => control.cancelled, onWait: queuedBehind });
+  const { record, save } = session;
+  const pending = record.steps.some((step) => step.status === 'pending');
+  if (pending) session.release = await lockFor({ ctx, request, runId, session });
+  else if (session.reused) ctx.log(`Nothing to run: ${session.reused} step(s) already passed for this tree.`);
   record.status = 'running';
   record.startedAt = now();
   save();
-  if (record.steps.some((step) => step.status === 'pending')) {
+  if (pending) {
     session.lost = watchMainCheckout(ctx.rootDir);
     session.path = addCiWorktree({ main: ctx.rootDir, runId, sha: request.sha });
+    if (session.localpkg) useLocalpkg({ localpkg: session.localpkg, path: session.path });
     for (const [index, step] of record.steps.entries()) step.cwd = resolve(session.path, session.plan[index].workdir ?? '');
     save();
     await runSteps({ session, log: ctx.log });
@@ -166,6 +141,7 @@ const closeSession = async ({ ctx, session }) => {
   process.off('SIGINT', session.onSignal);
   process.off('SIGTERM', session.onSignal);
   if (path) {
+    if (session.localpkg) releaseLocalpkg({ localpkg: session.localpkg, path, log: ctx.log });
     const kept = await dropCiWorktree({ path, main: ctx.rootDir, log: ctx.log });
     if (kept) {
       record.summary = `${record.summary} ${kept}`;

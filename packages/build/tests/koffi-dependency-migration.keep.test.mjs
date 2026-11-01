@@ -20,7 +20,7 @@ afterEach(() => {
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('the koffi-dependency migration', () => {
+describe('K5 the koffi-dependency migration', { tags: ['critical'] }, () => {
   it('adds koffi to an app that uses brock-electron, once', () => {
     const dir = appWith({ '@drizztdourden08/brock-electron': '^0.116.0' });
     const first = migration.workspace({ rootDir: dir });

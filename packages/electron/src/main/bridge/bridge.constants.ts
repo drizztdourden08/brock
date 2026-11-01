@@ -58,7 +58,6 @@ const BRIDGE_ACE_SIZE_OFFSET = 2;
 const BRIDGE_ACE_SID_OFFSET = 8;
 const BRIDGE_ACE_KINDS: readonly string[] = ['allow', 'deny'];
 const BRIDGE_ACCEPTED_FILES_MAX = 64;
-const BRIDGE_SDDL_ALIASES: readonly string[] = ['SY', 'BA'];
 const BRIDGE_TRUSTED_SIDS: readonly string[] = ['S-1-5-18', 'S-1-5-32-544'];
 const BRIDGE_IMPOSTOR = 'the endpoint could not prove it is the app; the bridge refuses it';
 

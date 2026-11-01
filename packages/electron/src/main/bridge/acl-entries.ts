@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { AclEntry, AclEntryKind, SecurityBindings } from './bridge.type';
-import { aclBytes, littleEndian } from './acl-bytes';
+import { aclBytes } from './acl-bytes';
+import { littleEndian } from './little-endian';
 import { BRIDGE_ACE_KINDS, BRIDGE_ACE_SID_OFFSET, BRIDGE_ACE_SIZE_OFFSET, BRIDGE_ACL_COUNT_OFFSET, BRIDGE_ACL_HEADER_BYTES } from './bridge.constants';
 import { sidText } from './sid-text';
 

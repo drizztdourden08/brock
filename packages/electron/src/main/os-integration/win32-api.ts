@@ -5,7 +5,9 @@ import type { Win32Api, Win32Bindings } from './win32-api.type';
 import { KOFFI_MISSING, SHCNE_ASSOCCHANGED, SHCNF_FLUSH } from './win32-api.constants';
 import { loadKoffi } from './load-koffi';
 import { bindWin32 } from './win32-bindings';
-import { deleteTree, deleteValue, setString } from './win32-registry-calls';
+import { deleteTree } from './delete-tree';
+import { deleteValue } from './delete-value';
+import { setString } from './win32-registry-calls';
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 

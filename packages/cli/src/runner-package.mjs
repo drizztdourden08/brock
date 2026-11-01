@@ -26,7 +26,7 @@ const threadDirOf = (packageDir) => {
 /**
  * @typedef {object} RunnerPackage
  * @property {string} label the package name and version
- * @property {boolean} hasLocalMode whether the thread code beside it knows the local remote mode
+ * @property {boolean} hasLocalMode whether the thread code knows local mode
  */
 
 /**

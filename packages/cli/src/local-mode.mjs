@@ -7,7 +7,7 @@ const SWITCH_FILE = 'remote.json';
 
 /**
  * @param {NodeJS.ProcessEnv} [env]
- * @returns {boolean} true unless the coord switch says remote, as brock-thread reads it
+ * @returns {boolean} true unless the coord switch says remote
  */
 const localModeOn = (env = process.env) => {
   try {

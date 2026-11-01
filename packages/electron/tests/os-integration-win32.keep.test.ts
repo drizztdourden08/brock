@@ -10,7 +10,13 @@ interface NativeCall {
   args: unknown[];
 }
 
-const native = vi.hoisted(() => ({ calls: [] as NativeCall[], codes: {} as Record<string, number>, koffi: null as Koffi | null }));
+interface NativeState {
+  calls: NativeCall[];
+  codes: Record<string, number>;
+  koffi: Koffi | null;
+}
+
+const native = vi.hoisted((): NativeState => ({ calls: [], codes: {}, koffi: null }));
 const spawned = vi.hoisted(() => ({ names: [] as string[] }));
 
 vi.mock('../src/main/os-integration/load-koffi', () => ({ loadKoffi: () => native.koffi }));
@@ -75,7 +81,7 @@ afterEach(() => {
   Reflect.deleteProperty(process, 'resourcesPath');
 });
 
-describe('registering with Windows through direct calls', () => {
+describe('K1 registering with Windows through direct calls', { tags: ['critical'] }, () => {
   it('writes each key and value, then tells the shell once, without any child process', () => {
     expect(registerOsIntegration(PRODUCT, EXE)).toEqual({ success: true });
     const creates = calls('RegCreateKeyExW').map((call) => call.args[1]);
@@ -119,7 +125,7 @@ describe('registering with Windows through direct calls', () => {
   });
 });
 
-describe('unregistering from Windows through direct calls', () => {
+describe('K2 unregistering from Windows through direct calls', { tags: ['critical'] }, () => {
   it('deletes the key trees and the progId value, then tells the shell once', () => {
     unregisterOsIntegration(PRODUCT);
     expect(calls('RegDeleteTreeW').map((call) => call.args[1])).toEqual(['Software\\Classes\\my-app', 'Software\\Classes\\MyApp.Pack']);

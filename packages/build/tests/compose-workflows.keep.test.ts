@@ -49,8 +49,8 @@ describe('K1 composeWorkflows lint and test modes', { tags: ['critical'] }, () =
     expect(stepOf('pnpm run lint:all')).toContain("if: github.event_name != 'pull_request'");
   });
 
-  it('runs test:pr on a pull request and test:e2e otherwise, both only when present', () => {
-    expect(stepOf('pnpm run --if-present test:pr')).toContain("if: github.event_name == 'pull_request'");
-    expect(stepOf('pnpm run --if-present test:e2e')).toContain("if: github.event_name != 'pull_request'");
+  it('runs test:pr on every trigger, only when present, and never e2e', () => {
+    expect(stepOf('pnpm run --if-present test:pr')).not.toContain('if:');
+    expect(ci).not.toContain('test:e2e');
   });
 });

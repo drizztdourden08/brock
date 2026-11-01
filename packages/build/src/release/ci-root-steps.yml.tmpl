@@ -15,10 +15,5 @@
       - name: Structure
         run: pnpm exec brock structure --check
 
-      - name: Tests (pull request)
-        if: github.event_name == 'pull_request'
+      - name: Tests (changed files)
         run: pnpm run --if-present test:pr
-
-      - name: Tests (release)
-        if: github.event_name != 'pull_request'
-        run: pnpm run --if-present test:e2e

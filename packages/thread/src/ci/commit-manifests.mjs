@@ -12,7 +12,7 @@ const parsed = (text) => {
 
 /**
  * @param {{ exec: Function, cwd: string, sha: string }} input the runner seam and the commit
- * @returns {object[]} every package.json of the commit, read from git, not from the checkout
+ * @returns {object[]} the commit's package.json files, read from git
  */
 const manifestsAt = ({ exec, cwd, sha }) => {
   const listed = (attempt(exec, 'git', ['ls-tree', '-r', '--name-only', sha], cwd) ?? '').split('\n').map((line) => line.trim());

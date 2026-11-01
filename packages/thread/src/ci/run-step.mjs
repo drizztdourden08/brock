@@ -26,7 +26,7 @@ const launchOf = (command, shell) => {
 
 /**
  * @param {{ command: string, cwd: string, logFile: string, shell?: string | null, env?: Record<string, string>, timeoutMs?: number, outcome?: { timedOut?: boolean }, onChild?: (child: import('node:child_process').ChildProcess) => void }} request the step to run
- * @returns {Promise<number>} the exit code, 127 when the command could not start, 124 on a timeout
+ * @returns {Promise<number>} the exit code: 127 no start, 124 timed out
  */
 const runStep = ({ command, cwd, logFile, shell = null, env = {}, timeoutMs = 0, outcome = {}, onChild = () => {} }) => new Promise((resolve) => {
   const fd = openSync(logFile, 'w');

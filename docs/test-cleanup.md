@@ -1,6 +1,6 @@
 # Test clean-up
 
-Verdicts against `ai-config/docs/test-standard.md`. A case is one `it` or `test` call site; an `it.each` counts as one. Nothing was run in this pass (no tests, lint or typecheck); the checker runs them.
+Verdicts against the shared test standard. A case is one `it` or `test` call site; an `it.each` counts as one. Nothing was run in this pass (no tests, lint or typecheck); the checker runs them.
 Branch: test-cleanup/all.
 
 ## Counts for the whole repo
@@ -28,7 +28,8 @@ Every critical case was checked for a real process, real git, a socket, a real b
 - Left as is: `process-job` and `process-job-limits` (e2e, a 15 s poll window for a real process, not a test timeout).
 
 ## Part 1: packages/react
-Verdicts against X:/ai-config/docs/test-standard.md. Case counts are it/test call sites.
+
+Verdicts against the shared test standard (docs/test-standard.md in the config repo). Case counts are it/test call sites.
 
 | | before | after |
 |---|---|---|
@@ -263,7 +264,8 @@ Removed helper: tests/title-bar-fixtures.ts (no importer left).
 - lazy-screens, mobile-storage-and-title-bar, navigation-history, profiles-panel, quit-async-guard: setTimeout waits replaced by microtask flush loops, unrun.
 
 ## Part 2: packages/build and packages/create-brock
-Verdicts against `ai-config/docs/test-standard.md`. A case is one `it` or `test` call.
+
+Verdicts against the shared test standard. A case is one `it` or `test` call.
 Branch: test-cleanup/build. Nothing was run in this pass (no tests, lint or typecheck); the
 lead's checker runs them.
 
@@ -562,6 +564,7 @@ Deleted cases that touched K1 to K5 logic, each with the reason it is safe to dr
 - workspace-scaffold.keep.test.mjs: tesseraRange equals the brock-react peer; member keeps markdownlint config - reads package.json and template files (W1)
 
 ## Part 3: the rest of Brock
+
 Scope: electron, thread, core, build-cache, lint-config, cli (no tests), plugins/snes and modules/*. React, build and create-brock are not in this file.
 
 Files: 235 before, 230 after. Cases: 1680 before, 1569 after.

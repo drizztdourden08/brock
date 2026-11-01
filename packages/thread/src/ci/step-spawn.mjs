@@ -9,7 +9,7 @@ import { eventNameOf } from './workflow-expr.mjs';
 const RUNNER_OS = Object.freeze({ win32: 'Windows', linux: 'Linux', darwin: 'macOS' });
 
 const workflowEnv = (planned, { root, record }) => ({
-  GITHUB_WORKSPACE: root.replace(/\/g, '/'),
+  GITHUB_WORKSPACE: root.replace(/\\/g, '/'),
   GITHUB_EVENT_NAME: eventNameOf(record.trigger),
   RUNNER_OS: RUNNER_OS[process.platform] ?? process.platform,
   RUNNER_TEMP: tmpdir(),

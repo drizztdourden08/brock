@@ -12,7 +12,7 @@ const useLocalpkg = ({ localpkg, path }) => {
   try {
     localpkg.exec(command, args, { cwd: path });
   } catch (error) {
-    throw new Error(`localpkg could not prepare the temporary worktree ${path}: ${firstLine(error)}`);
+    throw new Error(`localpkg could not prepare the temporary worktree ${path}: ${firstLine(error)}`, { cause: error });
   }
 };
 

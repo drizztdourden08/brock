@@ -39,8 +39,6 @@ const passFor = (records, tree, key) => {
 };
 
 /**
- * Marks steps that passed for this tree.
- * Install stays when another step runs.
  * @param {{ tree?: string, steps: object[] }} record
  * @param {object[]} plan
  * @param {object[]} records

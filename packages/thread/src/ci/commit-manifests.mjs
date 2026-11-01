@@ -11,7 +11,7 @@ const parsed = (text) => {
 };
 
 /**
- * @param {{ exec: Function, cwd: string, sha: string }} input exec is the runner seam
+ * @param {{ exec: Function, cwd: string, sha: string }} input the runner seam and the commit
  * @returns {object[]} every package.json of the commit, read from git, not from the checkout
  */
 const manifestsAt = ({ exec, cwd, sha }) => {

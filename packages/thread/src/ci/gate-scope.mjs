@@ -1,8 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 
 /**
- * The gate never runs the whole suite: tests cover what changed
- * since the merge base, or since the last release tag on a release.
  * @param {{ trigger: string, sha: string, base: string, git: (args: string[]) => string | null }} input
  * @returns {{ testRef: string, lintMode: 'changed' | 'all', lintBase: string }}
  */

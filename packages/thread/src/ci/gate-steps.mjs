@@ -8,7 +8,6 @@ const rank = (script) => {
 };
 
 /**
- * Unknown scripts first, then cheap and likely to fail, builds last.
  * @param {string[]} scripts
  * @returns {string[]} the scripts in run order
  */

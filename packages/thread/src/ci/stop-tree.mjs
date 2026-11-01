@@ -17,18 +17,22 @@ const stopPid = (pid, { platform = process.platform, exec = execFileSync, kill =
   }
 };
 
+const killChild = (child) => {
+  try {
+    child.kill();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 /**
  * @param {{ pid?: number, kill: () => void }} child
  * @param {object} [deps]
  * @returns {void}
  */
 const stopTree = (child, deps) => {
-  if (stopPid(child.pid, deps)) return;
-  try {
-    child.kill();
-  } catch {
-    // The child is already gone.
-  }
+  if (!stopPid(child.pid, deps)) killChild(child);
 };
 
 export { stopPid, stopTree };

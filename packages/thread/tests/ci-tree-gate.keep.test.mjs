@@ -37,7 +37,7 @@ describe('K1 reuse of a step result by git tree', { tags: ['critical'] }, () => 
     expect(passFor(records, 'tC', key)).toBeNull();
   });
 
-  it('points a reused step at the run that really ran it', () => {
+  it('points a reused step at the run that ran it', () => {
     const records = [passed('r1', 'tA'), passed('r2', 'tA', ['test'], { cachedFrom: 'r1' })];
     expect(passFor(records, 'tA', keyOf(planned('test')))).toBe('r1');
   });
@@ -107,6 +107,9 @@ describe('K1 hard time limit and process tree kill', { tags: ['critical'] }, () 
     expect(stopPid(undefined, { exec: () => { throw new Error('never'); } })).toBe(false);
   });
 
+});
+
+describe('K1 step time limits and lock holders', { tags: ['critical'] }, () => {
   it('gives each step its default limit, an override and a longer release lint', () => {
     expect(timeoutMs('install')).toBe(10 * 60000);
     expect(timeoutMs('gate / test')).toBe(20 * 60000);

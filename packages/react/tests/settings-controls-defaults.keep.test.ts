@@ -32,7 +32,7 @@ const controlsOf = (settings: BrockAppSettings<Shape>): SettingsControlsValue =>
   return captured.value;
 };
 
-describe('settings controls defaults', () => {
+describe('K5 settings controls defaults', { tags: ['critical'] }, () => {
   it('hands the app defaults to the tab pages through the controls value', () => {
     expect(controlsOf({ defaults: DEFAULTS }).defaults).toBe(DEFAULTS);
   });

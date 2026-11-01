@@ -8,7 +8,7 @@ import { DEFAULT_DISPLAY_SETTINGS, UNSUPPORTED_SYNCED_RATE } from '../src/displa
 const keysOf = (hasWindow: boolean): string[] =>
   displaySections(hasWindow).flatMap((section) => (section.items ?? []).map((item) => item.key));
 
-describe('display settings search sections', () => {
+describe('S2 display settings search sections', { tags: ['standard'] }, () => {
   it('indexes every row the tab renders when the host has a window', () => {
     expect(keysOf(true)).toEqual(['windowMode', 'displayMonitor', 'detectedRate', 'syncedRateInFullscreen', 'syncedRateTargetHz', 'changeRate']);
   });

@@ -29,6 +29,7 @@
     "@drizztdourden08/brock-updater": "workspace:*",
     "@drizztdourden08/tessera": "catalog:",
     "@electron-toolkit/utils": "catalog:",
+    "koffi": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "velopack": "catalog:",

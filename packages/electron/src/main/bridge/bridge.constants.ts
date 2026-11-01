@@ -43,17 +43,9 @@ const BRIDGE_ERROR_CODE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 const BRIDGE_CODES = { error: 'error', failed: 'failed', noHandler: 'no-handler', invalidArguments: 'invalid-arguments', tooLarge: 'too-large', timeout: 'timeout', closed: 'closed', noWindow: 'no-window', busy: 'busy' } as const;
 const BRIDGE_WHOAMI = /"(S-[0-9-]+)"/;
 const BRIDGE_SYSTEM32 = 'C:\\Windows\\System32';
-const BRIDGE_POWERSHELL = 'WindowsPowerShell\\v1.0\\powershell.exe';
-const BRIDGE_ACL_ENV = 'BROCK_BRIDGE_ACL_PATH';
-const BRIDGE_ACL_SCRIPT = [
-  `$acl = Get-Acl -LiteralPath $env:${BRIDGE_ACL_ENV}`,
-  '$sid = [System.Security.Principal.SecurityIdentifier]',
-  "'O ' + $acl.GetOwner($sid).Value",
-  "'P ' + $acl.AreAccessRulesProtected",
-  "foreach ($rule in $acl.GetAccessRules($true, $true, $sid)) { 'E ' + $rule.AccessControlType + ' ' + $rule.IdentityReference.Value + ' ' + $rule.FileSystemRights }",
-].join('; ');
-const BRIDGE_ACL_ARGS = ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', BRIDGE_ACL_SCRIPT];
 const BRIDGE_WHOAMI_ARGS = ['/user', '/fo', 'csv', '/nh'];
+const BRIDGE_NOT_PRIVATE = 'icacls could not confirm that only you, SYSTEM and Administrators can reach it';
+const BRIDGE_UNSURE_NAME = 'its name is not plain, so icacls cannot be asked about it safely';
 const BRIDGE_ACCEPTED_FILES_MAX = 64;
 const BRIDGE_PLAIN_FILE_NAME = /^[\w.-]+$/;
 const BRIDGE_SDDL_ACCESS_LIST = /^D:[A-Z]*((?:\([^()]*\))+)\s*$/m;
@@ -68,6 +60,6 @@ export {
   BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_LAUNCH_ARG, BRIDGE_LAUNCH_PREFIX, BRIDGE_PROFILE_LAUNCH_FILE, BRIDGE_PROFILE_LAUNCH_TTL_MS, BRIDGE_USER_DATA_ARG, BRIDGE_ASK_TIMED_OUT, BRIDGE_ASK_WINDOW_GONE, BRIDGE_RELAY_MAX_PENDING, BRIDGE_STRIPPED_ENV, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
   BRIDGE_HELPERS_DIR, BRIDGE_LISTEN_TRIES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_NEWLINE, BRIDGE_NONCE,
   BRIDGE_NONCE_BYTES, BRIDGE_OTHERS_MASK, BRIDGE_PERMISSION_BITS, BRIDGE_PIPE_NAME, BRIDGE_PIPE_PREFIX, BRIDGE_PROTOCOL, BRIDGE_REQUEST_TIMEOUT_MS,
-  BRIDGE_ACCEPTED_FILES_MAX, BRIDGE_ACL_ARGS, BRIDGE_PLAIN_FILE_NAME, BRIDGE_SDDL_ACCESS_LIST, BRIDGE_SDDL_ALIASES, BRIDGE_SDDL_ENTRY, BRIDGE_SDDL_ENTRY_FIELDS, BRIDGE_WHOAMI_ARGS,
-  BRIDGE_ACL_ENV, BRIDGE_POWERSHELL, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
+  BRIDGE_ACCEPTED_FILES_MAX, BRIDGE_PLAIN_FILE_NAME, BRIDGE_SDDL_ACCESS_LIST, BRIDGE_SDDL_ALIASES, BRIDGE_SDDL_ENTRY, BRIDGE_SDDL_ENTRY_FIELDS, BRIDGE_WHOAMI_ARGS,
+  BRIDGE_NOT_PRIVATE, BRIDGE_UNSURE_NAME, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
 };

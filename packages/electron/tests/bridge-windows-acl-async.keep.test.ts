@@ -7,36 +7,22 @@ import type { AsyncSystemToolRun } from '../src/main/bridge/bridge.type';
 import { fileOwnerIs } from '../src/main/bridge/file-owner-is';
 import { sddlIsPrivate } from '../src/main/bridge/sddl-is-private';
 import { windowsAccessProblemAsync } from '../src/main/bridge/windows-access-problem-async';
+import { ACCOUNT, ME, NOT_PRIVATE, OTHER_ACCOUNT, TOOLS, stubAccount, toolAnswer } from './icacls-fixture';
 import { closeOpened, discoveryOf, serve, tempDir, writeOpenFile } from './bridge-fixture';
 
-const ME = 'S-1-5-21-1-2-3-1001';
 const OTHER = 'S-1-5-21-1-2-3-1004';
-const BYTE_ORDER_MARK = String.fromCodePoint(0xfeff);
-const ACCOUNT =String.raw`PC\me`;
 const SDDL_ME = `D:PAI(A;;FA;;;${ME})(A;;FA;;;SY)(A;;FA;;;BA)`;
 const SDDL_OPEN = `D:PAI(A;;FA;;;${ME})(A;;0x1200a9;;;BU)`;
-const POWERSHELL_PRIVATE = [`O ${ME}`, 'P True', `E Allow ${ME} FullControl`].join('\r\n');
-const POWERSHELL_OPEN = [`O ${ME}`, 'P False', `E Allow ${ME} FullControl`, 'E Allow S-1-5-32-545 ReadAndExecute'].join('\r\n');
-
 interface Tools {
   run: AsyncSystemToolRun;
   calls: string[];
 }
 
-const fakeTools = (sddl: string, powershell: string, owner = ACCOUNT): Tools => {
+const fakeTools = (sddl: string, owner = ACCOUNT): Tools => {
   const calls: string[] = [];
-  const answer = (exe: string, args: string[]): Buffer => {
-    if (exe === 'whoami.exe') return Buffer.from(`"${ACCOUNT}","${ME}"\r\n`, 'latin1');
-    if (exe === 'icacls.exe') {
-      writeFileSync(args[2] ?? '', Buffer.from(`${BYTE_ORDER_MARK}${args[0]}\r\n${sddl}\r\n`, 'utf16le'));
-      return Buffer.from('processed file');
-    }
-    if (exe === 'cmd.exe') return Buffer.from(`\r\n 2026-10-29  05:48 AM                 4 ${owner}        ${args[4]}\r\n`, 'latin1');
-    return Buffer.from(powershell, 'latin1');
-  };
   const run: AsyncSystemToolRun = (exe, args) => {
     calls.push(exe);
-    return Promise.resolve(answer(exe, args));
+    return Promise.resolve(toolAnswer(exe, args, sddl, owner));
   };
   return { run, calls };
 };
@@ -46,11 +32,6 @@ const privateFile = (text = '{}'): string => {
   writeFileSync(file, text);
   return file;
 };
-
-beforeEach(() => {
-  vi.stubEnv('USERDOMAIN', 'PC');
-  vi.stubEnv('USERNAME', 'me');
-});
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -75,7 +56,7 @@ describe('the quick access check', () => {
   it('accepts only the exact account as owner, right before the file name', () => {
     const listing = (owner: string): string => ` 2026-10-29  05:48 AM                 4 ${owner}        bridge.json\r\n`;
     expect(fileOwnerIs(listing(ACCOUNT), ACCOUNT, 'bridge.json')).toBe(true);
-    expect(fileOwnerIs(listing(String.raw`PC\other`), ACCOUNT, 'bridge.json')).toBe(false);
+    expect(fileOwnerIs(listing(OTHER_ACCOUNT), ACCOUNT, 'bridge.json')).toBe(false);
     expect(fileOwnerIs(listing(String.raw`BUILTIN\Administrators`), ACCOUNT, 'bridge.json')).toBe(false);
     expect(fileOwnerIs(listing(ACCOUNT), ACCOUNT, 'other.json')).toBe(false);
     expect(fileOwnerIs(listing(ACCOUNT), '\\', 'bridge.json')).toBe(false);
@@ -84,32 +65,36 @@ describe('the quick access check', () => {
 });
 
 describe('the async Windows access check', () => {
-  it('accepts a private file with the quick check alone, never starting PowerShell', async () => {
-    const tools = fakeTools(SDDL_ME, POWERSHELL_PRIVATE);
+  beforeEach(stubAccount);
+
+  it('accepts a private file with icacls alone, never starting PowerShell', async () => {
+    const tools = fakeTools(SDDL_ME);
     expect(await windowsAccessProblemAsync(privateFile(), tools.run)).toBeNull();
-    expect(tools.calls).not.toContain('WindowsPowerShell\\v1.0\\powershell.exe');
+    expect(tools.calls.every((exe) => TOOLS.includes(exe))).toBe(true);
   });
 
-  it('refuses a file open to another group, with the full check naming it', async () => {
-    const tools = fakeTools(SDDL_OPEN, POWERSHELL_OPEN);
-    const problem = await windowsAccessProblemAsync(privateFile(), tools.run);
-    expect(problem).toContain('unexpected entries: Allow S-1-5-32-545 ReadAndExecute');
-    expect(tools.calls).toContain('WindowsPowerShell\\v1.0\\powershell.exe');
+  it('refuses a file open to another group or owned by another account, naming why, without PowerShell', async () => {
+    for (const tools of [fakeTools(SDDL_OPEN), fakeTools(SDDL_ME, OTHER_ACCOUNT)]) {
+      expect(await windowsAccessProblemAsync(privateFile(), tools.run)).toBe(NOT_PRIVATE);
+      expect(tools.calls.every((exe) => TOOLS.includes(exe))).toBe(true);
+    }
   });
 
-  it('does not take the quick check when the owner is not this account', async () => {
-    const tools = fakeTools(SDDL_ME, POWERSHELL_OPEN, String.raw`PC\other`);
-    expect(await windowsAccessProblemAsync(privateFile(), tools.run)).not.toBeNull();
-    expect(tools.calls).toContain('WindowsPowerShell\\v1.0\\powershell.exe');
+  it('refuses a file name icacls cannot be asked about, before running any tool', async () => {
+    const tools = fakeTools(SDDL_ME);
+    const file = join(tempDir(), 'odd name&.json');
+    writeFileSync(file, '{}');
+    expect(await windowsAccessProblemAsync(file, tools.run)).toBe('its name is not plain, so icacls cannot be asked about it safely');
+    expect(tools.calls).toEqual([]);
   });
 
-  it('says why it could not read the access list when both checks fail', async () => {
+  it('refuses with the reason when icacls is missing or fails', async () => {
     const run: AsyncSystemToolRun = () => Promise.reject(new Error('icacls.exe exited with 5'));
     expect(await windowsAccessProblemAsync(privateFile(), run)).toBe('could not read its owner and access list: icacls.exe exited with 5');
   });
 
   it('skips the check for a file it accepted and that has not changed', async () => {
-    const tools = fakeTools(SDDL_ME, POWERSHELL_PRIVATE);
+    const tools = fakeTools(SDDL_ME);
     const file = privateFile();
     expect(await windowsAccessProblemAsync(file, tools.run)).toBeNull();
     const used = tools.calls.length;
@@ -119,19 +104,19 @@ describe('the async Windows access check', () => {
 
   it('checks again when the file changed, and refuses it if the list is now open', async () => {
     const file = privateFile();
-    const first = fakeTools(SDDL_ME, POWERSHELL_PRIVATE);
+    const first = fakeTools(SDDL_ME);
     expect(await windowsAccessProblemAsync(file, first.run)).toBeNull();
     writeFileSync(file, '{"changed":true}');
-    const second = fakeTools(SDDL_OPEN, POWERSHELL_OPEN);
+    const second = fakeTools(SDDL_OPEN);
     expect(await windowsAccessProblemAsync(file, second.run)).not.toBeNull();
     expect(second.calls.length).toBeGreaterThan(0);
   });
 
   it('never remembers a refusal', async () => {
     const file = privateFile();
-    const open = fakeTools(SDDL_OPEN, POWERSHELL_OPEN);
+    const open = fakeTools(SDDL_OPEN);
     expect(await windowsAccessProblemAsync(file, open.run)).not.toBeNull();
-    const again = fakeTools(SDDL_OPEN, POWERSHELL_OPEN);
+    const again = fakeTools(SDDL_OPEN);
     expect(await windowsAccessProblemAsync(file, again.run)).not.toBeNull();
     expect(again.calls.length).toBeGreaterThan(0);
   });

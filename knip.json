@@ -3,6 +3,7 @@
   "ignoreDependencies": [
     "@drizztdourden08/tessera",
     "@electron-toolkit/utils",
+    "koffi",
     "@types/react-dom",
     "react",
     "react-dom",

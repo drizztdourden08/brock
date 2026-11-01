@@ -17,7 +17,7 @@ const definition: RomDefinition = {
   normalize: (bytes) => (bytes.length === dump.length + header.length ? bytes.subarray(header.length) : bytes),
 };
 
-describe('identifyRom', () => {
+describe('K1 identifyRom', { tags: ['critical'] }, () => {
   it('accepts a dump whose SHA-1 is declared', async () => {
     const check = await identifyRom(dump, definition);
     expect(check.ok).toBe(true);
@@ -46,7 +46,7 @@ describe('identifyRom', () => {
   });
 });
 
-describe('hasRomExtension', () => {
+describe('K1 hasRomExtension', { tags: ['critical'] }, () => {
   it('checks the extension without regard to case', () => {
     expect(hasRomExtension('Game (USA).ROM', definition)).toBe(true);
     expect(hasRomExtension('game.bin', definition)).toBe(true);

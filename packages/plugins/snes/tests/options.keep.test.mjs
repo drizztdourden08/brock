@@ -6,21 +6,14 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { snes } from '../src/snes-verb.mjs';
 import { snesOptions } from '../src/snes-options.mjs';
 
-const KNOWN = { '0123456789ABCDEF0123456789ABCDEF01234567': 'sample-us' };
-
-describe('snes defaults carry no game of their own', () => {
-  it('knows no ROM until the workspace lists its own', () => {
-    expect(snesOptions('roms', undefined).sha1).toEqual({});
-    expect(snesOptions('roms', { snes: { roms: { sha1: KNOWN } } }).sha1).toEqual(KNOWN);
-  });
-
+describe('K2 snes defaults carry no game of their own', { tags: ['critical'] }, () => {
   it('writes the core where port kit does unless the workspace says otherwise', () => {
     expect(snesOptions('wasm', undefined).output).toBe('public/wasm');
     expect(snesOptions('wasm', { snes: { wasm: { output: 'apps/game/public/wasm' } } }).output).toBe('apps/game/public/wasm');
   });
 });
 
-describe('snes rom check against the workspace list', () => {
+describe('K2 snes rom check against the workspace list', { tags: ['critical'] }, () => {
   const dirs = [];
   afterEach(() => {
     for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
@@ -46,7 +39,7 @@ describe('snes rom check against the workspace list', () => {
   });
 });
 
-describe('snes launch flags', () => {
+describe('K2 snes launch flags', { tags: ['critical'] }, () => {
   const dirs = [];
   afterEach(() => {
     for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });

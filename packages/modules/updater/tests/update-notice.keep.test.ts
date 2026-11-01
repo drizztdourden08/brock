@@ -20,7 +20,7 @@ const choiceOf = (version: string | null, prerelease = false): VersionChoice => 
   action: 'update',
 });
 
-describe('resolveUpdateNotice', () => {
+describe('K1 resolveUpdateNotice', { tags: ['critical'] }, () => {
   it('looks a version up in a keyed notice', () => {
     expect(resolveUpdateNotice({ '2.0.0': 'Saves are reset.' }, CONTEXT)).toBe('Saves are reset.');
     expect(resolveUpdateNotice({ '3.0.0': 'Later.' }, CONTEXT)).toBeNull();
@@ -38,7 +38,7 @@ describe('resolveUpdateNotice', () => {
   });
 });
 
-describe('noticeContext', () => {
+describe('K1 noticeContext', { tags: ['critical'] }, () => {
   it('names the picked version, else the found one', () => {
     expect(noticeContext(choiceOf('1.9.0', true), null, '1.4.0')).toEqual({ version: '1.9.0', currentVersion: '1.4.0', action: 'update', prerelease: true, releaseNotes: '', release: null });
     expect(noticeContext(choiceOf(null), { version: '2.0.0', releaseNotes: '', releaseDate: '' }, '1.4.0')?.version).toBe('2.0.0');
@@ -46,7 +46,7 @@ describe('noticeContext', () => {
   });
 });
 
-describe('release metadata in the notice', () => {
+describe('K1 release metadata in the notice', { tags: ['critical'] }, () => {
   const github = {
     tag_name: 'v2.0.0',
     name: 'Atlas 2.0',
@@ -92,7 +92,7 @@ describe('release metadata in the notice', () => {
   });
 });
 
-describe('setUpdateNotice', () => {
+describe('K1 setUpdateNotice', { tags: ['critical'] }, () => {
   it('stores the notice and clears only its own on undo', () => {
     const first = { '2.0.0': 'first' };
     const undoFirst = setUpdateNotice(first);
@@ -104,7 +104,7 @@ describe('setUpdateNotice', () => {
   });
 });
 
-describe('selfUpdateHost', () => {
+describe('K1 selfUpdateHost', { tags: ['critical'] }, () => {
   const scope = globalThis as { window?: unknown };
   afterEach(() => { delete scope.window; });
 

@@ -27,7 +27,7 @@ const listed = async (tagPrefix: string, allowPrerelease: boolean) => {
   return (await fetchReleases(feedWith(tagPrefix), allowPrerelease)).map((r) => r.tag_name);
 };
 
-describe('release tags', () => {
+describe('K1 release tags', { tags: ['critical'] }, () => {
   it('keeps the releases of this app only, and its pre-releases only when asked', async () => {
     expect(await listed('v', false)).toEqual(['v1.2.0']);
     expect(await listed('v', true)).toEqual(['v1.2.0', 'v1.3.0-beta.1']);

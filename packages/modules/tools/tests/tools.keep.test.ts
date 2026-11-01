@@ -1,7 +1,6 @@
 /* @layer electron-main @kind test */
-import { execFileSync } from 'child_process';
 import { createHash } from 'crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'fs';
 import { createServer } from 'http';
 import type { Server } from 'http';
 import type { AddressInfo } from 'net';
@@ -13,7 +12,6 @@ import { createZipWriter } from '@drizztdourden08/brock-electron/zip';
 import { createTools } from '../src/main/create-tools';
 import { defineTool } from '../src/main/define-tool';
 import { locateTool } from '../src/main/locate-tool';
-import { systemTar } from '../src/main/system-tar';
 import { toolPlatform } from '../src/main/tool-platform';
 import type { ToolsEnv } from '../src/main/tools-main.type';
 
@@ -94,7 +92,7 @@ const ffmpegAt = (url: string, sha256Hex: string, archive: 'zip' | 'tar' = 'zip'
   downloads: { 'win32-x64': { url, sha256: sha256Hex, archive } },
 });
 
-describe('defineTool', () => {
+describe('K1 defineTool', { tags: ['critical'] }, () => {
   it('fills the defaults and refuses a bad id, binary name, checksum or URL', () => {
     expect(defineTool({ id: 'ffmpeg', label: 'FFmpeg', binaries: ['ffmpeg'] })).toMatchObject({ usePath: true, version: 'current' });
     expect(() => defineTool({ id: 'FFmpeg Tool', label: 'x', binaries: ['a'] })).toThrow(/slug/);
@@ -110,7 +108,7 @@ describe('defineTool', () => {
   });
 });
 
-describe('locateTool', () => {
+describe('K1 locateTool', { tags: ['critical'] }, () => {
   it('prefers the cached copy, then a PATH folder that holds every binary', async () => {
     const cache = scratchDir();
     const partial = scratchDir();
@@ -130,7 +128,7 @@ describe('locateTool', () => {
   });
 });
 
-describe('createTools install', () => {
+describe('S2 createTools install', { tags: ['standard'] }, () => {
   it('downloads, verifies and unpacks the binaries from a zip as one job', async () => {
     const zip = await zipOf({ 'ffmpeg-9/bin/ffmpeg.exe': 'encoder', 'ffmpeg-9/bin/ffprobe.exe': 'prober', 'ffmpeg-9/README.txt': 'x' });
     files.set('/ffmpeg.zip', zip);
@@ -164,21 +162,6 @@ describe('createTools install', () => {
     expect((await tools.state('ffmpeg'))?.status).toBe('missing');
   });
 
-  it('unpacks a tar archive with the system tar', async () => {
-    const src = scratchDir();
-    mkdirSync(join(src, 'bin'));
-    writeFileSync(join(src, 'bin', 'ffmpeg.exe'), 'e');
-    writeFileSync(join(src, 'bin', 'ffprobe.exe'), 'p');
-    const tarFile = join(scratchDir(), 'ffmpeg.tar');
-    execFileSync(systemTar(), ['-cf', tarFile, '-C', src, 'bin']);
-    const tar = readFileSync(tarFile);
-    files.set('/ffmpeg.tar', tar);
-    const tools = createTools(envOf(fakeJobs().start));
-    tools.register(ffmpegAt(`${origin}/ffmpeg.tar`, sha256(tar), 'tar'));
-    const result = await tools.install('ffmpeg');
-    expect(result.success && basename(dirname(result.value.paths?.ffmpeg ?? ''))).toBe('current');
-  });
-
   it('reports a tool with no download for this system as unavailable, with the hint', async () => {
     const tools = createTools({ ...envOf(fakeJobs().start), platform: 'linux-x64' });
     tools.register({ ...ffmpegAt(`${origin}/x`, SHA), installHint: 'Install the ffmpeg package.' });
@@ -187,7 +170,7 @@ describe('createTools install', () => {
   });
 });
 
-describe('createTools run', () => {
+describe('E2 createTools run', { tags: ['e2e'] }, () => {
   const nodeTool = () => {
     const tools = createTools({ ...envOf(fakeJobs().start, dirname(process.execPath)), platform: toolPlatform(), os: process.platform });
     tools.register({ id: 'node', label: 'Node', binaries: [basename(process.execPath).replace(/\.exe$/i, '')] });

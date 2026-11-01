@@ -59,6 +59,23 @@ describe('the changed file list', () => {
     expect(found).toMatchObject({ files: ['src/committed.ts', 'src/fresh.ts', 'src/old.ts'], ref: 'main' });
   });
 
+  it('K1 compares with the local main when origin/main is behind it', { tags: ['critical'] }, () => {
+    const root = tempDir();
+    const commit = (file) => {
+      put(root, file, 'export const x = 1;\n');
+      git(root, 'add', '.');
+      git(root, 'commit', '-q', '-m', file);
+    };
+    git(root, 'init', '-b', 'main');
+    commit('src/base.ts');
+    git(root, 'update-ref', 'refs/remotes/origin/main', 'HEAD');
+    git(root, 'symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/main');
+    commit('src/ahead.ts');
+    git(root, 'checkout', '-q', '-b', 'feature');
+    commit('src/mine.ts');
+    expect(changedFiles(root, {})).toMatchObject({ files: ['src/mine.ts'], ref: 'main' });
+  });
+
   it('K1 asks for the whole tree when a config or manifest changed, or too many files did', { tags: ['critical'] }, () => {
     expect(needsWholeTree(['src/a.ts', 'eslint.config.mjs'])).toMatch('eslint.config.mjs');
     expect(needsWholeTree(['packages/app/tsconfig.json'])).toMatch('tsconfig.json');

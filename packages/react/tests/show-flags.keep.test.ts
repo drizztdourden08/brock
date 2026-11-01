@@ -45,7 +45,7 @@ const labels = (entries: readonly MenuEntry[]): string[] => entries.flatMap((ent
 
 afterEach(showHarness.resetShow);
 
-describe('app flags in show rules', () => {
+describe('K1 app flags in show rules', { tags: ['standard'] }, () => {
   it('reads a flag in a when rule of a bucket, a page and the menu', () => {
     const main = tree.hubs.find((hub) => hub.id === 'main');
     expect(main && visibleHubPages(main, false, ctxWith({})).pages.map((page) => page.id)).toEqual(['overview']);

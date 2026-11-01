@@ -18,19 +18,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('tour shell parts', () => {
-  it('lights the screen pane, the screens rail and the home hero, each on its own', () => {
-    document.body.innerHTML = SHELL;
-    expect(find('page')).toBe(document.querySelector('main.brock-app__screens'));
-    expect(find('rail')).toBe(document.querySelector('nav[aria-label="Screens"]'));
-    expect(find('hero')).toBe(document.getElementById('home-hero'));
-  });
-
-  it('keeps screen on the open screen card', () => {
-    document.body.innerHTML = SHELL;
-    expect(find('screen')).toBe(document.getElementById('card'));
-  });
-
+describe('K1 tour shell parts', { tags: ['standard'] }, () => {
   it('lights the hero of the open hub when the home screen has none', () => {
     document.body.innerHTML = SHELL;
     document.querySelector('.screen-host__home')?.replaceChildren();

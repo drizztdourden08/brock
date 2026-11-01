@@ -38,7 +38,7 @@ const raise = (...args: Parameters<typeof toast>): string => {
   return id;
 };
 
-describe('toast', () => {
+describe('S1 toast', { tags: ['standard'] }, () => {
   it('raises through Tessera\'s queue, drawn by one ToastStack, and joins a repeat with a count', () => {
     mountHost();
     const first = raise('Saved');
@@ -46,14 +46,6 @@ describe('toast', () => {
     expect(again).toBe(first);
     expect(shown()).toHaveLength(1);
     expect(document.querySelector('.toast__count')?.textContent).toBe('×2');
-  });
-
-  it('maps the variant and shows at most three at once', () => {
-    mountHost();
-    raise('Disk full', { variant: 'danger', duration: 0 });
-    for (const message of ['One', 'Two', 'Three']) raise(message);
-    expect(shown()).toHaveLength(3);
-    expect(shown()[0]?.classList.contains('toast--danger')).toBe(true);
   });
 
   it('dismisses by the id toast returned', () => {

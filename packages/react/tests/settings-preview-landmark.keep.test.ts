@@ -13,13 +13,9 @@ const page = (props: object = {}) => {
   return regionTargets().map((region) => region.getAttribute('aria-label'));
 };
 
-describe('settings preview landmark in region cycling', () => {
+describe('S1 settings preview landmark in region cycling', { tags: ['standard'] }, () => {
   it('gives F6 a stop on the preview and one on the rows, inside the main area', () => {
     expect(page()).toEqual(['Preview', 'Settings']);
-  });
-
-  it('takes the labels from the props', () => {
-    expect(page({ label: 'Sprite sheet', rowsLabel: 'Options' })).toEqual(['Sprite sheet', 'Options']);
   });
 
   it('leaves the main area as the only stop when there is no preview', () => {

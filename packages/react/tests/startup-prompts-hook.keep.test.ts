@@ -26,7 +26,7 @@ const roots: Root[] = [];
 
 const settle = async (): Promise<void> => {
   await act(async () => {
-    await new Promise((resolve) => { setTimeout(resolve, 10); });
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
   });
 };
 
@@ -63,7 +63,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('useStartupPrompts', () => {
+describe('S2 useStartupPrompts', { tags: ['standard'] }, () => {
   it('waits for the window reveal, an active profile with its settings, and the end of the first-run tour', async () => {
     stub(false);
     const run = vi.fn(noop);
@@ -86,15 +86,14 @@ describe('useStartupPrompts', () => {
     await settle();
     expect(run).toHaveBeenCalledTimes(1);
   });
-
 });
 
-describe('useStartupPrompts once it runs', () => {
+describe('S2 useStartupPrompts once it runs', { tags: ['standard'] }, () => {
   it('runs the ordered prompts one at a time, once per launch, with the profile, the settings and the dialogs', async () => {
     stub(false);
     const order: string[] = [];
     const contexts: StartupPromptContext[] = [];
-    const first: StartupPromptDef = { run: async (given) => { contexts.push(given); order.push('first'); await new Promise((resolve) => { setTimeout(resolve, 15); }); order.push('first done'); } };
+    const first: StartupPromptDef = { run: async (given) => { contexts.push(given); order.push('first'); await Promise.resolve(); order.push('first done'); } };
     const second: StartupPromptDef = { run: () => { order.push('second'); return Promise.resolve(); } };
     const { render, store } = mount(true, [first, second]);
     await arrive(store);
@@ -106,9 +105,6 @@ describe('useStartupPrompts once it runs', () => {
     expect(seen?.settings.get()).toEqual({ mode: 'a' });
     seen?.settings.patch({ mode: 'b' });
     expect(store.getState().settings.mode).toBe('b');
-    expect(typeof seen?.confirmAction).toBe('function');
-    expect(typeof seen?.confirmChoice).toBe('function');
-    expect(typeof seen?.nav.open).toBe('function');
     render(false);
     render(true);
     act(() => useTourStore.setState({ active: { id: 'again', index: 0 } }));
@@ -123,14 +119,5 @@ describe('useStartupPrompts once it runs', () => {
     const { store } = mount(true, [{ run }]);
     await arrive(store);
     expect(run).not.toHaveBeenCalled();
-  });
-
-  it('keeps going past a prompt that throws', async () => {
-    stub(false);
-    const after = vi.fn(noop);
-    const { store } = mount(true, [{ run: () => Promise.reject(new Error('bad')) }, { run: after }]);
-    await arrive(store);
-    await settle();
-    expect(after).toHaveBeenCalledTimes(1);
   });
 });

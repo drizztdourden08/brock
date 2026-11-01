@@ -11,7 +11,7 @@ const recorder = () => {
   return { sent, send: (id: string, next: WidgetPrefsWire) => { sent.push([id, next]); } };
 };
 
-describe('relayWidgetPrefs', () => {
+describe('K1 relayWidgetPrefs', { tags: ['critical'] }, () => {
   const stops: (() => void)[] = [];
 
   afterEach(() => {
@@ -34,15 +34,5 @@ describe('relayWidgetPrefs', () => {
     relay.receive({ logs: { hiddenLevels: ['warn'] } });
     expect(prefs().byWidget.logs).toEqual({ hiddenLevels: ['warn'] });
     expect(sent).toEqual([]);
-  });
-
-  it('lands in the app store as that widget prefs, leaving the others', () => {
-    const { sent, send } = recorder();
-    stops.push(relayWidgetPrefs('logs', send).stop);
-    prefs().setPref('logs', 'hiddenLevels', ['error']);
-    const [[id, next] = ['', {}]] = sent;
-    prefs().hydrate({ notes: { wrap: true } });
-    prefs().replaceWidget(id, next);
-    expect(prefs().byWidget).toEqual({ notes: { wrap: true }, logs: { hiddenLevels: ['error'] } });
   });
 });

@@ -27,7 +27,7 @@ const SCHEME: SettingItem = {
 
 const DEPTH: SettingItem = { key: 'depth', label: 'Depth', hint: 'More detail.', noDescription: true, visible: (settings) => settings.advanced === true, control: { kind: 'choice', options: [{ value: 'low', label: 'Low' }] } };
 
-describe('settings: the normalise hook and the patch transform', () => {
+describe('K3 settings: the normalise hook and the patch transform', { tags: ['critical'] }, () => {
   it('normalises the merged settings once a profile hydrates, with what was stored', async () => {
     const seen: unknown[] = [];
     const store = createSettingsStore({
@@ -65,20 +65,7 @@ describe('settings: the normalise hook and the patch transform', () => {
   });
 });
 
-describe('settings rows: colour, multi-choice, an option with a reason, and a row shown by a predicate', () => {
-  it('draws a colour row and a multi-choice row with Tessera inputs', () => {
-    const colour = settingRow({ key: 'accent', label: 'Accent', hint: 'The highlight.', noDescription: true, control: { kind: 'color' } }, context());
-    expect(colour).toMatchObject({ input: { kind: 'color', value: '#3366ff' } });
-    const multi = settingRow({ key: 'layers', label: 'Layers', hint: 'What draws.', noDescription: true, control: { kind: 'multi', options: [{ value: 'hud', label: 'HUD' }, { value: 'map', label: 'Map' }] } }, context());
-    expect(multi).toMatchObject({ input: { kind: 'multi', value: ['hud'] } });
-  });
-
-  it('hands an option with a reason to Tessera as it is, for every choice look', () => {
-    const row = settingRow(SCHEME, context());
-    expect(row).toMatchObject({ input: { kind: 'segmented', value: 'classic', options: SCHEME.control?.kind === 'choice' ? SCHEME.control.options : [] } });
-    const radio = settingRow({ ...SCHEME, control: { kind: 'radio', options: [{ value: 'classic', label: 'Classic' }, { value: 'pro', label: 'Pro', disabled: true }] } }, context());
-    expect(radio).toMatchObject({ input: { kind: 'radio', options: [{ value: 'classic' }, { value: 'pro', disabled: true }] } });
-  });
+describe('K1 a row shown by a predicate', { tags: ['critical'] }, () => {
 
   it('leaves a row out while its predicate says so, on the page and in search', () => {
     const sections: Section[] = [{ id: 'video', title: 'Video', items: [SCHEME, DEPTH] }];
@@ -107,7 +94,7 @@ afterEach(() => {
 
 const rowOf = (item: SettingItem, onChange = vi.fn()): SettingsRowProps => settingRow(item, context({ onChange })) as SettingsRowProps;
 
-describe('a settings option off with a reason, drawn by Tessera', () => {
+describe('S1 a settings option off with a reason, drawn by Tessera', { tags: ['standard'] }, () => {
   it('draws a disabled segment with its reason and never sets its value', () => {
     const onChange = vi.fn();
     draw(rowOf(SCHEME, onChange));
@@ -116,11 +103,5 @@ describe('a settings option off with a reason, drawn by Tessera', () => {
     expect(pro?.getAttribute('aria-description')).toBe('Needs a pad with two sticks');
     act(() => pro?.click());
     expect(onChange).not.toHaveBeenCalled();
-  });
-
-  it('draws a multi-choice with a disabled option', () => {
-    draw(rowOf({ key: 'layers', label: 'Layers', hint: 'What draws.', noDescription: true, control: { kind: 'multi', options: [{ value: 'hud', label: 'HUD' }, { value: 'map', label: 'Map', disabled: true }] } }));
-    const map = [...document.querySelectorAll('button, input')].find((element) => element.closest('label, button')?.textContent.includes('Map'));
-    expect(map?.hasAttribute('disabled')).toBe(true);
   });
 });

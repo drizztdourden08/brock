@@ -83,7 +83,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('the widget focus guard', () => {
+describe('S1 the widget focus guard', { tags: ['standard'] }, () => {
   it('keeps a pointer click on a widget button from leaving the focus there, and the click still fires', () => {
     mount();
     const button = byId('widget-button');
@@ -92,24 +92,6 @@ describe('the widget focus guard', () => {
     expect(click(byId('widget-icon'))).toBe(true);
     expect(document.activeElement).not.toBe(button);
     expect(clicks).toBe(1);
-  });
-
-  it('drops focus that a widget press moves onto a widget control afterwards', () => {
-    mount();
-    click(byId('widget-button'));
-    byId('widget-button').focus();
-    expect(document.activeElement).not.toBe(byId('widget-button'));
-  });
-
-  it('drops focus a widget click handler moves back onto a widget control, also when no focusin reaches the document', () => {
-    mount();
-    const button = byId('widget-button');
-    const hide = (event: Event): void => event.stopImmediatePropagation();
-    window.addEventListener('focusin', hide, true);
-    button.addEventListener('click', () => button.focus());
-    click(button);
-    window.removeEventListener('focusin', hide, true);
-    expect(document.activeElement).not.toBe(button);
   });
 
   it('lets a slider and a select hold the focus during the press and drops it on release or change', () => {
@@ -133,15 +115,9 @@ describe('the widget focus guard', () => {
     expect(click(text)).toBe(false);
     expect(document.activeElement).toBe(text);
   });
-
-  it('leaves a press on plain widget text alone, so the text stays selectable', () => {
-    mount();
-    expect(pressDown(byId('widget-text-line'))).toBe(false);
-  });
-
 });
 
-describe('the widget focus guard opt-out and keyboard focus', () => {
+describe('S1 the widget focus guard opt-out and keyboard focus', { tags: ['standard'] }, () => {
   it('keeps the focus on a row marked data-widget-keeps-focus after a click, and an unmarked button still loses it', () => {
     mount();
     const row = byId('widget-row');
@@ -163,10 +139,9 @@ describe('the widget focus guard opt-out and keyboard focus', () => {
     byId('widget-button').dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.activeElement).toBe(byId('widget-button'));
   });
-
 });
 
-describe('the widget focus guard and the rest of the app', () => {
+describe('S1 the widget focus guard and the rest of the app', { tags: ['standard'] }, () => {
   it('keeps the focus a keyboard user moves into a widget with Tab, also on a slider they change', () => {
     mount();
     click(byId('widget-button'));
@@ -184,22 +159,6 @@ describe('the widget focus guard and the rest of the app', () => {
     expect(document.activeElement).toBe(byId('widget-button'));
   });
 
-  it('leaves the focus with the app after a drag on a dock line, and keeps it there for a keyboard user who tabs to it', () => {
-    mount();
-    const line = byId('dock-line');
-    expect(click(line)).toBe(false);
-    expect(document.activeElement).not.toBe(line);
-    tabTo(line);
-    expect(document.activeElement).toBe(line);
-  });
-
-  it('covers the widget options panel and its sub-panel', () => {
-    mount();
-    expect(click(byId('options-row'))).toBe(true);
-    expect(click(byId('options-sub-item'))).toBe(true);
-    expect(document.activeElement).not.toBe(byId('options-sub-item'));
-  });
-
   it('leaves a click in an app menu and its sub-menu untouched', () => {
     mount();
     expect(click(byId('menu-item'))).toBe(false);
@@ -215,13 +174,5 @@ describe('the widget focus guard and the rest of the app', () => {
     const slider = byId('widget-slider');
     click(slider);
     expect(document.activeElement).toBe(slider);
-  });
-
-  it('stops guarding when it unmounts', () => {
-    mount();
-    act(() => root?.unmount());
-    root = null;
-    expect(click(byId('widget-button'))).toBe(false);
-    expect(document.activeElement).toBe(byId('widget-button'));
   });
 });

@@ -17,7 +17,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('scoped state', () => {
+describe('K3 scoped state', { tags: ['standard'] }, () => {
   it('comes back after a reload of the store, for the same scope only', async () => {
     const disk = fakeMain();
     const first = await freshModules();
@@ -52,7 +52,7 @@ describe('scoped state', () => {
   });
 });
 
-describe('the scope size cap', () => {
+describe('K3 the scope size cap', { tags: ['standard'] }, () => {
   it('evicts the oldest written name once a scope holds more than its cap', async () => {
     const disk = fakeMain();
     const { uiViews } = await freshModules();

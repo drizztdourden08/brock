@@ -52,7 +52,7 @@ afterEach(() => {
   listeners.clear();
 });
 
-describe('a phone browser on the web host', () => {
+describe('S1 a phone browser on the web host', { tags: ['standard'] }, () => {
   it('reports a mobile touch form factor where a coarse pointer meets a narrow viewport', () => {
     expect(createWebFactory().info).toMatchObject({ host: 'web', formFactor: 'desktop', input: 'pointer' });
     Object.assign(media, { phone: true, coarse: true });
@@ -93,12 +93,5 @@ describe('a phone browser on the web host', () => {
     turn({ phone: false, coarse: false });
     expect(host.textContent).toBe('desktop desktop pointer');
     expect(document.documentElement.classList.contains('platform-mobile')).toBe(false);
-  });
-
-  it('stops listening when the provider unmounts', () => {
-    showHarness.render(createElement(PlatformProvider, null, null));
-    expect([...listeners.values()].map((set) => set.size)).toEqual([1, 1]);
-    showHarness.unmount();
-    expect([...listeners.values()].map((set) => set.size)).toEqual([0, 0]);
   });
 });

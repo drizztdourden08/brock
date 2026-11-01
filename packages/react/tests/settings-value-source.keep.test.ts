@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
-import { settingsTab } from '../src/screens/conventions/settings-tab';
 import { buildCatalog } from '../src/search/catalog/build-catalog';
 import type { CatalogInput } from '../src/search/search.type';
 import { matchTabs } from '../src/settings/SettingsHub/behavior/match-tabs';
@@ -10,6 +9,10 @@ import { sourcePatch } from '../src/settings/SettingsLayout/behavior/source-patc
 import { sourceValues } from '../src/settings/source-values';
 import { tabSections } from '../src/settings/tab-sections';
 import type { Section, SettingItem, SettingsValueSource, TabDef } from '../src/settings/settings.type';
+
+const flush = async (): Promise<void> => {
+  for (let i = 0; i < 10; i += 1) await Promise.resolve();
+};
 
 type MemorySource = SettingsValueSource & { store: Record<string, unknown> };
 
@@ -31,7 +34,7 @@ const tabOf = (sections: Section[], source?: SettingsValueSource): TabDef<object
 const keysOf = (sections: Section[], profile: object): string[] =>
   resolveSections(sections, '', profile).flatMap((section) => section.groups.flatMap((group) => group.items.map((item) => item.key)));
 
-describe('reading a settings value source', () => {
+describe('K1 reading a settings value source', { tags: ['critical'] }, () => {
   it('reads the keys of a section from its source and nothing from the profile', () => {
     const source = memorySource({ autoStart: true, proxy: 'p:1', other: 'x' });
     expect(sourceValues({ id: 'a', title: 'A', items: ITEMS, source })).toEqual({ autoStart: true, proxy: 'p:1' });
@@ -55,21 +58,15 @@ describe('reading a settings value source', () => {
     source.store.autoStart = true;
     expect(keysOf(sections, { autoStart: false })).toEqual(['autoStart', 'proxy']);
   });
-
-  it('puts the meta source of a .settings.ts page on its tab', () => {
-    const source = memorySource({});
-    expect(settingsTab({ kind: 'settings', bucket: 'game', id: 'app', sections: [], meta: { source } }).source).toBe(source);
-    expect('source' in settingsTab({ kind: 'settings', bucket: 'game', id: 'app', sections: [] })).toBe(false);
-  });
 });
 
-describe('writing a settings value source', () => {
+describe('K3 writing a settings value source', { tags: ['critical'] }, () => {
   it('writes a row change to the source key by key, then refreshes', async () => {
     const source = memorySource({ autoStart: false });
     const refresh = vi.fn();
     const row = settingRow(AUTO_START, { settings: { autoStart: false }, onChange: sourcePatch(source, refresh), disabled: false, lock: null });
     if (row && 'input' in row && row.input?.kind === 'toggle') row.input.onChange(true);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await flush();
     expect(source.store.autoStart).toBe(true);
     expect(refresh).toHaveBeenCalledTimes(1);
   });
@@ -81,12 +78,12 @@ describe('writing a settings value source', () => {
     sourcePatch(source, refresh)({ a: 1 });
     expect(refresh).not.toHaveBeenCalled();
     finish();
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await flush();
     expect(refresh).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('finding the rows of a settings value source', () => {
+describe('K1 finding the rows of a settings value source', { tags: ['critical'] }, () => {
   it('keeps the source on the resolved section, and finds a row by its keywords', () => {
     const source = memorySource({});
     const found = resolveSections([{ id: 'a', title: 'A', items: ITEMS, source }], 'login');

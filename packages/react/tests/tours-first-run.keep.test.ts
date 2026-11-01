@@ -67,7 +67,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('first run is app-wide', () => {
+describe('K3 first run is app-wide', { tags: ['standard'] }, () => {
   it('runs the first-run tour once on a fresh install, and never again for a second profile or after a restart', async () => {
     const disk = newDisk();
     const first = await boot(disk);

@@ -22,7 +22,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('holdScreenshot', () => {
+describe('K1 holdScreenshot', { tags: ['critical'] }, () => {
   it('tells main how many holds are open, a release counts once, and 0 goes out once two frames passed with no hold', async () => {
     const { holdScreenshot } = await fresh();
     const releaseCore = holdScreenshot();

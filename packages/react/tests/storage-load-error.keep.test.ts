@@ -20,10 +20,10 @@ afterEach(() => {
 });
 
 const settle = async (): Promise<void> => {
-  await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
+  await act(async () => { for (let i = 0; i < 10; i += 1) await Promise.resolve(); });
 };
 
-describe('StoragePage when the data folder cannot be read', () => {
+describe('S1 StoragePage when the data folder cannot be read', { tags: ['standard'] }, () => {
   it('shows a LoadError box with the raw error behind Details, and Retry reads the folder again', async () => {
     const listDataDomains = vi.fn()
       .mockRejectedValueOnce(new Error('EACCES: permission denied, scandir C:/Data'))

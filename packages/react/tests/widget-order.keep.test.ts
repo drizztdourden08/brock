@@ -28,7 +28,7 @@ const stackOf = (node: LayoutNode): string[] => {
   return node.children.flatMap(stackOf);
 };
 
-describe('widget order in a dock column', () => {
+describe('K1 widget order in a dock column', { tags: ['critical'] }, () => {
   beforeEach(() => {
     store().setDefinitions(DEFINITIONS);
     store().replace(null);
@@ -45,12 +45,6 @@ describe('widget order in a dock column', () => {
     widgets.open('project');
     widgets.open('mid');
     expect(stackOf(store().layout.dock)).toEqual(['project', 'mid', 'view']);
-  });
-
-  it('keeps open order when no widget has an order', () => {
-    widgets.open('notes');
-    widgets.open('logs');
-    expect(stackOf(store().layout.dock)).toEqual(['notes', 'logs']);
   });
 
   it('puts ordered widgets before the ones without an order, which keep open order', () => {

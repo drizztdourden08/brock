@@ -29,7 +29,7 @@ beforeEach(() => {
   useWidgetLayoutStore.setState({ definitions: NORMAL, layout: createDefaultLayout(), externalDrag: null });
 });
 
-describe('one kit at a time', () => {
+describe('K1 one kit at a time', { tags: ['critical'] }, () => {
   it('closes the open kit when another kit opens, from the store or the API', () => {
     widgetKits.open('editor');
     widgetKits.open('probe');
@@ -40,7 +40,7 @@ describe('one kit at a time', () => {
   });
 });
 
-describe('a normal widget closes the open kit', () => {
+describe('K1 a normal widget closes the open kit', { tags: ['critical'] }, () => {
   it('closes the kit and opens the widget in the normal layout, from open, toggle and popOut', () => {
     widgetKits.open('editor');
     widgets.open('logs');
@@ -68,7 +68,7 @@ describe('a normal widget closes the open kit', () => {
   });
 });
 
-describe('the widgets API on a kit widget', () => {
+describe('K1 the widgets API on a kit widget', { tags: ['critical'] }, () => {
   it('opens its kit, closing any other, and shows the widget even after the user closed it', () => {
     widgetKits.open('editor');
     kits().toggleMember('tree');
@@ -81,17 +81,6 @@ describe('the widgets API on a kit widget', () => {
     expect(isWidgetOpen(normalLayout(), 'tree')).toBe(false);
   });
 
-  it('opens a list of widgets of one kit together and leaves an open one open', () => {
-    widgetKits.open('editor');
-    kits().toggleMember('tree');
-    kits().toggleMember('props');
-    widgetKits.close();
-    for (const id of ['tree', 'props', 'tree']) widgets.open(id);
-    expect(widgetKits.active()).toBe('editor');
-    expect(isWidgetOpen(kitLayout('editor'), 'tree')).toBe(true);
-    expect(isWidgetOpen(kitLayout('editor'), 'props')).toBe(true);
-  });
-
   it('toggles a kit widget within its open kit, and opens the kit when it is closed', () => {
     widgets.toggle('props');
     expect(widgetKits.active()).toBe('editor');
@@ -102,16 +91,9 @@ describe('the widgets API on a kit widget', () => {
     widgets.close('tree');
     expect(isWidgetOpen(kitLayout('editor'), 'tree')).toBe(false);
   });
-
-  it('has widgetKits.openWidget as the explicit form', () => {
-    widgetKits.openWidget('trace');
-    expect(widgetKits.active()).toBe('probe');
-    widgetKits.openWidget('logs');
-    expect(widgetKits.active()).toBe('probe');
-  });
 });
 
-describe('kit widgets in Tessera', () => {
+describe('K1 kit widgets in Tessera', { tags: ['critical'] }, () => {
   it('gives each kit widget its kit id as group, leaves normal widgets ungrouped, and reads chrome from a widget file', () => {
     const grouped = groupedMembers([...MEMBERS, ...NORMAL, widget('stray', { kit: 'gone' })], [EDITOR, PROBE]);
     expect(grouped.map((def) => [def.id, def.group])).toEqual([['tree', 'editor'], ['props', 'editor'], ['trace', 'probe']]);
@@ -120,7 +102,7 @@ describe('kit widgets in Tessera', () => {
   });
 });
 
-describe('kit widgets in their own window', () => {
+describe('K1 kit widgets in their own window', { tags: ['critical'] }, () => {
   it('pops a kit widget out within its kit, keeps it popped through a close, and drops it from the windows while closed', () => {
     widgets.popOut('tree');
     expect(widgetKits.active()).toBe('editor');

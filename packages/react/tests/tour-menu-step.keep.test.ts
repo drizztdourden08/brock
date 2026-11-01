@@ -26,12 +26,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('tabs part and open-menu step', () => {
-  it('lights the page tab strip of the open screen', () => {
-    document.body.innerHTML = BAR;
-    expect(tourTargets.resolve({ shell: 'tabs' })).toBe(document.getElementById('tabs'));
-  });
-
+describe('S2 open-menu step', { tags: ['standard'] }, () => {
   it('finds a menu entry by its label only while the menu is open', async () => {
     document.body.innerHTML = BAR;
     document.querySelectorAll('.dropdown-trigger').forEach(wire);

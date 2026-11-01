@@ -55,7 +55,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('screen state across a restart', { timeout: 60_000 }, () => {
+describe('K3 screen state across a restart', { tags: ['standard'], timeout: 60_000 }, () => {
   it('keeps a widget write and a screen write of one profile, and brings back the open hub, page, history and screen state', async () => {
     const { disk, listeners } = fakeDisk({ 'profile:p1': { widgetPrefs: { log: { filter: 'warn' } }, screens: { state: { about: 'broken', 'data/library': { sort: 'name' } } } } });
     const first = await startApp();

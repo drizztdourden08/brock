@@ -58,7 +58,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('layout preset revision', { timeout: 60_000 }, () => {
+describe('K3 layout preset revision', { tags: ['standard'], timeout: 60_000 }, () => {
   it('records the preset revision with a layout saved from it', async () => {
     const { disk } = await savedProfile();
     expect(profile(disk).widgetLayoutRevision).toBe(1);
@@ -95,10 +95,9 @@ describe('layout preset revision', { timeout: 60_000 }, () => {
     await newer.widgetPersistence.load('p1');
     expect(raised).toHaveLength(1);
   });
-
 });
 
-describe('answering the layout revision notice', { timeout: 60_000 }, () => {
+describe('K3 answering the layout revision notice', { tags: ['standard'], timeout: 60_000 }, () => {
   it('keeps the layout and stores the new revision when the notice is closed, so it does not ask again', async () => {
     const { disk, saved, listeners } = await savedProfile();
     const next = await startApp(NEWER);

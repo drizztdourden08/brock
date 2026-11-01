@@ -9,7 +9,7 @@ const localFields = (local) => ({
 });
 
 /**
- * @param {{ runId: string, request: { project: string, sha: string, tree?: string, branch: string | null, pr: string | null, trigger: string, partial: boolean, localpkg?: { builds: object[] } | null }, main: string }} input
+ * @param {{ runId: string, request: { project: string, sha: string, tree?: string, branch: string | null, pr: string | null, trigger: string, partial: boolean, localpkg?: { builds: object[] } | null, here?: string | null }, main: string }} input
  * @returns {object} a queued check-run record with no steps yet
  */
 const newRecord = ({ runId, request, main }) => ({
@@ -23,6 +23,7 @@ const newRecord = ({ runId, request, main }) => ({
   pr: request.pr,
   trigger: request.trigger,
   mode: 'local',
+  place: request.here ? 'here' : 'worktree',
   ...localFields(request.localpkg),
   status: 'queued',
   startedAt: new Date().toISOString(),

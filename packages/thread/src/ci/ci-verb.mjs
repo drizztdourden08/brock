@@ -7,8 +7,10 @@ import { newRunId } from './check-record.mjs';
 import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
 import { planSteps, targetOf } from './ci-plan.mjs';
 import { gateScope } from './gate-scope.mjs';
+import { hereRequest } from './here-request.mjs';
 import { localpkgRequest } from './localpkg-request.mjs';
 import { integrationBranch } from '../local/integration-branch.mjs';
+import { skipInstall } from './skip-install.mjs';
 import { parseTimeouts } from './step-timeouts.mjs';
 import { treeOf } from './tree-cache.mjs';
 import { resolveLocalPr } from '../pr/local-pr.mjs';
@@ -18,7 +20,7 @@ import { runCi } from './run-ci.mjs';
 const USAGE = [
   '  brock ci [check] [<job>|<step>] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
   '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
-  '           [--base <branch>] [--timeout <step>=<min>[,...]] [--no-cache] [--localpkg]',
+  '           [--base <branch>] [--timeout <step>=<min>[,...]] [--no-cache] [--localpkg] [--here]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
   '                               (default the head of --pr, else HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
   '                               of the workflow file (default ci.yml). A job or step name runs only that one,',
@@ -28,7 +30,9 @@ const USAGE = [
   '                               --trigger release); lint covers the same files, all of them on a release.',
   '                               --localpkg runs a branch that needs unpushed local builds: localpkg points the temporary worktree at',
   '                               its tarballs, install is --no-frozen-lockfile, the lockfile stays the registry one, and the record says so.',
-  '                               Exit 0 pass, 1 a step failed or timed out, 2 usage or setup error.',
+  '                               --here runs the same steps in the current checkout instead of a temporary worktree and skips the install.',
+  '                               It needs HEAD to be the commit under test and a clean tracked tree (else exit 2), and not --localpkg.',
+  '                               The record says place: here. Exit 0 pass, 1 a step failed or timed out, 2 usage or setup error.',
 ].join('\n');
 
 const PR_ID = /^PR-\d+$/;
@@ -104,6 +108,7 @@ const resolveRequest = (positional, options, ctx) => {
   const project = projectOf(options, ctx.workspace);
   const branchBase = stringOption(options, 'base') ?? integrationBranch({ options, project, base: ctx.workspace.base, cwd });
   const scope = gateScope({ trigger, sha, base: branchBase, git: (args) => tryGit(args, cwd) });
+  const here = hereRequest({ options, sha, git: (args) => tryGit(args, cwd) });
   const localpkg = localpkgOf(options, ctx, { cwd, sha });
   const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger, scope, localpkg: Boolean(localpkg) };
   const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));
@@ -117,7 +122,8 @@ const resolveRequest = (positional, options, ctx) => {
     branch: branchOf(sha, spec, options, cwd),
     pr,
     trigger,
-    plan,
+    plan: here ? skipInstall(plan) : plan,
+    here,
     localpkg,
     partial: Boolean(only),
     waitMs: waitOf(options),

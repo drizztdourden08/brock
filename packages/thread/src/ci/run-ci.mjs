@@ -93,7 +93,7 @@ const openSession = ({ ctx, request, runId }) => {
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
-  return { file, record, plan, save, control, onSignal, reused, timeouts: request.timeouts ?? {}, release: null, path: null, lost: null, localpkg: request.localpkg ?? null };
+  return { file, record, plan, save, control, onSignal, reused, timeouts: request.timeouts ?? {}, release: null, path: null, temporary: false, lost: null, localpkg: request.localpkg ?? null };
 };
 
 const lockFor = async ({ ctx, request, runId, session }) => {
@@ -115,7 +115,8 @@ const execute = async ({ ctx, request, runId, session }) => {
   save();
   if (pending) {
     session.lost = watchMainCheckout(ctx.rootDir);
-    session.path = addCiWorktree({ main: ctx.rootDir, runId, sha: request.sha });
+    session.path = request.here ?? addCiWorktree({ main: ctx.rootDir, runId, sha: request.sha });
+    session.temporary = !request.here;
     if (session.localpkg) useLocalpkg({ localpkg: session.localpkg, path: session.path });
     for (const [index, step] of record.steps.entries()) step.cwd = resolve(session.path, session.plan[index].workdir ?? '');
     save();
@@ -135,7 +136,8 @@ const noteLoss = (session, log) => {
 };
 
 const closeSession = async ({ ctx, session }) => {
-  const { record, save, path } = session;
+  const { record, save } = session;
+  const path = session.temporary ? session.path : null;
   record.finishedAt = now();
   save();
   process.off('SIGINT', session.onSignal);

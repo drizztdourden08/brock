@@ -1,4 +1,6 @@
 /* @layer tooling-scripts @kind logic */
+const BOOLEAN_FLAGS = new Set(['here', 'localpkg', 'no-cache']);
+
 /**
  * @param {string[]} argv
  * @returns {{ positional: string[], options: Record<string, string | boolean> }}
@@ -19,7 +21,7 @@ const parseThreadArgs = (argv) => {
       continue;
     }
     const next = argv[i + 1];
-    if (next !== undefined && !next.startsWith('--')) {
+    if (!BOOLEAN_FLAGS.has(body) && next !== undefined && !next.startsWith('--')) {
       options[body] = next;
       i += 1;
     } else {

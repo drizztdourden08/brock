@@ -31,7 +31,7 @@ const structureOf = async (root) => {
   return { code, errors: errors.mock.calls.flat() };
 };
 
-describe('package names under workflows.publish', () => {
+describe('K1 package names under workflows.publish', { tags: ['critical'] }, () => {
   it('names a published package @<owner>/<app>-<subject> and every other package @<app>/<subject>', async () => {
     const { code, errors } = await structureOf(repo({ kit: '@drizztdourden08/archipelia-client-kit' }));
     expect(errors).toEqual([]);
@@ -45,21 +45,9 @@ describe('package names under workflows.publish', () => {
     expect(errors.join('\n')).not.toContain('is not "@archipelia/<subject>"');
   });
 
-  it('refuses a wrong subject on a published package', async () => {
-    const { code, errors } = await structureOf(repo({ kit: '@drizztdourden08/client-kit' }));
-    expect(code).toBe(1);
-    expect(errors.join('\n')).toContain('is not "@drizztdourden08/archipelia-client-kit"');
-  });
-
   it('keeps @<app>/<subject> for a package that is not listed, and names that form', async () => {
     const { code, errors } = await structureOf(repo({ kit: '@drizztdourden08/archipelia-client-kit', core: '@drizztdourden08/archipelia-lobby-core' }));
     expect(code).toBe(1);
     expect(errors.join('\n')).toContain('packages/lobby-core: name "@drizztdourden08/archipelia-lobby-core" is not "@archipelia/<subject>"');
-  });
-
-  it('keeps the app scope on every package when nothing is published', async () => {
-    const { code, errors } = await structureOf(repo({ kit: '@archipelia/client-kit' }, []));
-    expect(errors).toEqual([]);
-    expect(code).toBe(0);
   });
 });

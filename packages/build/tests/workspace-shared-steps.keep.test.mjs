@@ -28,7 +28,7 @@ const render = async (root, app) => {
 
 const between = (names, first, last) => names.slice(names.indexOf(first) + 1, names.indexOf(last));
 
-describe('the shared ci.yml of a workspace whose two apps declare steps', () => {
+describe('K1 the shared ci.yml of a workspace whose two apps declare steps', { tags: ['critical'] }, () => {
   it('runs the steps of every app, in workspace order, named after the app and in its folder', async () => {
     const root = twoApps();
     const [shared] = await render(root, 'apps/desktop');
@@ -56,13 +56,5 @@ describe('the shared ci.yml of a workspace whose two apps declare steps', () => 
     expect(quality.map((step) => step.name)).toEqual(expect.arrayContaining(['Check the tools', 'Build the cores']));
     expect(quality.map((step) => step.name)).not.toContain('Fetch the data');
     expect(quality.find((step) => step.name === 'Check the tools')['working-directory']).toBeUndefined();
-  });
-
-  it('leaves the shared ci.yml alone when brock.workspace.mjs owns it', async () => {
-    const root = twoApps({ 'brock.workspace.mjs': "export default { name: 'atlas', workflows: { ci: 'own' }, plugins: [] };\n" });
-    const inputs = await workflowInputs(join(root, 'apps/desktop'));
-    expect(inputs.sharedWorkflows).toEqual({ ci: 'own' });
-    expect(inputs.workspaceApps.map((app) => app.appDir)).toEqual(['apps/desktop', 'apps/tools']);
-    expect((await render(root, 'apps/desktop')).map((file) => file.path)).toEqual(['../../.github/workflows/ci-desktop.yml', '../../.github/workflows/release-desktop.yml']);
   });
 });

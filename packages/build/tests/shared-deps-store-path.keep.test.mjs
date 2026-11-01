@@ -44,7 +44,7 @@ const withPreBundle = (install) => {
   tree.put(depsDir, 'package.json', '{"type":"module"}');
 };
 
-describe('the pre-bundle key and the package store', () => {
+describe('K1 the pre-bundle key and the package store', { tags: ['critical'] }, () => {
   it('is the same for one lockfile on two package stores, which the store path alone changed', () => {
     const first = storeInstall(tree);
     const second = storeInstall(tree, { depth: 3 });

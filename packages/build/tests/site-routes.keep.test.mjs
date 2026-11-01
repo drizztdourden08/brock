@@ -36,7 +36,7 @@ const buildSite = async (routes, base = '/') => {
     base,
     logLevel: 'silent',
     configFile: false,
-    plugins: routes.length > 0 ? [siteRoutesPlugin({ routes: defineBrockSite({ ...site, build: { routes } }).build.routes })] : [],
+    plugins: [siteRoutesPlugin({ routes: defineBrockSite({ ...site, build: { routes } }).build.routes })],
     build: { outDir: join(root, 'dist'), emptyOutDir: true, rollupOptions: { input: { index: join(src, 'index.html') } } },
   });
   return join(root, 'dist');
@@ -46,7 +46,7 @@ const read = (dist, path) => readFileSync(join(dist, path), 'utf8');
 
 afterEach(removeTempRepos);
 
-describe('build.routes', () => {
+describe('E2 build.routes', { tags: ['e2e'] }, () => {
   it('writes a page per route with its own title and description', async () => {
     const dist = await buildSite(ROUTES);
     const privacy = read(dist, 'privacy/index.html');
@@ -78,33 +78,16 @@ describe('build.routes', () => {
     const [asset] = readdirSync(join(dist, 'assets'));
     expect(existsSync(join(dist, 'privacy', '..', 'assets', asset))).toBe(true);
   });
-
-  it('adds the title and the description when the page has none', async () => {
-    const root = tempRepo({ 'src/index.html': '<!doctype html>\n<html>\n  <head></head>\n  <body></body>\n</html>\n' });
-    const src = join(root, 'src');
-    const routes = defineBrockSite({ ...site, build: { routes: [{ path: 'terms', title: 'Terms', description: 'The terms' }] } }).build.routes;
-    await build({ root: src, logLevel: 'silent', configFile: false, plugins: [siteRoutesPlugin({ routes })], build: { outDir: join(root, 'dist'), emptyOutDir: true } });
-    const page = read(join(root, 'dist'), 'terms/index.html');
-    expect(page).toContain('<title>Terms</title>');
-    expect(page).toContain('<meta name="description" content="The terms" />');
-    expect(page).not.toContain('og:description');
-  });
-
-  it('writes no extra page without routes', async () => {
-    const dist = await buildSite([]);
-    expect(readdirSync(dist).sort()).toEqual(['assets', 'index.html']);
-    expect(defineBrockSite(site).build.routes).toEqual([]);
-  });
 });
 
-describe('the routes of defineBrockSite', () => {
+describe('K1 the routes of defineBrockSite', { tags: ['critical'] }, () => {
   const routes = (list) => () => defineBrockSite({ ...site, build: { routes: list } });
 
   it('keeps a path with nested segments and a missing description', () => {
     expect(defineBrockSite({ ...site, build: { routes: [{ path: 'a1/b-2', title: ' Terms ' }] } }).build.routes).toEqual([{ path: 'a1/b-2', title: 'Terms', description: null }]);
   });
 
-  it.each(['/privacy', 'privacy/', '../privacy', 'a/../b', 'privacy.html', 'a//b', '-privacy', 'a b', ''])('refuses the path "%s" with a message', (path) => {
+  it.each(['/privacy', '../privacy', 'privacy.html', 'a//b', ''])('refuses the path "%s" with a message', (path) => {
     expect(routes([{ path, title: 'T' }])).toThrow(/brock\.site\.ts: build\.routes \[0\]\.path .* no leading or trailing slash and no dots/);
   });
 

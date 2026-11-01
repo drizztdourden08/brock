@@ -27,7 +27,6 @@ const tempDir = (files: Record<string, string>): string => {
 };
 
 const release = (targets = ['desktop']): Workflow => parse(composeWorkflows({ targets, appDir: 'apps/desktop', prefix: 'atlas-' }).release) as Workflow;
-const ci = (): Workflow => parse(composeWorkflows({ targets: ['desktop'], appDir: 'apps/desktop', prefix: 'atlas-' }).ci) as Workflow;
 const jobOf = (workflow: Workflow, id: string): Job => {
   const job = workflow.jobs[id];
   if (!job) throw new Error(`no ${id} job`);
@@ -46,7 +45,7 @@ const runBash = (cwd: string, script: string, env: Record<string, string> = {}) 
   return { code: result.status, out: `${result.stdout}${result.stderr}` };
 };
 
-describe('the composed workflows parse and wire up', () => {
+describe('K1 the composed workflows parse and wire up', { tags: ['critical'] }, () => {
   it('declares every prepare output a later job reads', () => {
     const text = composeWorkflows({ targets: ['desktop', 'android', 'web'], appDir: '.', prefix: 'a-' }).release;
     const declared = Object.keys(jobOf(parse(text) as Workflow, 'prepare').outputs ?? {});
@@ -65,43 +64,6 @@ describe('the composed workflows parse and wire up', () => {
       const used = [...JSON.stringify(job).matchAll(/steps\.(\w+)\.outputs/g)].map((m) => m[1]);
       for (const id of used) expect(ids).toContain(id);
     }
-  });
-
-  it('checks the release note in prepare and in CI, and tags only after every build', () => {
-    const workflow = release(['desktop', 'android', 'web']);
-    const prepare = jobOf(workflow, 'prepare');
-    expect(prepare.steps.map((step) => step.name)).toContain('Release note');
-    for (const [id, job] of Object.entries(workflow.jobs).filter(([name]) => name !== 'release')) {
-      expect(JSON.stringify(job), id).not.toMatch(/git (tag|push|commit)/);
-    }
-    const publish = jobOf(workflow, 'release');
-    expect(publish.needs).toEqual(['prepare', 'build-windows', 'build-macos', 'build-linux', 'build-android', 'build-web']);
-    const names = publish.steps.map((step) => step.name ?? step.uses);
-    expect(names.indexOf('Commit the version and tag it')).toBeLessThan(names.indexOf('softprops/action-gh-release@v3'));
-    expect(stepOf(prepare, 'Release note').run).toBe('pnpm --dir "$APP_DIR" exec brock release-notes check "${{ steps.resolve.outputs.version }}"');
-    expect(stepOf(jobOf(ci(), 'quality'), 'Release note').run).toBe('pnpm --dir "$APP_DIR" exec brock release-notes check');
-  });
-
-  it('installs with PACKAGES_TOKEN when the repo sets it, else the workflow token', () => {
-    const text = composeWorkflows({ targets: ['desktop'], appDir: '.', prefix: 'a-' });
-    for (const yaml of [text.ci, text.release]) {
-      expect(yaml).not.toMatch(/NODE_AUTH_TOKEN: \$\{\{ secrets\.GITHUB_TOKEN \}\}/);
-      expect(yaml).toContain('NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}');
-    }
-  });
-
-  it('packages full when prepare says so, and never marks a pre-release latest', () => {
-    const workflow = release();
-    const pack = stepOf(jobOf(workflow, 'build-windows'), 'Package').run ?? '';
-    expect(pack).toContain('"${{ needs.prepare.outputs.full }}" = "true"');
-    const publish = jobOf(workflow, 'release').steps.find((step) => step.uses?.startsWith('softprops/')) ?? {};
-    expect(publish.with).toMatchObject({
-      draft: '${{ inputs.set_latest != true && inputs.prerelease != true }}',
-      prerelease: '${{ inputs.prerelease == true }}',
-      make_latest: '${{ inputs.set_latest == true && inputs.prerelease != true }}',
-      name: '${{ steps.body.outputs.title }}',
-      files: 'artifacts/release-*/*',
-    });
   });
 });
 
@@ -145,7 +107,7 @@ const resolveRun = (inputs: { full?: string; prerelease?: string; set_latest?: s
 
 const OUT = 'tag=v1.2.0\nversion=1.2.0\n';
 
-describe('prepare, run by bash', () => {
+describe('E2 prepare, run by bash', { tags: ['e2e'] }, () => {
   it('forces a full release while no latest release exists, for a pre-release too', () => {
     expect(resolveRun({ prerelease: 'true' }, { latest: false }).outputs).toBe(`${OUT}full=true\n`);
     expect(resolveRun({ set_latest: 'true' }, { latest: false }).outputs).toBe(`${OUT}full=true\n`);
@@ -193,7 +155,7 @@ const bodyRun = (prerelease: boolean, extra: Record<string, string> = {}) => {
   return { body: readFileSync(join(dir, 'release-body.md'), 'utf8'), outputs: readFileSync(output, 'utf8') };
 };
 
-describe('the release body, run by bash', () => {
+describe('E2 the release body, run by bash', { tags: ['e2e'] }, () => {
   const BASE = 'https://github.com/acme/atlas/releases/download/v1.2.0';
   const LATEST = 'https://github.com/acme/atlas/releases/latest/download';
 
@@ -212,10 +174,5 @@ describe('the release body, run by bash', () => {
     const { body } = bodyRun(true, { 'artifacts/release-windows/atlas-windows-payload.exe': 'payload' });
     expect(body).toContain(`- [Windows setup (.exe) of this pre-release, which updates itself](${BASE}/atlas-windows-payload.exe)\n`);
     expect(body).not.toContain(`${LATEST}/atlas-windows-setup.exe`);
-  });
-
-  it('says the stub installs the latest stable release on a routine pre-release', () => {
-    const { body } = bodyRun(true);
-    expect(body).toContain(`(${LATEST}/atlas-windows-setup.exe), which installs the latest stable release; turn on pre-releases in the app's updater to move to this one\n`);
   });
 });

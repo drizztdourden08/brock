@@ -19,7 +19,7 @@ const SECTIONS: DoctorSection[] = [
   { title: 'Web', results: [] },
 ];
 
-describe('doctorReport', () => {
+describe('K1 doctorReport', { tags: ['critical'] }, () => {
   const report = doctorReport(SECTIONS);
 
   it('fails on a missing item and names each one', () => {

@@ -38,7 +38,7 @@ const PAGE = [
   '',
 ].join('\n');
 
-describe('stripToExports', () => {
+describe('K1 stripToExports', { tags: ['critical'] }, () => {
   it('keeps meta and what it uses, and leaves out the component, its imports and side effects', () => {
     const out = strip(PAGE);
     expect(out?.exports).toEqual(['meta']);
@@ -91,7 +91,7 @@ describe('stripToExports', () => {
   });
 });
 
-describe('rewriteMetaImports', () => {
+describe('K1 rewriteMetaImports', { tags: ['critical'] }, () => {
   it('points an import of only meta or order at the file meta module and leaves the rest', () => {
     const code = [
       "import { meta as savesMeta } from '../src/screens/saves.page';",
@@ -108,7 +108,7 @@ describe('rewriteMetaImports', () => {
   });
 });
 
-describe('title bar items', () => {
+describe('K1 title bar items', { tags: ['critical'] }, () => {
   it('loads a button the build can read on its first click, and keeps a hook or a computed label eager', () => {
     const root = tempDir();
     put(root, 'src/title-bar/export.action.ts', "export const order = 1;\nexport default defineTitleBarItem({ kind: 'button', label: 'Export', icon: 'download', shortcut: 'Mod+E', onSelect: () => runExport() });\n");
@@ -157,7 +157,7 @@ const bundle = async (root) => {
   return Object.fromEntries(readdirSync(outDir).map((file) => [file, readFileSync(join(outDir, file), 'utf8')]));
 };
 
-describe('a build of the lazy registries', () => {
+describe('E2 a build of the lazy registries', { tags: ['e2e'] }, () => {
   it('puts each meta in the entry chunk and each component in a chunk of its own', async () => {
     const chunks = await bundle(lazyApp());
     const [entryFile = '', entry = ''] = Object.entries(chunks).find(([file]) => file.startsWith('entry.')) ?? [];

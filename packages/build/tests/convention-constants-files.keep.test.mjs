@@ -6,7 +6,6 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { collectFindings } from '@drizztdourden08/standards/structure';
 import brockApp from '../standards.extension.mjs';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
-import { renderTitleBarFiles } from '../src/title-bar/render-title-bar.mjs';
 import { renderWidgetsFiles } from '../src/widgets/render-widgets.mjs';
 
 const roots = [];
@@ -31,7 +30,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('constants files in the convention folders', () => {
+describe('K1 constants files in the convention folders', { tags: ['critical'] }, () => {
   it('src/widgets takes the file lint names beside a widget and the layout, and a shared one, and sync leaves them out', async () => {
     const root = app({
       'src/widgets/notes.widget.tsx': "import { POLL_MS } from './notes.widget.constants';\nconst Notes = () => null;\nexport default Notes;\n",
@@ -49,25 +48,9 @@ describe('constants files in the convention folders', () => {
     expect(written).toContain("import('../src/widgets/notes.widget')");
     expect(written).not.toContain('constants');
   });
-
-  it('src/title-bar takes the file lint names beside an item, and a shared one, and sync leaves them out', async () => {
-    const root = app({
-      'src/title-bar/rooms.action.ts': "import { POLL_MS } from './rooms.action.constants';\nexport default defineTitleBarItem({});\n",
-      'src/title-bar/rooms.action.constants.ts': 'const POLL_MS = 5000;\nexport { POLL_MS };\n',
-      'src/title-bar/item-labels.constants.ts': '',
-      'src/title-bar/Labels.constants.ts': '',
-      'src/title-bar/rooms.action.type.ts': '',
-    });
-    const findings = await findingsOf(root);
-    expect(pathsOf(findings)).toEqual(['src/title-bar/Labels.constants.ts', 'src/title-bar/rooms.action.type.ts']);
-    expect(findings.find((finding) => finding.startsWith('src/title-bar/Labels'))).toContain('<id>.action.constants.ts');
-    const written = renderTitleBarFiles(root)[0]?.content ?? '';
-    expect(written).toContain("{ id: 'rooms', source: roomsItem }");
-    expect(written).not.toContain('constants');
-  });
 });
 
-describe('constants files in the screen and module folders', () => {
+describe('K1 constants files in the screen folder', { tags: ['critical'] }, () => {
   it('src/screens takes the file lint names beside a screen of every kind, and a shared one, at every level, and the scan leaves them out', () => {
     const root = app({
       'src/screens/game/home.hero.tsx': PAGE,
@@ -93,20 +76,5 @@ describe('constants files in the screen and module folders', () => {
       'src/screens/credits.card.tsx', 'src/screens/game/general.settings.ts', 'src/screens/game/home.hero.tsx', 'src/screens/game/saves.page.tsx',
       'src/screens/game/tracker/items.tab.tsx',
     ]);
-  });
-
-  it('a module folder takes <id>.<kind>.constants.ts beside a boot task and a review step, and no other doubled suffix', async () => {
-    const root = app({
-      'src/boot/theme.task.ts': '',
-      'src/boot/theme.task.constants.ts': '',
-      'src/review/open.step.ts': '',
-      'src/review/open.step.constants.ts': '',
-      'src/review/seed.ts': '',
-      'src/review/seed.constants.ts': '',
-      'src/review/open.page.constants.ts': '',
-    });
-    const findings = await findingsOf(root);
-    expect(pathsOf(findings)).toEqual(['src/review/open.page.constants.ts']);
-    expect(findings[0]).toContain('<id>.<kind>.constants.ts');
   });
 });

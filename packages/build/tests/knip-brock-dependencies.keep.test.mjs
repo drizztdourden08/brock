@@ -83,7 +83,7 @@ afterEach(() => {
 });
 
 describe('brock knip and the packages Brock bundles', () => {
-  it('drops an unused dependency an app declares for its bundled Brock packages, and keeps the rest', () => {
+  it('K1 drops an unused dependency an app declares for its bundled Brock packages, and keeps the rest', { tags: ['critical'] }, () => {
     const root = app();
     made.push(root);
     const data = {
@@ -96,7 +96,7 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(kept.counters.dependencies).toBe(1);
   });
 
-  it('counts vite-plugin-node-polyfills as used while build.nodePolyfills is on', () => {
+  it('K1 counts vite-plugin-node-polyfills as used while build.nodePolyfills is on', { tags: ['critical'] }, () => {
     const root = app();
     made.push(root);
     const polyfills = { cwd: root, issues: { dependencies: { 'package.json': { 'vite-plugin-node-polyfills': issue('.', 'vite-plugin-node-polyfills') } } }, counters: { dependencies: 1 } };
@@ -107,7 +107,7 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(keepBrockRuntimeDependencies(polyfills).counters.dependencies).toBe(1);
   });
 
-  it('counts clang-format-node as used while gate.clangFormat names sources', () => {
+  it('K1 counts clang-format-node as used while gate.clangFormat names sources', { tags: ['critical'] }, () => {
     const root = app();
     made.push(root);
     const pinned = { cwd: root, issues: { dependencies: { 'package.json': { 'clang-format-node': issue('.', 'clang-format-node') } } }, counters: { dependencies: 1 } };
@@ -117,7 +117,7 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(keepBrockRuntimeDependencies(pinned).counters.dependencies).toBe(0);
   });
 
-  it('leaves a workspace without brock.config.ts alone', () => {
+  it('K1 leaves a workspace without brock.config.ts alone', { tags: ['critical'] }, () => {
     const root = app();
     made.push(root);
     write(root, { 'packages/model/package.json': { name: 'model', dependencies: { zustand: '^5.0.0' } } });
@@ -125,7 +125,7 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(keepBrockRuntimeDependencies(data).counters.dependencies).toBe(1);
   });
 
-  it('gives the same answer on a fresh checkout as after a build wrote dist', () => {
+  it('E2 gives the same answer on a fresh checkout as after a build wrote dist', { tags: ['e2e'] }, () => {
     const root = app();
     made.push(root);
     expect(unusedIn(root)).toEqual(['left-pad']);
@@ -133,5 +133,5 @@ describe('brock knip and the packages Brock bundles', () => {
     expect(unusedIn(root)).toEqual(['left-pad']);
     write(root, { 'dist/electron/main.js': "import '@electron-toolkit/utils';\nimport 'zustand';\n" });
     expect(unusedIn(root)).toEqual(['left-pad']);
-  }, 60000);
+  });
 });

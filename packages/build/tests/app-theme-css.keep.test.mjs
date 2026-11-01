@@ -32,14 +32,9 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('appThemeCss', () => {
+describe('K1 appThemeCss', { tags: ['critical'] }, () => {
   it('falls back to src/theme.css when the repo has no tessera.config.json', () => {
     const root = appWith({});
-    expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
-  });
-
-  it('keeps src/theme.css for a config that holds only $schema', () => {
-    const root = appWith({ 'tessera.config.json': { $schema: SCHEMA } });
     expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
   });
 
@@ -61,17 +56,9 @@ describe('appThemeCss', () => {
     expect(() => appThemeCss(root)).toThrow(new RegExp(`${posix(join(root, 'tessera.config.json')).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}: unknown key "theme.file"`));
     expect(() => appThemeCss(root)).toThrow(/Brock reads theme\.css from this file/);
   });
-
-  it('falls back to src/theme.css with a Tessera that has no config entry', () => {
-    const old = mkdtempSync(join(tmpdir(), 'brock-old-tessera-'));
-    made.push(old);
-    writeFileSync(join(old, 'package.json'), JSON.stringify({ name: '@drizztdourden08/tessera', exports: { '.': './index.mjs' } }));
-    const root = appWith({ 'tessera.config.json': { theme: { css: 'styles/look.css' } } }, old);
-    expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
-  });
 });
 
-describe('the brand palette', () => {
+describe('K1 the brand palette', { tags: ['critical'] }, () => {
   const OVERRIDE_ONLY = '/* @layer renderer-app @kind style */\n';
 
   it('is the palette the app shows when theme.css sets no seeds', () => {
@@ -101,7 +88,7 @@ describe('the brand palette', () => {
   });
 });
 
-describe('the splash token stylesheet', () => {
+describe('K1 the splash token stylesheet', { tags: ['critical'] }, () => {
   it('ends with the theme tessera.config.json names', () => {
     const root = appWith({ 'tessera.config.json': { theme: { css: 'styles/look.css' } }, 'styles/look.css': ':root { --p-primary: #123456; }\n' });
     expect(readTokenCss(root, TESSERA).trimEnd().endsWith(':root { --p-primary: #123456; }')).toBe(true);

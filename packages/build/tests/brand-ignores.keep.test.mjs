@@ -10,7 +10,7 @@ afterEach(removeTempRepos);
 const read = (root) => readFileSync(join(root, '.gitignore'), 'utf8');
 const lines = (root) => read(root).split('\n');
 
-describe('the generated icon lines of .gitignore', () => {
+describe('K3 the generated icon lines of .gitignore', { tags: ['critical'] }, () => {
   it('are written for a branded single-app repo, anchored at the root, inside the marked block', () => {
     const root = tempRepo({ '.gitignore': 'node_modules/\n' });
     expect(syncBrandIgnores(root, [''])).toBe(true);

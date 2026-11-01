@@ -30,7 +30,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('createBuilderConfig OS integration', () => {
+describe('K2 createBuilderConfig OS integration', { tags: ['critical'] }, () => {
   it('passes the deep link schemes to electron-builder for Info.plist and the .desktop file', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
     expect(config.protocols).toEqual([{ name: 'My App', schemes: ['my-app'] }]);
@@ -73,7 +73,7 @@ describe('createBuilderConfig OS integration', () => {
   });
 });
 
-describe('Windows version info', () => {
+describe('K2 Windows version info', { tags: ['critical'] }, () => {
   it('names the company, the product, the file and the copyright from the product', () => {
     expect(windowsVersionStrings({ ...PRODUCT, description: 'Plays packs.' }, 2026)).toEqual({
       CompanyName: 'someone', ProductName: 'My App', FileDescription: 'My App', LegalCopyright: 'Copyright (C) 2026 someone', Comments: 'Plays packs.',
@@ -93,7 +93,7 @@ describe('Windows version info', () => {
   });
 });
 
-describe('debPostinst OS integration', () => {
+describe('K1 debPostinst OS integration', { tags: ['critical'] }, () => {
   it('refreshes the mime and desktop databases when the product opens links or files', () => {
     const [file] = debPostinst({ modules: [], rootDir: tempRoot(), config: { product: PRODUCT } });
     expect(file.path).toBe('build/linux/deb-postinst.sh');

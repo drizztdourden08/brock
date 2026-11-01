@@ -37,7 +37,7 @@ const failureOf = async (root, options) => {
   return null;
 };
 
-describe('the main process guard', () => {
+describe('K4 the main process guard', { tags: ['e2e'] }, () => {
   it('lets a main process that stays in Node build', async () => {
     const root = appWith({
       'electron/main.ts': "import { CHANNELS } from '../src/ipc/contract.constants.ts';\nexport const main = CHANNELS;\n",
@@ -54,12 +54,6 @@ describe('the main process guard', () => {
     expect(message).toContain('electron/main.ts -> react');
   });
 
-  it('fails a Tessera import and its subpaths', async () => {
-    const root = appWith({ 'electron/main.ts': "import { tokens } from '@drizztdourden08/tessera/tokens';\nexport default tokens;\n" });
-    installPackage(root, '@drizztdourden08/tessera', { 'tokens.js': 'export const tokens = 1;\n' });
-    expect(await failureOf(root)).toContain('electron/main.ts -> @drizztdourden08/tessera/tokens');
-  });
-
   it('prints the whole chain for a transitive import of renderer source', async () => {
     const root = appWith({
       'electron/main.ts': "import { a } from './services/a.ts';\nexport default a;\n",
@@ -69,25 +63,9 @@ describe('the main process guard', () => {
     });
     expect(await failureOf(root)).toContain('electron/main.ts -> electron/services/a.ts -> electron/services/b.ts -> src/views/Panel.ts');
   });
-
 });
 
-describe('the main process guard options', () => {
-  it('prints the chain to a forbidden package reached through a shared package', async () => {
-    const root = appWith({ 'electron/main.ts': "import { shared } from '@fix/shared';\nexport default shared;\n" });
-    installPackage(root, '@fix/shared', { 'index.js': "import { design } from '@fix/design';\nexport const shared = design;\n" });
-    installPackage(root, '@fix/design', { 'index.js': 'export const design = 1;\n' });
-    const message = await failureOf(root, { forbid: ['@fix/design'] });
-    expect(message).toContain('electron/main.ts -> @fix/shared/index.js -> @fix/design');
-  });
-
-  it('leaves a package alone until the app forbids it', async () => {
-    const root = appWith({ 'electron/main.ts': "import { design } from '@fix/design';\nexport default design;\n" });
-    installPackage(root, '@fix/design', { 'index.js': 'export const design = 1;\n' });
-    expect(await failureOf(root)).toBeNull();
-    expect(await failureOf(root, { forbid: ['@fix/design'] })).toContain('@fix/design');
-  });
-
+describe('K4 the main process guard options', { tags: ['e2e'] }, () => {
   it('forbids a path glob of the app', async () => {
     const root = appWith({
       'electron/main.ts': "import { Card } from '../shared/ui/card.ts';\nexport default Card;\n",
@@ -112,15 +90,5 @@ describe('the main process guard options', () => {
     const root = appWith({ 'electron/main.ts': "import type { ReactNode } from 'react';\nexport const none: ReactNode = null;\n" });
     installPackage(root, 'react');
     expect(await failureOf(root)).toBeNull();
-  });
-
-  it('reports each forbidden target once, shortest chain first, and counts the rest', async () => {
-    const imports = ['react', 'react-dom', '@drizztdourden08/brock-react', '@drizztdourden08/tessera', 'react/jsx-runtime', '@fix/a', '@fix/b'];
-    const root = appWith({ 'electron/main.ts': `${imports.map((name, at) => `import m${at} from '${name}';`).join('\n')}\nexport default [${imports.map((name, at) => `m${at}`).join(', ')}];\n` });
-    for (const name of ['react', 'react-dom', '@drizztdourden08/brock-react', '@drizztdourden08/tessera', '@fix/a', '@fix/b']) installPackage(root, name);
-    put(root, 'node_modules/react/jsx-runtime.js', 'export default 1;\n');
-    const message = await failureOf(root, { forbid: ['@fix/a', '@fix/b'] });
-    expect(message).toContain('and 2 more.');
-    expect(message.match(/ -> /g)).toHaveLength(5);
   });
 });

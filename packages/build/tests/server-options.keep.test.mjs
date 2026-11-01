@@ -4,7 +4,7 @@ import { archesFromFlag, serverOptions } from '../src/platforms/server/server-op
 import { SERVER_NODE_VERSION } from '../src/platforms/server/server.constants.mjs';
 import { PRODUCT } from './server-packaging-fixture.mjs';
 
-describe('the server options', () => {
+describe('K1 the server options', { tags: ['critical'] }, () => {
   it('defaults to the pinned Node, x64 and an image from the repo owner', () => {
     expect(serverOptions({ product: PRODUCT })).toEqual({ node: SERVER_NODE_VERSION, osPackages: [], ports: [], image: 'ghcr.io/owner/fixture-server', arch: ['x64'], optionalAddons: [] });
     expect(serverOptions({ product: { ...PRODUCT, repo: undefined } }).image).toBeNull();

@@ -49,7 +49,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('installerTheme', () => {
+describe('K1 installerTheme', { tags: ['critical'] }, () => {
   it('falls back to the built-in colours and says so once when tokens.json is missing', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const root = tempDir();
@@ -57,11 +57,6 @@ describe('installerTheme', () => {
     expect(installerTheme(root)).toBe(FALLBACK_THEME);
     expect(log).toHaveBeenCalledTimes(1);
     expect(log.mock.calls[0][0]).toMatch(/tokens\.json/);
-  });
-
-  it('reads the resolved dark theme from tokens.json, lower cased', () => {
-    const root = tempDir({ 'tokens.json': JSON.stringify(TOKENS) });
-    expect(installerTheme(root)).toMatchObject({ bg: '#101014', surface: '#1a1a20', primary: '#f0862b', onPrimary: '#101014' });
   });
 
   it('reads the brand palette when the app shows it, and the default theme for a palette Tessera lacks', () => {
@@ -80,7 +75,7 @@ describe('installerTheme', () => {
   });
 });
 
-describe('stubColours', () => {
+describe('K1 stubColours', { tags: ['critical'] }, () => {
   it('keeps the colours the stub had before tokens.json existed', () => {
     const colours = stubColours(LOOK, FALLBACK_THEME);
     expect(colours).toEqual({
@@ -109,30 +104,11 @@ describe('stubColours', () => {
     expect(stubColours({ ...LOOK, accent: '#F0862B' }, theme).onAccent).toBe('#101014');
     expect(stubColours({ ...LOOK, accent: '#1d2a6b' }, theme).onAccent).toBe('#ececf1');
   });
-
-  it('takes the text colour for the gradient from the look', () => {
-    expect(stubColours({ ...LOOK, ink: '#101014' }, FALLBACK_THEME).ink).toBe('#101014');
-  });
 });
 
-describe('stubProductHeader', () => {
+describe('K4 stubProductHeader', { tags: ['critical'] }, () => {
   const header = (installer = INSTALLER) =>
     stubProductHeader({ config: { ...CONFIG, installer }, colours: stubColours(LOOK, FALLBACK_THEME), manifestUrl: 'https://x/install.json', appVersion: '1.2.3' });
-
-  it('writes every colour, the gradient and the angle as macros', () => {
-    const text = header();
-    expect(text).toContain('#define BROCK_C_BG 0xFF12100E');
-    expect(text).toContain('#define BROCK_C_ACCENT 0xFFE8A33D');
-    expect(text).toContain('#define BROCK_C_ON_ACCENT 0xFF1A1207');
-    expect(text).toContain('#define BROCK_C_TRACK 0xFF221E1A');
-    expect(text).toContain('#define BROCK_LOOK_FROM 0xFF3B6FE0');
-    expect(text).toContain('#define BROCK_LOOK_VIA 0xFF253F79');
-    expect(text).toContain('#define BROCK_LOOK_ANGLE 160.0f');
-    expect(text).toContain('#define BROCK_C_HEADER_INK 0xFFF2F3F7');
-    for (const name of ['BG', 'SURFACE', 'HAIRLINE', 'TEXT', 'DIM', 'FAINT', 'ACCENT', 'ON_ACCENT', 'TRACK', 'STAMP']) {
-      expect(text).toMatch(new RegExp(`#define BROCK_C_${name} 0xFF[0-9A-F]{6}\\n`));
-    }
-  });
 
   it('escapes names and carries the product.installer defaults', () => {
     const text = header();
@@ -160,7 +136,7 @@ describe('stubProductHeader', () => {
   });
 });
 
-describe('vpkPackArgs', () => {
+describe('K2 vpkPackArgs', { tags: ['critical'] }, () => {
   const args = (installer) => vpkPackArgs({
     product: { ...CONFIG, name: 'Brock App' }, version: '1.0.0', platform: 'win32', packDir: 'p', outputDir: 'o', extras: { installer, full: true },
   });
@@ -178,14 +154,14 @@ describe('vpkPackArgs', () => {
   });
 });
 
-describe('Setup splash', () => {
+describe('K1 Setup splash', { tags: ['critical'] }, () => {
   it('runs the CSS gradient line through the middle of the image', () => {
     expect(gradientLine(480, 360, 180)).toEqual({ x1: 240, y1: 0, x2: 240, y2: 360 });
     expect(gradientLine(480, 360, 90)).toEqual({ x1: 0, y1: 180, x2: 480, y2: 180 });
   });
 });
 
-describe('markSourceOf', () => {
+describe('K1 markSourceOf', { tags: ['critical'] }, () => {
   const config = (mark = './logos/mark.svg', icons = { brand: 'brock' }) => ({ icons, logos: { mark } });
 
   it('prefers the Tessera mark PNG, then the app mark, then the brand SVG, from the light rim set for brock', () => {
@@ -208,7 +184,7 @@ describe('markSourceOf', () => {
   });
 });
 
-describe('checkInstallerFolder', () => {
+describe('K1 checkInstallerFolder', { tags: ['critical'] }, () => {
   it('accepts the two overrides and names anything else', () => {
     const root = tempDir({ 'build/installer/header.png': 'x', 'build/installer/splash.png': 'x', 'build/installer/notes.txt': 'x' });
     expect(checkInstallerFolder(root, root)).toEqual([

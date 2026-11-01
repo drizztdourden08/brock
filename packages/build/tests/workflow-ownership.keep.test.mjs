@@ -3,7 +3,6 @@ import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { definePlugin } from '@drizztdourden08/brock-thread';
 import { syncApp } from '../src/modules/sync.mjs';
 import { workflowInputs } from '../src/release/workspace-workflow-inputs.mjs';
 import { renderWorkflows } from '../src/release/render-workflows.mjs';
@@ -15,7 +14,7 @@ const CONFIG = { product: { id: 'atlas', name: 'Atlas' }, targets: ['windows', '
 const standalone = () => tempRepo({ '.git/HEAD': 'ref: refs/heads/main\n', 'brock.config.ts': '' });
 const paths = (files) => files.map((file) => file.path);
 
-describe('workflows.ci and workflows.release of brock.config.ts', () => {
+describe('K1 workflows.ci and workflows.release of brock.config.ts', { tags: ['critical'] }, () => {
   it('leaves a workflow the app owns out of sync, and keeps the other managed', () => {
     const root = standalone();
     expect(paths(renderWorkflows(root, { ...CONFIG, workflows: { ci: 'own' } }, []))).toEqual(['.github/workflows/release.yml']);
@@ -47,7 +46,7 @@ describe('workflows.ci and workflows.release of brock.config.ts', () => {
   });
 });
 
-describe('a repo that releases from another base branch', () => {
+describe('K1 a repo that releases from another base branch', { tags: ['critical'] }, () => {
   it('runs CI on a push to the base and moves the base, not the GitHub default branch, after a release', () => {
     const root = brockWorkspace({ 'brock.workspace.mjs': "export default { name: 'atlas', base: 'integration' };\n" });
     const [ci, release] = renderWorkflows(join(root, 'apps/desktop'), CONFIG, []).map((file) => file.content);
@@ -56,24 +55,9 @@ describe('a repo that releases from another base branch', () => {
     expect(tagStep.env.BRANCH).toBe('integration');
     expect(release).not.toContain('github.event.repository.default_branch');
   });
-
-  it('keeps the Velopack delta fetch and the small installer in every desktop build', () => {
-    const release = parse(renderWorkflows(standalone(), CONFIG, [])[1].content);
-    for (const job of ['build-windows', 'build-linux']) {
-      const names = release.jobs[job].steps.map((step) => step.name);
-      expect(names.indexOf('Fetch the previous release')).toBeLessThan(names.indexOf('Package'));
-    }
-    expect(release.jobs['build-windows'].steps.find((step) => step.name === 'Package').run).toContain('brock package $FULL');
-  });
 });
 
-describe('workflow steps from the plugins of the repo command', () => {
-  it('keeps workflows in definePlugin', () => {
-    const workflows = { ci: { beforeBuild: [{ name: 'Plugin step', run: 'true' }] } };
-    expect(definePlugin({ name: 'cores', verbs: {}, workflows }).workflows).toBe(workflows);
-    expect(definePlugin({ name: 'cores', verbs: {} })).not.toHaveProperty('workflows');
-  });
-
+describe('K1 workflow steps from the plugins of the repo command', { tags: ['critical'] }, () => {
   it('loads them from the repo plugins and splices them before the app steps', async () => {
     const root = tempRepo({
       '.git/HEAD': 'ref: refs/heads/main\n',

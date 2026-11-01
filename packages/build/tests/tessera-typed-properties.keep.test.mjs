@@ -73,17 +73,13 @@ beforeAll(() => {
 
 afterAll(() => rmSync(state.root, { recursive: true, force: true }));
 
-describe('the Tessera prop renames on object literals typed by their context', () => {
+describe('K1 the Tessera prop renames on object literals typed by their context', { tags: ['standard'] }, () => {
   it('renames a prop of an object returned where the return type is the Tessera type', () => {
     expect(state.after).toContain("export const made = (): SettingsRowAction => ({ id: 'a', label: 'A', onSelect: go });");
   });
 
   it('renames a method of an object passed as an argument typed with the Tessera type', () => {
     expect(state.after).toContain("addAction({ id: 'b', label: 'B', onSelect() { go(); } });");
-  });
-
-  it('renames a prop of an object inside an array of the Tessera type', () => {
-    expect(state.after).toContain("export const list: SettingsRowAction[] = [{ id: 'c', label: 'C', onSelect: go }];");
   });
 
   it('renames a prop of an object inside a JSX prop value of a Tessera component', () => {

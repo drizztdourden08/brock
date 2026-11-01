@@ -18,7 +18,7 @@ const withConfig = (config) => {
   return root;
 };
 
-describe('hasGuideParts', () => {
+describe('K1 hasGuideParts', { tags: ['critical'] }, () => {
   it('is set by guide.parts at the root or in an apps entry', () => {
     expect(hasGuideParts(withConfig({ guide: { parts: 'src/guide/parts.type.ts' } }))).toBe(true);
     expect(hasGuideParts(withConfig({ apps: { 'apps/desktop': { guide: { parts: 'apps/desktop/src/guide/parts.type.ts' } } } }))).toBe(true);

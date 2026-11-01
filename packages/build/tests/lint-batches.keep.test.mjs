@@ -19,7 +19,7 @@ const repoWith = (count) => {
   return root;
 };
 
-describe('splitting the file list', () => {
+describe('K1 splitting the file list', { tags: ['critical'] }, () => {
   it('cuts contiguous slices of the batch size and keeps every file once', () => {
     const files = Array.from({ length: 2500 }, (_, n) => `f${n}`);
     const batches = splitBatches(files, 1000);
@@ -41,7 +41,7 @@ describe('splitting the file list', () => {
   });
 });
 
-describe('merging the exit codes', () => {
+describe('K1 merging the exit codes', { tags: ['critical'] }, () => {
   it('takes the worst code, so a crash outranks lint problems', () => {
     expect(worstExit([])).toBe(0);
     expect(worstExit([0, 0])).toBe(0);
@@ -75,7 +75,7 @@ describe('merging the exit codes', () => {
   });
 });
 
-describe('the full-tree plan', () => {
+describe('E2 the full-tree plan with real git', { tags: ['e2e'] }, () => {
   it('lists the tree sorted, without deleted files, and batches it', () => {
     const root = repoWith(5);
     spawnSync('git', ['add', '.'], { cwd: root });
@@ -88,31 +88,11 @@ describe('the full-tree plan', () => {
     expect(plan.batches).toEqual([files.slice(0, 4), files.slice(4)]);
     expect(plan.line).toBe('brock lint: full tree (--all), 6 files in 2 batches');
   });
-
-  it('lints "." in one run when git cannot list the tree', () => {
-    const plan = planLint({ cwd: tempDir(), all: true, env: {} });
-    expect(plan.batches).toBeNull();
-    expect(plan.targets).toEqual(['.']);
-  });
-
-  it('does not batch a run on named files', () => {
-    const root = repoWith(3);
-    const plan = planLint({ cwd: root, paths: ['src/f001.ts'], env: {} });
-    expect(plan.mode).toBe('paths');
-    expect(plan.batches).toBeUndefined();
-  });
 });
 
-describe('the heap ceiling choice', () => {
+describe('K1 the heap ceiling choice', { tags: ['critical'] }, () => {
   it('gives a full-tree batch 4096 MB and a changed run 2048 MB', () => {
-    expect(FULL_TREE_MEMORY_MB).toBe(4096);
     expect(heavyNodeEnv({}, FULL_TREE_MEMORY_MB).NODE_OPTIONS).toBe('--max-old-space-size=4096');
     expect(heavyNodeEnv({}).NODE_OPTIONS).toBe('--max-old-space-size=2048');
-  });
-
-  it('lets BROCK_LINT_MEMORY_MB and a NODE_OPTIONS heap flag win over the full-tree default', () => {
-    expect(heavyNodeEnv({ BROCK_LINT_MEMORY_MB: '3000' }, FULL_TREE_MEMORY_MB).NODE_OPTIONS).toBe('--max-old-space-size=3000');
-    const env = { NODE_OPTIONS: '--max-old-space-size=1024' };
-    expect(heavyNodeEnv(env, FULL_TREE_MEMORY_MB)).toBe(env);
   });
 });

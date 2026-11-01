@@ -62,7 +62,7 @@ const fixtureApp = () => {
 
 const aliasesOf = (root) => ({ '@app': resolve(root, 'src') });
 
-describe('the computed renderer optimizeDeps', () => {
+describe('K1 the computed renderer optimizeDeps', { tags: ['critical'] }, () => {
   it('lists React, the renderer entries of installed Brock and Tessera packages, and what the source imports from node_modules', async () => {
     const root = fixtureApp();
     const { include, exclude, entries } = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
@@ -137,7 +137,7 @@ const linkedBrockApp = () => {
   return { root, brock };
 };
 
-describe('linked Brock packages', () => {
+describe('K1 linked Brock packages', { tags: ['critical'] }, () => {
   afterEach(() => {
     delete process.env.BROCK_LIVE_BROCK;
   });
@@ -171,7 +171,7 @@ describe('linked Brock packages', () => {
   });
 });
 
-describe('optimizeDepsPlugin', () => {
+describe('K1 optimizeDepsPlugin', { tags: ['critical'] }, () => {
   it('sets optimizeDeps on the dev server only, and names the optimizer metadata for the Electron app', async () => {
     const root = fixtureApp();
     const plugin = optimizeDepsPlugin({ rootDir: root, aliases: aliasesOf(root), options: { worker: ['fs'] } });

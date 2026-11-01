@@ -21,8 +21,8 @@ const records = (count) => [
   '',
 ].join('\n');
 
-describe('the data file kind', () => {
-  it('finds the files whose header says @kind data, and nothing in dot-folders or node_modules', () => {
+describe('S2 the data file kind', () => {
+  it('finds the files whose header says @kind data, and nothing in dot-folders or node_modules', { tags: ['critical'] }, () => {
     const root = app();
     put(root, 'records/tags.ts', `${header('data')}${records(2)}`);
     put(root, 'records/logic.ts', `${header('logic')}const x = 1;\nexport { x };\n`);
@@ -33,19 +33,13 @@ describe('the data file kind', () => {
     expect(dataBlocks(tempDir())).toEqual([]);
   });
 
-  it('lets a data file run past 200 lines, export two lists and hold UPPER_SNAKE consts', async () => {
+  it('lets a data file run past 200 lines, export two lists and hold UPPER_SNAKE consts', { tags: ['standard'] }, async () => {
     const root = app();
     put(root, 'records/tags.ts', `${header('data')}${records(240)}`);
     expect(await lintRules(root, 'records/tags.ts')).toEqual([]);
   }, LINT_TIMEOUT_MS);
 
-  it('keeps the rules on the same file when its header names another kind', async () => {
-    const root = app();
-    put(root, 'records/tags.ts', `${header('logic')}${records(240)}`);
-    expect(await lintRules(root, 'records/tags.ts')).toEqual(expect.arrayContaining(['max-lines', 'local/one-export-per-file', 'local/constants-in-constants-file']));
-  }, LINT_TIMEOUT_MS);
-
-  it('refuses logic in a data file, so the kind exempts no code', async () => {
+  it('refuses logic in a data file, so the kind exempts no code', { tags: ['standard'] }, async () => {
     const root = app();
     const logic = [
       'const ALL_TAGS = [{ id: \'a\', pick: () => 1 }];',

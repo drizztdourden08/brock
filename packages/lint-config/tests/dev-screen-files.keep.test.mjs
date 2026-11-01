@@ -36,7 +36,7 @@ const screenFindings = async (file) => {
   return result.messages.filter((message) => SCREEN_RULES.has(message.ruleId)).map((message) => message.ruleId);
 };
 
-describe('dev-only screen files', () => {
+describe('S2 dev-only screen files', { tags: ['standard'] }, () => {
   it('take the default export and the meta export of a screen file', async () => {
     for (const file of ['src/screens/tools/inspector.page.dev.tsx', 'src/screens/tools/inspector/state.tab.dev.tsx', 'src/screens/debug.card.dev.tsx']) {
       expect(await screenFindings(file), file).toEqual([]);

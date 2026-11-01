@@ -24,7 +24,7 @@ const worktreeApp = () => {
   const log = join(root, 'argv.log');
   put(root, 'package.json', JSON.stringify({ name: 'fixture' }));
   put(root, '.user-data/keep', '');
-  put(root, 'node_modules/@drizztdourden08/brock-build/package.json', JSON.stringify({ name: '@drizztdourden08/brock-build', bin: { brock: 'bin/brock.cjs' } }));
+  put(root, 'node_modules/@drizztdourden08/brock-build/package.json', JSON.stringify({ name: '@drizztdourden08/brock-build', bin: { brock: 'bin/brock.cjs' }, exports: { './package.json': './package.json', './sync-if-stale': null } }));
   put(root, 'node_modules/@drizztdourden08/brock-build/bin/brock.cjs', WRITE_ARGV);
   put(root, 'dist/server/main.mjs', "import { appendFileSync } from 'node:fs';\nappendFileSync(process.env.ARGV_LOG, `${JSON.stringify(['main', ...process.argv.slice(2)])}\\n`);\nconsole.log('server up');\n");
   process.env.ARGV_LOG = log;

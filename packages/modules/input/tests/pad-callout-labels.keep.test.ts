@@ -128,8 +128,6 @@ describe('K1 body length of a leader', { tags: ['critical'] }, () => {
 });
 
 describe('K1 pad leaders and meta callouts', { tags: ['critical'] }, () => {
-  const metaAnchors = ['meta.menu', 'meta.view', 'meta.capture'] as const;
-
   it('puts Menu and View above an Xbox layout', () => {
     for (const anchor of ['meta.menu', 'meta.view'] as const) {
       const { elbowY, top } = labelOf('xbox', anchor);

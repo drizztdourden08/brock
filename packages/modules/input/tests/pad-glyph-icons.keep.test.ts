@@ -5,9 +5,6 @@ import type { GlyphSource } from '../src/renderer/glyph-source.type';
 import { slotViewsOf } from '../src/views/ControllerPage/behavior/slot-views';
 
 describe('K2 pad glyphs without a registered glyph source', { tags: ['critical'] }, () => {
-  for (const [family, overlay] of Object.entries(FAMILY_OVERLAYS)) {
-  }
-
   it('prefers a registered image over the Tessera icon', () => {
     const source: GlyphSource = { button: (glyph) => `app://${glyph}.svg` };
     const slot = FAMILY_OVERLAYS.xbox.slots.find((candidate) => candidate.glyph === 'xbox-a');

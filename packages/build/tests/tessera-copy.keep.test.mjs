@@ -154,8 +154,7 @@ describe('E2 brock migrate --tessera-from-copy on an app holding its own copy', 
     expect(read(root, `${VIEWS}/compounds/AlertBanner/AlertBanner.css`)).toContain('solid var(--c-primary);');
     for (const [file, text] of Object.entries(COPY_FILES)) expect(read(root, file)).toBe(text);
     const todos = todosOf(run);
-    expect(read(root, 'apps/app/src/main.tsx')).toContain("import '@drizztdourden08/tessera/tokens.css';
-import { Box } from '@drizztdourden08/tessera/primitives';");
+    expect(read(root, 'apps/app/src/main.tsx')).toContain("import '@drizztdourden08/tessera/tokens.css';\nimport { Box } from '@drizztdourden08/tessera/primitives';");
     const at = (file) => todos.filter((todo) => todo.file === file).map(({ line, message }) => `${line}: ${message}`);
     expect(at('apps/app/src/main.tsx')).toEqual([expect.stringMatching(/^2: now imports Tessera's tokens\.css/)]);
     expect(at('apps/site/src/views/SavedViewsMenu.tsx')).toEqual([expect.stringMatching(/^1: Tessera .* exports no useAnchorMenu/)]);

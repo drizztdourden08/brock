@@ -68,9 +68,9 @@ const checkout = () => write(tempDir('thread-upgrade-checkout-'), {
 
 const readJson = (root, file) => JSON.parse(readFileSync(join(root, file), 'utf8'));
 
-const cleanTemp = () => {
+const removeMadeDirs = () => {
   delete process.env.BROCK_STUB_LOG;
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 };
 
-export { checkout, cleanTemp, monorepo, readJson, write };
+export { WORKSPACE_YAML, checkout, monorepo, readJson, removeMadeDirs, write };

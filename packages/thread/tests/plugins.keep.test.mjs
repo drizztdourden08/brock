@@ -74,4 +74,4 @@ describe('K4 checkPublishStyle', { tags: ['critical'] }, () => {
       expect(() => checkPublishStyle(text, 'The PR body', plainWorkspace), text).toThrow(/attribution or co-author line/);
     }
   });
-
+});

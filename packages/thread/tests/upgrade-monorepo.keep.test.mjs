@@ -7,9 +7,9 @@ import { bumpApp } from '../src/upgrade/bump-app.mjs';
 import { coversEveryPackage } from '../src/upgrade/covers-every-package.mjs';
 import { gateSteps } from '../src/upgrade/gate-steps.mjs';
 import { upgradeApps } from '../src/upgrade/upgrade-apps.mjs';
-import { checkout, cleanTemp, monorepo, readJson, write } from './upgrade-monorepo-fixture.mjs';
+import { WORKSPACE_YAML, checkout, monorepo, readJson, removeMadeDirs, write } from './upgrade-monorepo-fixture.mjs';
 
-afterEach(cleanTemp);
+afterEach(removeMadeDirs);
 
 describe('K1 appDirs', { tags: ['critical'] }, () => {
   it('finds the app in a workspace package, or the root app alone', () => {

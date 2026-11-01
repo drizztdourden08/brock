@@ -81,10 +81,6 @@ describe('K1 a row drawn by renderControl', { tags: ['critical'] }, () => {
 });
 
 describe('K1 path and json controls', { tags: ['critical'] }, () => {
-  const settings = { rom: 'C:/roms/game.gb', extra: { speed: 2 } };
-  const at = (key: string, control: SettingItem['control']) => settingRow({ ...AUDIO, key, control }, context({ settings }));
-  const controlOf = (row: ReturnType<typeof settingRow>) => (row && 'input' in row && row.input?.kind === 'custom' ? row.input.control : null);
-
   it('turns accepted endings into the extensions of the native dialog', () => {
     expect(dialogExtensions(['.yaml', '*.yml', 'gb', '.'])).toEqual(['yaml', 'yml', 'gb']);
     expect(dialogExtensions(undefined)).toEqual([]);

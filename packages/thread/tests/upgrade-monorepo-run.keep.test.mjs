@@ -7,9 +7,9 @@ import { runSteps } from '../src/upgrade/run-steps.mjs';
 import { upgradeApps } from '../src/upgrade/upgrade-apps.mjs';
 import { writeReports } from '../src/upgrade/write-reports.mjs';
 import { bumpApp } from '../src/upgrade/bump-app.mjs';
-import { checkout, cleanTemp, monorepo } from './upgrade-monorepo-fixture.mjs';
+import { checkout, monorepo, removeMadeDirs } from './upgrade-monorepo-fixture.mjs';
 
-afterEach(cleanTemp);
+afterEach(removeMadeDirs);
 
 describe('S2 the upgrade steps run brock in the app', { tags: ['standard'] }, () => {
   it('syncs and migrates in the app from its own pins, and writes the report there', () => {

@@ -48,7 +48,7 @@ describe('brock ci --here runs', { tags: ['standard'] }, () => {
     const record = readRecords('demo').at(-1);
     expect(record).toMatchObject({ status: 'pass', place: 'here' });
     expect(record.steps.map((step) => step.status)).toEqual(['skipped-local', 'pass', 'pass']);
-    expect(record.steps[1].cwd.replace(/\/g, '/')).toBe(repo.replace(/\/g, '/'));
+    expect(record.steps[1].cwd.replace(/\\/g, '/')).toBe(repo.replace(/\\/g, '/'));
     expect(existsSync(ciWorktreesFolder(repo))).toBe(false);
     expect(existsSync(join(repo, 'package.json'))).toBe(true);
   });

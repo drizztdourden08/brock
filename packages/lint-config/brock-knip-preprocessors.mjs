@@ -8,8 +8,8 @@ const BUILD_MANIFEST = '@drizztdourden08/brock-build/package.json';
 const PREPROCESSOR_FILE = join('src', 'knip-brock-dependencies.mjs');
 
 /**
- * @param {string} [rootDir] the consumer root, found from the current folder by default
- * @returns {string[]} the absolute path of the brock-build knip preprocessor, none when it does not resolve
+ * @param {string} [rootDir] the consumer root, default found from here
+ * @returns {string[]} the preprocessor path, or none
  */
 const brockKnipPreprocessors = (rootDir = findRoot()) => {
   try {

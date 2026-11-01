@@ -31,7 +31,7 @@ describe('K1 the knip preprocessor of the Brock extension', { tags: ['critical']
     withBuild(root, ['src/knip-brock-dependencies.mjs']);
     const [file] = brockKnipPreprocessors(root);
     expect(isAbsolute(file)).toBe(true);
-    expect(file.replace(/\/g, '/')).toBe(join(root, 'node_modules/@drizztdourden08/brock-build/src/knip-brock-dependencies.mjs').replace(/\/g, '/'));
+    expect(file.replace(/\\/g, '/')).toBe(join(root, 'node_modules/@drizztdourden08/brock-build/src/knip-brock-dependencies.mjs').replace(/\\/g, '/'));
   });
 
   it('adds nothing when brock-build does not resolve', () => {

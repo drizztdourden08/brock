@@ -6,7 +6,7 @@ import { Text } from '@drizztdourden08/tessera/primitives';
 import type { WindowMode } from '../../../display.type';
 import { useDisplayStore } from '../../useDisplayStore';
 import { monitorOptions } from '../behavior/monitor-options';
-import { WINDOW_MODE_OPTIONS } from '../DisplaySettingsTab.constants';
+import { DISPLAY_ROW_COPY, DISPLAY_SECTION_COPY, WINDOW_MODE_OPTIONS } from '../DisplaySettingsTab.constants';
 import type { DisplaySectionProps } from '../DisplaySettingsTab.type';
 
 const WindowModeSection = (props: DisplaySectionProps) => {
@@ -20,22 +20,22 @@ const WindowModeSection = (props: DisplaySectionProps) => {
   const rows = useMemo<SettingsSectionRow[]>(() => [
     {
       id: 'windowMode',
-      title: 'Window mode',
-      description: 'Windowed, borderless or fullscreen.',
-      hint: 'Pick how the window fills the screen. It changes right away.',
+      title: DISPLAY_ROW_COPY.windowMode.label,
+      description: DISPLAY_ROW_COPY.windowMode.description,
+      hint: DISPLAY_ROW_COPY.windowMode.hint,
       input: { kind: 'segmented', value: settings.windowMode, options: WINDOW_MODE_OPTIONS, onChange: handleMode },
     },
     {
       id: 'displayMonitor',
-      title: 'Screen',
-      description: 'The screen the window uses.',
-      hint: 'Pick a screen for borderless and fullscreen, or follow the screen the window is on.',
+      title: DISPLAY_ROW_COPY.displayMonitor.label,
+      description: DISPLAY_ROW_COPY.displayMonitor.description,
+      hint: DISPLAY_ROW_COPY.displayMonitor.hint,
       input: { kind: 'select', value: settings.displayMonitor, options, onChange: handleMonitor },
     },
   ], [settings.windowMode, settings.displayMonitor, options, handleMode, handleMonitor]);
 
   return (
-    <SettingsSection title="Window" description="How the window fills the screen, and which screen it uses." rows={rows}>
+    <SettingsSection title={DISPLAY_SECTION_COPY.window.title} description={DISPLAY_SECTION_COPY.window.description} rows={rows}>
       {lastError ? <Text variant="caption" className="display-tab__warning">{lastError}</Text> : undefined}
     </SettingsSection>
   );

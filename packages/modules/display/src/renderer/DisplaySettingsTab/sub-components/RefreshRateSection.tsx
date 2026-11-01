@@ -5,6 +5,7 @@ import { Button, Text } from '@drizztdourden08/tessera/primitives';
 import { effectiveHz } from '../../../rates/effective-hz';
 import { useDisplayStore } from '../../useDisplayStore';
 import { useRefreshRate } from '../../useRefreshRate';
+import { DISPLAY_SECTION_COPY } from '../DisplaySettingsTab.constants';
 import { refreshRateRows } from '../behavior/refresh-rate-rows';
 import { selectedRate } from '../behavior/selected-rate';
 import type { DisplaySectionProps } from '../DisplaySettingsTab.type';
@@ -41,7 +42,7 @@ const RefreshRateSection = (props: DisplaySectionProps) => {
 
   return (
     <>
-      <SettingsSection title="Refresh rate" description="A multiple of 60 shows every frame of 60 Hz content for the same time." rows={rows}>
+      <SettingsSection title={DISPLAY_SECTION_COPY.refreshRate.title} description={DISPLAY_SECTION_COPY.refreshRate.description} rows={rows}>
         {status.lastError ? <Text variant="caption" className="display-tab__warning">{status.lastError}</Text> : undefined}
       </SettingsSection>
       <ChangeRateDialog open={confirming} targetHz={selected} currentHz={currentHz} onConfirm={handleConfirm} onCancel={handleCancel} />

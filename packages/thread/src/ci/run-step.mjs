@@ -1,23 +1,12 @@
 /* @layer tooling-scripts @kind logic */
-import { execFileSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { appendFileSync, closeSync, mkdtempSync, openSync, rmSync, writeFileSync, writeSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { KILL_GRACE_MS, TIMEOUT_CODE } from './ci.constants.mjs';
 import { shellSpec } from './shell-spec.mjs';
-
-/**
- * @param {import('node:child_process').ChildProcess} child
- * @returns {void}
- */
-const stopTree = (child) => {
-  if (!child.pid) return;
-  try {
-    if (process.platform === 'win32') execFileSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
-    else child.kill('SIGTERM');
-  } catch {
-    child.kill();
-  }
-};
+import { stopTree } from './stop-tree.mjs';
+import { watchStep } from './step-watchdog.mjs';
 
 /**
  * @param {string} logFile
@@ -36,23 +25,33 @@ const launchOf = (command, shell) => {
 };
 
 /**
- * @param {{ command: string, cwd: string, logFile: string, shell?: string | null, env?: Record<string, string>, onChild?: (child: import('node:child_process').ChildProcess) => void }} request
- * @returns {Promise<number>} the exit code, 127 when the command could not start
+ * @param {{ command: string, cwd: string, logFile: string, shell?: string | null, env?: Record<string, string>, timeoutMs?: number, outcome?: { timedOut?: boolean }, onChild?: (child: import('node:child_process').ChildProcess) => void }} request outcome.timedOut is set when the time ran out
+ * @returns {Promise<number>} the exit code, 127 when the command could not start, 124 on a timeout
  */
-const runStep = ({ command, cwd, logFile, shell = null, env = {}, onChild = () => {} }) => new Promise((resolve) => {
+const runStep = ({ command, cwd, logFile, shell = null, env = {}, timeoutMs = 0, outcome = {}, onChild = () => {} }) => new Promise((resolve) => {
   const fd = openSync(logFile, 'w');
   writeSync(fd, `$ ${command}\n(cwd ${cwd}${shell ? `, shell ${shell}` : ''})\n\n`);
   const launch = launchOf(command, shell);
   let finished = false;
+  let watch = null;
   const finish = (code) => {
     if (finished) return;
     finished = true;
+    watch?.cancel();
     closeSync(fd);
     launch.cleanup();
-    resolve(code);
+    resolve(outcome.timedOut ? TIMEOUT_CODE : code);
   };
-  const child = spawn(launch.file, launch.args, { cwd, stdio: ['ignore', fd, fd], env: { ...process.env, CI: '1', ...env }, windowsHide: true, ...launch.options });
+  const child = spawn(launch.file, launch.args, { cwd, stdio: ['ignore', fd, fd], env: { ...process.env, ...env }, windowsHide: true, ...launch.options });
   onChild(child);
+  if (timeoutMs > 0) {
+    const onTimeout = () => {
+      outcome.timedOut = true;
+      writeSync(fd, `\n[brock ci] timed out after ${Math.round(timeoutMs / 60000)} minute(s); stopping pid ${child.pid} and its tree\n`);
+      setTimeout(() => finish(TIMEOUT_CODE), KILL_GRACE_MS).unref();
+    };
+    watch = watchStep({ child, timeoutMs, stop: stopTree, onTimeout });
+  }
   child.on('error', (error) => {
     writeSync(fd, `${error.message}\n`);
     finish(127);
@@ -60,4 +59,4 @@ const runStep = ({ command, cwd, logFile, shell = null, env = {}, onChild = () =
   child.on('close', (code, signal) => finish(code ?? (signal ? 143 : 1)));
 });
 
-export { noteInLog, runStep, stopTree };
+export { noteInLog, runStep };

@@ -2,7 +2,9 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ciDir } from './ci-paths.mjs';
-import { LOCK_FILE, LOCK_POLL_MS } from './ci.constants.mjs';
+import { LOCK_BUDGET_MS, LOCK_FILE, LOCK_POLL_MS } from './ci.constants.mjs';
+import { holderState } from './lock-holder.mjs';
+import { stopPid } from './stop-tree.mjs';
 
 const alive = (pid) => {
   try {
@@ -21,14 +23,19 @@ const holderOf = (file) => {
   }
 };
 
-const tryTake = (file, runId) => {
+const tryTake = (file, runId, { budgetMs, onHung }) => {
   try {
-    writeFileSync(file, JSON.stringify({ pid: process.pid, runId, at: new Date().toISOString() }), { flag: 'wx' });
+    writeFileSync(file, JSON.stringify({ pid: process.pid, runId, at: new Date().toISOString(), deadline: Date.now() + budgetMs }), { flag: 'wx' });
     return true;
   } catch (error) {
     if (error.code !== 'EEXIST') throw error;
     const holder = holderOf(file);
-    if (holder && !alive(holder.pid)) rmSync(file, { force: true });
+    const state = holderState(holder, { now: Date.now(), isAlive: alive });
+    if (state === 'hung') {
+      onHung(holder);
+      stopPid(holder.pid);
+    }
+    if (state === 'dead' || state === 'hung') rmSync(file, { force: true });
     return false;
   }
 };
@@ -36,15 +43,15 @@ const tryTake = (file, runId) => {
 const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
 /**
- * @param {{ project: string, runId: string, timeoutMs: number, onWait?: (holder: object | null) => void, cancelled?: () => boolean, pollMs?: number }} request
+ * @param {{ project: string, runId: string, timeoutMs: number, budgetMs?: number, onHung?: (holder: object) => void, onWait?: (holder: object | null) => void, cancelled?: () => boolean, pollMs?: number }} request
  * @returns {Promise<() => void>} the release function
  */
-const acquireRunLock = async ({ project, runId, timeoutMs, onWait = () => {}, cancelled = () => false, pollMs = LOCK_POLL_MS }) => {
+const acquireRunLock = async ({ project, runId, timeoutMs, budgetMs = LOCK_BUDGET_MS, onHung = () => {}, onWait = () => {}, cancelled = () => false, pollMs = LOCK_POLL_MS }) => {
   const file = join(ciDir(project), LOCK_FILE);
   mkdirSync(ciDir(project), { recursive: true });
   const deadline = Date.now() + timeoutMs;
   let told = false;
-  while (!tryTake(file, runId)) {
+  while (!tryTake(file, runId, { budgetMs, onHung })) {
     if (cancelled()) throw new Error('Cancelled while queued.');
     if (Date.now() >= deadline) throw new Error(`Another check run still holds ${file} after ${Math.round(timeoutMs / 60000)} minute(s).`);
     if (!told) onWait(holderOf(file));

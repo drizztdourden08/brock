@@ -105,7 +105,7 @@ describe('registering with Windows through direct calls', () => {
   it('returns an error, never throws, when the binding is missing or a call throws', () => {
     native.koffi = null;
     expect(registerOsIntegration(PRODUCT, EXE)).toEqual({ success: false, error: 'registering My App with Windows failed: the native Windows binding (koffi) is not installed' });
-    native.koffi = { load: () => ({ func: () => (): never => { throw new Error('boom'); } }) };
+    native.koffi = { load: () => ({ func: () => (): never => { throw new Error('boom'); } }), decode: Object.assign(() => null, { string16: () => '' }) };
     const result = registerOsIntegration(PRODUCT, EXE);
     expect(result.success ? '' : result.error).toContain('boom');
     expect(spawned.names).toEqual([]);

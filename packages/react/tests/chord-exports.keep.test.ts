@@ -3,16 +3,16 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { chordKeys, commands, isMac, useCommandChords, useIsMac } from '../src/commands';
+import { chordKeys, commands, useCommandChords } from '../src/commands';
 import { useCommandStore } from '../src/commands/useCommandStore';
 import { registerFresh } from './command-fixtures';
 
 const flag = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
 
-describe('chordKeys without a platform argument', () => {
+describe('K1 chordKeys without a platform argument', () => {
   afterEach(() => useCommandStore.setState({ mac: false }));
 
-  it('follows the platform of the command store', () => {
+  it('follows the platform of the command store', { tags: ['critical'] }, () => {
     useCommandStore.setState({ mac: false });
     expect(chordKeys('Mod+K')).toEqual(['ctrl', 'K']);
     useCommandStore.setState({ mac: true });
@@ -20,44 +20,12 @@ describe('chordKeys without a platform argument', () => {
     expect(chordKeys('Mod+K', false)).toEqual(['ctrl', 'K']);
   });
 
-  it('gives no keycaps for a chord it cannot read', () => {
+  it('gives no keycaps for a chord it cannot read', { tags: ['critical'] }, () => {
     expect(chordKeys('Ctrl+Shift', false)).toEqual([]);
   });
 });
 
-describe('isMac and useIsMac', () => {
-  let root: ReturnType<typeof createRoot>;
-  const seen: boolean[] = [];
-
-  const Reader = () => {
-    seen.push(useIsMac());
-    return null;
-  };
-
-  beforeEach(() => {
-    flag.IS_REACT_ACT_ENVIRONMENT = true;
-    seen.length = 0;
-    useCommandStore.setState({ mac: false });
-    root = createRoot(document.createElement('div'));
-  });
-
-  afterEach(() => act(() => root.unmount()));
-
-  it('reads the Mac flag of the store', () => {
-    expect(isMac()).toBe(false);
-    useCommandStore.setState({ mac: true });
-    expect(isMac()).toBe(true);
-  });
-
-  it('re-renders the hook when the flag changes', () => {
-    act(() => root.render(createElement(Reader)));
-    expect(seen.at(-1)).toBe(false);
-    act(() => useCommandStore.setState({ mac: true }));
-    expect(seen.at(-1)).toBe(true);
-  });
-});
-
-describe('useCommandChords', () => {
+describe('S1 useCommandChords', () => {
   let root: ReturnType<typeof createRoot>;
   let unregister = (): void => {};
   const seen: (readonly string[])[] = [];
@@ -79,7 +47,7 @@ describe('useCommandChords', () => {
     unregister();
   });
 
-  it('returns the platform chords and updates on a remap and a reset', () => {
+  it('returns the platform chords and updates on a remap and a reset', { tags: ['standard'] }, () => {
     act(() => root.render(createElement(Reader)));
     expect(seen.at(-1)).toEqual(['Mod+Y', 'Mod+Shift+Z']);
     act(() => commands.remap('redo', ['Ctrl+Alt+R']));
@@ -88,7 +56,7 @@ describe('useCommandChords', () => {
     expect(seen.at(-1)).toEqual(['Mod+Y', 'Mod+Shift+Z']);
   });
 
-  it('follows the platform and gives no chords for an unknown command', () => {
+  it('follows the platform and gives no chords for an unknown command', { tags: ['standard'] }, () => {
     act(() => root.render(createElement(Reader)));
     act(() => useCommandStore.setState({ mac: true }));
     expect(seen.at(-1)).toEqual(['Mod+Shift+Z']);

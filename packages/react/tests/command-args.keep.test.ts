@@ -16,7 +16,7 @@ const SCHEMA = {
   size: { type: 'number', min: 1, max: 9, optional: true },
 } as const;
 
-describe('argument schemas', () => {
+describe('K1 argument schemas', { tags: ['critical'] }, () => {
   it('accepts valid arguments and names the first problem otherwise', () => {
     expect(validateArgs(SCHEMA, { id: 'soft', size: 3 })).toBeNull();
     expect(validateArgs(SCHEMA, { id: 'soft' })).toBeNull();
@@ -29,7 +29,7 @@ describe('argument schemas', () => {
   });
 });
 
-describe('commands with bound arguments', () => {
+describe('K1 commands with bound arguments', { tags: ['critical'] }, () => {
   const seen: CommandContext[] = [];
   let unregister = (): void => {};
 
@@ -92,7 +92,7 @@ describe('commands with bound arguments', () => {
   });
 });
 
-describe('opening the palette with a query and a scope', () => {
+describe('K1 opening the palette with a query and a scope', { tags: ['critical'] }, () => {
   afterEach(() => palette.close());
 
   it('sets the query and the scope, and clears both on close', () => {

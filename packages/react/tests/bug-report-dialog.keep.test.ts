@@ -42,7 +42,7 @@ afterEach(() => {
   sent.afterSend = 'view';
 });
 
-describe('the bug report dialog after sending', () => {
+describe('S1 the bug report dialog after sending', { tags: ['standard'] }, () => {
   it('shows the receipt in place of the form when the transport asks for the view', async () => {
     await fillAndSend();
     expect(sent.payloads[0]).toMatchObject({ title: 'Crash on save', contact: 'me@example.com' });

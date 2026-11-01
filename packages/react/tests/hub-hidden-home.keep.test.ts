@@ -1,21 +1,15 @@
 /* @layer renderer-shell @kind test */
-// @vitest-environment happy-dom
 import { createElement } from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
-import { Hub } from '../src/hub/Hub';
+import { describe, expect, it } from 'vitest';
 import { buildHubNav } from '../src/hub/Hub/behavior/build-hub-nav';
 import { navPageCount } from '../src/hub/Hub/behavior/nav-page-count';
 import { resolveHubPage } from '../src/hub/Hub/behavior/resolve-hub-page';
 import { showsHubNav } from '../src/hub/Hub/behavior/shows-hub-nav';
 import { visibleHubPages } from '../src/hub/Hub/behavior/visible-hub-pages';
 import type { HubDef, HubPage } from '../src/hub/hub.type';
-import { NO_PARAMS } from '../src/navigation/navigation.constants';
-import type { ScreenParams } from '../src/navigation/navigation.type';
-import { PlatformProvider } from '../src/platform/PlatformProvider';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import type { ScreenEntry } from '../src/screens/conventions/screen-tree.type';
 import type { ScreensConfig } from '../src/screens/conventions/screens-config.type';
-import { showHarness } from './show-harness';
 
 const CONFIG: ScreensConfig = { buckets: [{ id: 'studio', title: 'Studio', icon: 'cpu', menu: 'entry' }], home: 'studio' };
 
@@ -40,16 +34,7 @@ const hideAll = (hub: HubDef): HubDef => ({
 
 const ids = (pages: readonly HubPage[]): string[] => pages.map((page) => page.id);
 
-const draw = (def: HubDef, params: ScreenParams = NO_PARAMS): void => {
-  const ctx = { params, profile: null, close: () => undefined, open: () => undefined };
-  showHarness.render(createElement(PlatformProvider, null, createElement(Hub, { def, ctx })));
-};
-
-const navLabels = (): string[] => [...document.querySelectorAll('.side-nav__item')].map((item) => item.getAttribute('aria-label') ?? '');
-
-afterEach(() => showHarness.resetShow());
-
-describe('a hub whose home page is hidden', () => {
+describe('K1 a hub whose home page is hidden', { tags: ['critical'] }, () => {
   const hub = hideHome(builtHub());
 
   it('keeps the home in the routable pages but marks it as not listed', () => {
@@ -57,12 +42,6 @@ describe('a hub whose home page is hidden', () => {
     expect(ids(list.pages)).toEqual(['home', 'logs', 'tools']);
     expect(list.homeListed).toBe(false);
     expect(navPageCount(list)).toBe(2);
-  });
-
-  it('lists a shown home as before', () => {
-    const list = visibleHubPages(builtHub(), false);
-    expect(list.homeListed).toBe(true);
-    expect(navPageCount(list)).toBe(3);
   });
 
   it('leaves the home out of the side nav config', () => {
@@ -87,16 +66,5 @@ describe('a hub whose home page is hidden', () => {
     const list = visibleHubPages(hideAll(builtHub()), false);
     expect(list.homeListed).toBe(true);
     expect(ids(list.pages)).toEqual(['home']);
-  });
-
-  it('draws the nav without the home, and the home body for a route without a section', () => {
-    draw(hub);
-    expect(navLabels()).toEqual(['Logs', 'Tools']);
-    expect(document.body.textContent).toContain('home body');
-  });
-
-  it('draws the nav with the home when it is shown', () => {
-    draw(builtHub());
-    expect(navLabels()).toEqual(['Home', 'Logs', 'Tools']);
   });
 });

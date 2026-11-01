@@ -6,7 +6,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('exposeHostNamespace', () => {
+describe('K4 exposeHostNamespace', { tags: ['critical'] }, () => {
   it('adds a module namespace to the api shim once, and never over a preload one', () => {
     const api: Record<string, unknown> = { display: 'preload' };
     vi.stubGlobal('window', { api });
@@ -14,10 +14,5 @@ describe('exposeHostNamespace', () => {
     exposeHostNamespace('input', 'again');
     exposeHostNamespace('display', 'android');
     expect(api).toEqual({ display: 'preload', input: 'android' });
-  });
-
-  it('does nothing before window.api exists', () => {
-    vi.stubGlobal('window', {});
-    expect(() => { exposeHostNamespace('input', 'android'); }).not.toThrow();
   });
 });

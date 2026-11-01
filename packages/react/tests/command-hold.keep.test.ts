@@ -36,7 +36,7 @@ const teardown = (): void => {
   vi.useRealTimers();
 };
 
-describe('hold commands on the keyboard', () => {
+describe('K1 hold commands on the keyboard', { tags: ['standard'] }, () => {
   beforeEach(setup);
   afterEach(teardown);
 
@@ -71,7 +71,7 @@ describe('hold commands on the keyboard', () => {
   });
 });
 
-describe('hold commands that end without a key up', () => {
+describe('K1 hold commands that end without a key up', { tags: ['standard'] }, () => {
   beforeEach(setup);
   afterEach(teardown);
 

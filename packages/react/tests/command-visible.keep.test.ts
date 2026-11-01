@@ -13,7 +13,7 @@ const groupedIds = (): string[] => commandGroups(listCommands(useCommandStore.ge
 
 const press = (init: KeyboardEventInit): boolean => dispatchCommand(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }), null);
 
-describe('hidden commands', () => {
+describe('K1 hidden commands', { tags: ['critical'] }, () => {
   const ran: string[] = [];
   let surface = 'map';
   let unregister = (): void => {};

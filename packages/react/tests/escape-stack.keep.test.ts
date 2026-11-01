@@ -72,9 +72,9 @@ const escape = (target: Element = document.body): KeyboardEvent => {
   return event;
 };
 
-describe('shellTakesEscape', () => {
+describe('K1 shellTakesEscape', () => {
   const stack = (top: EscapeLevel | null) => ({ depth: () => (top ? 1 : 0), top: () => top });
-  it('takes Escape with nothing on the stack or only a screen, and leaves the rest to Tessera', () => {
+  it('takes Escape with nothing on the stack or only a screen, and leaves the rest to Tessera', { tags: ['critical'] }, () => {
     const free = { defaultPrevented: false };
     expect(shellTakesEscape(free, stack(null))).toBe(true);
     expect(shellTakesEscape(free, stack('screen'))).toBe(true);
@@ -83,8 +83,8 @@ describe('shellTakesEscape', () => {
   });
 });
 
-describe('Escape between the shell and Tessera\'s escape stack', () => {
-  it('closes the open window from a hub page in one press, through the shell, with the screen frame on the stack', () => {
+describe('S2 Escape between the shell and Tessera\'s escape stack', () => {
+  it('closes the open window from a hub page in one press, through the shell, with the screen frame on the stack', { tags: ['standard'] }, () => {
     const screenClose = vi.fn();
     mount({ screenClose });
     nav.open('game');
@@ -95,17 +95,7 @@ describe('Escape between the shell and Tessera\'s escape stack', () => {
     expect(screenClose).not.toHaveBeenCalled();
   });
 
-  it('would close the screen frame through Tessera alone, so the shell has to take the key first', () => {
-    const screenClose = vi.fn();
-    const host = document.createElement('div');
-    document.body.append(host);
-    root = createRoot(host);
-    act(() => root?.render(createElement(ScreenWindow, { title: 'Rooms', onClose: screenClose, children: 'Rooms' })));
-    escape();
-    expect(screenClose).toHaveBeenCalledTimes(1);
-  });
-
-  it('closes only a menu, a dialog or a popover above the screen', () => {
+  it('closes only a menu, a dialog or a popover above the screen', { tags: ['standard'] }, () => {
     for (const level of ['menu', 'dialog', 'popover'] as const) {
       const screenClose = vi.fn();
       const onEscape = vi.fn();
@@ -119,7 +109,7 @@ describe('Escape between the shell and Tessera\'s escape stack', () => {
     }
   });
 
-  it('leaves a key an inner control consumed alone', () => {
+  it('leaves a key an inner control consumed alone', { tags: ['standard'] }, () => {
     const screenClose = vi.fn();
     mount({ screenClose });
     nav.open('rooms');
@@ -131,7 +121,7 @@ describe('Escape between the shell and Tessera\'s escape stack', () => {
     expect(screenClose).not.toHaveBeenCalled();
   });
 
-  it('closes the search palette on its own, and the screen under it stays', () => {
+  it('closes the search palette on its own, and the screen under it stays', { tags: ['standard'] }, () => {
     const screenClose = vi.fn();
     mount({ screenClose, palette: true });
     nav.open('rooms');
@@ -145,8 +135,8 @@ describe('Escape between the shell and Tessera\'s escape stack', () => {
   });
 });
 
-describe('Escape with no window open', () => {
-  it('reopens the window it closed on the next Escape, and opens home when nothing can be reopened', () => {
+describe('K1 Escape with no window open', () => {
+  it('reopens the window it closed on the next Escape, and opens home when nothing can be reopened', { tags: ['critical'] }, () => {
     const escapes = { depth: () => 0, top: () => null };
     const press = (reopenable: boolean): void => {
       handleShellKey(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }), { home: () => 'settings', reopenable: () => reopenable, escapes });

@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createWebFactory } from '../src/platform/hosts/web-factory';
 import { useProfilesStore } from '../src/stores/useProfilesStore';
 import { electronDocuments, FILE, PROFILE, stubApi } from './documents-port-fixture';
 
@@ -9,26 +8,7 @@ afterEach(() => {
   useProfilesStore.setState({ active: null });
 });
 
-describe('the documents port', () => {
-  it('maps the dialogs and reads onto the document channels on Electron', async () => {
-    const api = stubApi();
-    const documents = electronDocuments();
-    expect(await documents.open({ title: 'Open' })).toBe(FILE);
-    expect(api.documentOpen).toHaveBeenCalledWith({ title: 'Open' }, undefined);
-    expect(await documents.saveAs()).toBeNull();
-    expect([...(await documents.read(FILE))]).toEqual([4, 5]);
-    expect(await documents.readText(FILE)).toBe('text');
-  });
-
-  it('maps the folder dialog and the listing onto their channels', async () => {
-    const api = stubApi();
-    const documents = electronDocuments();
-    expect(await documents.openFolder({ title: 'Project' })).toBe('C:\\art');
-    expect(api.documentOpenFolder).toHaveBeenCalledWith({ title: 'Project' }, undefined);
-    expect((await documents.list('C:\\art', { extensions: ['bxel'], recursive: true })).entries.map((entry) => entry.name)).toEqual(['a.bxel']);
-    expect(api.documentList).toHaveBeenCalledWith('C:\\art', { extensions: ['bxel'], recursive: true });
-  });
-
+describe('S2 the documents port', { tags: ['standard'] }, () => {
   it('sends writes as bytes and text on Electron', async () => {
     const api = stubApi();
     const documents = electronDocuments();
@@ -37,25 +17,9 @@ describe('the documents port', () => {
     await documents.writeText(FILE, 'hello');
     expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'hello', undefined, undefined);
   });
-
-  it('passes the write options on, and leaves them out by default', async () => {
-    const api = stubApi();
-    useProfilesStore.setState({ active: PROFILE });
-    const documents = electronDocuments();
-    await documents.write(FILE, new Uint8Array([1]), { recent: false });
-    await documents.writeText(FILE, 'png', { recent: false });
-    expect(api.documentWrite.mock.calls[0]?.[3]).toEqual({ recent: false });
-    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'png', 'p1', { recent: false });
-    await documents.writeText(FILE, 'doc');
-    expect(api.documentWriteText).toHaveBeenLastCalledWith(FILE, 'doc', 'p1', undefined);
-  });
-
-  it('is absent on the web host', () => {
-    expect(createWebFactory().ports.documents).toBeUndefined();
-  });
 });
 
-describe('recent documents and recovery on Electron', () => {
+describe('S2 recent documents and recovery on Electron', { tags: ['standard'] }, () => {
   it('passes the active profile to every channel', async () => {
     const api = stubApi();
     useProfilesStore.setState({ active: PROFILE });

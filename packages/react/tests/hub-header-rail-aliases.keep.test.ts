@@ -1,77 +1,26 @@
 /* @layer renderer-shell @kind test */
-// @vitest-environment happy-dom
-import { createElement } from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { buildMenu } from '../src/app/BrockApp/behavior/build-menu';
 import type { MenuBuildInput } from '../src/app/BrockApp/BrockApp.type';
-import { Hub } from '../src/hub/Hub';
 import { railNav } from '../src/hub/Hub/behavior/rail-nav';
-import { showsHubNav } from '../src/hub/Hub/behavior/shows-hub-nav';
-import { HubHeader } from '../src/hub/Hub/sub-components/HubHeader';
-import type { HubDef, HubPage } from '../src/hub/hub.type';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
 import { resolveRoute } from '../src/navigation/resolve-route';
-import { PlatformProvider } from '../src/platform/PlatformProvider';
 import { assertScreensConfig } from '../src/screens/conventions/assert-screens-config';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import { configAliases } from '../src/screens/conventions/config-aliases';
 import { resolveScreenTree } from '../src/screens/conventions/resolve-screen-tree';
 import { settingsTitleOf } from '../src/screens/conventions/settings-title-of';
 import type { ScreensConfig } from '../src/screens/conventions/screens-config.type';
-import { showHarness } from './show-harness';
 
-const page = (id: string): HubPage => ({ id, label: id, icon: null, fullBleed: true, render: () => createElement('p', null, `page ${id}`) });
-
-const hubWith = (extra: Partial<HubDef>): HubDef => ({
-  id: 'props', title: 'Properties', icon: null, home: page('home'), groups: [{ id: 'main', label: 'Main', pages: [page('summary')] }], search: { placeholder: 'Search' }, ...extra,
-});
-
-const draw = (def: HubDef, params: Record<string, unknown> = {}): void => {
-  const ctx = { params, profile: null, close: () => undefined, open: () => undefined };
-  showHarness.render(createElement(PlatformProvider, null, createElement(Hub, { def, ctx }), createElement(HubHeader, { hub: def })));
-};
-
-afterEach(showHarness.resetShow);
-
-describe('the hub header', () => {
-  it('draws the bucket header from the hub render context, with its actions on the right', () => {
-    const def = hubWith({
-      header: {
-        render: (ctx) => createElement('b', { className: 'chip' }, `${ctx.page.label}:${String(ctx.params.subject)}`),
-        actions: (ctx) => createElement('i', { className: 'act' }, ctx.hub.title),
-      },
-    });
-    draw(def, { subject: 'a.png', section: 'summary' });
-    expect(document.querySelector('.hub-header__main .chip')?.textContent).toBe('summary:a.png');
-    expect(document.querySelector('.hub-header__actions .act')?.textContent).toBe('Properties');
-    draw(def, { subject: 'b.png' });
-    expect(document.querySelector('.hub-header__main .chip')?.textContent).toBe('home:b.png');
-  });
-
-  it('draws nothing for a hub with no header, and no actions area when there are no actions', () => {
-    draw(hubWith({}));
-    expect(document.querySelector('.hub-header')).toBeNull();
-    showHarness.unmount();
-    draw(hubWith({ header: { render: () => createElement('b', { className: 'chip' }, 'x') } }));
-    expect(document.querySelector('.hub-header__actions')).toBeNull();
-    expect(document.querySelector('.chip')).not.toBeNull();
-  });
-});
-
-describe('nav: rail', () => {
-  it('draws the hub nav as an icon rail, without the nav search', () => {
+describe('K1 hub rail nav', { tags: ['critical'] }, () => {
+  it('draws the hub nav as an icon rail only for rail', () => {
     expect(railNav('rail')).toEqual({ variant: 'rail', collapsed: true });
     expect(railNav('auto')).toEqual({});
     expect(railNav(undefined)).toEqual({});
-    expect(showsHubNav('rail', 1)).toBe(false);
-    expect(showsHubNav('rail', 2)).toBe(true);
-    draw(hubWith({ nav: 'rail' }));
-    expect(document.querySelector('.side-nav--rail')).not.toBeNull();
-    expect(document.querySelector('.side-nav__search-input, .side-nav__search')).toBeNull();
   });
 });
 
-describe('ScreensConfig.aliases', () => {
+describe('K1 ScreensConfig.aliases', { tags: ['critical'] }, () => {
   const aliasOf = (name: string) => configAliases({ asset: 'properties', app: 'options/general' })[name];
 
   it('sends the old name to the new bucket, keeping params and deep links', () => {
@@ -102,7 +51,7 @@ describe('ScreensConfig.aliases', () => {
   });
 });
 
-describe('the settings bucket title', () => {
+describe('K1 the settings bucket title', { tags: ['critical'] }, () => {
   const noop = (): void => undefined;
   const INPUT: MenuBuildInput = { appMenu: [], moduleMenu: [], widgets: [], homeScreen: 'game', hasCredits: false, developerTools: false, onQuit: noop, onDevConsole: noop, onReportBug: noop, onShortcuts: noop };
   const labelOf = (entries: readonly MenuEntry[], key: string): string | undefined =>

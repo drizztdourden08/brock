@@ -15,7 +15,7 @@ afterEach(() => {
   useDialogStore.setState({ dialog: null });
 });
 
-describe('dialogs.current', () => {
+describe('K2 dialogs.current', { tags: ['critical'] }, () => {
   it('is null with no dialog open', () => {
     expect(dialogs.current()).toBeNull();
   });
@@ -47,7 +47,7 @@ describe('dialogs.current', () => {
   });
 });
 
-describe('dialogs.answer', () => {
+describe('K2 dialogs.answer', { tags: ['critical'] }, () => {
   it('confirms a plain confirm and resolves it true', async () => {
     const answer = confirmAction({ title: 'Go', message: 'Sure?' });
     expect(dialogs.answer('confirm')).toMatchObject({ ok: true, choice: 'confirm' });

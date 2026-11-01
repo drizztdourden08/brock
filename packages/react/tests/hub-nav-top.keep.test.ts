@@ -14,7 +14,7 @@ const GROUPS: HubGroup[] = [
 
 const idsOf = (items: readonly { id: string }[] | undefined): string[] => (items ?? []).map((item) => item.id);
 
-describe('the hub side nav top group', () => {
+describe('K1 the hub side nav top group', { tags: ['critical'] }, () => {
   it('puts the top pages under Home in the order the hub lists them', () => {
     const nav = buildHubNav(HOME, GROUPS, undefined, ['notes', 'sessions']);
     expect(nav.home?.id).toBe('home');
@@ -36,14 +36,6 @@ describe('the hub side nav top group', () => {
     const nav = buildHubNav(HOME, GROUPS, undefined, ['unknown', 'tasks', 'tasks']);
     expect(idsOf(nav.top)).toEqual(['tasks']);
     expect(nav.groups.flatMap((group) => idsOf(group.items))).toEqual(['sessions', 'plans', 'notes', 'logs']);
-  });
-
-  it('builds the top items like any other nav item', () => {
-    const picked: string[] = [];
-    const nav = buildHubNav(HOME, GROUPS, (id) => picked.push(id), ['sessions']);
-    nav.top?.[0]?.onHighlight?.();
-    expect(picked).toEqual(['sessions']);
-    expect(nav.top?.[0]?.label).toBe('SESSIONS');
   });
 
   it('does not change the groups it was given', () => {

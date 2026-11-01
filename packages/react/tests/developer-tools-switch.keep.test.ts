@@ -86,7 +86,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('binding developer tools to an app setting', () => {
+describe('S2 binding developer tools to an app setting', { tags: ['standard'] }, () => {
   it('reads and writes a nested settings key, and the store follows it', () => {
     const store = settingsStore();
     unbind = bindDeveloperTools(developerToolsFromSettings('contributing.developerTools')(store));
@@ -113,7 +113,7 @@ describe('binding developer tools to an app setting', () => {
   });
 });
 
-describe('turning developer tools off', () => {
+describe('S2 turning developer tools off', { tags: ['standard'] }, () => {
   it('hides Widgets > Developer and closes open dev widgets, the dev kit and popped dev windows, and on brings the submenu back', () => {
     const store = settingsStore();
     unbind = bindDeveloperTools(developerToolsFromSettings('contributing.developerTools')(store));

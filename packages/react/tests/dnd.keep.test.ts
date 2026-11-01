@@ -43,7 +43,7 @@ const release = (x: number, y: number): void => {
   win.dispatchEvent(pointer('pointerup', x, y));
 };
 
-describe('a typed drag between two widgets', () => {
+describe('K1 a typed drag between two widgets', { tags: ['critical'] }, () => {
   it('hands the payload to the target that accepts its type, with feedback along the way', () => {
     const source = new FakeElement();
     const target = new FakeElement();
@@ -79,7 +79,7 @@ describe('a typed drag between two widgets', () => {
   });
 });
 
-describe('targets that refuse or compete', () => {
+describe('K1 targets that refuse or compete', { tags: ['critical'] }, () => {
   it('marks a target that does not accept the type and never drops on it', () => {
     const source = new FakeElement();
     const target = new FakeElement();
@@ -114,7 +114,7 @@ describe('targets that refuse or compete', () => {
   });
 });
 
-describe('cancelling and thresholds', () => {
+describe('K1 cancelling and thresholds', { tags: ['critical'] }, () => {
   it('cancels on Escape and leaves nothing marked', () => {
     const source = new FakeElement();
     const target = new FakeElement();
@@ -150,7 +150,7 @@ describe('cancelling and thresholds', () => {
   });
 });
 
-describe('dragging out of the window', () => {
+describe('K1 dragging out of the window', { tags: ['critical'] }, () => {
   it('answers false until the main-process side registers a host', async () => {
     expect(await dnd.dragOut(['C:\\art\\a.png'])).toBe(false);
     const start = vi.fn(() => Promise.resolve(true));

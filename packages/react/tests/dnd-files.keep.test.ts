@@ -15,7 +15,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('OS file drops', () => {
+describe('K4 OS file drops', { tags: ['critical'] }, () => {
   it('sends the paths to main and keeps only what main granted, under the path main answered', async () => {
     const vet = vi.fn((paths: string[]) => Promise.resolve([
       { path: `${paths[0]}.real`, kind: 'file', granted: true },

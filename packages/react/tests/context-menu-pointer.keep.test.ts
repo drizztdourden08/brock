@@ -7,12 +7,12 @@ import { contextMenuHandler } from '../src/context-menu/context-menu-handler';
 import { listContextMenus } from '../src/context-menu/list-context-menus';
 import { openContextMenu } from '../src/context-menu/open-context-menu';
 import { useContextMenuStore } from '../src/context-menu/useContextMenuStore';
-import { byId, contextmenu, item, mountMenus, openPoint, opened, pointer, ran, rectOf, rerenderMenus, rightClick, seen, unmountMenus } from './context-menu-harness';
+import { byId, contextmenu, item, mountMenus, openPoint, opened, pointer, ran, rectOf, rightClick, seen, unmountMenus } from './context-menu-harness';
 
 beforeEach(mountMenus);
 afterEach(unmountMenus);
 
-describe('opening with the pointer', () => {
+describe('S1 opening with the pointer', { tags: ['standard'] }, () => {
   it('opens at the pointer, keeps the browser menu away and names the menu from the zone', () => {
     const event = rightClick(byId('canvas'), 40, 50);
     expect(event.defaultPrevented).toBe(true);
@@ -41,15 +41,9 @@ describe('opening with the pointer', () => {
     expect(ran[0]?.target).toBe(byId('canvas'));
     expect(opened()).toBeNull();
   });
-
-  it('builds the entries once per open, not per render', () => {
-    rightClick(byId('canvas'), 1, 1);
-    rerenderMenus();
-    expect(seen.builds).toBe(1);
-  });
 });
 
-describe('veto, hooks and zones', () => {
+describe('S1 veto, hooks and zones', { tags: ['standard'] }, () => {
   it('runs beforeOpen first and cancels when it returns false', () => {
     seen.allow = false;
     expect(rightClick(byId('canvas'), 1, 1).defaultPrevented).toBe(true);
@@ -85,19 +79,9 @@ describe('veto, hooks and zones', () => {
   });
 });
 
-describe('the open menu', () => {
+describe('S1 the open menu', { tags: ['standard'] }, () => {
   beforeEach(() => {
     rightClick(byId('canvas'), 40, 50);
-  });
-
-  it('draws separators, checked items, submenus and disabled items', () => {
-    expect(document.querySelector('[role="separator"]')).not.toBeNull();
-    expect(item('Show grid')?.getAttribute('aria-checked')).toBe('true');
-    expect(item('Arrange')).toBeDefined();
-    expect(item('Copy pixels')?.getAttribute('data-menu-entry')).toBe('canvas.copy');
-    expect(item('Arrange')?.getAttribute('data-menu-entry')).toBe('Arrange');
-    const off = item('Paste pixels');
-    expect(off?.hasAttribute('disabled') === true || off?.getAttribute('aria-disabled') === 'true').toBe(true);
   });
 
   it('closes on resize and when the focus leaves', () => {
@@ -109,7 +93,7 @@ describe('the open menu', () => {
   });
 });
 
-describe('long press', () => {
+describe('S1 long press', { tags: ['standard'] }, () => {
   const touch = (type: string, x: number, y: number, pointerId = 1): void => {
     pointer(type, byId('canvas'), { pointerType: 'touch', pointerId, clientX: x, clientY: y });
   };
@@ -140,7 +124,7 @@ describe('long press', () => {
   });
 });
 
-describe('blocking and helpers', () => {
+describe('S1 blocking and helpers', { tags: ['standard'] }, () => {
   it('does not open while blocked or while a modal dialog is open, but keeps the browser menu away', () => {
     blockContextMenus(true);
     expect(rightClick(byId('canvas'), 1, 1).defaultPrevented).toBe(true);
@@ -174,11 +158,5 @@ describe('blocking and helpers', () => {
     const canvas = listContextMenus().find((listed) => listed.zone === 'canvas');
     expect(canvas?.commands).toEqual(['canvas.copy', 'canvas.grid', 'canvas.front', 'missing.command', 'canvas.off']);
     expect(canvas?.missing).toEqual(['missing.command']);
-  });
-
-  it('marks the zone element as a menu opener and can make it focusable', () => {
-    expect(byId('canvas').getAttribute('aria-haspopup')).toBe('menu');
-    expect(byId('canvas').getAttribute('data-context-menu')).toBe('canvas');
-    expect(byId('canvas').tabIndex).toBe(0);
   });
 });

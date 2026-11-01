@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { heroChecks } from '../src/review/checks/hero-checks';
 
-describe('heroChecks', () => {
+describe('K1 heroChecks', { tags: ['critical'] }, () => {
   it('passes a hero with a title and filled slots', () => {
     const outcomes = heroChecks({ hub: 'game', rendered: true, title: 'Brock App', slots: ['eyebrow', 'actions', 'facts'] });
     expect(outcomes.every((o) => o.pass)).toBe(true);

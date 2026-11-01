@@ -31,7 +31,7 @@ afterEach(() => {
   useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
 });
 
-describe('built-in chords yield to app commands', () => {
+describe('K1 built-in chords yield to app commands', { tags: ['critical'] }, () => {
   it('binds fullscreen to F11 and Alt+Enter while no app command wants Alt+Enter', () => {
     expect(commands.chords(BROCK_COMMANDS.fullscreen)).toEqual(['F11', 'Alt+Enter']);
     expect(dispatchCommand(key(altEnter), null)).toBe(true);

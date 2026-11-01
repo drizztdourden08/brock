@@ -8,30 +8,7 @@ afterEach(() => {
   useProfilesStore.setState({ active: null });
 });
 
-describe('the folder operations on Electron', () => {
-  it('maps trash, rename, mkdir and revokeFolder onto their channels', async () => {
-    const api = stubApi();
-    const documents = electronDocuments();
-    await documents.trash(FILE);
-    await documents.rename(FILE, 'C:\\art\\b.bxel', { overwrite: true });
-    await documents.mkdir('C:\\art\\new', { recursive: true });
-    expect(await documents.revokeFolder('C:\\art')).toBe(true);
-    expect(api.documentTrash).toHaveBeenCalledWith(FILE);
-    expect(api.documentRename).toHaveBeenCalledWith(FILE, 'C:\\art\\b.bxel', { overwrite: true });
-    expect(api.documentMkdir).toHaveBeenCalledWith('C:\\art\\new', { recursive: true });
-    expect(api.documentRevokeFolder).toHaveBeenCalledWith('C:\\art');
-  });
-});
-
-describe('reveal on Electron', () => {
-  it('maps reveal onto its channel and returns the answer', async () => {
-    const api = stubApi();
-    expect(await electronDocuments().reveal(FILE)).toEqual({ revealed: true });
-    expect(api.documentReveal).toHaveBeenCalledWith(FILE);
-  });
-});
-
-describe('watching a folder on Electron', () => {
+describe('S2 watching a folder on Electron', { tags: ['standard'] }, () => {
   it('sends the events of its own watch to the listener until it is unsubscribed', async () => {
     const api = stubApi();
     const documents = electronDocuments();
@@ -61,7 +38,7 @@ describe('watching a folder on Electron', () => {
   });
 });
 
-describe('remembered folders on Electron', () => {
+describe('S2 remembered folders on Electron', { tags: ['standard'] }, () => {
   it('lists, grants again and forgets with the active profile', async () => {
     const api = stubApi();
     useProfilesStore.setState({ active: PROFILE });

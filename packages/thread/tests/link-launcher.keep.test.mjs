@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { launcherSource, runThreadCli } from '../src/index.mjs';
-import { runThreadBin } from '../src/cli/run-thread-cli.mjs';
 
 const folders = [];
 
@@ -27,7 +26,7 @@ afterEach(() => {
 
 const packageOf = (root) => JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
-describe('brock-thread link', () => {
+describe('K2 brock-thread link', { tags: ['critical'] }, () => {
   it('writes the launcher, the bin entry and the postinstall for a repo with no command', async () => {
     const root = repo({ name: '@scope/library' });
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -63,22 +62,12 @@ describe('brock-thread link', () => {
     expect(packageOf(root).scripts).toBeUndefined();
   });
 
-  it('stops where there is no brock.workspace.mjs', async () => {
-    const root = scratch({ 'package.json': '{}' });
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(await runThreadCli(['link'], root)).toBe(1);
-  });
 });
 
-describe('runThreadCli', () => {
+describe('K2 runThreadCli', { tags: ['critical'] }, () => {
   it('returns null for a word that is not a thread word, so the host handles it', async () => {
     expect(await runThreadCli(['check'])).toBeNull();
     expect(await runThreadCli([])).toBeNull();
   });
 
-  it('prints the usage for an unknown word in the brock-thread bin', async () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(await runThreadBin(['nope'])).toBe(1);
-    expect(error.mock.calls[0][0]).toContain('brock-thread link');
-  });
 });

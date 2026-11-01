@@ -81,7 +81,7 @@ afterEach(() => {
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('appDirs', () => {
+describe('K1 appDirs', { tags: ['critical'] }, () => {
   it('finds the app in a workspace package, or the root app alone', () => {
     const root = monorepo();
     expect(appDirs(root)).toEqual([join(root, 'apps', 'desktop')]);
@@ -90,7 +90,7 @@ describe('appDirs', () => {
   });
 });
 
-describe('brock upgrade in a monorepo whose app lives in apps/desktop', () => {
+describe('K1 brock upgrade in a monorepo whose app lives in apps/desktop', { tags: ['critical'] }, () => {
   it('bumps the root, the app, the other Brock packages and the catalog', () => {
     const root = monorepo();
     const plan = { mode: 'link', current: '0.16.0', target: '0.17.0', checkout: checkout(), relink: false };
@@ -145,7 +145,7 @@ describe('brock upgrade in a monorepo whose app lives in apps/desktop', () => {
   });
 });
 
-describe('the upgrade gate in a monorepo', () => {
+describe('K1 the upgrade gate in a monorepo', { tags: ['critical'] }, () => {
   it('runs the gate scripts at the root and in the app, and the review from the root', () => {
     const root = monorepo();
     const apps = upgradeApps(root, { current: '0.16.0' });
@@ -162,7 +162,7 @@ describe('the upgrade gate in a monorepo', () => {
 
 });
 
-describe('the upgrade gate in each app of a monorepo', () => {
+describe('K1 the upgrade gate in each app of a monorepo', { tags: ['critical'] }, () => {
   it.each(['check', 'gate'])('runs brock %s in each app: the managed files as CI checks them, and the gate steps of brock.config.ts', (verb) => {
     const root = monorepo();
     process.env.BROCK_STUB_LOG = join(root, 'brock-calls.log');

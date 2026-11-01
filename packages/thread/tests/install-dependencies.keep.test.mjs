@@ -24,7 +24,7 @@ const workspace = () => {
   return root;
 };
 
-describe('installDependencies', async () => {
+describe('K1 installDependencies', { tags: ['critical'] }, async () => {
   it('installs a workspace once when the root install also fills the app, even with two targets on one app', async () => {
     const root = workspace();
     exec.mockImplementation((_command, _args, { cwd }) => {

@@ -6,7 +6,7 @@ import { inNeedsOrder, readWorkflow } from '../src/ci/workflow-jobs.mjs';
 import { matrixEntries } from '../src/ci/workflow-matrix.mjs';
 import { byName, WORKFLOW, workspace } from './ci-workflow-fixture.mjs';
 
-describe('expressions and conditions', () => {
+describe('K1 expressions and conditions', { tags: ['critical'] }, () => {
   const scope = { env: { A: 'x' }, matrix: { os: 'windows-latest' }, eventName: 'push', runnerOs: 'Windows' };
 
   it('expands simple env, matrix, secret and event values and reports the rest', () => {
@@ -37,7 +37,7 @@ describe('expressions and conditions', () => {
   });
 });
 
-describe('the plan of a workflow', () => {
+describe('K1 the plan of a workflow', { tags: ['critical'] }, () => {
   const plan = (extra = {}) => planSteps({ workspace, workflowText: WORKFLOW, platform: 'win32', trigger: 'manual', ...extra });
 
   it('names every step job / step, with the job as a field, and puts needs first', () => {
@@ -99,7 +99,7 @@ describe('the plan of a workflow', () => {
   });
 });
 
-describe('the free word of brock ci', () => {
+describe('K1 the free word of brock ci', { tags: ['critical'] }, () => {
   const plan = () => planSteps({ workspace, workflowText: WORKFLOW, platform: 'win32', trigger: 'manual' });
 
   it('reads a free word as a job name or a step name', () => {

@@ -17,7 +17,7 @@ const { verb, setMode } = t;
 
 const manifest = (release) => JSON.parse(readFileSync(join(release.dir, 'release.json'), 'utf8'));
 
-describe('replay plan', () => {
+describe('K1 replay plan', { tags: ['critical'] }, () => {
   it('lists base push, merged PRs, then releases oldest first, and runs nothing', () => {
     makeRelease({ home: t.world.home, version: '1.1.0', createdAt: '2026-10-29T11:00:00Z' });
     makeRelease({ home: t.world.home, version: '1.0.0', createdAt: '2026-10-29T09:00:00Z' });
@@ -56,7 +56,7 @@ describe('replay plan', () => {
   });
 });
 
-describe('replay run guards', () => {
+describe('K1 replay run guards', { tags: ['critical'] }, () => {
   it.each([['local'], [null]])('refuses in local mode (%s)', (mode) => {
     if (mode) setMode(mode);
     const remote = makeRemote({ prs: PRS });
@@ -91,7 +91,7 @@ describe('replay run guards', () => {
   });
 });
 
-describe('replay run', () => {
+describe('K1 replay run', { tags: ['critical'] }, () => {
   beforeEach(() => setMode('remote'));
 
   it('runs the plan in order, records the release, and skips done items on a rerun', () => {

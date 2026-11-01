@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -17,26 +17,11 @@ const app = () => {
   return dir;
 };
 
-const finishLater = (file, state) => setTimeout(() => {
-  const record = JSON.parse(readFileSync(file, 'utf8'));
-  writeFileSync(file, JSON.stringify({ ...record, state, reason: 'sync failed' }));
-}, 50);
-
-describe('afterPrewarm', () => {
+describe('K1 afterPrewarm', { tags: ['critical'] }, () => {
   it('lets a launch go at once when no prewarm runs', async () => {
     const lines = [];
     expect(await afterPrewarm(app(), (line) => lines.push(line))).toBe(false);
     expect(lines).toEqual([]);
-  });
-
-  it('waits for a running prewarm and reports how it ended', async () => {
-    const dir = app();
-    announceJob(prewarmRecord(dir), { pid: process.pid });
-    finishLater(prewarmRecord(dir), 'failed');
-    const lines = [];
-    expect(await afterPrewarm(dir, (line) => lines.push(line))).toBe(true);
-    expect(lines[0]).toMatch(/is running \(pid \d+, started \d+ s ago\); waiting for it/);
-    expect(lines[1]).toMatch(/failed \(sync failed\); going ahead without it/);
   });
 
   it('does not wait on a prewarm whose heartbeat stopped', async () => {

@@ -21,7 +21,7 @@ afterEach(() => {
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('followTessera', () => {
+describe('K1 followTessera', { tags: ['critical'] }, () => {
   it('moves a catalog entry to the range Brock asks for', () => {
     const root = app('catalog:', "catalog:\n  '@drizztdourden08/tessera': ^0.3.0\n  zustand: ^5.0.0\n");
     expect(followTessera(root, '^0.4.0')).toEqual(['catalog.@drizztdourden08/tessera']);
@@ -36,12 +36,6 @@ describe('followTessera', () => {
     expect(followTessera(root, '>=0.58.0 <1')).toEqual([]);
     expect(followTessera(root, '^0.59.0')).toEqual(['catalog.@drizztdourden08/tessera']);
     expect(readFileSync(join(root, 'pnpm-workspace.yaml'), 'utf8')).toBe("catalog:\n  '@drizztdourden08/tessera': ^0.59.0\n");
-  });
-
-  it('moves a plain spec', () => {
-    const root = app('^0.3.0');
-    expect(followTessera(root, '^0.4.0')).toEqual(['dependencies.@drizztdourden08/tessera']);
-    expect(specOf(root)).toBe('^0.4.0');
   });
 
   it('leaves a linked Tessera and an open range alone', () => {

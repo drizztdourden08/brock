@@ -32,7 +32,7 @@ beforeEach(() => {
 
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-describe('pickBase', () => {
+describe('K1 pickBase', { tags: ['standard'] }, () => {
   it('takes origin when the local branch is level with it or behind', () => {
     expect(pickBase({ main, branch: 'main', fetched: true, log })).toBe('origin/main');
     commit(origin, 'second');

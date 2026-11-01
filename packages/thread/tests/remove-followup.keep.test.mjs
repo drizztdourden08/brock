@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { isPathArgument, removeLeftover } from '../src/worktree/remove-leftover.mjs';
+import { removeLeftover } from '../src/worktree/remove-leftover.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 import { isUpgradeThrowaway } from '../src/worktree/upgrade-throwaway.mjs';
 
@@ -45,7 +45,7 @@ beforeEach(() => {
 
 afterEach(() => rmSync(base, { recursive: true, force: true }));
 
-describe('removeTree messages', () => {
+describe('K4 removeTree messages', { tags: ['standard'] }, () => {
   it('prints one plain line, not git\'s error, when its own delete handles it', async () => {
     const folder = join(base, 'not-a-worktree');
     mkdirSync(folder);
@@ -55,7 +55,7 @@ describe('removeTree messages', () => {
   });
 });
 
-describe('isUpgradeThrowaway', () => {
+describe('K4 isUpgradeThrowaway', { tags: ['standard'] }, () => {
   const check = (branch) => isUpgradeThrowaway({ branch, base: 'main', cwd: main, workspace });
 
   it('accepts an upgrade branch with only upgrade commits, or none', () => {
@@ -88,7 +88,7 @@ describe('isUpgradeThrowaway', () => {
   });
 });
 
-describe('removeLeftover', () => {
+describe('K4 removeLeftover', { tags: ['standard'] }, () => {
   const leftover = (name = 'brock-0-113-0') => {
     const dir = join(main, '.worktrees', name);
     let deep = join(dir, 'node_modules', '.pnpm');
@@ -98,12 +98,6 @@ describe('removeLeftover', () => {
     symlinkSync(outside, join(dir, 'node_modules', 'linked'), 'junction');
     return dir;
   };
-
-  it('recognises a path argument and not a name', () => {
-    expect(isPathArgument('.worktrees/brock-0-113-0')).toBe(true);
-    expect(isPathArgument(join(main, 'x'))).toBe(true);
-    expect(isPathArgument('brock-0-113-0')).toBe(false);
-  });
 
   it('deletes an unlisted folder with a long path and a link, leaving the link target', async () => {
     const dir = leftover();

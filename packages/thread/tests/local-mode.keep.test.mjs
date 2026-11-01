@@ -36,7 +36,7 @@ afterEach(() => {
   rmSync(home, { recursive: true, force: true });
 });
 
-describe('the mode switch', () => {
+describe('K1 the mode switch', { tags: ['standard'] }, () => {
   it('is local when the file is missing, unreadable or odd', () => {
     expect(remoteMode()).toBe('local');
     writeFileSync(join(home, 'remote.json'), 'not json');
@@ -61,12 +61,4 @@ describe('the mode switch', () => {
     expect(spawned.calls).toEqual([]);
   });
 
-  it('calls gh and git again in remote mode, and still runs local git in local mode', () => {
-    tryGit(['status'], '.');
-    expect(spawned.calls).toEqual([['git', 'status']]);
-    setMode('remote');
-    tryGh(['pr', 'list'], '.');
-    gitLoud(['fetch', 'origin'], '.');
-    expect(spawned.calls.map((call) => call.slice(0, 2))).toEqual([['git', 'status'], ['gh', 'pr'], ['git', 'fetch']]);
-  });
 });

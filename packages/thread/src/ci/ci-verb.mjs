@@ -1,10 +1,13 @@
 /* @layer tooling-scripts @kind logic */
 import { tryGit } from '../git.mjs';
+import { flag } from '../cli/thread-args.mjs';
+import { runCommand } from '../release/local/run-command.mjs';
 import { usageFor } from '../cli/usage-for.mjs';
 import { newRunId } from './check-record.mjs';
 import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
 import { planSteps, targetOf } from './ci-plan.mjs';
 import { gateScope } from './gate-scope.mjs';
+import { localpkgRequest } from './localpkg-request.mjs';
 import { integrationBranch } from '../local/integration-branch.mjs';
 import { parseTimeouts } from './step-timeouts.mjs';
 import { treeOf } from './tree-cache.mjs';
@@ -15,7 +18,7 @@ import { runCi } from './run-ci.mjs';
 const USAGE = [
   '  brock ci [check] [<job>|<step>] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
   '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
-  '           [--base <branch>] [--timeout <step>=<min>[,...]] [--no-cache]',
+  '           [--base <branch>] [--timeout <step>=<min>[,...]] [--no-cache] [--localpkg]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
   '                               (default the head of --pr, else HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
   '                               of the workflow file (default ci.yml). A job or step name runs only that one,',
@@ -23,6 +26,8 @@ const USAGE = [
   '                               A step that passed for the same git tree is not run again (--no-cache runs all). Every step has a hard',
   '                               time limit. Tests cover only files changed since the merge base with --base (the last release tag on',
   '                               --trigger release); lint covers the same files, all of them on a release.',
+  '                               --localpkg runs a branch that needs unpushed local builds: localpkg points the temporary worktree at',
+  '                               its tarballs, install is --no-frozen-lockfile, the lockfile stays the registry one, and the record says so.',
   '                               Exit 0 pass, 1 a step failed or timed out, 2 usage or setup error.',
 ].join('\n');
 
@@ -88,6 +93,8 @@ const commitOf = (options, pr, cwd) => {
   return { spec, sha };
 };
 
+const localpkgOf = (options, ctx, cwd) => (flag(options, 'localpkg') ? localpkgRequest({ exec: ctx.exec ?? runCommand, cwd }) : null);
+
 const resolveRequest = (positional, options, ctx) => {
   const word = wordOf(positional);
   const cwd = process.cwd();
@@ -97,7 +104,8 @@ const resolveRequest = (positional, options, ctx) => {
   const project = projectOf(options, ctx.workspace);
   const branchBase = stringOption(options, 'base') ?? integrationBranch({ options, project, base: ctx.workspace.base, cwd });
   const scope = gateScope({ trigger, sha, base: branchBase, git: (args) => tryGit(args, cwd) });
-  const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger, scope };
+  const localpkg = localpkgOf(options, ctx, cwd);
+  const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger, scope, localpkg: Boolean(localpkg) };
   const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));
   const plan = planSteps({ ...base, job, only });
   return {
@@ -110,6 +118,7 @@ const resolveRequest = (positional, options, ctx) => {
     pr,
     trigger,
     plan,
+    localpkg,
     partial: Boolean(only),
     waitMs: waitOf(options),
   };

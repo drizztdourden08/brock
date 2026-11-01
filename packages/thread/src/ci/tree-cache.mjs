@@ -3,11 +3,18 @@ import { createHash } from 'node:crypto';
 
 const runnable = (planned) => !planned.skip && !planned.noop && !planned.upload && Boolean(planned.command);
 
+const localPart = (local) => {
+  if (!local) return '';
+  const used = [...local.builds].sort((a, b) => a.name.localeCompare(b.name)).map(({ name, version, head }) => [name, version, head ?? null]);
+  return `\nlocalpkg ${JSON.stringify(used)}`;
+};
+
 /**
  * @param {{ name: string, command: string, stepEnv?: object }} planned
+ * @param {{ builds: { name: string, version: string, head?: string | null }[] } | null} [local] the local builds of a --localpkg run
  * @returns {string} the key of a step result inside one tree
  */
-const keyOf = (planned) => createHash('sha1').update(`${planned.name}\n${planned.command}\n${JSON.stringify(planned.stepEnv ?? {})}`).digest('hex').slice(0, 16);
+const keyOf = (planned, local = null) => createHash('sha1').update(`${planned.name}\n${planned.command}\n${JSON.stringify(planned.stepEnv ?? {})}${localPart(local)}`).digest('hex').slice(0, 16);
 
 /**
  * @param {string} sha

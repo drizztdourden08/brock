@@ -23,7 +23,7 @@ const inRunOrder = (scripts) => [...scripts].sort((a, b) => rank(a) - rank(b));
 const scriptStep = (script, place, scope) => {
   const step = { name: script, command: `pnpm run ${script}`, ...place };
   if (!scope) return step;
-  if (script === 'test') return { ...step, command: `pnpm run test --changed ${scope.testRef}` };
+  if (script === 'test') return { ...step, command: `pnpm run test --base ${scope.testRef}` };
   if (script !== 'lint') return step;
   return { ...step, stepEnv: { BROCK_LINT_MODE: scope.lintMode, ...(scope.lintBase ? { BROCK_LINT_BASE: scope.lintBase } : {}) } };
 };

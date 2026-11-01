@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { GATE_FALLBACK, INSTALL_STEP, STANDARDS_CI } from './ci.constants.mjs';
+import { GATE_FALLBACK, INSTALL_STEP, LOCALPKG_INSTALL_COMMAND, STANDARDS_CI } from './ci.constants.mjs';
 import { inRunOrder, scriptStep } from './gate-steps.mjs';
 import { isGithubOnly } from './github-only.mjs';
 import { inNeedsOrder, readWorkflow } from './workflow-jobs.mjs';
@@ -72,6 +72,8 @@ const targetOf = (steps, word, job, only) => {
   throw new Error(`"${word}" is not a job or a step here. Jobs: ${jobsOf(steps).join(', ')}, all. Steps: ${[...new Set(steps.map(shortName))].join(', ')}.`);
 };
 
+const forLocalBuilds = (step, localpkg) => (localpkg && step.name === INSTALL_STEP.name && step.command === INSTALL_STEP.command ? { ...step, command: LOCALPKG_INSTALL_COMMAND } : step);
+
 const EMPTY_WORKFLOW = Object.freeze({ env: {}, shell: null, workdir: null, jobs: [] });
 
 const standaloneGate = (workflow, workspace, scope) => {
@@ -82,15 +84,15 @@ const standaloneGate = (workflow, workspace, scope) => {
 };
 
 /**
- * @param {{ workspace: object, workflowText?: string | null, job?: string, only?: string[] | null, trigger?: string, platform?: string, scope?: object | null }} request
+ * @param {{ workspace: object, workflowText?: string | null, job?: string, only?: string[] | null, trigger?: string, platform?: string, scope?: object | null, localpkg?: boolean }} request
  * @returns {object[]} the steps of the run, in the order they run
  */
-const planSteps = ({ workspace, workflowText = null, job = 'all', only = null, trigger = 'manual', platform = process.platform, scope = null }) => {
+const planSteps = ({ workspace, workflowText = null, job = 'all', only = null, trigger = 'manual', platform = process.platform, scope = null, localpkg = false }) => {
   const workflow = workflowText ? readWorkflow(workflowText) : EMPTY_WORKFLOW;
   const request = { workspace, trigger, platform, scope };
   const steps = [...standaloneGate(workflow, workspace, scope), ...inNeedsOrder(workflow.jobs).flatMap((entry) => stepsOfJob(entry, workflow, request))];
   const checks = workspace.publish?.requiredChecks;
-  return chooseOnly(chooseJob(unique(steps), job), only).map((step) => ({ ...step, required: isRequired(step, checks) }));
+  return chooseOnly(chooseJob(unique(steps), job), only).map((step) => ({ ...forLocalBuilds(step, localpkg), required: isRequired(step, checks) }));
 };
 
 export { planSteps, targetOf };

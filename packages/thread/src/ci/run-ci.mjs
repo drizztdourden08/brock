@@ -6,6 +6,7 @@ import { newRecord, stepRecord } from './record-shape.mjs';
 import { readRecords, writeRecord } from './check-record.mjs';
 import { artifactDir, recordFile } from './ci-paths.mjs';
 import { addCiWorktree, dropCiWorktree, isInsideWorktree } from './ci-worktree.mjs';
+import { releaseLocalpkg, useLocalpkg } from './localpkg-worktree.mjs';
 import { watchMainCheckout } from './main-guard.mjs';
 import { acquireRunLock } from './run-lock.mjs';
 import { finishedWith } from './run-status.mjs';
@@ -80,7 +81,7 @@ const openSession = ({ ctx, request, runId }) => {
   const { project, plan } = request;
   const file = recordFile(project, runId);
   const record = newRecord({ runId, request, main: ctx.rootDir });
-  record.steps = plan.map((step, index) => stepRecord(step, { project, runId, index }));
+  record.steps = plan.map((step, index) => stepRecord(step, { project, runId, index, local: request.localpkg }));
   const save = () => writeRecord(file, record);
   const reused = request.cache && request.tree ? applyCache(record, plan, readRecords(project)) : 0;
   save();
@@ -92,7 +93,7 @@ const openSession = ({ ctx, request, runId }) => {
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
-  return { file, record, plan, save, control, onSignal, reused, timeouts: request.timeouts ?? {}, release: null, path: null, lost: null };
+  return { file, record, plan, save, control, onSignal, reused, timeouts: request.timeouts ?? {}, release: null, path: null, lost: null, localpkg: request.localpkg ?? null };
 };
 
 const lockFor = async ({ ctx, request, runId, session }) => {
@@ -115,6 +116,7 @@ const execute = async ({ ctx, request, runId, session }) => {
   if (pending) {
     session.lost = watchMainCheckout(ctx.rootDir);
     session.path = addCiWorktree({ main: ctx.rootDir, runId, sha: request.sha });
+    if (session.localpkg) useLocalpkg({ localpkg: session.localpkg, path: session.path });
     for (const [index, step] of record.steps.entries()) step.cwd = resolve(session.path, session.plan[index].workdir ?? '');
     save();
     await runSteps({ session, log: ctx.log });
@@ -139,6 +141,7 @@ const closeSession = async ({ ctx, session }) => {
   process.off('SIGINT', session.onSignal);
   process.off('SIGTERM', session.onSignal);
   if (path) {
+    if (session.localpkg) releaseLocalpkg({ localpkg: session.localpkg, path, log: ctx.log });
     const kept = await dropCiWorktree({ path, main: ctx.rootDir, log: ctx.log });
     if (kept) {
       record.summary = `${record.summary} ${kept}`;

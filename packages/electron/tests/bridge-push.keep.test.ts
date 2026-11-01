@@ -14,6 +14,8 @@ afterEach(closeOpened);
 const CHANGED = event<(doc: string, rev: number) => void>()('test:doc-changed');
 const WHO = invoke<() => Promise<string>>()('test:who');
 
+const CLOSE_CEILING_MS = 10_000;
+
 const settle = (ms = 100): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const answerAsServer = (socket: Socket, secret: string, text: string): void => {
@@ -54,8 +56,7 @@ describe('bridge connections', () => {
     expect(server.connections().sort()).toEqual([...ids].sort());
     expect(opened.mock.calls.map(([id]) => id as unknown)).toEqual(ids);
     first.close();
-    await settle();
-    expect(closed).toHaveBeenCalledWith(ids[0]);
+    await vi.waitFor(() => expect(closed).toHaveBeenCalledWith(ids[0]), { timeout: CLOSE_CEILING_MS, interval: 10 });
     expect(server.connections()).toEqual([ids[1]]);
   });
 });

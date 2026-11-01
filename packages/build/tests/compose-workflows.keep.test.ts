@@ -39,3 +39,18 @@ describe('K1 composeWorkflows release notes folder', { tags: ['critical'] }, () 
     expect(notes({ notesDir: 'docs/notes' })).toContain('NOTES="docs/notes/v${{ needs.prepare.outputs.version }}.md"');
   });
 });
+
+describe('K1 composeWorkflows lint and test modes', { tags: ['critical'] }, () => {
+  const { ci } = composeWorkflows({ targets: ['desktop'], prefix: 'a-' });
+  const stepOf = (run: string) => ci.slice(ci.lastIndexOf('- name:', ci.indexOf(`run: ${run}\n`)), ci.indexOf(`run: ${run}\n`));
+
+  it('lints the changed files on a pull request and every file otherwise', () => {
+    expect(stepOf('pnpm run lint')).toContain("if: github.event_name == 'pull_request'");
+    expect(stepOf('pnpm run lint:all')).toContain("if: github.event_name != 'pull_request'");
+  });
+
+  it('runs test:pr on a pull request and test:e2e otherwise, both only when present', () => {
+    expect(stepOf('pnpm run --if-present test:pr')).toContain("if: github.event_name == 'pull_request'");
+    expect(stepOf('pnpm run --if-present test:e2e')).toContain("if: github.event_name != 'pull_request'");
+  });
+});

@@ -11,7 +11,7 @@ const freshModules = async () => {
 
 beforeAll(async () => {
   await import('../src/stores/useScopedStateStore');
-}, 60_000);
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();

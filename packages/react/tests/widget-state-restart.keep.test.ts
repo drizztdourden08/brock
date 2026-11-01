@@ -32,7 +32,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('K3 widget state across a restart', { tags: ['standard'], timeout: 60_000 }, () => {
+describe('K3 widget state across a restart', { tags: ['standard'] }, () => {
   it('writes the dock, the floating and popped bounds and every widget pref, and reads them back after a restart', async () => {
     const { disk, listeners } = fakeDisk({ 'profile:p1': { screens: { home: { tab: 'news' } } } });
     const first = await startApp();
@@ -62,7 +62,7 @@ describe('K3 widget state across a restart', { tags: ['standard'], timeout: 60_0
   });
 });
 
-describe('K3 widget state per profile', { tags: ['standard'], timeout: 60_000 }, () => {
+describe('K3 widget state per profile', { tags: ['standard'] }, () => {
   it('gives each profile its own widgets and brings them back after a switch', async () => {
     fakeDisk({});
     const app = await startApp();

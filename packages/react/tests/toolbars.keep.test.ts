@@ -104,7 +104,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('K3 the toolbar layout across a restart', { tags: ['standard'], timeout: 60_000 }, () => {
+describe('K3 the toolbar layout across a restart', { tags: ['standard'] }, () => {
   it('saves toolbarLayout as its own key beside widgetLayout, flushes on pagehide, and reads it back', async () => {
     const { disk, listeners } = fakeDisk({ 'profile:p1': { widgetLayout: { kept: true } } });
     const first = await startApp();

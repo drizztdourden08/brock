@@ -137,7 +137,7 @@ describe('K4 the async Windows access check', { tags: ['critical'] }, () => {
   });
 });
 
-describe.runIf(process.platform === 'win32')('K4 the async read on a real file', { tags: ['standard'] }, () => {
+describe.runIf(process.platform === 'win32')('E2 the async read on a real file', { tags: ['e2e'] }, () => {
   it('reads the discovery file the bridge wrote and refuses one open to other accounts', async () => {
     const { server } = await serve();
     const file = join(tempDir(), 'bridge.json');

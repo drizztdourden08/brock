@@ -45,22 +45,6 @@ describe('K1 serverTarget', { tags: ['critical'] }, () => {
     expect(defineWorkspace({ name: 'demo', targets: { server: target } }).targets.server).toBe(target);
   });
 
-  it('runs the built server with node and the data flag for a production launch of state none', async () => {
-    const { root, log, worktree } = worktreeApp();
-    const target = serverTarget();
-    expect(target.notReady(worktree, true)).toBeNull();
-    const child = await target.launch(request(worktree, { prod: true, passthrough: ['--port=4000'] }));
-    expect(await closed(child)).toBe(0);
-    expect(lines(log)).toEqual([['build', '--if-stale'], ['sync', '--if-stale'], ['main', `--user-data=${join(root, '.user-data')}`, '--port=4000']]);
-  });
-
-  it('runs brock server dev with the data flag for a launch without --prod', async () => {
-    const { root, log, worktree } = worktreeApp();
-    const child = await serverTarget().launch(request(worktree));
-    expect(await closed(child)).toBe(0);
-    expect(lines(log)).toEqual([['sync', '--if-stale'], ['server', 'dev', '--', `--user-data=${join(root, '.user-data')}`]]);
-  });
-
   it('refuses a state when it has no states hook, and asks the hook otherwise', () => {
     const { worktree } = worktreeApp();
     expect(serverTarget().checkState(worktree, 'none')).toBeNull();
@@ -76,5 +60,23 @@ describe('K1 serverTarget', { tags: ['critical'] }, () => {
     rmSync(join(root, 'dist'), { recursive: true });
     expect(serverTarget().notReady(worktree, false)).toBeNull();
     expect(serverTarget().notReady(worktree, true)).toMatch(/dist[\\/]server[\\/]main\.mjs is missing/);
+  });
+});
+
+describe('S2 launching the server target', { tags: ['standard'] }, () => {
+  it('runs the built server with node and the data flag for a production launch of state none', async () => {
+    const { root, log, worktree } = worktreeApp();
+    const target = serverTarget();
+    expect(target.notReady(worktree, true)).toBeNull();
+    const child = await target.launch(request(worktree, { prod: true, passthrough: ['--port=4000'] }));
+    expect(await closed(child)).toBe(0);
+    expect(lines(log)).toEqual([['build', '--if-stale'], ['sync', '--if-stale'], ['main', `--user-data=${join(root, '.user-data')}`, '--port=4000']]);
+  });
+
+  it('runs brock server dev with the data flag for a launch without --prod', async () => {
+    const { root, log, worktree } = worktreeApp();
+    const child = await serverTarget().launch(request(worktree));
+    expect(await closed(child)).toBe(0);
+    expect(lines(log)).toEqual([['sync', '--if-stale'], ['server', 'dev', '--', `--user-data=${join(root, '.user-data')}`]]);
   });
 });

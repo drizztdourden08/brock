@@ -58,7 +58,7 @@ describe('K4 the Windows access check on the discovery file', { tags: ['critical
     expect(windowsAccessProblem(file, broken)).toBe('could not read its owner and access list: powershell.exe exited with 1: Get-Acl failed');
   });
 
-  it.runIf(process.platform === 'win32')('reads a real file in a folder with a non-ASCII name', async () => {
+  it.runIf(process.platform === 'win32')('E2 reads a real file in a folder with a non-ASCII name', { tags: ['e2e'] }, async () => {
     const { server } = await serve();
     const folder = join(tempDir(), 'dossier-été');
     mkdirSync(folder);

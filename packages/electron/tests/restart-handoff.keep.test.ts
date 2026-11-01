@@ -14,6 +14,7 @@ import { closeOpened, tempDir } from './bridge-fixture';
 
 const fakeApp = vi.hoisted(() => ({ relaunch: vi.fn(), exit: vi.fn() }));
 vi.mock('electron', () => ({ app: fakeApp }));
+vi.mock('../src/main/bridge/restrict-to-user', () => ({ restrictToUser: () => undefined }));
 
 const realArgv = process.argv;
 const T0 = 1_000_000;

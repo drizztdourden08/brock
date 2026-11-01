@@ -14,8 +14,6 @@ afterEach(closeOpened);
 const CHANGED = event<(doc: string, rev: number) => void>()('test:doc-changed');
 const WHO = invoke<() => Promise<string>>()('test:who');
 
-const settle = (ms = 100): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
-
 const answerAsServer = (socket: Socket, secret: string, text: string): void => {
   const hello = JSON.parse(text) as { hello?: string };
   if (!hello.hello) return;
@@ -54,8 +52,7 @@ describe('K2 bridge connections', { tags: ['standard'] }, () => {
     expect(server.connections().sort()).toEqual([...ids].sort());
     expect(opened.mock.calls.map(([id]) => id as unknown)).toEqual(ids);
     first.close();
-    await settle();
-    expect(closed).toHaveBeenCalledWith(ids[0]);
+    await vi.waitFor(() => expect(closed).toHaveBeenCalledWith(ids[0]));
     expect(server.connections()).toEqual([ids[1]]);
   });
 });
@@ -74,9 +71,10 @@ describe('K2 bridge push', { tags: ['standard'] }, () => {
     expect(server.emitTo(firstId, CHANGED, 'a.bxel', 1)).toBe(1);
     expect(server.emitTo('0'.repeat(32), CHANGED, 'a.bxel', 1)).toBe(0);
     expect(server.emit(CHANGED, 'b.bxel', 2)).toBe(2);
-    await settle();
-    expect(heardFirst.mock.calls).toEqual([['a.bxel', 1], ['b.bxel', 2]]);
-    expect(heardSecond.mock.calls).toEqual([['b.bxel', 2]]);
+    await vi.waitFor(() => {
+      expect(heardFirst.mock.calls).toEqual([['a.bxel', 1], ['b.bxel', 2]]);
+      expect(heardSecond.mock.calls).toEqual([['b.bxel', 2]]);
+    });
   });
 
   it('refuses a server message signed with another key and a push out of order', async () => {
@@ -92,7 +90,7 @@ describe('K2 bridge push', { tags: ['standard'] }, () => {
     const heard = vi.fn();
     fake.on(CHANGED, heard);
     await fake.connect();
-    await settle();
+    await vi.waitFor(() => expect(heard).toHaveBeenCalledTimes(1));
     expect(heard.mock.calls).toEqual([['x', 1]]);
     fake.close();
     replay.close();

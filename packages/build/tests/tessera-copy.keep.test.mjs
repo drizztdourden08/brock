@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runMigrate } from '../src/commands/migrate.mjs';
 import { readCopyMap } from '../src/upgrade/tessera-copy/copy-map.mjs';
 import { tesseraCopyStep } from '../src/upgrade/tessera-copy/tessera-copy-step.mjs';
@@ -135,43 +135,27 @@ const mapOf = (root) => join(root, MAP_FILE);
 
 const convert = (root) => tesseraCopyStep({ rootDir: root, copy: COPY, aliases: ['@ds'], map: readCopyMap(mapOf(root)).map });
 
-const converted = { root: '', run: null };
-
 afterEach(() => {
   vi.restoreAllMocks();
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
 describe('E2 brock migrate --tessera-from-copy on an app holding its own copy', { tags: ['e2e'] }, () => {
-  beforeAll(() => {
-    converted.root = repo(APP);
-    made.splice(made.indexOf(converted.root), 1);
-    converted.run = convert(converted.root);
-  }, 240_000);
-
-  afterAll(() => rmSync(converted.root, { recursive: true, force: true }));
-
-  it('turns the copy\'s Stepper into NumberInput with side buttons, never into Tessera\'s Stepper', () => {
-    const { root, run } = converted;
+  it('converts the copy, replays the token renames and leaves to-dos for the rest', () => {
+    const root = repo(APP);
+    const run = convert(root);
     const source = read(root, `${VIEWS}/views/SettingsPanel/sub-components/AspectRatioControl.tsx`);
     expect(source).toContain('<NumberInput buttons="sides" aria-label="Ratio width" min={1} step={1} value={w} onChange={setW} />');
     expect(source).toContain('<NumberInput buttons="sides" aria-label="Ratio height"');
-    expect(source).not.toMatch(/\b(?:Number)?Stepper\b/);
+    expect(source).not.toMatch(/(?:Number)?Stepper/);
     expect(source.match(/from '@drizztdourden08\/tessera\/primitives';/g)).toHaveLength(2);
     expect(source).toContain("import './AspectRatioControl.css';");
     expect(todosOf(run).filter(({ file }) => file.endsWith('AspectRatioControl.tsx'))).toEqual([]);
-  });
-
-  it('replays the token renames over the app stylesheets and leaves the copy alone', () => {
-    const { root } = converted;
     expect(read(root, `${VIEWS}/compounds/AlertBanner/AlertBanner.css`)).toContain('solid var(--c-primary);');
     for (const [file, text] of Object.entries(COPY_FILES)) expect(read(root, file)).toBe(text);
-  });
-
-  it('points the tokens at Tessera and leaves a to-do for what cannot move by itself', () => {
-    const { root, run } = converted;
     const todos = todosOf(run);
-    expect(read(root, 'apps/app/src/main.tsx')).toContain("import '@drizztdourden08/tessera/tokens.css';\nimport { Box } from '@drizztdourden08/tessera/primitives';");
+    expect(read(root, 'apps/app/src/main.tsx')).toContain("import '@drizztdourden08/tessera/tokens.css';
+import { Box } from '@drizztdourden08/tessera/primitives';");
     const at = (file) => todos.filter((todo) => todo.file === file).map(({ line, message }) => `${line}: ${message}`);
     expect(at('apps/app/src/main.tsx')).toEqual([expect.stringMatching(/^2: now imports Tessera's tokens\.css/)]);
     expect(at('apps/site/src/views/SavedViewsMenu.tsx')).toEqual([expect.stringMatching(/^1: Tessera .* exports no useAnchorMenu/)]);

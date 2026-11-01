@@ -28,22 +28,6 @@ let hits = 0;
 let server: Server;
 let origin = '';
 
-beforeAll(async () => {
-  server = createServer((req, res) => {
-    hits += 1;
-    const body = files.get(req.url ?? '');
-    if (!body) {
-      res.writeHead(404).end();
-      return;
-    }
-    res.writeHead(200, { 'content-length': String(body.length) }).end(body);
-  });
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-});
-
-afterAll(() => new Promise<void>((resolve) => { server.close(() => resolve()); }));
-
 afterEach(() => {
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   files.clear();
@@ -129,6 +113,22 @@ describe('K1 locateTool', { tags: ['critical'] }, () => {
 });
 
 describe('S2 createTools install', { tags: ['standard'] }, () => {
+  beforeAll(async () => {
+    server = createServer((req, res) => {
+      hits += 1;
+      const body = files.get(req.url ?? '');
+      if (!body) {
+        res.writeHead(404).end();
+        return;
+      }
+      res.writeHead(200, { 'content-length': String(body.length) }).end(body);
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  });
+
+  afterAll(() => new Promise<void>((resolve) => { server.close(() => resolve()); }));
+
   it('downloads, verifies and unpacks the binaries from a zip as one job', async () => {
     const zip = await zipOf({ 'ffmpeg-9/bin/ffmpeg.exe': 'encoder', 'ffmpeg-9/bin/ffprobe.exe': 'prober', 'ffmpeg-9/README.txt': 'x' });
     files.set('/ffmpeg.zip', zip);

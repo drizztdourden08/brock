@@ -11,7 +11,7 @@ const freshModules = async () => {
 
 beforeAll(async () => {
   await import('../src/widgets/profile-views');
-}, 60_000);
+});
 
 afterEach(() => {
   vi.doUnmock('../src/platform/get-platform');

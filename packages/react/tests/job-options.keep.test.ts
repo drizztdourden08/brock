@@ -44,7 +44,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('quiet jobs in the renderer', () => {
+describe('S2 quiet jobs in the renderer', { tags: ['standard'] }, () => {
   it('keeps a quiet job out of the title bar item and the job dialog, while its snapshot stays in the store', () => {
     let action: ReturnType<typeof useJobTitleBarAction> = null;
     mount(() => {
@@ -80,7 +80,7 @@ describe('quiet jobs in the renderer', () => {
   });
 });
 
-describe('useJob', () => {
+describe('S2 useJob', { tags: ['standard'] }, () => {
   it('follows a renderer job: state, progress, the current step, the line and the error, and null for an unknown id', () => {
     let result: UseJobResult | null = null;
     let unknown: UseJobResult | null = null;
@@ -122,7 +122,7 @@ describe('useJob', () => {
   });
 });
 
-describe('forwarding a renderer job log to the app log', () => {
+describe('S2 forwarding a renderer job log to the app log', { tags: ['standard'] }, () => {
   it('writes the log lines of a job started with forwardLog to the app log with the job id, and keeps them after the job is gone', async () => {
     const bus = createAppLog();
     await jobs.start('sync', STEPS, { forwardLog: true }).run(async (job) => {

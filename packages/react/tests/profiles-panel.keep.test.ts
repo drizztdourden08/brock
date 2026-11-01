@@ -44,7 +44,9 @@ const Harness = ({ start, failWith, onSelect, onDelete }: HarnessProps) => {
 let root: Root | null = null;
 let host: HTMLElement | null = null;
 
-const settle = () => act(async () => { await new Promise((resolve) => { setTimeout(resolve, 40); }); });
+const settle = () => act(async () => {
+  for (let turn = 0; turn < 20; turn += 1) await Promise.resolve();
+});
 
 const mount = async (props: HarnessProps): Promise<HTMLElement> => {
   host = document.createElement('div');
@@ -94,7 +96,7 @@ afterEach(() => {
   host = null;
 });
 
-describe('ProfilesPanel create form', () => {
+describe('S1 ProfilesPanel create form', { tags: ['standard'] }, () => {
   it('opens the first run form with focus in the name, no Cancel and no way out by Escape, and lands on the new row after the create', async () => {
     await mount({ start: [] });
     expect(document.body.textContent).toContain('Create a profile to get started');
@@ -139,7 +141,7 @@ describe('ProfilesPanel create form', () => {
   });
 });
 
-describe('ProfilesPanel rows', () => {
+describe('S1 ProfilesPanel rows', { tags: ['standard'] }, () => {
   it('deletes a profile that is not the active one with the mouse, without switching to it', async () => {
     const onSelect = vi.fn();
     const onDelete = vi.fn();

@@ -7,7 +7,7 @@ import { withActionChord } from '../src/title-bar/with-action-chord';
 const chords: Readonly<Record<string, readonly string[]>> = { 'file.save': ['Mod+Alt+S'], 'open:library': ['Mod+L'], 'brock.search': [] };
 const lookup = (id: string): readonly string[] | undefined => chords[id];
 
-describe('menus read the current chord from the registry', () => {
+describe('K1 menus read the current chord from the registry', { tags: ['critical'] }, () => {
   it('shows the chord of a command entry and runs it', () => {
     const [save] = withCommandChords([{ key: 'save', label: 'Save', command: 'file.save' }], lookup) as MenuItem[];
     expect(save?.shortcut).toBe('Mod+Alt+S');

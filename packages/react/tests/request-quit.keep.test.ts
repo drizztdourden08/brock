@@ -13,7 +13,7 @@ afterEach(() => {
   useDialogStore.setState({ dialog: null });
 });
 
-describe('requestQuit (beforeQuit)', () => {
+describe('K4 requestQuit (beforeQuit)', { tags: ['critical'] }, () => {
   it('quits at once when no beforeQuit returns a message', async () => {
     guard(null);
     const quit = vi.fn();

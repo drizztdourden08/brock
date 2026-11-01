@@ -6,7 +6,7 @@ const toasts = vi.hoisted(() => [] as string[]);
 
 vi.mock('../src/toast/toast', () => ({ toast: (message: string) => { toasts.push(message); } }));
 
-describe('revealWithToast', () => {
+describe('K1 revealWithToast', { tags: ['critical'] }, () => {
   it('gives PathInput no reveal when the host cannot show a path', () => {
     expect(revealWithToast(undefined)).toBeUndefined();
   });
@@ -16,7 +16,8 @@ describe('revealWithToast', () => {
     const onReveal = revealWithToast(reveal);
     onReveal?.('C:/roms/game.gb');
     onReveal?.('C:/roms/gone.gb');
-    await vi.waitFor(() => expect(toasts).toEqual(['Could not show C:/roms/gone.gb: missing']));
+    for (let i = 0; i < 5; i += 1) await Promise.resolve();
+    expect(toasts).toEqual(['Could not show C:/roms/gone.gb: missing']);
     expect(reveal.mock.calls).toEqual([['C:/roms/game.gb'], ['C:/roms/gone.gb']]);
   });
 });

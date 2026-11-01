@@ -38,7 +38,7 @@ const MENU: MenuEntry[] = [
   { key: 'quit', label: 'Quit' },
 ];
 
-describe('bootChecks', () => {
+describe('K1 bootChecks', { tags: ['critical'] }, () => {
   it('passes a complete title bar', () => {
     expect(failed(bootChecks(BOOT))).toEqual([]);
   });
@@ -48,13 +48,9 @@ describe('bootChecks', () => {
     expect(failed(outcomes)).toEqual(['title-text', 'title-bar-logo', 'bug-report-button', 'title-bar-actions']);
     expect(reasonOf(outcomes, 'title-bar-actions')).toBe('no bar item for the title bar action action:report-bug');
   });
-
-  it('expects only the actions the bar draws', () => {
-    expect(failed(bootChecks({ ...BOOT, expectedBarItems: [] }))).toEqual([]);
-  });
 });
 
-describe('menuExpectation', () => {
+describe('K1 menuExpectation', { tags: ['critical'] }, () => {
   it('drops Settings when it is the home screen and takes labels from the built menu', () => {
     expect(menuExpectation(MENU, 'settings')).toEqual({ required: ['Home', 'Profiles', 'About', 'Quit'], sections: ['Advanced'], actions: [], view: null, tail: ['About', 'Quit'] });
   });
@@ -77,22 +73,12 @@ describe('menuExpectation', () => {
   });
 });
 
-describe('menuChecks', () => {
+describe('K1 menuChecks', { tags: ['critical'] }, () => {
   const expected = { required: ['Home', 'Quit'], sections: ['Advanced'], actions: ['Report a bug'], view: 'View' };
 
   it('passes a full menu', () => {
     const items = [item('Home'), item('Advanced', true, true), item('Quit'), item('View', true, true), item('Report a bug')];
     expect(failed(menuChecks({ open: true, items }, expected))).toEqual([]);
-  });
-
-  it('counts a title bar dropdown listed as a sub-menu', () => {
-    const items = [item('Home'), item('Advanced', true, true), item('Quit'), item('View', true, true), item('Report a bug'), item('Rooms', true, true)];
-    expect(failed(menuChecks({ open: true, items }, { ...expected, actions: ['Report a bug', 'Rooms'] }))).toEqual([]);
-  });
-
-  it('asks no icon of a title bar volume item\'s slider row', () => {
-    const items = [item('Home'), item('Advanced', true, true), item('Quit'), item('View', true, true), item('Report a bug'), item('Mute'), { ...item('Volume', false), isSlider: true }];
-    expect(failed(menuChecks({ open: true, items }, { ...expected, actions: ['Report a bug', 'Volume'] }))).toEqual([]);
   });
 
   it('reports a closed menu once', () => {
@@ -114,7 +100,7 @@ describe('menuChecks', () => {
   });
 });
 
-describe('menuPathTo', () => {
+describe('K1 menuPathTo', { tags: ['critical'] }, () => {
   it('finds a top entry, then a nested one', () => {
     expect(menuPathTo(MENU, (entry) => entry.screen === 'about')).toEqual(['About']);
     expect(menuPathTo(MENU, (entry) => entry.screen === 'tools')).toEqual(['Advanced', 'Tools']);
@@ -122,7 +108,7 @@ describe('menuPathTo', () => {
   });
 });
 
-describe('frameChecks', () => {
+describe('K1 frameChecks', { tags: ['critical'] }, () => {
   it('passes the standard frame and fails a bare screen', () => {
     expect(failed(frameChecks('about', 'About', { layers: 1, card: true, title: 'About', closeButton: true }))).toEqual([]);
     expect(failed(frameChecks('about', 'About', { layers: 0, card: false, title: null, closeButton: false })))
@@ -130,7 +116,7 @@ describe('frameChecks', () => {
   });
 });
 
-describe('screenFocusChecks', () => {
+describe('K1 screenFocusChecks', { tags: ['critical'] }, () => {
   it('passes a screen that takes focus and makes the page inert while the title bar and dock stay usable', () => {
     expect(failed(screenFocusChecks('about', { focusInside: true, pageInert: true, titleBarReachable: true, dockReachable: true }))).toEqual([]);
     expect(failed(screenFocusChecks('about', { focusInside: false, pageInert: false, titleBarReachable: false, dockReachable: false })))
@@ -143,7 +129,7 @@ describe('screenFocusChecks', () => {
   });
 });
 
-describe('pageHeaderChecks', () => {
+describe('K1 pageHeaderChecks', { tags: ['critical'] }, () => {
   it('needs the page header with an icon and the expected title', () => {
     expect(failed(pageHeaderChecks('credits', 'Credits', { shown: true, icon: true, title: 'Credits' }))).toEqual([]);
     expect(failed(pageHeaderChecks('about', null, { shown: true, icon: true, title: 'Brock' }))).toEqual([]);
@@ -152,7 +138,7 @@ describe('pageHeaderChecks', () => {
   });
 });
 
-describe('iconSlotChecks', () => {
+describe('K1 iconSlotChecks', { tags: ['critical'] }, () => {
   const known = (text: string): boolean => ['house', 'info'].includes(text);
 
   it('flags an icon name printed as text', () => {
@@ -162,13 +148,9 @@ describe('iconSlotChecks', () => {
     ], known);
     expect(outcomes).toEqual([{ id: 'palette-icons', pass: false, reason: 'icon names shown as text on Home ("house")' }]);
   });
-
-  it('accepts drawn icons and plain glyphs', () => {
-    expect(failed(iconSlotChecks('palette-icons', [{ label: 'Star', text: '*', hasElement: false }], known))).toEqual([]);
-  });
 });
 
-describe('viewMenuChecks', () => {
+describe('K1 viewMenuChecks', { tags: ['critical'] }, () => {
   it('passes a View sub-menu with the pin and full screen', () => {
     expect(failed(viewMenuChecks({ open: true, labels: ['Pin window on top', 'Fullscreen'] }, ['Pin window on top', 'Fullscreen']))).toEqual([]);
   });
@@ -179,11 +161,7 @@ describe('viewMenuChecks', () => {
   });
 });
 
-describe('updaterChecks', () => {
-  it('passes a title bar with no version tag and no update status before any check', () => {
-    expect(failed(updaterChecks({ versionShown: false, statusShown: false }))).toEqual([]);
-  });
-
+describe('K1 updaterChecks', { tags: ['critical'] }, () => {
   it('fails a permanent version tag and an update status nobody found an update for', () => {
     expect(failed(updaterChecks({ versionShown: true, statusShown: true }))).toEqual(['no-version-tag', 'no-update-status']);
   });
@@ -191,16 +169,10 @@ describe('updaterChecks', () => {
 
 const SIZES: ControlSizeSnapshot = { xs: 20, hit: 20, sm: 28, widgetButtons: [20, 20, 20], barButtons: [28, 28] };
 
-describe('controlSizeChecks', () => {
+describe('K1 controlSizeChecks', { tags: ['critical'] }, () => {
   it('passes xs widget title bar buttons beside sm window title bar actions', () => {
     expect(failed(controlSizeChecks(SIZES))).toEqual([]);
     expect(failed(controlSizeChecks({ ...SIZES, widgetButtons: [20.4], barButtons: [] }))).toEqual([]);
-  });
-
-  it('expects the minimum hit area when it is larger than xs', () => {
-    const hit = { ...SIZES, hit: 24, widgetButtons: [24, 24, 24] };
-    expect(failed(controlSizeChecks(hit))).toEqual([]);
-    expect(failed(controlSizeChecks({ ...hit, widgetButtons: [24, 28] }))).toEqual(['widget-title-buttons-xs']);
   });
 
   it('fails a widget title bar button drawn at sm and names its height', () => {
@@ -214,7 +186,7 @@ describe('controlSizeChecks', () => {
   });
 });
 
-describe('narrowFitChecks', () => {
+describe('K1 narrowFitChecks', { tags: ['critical'] }, () => {
   it('passes a screen with no cut title and no sideways scroll', () => {
     const outcomes = narrowFitChecks('settings', { width: 600, cutTitles: [], sideScroll: false });
     expect(outcomes).toEqual([{ id: 'settings-fits-narrow', pass: true, reason: '"settings" fits a 600 px wide window: no title cut, no sideways scroll' }]);

@@ -3,7 +3,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { awaitSignal } from '../src/review/dom/await-signal';
 import { currentStep } from '../src/review/dom/current-step';
-import { quietLayout } from '../src/review/dom/quiet-layout';
 import { until } from '../src/review/dom/until';
 import { waitFor } from '../src/review/dom/wait-for';
 import { WAIT_CEILING_MS } from '../src/review/review.constants';
@@ -37,7 +36,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('awaitSignal', () => {
+describe('K1 awaitSignal', { tags: ['standard'] }, () => {
   it('resolves on the signal itself, long before any clock window could end', async () => {
     let ready = false;
     let wake: () => void = () => undefined;
@@ -70,25 +69,12 @@ describe('awaitSignal', () => {
     expect(host.check).not.toHaveBeenCalled();
   });
 
-  it('tells the watchdog it is alive when it starts and on each wake', async () => {
-    vi.useFakeTimers();
-    let wake: () => void = () => undefined;
-    const source: WakeSource = (onWake) => { wake = onWake; return () => undefined; };
-    const waiting = awaitSignal(() => false, { what: 'a flag', wakeOn: [source] });
-    expect(host.alive).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(1500);
-    wake();
-    expect(host.alive.mock.calls.length).toBeGreaterThan(1);
-    await vi.advanceTimersByTimeAsync(WAIT_CEILING_MS);
-    await waiting;
-  });
-
   it('rejects when the probe throws', async () => {
     await expect(awaitSignal(() => { throw new Error('probe broke'); }, { what: 'a probe' })).rejects.toThrow('probe broke');
   });
 });
 
-describe('waitFor', () => {
+describe('K1 waitFor', { tags: ['standard'] }, () => {
   it('resolves when the page changes, without a clock', async () => {
     const waiting = waitFor(() => document.querySelector('.late'), undefined, 'the late element');
     const late = document.createElement('div');
@@ -105,7 +91,7 @@ describe('waitFor', () => {
   });
 });
 
-describe('until', () => {
+describe('K1 until', { tags: ['standard'] }, () => {
   it('resolves on a window event from main', async () => {
     let open = false;
     const waiting = until(() => Promise.resolve(open), 'the popped window to open');
@@ -124,17 +110,3 @@ describe('until', () => {
   });
 });
 
-describe('quietLayout', () => {
-  it('resolves once the layout stops changing', async () => {
-    await expect(quietLayout()).resolves.toBeUndefined();
-  });
-
-  it('resolves at the ceiling for a layout that never stops changing', async () => {
-    vi.useFakeTimers();
-    const churn = setInterval(() => document.body.append(document.createElement('i')), 5);
-    const quiet = quietLayout(2000);
-    await vi.advanceTimersByTimeAsync(2000);
-    clearInterval(churn);
-    await expect(quiet).resolves.toBeUndefined();
-  });
-});

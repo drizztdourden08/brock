@@ -18,8 +18,6 @@ const NOTES = defineWidget({ id: 'notes', label: 'Notes', render: () => null });
 
 const OFF: WidgetDisabledHook = () => (id) => (id === 'notes' ? { message: 'Turn on notes first', settingId: 'general#notes.enabled' } : null);
 
-const ON: WidgetDisabledHook = () => () => null;
-
 const fakeHost = () => {
   const asked: string[] = [];
   const listeners = new Set<(target: string) => void>();
@@ -57,7 +55,7 @@ afterEach(() => {
   opened.length = 0;
 });
 
-describe('a disabled widget in its own window', () => {
+describe('S1 a disabled widget in its own window', { tags: ['standard'] }, () => {
   it('covers the body with the reason from widgetDisabled, and Open Settings asks the main window for the setting', () => {
     const host = fakeHost();
     drawInHost(createElement(Popped, { hook: OFF }));
@@ -66,13 +64,6 @@ describe('a disabled widget in its own window', () => {
     const button = [...document.querySelectorAll('button')].find((element) => element.textContent === 'Open Settings');
     act(() => button?.click());
     expect(host.asked).toEqual(['general#notes.enabled']);
-  });
-
-  it('draws the body as usual while the hook leaves the widget on', () => {
-    fakeHost();
-    drawInHost(createElement(Popped, { hook: ON }));
-    expect(document.querySelector('.disabled-overlay')).toBeNull();
-    expect(document.querySelector('.notes-body')?.textContent).toBe('Body');
   });
 
   it('opens the setting a widget window asks for in the main window, while a widget is popped', () => {

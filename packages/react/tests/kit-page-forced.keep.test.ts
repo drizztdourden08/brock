@@ -76,7 +76,7 @@ afterEach(() => {
   seen.gates = null;
 });
 
-describe('a page over an open kit', () => {
+describe('S2 a page over an open kit', { tags: ['standard'] }, () => {
   it('hides the kit layer and its widgets while a page is open, keeps the kit open, and brings it back as it was', () => {
     widgets.open('trace');
     widgets.popOut('trace');
@@ -103,7 +103,7 @@ describe('a page over an open kit', () => {
   });
 });
 
-describe('forced widgets', () => {
+describe('S2 forced widgets', { tags: ['standard'] }, () => {
   it('opens a forced widget once its definition is known and lets it past the developer gate', () => {
     useWidgetLayoutStore.setState({ definitions: [] });
     widgets.force(['debugger']);

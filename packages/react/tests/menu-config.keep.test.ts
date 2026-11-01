@@ -42,7 +42,7 @@ const messages = (input: MenuBuildInput): string[] => resolveShellMenu(input).is
 
 const DEFAULT_KEYS = ['home', 'profiles', 'settings', 'bucket:library', 'bucket:tools', '|', 'section:advanced', '|', 'check-updates', 'credits', 'about', 'quit'];
 
-describe('menu config', () => {
+describe('K1 menu config', { tags: ['critical'] }, () => {
   it('keeps the detected menu when nothing is configured, Credits, About and Quit last', () => {
     expect(keys(buildMenu(BASE))).toEqual(DEFAULT_KEYS);
     expect(resolveShellMenu(BASE).issues).toEqual([]);
@@ -101,7 +101,7 @@ describe('menu config', () => {
 
 });
 
-describe('menu config sources, issues and profile locks', () => {
+describe('K1 menu config sources, issues and profile locks', { tags: ['critical'] }, () => {
   it('takes the overrides of the entry itself, which the app config overrides field by field', () => {
     const input: MenuBuildInput = { ...BASE, appMenu: [{ key: 'bucket:library', label: 'Library', screen: 'library', inMenu: false, order: -1 }], menuConfig: { entries: { 'bucket:library': { inMenu: true } } } };
     const menu = buildMenu(input);

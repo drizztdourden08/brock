@@ -21,7 +21,7 @@ afterEach(() => {
   useMenuHiddenStore.getState().setRoutes(new Set());
 });
 
-describe('shortcuts of an entry the menu config hides', () => {
+describe('K4 shortcuts of an entry the menu config hides', { tags: ['critical'] }, () => {
   it('open while the entry is only out of the menu', () => {
     expect(targetOf('l')).toBe('open:library');
     expect(targetOf('n')).toBe('open:tools/notes');

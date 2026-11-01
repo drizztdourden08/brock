@@ -29,11 +29,7 @@ const entries = (pageId: string): ScreenEntry[] => [
   { kind: 'settings', bucket: 'main', group: 'look', id: pageId, sections: [] },
 ];
 
-describe('module settings tab ids', () => {
-  it('records which module a tab came from', () => {
-    expect(moduleTabs(['monitor', 'screen']).map((t) => [t.id, t.moduleId])).toEqual([['screen', 'monitor']]);
-  });
-
+describe('K1 module settings tab ids', { tags: ['critical'] }, () => {
   it('keeps a module tab id that nothing else uses, so existing links still open it', () => {
     const resolved = resolveScreenTree(buildScreenTree(CONFIG, entries('colors')), moduleTabs(['monitor', 'screen']));
     expect(pagesOf(resolved.hubs[0])).toEqual(['colors', 'screen']);

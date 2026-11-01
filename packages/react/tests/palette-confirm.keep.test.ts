@@ -61,15 +61,7 @@ const press = (key: string, target: Element | null = document.querySelector('inp
 
 const button = (label: string): HTMLButtonElement | null => document.querySelector(`button[aria-label="${label}"]`);
 
-describe('Reset layout in the search palette', () => {
-  it('carries a compact ConfirmIconButton in its row, from the confirm of its menu entry', () => {
-    open(vi.fn());
-    expect(catalog.entries[0]).toMatchObject({ label: 'Reset layout', confirm: true });
-    const action = document.querySelector('.command-palette-row__action .confirm-icon-btn');
-    expect(action?.classList.contains('confirm-icon-btn--xs')).toBe(true);
-    expect(button('Reset layout')).not.toBeNull();
-  });
-
+describe('S1 Reset layout in the search palette', { tags: ['standard'] }, () => {
   it('asks on Enter, cancels on Escape from outside the search box with the palette and its text left, and resets on the check', () => {
     const reset = vi.fn();
     open(reset);

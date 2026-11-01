@@ -14,7 +14,7 @@ vi.mock('../src/main/logs/append-main-log', () => ({
 
 const ctx = { paths: { userData: () => '/app-data', data: () => '/app-data/Data' } };
 
-describe('embedServer', () => {
+describe('K2 embedServer', { tags: ['critical'] }, () => {
   beforeEach(() => {
     shared.quit.length = 0;
     shared.logs.length = 0;

@@ -9,7 +9,7 @@ const options = { title: 'Allow it?', message: 'A helper wants to act.' };
 
 beforeEach(resetDialogs);
 
-describe('ctx.dialogs.confirm', () => {
+describe('K2 ctx.dialogs.confirm', { tags: ['critical'] }, () => {
   it('resolves true on the confirm button and false on the cancel button', async () => {
     const dialogs = createDialogs({ flags, window: () => null, log });
     expect(await dialogs.confirm(options)).toBe(true);
@@ -60,7 +60,7 @@ describe('ctx.dialogs.confirm', () => {
   });
 });
 
-describe('ctx.dialogs.confirm on an automation launch', () => {
+describe('K2 ctx.dialogs.confirm on an automation launch', { tags: ['critical'] }, () => {
   it('resolves false without showing anything on an automation launch, and logs it', async () => {
     const parent = parentOf({ visible: true, minimized: false, destroyed: false });
     expect(await createDialogs({ flags: automation, window: () => parent, log }).confirm(options)).toBe(false);

@@ -25,7 +25,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('the events of a watch', () => {
+describe('K1 the events of a watch', { tags: ['critical'] }, () => {
   it('reports add for a new path, change for a modified one and remove for a gone one', async () => {
     const { granted, fakes, listener } = world;
     await access.watch(granted, {}, listener);
@@ -73,7 +73,7 @@ describe('the events of a watch', () => {
   });
 });
 
-describe('the end of a watch', () => {
+describe('K1 the end of a watch', { tags: ['critical'] }, () => {
   it('stops on unsubscribe, once, and ignores later signals', async () => {
     const { granted, fakes, listener, events } = world;
     const stop = await access.watch(granted, {}, listener);

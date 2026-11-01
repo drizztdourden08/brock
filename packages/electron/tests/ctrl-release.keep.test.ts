@@ -41,7 +41,7 @@ afterEach(() => {
   if (platform) Object.defineProperty(process, 'platform', platform);
 });
 
-describe('a Ctrl release main never sees', () => {
+describe('K1 a Ctrl release main never sees', { tags: ['critical'] }, () => {
   it('does not leave snapping off once the Ctrl move ends, so the next plain drag moves the cluster', async () => {
     const s = cluster();
     pressCtrl(s.logs);

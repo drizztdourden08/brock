@@ -18,7 +18,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('mkdir', () => {
+describe('K4 mkdir', { tags: ['critical'] }, () => {
   it('creates a folder, and a chain only when recursive', async () => {
     const { access, granted } = world;
     await access.mkdir(join(granted, 'one'));

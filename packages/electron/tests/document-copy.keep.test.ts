@@ -11,7 +11,7 @@ vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web
 
 const world = withOpsWorld('brock-copy-');
 
-describe('copy', () => {
+describe('K3 copy', { tags: ['critical'] }, () => {
   it('copies a file inside the grant and leaves the original', async () => {
     const { access, granted } = world;
     await access.copy(join(granted, 'sub', 'in.txt'), join(granted, 'copy.txt'));
@@ -69,7 +69,7 @@ describe('copy', () => {
   });
 });
 
-describe('copy over IPC', () => {
+describe('K2 copy over IPC', { tags: ['critical'] }, () => {
   it('copies through document:copy and refuses an outside path the same way', async () => {
     const { access, granted, outside } = world;
     const call = sessionOf({ documents: access });
@@ -80,7 +80,7 @@ describe('copy over IPC', () => {
   });
 });
 
-describe('copy refusals', () => {
+describe('K4 copy refusals', { tags: ['critical'] }, () => {
   it('refuses a source or a target outside every grant, an unsafe shape and a missing source', async () => {
     const { access, granted, outside } = world;
     const inside = join(granted, 'sub', 'in.txt');
@@ -117,7 +117,7 @@ describe('copy refusals', () => {
 
 });
 
-describe('copy refusals for links and names', () => {
+describe('K4 copy refusals for links and names', { tags: ['critical'] }, () => {
   it('refuses a target that a link leads outside, even with overwrite', async () => {
     const { access, granted, outside } = world;
     await symlink(outside, join(granted, 'out'), dirLink);

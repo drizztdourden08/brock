@@ -16,7 +16,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('createStopper', () => {
+describe('K1 createStopper', { tags: ['critical'] }, () => {
   it('reports a detached process when the forced kill is refused', async () => {
     const giveUp = vi.fn();
     const controller = new AbortController();

@@ -58,7 +58,7 @@ const startInstaller = (options: { cancellable?: boolean } = {}) => {
   return { outcome, child };
 };
 
-describe('cancelling an elevated installer', () => {
+describe('K1 cancelling an elevated installer', { tags: ['critical'] }, () => {
   it('is allowed by default and ends as cancelled when the process exits on the kill', async () => {
     const { outcome, child } = startInstaller();
     await vi.advanceTimersByTimeAsync(0);

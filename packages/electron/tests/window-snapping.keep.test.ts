@@ -15,7 +15,7 @@ const MIN = { width: 240, height: 160 };
 const box = (x: number, y: number, width = 200, height = 300) => ({ x, y, width, height });
 const ALL_EDGES = { left: false, right: false, top: false, bottom: false };
 
-describe('snapTo corners', () => {
+describe('K1 snapTo corners', { tags: ['critical'] }, () => {
   it('lines the top corners up when the window lands beside another', () => {
     const hit = snapTo(box(905, 108), [{ to: 'main', bounds: APP }]);
     expect(hit?.bounds).toEqual(box(900, 100));
@@ -46,7 +46,7 @@ describe('snapTo corners', () => {
   });
 });
 
-describe('resizeEdges', () => {
+describe('K1 resizeEdges', { tags: ['critical'] }, () => {
   it('reads the edge Electron reports', () => {
     expect(resizeEdges(APP, APP, 'top-left')).toEqual({ left: true, right: false, top: true, bottom: false });
     expect(resizeEdges(APP, APP, 'bottom')).toEqual({ ...ALL_EDGES, bottom: true });
@@ -58,7 +58,7 @@ describe('resizeEdges', () => {
   });
 });
 
-describe('resizeSnap', () => {
+describe('K1 resizeSnap', { tags: ['critical'] }, () => {
   const beside = box(900, 100, 300, 500);
 
   it('snaps a moving bottom edge to the neighbour bottom edge', () => {
@@ -95,7 +95,7 @@ describe('resizeSnap', () => {
   });
 });
 
-describe('group layout maths', () => {
+describe('K1 group layout maths', { tags: ['critical'] }, () => {
   const left = box(0, 0, 400, 300);
   const right = box(400, 0, 200, 300);
 
@@ -138,7 +138,7 @@ describe('group layout maths', () => {
   });
 });
 
-describe('the shared edge of a resize', () => {
+describe('K1 the shared edge of a resize', { tags: ['critical'] }, () => {
   const top = box(500, 100, 300, 200);
   const bottom = box(500, 300, 300, 200);
   const leftOf = box(200, 100, 300, 400);
@@ -181,7 +181,7 @@ describe('the shared edge of a resize', () => {
   });
 });
 
-describe('Ctrl bypass', () => {
+describe('K1 Ctrl bypass', { tags: ['critical'] }, () => {
   it('turns snapping and the shared-edge resize off while Ctrl is held', () => {
     expect(manipulationRules(true, true)).toEqual({ snap: false, shared: false });
     expect(manipulationRules(false, true)).toEqual({ snap: true, shared: true });

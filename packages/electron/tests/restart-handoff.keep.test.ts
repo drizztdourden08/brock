@@ -35,7 +35,7 @@ afterEach(() => {
   closeOpened();
 });
 
-describe('the restart handoff blob', () => {
+describe('K3 the restart handoff blob', { tags: ['critical'] }, () => {
   it('is read once: the first read returns the value and the second returns null', () => {
     writeHandoff(file, NOTE, () => T0);
     expect(takeHandoff(file, () => T0 + 5)).toEqual(NOTE);
@@ -84,7 +84,7 @@ describe('the restart handoff blob', () => {
 
 });
 
-describe('the restart handoff limits', () => {
+describe('K3 the restart handoff limits', { tags: ['critical'] }, () => {
   it('refuses to write a value over 64 KB and writes nothing', () => {
     expect(() => writeHandoff(file, 'x'.repeat(HANDOFF_MAX_BYTES + 1))).toThrow(/larger than 65536/);
     expect(existsSync(file)).toBe(false);
@@ -111,7 +111,7 @@ describe('the restart handoff limits', () => {
 
 });
 
-describe('the restart handoff file', () => {
+describe('K3 the restart handoff file', { tags: ['critical'] }, () => {
   it.runIf(process.platform !== 'win32')('is written with mode 600 in a private folder', () => {
     writeHandoff(file, NOTE, () => T0);
     expect(statSync(file).mode & 0o777).toBe(0o600);
@@ -125,7 +125,7 @@ describe('the restart handoff file', () => {
   });
 });
 
-describe('restartApp', () => {
+describe('K3 restartApp', { tags: ['critical'] }, () => {
   it('writes the handoff, relaunches with the same args and exits', () => {
     process.argv = ['electron', '/app', '--user-data=/d', '--no-focus', '--muted'];
     restartApp({ handoff: NOTE });

@@ -16,7 +16,7 @@ afterEach(closeOpened);
 const BIG = event<(blob: string) => void>()('test:big');
 const posix = process.platform !== 'win32';
 
-describe('a client that never reads', () => {
+describe('K4 a client that never reads', { tags: ['standard'] }, () => {
   it('drops pushes past the buffer cap and closes the connection when a reply cannot be queued', async () => {
     const { server } = await serve({ maxBufferedBytes: 64 * 1024 });
     const slow = rawSession(server.endpoint);
@@ -34,7 +34,7 @@ describe('a client that never reads', () => {
   });
 });
 
-describe('connection listeners and ids', () => {
+describe('K4 connection listeners and ids', { tags: ['standard'] }, () => {
   it('routes a throwing listener to the error log and keeps serving', async () => {
     const onError = vi.fn();
     const { server, file } = await serve({ onError });
@@ -48,7 +48,7 @@ describe('connection listeners and ids', () => {
   });
 });
 
-describe('closing and reopening the app bridge', () => {
+describe('K4 closing and reopening the app bridge', { tags: ['standard'] }, () => {
   it('lets the last open win and never deletes the live discovery file', async () => {
     const file = join(tempDir(), 'bxel', 'bridge.json');
     const ctx: MainContext = { product: { id: 'bxel' }, log: vi.fn() } as never;
@@ -63,7 +63,7 @@ describe('closing and reopening the app bridge', () => {
   });
 });
 
-describe('reading the discovery file', () => {
+describe('K4 reading the discovery file', { tags: ['standard'] }, () => {
   it.runIf(posix)('refuses a link and a folder anyone can write', async () => {
     const { server } = await serve();
     const folder = join(tempDir(), 'app');

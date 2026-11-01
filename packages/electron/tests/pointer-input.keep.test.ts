@@ -15,7 +15,7 @@ const sources = (dir: string): string[] =>
 const FLAGS = /(?:disable-features|disable-blink-features|disable-gpu|disable-input|disable-pointer)[^\n]*/g;
 const POINTER_FEATURE = /pointer|touch|stylus|pen|ink|input|coalesc|raw/i;
 
-describe('pointer input reaches the renderer', () => {
+describe('K2 pointer input reaches the renderer', { tags: ['critical'] }, () => {
   it('turns off no Chromium feature that carries pointer, pen or touch input', () => {
     const found: string[] = [];
     for (const file of sources(root)) {

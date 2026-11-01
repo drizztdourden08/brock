@@ -41,7 +41,7 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-describe('zip writer and reader', () => {
+describe('K3 zip writer and reader', { tags: ['critical'] }, () => {
   it('round-trips stored and deflated entries with their checksums', async () => {
     const path = join(root, 'plain.zip');
     const zip = await createZipWriter(path);
@@ -63,7 +63,7 @@ describe('zip writer and reader', () => {
   });
 });
 
-describe('zip64', () => {
+describe('K3 zip64', { tags: ['standard'] }, () => {
   it('writes the zip64 end records once the entry count reaches the limit, and reads them back', async () => {
     const limits = { count: 4, bytes: MAX_32 };
     const writeZip = async (name: string, count: number): Promise<Buffer> => {
@@ -118,7 +118,7 @@ describe('zip64', () => {
   });
 });
 
-describe('exportDomains and importDomains', () => {
+describe('K3 exportDomains and importDomains', { tags: ['standard'] }, () => {
   it.each(['zip', 'folder'] as const)('exports chosen domains to a %s and imports them back over changed data', async (format) => {
     const target = join(root, format === 'zip' ? 'out.zip' : 'out');
     const steps: string[] = [];

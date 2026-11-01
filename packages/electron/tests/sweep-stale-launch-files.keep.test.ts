@@ -26,7 +26,7 @@ const folder = (): string => {
   return dir;
 };
 
-describe('sweepStaleLaunchFiles', () => {
+describe('K3 sweepStaleLaunchFiles', { tags: ['critical'] }, () => {
   it('removes an old profile launch file whose profile folder is gone', async () => {
     const dir = folder();
     const file = launchWith(dir, `launch-bridge.${KEY}.json`, [`--user-data=${join(dir, 'gone')}`]);

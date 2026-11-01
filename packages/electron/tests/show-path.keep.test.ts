@@ -28,7 +28,7 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-describe('openFolder', () => {
+describe('K4 openFolder', { tags: ['critical'] }, () => {
   it('opens a folder and refuses a file, a missing path and a relative path', async () => {
     expect(await openFolder(root)).toEqual({ success: true });
     const errorOf = async (path: string): Promise<string> => {
@@ -42,7 +42,7 @@ describe('openFolder', () => {
   });
 });
 
-describe('revealPath', () => {
+describe('K4 revealPath', { tags: ['critical'] }, () => {
   it('shows a file or a folder in its folder, and refuses a missing or relative path', async () => {
     expect(await revealPath(join(root, 'engine.exe'))).toEqual({ success: true });
     expect(await revealPath(root)).toEqual({ success: true });

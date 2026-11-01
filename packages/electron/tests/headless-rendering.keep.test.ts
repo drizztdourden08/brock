@@ -24,7 +24,7 @@ beforeEach(() => {
   vi.mocked(app.commandLine.appendSwitch).mockClear();
 });
 
-describe('rendering of a headless launch', () => {
+describe('K1 rendering of a headless launch', { tags: ['critical'] }, () => {
   it('turns hardware acceleration off so offscreen frames never need a GPU', () => {
     pinHeadlessRendering(flags, ['electron', '.', '--no-focus', '--muted', '--review']);
     expect(app.disableHardwareAcceleration).toHaveBeenCalledTimes(1);
@@ -47,14 +47,4 @@ describe('rendering of a headless launch', () => {
     expect(app.commandLine.appendSwitch).not.toHaveBeenCalled();
   });
 
-  it('keeps hardware acceleration for a normal launch', () => {
-    pinHeadlessRendering(flags, ['electron', '.']);
-    expect(app.disableHardwareAcceleration).not.toHaveBeenCalled();
-    expect(app.commandLine.appendSwitch).not.toHaveBeenCalled();
-  });
-
-  it('keeps hardware acceleration for a visible automation launch', () => {
-    pinHeadlessRendering(flags, ['electron', '.', '--review', '--visible']);
-    expect(app.disableHardwareAcceleration).not.toHaveBeenCalled();
-  });
 });

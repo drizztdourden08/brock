@@ -67,7 +67,7 @@ beforeEach(() => {
   };
 });
 
-describe('restored widget windows at launch', () => {
+describe('K1 restored widget windows at launch', { tags: ['critical'] }, () => {
   it('stay hidden until main is revealed, then show with main in the same tick and fade in with it', async () => {
     const main = bootMain();
     const logs = restore('logs', LOGS);
@@ -108,7 +108,7 @@ describe('restored widget windows at launch', () => {
   });
 });
 
-describe('late and automation widget windows', () => {
+describe('K1 late and automation widget windows', { tags: ['critical'] }, () => {
   it('reveals main anyway when a restored window takes too long, and that window shows when it is ready', async () => {
     const main = bootMain();
     const logs = restore('logs', LOGS);

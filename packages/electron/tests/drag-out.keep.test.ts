@@ -33,7 +33,7 @@ const run = (paths: unknown, fromApp = true): Promise<void> =>
     paths,
   );
 
-describe('drag out', () => {
+describe('K4 drag out', { tags: ['critical'] }, () => {
   it('starts a drag for files and folders inside a granted folder', async () => {
     const { granted } = world;
     await put(join(granted, 'tree', 'a.txt'));
@@ -56,7 +56,7 @@ describe('drag out', () => {
   });
 });
 
-describe('drag out refusals', () => {
+describe('K4 drag out refusals', { tags: ['critical'] }, () => {
   it('refuses a path outside every grant, an unsafe shape and a missing file', async () => {
     const { granted, outside } = world;
     for (const path of [join(outside, 'secret.txt'), dots(granted, 'outside', 'secret.txt'), 'relative.txt', '', join(granted, 'gone.txt')]) {

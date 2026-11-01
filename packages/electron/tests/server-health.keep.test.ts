@@ -7,7 +7,7 @@ import { createHarness, idle, removeHarnessRoots } from './server-harness';
 
 afterEach(removeHarnessRoots);
 
-describe('the heartbeat and the health command', () => {
+describe('K2 the heartbeat and the health command', { tags: ['critical'] }, () => {
   it('writes an ok record at start, and removes it on stop', async () => {
     const { options, clock, dataDir } = await createHarness();
     const handle = await runServer(idle(), options);
@@ -63,7 +63,7 @@ describe('the heartbeat and the health command', () => {
   });
 });
 
-describe('stopping', () => {
+describe('K2 stopping', { tags: ['critical'] }, () => {
   it.each(['SIGTERM', 'SIGINT'] as const)('calls stop once on %s', async (signal) => {
     const { options, signals, out, dataDir } = await createHarness();
     const stop = vi.fn();

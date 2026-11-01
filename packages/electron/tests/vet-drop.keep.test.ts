@@ -31,7 +31,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('vetting dropped paths in main', () => {
+describe('K4 vetting dropped paths in main', { tags: ['critical'] }, () => {
   it('grants a dropped file and folder, then lets the renderer use them', async () => {
     const [file, folder] = await vetDrop(access, [join(art, 'a.png'), art]);
     expect(file).toMatchObject({ kind: 'file', granted: true });

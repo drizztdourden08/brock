@@ -57,7 +57,7 @@ afterEach(() => {
   closeOpened();
 });
 
-describe('the quick access check', () => {
+describe('K4 the quick access check', { tags: ['critical'] }, () => {
   it('accepts an access list that holds only the user, SYSTEM and Administrators', () => {
     expect(sddlIsPrivate(SDDL_ME, ME)).toBe(true);
     expect(sddlIsPrivate(`D:P(A;;FA;;;S-1-5-18)(D;;FA;;;WD)`, ME)).toBe(true);
@@ -83,7 +83,7 @@ describe('the quick access check', () => {
   });
 });
 
-describe('the async Windows access check', () => {
+describe('K4 the async Windows access check', { tags: ['critical'] }, () => {
   it('accepts a private file with the quick check alone, never starting PowerShell', async () => {
     const tools = fakeTools(SDDL_ME, POWERSHELL_PRIVATE);
     expect(await windowsAccessProblemAsync(privateFile(), tools.run)).toBeNull();
@@ -137,7 +137,7 @@ describe('the async Windows access check', () => {
   });
 });
 
-describe.runIf(process.platform === 'win32')('the async read on a real file', () => {
+describe.runIf(process.platform === 'win32')('K4 the async read on a real file', { tags: ['standard'] }, () => {
   it('reads the discovery file the bridge wrote and refuses one open to other accounts', async () => {
     const { server } = await serve();
     const file = join(tempDir(), 'bridge.json');

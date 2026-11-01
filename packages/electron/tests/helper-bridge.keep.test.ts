@@ -19,7 +19,7 @@ const impostorServer = (heard: string[]) => createServer((socket) => {
   socket.write(`${JSON.stringify({ v: BRIDGE_PROTOCOL, hello: bridgeProof.nonce(), proof: 'forged' })}\n`);
 });
 
-describe('the bridge handshake', () => {
+describe('K4 the bridge handshake', { tags: ['standard'] }, () => {
   it('answers typed requests from several clients at once', async () => {
     const { file } = await serve();
     const first = client(file);
@@ -76,7 +76,7 @@ describe('the bridge handshake', () => {
   });
 });
 
-describe('the bridge limits', () => {
+describe('K4 the bridge limits', { tags: ['standard'] }, () => {
   it('gives up on an endpoint that never answers the handshake', async () => {
     const endpoint = impostorEndpoint();
     const silent = createServer(() => undefined);
@@ -116,7 +116,7 @@ describe('the bridge limits', () => {
   });
 });
 
-describe('bridge handlers', () => {
+describe('K2 bridge handlers', { tags: ['standard'] }, () => {
   it('checks arguments with the route validator before the handler runs', async () => {
     const { server, file } = await serve();
     const handler = vi.fn((n: number) => n * 2);

@@ -22,7 +22,7 @@ afterEach(() => {
   widgetRuntime.headless = false;
 });
 
-describe('full screen in a headless run', () => {
+describe('K1 full screen in a headless run', { tags: ['critical'] }, () => {
   it('fills the display size off screen, tells the renderer, and puts the window back', () => {
     widgetRuntime.headless = true;
     const { win, state, tell } = fakeWindow();

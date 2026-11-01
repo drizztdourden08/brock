@@ -56,7 +56,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('the folder watch over the document channels', () => {
+describe('K4 the folder watch over the document channels', { tags: ['critical'] }, () => {
   it('sends the events of a watch to the page that asked, with its id, until it is stopped', async () => {
     await call('document:watch', 'w1', granted, { recursive: true });
     fakes[0]?.signal('change', join('sub', 'in.txt'));
@@ -89,7 +89,7 @@ describe('the folder watch over the document channels', () => {
 
 });
 
-describe('the end of the watches of a page', () => {
+describe('K4 the end of the watches of a page', { tags: ['critical'] }, () => {
   it('stops that page watches on a main-frame navigation, a gone render process and a destroyed page', async () => {
     for (const name of ['did-start-navigation', 'render-process-gone', 'destroyed']) {
       await call('document:watch', `w-${name}`, granted, {});

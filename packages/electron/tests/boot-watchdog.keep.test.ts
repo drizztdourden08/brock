@@ -45,7 +45,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('the boot watchdog', () => {
+describe('K1 the boot watchdog', { tags: ['critical'] }, () => {
   it('lets a late boot:ready clear its failure, hide the failure screen and reveal the app', async () => {
     const { app, splash } = boot();
     await vi.advanceTimersByTimeAsync(WATCHDOG);
@@ -106,7 +106,7 @@ describe('the boot watchdog', () => {
   });
 });
 
-describe('a load error before the interface reports in', () => {
+describe('K1 a load error before the interface reports in', { tags: ['critical'] }, () => {
   const consoleError = (app: FakeWindow, message: string, level = 'error'): void => { app.webContents.emit('console-message', { level, message, sourceId: 'x', lineNumber: 1 }); };
 
   it('stops the boot at once and shows the error on the splash, without waiting for the watchdog', () => {
@@ -151,7 +151,7 @@ describe('a load error before the interface reports in', () => {
   });
 });
 
-describe('watchdogMsOf', () => {
+describe('K1 watchdogMsOf', { tags: ['critical'] }, () => {
   it('waits 120 s in development and 8 s packaged by default', () => {
     expect(DEV_WATCHDOG_MS).toBe(120_000);
     expect(watchdogMsOf(true, undefined, {})).toBe(DEV_WATCHDOG_MS);

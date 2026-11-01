@@ -14,7 +14,7 @@ const dialogs = createDialogs({ flags, window: () => null, log });
 
 beforeEach(resetDialogs);
 
-describe('ctx.dialogs.choose', () => {
+describe('K2 ctx.dialogs.choose', { tags: ['critical'] }, () => {
   it('shows the labels in order, with Enter on defaultId and Escape on cancelId', async () => {
     await dialogs.choose({ ...options, detail: 'Pick one.' });
     expect(showMessageBox).toHaveBeenCalledWith(

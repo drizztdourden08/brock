@@ -65,4 +65,4 @@ const renderTitleBar = (files) => {
  */
 const renderTitleBarFiles = (rootDir) => [{ path: TITLE_BAR_OUTPUT, content: renderTitleBar(scanTitleBar(rootDir).files.filter((file) => file.hasDefault)) }];
 
-export { renderTitleBar, renderTitleBarFiles };
+export { renderTitleBarFiles };

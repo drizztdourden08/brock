@@ -2,11 +2,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { isWidgetOpen, placementOf, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { LayoutNode } from '@drizztdourden08/tessera/composites';
-import { defineLayoutPreset } from '../src/widgets/define-layout-preset';
-import { defineWidget } from '../src/widgets/define-widget';
-import { presetLayout } from '../src/widgets/preset-layout';
-import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
-import { widgets } from '../src/widgets/widgets';
+import { defineLayoutPreset, defineWidget, presetLayout, store, widgets } from './widget-preset-kit';
 
 const session = (id: string) => defineWidget({ id, label: id, render: () => null, defaultVisibility: 'context-only', popOut: true });
 const SESSION = ['players', 'hints', 'room', 'log', 'console', 'spoiler'].map(session);
@@ -23,8 +19,6 @@ const shape = (node: LayoutNode): unknown => {
   if (node.kind === 'pane') return node.widgets;
   return { [node.axis]: node.children.map(shape), sizes: node.sizes.map((size) => Math.round(size * 100) / 100) };
 };
-
-const store = () => useWidgetLayoutStore.getState();
 
 describe('K1 presetLayout', { tags: ['critical'] }, () => {
   it('builds three rows around the main view', () => {

@@ -85,8 +85,7 @@ Removed helper: tests/title-bar-fixtures.ts (no importer left).
 | dnd.keep.test.ts | keep | K1 | 6 | 6 |
 | dock-layout-reading.keep.test.ts | keep | K1 | 3 | 3 |
 | document-title.keep.test.ts | keep | K1,S1,S2 | 4 | 4 |
-| documents-folder-port.keep.test.ts | trim | S2 | 6 | 4 |
-| documents-port.keep.test.ts | trim | S2 | 8 | 4 |
+| documents-port.keep.test.ts | trim | S2, merged with documents-folder-port | 14 | 8 |
 | escape-stack.keep.test.ts | trim | K1,S2 | 7 | 6 |
 | expose-host-namespace.keep.test.ts | trim | K4 | 2 | 1 |
 | finished-jobs.keep.test.ts | keep | K1 | 4 | 4 |
@@ -393,7 +392,7 @@ Codemod tests that load the TypeScript compiler are tagged standard.
 | server-scaffold.keep.test.mjs | trim | E2 | 10 | 3 |
 | server-staging.keep.test.mjs | trim | K2+K4 | 11 | 10 |
 | server-starter.keep.test.mjs | keep | K3 | 5 | 5 |
-| server-workflows.keep.test.mjs | trim | K1+K4 | 25 | 12 |
+| server-workflows.keep.test.mjs | trim | K1+K4, merged with test-env-workflows | 32 | 17 |
 | setting-action-tone-migration.keep.test.ts | delete | W10 | 5 | 0 |
 | settings-function-seeds.keep.test.mjs | keep | K1 | 4 | 4 |
 | setup-splash.keep.test.mjs | trim | K1+K4 | 10 | 9 |
@@ -429,7 +428,6 @@ Codemod tests that load the TypeScript compiler are tagged standard.
 | tessera-typed-properties.keep.test.mjs | trim | K1 | 7 | 6 |
 | tessera-usage-renames.keep.test.mjs | trim | K1 | 7 | 5 |
 | tessera-wildcard-props.keep.test.mjs | trim | K1 | 7 | 5 |
-| test-env-workflows.keep.test.mjs | trim | K2+K4 | 7 | 5 |
 | testing-helpers.keep.test.mjs | trim | K1 | 8 | 7 |
 | title-bar-actions-migration.keep.test.ts | delete | W10 | 6 | 0 |
 | title-bar-files.keep.test.mjs | trim | K1 | 6 | 3 |
@@ -444,8 +442,7 @@ Codemod tests that load the TypeScript compiler are tagged standard.
 | vitest-workspace-root.keep.test.mjs | trim | K1+E2 | 3 | 2 |
 | volume-item-labels.keep.test.mjs | delete | W10 | 3 | 0 |
 | widget-files.keep.test.mjs | delete | W10 | 8 | 0 |
-| widget-kit-files.keep.test.mjs | trim | K1 | 7 | 3 |
-| widget-layout-file.keep.test.mjs | trim | K1 | 6 | 2 |
+| widget-kit-files.keep.test.mjs | trim | K1, merged with widget-layout-file | 13 | 5 |
 | wordmark-height-warnings.keep.test.mjs | trim | K1 | 6 | 5 |
 | workflow-config-types.keep.test.ts | delete | W2 | 2 | 0 |
 | workflow-ownership.keep.test.mjs | trim | K1 | 8 | 6 |

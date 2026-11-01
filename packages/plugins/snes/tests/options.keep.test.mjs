@@ -6,6 +6,18 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { snes } from '../src/snes-verb.mjs';
 import { snesOptions } from '../src/snes-options.mjs';
 
+const useScratch = () => {
+  const dirs = [];
+  afterEach(() => {
+    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+  return (prefix) => {
+    const dir = mkdtempSync(join(tmpdir(), prefix));
+    dirs.push(dir);
+    return dir;
+  };
+};
+
 describe('K2 snes defaults carry no game of their own', { tags: ['critical'] }, () => {
   it('writes the core where port kit does unless the workspace says otherwise', () => {
     expect(snesOptions('wasm', undefined).output).toBe('public/wasm');
@@ -14,14 +26,10 @@ describe('K2 snes defaults carry no game of their own', { tags: ['critical'] }, 
 });
 
 describe('K2 snes rom check against the workspace list', { tags: ['critical'] }, () => {
-  const dirs = [];
-  afterEach(() => {
-    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
-  });
+  const scratch = useScratch();
 
   const romFile = () => {
-    const dir = mkdtempSync(join(tmpdir(), 'snes-rom-'));
-    dirs.push(dir);
+    const dir = scratch('snes-rom-');
     const file = join(dir, 'sample.sfc');
     writeFileSync(file, 'not a real rom');
     return file;
@@ -40,14 +48,10 @@ describe('K2 snes rom check against the workspace list', { tags: ['critical'] },
 });
 
 describe('K2 snes launch flags', { tags: ['critical'] }, () => {
-  const dirs = [];
-  afterEach(() => {
-    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
-  });
+  const scratch = useScratch();
 
   const worktreeWithSave = (workspace) => {
-    const userData = mkdtempSync(join(tmpdir(), 'snes-states-'));
-    dirs.push(userData);
+    const userData = scratch('snes-states-');
     const manual = join(userData, 'Data/profiles/main/saves/normal');
     mkdirSync(manual, { recursive: true });
     writeFileSync(join(manual, 'manifest.json'), JSON.stringify([{ name: 'castle' }]));

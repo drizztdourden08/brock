@@ -1,24 +1,12 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { collectFindings } from '@drizztdourden08/standards/structure';
 import brockApp from '../standards.extension.mjs';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
 import { renderWidgetsFiles } from '../src/widgets/render-widgets.mjs';
+import { removeTempRepos, tempRepo } from './temp-repo.mjs';
 
-const roots = [];
-
-const app = (files) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-constants-'));
-  roots.push(root);
-  for (const [file, content] of Object.entries({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', ...files })) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), content);
-  }
-  return root;
-};
+const app = (files) => tempRepo({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', ...files });
 
 const findingsOf = async (root) => (await collectFindings(root, '@app', [brockApp])).findings;
 
@@ -26,9 +14,7 @@ const pathsOf = (findings) => findings.map((finding) => finding.split(': ')[0]).
 
 const PAGE = 'const Page = () => null;\nexport default Page;\n';
 
-afterEach(() => {
-  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-});
+afterEach(removeTempRepos);
 
 describe('K1 constants files in the convention folders', { tags: ['critical'] }, () => {
   it('src/widgets takes the file lint names beside a widget and the layout, and a shared one, and sync leaves them out', async () => {

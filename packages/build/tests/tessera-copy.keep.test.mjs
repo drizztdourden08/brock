@@ -1,14 +1,12 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runMigrate } from '../src/commands/migrate.mjs';
 import { readCopyMap } from '../src/upgrade/tessera-copy/copy-map.mjs';
 import { tesseraCopyStep } from '../src/upgrade/tessera-copy/tessera-copy-step.mjs';
+import { TESSERA_DIR, linkTessera, removeTempRepos, tempRepo, textFiles } from './temp-repo.mjs';
 
-const TESSERA_DIR = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
 const TESSERA_VERSION = JSON.parse(readFileSync(join(TESSERA_DIR, 'package.json'), 'utf8')).version;
 const COPY = 'apps/app/src/ui/design-system';
 const VIEWS = 'apps/app/src/ui/views/home';
@@ -106,25 +104,9 @@ const APP = {
   'tests/design-system/table-state.keep.test.ts': TABLE_TEST,
 };
 
-const made = [];
-
-const textOf = (value) => (typeof value === 'string' ? value : `${JSON.stringify(value, null, 2)}\n`);
-
-const place = (root) => ([file, value]) => {
-  const target = join(root, file);
-  mkdirSync(dirname(target), { recursive: true });
-  writeFileSync(target, textOf(value));
-};
-
 const repo = (files, { tessera = true } = {}) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-tessera-copy-'));
-  made.push(root);
-  Object.entries(files).forEach(place(root));
-  if (tessera) {
-    mkdirSync(join(root, 'node_modules/@drizztdourden08'), { recursive: true });
-    symlinkSync(TESSERA_DIR, join(root, 'node_modules/@drizztdourden08/tessera'), 'junction');
-  }
-  return root;
+  const root = tempRepo(textFiles(files));
+  return tessera ? linkTessera(root) : root;
 };
 
 const read = (root, file) => readFileSync(join(root, file), 'utf8');
@@ -137,7 +119,7 @@ const convert = (root) => tesseraCopyStep({ rootDir: root, copy: COPY, aliases: 
 
 afterEach(() => {
   vi.restoreAllMocks();
-  for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
+  removeTempRepos();
 });
 
 describe('E2 brock migrate --tessera-from-copy on an app holding its own copy', { tags: ['e2e'] }, () => {

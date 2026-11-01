@@ -48,4 +48,4 @@ const renderScreensFiles = (rootDir) => {
   ];
 };
 
-export { renderScreens, renderScreensFiles };
+export { renderScreensFiles };

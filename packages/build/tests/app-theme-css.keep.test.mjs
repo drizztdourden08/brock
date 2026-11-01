@@ -1,36 +1,21 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { appThemeCss } from '../src/look/app-theme-css.mjs';
 import { loadLookSources } from '../src/look/load-look-sources.mjs';
 import { themePalette } from '../src/look/theme-palette.mjs';
 import { readTokenCss } from '../src/splash/read-token-css.mjs';
+import { TESSERA_DIR as TESSERA, linkTessera, removeTempRepos, tempRepo, textFiles } from './temp-repo.mjs';
 
-const TESSERA = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
 const BROCK_DIM = JSON.parse(readFileSync(join(TESSERA, 'tokens.json'), 'utf8')).palettes.brock.dark.textDim;
 const SCHEMA = './node_modules/@drizztdourden08/tessera/tessera.config.schema.json';
-const made = [];
 
 const posix = (path) => path.replace(/\\/g, '/');
 
-const appWith = (files, tessera = TESSERA) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-theme-'));
-  made.push(root);
-  for (const [file, text] of Object.entries({ 'package.json': '{"name":"app"}', ...files })) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), typeof text === 'string' ? text : JSON.stringify(text));
-  }
-  mkdirSync(join(root, 'node_modules', '@drizztdourden08'), { recursive: true });
-  symlinkSync(tessera, join(root, 'node_modules', '@drizztdourden08', 'tessera'), 'junction');
-  return root;
-};
+const appWith = (files, tessera = TESSERA) => linkTessera(tempRepo(textFiles({ 'package.json': '{"name":"app"}', ...files })), tessera);
 
-afterEach(() => {
-  for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
-});
+afterEach(removeTempRepos);
 
 describe('K1 appThemeCss', { tags: ['critical'] }, () => {
   it('falls back to src/theme.css when the repo has no tessera.config.json', () => {

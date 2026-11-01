@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
@@ -51,4 +52,26 @@ const linkBuildPackage = (root) => {
   return root;
 };
 
-export { tempRepo, brockWorkspace, removeTempRepos, linkBuildPackage, BUILD_PACKAGE };
+const TESSERA_DIR = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
+
+/**
+ * @param {Record<string, unknown>} files strings stay, anything else becomes JSON
+ * @returns {Record<string, string>} text for every file
+ */
+const textFiles = (files) => Object.fromEntries(
+  Object.entries(files).map(([path, value]) => [path, typeof value === 'string' ? value : `${JSON.stringify(value, null, 2)}
+`]),
+);
+
+/**
+ * @param {string} root
+ * @param {string} [tessera]
+ * @returns {string} the folder, with Tessera linked in
+ */
+const linkTessera = (root, tessera = TESSERA_DIR) => {
+  mkdirSync(join(root, 'node_modules', '@drizztdourden08'), { recursive: true });
+  symlinkSync(tessera, join(root, 'node_modules', '@drizztdourden08', 'tessera'), 'junction');
+  return root;
+};
+
+export { tempRepo, brockWorkspace, removeTempRepos, linkBuildPackage, linkTessera, textFiles, BUILD_PACKAGE, TESSERA_DIR };

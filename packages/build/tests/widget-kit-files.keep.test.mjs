@@ -9,7 +9,7 @@ import { renderWidgetsFiles } from '../src/widgets/render-widgets.mjs';
 const made = [];
 
 const appWith = (files) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-widget-kits-'));
+  const root = mkdtempSync(join(tmpdir(), 'brock-widget-files-'));
   for (const [file, text] of Object.entries(files)) {
     const path = join(root, file);
     mkdirSync(dirname(path), { recursive: true });
@@ -22,6 +22,9 @@ const appWith = (files) => {
 const KIT = "const kit = { label: 'Shadow editor', devOnly: true, requires: { context: 'game', reason: 'Start the game first.' } };\n\nexport default kit;\n";
 const MEMBER = "const Tree = () => null;\n\nconst meta = { kit: 'shadow' };\n\nexport default Tree;\nexport { meta };\n";
 const OVERLAY = "const Gizmo = () => null;\n\nconst meta = { kit: 'shadow', label: 'Gizmo' };\n\nexport default Gizmo;\nexport { meta };\n";
+
+const LAYOUT = "import { defineLayoutPreset } from '@drizztdourden08/brock-react';\n\nexport default defineLayoutPreset({ rows: [['main', 'notes']] });\n";
+const NOTES = "const Notes = () => null;\n\nconst meta = { defaultOpen: true };\n\nexport default Notes;\nexport { meta };\n";
 
 afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
@@ -69,5 +72,19 @@ describe('K1 menu placement in widget and kit files', { tags: ['critical'] }, ()
       "src/widgets/late.kit.ts: kit.menu.group must be 'main', 'sections', 'modules', 'end'",
       'src/widgets/late.kit.ts: kit.menu.order must be a number',
     ]);
+  });
+});
+
+describe('K1 src/widgets/layout.ts', { tags: ['critical'] }, () => {
+  it('is the widget layout, not a stray file, and defaultOpen is a widget field', () => {
+    const root = appWith({ 'src/widgets/layout.ts': LAYOUT, 'src/widgets/notes.widget.tsx': NOTES });
+    expect(checkWidgets(root)).toEqual([]);
+    expect(renderWidgetsFiles(root)[0]?.content).toContain("import appWidgetLayout from '../src/widgets/layout';");
+  });
+
+  it('is reported without a default export and left out of the list', () => {
+    const root = appWith({ 'src/widgets/layout.ts': 'export const rows = [];\n' });
+    expect(checkWidgets(root)).toEqual(['src/widgets/layout.ts: no default export; the layout file default-exports defineLayoutPreset({ rows })']);
+    expect(renderWidgetsFiles(root)[0]?.content).toContain('const appWidgetLayout = undefined;');
   });
 });

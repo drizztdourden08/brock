@@ -51,4 +51,4 @@ const serverApp = (files = {}) => fixtureApp(SERVER_CONFIG, {
   ...files,
 });
 
-export { SERVER_CONFIG, buildRaw, cleanup, fixtureApp, put, realVite, serverApp, tempDir };
+export { SERVER_CONFIG, buildRaw, cleanup, fixtureApp, put, serverApp, tempDir };

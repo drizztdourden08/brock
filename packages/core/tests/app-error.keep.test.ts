@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { AppError, decodeAppError, encodeAppError, isAppError, toAppError } from '../src/ipc';
 
-describe('AppError over the wire', () => {
+describe('K2 AppError over the wire', { tags: ['critical'] }, () => {
   it('round-trips the message, code and data', () => {
     const sent = new AppError('Install failed', { code: 'install-failed', data: { step: 'unpack', files: [1, 2], retry: false, note: null } });
     const received = decodeAppError(encodeAppError(sent));
@@ -51,7 +51,7 @@ describe('AppError over the wire', () => {
   });
 });
 
-describe('AppError construction', () => {
+describe('K1 AppError construction', { tags: ['critical'] }, () => {
   it('rejects data that is not JSON-safe', () => {
     const data = { fn: () => 1 } as never;
     expect(() => new AppError('m', { code: 'bad', data })).toThrow(TypeError);
@@ -68,7 +68,7 @@ describe('AppError construction', () => {
   });
 });
 
-describe('isAppError', () => {
+describe('K1 isAppError', { tags: ['critical'] }, () => {
   it('matches an instance and narrows by code', () => {
     const error: unknown = new AppError('m', { code: 'install-failed', data: { step: 'x' } });
     expect(isAppError(error)).toBe(true);

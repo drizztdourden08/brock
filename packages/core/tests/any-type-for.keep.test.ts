@@ -5,7 +5,7 @@ import { anyTypeFor } from '../src/platform/any-type-for';
 const PHONE = { host: 'capacitor', formFactor: 'mobile' } as const;
 const DESKTOP = { host: 'electron', formFactor: 'desktop' } as const;
 
-describe('anyTypeFor', () => {
+describe('K1 anyTypeFor', { tags: ['critical'] }, () => {
   it('keeps true for every host and false or nothing for none', () => {
     expect([anyTypeFor(true, PHONE), anyTypeFor(true, DESKTOP)]).toEqual([true, true]);
     expect([anyTypeFor(false, PHONE), anyTypeFor(undefined, DESKTOP)]).toEqual([false, false]);

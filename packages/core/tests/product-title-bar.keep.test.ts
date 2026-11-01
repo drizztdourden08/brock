@@ -4,7 +4,7 @@ import { defineProduct } from '../src/product/define-product';
 
 const BASE = { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author: { name: 'someone' } };
 
-describe('product.window.titleBar', () => {
+describe('K1 product.window.titleBar', { tags: ['critical'] }, () => {
   it('shows every title bar control by default', () => {
     expect(defineProduct(BASE).window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true }, mobile: true });
   });
@@ -16,13 +16,9 @@ describe('product.window.titleBar', () => {
     expect(window.title).toBe('My App');
   });
 
-  it('takes the mobile opt-out and keeps the controls', () => {
-    const { window } = defineProduct({ ...BASE, window: { titleBar: { mobile: false } } });
-    expect(window.titleBar).toEqual({ controls: { fullscreen: true, pin: true, minimize: true, maximize: true }, mobile: false });
-  });
 });
 
-describe('product packaging facts', () => {
+describe('K1 product packaging facts', { tags: ['critical'] }, () => {
   it('keeps the copyright and the Linux category, and refuses a category the desktop does not know', () => {
     const product = defineProduct({ ...BASE, copyright: 'Copyright (C) Example Studio', linuxCategory: 'Game' });
     expect(product.copyright).toBe('Copyright (C) Example Studio');

@@ -4,7 +4,7 @@ import { defineProduct } from '../src/product/define-product';
 
 const BASE = { id: 'my-app', name: 'My App: Deluxe', appId: 'com.example.my-app', author: { name: 'someone' } };
 
-describe('product.installer', () => {
+describe('K1 product.installer', { tags: ['critical'] }, () => {
   it('defaults to per user, both shortcuts, launch after install, no licence', () => {
     expect(defineProduct(BASE).installer).toEqual({
       scope: 'user',

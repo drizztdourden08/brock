@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createAutomationFlags } from '../src/automation/flags';
 
-describe('createAutomationFlags', () => {
+describe('K2 createAutomationFlags', { tags: ['critical'] }, () => {
   const flags = createAutomationFlags(['--auto-state']);
 
   it('treats a base flag, bare or with a value, as automation', () => {

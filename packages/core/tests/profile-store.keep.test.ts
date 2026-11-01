@@ -40,7 +40,7 @@ const memoryFileStore = (): FileStore => {
   };
 };
 
-describe('createProfileStore', () => {
+describe('K3 createProfileStore', { tags: ['critical'] }, () => {
   it('creates, lists, patches only the allowed keys and removes', async () => {
     const files = memoryFileStore();
     const store = createProfileStore(files, { build: () => ({ romFile: 'a.sfc' }), patchable: ['language'] });

@@ -87,9 +87,9 @@ describe('check-run records', () => {
 describe('the step plan', () => {
   it('reads the gate scripts from the workflow, installs first and plans the other jobs step by step', () => {
     const plan = planSteps({ workspace, workflowText: WORKFLOW });
-    expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade / echo hi']);
+    expect(plan.map((step) => step.name)).toEqual(['install', 'structure', 'lint:md', 'lint', 'test', 'upgrade / echo hi']);
     expect(plan[0].command).toBe('pnpm install --offline --frozen-lockfile');
-    expect(plan[1].command).toBe('pnpm run lint');
+    expect(plan[3].command).toBe('pnpm run lint');
     expect(plan.at(-1)).toMatchObject({ job: 'upgrade', command: 'echo hi', shell: 'pwsh' });
     expect(plan.map((step) => step.required)).toEqual([true, true, true, true, true, true]);
   });

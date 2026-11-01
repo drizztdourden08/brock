@@ -4,6 +4,10 @@ import { usageFor } from '../cli/usage-for.mjs';
 import { newRunId } from './check-record.mjs';
 import { DEFAULT_WAIT_MINUTES, EXIT, TRIGGERS, WORKFLOW_FILE, WORKFLOWS_DIR } from './ci.constants.mjs';
 import { planSteps, targetOf } from './ci-plan.mjs';
+import { gateScope } from './gate-scope.mjs';
+import { integrationBranch } from '../local/integration-branch.mjs';
+import { parseTimeouts } from './step-timeouts.mjs';
+import { treeOf } from './tree-cache.mjs';
 import { resolveLocalPr } from '../pr/local-pr.mjs';
 import { projectOf } from './project-of.mjs';
 import { runCi } from './run-ci.mjs';
@@ -11,11 +15,15 @@ import { runCi } from './run-ci.mjs';
 const USAGE = [
   '  brock ci [check] [<job>|<step>] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]',
   '           [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]',
+  '           [--base <branch>] [--timeout <step>=<min>[,...]] [--no-cache]',
   '                               run the repo\'s checks locally in a detached temporary worktree at the commit',
   '                               (default the head of --pr, else HEAD) and write ~/.coord/ci/<project>/<runId>.json. The jobs are the ones',
   '                               of the workflow file (default ci.yml). A job or step name runs only that one,',
   '                               like --job or --only. The first line printed is the record path.',
-  '                               Exit 0 pass, 1 a step failed, 2 usage or setup error.',
+  '                               A step that passed for the same git tree is not run again (--no-cache runs all). Every step has a hard',
+  '                               time limit. Tests cover only files changed since the merge base with --base (the last release tag on',
+  '                               --trigger release); lint covers the same files, all of them on a release.',
+  '                               Exit 0 pass, 1 a step failed or timed out, 2 usage or setup error.',
 ].join('\n');
 
 const PR_ID = /^PR-\d+$/;
@@ -86,12 +94,18 @@ const resolveRequest = (positional, options, ctx) => {
   const pr = prOf(options);
   const { spec, sha } = commitOf(options, pr, cwd);
   const trigger = triggerOf(options, pr);
-  const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger };
+  const project = projectOf(options, ctx.workspace);
+  const branchBase = stringOption(options, 'base') ?? integrationBranch({ options, project, base: ctx.workspace.base, cwd });
+  const scope = gateScope({ trigger, sha, base: branchBase, git: (args) => tryGit(args, cwd) });
+  const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger, scope };
   const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));
   const plan = planSteps({ ...base, job, only });
   return {
-    project: projectOf(options, ctx.workspace),
+    project,
     sha,
+    tree: treeOf(sha, (args) => tryGit(args, cwd)),
+    cache: options['no-cache'] !== true && options.cache !== false,
+    timeouts: parseTimeouts(stringOption(options, 'timeout')),
     branch: branchOf(sha, spec, options, cwd),
     pr,
     trigger,

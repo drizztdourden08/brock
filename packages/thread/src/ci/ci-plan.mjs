@@ -1,31 +1,23 @@
 /* @layer tooling-scripts @kind logic */
 import { GATE_FALLBACK, INSTALL_STEP, STANDARDS_CI } from './ci.constants.mjs';
+import { inRunOrder, scriptStep } from './gate-steps.mjs';
+import { isGithubOnly } from './github-only.mjs';
 import { inNeedsOrder, readWorkflow } from './workflow-jobs.mjs';
 import { planJob } from './workflow-steps.mjs';
 
 const shortName = (step) => step.name.split(' / ').slice(1).join(' / ') || step.name;
 
-const gateFor = (job, scripts) => {
+const gateFor = (job, scripts, scope = null) => {
   const id = job?.id ?? 'gate';
   const place = { job: id, jobId: id, needs: job?.needs ?? [], always: false };
   const install = { ...INSTALL_STEP, ...place };
   if (!scripts) return [install, { ...GATE_FALLBACK, ...place }];
-  return [install, ...scripts.map((script) => ({ name: script, command: `pnpm run ${script}`, ...place }))];
+  return [install, ...inRunOrder(scripts).map((script) => scriptStep(script, place, scope))];
 };
 
-const reusableCall = (job) => ({
-  name: job.id,
-  command: `uses: ${job.uses}`,
-  job: job.id,
-  jobId: job.id,
-  needs: job.needs,
-  always: false,
-  skip: `The job "${job.id}" calls the reusable workflow ${job.uses}, which has no local equivalent. It is recorded skipped-local and replayed on push.`,
-});
-
 const stepsOfJob = (job, workflow, request) => {
-  if (STANDARDS_CI.test(job.uses ?? '')) return gateFor(job, request.workspace.gate?.scripts ?? job.scripts);
-  return job.uses ? [reusableCall(job)] : planJob(job, workflow, request);
+  if (STANDARDS_CI.test(job.uses ?? '')) return gateFor(job, request.workspace.gate?.scripts ?? job.scripts, request.scope);
+  return isGithubOnly(job) ? [] : planJob(job, workflow, request);
 };
 
 const unique = (steps) => {
@@ -82,21 +74,21 @@ const targetOf = (steps, word, job, only) => {
 
 const EMPTY_WORKFLOW = Object.freeze({ env: {}, shell: null, workdir: null, jobs: [] });
 
-const standaloneGate = (workflow, workspace) => {
+const standaloneGate = (workflow, workspace, scope) => {
   if (workflow.jobs.some((entry) => STANDARDS_CI.test(entry.uses ?? ''))) return [];
   const scripts = workspace.gate?.scripts ?? null;
   const ownJobs = workflow.jobs.some((entry) => !entry.uses && entry.steps.length > 0);
-  return scripts || !ownJobs ? gateFor(null, scripts) : [];
+  return scripts || !ownJobs ? gateFor(null, scripts, scope) : [];
 };
 
 /**
- * @param {{ workspace: object, workflowText?: string | null, job?: string, only?: string[] | null, trigger?: string, platform?: string }} request
+ * @param {{ workspace: object, workflowText?: string | null, job?: string, only?: string[] | null, trigger?: string, platform?: string, scope?: object | null }} request
  * @returns {object[]} the steps of the run, in the order they run
  */
-const planSteps = ({ workspace, workflowText = null, job = 'all', only = null, trigger = 'manual', platform = process.platform }) => {
+const planSteps = ({ workspace, workflowText = null, job = 'all', only = null, trigger = 'manual', platform = process.platform, scope = null }) => {
   const workflow = workflowText ? readWorkflow(workflowText) : EMPTY_WORKFLOW;
-  const request = { workspace, trigger, platform };
-  const steps = [...standaloneGate(workflow, workspace), ...inNeedsOrder(workflow.jobs).flatMap((entry) => stepsOfJob(entry, workflow, request))];
+  const request = { workspace, trigger, platform, scope };
+  const steps = [...standaloneGate(workflow, workspace, scope), ...inNeedsOrder(workflow.jobs).flatMap((entry) => stepsOfJob(entry, workflow, request))];
   const checks = workspace.publish?.requiredChecks;
   return chooseOnly(chooseJob(unique(steps), job), only).map((step) => ({ ...step, required: isRequired(step, checks) }));
 };

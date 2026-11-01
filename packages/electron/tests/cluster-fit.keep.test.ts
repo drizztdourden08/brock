@@ -23,7 +23,7 @@ const pick = (list: WidgetWindowBounds[], index: number): WidgetWindowBounds => 
   return found;
 };
 
-describe('fitIntoArea', () => {
+describe('K1 fitIntoArea', { tags: ['critical'] }, () => {
   it('scales in proportion when no minimum gets in the way', () => {
     expect(fit([box(0, 0, 400, 300), box(400, 0, 200, 300)], [MIN, MIN], box(0, 0, 1200, 900))).toEqual([box(0, 0, 800, 900), box(800, 0, 400, 900)]);
   });

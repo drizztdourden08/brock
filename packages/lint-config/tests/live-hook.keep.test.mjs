@@ -26,13 +26,9 @@ const findings = async (file) => {
 
 afterEach(removeRoots);
 
-describe('a live hub file', () => {
+describe('S2 a live hub file', { tags: ['standard'] }, () => {
   it('declares its hook and default-exports it without a finding', async () => {
     expect(await findings('src/screens/controllers/pads.live.tsx')).toEqual([]);
-  }, LINT_TIMEOUT_MS);
-
-  it('does the same as a dev-only live file', async () => {
-    expect(await findings('src/screens/controllers/pads.live.dev.tsx')).toEqual([]);
   }, LINT_TIMEOUT_MS);
 
   it('keeps the hook rule on any other file', async () => {

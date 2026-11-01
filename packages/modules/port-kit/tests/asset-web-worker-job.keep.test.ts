@@ -17,7 +17,7 @@ const counted = (): { spawn: SpawnAssetWebWorker; ended: () => boolean } => {
   return { spawn, ended: () => ended };
 };
 
-describe('runAssetWebWorkerJob in a Web Worker', () => {
+describe('S2 runAssetWebWorkerJob in a Web Worker', { tags: ['standard'] }, () => {
   it('runs the shared steps in the worker and reports through the job', async () => {
     const job = fakeJob();
     const worker = counted();
@@ -71,7 +71,7 @@ describe('runAssetWebWorkerJob in a Web Worker', () => {
   });
 });
 
-describe('runAssetWebWorkerJob on the renderer job store', () => {
+describe('S2 runAssetWebWorkerJob on the renderer job store', { tags: ['standard'] }, () => {
   it('shows the job in the job store the job dialog reads, without a main process', async () => {
     await runAssetWebWorkerJob({ id: 'web-assets', title: 'Building the assets', worker: AssetStepsWorker, steps: [{ id: 'tiles', label: 'Tiles', input: 1 }] });
     expect(jobs.get('web-assets')).toMatchObject({ title: 'Building the assets', state: 'done', progress: 1, steps: [{ id: 'tiles', state: 'done' }] });

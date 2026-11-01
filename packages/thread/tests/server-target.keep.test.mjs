@@ -38,7 +38,7 @@ const closed = (child) => new Promise((resolve) => child.on('close', resolve));
 
 const lines = (log) => readFileSync(log, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
 
-describe('serverTarget', () => {
+describe('K1 serverTarget', { tags: ['critical'] }, () => {
   it('is a launch target of kind server that defineWorkspace accepts', () => {
     const target = serverTarget();
     expect(target.kind).toBe('server');

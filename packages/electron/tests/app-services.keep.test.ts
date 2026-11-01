@@ -7,7 +7,7 @@ import { servicesState } from '../src/main/services/services-state';
 
 const contextWith = (log = vi.fn()) => ({ log, services: servicesProxy });
 
-describe('app services', () => {
+describe('K2 app services', { tags: ['critical'] }, () => {
   it('says why ctx.services is empty before the build, builds once and forwards through copies of the context', async () => {
     const ctx = contextWith();
     expect(() => { Reflect.get(ctx.services, 'sessions'); }).toThrow(/pass services/);

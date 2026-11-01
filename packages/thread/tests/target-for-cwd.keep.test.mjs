@@ -6,7 +6,7 @@ import { targetForCwd } from '../src/launch/target-for-cwd.mjs';
 const root = resolve('/repo');
 const at = (app) => ({ appDir: (worktree) => resolve(worktree.path, app) });
 
-describe('targetForCwd', () => {
+describe('K1 targetForCwd', { tags: ['critical'] }, () => {
   const targets = { desktop: at('apps/desktop'), tools: at('apps/tools'), site: {} };
 
   it('picks the app whose folder holds the folder the command runs in', () => {

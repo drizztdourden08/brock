@@ -50,7 +50,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('the Android input API over the BrockInput plugin', () => {
+describe('K2 the Android input API over the BrockInput plugin', { tags: ['critical'] }, () => {
   it('listens before it starts, so pads already connected are in the first list', async () => {
     const { plugin } = fakePlugin({ onStart: [added(7)] });
     const api = createAndroidInputApi(plugin);
@@ -103,7 +103,7 @@ describe('the Android input API over the BrockInput plugin', () => {
   });
 });
 
-describe('the Android input API calls into the plugin', () => {
+describe('K2 the Android input API calls into the plugin', { tags: ['critical'] }, () => {
   it('rumbles the SDL id behind a device key, and nothing for an unknown key', async () => {
     const { plugin, send } = fakePlugin();
     const api = createAndroidInputApi(plugin);

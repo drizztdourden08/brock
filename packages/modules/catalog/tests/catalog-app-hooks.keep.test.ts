@@ -14,7 +14,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('what app code reads of an install', () => {
+describe('K2 what app code reads of an install', { tags: ['critical'] }, () => {
   it('sends what an installer removes to the trash, unless the app asks to delete', async () => {
     const trashing = setup();
     await trashing.catalog.install({ itemId: 'abc', version: null });

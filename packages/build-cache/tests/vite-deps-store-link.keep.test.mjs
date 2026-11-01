@@ -28,7 +28,7 @@ const linkedInstall = (withDeps) => {
   return { installRoot, packages, depsDir };
 };
 
-describe('a package store reached through a link', () => {
+describe('K1 a package store reached through a link', { tags: ['critical'] }, () => {
   it('names a path below it whether it is given by the link or by where the link points', () => {
     const { installRoot, packages } = linkedInstall(false);
     const inStore = storeRelativeOf(installRoot);

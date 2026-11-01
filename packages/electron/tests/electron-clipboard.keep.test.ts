@@ -35,7 +35,7 @@ beforeEach(() => {
   system.readImage.mockReturnValue(decoded(2, 2));
 });
 
-describe('clipboard image read', () => {
+describe('K1 clipboard image read', { tags: ['critical'] }, () => {
   it('reads a PNG from its own bytes without decoding it', () => {
     system.formats = ['image/png'];
     system.buffers.set('image/png', Buffer.from(pngOf(4, 3)));
@@ -68,7 +68,7 @@ describe('clipboard image read', () => {
   });
 });
 
-describe('clipboard fingerprint', () => {
+describe('K1 clipboard fingerprint', { tags: ['critical'] }, () => {
   it('never decodes an image when the system gives PNG bytes', () => {
     system.formats = ['image/png'];
     system.buffers.set('image/png', Buffer.from(pngOf(4, 3)));

@@ -25,7 +25,7 @@ const problemOf = (lines: readonly string[], me = ME): string | null => {
 
 const privateTo = (owner: string, ...entries: string[]): boolean => problemOf([`O ${owner}`, 'P True', ...entries]) === null;
 
-describe('the Windows access check on the discovery file', () => {
+describe('K4 the Windows access check on the discovery file', { tags: ['critical'] }, () => {
   it('trusts the user, SYSTEM and Administrators as owner and as access entries, by full SID', () => {
     expect(privateTo(ME, FULL(ME))).toBe(true);
     expect(privateTo('S-1-5-32-544', FULL('S-1-5-18'), FULL('S-1-5-32-544'), FULL(ME))).toBe(true);

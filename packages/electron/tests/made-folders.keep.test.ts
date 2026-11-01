@@ -33,7 +33,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('a temp folder the app made this session', () => {
+describe('K4 a temp folder the app made this session', { tags: ['critical'] }, () => {
   it('is refused as an AppData folder until the app makes it, then passes', async () => {
     const stranger = await mkdtemp(join(scratchRoot, 'stranger-'));
     expect(() => access.allowFolder(stranger)).toThrow(/cannot be granted/);
@@ -61,7 +61,7 @@ describe('a temp folder the app made this session', () => {
   });
 });
 
-describe('links, clearing and limits for made temp folders', () => {
+describe('K4 links, clearing and limits for made temp folders', { tags: ['critical'] }, () => {
   it('judges a link inside a made folder by where it points', async () => {
     const made = access.createTempFolder();
     const strangerTree = join(appData, 'Roaming', 'Other');

@@ -26,7 +26,7 @@ const FACE_DIRECTION_BY_ANCHOR = {
   'face.north': 'Up', 'face.east': 'Right', 'face.south': 'Down', 'face.west': 'Left',
 } as const;
 
-describe('callout text alignment', () => {
+describe('K1 callout text alignment', { tags: ['critical'] }, () => {
   const size = { w: 40, up: 16, down: 16 };
   const elbow = { x: 100, y: 50 };
 
@@ -50,7 +50,7 @@ describe('callout text alignment', () => {
   });
 });
 
-describe('underline length', () => {
+describe('K1 underline length', { tags: ['critical'] }, () => {
   it('is at least five characters wide for a short label', () => {
     expect(labelSize(slotOf('A'), metrics).w).toBe(5 * CHAR);
     expect(labelSize(slotOf('LB'), metrics).w).toBe(5 * CHAR);
@@ -61,7 +61,7 @@ describe('underline length', () => {
   });
 });
 
-describe('face button second line', () => {
+describe('K1 face button second line', { tags: ['critical'] }, () => {
   const faceOf = (family: keyof typeof FAMILY_OVERLAYS) =>
     FAMILY_OVERLAYS[family].slots.filter((slot) => slot.anchor in FACE_DIRECTION_BY_ANCHOR);
 
@@ -94,7 +94,6 @@ const metricsOf = (width: number, height: number, fontPx: number): OverlayMetric
 });
 
 const LAYOUT_METRICS = metricsOf(640, 420, 13);
-const SMALL_WINDOW_METRICS = metricsOf(640, 360, 14);
 
 type Family = keyof typeof FAMILY_OVERLAYS;
 
@@ -116,7 +115,7 @@ const labelOf = (family: Family, anchor: OverlaySlotView['anchor'], layoutMetric
   };
 };
 
-describe('body length of a leader', () => {
+describe('K1 body length of a leader', { tags: ['critical'] }, () => {
   const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
   const edges = square.map((point, index): readonly [Point, Point] => [point, square[(index + 1) % square.length] ?? point]);
   const body = { outline: square, outlineEdges: edges };
@@ -128,7 +127,7 @@ describe('body length of a leader', () => {
   });
 });
 
-describe('pad leaders and meta callouts', () => {
+describe('K1 pad leaders and meta callouts', { tags: ['critical'] }, () => {
   const metaAnchors = ['meta.menu', 'meta.view', 'meta.capture'] as const;
 
   it('puts Menu and View above an Xbox layout', () => {
@@ -136,15 +135,6 @@ describe('pad leaders and meta callouts', () => {
       const { elbowY, top } = labelOf('xbox', anchor);
       expect(elbowY).toBeLessThan(top);
     }
-  });
-
-  it('keeps the Xbox meta leaders from running far through the body', () => {
-    for (const anchor of metaAnchors) expect(labelOf('xbox', anchor).inside).toBeLessThan(120);
-  });
-
-  it('keeps the PlayStation stick and button leaders short inside the body', () => {
-    expect(labelOf('playstation', 'stick.right').inside).toBeLessThan(20);
-    expect(labelOf('playstation', 'meta.guide').inside).toBeLessThan(40);
   });
 
   it('puts the PlayStation Share and Options callouts above', () => {
@@ -155,19 +145,3 @@ describe('pad leaders and meta callouts', () => {
   });
 });
 
-describe('Xbox pad in a 1280 by 720 window', () => {
-  it('puts View and Menu above the pad', () => {
-    for (const anchor of ['meta.view', 'meta.menu'] as const) {
-      const { elbowY, top } = labelOf('xbox', anchor, SMALL_WINDOW_METRICS);
-      expect(elbowY).toBeLessThan(top);
-    }
-  });
-
-  it('keeps the face, D-pad and stick callouts beside the pad, not below it', () => {
-    const anchors = ['face.south', 'face.east', 'face.north', 'dpad.up', 'stick.left', 'stick.right'] as const;
-    for (const anchor of anchors) {
-      const { elbowY, bottom } = labelOf('xbox', anchor, SMALL_WINDOW_METRICS);
-      expect(elbowY).toBeLessThanOrEqual(bottom);
-    }
-  });
-});

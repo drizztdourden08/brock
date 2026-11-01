@@ -36,7 +36,7 @@ const replayServer = (secret: string) => createServer((socket) => {
   socket.on('data', createLineReader(4096, (text) => answerAsServer(socket, secret, text), () => undefined));
 });
 
-describe('bridge connections', () => {
+describe('K2 bridge connections', { tags: ['standard'] }, () => {
   it('gives handlers a stable connection id and tells main when clients open and close', async () => {
     const { server, file } = await serve();
     const opened = vi.fn();
@@ -60,7 +60,7 @@ describe('bridge connections', () => {
   });
 });
 
-describe('bridge push', () => {
+describe('K2 bridge push', { tags: ['standard'] }, () => {
   it('sends an event to one connection or to all, signed with each session key', async () => {
     const { server, file } = await serve();
     const first = client(file);
@@ -99,7 +99,7 @@ describe('bridge push', () => {
   });
 });
 
-describe('structured bridge errors', () => {
+describe('K2 structured bridge errors', { tags: ['standard'] }, () => {
   it('sends a BridgeError code and data, bounds the data and masks other errors', async () => {
     const { server, file } = await serve();
     const locked = invoke<() => Promise<void>>()('test:locked');

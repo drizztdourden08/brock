@@ -28,7 +28,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('reveal', () => {
+describe('K4 reveal', { tags: ['critical'] }, () => {
   it('shows a file and a folder inside a granted folder', async () => {
     const { access, granted, shown } = world;
     const file = join(granted, 'sub', 'in.txt');
@@ -90,7 +90,7 @@ describe('reveal', () => {
   });
 });
 
-describe('reveal over the document channel', () => {
+describe('K4 reveal over the document channel', { tags: ['critical'] }, () => {
   it('answers the result instead of throwing', async () => {
     const { access, granted, outside, shown } = world;
     const call: Call = sessionOf({ documents: access });

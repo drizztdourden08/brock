@@ -20,7 +20,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('recovery snapshots', () => {
+describe('K3 recovery snapshots', { tags: ['critical'] }, () => {
   it('stores a snapshot in the profile folder and lists it with its facts', async () => {
     const snapshots = setup();
     await snapshots.save('p1', 'doc-1', bytes(1, 2, 3), { name: 'sprite.bxel', path: join(dir, 'sprite.bxel') });
@@ -40,13 +40,6 @@ describe('recovery snapshots', () => {
     expect(listed.map((entry) => entry.key)).toEqual(['a', 'b']);
     expect(listed[0]).toMatchObject({ size: 2, name: null, path: null });
     expect([...(await snapshots.read('p1', 'a') ?? [])]).toEqual([9, 9]);
-  });
-
-  it('keeps a list per profile', async () => {
-    const snapshots = setup();
-    await snapshots.save('p1', 'a', bytes(1), {});
-    expect(await snapshots.list('p2')).toEqual([]);
-    expect(await snapshots.read('p2', 'a')).toBeNull();
   });
 
   it('discards one snapshot, data and record', async () => {

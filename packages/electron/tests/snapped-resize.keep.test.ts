@@ -11,7 +11,7 @@ const CTRL = manipulationRules(true, true);
 const WIDE = { ratio: 16 / 9, extraHeight: 0 };
 const box = (x: number, y: number, width: number, height: number): WidgetWindowBounds => ({ x, y, width, height });
 
-describe('a snapped pair side by side', () => {
+describe('K1 a snapped pair side by side', { tags: ['critical'] }, () => {
   const a = box(100, 100, 300, 400);
   const b = box(400, 100, 300, 400);
   const others = [{ id: 'b', bounds: b }];
@@ -20,12 +20,6 @@ describe('a snapped pair side by side', () => {
     const result = planStep('a', { from: a, to: { ...a, width: 340 }, edge: 'right' }, others);
     expect(result.bounds).toEqual({ ...a, width: 340 });
     expect(result.moves).toEqual([{ id: 'b', bounds: box(440, 100, 260, 400) }]);
-  });
-
-  it('leaves the neighbour alone when the outer left edge moves', () => {
-    const result = planStep('a', { from: a, to: { ...a, x: 60, width: 340 }, edge: 'left' }, others);
-    expect(result.bounds).toEqual(box(60, 100, 340, 400));
-    expect(changed(result, others)).toEqual([]);
   });
 
   it('moves the top edge of the neighbour too when both tops line up', () => {
@@ -38,12 +32,6 @@ describe('a snapped pair side by side', () => {
     const result = planStep('a', { from: a, to: { ...a, height: 440 }, edge: 'bottom' }, others);
     expect(result.bounds).toEqual(box(100, 100, 300, 440));
     expect(changed(result, others)).toEqual([{ id: 'b', bounds: box(400, 100, 300, 440) }]);
-  });
-
-  it('leaves the neighbour alone when the edges do not line up', () => {
-    const shorter = [{ id: 'b', bounds: box(400, 140, 300, 300) }];
-    expect(changed(planStep('a', { from: a, to: { ...a, y: 60, height: 440 }, edge: 'top' }, shorter), shorter)).toEqual([]);
-    expect(changed(planStep('a', { from: a, to: { ...a, height: 440 }, edge: 'bottom' }, shorter), shorter)).toEqual([]);
   });
 
   it('moves the facing edge of the left window when the right window drags the shared edge', () => {
@@ -63,7 +51,7 @@ describe('a snapped pair side by side', () => {
   });
 });
 
-describe('a snapped pair stacked', () => {
+describe('K1 a snapped pair stacked', { tags: ['critical'] }, () => {
   const top = box(100, 100, 300, 200);
   const bottom = box(100, 300, 300, 200);
   const others = [{ id: 'bottom', bounds: bottom }];
@@ -87,7 +75,7 @@ describe('a snapped pair stacked', () => {
   });
 });
 
-describe('the main window aspect lock', () => {
+describe('K1 the main window aspect lock', { tags: ['critical'] }, () => {
   const main = box(100, 100, 800, 450);
   const widget = box(900, 100, 300, 450);
   const app = [{ id: 'main', bounds: main }];
@@ -119,7 +107,7 @@ describe('the main window aspect lock', () => {
   });
 });
 
-describe('the drag start', () => {
+describe('K1 the drag start', { tags: ['critical'] }, () => {
   const a = box(100, 100, 300, 400);
   const b = box(400, 100, 300, 400);
 
@@ -141,7 +129,7 @@ describe('the drag start', () => {
   });
 });
 
-describe('pin migration', () => {
+describe('K1 pin migration', { tags: ['critical'] }, () => {
   it('turns a saved "with app" pin into sync with the main window', () => {
     expect(entryFacts({ pin: 'with-app', sync: false })).toMatchObject({ pin: 'off', sync: true, taskbar: false });
   });

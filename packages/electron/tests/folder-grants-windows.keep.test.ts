@@ -25,7 +25,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe.runIf(process.platform === 'win32')('a folder grant on Windows', () => {
+describe.runIf(process.platform === 'win32')('K4 a folder grant on Windows', { tags: ['standard'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });

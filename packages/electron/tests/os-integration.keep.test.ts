@@ -34,7 +34,7 @@ afterEach(() => {
   refreshed.length = 0;
 });
 
-describe('Windows registry', () => {
+describe('K2 Windows registry', { tags: ['critical'] }, () => {
   it('writes the deep link scheme and each file type under the user classes', () => {
     const entries = windowsRegistryEntries(PRODUCT, EXE, (ext) => `icon:${ext}`);
     expect(entries).toContainEqual({ key: `${CLASSES}\\my-app`, name: 'URL Protocol', value: '' });
@@ -75,7 +75,7 @@ describe('Windows registry', () => {
   });
 });
 
-describe('Linux desktop entry', () => {
+describe('K2 Linux desktop entry', { tags: ['critical'] }, () => {
   it('lists the file types and the scheme handler, with a quoted Exec', () => {
     const entry = linuxDesktopEntry(PRODUCT, '/home/me/MyApp "1".AppImage');
     expect(entry).toContain('Exec="/home/me/MyApp \\"1\\".AppImage" %U');

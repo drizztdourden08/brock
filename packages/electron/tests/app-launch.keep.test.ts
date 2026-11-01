@@ -45,7 +45,7 @@ const openedBridge = async (log = vi.fn()) => {
   return { bridge, file, log };
 };
 
-describe('appLaunch', () => {
+describe('K2 appLaunch', { tags: ['critical'] }, () => {
   it('starts the stock Electron on the app folder in development and the executable alone when packaged', () => {
     expect(appLaunch()).toEqual({ command: process.execPath, args: [APP_PATH], env: {} });
     fakeApp.isPackaged = true;
@@ -74,7 +74,7 @@ describe('appLaunch', () => {
   });
 });
 
-describe('the app launch file', () => {
+describe('S2 the app launch file', { tags: ['standard'] }, () => {
   it('sits beside the discovery file under its own name, so no instance key can collide with it', () => {
     expect(bridgeLaunchFile(join('a', 'bridge.json'))).toBe(join('a', 'launch-bridge.json'));
     expect(bridgeLaunchFile(join('a', 'bridge.launch.json'))).toBe(join('a', 'launch-bridge.launch.json'));

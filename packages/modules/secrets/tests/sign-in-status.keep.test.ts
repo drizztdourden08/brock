@@ -6,7 +6,7 @@ import { applySignedIn } from '../src/renderer/apply-signed-in';
 const stored = new Set(['api-token']);
 const has = (name: string): Promise<boolean> => Promise.resolve(stored.has(name));
 
-describe('signInStatus', () => {
+describe('K4 signInStatus', { tags: ['critical'] }, () => {
   it('reads the token secret a provider names', async () => {
     expect(await signInStatus({ tokenSecret: 'api-token' }, has)).toBe(true);
     expect(await signInStatus({ tokenSecret: 'other-token' }, has)).toBe(false);
@@ -22,7 +22,7 @@ describe('signInStatus', () => {
   });
 });
 
-describe('applySignedIn', () => {
+describe('K4 applySignedIn', { tags: ['critical'] }, () => {
   it('starts a provider with a stored token signed in and leaves a running sign-in alone', () => {
     const waiting = { state: 'waiting' as const, userCode: 'ABCD', lastError: null };
     const next = applySignedIn({ second: waiting }, { account: true, second: false, third: false });

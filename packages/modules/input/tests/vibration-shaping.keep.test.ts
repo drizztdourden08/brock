@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { buildDisplayContext } from '../src/family/resolve-display/build-display-context';
 import { resolveShapeVibration } from '../src/family/resolve-display/resolve-shape-vibration';
 
-describe('per-family vibration shaping', () => {
+describe('K1 per-family vibration shaping', { tags: ['critical'] }, () => {
   it('Xbox boosts low/mid magnitudes onto a floor and clamps at 1', () => {
     const ctx = buildDisplayContext({ sdlType: 'xboxone' });
     const shapeVibration = resolveShapeVibration(ctx);

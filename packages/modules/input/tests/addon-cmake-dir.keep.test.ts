@@ -8,7 +8,7 @@ import { addonPathsOf, cmakeDirOf } from '../ensure-addon/index.mjs';
 const PACKAGE_DIR = resolve('work', 'deep', 'node_modules', 'brock-input');
 const OTHER_DIR = resolve('work', 'other', 'node_modules', 'brock-input');
 
-describe('the CMake build folder of the addon', () => {
+describe('K1 the CMake build folder of the addon', { tags: ['critical'] }, () => {
   it('stays inside the package when the option is not set', () => {
     const paths = addonPathsOf(PACKAGE_DIR, 'win32-x64', {});
     expect(paths.cmakeDir).toBeNull();

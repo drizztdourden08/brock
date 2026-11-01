@@ -10,7 +10,7 @@ const cached = () => cachedPrebuiltOf(fx.asset(), PLATFORM_ARCH, process.env);
 beforeEach(fx.setup);
 afterEach(fx.teardown);
 
-describe('the cached addon prebuilt', () => {
+describe('K3 the cached addon prebuilt', { tags: ['standard'] }, () => {
   it('installs from the cache with no network on a hit, in either mode', async () => {
     expect(await storePrebuilt(fx.asset(), PLATFORM_ARCH, fx.state.archive, process.env)).toBe(true);
     const fetchStub = fx.blockNetwork();

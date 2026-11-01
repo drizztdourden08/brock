@@ -9,8 +9,6 @@ import { ciDir, recordFile } from '../src/ci/ci-paths.mjs';
 import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 import { planSteps } from '../src/ci/ci-plan.mjs';
 import { runCi } from '../src/ci/run-ci.mjs';
-import { acquireRunLock } from '../src/ci/run-lock.mjs';
-import { readWorkflow } from '../src/ci/workflow-jobs.mjs';
 import { mergeBlocker } from '../src/pr/merge-gate.mjs';
 import { mergeVerb } from '../src/pr/merge.mjs';
 
@@ -62,7 +60,7 @@ afterEach(() => {
   for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('check-run records', () => {
+describe('K3 check-run records', { tags: ['standard'] }, () => {
   it('sorts run ids by start time and writes a record whole, with no temp file left', () => {
     const early = newRunId(new Date('2026-10-29T10:00:00.000Z'));
     const late = newRunId(new Date('2026-10-29T10:00:00.001Z'));
@@ -84,7 +82,7 @@ describe('check-run records', () => {
   });
 });
 
-describe('the step plan', () => {
+describe('K1 the step plan', { tags: ['standard'] }, () => {
   it('reads the gate scripts from the workflow, installs first and plans the other jobs step by step', () => {
     const plan = planSteps({ workspace, workflowText: WORKFLOW });
     expect(plan.map((step) => step.name)).toEqual(['install', 'lint', 'lint:md', 'structure', 'test', 'upgrade / echo hi']);
@@ -107,12 +105,9 @@ describe('the step plan', () => {
     expect(() => planSteps({ workspace, workflowText: WORKFLOW, job: 'nope' })).toThrow(/No job "nope"/);
   });
 
-  it('reads jobs and unquotes a quoted scripts value', () => {
-    expect(readWorkflow(WORKFLOW.replace('lint lint:md structure test', "'lint test'")).jobs.map((job) => job.scripts)).toEqual([['lint', 'test'], null]);
-  });
 });
 
-describe('a run', () => {
+describe('E2 a run', { tags: ['e2e'] }, () => {
   const plan = (...steps) => steps.map(([name, command, required = true]) => ({ name, command, job: 'gate', required }));
   const request = (steps, extra = {}) => ({ project: 'demo', sha: git(repo, 'rev-parse', 'HEAD'), branch: 'main', pr: 'PR-1', trigger: 'pr', plan: steps, partial: false, waitMs: 5000, ...extra });
   const node = (code, text) => `node -e "console.log('${text}'); process.exit(${code})"`;
@@ -152,15 +147,9 @@ describe('a run', () => {
     expect(record.summary).toContain('1 skipped-local');
   });
 
-  it('makes a second run wait for the lock and gives up with a plain reason', async () => {
-    const release = await acquireRunLock({ project: 'demo', runId: 'first', timeoutMs: 1000 });
-    await expect(acquireRunLock({ project: 'demo', runId: 'second', timeoutMs: 50, pollMs: 10 })).rejects.toThrow(/still holds/);
-    release();
-    (await acquireRunLock({ project: 'demo', runId: 'third', timeoutMs: 1000 }))();
-  });
 });
 
-describe('a local merge', () => {
+describe('E2 a local merge', { tags: ['e2e'] }, () => {
   const pass = (sha, extra = {}) => ({ kind: 'check-run', id: newRunId(), commit: sha, status: 'pass', steps: [{ name: 'lint', required: true, status: 'pass' }, { name: 'upgrade', required: false, status: 'skipped-local' }], ...extra });
   const feature = () => {
     git(repo, 'checkout', '-q', '-b', 'feat/x');

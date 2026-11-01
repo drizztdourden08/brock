@@ -8,7 +8,7 @@ import { WASM_DEFAULTS, staleReasonOf, wasmStaleReason } from '../ensure-wasm/in
 const MISSING = 'the core output is missing';
 const CHANGED = 'sources changed since the last build';
 
-describe('staleReasonOf', () => {
+describe('K1 staleReasonOf', { tags: ['critical'] }, () => {
   it('asks for a build when there is no output', () => {
     expect(staleReasonOf({ outputTimes: [], sourceTimes: [5] })).toBe(MISSING);
   });
@@ -22,7 +22,7 @@ describe('staleReasonOf', () => {
   });
 });
 
-describe('wasmStaleReason', () => {
+describe('K1 wasmStaleReason', { tags: ['standard'] }, () => {
   const dirs: string[] = [];
   afterEach(() => {
     for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });

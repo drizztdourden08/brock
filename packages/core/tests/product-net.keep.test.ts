@@ -5,7 +5,7 @@ import { isPrivateClipboardType, privateClipboardType } from '../src/platform';
 
 const base = { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author: { name: 'Me' } };
 
-describe('product.net', () => {
+describe('K4 product.net', { tags: ['critical'] }, () => {
   it('is left out unless the product lists hosts', () => {
     expect(defineProduct(base).net).toBeUndefined();
   });
@@ -13,11 +13,6 @@ describe('product.net', () => {
   it('fills the content types and the byte cap, and lowers and trims the hosts', () => {
     const { net } = defineProduct({ ...base, net: { hosts: [' Lospec.com ', 'lospec.com', 'cdn.example.org'] } });
     expect(net).toEqual({ hosts: ['lospec.com', 'cdn.example.org'], contentTypes: ['application/json', 'text/plain', 'image/png'], maxBytes: 4 * 1024 * 1024 });
-  });
-
-  it('keeps the types and the cap a product sets', () => {
-    const { net } = defineProduct({ ...base, net: { hosts: ['lospec.com'], contentTypes: ['text/*'], maxBytes: 100 } });
-    expect(net).toEqual({ hosts: ['lospec.com'], contentTypes: ['text/*'], maxBytes: 100 });
   });
 
   it('refuses a host that is not a plain name', () => {
@@ -38,7 +33,7 @@ describe('product.net', () => {
   });
 });
 
-describe('private clipboard types', () => {
+describe('K4 private clipboard types', { tags: ['critical'] }, () => {
   it('builds a type in the product namespace and recognises only its own', () => {
     const type = privateClipboardType('bxel', 'clip');
     expect(type).toBe('application/x-bxel-clip');

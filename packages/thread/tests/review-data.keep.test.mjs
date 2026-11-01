@@ -12,7 +12,7 @@ afterAll(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe('reviewDataDir', () => {
+describe('K1 reviewDataDir', { tags: ['critical'] }, () => {
   it('keeps the data folder for a launch or a review without baselines', () => {
     expect(reviewDataDir([], userData)).toBe(userData);
     expect(reviewDataDir(['--review'], userData)).toBe(userData);

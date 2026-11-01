@@ -11,7 +11,7 @@ const defs: Def[] = [
   { id: 'c', label: 'C', description: '', group: 'g', default: false, requires: ['b'], suggests: ['a'], live: false, locked: true },
 ];
 
-describe('createFeatureResolver', () => {
+describe('K1 createFeatureResolver', { tags: ['critical'] }, () => {
   const resolver = createFeatureResolver(defs);
 
   it('prunes a feature whose requirement is off, to a fixpoint', () => {

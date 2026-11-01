@@ -5,7 +5,7 @@ import { memoByContext } from '../src/main/context/memo-by-context';
 
 const contextWith = () => ({ files: {} as MainContext['files'] });
 
-describe('memoByContext', () => {
+describe('K1 memoByContext', { tags: ['critical'] }, () => {
   it('builds once for the context and every copy of it', () => {
     const create = vi.fn(() => ({}));
     const get = memoByContext(create);

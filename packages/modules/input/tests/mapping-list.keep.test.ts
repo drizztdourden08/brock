@@ -26,7 +26,7 @@ const mappingDb = (addon: Partial<Sdl3Input>) => {
   return createMappingDb(input);
 };
 
-describe('decoding an SDL GUID', () => {
+describe('K1 decoding an SDL GUID', { tags: ['critical'] }, () => {
   it('reads vendor and product from the little endian words', () => {
     expect(decodeGuid('030000005e040000130b000001050000')).toEqual({ vid: 0x045e, pid: 0x0b13 });
     expect(decodeGuid('030000007e0500000920000000006800')).toEqual({ vid: 0x057e, pid: 0x2009 });
@@ -46,7 +46,7 @@ describe('decoding an SDL GUID', () => {
   });
 });
 
-describe('parsing a mapping string', () => {
+describe('K1 parsing a mapping string', { tags: ['critical'] }, () => {
   it('parses an Xbox pad with its platform and family', () => {
     expect(parseMapping(XBOX)).toEqual({
       guid: '030000005e040000130b000001050000', name: 'Xbox Series Controller', vid: 0x045e, pid: 0x0b13, platform: 'Windows', family: 'xbox',
@@ -90,7 +90,7 @@ describe('parsing a mapping string', () => {
   });
 });
 
-describe('the mapping list in main', () => {
+describe('K1 the mapping list in main', { tags: ['critical'] }, () => {
   it('returns an empty list with an addon that lacks mappingList', () => {
     expect(mappingDb({}).list()).toEqual([]);
   });

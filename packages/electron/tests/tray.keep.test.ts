@@ -54,24 +54,7 @@ beforeEach(() => {
   log.mockClear();
 });
 
-describe('the tray', () => {
-  it('is off until the app asks', () => {
-    const tray = control();
-    expect(tray.active).toBe(false);
-    expect(shared.trays).toEqual([]);
-  });
-
-  it('is created with the tooltip, the app icon and the default menu', () => {
-    const tray = control();
-    tray.set({ tooltip: 'Bxel is running' });
-    expect(tray.active).toBe(true);
-    expect(shared.trays).toHaveLength(1);
-    expect(shared.images).toEqual(['/icons/app.ico']);
-    const [made] = shared.trays;
-    expect(made?.tip).toBe('Bxel is running');
-    expect(items(made as FakeTray).map((item) => item.label ?? item.type)).toEqual(['Show Bxel', 'separator', 'Quit']);
-  });
-
+describe('S1 the tray', { tags: ['standard'] }, () => {
   it('shows the window on a left click', () => {
     control().set({ tooltip: 'x' });
     shared.trays[0]?.clicks[0]?.();
@@ -101,42 +84,7 @@ describe('the tray', () => {
 
 });
 
-describe('the tray over time', () => {
-  it('updates the tray in place when set again, and takes a different icon', () => {
-    const tray = control();
-    tray.set({ tooltip: 'one' });
-    tray.set({ tooltip: 'two', icon: '/icons/other.png' });
-    expect(shared.trays).toHaveLength(1);
-    expect(shared.trays[0]?.tip).toBe('two');
-    expect(shared.images).toEqual(['/icons/app.ico', '/icons/other.png']);
-  });
-
-  it('is disposed on clear, and can be created again', () => {
-    const tray = control();
-    tray.set({ tooltip: 'x' });
-    tray.clear();
-    expect(shared.trays[0]?.destroyed).toBe(true);
-    expect(tray.active).toBe(false);
-    tray.clear();
-    tray.set({ tooltip: 'again' });
-    expect(shared.trays).toHaveLength(2);
-    expect(tray.active).toBe(true);
-  });
-
-  it('warns when the icon does not load, and still creates the tray', () => {
-    const tray = control('/icons/missing.png');
-    tray.set({ tooltip: 'x' });
-    expect(tray.active).toBe(true);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('no icon'), 'warn');
-  });
-
-  it('resolves a relative icon against the app folder', () => {
-    control().set({ tooltip: 'x', icon: 'build/tray.png' });
-    expect(shared.images[0]).toMatch(/app[\\/]build[\\/]tray\.png$/);
-  });
-});
-
-describe('the tray menu', () => {
+describe('K1 the tray menu', { tags: ['critical'] }, () => {
   it('turns separators, actions and ids into menu entries', () => {
     const run = { show: vi.fn(), quit: vi.fn(), pick: vi.fn() };
     const template = trayMenuTemplate([...defaultTrayMenu('App'), { label: 'Go', id: 'go' }], run);

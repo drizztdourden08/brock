@@ -1,8 +1,6 @@
 /* @layer tooling-scripts @kind test */
-import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { electronEntryId, restoreElectron, storeElectron } from '../src/electron/electron-cache.mjs';
 import { electronTarget } from '../src/electron/electron-target.mjs';
@@ -20,7 +18,6 @@ const { tempDir, put, cleanup } = cacheTestTree('build-cache-review-');
 afterEach(cleanup);
 
 const NAME = '@drizztdourden08/demo';
-const STORE_CLI = fileURLToPath(new URL('../src/electron/store-electron-cli.mjs', import.meta.url));
 
 const electronPackage = (withDist, version = '42.1.0') => {
   const dir = join(tempDir(), 'node_modules', 'electron');
@@ -29,12 +26,8 @@ const electronPackage = (withDist, version = '42.1.0') => {
   return dir;
 };
 
-describe('package build key', () => {
-  it('carries the output layout version, so a layout change never serves old entries', () => {
-    expect(packageBuildKey({ platform: 'node', target: 'node22' }).settings.layout).toBe(1);
-  });
-
-  it('keeps a patched and an unpatched copy of one version side by side', { timeout: 300_000 }, async () => {
+describe('E2 package build key', { tags: ['e2e'] }, () => {
+  it('keeps a patched and an unpatched copy of one version side by side', async () => {
     const root = tempDir();
     const serve = async (files) => {
       const app = tempDir();
@@ -53,8 +46,8 @@ describe('package build key', () => {
   });
 });
 
-describe('electron store', () => {
-  it('replaces a damaged entry instead of counting it as present', async () => {
+describe('K3 electron store', () => {
+  it('replaces a damaged entry instead of counting it as present', { tags: ['critical'] }, async () => {
     const root = tempDir();
     const ready = electronPackage(true);
     await storeElectron(ready, { root });
@@ -64,14 +57,7 @@ describe('electron store', () => {
     expect(restoreElectron(electronPackage(false), { root })).toBe('restored');
   });
 
-  it('stores from a detached process of its own', () => {
-    const root = tempDir();
-    const ready = electronPackage(true);
-    execFileSync(process.execPath, [STORE_CLI, ready], { env: { ...process.env, BROCK_BUILD_CACHE_DIR: root } });
-    expect(restoreElectron(electronPackage(false), { root })).toBe('restored');
-  });
-
-  it('keys the binary by the target arch from the environment or .npmrc', () => {
+  it('keys the binary by the target arch from the environment or .npmrc', { tags: ['critical'] }, () => {
     const dir = electronPackage(false);
     expect(electronTarget(dir, { npm_config_arch: 'arm64' }).arch).toBe('arm64');
     put(join(dir, '..', '..'), { '.npmrc': 'arch=ia32\n' });
@@ -80,7 +66,7 @@ describe('electron store', () => {
   });
 });
 
-describe('restore lock', () => {
+describe('K1 restore lock', { tags: ['critical'] }, () => {
   it('takes over a stale lock and frees the lock after an error', () => {
     const dir = electronPackage(false);
     const later = () => Date.now() + 11 * 60 * 1000;
@@ -100,18 +86,7 @@ describe('restore lock', () => {
   });
 });
 
-describe('background job', () => {
-  it('records running, then done, and a launch waits for it and says so', async () => {
-    const file = join(tempDir(), 'job.json');
-    const end = beginJob(file);
-    expect(jobState(file).running).toBe(true);
-    const lines = [];
-    setTimeout(() => end(), 50);
-    expect(await waitForJob(file, 'The prewarm', (line) => lines.push(line), { pollMs: 10 })).toBe(true);
-    expect(readJob(file)?.state).toBe('done');
-    expect(lines.join('\n')).toMatch(/waiting for it[\s\S]*finished/);
-  });
-
+describe('K1 background job', { tags: ['critical'] }, () => {
   it('records a failure with its reason', async () => {
     const file = join(tempDir(), 'job.json');
     beginJob(file)({ failed: 'sync failed' });

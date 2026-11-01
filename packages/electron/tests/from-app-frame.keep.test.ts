@@ -22,7 +22,7 @@ beforeEach(() => {
   state.main = null;
 });
 
-describe('fromAppFrame', () => {
+describe('K4 fromAppFrame', { tags: ['critical'] }, () => {
   it('refuses a call with no frame, from a sub frame, or from another origin', () => {
     state.server = 'http://localhost:5173';
     expect(fromAppFrame(eventFrom(null))).toBe(false);

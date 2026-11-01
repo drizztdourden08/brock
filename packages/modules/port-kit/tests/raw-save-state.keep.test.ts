@@ -18,7 +18,7 @@ const setup = () => {
   return { saves, loaded, disk };
 };
 
-describe('raw save states', () => {
+describe('K3 raw save states', { tags: ['critical'] }, () => {
   it('loads a raw state file with no container into the core', async () => {
     const { saves, loaded, disk } = setup();
     disk.set(QUICK, RAW_STATE);

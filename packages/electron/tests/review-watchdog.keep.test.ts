@@ -20,7 +20,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('the review watchdog before the tour starts', () => {
+describe('K1 the review watchdog before the tour starts', { tags: ['critical'] }, () => {
   it('trips when the boot is silent for the whole start limit', async () => {
     make();
     await vi.advanceTimersByTimeAsync(START);
@@ -48,7 +48,7 @@ describe('the review watchdog before the tour starts', () => {
   });
 });
 
-describe('the review watchdog once the tour runs', () => {
+describe('K1 the review watchdog once the tour runs', { tags: ['critical'] }, () => {
   it('trips only after the idle limit of silence', async () => {
     const dog = make();
     dog.working();
@@ -85,7 +85,7 @@ describe('the review watchdog once the tour runs', () => {
   });
 });
 
-describe('a step that declares a long operation', () => {
+describe('K1 a step that declares a long operation', { tags: ['critical'] }, () => {
   const TWO_MINUTES = 120_000;
 
   it('is not stopped at the default idle limit, and is stopped after its own limit', async () => {

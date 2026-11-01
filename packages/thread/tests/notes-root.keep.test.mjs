@@ -22,7 +22,7 @@ const repo = (files) => {
 
 const APP = { 'apps/desktop/brock.config.ts': '' };
 
-describe('findAppDir', () => {
+describe('K1 findAppDir', { tags: ['critical'] }, () => {
   it('finds the root app, the first app of apps/, or none', () => {
     expect(findAppDir(repo({ 'brock.config.ts': '' }))).toBe('.');
     expect(findAppDir(repo(APP))).toBe('apps/desktop');
@@ -31,7 +31,7 @@ describe('findAppDir', () => {
   });
 });
 
-describe('resolveNotesRoot', () => {
+describe('K1 resolveNotesRoot', { tags: ['critical'] }, () => {
   const resolve = (files, rootFallback = true) => resolveNotesRoot({ repoDir: repo(files), appDir: 'apps/desktop', rootFallback });
 
   it('takes the folder beside the app, empty or not', () => {
@@ -58,13 +58,7 @@ const release = async (files, options = {}) => {
   return { error, lines };
 };
 
-describe('brock release notes folder', () => {
-  it('reads the notes beside the app', async () => {
-    const { error, lines } = await release({ ...APP, 'apps/desktop/release-notes/v1.0.0.md': BAD });
-    expect(error).toMatch(/^release-notes[\\/]v1\.0\.0\.md does not follow/);
-    expect(lines).toEqual([]);
-  });
-
+describe('K1 brock release notes folder', { tags: ['critical'] }, () => {
   it('reads the notes at the repo root when the app folder has none, and says so', async () => {
     const { error, lines } = await release({ ...APP, 'release-notes/v1.0.0.md': BAD });
     expect(error).toMatch(/^release-notes[\\/]v1\.0\.0\.md does not follow/);

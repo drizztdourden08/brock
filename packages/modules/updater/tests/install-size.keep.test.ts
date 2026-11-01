@@ -21,7 +21,7 @@ const fakeReg = (stdout: string | null) => {
   return { run, calls };
 };
 
-describe('installLocation', () => {
+describe('K1 installLocation', { tags: ['critical'] }, () => {
   it('finds a Velopack install root on Windows and names its uninstall key', () => {
     const facts = { platform: 'win32' as const, execPath: 'C:\\Users\\me\\AppData\\Local\\my-app\\current\\My App.exe', appId: 'my-app' };
     expect(installLocation({ ...facts, exists: () => true })).toEqual({ path: 'C:\\Users\\me\\AppData\\Local\\my-app', uninstallKey: KEY });
@@ -36,7 +36,7 @@ describe('installLocation', () => {
   });
 });
 
-describe('parseRegValue', () => {
+describe('K1 parseRegValue', { tags: ['critical'] }, () => {
   it('reads hex and decimal values', () => {
     expect(parseRegValue('\n    EstimatedSize    REG_QWORD    0x1f4\n', 'EstimatedSize')).toEqual({ type: 'REG_QWORD', value: 500 });
     expect(parseRegValue('    EstimatedSize    REG_SZ    2048\n', 'EstimatedSize')).toEqual({ type: 'REG_SZ', value: 2048 });
@@ -44,7 +44,7 @@ describe('parseRegValue', () => {
   });
 });
 
-describe('createInstallSize', () => {
+describe('K1 createInstallSize', { tags: ['critical'] }, () => {
   it('writes the measured size as a DWORD in kilobytes when the uninstall key holds another type', async () => {
     const reg = fakeReg('    EstimatedSize    REG_QWORD    0x10\n');
     await createInstallSize({ path: 'root', uninstallKey: KEY }, reg.run, () => Promise.resolve(3 * 1024 + 1)).publish();
@@ -70,7 +70,7 @@ describe('createInstallSize', () => {
   });
 });
 
-describe('measurePath', () => {
+describe('K1 measurePath', { tags: ['standard'] }, () => {
   it('adds up every file under a folder', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'brock-size-'));
     try {

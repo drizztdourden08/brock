@@ -20,7 +20,7 @@ const appBridge = () => {
   return { bridge, file };
 };
 
-describe('opening the app bridge at run time', () => {
+describe('S2 opening the app bridge at run time', { tags: ['standard'] }, () => {
   it('opens on demand, closes with its connections and file, and reopens with a new secret and endpoint', async () => {
     const { bridge, file } = appBridge();
     expect(bridge.current()).toBeNull();

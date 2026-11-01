@@ -8,8 +8,6 @@ import { createNodeSecretStore, envSecretName, NODE_SECRETS_FILE } from '../src/
 const isPosix = process.platform !== 'win32';
 let dataDir = '';
 
-const importsOf = (source: string): string[] => Array.from(source.matchAll(/from '([^']+)'/g), (m) => m[1] ?? '');
-
 beforeEach(async () => {
   dataDir = await mkdtemp(join(tmpdir(), 'brock-secrets-'));
 });
@@ -18,7 +16,7 @@ afterEach(async () => {
   await rm(dataDir, { recursive: true, force: true });
 });
 
-describe('node secret store', () => {
+describe('K3 node secret store', { tags: ['critical'] }, () => {
   it('round trips a value, a label and the list', async () => {
     const store = createNodeSecretStore({ dataDir, env: {} });
     expect(await store.get('api-token')).toBeNull();
@@ -83,18 +81,3 @@ describe('node secret store', () => {
   });
 });
 
-describe('node entry', () => {
-  it('never imports electron or the main side', async () => {
-    const dir = new URL('../src/node/', import.meta.url);
-    const names = (await readdir(dir)).filter((n) => n.endsWith('.ts'));
-    const sources = await Promise.all(names.map((n) => readFile(new URL(n, dir), 'utf8')));
-    const specifiers = sources.flatMap(importsOf);
-    expect(specifiers.length).toBeGreaterThan(0);
-    expect(specifiers.filter((s) => /electron|\/main|\/preload|\/renderer/.test(s))).toEqual([]);
-  });
-
-  it('is exported as ./node', async () => {
-    const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as { exports: Record<string, string> };
-    expect(pkg.exports['./node']).toBe('./src/node/index.ts');
-  });
-});

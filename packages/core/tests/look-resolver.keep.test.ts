@@ -8,7 +8,7 @@ import { contrastRatio } from '../src/look/contrast-ratio';
 
 const seeds = { primary: '#3b6fe0', black: '#0e0e12' };
 
-describe('resolveLook', () => {
+describe('K1 resolveLook', { tags: ['critical'] }, () => {
   it('derives a gradient from the palette seeds when nothing else is set', () => {
     const look = resolveLook({}, { seeds });
     expect(look).toEqual({
@@ -46,14 +46,14 @@ describe('resolveLook', () => {
   });
 });
 
-describe('contrastRatio', () => {
+describe('K1 contrastRatio', { tags: ['critical'] }, () => {
   it('is 21 for black on white and 1 for a colour on itself', () => {
     expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21, 1);
     expect(contrastRatio('#3b6fe0', '#3b6fe0')).toBeCloseTo(1, 5);
   });
 });
 
-describe('mixHex', () => {
+describe('K1 mixHex', { tags: ['critical'] }, () => {
   it('mixes two colours channel by channel', () => {
     expect(mixHex('#ffffff', '#000000', 0.5)).toBe('#808080');
     expect(mixHex('#3b6fe0', '#0e0e12', 1)).toBe('#3b6fe0');
@@ -64,7 +64,7 @@ describe('mixHex', () => {
   });
 });
 
-describe('darkPair', () => {
+describe('K1 darkPair', { tags: ['critical'] }, () => {
   const dim = '#8a8b8d';
   const inks = { ...DEFAULT_INKS, dim };
 

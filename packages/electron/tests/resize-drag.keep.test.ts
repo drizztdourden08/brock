@@ -73,7 +73,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe("a top-edge drag of the logs widget snapped left of main (symptoms 1 and 2)", () => {
+describe("K1 a top-edge drag of the logs widget snapped left of main (symptoms 1 and 2)", { tags: ['critical'] }, () => {
   it('keeps touching the main window from the first step', async () => {
     const pair = snappedPair();
     await resizeDrag(pair.logs, 'top', line({ dx: 0, dy: -10 }, 5), {
@@ -103,7 +103,7 @@ describe("a top-edge drag of the logs widget snapped left of main (symptoms 1 an
   });
 });
 
-describe('every other edge and corner of the snapped pair (symptom 3), outer edges', () => {
+describe('K1 every other edge and corner of the snapped pair (symptom 3), outer edges', { tags: ['critical'] }, () => {
   for (const c of ALONE) {
     it(`resizes only the dragged window: ${c.name}`, async () => {
       const pair = snappedPair();
@@ -116,7 +116,7 @@ describe('every other edge and corner of the snapped pair (symptom 3), outer edg
   }
 });
 
-describe('every other edge and corner of the snapped pair (symptom 3), the lined-up bottoms', () => {
+describe('K1 every other edge and corner of the snapped pair (symptom 3), the lined-up bottoms', { tags: ['critical'] }, () => {
   for (const c of ALIGNED) {
     it(`moves both bottoms together: ${c.name}`, async () => {
       const pair = snappedPair();
@@ -135,7 +135,7 @@ describe('every other edge and corner of the snapped pair (symptom 3), the lined
   });
 });
 
-describe('every other edge and corner of the snapped pair (symptom 3), the shared edge', () => {
+describe('K1 every other edge and corner of the snapped pair (symptom 3), the shared edge', { tags: ['critical'] }, () => {
   for (const c of SHARED) {
     it(`moves the shared edge of both windows together: ${c.name}`, async () => {
       const pair = snappedPair();
@@ -154,7 +154,7 @@ describe('every other edge and corner of the snapped pair (symptom 3), the share
   });
 });
 
-describe('Ctrl, release and a third window', () => {
+describe('K1 Ctrl, release and a third window', { tags: ['critical'] }, () => {
   it('resizes alone, without snapping, while Ctrl is held', async () => {
     const { main, logs } = snappedPair();
     modifierState.ctrl = true;

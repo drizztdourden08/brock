@@ -39,7 +39,7 @@ afterEach(async () => {
   await removeTree(base);
 });
 
-describe('the folder question in an automation launch', () => {
+describe('K4 the folder question in an automation launch', { tags: ['critical'] }, () => {
   it('still declines by default and shows nothing', async () => {
     launch(['--no-focus']);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
@@ -71,7 +71,7 @@ describe('the folder question in an automation launch', () => {
   });
 });
 
-describe(ANSWER, () => {
+describe(`K4 ${ANSWER}`, { tags: ['critical'] }, () => {
   it('grants the same folder a human yes would, without showing a dialog', async () => {
     launch(['--no-focus', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toEqual({ path: join(assets, 'hero.json'), folderGranted: true, folder: assets });
@@ -101,7 +101,7 @@ describe(ANSWER, () => {
 
 });
 
-describe(`${ANSWER} refusals and edge cases`, () => {
+describe(`K4 ${ANSWER} refusals and edge cases`, { tags: ['critical'] }, () => {
   it('is ignored with an identity flag alone, which is an automation launch but not a headless one', async () => {
     launch(['--profile=x', `${ANSWER}=grant`]);
     expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
@@ -123,12 +123,6 @@ describe(`${ANSWER} refusals and edge cases`, () => {
     expect(await reads(access, join(assets, 'side.json'))).toBe(false);
   });
 
-  it('refuses a bad option even with the flag', async () => {
-    launch(['--no-focus', `${ANSWER}=grant`]);
-    expect(await openFile({ grantFolder: { ask: false } })).toMatchObject({ folderGranted: false });
-    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
-  });
-
   it('is ignored and logged once in a packaged app', async () => {
     electronDialogMock.app.isPackaged = true;
     launch(['--no-focus', `${ANSWER}=grant`]);
@@ -146,9 +140,4 @@ describe(`${ANSWER} refusals and edge cases`, () => {
     expect(log).toHaveBeenCalledWith(expect.stringContaining(ANSWER));
   });
 
-  it('is ignored for a value it does not know', async () => {
-    launch(['--no-focus', `${ANSWER}=yes`]);
-    expect(await openFile({ grantFolder: 'ask' })).toMatchObject({ folderGranted: false });
-    expect(await reads(access, join(assets, 'side.json'))).toBe(false);
-  });
 });

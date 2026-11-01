@@ -34,7 +34,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('the real path of a path that may not exist yet', () => {
+describe('K4 the real path of a path that may not exist yet', { tags: ['critical'] }, () => {
   it('resolves a folder that another write created between the two looks', async () => {
     await mkdir(join(base, 'made', 'inner'), { recursive: true });
     race.misses.set(join(base, 'made', 'inner', 'file.txt'), 1);

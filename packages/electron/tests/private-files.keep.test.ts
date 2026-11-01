@@ -18,7 +18,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('private files', () => {
+describe('K4 private files', { tags: ['critical'] }, () => {
   it('open the temp file with the owner-only mode, and an ordinary write with none', async () => {
     const handle = { writeFile: vi.fn(() => Promise.resolve()), sync: vi.fn(() => Promise.resolve()), close: vi.fn(() => Promise.resolve()) };
     const open = vi.fn(() => Promise.resolve(handle));

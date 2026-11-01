@@ -56,7 +56,7 @@ const freshAccess = async (): Promise<DocumentAccess> => {
 
 const leftovers = async (dir: string): Promise<string[]> => (await names(dir)).filter((name) => name.includes('brock-copy'));
 
-describe('rename between two granted folders', () => {
+describe('K3 rename between two granted folders', { tags: ['critical'] }, () => {
   it('moves a file and a folder from one grant to another on the same drive', async () => {
     const { access, granted } = world;
     await put(join(granted, 'tree', 'a.txt'), 'A');
@@ -77,7 +77,7 @@ describe('rename between two granted folders', () => {
   });
 });
 
-describe('rename across drives', () => {
+describe('K3 rename across drives', { tags: ['critical'] }, () => {
   it('copies, verifies and then removes a file', async () => {
     const { access, granted } = world;
     const from = join(granted, 'sub', 'in.txt');
@@ -116,7 +116,7 @@ describe('rename across drives', () => {
 
 });
 
-describe('rename across drives that fail', () => {
+describe('K3 rename across drives that fail', { tags: ['critical'] }, () => {
   it('keeps the original and leaves no copy when the copy does not verify', async () => {
     const { granted } = world;
     const from = join(granted, 'sub', 'in.txt');
@@ -157,7 +157,7 @@ describe('rename across drives that fail', () => {
 
 });
 
-describe('rename across drives that refuse a link', () => {
+describe('K3 rename across drives that refuse a link', { tags: ['critical'] }, () => {
   it('refuses a link, since a copy never carries one', async () => {
     const { access, granted } = world;
     await symlink(join(granted, 'sub'), join(granted, 'shortcut'), dirLink);
@@ -177,7 +177,7 @@ describe('rename across drives that refuse a link', () => {
   });
 });
 
-describe('rename across drives when the source changes after the copy', () => {
+describe('K3 rename across drives when the source changes after the copy', { tags: ['critical'] }, () => {
   it('leaves a file that was edited after it was copied, and says so', async () => {
     const { access, granted } = world;
     const from = join(granted, 'sub', 'in.txt');

@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { isBenignBrowserError } from '../src/log/is-benign-browser-error';
 
-describe('isBenignBrowserError', () => {
+describe('K1 isBenignBrowserError', { tags: ['critical'] }, () => {
   it('matches the ResizeObserver loop notice exactly and nothing else', () => {
     expect(isBenignBrowserError('ResizeObserver loop completed with undelivered notifications.')).toBe(true);
     expect(isBenignBrowserError('ResizeObserver loop limit exceeded')).toBe(false);

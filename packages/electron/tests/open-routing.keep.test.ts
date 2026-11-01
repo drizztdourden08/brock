@@ -14,7 +14,7 @@ const TARGETS = openTargets({
 
 const LINK: OpenRequest = { kind: 'url', url: 'my-app://install/abc', scheme: 'my-app', source: 'launch' };
 
-describe('openRequestsOf', () => {
+describe('K1 openRequestsOf', { tags: ['critical'] }, () => {
   it('finds deep links and declared file types, skipping the executable, flags and anything else', () => {
     const cwd = resolve('/work');
     const argv = ['C:\\Apps\\MyApp.exe', '--allow-file-access-from-files', 'MY-APP://install/abc', 'packs/theme.mypack', 'notes.txt', 'https://example.com'];
@@ -30,7 +30,7 @@ describe('openRequestsOf', () => {
   });
 });
 
-describe('createOpenRouter', () => {
+describe('K1 createOpenRouter', { tags: ['critical'] }, () => {
   it('holds requests until ready, then gives each to main handlers and, once taken, to the renderer', () => {
     const router = createOpenRouter();
     const main: OpenRequest[] = [];
@@ -65,7 +65,7 @@ describe('createOpenRouter', () => {
   });
 });
 
-describe('shouldLockInstance', () => {
+describe('K1 shouldLockInstance', { tags: ['critical'] }, () => {
   const none = { schemes: [], extensions: [] };
 
   it('locks an app that opens links or files, and one that asks', () => {

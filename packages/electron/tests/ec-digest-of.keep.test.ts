@@ -21,7 +21,7 @@ const recorder = (): { verify: CryptoVerify; algorithms: unknown[] } => {
 const ecPair = (namedCurve: string): { publicKey: KeyObject; privateKey: KeyObject } =>
   generateKeyPairSync('ec', { namedCurve });
 
-describe('ecDigestOf with KeyObject inputs', () => {
+describe('K1 ecDigestOf with KeyObject inputs', { tags: ['critical'] }, () => {
   it.each(curves)('picks the default digest for a bare public %s key', (curve) => {
     expect(ecDigestOf(ecPair(curve).publicKey)).toBe('sha256');
   });
@@ -49,7 +49,7 @@ describe('ecDigestOf with KeyObject inputs', () => {
   });
 });
 
-describe('ecNullDigestVerify with KeyObject inputs', () => {
+describe('K1 ecNullDigestVerify with KeyObject inputs', { tags: ['critical'] }, () => {
   it.each(curves)('hands the picked digest to the original for a public %s KeyObject', (curve) => {
     const { verify: original, algorithms } = recorder();
     const { publicKey } = ecPair(curve);

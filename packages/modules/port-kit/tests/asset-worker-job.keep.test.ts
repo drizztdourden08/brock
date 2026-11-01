@@ -31,7 +31,7 @@ const channelWorker = (steps: AssetWorkerSteps): { spawn: SpawnAssetWorker; term
   return { spawn, terminated: () => terminated };
 };
 
-describe('runAssetWorkerJob', () => {
+describe('S2 runAssetWorkerJob', { tags: ['standard'] }, () => {
   it('runs the app steps in order and reports through the job', async () => {
     const jobs = fakeJob();
     const worker = channelWorker(STEPS);
@@ -80,7 +80,7 @@ describe('runAssetWorkerJob', () => {
   });
 });
 
-describe('runAssetWorkerJob in a worker thread', () => {
+describe('E2 runAssetWorkerJob in a worker thread', { tags: ['e2e'] }, () => {
   const worker = new URL('./fakes/echo-asset-worker.mjs', import.meta.url);
 
   it('posts each step to a real worker with its data', async () => {

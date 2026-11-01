@@ -9,7 +9,7 @@ import { createWatchRegistry } from '../src/main/documents/watch-registry';
 import type { WatchFn } from '../src/main/documents/watch-folder.type';
 import { makeBase } from './folder-fixture';
 
-describe('a watch that starts while its grant is revoked', () => {
+describe('K4 a watch that starts while its grant is revoked', { tags: ['critical'] }, () => {
   it('is stopped and refused when the root is no longer held after it registered', async () => {
     const dir = await makeBase('brock-race-');
     const closed = vi.fn();
@@ -31,7 +31,7 @@ describe('a watch that starts while its grant is revoked', () => {
   });
 });
 
-describe('granting a remembered folder again', () => {
+describe('K4 granting a remembered folder again', { tags: ['critical'] }, () => {
   it('grants the exact real path the checks ran on, with no second resolve', async () => {
     const calls: string[] = [];
     const folders = loose<FolderGrants>({

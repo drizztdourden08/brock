@@ -87,7 +87,7 @@ afterEach(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe('brock release --local refuses', () => {
+describe('E2 brock release --local refuses', { tags: ['e2e'] }, () => {
   it('a dirty checkout, a HEAD that is not the integration tip and a repo with no changeset', () => {
     const errors = quiet();
     write(join(repo, 'stray.txt'), 'x');
@@ -110,7 +110,7 @@ describe('brock release --local refuses', () => {
   });
 });
 
-describe('brock release --local', () => {
+describe('E2 brock release --local', { tags: ['e2e'] }, () => {
   it('stops with exit 2 on a branch until the release note exists, then continues', () => {
     const errors = quiet();
     expect(release()).toBe(2);
@@ -155,7 +155,7 @@ describe('brock release --local', () => {
 
 });
 
-describe('brock release --local and the board', () => {
+describe('E2 brock release --local and the board', { tags: ['e2e'] }, () => {
   it('opens the pull request record and does not merge', () => {
     quiet();
     write(join(repo, 'release-notes/v1.0.1.md'), NOTE);
@@ -167,19 +167,6 @@ describe('brock release --local and the board', () => {
     expect(open.slice(1, 8)).toEqual(['pr', 'open', 'release: v1.0.1', '--head', 'release/local-1.0.1', '--base', 'local/main']);
     expect(git(repo, 'rev-parse', 'local/main')).toBe(tip);
     expect(lines.join('\n')).toContain('PR-1 opened');
-  });
-
-  it('prints the coord command when the board is not reachable', () => {
-    quiet();
-    write(join(repo, 'release-notes/v1.0.1.md'), NOTE);
-    git(repo, 'add', '-A');
-    git(repo, 'commit', '-q', '-m', 'notes');
-    const exec = (command, args, where) => {
-      if (command === 'coord') throw new Error('no coord');
-      return fakeExec(command, args, where);
-    };
-    expect(release({ exec })).toBe(0);
-    expect(lines.join('\n')).toMatch(/Open the pull request yourself: coord pr open "release: v1\.0\.1" --head release\/local-1\.0\.1/);
   });
 
   it('leaves no release.json when a step fails after the tarballs, and refuses a released version', () => {

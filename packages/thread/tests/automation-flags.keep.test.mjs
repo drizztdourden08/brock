@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { automationFlags } from '../src/launch/automation-flags.mjs';
 
-describe('automationFlags', () => {
+describe('K2 automationFlags', { tags: ['critical'] }, () => {
   it('keeps a hidden launch automated and silent', () => {
     expect(automationFlags({ visible: false, sound: false })).toEqual(['--no-focus', '--muted']);
   });

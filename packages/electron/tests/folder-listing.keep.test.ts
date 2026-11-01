@@ -55,7 +55,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('listing a granted folder', () => {
+describe('K4 listing a granted folder', { tags: ['critical'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });
@@ -99,7 +99,7 @@ describe('listing a granted folder', () => {
 
 });
 
-describe('listing a folder that holds links', () => {
+describe('K4 listing a folder that holds links', { tags: ['critical'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });
@@ -140,7 +140,7 @@ describe('listing a folder that holds links', () => {
   });
 });
 
-describe('the recent list for main code', () => {
+describe('K3 the recent list for main code', { tags: ['critical'] }, () => {
   const open = async (path: string, profileId: string): Promise<void> => {
     electron.dialog.showOpenDialog.mockResolvedValue({ canceled: false, filePaths: [path] });
     await call('document:open', undefined, profileId);

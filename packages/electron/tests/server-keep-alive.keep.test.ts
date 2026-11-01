@@ -22,7 +22,7 @@ const startChild = async (): Promise<{ child: ReturnType<typeof fork>; exit: Pro
   return { child, exit };
 };
 
-describe('a server whose start function holds nothing open', () => {
+describe('E2 a server whose start function holds nothing open', { tags: ['e2e'] }, () => {
   it('stays up past two heartbeats, and exits with code 0 once stopped', async () => {
     const { child, exit } = await startChild();
     const early = await Promise.race([exit, new Promise<'alive'>((alive) => setTimeout(() => alive('alive'), PAST_TWO_HEARTBEATS_MS))]);
@@ -30,5 +30,5 @@ describe('a server whose start function holds nothing open', () => {
     if (process.platform === 'win32') child.send('stop');
     else child.kill('SIGTERM');
     expect(await exit).toBe(0);
-  }, 20_000);
+  });
 });

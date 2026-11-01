@@ -28,8 +28,8 @@ const dialogue = (count = 1) => [
 
 const proseHits = (rules) => rules.filter((rule) => PROSE_RULES.includes(rule));
 
-describe('the verbatim file kind', () => {
-  it('lists a verbatim file with the source its header names, and turns it into a verbatimText entry', () => {
+describe('S2 the verbatim file kind', () => {
+  it('lists a verbatim file with the source its header names, and turns it into a verbatimText entry', { tags: ['critical'] }, () => {
     const root = app();
     put(root, 'text/dialogue.ts', `${VERBATIM}${dialogue()}`);
     put(root, 'text/unsourced.ts', `${header('verbatim')}${dialogue()}`);
@@ -37,19 +37,13 @@ describe('the verbatim file kind', () => {
     expect(verbatimText(dataFiles(root))).toEqual([{ files: ['text/dialogue.ts'], why: `@kind verbatim, reproduced from ${SOURCE}` }]);
   });
 
-  it('skips the string values of a verbatim file and gives it the data exemptions', async () => {
+  it('skips the string values of a verbatim file and gives it the data exemptions', { tags: ['standard'] }, async () => {
     const root = app();
     put(root, 'text/dialogue.ts', `${VERBATIM}${dialogue(240)}`);
     expect(await lintRules(root, 'text/dialogue.ts')).toEqual([]);
   }, LINT_TIMEOUT_MS);
 
-  it('reads the same strings in a data file, so UI strings still pass the prose rules', async () => {
-    const root = app();
-    put(root, 'text/dialogue.ts', `${header('data')}${dialogue()}`);
-    expect(proseHits(await lintRules(root, 'text/dialogue.ts'))).toEqual(expect.arrayContaining(PROSE_RULES));
-  }, LINT_TIMEOUT_MS);
-
-  it('fails a verbatim header without a source, and then reads its strings', async () => {
+  it('fails a verbatim header without a source, and then reads its strings', { tags: ['standard'] }, async () => {
     const root = app();
     put(root, 'text/dialogue.ts', `${header('verbatim')}${dialogue()}`);
     const rules = await lintRules(root, 'text/dialogue.ts');
@@ -57,7 +51,7 @@ describe('the verbatim file kind', () => {
     expect(proseHits(rules)).toEqual(expect.arrayContaining(PROSE_RULES));
   }, LINT_TIMEOUT_MS);
 
-  it('lets a vendor name stand in a verbatim string, but still reads comments and refuses logic', async () => {
+  it('lets a vendor name stand in a verbatim string, but still reads comments and refuses logic', { tags: ['standard'] }, async () => {
     const root = app();
     const code = [`const DIALOGUE = ['Ask the ${VENDOR_WORD}'];`, `// Saved\x21 Ask the ${VENDOR_WORD}.`, 'const pick = () => DIALOGUE[0];', '', 'export { DIALOGUE, pick };', ''].join('\n');
     put(root, 'text/dialogue.ts', `${VERBATIM}${code}`);

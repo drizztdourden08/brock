@@ -36,7 +36,7 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-describe('the write guard of the base file handlers', () => {
+describe('K4 the write guard of the base file handlers', { tags: ['critical'] }, () => {
   it('asks the guard before every write and refuses with its reason', async () => {
     const asked: string[] = [];
     fileGuard.current = (request) => {
@@ -61,7 +61,7 @@ describe('the write guard of the base file handlers', () => {
   });
 });
 
-describe('FileStore.trash', () => {
+describe('K4 FileStore.trash', { tags: ['critical'] }, () => {
   it('hands the full path to the trash and skips a missing file', async () => {
     const trashed: string[] = [];
     const files = createNodeFileStore({ trashItem: (full) => { trashed.push(full); return Promise.resolve(); } });
@@ -86,7 +86,7 @@ describe('FileStore.trash', () => {
   });
 });
 
-describe('the audio mute channels', () => {
+describe('K4 the audio mute channels', { tags: ['critical'] }, () => {
   it('mute and unmute the app window and read its state back', async () => {
     let muted = false;
     const win = { webContents: { setAudioMuted: (value: boolean) => { muted = value; }, isAudioMuted: () => muted } };

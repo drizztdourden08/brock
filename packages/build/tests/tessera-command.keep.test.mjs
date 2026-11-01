@@ -40,14 +40,14 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('brock tessera', () => {
-  it('hands every word to runTessera with the working folder and returns its exit code', async () => {
+describe('K2 brock tessera', () => {
+  it('hands every word to runTessera with the working folder and returns its exit code', { tags: ['critical'] }, async () => {
     const root = repo({ 'package.json': { name: 'app' }, ...tesseraAt('') });
     expect(await runTesseraCommand({ args: ['new', 'compound', 'SaveSlot', '--help'], cwd: root })).toBe(3);
     expect(called(root)).toEqual({ args: ['new', 'compound', 'SaveSlot', '--help'], cwd: root });
   });
 
-  it('finds Tessera in an app of the workspace when the repo root has none', async () => {
+  it('finds Tessera in an app of the workspace when the repo root has none', { tags: ['critical'] }, async () => {
     const root = repo({
       'package.json': { name: 'acme' },
       'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n",
@@ -59,14 +59,14 @@ describe('brock tessera', () => {
     expect(called(root, 'apps/desktop/')).toEqual({ args: ['--help'], cwd: root });
   });
 
-  it('says how to install Tessera when it is missing', async () => {
+  it('S3 says how to install Tessera when it is missing', { tags: ['standard'] }, async () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const root = repo({ 'package.json': { name: 'app' } });
     expect(await runTesseraCommand({ args: ['new'], cwd: root })).toBe(1);
     expect(errors).toHaveBeenCalledWith('brock tessera: @drizztdourden08/tessera is not installed in this app; add it with pnpm add -D @drizztdourden08/tessera');
   });
 
-  it('says to update a Tessera without the cli entry', async () => {
+  it('S3 says to update a Tessera without the cli entry', { tags: ['standard'] }, async () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const root = repo({ 'package.json': { name: 'app' }, ...tesseraAt('', { '.': './cli.mjs' }) });
     expect(await runTesseraCommand({ args: ['new'], cwd: root })).toBe(1);

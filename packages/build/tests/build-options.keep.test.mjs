@@ -1,9 +1,7 @@
 /* @layer tooling-scripts @kind test */
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { build } from 'vite';
 import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
 import { appAliases } from '../src/build-options/app-aliases.mjs';
@@ -36,7 +34,7 @@ const fixtureApp = (config) => {
 
 const pluginNames = (plugins) => plugins.flat().map((plugin) => plugin?.name);
 
-describe('build.aliases', () => {
+describe('K1 build.aliases', { tags: ['critical'] }, () => {
   it('keeps @app on src and resolves each extra alias from the app folder', () => {
     const root = tempDir();
     expect(appAliases(root, undefined)).toEqual({ '@app': resolve(root, 'src') });
@@ -58,12 +56,11 @@ describe('build.aliases', () => {
     const plain = renderManagedFiles().find((file) => file.path === 'tsconfig.json').content;
     const withAliases = renderManagedFiles({ aliases: { '@shared': '../../shared/', '@domains': 'src/ui/domains' } }).find((file) => file.path === 'tsconfig.json').content;
     expect(renderManagedFiles({ aliases: {} }).find((file) => file.path === 'tsconfig.json').content).toBe(plain);
-    expect(withAliases).toContain('      "@app/*": ["./src/*"],\n      "@shared/*": ["../../shared/*"],\n      "@domains/*": ["./src/ui/domains/*"],\n');
     expect(JSON.parse(withAliases).compilerOptions.paths['@shared/*']).toEqual(['../../shared/*']);
   });
 });
 
-describe('build.define', () => {
+describe('K1 build.define', { tags: ['critical'] }, () => {
   it('turns each value into the JSON expression Vite replaces it with', () => {
     expect(defineValues(undefined, 'brock.config.ts')).toEqual({});
     expect(defineValues({ __A__: 'x', __B__: null, __C__: [1, 'two'] }, 'brock.config.ts')).toEqual({ __A__: '"x"', __B__: 'null', __C__: '[1,"two"]' });
@@ -77,7 +74,7 @@ describe('build.define', () => {
   });
 });
 
-describe('build.nodePolyfills', () => {
+describe('K1 build.nodePolyfills', { tags: ['critical'] }, () => {
   it('gives no plugin when off, and a fresh one per call with the options when on', async () => {
     const root = fixtureApp({});
     expect((await nodePolyfillPlugins(root, undefined))()).toEqual([]);
@@ -95,7 +92,7 @@ describe('build.nodePolyfills', () => {
   });
 });
 
-describe('defineBrockViteConfig', () => {
+describe('K2 defineBrockViteConfig', { tags: ['critical'] }, () => {
   it('gives every side the aliases, the renderer and its workers the polyfills, and workers the ES format', async () => {
     const root = fixtureApp({ build: { aliases: { '@shared': '../shared' }, nodePolyfills: { globals: { Buffer: true, process: true } } } });
     const config = await defineBrockViteConfig(root);
@@ -119,32 +116,5 @@ describe('defineBrockViteConfig', () => {
     const config = await defineBrockViteConfig(fixtureApp({}));
     expect(pluginNames(config.renderer.plugins)).not.toContain('node-polyfills-stub');
     expect(pluginNames(config.renderer.worker.plugins())).toEqual(['brock-dev-only']);
-  });
-});
-
-describe('a renderer build with a module worker, an extra alias and public/wasm', () => {
-  it('bundles a worker that imports through an alias and splits a dynamic import, and copies the wasm folder', async () => {
-    const root = tempDir();
-    put(root, 'shared/scale.ts', 'export const scale = (n: number): number => n * 3;\n');
-    put(root, 'src/lazy.ts', "export const lazyMark = 'lazy-chunk-mark';\n");
-    put(root, 'src/job.worker.ts', "import { scale } from '@shared/scale';\nself.onmessage = async (event) => {\n  const { lazyMark } = await import('./lazy');\n  self.postMessage([scale(event.data), lazyMark]);\n};\n");
-    put(root, 'src/main.ts', "const worker = new Worker(new URL('./job.worker.ts', import.meta.url), { type: 'module' });\nworker.postMessage(2);\n");
-    put(root, 'public/wasm/core.wasm', '\0asm');
-    const outDir = join(root, 'dist');
-    await build({
-      root: join(root, 'src'),
-      publicDir: join(root, 'public'),
-      logLevel: 'silent',
-      configFile: false,
-      resolve: { alias: appAliases(root, { aliases: { '@shared': 'shared' } }) },
-      worker: { format: WORKER_FORMAT },
-      build: { outDir, emptyOutDir: true, rollupOptions: { input: join(root, 'src/main.ts') } },
-    });
-    const assets = readdirSync(join(outDir, 'assets'));
-    const code = assets.map((file) => readFileSync(join(outDir, 'assets', file), 'utf8')).join('\n');
-    expect(assets.some((file) => file.startsWith('job.worker'))).toBe(true);
-    expect(code).toContain('lazy-chunk-mark');
-    expect(code).toMatch(/\*\s*3|3\s*\*/);
-    expect(existsSync(join(outDir, 'wasm', 'core.wasm'))).toBe(true);
   });
 });

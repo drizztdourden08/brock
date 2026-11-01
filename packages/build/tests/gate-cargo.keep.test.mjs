@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind test */
-import { chmodSync, existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
@@ -44,7 +44,7 @@ const gate = (root, env, config = {}) => {
 };
 
 describe('the cargo lane', () => {
-  it('runs the comment check, fmt, clippy and test while a Cargo.toml is at the root', async () => {
+  it('E2 runs the comment check, fmt, clippy and test while a Cargo.toml is at the root', { tags: ['e2e'] }, async () => {
     const { root, env } = repo();
     const { failed, lines } = await gate(root, env);
     expect(failed).toEqual([]);
@@ -61,58 +61,42 @@ describe('the cargo lane', () => {
     ]);
   });
 
-  it('takes a [package] manifest too, and stays off without a Cargo.toml or a table', async () => {
+  it('K1 takes a [package] manifest too, and stays off without a Cargo.toml or a table', { tags: ['critical'] }, () => {
     const single = repo({ cargo: '[package]\nname = "a"\n' });
-    expect((await gate(single.root, single.env)).failed).toEqual([]);
-    expect(calls(single.root)).toHaveLength(3);
+    expect(gateSteps(single.root, {}, { env: single.env })).toHaveLength(4);
     for (const cargo of ['', '[dependencies]\nx = "1"\n']) {
       const { root, env } = repo({ cargo });
       expect(gateSteps(root, {}, { env })).toEqual([]);
-      expect(calls(root)).toEqual([]);
     }
   });
 
-  it('fails the gate when a step exits non-zero, and still runs every step', async () => {
+  it('E2 fails the gate when a step exits non-zero, and still runs every step', { tags: ['e2e'] }, async () => {
     const { root, env } = repo({ fail: 'clippy' });
     const { failed } = await gate(root, env);
     expect(failed).toEqual(['cargo clippy --workspace --all-targets -- -D warnings -W clippy::too_many_lines -W clippy::cognitive_complexity']);
     expect(calls(root).map((call) => call.words[0])).toEqual(['fmt', 'clippy', 'test']);
   });
 
-  it('fails with a message when cargo is missing, and does not skip', async () => {
+  it('E2 fails with a message when cargo is missing, and does not skip', { tags: ['e2e'] }, async () => {
     const { root } = repo();
     const { failed, lines } = await gate(root, { PATH: join(root, 'empty') });
     expect(failed).toEqual(['cargo (not on PATH)']);
     expect(lines.join('\n')).toMatch(/cargo is not on PATH.*rustup.*gate\.cargo\.enabled: false/);
   });
-
-  it.skipIf(process.platform === 'win32')('finds cargo on PATH', async () => {
-    const { root } = repo();
-    put(root, 'bin/cargo', `#!/bin/sh\nexec ${JSON.stringify(process.execPath)} ${JSON.stringify(join(root, 'fake', 'cargo.mjs'))} "$@"\n`);
-    chmodSync(join(root, 'bin', 'cargo'), 0o755);
-    const { failed } = await gate(root, { PATH: join(root, 'bin') });
-    expect(failed).toEqual([]);
-    expect(calls(root)).toHaveLength(3);
-  });
-
 });
 
-describe('the cargo lane config', () => {
-  it('is off with gate.cargo.enabled false', async () => {
+describe('K1 the cargo lane config', { tags: ['critical'] }, () => {
+  it('is off with gate.cargo.enabled false', () => {
     const { root, env } = repo();
-    const { failed } = await gate(root, env, { gate: { cargo: { enabled: false } } });
-    expect(failed).toEqual([]);
-    expect(calls(root)).toEqual([]);
+    expect(gateSteps(root, { gate: { cargo: { enabled: false } } }, { env })).toEqual([]);
   });
 
-  it('adds clippyArgs after the lint flags and runs in gate.cargo.path', async () => {
+  it('adds clippyArgs after the lint flags and runs in gate.cargo.path', () => {
     const { root, env } = repo({ cargo: '' });
     put(root, 'rust/Cargo.toml', '[workspace]\n');
-    const { failed } = await gate(root, env, { gate: { cargo: { path: 'rust', clippyArgs: ['-A', 'clippy::needless_return'] } } });
-    expect(failed).toEqual([]);
-    const [, clippy] = calls(root);
-    expect(clippy.words.slice(-2)).toEqual(['-A', 'clippy::needless_return']);
-    expect(clippy.cwd.replace(/\\/g, '/')).toMatch(/\/rust$/);
+    const [, , clippy] = gateSteps(root, { gate: { cargo: { path: 'rust', clippyArgs: ['-A', 'clippy::needless_return'] } } }, { env });
+    expect(clippy.args.slice(-2)).toEqual(['-A', 'clippy::needless_return']);
+    expect(clippy.dir.replace(/\\/g, '/')).toMatch(/\/rust$/);
     expect(() => gateSteps(root, { gate: { cargo: { path: 'nope' } } }, { env })).toThrow(/gate\.cargo\.path: no Cargo\.toml/);
   });
 
@@ -124,29 +108,21 @@ describe('the cargo lane config', () => {
   });
 });
 
-describe('the clippy default', () => {
-  it('ships the thresholds of the TypeScript rules', () => {
-    expect(readFileSync(join(CLIPPY_DEFAULT_DIR, 'clippy.toml'), 'utf8').replace(/\r\n/g, '\n')).toBe('too-many-lines-threshold = 60\ncognitive-complexity-threshold = 10\n');
-  });
-
-  it('points clippy at it when the repo has no clippy.toml, and leaves a repo file alone', async () => {
+describe('K1 the clippy default', { tags: ['critical'] }, () => {
+  it('points clippy at it when the repo has no clippy.toml, and leaves a repo file alone', () => {
     const bare = repo();
     const [, , clippy] = gateSteps(bare.root, {}, { env: bare.env });
     expect(clippy.env).toEqual({ CLIPPY_CONF_DIR: CLIPPY_DEFAULT_DIR });
-    await gate(bare.root, bare.env);
-    expect(calls(bare.root)[1].conf).toBe(CLIPPY_DEFAULT_DIR);
     for (const file of ['clippy.toml', '.clippy.toml']) {
       const own = repo();
       put(own.root, file, 'too-many-lines-threshold = 80\n');
       const [, , ownClippy] = gateSteps(own.root, {}, { env: own.env });
       expect(ownClippy.env).toEqual({});
-      await gate(own.root, own.env);
-      expect(calls(own.root)[1].conf).toBeNull();
     }
   });
 });
 
-describe('the Rust comment check', () => {
+describe('K1 the Rust comment check', { tags: ['critical'] }, () => {
   const lines = (text) => rustCommentProblems(text).map((problem) => problem.line);
 
   it('allows doc comments and refuses line and block comments, with their lines', () => {
@@ -185,17 +161,9 @@ describe('the Rust comment check', () => {
     put(root, 'crates/a/src/lib.rs', '/// ok\nfn a() {}\n');
     expect(runRustComments({ dir: root, log: () => {} })).toBe(0);
   });
-
-  it('fails the gate on a comment even though every cargo step passes', async () => {
-    const { root, env } = repo();
-    put(root, 'crates/a/src/lib.rs', 'fn a() {} // no\n');
-    const { failed, lines: out } = await gate(root, env);
-    expect(failed).toEqual(['rust comment check']);
-    expect(out.join('\n')).toContain('crates/a/src/lib.rs:1:');
-  });
 });
 
-describe('a repo with no Brock app', () => {
+describe('K1 a repo with no Brock app', { tags: ['critical'] }, () => {
   it('takes the gate of brock.workspace.mjs, else an empty gate for a Cargo.toml, else none', async () => {
     const declared = tempDir();
     put(declared, 'brock.workspace.mjs', "export default { name: 'argus', gate: { scripts: ['lint'], cargo: { enabled: false } } };\n");

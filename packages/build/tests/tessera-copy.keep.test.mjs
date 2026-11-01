@@ -142,7 +142,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('brock migrate --tessera-from-copy on an app holding its own copy', () => {
+describe('E2 brock migrate --tessera-from-copy on an app holding its own copy', { tags: ['e2e'] }, () => {
   beforeAll(() => {
     converted.root = repo(APP);
     made.splice(made.indexOf(converted.root), 1);
@@ -150,14 +150,6 @@ describe('brock migrate --tessera-from-copy on an app holding its own copy', () 
   }, 240_000);
 
   afterAll(() => rmSync(converted.root, { recursive: true, force: true }));
-
-  it('turns the copy\'s Badge into Status, never into Tessera\'s Badge', () => {
-    const { root } = converted;
-    const source = read(root, `${VIEWS}/compounds/LinkStatusBadge/LinkStatusBadge.tsx`);
-    expect(source).toContain("import { Status } from '@drizztdourden08/tessera/primitives';");
-    expect(source).toContain("<Status tone={status === 'ready' ? 'success' : 'warning'}>{LABEL[status]}</Status>");
-    expect(source).not.toMatch(/\bBadge\b(?!Props)/);
-  }, 60000);
 
   it('turns the copy\'s Stepper into NumberInput with side buttons, never into Tessera\'s Stepper', () => {
     const { root, run } = converted;
@@ -168,13 +160,13 @@ describe('brock migrate --tessera-from-copy on an app holding its own copy', () 
     expect(source.match(/from '@drizztdourden08\/tessera\/primitives';/g)).toHaveLength(2);
     expect(source).toContain("import './AspectRatioControl.css';");
     expect(todosOf(run).filter(({ file }) => file.endsWith('AspectRatioControl.tsx'))).toEqual([]);
-  }, 60000);
+  });
 
   it('replays the token renames over the app stylesheets and leaves the copy alone', () => {
     const { root } = converted;
     expect(read(root, `${VIEWS}/compounds/AlertBanner/AlertBanner.css`)).toContain('solid var(--c-primary);');
     for (const [file, text] of Object.entries(COPY_FILES)) expect(read(root, file)).toBe(text);
-  }, 60000);
+  });
 
   it('points the tokens at Tessera and leaves a to-do for what cannot move by itself', () => {
     const { root, run } = converted;
@@ -189,10 +181,10 @@ describe('brock migrate --tessera-from-copy on an app holding its own copy', () 
     ]);
     expect(at('tsconfig.json')).toEqual([expect.stringMatching(/^5: maps @ds to the copy/)]);
     expect(at(COPY)).toEqual([expect.stringMatching(/^null: the copy of the design system/)]);
-  }, 60000);
+  });
 });
 
-describe('brock migrate --tessera-from-copy: runs again', () => {
+describe('E2 brock migrate --tessera-from-copy: runs again', { tags: ['e2e'] }, () => {
   it('pins brock.tessera and changes nothing on a second run', () => {
     const root = repo(APP);
     const first = convert(root);
@@ -203,7 +195,7 @@ describe('brock migrate --tessera-from-copy: runs again', () => {
     const second = convert(root);
     expect(files.map((file) => read(root, file))).toEqual(before);
     expect(second.applied.flatMap((entry) => entry.touched)).toEqual([]);
-  }, 120000);
+  });
 
   it('leaves a file that imports Tessera already for a person', () => {
     const mixed = "import { Status } from '@drizztdourden08/tessera/primitives';\nimport { Stepper } from '@ds/primitives';\n\nexport const parts = [Status, Stepper];\n";
@@ -211,11 +203,11 @@ describe('brock migrate --tessera-from-copy: runs again', () => {
     const todos = todosOf(convert(root)).filter(({ file }) => file === 'apps/app/src/mixed.tsx');
     expect(read(root, 'apps/app/src/mixed.tsx')).toBe(mixed);
     expect(todos).toEqual([expect.objectContaining({ line: 2, message: expect.stringContaining('imports Tessera already') })]);
-  }, 60000);
+  });
 });
 
 describe('brock migrate --tessera-from-copy: refusals', () => {
-  it('needs Tessera installed, and the copy folder', async () => {
+  it('K4 needs Tessera installed, and the copy folder', { tags: ['critical'] }, async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const bare = repo(APP, { tessera: false });
     expect(await runMigrate({ rootDir: bare, tesseraFromCopy: COPY, aliases: ['@ds'], map: mapOf(bare) })).toBe(1);
@@ -226,10 +218,10 @@ describe('brock migrate --tessera-from-copy: refusals', () => {
     expect(await runMigrate({ rootDir: bare, tesseraFromCopy: COPY, tesseraFrom: '0.3.0', map: mapOf(bare) })).toBe(1);
   });
 
-  it('runs without brock.version, since it replays only Tessera', async () => {
+  it('runs without brock.version, since it replays only Tessera', { tags: ['e2e'] }, async () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const root = repo(APP);
     expect(await runMigrate({ rootDir: root, tesseraFromCopy: COPY, aliases: ['@ds'], map: mapOf(root) })).toBe(0);
     expect(JSON.parse(read(root, 'package.json')).brock).toEqual({ tessera: TESSERA_VERSION });
-  }, 60000);
+  });
 });

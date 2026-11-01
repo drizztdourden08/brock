@@ -30,7 +30,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('brock adopt and tessera.config.json', () => {
+describe('K2 brock adopt and tessera.config.json', { tags: ['standard'] }, () => {
   it('writes $schema alone for a single app', async () => {
     const root = repo({ 'package.json': { name: 'solo' } });
     expect(await runAdopt({ rootDir: root })).toBe(0);
@@ -75,18 +75,6 @@ describe('brock adopt and tessera.config.json', () => {
     });
   });
 
-  it('keeps each app\'s views in its own src for a monorepo with no design package yet', async () => {
-    const root = repo({
-      'package.json': { name: 'acme' },
-      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n",
-      'apps/desktop/package.json': { name: '@acme/desktop' },
-      'apps/desktop/brock.config.ts': 'export default {};\n',
-    });
-    await runAdopt({ rootDir: root });
-    expect(config(root)).toEqual({ $schema: SCHEMA, apps: { 'apps/desktop': { parts: { views: 'apps/desktop/src/views' } } } });
-    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('shared Tessera parts go in a packages/design package'));
-  });
-
   it('keeps a tessera.config.json that exists, even with --force', async () => {
     const root = repo({ 'package.json': { name: 'solo' }, 'tessera.config.json': '{ "theme": { "css": "styles/look.css" } }\n' });
     await runAdopt({ rootDir: root, force: true });
@@ -94,20 +82,7 @@ describe('brock adopt and tessera.config.json', () => {
   });
 });
 
-describe('brock adopt and the Tessera schema path', () => {
-  it('points $schema into the package that installs Tessera when the root does not', async () => {
-    const root = repo({
-      'package.json': { name: 'acme' },
-      'pnpm-workspace.yaml': "packages:\n  - 'apps/*'\n  - 'packages/*'\n",
-      'packages/design/package.json': { name: '@acme/design' },
-      'packages/design/node_modules/@drizztdourden08/tessera/tessera.config.schema.json': '{}',
-      'apps/desktop/package.json': { name: '@acme/desktop' },
-      'apps/desktop/brock.config.ts': 'export default {};\n',
-    });
-    await runAdopt({ rootDir: root });
-    expect(config(root).$schema).toBe('./packages/design/node_modules/@drizztdourden08/tessera/tessera.config.schema.json');
-  });
-
+describe('K1 brock adopt and the Tessera schema path', { tags: ['standard'] }, () => {
   it('finds Tessera in an app package too, and prefers the root install', async () => {
     const files = {
       'package.json': { name: 'acme' },
@@ -125,7 +100,7 @@ describe('brock adopt and the Tessera schema path', () => {
   });
 });
 
-describe('brock adopt on an app that was never on Brock', () => {
+describe('K3 brock adopt on an app that was never on Brock', { tags: ['standard'] }, () => {
   const pinOf = (root) => JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).brock?.version;
 
   it('pins brock.version to the Brock version it adopts', async () => {

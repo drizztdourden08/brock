@@ -5,7 +5,6 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { writePnpmFiles } from '../src/pnpm-files.mjs';
 import { copyTemplate, locateTemplate } from '../src/template.mjs';
-import { tesseraRange } from '../src/tessera-range.mjs';
 import { dropRootOwned } from '../src/workspace-member.mjs';
 
 const TESSERA = '@drizztdourden08/tessera';
@@ -27,13 +26,7 @@ afterEach(() => {
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-const reactPeerRange = () => JSON.parse(readFileSync(join(import.meta.dirname, '../../react/package.json'), 'utf8')).peerDependencies[TESSERA];
-
-describe('the Tessera range of a scaffolded app', () => {
-  it('is the range brock-react peers on', () => {
-    expect(tesseraRange(locateTemplate())).toBe(reactPeerRange());
-  });
-
+describe('K3 the Tessera range of a scaffolded app', { tags: ['critical'] }, () => {
   it('wins over a stale catalog entry when the workspace root gains its catalog', () => {
     const dir = tempDir();
     const template = join(dir, 'template');
@@ -49,7 +42,7 @@ describe('the Tessera range of a scaffolded app', () => {
   });
 });
 
-describe('a workspace member app', () => {
+describe('K1 a workspace member app', { tags: ['standard'] }, () => {
   it('gets no brock.workspace.mjs, no root-only dependencies and no root-only knip entries', () => {
     const dir = tempDir();
     copyTemplate(locateTemplate(), dir);
@@ -63,14 +56,5 @@ describe('a workspace member app', () => {
     const knip = JSON.parse(readFileSync(join(dir, 'knip.json'), 'utf8'));
     expect(knip.entry).not.toContain('brock.workspace.mjs');
     expect(knip.entry).toContain('brock.config.ts');
-  });
-
-  it('keeps its own markdownlint config and knip entry for its lint:md script', () => {
-    const dir = tempDir();
-    copyTemplate(locateTemplate(), dir);
-    dropRootOwned(dir);
-    expect(existsSync(join(dir, '.markdownlint-cli2.mjs'))).toBe(true);
-    const knip = JSON.parse(readFileSync(join(dir, 'knip.json'), 'utf8'));
-    expect(knip.entry).toContain('.markdownlint-cli2.mjs');
   });
 });

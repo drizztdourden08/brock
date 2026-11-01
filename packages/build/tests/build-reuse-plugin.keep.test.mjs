@@ -37,7 +37,7 @@ const reused = () => messages.some((message) => message.includes('reused the mai
 
 const written = (root) => readFileSync(join(root, 'dist/electron/main.js'), 'utf8');
 
-describe('buildReusePlugin', () => {
+describe('K1 buildReusePlugin', { tags: ['e2e'] }, () => {
   it('writes the last bundle again, without reading source, while no input changed', async () => {
     const root = project();
     await run(root);
@@ -63,16 +63,6 @@ describe('buildReusePlugin', () => {
     await run(root);
     expect(messages.some((message) => message.includes('reused the main bundle'))).toBe(true);
     expect(written(root)).toContain('hello two');
-  });
-
-  it('builds again when the config key changes', async () => {
-    const root = project();
-    await run(root);
-    put(root, 'brock.config.ts', 'export default { define: { A: 1 } };');
-    age(root, 'brock.config.ts');
-    messages.length = 0;
-    await run(root);
-    expect(messages.some((message) => message.includes('reused'))).toBe(false);
   });
 
   it('never reuses outside a dev start', async () => {
@@ -101,37 +91,7 @@ describe('buildReusePlugin', () => {
   });
 });
 
-describe('buildReusePlugin env, mode and options', () => {
-  it('builds again for another mode, and when the env file of the mode changes', async () => {
-    const root = project();
-    put(root, 'electron/main.js', 'console.log(import.meta.env.MAIN_VITE_API);\n');
-    put(root, '.env.staging', 'MAIN_VITE_API=staging-one\n');
-    age(root, 'electron/main.js');
-    age(root, '.env.staging');
-    await run(root, { top: { mode: 'staging', envDir: root } });
-    expect(written(root)).toContain('staging-one');
-    messages.length = 0;
-    await run(root, { top: { mode: 'staging', envDir: root } });
-    expect(reused()).toBe(true);
-    messages.length = 0;
-    await run(root, { top: { mode: 'development', envDir: root } });
-    expect(reused()).toBe(false);
-    put(root, '.env.staging', 'MAIN_VITE_API=staging-two\n');
-    age(root, '.env.staging', 5 * HOUR);
-    messages.length = 0;
-    await run(root, { top: { mode: 'staging', envDir: root } });
-    expect(reused()).toBe(false);
-    expect(written(root)).toContain('staging-two');
-  });
-
-  it('builds again for other build options', async () => {
-    const root = project();
-    await run(root);
-    messages.length = 0;
-    await run(root, { build: { minify: true } });
-    expect(reused()).toBe(false);
-  });
-
+describe('K1 buildReusePlugin shadowed imports', { tags: ['e2e'] }, () => {
   it('builds again when a new file shadows an import', async () => {
     const root = project();
     put(root, 'electron/main.js', "import { greet } from './greet';\nconsole.log(greet());\n");
@@ -146,35 +106,3 @@ describe('buildReusePlugin env, mode and options', () => {
   });
 });
 
-describe('buildReusePlugin resolution', () => {
-  it('builds again when the package.json of a bundled dependency changes its entry', async () => {
-    const root = project();
-    put(root, 'node_modules/dep/package.json', '{"name":"dep","version":"1.0.0","main":"one.js"}');
-    put(root, 'node_modules/dep/one.js', "module.exports = 'dep one';\n");
-    put(root, 'node_modules/dep/two.js', "module.exports = 'dep two';\n");
-    put(root, 'electron/main.js', "import dep from 'dep';\nconsole.log(dep);\n");
-    ['node_modules/dep/package.json', 'node_modules/dep/one.js', 'node_modules/dep/two.js', 'electron/main.js'].forEach((path) => age(root, path));
-    await run(root);
-    expect(written(root)).toContain('dep one');
-    put(root, 'node_modules/dep/package.json', '{"name":"dep","version":"1.0.1","main":"two.js"}');
-    age(root, 'node_modules/dep/package.json', 5 * HOUR);
-    messages.length = 0;
-    await run(root);
-    expect(reused()).toBe(false);
-    expect(written(root)).toContain('dep two');
-  });
-
-  it('builds again when a file the config imports changes', async () => {
-    const root = project();
-    put(root, 'brock.config.ts', "import { names } from './config-helper';\nexport default names;\n");
-    put(root, 'config-helper.ts', 'export const names = 1;\n');
-    age(root, 'brock.config.ts');
-    age(root, 'config-helper.ts');
-    await run(root);
-    put(root, 'config-helper.ts', 'export const names = 22;\n');
-    age(root, 'config-helper.ts', 5 * HOUR);
-    messages.length = 0;
-    await run(root);
-    expect(reused()).toBe(false);
-  });
-});

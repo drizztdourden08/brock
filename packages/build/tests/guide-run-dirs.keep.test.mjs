@@ -62,7 +62,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('guideRunDirs', () => {
+describe('K1 guideRunDirs', { tags: ['critical'] }, () => {
   it('runs at the config folder when it has Tessera', () => {
     const root = workspace({ 'package.json': { name: 'acme', devDependencies: TESSERA } });
     expect(guideRunDirs(root)).toEqual([root]);
@@ -81,7 +81,7 @@ describe('guideRunDirs', () => {
   });
 });
 
-describe('writeGuide in a workspace app', () => {
+describe('S2 writeGuide in a workspace app', { tags: ['standard'] }, () => {
   it('reads the root tessera.config.json and runs tessera guide where Tessera is installed', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const root = workspace(tesseraAt('packages/design/'));

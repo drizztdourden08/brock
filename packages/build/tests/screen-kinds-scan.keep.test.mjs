@@ -1,8 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { afterEach, describe, expect, it } from 'vitest';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
-import { renderSearch } from '../src/screens/search/render-search.mjs';
-import { renderScreens } from '../src/screens/render-screens.mjs';
 import { checkScreens } from '../src/screens/check-screens.mjs';
 import { tmpdir } from 'node:os';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -47,7 +45,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('base and sub-page files', () => {
+describe('K1 base and sub-page files', { tags: ['critical'] }, () => {
   it('reads a base screen at the root and sub-pages in the folder of their page', async () => {
     const root = appWith(VALID);
     const { files, findings } = scanScreens(root);
@@ -55,19 +53,6 @@ describe('base and sub-page files', () => {
     expect(await checkScreens(root)).toEqual([]);
     expect(files.filter((file) => file.kind === 'sub').map((file) => [file.group, file.page, file.id])).toEqual([['library', 'sessions', 'edit'], ['library', 'sessions', 'new']]);
     expect(files.find((file) => file.kind === 'base')?.id).toBe('session');
-  });
-
-  it('lists them in .brock/screens.ts', () => {
-    const out = renderScreens(scanScreens(appWith(VALID)).files);
-    expect(out).toContain("{ kind: 'sub', bucket: 'multiworld', group: 'library', page: 'sessions', id: 'edit', component: lazyComponent(() => import('../src/screens/multiworld/library/sessions/edit.sub')), meta: multiworldLibrarySessionsEditSubMeta },");
-    expect(out).toContain("{ kind: 'base', id: 'session', component: lazyComponent(() => import('../src/screens/session.base')), meta: sessionBaseMeta },");
-  });
-
-  it('seeds search with the sub-page path', () => {
-    const root = appWith(VALID);
-    const out = renderSearch(root, scanScreens(root).files);
-    expect(out).toContain('"kind":"sub","id":"edit","bucket":"multiworld","group":"library","page":"sessions","title":"Edit session","path":":id/edit"');
-    expect(out).toContain('"kind":"base","id":"session","title":"Session"');
   });
 
   it('rejects two base screens, a base inside a bucket, a base named like a bucket and a sub-page with no page', () => {

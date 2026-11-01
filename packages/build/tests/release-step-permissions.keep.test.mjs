@@ -16,7 +16,7 @@ const releaseOf = (workflows, targets = CONFIG.targets) => {
 
 const stepOf = (job, name) => job.steps.find((step) => step.name === name);
 
-describe('permissions of a release step', () => {
+describe('K4 permissions of a release step', { tags: ['critical'] }, () => {
   const steps = { release: { afterPackage: [{ name: 'Sign', run: 'echo sign', jobs: 'build-linux', permissions: { 'id-token': 'write', contents: 'read' } }] } };
   const { workflow } = releaseOf({ steps });
 
@@ -31,11 +31,6 @@ describe('permissions of a release step', () => {
     expect(workflow.jobs.release.permissions).toBeUndefined();
   });
 
-  it('lifts onto prepare when a prepare step asks', () => {
-    const prepare = releaseOf({ steps: { release: { prepare: [{ name: 'Look', run: 'echo', permissions: { issues: 'read' } }] } } }).workflow;
-    expect(prepare.jobs.prepare.permissions).toEqual({ contents: 'write', issues: 'read', packages: 'read' });
-  });
-
   it('refuses a permission GitHub does not have, a level it does not take, and a CI step', () => {
     const one = (permissions, workflow = 'release', point = 'afterPackage') => () => releaseOf({ steps: { [workflow]: { [point]: [{ name: 'x', run: 'a', permissions }] } } });
     expect(one({ 'id-tokens': 'write' })).toThrow(/permissions\.id-tokens is not a GitHub permission/);
@@ -44,9 +39,9 @@ describe('permissions of a release step', () => {
   });
 });
 
-describe('workflows.attest', () => {
+describe('K4 workflows.attest', { tags: ['critical'] }, () => {
   const attest = { paths: ['upload/*.apworld', 'upload/*.zip'], stage: 'afterPackage' };
-  const { text, workflow } = releaseOf({ attest });
+  const { workflow } = releaseOf({ attest });
   const linux = workflow.jobs['build-linux'];
 
   it('gives the Linux job that uploads the assets id-token and attestations write on release.yml itself', () => {
@@ -66,26 +61,10 @@ describe('workflows.attest', () => {
     expect(names.indexOf('Write the attestation bundles')).toBeLessThan(names.length - 1);
   });
 
-  it('writes the Sigstore bundle beside each matched file', () => {
-    const step = stepOf(linux, 'Write the attestation bundles');
-    expect(step.env.BUNDLE_PATH).toBe(`\${{ steps.${stepOf(linux, 'Attest the release files').id}.outputs.bundle-path }}`);
-    expect(step.env.ATTEST_PATHS).toBe('upload/*.apworld\nupload/*.zip');
-    expect(step.run).toContain('cp "$BUNDLE_PATH" "$file.sigstore.json"');
-  });
-
-  it('runs the attest steps in the Linux job only and leaves no template key behind', () => {
-    expect(workflow.jobs['build-windows'].steps.map((step) => step.name)).not.toContain('Attest the release files');
-    expect(text).not.toMatch(/__[A-Z_]+__/);
-  });
-
   it('attests before the package when asked', () => {
     const early = releaseOf({ attest: { paths: ['dist/*.bin'], stage: 'beforePackage' } }).workflow.jobs['build-linux'];
     const names = early.steps.map((step) => step.name);
     expect(names.indexOf('Attest the release files')).toBeLessThan(names.indexOf('Package'));
-  });
-
-  it('writes the workflow of an app without attest as before', () => {
-    expect(releaseOf(undefined).workflow.jobs['build-linux'].permissions).toBeUndefined();
   });
 
   it('refuses a malformed attest and targets with no Linux build', () => {

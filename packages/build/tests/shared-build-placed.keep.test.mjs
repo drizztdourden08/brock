@@ -50,7 +50,7 @@ const oldBuild = async (cache) => {
   return { entry, root, stored: await store(root) };
 };
 
-describe('compiled packages copied from the build cache', () => {
+describe('E2 compiled packages copied from the build cache', { tags: ['e2e'] }, () => {
   it('hits in a worktree that has the same copy with other file times, or none yet', async () => {
     const { entry, root, stored } = await oldBuild(freshCache());
     expect(Object.keys(record(root).placed)).toEqual(['@scope/pkg']);
@@ -76,7 +76,7 @@ describe('compiled packages copied from the build cache', () => {
   });
 });
 
-describe('files outside the repository', () => {
+describe('K1 files outside the repository', { tags: ['critical'] }, () => {
   it('are keyed by content, so other file times give the same key, and other content another', () => {
     freshCache();
     const outside = tempDir();

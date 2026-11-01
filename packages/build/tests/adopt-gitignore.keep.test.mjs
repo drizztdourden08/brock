@@ -30,7 +30,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('ignoreGenerated', () => {
+describe('K3 ignoreGenerated', { tags: ['e2e'] }, () => {
   it('ignores every dot-folder, keeps the tracked ones and drops single dot-folder lines', () => {
     const root = gitRepo({ '.gitignore': 'node_modules/\n.vite/\n', '.storybook/main.ts': 'x', 'app/.config/a.json': 'x', '.brock/screens.ts': 'x' });
     ignoreGenerated(root);

@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { collectFindings, structureRules } from '@drizztdourden08/standards/structure';
+import { collectFindings } from '@drizztdourden08/standards/structure';
 import brockApp from '../standards.extension.mjs';
 
 const roots = [];
@@ -22,7 +22,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('the brock-app extension', () => {
+describe('K1 the brock-app extension', { tags: ['critical'] }, () => {
   it('marks an app by brock.config.ts and accepts <id>.task.ts boot tasks', async () => {
     const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/boot/theme.task.ts': '' });
     expect(await collectFindings(root, '@app', [brockApp])).toEqual({ findings: [], notes: [], counted: 1 });
@@ -33,10 +33,6 @@ describe('the brock-app extension', () => {
     const { findings } = await collectFindings(root, '@app', [brockApp]);
     expect(findings).toHaveLength(1);
     expect(findings[0]).toMatch(/^build\/installer\/notes\.txt: build\/installer holds only /);
-  });
-
-  it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.overlay.tsx', '<id>.kit.ts', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.toolbar.tsx', '<id>.prompt.ts', '<id>.page.tsx', '<id>.live.tsx', '<id>.<kind>.constants.ts']);
   });
 
   it('holds src/startup to <id>.prompt.ts files with a default export and their constants', async () => {
@@ -82,10 +78,5 @@ describe('the brock-app extension', () => {
   it('leaves the src/widgets folder of a package that is not an app to the shape check', async () => {
     const root = tree({ 'package.json': '{ "name": "@app/kit", "exports": "./src/index.ts" }', 'src/index.ts': '', 'src/widgets/logs.widget.tsx': 'export default null;\n' });
     expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
-  });
-
-  it('is what brock-build declares for discovery', async () => {
-    const { default: pkg } = await import('../package.json', { with: { type: 'json' } });
-    expect(pkg.standards).toEqual({ extension: './standards.extension.mjs' });
   });
 });

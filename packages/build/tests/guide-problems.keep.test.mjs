@@ -35,7 +35,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('guideProblems', () => {
+describe('K3 guideProblems', { tags: ['critical'] }, () => {
   it('names the guide.parts file when its content differs from what tessera guide writes, and leaves it as it was', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const root = app('one\r\n');

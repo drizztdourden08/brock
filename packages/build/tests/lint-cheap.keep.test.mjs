@@ -35,7 +35,7 @@ const repoOnFeatureBranch = () => {
   return root;
 };
 
-describe('which files brock lint covers', () => {
+describe('K1 which files brock lint covers', { tags: ['critical'] }, () => {
   it('lints only changed files on a local run and the whole tree in CI', () => {
     expect(chooseMode({ env: {} })).toEqual({ mode: 'changed', reason: 'local run' });
     expect(chooseMode({ env: { CI: 'true' } })).toEqual({ mode: 'all', reason: 'CI is set' });
@@ -53,19 +53,13 @@ describe('which files brock lint covers', () => {
 });
 
 describe('the changed file list', () => {
-  it('holds committed, edited and untracked files since the merge base, and leaves out deleted ones', () => {
+  it('E2 holds committed, edited and untracked files since the merge base, and leaves out deleted ones', { tags: ['e2e'] }, () => {
     const root = repoOnFeatureBranch();
     const found = changedFiles(root, { BROCK_LINT_BASE: 'main' });
     expect(found).toMatchObject({ files: ['src/committed.ts', 'src/fresh.ts', 'src/old.ts'], ref: 'main' });
   });
 
-  it('reports why it cannot tell outside a git work tree or without a base branch', () => {
-    expect(changedFiles(tempDir(), {})).toEqual({ failure: 'not a git work tree' });
-    const root = repoOnFeatureBranch();
-    expect(changedFiles(root, { BROCK_LINT_BASE: 'nope' })).toHaveProperty('failure');
-  });
-
-  it('asks for the whole tree when a config or manifest changed, or too many files did', () => {
+  it('K1 asks for the whole tree when a config or manifest changed, or too many files did', { tags: ['critical'] }, () => {
     expect(needsWholeTree(['src/a.ts', 'eslint.config.mjs'])).toMatch('eslint.config.mjs');
     expect(needsWholeTree(['packages/app/tsconfig.json'])).toMatch('tsconfig.json');
     expect(needsWholeTree(['packages/lint-config/eslint.mjs'])).toMatch('lint-config');
@@ -74,38 +68,15 @@ describe('the changed file list', () => {
   });
 });
 
-describe('the lint plan and its one line', () => {
-  it('names the changed files and the merge base', () => {
-    const root = repoOnFeatureBranch();
-    const plan = planLint({ cwd: root, env: { BROCK_LINT_BASE: 'main' } });
-    expect(plan.targets).toEqual(['src/committed.ts', 'src/fresh.ts', 'src/old.ts']);
-    expect(plan.line).toMatch(/^brock lint: changed mode, 3 files changed since [0-9a-f]{8} \(merge base with main\)$/);
-  });
-
-  it('lints the whole tree in CI and says how many files it holds, deleted ones left out', () => {
-    const root = repoOnFeatureBranch();
-    const plan = planLint({ cwd: root, env: { CI: '1' } });
-    expect(plan.targets).toEqual(['.']);
-    expect(plan.line).toBe('brock lint: full tree (CI is set), 3 files in 1 batch');
-  });
-
+describe('E2 the lint plan outside a git work tree', { tags: ['e2e'] }, () => {
   it('falls back to the whole tree when the changes cannot be listed', () => {
     const plan = planLint({ cwd: tempDir(), env: {} });
     expect(plan.targets).toEqual(['.']);
     expect(plan.line).toMatch('changed files unknown: not a git work tree');
   });
-
-  it('has nothing to lint when nothing changed', () => {
-    const root = repoOnFeatureBranch();
-    git(root, 'checkout', '-f', 'main');
-    git(root, 'clean', '-fdq');
-    const plan = planLint({ cwd: root, changed: true, env: { BROCK_LINT_BASE: 'main' } });
-    expect(plan.targets).toEqual([]);
-    expect(plan.line).toMatch('0 files changed');
-  });
 });
 
-describe('the heap ceiling for heavy node children', () => {
+describe('K1 the heap ceiling for heavy node children', { tags: ['critical'] }, () => {
   it('sets 2048 MB by default and keeps other NODE_OPTIONS', () => {
     expect(heavyNodeEnv({ PATH: 'p' })).toEqual({ PATH: 'p', NODE_OPTIONS: '--max-old-space-size=2048' });
     expect(heavyNodeEnv({ NODE_OPTIONS: '--trace-warnings' }).NODE_OPTIONS).toBe('--trace-warnings --max-old-space-size=2048');

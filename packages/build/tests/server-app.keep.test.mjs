@@ -14,7 +14,7 @@ import { cleanup, fixtureApp, put, tempDir } from './server-fixture.mjs';
 
 afterEach(cleanup);
 
-describe('a windowless app', () => {
+describe('K1 a windowless app', { tags: ['critical'] }, () => {
   const syncedFiles = (targets) => {
     const root = tempDir();
     put(root, 'package.json', JSON.stringify({ name: 'fixture', type: 'module' }));
@@ -59,7 +59,7 @@ describe('a windowless app', () => {
   });
 });
 
-describe('the build freshness of a server app', () => {
+describe('K1 the build freshness of a server app', { tags: ['critical'] }, () => {
   const age = (path, secondsAgo) => {
     const at = new Date(Date.now() - secondsAgo * 1000);
     utimesSync(path, at, at);
@@ -100,7 +100,7 @@ describe('the build freshness of a server app', () => {
   });
 });
 
-describe('the server command', () => {
+describe('K4 the server command', { tags: ['critical'] }, () => {
   it('prints its usage for an unknown mode and refuses an app that does not target the server', async () => {
     const root = fixtureApp({ targets: ['desktop'] }, {});
     expect(await runServer({ rootDir: root, args: ['package'] })).toBe(1);

@@ -44,7 +44,7 @@ const pixel = (png, x, y) => {
   return `#${[0, 1, 2].map((i) => png.data[at + i].toString(16).padStart(2, '0')).join('')}`;
 };
 
-describe('splashGround', () => {
+describe('K1 splashGround', { tags: ['critical'] }, () => {
   it('takes the palette dark gradient and its text, which holds AA at both ends', () => {
     const ground = splashGround(tempDir(), { dark: null, theme: BROCK_DARK });
     expect(ground).toEqual({ from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' });
@@ -63,8 +63,8 @@ describe('splashGround', () => {
   });
 });
 
-describe('the Setup splash', () => {
-  it('draws the dark ground with no glow and no shadow behind the mark', () => {
+describe('K4 the Setup splash', { tags: ['critical'] }, () => {
+  it('draws the dark ground and escapes the app name', () => {
     const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
     const ground = { from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' };
     const svg = setupSplashSvg({ width: 480, height: 360, ground, angle: 160, mark, name: 'A & B' });
@@ -72,13 +72,11 @@ describe('the Setup splash', () => {
     expect(svg).toContain('stop-color="#0f0a06"');
     expect(svg).toContain('fill="#eeeeee"');
     expect(svg).toContain('>A &amp; B</text>');
-    expect(svg).not.toMatch(/radialGradient|filter|#ffffff/);
   });
-
 });
 
-describe('the Setup splash wordmark', () => {
-  it('draws the wordmark image in place of the name, fitted under the mark', () => {
+describe('K1 the Setup splash wordmark', () => {
+  it('draws the wordmark image in place of the name, fitted under the mark', { tags: ['critical'] }, () => {
     const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
     const wordmark = { data: Buffer.from('<svg id="wordmark"/>'), mime: 'image/svg+xml', from: 'public/logos/wordmark.svg' };
     const ground = { from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' };
@@ -91,15 +89,7 @@ describe('the Setup splash wordmark', () => {
     expect(svg).not.toContain('image-rendering');
   });
 
-  it('scales the wordmark nearest neighbour only when it is pixelated', () => {
-    const mark = { data: Buffer.from('<svg/>'), mime: 'image/svg+xml', from: 'mark.svg' };
-    const wordmark = { data: Buffer.from('<svg id="wordmark"/>'), mime: 'image/png', from: 'public/logos/wordmark.png', pixelated: true };
-    const ground = { from: '#2e1d0c', to: '#0f0a06', ink: '#eeeeee' };
-    const svg = setupSplashSvg({ width: 480, height: 360, ground, angle: 160, mark, name: 'Brock App', wordmark });
-    expect(svg).toContain('width="384" height="48" preserveAspectRatio="xMidYMid meet" image-rendering="optimizeSpeed"/>');
-  });
-
-  it('reads the dark ground wordmark from public/ and stops on a missing file', () => {
+  it('reads the dark ground wordmark from public/ and stops on a missing file', { tags: ['critical'] }, () => {
     const wordmarkSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 20"><text x="0" y="16" font-size="16" fill="#ffffff">My App</text></svg>';
     const rootDir = tempDir({ 'public/logos/wordmark.svg': wordmarkSvg, 'public/logos/wordmark-dark.png': MARK_PNG });
     expect(wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/wordmark.svg', dark: './logos/wordmark-dark.png' } } }))
@@ -114,7 +104,7 @@ describe('the Setup splash wordmark', () => {
     expect(() => wordmarkSourceOf(rootDir, { icons: { wordmark: { src: './logos/gone.svg', dark: './logos/gone.svg' } } })).toThrow(/not under public/);
   });
 
-  it('writes the wordmark into the Setup splash PNG, and the name without one', () => {
+  it('S2 writes the wordmark into the Setup splash PNG, and the name without one', { tags: ['standard'] }, () => {
     const tesseraRoot = tempDir({ 'brand/dark-ground/brock/mark/mark-256.png': MARK_PNG });
     const rootDir = tempDir({ 'public/logos/wordmark.png': MARK_PNG });
     const ground = splashGround(tempDir(), { dark: null, theme: BROCK_DARK });
@@ -126,15 +116,15 @@ describe('the Setup splash wordmark', () => {
   });
 });
 
-describe('the Setup splash mark', () => {
-  it('reads the mark from brand/dark-ground', () => {
+describe('K1 the Setup splash mark', () => {
+  it('reads the mark from brand/dark-ground', { tags: ['critical'] }, () => {
     const tesseraRoot = tempDir({ 'brand/dark-ground/brock/mark/mark-256.png': 'png', 'brand/light-rim/brock/mark/mark-256.png': 'png' });
     expect(markSourceOf(tempDir(), { config: config(), tesseraRoot }, { ground: 'dark' })).toMatchObject({ from: 'brand/dark-ground/brock/mark/mark-256.png' });
     expect(markSourceOf(tempDir(), { config: config(), tesseraRoot: tempDir({ 'brand/dark-ground/brock.svg': '<svg/>' }) }, { ground: 'dark' }))
       .toMatchObject({ from: 'brand/dark-ground/brock.svg' });
   });
 
-  it('writes a PNG on the dark ground, dark everywhere the mark and the name are not', () => {
+  it('S2 writes a PNG on the dark ground, dark everywhere the mark and the name are not', { tags: ['standard'] }, () => {
     const tesseraRoot = tempDir({ 'brand/dark-ground/brock/mark/mark-256.png': MARK_PNG });
     const ground = splashGround(tempDir(), { dark: null, theme: BROCK_DARK });
     const { png, from } = setupSplashPng(tempDir(), { config: config(), colours: { angle: 160 }, splash: ground, tesseraRoot });

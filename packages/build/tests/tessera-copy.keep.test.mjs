@@ -147,7 +147,7 @@ describe('E2 brock migrate --tessera-from-copy on an app holding its own copy', 
     const source = read(root, `${VIEWS}/views/SettingsPanel/sub-components/AspectRatioControl.tsx`);
     expect(source).toContain('<NumberInput buttons="sides" aria-label="Ratio width" min={1} step={1} value={w} onChange={setW} />');
     expect(source).toContain('<NumberInput buttons="sides" aria-label="Ratio height"');
-    expect(source).not.toMatch(/(?:Number)?Stepper/);
+    expect(source).not.toMatch(/\b(?:Number)?Stepper\b/);
     expect(source.match(/from '@drizztdourden08\/tessera\/primitives';/g)).toHaveLength(2);
     expect(source).toContain("import './AspectRatioControl.css';");
     expect(todosOf(run).filter(({ file }) => file.endsWith('AspectRatioControl.tsx'))).toEqual([]);

@@ -93,7 +93,7 @@ const commitOf = (options, pr, cwd) => {
   return { spec, sha };
 };
 
-const localpkgOf = (options, ctx, cwd) => (flag(options, 'localpkg') ? localpkgRequest({ exec: ctx.exec ?? runCommand, cwd }) : null);
+const localpkgOf = (options, ctx, { cwd, sha }) => (flag(options, 'localpkg') ? localpkgRequest({ exec: ctx.exec ?? runCommand, cwd, sha }) : null);
 
 const resolveRequest = (positional, options, ctx) => {
   const word = wordOf(positional);
@@ -104,7 +104,7 @@ const resolveRequest = (positional, options, ctx) => {
   const project = projectOf(options, ctx.workspace);
   const branchBase = stringOption(options, 'base') ?? integrationBranch({ options, project, base: ctx.workspace.base, cwd });
   const scope = gateScope({ trigger, sha, base: branchBase, git: (args) => tryGit(args, cwd) });
-  const localpkg = localpkgOf(options, ctx, cwd);
+  const localpkg = localpkgOf(options, ctx, { cwd, sha });
   const base = { workspace: ctx.workspace, workflowText: workflowOf(options, sha, cwd), trigger, scope, localpkg: Boolean(localpkg) };
   const { job, only } = targetOf(word ? planSteps(base) : [], word, stringOption(options, 'job', 'all'), listOf(options.only));
   const plan = planSteps({ ...base, job, only });

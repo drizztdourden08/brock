@@ -97,28 +97,42 @@ describe('brock ci --localpkg runs', { tags: ['standard'] }, () => {
 });
 
 describe('the localpkg of a run', { tags: ['standard'] }, () => {
-  const exec = (command, args) => {
-    if (command === 'git') return 'package.json\n';
+  const exec = (command, args, { cwd }) => {
+    if (command === 'git') return git(cwd, ...args);
     return args.includes('status') ? JSON.stringify({ builds: [], consumers: [] }) : '';
   };
+  const withState = (packages) => {
+    const state = mkdtempSync(join(tmpdir(), 'brock-ci-lp-state-'));
+    writeFileSync(join(state, 'index.json'), JSON.stringify({ packages }));
+    vi.stubEnv('LOCALPKG_HOME', state);
+    vi.stubEnv('LOCALPKG_BIN', 'localpkg.mjs');
+    return state;
+  };
+  const sha = () => git(repo, 'rev-parse', 'HEAD');
 
   it('fails with one sentence when localpkg cannot be resolved', () => {
     vi.stubEnv('LOCALPKG_BIN', '');
     const missing = () => {
       throw new Error('missing');
     };
-    expect(() => localpkgRequest({ exec: missing, cwd: repo })).toThrow(/needs localpkg and none was found/);
+    expect(() => localpkgRequest({ exec: missing, cwd: repo, sha: sha() })).toThrow(/needs localpkg and none was found/);
   });
 
   it('lists the local builds the repo depends on, with their head and unmerged flag', () => {
-    const state = mkdtempSync(join(tmpdir(), 'brock-ci-lp-state-'));
-    const packages = { [TESSERA]: { version: '0.46.0', head: 'aaa1111', unmerged: true }, '@drizztdourden08/other': { version: '1.0.0', head: 'zzz', unmerged: false } };
-    writeFileSync(join(state, 'index.json'), JSON.stringify({ packages }));
-    vi.stubEnv('LOCALPKG_HOME', state);
-    vi.stubEnv('LOCALPKG_BIN', 'localpkg.mjs');
-    const request = localpkgRequest({ exec, cwd: repo });
+    const state = withState({ [TESSERA]: { version: '0.46.0', head: 'aaa1111', unmerged: true }, '@drizztdourden08/other': { version: '1.0.0', head: 'zzz', unmerged: false } });
+    const request = localpkgRequest({ exec, cwd: repo, sha: sha() });
     rmSync(state, { recursive: true, force: true });
     expect(request.builds).toEqual([{ name: TESSERA, version: '0.46.0', head: 'aaa1111', unmerged: true }]);
     expect(request.binary).toEqual({ command: 'node', prefix: ['localpkg.mjs'] });
+  });
+
+  it('reads the manifests of the commit under test, not the files of the checkout', () => {
+    const other = '@drizztdourden08/other';
+    const state = withState({ [TESSERA]: { version: '0.46.0', head: 'aaa1111', unmerged: false }, [other]: { version: '1.0.0', head: 'zzz', unmerged: false } });
+    const tested = sha();
+    writeFileSync(join(repo, 'package.json'), JSON.stringify({ name: 'demo', dependencies: { [other]: '^1.0.0' } }));
+    const request = localpkgRequest({ exec, cwd: repo, sha: tested });
+    rmSync(state, { recursive: true, force: true });
+    expect(request.builds.map((build) => build.name)).toEqual([TESSERA]);
   });
 });

@@ -1,9 +1,10 @@
 /* @layer tooling-scripts @kind logic */
 import { stepLogFile } from './ci-paths.mjs';
 import { runnerInfo } from './runner-info.mjs';
+import { keyOf, runnable } from './tree-cache.mjs';
 
 /**
- * @param {{ runId: string, request: { project: string, sha: string, branch: string | null, pr: string | null, trigger: string, partial: boolean }, main: string }} input
+ * @param {{ runId: string, request: { project: string, sha: string, tree?: string, branch: string | null, pr: string | null, trigger: string, partial: boolean }, main: string }} input
  * @returns {object} a queued check-run record with no steps yet
  */
 const newRecord = ({ runId, request, main }) => ({
@@ -13,6 +14,7 @@ const newRecord = ({ runId, request, main }) => ({
   repo: main.replace(/\\/g, '/'),
   branch: request.branch,
   commit: request.sha,
+  ...(request.tree ? { tree: request.tree } : {}),
   pr: request.pr,
   trigger: request.trigger,
   mode: 'local',
@@ -35,6 +37,7 @@ const stepRecord = (planned, { project, runId, index }) => ({
   job: planned.job,
   command: planned.command,
   ...(planned.shell ? { shell: planned.shell } : {}),
+  ...(runnable(planned) ? { cacheKey: keyOf(planned) } : {}),
   cwd: null,
   status: planned.skip ? 'skipped-local' : 'pending',
   required: planned.required,

@@ -36,6 +36,11 @@ describe('K2 createBuilderConfig OS integration', { tags: ['critical'] }, () => 
     expect(config.protocols).toEqual([{ name: 'My App', schemes: ['my-app'] }]);
   });
 
+  it('unpacks the koffi binding from the asar, since the OS integration loads it natively', () => {
+    const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
+    expect(config.asarUnpack).toEqual(expect.arrayContaining(['node_modules/koffi/**', 'node_modules/@koromix/**']));
+  });
+
   it('gives every file type a mime type, since Linux needs one', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempRoot() });
     expect(config.fileAssociations).toEqual([

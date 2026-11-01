@@ -34,7 +34,8 @@
   "sideEffects": false,
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
-    "@electron-toolkit/utils": "catalog:"
+    "@electron-toolkit/utils": "catalog:",
+    "koffi": "catalog:"
   },
   "devDependencies": {
     "electron": "catalog:"

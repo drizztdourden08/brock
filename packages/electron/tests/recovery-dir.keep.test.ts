@@ -21,7 +21,7 @@ afterEach(async () => {
   await rm(userData, { recursive: true, force: true });
 });
 
-describe('recovery folder helpers of the node entry', () => {
+describe('K2 recovery folder helpers of the node entry', { tags: ['critical'] }, () => {
   it('places the recovery folder under Data/profiles/<id>/recovery', () => {
     expect(recoveryDir(userData, 'ab12')).toBe(join(userData, 'Data', 'profiles', 'ab12', 'recovery'));
   });

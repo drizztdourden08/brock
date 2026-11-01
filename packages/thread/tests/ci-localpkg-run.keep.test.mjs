@@ -1,39 +1,19 @@
 /* @layer tooling-scripts @kind test */
-import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { newRunId, readRecords } from '../src/ci/check-record.mjs';
-import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 import { localpkgRequest } from '../src/ci/localpkg-request.mjs';
 import { runCi } from '../src/ci/run-ci.mjs';
+import { ciRepo, git, workspace } from './ci-workflow-fixture.mjs';
 
-const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
-const workspace = { name: 'demo', base: 'main', protectedBranches: ['main'], worktreesDir: '.worktrees', publish: {}, gate: undefined };
 const TESSERA = '@drizztdourden08/tessera';
-
-let home = '';
-let repo = '';
+const ci = ciRepo({ 'package.json': JSON.stringify({ name: 'demo', dependencies: { [TESSERA]: '^0.46.0' } }) });
 let lines = [];
 
 beforeEach(() => {
-  vi.stubEnv('COORD_PROJECT', undefined);
-  home = mkdtempSync(join(tmpdir(), 'brock-ci-lp-home-'));
-  vi.stubEnv('COORD_HOME', home);
-  repo = mkdtempSync(join(tmpdir(), 'brock-ci-lp-repo-'));
   lines = [];
-  git(repo, 'init', '-q', '-b', 'main');
-  git(repo, 'config', 'user.name', 't');
-  git(repo, 'config', 'user.email', 't@t');
-  writeFileSync(join(repo, 'package.json'), JSON.stringify({ name: 'demo', dependencies: { [TESSERA]: '^0.46.0' } }));
-  git(repo, 'add', '-A');
-  git(repo, 'commit', '-q', '-m', 'init');
-});
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-  for (const dir of [home, repo, ciWorktreesFolder(repo)]) rmSync(dir, { recursive: true, force: true });
 });
 
 describe('brock ci --localpkg runs', { tags: ['standard'] }, () => {
@@ -49,9 +29,9 @@ describe('brock ci --localpkg runs', { tags: ['standard'] }, () => {
     },
   });
   const run = (extra) => runCi({
-    ctx: { rootDir: repo, workspace, log: (line) => lines.push(line) },
+    ctx: { rootDir: ci.repo, workspace, log: (line) => lines.push(line) },
     runId: newRunId(),
-    request: { project: 'demo', sha: git(repo, 'rev-parse', 'HEAD'), branch: 'main', pr: null, trigger: 'manual', partial: false, waitMs: 5000, ...extra },
+    request: { project: 'demo', sha: git(ci.repo, 'rev-parse', 'HEAD'), branch: 'main', pr: null, trigger: 'manual', partial: false, waitMs: 5000, ...extra },
     announce: () => {},
   });
 
@@ -108,19 +88,19 @@ describe('the localpkg of a run', { tags: ['standard'] }, () => {
     vi.stubEnv('LOCALPKG_BIN', 'localpkg.mjs');
     return state;
   };
-  const sha = () => git(repo, 'rev-parse', 'HEAD');
+  const sha = () => git(ci.repo, 'rev-parse', 'HEAD');
 
   it('fails with one sentence when localpkg cannot be resolved', () => {
     vi.stubEnv('LOCALPKG_BIN', '');
     const missing = () => {
       throw new Error('missing');
     };
-    expect(() => localpkgRequest({ exec: missing, cwd: repo, sha: sha() })).toThrow(/needs localpkg and none was found/);
+    expect(() => localpkgRequest({ exec: missing, cwd: ci.repo, sha: sha() })).toThrow(/needs localpkg and none was found/);
   });
 
   it('lists the local builds the repo depends on, with their head and unmerged flag', () => {
     const state = withState({ [TESSERA]: { version: '0.46.0', head: 'aaa1111', unmerged: true }, '@drizztdourden08/other': { version: '1.0.0', head: 'zzz', unmerged: false } });
-    const request = localpkgRequest({ exec, cwd: repo, sha: sha() });
+    const request = localpkgRequest({ exec, cwd: ci.repo, sha: sha() });
     rmSync(state, { recursive: true, force: true });
     expect(request.builds).toEqual([{ name: TESSERA, version: '0.46.0', head: 'aaa1111', unmerged: true }]);
     expect(request.binary).toEqual({ command: 'node', prefix: ['localpkg.mjs'] });
@@ -130,8 +110,8 @@ describe('the localpkg of a run', { tags: ['standard'] }, () => {
     const other = '@drizztdourden08/other';
     const state = withState({ [TESSERA]: { version: '0.46.0', head: 'aaa1111', unmerged: false }, [other]: { version: '1.0.0', head: 'zzz', unmerged: false } });
     const tested = sha();
-    writeFileSync(join(repo, 'package.json'), JSON.stringify({ name: 'demo', dependencies: { [other]: '^1.0.0' } }));
-    const request = localpkgRequest({ exec, cwd: repo, sha: tested });
+    writeFileSync(join(ci.repo, 'package.json'), JSON.stringify({ name: 'demo', dependencies: { [other]: '^1.0.0' } }));
+    const request = localpkgRequest({ exec, cwd: ci.repo, sha: tested });
     rmSync(state, { recursive: true, force: true });
     expect(request.builds.map((build) => build.name)).toEqual([TESSERA]);
   });

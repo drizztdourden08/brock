@@ -2,6 +2,7 @@
 import { Box, Text } from '@drizztdourden08/tessera/primitives';
 import { sdlButtonNameForIndex } from '../diagnostics/sdl-button-name-for-index';
 import type { LiveParserOutputProps } from './LiveParserOutput.type';
+import './LiveParserOutput.css';
 
 const LiveParserOutput = (props: LiveParserOutputProps) => {
   const { profile, state } = props;

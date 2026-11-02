@@ -206,10 +206,12 @@ SDL starts when the window opens and stops on quit. `getInput(ctx).runtime()` gi
 
 The module adds a `Controllers` hub (the bucket `controllers`) and a menu entry under Advanced that opens it. The hub is hidden from the hub switcher, so the menu entry is the way in. A module contributes the bucket through `RendererModule.buckets`, and an app that declares its own bucket with the id `controllers` fails at start.
 
-- **Pads.** One page per connected controller, listed under Connected in the hub nav. Four boxes: the pad drawn with a callout for each input and the glyph of the pad's family, the sticks and triggers with their readouts and calibration, the buttons, and the facts of the controller with its rumble tests. The Controller box header holds Run diagnostics and the buttons an app registers.
+The module lists the connected controllers itself at start. Its boot task loads the device list and keeps listening, and it loads the list again when the diagnostics hold is restored, so pads that were plugged in before the app opened show up with no replug. An app adds no feed or list call of its own.
+
+- **Pads.** One page per connected controller, listed under Connected in the hub nav. Four boxes: the pad drawn with a callout for each input and the glyph of the pad's family, the sticks and triggers with their readouts and calibration, the buttons, and the facts of the controller with its rumble tests. The Controller box header holds one Diagnose button and the buttons an app registers. With a Report action registered (see below) the button reads Diagnose and report and runs the diagnostics for this pad with the pad already chosen, so the wizard skips Choose a controller, and the last step hands the result to the Report action. With no Report action registered the button reads Run diagnostics and the flow ends on its result step.
 - **Directory.** A searchable table of every mapping SDL3 knows, with the connected controllers first and a Rescan button at the end of the filter row. Only the table body scrolls.
 - **Logs.** The connect and disconnect history of this session, with the HID events.
-- **Diagnostics.** The guided wizard: pick a controller, capture its raw bytes, press each control in place, and read the result. It also hosts the stick and trigger calibration wizards. The wizard saves its JSON to the app's data folder (`debug/<name>-<time>.json`) through `window.api.input.capture.writeDebug(name, data)`, which returns the path.
+- **Diagnostics.** The guided wizard, drawn by Tessera's `Wizard` with its step strip, step title and Back and Next bar, and no header row of its own: pick a controller, capture its raw bytes, press each control in place, and read the result. The capture prompts keep the look and wording of RotP's wizard. The positional step listens for presses as soon as it opens, with an Auto-capture checkbox on by default; turning it off pauses the listening and turning it on resumes at the first unanswered input. The choice lasts for the run. The Diagnostics page in the hub keeps the controller picker. `ControllerDiagnostics` and `DiagnosticsWizard` skip the picker when they get a pad (`initialDeviceKey` on the page, with `preselected` on the wizard). It also hosts the stick and trigger calibration wizards. The wizard saves its JSON to the app's data folder (`debug/<name>-<time>.json`) through `window.api.input.capture.writeDebug(name, data)`, which returns the path.
 
 The pages are `ControllerDirectory`, `ControllerLogs` and `ControllerDiagnostics`, exported from `@drizztdourden08/brock-input/renderer` for an app that wants them in a screen of its own. The module also exports what an app needs to build a report dialog around the wizard: `StepIndicator`, `ReportSection`, `buildReport`, `useDiagnosticsWizardState`, `useSummaryExport`, `useFlashStatus`, `DiagnosticsStepActions`, `DiagnosticsFlowBody`, `FlashButton`, `COPY_LABELS` and the report step types.
 
@@ -222,13 +224,21 @@ The pages are `ControllerDirectory`, `ControllerLogs` and `ControllerDiagnostics
 
 The `controller-components-to-input` migration of 0.82.0 rewrites an app's imports of these names from Tessera to this entry. Their classes carry an `input-` prefix (`input-controller-layout`, `input-stick-plot`, `input-pressed-grid`).
 
-An app adds its own buttons for a controller with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook; an action with the same `id` replaces the earlier one. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. The actions show as icon buttons in the header of the Controller box of the pad page, after Run diagnostics. This is the hook for a Report button.
+An app adds its own buttons for a controller with `registerDeviceCardActions(actions)` (it returns the unregister) or the `useDeviceCardActions(actions)` hook; an action with the same `id` replaces the earlier one. Each `DeviceCardAction` has `id`, `label`, `icon`, `variant`, `disabled` (a flag, or a check on the `DeviceEntry`), `visible` (a check on the `DeviceEntry`) and `onSelect(entry)`. The actions show as icon buttons in the header of the Controller box of the pad page, after the Diagnose button. `onSelect(entry, result)` gets a second argument only when the action is the Report action.
 
 ```ts
 import { registerDeviceCardActions } from '@drizztdourden08/brock-input/renderer';
 
 registerDeviceCardActions([
   { id: 'report', label: 'Report a problem', icon: 'bug', onSelect: (entry) => openReport(entry.deviceKey) },
+]);
+```
+
+The action whose `id` is `report` (exported as `REPORT_ACTION_ID`) is the Report action. It has no button of its own on the pad page. The Diagnose button replaces it: when a pad's diagnostics run ends, the last step shows the action's `label` and `icon` on its finish button, and pressing it calls `onSelect(entry, result)` with a `DiagnosticsRunResult` (`deviceKey`, `entry`, `mapping`, `byteCapture` and `positionalRecords`; pass the parts to `buildReport` for the full report) and closes the flow. An action with `visible` returning false or `disabled` set for the pad is not used, and the flow ends on its result step. A Report action that ignores the second argument still works as before.
+
+```ts
+registerDeviceCardActions([
+  { id: 'report', label: 'Send report', icon: 'bug', onSelect: (entry, result) => sendReport(entry, result) },
 ]);
 ```
 

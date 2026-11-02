@@ -8,7 +8,7 @@ import { waitFor } from '../dom/wait-for';
 import type { StepTour } from '../review.type';
 import { closeVolumePanel } from './close-volume-panel';
 import { volumePanelOpen } from './volume-panel-open';
-import { VOLUME_SELECTORS, VOLUME_SLIDE, VOLUME_TOLERANCE } from './volume-step.constants';
+import { FOCUS_PROBE_MS, VOLUME_SELECTORS, VOLUME_SLIDE, VOLUME_TOLERANCE } from './volume-step.constants';
 
 const slides = async (): Promise<boolean> => {
   const input = find(VOLUME_SELECTORS.slider);
@@ -24,9 +24,9 @@ const slides = async (): Promise<boolean> => {
 
 const opensOnFocus = async (item: HTMLElement): Promise<boolean> => {
   const button = find(VOLUME_SELECTORS.button, item);
-  if (!button) return false;
+  if (!button || !document.hasFocus()) return false;
   button.focus({ focusVisible: true });
-  const open = (await waitFor(volumePanelOpen)) !== null;
+  const open = (await waitFor(volumePanelOpen, FOCUS_PROBE_MS)) !== null;
   await closeVolumePanel(item);
   return open;
 };

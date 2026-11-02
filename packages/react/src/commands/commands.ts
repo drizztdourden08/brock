@@ -12,7 +12,6 @@ import { listCommands } from './list-commands';
 import { matchesChord } from './matches-chord';
 import { currentModifiers } from './current-modifiers';
 import { normalizeChords } from './normalize-chords';
-import { parseBindingKey } from './parse-binding-key';
 import { remapOverrides } from './remap-overrides';
 import { setCommandSource } from './set-command-source';
 import { useCommandStore } from './useCommandStore';
@@ -47,10 +46,8 @@ const bind = (id: string, args: Readonly<Record<string, ArgValue>>, chords: read
 };
 
 const bindings = (id?: string): CommandBinding[] =>
-  Object.entries(useCommandStore.getState().overrides).flatMap(([key, chords]) => {
-    const bound = parseBindingKey(key);
-    return bound === null || (id !== undefined && bound.id !== id) || find(bound.id) === undefined ? [] : [{ ...bound, chords }];
-  });
+  listCommands(useCommandStore.getState()).flatMap((def) =>
+    def.bound === undefined || (id !== undefined && def.bound.id !== id) ? [] : [{ ...def.bound, chords: chordsOf(def, useCommandStore.getState()) }]);
 
 const commands = {
   register: (defs: readonly CommandDef[]): (() => void) => {

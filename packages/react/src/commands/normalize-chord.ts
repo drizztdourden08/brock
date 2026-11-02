@@ -13,6 +13,7 @@ const normalizeChord = (chord: string, mac: boolean): string | null => {
     secondary ? secondName : '',
     parsed.alt ? 'Alt' : '',
     parsed.shift ? 'Shift' : '',
+    ...(parsed.with ?? []).map((key) => (key === '+' ? 'Plus' : key)),
     parsed.key === '+' ? 'Plus' : parsed.key,
   ];
   return parts.filter(Boolean).join('+');

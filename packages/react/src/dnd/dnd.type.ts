@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { DocumentDropKind } from '@drizztdourden08/brock-core';
+import type { PathDropOptions, RejectedFile } from './path-drop.type';
 
 interface DragType<T> {
   readonly name: string;
@@ -54,6 +55,7 @@ interface DropTargetOptions<T> {
   canDrop?: (payload: T, info: DropInfo) => boolean;
   feedback?: (feedback: DropFeedback<T>) => void;
   index?: (point: DragPoint, element: DndElement) => number | null;
+  paths?: PathDropOptions;
 }
 
 interface DroppedFile {
@@ -61,11 +63,6 @@ interface DroppedFile {
   name: string;
   path: string | null;
   kind: DocumentDropKind;
-}
-
-interface RejectedFile {
-  name: string;
-  reason: string;
 }
 
 interface DroppedFiles {

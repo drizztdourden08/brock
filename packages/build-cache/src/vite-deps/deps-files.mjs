@@ -29,7 +29,7 @@ const rewriteBundles = (dir, pairs) => {
 /**
  * @param {string} dir a copy of the pre-bundle Vite wrote
  * @param {string} installRoot the install it was written in
- * @returns {void} absolute paths into its package store or install folder become tokens
+ * @returns {void} store and install paths become tokens
  */
 const portableBundles = (dir, installRoot) => rewriteBundles(dir, [
   ...storeRootsOf(installRoot).map((root) => [folderOf(root), FILE_TOKENS.store]),

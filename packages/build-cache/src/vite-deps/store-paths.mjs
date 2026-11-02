@@ -23,7 +23,7 @@ const below = (root, path) => {
 
 /**
  * @param {string} installRoot the folder whose node_modules pnpm filled
- * @returns {string[]} every spelling of its package store: as named, as linked and as resolved
+ * @returns {string[]} the store as named, linked and resolved
  */
 const storeRootsOf = (installRoot) => {
   const named = virtualStoreOf(installRoot);

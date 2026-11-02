@@ -7,7 +7,7 @@ const CRLF = /\r\n/g;
 
 /**
  * @param {string} file a text file
- * @returns {string | null} a short hash of its text read with LF line ends, so a git checkout with CRLF keys the same; null when missing
+ * @returns {string | null} hash of the text with LF ends, or null
  */
 const contentOf = (file) => {
   try {

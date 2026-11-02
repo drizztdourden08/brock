@@ -61,11 +61,9 @@ const grantedWorld = async (prefix: string): Promise<Granted> => {
   return { ...tree, access, call: sessionOf({ documents: access }) };
 };
 
-const electronFolderMock = { dialog: {}, app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined } };
-
 const dropTree = (base: string): Promise<void> => rm(base, { recursive: true, force: true });
 
 const loose = <T>(value: unknown): T => value as T;
 
-export { dropTree, electronFolderMock, grantedWorld, knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
+export { dropTree, grantedWorld, knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
 export type { Call, Granted };

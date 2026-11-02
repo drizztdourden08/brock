@@ -5,7 +5,7 @@ import { join } from 'path';
 import { dropTree, grantedWorld, refusedBy } from './folder-fixture';
 import type { Call, Granted } from './folder-fixture';
 
-vi.mock('electron', async () => (await import('./folder-fixture')).electronFolderMock);
+vi.mock('electron', async () => (await import('./electron-folder-mock')).electronFolderMock);
 
 let base = '';
 let granted = '';

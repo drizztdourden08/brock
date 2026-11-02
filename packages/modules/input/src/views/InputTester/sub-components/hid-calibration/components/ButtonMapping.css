@@ -7,3 +7,85 @@
   font-size: calc(var(--size-1) * 11);
   color: var(--c-text-dim);
 }
+
+.hid-cal__instruction {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semi);
+  color: var(--c-text);
+  padding: var(--space-sm) 0;
+}
+
+.hid-cal__axis-sub {
+  font-size: var(--text-xs);
+  color: var(--c-info);
+  margin-left: var(--space-xs);
+}
+
+.hid-cal__input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(200 * var(--size-1)), 1fr));
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.hid-cal__input-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  border: var(--border-width-thin) solid transparent;
+  transition: var(--transition-fast);
+}
+
+.hid-cal__input-item--pending {
+  background: var(--c-bg);
+  color: var(--c-text-muted);
+}
+
+.hid-cal__input-item--active {
+  background: var(--c-surface);
+  color: var(--c-info);
+}
+
+.hid-cal__input-item--captured {
+  background: var(--c-secondary-dim);
+  color: var(--c-secondary-bright);
+}
+
+.hid-cal__input-item--skipped {
+  background: var(--c-warning-dim);
+  color: var(--c-warning);
+}
+
+.hid-cal__input-item--focus {
+  border-color: var(--c-info);
+}
+
+.hid-cal__input-item--pending:hover,
+.hid-cal__input-item--captured:hover,
+.hid-cal__input-item--skipped:hover {
+  border-color: var(--c-border-strong);
+}
+
+.hid-cal__input-icon {
+  width: var(--size-14);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.hid-cal__input-name {
+  flex: 1;
+}
+
+.hid-cal__input-result {
+  font-size: var(--text-xs);
+  color: var(--c-text-muted);
+  font-family: var(--font-mono);
+}
+
+.hid-cal__input-clear {
+  flex-shrink: 0;
+  margin-left: var(--space-xs);
+}

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { detectAxisFired } from './detect-axis-fired';
+import { adoptIdleBaseline } from './adopt-idle-baseline';
 import { detectFiredIndex } from './detect-fired-index';
 import type { SampleParams } from './positional-capture.type';
 import { settleRest } from './settle-rest';
@@ -8,8 +9,8 @@ const evaluatePositionalSample = (params: Omit<SampleParams, 'onItemsChange'>): 
   const { refs, sample, onAnswer } = params;
   if (!refs.inputPhaseActiveRef.current) return;
   const target = refs.targetsRef.current[refs.activeIndexRef.current];
-  const baseline = refs.baselineRef.current;
-  if (!target || !baseline) return;
+  if (!target) return;
+  const baseline = refs.baselineRef.current ?? adoptIdleBaseline(refs, sample);
 
   if (refs.awaitingRestRef.current) {
     settleRest(refs, baseline, sample);

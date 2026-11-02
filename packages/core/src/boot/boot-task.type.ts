@@ -41,11 +41,13 @@ interface BootRunOptions<X extends object> {
   onProgress?: (progress: BootProgress) => void;
   onTaskDone?: (id: string) => void;
   signal?: AbortSignal;
+  defaultTimeoutMs?: number;
 }
 
 interface BootTaskRun<X extends object> {
   extras: () => X;
   stop: AbortSignal;
+  defaultTimeoutMs?: number;
   report: (fraction: number, detail: string | null) => void;
 }
 

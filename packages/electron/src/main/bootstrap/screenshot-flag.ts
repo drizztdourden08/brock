@@ -7,7 +7,7 @@ import { bootEvents } from '../boot/boot-events';
 import { whenRevealed } from '../boot/when-revealed';
 import { bootState } from '../boot/boot-state';
 import { SCREENSHOT_TIMEOUT_EXIT_CODE, SCREENSHOT_TIMEOUT_FLAG, SCREENSHOT_WATCHDOG_MS } from './screenshot-flag.constants';
-import { screenshotTimeoutMs } from './screenshot-timeout-ms';
+import { secondsFlagMs } from './seconds-flag-ms';
 
 const watchdogLine = (timeoutMs: number, revealed: boolean): string => {
   const why = revealed ? `${captureHolds.count()} screenshot hold(s) still open` : 'the window was never revealed';
@@ -17,7 +17,7 @@ const watchdogLine = (timeoutMs: number, revealed: boolean): string => {
 const armScreenshotFlag = (ctx: MainContext, defaultTimeoutMs = Math.max(SCREENSHOT_WATCHDOG_MS, bootState.watchdogMs)): void => {
   const name = ctx.flags.flagValue('--screenshot');
   if (!name) return;
-  const timeout = screenshotTimeoutMs(ctx.flags.flagValue(SCREENSHOT_TIMEOUT_FLAG), defaultTimeoutMs);
+  const timeout = secondsFlagMs(SCREENSHOT_TIMEOUT_FLAG, ctx.flags.flagValue(SCREENSHOT_TIMEOUT_FLAG), defaultTimeoutMs);
   if (timeout.problem) ctx.log(timeout.problem, 'warn');
 
   let done = false;

@@ -50,7 +50,7 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
         current = { label: task.label, detail };
         emit();
       };
-      void runBootTask(task, { extras: options.extras, stop: stop.signal, report }).then((outcome) => {
+      void runBootTask(task, { extras: options.extras, stop: stop.signal, report, defaultTimeoutMs: options.defaultTimeoutMs }).then((outcome) => {
         if (settled) return;
         if (!outcome.ok) return settle(outcome);
         shares.set(task.id, 1);

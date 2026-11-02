@@ -3,6 +3,7 @@ import type { BootProgress } from '@drizztdourden08/brock-core';
 import { runBootTasks } from '@drizztdourden08/brock-core';
 import { hostApi } from '../host/host-api';
 import { getAppLog } from '../log/get-app-log';
+import { bootTimeoutMs } from './boot-timeout-ms';
 import { HEARTBEAT_MS } from './boot.constants';
 import type { RendererBootExtras, RendererBootTask } from './renderer-boot.type';
 import { useBootStore } from './useBootStore';
@@ -15,6 +16,7 @@ const runRendererBoot = async (tasks: readonly RendererBootTask[], extras: () =>
   const stopWatch = import.meta.env.DEV ? watchSessionFills(tasks, (message) => getAppLog().log('app', message, 'warn')) : null;
   const outcome = await runBootTasks(tasks, {
     extras,
+    defaultTimeoutMs: bootTimeoutMs(),
     onProgress: (progress) => {
       last = progress;
       api?.bootProgress(progress);

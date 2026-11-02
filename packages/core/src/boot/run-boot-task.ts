@@ -11,8 +11,8 @@ const whenAborted = (signal: AbortSignal): Promise<never> =>
     else signal.addEventListener('abort', () => reject(signal.reason), { once: true });
   });
 
-const runBootTask = async <X extends object>(task: BootTask<X>, { extras, stop, report }: BootTaskRun<X>): Promise<BootOutcome> => {
-  const timeoutMs = task.timeoutMs ?? DEFAULT_BOOT_TIMEOUT_MS;
+const runBootTask = async <X extends object>(task: BootTask<X>, { extras, stop, report, defaultTimeoutMs }: BootTaskRun<X>): Promise<BootOutcome> => {
+  const timeoutMs = task.timeoutMs ?? defaultTimeoutMs ?? DEFAULT_BOOT_TIMEOUT_MS;
   const own = new AbortController();
   const abort = (): void => own.abort(stop.reason);
   stop.addEventListener('abort', abort, { once: true });

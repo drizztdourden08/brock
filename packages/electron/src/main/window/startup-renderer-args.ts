@@ -1,5 +1,7 @@
 /* @layer electron-main @kind logic */
 import { REVIEW_FLAG } from '@drizztdourden08/brock-core/review';
+import { bootTimeout } from '../boot/boot-timeout';
+import { BOOT_TIMEOUT_STARTUP_FLAG } from '../boot/boot-timeout.constants';
 import { wantsBaselines } from '../review/baselines/wants-baselines';
 import type { RendererArgsInput, StartupMarkerInput } from './startup-config.type';
 
@@ -17,6 +19,7 @@ const startupMarkers = ({ config, flags, instance, isDev, argv }: StartupMarkerI
   markers.push(...instanceMarkers({ flags, instance, argv }));
   if (flags.isAutomationLaunch(argv)) markers.push('--startup-automation');
   if (flags.hasFlag(REVIEW_FLAG, argv)) markers.push('--startup-review');
+  markers.push(`${BOOT_TIMEOUT_STARTUP_FLAG}=${bootTimeout(flags, argv).ms}`);
   return markers;
 };
 

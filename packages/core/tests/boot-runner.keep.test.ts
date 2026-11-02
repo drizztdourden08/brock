@@ -56,6 +56,34 @@ describe('K1 runBootTasks failures', { tags: ['critical'] }, () => {
 
 });
 
+describe('K1 runBootTasks default timeout', { tags: ['critical'] }, () => {
+  const stuck = (extra: Partial<BootTask> = {}) => task('stuck', { run: () => new Promise<void>(() => undefined), ...extra });
+  const failureAfter = async (tasks: BootTask[], defaultTimeoutMs: number | undefined, waitMs: number) => {
+    vi.useFakeTimers();
+    const pending = runBootTasks(tasks, { extras: () => ({}), defaultTimeoutMs });
+    await vi.advanceTimersByTimeAsync(waitMs);
+    const settled = await Promise.race([pending, Promise.resolve(null)]);
+    vi.useRealTimers();
+    return settled;
+  };
+
+  it('times out a task with no timeoutMs at the runner default', async () => {
+    expect(await failureAfter([stuck()], 50, 49)).toBeNull();
+    const outcome = await failureAfter([stuck()], 50, 51);
+    expect(outcome).toMatchObject({ ok: false, failure: { task: 'stuck', timedOut: true } });
+  });
+
+  it('keeps the own timeoutMs of a task over the runner default', async () => {
+    const outcome = await failureAfter([stuck({ timeoutMs: 10 })], 5_000, 11);
+    expect(outcome).toMatchObject({ ok: false, failure: { timedOut: true } });
+  });
+
+  it('falls back to the 20 s constant when no default is given', async () => {
+    expect(await failureAfter([stuck()], undefined, 19_999)).toBeNull();
+    expect(await failureAfter([stuck()], undefined, 20_001)).toMatchObject({ ok: false });
+  });
+});
+
 describe('K1 runBootTasks progress', { tags: ['critical'] }, () => {
   it('reports weighted progress with the running label and detail', async () => {
     const progress: BootProgress[] = [];

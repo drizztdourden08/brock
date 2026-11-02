@@ -24,6 +24,7 @@ import { bootState } from '../boot/boot-state';
 import { openSplash } from '../boot/open-splash';
 import { runMainBoot } from '../boot/run-main-boot';
 import { watchdogMsOf } from '../boot/watchdog-ms';
+import { bootTimeout } from '../boot/boot-timeout';
 import { mainBootTasks } from '../boot/tasks/main-boot-tasks';
 import { createMainContext } from './create-main-context';
 import { resolvePaths } from './resolve-paths';
@@ -74,6 +75,8 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
     });
     logBoot('splash opened');
   }
+  const bootCap = bootTimeout(ctx.flags);
+  if (bootCap.problem) ctx.log(bootCap.problem, 'warn');
   armScreenshotFlag(ctx, options.screenshotTimeoutMs);
   armSplashScreenshotFlag(ctx);
   armReviewFlag(ctx, setup.icon);

@@ -1,24 +1,22 @@
 /* @layer tooling-scripts @kind logic */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { heavyNodeEnv } from '../lint/heavy-env.mjs';
 import { runBatches } from '../lint/lint-batches.mjs';
-import { CACHE_DIR_ENV, DEFAULT_MEMORY_MB, FULL_TREE_MEMORY_MB } from '../lint/lint.constants.mjs';
+import { lintCacheFile } from '../lint/lint-cache.mjs';
+import { DEFAULT_MEMORY_MB, FULL_TREE_MEMORY_MB } from '../lint/lint.constants.mjs';
 import { planLint } from '../lint/lint-plan.mjs';
 import { resolveBin, runInherit } from '../run.mjs';
 
 const batchRunner = fileURLToPath(new URL('../lint/batch-runner.mjs', import.meta.url));
 
-const cacheFile = (rootDir, name, env) => {
-  const dir = resolve(env[CACHE_DIR_ENV] ?? join(rootDir, 'node_modules', '.cache', 'brock'));
-  mkdirSync(dir, { recursive: true });
-  return join(dir, `eslint-${name}.json`);
+const cacheArgsFor = (ctx, env, name) => {
+  if (ctx.noCache || env.CI) return [];
+  const location = lintCacheFile(ctx.rootDir, name, env);
+  return location ? ['--cache', '--cache-strategy', 'content', '--cache-location', location] : [];
 };
-
-const cacheArgsFor = (ctx, env, name) =>
-  !ctx.noCache && !env.CI ? ['--cache', '--cache-strategy', 'content', '--cache-location', cacheFile(ctx.rootDir, name, env)] : [];
 
 const runWholeTree = (ctx, env, plan) => {
   const eslintArgs = [resolveBin(ctx.rootDir, 'eslint'), ...plan.targets, ...cacheArgsFor(ctx, env, 'all'), ...(ctx.passthrough ?? [])];

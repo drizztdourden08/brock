@@ -2,7 +2,8 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { isAbsolute, join, relative } from 'node:path';
+import { basename, isAbsolute, join, relative } from 'node:path';
+import { GENERATED_AT_LAUNCH, GENERATED_DIR } from './build-reuse.constants.mjs';
 
 const GIT_OPTIONS = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 256 * 1024 * 1024 };
 const GONE = 'gone';
@@ -41,7 +42,9 @@ const contentKey = (file) => {
 
 const dirOf = (rel) => (rel.includes('/') ? rel.slice(0, rel.lastIndexOf('/')) : '');
 
-const namesByDir = (paths) => {
+const generatedAtLaunch = (rel) => GENERATED_AT_LAUNCH.includes(basename(rel)) && basename(dirOf(rel)) === GENERATED_DIR;
+
+const namesByDir =(paths) => {
   const dirs = new Map();
   for (const rel of paths) {
     const dir = dirOf(rel);
@@ -72,7 +75,7 @@ const repoSnapshot = (dir) => {
   const index = indexOf(listing);
   const status = statusOf(changes);
   const hashed = new Map();
-  const dirs = namesByDir(new Set([...index.keys(), ...[...status].filter(([, code]) => code === '??').map(([rel]) => rel)]));
+  const dirs = namesByDir(new Set([...index.keys(), ...[...status].filter(([rel, code]) => code === '??' && !generatedAtLaunch(rel)).map(([rel]) => rel)]));
   const keyOf = (rel) => {
     if (!status.has(rel) && index.has(rel)) return index.get(rel);
     if (!hashed.has(rel)) hashed.set(rel, contentKey(join(top, rel)));

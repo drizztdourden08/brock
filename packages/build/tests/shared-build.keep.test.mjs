@@ -107,4 +107,16 @@ describe('reusing a build in another worktree', () => {
     expect(restore(later).hit).toBe(true);
     expect(readFileSync(outFile(later), 'utf8')).toContain('hello three');
   });
+
+  it('ignores the files the launch generates in .brock but not other new files there', () => {
+    const root = repo();
+    put(root, '.brock/tessera.ts', 'export {};\n');
+    git(root, 'add', '-A');
+    git(root, 'commit', '-q', '-m', 'brock dir');
+    const before = repoSnapshot(root).dirKeyOf('.brock');
+    put(root, '.brock/tessera-parts.ts', 'export {};\n');
+    expect(repoSnapshot(root).dirKeyOf('.brock')).toBe(before);
+    put(root, '.brock/other.ts', 'export {};\n');
+    expect(repoSnapshot(root).dirKeyOf('.brock')).not.toBe(before);
+  });
 });

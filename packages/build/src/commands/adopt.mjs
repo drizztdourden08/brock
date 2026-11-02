@@ -13,6 +13,7 @@ import { designPackageOf } from '../tessera/design-package-of.mjs';
 import { tesseraConfigFor } from '../tessera/tessera-config-for.mjs';
 import { TESSERA_CONFIG_FILE } from '../tessera/tessera.constants.mjs';
 import { tokenGlobs } from '../tessera/token-globs.mjs';
+import { ensureGitattributes } from './adopt-gitattributes.mjs';
 import { ignoreGenerated } from './adopt-gitignore.mjs';
 import { layoutLines } from './adopt-layout.mjs';
 import { handWrittenSplash } from './hand-written-splash.mjs';
@@ -180,6 +181,7 @@ const runAdopt = async ({ rootDir, scope: explicitScope, local, force = false })
   const scope = scopeOf(pkg, explicitScope);
   const files = writeConfigFiles(rootDir, scope, { force, local });
   if (ignoreGenerated(rootDir).length) files.written.push('.gitignore (generated outputs)');
+  if (ensureGitattributes(rootDir)) files.written.push('.gitattributes (LF line endings)');
   addTooling(pkg, { rootDir, local, force });
   const { pkg: pinned } = followBrockPin(pkg, OWN_PACKAGE.version);
   writeFileSync(pkgFile, `${JSON.stringify(pinned, null, 2)}\n`, 'utf8');

@@ -89,7 +89,10 @@ Usage:
                              steps and doctor; add and remove rewrite targets and regenerate both workflows
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
-                             JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+                             JDK 21, the Android SDK, module libraries), then the app: package versions against
+                             their ranges, broken link: and file: dependencies, generated files that differ from
+                             brock sync, packages the source imports that package.json lacks. One line each, with
+                             the fix; installs nothing; exit 1 on any problem. With ids it checks the machine alone
   brock prewarm              pre-bundle the renderer dependencies of brock dev now, so the first launch finds
                              them ready; worktree create starts it in the background after the install
   brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,

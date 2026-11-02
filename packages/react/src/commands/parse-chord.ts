@@ -2,14 +2,18 @@
 import { chordKey } from './chord-key';
 import { MODIFIERS } from './commands.constants';
 import type { ParsedChord } from './command.type';
+import { isKnownKey } from './is-known-key';
 import { splitChord } from './split-chord';
+
+const isModifier = (part: string): boolean => MODIFIERS[part.toLowerCase()] !== undefined;
 
 const parseChord = (chord: string, mac: boolean): ParsedChord | null => {
   const parts = splitChord(chord);
   const key = parts.pop();
-  if (key === undefined || MODIFIERS[key.toLowerCase()] !== undefined) return null;
-  const held = parts.map((part) => MODIFIERS[part.toLowerCase()]);
-  if (held.includes(undefined)) return null;
+  if (key === undefined || isModifier(key)) return null;
+  const held = parts.filter(isModifier).map((part) => MODIFIERS[part.toLowerCase()]);
+  const others = parts.filter((part) => !isModifier(part)).map(chordKey);
+  if (!others.every(isKnownKey)) return null;
   const mod = held.includes('mod');
   return {
     ctrl: held.includes('ctrl') || (mod && !mac),
@@ -17,6 +21,7 @@ const parseChord = (chord: string, mac: boolean): ParsedChord | null => {
     alt: held.includes('alt'),
     shift: held.includes('shift'),
     key: chordKey(key),
+    ...(others.length === 0 ? {} : { with: others }),
   };
 };
 

@@ -1,7 +1,14 @@
 /* @layer renderer-shell @kind logic */
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
+import { bindingKey } from './binding-key';
 import { parseBindingKey } from './parse-binding-key';
-import type { BoundArgs, CommandContext, CommandDef } from './command.type';
+import type { BoundArgs, ChordInput, CommandContext, CommandDef } from './command.type';
+
+interface Wanted {
+  base: CommandDef;
+  bound: BoundArgs;
+  chord?: ChordInput;
+}
 
 const argsLabel = (base: CommandDef, args: BoundArgs['args']): string =>
   Object.entries(args).map(([name, value]) => base.args?.[name]?.options?.find((option) => option.value === value)?.label ?? String(value)).join(', ');
@@ -9,23 +16,31 @@ const argsLabel = (base: CommandDef, args: BoundArgs['args']): string =>
 const withArgs = (context: CommandContext | undefined, args: BoundArgs['args']): CommandContext =>
   ({ point: { x: 0, y: 0 }, target: null, trigger: 'keyboard', data: undefined, ...context, args });
 
-const boundOf = (base: CommandDef, key: string, bound: BoundArgs): CommandDef => {
-  const { chord: _chord, args: _schema, hold, ...rest } = base;
+const boundOf = (key: string, { base, bound, chord }: Wanted): CommandDef => {
+  const { chord: _chord, args: _schema, bindings: _bindings, hold, ...rest } = base;
   return {
     ...rest,
     id: key,
     label: `${base.label}: ${argsLabel(base, bound.args)}`,
     bound,
+    ...(chord === undefined ? {} : { chord }),
     run: (context) => base.run(withArgs(context, bound.args)),
     ...(hold === undefined ? {} : { hold: { ...hold, release: (context) => hold.release({ ...context, args: bound.args }) } }),
   };
 };
 
-const boundCommands = (defs: readonly CommandDef[], overrides: KeymapOverrides): CommandDef[] =>
-  Object.keys(overrides).flatMap((key) => {
+const declared = (defs: readonly CommandDef[]): [string, Wanted][] =>
+  defs.filter((base) => base.args !== undefined).flatMap((base) =>
+    (base.bindings ?? []).map((each): [string, Wanted] => [bindingKey(base.id, each.args), { base, bound: { id: base.id, args: each.args }, chord: each.chord }]));
+
+const saved = (defs: readonly CommandDef[], overrides: KeymapOverrides): [string, Wanted][] =>
+  Object.keys(overrides).flatMap((key): [string, Wanted][] => {
     const bound = parseBindingKey(key);
     const base = bound === null ? undefined : defs.find((def) => def.id === bound.id && def.args !== undefined);
-    return bound === null || base === undefined ? [] : [boundOf(base, key, bound)];
+    return bound === null || base === undefined ? [] : [[key, { base, bound }]];
   });
+
+const boundCommands = (defs: readonly CommandDef[], overrides: KeymapOverrides): CommandDef[] =>
+  [...new Map([...saved(defs, overrides), ...declared(defs)]).entries()].map(([key, wanted]) => boundOf(key, wanted));
 
 export { boundCommands };

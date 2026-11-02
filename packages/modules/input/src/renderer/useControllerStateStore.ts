@@ -11,8 +11,13 @@ const useControllerStateStore = create<ControllerStateStore>()((set) => ({
 
   listen: () => {
     if (unsubscribeState || !isInputAvailable()) return;
-    unsubscribeState = inputApi().onState((deviceKey, buttons, axes) =>
-      set((s) => ({ states: { ...s.states, [deviceKey]: { buttons, axes } } })));
+    const api = inputApi();
+    const stops = [
+      api.onState((deviceKey, buttons, axes) =>
+        set((s) => ({ states: { ...s.states, [deviceKey]: { buttons, axes } } }))),
+      api.capture.onHoldChanged(() => set({ states: {} })),
+    ];
+    unsubscribeState = () => { for (const stop of stops) stop(); };
   },
 }));
 

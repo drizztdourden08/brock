@@ -8,7 +8,7 @@ const useHoldReleased = (): boolean => {
 
   useEffect(() => {
     if (!isInputAvailable()) return undefined;
-    return inputApi().capture.onHoldChanged((held) => setReleased(!held));
+    return inputApi().capture.onHoldChanged((held) => setReleased(held));
   }, []);
 
   return released;

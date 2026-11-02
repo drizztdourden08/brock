@@ -253,4 +253,4 @@ registerGlyphSource({
 });
 ```
 
-The stores are exported for an app screen of its own: `useControllerDevicesStore`, `useControllerState(deviceKey)` and `useCalibrationStore`. `applyStickCalibration` and `applyTriggerCalibration` turn a raw reading into a calibrated one.
+The stores are exported for an app screen of its own: `useControllerDevicesStore`, `useControllerState(deviceKey)` and `useCalibrationStore`. `applyStickCalibration` and `applyTriggerCalibration` turn a raw reading into a calibrated one. The input feed applies both to every report it stores: a saved stick calibration centres and scales the stick and zeroes it inside the inner dead zone, then rescales radially up to the outer one. `rawSticks` on a report keeps the uncalibrated values. When the gamepad subsystem is released or restored for a capture, every pad held buttons and axes are cleared, so nothing stays pressed across the release.

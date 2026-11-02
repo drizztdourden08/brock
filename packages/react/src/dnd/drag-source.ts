@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { cancelRunOf } from './cancel-run';
-import type { DndElement, DragSourceOptions } from './dnd.type';
+import type { DndElement, DragPreviewOptions, DragSourceOptions } from './dnd.type';
 import { startRun } from './start-run';
 
 const disabled = (options: DragSourceOptions<unknown>): boolean => (typeof options.disabled === 'function' ? options.disabled() : options.disabled === true);
@@ -9,6 +9,7 @@ const erased = <T,>(options: DragSourceOptions<T>): DragSourceOptions<unknown> =
   get type() { return options.type; },
   get payload() { return options.payload; },
   get disabled() { return options.disabled; },
+  get preview() { return options.preview as DragPreviewOptions<unknown> | undefined; },
   onStart: (payload) => options.onStart?.(payload as T),
   onEnd: (end) => options.onEnd?.(end),
 });

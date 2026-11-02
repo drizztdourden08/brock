@@ -9,4 +9,4 @@ export { useDragSession } from './useDragSession';
 export { useWindowFileDrop } from './useWindowFileDrop';
 export { DROP_ATTRIBUTE, DRAGGING_ATTRIBUTE } from './dnd.constants';
 export type { DroppedPath, FileListDragOptions, PathDrop, PathDropExpand, PathDropOptions, WindowFileDropOptions } from './path-drop.type';
-export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, RejectedFile } from './dnd.type';
+export type { DndElement, DragEnd, DragOutHost, DragPoint, DragPreviewOptions, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, RejectedFile } from './dnd.type';

@@ -41,12 +41,18 @@ interface DragEnd {
   target: DndElement | null;
 }
 
+interface DragPreviewOptions<T> {
+  label: string | ((payload: T) => string);
+  count?: number | ((payload: T) => number);
+}
+
 interface DragSourceOptions<T> {
   type: DragType<T>;
   payload: T | (() => T);
   disabled?: boolean | (() => boolean);
   onStart?: (payload: T) => void;
   onEnd?: (end: DragEnd) => void;
+  preview?: DragPreviewOptions<T>;
 }
 
 interface DropTargetOptions<T> {
@@ -89,4 +95,4 @@ interface DragOutHost {
   start: (paths: readonly string[]) => Promise<boolean>;
 }
 
-export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, MeasuredItem, MeasuredList, RejectedFile };
+export type { DndElement, DragEnd, DragOutHost, DragPoint, DragPreviewOptions, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, MeasuredItem, MeasuredList, RejectedFile };

@@ -12,6 +12,7 @@ const fileListDragSource = (options: FileListDragOptions): DragSourceOptions<Pat
   type: pathsType,
   payload: () => appDrop(options),
   get disabled() { return options.disabled; },
+  get preview() { return options.preview; },
 });
 
 export { fileListDragSource };

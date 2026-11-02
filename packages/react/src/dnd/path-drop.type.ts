@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { DocumentDropKind, DocumentEntry } from '@drizztdourden08/brock-core';
+import type { DragPreviewOptions } from './dnd.type';
 
 interface RejectedFile {
   name: string;
@@ -33,6 +34,7 @@ interface PathDropOptions {
 interface FileListDragOptions {
   paths: () => readonly DroppedPath[];
   disabled?: boolean | (() => boolean);
+  preview?: DragPreviewOptions<PathDrop>;
 }
 
 interface WindowFileDropOptions {

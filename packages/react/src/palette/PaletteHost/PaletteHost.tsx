@@ -10,7 +10,7 @@ const PaletteHost = (props: PaletteHostProps) => {
   const { menu, actions = NO_ACTIONS } = props;
   usePaletteShortcut();
   const mascot = useBrandMascot();
-  const { open, query, setQuery, groups, activeIndex, runItem, close } = useSearchPalette(menu, actions);
+  const { open, query, setQuery, groups, activeIndex, placeholder, runItem, close } = useSearchPalette(menu, actions);
 
   return (
     <CommandPalette
@@ -22,6 +22,7 @@ const PaletteHost = (props: PaletteHostProps) => {
       onSelect={runItem}
       activeIndex={activeIndex}
       mascot={mascot}
+      placeholder={placeholder}
     />
   );
 };

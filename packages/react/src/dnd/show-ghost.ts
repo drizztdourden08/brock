@@ -21,7 +21,8 @@ const showGhost = (preview: DragPreviewOptions<unknown>, payload: unknown, point
   const node = document.createElement('div');
   node.className = 'brock-drag-ghost';
   node.setAttribute('aria-hidden', 'true');
-  if (preview.count !== undefined) node.append(part('count', String(resolve(preview.count, payload))));
+  const count = preview.count === undefined ? undefined : resolve(preview.count, payload);
+  if (count) node.append(part('count', String(count)));
   node.append(part('label', resolve(preview.label, payload)));
   place(node, point);
   document.body.append(node);

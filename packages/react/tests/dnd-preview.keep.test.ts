@@ -73,9 +73,9 @@ describe('drag preview', () => {
     expect(body).toHaveLength(0);
   });
 
-  it('draws no count part for a label only preview', { tags: ['standard'] }, () => {
+  it.each([undefined, 0, () => undefined])('draws no count part when the count is %s', { tags: ['standard'] }, (count) => {
     const row = new FakeElement();
-    dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item' } });
+    dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item', count } });
     dragPast(row);
     expect(ghostOf().children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
   });

@@ -43,7 +43,7 @@ interface DragEnd {
 
 interface DragPreviewOptions<T> {
   label: string | ((payload: T) => string);
-  count?: number | ((payload: T) => number);
+  count?: number | ((payload: T) => number | undefined);
 }
 
 interface DragSourceOptions<T> {

@@ -1,5 +1,5 @@
 /* @layer electron-main @kind types */
-import type { DocumentFileOperations, DocumentListing, DocumentListOptions, DocumentRevealResult, DocumentWatchListener, DocumentWatchOptions, RecentDocument, RememberedFolder } from '@drizztdourden08/brock-core/platform';
+import type { DocumentFileOperations, DocumentListing, DocumentListOptions, DocumentRevealResult, DocumentWriteCheck, DocumentWatchListener, DocumentWatchOptions, RecentDocument, RememberedFolder } from '@drizztdourden08/brock-core/platform';
 import type { SensitiveRoots } from './folder-grants.type';
 import type { ListLimits } from './list-limits.type';
 import type { RememberedFolders } from './remembered-folders.type';
@@ -14,6 +14,7 @@ interface DocumentAccess extends DocumentFileOperations {
   folderRefusal: (path: string) => string | null;
   exact: (path: string) => boolean;
   isAllowed: (path: string) => Promise<boolean>;
+  canWrite: (folder: string) => Promise<DocumentWriteCheck>;
   reveal: (path: string) => Promise<DocumentRevealResult>;
   resolve: (path: string, intent?: 'read' | 'write') => Promise<string>;
   list: (folder: string, options?: DocumentListOptions) => Promise<DocumentListing>;

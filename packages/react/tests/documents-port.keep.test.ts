@@ -19,6 +19,14 @@ describe('S2 the documents port', { tags: ['standard'] }, () => {
   });
 });
 
+describe('S2 the write check on Electron', { tags: ['standard'] }, () => {
+  it('sends a folder to the dry run and returns its answer', async () => {
+    const api = stubApi();
+    expect(await electronDocuments().canWrite?.('C:\\art')).toEqual({ ok: true, path: 'C:\\art' });
+    expect(api.documentCanWrite).toHaveBeenCalledWith('C:\\art');
+  });
+});
+
 describe('S2 recent documents and recovery on Electron', { tags: ['standard'] }, () => {
   it('passes the active profile to every channel', async () => {
     const api = stubApi();

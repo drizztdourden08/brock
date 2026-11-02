@@ -17,7 +17,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('ensureGitattributes', () => {
+describe('K1 ensureGitattributes', { tags: ['critical'] }, () => {
   it('writes the file with LF endings when it is missing', () => {
     const root = emptyRepo();
     expect(ensureGitattributes(root)).toBe(true);

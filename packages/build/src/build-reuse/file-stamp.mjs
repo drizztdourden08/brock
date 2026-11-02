@@ -3,13 +3,15 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+const CRLF = /\r\n/g;
+
 /**
- * @param {string} file
- * @returns {string | null} a short hash of its bytes, null when missing
+ * @param {string} file a text file
+ * @returns {string | null} a short hash of its text read with LF line ends, so a git checkout with CRLF keys the same; null when missing
  */
 const contentOf = (file) => {
   try {
-    return createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 24);
+    return createHash('sha256').update(readFileSync(file, 'utf8').replace(CRLF, '\n')).digest('hex').slice(0, 24);
   } catch {
     return null;
   }

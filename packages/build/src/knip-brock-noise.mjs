@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
+import { keptByFile, withKeptIssues } from './knip-results.mjs';
 
 const ESBUILD_ENTRY = /\besbuild\s+(?:-\S+\s+)*((?:\.\/)?[^\s.\-/][^\s]*)/g;
 const DOT_SLASH = /^\.\//;
@@ -25,21 +26,15 @@ const namesOf = (packageFile) => {
   }));
 };
 
-const keptSymbols = (cwd, byFile) =>
-  Object.entries(byFile).map(([file, issues]) => {
-    const names = basename(file) === 'package.json' ? namesOf(join(cwd, file)) : new Set();
-    return [file, Object.fromEntries(Object.entries(issues).filter(([symbol]) => !names.has(symbol)))];
-  }).filter(([, issues]) => Object.keys(issues).length > 0);
-
-const countOf = (byFile) => Object.values(byFile).reduce((total, issues) => total + Object.keys(issues).length, 0);
-
 const withoutScriptEntryIssues = (data) =>
   SCRIPT_ISSUE_TYPES.reduce((out, type) => {
     const before = out.issues?.[type];
     if (!before) return out;
-    const after = Object.fromEntries(keptSymbols(out.cwd, before));
-    const dropped = countOf(before) - countOf(after);
-    return { ...out, issues: { ...out.issues, [type]: after }, counters: { ...out.counters, [type]: (out.counters?.[type] ?? 0) - dropped } };
+    const keepFor = (file) => {
+      const names = basename(file) === 'package.json' ? namesOf(join(out.cwd, file)) : new Set();
+      return (symbol) => !names.has(symbol);
+    };
+    return withKeptIssues(out, type, Object.fromEntries(keptByFile(before, keepFor)));
   }, data);
 
 /**

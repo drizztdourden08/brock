@@ -1,14 +1,13 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
 import type { DocumentsPort, Platform } from '@drizztdourden08/brock-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type * as DndModule from '../src/dnd';
 import type { DropTargetOptions, PathDrop } from '../src/dnd';
 import { DocumentFolderField } from '../src/documents/DocumentFolderField';
 import { platformState } from '../src/platform/platform-state';
+import { renderInBody, unmountAll } from './react-roots';
 
 const targets = vi.hoisted((): DropTargetOptions<PathDrop>[] => []);
 
@@ -19,14 +18,8 @@ vi.mock('../src/dnd', async (original) => ({
   },
 }));
 
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-
-let root: Root | null = null;
-
 afterEach(() => {
-  act(() => root?.unmount());
-  root = null;
-  document.body.innerHTML = '';
+  unmountAll();
   platformState.platform = null;
   targets.length = 0;
 });
@@ -39,10 +32,7 @@ const settle = (): Promise<void> => act(async () => { await Promise.resolve(); }
 
 const mount = async (documents: Partial<DocumentsPort>, props: { value: string | null; roots?: readonly string[]; onChange?: (path: string | null) => void }): Promise<HTMLElement> => {
   platformState.platform = { documents, filePicker: {} } as Platform;
-  const host = document.createElement('div');
-  document.body.append(host);
-  root = createRoot(host);
-  act(() => root?.render(createElement(DocumentFolderField, { label: 'Destination', onChange: () => undefined, ...props })));
+  const host = renderInBody(createElement(DocumentFolderField, { label: 'Destination', onChange: () => undefined, ...props }));
   await settle();
   return host;
 };
@@ -87,9 +77,7 @@ describe('K1 DocumentFolderField', { tags: ['critical'] }, () => {
   it('offers the roots as a list only when there are some', async () => {
     const withRoots = await mount({}, { value: null, roots: ['C:\\art', 'C:\\art\\sprites'] });
     expect(withRoots.querySelector('[aria-label="Folders of the project"]')).not.toBeNull();
-    act(() => root?.unmount());
-    root = null;
-    document.body.innerHTML = '';
+    unmountAll();
     const withoutRoots = await mount({}, { value: null });
     expect(withoutRoots.querySelector('[aria-label="Folders of the project"]')).toBeNull();
   });

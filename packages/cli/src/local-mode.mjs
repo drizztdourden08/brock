@@ -1,21 +1,12 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-
-const SWITCH_FILE = 'remote.json';
+import { remoteMode } from '@drizztdourden08/brock-thread/remote-mode';
 
 /**
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {boolean} true unless the coord switch says remote
  */
-const localModeOn = (env = process.env) => {
-  try {
-    const home = env.COORD_HOME || join(homedir(), '.coord');
-    return JSON.parse(readFileSync(join(home, SWITCH_FILE), 'utf8')).mode !== 'remote';
-  } catch {
-    return true;
-  }
-};
+const localModeOn = (env = process.env) => remoteMode(env.COORD_HOME || join(homedir(), '.coord')) === 'local';
 
 export { localModeOn };

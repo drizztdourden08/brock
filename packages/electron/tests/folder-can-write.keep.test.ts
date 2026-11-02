@@ -1,28 +1,24 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mkdir, readdir, rm } from 'fs/promises';
+import { mkdir, readdir } from 'fs/promises';
 import { join } from 'path';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { makeTree, refusedBy, sessionOf, testAccess } from './folder-fixture';
-import type { Call } from './folder-fixture';
+import { dropTree, grantedWorld, refusedBy } from './folder-fixture';
+import type { Call, Granted } from './folder-fixture';
 
 vi.mock('electron', () => ({ dialog: {}, app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined } }));
 
 let base = '';
 let granted = '';
 let outside = '';
-let access: DocumentAccess;
+let access: Granted['access'];
 let call: Call;
 
 beforeEach(async () => {
-  ({ base, granted, outside } = await makeTree('brock-can-write-'));
-  access = testAccess();
-  access.allowFolder(granted);
-  call = sessionOf({ documents: access });
+  ({ base, granted, outside, access, call } = await grantedWorld('brock-can-write-'));
 });
 
 afterEach(async () => {
-  await rm(base, { recursive: true, force: true });
+  await dropTree(base);
 });
 
 const listing = async (): Promise<string[]> => (await readdir(granted, { recursive: true })).sort();

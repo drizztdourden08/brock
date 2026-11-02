@@ -1,12 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-class FakeElement extends EventTarget {
-  attributes = new Map<string, string>();
-  setAttribute(name: string, value: string): void { this.attributes.set(name, value); }
-  removeAttribute(name: string): void { this.attributes.delete(name); }
-  contains(other: unknown): boolean { return other === this; }
-}
+import { FakeElement, GRANTED, settle } from './dnd-fixtures';
 
 const FILE = (name: string) => ({ name }) as File;
 
@@ -15,14 +9,6 @@ const osEvent = (type: string, names: string[]): Event =>
 
 const bubble = (event: Event, ...chain: FakeElement[]): void => {
   for (const element of chain) element.dispatchEvent(event);
-};
-
-const settle = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0); });
-
-const GRANTED: Record<string, { path: string; kind: 'file' | 'folder' }> = {
-  'C:\\art\\a.png': { path: 'C:\\art\\a.png', kind: 'file' },
-  'C:\\art\\b.txt': { path: 'C:\\art\\b.txt', kind: 'file' },
-  'C:\\art\\set': { path: 'C:\\art\\set', kind: 'folder' },
 };
 
 const setup = async () => {

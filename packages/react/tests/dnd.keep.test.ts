@@ -3,26 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dnd } from '../src/dnd/dnd';
 import { setDragOutHost } from '../src/dnd/set-drag-out-host';
 import type { DropFeedback } from '../src/dnd/dnd.type';
-
-class FakeElement extends EventTarget {
-  attributes = new Map<string, string>();
-  setAttribute(name: string, value: string): void { this.attributes.set(name, value); }
-  removeAttribute(name: string): void { this.attributes.delete(name); }
-  contains(other: unknown): boolean { return other === this; }
-}
-
-const pointer = (type: string, x: number, y: number): Event => Object.assign(new Event(type, { cancelable: true }), { button: 0, pointerId: 1, clientX: x, clientY: y });
-
-let win: EventTarget;
-let root: FakeElement;
-let stack: FakeElement[] = [];
+import { FakeElement, dragWorld, installDragWorld, pointer } from './dnd-fixtures';
 
 beforeEach(() => {
-  win = new EventTarget();
-  root = new FakeElement();
-  stack = [];
-  vi.stubGlobal('window', win);
-  vi.stubGlobal('document', { documentElement: root, elementsFromPoint: () => stack });
+  installDragWorld();
 });
 
 afterEach(() => {
@@ -37,10 +21,10 @@ const press = (el: FakeElement, x = 0, y = 0): void => {
   el.dispatchEvent(pointer('pointerdown', x, y));
 };
 const move = (x: number, y: number): void => {
-  win.dispatchEvent(pointer('pointermove', x, y));
+  dragWorld.win.dispatchEvent(pointer('pointermove', x, y));
 };
 const release = (x: number, y: number): void => {
-  win.dispatchEvent(pointer('pointerup', x, y));
+  dragWorld.win.dispatchEvent(pointer('pointerup', x, y));
 };
 
 describe('K1 a typed drag between two widgets', { tags: ['critical'] }, () => {
@@ -63,8 +47,8 @@ describe('K1 a typed drag between two widgets', { tags: ['critical'] }, () => {
     expect(dnd.session()).toBeNull();
     move(40, 25);
     expect(dnd.session()).toEqual({ type: 'asset', payload: { id: 'sprite-7' } });
-    expect(root.attributes.get('data-dragging')).toBe('asset');
-    stack = [target];
+    expect(dragWorld.root.attributes.get('data-dragging')).toBe('asset');
+    dragWorld.stack = [target];
     move(50, 25);
     expect(target.attributes.get('data-drop')).toBe('over');
     move(50, 35);
@@ -75,7 +59,7 @@ describe('K1 a typed drag between two widgets', { tags: ['critical'] }, () => {
     expect(ended).toEqual([true]);
     expect(target.attributes.has('data-drop')).toBe(false);
     expect(dnd.session()).toBeNull();
-    expect(root.attributes.has('data-dragging')).toBe(false);
+    expect(dragWorld.root.attributes.has('data-dragging')).toBe(false);
   });
 });
 
@@ -87,7 +71,7 @@ describe('K1 targets that refuse or compete', { tags: ['critical'] }, () => {
     const onDrop = vi.fn();
     dnd.source(source, { type: Asset, payload: { id: 'a' } });
     dnd.target(target, { accepts: Layer, onDrop, feedback: (f) => seen.push(`${f.phase}:${f.accepted}`) });
-    stack = [target];
+    dragWorld.stack = [target];
     press(source);
     move(30, 30);
     expect(target.attributes.get('data-drop')).toBe('reject');
@@ -105,7 +89,7 @@ describe('K1 targets that refuse or compete', { tags: ['critical'] }, () => {
     dnd.source(source, { type: Layer, payload: 3 });
     dnd.target(inner, { accepts: Layer, canDrop: (layer) => layer > 5, onDrop: innerDrop });
     dnd.target(outer, { accepts: [Layer], onDrop: outerDrop });
-    stack = [inner, outer];
+    dragWorld.stack = [inner, outer];
     press(source);
     move(20, 20);
     release(20, 20);
@@ -121,10 +105,10 @@ describe('K1 cancelling and thresholds', { tags: ['critical'] }, () => {
     const onDrop = vi.fn();
     dnd.source(source, { type: Asset, payload: { id: 'a' } });
     dnd.target(target, { accepts: Asset, onDrop });
-    stack = [target];
+    dragWorld.stack = [target];
     press(source);
     move(30, 30);
-    win.dispatchEvent(Object.assign(new Event('keydown'), { key: 'Escape' }));
+    dragWorld.win.dispatchEvent(Object.assign(new Event('keydown'), { key: 'Escape' }));
     release(30, 30);
     expect(onDrop).not.toHaveBeenCalled();
     expect(target.attributes.has('data-drop')).toBe(false);
@@ -137,7 +121,7 @@ describe('K1 cancelling and thresholds', { tags: ['critical'] }, () => {
     const onDrop = vi.fn();
     const stopSource = dnd.source(source, { type: Asset, payload: { id: 'a' } });
     dnd.target(target, { accepts: Asset, onDrop });
-    stack = [target];
+    dragWorld.stack = [target];
     press(source, 10, 10);
     move(11, 11);
     release(11, 11);

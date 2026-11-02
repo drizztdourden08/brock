@@ -2,8 +2,6 @@
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
 import type { ReactNode } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PalettePick, PickOption } from '../src/palette/palette.type';
 import { palette } from '../src/palette/palette';
@@ -13,14 +11,10 @@ import { usePickScopes } from '../src/palette/PaletteHost/behavior/usePickScopes
 import type { PickScopeModel } from '../src/palette/PaletteHost/PaletteHost.type';
 import { stepScope } from '../src/palette/step-scope';
 import { usePaletteStore } from '../src/palette/usePaletteStore';
-
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-
-let root: Root | null = null;
+import { renderInto, unmountAll } from './react-roots';
 
 afterEach(() => {
-  act(() => root?.unmount());
-  root = null;
+  unmountAll();
   palette.close();
 });
 
@@ -35,8 +29,7 @@ const probe = (): { latest: () => PickScopeModel } => {
     seen = usePickScopes(usePaletteStore((s) => s.picking));
     return null;
   };
-  root = createRoot(document.createElement('div'));
-  act(() => root?.render(createElement(Probe)));
+  renderInto(createElement(Probe), document.createElement('div'));
   return { latest: () => seen };
 };
 

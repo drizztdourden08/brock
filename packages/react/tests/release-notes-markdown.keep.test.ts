@@ -1,13 +1,9 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
-import type { ReactNode } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ReleaseNotesPanel } from '../src/compounds/ReleaseNotesPanel';
-
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+import { renderInBody, unmountAll } from './react-roots';
 
 const NOTE = [
   '<!-- release-notes: kept out -->',
@@ -22,22 +18,13 @@ const NOTE = [
   '',
 ].join('\n');
 
-const roots: Root[] = [];
-
 afterEach(() => {
-  act(() => { roots.splice(0).forEach((root) => root.unmount()); });
-  document.body.innerHTML = '';
+  unmountAll();
   vi.restoreAllMocks();
 });
 
-const render = (props: { markdown?: boolean; onOpenLink?: (href: string) => void }, children: ReactNode = NOTE): HTMLElement => {
-  const host = document.createElement('div');
-  document.body.append(host);
-  const root = createRoot(host);
-  roots.push(root);
-  act(() => root.render(createElement(ReleaseNotesPanel, { ...props, children })));
-  return host;
-};
+const render = (props: { markdown?: boolean; onOpenLink?: (href: string) => void }): HTMLElement =>
+  renderInBody(createElement(ReleaseNotesPanel, { ...props, children: NOTE }));
 
 describe('S1 ReleaseNotesPanel with markdown', { tags: ['standard'] }, () => {
   it('draws the note with Tessera Markdown: no # title, ## sections as h4 under the h3 box title, a list and links', () => {

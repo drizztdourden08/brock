@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { chordKeys, chordOfKeys } from '../src/commands';
 import type { CommandContext, HoldContext } from '../src/commands/command.type';
 import { commands } from '../src/commands/commands';
-import { dispatchCommand } from '../src/commands/dispatch-command';
 import { formatChord } from '../src/commands/format-chord';
 import { listenHolds } from '../src/commands/hold-listeners';
 import { normalizeChord } from '../src/commands/normalize-chord';
@@ -12,7 +11,7 @@ import { openKeymapAt } from '../src/commands/open-keymap-at';
 import { parseChord } from '../src/commands/parse-chord';
 import { nav } from '../src/navigation/nav';
 import { scrollToAnchor } from '../src/search/scroll-to-anchor';
-import { registerFresh } from './command-fixtures';
+import { down, registerFresh, up } from './command-fixtures';
 
 vi.mock('../src/search/scroll-to-anchor', () => ({ scrollToAnchor: vi.fn() }));
 
@@ -20,15 +19,6 @@ const runs: CommandContext[] = [];
 const presses: string[] = [];
 const releases: HoldContext[] = [];
 const stops: { listeners: () => void; commands: () => void } = { listeners: () => {}, commands: () => {} };
-
-const down = (init: KeyboardEventInit): void => {
-  document.documentElement.addEventListener('keydown', (each) => dispatchCommand(each, null), { once: true });
-  document.documentElement.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
-};
-
-const up = (init: KeyboardEventInit): void => {
-  document.documentElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, ...init }));
-};
 
 const SPACE = { key: ' ', code: 'Space' };
 const B = { key: 'b', code: 'KeyB' };

@@ -1,27 +1,17 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SettingJsonField } from '../src/settings/SettingsLayout/sub-components/SettingJsonField';
 import { readJsonText } from '../src/settings/SettingsLayout/sub-components/SettingJsonField/behavior/read-json-text';
-
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-
-let root: Root | null = null;
+import { renderInBody, unmountAll } from './react-roots';
 
 afterEach(() => {
-  act(() => root?.unmount());
-  root = null;
-  document.body.innerHTML = '';
+  unmountAll();
 });
 
 const mount = (value: unknown, onChange: (next: unknown) => void, shape?: 'object' | 'array' | 'any'): HTMLTextAreaElement => {
-  const host = document.createElement('div');
-  document.body.append(host);
-  root = createRoot(host);
-  act(() => root?.render(createElement(SettingJsonField, { control: { kind: 'json', shape }, value, onChange, label: 'Extra', disabled: false })));
+  const host = renderInBody(createElement(SettingJsonField, { control: { kind: 'json', shape }, value, onChange, label: 'Extra', disabled: false }));
   const field = host.querySelector('textarea');
   if (!field) throw new Error('no textarea');
   return field;

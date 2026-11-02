@@ -21,7 +21,8 @@
   "exports": {
     ".": "./src/index.mjs",
     "./cli": "./src/cli/run-thread-cli.mjs",
-    "./ports": "./src/ports/index.mjs"
+    "./ports": "./src/ports/index.mjs",
+    "./remote-mode": "./src/local/remote-mode.mjs"
   },
   "files": [
     "bin",

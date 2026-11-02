@@ -1,11 +1,10 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, symlink, writeFile } from 'fs/promises';
+import { mkdir, readFile, symlink, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { makeTree, sessionOf, testAccess } from './folder-fixture';
-import type { Call } from './folder-fixture';
+import { dropTree, grantedWorld } from './folder-fixture';
+import type { Call, Granted } from './folder-fixture';
 
 vi.mock('electron', () => ({ dialog: {}, app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined } }));
 
@@ -20,7 +19,7 @@ const LURE_SAFE = ['a.link', 'lnk.txt', 'notes.url.txt', 'desktop.ini.txt', 'aut
 
 let base = '';
 let granted = '';
-let access: DocumentAccess;
+let access: Granted['access'];
 let call: Call;
 
 const seed = async (files: string[]): Promise<void> => {
@@ -37,14 +36,11 @@ const refusedWrite = async (file: string): Promise<void> => {
 };
 
 beforeEach(async () => {
-  ({ base, granted } = await makeTree('brock-classes-'));
-  access = testAccess();
-  access.allowFolder(granted);
-  call = sessionOf({ documents: access });
+  ({ base, granted, access, call } = await grantedWorld('brock-classes-'));
 });
 
 afterEach(async () => {
-  await rm(base, { recursive: true, force: true });
+  await dropTree(base);
 });
 
 describe('K4 writes into repository and editor configuration', { tags: ['critical'] }, () => {

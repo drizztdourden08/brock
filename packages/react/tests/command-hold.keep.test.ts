@@ -3,22 +3,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { commands } from '../src/commands/commands';
 import type { HoldContext } from '../src/commands/command.type';
-import { dispatchCommand } from '../src/commands/dispatch-command';
 import { listenHolds } from '../src/commands/hold-listeners';
-import { registerFresh } from './command-fixtures';
+import { down, registerFresh, up } from './command-fixtures';
 
 const presses: string[] = [];
 const releases: HoldContext[] = [];
 const stops: { listeners: () => void; commands: () => void } = { listeners: () => {}, commands: () => {} };
-
-const down = (init: KeyboardEventInit): void => {
-  document.documentElement.addEventListener('keydown', (each) => dispatchCommand(each, null), { once: true });
-  document.documentElement.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
-};
-
-const up = (init: KeyboardEventInit): void => {
-  document.documentElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, ...init }));
-};
 
 const setup = (): void => {
   presses.length = 0;

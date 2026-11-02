@@ -1,20 +1,12 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { dropBrockKnipNoise } from '../src/knip-brock-noise.mjs';
+import { write } from './knip-write-fixture.mjs';
 
 const made = [];
-
-const write = (root, files) => {
-  Object.entries(files).forEach(([file, content]) => {
-    const path = join(root, ...file.split('/'));
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, typeof content === 'string' ? content : `${JSON.stringify(content)}\n`);
-  });
-  return root;
-};
 
 const functionApp = (bundle) => {
   const root = write(mkdtempSync(join(tmpdir(), 'brock-knip-noise-')), {

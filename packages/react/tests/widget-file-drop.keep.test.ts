@@ -1,24 +1,10 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { FileDrop } from '../src/file-drop/file-drop.type';
-
-class FakeElement extends EventTarget {
-  attributes = new Map<string, string>();
-  setAttribute(name: string, value: string): void { this.attributes.set(name, value); }
-  removeAttribute(name: string): void { this.attributes.delete(name); }
-  contains(other: unknown): boolean { return other === this; }
-}
-
-const GRANTED: Record<string, { path: string; kind: 'file' | 'folder' }> = {
-  'C:\\art\\a.png': { path: 'C:\\art\\a.png', kind: 'file' },
-  'C:\\art\\b.txt': { path: 'C:\\art\\b.txt', kind: 'file' },
-  'C:\\art\\set': { path: 'C:\\art\\set', kind: 'folder' },
-};
+import { FakeElement, GRANTED, settle } from './dnd-fixtures';
 
 const osDrop = (names: string[]): Event =>
   Object.assign(new Event('drop', { cancelable: true }), { clientX: 5, clientY: 6, dataTransfer: { types: ['Files'], files: names.map((name) => ({ name }) as File), dropEffect: 'none' } });
-
-const settle = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0); });
 
 const BYTES = new Uint8Array([0, 1, 2, 3, 4]).subarray(1, 4);
 

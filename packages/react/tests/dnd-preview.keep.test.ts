@@ -2,13 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dnd } from '../src/dnd/dnd';
 import { fileListDragSource } from '../src/dnd/file-list-drag';
-
-class FakeElement extends EventTarget {
-  attributes = new Map<string, string>();
-  setAttribute(name: string, value: string): void { this.attributes.set(name, value); }
-  removeAttribute(name: string): void { this.attributes.delete(name); }
-  contains(other: unknown): boolean { return other === this; }
-}
+import { FakeElement, dragPast, dragWorld, installDragWorld, pointer } from './dnd-fixtures';
 
 class FakeNode {
   className = '';
@@ -27,20 +21,13 @@ class FakeNode {
   isBody = false;
 }
 
-const pointer = (type: string, x: number, y: number): Event => Object.assign(new Event(type, { cancelable: true }), { button: 0, pointerId: 1, clientX: x, clientY: y });
-
-let win: EventTarget;
-let root: FakeElement;
 let body: FakeNode[] = [];
 
 beforeEach(() => {
-  win = new EventTarget();
-  root = new FakeElement();
   body = [];
   const bodyNode = new FakeNode(body);
   bodyNode.isBody = true;
-  vi.stubGlobal('window', win);
-  vi.stubGlobal('document', { documentElement: root, body: bodyNode, elementsFromPoint: () => [], createElement: () => new FakeNode(body) });
+  installDragWorld({ body: bodyNode, createElement: () => new FakeNode(body) });
 });
 
 const ghostOf = (): FakeNode => {
@@ -49,13 +36,8 @@ const ghostOf = (): FakeNode => {
   return first;
 };
 
-const dragPast = (row: FakeElement): void => {
-  row.dispatchEvent(pointer('pointerdown', 5, 5));
-  win.dispatchEvent(pointer('pointermove', 40, 40));
-};
-
 afterEach(() => {
-  win.dispatchEvent(pointer('pointercancel', 0, 0));
+  dragWorld.win.dispatchEvent(pointer('pointercancel', 0, 0));
   vi.unstubAllGlobals();
 });
 
@@ -66,14 +48,14 @@ describe('drag preview', () => {
     dnd.source(row, { type, payload: ['a', 'b', 'c'], preview: { label: () => 'sprites', count: (list) => list.length } });
     row.dispatchEvent(pointer('pointerdown', 5, 5));
     expect(body).toHaveLength(0);
-    win.dispatchEvent(pointer('pointermove', 40, 50));
+    dragWorld.win.dispatchEvent(pointer('pointermove', 40, 50));
     expect(body).toHaveLength(1);
     const ghost = ghostOf();
     expect(ghost.className).toBe('brock-drag-ghost');
     expect(ghost.attributes.get('aria-hidden')).toBe('true');
     expect(ghost.children.map((part) => part.textContent)).toEqual(['3', 'sprites']);
     expect(ghost.vars.get('--drag-x')).toBe('40px');
-    win.dispatchEvent(pointer('pointermove', 60, 70));
+    dragWorld.win.dispatchEvent(pointer('pointermove', 60, 70));
     expect(ghost.vars.get('--drag-x')).toBe('60px');
     expect(ghost.vars.get('--drag-y')).toBe('70px');
   });
@@ -83,11 +65,11 @@ describe('drag preview', () => {
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item' } });
     dragPast(row);
     expect(body).toHaveLength(1);
-    win.dispatchEvent(pointer('pointerup', 40, 40));
+    dragWorld.win.dispatchEvent(pointer('pointerup', 40, 40));
     expect(body).toHaveLength(0);
     dragPast(row);
     expect(body).toHaveLength(1);
-    win.dispatchEvent(pointer('pointercancel', 40, 40));
+    dragWorld.win.dispatchEvent(pointer('pointercancel', 40, 40));
     expect(body).toHaveLength(0);
   });
 
@@ -103,11 +85,11 @@ describe('drag preview', () => {
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1 });
     dragPast(row);
     expect(body).toHaveLength(0);
-    win.dispatchEvent(pointer('pointerup', 40, 40));
+    dragWorld.win.dispatchEvent(pointer('pointerup', 40, 40));
     const other = new FakeElement();
     dnd.source(other, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'x' } });
     other.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 6, 6));
+    dragWorld.win.dispatchEvent(pointer('pointermove', 6, 6));
     expect(body).toHaveLength(0);
   });
 

@@ -14,6 +14,8 @@ export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSized, W
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';
+export { activeWidget } from './active-widget/active-widget';
+export { useActiveWidget } from './active-widget/useActiveWidget';
 export { keepsWidgetFocus } from './keeps-widget-focus';
 export { WIDGET_KEEPS_FOCUS } from './keeps-widget-focus.constants';
 export { buildWidgetMenuEntries } from './build-widget-menu-entries';

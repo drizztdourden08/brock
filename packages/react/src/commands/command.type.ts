@@ -71,6 +71,7 @@ interface CommandDef {
   chord?: ChordInput;
   scope?: string;
   zone?: string;
+  widget?: string;
   whileTyping?: boolean;
   when?: () => boolean;
   visible?: () => boolean;
@@ -143,6 +144,7 @@ interface CommandLookup {
   route: string | null;
   typing: boolean;
   zones: readonly string[];
+  widget: string | null;
 }
 
 type ChordLookup = (id: string) => readonly string[] | undefined;

@@ -286,7 +286,7 @@ Every shortcut and menu action is a `CommandDef` in one registry. Besides `id`, 
 
 An app menu entry with `command` reads the gates of that command: it is left out when the command is hidden, and it is disabled with the command's reason as its description otherwise (`useCommandDescribe()` re-reads when a gate changes). A menu-bar entry skips a hidden command too.
 
-`palette.open({ query?, scope? })` opens the search palette with a query and a scope (a hub id) already set; `palette.open()` keeps what is there. `palette.pick({ title, options, onPick })` opens it as a value picker over a list. Closing the palette clears the query, the scope and the picker.
+`palette.open({ query?, scope? })` opens the search palette with a query and a scope (a hub id) already set; `palette.open()` keeps what is there. `palette.pick({ title, options, onPick })` opens it as a value picker over a list. An option can carry `description`, `icon`, `keywords` and `group`; a `group` splits the results into titled groups in order of first appearance. `palette.pick({ title, scopes, scope?, onPick })` gives the picker scopes, each `{ id, label, options }` where `options` is a list or an async function that loads once, on the first visit of that scope. The picker opens in `scope` (else the first), Tab and Shift+Tab move to the next and previous scope, the placeholder names the scope and the next one, and `onPick(value, scopeId)` gets the scope the value came from. A scoped picker ranks by label, keywords and description, as the search does; a flat `options` picker keeps its label filter. Closing the palette clears the query, the scope and the picker.
 
 ## Context menu
 

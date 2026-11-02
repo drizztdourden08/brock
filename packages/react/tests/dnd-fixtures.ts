@@ -9,9 +9,9 @@ class FakeElement extends EventTarget {
 }
 
 const GRANTED: Record<string, { path: string; kind: 'file' | 'folder' }> = {
-  'C:\art\a.png': { path: 'C:\art\a.png', kind: 'file' },
-  'C:\art\b.txt': { path: 'C:\art\b.txt', kind: 'file' },
-  'C:\art\set': { path: 'C:\art\set', kind: 'folder' },
+  'C:\\art\\a.png': { path: 'C:\\art\\a.png', kind: 'file' },
+  'C:\\art\\b.txt': { path: 'C:\\art\\b.txt', kind: 'file' },
+  'C:\\art\\set': { path: 'C:\\art\\set', kind: 'folder' },
 };
 
 const pointer = (type: string, x: number, y: number): Event => Object.assign(new Event(type, { cancelable: true }), { button: 0, pointerId: 1, clientX: x, clientY: y });

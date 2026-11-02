@@ -15,6 +15,7 @@ const useDropTarget = <T,>(ref: RefObject<DndElement | null>, options: DropTarge
     if (!element) return undefined;
     return dropTarget<T>(element, {
       accepts: latest.current.accepts,
+      get paths() { return latest.current.paths; },
       onDrop: (payload, info) => latest.current.onDrop(payload, info),
       canDrop: (payload, info) => latest.current.canDrop?.(payload, info) ?? true,
       feedback: (feedback) => latest.current.feedback?.(feedback),

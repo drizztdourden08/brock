@@ -73,7 +73,7 @@ describe('K4 OS path drops', () => {
   it('sends a file with no checkable path to rejected instead of passing it on', { tags: ['critical'] }, async () => {
     const { dnd } = await setup();
     const target = new FakeElement();
-    const drops: { paths: unknown[]; rejected: unknown[] }[] = [];
+    const drops: { paths: readonly unknown[]; rejected: readonly unknown[] }[] = [];
     dnd.target(target, { accepts: dnd.paths, onDrop: (drop) => drops.push(drop) });
     target.dispatchEvent(osEvent('drop', ['web.png']));
     await settle();
@@ -84,7 +84,7 @@ describe('K4 OS path drops', () => {
   it('rejects a wrong extension after vetting and keeps folders', { tags: ['standard'] }, async () => {
     const { dnd } = await setup();
     const target = new FakeElement();
-    const drops: { paths: { name: string }[]; rejected: unknown[] }[] = [];
+    const drops: { paths: readonly { name: string }[]; rejected: readonly unknown[] }[] = [];
     dnd.target(target, { accepts: dnd.paths, paths: { extensions: ['.PNG'] }, onDrop: (drop) => drops.push(drop) });
     target.dispatchEvent(osEvent('drop', ['a.png', 'b.txt', 'set']));
     await settle();
@@ -95,7 +95,7 @@ describe('K4 OS path drops', () => {
   it('lists the content of dropped folders from main when expand is set', { tags: ['standard'] }, async () => {
     const { dnd, list } = await setup();
     const target = new FakeElement();
-    const drops: { entries: { path: string }[]; truncated: boolean }[] = [];
+    const drops: { entries: readonly { path: string }[]; truncated: boolean }[] = [];
     dnd.target(target, { accepts: dnd.paths, paths: { expand: { recursive: true, extensions: ['png'] } }, onDrop: (drop) => drops.push(drop) });
     target.dispatchEvent(osEvent('drop', ['a.png', 'set']));
     await settle();

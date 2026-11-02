@@ -32,11 +32,11 @@ describe('K1 held input across a release of the gamepad subsystem', { tags: ['cr
 
   it('tells each listener once per pad that the pad is idle', () => {
     const host = hostWith(heldPad('a'), heldPad('b'));
-    const listener = vi.fn();
+    const listener = vi.fn<(state: ControllerInputState) => void>();
     host.listeners.add(listener);
     clearHeldStates(host);
     expect(listener).toHaveBeenCalledTimes(2);
-    expect(listener.mock.calls.every(([state]: [ControllerInputState]) => state.buttons.every((down) => !down))).toBe(true);
+    expect(listener.mock.calls.every(([state]) => state.buttons.every((down) => !down))).toBe(true);
   });
 
   it('does not change what is connected', () => {

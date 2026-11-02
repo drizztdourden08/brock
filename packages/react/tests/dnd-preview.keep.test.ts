@@ -43,7 +43,14 @@ beforeEach(() => {
   vi.stubGlobal('document', { documentElement: root, body: bodyNode, elementsFromPoint: () => [], createElement: () => new FakeNode(body) });
 });
 
+const ghostOf = (): FakeNode => {
+  const [first] = body;
+  if (!first) throw new Error('no ghost on the body');
+  return first;
+};
+
 afterEach(() => {
+  win.dispatchEvent(pointer('pointercancel', 0, 0));
   vi.unstubAllGlobals();
 });
 
@@ -56,7 +63,7 @@ describe('drag preview', () => {
     expect(body).toHaveLength(0);
     win.dispatchEvent(pointer('pointermove', 40, 50));
     expect(body).toHaveLength(1);
-    const ghost = body[0];
+    const ghost = ghostOf();
     expect(ghost.className).toBe('brock-drag-ghost');
     expect(ghost.attributes.get('aria-hidden')).toBe('true');
     expect(ghost.children.map((part) => part.textContent)).toEqual(['3', 'sprites']);
@@ -86,7 +93,7 @@ describe('drag preview', () => {
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item' } });
     row.dispatchEvent(pointer('pointerdown', 5, 5));
     win.dispatchEvent(pointer('pointermove', 40, 40));
-    expect(body[0].children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
+    expect(ghostOf().children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
   });
 
   it('draws nothing without a preview and never for a press that stays under the threshold', { tags: ['critical'] }, () => {
@@ -109,6 +116,6 @@ describe('drag preview', () => {
     dnd.source(row, fileListDragSource({ paths: () => picked, preview: { label: 'files', count: (drop) => drop.paths.length } }));
     row.dispatchEvent(pointer('pointerdown', 5, 5));
     win.dispatchEvent(pointer('pointermove', 40, 40));
-    expect(body[0].children.map((part) => part.textContent)).toEqual(['2', 'files']);
+    expect(ghostOf().children.map((part) => part.textContent)).toEqual(['2', 'files']);
   });
 });

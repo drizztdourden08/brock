@@ -85,8 +85,8 @@ describe('K1 commands with bound arguments', { tags: ['critical'] }, () => {
     await runWithPicker('tool.apply');
     const { picking, open } = usePaletteStore.getState();
     expect(open).toBe(true);
-    expect(picking?.options.map((option) => option.label)).toEqual(['Soft', 'Hard']);
-    picking?.onPick('hard');
+    expect(picking?.options?.map((option) => option.label)).toEqual(['Soft', 'Hard']);
+    picking?.onPick('hard', null);
     await Promise.resolve();
     expect(seen).toMatchObject([{ args: { id: 'hard' } }]);
   });

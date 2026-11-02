@@ -19,7 +19,7 @@ const useFolderField = (props: DocumentFolderFieldProps, ref: RefObject<DndEleme
   );
   const rootOptions = useMemo(() => roots.map((path) => ({ value: path, label: path })), [roots]);
 
-  return { reason: drop.reason ?? checked, change: drop.change, browse, rootOptions, rootValue: value !== null && roots.includes(value) ? value : null };
+  return { reason: drop.reason ?? checked, change: drop.change, browse, rootOptions, rootValue: value !== null && roots.includes(value) ? value : undefined };
 };
 
 export { useFolderField };

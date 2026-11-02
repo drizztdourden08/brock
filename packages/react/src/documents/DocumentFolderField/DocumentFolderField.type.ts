@@ -20,7 +20,7 @@ interface FolderFieldState {
   change: (path: string | null) => void;
   browse: () => Promise<string | null>;
   rootOptions: readonly SelectOption[];
-  rootValue: string | null;
+  rootValue: string | undefined;
 }
 
 interface FolderCheck {

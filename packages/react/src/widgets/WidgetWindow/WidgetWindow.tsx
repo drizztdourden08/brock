@@ -74,7 +74,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
         disabled={off.disabled}
         onOpenSettings={off.onOpenSettings}
       >
-        <WidgetBody id={id} label={tabs[0]?.label ?? id}>{definition?.render()}</WidgetBody>
+        <WidgetBody id={id} label={tabs[0]?.label ?? id} drop={definition?.drop}>{definition?.render()}</WidgetBody>
       </Widget>
       <WindowGuide />
       <WidgetTourSpot id={id} />

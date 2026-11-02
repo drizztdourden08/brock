@@ -40,7 +40,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('configKeyMoves', () => {
+describe('K1 configKeyMoves', { tags: ['critical'] }, () => {
   it('renames an object in place when every key in it moves alike, keeping a one-line layout', () => {
     const source = '{\n  "$schema": "x",\n  "old": { "usage": "enforce", "tree": "a.ts" },\n  "stories": "s"\n}\n';
     expect(move(source)).toEqual({ source: '{\n  "$schema": "x",\n  "fresh": { "usage": "enforce", "tree": "a.ts" },\n  "stories": "s"\n}\n', todos: [] });
@@ -80,7 +80,9 @@ describe('configKeyMoves', () => {
     expect(move(once)).toEqual({ source: once, todos: [] });
     expect(move('{ not json')).toEqual({ source: '{ not json', todos: [] });
   });
+});
 
+describe('S4 the installed Tessera configKeys', { tags: ['standard'] }, () => {
   it('replays the configKeys of the installed Tessera', () => {
     const tesseraDir = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
     const renames = JSON.parse(readFileSync(join(tesseraDir, 'RENAMES.json'), 'utf8'));
@@ -94,7 +96,7 @@ describe('configKeyMoves', () => {
   });
 });
 
-describe('the Tessera renames step: configKeys', () => {
+describe('S2 the Tessera renames step: configKeys', { tags: ['standard'] }, () => {
   const RELEASES = [{ version: '0.10.0', configKeys: { 'tessera.config.json': CONFIG_MAP, 'package.json': SCRIPT_MAP } }];
 
   it('moves the keys at the repo root and in every workspace package', () => {

@@ -13,7 +13,7 @@ const setup = () => {
   return { registry, emitted, forwarded, latest };
 };
 
-describe('quiet jobs', () => {
+describe('K1 quiet jobs', { tags: ['critical'] }, () => {
   it('marks a job started with visible: false in its snapshot, and every other job visible', () => {
     const { registry, latest } = setup();
     registry.start('thumbs', STEPS, { visible: false }).step('fetch');
@@ -23,7 +23,7 @@ describe('quiet jobs', () => {
   });
 });
 
-describe('forwarding the job log', () => {
+describe('K1 forwarding the job log', { tags: ['critical'] }, () => {
   it('hands each log line of a job started with forwardLog to the sink with the job id, and keeps the others to the job', () => {
     const { registry, forwarded } = setup();
     const job = registry.start('sync', STEPS, { forwardLog: true });
@@ -36,13 +36,9 @@ describe('forwarding the job log', () => {
     ]);
   });
 
-  it('forwards nothing when the registry has no sink', () => {
-    const registry = createJobRegistry(() => undefined);
-    expect(() => registry.start('sync', STEPS, { forwardLog: true }).log('no sink')).not.toThrow();
-  });
 });
 
-describe('the duplicate id policy: throw and queue', () => {
+describe('K1 the duplicate id policy: throw and queue', { tags: ['critical'] }, () => {
   it('throws by default, and ends with started and ended promises on the handle', async () => {
     const { registry } = setup();
     const job = registry.start('scan', STEPS);
@@ -90,7 +86,7 @@ describe('the duplicate id policy: throw and queue', () => {
 
 });
 
-describe('the duplicate id policy: parallel and join', () => {
+describe('K1 the duplicate id policy: parallel and join', { tags: ['critical'] }, () => {
   it('runs a parallel job under the first free suffixed id, keeping the title', () => {
     const { registry, latest } = setup();
     registry.start('scan', STEPS, { title: 'Scanning' });

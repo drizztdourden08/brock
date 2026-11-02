@@ -6,10 +6,10 @@ import { EC_CURVES, EC_DEFAULT_DIGEST } from './ec-null-digest.constants';
 const isKeyObjectInput = (key: VerifyKey): key is VerifyKeyObjectInput =>
   typeof key === 'object' && !Buffer.isBuffer(key) && !(key instanceof KeyObject) && key.key instanceof KeyObject;
 
-const keyObjectOf = (key: VerifyKey): KeyObject => {
-  if (isKeyObjectInput(key)) return createPublicKey(key.key);
-  return createPublicKey(key);
-};
+const asPublic = (key: Exclude<VerifyKey, VerifyKeyObjectInput>): KeyObject =>
+  key instanceof KeyObject && key.type === 'public' ? key : createPublicKey(key);
+
+const keyObjectOf = (key: VerifyKey): KeyObject => (isKeyObjectInput(key) ? asPublic(key.key) : asPublic(key));
 
 const ecDigestOf = (key: VerifyKey): string | null => {
   try {

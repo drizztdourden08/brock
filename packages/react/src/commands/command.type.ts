@@ -45,6 +45,11 @@ interface BoundArgs {
   args: Readonly<Record<string, ArgValue>>;
 }
 
+interface DefaultBinding {
+  args: Readonly<Record<string, ArgValue>>;
+  chord: ChordInput;
+}
+
 type HoldCause = 'keyup' | 'blur' | 'run' | 'dispose';
 
 interface HoldContext extends CommandContext {
@@ -66,6 +71,7 @@ interface CommandDef {
   chord?: ChordInput;
   scope?: string;
   zone?: string;
+  widget?: string;
   whileTyping?: boolean;
   when?: () => boolean;
   visible?: () => boolean;
@@ -75,6 +81,7 @@ interface CommandDef {
   hold?: CommandHold;
   args?: ArgSchema;
   bound?: BoundArgs;
+  bindings?: readonly DefaultBinding[];
   meta?: Readonly<Record<string, unknown>>;
   run: (context?: CommandContext) => void | Promise<void>;
 }
@@ -108,6 +115,7 @@ interface ParsedChord {
   shift: boolean;
   meta: boolean;
   key: string;
+  with?: readonly string[];
 }
 
 type HeldModifier = 'ctrl' | 'alt' | 'shift' | 'meta';
@@ -136,6 +144,7 @@ interface CommandLookup {
   route: string | null;
   typing: boolean;
   zones: readonly string[];
+  widget: string | null;
 }
 
 type ChordLookup = (id: string) => readonly string[] | undefined;
@@ -165,5 +174,5 @@ interface CommandBinding {
 
 export type {
   ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordEvent, ChordInput, ChordList, ChordLookup, CommandBinding, CommandBlock, CommandConflict, CommandDescription, CommandHold, CommandRunResult, CommandContext, CommandData, CommandTrigger,
-  CommandDef, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
+  CommandDef, DefaultBinding, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
 };

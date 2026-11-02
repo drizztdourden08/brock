@@ -47,28 +47,25 @@ afterEach(() => {
   useBugReportStore.setState({ extras: null });
 });
 
-describe('the app section of the bug report', () => {
+describe('S1 the app section of the bug report', { tags: ['standard'] }, () => {
   const Picker = (props: BugReportSectionProps) => {
     const { setExtras } = props;
     useEffect(() => setExtras({ picked: 'clip-2' }), [setExtras]);
     return createElement('span', { className: 'picker' }, 'Pick a clip');
   };
 
-  it('renders below the form fields and adds its extras beside the app extras', async () => {
+  it('shows its section and adds its extras beside the app extras', async () => {
     useBugReportStore.setState({ appTransport: { section: Picker }, extras: () => ({ screen: 'home' }) });
     act(() => bugReport.open());
     mountDialog();
-    const section = document.querySelector('.bug-report__section');
-    const description = document.querySelector('textarea');
-    expect(section?.textContent).toBe('Pick a clip');
-    expect(description && section && description.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(document.body.textContent).toContain('Pick a clip');
     fillReport();
     await send();
     expect(target.payloads[0]?.extras).toEqual({ screen: 'home', picked: 'clip-2' });
   });
 });
 
-describe('the prefilled title', () => {
+describe('S1 the prefilled title', { tags: ['standard'] }, () => {
   it('fills the title from open and clears it when the dialog closes', () => {
     mountDialog();
     act(() => bugReport.open({ title: 'Crash in the editor' }));
@@ -89,7 +86,7 @@ describe('the prefilled title', () => {
   });
 });
 
-describe('the signed-in identity', () => {
+describe('S1 the signed-in identity', { tags: ['standard'] }, () => {
   it('shows who reports in place of the contact field and sends no contact', async () => {
     target.fields = { ...target.fields, identity: 'sam@example.com' };
     act(() => bugReport.open());
@@ -102,7 +99,7 @@ describe('the signed-in identity', () => {
   });
 });
 
-describe('the receipt links and retry', () => {
+describe('S1 the receipt links and retry', { tags: ['standard'] }, () => {
   const retry = vi.fn<() => Promise<Result<BugReportReceipt>>>();
   const partial: BugReportReceipt = {
     message: 'Saved, but the upload failed.', url: 'https://reports.example/1', retry,

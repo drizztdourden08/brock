@@ -40,7 +40,7 @@ const restore = async (root) => {
   return { ...restoreSharedBuild(root, { log, targets: ['main'] }), found };
 };
 
-describe('a shared build hit', () => {
+describe('E2 a shared build hit', { tags: ['e2e'] }, () => {
   it('decides from git and the cache without loading vite or electron-vite', async () => {
     freshCache();
     const root = repo();

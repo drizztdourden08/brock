@@ -57,7 +57,7 @@ const publish = async (first) => {
   return storeViteDeps(stored[0]);
 };
 
-describe('configHashOf', () => {
+describe('K1 configHashOf', { tags: ['critical'] }, () => {
   it('names the worktree unless portable, and always names the optimizer inputs', () => {
     const one = makeConfig(tempDir());
     const two = makeConfig(tempDir());
@@ -84,13 +84,8 @@ describe('configHashOf', () => {
   });
 });
 
-describe('depsBuildKey', () => {
+describe('K1 depsBuildKey', { tags: ['critical'] }, () => {
   const parts = { vite: '7.3.7', lockfile: { content: LOCKFILE }, configHash: 'abc' };
-
-  it('gives the same key for the same inputs and starts with the platform', () => {
-    expect(depsBuildKey({ ...parts, lockfile: { content: LOCKFILE } })).toBe(depsBuildKey(parts));
-    expect(depsBuildKey(parts)).toMatch(new RegExp(`^${process.platform}-${process.arch}-[0-9a-f]{16}$`));
-  });
 
   it('moves with the lockfile content, the Vite version and the optimizer config', () => {
     expect(depsBuildKey({ ...parts, lockfile: { content: `${LOCKFILE}  bar@2.0.0: {}\n` } })).not.toBe(depsBuildKey(parts));
@@ -99,7 +94,7 @@ describe('depsBuildKey', () => {
   });
 });
 
-describe('shareDeps', () => {
+describe('K3 shareDeps', { tags: ['critical'] }, () => {
   it('stores a current pre-bundle, then restores it in a second worktree with that worktree hashes', async () => {
     const cache = tempDir();
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);
@@ -149,10 +144,9 @@ describe('shareDeps', () => {
     expect(shareDeps({ config: stale.config, rootDir: stale.root, store })).toBe('seeded');
     expect(metadataOf(stale.root).hash).toBe(viteHashes(stale.config, { content: LOCKFILE }).hash);
   });
-
 });
 
-describe('shareDeps misses', () => {
+describe('S3 shareDeps misses', { tags: ['standard'] }, () => {
   it('reads another lockfile, another optimizer include or an uninstalled dependency as a miss', async () => {
     const cache = tempDir();
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', cache);

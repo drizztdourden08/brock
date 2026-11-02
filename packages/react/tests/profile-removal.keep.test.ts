@@ -69,7 +69,7 @@ afterEach(() => {
   useProfilesStore.getState().setActive(null);
 });
 
-describe('removing a profile', () => {
+describe('K3 removing a profile', { tags: ['critical'] }, () => {
   it('activates the most recently used profile left when the active one goes, and stays where the user is', async () => {
     await start([OLDEST, NEWEST, MIDDLE], OLDEST);
     nav.open('settings');
@@ -104,7 +104,7 @@ describe('removing a profile', () => {
   });
 });
 
-describe('the app hook before a removal', () => {
+describe('K4 the app hook before a removal', { tags: ['critical'] }, () => {
   it('keeps the profile when the hook says no, even after waiting', async () => {
     const asked: string[] = [];
     removals.push(profileRemoval.add(async (target) => {
@@ -130,7 +130,7 @@ describe('the app hook before a removal', () => {
   });
 });
 
-describe('Escape with no profile', () => {
+describe('K4 Escape with no profile', { tags: ['critical'] }, () => {
   it('opens the profiles route when nothing is open', async () => {
     await start([], null);
     pressEscape();
@@ -166,7 +166,7 @@ describe('Escape with no profile', () => {
   });
 });
 
-describe('the paths to profiles with no profile', () => {
+describe('K4 the paths to profiles with no profile', { tags: ['critical'] }, () => {
   it('sends the boot picker to the route the app names', async () => {
     removals.push(profileAlias('data/profiles'));
     await start([], null);

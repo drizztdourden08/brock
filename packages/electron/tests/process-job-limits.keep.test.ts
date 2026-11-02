@@ -16,7 +16,7 @@ beforeEach(() => {
 
 const WAIT = { timeout: 15_000, interval: 50 };
 
-describe('run a process as a job: limits and privacy', () => {
+describe('E2 run a process as a job: limits and privacy', { tags: ['e2e'] }, () => {
   it('force kills a process that outlives timeoutMs and fails the job as timed out', async () => {
     const outcome = await fx.processes.run('slow', { command: fx.command, args: fx.argv('hold') }, { label: 'Slow', timeoutMs: 800 });
     expect(outcome).toMatchObject({ status: 'failed', error: 'Slow timed out.' });

@@ -47,7 +47,7 @@ beforeEach(() => {
 
 afterEach(() => rmSync(base, { recursive: true, force: true }));
 
-describe('removeTree', () => {
+describe('K4 removeTree', { tags: ['standard'] }, () => {
   it('removes a worktree whose node_modules holds a path past 260 characters', async () => {
     const deep = deepFolder(join(tree, 'node_modules', '.pnpm', 'pkg@1.0.0', 'node_modules', 'pkg'));
     expect(deep.length).toBeGreaterThan(260);
@@ -84,7 +84,7 @@ describe('removeTree', () => {
   });
 });
 
-describe('deleteTree', () => {
+describe('K4 deleteTree', { tags: ['standard'] }, () => {
   it('removes a link target itself and leaves what it points to', async () => {
     symlinkSync(outside, join(tree, 'link'), 'junction');
     expect(await deleteTree({ owner: tree, target: join(tree, 'link') })).toBeNull();

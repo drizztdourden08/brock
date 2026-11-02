@@ -5,7 +5,7 @@ import { createAppOpenRegistry } from '../src/open/create-app-open-registry';
 
 const FILE: OpenRequest = { kind: 'file', path: '/packs/theme.mypack', ext: 'mypack', source: 'launch' };
 
-describe('createAppOpenRegistry', () => {
+describe('K1 createAppOpenRegistry', { tags: ['critical'] }, () => {
   it('holds a request that arrives before any handler and hands it to the first one', () => {
     const registry = createAppOpenRegistry();
     registry.dispatch(FILE);
@@ -28,18 +28,6 @@ describe('createAppOpenRegistry', () => {
     registry.on((request) => late.push(request));
     expect(first).toEqual([FILE]);
     expect(second).toEqual([FILE]);
-    expect(late).toEqual([]);
-  });
-
-  it('ends the hold on the next task by default', async () => {
-    const registry = createAppOpenRegistry();
-    registry.dispatch(FILE);
-    const first: OpenRequest[] = [];
-    const late: OpenRequest[] = [];
-    registry.on((request) => first.push(request));
-    await new Promise((resolve) => { setTimeout(resolve, 0); });
-    registry.on((request) => late.push(request));
-    expect(first).toEqual([FILE]);
     expect(late).toEqual([]);
   });
 

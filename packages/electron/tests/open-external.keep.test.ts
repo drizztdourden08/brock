@@ -33,7 +33,7 @@ beforeEach(() => {
   externalProtocols.allowed = new Set(WEB);
 });
 
-describe('openExternal', () => {
+describe('K4 openExternal', { tags: ['critical'] }, () => {
   it('opens an allowed link and refuses other protocols and broken links', async () => {
     expect(await openExternal('https://example.org/rooms')).toBe(true);
     expect(await openExternal('file:///C:/Windows/system32/calc.exe')).toBe(false);
@@ -48,7 +48,7 @@ describe('openExternal', () => {
   });
 });
 
-describe('navigationVerdict', () => {
+describe('K4 navigationVerdict', { tags: ['critical'] }, () => {
   it('keeps the page on a dev server reload, the same origin and a hash change', () => {
     expect(navigationVerdict(DEV, DEV, WEB)).toBe('stay');
     expect(navigationVerdict(DEV, 'http://localhost:24200/', WEB)).toBe('stay');
@@ -71,7 +71,7 @@ describe('navigationVerdict', () => {
   });
 });
 
-describe('guardNavigation', () => {
+describe('K4 guardNavigation', { tags: ['critical'] }, () => {
   it('cancels a navigation that leaves the page and opens a web link outside the app', () => {
     const { contents, navigate } = fakeContents(PACKAGED);
     guardNavigation(contents);

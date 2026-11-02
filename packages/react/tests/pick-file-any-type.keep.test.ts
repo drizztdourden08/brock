@@ -25,7 +25,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('pickFile anyType per host', () => {
+describe('K1 pickFile anyType per host', { tags: ['critical'] }, () => {
   it('drops the filter on a phone only when anyType names the mobile form factor or the Capacitor host', () => {
     const phone = (anyType: AnyTypeOption) => createCapacitorFilePicker().pickFile({ extensions: EXTENSIONS, anyType });
     expect(browserAccept(phone, 'mobile')).toBe('');

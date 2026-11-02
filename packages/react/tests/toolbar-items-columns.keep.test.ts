@@ -41,7 +41,7 @@ afterEach(() => {
   unregister();
 });
 
-describe('toolbar item visibility and columns in the layout', () => {
+describe('K1 toolbar item visibility and columns in the layout', { tags: ['critical'] }, () => {
   it('saves hidden item ids and the column count per toolbar, and reads them back through the slot fields', () => {
     toolbars.items('tools', ['eraser']);
     toolbars.columns('tools', 2);
@@ -83,7 +83,7 @@ describe('toolbar item visibility and columns in the layout', () => {
   });
 });
 
-describe('the item and columns commands', () => {
+describe('K1 the item and columns commands', { tags: ['critical'] }, () => {
   it('toggles an item in the hidden list', () => {
     run('toolbar.item', { id: 'tools', item: 'pencil' });
     expect(store().layout.items).toEqual({ tools: ['pencil'] });
@@ -103,7 +103,7 @@ describe('the item and columns commands', () => {
   });
 });
 
-describe('the toolbar context menu items and columns', () => {
+describe('K1 the toolbar context menu items and columns', { tags: ['critical'] }, () => {
   it('lists each item as a check, ticked while shown', () => {
     toolbars.items('tools', ['eraser']);
     const entry = toolbarContextEntries(context).find((each) => typeof each === 'object' && 'label' in each && each.label === 'Items') as ContextMenuSubmenu;
@@ -131,7 +131,7 @@ describe('the toolbar context menu items and columns', () => {
   });
 });
 
-describe('P-184 a toolbar ruled out by when', () => {
+describe('K5 P-184 a toolbar ruled out by when', { tags: ['standard'] }, () => {
   const PENCIL = defineToolbar({ id: 'pencil', label: 'Pencil', defaultSide: 'top', render: () => createElement('i', { className: 'pencil-bar' }), when: mode('sheet') });
   const LEFT = defineToolbar({ id: 'left-tools', label: 'Left', defaultSide: 'left', render: () => createElement('i', { className: 'left-bar' }) });
   let root: Root | null = null;

@@ -4,6 +4,8 @@ import { dirname, join, resolve } from 'node:path';
 import { NODE_POLYFILLS_PACKAGE, NODE_POLYFILLS_SETTING } from './build-options/build-options.constants.mjs';
 import { CLANG_FORMAT_PACKAGE, CLANG_FORMAT_SETTING } from './gate/gate.constants.mjs';
 import { CONFIG_FILE } from './config.mjs';
+import { dropBrockKnipNoise } from './knip-brock-noise.mjs';
+import { keptByFile, withKeptIssues } from './knip-results.mjs';
 import { sourceDependencies } from './vite-config.mjs';
 import { SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
 
@@ -54,13 +56,6 @@ const neededBy = (cwd) => {
   };
 };
 
-const keptIssues = (byFile, needed) =>
-  Object.entries(byFile)
-    .map(([file, issues]) => [file, Object.fromEntries(Object.entries(issues).filter(([symbol, issue]) => !needed(issue.workspace).has(symbol)))])
-    .filter(([, issues]) => Object.keys(issues).length > 0);
-
-const countOf = (byFile) => Object.values(byFile).reduce((total, issues) => total + Object.keys(issues).length, 0);
-
 const optionsOf = (data) => {
   try {
     return JSON.parse(data.preprocessorOptions || '{}');
@@ -77,16 +72,15 @@ const withoutInjectedHints = (data) => {
 };
 
 const keepBundledNeeds = (data) => {
-  const before = data.issues.dependencies ?? {};
-  const dependencies = Object.fromEntries(keptIssues(before, neededBy(data.cwd)));
-  const dropped = countOf(before) - countOf(dependencies);
-  return { ...data, issues: { ...data.issues, dependencies }, counters: { ...data.counters, dependencies: data.counters.dependencies - dropped } };
+  const needed = neededBy(data.cwd);
+  const kept = keptByFile(data.issues.dependencies ?? {}, () => (symbol, issue) => !needed(issue.workspace).has(symbol));
+  return withKeptIssues(data, 'dependencies', Object.fromEntries(kept));
 };
 
 /**
  * @param {{ cwd: string, issues: Record<string, Record<string, Record<string, { workspace?: string }>>>, counters: Record<string, number>, configurationHints?: { type: string, identifier: unknown }[], preprocessorOptions?: string }} data the knip results
  * @returns {object} the results, minus what bundled packages need
  */
-const keepBrockRuntimeDependencies = (data) => keepBundledNeeds(withoutInjectedHints(data));
+const keepBrockRuntimeDependencies = (data) => dropBrockKnipNoise(keepBundledNeeds(withoutInjectedHints(data)));
 
 export default keepBrockRuntimeDependencies;

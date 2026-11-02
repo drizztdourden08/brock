@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { SettingItem, SettingValues } from '../settings.type';
+import { itemShown } from '../item-shown';
 import { catalogControl } from './catalog-control';
 import type { CatalogItem } from './settings-catalog.type';
 
@@ -14,7 +15,7 @@ const catalogItem = (item: SettingItem, shown: SettingValues, read: (key: string
     control,
     source: custom ? 'custom' : 'app',
     settable: !custom && control.kind !== 'none',
-    visible: item.visible === undefined || item.visible(shown),
+    visible: itemShown(item, shown),
     ...(item.control?.kind === 'password' || value === undefined ? {} : { value }),
   };
 };

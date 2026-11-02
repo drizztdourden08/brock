@@ -6,7 +6,7 @@ const PRODUCT = {
   id: 'my-app', name: 'My App', protocols: [{ scheme: 'my-app' }], fileAssociations: [],
 };
 
-describe('withOsIntegration', () => {
+describe('K2 withOsIntegration', { tags: ['critical'] }, () => {
   it('registers on install and update and removes on uninstall, before the app hooks', () => {
     const calls: string[] = [];
     const steps = { register: () => calls.push('register'), unregister: () => calls.push('unregister') };

@@ -8,7 +8,7 @@ afterEach(removeTempRepos);
 
 const CONFIG = '[core]\n\tbare = false\n[remote "origin"]\n\turl = https://github.com/Acme-Org/atlas.git\n';
 
-describe('the repo owner', () => {
+describe('K1 the repo owner', { tags: ['critical'] }, () => {
   it('reads the origin remote of a plain checkout', () => {
     const root = tempRepo({ '.git/config': CONFIG });
     expect(repoOwnerOf(root)).toBe('acme-org');

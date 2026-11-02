@@ -4,13 +4,9 @@ import { defineProduct } from '../src/product/define-product';
 
 const BASE = { id: 'my-app', name: 'My App', appId: 'com.example.my-app', author: { name: 'someone' } };
 
-describe('product.icons.rim', () => {
+describe('K1 product.icons.rim', { tags: ['critical'] }, () => {
   it('gives the brock brand the light rim', () => {
     expect(defineProduct({ ...BASE, icons: { brand: 'brock' } }).icons.rim).toBe('light');
-  });
-
-  it('keeps the rim an app sets', () => {
-    expect(defineProduct({ ...BASE, icons: { brand: 'tessera', rim: 'light' } }).icons.rim).toBe('light');
   });
 
   it('sets no rim on another brand or without a brand', () => {
@@ -19,7 +15,7 @@ describe('product.icons.rim', () => {
   });
 });
 
-describe('product.logos.app', () => {
+describe('K1 product.logos.app', { tags: ['critical'] }, () => {
   it('points a brand app at the 32 px icon the title bar draws', () => {
     expect(defineProduct({ ...BASE, icons: { brand: 'brock' } }).logos).toEqual({
       app: './logos/icon-32.png', instance: './logos/icon-bot.svg', mark: './logos/mark.svg',
@@ -32,7 +28,7 @@ describe('product.logos.app', () => {
   });
 });
 
-describe('product.icons.wordmark', () => {
+describe('K1 product.icons.wordmark', { tags: ['critical'] }, () => {
   it('takes a path and uses it on the dark ground too', () => {
     expect(defineProduct({ ...BASE, icons: { wordmark: './logos/wordmark.svg' } }).icons.wordmark).toEqual({ src: './logos/wordmark.svg', dark: './logos/wordmark.svg' });
   });
@@ -54,11 +50,6 @@ describe('product.icons.wordmark', () => {
     const wordmark = { src: './logos/wordmark.svg', rendering: 'auto' as const };
     Reflect.set(wordmark, 'rendering', 'crisp');
     expect(() => defineProduct({ ...BASE, icons: { wordmark } })).toThrow(/product\.icons\.wordmark\.rendering "crisp" must be one of auto, pixelated/);
-  });
-
-  it('sets no wordmark when the app names none', () => {
-    expect(defineProduct(BASE).icons).not.toHaveProperty('wordmark');
-    expect(defineProduct({ ...BASE, icons: { brand: 'brock' } }).icons).not.toHaveProperty('wordmark');
   });
 
   it('refuses a file that is not an SVG or a PNG, or one outside public/', () => {

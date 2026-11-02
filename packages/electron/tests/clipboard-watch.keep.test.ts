@@ -12,7 +12,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('clipboard change watch', () => {
+describe('K1 clipboard change watch', { tags: ['critical'] }, () => {
   it('does not poll until something subscribes', () => {
     const board = fakeClipboard();
     const fingerprint = vi.spyOn(board, 'fingerprint');
@@ -53,7 +53,7 @@ describe('clipboard change watch', () => {
   });
 });
 
-describe('clipboard watch ownership', () => {
+describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
   const polls = (board: ReturnType<typeof fakeClipboard>): number => {
     const fingerprint = vi.spyOn(board, 'fingerprint');
     vi.advanceTimersByTime(5000);
@@ -108,7 +108,7 @@ describe('clipboard watch ownership', () => {
   });
 });
 
-describe('clipboard watch between windows and limits', () => {
+describe('K1 clipboard watch between windows and limits', { tags: ['critical'] }, () => {
   it('tells each window that owns a watch, a widget window included, and no other', async () => {
     const board = fakeClipboard();
     const main = sessionOf(board);

@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { redactSecrets } from '../src/log/redact-secrets';
 
-describe('redactSecrets', () => {
+describe('K4 redactSecrets', { tags: ['critical'] }, () => {
   it('hides bearer and basic credentials', () => {
     expect(redactSecrets('Authorization: Bearer abc.def-123456')).toBe('Authorization: Bearer ***');
     expect(redactSecrets('auth header Basic dXNlcjpwYXNz')).toBe('auth header Basic ***');

@@ -13,7 +13,7 @@ const view = () => ({ defs: new Map(commands.list().map((def) => [def.id, def]))
 beforeEach(mountMenus);
 afterEach(unmountMenus);
 
-describe('resolving entries from commands', () => {
+describe('S2 resolving entries from commands', { tags: ['standard'] }, () => {
   it('takes the label, shortcut, enabled and checked state from the command', () => {
     const [copy, , grid, arrange, off] = resolveEntries(entries, view());
     expect(copy).toMatchObject({ label: 'Copy pixels', shortcut: ['ctrl', 'C'], disabled: false });

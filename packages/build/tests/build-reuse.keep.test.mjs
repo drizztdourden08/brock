@@ -11,7 +11,7 @@ const { tempDir, put, cleanup } = tempTree('brock-build-reuse-');
 
 afterEach(cleanup);
 
-describe('storeIsCurrent', () => {
+describe('K1 storeIsCurrent', { tags: ['critical'] }, () => {
   const stamps = { '/a.ts': '10:5', '/b.ts': '20:7' };
   const store = { version: 4, key: 'k', files: stamps, dirs: { '/d': '5:5' }, outputs: [{ fileName: 'main.js', base64: '' }] };
   const stampFrom = (table) => (file) => ({ ...table, '/d': '5:5' })[file] ?? null;
@@ -40,7 +40,7 @@ describe('storeIsCurrent', () => {
   });
 });
 
-describe('moduleStamps', () => {
+describe('K1 moduleStamps', { tags: ['critical'] }, () => {
   const table = { '/src/old.ts': '1000:5', '/src/new.ts': '99950:5' };
   const stamp = (file) => table[file] ?? null;
 
@@ -54,7 +54,7 @@ describe('moduleStamps', () => {
   });
 });
 
-describe('stubInput', () => {
+describe('K1 stubInput', { tags: ['critical'] }, () => {
   it('keeps the entry names and points each at an empty virtual module', () => {
     expect(stubInput({ main: '/app/electron/main.ts', 'splash-preload': '/x/splash.ts' })).toEqual({ main: '\0brock-reuse:main', 'splash-preload': '\0brock-reuse:splash-preload' });
     expect(stubInput('/app/electron/main.ts')).toEqual({ main: '\0brock-reuse:main' });
@@ -63,7 +63,7 @@ describe('stubInput', () => {
   });
 });
 
-describe('reuseKey', () => {
+describe('K1 reuseKey', { tags: ['critical'] }, () => {
   it('is steady until the config, the manifest or the install state changes', () => {
     const root = tempDir();
     put(root, 'package.json', '{"name":"app"}');

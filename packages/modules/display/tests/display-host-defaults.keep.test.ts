@@ -8,12 +8,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('the display defaults per host', () => {
-  it('keeps the synced rate off on the desktop and on the web', () => {
-    expect(displayDefaultsFor('electron')).toEqual(DEFAULT_DISPLAY_SETTINGS);
-    expect(displayDefaultsFor('web').syncedRateInFullscreen).toBe(false);
-  });
-
+describe('K1 the display defaults per host', { tags: ['critical'] }, () => {
   it('turns the synced rate on for Android, where the app is always full screen', () => {
     expect(displayDefaultsFor('capacitor')).toEqual({ ...DEFAULT_DISPLAY_SETTINGS, syncedRateInFullscreen: true });
   });

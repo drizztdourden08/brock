@@ -36,7 +36,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('the folders of the app itself', () => {
+describe('K4 the folders of the app itself', { tags: ['critical'] }, () => {
   const inApp = (): string[] => [join(appDir, 'app.json'), join(appDir, 'Data', 'app.json'), join(appDir, 'Data', 'profiles', 'p1', RECENT_FILE), join(base, 'bin', 'app.exe'), join(base, 'bin', 'resources', 'app.asar')];
 
   beforeEach(async () => {
@@ -89,7 +89,7 @@ describe('the folders of the app itself', () => {
   });
 });
 
-describe('the recent list as a source of authority', () => {
+describe('K4 the recent list as a source of authority', { tags: ['critical'] }, () => {
   const key = () => Promise.resolve(Buffer.alloc(32, 7));
   const os = { add: vi.fn(), clear: vi.fn() };
   const make = (given = key) => createRecentDocuments({ profileDir: (id) => join(base, 'profiles', id), exists: pathExists, allow: access.allow, key: given, os });
@@ -139,7 +139,7 @@ describe('the recent list as a source of authority', () => {
   });
 });
 
-describe('recent documents and folder grants', () => {
+describe('K4 recent documents and folder grants', { tags: ['critical'] }, () => {
   let call: Call;
   const paths: MainContext['paths'] = { userData: (...segments) => join(base, ...segments), data: (...segments) => join(base, 'Data', ...segments) };
 
@@ -173,7 +173,7 @@ describe('recent documents and folder grants', () => {
   });
 });
 
-describe('revoking a folder by another spelling', () => {
+describe('K4 revoking a folder by another spelling', { tags: ['critical'] }, () => {
   it('does not find the grant through a link the grant was never made with', async () => {
     await symlink(granted, join(base, 'alias'), dirLink);
     access.allowFolder(granted);

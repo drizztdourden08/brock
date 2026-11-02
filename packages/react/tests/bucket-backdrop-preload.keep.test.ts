@@ -39,7 +39,7 @@ const PRELOADS: [string, Pick][] = [
   ['a sub-page', (hub) => pageOf(hub, 'shelf').subs?.[0]?.preload],
 ];
 
-describe('a bucket backdrop file preloads with its bucket', () => {
+describe('K1 a bucket backdrop file preloads with its bucket', { tags: ['critical'] }, () => {
   it.each(PRELOADS)('loads with %s', async (_where, pick) => {
     const art = lazyComponent(() => Promise.resolve({ default: View }));
     const preload = pick(libraryHub([{ kind: 'backdrop', bucket: 'library', id: 'library', component: art }]));

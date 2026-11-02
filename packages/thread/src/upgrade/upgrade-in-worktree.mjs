@@ -2,6 +2,7 @@
 import { rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { git } from '../git.mjs';
+import { NO_PURGE_PROMPT } from '../pnpm.constants.mjs';
 import { createVerb } from '../worktree/create.mjs';
 import { commitVerb } from '../worktree/commit.mjs';
 import { excludeLocally } from '../worktree/exclude-worktrees.mjs';
@@ -23,7 +24,7 @@ const worktreeNameFor = (version) => `${WORKTREE_PREFIX}${version.toLowerCase().
 const installStep = (path) => ({
   name: 'pnpm install',
   skipped: 'no package.json or pnpm-workspace.yaml differs from the base branch',
-  run: () => (git(['status', '--porcelain', '--', ...DEPENDENCY_FILES], path) ? runIn.pnpm(path, ['install', '--no-frozen-lockfile']) : null),
+  run: () => (git(['status', '--porcelain', '--', ...DEPENDENCY_FILES], path) ? runIn.pnpm(path, ['install', '--no-frozen-lockfile', NO_PURGE_PROMPT]) : null),
 });
 
 const printChangelog = (changelog, plan, log) => {

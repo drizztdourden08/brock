@@ -14,7 +14,7 @@ const detachAll = (): void => {
 const startRun = (element: DndElement, options: DragSourceOptions<unknown>, event: Event): void => {
   if (runState.current) return;
   const { clientX, clientY, pointerId } = event as PointerEvent;
-  runState.current = { element, options, start: { x: clientX, y: clientY }, pointerId, started: false, payload: null, hover: null, detach: detachAll };
+  runState.current = { element, options, start: { x: clientX, y: clientY }, pointerId, started: false, payload: null, hover: null, ghost: null, detach: detachAll };
   window.addEventListener('pointermove', runHandlers.move);
   window.addEventListener('pointerup', runHandlers.up);
   window.addEventListener('pointercancel', runHandlers.cancel);

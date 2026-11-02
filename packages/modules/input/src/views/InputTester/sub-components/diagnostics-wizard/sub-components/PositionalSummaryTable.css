@@ -1,0 +1,16 @@
+/* @layer renderer-shell @kind style */
+.pos-summary__fired {
+  font-family: var(--font-mono);
+}
+
+.pos-summary__row[data-outcome="mismatch"] .pos-summary__outcome {
+  color: var(--c-warning);
+}
+
+.pos-summary__row[data-outcome="skipped"] .pos-summary__outcome {
+  color: var(--c-text-muted);
+}
+
+.pos-summary__row[data-outcome="match"] .pos-summary__outcome {
+  color: var(--c-success);
+}

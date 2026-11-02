@@ -5,14 +5,15 @@ import { useBodyMounted } from '../../screenshot/useBodyMounted';
 import { widgetBodyHolds } from '../widget-body-holds';
 import { WidgetIdContext } from '../widget-id-context';
 import { widgetErrorLabel } from '../widget-error-label';
+import { WidgetDropZone } from './sub-components/WidgetDropZone';
 import type { WidgetBodyProps } from './WidgetBody.type';
 
 const WidgetBody = (props: WidgetBodyProps) => {
-  const { id, label, children } = props;
+  const { id, label, drop, children } = props;
   useBodyMounted(widgetBodyHolds.widgetKey(id));
   return (
     <WidgetIdContext.Provider value={id}>
-      <RenderErrorBoundary scope={`Widget ${id}`} label={widgetErrorLabel(label)}><LazyHost>{children}</LazyHost></RenderErrorBoundary>
+      <RenderErrorBoundary scope={`Widget ${id}`} label={widgetErrorLabel(label)}><LazyHost>{drop ? <WidgetDropZone drop={drop}>{children}</WidgetDropZone> : children}</LazyHost></RenderErrorBoundary>
     </WidgetIdContext.Provider>
   );
 };

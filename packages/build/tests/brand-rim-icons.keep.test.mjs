@@ -41,7 +41,7 @@ const sampleApp = () => {
 
 const read = (root, file) => readFileSync(join(root, file), 'utf8');
 
-describe('copyBrandIcons with a rim', () => {
+describe('K1 copyBrandIcons with a rim', { tags: ['critical'] }, () => {
   it('copies the light rim set for brock, the dark ground mark for the splash, and the 32 and 24 px title bar icons', () => {
     const root = sampleApp();
     const result = copyBrandIcons(root, { product: { icons: { brand: 'brock' } } });

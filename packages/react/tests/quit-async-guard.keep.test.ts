@@ -14,7 +14,9 @@ const removers: (() => void)[] = [];
 
 const guard = (fn: OnBeforeQuit): void => { removers.push(quitGuards.addAsync(fn)); };
 
-const tick = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0); });
+const tick = async (): Promise<void> => {
+  for (let turn = 0; turn < 50; turn += 1) await Promise.resolve();
+};
 
 afterEach(() => {
   for (const remove of removers.splice(0)) remove();
@@ -22,7 +24,7 @@ afterEach(() => {
   toast.mockReset();
 });
 
-describe('an async beforeQuit guard', () => {
+describe('K1 an async beforeQuit guard', { tags: ['critical'] }, () => {
   it('quits when no guard is registered', async () => {
     await expect(quitGuards.decide()).resolves.toBe('quit');
   });
@@ -63,7 +65,7 @@ describe('an async beforeQuit guard', () => {
 
 });
 
-describe('requestQuit with an async beforeQuit guard', () => {
+describe('K4 requestQuit with an async beforeQuit guard', { tags: ['critical'] }, () => {
   it('holds requestQuit until the guard answers, and quits on quit', async () => {
     let finish: (value: 'quit') => void = () => undefined;
     guard(() => new Promise<'quit'>((resolve) => { finish = resolve; }));
@@ -97,7 +99,7 @@ describe('requestQuit with an async beforeQuit guard', () => {
   });
 });
 
-describe('saveBeforeQuit', () => {
+describe('K3 saveBeforeQuit', { tags: ['critical'] }, () => {
   const answer = async (pick: 'save' | 'discard' | 'cancel', decided: Promise<unknown>): Promise<void> => {
     await tick();
     const dialog = useDialogStore.getState().dialog;

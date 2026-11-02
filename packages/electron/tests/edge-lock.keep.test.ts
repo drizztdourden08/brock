@@ -69,7 +69,7 @@ const START = { main: MAIN, notes: NOTES, logs: LOGS };
 
 const alone = (c: LockCase): Rect[] => (['main', 'notes', 'logs'] as const).map((id) => (id === c.drag ? c[id] : START[id]));
 
-describe("the owner's stack: Notes over Logs, both snapped to main's left edge", () => {
+describe("K1 the owner's stack: Notes over Logs, both snapped to main's left edge", { tags: ['critical'] }, () => {
   for (const c of LOCKED) {
     it(`locks the lined-up edges: ${c.name}`, async () => {
       const s = owner();
@@ -104,7 +104,7 @@ describe("the owner's stack: Notes over Logs, both snapped to main's left edge",
   });
 });
 
-describe("moving the owner's stack", () => {
+describe("K1 moving the owner's stack", { tags: ['critical'] }, () => {
   for (const drag of ['main', 'notes', 'logs'] as const) {
     it(`moves all three when ${drag} is dragged`, async () => {
       const s = owner();

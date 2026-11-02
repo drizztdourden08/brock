@@ -23,7 +23,7 @@ const keys = (entries: readonly MenuEntry[]): string[] => entries.map((entry) =>
 const item = (entries: readonly MenuEntry[], key: string): MenuItem | undefined =>
   entries.find((entry): entry is MenuItem => entry !== 'separator' && entry.key === key);
 
-describe('buildMenu', () => {
+describe('K1 buildMenu', { tags: ['critical'] }, () => {
   it('orders the built-ins like the reference shell', () => {
     expect(keys(buildMenu(BASE))).toEqual(['home', 'profiles', '|', 'section:advanced', '|', 'about', 'quit']);
   });
@@ -82,7 +82,7 @@ describe('buildMenu', () => {
   });
 });
 
-describe('the Take the tour entry', () => {
+describe('K1 the Take the tour entry', { tags: ['critical'] }, () => {
   it('adds Take the tour at the top level, before Credits and About, with or without a Help group', () => {
     const tours = { list: [{ id: 'welcome', title: 'Welcome' }], start: noop };
     const plain = buildMenu({ ...BASE, tours });
@@ -100,7 +100,7 @@ describe('the Take the tour entry', () => {
   });
 });
 
-describe('an app submenu named like a Brock section', () => {
+describe('K1 an app submenu named like a Brock section', { tags: ['critical'] }, () => {
   it('joins the section instead of making a second Advanced', () => {
     const appAdvanced: MenuItem = {
       key: 'menu:/advanced', label: 'Advanced', icon: 'folder',

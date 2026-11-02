@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind test */
 import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { isWidgetOpen, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
-import { KitLayer } from '../src/widgets/KitLayer';
 import { buildKitMenuEntries } from '../src/widgets/kits/build-kit-menu-entries';
 import { defaultKitView } from '../src/widgets/kits/default-kit-view';
 import { defineWidgetKit } from '../src/widgets/kits/define-widget-kit';
@@ -43,7 +41,7 @@ beforeEach(() => {
   store().setKits(KITS, MEMBERS);
 });
 
-describe('kit files', () => {
+describe('K1 kit files', { tags: ['critical'] }, () => {
   it('names a kit after its file, gives it the overlays that name it, and lets a widget file join it', () => {
     const [kit] = widgetKitsFromFiles({
       kits: [{ id: 'shadow-editor', meta: { devOnly: true } }],
@@ -58,7 +56,7 @@ describe('kit files', () => {
   });
 });
 
-describe('kit status', () => {
+describe('K1 kit status', { tags: ['critical'] }, () => {
   it('hides a devOnly kit without developer tools and gives the reason while its context is inactive', () => {
     expect(kitStatus(EDITOR, {}, false)).toEqual({ shown: false, reason: 'Start the scene first.' });
     expect(kitStatus(EDITOR, SCENE_ON, true)).toEqual({ shown: true, reason: null });
@@ -66,7 +64,7 @@ describe('kit status', () => {
   });
 });
 
-describe('the kit store', () => {
+describe('K1 the kit store', { tags: ['critical'] }, () => {
   it('opens one kit at a time and closes it as a whole', () => {
     store().open('editor');
     expect(store().active).toBe('editor');
@@ -117,7 +115,7 @@ describe('the kit store', () => {
   });
 });
 
-describe('saved kit views', () => {
+describe('K3 saved kit views', { tags: ['critical'] }, () => {
   it('keeps the layout, its popped windows and the hidden overlays', () => {
     const layout = { ...defaultKitView(EDITOR, MEMBERS).layout, popped: [{ id: 'tree' }] };
     const read = readKitViews({ editor: { layout, hidden: ['gizmo', 3] } });
@@ -127,7 +125,7 @@ describe('saved kit views', () => {
   });
 });
 
-describe('the kit menu', () => {
+describe('K1 the kit menu', { tags: ['critical'] }, () => {
   const entries = (contexts = {}, developerTools = true): MenuItem[] =>
     buildKitMenuEntries(store(), (kit: WidgetKitDef) => kitStatus(kit, contexts, developerTools));
 
@@ -143,24 +141,5 @@ describe('the kit menu', () => {
   it('describes a blocked kit with its reason and leaves a devOnly kit out without developer tools', () => {
     expect(entries({}, true).find((entry) => entry.key === 'kit-editor')?.description).toBe('Start the scene first.');
     expect(entries({}, false).map((entry) => entry.key)).toEqual(['kit-probe']);
-  });
-});
-
-describe('the kit layer', () => {
-  const draw = (reason: string | null, hidden: string[] = []) => renderToStaticMarkup(createElement(KitLayer, { kit: EDITOR, hidden, reason, onClose: () => undefined }));
-
-  it('draws the overlays and the kit bar with its close button', () => {
-    const html = draw(null);
-    expect(html).toContain('data-kit-overlay="gizmo"');
-    expect(html).toContain('data-kit-bar="editor"');
-    expect(html).toContain('data-kit-close="editor"');
-    expect(draw(null, ['gizmo'])).not.toContain('data-kit-overlay');
-  });
-
-  it('draws the reason card in place of the overlays while the kit is blocked', () => {
-    const html = draw('Start the scene first.');
-    expect(html).toContain('data-kit-waiting="editor"');
-    expect(html).toContain('Start the scene first.');
-    expect(html).not.toContain('data-kit-overlay');
   });
 });

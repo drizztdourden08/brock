@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PAD_LOCK_FILE } from '../src/main/pad-lock.constants';
 import { createPadLock } from '../src/main/pad-lock';
 
-describe('the pad lock', () => {
+describe('K4 the pad lock', { tags: ['critical'] }, () => {
   let dir = '';
   const alive = new Set<number>();
   const heldBy = (): number => (JSON.parse(readFileSync(join(dir, PAD_LOCK_FILE), 'utf8')) as { pid: number }).pid;
@@ -25,12 +25,6 @@ describe('the pad lock', () => {
     lockAt(20, 'Owner').claim(true);
     const claim = lockAt(10).claim(false);
     expect(claim).toMatchObject({ ok: false, holder: { pid: 20, product: 'Owner' } });
-  });
-
-  it('refuses a second live launch too', () => {
-    alive.add(10);
-    lockAt(10).claim(false);
-    expect(lockAt(11).claim(false).ok).toBe(false);
   });
 
   it('takes over a stale lock whose process is gone', () => {

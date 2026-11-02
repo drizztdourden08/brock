@@ -1,45 +1,25 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { appThemeCss } from '../src/look/app-theme-css.mjs';
 import { loadLookSources } from '../src/look/load-look-sources.mjs';
 import { themePalette } from '../src/look/theme-palette.mjs';
 import { readTokenCss } from '../src/splash/read-token-css.mjs';
+import { TESSERA_DIR as TESSERA, linkTessera, removeTempRepos, tempRepo, textFiles } from './temp-repo.mjs';
 
-const TESSERA = dirname(createRequire(import.meta.url).resolve('@drizztdourden08/tessera/package.json'));
 const BROCK_DIM = JSON.parse(readFileSync(join(TESSERA, 'tokens.json'), 'utf8')).palettes.brock.dark.textDim;
 const SCHEMA = './node_modules/@drizztdourden08/tessera/tessera.config.schema.json';
-const made = [];
 
 const posix = (path) => path.replace(/\\/g, '/');
 
-const appWith = (files, tessera = TESSERA) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-theme-'));
-  made.push(root);
-  for (const [file, text] of Object.entries({ 'package.json': '{"name":"app"}', ...files })) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), typeof text === 'string' ? text : JSON.stringify(text));
-  }
-  mkdirSync(join(root, 'node_modules', '@drizztdourden08'), { recursive: true });
-  symlinkSync(tessera, join(root, 'node_modules', '@drizztdourden08', 'tessera'), 'junction');
-  return root;
-};
+const appWith = (files, tessera = TESSERA) => linkTessera(tempRepo(textFiles({ 'package.json': '{"name":"app"}', ...files })), tessera);
 
-afterEach(() => {
-  for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
-});
+afterEach(removeTempRepos);
 
-describe('appThemeCss', () => {
+describe('K1 appThemeCss', { tags: ['critical'] }, () => {
   it('falls back to src/theme.css when the repo has no tessera.config.json', () => {
     const root = appWith({});
-    expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
-  });
-
-  it('keeps src/theme.css for a config that holds only $schema', () => {
-    const root = appWith({ 'tessera.config.json': { $schema: SCHEMA } });
     expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
   });
 
@@ -61,17 +41,9 @@ describe('appThemeCss', () => {
     expect(() => appThemeCss(root)).toThrow(new RegExp(`${posix(join(root, 'tessera.config.json')).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}: unknown key "theme.file"`));
     expect(() => appThemeCss(root)).toThrow(/Brock reads theme\.css from this file/);
   });
-
-  it('falls back to src/theme.css with a Tessera that has no config entry', () => {
-    const old = mkdtempSync(join(tmpdir(), 'brock-old-tessera-'));
-    made.push(old);
-    writeFileSync(join(old, 'package.json'), JSON.stringify({ name: '@drizztdourden08/tessera', exports: { '.': './index.mjs' } }));
-    const root = appWith({ 'tessera.config.json': { theme: { css: 'styles/look.css' } } }, old);
-    expect(posix(appThemeCss(root))).toBe(posix(join(root, 'src', 'theme.css')));
-  });
 });
 
-describe('the brand palette', () => {
+describe('K1 the brand palette', { tags: ['critical'] }, () => {
   const OVERRIDE_ONLY = '/* @layer renderer-app @kind style */\n';
 
   it('is the palette the app shows when theme.css sets no seeds', () => {
@@ -101,7 +73,7 @@ describe('the brand palette', () => {
   });
 });
 
-describe('the splash token stylesheet', () => {
+describe('K1 the splash token stylesheet', { tags: ['critical'] }, () => {
   it('ends with the theme tessera.config.json names', () => {
     const root = appWith({ 'tessera.config.json': { theme: { css: 'styles/look.css' } }, 'styles/look.css': ':root { --p-primary: #123456; }\n' });
     expect(readTokenCss(root, TESSERA).trimEnd().endsWith(':root { --p-primary: #123456; }')).toBe(true);

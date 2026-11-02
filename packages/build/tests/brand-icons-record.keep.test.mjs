@@ -19,7 +19,7 @@ const appWithBrand = () => {
   return { root, brandDir, copied: { brandDir, written: ['build/icon.png'], current: [] } };
 };
 
-describe('brandIconsCurrent', () => {
+describe('K1 brandIconsCurrent', { tags: ['critical'] }, () => {
   it('is false before any copy is recorded', () => {
     expect(brandIconsCurrent(appWithBrand().root)).toBe(false);
   });

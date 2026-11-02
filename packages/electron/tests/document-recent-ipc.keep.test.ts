@@ -54,7 +54,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('recent documents over IPC', () => {
+describe('K3 recent documents over IPC', { tags: ['critical'] }, () => {
   it('records a file picked in the open dialog, and tells the OS', async () => {
     const picked = await make('a.bxel');
     await openDialog(picked);
@@ -112,7 +112,7 @@ describe('recent documents over IPC', () => {
   });
 });
 
-describe('writes that opt out of the recent list', () => {
+describe('K3 writes that opt out of the recent list', { tags: ['critical'] }, () => {
   it('skips the recent list and the recovery snapshots when the write says recent is false', async () => {
     const picked = await make('a.bxel');
     await openDialog(picked);
@@ -129,7 +129,7 @@ describe('writes that opt out of the recent list', () => {
   });
 });
 
-describe('recovery snapshots over IPC', () => {
+describe('K3 recovery snapshots over IPC', { tags: ['critical'] }, () => {
   it('saves a snapshot, lists it, restores the bytes and discards it', async () => {
     await call('document:snapshot', 'p1', { key: 'doc-1', data: bytes(5, 6), name: 'sprite', path: join(dir, 'sprite.bxel') });
     expect(await call('document:recoverable', 'p1')).toMatchObject([{ key: 'doc-1', name: 'sprite', size: 2 }]);

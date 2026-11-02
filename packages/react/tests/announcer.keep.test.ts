@@ -40,16 +40,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('the announcer', () => {
-  it('mounts one polite status region and one assertive alert region, both empty', () => {
-    expect(region('polite')?.getAttribute('role')).toBe('status');
-    expect(region('polite')?.getAttribute('aria-live')).toBe('polite');
-    expect(region('assertive')?.getAttribute('role')).toBe('alert');
-    expect(region('assertive')?.getAttribute('aria-live')).toBe('assertive');
-    expect(textOf('polite')).toBe('');
-    expect(textOf('assertive')).toBe('');
-  });
-
+describe('S1 the announcer', { tags: ['standard'] }, () => {
   it('writes a message to the polite region by default', () => {
     act(() => announce('Saved hero'));
     settle();

@@ -13,6 +13,8 @@ const finishRun = (active: Run, dropped: boolean): void => {
   active.detach();
   runState.current = null;
   if (!active.started) return;
+  active.ghost?.remove();
+  active.ghost = null;
   dragSession.set(null);
   document.documentElement.removeAttribute(DRAGGING_ATTRIBUTE);
   const view = window;

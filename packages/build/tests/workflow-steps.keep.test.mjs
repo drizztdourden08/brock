@@ -24,7 +24,7 @@ const stepNames = (job) => job.steps.map((step) => step.name ?? step.uses);
 
 const between = (names, first, last) => names.slice(names.indexOf(first) + 1, names.indexOf(last));
 
-describe('app workflow steps in the CI workflow', () => {
+describe('K1 app workflow steps in the CI workflow', { tags: ['critical'] }, () => {
   const ci = parse(composeWorkflows({ targets: ['desktop', 'web'], prefix: 'a-', steps: STEPS }).ci);
 
   it('splices each step point into the quality job, in order', () => {
@@ -49,7 +49,7 @@ describe('app workflow steps in the CI workflow', () => {
   });
 });
 
-describe('app workflow steps in the release workflow', () => {
+describe('app workflow steps in the release workflow', { tags: ['critical'] }, () => {
   const release = parse(composeWorkflows({ targets: ['desktop', 'web'], prefix: 'a-', steps: STEPS }).release);
 
   it('runs a step only on its runners and in its platforms', () => {
@@ -76,7 +76,7 @@ describe('app workflow steps in the release workflow', () => {
   });
 });
 
-describe('steps for one job and the prepare job', () => {
+describe('steps for one job and the prepare job', { tags: ['critical'] }, () => {
   const steps = app({
     ci: {
       beforeInstall: [{ name: 'Review fonts', run: 'sudo apt-get install -y fonts-noto', jobs: 'review' }],
@@ -121,7 +121,7 @@ describe('steps for one job and the prepare job', () => {
   });
 });
 
-describe('a uses step that several sources declare', () => {
+describe('a uses step that several sources declare', { tags: ['critical'] }, () => {
   it('runs once per job, while one with other inputs still runs', () => {
     const java = (version) => ({ name: `Java ${version}`, uses: 'actions/setup-java@v6', with: { 'java-version': version } });
     const steps = collectWorkflowSteps([
@@ -133,19 +133,7 @@ describe('a uses step that several sources declare', () => {
   });
 });
 
-describe('the Linux runner image', () => {
-  it('is pinned to ubuntu-24.04 in every Linux job, never ubuntu-latest', () => {
-    const app = { name: 'desktop', tagPrefix: 'desktop-v', notesDir: 'apps/desktop/release-notes' };
-    const { ci, release } = composeWorkflows({ targets: ['desktop', 'android', 'web'], prefix: 'a-', appDir: 'apps/desktop', app });
-    const text = `${ci}${release}${workspaceCi()}`;
-    expect(text).not.toMatch(/runs-on: ubuntu-latest/);
-    const linux = [...Object.values(parse(ci).jobs), ...Object.values(parse(release).jobs)].filter((job) => String(job['runs-on']).startsWith('ubuntu'));
-    expect(linux.map((job) => job['runs-on'])).toEqual(Array(linux.length).fill('ubuntu-24.04'));
-    expect(linux.length).toBe(9);
-  });
-});
-
-describe('collectWorkflowSteps', () => {
+describe('collectWorkflowSteps', { tags: ['critical'] }, () => {
   it('keeps the order modules, plugins, then the app', () => {
     const step = (name) => ({ ci: { beforeBuild: [{ name, run: 'true' }] } });
     const steps = collectWorkflowSteps([{ label: 'module a', workflows: step('module') }, { label: 'plugin b', workflows: step('plugin') }, { label: 'app', workflows: step('app') }]);

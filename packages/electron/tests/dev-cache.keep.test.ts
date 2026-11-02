@@ -25,7 +25,7 @@ afterEach(() => {
 
 const metadata = (hash: string): string => JSON.stringify({ hash, browserHash: `${hash}-b`, optimized: {} });
 
-describe('devCachePlan', () => {
+describe('K1 devCachePlan', { tags: ['critical'] }, () => {
   it('keeps the cache while the optimizer hash is the one of the last dev boot', () => {
     expect(devCachePlan(metadata('aa11'), 'aa11', false)).toEqual({ clear: false, hash: 'aa11' });
   });
@@ -42,7 +42,7 @@ describe('devCachePlan', () => {
   });
 });
 
-describe('refreshDevCache', () => {
+describe('K1 refreshDevCache', { tags: ['critical'] }, () => {
   it('clears once for a new hash, records it, and keeps the cache on the next boot', async () => {
     const userData = tempDir();
     const file = join(tempDir(), '_metadata.json');

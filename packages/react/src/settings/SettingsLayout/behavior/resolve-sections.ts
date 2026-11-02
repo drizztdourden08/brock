@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { Section, SettingItem, SettingValues } from '../../settings.type';
+import { itemShown } from '../../item-shown';
 import { sourceValues } from '../../source-values';
 import type { ItemGroup, ResolvedSection } from '../SettingsLayout.type';
 
@@ -15,7 +16,7 @@ const matches = (item: SettingItem, query: string): boolean =>
   [item.label, item.description ?? '', item.hint ?? '', item.keywords ?? '', ...choiceWords(item)].some((text) => text.toLowerCase().includes(query));
 
 const shownWith = (settings: object | undefined) => (item: SettingItem): boolean =>
-  settings === undefined || item.visible === undefined || item.visible(settings as SettingValues);
+  settings === undefined || itemShown(item, settings as SettingValues);
 
 const settingsOf = (section: Section, settings: object | undefined): object | undefined => sourceValues(section) ?? settings;
 

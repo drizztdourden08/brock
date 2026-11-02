@@ -14,7 +14,7 @@ import { registerFresh } from './command-fixtures';
 
 const key = (init: KeyboardEventInit): KeyboardEvent => new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
 
-describe('chord parsing and formatting', () => {
+describe('K1 chord parsing and formatting', { tags: ['critical'] }, () => {
   it('reads modifiers in any case and order, with Mod as the platform key', () => {
     expect(parseChord('shift+mod+k', false)).toEqual({ ctrl: true, meta: false, alt: false, shift: true, key: 'K' });
     expect(parseChord('Mod+K', true)).toEqual({ ctrl: false, meta: true, alt: false, shift: false, key: 'K' });
@@ -52,7 +52,7 @@ describe('chord parsing and formatting', () => {
   });
 });
 
-describe('the platform modifier', () => {
+describe('K1 the platform modifier', { tags: ['critical'] }, () => {
   it('is Ctrl on Windows and Linux and Cmd on macOS', () => {
     expect(matchesChord(key({ key: 'k', ctrlKey: true }), 'Mod+K', false)).toBe(true);
     expect(matchesChord(key({ key: 'k', metaKey: true }), 'Mod+K', false)).toBe(false);
@@ -67,7 +67,7 @@ describe('the platform modifier', () => {
   });
 });
 
-describe('the dispatcher', () => {
+describe('K1 the dispatcher', { tags: ['critical'] }, () => {
   const ran: string[] = [];
   const command = (def: Omit<CommandDef, 'run'>): CommandDef => ({ ...def, run: () => { ran.push(def.id); } });
   let unregister = (): void => {};
@@ -125,7 +125,7 @@ describe('the dispatcher', () => {
   });
 });
 
-describe('remapping', () => {
+describe('K1 remapping', { tags: ['critical'] }, () => {
   const written: unknown[] = [];
   let unregister = (): void => {};
 

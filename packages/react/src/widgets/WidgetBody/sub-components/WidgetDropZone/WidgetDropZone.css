@@ -1,0 +1,21 @@
+/* @layer renderer-shell @kind style */
+
+.widget-drop-zone {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.widget-drop-zone[data-drop='over'] {
+  outline: var(--border-width-thin) dashed var(--c-primary);
+  outline-offset: calc(-1 * var(--space-xs));
+}
+
+.widget-drop-zone[data-drop='reject'] {
+  outline: var(--border-width-thin) dashed var(--c-border);
+  outline-offset: calc(-1 * var(--space-xs));
+}

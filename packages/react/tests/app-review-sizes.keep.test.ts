@@ -29,7 +29,7 @@ const capturing: ReviewStepDef = {
   run: async (tour) => { tour.check('layout', true, 'laid out', ''); await tour.capture('layout'); },
 };
 
-describe('app review step sizes', () => {
+describe('K1 app review step sizes', { tags: ['critical'] }, () => {
   it('resizes the window before the step and restores it after, with the capture suffixed', async () => {
     calls.length = 0;
     const { tour, captures, checks } = recordingTour();

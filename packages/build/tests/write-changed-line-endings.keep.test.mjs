@@ -19,7 +19,7 @@ const tempRoot = () => {
 
 const OLD_TIME = new Date('2020-01-01T00:00:00Z');
 
-describe('writeChanged line endings', () => {
+describe('K3 writeChanged line endings', { tags: ['critical'] }, () => {
   it('leaves a CRLF file with the same content untouched', () => {
     const root = tempRoot();
     const target = join(root, 'parts.ts');
@@ -40,7 +40,7 @@ describe('writeChanged line endings', () => {
   });
 });
 
-describe('settleLineEndings', () => {
+describe('K3 settleLineEndings', { tags: ['critical'] }, () => {
   it('puts back a file another tool rewrote with only the line endings changed', () => {
     const root = tempRoot();
     const target = join(root, 'parts.ts');

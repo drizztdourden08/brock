@@ -44,7 +44,7 @@ const tree = buildScreenTree(CONFIG, ENTRIES);
 const hubOf = (id: string) => tree.hubs.find((hub) => hub.id === id);
 const labels = (entries: readonly MenuEntry[]): string[] => entries.flatMap((entry) => (entry === 'separator' ? [] : [entry.label, ...labels(entry.children ?? [])]));
 
-describe('pages, buckets and cards shown per host or per profile', () => {
+describe('K1 pages, buckets and cards shown per host or per profile', { tags: ['critical'] }, () => {
   it('reads hosts and when from a page meta and a bucket', () => {
     expect(isShown(undefined, PHONE)).toBe(true);
     expect(isShown({ hosts: ['capacitor'] }, DESKTOP)).toBe(false);
@@ -83,7 +83,7 @@ describe('pages, buckets and cards shown per host or per profile', () => {
   });
 });
 
-describe('the menu item rule', () => {
+describe('K1 the menu item rule', { tags: ['critical'] }, () => {
   it('passes the show context through every level of the menu', () => {
     const tools: MenuItem = { key: 'tools', label: 'Tools', children: [{ key: 'pad', label: 'Pad', onClick: noop, show: { hosts: ['capacitor'] } }] };
     const menu = buildMenu({ appMenu: [tools], moduleMenu: [], widgets: [], homeScreen: 'game', hasCredits: false, developerTools: false, show: DESKTOP, onQuit: noop, onDevConsole: noop, onReportBug: noop, onShortcuts: noop });

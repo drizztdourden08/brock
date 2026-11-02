@@ -11,7 +11,7 @@ const layer = (inner: string): void => {
   document.body.innerHTML = `<div class="screen-layer"><div class="screen-layer__frame" role="dialog" ${inner}</div></div>`;
 };
 
-describe('readFrame title', () => {
+describe('K1 readFrame title', { tags: ['standard'] }, () => {
   it('reads the header title first', () => {
     document.body.innerHTML = '<div class="screen-layer"><div role="dialog" aria-label="Label"><div class="screen-window__header"><span class="window-header__title">Header</span></div></div></div>';
     expect(readFrame().title).toBe('Header');

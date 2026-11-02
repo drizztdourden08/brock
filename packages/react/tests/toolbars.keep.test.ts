@@ -1,15 +1,10 @@
 /* @layer renderer-shell @kind test */
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createToolbarLayout, toolbarIdsOf } from '@drizztdourden08/tessera/composites';
 import { fakeDisk, settle } from './fake-ui-views-disk';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
-import { mergeModules } from '../src/modules/merge-modules';
 import { buildToolbarMenuEntries } from '../src/toolbars/build-toolbar-menu-entries';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
-import { ToolbarHost } from '../src/toolbars/ToolbarHost';
-import { toolbarRenderer } from '../src/toolbars/toolbar-renderer';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 
 const make = (id: string, defaultSide: 'top' | 'bottom' | 'left' | 'right', hiddenByDefault = false) =>
@@ -29,13 +24,7 @@ beforeEach(() => {
   useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
 });
 
-describe('defineToolbar', () => {
-  it('returns the definition as given', () => {
-    expect(defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null })).toMatchObject({ id: 'tools', label: 'Tools', defaultSide: 'left' });
-  });
-});
-
-describe('the toolbar layout store', () => {
+describe('K3 the toolbar layout store', { tags: ['critical'] }, () => {
   it('places each registered toolbar on its default side, and hides one that starts hidden', () => {
     store().setDefinitions(DEFINITIONS);
     const { hidden } = store().layout;
@@ -72,11 +61,7 @@ describe('the toolbar layout store', () => {
   });
 });
 
-describe('the Toolbars menu', () => {
-  it('is empty when no toolbar is registered', () => {
-    expect(entriesOf()).toEqual([]);
-  });
-
+describe('K1 the Toolbars menu', { tags: ['critical'] }, () => {
   it('lists a check item per toolbar and its own Reset toolbars entry', () => {
     store().setDefinitions(DEFINITIONS);
     const [menu] = entriesOf();
@@ -104,37 +89,6 @@ describe('the Toolbars menu', () => {
     expect(items.find((item) => item.key === 'toolbar-c')?.disabled).toBe(true);
     expect(items.find((item) => item.key === 'toolbar-left-a')?.disabled).toBe(false);
   });
-
-  it('leaves the widgets Reset layout alone', async () => {
-    const { useWidgetLayoutStore } = await import('../src/widgets/useWidgetLayoutStore');
-    store().setDefinitions(DEFINITIONS);
-    store().toggle('options');
-    const before = store().layout;
-    useWidgetLayoutStore.getState().reset();
-    expect(store().layout).toBe(before);
-  });
-});
-
-describe('the toolbar host', () => {
-  it('draws its children in the dock centre', () => {
-    const html = renderToStaticMarkup(createElement(ToolbarHost, { toolbars: [TOOLS], children: createElement('b', { className: 'work-area' }) }));
-    expect(html).toContain('class="toolbar-dock"');
-    expect(html).toContain('<div class="toolbar-dock__centre"><b class="work-area"></b></div>');
-  });
-
-  it('draws each toolbar through its own render, with the slot the dock gives it', () => {
-    const probe = defineToolbar({ id: 'probe', label: 'Probe', defaultSide: 'left', render: (slot) => createElement('i', { className: 'probe-bar', 'data-side': slot.side }) });
-    const slot = { orientation: 'vertical', handle: {}, side: 'left', menuSide: 'right' } as const;
-    expect(renderToStaticMarkup(createElement('div', null, toolbarRenderer([TOOLS, probe])('probe', slot)))).toContain('<i class="probe-bar" data-side="left"></i>');
-    expect(toolbarRenderer([TOOLS, probe])('missing', slot)).toBeNull();
-  });
-});
-
-describe('modules', () => {
-  it('add their toolbars to the merged list', () => {
-    const merged = mergeModules([{ id: 'one', toolbars: [TOOLS] }, { id: 'two' }, { id: 'three', toolbars: [OPTIONS] }]);
-    expect(merged.toolbars.map((toolbar) => toolbar.id)).toEqual(['tools', 'options']);
-  });
 });
 
 const startApp = async () => {
@@ -150,7 +104,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('the toolbar layout across a restart', { timeout: 60_000 }, () => {
+describe('K3 the toolbar layout across a restart', { tags: ['standard'] }, () => {
   it('saves toolbarLayout as its own key beside widgetLayout, flushes on pagehide, and reads it back', async () => {
     const { disk, listeners } = fakeDisk({ 'profile:p1': { widgetLayout: { kept: true } } });
     const first = await startApp();

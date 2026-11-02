@@ -25,7 +25,7 @@ const BUNDLE_WITH_TEXT = [
   'const glob = Array.from("abc");',
 ].join('\n');
 
-describe('importSpecifiers in a bundle that holds code as text', () => {
+describe('K1 importSpecifiers in a bundle that holds code as text', { tags: ['critical'] }, () => {
   it('reads specifiers from the code only, never from strings, template text, comments or regular expressions', () => {
     expect(importSpecifiers(BUNDLE_WITH_TEXT)).toEqual(['node:path', 'velopack', './chunks/later.js', './thing.js']);
   });

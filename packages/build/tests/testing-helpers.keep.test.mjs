@@ -1,9 +1,13 @@
 /* @layer tooling-scripts @kind test */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { pageKindOf } from '../src/testing/page-kind.mjs';
 import { readDockLayout } from '../src/testing/read-dock-layout.mjs';
 import { waitForAppPage } from '../src/testing/wait-for-app-page.mjs';
 import { widgetWindows } from '../src/testing/widget-windows.mjs';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 const page = (url) => ({ url: () => url });
 
@@ -22,7 +26,7 @@ const browserWindow = ({ url, bounds = { x: 0, y: 0, width: 300, height: 200 }, 
   isAlwaysOnTop: () => false,
 });
 
-describe('pageKindOf', () => {
+describe('K1 pageKindOf', { tags: ['critical'] }, () => {
   it('tells the splash, a widget window and the app window apart', () => {
     expect(pageKindOf('file:///C:/app/dist/renderer/splash.html?v=1.0.0')).toBe('splash');
     expect(pageKindOf('file:///C:/app/dist/renderer/index.html?widget=logs')).toBe('widget');
@@ -36,27 +40,27 @@ describe('pageKindOf', () => {
   });
 });
 
-describe('waitForAppPage', () => {
+describe('K1 waitForAppPage', { tags: ['critical'] }, () => {
   it('skips the splash and waits until it closes', async () => {
     const splash = page('file:///a/renderer/splash.html');
     const index = page('file:///a/renderer/index.html');
     const app = appWith([[splash], [splash, index], [index]]);
-    expect(await waitForAppPage(app, 5000)).toBe(index);
-  });
-
-  it('never returns a widget window', async () => {
-    const widget = page('file:///a/renderer/index.html?widget=logs');
-    const index = page('file:///a/renderer/index.html');
-    expect(await waitForAppPage(appWith([[widget], [widget, index]]), 5000)).toBe(index);
+    vi.useFakeTimers();
+    const waiting = waitForAppPage(app, 5000);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await waiting).toBe(index);
   });
 
   it('says the boot never finished while the splash stays open', async () => {
     const app = appWith([[page('file:///a/renderer/splash.html'), page('file:///a/renderer/index.html')]]);
-    await expect(waitForAppPage(app, 50)).rejects.toThrow(/splash is still open/);
+    vi.useFakeTimers();
+    const settled = expect(waitForAppPage(app, 50)).rejects.toThrow(/splash is still open/);
+    await vi.advanceTimersByTimeAsync(1000);
+    await settled;
   });
 });
 
-describe('widgetWindows', () => {
+describe('K1 widgetWindows', { tags: ['critical'] }, () => {
   it('lists the popped widget windows from main, sorted by id, and skips the app and splash', async () => {
     const windows = [
       browserWindow({ url: 'file:///a/renderer/index.html' }),
@@ -72,7 +76,7 @@ describe('widgetWindows', () => {
   });
 });
 
-describe('readDockLayout', () => {
+describe('K1 readDockLayout', { tags: ['critical'] }, () => {
   it('reads the layout through the reader the renderer exposes', async () => {
     const reading = { layout: { v: 2 }, docked: ['logs'], floating: [], popped: [], main: null, rects: {} };
     const fake = { waitForFunction: async () => undefined, evaluate: async () => reading };

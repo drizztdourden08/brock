@@ -39,7 +39,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('a bucket backdrop file', () => {
+describe('K1 a bucket backdrop file', { tags: ['critical'] }, () => {
   it('syncs <bucket>.backdrop.tsx as a lazy backdrop entry of its bucket, left out of search', async () => {
     const root = appWith({ 'src/screens/library/shelf.page.tsx': PAGE, 'src/screens/library/library.backdrop.tsx': BACKDROP });
     const screens = screensTs(root);

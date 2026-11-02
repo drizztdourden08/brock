@@ -16,7 +16,7 @@ const STORE_CLI = fileURLToPath(new URL('./store-vite-deps-cli.mjs', import.meta
 const started = new Set();
 
 /**
- * @typedef {{ depsDir: string, installRoot: string, version: string, buildKey: string, hashes: import('./deps-metadata.mjs').DepsHashes, root?: string }} ViteDepsInput
+ * @typedef {{ depsDir: string, installRoot: string, version: string, buildKey: string, lockfileKey?: string, hashes: import('./deps-metadata.mjs').DepsHashes, root?: string }} ViteDepsInput
  */
 
 const idOf = ({ root = cacheRoot(), version, buildKey }) => ({ root, kind: KIND.VITE_DEPS, name: ENTRY_NAME, version, buildKey });
@@ -98,7 +98,7 @@ const storeViteDeps = async (input) => {
   try {
     await commitEntry({
       ...id,
-      buildSettings: { layout: LAYOUT, lockfileHash: hashes.lockfileHash },
+      buildSettings: { layout: LAYOUT, lockfileHash: input.lockfileKey ?? hashes.lockfileHash },
       fill: async (filesDir) => {
         await cp(depsDir, filesDir, { recursive: true });
         if (!unchanged(depsDir, before) || !unchanged(filesDir, before) || !filesPresent(metadata, filesDir)) throw new Error('build-cache: the dependency folder changed while it was copied');

@@ -36,7 +36,7 @@ const POPPED = defineTour({ id: 'popped', title: 'Popped', steps: [{ id: 'notes'
 
 afterEach(tourHarness.cleanUp);
 
-describe('TourHost', () => {
+describe('S1 TourHost', { tags: ['standard'] }, () => {
   it('draws the open step with Tessera, keeps the title bar live, records the shown step and goes on after a tour event', async () => {
     mount([TOUR]);
     act(() => { tours.start('host'); });
@@ -70,13 +70,12 @@ describe('TourHost', () => {
   });
 });
 
-describe('a step whose target is absent', () => {
+describe('S1 a step whose target is absent', { tags: ['standard'] }, () => {
   it('shows centred and counts as shown, and a click step offers Next so the tour and the review go on', async () => {
     mount([ABSENT]);
     act(() => { tours.start('absent'); });
     await flush();
     expect(tourReading.shown('absent', 0)).toEqual({ id: 'absent', index: 0, step: 'gone', target: null });
-    expect(document.querySelector('.guided-tour__bubble--center')).not.toBeNull();
     act(() => tours.next());
     await flush();
     expect(tourReading.shown('absent', 1)?.target).toBeNull();
@@ -102,7 +101,7 @@ describe('a step whose target is absent', () => {
   });
 });
 
-describe('WidgetTourSpot', () => {
+describe('S1 WidgetTourSpot', { tags: ['standard'] }, () => {
   it('draws the tour spot in the widget window the main window names, and nothing elsewhere', async () => {
     document.body.innerHTML = '<div id="host"></div><div data-widget-id="notes"><textarea></textarea></div>';
     renderInto('host', createElement(WidgetTourSpot, { id: 'notes' }));

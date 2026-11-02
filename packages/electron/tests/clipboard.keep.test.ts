@@ -6,7 +6,7 @@ vi.mock('../src/main/window/dev-server-url', () => ({ devServerUrl: () => null }
 
 const own = 'application/x-bxel-clip';
 
-describe('clipboard round trip', () => {
+describe('K2 clipboard round trip', { tags: ['critical'] }, () => {
   it('writes and reads a PNG, a private type and text together', async () => {
     const board = fakeClipboard();
     const { call } = sessionOf(board);
@@ -35,7 +35,7 @@ describe('clipboard round trip', () => {
   });
 });
 
-describe('clipboard write refusals', () => {
+describe('K4 clipboard write refusals', { tags: ['critical'] }, () => {
   const refuse = async (entries: unknown, message: RegExp): Promise<void> => {
     const board = fakeClipboard();
     const { call } = sessionOf(board);
@@ -100,7 +100,7 @@ describe('clipboard write refusals', () => {
   });
 });
 
-describe('clipboard read refusals', () => {
+describe('K4 clipboard read refusals', { tags: ['critical'] }, () => {
   it('never reads another app private format, and does not touch it', async () => {
     const board = fakeClipboard();
     board.memory.buffers.set('application/x-secret-notes', Uint8Array.from([7, 7]));
@@ -136,7 +136,7 @@ describe('clipboard read refusals', () => {
   });
 });
 
-describe('clipboard product namespace', () => {
+describe('K4 clipboard product namespace', { tags: ['critical'] }, () => {
   it('keeps bxel apart from a product whose id starts with bxel-', async () => {
     const bxel = sessionOf(fakeClipboard(), 'bxel');
     const pro = sessionOf(fakeClipboard(), 'bxel-pro');
@@ -149,7 +149,7 @@ describe('clipboard product namespace', () => {
   });
 });
 
-describe('clipboard channels check the frame', () => {
+describe('K4 clipboard channels check the frame', { tags: ['critical'] }, () => {
   const calls: [string, ...unknown[]][] = [
     ['clipboard:readText'],
     ['clipboard:read', ['text/plain']],

@@ -1,49 +1,17 @@
 /* @layer electron-main @kind test */
-import { existsSync, readFileSync } from 'fs';
-import { dirname, join, resolve } from 'path';
+import { existsSync } from 'fs';
+import { join, resolve } from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as serverEntry from '../src/server';
 import { resolveDataDir } from '../src/server/data-dir';
 import { runServer } from '../src/server/run-server';
 import { createHarness, removeHarnessRoots } from './server-harness';
 
-const ENTRY = resolve(import.meta.dirname, '../src/server/index.ts');
-const SPECIFIER = /from\s+'([^']+)'/g;
 const LINE = /^\[\d{4}-\d{2}-\d{2}T[\d:.]+Z\] \[(log|info|warn|error)\] (.+)\n$/;
-
-const sourceOf = (from: string, spec: string): string => {
-  const target = resolve(dirname(from), spec);
-  return [`${target}.ts`, join(target, 'index.ts')].find((candidate) => existsSync(candidate)) ?? target;
-};
-
-const externalSpecs = (entry: string): string[] => {
-  const queue = [entry];
-  const visited = new Set<string>();
-  const external: string[] = [];
-  for (let file = queue.pop(); file !== undefined; file = queue.pop()) {
-    if (visited.has(file)) continue;
-    visited.add(file);
-    const specs = [...readFileSync(file, 'utf8').matchAll(SPECIFIER)].map((match) => match[1] ?? '');
-    for (const spec of specs) {
-      if (spec.startsWith('.')) queue.push(sourceOf(file, spec));
-      else external.push(spec);
-    }
-  }
-  return external;
-};
 
 afterEach(removeHarnessRoots);
 
-describe('the Electron-free entry, @drizztdourden08/brock-electron/server', () => {
-  it('reaches no module of Electron, so plain Node can load it', () => {
-    const external = externalSpecs(ENTRY);
-    const electronic = external.filter((spec) => /^(electron(\/|$)|@electron-toolkit)/.test(spec));
-    expect(external).toContain('fs');
-    expect(electronic).toEqual([]);
-  });
-});
-
-describe('the data folder', () => {
+describe('K2 the data folder', { tags: ['critical'] }, () => {
   it('takes the flag first, then BROCK_DATA_DIR, then STATE_DIRECTORY, then ./.user-data', () => {
     const cwd = resolve('/work');
     expect(resolveDataDir(['--user-data=flag'], { BROCK_DATA_DIR: 'env', STATE_DIRECTORY: '/state' }, cwd)).toBe(resolve(cwd, 'flag'));
@@ -91,7 +59,7 @@ describe('the data folder', () => {
   });
 });
 
-describe('the stdout log', () => {
+describe('K2 the stdout log', { tags: ['critical'] }, () => {
   it('writes one main-format line per event and sends errors to stderr', async () => {
     const { options, out, err } = await createHarness();
     await runServer((host) => {

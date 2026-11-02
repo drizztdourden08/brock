@@ -4,7 +4,7 @@ import { keyedGuardReducer } from '../src/hooks/keyed-guard-reducer';
 import { IDLE_GUARD } from '../src/hooks/keyed-guard.constants';
 import { lastGuardError } from '../src/hooks/last-guard-error';
 
-describe('keyedGuardReducer', () => {
+describe('K1 keyedGuardReducer', { tags: ['critical'] }, () => {
   it('marks a key busy and clears its old error', () => {
     const failed = keyedGuardReducer(IDLE_GUARD, { type: 'fail', key: 'save', message: 'disk full' });
     const next = keyedGuardReducer(failed, { type: 'start', key: 'save' });

@@ -14,8 +14,6 @@ afterEach(closeOpened);
 const CHANGED = event<(doc: string, rev: number) => void>()('test:doc-changed');
 const WHO = invoke<() => Promise<string>>()('test:who');
 
-const settle = (ms = 100): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
-
 const answerAsServer = (socket: Socket, secret: string, text: string): void => {
   const hello = JSON.parse(text) as { hello?: string };
   if (!hello.hello) return;
@@ -36,7 +34,7 @@ const replayServer = (secret: string) => createServer((socket) => {
   socket.on('data', createLineReader(4096, (text) => answerAsServer(socket, secret, text), () => undefined));
 });
 
-describe('bridge connections', () => {
+describe('K2 bridge connections', { tags: ['standard'] }, () => {
   it('gives handlers a stable connection id and tells main when clients open and close', async () => {
     const { server, file } = await serve();
     const opened = vi.fn();
@@ -54,13 +52,12 @@ describe('bridge connections', () => {
     expect(server.connections().sort()).toEqual([...ids].sort());
     expect(opened.mock.calls.map(([id]) => id as unknown)).toEqual(ids);
     first.close();
-    await settle();
-    expect(closed).toHaveBeenCalledWith(ids[0]);
+    await vi.waitFor(() => expect(closed).toHaveBeenCalledWith(ids[0]));
     expect(server.connections()).toEqual([ids[1]]);
   });
 });
 
-describe('bridge push', () => {
+describe('K2 bridge push', { tags: ['standard'] }, () => {
   it('sends an event to one connection or to all, signed with each session key', async () => {
     const { server, file } = await serve();
     const first = client(file);
@@ -74,9 +71,10 @@ describe('bridge push', () => {
     expect(server.emitTo(firstId, CHANGED, 'a.bxel', 1)).toBe(1);
     expect(server.emitTo('0'.repeat(32), CHANGED, 'a.bxel', 1)).toBe(0);
     expect(server.emit(CHANGED, 'b.bxel', 2)).toBe(2);
-    await settle();
-    expect(heardFirst.mock.calls).toEqual([['a.bxel', 1], ['b.bxel', 2]]);
-    expect(heardSecond.mock.calls).toEqual([['b.bxel', 2]]);
+    await vi.waitFor(() => {
+      expect(heardFirst.mock.calls).toEqual([['a.bxel', 1], ['b.bxel', 2]]);
+      expect(heardSecond.mock.calls).toEqual([['b.bxel', 2]]);
+    });
   });
 
   it('refuses a server message signed with another key and a push out of order', async () => {
@@ -92,14 +90,14 @@ describe('bridge push', () => {
     const heard = vi.fn();
     fake.on(CHANGED, heard);
     await fake.connect();
-    await settle();
+    await vi.waitFor(() => expect(heard).toHaveBeenCalledTimes(1));
     expect(heard.mock.calls).toEqual([['x', 1]]);
     fake.close();
     replay.close();
   });
 });
 
-describe('structured bridge errors', () => {
+describe('K2 structured bridge errors', { tags: ['standard'] }, () => {
   it('sends a BridgeError code and data, bounds the data and masks other errors', async () => {
     const { server, file } = await serve();
     const locked = invoke<() => Promise<void>>()('test:locked');

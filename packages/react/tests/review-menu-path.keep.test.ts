@@ -24,7 +24,7 @@ const drawMenu = (): void => {
   ].join('');
 };
 
-describe('pickMenuPath', () => {
+describe('K1 pickMenuPath', { tags: ['standard'] }, () => {
   it('closes the menu when the path is not there, so the next Escape reaches the screen and not a menu left open', async () => {
     drawMenu();
     expect(await pickMenuPath(['Advanced', 'Controllers'])).toBe(false);

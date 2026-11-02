@@ -23,7 +23,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('what a watch refuses', () => {
+describe('K4 what a watch refuses', { tags: ['critical'] }, () => {
   it('a folder outside a grant, a file, a path that is not plain, a missing folder and the app folders', async () => {
     const { granted, outside, appDir, fakes, listener } = world;
     const dotted = [granted, '..', 'outside'].join(sep);
@@ -51,8 +51,8 @@ describe('what a watch refuses', () => {
   });
 });
 
-describe('what a watch passes on', () => {
-  it('passes recursive only when it is true, and watches the real path of a subfolder', async () => {
+describe('K1 what a watch passes on', () => {
+  it('passes recursive only when it is true, and watches the real path of a subfolder', { tags: ['critical'] }, async () => {
     const { granted, fakes, listener } = world;
     await access.watch(granted, { recursive: true }, listener);
     await access.watch(join(granted, 'sub'), loose({ recursive: 'yes' }), listener);
@@ -60,7 +60,7 @@ describe('what a watch passes on', () => {
     expect(fakes.map(({ dir, recursive }) => [dir, recursive])).toEqual([[granted, true], [join(granted, 'sub'), false], [granted, false]]);
   });
 
-  it('reports a file made and removed in a subfolder through the real file system', async () => {
+  it('reports a file made and removed in a subfolder through the real file system', { tags: ['standard'] }, async () => {
     const { granted, listener, events } = world;
     const real = testAccess({ watchMs: 20 });
     real.allowFolder(granted);

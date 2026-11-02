@@ -76,4 +76,4 @@ const buildInWsl = (remote, machine, settings, run) => {
   copyTo(remote, hostCopy, run.staged);
 };
 
-export { wslMountPath, mountLine, mountShare, buildInVm, buildInWsl };
+export { wslMountPath, mountShare, buildInVm, buildInWsl };

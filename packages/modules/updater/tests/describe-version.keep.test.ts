@@ -10,7 +10,7 @@ const optionOf = (patch: Partial<VersionOption>): VersionOption => ({
   version: '1.2.0', releaseNotes: '', releaseDate: RELEASED, size: 0, downloadSize: 0, prerelease: false, downgrade: false, installed: false, ...patch,
 });
 
-describe('describeVersion', () => {
+describe('K1 describeVersion', { tags: ['critical'] }, () => {
   it('reads the release date as a Tessera date', () => {
     expect(describeVersion(optionOf({ installed: true }))).toBe(`${formatDate(RELEASED, 'date')} · installed`);
   });

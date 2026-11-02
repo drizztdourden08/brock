@@ -21,7 +21,7 @@ const REVIEW: AppReview = {
   ],
 };
 
-describe('app review steps', () => {
+describe('K1 app review steps', { tags: ['critical'] }, () => {
   it('runs the seed as the seed step, and nothing when the app has none', async () => {
     expect(seedSteps(null)).toEqual([]);
     expect(seedSteps({ seed: null, steps: [] })).toEqual([]);

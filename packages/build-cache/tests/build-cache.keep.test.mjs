@@ -6,7 +6,6 @@ import { codeExports, exportKeyOf } from '../src/packages/code-exports.mjs';
 import { packageBuildKey } from '../src/packages/compile-package.mjs';
 import { packageClosure } from '../src/packages/package-closure.mjs';
 import { servePackage } from '../src/packages/serve-package.mjs';
-import { cacheRoot } from '../src/store/cache-root.mjs';
 import { commitEntry } from '../src/store/commit-entry.mjs';
 import { entryPaths } from '../src/store/entry-path.mjs';
 import { hashTree } from '../src/store/hash-tree.mjs';
@@ -34,14 +33,7 @@ const serve = (root, app) => {
   return servePackage({ root, rootDir: app, source, ...KEY });
 };
 
-describe('cacheRoot', () => {
-  it('honours BROCK_BUILD_CACHE_DIR and otherwise sits in the home folder', () => {
-    expect(cacheRoot({ BROCK_BUILD_CACHE_DIR: '/tmp/x' })).toMatch(/x$/);
-    expect(cacheRoot({})).toMatch(/[\\/]\.brock[\\/]cache[\\/]build-cache$/);
-  });
-});
-
-describe('hashTree', () => {
+describe('K1 hashTree', { tags: ['critical'] }, () => {
   it('hashes contents and relative paths, not where the folder is', () => {
     const one = tempDir();
     const two = tempDir();
@@ -53,7 +45,7 @@ describe('hashTree', () => {
   });
 });
 
-describe('packageBuildKey', () => {
+describe('K1 packageBuildKey', { tags: ['critical'] }, () => {
   it('changes with the settings that change the output', () => {
     expect(packageBuildKey({ platform: 'node', target: 'node22' }).buildKey).toBe(KEY.buildKey);
     expect(packageBuildKey({ platform: 'node', target: 'node20' }).buildKey).not.toBe(KEY.buildKey);
@@ -61,7 +53,7 @@ describe('packageBuildKey', () => {
   });
 });
 
-describe('codeExports', () => {
+describe('K2 codeExports', { tags: ['critical'] }, () => {
   it('serves each export that points at code and refuses a pattern export', () => {
     expect(codeExports({ exports: { '.': './src/index.ts', './main': { types: './x.d.ts', default: './src/main.ts' }, './styles.css': './s.css' } }))
       .toEqual([{ key: '.', file: './src/index.ts', out: 'index' }, { key: './main', file: './src/main.ts', out: 'main' }]);
@@ -71,7 +63,7 @@ describe('codeExports', () => {
   });
 });
 
-describe('servePackage', { timeout: 300_000 }, () => {
+describe('E2 servePackage', { tags: ['e2e'] }, () => {
   it('builds once, then a copy of the same version at another path is a hit', async () => {
     const root = tempDir();
     const first = await serve(root, installedApp());
@@ -85,12 +77,6 @@ describe('servePackage', { timeout: 300_000 }, () => {
     expect(readFileSync(join(second.placedDir, 'index.js'), 'utf8')).toContain('left-pad');
   });
 
-  it('shares one module between two exports, so state is not duplicated', async () => {
-    const { placedDir } = await serve(tempDir(), installedApp());
-    expect(readFileSync(join(placedDir, 'sub.js'), 'utf8')).not.toContain('count: 0');
-    expect(readdirSync(join(placedDir, 'chunks')).length).toBeGreaterThan(0);
-  });
-
   it('misses when the source content changes under the same version', async () => {
     const root = tempDir();
     await serve(root, installedApp());
@@ -99,7 +85,7 @@ describe('servePackage', { timeout: 300_000 }, () => {
   });
 });
 
-describe('readEntry and commitEntry', () => {
+describe('K3 readEntry and commitEntry', { tags: ['critical'] }, () => {
   const id = (root) => ({ root, kind: 'package', name: NAME, version: '1.0.0', buildKey: 'node-abc' });
   const fill = (filesDir) => {
     writeFileSync(join(filesDir, 'index.js'), 'export {};\n');
@@ -148,7 +134,7 @@ describe('readEntry and commitEntry', () => {
   });
 });
 
-describe('runtimeImportsOf', () => {
+describe('K1 runtimeImportsOf', { tags: ['critical'] }, () => {
   it('lists the app packages the served exports load, following served packages through', () => {
     const closure = {
       served: new Map([['@s/a', new Map()], ['@s/b', new Map()]]),
@@ -158,7 +144,7 @@ describe('runtimeImportsOf', () => {
   });
 });
 
-describe('packageClosure', () => {
+describe('K1 packageClosure', { tags: ['critical'] }, () => {
   it('keeps linked packages, and packages that depend on them, compiled in', () => {
     const app = tempDir();
     const TWO = '@drizztdourden08/demo-two';

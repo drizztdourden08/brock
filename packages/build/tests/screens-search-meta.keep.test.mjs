@@ -21,7 +21,7 @@ const appWith = (page) => {
   return root;
 };
 
-describe('page meta in search', () => {
+describe('K1 page meta in search', { tags: ['critical'] }, () => {
   it('reads the keywords and searchRows of a page meta into its seed', async () => {
     const root = appWith(pageWith("{ title: 'Engine', keywords: ['version'], searchRows: [{ label: 'Build', keywords: ['patch'], anchor: 'build' }] }"));
     expect(await checkScreens(root)).toEqual([]);

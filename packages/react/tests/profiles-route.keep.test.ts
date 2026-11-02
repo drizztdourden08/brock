@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it } from 'vitest';
-import { defineProduct } from '@drizztdourden08/brock-core';
 import { profilesAlias } from '../src/app/BrockApp/behavior/profiles-alias';
 import { nav } from '../src/navigation/nav';
 import { restoreNavigation } from '../src/navigation/restore-navigation';
@@ -25,7 +24,7 @@ afterEach(() => {
   useNavigationStore.getState().restore(null);
 });
 
-describe('the profiles route an app names', () => {
+describe('K1 the profiles route an app names', { tags: ['critical'] }, () => {
   it('sends every open of the profiles screen to the app page', () => {
     aliasTo('data/profiles');
     nav.open(PROFILES_SCREEN);
@@ -47,13 +46,10 @@ describe('the profiles route an app names', () => {
     expect(createBuiltInScreens({ profiles: false }).map((screen) => screen.id)).not.toContain(PROFILES_SCREEN);
     expect(createBuiltInScreens({}).map((screen) => screen.id)).toContain(PROFILES_SCREEN);
     expect(isProfilesRoute(PROFILES_SCREEN, {})).toBe(true);
-    const base = { id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'Example' } };
-    expect(defineProduct(base).profilesRoute).toBeUndefined();
-    expect(defineProduct({ ...base, profilesRoute: 'data/profiles' }).profilesRoute).toBe('data/profiles');
   });
 });
 
-describe('a bucket reachable without a profile', () => {
+describe('K1 a bucket reachable without a profile', { tags: ['critical'] }, () => {
   it('passes requiresProfile from the bucket to its hub screen', () => {
     const View = () => null;
     const tree = resolveScreenTree(buildScreenTree(

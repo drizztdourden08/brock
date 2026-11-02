@@ -3,6 +3,8 @@ import { createElement } from 'react';
 import type { TabDef } from '@drizztdourden08/brock-react';
 import { Icon } from '@drizztdourden08/tessera/primitives';
 import { DisplaySettingsTab } from './DisplaySettingsTab';
+import { displaySections } from './DisplaySettingsTab/behavior/display-sections';
+import { hasWindowControls } from './DisplaySettingsTab/behavior/has-window-controls';
 
 const DISPLAY_SETTINGS_TAB: TabDef<object> = {
   id: 'display',
@@ -10,6 +12,7 @@ const DISPLAY_SETTINGS_TAB: TabDef<object> = {
   navIcon: createElement(Icon, { name: 'monitor' }),
   group: 'App',
   groupId: 'app',
+  sections: () => displaySections(hasWindowControls()),
   render: ({ settings, onChange }) => createElement(DisplaySettingsTab, { settings, onChange }),
 };
 

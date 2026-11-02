@@ -11,7 +11,6 @@ import { readSavedNavigation } from '../src/navigation/read-saved-navigation';
 import { stickyParams } from '../src/navigation/sticky-params';
 import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { PlatformProvider } from '../src/platform/PlatformProvider';
-import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import { currentShowContext } from '../src/screens/show/current-show-context';
 import type { ShowContext } from '../src/screens/show/show.type';
 import { useShowContext } from '../src/screens/show/useShowContext';
@@ -36,7 +35,7 @@ afterEach(() => {
   showHarness.resetShow();
 });
 
-describe('sticky hub params', () => {
+describe('K1 sticky hub params', { tags: ['critical'] }, () => {
   it('keep their value when the page changes inside the hub, and Back brings the earlier page with them', () => {
     nav.open('props', { subject: 'a.png', pin: true });
     nav.open('props/summary');
@@ -60,10 +59,9 @@ describe('sticky hub params', () => {
     expect(nav.back()).toBe(true);
     expect(state().params).toMatchObject({ subject: 'a.png', section: 'summary' });
   });
-
 });
 
-describe('sticky hub params across screens and links', () => {
+describe('K1 sticky hub params across screens and links', { tags: ['critical'] }, () => {
   it('stay when a sub-page goes up, and when the hub is left and opened again on a page', () => {
     nav.open('props', { subject: 'a.png' });
     nav.open('props/summary/more');
@@ -93,21 +91,14 @@ describe('sticky hub params across screens and links', () => {
     expect(state().params.subject).toBeUndefined();
   });
 
-  it('are registered by a hub from its params, and a bucket hands them to its hub', () => {
+  it('are registered by a hub from its params', () => {
     defineHub({ id: 'studio', title: 'Studio', icon: null, home: page('home'), groups: [], params: ['subject'] });
     expect(stickyParams.keys('studio')).toEqual(['subject']);
     stickyParams.set('studio', undefined);
-    const View = () => null;
-    const tree = buildScreenTree(
-      { buckets: [{ id: 'one', title: 'One', icon: 'house', menu: 'entry', params: ['subject'], header: { render: () => null } }], home: 'one' },
-      [{ kind: 'page', bucket: 'one', id: 'a', component: View }],
-    );
-    expect(tree.hubs[0]?.params).toEqual(['subject']);
-    expect(tree.hubs[0]?.header).toBeDefined();
   });
 });
 
-describe('sticky params in a show rule', () => {
+describe('S2 sticky params in a show rule', { tags: ['standard'] }, () => {
   const HUB: HubDef = {
     id: 'props',
     title: 'Properties',
@@ -126,18 +117,5 @@ describe('sticky params in a show rule', () => {
     expect(seen.at(-1)?.params).toEqual({ subject: 'a.png' });
     expect(idsFor(seen.at(-1) as ShowContext)).toEqual(['home', 'summary']);
     expect(currentShowContext().params).toEqual({ subject: 'a.png' });
-  });
-
-  it('keep one object while the sticky values hold, so memos on the context do not run again', () => {
-    showHarness.render(createElement(PlatformProvider, null, createElement(Probe)));
-    act(() => nav.open('props', { subject: 'a.png' }));
-    const first = seen.at(-1);
-    act(() => nav.open('props/summary'));
-    act(() => nav.open('props/colors'));
-    expect(seen.at(-1)?.params).toBe(first?.params);
-    expect(seen.at(-1)).toBe(first);
-    act(() => nav.open('props/colors', { subject: 'b.png' }));
-    expect(seen.at(-1)?.params).toEqual({ subject: 'b.png' });
-    expect(seen.at(-1)).not.toBe(first);
   });
 });

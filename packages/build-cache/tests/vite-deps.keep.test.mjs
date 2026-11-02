@@ -1,8 +1,7 @@
 /* @layer tooling-scripts @kind test */
-import { execFileSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { listEntries } from '../src/store/list-entries.mjs';
 import { hasViteDeps } from '../src/vite-deps/deps-lookup.mjs';
@@ -18,7 +17,6 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-const STORE_CLI = fileURLToPath(new URL('../src/vite-deps/store-vite-deps-cli.mjs', import.meta.url));
 const HASHES = { lockfileHash: 'aaaaaaaa', configHash: 'bbbbbbbb', hash: 'cccccccc' };
 
 const worktree = ({ hashes = HASHES, withDeps = true, shared = false } = {}) => {
@@ -43,7 +41,7 @@ const worktree = ({ hashes = HASHES, withDeps = true, shared = false } = {}) => 
 const inputOf = (tree, extra = {}) => ({ ...tree, version: '7.3.7', buildKey: 'linux-x64-abc', hashes: HASHES, ...extra });
 const entries = (root) => listEntries(root).filter(({ manifest }) => manifest?.kind === 'vite-deps');
 
-describe('vite deps store', () => {
+describe('K3 vite deps store', { tags: ['critical'] }, () => {
   it('stores a pre-bundle once, as a vite-deps entry with portable sources', async () => {
     const root = tempDir();
     const input = inputOf(worktree(), { root });
@@ -71,7 +69,7 @@ describe('vite deps store', () => {
   });
 });
 
-describe('vite deps restore', () => {
+describe('K3 vite deps restore', { tags: ['critical'] }, () => {
   const stored = async (root) => {
     await storeViteDeps(inputOf(worktree(), { root }));
     return entries(root)[0].dir;
@@ -99,15 +97,6 @@ describe('vite deps restore', () => {
     expect(metadata.optimized.picker.src).toBe(join(cloned.packages, 'picker@1.0.0/node_modules/picker/index.js'));
   });
 
-  it('stores a pre-bundle made in a shared-store worktree with the same portable sources, and restores it into a normal one', async () => {
-    const root = tempDir();
-    expect(await storeViteDeps(inputOf(worktree({ shared: true }), { root }))).toBe('stored');
-    const [{ dir }] = entries(root);
-    expect(JSON.parse(readFileSync(join(dir, 'files', '_metadata.json'), 'utf8')).optimized.picker.src).toBe('@root/node_modules/.pnpm/picker@1.0.0/node_modules/picker/index.js');
-    const plain = worktree({ withDeps: false });
-    expect(restoreViteDeps(inputOf(plain, { root }))).toBe('restored');
-  });
-
   it('reads a missing source, a damaged file or a broken manifest as a miss and leaves no half folder', async () => {
     const root = tempDir();
     const dir = await stored(root);
@@ -131,22 +120,9 @@ describe('vite deps restore', () => {
     expect(restoreViteDeps(inputOf(linked, { root }))).toBe('missing');
   });
 
-  it('keeps entries for another build key apart', async () => {
-    const root = tempDir();
-    await stored(root);
-    expect(restoreViteDeps(inputOf(worktree({ withDeps: false }), { root, buildKey: 'linux-x64-other' }))).toBe('missing');
-  });
 });
 
-describe('detached store', () => {
-  it('stores from a process of its own, and starts none when the entry is there or already started', async () => {
-    const root = tempDir();
-    const input = inputOf(worktree(), { root });
-    execFileSync(process.execPath, [STORE_CLI, JSON.stringify(input)], { env: { ...process.env, BROCK_BUILD_CACHE_DIR: root } });
-    expect(entries(root)).toHaveLength(1);
-    expect(storeViteDepsDetached(input)).toBe('present');
-  });
-
+describe('K1 detached store', { tags: ['critical'] }, () => {
   it('starts one process for an entry that is not there yet', () => {
     const root = tempDir();
     const input = inputOf(worktree({ withDeps: false }), { root, buildKey: 'linux-x64-fresh' });

@@ -1,15 +1,17 @@
 /* @layer renderer-shell @kind hook */
 import { instructionFor } from './instruction-for';
 import type { UsePositionalOneByOneProps } from './positional-capture.type';
+import { useAutoCapture } from './useAutoCapture';
 import { usePositionalActions } from './usePositionalActions';
 import { usePositionalInput } from './usePositionalInput';
 import { usePositionalSession } from './usePositionalSession';
 
 const usePositionalOneByOne = (props: UsePositionalOneByOneProps) => {
-  const { deviceKey, active, resolvedDevice } = props;
+  const { deviceKey, active, resolvedDevice, autoCapture, onAutoCaptureChange } = props;
   const session = usePositionalSession({ active, resolvedDevice });
   usePositionalInput(session, deviceKey, active);
   const actions = usePositionalActions(session);
+  const { onAutoCaptureToggle } = useAutoCapture({ session, actions, active, autoCapture, onAutoCaptureChange });
   const { refs, items, records, activeIndex, inputPhaseActive, autoAdvance, setAutoAdvanceWrapped, setInputPhaseActiveWrapped } = session;
 
   const capturedCount = items.filter((it) => it.status === 'captured' || it.status === 'skipped').length;
@@ -18,7 +20,7 @@ const usePositionalOneByOne = (props: UsePositionalOneByOneProps) => {
 
   return {
     items, records, activeIndex, inputPhaseActive, autoAdvance, capturedCount, instruction,
-    ...actions,
+    ...actions, autoCapture, onAutoCaptureToggle,
     setAutoAdvanceWrapped, setInputPhaseActiveWrapped,
   };
 };

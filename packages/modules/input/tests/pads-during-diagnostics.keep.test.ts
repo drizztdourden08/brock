@@ -15,7 +15,7 @@ const NONE = groupControllerDevices([]);
 const labelsOf = (released: boolean, live = NONE) =>
   padNavEntries(holdAwareGroups(live, before, released), released).map((entry) => entry.label);
 
-describe('the pads in the Controllers nav during diagnostics', () => {
+describe('K1 the pads in the Controllers nav during diagnostics', { tags: ['critical'] }, () => {
   it('keeps the last known pads, marked, while the hold is released', () => {
     const labels = labelsOf(true);
     expect(labels).toHaveLength(1);

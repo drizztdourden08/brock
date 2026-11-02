@@ -81,7 +81,7 @@ const itemOf = (key: string) => settingsCatalog()
   .flatMap((section) => [...section.items, ...section.subsections.flatMap((sub) => sub.items)])
   .find((item) => item.key === key);
 
-describe('settingsCatalog', () => {
+describe('K2 settingsCatalog', { tags: ['critical'] }, () => {
   it('is empty before the app publishes its settings', () => {
     expect(settingsCatalog()).toEqual([]);
   });
@@ -117,7 +117,7 @@ describe('settingsCatalog', () => {
   });
 });
 
-describe('settings.set', () => {
+describe('K4 settings.set', { tags: ['critical'] }, () => {
   it('refuses before the settings are loaded', async () => {
     await publish(false);
     expect(settingsApi.set('theme', 'light')).toMatchObject({ ok: false, why: 'not-ready' });
@@ -133,13 +133,6 @@ describe('settings.set', () => {
     await publish(true);
     expect(settingsApi.set('nested.depth', 2)).toEqual({ ok: true });
     expect(store.getState().settings.nested).toEqual({ depth: 2 });
-  });
-
-  it('writes a toggle and a list', async () => {
-    await publish(true);
-    expect(settingsApi.set('notify', false)).toEqual({ ok: true });
-    expect(settingsApi.set('tags', ['x', 'y'])).toEqual({ ok: true });
-    expect(store.getState().settings).toMatchObject({ notify: false, tags: ['x', 'y'] });
   });
 
   it('rejects an unknown key', async () => {

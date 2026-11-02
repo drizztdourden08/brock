@@ -13,7 +13,7 @@ const later = (run: () => void): void => {
   setTimeout(run, 0);
 };
 
-describe('response chunks', () => {
+describe('K1 response chunks', { tags: ['critical'] }, () => {
   it('yields every chunk and ends on end', async () => {
     const response = new EventEmitter();
     later(() => {

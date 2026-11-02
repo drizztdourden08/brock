@@ -23,7 +23,7 @@ const PRODUCT = {
   fileAssociations: [{ ext: 'pack', name: 'Pack', progId: 'Packs.Pack', icon: 'pack' }, { ext: 'note', name: 'Note', progId: 'Packs.Note' }],
 };
 
-describe('tsconfig.compilerOptions of brock.config.ts', () => {
+describe('K1 tsconfig.compilerOptions of brock.config.ts', { tags: ['critical'] }, () => {
   it('writes the managed tsconfig.json unchanged without any, in the same shape', () => {
     const plain = tsconfigOf();
     expect(tsconfigOf({ compilerOptions: {} })).toBe(plain);
@@ -46,7 +46,7 @@ describe('tsconfig.compilerOptions of brock.config.ts', () => {
   });
 });
 
-describe('packaging of brock.config.ts', () => {
+describe('K1 packaging of brock.config.ts', { tags: ['critical'] }, () => {
   it('gives a file association its role and icon, and its Windows registry icon follows', () => {
     const config = createBuilderConfig(PRODUCT, { rootDir: tempDir(), packaging: { fileAssociations: { note: { role: 'Viewer', icon: 'note' }, PACK: { role: 'Editor' } } } });
     expect(config.fileAssociations).toEqual([
@@ -92,7 +92,7 @@ describe('packaging of brock.config.ts', () => {
   });
 });
 
-describe('the app package type', () => {
+describe('K4 the app package type', { tags: ['critical'] }, () => {
   it('asks for "type": "module", which the managed configs need for import.meta.dirname', () => {
     const app = tempDir();
     put(app, 'package.json', JSON.stringify({ name: 'app', type: 'module' }));
@@ -105,7 +105,7 @@ describe('the app package type', () => {
 
 const SHIM = "\n// -- CommonJS Shims --\nimport __cjs_mod__ from 'node:module';\nconst __filename = import.meta.filename;\nconst __dirname = import.meta.dirname;\nconst require = __cjs_mod__.createRequire(import.meta.url);\n";
 
-describe('the CommonJS shim of electron-vite', () => {
+describe('K1 the CommonJS shim of electron-vite', { tags: ['critical'] }, () => {
   it('moves the shim out of a template literal that holds an import line, after the last import', () => {
     const head = "import { join } from 'node:path';\nconst template = `import a from 'x';";
     const tail = "\nexport const b = 1;`;\nexport const at = join(__dirname, template);\n";

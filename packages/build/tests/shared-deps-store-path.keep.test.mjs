@@ -35,6 +35,8 @@ const keyOf = (install, vite) => {
   return depsBuildKey({ vite: '7.3.7', lockfile: lockfileOf(config.root), configHash: configHashOf(config, { portable: true, installRoot: install.root }) });
 };
 
+const withVite = (install) => tree.put(install.root, 'node_modules/vite/package.json', '{"name":"vite","version":"7.3.7"}');
+
 const withPreBundle = (install) => {
   const depsDir = join(install.root, 'node_modules/.vite/deps');
   const src = relative(depsDir, join(install.packages, PICKER)).split(sep).join('/');
@@ -44,7 +46,7 @@ const withPreBundle = (install) => {
   tree.put(depsDir, 'package.json', '{"type":"module"}');
 };
 
-describe('the pre-bundle key and the package store', () => {
+describe('K1 the pre-bundle key and the package store', { tags: ['critical'] }, () => {
   it('is the same for one lockfile on two package stores, which the store path alone changed', () => {
     const first = storeInstall(tree);
     const second = storeInstall(tree, { depth: 3 });
@@ -61,12 +63,14 @@ describe('the pre-bundle key and the package store', () => {
   it('restores a pre-bundle made on one store into an install on another, sources pointing into that one', async () => {
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', tree.tempDir());
     const first = storeInstall(tree);
+    withVite(first);
     withPreBundle(first);
     const stored = [];
     expect(shareDeps({ config: configOf(first), rootDir: first.root, store: (input) => stored.push(input) })).toBe('present');
     expect(await storeViteDeps(stored[0])).toBe('stored');
 
     const second = storeInstall(tree, { depth: 3 });
+    withVite(second);
     expect(shareDeps({ config: configOf(second), rootDir: second.root, store: vi.fn() })).toBe('seeded');
     const restored = JSON.parse(readFileSync(join(second.root, 'node_modules/.vite/deps/_metadata.json'), 'utf8'));
     expect(restored.optimized['dummy-dep'].src).toBe(join(second.packages, PICKER));

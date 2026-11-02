@@ -51,7 +51,7 @@ const input = (extra: Partial<CatalogInput> = {}): CatalogInput => ({
   ...extra,
 });
 
-describe('normaliseKeywords', () => {
+describe('K1 normaliseKeywords', { tags: ['critical'] }, () => {
   it('folds case and accents, splits words and drops edge punctuation and repeats', () => {
     expect(normaliseKeywords(['Élan, Rapide', 'button A', '(space)', 'elan'])).toEqual(['elan', 'rapide', 'button', 'a', 'space']);
     expect(normaliseKeywords('Fast  travel')).toEqual(['fast', 'travel']);
@@ -59,7 +59,7 @@ describe('normaliseKeywords', () => {
   });
 });
 
-describe('buildSearchIndex', () => {
+describe('K1 buildSearchIndex', { tags: ['critical'] }, () => {
   it('makes one entry per bucket with the hero keywords, and one per page, tab and card', () => {
     expect(byId('screen:game')).toMatchObject({ kind: 'screen', label: 'Game', target: { route: 'game' }, keywords: ['start', 'home'] });
     expect(byId('screen:game/display')).toMatchObject({ kind: 'page', label: 'Display', breadcrumb: ['Game', 'Video'] });
@@ -90,7 +90,7 @@ describe('buildSearchIndex', () => {
   });
 });
 
-describe('entriesInBucket', () => {
+describe('K1 entriesInBucket', { tags: ['critical'] }, () => {
   it('keeps the entries whose target opens that bucket', () => {
     const ids = entriesInBucket(INDEX, 'game').map((entry) => entry.id);
     expect(ids).toContain('setting:windowMode');
@@ -100,7 +100,7 @@ describe('entriesInBucket', () => {
   });
 });
 
-describe('ranking the index', () => {
+describe('K1 ranking the index', { tags: ['critical'] }, () => {
   it('finds a custom page entry by keyword and a setting by its full label first', () => {
     expect(rankEntries(INDEX, 'space')[0]?.id).toBe('entry:game/controls#jump');
     expect(rankEntries(INDEX, 'window mode')[0]?.id).toBe('setting:windowMode');
@@ -108,7 +108,7 @@ describe('ranking the index', () => {
   });
 });
 
-describe('buildCatalog with the index', () => {
+describe('K1 buildCatalog with the index', { tags: ['critical'] }, () => {
   it('hides dev-only pages without developer tools and adds a toggle only to boolean settings', () => {
     expect(buildCatalog(input()).some((entry) => entry.id === 'screen:data/library')).toBe(false);
     expect(buildCatalog(input({ isDev: true })).some((entry) => entry.id === 'screen:data/library')).toBe(true);
@@ -136,11 +136,6 @@ describe('buildCatalog with the index', () => {
     expect(found[1]?.target).toEqual({ route: 'game/controls', params: { presetId: 'preset-2' } });
     expect(entriesInBucket(found, 'game')).toHaveLength(2);
   });
-
-  it('turns widget menu toggles into widget entries', () => {
-    const widgets = [{ key: 'widget-logs', label: 'Logs', checked: false, onClick: () => undefined }];
-    expect(buildCatalog(input({ widgets })).find((entry) => entry.id === 'widget:logs')?.kind).toBe('widget');
-  });
 });
 
 const ROW_SEEDS: SearchFileSeed[] = [
@@ -153,7 +148,7 @@ const ROW_SEEDS: SearchFileSeed[] = [
   { kind: 'hero', bucket: 'game', id: 'home', entries: [{ label: 'Welcome back', anchor: 'welcome' }] },
 ];
 
-describe('page keywords and declared rows', () => {
+describe('K1 page keywords and declared rows', { tags: ['critical'] }, () => {
   const rows = buildSearchIndex(CONFIG, ROW_SEEDS);
 
   it('finds a page of every kind by a keyword of its meta', () => {

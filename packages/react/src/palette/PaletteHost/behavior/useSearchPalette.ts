@@ -10,6 +10,7 @@ import { PaletteConfirm } from '../sub-components/PaletteConfirm';
 import { paletteGroups } from './palette-groups';
 import { pickGroups } from './pick-groups';
 import { usePaletteScope } from './usePaletteScope';
+import { usePickScopes } from './usePickScopes';
 import { useStandardActions } from './useStandardActions';
 import { withConfirmActions } from './with-confirm-actions';
 
@@ -39,9 +40,10 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   }, [settle]);
 
   const preload = useRoutePreloader();
+  const { options: pickOptions, scope: pickScope, placeholder } = usePickScopes(picking);
   const ranked = useMemo(
-    () => (picking === null ? paletteGroups(catalog, query, scope, preload) : pickGroups(picking, query)),
-    [catalog, query, scope, preload, picking],
+    () => (picking === null ? paletteGroups(catalog, query, scope, preload) : pickGroups(picking, query, pickOptions, pickScope)),
+    [catalog, query, scope, preload, picking, pickOptions, pickScope],
   );
   const groups = useMemo(() => withConfirmActions(
     ranked,
@@ -53,7 +55,7 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
     else ask(item.id);
   }, [ask, runNow]);
 
-  return { open, query, setQuery, groups, activeIndex, runItem, close };
+  return { open, query, setQuery, groups, activeIndex, placeholder,runItem, close };
 };
 
 export { useSearchPalette };

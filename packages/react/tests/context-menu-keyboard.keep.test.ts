@@ -11,7 +11,7 @@ import { byId, item, mountMenus, openPoint, opened, press, rectOf, seen, unmount
 beforeEach(mountMenus);
 afterEach(unmountMenus);
 
-describe('opening with the keyboard', () => {
+describe('S1 opening with the keyboard', { tags: ['standard'] }, () => {
   it('opens at the focused element on Shift+F10 and on the Menu key', () => {
     rectOf('list', 10, 70).focus();
     expect(press({ key: 'F10', shiftKey: true }).defaultPrevented).toBe(true);

@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { flag } from '../cli/thread-args.mjs';
 import { tryGit } from '../git.mjs';
+import { NO_PURGE_PROMPT } from '../pnpm.constants.mjs';
 import { cloneInstall } from './clone/clone-install.mjs';
 
 const installable = (dir) => existsSync(join(dir, 'package.json')) && !existsSync(join(dir, 'node_modules'));
@@ -25,7 +26,11 @@ const restoreLockfile = (dir, log) => {
 const installIn = (dir, log) => {
   const args = installArgs(dir);
   log(`Running pnpm ${args.join(' ')} in ${dir}.`);
-  execFileSync('pnpm', args, { cwd: dir, stdio: 'inherit', shell: process.platform === 'win32' });
+  try {
+    execFileSync('pnpm', [...args, NO_PURGE_PROMPT], { cwd: dir, stdio: 'inherit', shell: process.platform === 'win32' });
+  } catch (error) {
+    throw new Error(`pnpm ${args.join(' ')} failed in ${dir} (${error?.status ?? error?.message ?? 'no exit code'}); its output is above. The install is unfinished, so fix the cause and run it again.`, { cause: error });
+  }
   if (args.includes('--fix-lockfile')) restoreLockfile(dir, log);
 };
 

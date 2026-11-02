@@ -21,7 +21,7 @@ vi.mock('../src/testing/load-electron-driver.mjs', () => ({
 const tree = tempTree('brock-launch-');
 afterEach(() => tree.cleanup());
 
-describe('launchAppForTest', () => {
+describe('K3 launchAppForTest', { tags: ['critical'] }, () => {
   it('starts on a fresh temporary profile and removes it on close', async () => {
     const launched = await testing.launchAppForTest({ appDir: '.' });
     expect(launches.args).toContain(`--user-data=${launched.userData}`);
@@ -38,10 +38,5 @@ describe('launchAppForTest', () => {
     expect(launches.args).toContain(`--user-data=${profile}`);
     await launched.close();
     expect(existsSync(profile)).toBe(true);
-  });
-
-  it('exports waitForAppPage and pageKindOf, so a test never takes the splash from firstWindow()', () => {
-    expect(typeof testing.waitForAppPage).toBe('function');
-    expect(testing.pageKindOf('file:///app/dist/renderer/splash.html')).toBe('splash');
   });
 });

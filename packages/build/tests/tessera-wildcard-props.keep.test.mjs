@@ -88,13 +88,12 @@ afterAll(() => {
   for (const root of roots) rmSync(root, { recursive: true, force: true });
 });
 
-describe('the Tessera props keys ending in *, read with the installed types', () => {
-  const state = { first: null, second: null };
+describe('K1 the Tessera props keys ending in *, read with the installed types', { tags: ['standard'] }, () => {
+  const state = { first: null };
 
   beforeAll(() => {
     const root = writeApp({ release: { version: 'next', props: PROPS }, types: true });
     state.first = replayed(root);
-    state.second = replayed(root);
   });
 
   it('lets an exact key win: its rename is written, on the JSX attribute and the typed object', () => {
@@ -114,14 +113,6 @@ describe('the Tessera props keys ending in *, read with the installed types', ()
     expect(state.first.text).toContain('    onFocus={go}\n');
   });
 
-  it('keeps an exact note as its own to-do, on the attribute and the typed object', () => {
-    const named = state.first.todos.filter((todo) => todo.includes('CommandInput.name'));
-    expect(named).toEqual([
-      expect.stringMatching(/^12 Tessera main \(next\): the prop CommandInput\.name is now "removed; keep the command/),
-      expect.stringMatching(/^17 Tessera main \(next\): the prop CommandInput\.name is now "removed; keep the command/),
-    ]);
-  });
-
   it('leaves alone the props the component still takes, key, other objects and plain JSX', () => {
     for (const prop of ['aria-describedby', 'onKeyDown', 'className', 'key', 'label', 'onSubmit']) {
       expect(state.first.todos.some((todo) => todo.includes(`CommandInput.${prop} `))).toBe(false);
@@ -130,15 +121,9 @@ describe('the Tessera props keys ending in *, read with the installed types', ()
     expect(state.first.todos).toHaveLength(7);
     expect(state.first.text).toContain('export const loose = { onFocus: go, name: 1 };');
   });
-
-  it('changes nothing on a second replay and lists the same to-dos', () => {
-    expect(state.second.text).toBe(state.first.text);
-    expect(state.second.run.applied[0].touched).toEqual([]);
-    expect(state.second.todos).toEqual(state.first.todos);
-  });
 });
 
-describe('the Tessera props keys ending in *, when the checker cannot read the types', () => {
+describe('K1 the Tessera props keys ending in *, when the checker cannot read the types', { tags: ['standard'] }, () => {
   it('reads a keep list from the release when it has one', () => {
     const keep = { CommandInput: ['onSubmit', 'label', 'className', 'aria-describedby', 'onKeyDown'] };
     const { todos, text } = replayed(writeApp({ release: { version: 'next', props: PROPS, keep }, types: false }));

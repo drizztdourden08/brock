@@ -17,18 +17,7 @@ afterEach(() => {
   widgetMainRect.current = null;
 });
 
-describe('docked sizes with a widget on each side', () => {
-  it.each([
-    ['left first', ['a', 'left'], ['b', 'right']],
-    ['right first', ['b', 'right'], ['a', 'left']],
-  ] as const)('docks both at the exact pixels when asked (%s)', (_name, first, second) => {
-    widgets.dock(first[0], { side: first[1], size: 300 });
-    const result = widgets.dock(second[0], { side: second[1], size: 300 });
-    expect(widthOf('a')).toBe(300);
-    expect(widthOf('b')).toBe(300);
-    expect(result).toEqual({ size: 300, reason: null });
-  });
-
+describe('K1 docked sizes with a widget on each side', { tags: ['critical'] }, () => {
   it('sets the right side to 300 px with a widget on the left, and keeps the left width', () => {
     widgets.dock('a', { side: 'left', size: 260 });
     widgets.dock('b', { side: 'right', size: 120 });

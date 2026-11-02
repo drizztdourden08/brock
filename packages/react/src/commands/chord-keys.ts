@@ -16,7 +16,7 @@ const chordKeys = (chord: string, mac: boolean = isMac()): ShortcutKey[] => {
   const parsed = parseChord(chord, mac);
   if (parsed === null) return [];
   const caps = mac ? MODIFIER_CAPS.mac : MODIFIER_CAPS.other;
-  return [...heldModifiers(parsed).map((name) => caps[name]), keycapOf(parsed.key)];
+  return [...heldModifiers(parsed).map((name) => caps[name]), ...(parsed.with ?? []).map(keycapOf), keycapOf(parsed.key)];
 };
 
 export { chordKeys };

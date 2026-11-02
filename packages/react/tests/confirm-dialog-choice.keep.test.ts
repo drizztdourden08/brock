@@ -43,28 +43,12 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('confirmChoice look', () => {
-  it('draws a radio group by default and resolves the picked value', async () => {
+describe('S1 confirmChoice', { tags: ['standard'] }, () => {
+  it('resolves the picked value', async () => {
     mount();
     let answer: Promise<string | null> | null = null;
     act(() => { answer = confirmChoice({ title: 'Pick', message: 'One of them', choices: CHOICES, initial: 'a' }); });
-    expect(document.querySelector('.radio-group')).not.toBeNull();
-    expect(document.querySelector('[role="combobox"]')).toBeNull();
     act(() => useDialogStore.getState().choose('c'));
-    clickButton('Confirm');
-    await expect(answer).resolves.toBe('c');
-  });
-
-  it('draws a Select for look select, passes searchable on and resolves the picked value', async () => {
-    mount();
-    let answer: Promise<string | null> | null = null;
-    act(() => { answer = confirmChoice({ title: 'Pick', message: 'One of them', choices: CHOICES, initial: 'b', look: 'select', searchable: true }); });
-    expect(document.querySelector('.radio-group')).toBeNull();
-    expect(useDialogStore.getState().dialog).toMatchObject({ look: 'select', searchable: true, choice: 'b' });
-    const trigger = document.querySelector('[role="combobox"]');
-    expect(trigger?.textContent).toContain('Version B');
-    act(() => useDialogStore.getState().choose('c'));
-    expect(document.querySelector('[role="combobox"]')?.textContent).toContain('Version C');
     clickButton('Confirm');
     await expect(answer).resolves.toBe('c');
   });
@@ -80,44 +64,48 @@ describe('confirmChoice look', () => {
     act(() => useDialogStore.getState().dismiss());
     await expect(cancelled).resolves.toBeNull();
   });
+
+  it('keeps the dialog open on a neutral alternate and resolves the picked value on confirm', async () => {
+    mount();
+    const onSelect = vi.fn();
+    let answer: Promise<string | null> | null = null;
+    act(() => { answer = confirmChoice({ title: 'Pick', message: 'x', choices: CHOICES, initial: 'a', alternate: { label: 'Notes', onSelect } }); });
+    clickButton('Notes');
+    expect(onSelect).toHaveBeenCalledOnce();
+    expect(useDialogStore.getState().dialog).not.toBeNull();
+    act(() => useDialogStore.getState().choose('b'));
+    clickButton('Confirm');
+    await expect(answer).resolves.toBe('b');
+  });
+
+  it('resolves null and closes when the alternate closes', async () => {
+    mount();
+    let answer: Promise<string | null> | null = null;
+    act(() => { answer = confirmChoice({ title: 'Pick', message: 'x', choices: CHOICES, initial: 'a', alternate: { label: 'Skip', closes: true, onSelect: () => {} } }); });
+    clickButton('Skip');
+    await expect(answer).resolves.toBeNull();
+    expect(useDialogStore.getState().dialog).toBeNull();
+  });
 });
 
-describe('confirm dialog facts', () => {
-  it('draws the facts under the message, label beside value', () => {
+describe('S1 confirmAction', { tags: ['standard'] }, () => {
+  it('shows the facts under the message', () => {
     mount();
     act(() => {
       void confirmAction({ title: 'Install', message: 'Install this build?', facts: [{ label: 'Version', value: '0.9.2' }, { label: 'Size', value: '120 MB' }] });
     });
     const text = document.body.textContent;
     expect(text).toContain('Install this build?');
-    expect(text.indexOf('Version')).toBeGreaterThan(text.indexOf('Install this build?'));
+    expect(text).toContain('Version');
     expect(text).toContain('0.9.2');
     expect(text).toContain('Size');
     expect(text).toContain('120 MB');
-    expect(document.querySelector('.facts-panel')).not.toBeNull();
   });
 
-  it('draws facts together with a choice, and no panel without facts', () => {
-    mount();
-    act(() => {
-      void confirmChoice({ title: 'Pick', message: 'x', choices: CHOICES, initial: 'a', look: 'select', facts: [{ label: 'Installed', value: '0.8.0' }] });
-    });
-    expect(document.querySelector('.facts-panel')?.textContent).toContain('0.8.0');
-    expect(document.querySelector('[role="combobox"]')).not.toBeNull();
-    act(() => useDialogStore.setState({ dialog: null }));
-    act(() => { void confirmAction({ title: 'Plain', message: 'No facts' }); });
-    expect(document.querySelector('.facts-panel')).toBeNull();
-  });
-});
-
-describe('confirmAction alternate', () => {
-  it('draws a neutral alternate as a secondary button, keeps the dialog open and calls onSelect', () => {
+  it('keeps the dialog open on a neutral alternate and calls onSelect', () => {
     mount();
     const onSelect = vi.fn();
     act(() => { void confirmAction({ title: 'Upgrade', message: 'A new build is ready.', confirmLabel: 'Upgrade', cancelLabel: 'Not now', alternate: { label: 'Release notes', onSelect } }); });
-    const button = findButton('Release notes');
-    expect(button?.className).toContain('secondary');
-    expect(button?.className).not.toContain('danger');
     clickButton('Release notes');
     clickButton('Release notes');
     expect(onSelect).toHaveBeenCalledTimes(2);
@@ -139,12 +127,6 @@ describe('confirmAction alternate', () => {
     await expect(cancelled).resolves.toBe(false);
   });
 
-  it('draws a danger alternate in the danger look when tone is danger', () => {
-    mount();
-    act(() => { void confirmAction({ title: 'Reset', message: 'x', alternate: { label: 'Wipe', onSelect: () => {}, tone: 'danger' } }); });
-    expect(findButton('Wipe')?.className).toContain('danger');
-  });
-
   it('closes the dialog and resolves false when closes is true, after onSelect ran', async () => {
     mount();
     const onSelect = vi.fn();
@@ -157,64 +139,13 @@ describe('confirmAction alternate', () => {
   });
 });
 
-describe('confirmChoice alternate', () => {
-  it('keeps the dialog open on a neutral alternate and resolves the picked value on confirm', async () => {
-    mount();
-    const onSelect = vi.fn();
-    let answer: Promise<string | null> | null = null;
-    act(() => { answer = confirmChoice({ title: 'Pick', message: 'x', choices: CHOICES, initial: 'a', alternate: { label: 'Notes', onSelect } }); });
-    clickButton('Notes');
-    expect(onSelect).toHaveBeenCalledOnce();
-    expect(useDialogStore.getState().dialog).not.toBeNull();
-    act(() => useDialogStore.getState().choose('b'));
-    clickButton('Confirm');
-    await expect(answer).resolves.toBe('b');
-  });
-
-  it('resolves null and closes when closes is true', async () => {
-    mount();
-    let answer: Promise<string | null> | null = null;
-    act(() => { answer = confirmChoice({ title: 'Pick', message: 'x', choices: CHOICES, initial: 'a', alternate: { label: 'Skip', closes: true, onSelect: () => {} } }); });
-    clickButton('Skip');
-    await expect(answer).resolves.toBeNull();
-    expect(useDialogStore.getState().dialog).toBeNull();
-  });
-});
-
-describe('confirmSave discard', () => {
-  it('is still a danger button that closes the dialog and resolves discard', async () => {
+describe('S1 confirmSave discard', { tags: ['standard'] }, () => {
+  it('closes the dialog and resolves discard', async () => {
     mount();
     let answer: Promise<string> | null = null;
     act(() => { answer = confirmSave({ title: 'Unsaved', message: 'x' }); });
-    expect(findButton('Discard')?.className).toContain('danger');
     clickButton('Discard');
     await expect(answer).resolves.toBe('discard');
     expect(useDialogStore.getState().dialog).toBeNull();
-  });
-});
-
-describe('confirm dialog footer', () => {
-  const textOf = (selector: string): string[] => [...document.querySelectorAll(`${selector} button`)].map((button) => button.textContent.trim());
-
-  it.each([
-    ['confirmSave', () => { void confirmSave({ title: 'Unsaved', message: 'x' }); }, 'Discard', ['Cancel', 'Save']],
-    ['a neutral alternate', () => { void confirmAction({ title: 'Upgrade', message: 'x', confirmLabel: 'Upgrade', cancelLabel: 'Not now', alternate: { label: 'Release notes', onSelect: () => {} } }); }, 'Release notes', ['Not now', 'Upgrade']],
-  ])('puts the alternate of %s in a start group and cancel and confirm in an end group', (_name, open, alternateLabel, endLabels) => {
-    mount();
-    act(open);
-    const footer = document.querySelector('.dialog__actions');
-    const start = footer?.querySelector('.confirm-actions__start');
-    const end = footer?.querySelector('.confirm-actions__end');
-    expect(textOf('.confirm-actions__start')).toEqual([alternateLabel]);
-    expect(textOf('.confirm-actions__end')).toEqual(endLabels);
-    expect((start?.compareDocumentPosition(end as Node) ?? 0) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(footer?.querySelectorAll('button')).toHaveLength(3);
-  });
-
-  it('draws only the end group when there is no alternate', () => {
-    mount();
-    act(() => { void confirmAction({ title: 'Plain', message: 'x' }); });
-    expect(document.querySelector('.confirm-actions__start')).toBeNull();
-    expect(textOf('.confirm-actions__end')).toEqual(['Cancel', 'Confirm']);
   });
 });

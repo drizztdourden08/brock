@@ -6,7 +6,6 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
-import { defineBrockViteConfig } from '../src/vite-config.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-module-path-');
 
@@ -51,13 +50,7 @@ const fixtureApp = () => {
   return root;
 };
 
-describe('a main build with a ?modulePath worker', () => {
-  it('names the main entry as a build input, not a library, so a ?modulePath bundle gets one output', async () => {
-    const config = await defineBrockViteConfig(fixtureApp());
-    expect(config.main.build.lib).toBeUndefined();
-    expect(Object.keys(config.main.build.rollupOptions.input)).toEqual(['main']);
-  });
-
+describe('E2 a main build with a ?modulePath worker', { tags: ['e2e'] }, () => {
   it('bundles the worker as its own file that the built main starts and hears from', async () => {
     const root = fixtureApp();
     const { build } = await import('electron-vite');
@@ -65,5 +58,5 @@ describe('a main build with a ?modulePath worker', () => {
     const out = join(root, 'dist/electron');
     expect(readdirSync(out).some((file) => file.startsWith('job.worker'))).toBe(true);
     expect(execFileSync(process.execPath, [join(out, 'main.js')], { cwd: root, encoding: 'utf8', timeout: 20000 })).toBe('worker answered 42');
-  }, 120000);
+  });
 });

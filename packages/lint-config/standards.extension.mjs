@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind config */
 import { defineExtension } from '@drizztdourden08/standards';
+import { brockKnipPreprocessors } from './brock-knip-preprocessors.mjs';
 import { dataOnly } from './data-only-rule.mjs';
 import { verbatimSource } from './verbatim-source-rule.mjs';
 
@@ -26,7 +27,7 @@ const BROCK_DEFAULT_EXPORTS = [
 
 export default defineExtension({
   id: 'brock-lint-config',
-  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item, tour, toolbar and start-up prompt files, module entries, boot tasks and review steps, Tessera tokens',
+  description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item, tour, toolbar and start-up prompt files, module entries, boot tasks and review steps, Tessera tokens, the brock-build knip preprocessor',
   eslint: {
     plugins: { brock: { rules: { 'data-only': dataOnly, 'verbatim-source': verbatimSource } } },
     rules: { 'brock/data-only': 'error', 'brock/verbatim-source': 'error' },
@@ -39,4 +40,5 @@ export default defineExtension({
     },
   },
   stylelint: { options: { tokens: ['@drizztdourden08/tessera/tokens.css'] } },
+  knip: { preprocessors: brockKnipPreprocessors() },
 });

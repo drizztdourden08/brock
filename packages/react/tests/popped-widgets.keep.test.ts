@@ -24,7 +24,7 @@ const layout: WidgetLayout = {
 const gates = { definitions, developerToolsEnabled: true, contextActive: true, pageOpen: false, forcedIds: [], contentIds: definitions.map((d) => d.id) };
 const shownIds = (over: Partial<typeof gates>) => poppedShown(layout, { ...gates, ...over }).map((p) => p.id);
 
-describe('poppedShown', () => {
+describe('K1 poppedShown', { tags: ['critical'] }, () => {
   it('shows every popped widget that may pop out while every gate is open', () => {
     expect(shownIds({})).toEqual(['tools', 'radar']);
   });
@@ -45,7 +45,7 @@ describe('poppedShown', () => {
   });
 });
 
-describe('poppedWindows', () => {
+describe('K1 poppedWindows', { tags: ['critical'] }, () => {
   it('accepts only the close of the window it opened last', () => {
     poppedWindows.open({ id: 'tools' });
     expect(poppedWindows.isOpen('tools')).toBe(true);
@@ -58,7 +58,7 @@ describe('poppedWindows', () => {
   });
 });
 
-describe('the widget relay store', () => {
+describe('K1 the widget relay store', { tags: ['critical'] }, () => {
   it('appends log increments up to the limit', () => {
     const relay = useWidgetRelayStore.getState();
     relay.receive('log', [1, 2]);
@@ -67,7 +67,7 @@ describe('the widget relay store', () => {
   });
 });
 
-describe('relayWidgetSettings', () => {
+describe('K1 relayWidgetSettings', { tags: ['critical'] }, () => {
   const store = createSettingsStore<{ theme: string; volume: number }>({
     defaults: { theme: 'dark', volume: 1 }, load: () => Promise.resolve(null), save: () => Promise.resolve(),
   });

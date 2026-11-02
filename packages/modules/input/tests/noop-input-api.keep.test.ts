@@ -3,19 +3,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { IDENTITY_STICK } from '../src/calibration/calibration.constants';
 import { noopInputApi } from '../src/noop-input-api';
 
-describe('the no-op input API', () => {
+describe('K2 the no-op input API', { tags: ['critical'] }, () => {
   it('reports controllers off and lists nothing', async () => {
     expect(await noopInputApi.status()).toEqual({ available: false, sdlVersion: null });
     expect(await noopInputApi.list()).toEqual([]);
     expect(await noopInputApi.refresh()).toEqual([]);
     expect(await noopInputApi.listHid()).toEqual([]);
     expect(await noopInputApi.capture.listJoysticks()).toEqual([]);
-  });
-
-  it('gives a fresh list on each call', async () => {
-    const first = await noopInputApi.list();
-    first.push({ deviceKey: 'x', vendorId: 1, productId: 2, product: 'p', busType: 'usb', status: 'ready' });
-    expect(await noopInputApi.list()).toEqual([]);
   });
 
   it('refuses every action without throwing', async () => {

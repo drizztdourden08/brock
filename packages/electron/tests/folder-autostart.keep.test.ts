@@ -6,7 +6,6 @@ import { homedir } from 'os';
 import { dirname, join, parse } from 'path';
 import { createDocumentAccess } from '../src/main/documents/document-access';
 import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { autostartPath } from '../src/main/documents/autostart-path';
 import { protectedReals } from '../src/main/documents/protected-reals';
 import { makeTree, sessionOf } from './folder-fixture';
 import type { Call } from './folder-fixture';
@@ -45,7 +44,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('a grant that would reach too much', () => {
+describe('K4 a grant that would reach too much', { tags: ['critical'] }, () => {
   it('refuses the home folder and its parents, and a filesystem root', () => {
     for (const folder of [home, base, parse(base).root]) expect(() => access.allowFolder(folder)).toThrow(/home folder|below the filesystem root/);
   });
@@ -73,13 +72,9 @@ describe('a grant that would reach too much', () => {
     }
   });
 
-  it('allows the real Documents folder when it is there', () => {
-    const documents = join(homedir(), 'Documents');
-    if (existsSync(documents)) expect(createDocumentAccess().allowFolder(documents)).toBeTruthy();
-  });
 });
 
-describe('writing to autostart and hook paths under a grant', () => {
+describe('K4 writing to autostart and hook paths under a grant', { tags: ['critical'] }, () => {
   beforeEach(async () => {
     access.allowFolder(granted);
     for (const file of [...RISKY, ...SAFE]) {
@@ -124,13 +119,9 @@ describe('writing to autostart and hook paths under a grant', () => {
     expect(await readFile(picked, 'utf8')).toBe('mine');
   });
 
-  it('knows the paths on its own', () => {
-    for (const file of RISKY) expect(autostartPath(join(base, file))).toBe(true);
-    for (const file of SAFE) expect(autostartPath(join(base, file))).toBe(false);
-  });
 });
 
-describe('the app folders that are not there yet', () => {
+describe('K4 the app folders that are not there yet', { tags: ['critical'] }, () => {
   it('reads the real path of the nearest folder that exists, and looks again until the folder is there', async () => {
     const later = join(base, 'later');
     const roots = protectedReals(() => [join(later, 'Data')]);

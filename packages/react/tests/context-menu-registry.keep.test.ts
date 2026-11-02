@@ -21,7 +21,7 @@ afterEach(() => {
   useContextMenuStore.setState({ menus: {}, known: {} });
 });
 
-describe('listing every registered menu', () => {
+describe('S2 listing every registered menu', { tags: ['standard'] }, () => {
   it('lists a menu defined at module scope before any zone mounts, with its entries', () => {
     defineContextMenu('reg.static', ['reg.two', { label: 'Open', run: () => undefined }]);
     expect(find('reg.static')).toMatchObject({ mounted: false, commands: ['reg.two'], missing: ['reg.two'] });

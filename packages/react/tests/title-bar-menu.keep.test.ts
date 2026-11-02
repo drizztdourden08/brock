@@ -17,7 +17,7 @@ const MENU: MenuEntry[] = [
 
 const resolve = { openScreen: () => undefined };
 
-describe('withoutActionEntries', () => {
+describe('K1 withoutActionEntries', { tags: ['critical'] }, () => {
   it('drops the entries a title bar action holds and the submenus they leave empty', () => {
     expect(withoutActionEntries(MENU, ['report-bug', 'updater:check', 'search'])).toEqual([
       { key: 'home', label: 'Home', screen: 'settings' },
@@ -34,7 +34,7 @@ describe('withoutActionEntries', () => {
   });
 });
 
-describe('titleBarGroups', () => {
+describe('K1 titleBarGroups', { tags: ['critical'] }, () => {
   it('puts the trailing Credits, About and Quit in a group of their own, below where the bar adds its group, with a line above Quit', () => {
     const { groups, view } = titleBarGroups([...MENU.slice(0, -2), { key: 'credits', label: 'Credits', screen: 'credits' }, ...MENU.slice(-2)], resolve);
     expect(groups.map((group) => group.id)).toEqual(['menu', 'menu-end']);

@@ -69,7 +69,7 @@ const filteredPng = (rows: Uint8Array, width: number, height: number, channels: 
   return Buffer.concat([signature, chunk('IHDR', header), chunk('IDAT', deflateSync(raw)), chunk('IEND', new Uint8Array(0))]);
 };
 
-describe('the review PNG codec', () => {
+describe('K1 the review PNG codec', { tags: ['critical'] }, () => {
   it('reads back what it writes', () => {
     const source = image(7, 5);
     expect(decodePng(encodePng(source))).toEqual(source);
@@ -104,7 +104,7 @@ const optionsIn = (root: string): BaselineOptions => ({
   config: parseBaselineConfig(undefined),
 });
 
-describe('bless and compare', () => {
+describe('K1 bless and compare', { tags: ['critical'] }, () => {
   let root = '';
   let reviewDir = '';
   let options: BaselineOptions;
@@ -172,7 +172,7 @@ describe('bless and compare', () => {
   });
 });
 
-describe('a bless after a failed check', () => {
+describe('K1 a bless after a failed check', { tags: ['critical'] }, () => {
   it('writes nothing and names the failed checks, unless forced', async () => {
     const root = await mkdtemp(join(tmpdir(), 'brock-bless-'));
     const reviewDir = join(root, 'review');
@@ -190,7 +190,7 @@ describe('a bless after a failed check', () => {
   });
 });
 
-describe('readBaselineOptions', () => {
+describe('K1 readBaselineOptions', { tags: ['critical'] }, () => {
   const flags = createAutomationFlags();
 
   it('stays off without the review or a baseline flag', () => {

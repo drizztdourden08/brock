@@ -22,7 +22,7 @@ afterEach(() => {
   stop = null;
 });
 
-describe('tasksBeforeSettings', () => {
+describe('K1 tasksBeforeSettings', { tags: ['critical'] }, () => {
   it('names the app tasks with no settings in their after chain', () => {
     expect(tasksBeforeSettings(tasks)).toEqual(['welcome', 'loose']);
   });
@@ -32,7 +32,7 @@ describe('tasksBeforeSettings', () => {
   });
 });
 
-describe('watchSessionFills', () => {
+describe('K1 watchSessionFills', { tags: ['critical'] }, () => {
   it('warns when the profile reset wipes a filled session store, naming the suspects', () => {
     const store = createSessionStore<{ runs: string[] }>(() => ({ runs: [] }));
     const warn = vi.fn();

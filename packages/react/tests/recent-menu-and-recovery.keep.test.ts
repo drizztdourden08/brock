@@ -46,7 +46,7 @@ afterEach(() => {
   for (const fn of Object.values(documents)) fn.mockReset();
 });
 
-describe('the recent documents store', () => {
+describe('K3 the recent documents store', { tags: ['critical'] }, () => {
   it('loads the list and clears it', async () => {
     await useRecentDocumentsStore.getState().refresh();
     expect(useRecentDocumentsStore.getState().recent).toEqual([A, B]);
@@ -70,7 +70,7 @@ describe('the recent documents store', () => {
   });
 });
 
-describe('the Recent menu entry', () => {
+describe('S1 the Recent menu entry', { tags: ['standard'] }, () => {
   const mountMenu = (onOpen: (path: string) => void): { current: () => MenuItem } => {
     let latest: MenuItem | null = null;
     const Probe = () => {
@@ -112,7 +112,7 @@ describe('the Recent menu entry', () => {
   });
 });
 
-describe('the recoverable store', () => {
+describe('K3 the recoverable store', { tags: ['critical'] }, () => {
   it('lists the snapshots and restores the bytes of one', async () => {
     await useRecoverableStore.getState().refresh();
     expect(useRecoverableStore.getState().snapshots).toEqual([SNAP]);

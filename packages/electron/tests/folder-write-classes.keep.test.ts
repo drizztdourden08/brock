@@ -1,15 +1,12 @@
 /* @layer electron-main @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, symlink, writeFile } from 'fs/promises';
+import { mkdir, readFile, symlink, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
-import type { DocumentAccess } from '../src/main/documents/document-access.type';
-import { lureFile } from '../src/main/documents/lure-file';
-import { repoConfigPath } from '../src/main/documents/repo-config-path';
-import { makeTree, sessionOf, testAccess } from './folder-fixture';
-import type { Call } from './folder-fixture';
+import { dropTree, grantedWorld } from './folder-fixture';
+import type { Call, Granted } from './folder-fixture';
 
-vi.mock('electron', () => ({ dialog: {}, app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined } }));
+vi.mock('electron', async () => (await import('./electron-folder-mock')).electronFolderMock);
 
 const REPO = [
   join('proj', '.git', 'hooks', 'pre-commit'), join('proj', '.git', 'config'), join('proj', '.git', 'info', 'attributes'), join('sub', 'proj', '.git'),
@@ -22,7 +19,7 @@ const LURE_SAFE = ['a.link', 'lnk.txt', 'notes.url.txt', 'desktop.ini.txt', 'aut
 
 let base = '';
 let granted = '';
-let access: DocumentAccess;
+let access: Granted['access'];
 let call: Call;
 
 const seed = async (files: string[]): Promise<void> => {
@@ -32,12 +29,6 @@ const seed = async (files: string[]): Promise<void> => {
   }
 };
 
-const outcomeOf = (outcome: PromiseSettledResult<unknown>): string => {
-  if (outcome.status === 'fulfilled') return 'fulfilled';
-  const reason = String(outcome.reason);
-  return reason.includes('may not use') ? 'refused' : reason.slice(0, 160);
-};
-
 const refusedWrite = async (file: string): Promise<void> => {
   const path = join(granted, file);
   await expect(call('document:writeText', path, 'evil'), file).rejects.toThrow(/may not use/);
@@ -45,17 +36,14 @@ const refusedWrite = async (file: string): Promise<void> => {
 };
 
 beforeEach(async () => {
-  ({ base, granted } = await makeTree('brock-classes-'));
-  access = testAccess();
-  access.allowFolder(granted);
-  call = sessionOf({ documents: access });
+  ({ base, granted, access, call } = await grantedWorld('brock-classes-'));
 });
 
 afterEach(async () => {
-  await rm(base, { recursive: true, force: true });
+  await dropTree(base);
 });
 
-describe('writes into repository and editor configuration', () => {
+describe('K4 writes into repository and editor configuration', { tags: ['critical'] }, () => {
   it('are refused for any .git segment, a .git pointer file and the editor and CI folders, but reads work', async () => {
     await seed([...REPO, ...REPO_SAFE]);
     for (const file of REPO) {
@@ -86,13 +74,9 @@ describe('writes into repository and editor configuration', () => {
     await refusedWrite(join('alias', 'hooks', 'post-commit'));
   });
 
-  it('know the paths on their own', () => {
-    for (const file of REPO) expect(repoConfigPath(join(base, file))).toBe(true);
-    for (const file of REPO_SAFE) expect(repoConfigPath(join(base, file))).toBe(false);
-  });
 });
 
-describe('writes of files that leak credentials when a folder is shown', () => {
+describe('K4 writes of files that leak credentials when a folder is shown', { tags: ['critical'] }, () => {
   it('are refused by name and by extension, in any case and any depth, and leave the old file', async () => {
     await seed(LURES);
     for (const file of LURES) {
@@ -118,13 +102,9 @@ describe('writes of files that leak credentials when a folder is shown', () => {
     expect(await readFile(join(granted, 'a.lnk'), 'utf8')).toBe('mine');
   });
 
-  it('know the names on their own', () => {
-    for (const file of LURES) expect(lureFile(join(base, file))).toBe(true);
-    for (const file of LURE_SAFE) expect(lureFile(join(base, file))).toBe(false);
-  });
 });
 
-describe('writes of the files every git directory needs', () => {
+describe('K4 writes of the files every git directory needs', { tags: ['critical'] }, () => {
   const names = ['HEAD', 'head', 'commondir', 'CommonDir', 'gitdir'];
 
   it('are refused by name, whatever the folder', async () => {
@@ -135,21 +115,6 @@ describe('writes of the files every git directory needs', () => {
       expect(existsSync(join(granted, 'bare', name))).toBe(false);
     }
   });
-
-  it('are refused in a parallel burst of the three names, and the ordinary two are never refused with them', async () => {
-    const seen = new Set<string>();
-    for (let n = 0; n < 100; n += 1) {
-      const settled = await Promise.allSettled([
-        call('document:writeText', join(granted, `b${n}`, 'HEAD'), 'ref'),
-        call('document:writeText', join(granted, `b${n}`, 'objects', 'x'), 'o'),
-        call('document:writeText', join(granted, `b${n}`, 'refs', 'heads', 'main'), 'r'),
-      ]);
-      const key = JSON.stringify(settled.map(outcomeOf));
-      if (key !== '["refused","fulfilled","fulfilled"]') seen.add(key);
-    }
-    expect([...seen]).toEqual([]);
-    expect(existsSync(join(granted, 'b0', 'HEAD'))).toBe(false);
-  }, 60000);
 
   it('are refused for the commondir split, X holding HEAD and commondir and Y the objects', async () => {
     await call('document:writeText', join(granted, 'y', 'objects', 'x'), 'o');

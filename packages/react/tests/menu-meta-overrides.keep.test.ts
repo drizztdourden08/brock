@@ -48,7 +48,7 @@ const keys = (entries: readonly MenuEntry[]): string[] => entries.map((entry) =>
 const childrenOf = (entries: readonly MenuEntry[], key: string): MenuEntry[] =>
   entries.find((entry): entry is MenuItem => entry !== 'separator' && entry.key === key)?.children ?? [];
 
-describe('menu overrides from screen meta', () => {
+describe('K1 menu overrides from screen meta', { tags: ['critical'] }, () => {
   const menu = buildMenu(INPUT);
 
   it('renames a page in place', () => {
@@ -77,7 +77,7 @@ describe('menu overrides from screen meta', () => {
   });
 });
 
-describe('the review of the effective menu', () => {
+describe('K1 the review of the effective menu', { tags: ['critical'] }, () => {
   const { overrides } = resolveShellMenu(INPUT);
   const menu = buildMenu(INPUT);
   const drawn: Record<string, string[]> = {

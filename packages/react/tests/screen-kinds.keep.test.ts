@@ -60,7 +60,7 @@ const labelOf = (item: MenuItem): unknown => (item.children ? [item.label, label
 const labels = (items: readonly (MenuItem | 'separator')[] | undefined): unknown[] =>
   (items ?? []).map((item) => (item === 'separator' ? item : labelOf(item)));
 
-describe('base screen', () => {
+describe('K1 base screen', { tags: ['critical'] }, () => {
   it('becomes one screen drawn under the hubs, with no menu entry', () => {
     expect(tree.base).toMatchObject({ id: 'session', title: 'Session', layer: 'own', header: 'none' });
     const resolved = resolveScreenTree(tree, []);
@@ -74,7 +74,7 @@ describe('base screen', () => {
   });
 });
 
-describe('sub-pages', () => {
+describe('K1 sub-pages', { tags: ['critical'] }, () => {
   const sessions = pageOf(hubOf('multiworld'), 'sessions');
 
   it('hang under their page with a route path', () => {
@@ -117,13 +117,13 @@ describe('sub-pages', () => {
   });
 });
 
-describe('page header actions', () => {
+describe('K1 page header actions', { tags: ['critical'] }, () => {
   it('carry the primary action and the search field from meta', () => {
     expect(pageOf(hubOf('multiworld'), 'sessions').header).toMatchObject({ primary: { label: 'New session', open: 'new' }, search: { placeholder: 'Filter sessions' } });
   });
 });
 
-describe('menu placement from meta', () => {
+describe('K1 menu placement from meta', { tags: ['critical'] }, () => {
   const menu = deriveMenu(CONFIG, tree.hubs, tree.screens) as MenuItem[];
 
   it('nests pages under a path, creating the parents, in meta order', () => {
@@ -138,7 +138,7 @@ describe('menu placement from meta', () => {
   });
 });
 
-describe('screen state', () => {
+describe('K1 screen state', { tags: ['critical'] }, () => {
   it('keeps values per scope and hydrates them back', () => {
     const store = useScreenStateStore.getState();
     store.put('multiworld/sessions', 'filter', 'weekly');

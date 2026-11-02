@@ -22,7 +22,7 @@ class FakeField {
 
 const press = (target: unknown): boolean => clearTextField(target as EventTarget);
 
-describe('clearTextField (Esc in a text field)', () => {
+describe('K1 clearTextField (Esc in a text field)', { tags: ['critical'] }, () => {
   it('clears a non-empty text input on the first Esc and fires a bubbling input event', () => {
     const field = new FakeField('INPUT', 'multi', 'search');
     expect(press(field)).toBe(true);

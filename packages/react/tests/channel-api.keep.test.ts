@@ -12,7 +12,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('channelApi with ask channels', () => {
+describe('K2 channelApi with ask channels', { tags: ['critical'] }, () => {
   it('accepts a set that holds ask channels, since the renderer answers them and the preload never maps them', () => {
     const api = { addNote: vi.fn() };
     vi.stubGlobal('window', { api });

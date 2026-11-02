@@ -37,18 +37,18 @@ const resolverOf = (hook?: WidgetDisabledHook): ((definition: WidgetDef) => Widg
   return found.resolve;
 };
 
-describe('the widget disabled hook of WidgetHost', () => {
-  it('asks the app hook each render and answers Tessera per widget', () => {
+describe('K1 the widget disabled hook of WidgetHost', () => {
+  it('asks the app hook each render and answers Tessera per widget', { tags: ['standard'] }, () => {
     const resolve = resolverOf(useEngineDisabled);
     expect(resolve(ROOM)).toEqual(ENGINE_OFF);
     expect(resolve(NOTES)).toBeNull();
   });
 
-  it('leaves every widget enabled without a hook', () => {
+  it('leaves every widget enabled without a hook', { tags: ['standard'] }, () => {
     expect(resolverOf()(ROOM)).toBeNull();
   });
 
-  it('opens the setting a disabled widget names: a route, then the row after #', () => {
+  it('opens the setting a disabled widget names: a route, then the row after #', { tags: ['critical'] }, () => {
     openSettingTarget('game/engine#engine.autoStart');
     openSettingTarget('settings');
     expect(opened.routes).toEqual(['game/engine', 'settings']);

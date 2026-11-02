@@ -25,7 +25,7 @@ afterEach(() => {
   askWithin.mockReset();
 });
 
-describe('the main window close hold without a guard', () => {
+describe('K1 the main window close hold without a guard', { tags: ['critical'] }, () => {
   it('closes at once and asks nothing when the renderer has no guard', () => {
     const { win, attempt } = createCloseWindow();
     holdClose(win);
@@ -52,7 +52,7 @@ describe('the main window close hold without a guard', () => {
   });
 });
 
-describe('the main window close hold with a guard', () => {
+describe('K1 the main window close hold with a guard', { tags: ['critical'] }, () => {
   it('holds the close, pings, asks the renderer without a deadline, and closes on quit', async () => {
     answers(() => Promise.resolve('quit'));
     const { win, raw, attempt } = guardedWindow();

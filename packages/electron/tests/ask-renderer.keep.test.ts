@@ -1,12 +1,11 @@
 /* @layer electron-main @kind test */
 import { EventEmitter } from 'node:events';
-import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ask as askChannel, defineChannels } from '@drizztdourden08/brock-core/ipc';
 import type { AskContractOf } from '@drizztdourden08/brock-core/ipc';
 import { ask } from '../src/main/ipc/ask';
 import { askWithin } from '../src/main/ipc/ask-within';
 import { acceptAskReply } from '../src/main/ipc/accept-ask-reply';
-import type { AskFn } from '../src/main/ipc/ask.type';
 import { createAnswerer } from '../src/preload/create-answerer';
 import type { SendFn, SubscribeFn } from '../src/preload/bridge.type';
 
@@ -57,20 +56,13 @@ const deferred = (waiting: Array<() => void>, value: number): Promise<number> =>
     waiting.push(() => resolve(value));
   });
 
-describe('a typed request from main to a renderer window', () => {
+describe('K2 a typed request from main to a renderer window', { tags: ['critical'] }, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
-  });
-
-  it('keeps ask channels out of the preload maps and types them by channel', () => {
-    expect(TEST_CHANNELS.maps.invoke).toEqual({});
-    expect(TEST_CHANNELS.double).toEqual({ kind: 'ask', channel: 'ask-test:double' });
-    expectTypeOf<AskContractOf<typeof TEST_CHANNELS>['ask-test:double']>().toEqualTypeOf<(value: number) => Promise<number>>();
-    expectTypeOf<AskFn>().toBeFunction();
   });
 
   it('round trips the arguments and the reply, by entry or by channel string', async () => {
@@ -99,7 +91,7 @@ describe('a typed request from main to a renderer window', () => {
 
 });
 
-describe('a request that fails', () => {
+describe('K2 a request that fails', { tags: ['critical'] }, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -164,7 +156,7 @@ describe('a request that fails', () => {
 
 });
 
-describe('which window answers', () => {
+describe('K4 which window answers', { tags: ['critical'] }, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

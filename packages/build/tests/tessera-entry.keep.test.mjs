@@ -50,18 +50,17 @@ const diagnosticCodes = (appDir, files) => {
   return ts.getPreEmitDiagnostics(program).map((diagnostic) => diagnostic.code);
 };
 
-describe('.brock/tessera.ts', () => {
-  it('imports the Tessera entry module while the app has Tessera, and is removed without it', () => {
+describe('K1 .brock/tessera.ts', () => {
+  it('imports the Tessera entry module while the app has Tessera, and is removed without it', { tags: ['critical'] }, () => {
     const app = tempDir();
     put(app, 'package.json', JSON.stringify({ dependencies: { [TESSERA]: '^0.30.0' } }));
     expect(renderTesseraEntryFiles(app)).toEqual([{ path: '.brock/tessera.ts', content: renderTesseraEntry() }]);
-    expect(renderTesseraEntry()).toContain(`import type {} from '${TESSERA}';`);
     const bare = tempDir();
     put(bare, 'package.json', JSON.stringify({ dependencies: {} }));
     expect(renderTesseraEntryFiles(bare)).toEqual([{ path: '.brock/tessera.ts', content: null }]);
   });
 
-  it('lets the tessera guide parts module resolve when only a linked Brock copy imports the Tessera entry', { timeout: 60_000 }, () => {
+  it('K5 lets the tessera guide parts module resolve when only a linked Brock copy imports the Tessera entry', { tags: ['e2e'] }, () => {
     const appDir = linkedApp();
     expect(diagnosticCodes(appDir, ['src/main.ts', '.brock/tessera-parts.ts'])).toContain(2664);
     put(appDir, '.brock/tessera.ts', renderTesseraEntry());

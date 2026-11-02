@@ -47,7 +47,7 @@ beforeEach(() => {
   views.patches = [];
 });
 
-describe('useVolumeStore on its own', () => {
+describe('K1 useVolumeStore on its own', { tags: ['critical'] }, () => {
   it('keeps the level between 0 and 1 and toggles mute', () => {
     const { setValue, toggleMute } = useVolumeStore.getState();
     setValue(1.5);
@@ -87,7 +87,7 @@ describe('useVolumeStore on its own', () => {
   });
 });
 
-describe('a volume binding', () => {
+describe('K1 a volume binding', { tags: ['critical'] }, () => {
   const binding = (start: VolumeLevel) => {
     let level = start;
     const listeners = new Set<() => void>();
@@ -121,7 +121,7 @@ describe('a volume binding', () => {
   });
 });
 
-describe('volumeFromSettings', () => {
+describe('K1 volumeFromSettings', { tags: ['critical'] }, () => {
   it('moves the title bar item and the app settings together, both ways', () => {
     const settings = settingsStore();
     const stop = bindVolume(volumeFromSettings({ value: 'audio.master', muted: 'audio.muted', max: 100 })(settings));

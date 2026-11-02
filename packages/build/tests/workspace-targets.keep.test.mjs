@@ -7,7 +7,7 @@ import { importSpecifiers } from '../src/testing/import-specifiers.mjs';
 
 const ROOT = resolve('/repo');
 
-describe('electronAppDirs', () => {
+describe('K1 electronAppDirs', { tags: ['critical'] }, () => {
   it('lists the app folder of every electron target, once each', () => {
     const workspace = {
       targets: {
@@ -29,7 +29,7 @@ describe('electronAppDirs', () => {
   });
 });
 
-describe('importSpecifiers', () => {
+describe('K1 importSpecifiers', { tags: ['critical'] }, () => {
   it('finds static, dynamic and require imports once each', () => {
     const source = [
       'import { app } from "electron";',

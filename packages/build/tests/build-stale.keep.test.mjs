@@ -44,7 +44,7 @@ const touch = (root, rel) => {
   age(join(root, rel), 1);
 };
 
-describe('buildStaleReason', () => {
+describe('K1 buildStaleReason', { tags: ['critical'] }, () => {
   it('passes a build newer than every source, whatever node_modules or .brock hold', () => {
     const root = builtApp(tempRoot());
     touch(root, 'node_modules/x/index.js');

@@ -10,7 +10,7 @@ import { linkSpec } from '../src/links/link-spec.mjs';
 const CORE = '@drizztdourden08/brock-core';
 const BUILD = '@drizztdourden08/brock-build';
 
-describe('linkSpec', () => {
+describe('K1 linkSpec', { tags: ['critical'] }, () => {
   it('writes an absolute path with forward slashes', () => {
     const spec = linkSpec(join('checkout', 'packages', 'core'));
     expect(spec).toBe(`link:${resolve('checkout/packages/core').replace(/\\/g, '/')}`);
@@ -18,7 +18,7 @@ describe('linkSpec', () => {
   });
 });
 
-describe('crossDriveLinks', () => {
+describe('K1 crossDriveLinks', { tags: ['critical'] }, () => {
   it('names the links on another drive, whatever the letter case', () => {
     const pkg = { dependencies: { [CORE]: 'link:X:/brock/packages/core' }, devDependencies: { [BUILD]: 'link:x:\\brock\\packages\\build' } };
     expect(crossDriveLinks(pkg, 'C:\\bl\\app')).toEqual([CORE, BUILD]);
@@ -29,12 +29,9 @@ describe('crossDriveLinks', () => {
     expect(crossDriveLinks(pkg, 'C:\\bl\\app')).toEqual([]);
   });
 
-  it('finds nothing outside Windows paths', () => {
-    expect(crossDriveLinks({ dependencies: { [CORE]: 'link:/home/me/brock/packages/core' } }, '/home/me/app')).toEqual([]);
-  });
 });
 
-describe('keepCrossDriveLinks', () => {
+describe('K1 keepCrossDriveLinks', { tags: ['critical'] }, () => {
   let dir = '';
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 

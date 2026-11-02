@@ -19,7 +19,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('trash', () => {
+describe('K4 trash', { tags: ['critical'] }, () => {
   it('moves a file, an empty folder and a folder with content to the trash', async () => {
     const { access, granted, trashed } = world;
     const file = await put(join(granted, 'a.txt'));
@@ -80,7 +80,7 @@ describe('trash', () => {
 
 });
 
-describe('trash and the app folders', () => {
+describe('K4 trash and the app folders', { tags: ['critical'] }, () => {
   it('refuses the app folders, and a folder that holds them', async () => {
     const { access, appDir, trashed } = world;
     await expect(access.trash(appDir)).rejects.toThrow(/holds one of the app's own folders|may not be changed/);

@@ -102,11 +102,10 @@ const isConsumer = (status, cwd) => status.hook || status.consumers.some((entry)
 const versionNeeded = (spec, built) => (EXACT.test(spec) ? spec.replace(/^v/, '') : built);
 
 /**
- * @param {{ exec: Function, cwd: string, status: { builds: object[] } }} input
- * @returns {{ name: string, version: string }[]} the moved packages this repo depends on
+ * @param {{ manifests: object[], status: { builds: object[] } }} input
+ * @returns {{ name: string, version: string }[]} the moved packages these manifests depend on
  */
-const neededVersions = ({ exec, cwd, status }) => {
-  const manifests = manifestsOf(exec, cwd);
+const neededIn = ({ manifests, status }) => {
   const own = new Set(manifests.map((manifest) => manifest.name));
   const built = new Map(status.builds.map((build) => [build.name, build.version]));
   const needs = new Map();
@@ -119,4 +118,10 @@ const neededVersions = ({ exec, cwd, status }) => {
   return [...needs.values()];
 };
 
-export { isConsumer, localpkgCall, localpkgStatus, neededVersions, resolveBinary };
+/**
+ * @param {{ exec: Function, cwd: string, status: { builds: object[] } }} input
+ * @returns {{ name: string, version: string }[]} the moved packages this repo depends on
+ */
+const neededVersions = ({ exec, cwd, status }) => neededIn({ manifests: manifestsOf(exec, cwd), status });
+
+export { isConsumer, localpkgCall, localpkgStatus, neededIn, neededVersions, resolveBinary };

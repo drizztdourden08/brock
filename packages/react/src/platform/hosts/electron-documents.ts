@@ -30,6 +30,7 @@ const createElectronDocuments = (): DocumentsPort => {
     rememberedFolders: () => withProfile([], (profileId) => api.documentRememberedFolders(profileId)),
     regrant: (path) => needProfile((profileId) => api.documentRegrant(profileId, path)),
     forgetFolder: (path) => withProfile(false, (profileId) => api.documentForgetFolder(profileId, path)),
+    canWrite: (folder) => api.documentCanWrite(folder),
     list: (folder, options) => api.documentList(folder, options),
     read: async (path) => new Uint8Array(await api.documentRead(path)),
     readText: (path) => api.documentReadText(path),

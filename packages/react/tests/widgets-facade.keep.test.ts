@@ -31,7 +31,7 @@ afterEach(() => {
   widgetMainRect.current = null;
 });
 
-describe('widgets.list', () => {
+describe('K2 widgets.list', { tags: ['critical'] }, () => {
   it('lists every registered widget with plain facts, closed ones with nothing placed', () => {
     expect(widgets.list().map((each) => each.id)).toEqual(['a', 'b', 'c', 'f', 's']);
     expect(entry('a')).toEqual({
@@ -61,7 +61,7 @@ describe('widgets.list', () => {
   });
 });
 
-describe('widgets.dock', () => {
+describe('K2 widgets.dock', { tags: ['critical'] }, () => {
   it('docks to each side, opening a closed widget', () => {
     for (const side of ['left', 'right', 'top', 'bottom'] as const) {
       widgets.dock('a', { side });
@@ -88,7 +88,7 @@ describe('widgets.dock', () => {
   });
 });
 
-describe('widgets.float', () => {
+describe('K2 widgets.float', { tags: ['critical'] }, () => {
   it('floats a docked widget at the rect', () => {
     widgets.dock('a', { side: 'left' });
     widgets.float('a', { x: 40, y: 30, width: 400, height: 260 });
@@ -101,7 +101,7 @@ describe('widgets.float', () => {
   });
 });
 
-describe('widgets.resize', () => {
+describe('K2 widgets.resize', { tags: ['critical'] }, () => {
   it('resizes a docked widget by pixels', () => {
     widgets.dock('a', { side: 'left', size: 200 });
     widgets.resize('a', 420);
@@ -126,7 +126,7 @@ describe('widgets.resize', () => {
   });
 });
 
-describe('widgets.focus', () => {
+describe('K2 widgets.focus', { tags: ['critical'] }, () => {
   beforeEach(() => {
     store().setPreset(TABBED);
     store().reset();
@@ -149,7 +149,7 @@ describe('widgets.focus', () => {
   });
 });
 
-describe('widgets.presets and widgets.applyPreset', () => {
+describe('K2 widgets.presets and widgets.applyPreset', { tags: ['critical'] }, () => {
   const COLUMN = defineLayoutPreset({ rows: [['a', 'main', 'b']] });
 
   it('lists the app preset as default and the registered ones, and applies each', () => {
@@ -171,7 +171,7 @@ describe('widgets.presets and widgets.applyPreset', () => {
   });
 });
 
-describe('widgets.subscribe', () => {
+describe('K2 widgets.subscribe', { tags: ['critical'] }, () => {
   it('sends a fresh snapshot when the layout changes, and stops after unsubscribe', () => {
     const listener = vi.fn();
     const stop = widgets.subscribe(listener);
@@ -194,7 +194,7 @@ describe('widgets.subscribe', () => {
   });
 });
 
-describe('unknown ids', () => {
+describe('K2 unknown ids', { tags: ['critical'] }, () => {
   it('are rejected by every call that takes one', () => {
     const calls = [
       () => widgets.dock('zzz', { side: 'left' }),

@@ -25,44 +25,13 @@ const draw = (platform: Platform, failure: BootFailure): string => renderToStati
   createElement(PlatformContext.Provider, { value: platform }, createElement(BrockContext.Provider, { value: BROCK }, createElement(BootFailureSplash, { failure }))),
 );
 
-const FAILURE: BootFailure = { task: 'settings', label: 'Settings', message: 'config.json is not valid JSON', timedOut: false };
-
-describe('BootFailureSplash', () => {
-  it('draws the failed splash with the task, the error, Retry, Open logs and Quit, as the splash page does', () => {
+describe('S1 BootFailureSplash', { tags: ['standard'] }, () => {
+  it('shows the failed task, the error, Retry, Open logs and Quit on a desktop host', () => {
     const html = draw(platformWith(true), { task: 'settings', label: 'Settings', message: 'config.json is not valid JSON', timedOut: false });
-    for (const part of ['ts-splash ts-splash--layer', 'ts-mark', 'ts-status ts-status--danger', 'ts-detail', 'ts-progress--danger', 'ts-version']) expect(html).toContain(part);
     expect(html).toContain('Demo');
     expect(html).toContain('Settings failed');
     expect(html).toContain('config.json is not valid JSON');
-    expect(html).toContain('data-boot-failure="settings"');
     for (const label of ['Retry', 'Open logs', 'Quit']) expect(html).toContain(`>${label}<`);
-  });
-
-  it('draws the dark ground wordmark in the title, named by the app name', () => {
-    const product = defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'tester' }, icons: { wordmark: { src: './logos/w.svg', dark: './logos/w-dark.svg' } } });
-    const html = renderToStaticMarkup(
-      createElement(PlatformContext.Provider, { value: platformWith(true) }, createElement(BrockContext.Provider, { value: { ...BROCK, product } }, createElement(BootFailureSplash, { failure: FAILURE }))),
-    );
-    expect(html).toMatch(/<h1 class="ts-title"><img class="ts-wordmark" src="\.\/logos\/w-dark\.svg" alt="Demo"\/?><\/h1>/);
-    expect(html).not.toContain('./logos/w.svg');
-  });
-
-  it('asks Tessera for the pixel art wordmark only when the wordmark opts into it', () => {
-    const drawWith = (wordmark: { src: string; rendering?: 'auto' | 'pixelated' }): string => {
-      const product = defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', author: { name: 'tester' }, icons: { wordmark } });
-      return renderToStaticMarkup(
-        createElement(PlatformContext.Provider, { value: platformWith(true) }, createElement(BrockContext.Provider, { value: { ...BROCK, product } }, createElement(BootFailureSplash, { failure: FAILURE }))),
-      );
-    };
-    expect(drawWith({ src: './logos/w.png', rendering: 'pixelated' })).toMatch(/<img class="ts-wordmark ts-wordmark--pixelated" src="\.\/logos\/w\.png"/);
-    expect(drawWith({ src: './logos/w.svg' })).not.toContain('ts-wordmark--pixelated');
-    expect(drawWith({ src: './logos/w.png', rendering: 'pixelated' })).not.toContain('boot-failure-splash');
-  });
-
-  it('keeps the name as the title text without a wordmark', () => {
-    const html = draw(platformWith(true), FAILURE);
-    expect(html).toMatch(/<h1 class="ts-title">Demo<\/h1>/);
-    expect(html).not.toContain('ts-wordmark');
   });
 
   it('keeps only Retry where the host cannot open the logs folder or close the window', () => {

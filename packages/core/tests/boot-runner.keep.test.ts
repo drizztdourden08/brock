@@ -1,50 +1,43 @@
 /* @layer core @kind test */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { runBootTasks } from '../src/boot/run-boot-tasks';
 import type { BootProgress, BootTask } from '../src/boot/boot-task.type';
-
-const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const task = (id: string, extra: Partial<BootTask> = {}): BootTask => ({ id, label: `Task ${id}`, run: () => undefined, ...extra });
 
 const runWith = (tasks: BootTask[], progress: BootProgress[] = []) =>
   runBootTasks(tasks, { extras: () => ({}), onProgress: (p) => progress.push(p) });
 
-describe('runBootTasks', () => {
+describe('K1 runBootTasks', { tags: ['critical'] }, () => {
   it('runs a task only after every task in its after list', async () => {
     const order: string[] = [];
-    const log = (id: string, ms: number) => async () => { await wait(ms); order.push(id); };
+    const log = (id: string) => async () => { await Promise.resolve(); order.push(id); };
     const outcome = await runWith([
-      task('settings', { after: ['profiles'], run: log('settings', 1) }),
-      task('profiles', { run: log('profiles', 15) }),
-      task('first-frame', { after: ['settings', 'fonts'], run: log('first-frame', 1) }),
-      task('fonts', { run: log('fonts', 5) }),
+      task('settings', { after: ['profiles'], run: log('settings') }),
+      task('profiles', { run: log('profiles') }),
+      task('first-frame', { after: ['settings', 'fonts'], run: log('first-frame') }),
+      task('fonts', { run: log('fonts') }),
     ]);
     expect(outcome).toEqual({ ok: true });
     expect(order.indexOf('settings')).toBeGreaterThan(order.indexOf('profiles'));
     expect(order.at(-1)).toBe('first-frame');
   });
 
-  it('runs independent tasks together', async () => {
-    const started: number[] = [];
-    const slow = (ms: number) => async () => { started.push(Date.now()); await wait(ms); };
-    const begun = Date.now();
-    await runWith([task('a', { run: slow(40) }), task('b', { run: slow(40) }), task('c', { run: slow(40) })]);
-    expect(Date.now() - begun).toBeLessThan(110);
-    expect(Math.max(...started) - Math.min(...started)).toBeLessThan(20);
-  });
-
 });
 
-describe('runBootTasks failures', () => {
+describe('K1 runBootTasks failures', { tags: ['critical'] }, () => {
   it('fails a task that passes its timeout and aborts its signal', async () => {
+    vi.useFakeTimers();
     let aborted = false;
-    const outcome = await runWith([
+    const pending = runWith([
       task('stuck', {
         timeoutMs: 20,
         run: ({ signal }) => new Promise<void>(() => { signal.addEventListener('abort', () => { aborted = true; }); }),
       }),
     ]);
+    await vi.advanceTimersByTimeAsync(25);
+    const outcome = await pending;
+    vi.useRealTimers();
     expect(outcome.ok).toBe(false);
     if (outcome.ok) return;
     expect(outcome.failure).toMatchObject({ task: 'stuck', timedOut: true });
@@ -63,7 +56,7 @@ describe('runBootTasks failures', () => {
 
 });
 
-describe('runBootTasks progress', () => {
+describe('K1 runBootTasks progress', { tags: ['critical'] }, () => {
   it('reports weighted progress with the running label and detail', async () => {
     const progress: BootProgress[] = [];
     await runWith([

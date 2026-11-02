@@ -29,7 +29,7 @@ afterEach(() => {
   roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true }));
 });
 
-describe('a removed member such as Text.CodeBlock', () => {
+describe('K1 a removed member such as Text.CodeBlock', { tags: ['standard'] }, () => {
   it('leaves Text alone where the file never reaches Text.CodeBlock', () => {
     const todos = replayOver("import { Text } from '@drizztdourden08/tessera/primitives';\nexport const View = () => <Text>hi</Text>;\n");
     expect(todos).toEqual([]);

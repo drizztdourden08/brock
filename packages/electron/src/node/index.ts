@@ -10,3 +10,6 @@ export { createNodeFileStore } from '../main/files/node-file-store';
 export type { NodeFileStoreOptions } from '../main/files/node-file-store.type';
 export { createDataDomains } from './create-node-data-domains';
 export type { DataDomains, DomainFiles } from '../main/storage/domain-files.type';
+export { recoveryDir } from './recovery-dir';
+export { listRecoverySnapshots } from './list-recovery-snapshots';
+export { SNAPSHOT_EXT } from '../main/documents/recovery-snapshots.constants';

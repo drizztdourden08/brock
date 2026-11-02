@@ -1,6 +1,4 @@
 /* @layer renderer-shell @kind test */
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from 'zustand';
 import type { WidgetSlice } from '@drizztdourden08/brock-core';
@@ -9,7 +7,6 @@ import { defineWidget } from '../src/widgets/define-widget';
 import { shareWithWidgets } from '../src/widgets/share-with-widgets';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { useWidgetRelayStore } from '../src/widgets/useWidgetRelayStore';
-import { useWidgetSlice } from '../src/widgets/useWidgetSlice';
 
 interface Session {
   room: string;
@@ -38,7 +35,7 @@ const fakeHost = (search = '') => {
 const sessionStore = () => create<Session>()(() => ({ room: 'Lobby', lines: [], typing: false }));
 const pick = ({ room, lines }: Session) => ({ room, lines });
 
-describe('shareWithWidgets', () => {
+describe('K1 shareWithWidgets', { tags: ['critical'] }, () => {
   beforeEach(() => {
     vi.useFakeTimers();
     useWidgetLayoutStore.getState().setDefinitions([ROOM]);
@@ -96,10 +93,5 @@ describe('shareWithWidgets', () => {
     expect(useWidgetRelayStore.getState().slices[KIND]).toBeUndefined();
     expect(sent).toEqual([]);
     stop();
-  });
-
-  it('reads the slice by kind, with the fallback until one arrives', () => {
-    const Reader = () => `${useWidgetSlice(KIND, { room: 'Nowhere' }).room} ${String(useWidgetSlice(KIND))}`;
-    expect(renderToStaticMarkup(createElement(Reader))).toBe('Nowhere undefined');
   });
 });

@@ -38,19 +38,19 @@ const knipFrom = (dir) => {
 afterEach(cleanUp);
 
 describe('brock knip from an app folder in a workspace', () => {
-  it('is as clean as the run from the root, with the test entries and test-only exports', () => {
+  it('E2 is as clean as the run from the root, with the test entries and test-only exports', { tags: ['e2e'] }, () => {
     const root = workspace();
     expect(knipFrom(root)).toEqual({ status: 0, files: [] });
     expect(knipFrom(join(root, 'apps', 'desk'))).toEqual({ status: 0, files: [] });
-  }, 60000);
+  });
 
-  it('still reports an unused file of that app', () => {
+  it('E2 still reports an unused file of that app', { tags: ['e2e'] }, () => {
     const root = workspace();
     writeFileSync(join(root, 'apps', 'desk', 'src', 'orphan.mjs'), 'export const orphan = 1;\n');
     expect(knipFrom(join(root, 'apps', 'desk')).files).toEqual(['apps/desk/src/orphan.mjs']);
-  }, 60000);
+  });
 
-  it('scopes the run to the member the config names, and leaves other folders and an own scope alone', () => {
+  it('K1 scopes the run to the member the config names, and leaves other folders and an own scope alone', { tags: ['critical'] }, () => {
     const root = workspace();
     const app = join(root, 'apps', 'desk');
     expect(knipScope(app, ['--debug'])).toEqual({ rootDir: root, args: ['--workspace', 'apps/desk', '--debug'] });

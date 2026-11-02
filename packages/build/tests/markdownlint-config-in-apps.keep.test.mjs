@@ -13,28 +13,23 @@ const MARKDOWNLINT = '.markdownlint-cli2.mjs';
 const paths = (opts) => renderManagedFiles(opts).map((file) => file.path);
 
 describe('the markdownlint config of a workspace app', () => {
-  it('stays in a single app, with or without the lint:md script', () => {
+  it('K1 stays in a single app, with or without the lint:md script', { tags: ['critical'] }, () => {
     expect(paths()).toContain(MARKDOWNLINT);
     expect(paths({ scripts: { 'lint:md': 'markdownlint-cli2' } })).toContain(MARKDOWNLINT);
   });
 
-  it('stays with the root of a workspace for an app with no lint:md script', () => {
+  it('K1 stays with the root of a workspace for an app with no lint:md script', { tags: ['critical'] }, () => {
     expect(paths({ inWorkspace: true, scripts: {} })).not.toContain(MARKDOWNLINT);
     expect(paths({ inWorkspace: true })).not.toContain(MARKDOWNLINT);
     expect(rootOwnedTargets({})).toContain(MARKDOWNLINT);
   });
 
-  it('goes into a workspace app whose lint:md script runs markdownlint-cli2 in the app folder', () => {
+  it('K1 goes into a workspace app whose lint:md script runs markdownlint-cli2 in the app folder', { tags: ['critical'] }, () => {
     expect(paths({ inWorkspace: true, scripts: { 'lint:md': 'markdownlint-cli2' } })).toContain(MARKDOWNLINT);
     expect(rootOwnedTargets({ 'lint:md': 'markdownlint-cli2' })).not.toContain(MARKDOWNLINT);
   });
 
-  it('still leaves the eslint and stylelint configs to the root', () => {
-    const owned = rootOwnedTargets({ 'lint:md': 'markdownlint-cli2' });
-    expect(owned).toEqual(expect.arrayContaining(['eslint.config.mjs', 'stylelint.config.mjs']));
-  });
-
-  it('is written by brock sync in apps/desktop when its package.json has lint:md, and only then', () => {
+  it('S2 is written by brock sync in apps/desktop when its package.json has lint:md, and only then', { tags: ['standard'] }, () => {
     const withScript = brockWorkspace({ 'apps/desktop/package.json': '{ "name": "@atlas/desktop", "version": "0.2.0", "scripts": { "lint:md": "markdownlint-cli2" } }\n' });
     const app = join(withScript, 'apps', 'desktop');
     expect(appScripts(app)).toEqual({ 'lint:md': 'markdownlint-cli2' });

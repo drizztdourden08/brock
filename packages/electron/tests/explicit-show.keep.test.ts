@@ -80,7 +80,7 @@ afterEach(() => {
   mainWindowRef.current = null;
 });
 
-describe('an explicit ctx.window.show() on a hidden automation window', () => {
+describe('K1 an explicit ctx.window.show() on a hidden automation window', { tags: ['critical'] }, () => {
   it('opens a window that is on screen and closes the off screen one', async () => {
     const hidden = stub();
     keepOffScreen(asWindow(hidden));
@@ -131,7 +131,7 @@ describe('an explicit ctx.window.show() on a hidden automation window', () => {
   });
 });
 
-describe('automation launches that never call show()', () => {
+describe('K1 automation launches that never call show()', { tags: ['critical'] }, () => {
   it('present a headless window without moving it or showing it natively', () => {
     const win = stub();
     placeHiddenWindow(asWindow(win), planOf(true), false)();
@@ -159,7 +159,7 @@ describe('automation launches that never call show()', () => {
   });
 });
 
-describe('show() on a window that was never kept off screen', () => {
+describe('K1 show() on a window that was never kept off screen', { tags: ['critical'] }, () => {
   it('takes the ordinary path and opens nothing', async () => {
     const visible = stub();
     Object.assign(visible, { isVisible: (): boolean => false, isMinimized: (): boolean => false, focus: (): void => { visible.calls.push('focus'); } });

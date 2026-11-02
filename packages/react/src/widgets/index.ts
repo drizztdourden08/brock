@@ -4,6 +4,7 @@ export { registerWidgets } from './register-widgets';
 export { widgetsFromFiles } from './widgets-from-files';
 export { widgets } from './widgets';
 export { layout } from './layout-facade';
+export { useFocusMode } from './useFocusMode';
 export { defineWorkspace, registerWorkspaces, workspaces, useWorkspaceMenuEntries, buildWorkspaceMenuEntries } from './workspaces';
 export type { WorkspaceDef, WorkspaceListener, WorkspaceSnapshot } from './workspaces';
 export { widgetSettingsTabs } from './widget-settings-tabs';
@@ -13,6 +14,8 @@ export type { WidgetDockOptions, WidgetFloatRect, WidgetListener, WidgetSized, W
 export { shareWithWidgets } from './share-with-widgets';
 export { useWidgetSlice } from './useWidgetSlice';
 export { useWidgetId } from './useWidgetId';
+export { activeWidget } from './active-widget/active-widget';
+export { useActiveWidget } from './active-widget/useActiveWidget';
 export { keepsWidgetFocus } from './keeps-widget-focus';
 export { WIDGET_KEEPS_FOCUS } from './keeps-widget-focus.constants';
 export { buildWidgetMenuEntries } from './build-widget-menu-entries';
@@ -31,4 +34,5 @@ export type { KitOverlayDef, KitOverlayFile, KitOverlayMeta, KitRequirement, Wid
 export type { WidgetContextSource, WidgetDisabledHook, WidgetDisabledOf, WidgetHostProps } from './WidgetHost';
 export { LogsWidget, LOGS_WIDGET_ID } from './built-in/LogsWidget';
 export { PerformanceWidget, PERFORMANCE_WIDGET_ID } from './built-in/PerformanceWidget';
-export type { ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutState, WidgetRegistryState, WindowKind } from './widget.type';
+export type { FocusKeep, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutState, WidgetRegistryState, WindowKind } from './widget.type';
+export type { WidgetDrop, WidgetFileDrop } from './widget-drop/widget-drop.type';

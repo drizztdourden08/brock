@@ -22,7 +22,7 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-describe('createDataDomains', () => {
+describe('K3 createDataDomains', { tags: ['critical'] }, () => {
   it('reads and writes JSON, text and bytes inside the domain folder', async () => {
     const sessions = domains.domain('sessions');
     expect(await sessions.readJson('runs/one.json', null)).toBeNull();
@@ -86,7 +86,7 @@ describe('createDataDomains', () => {
   });
 });
 
-describe('cleanDir', () => {
+describe('K3 cleanDir', { tags: ['critical'] }, () => {
   it('removes top-level entries older than the cutoff, judged by their newest file', async () => {
     const dir = join(root, 'sessions');
     await mkdir(join(dir, 'old-run'), { recursive: true });

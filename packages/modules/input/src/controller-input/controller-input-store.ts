@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { formatDate } from '@drizztdourden08/tessera/primitives';
+import { clearHeldStates } from './clear-held-states';
 import { processControllerState } from './process-controller-state';
 import type { ControllerRawReport } from '../capture.type';
 import type { ControllerDiagListener, ControllerDisconnectListener, ControllerInputState, ControllerStateListener, HidRawReportEvent, HidRawReportListener } from '../runtime/controller-input-store.type';
@@ -65,6 +66,10 @@ class ControllerInputStore {
 
   handleControllerState(deviceKey: string, buttons: boolean[], axes: number[]): void {
     processControllerState(this, deviceKey, buttons, axes);
+  }
+
+  clearHeldStates(): void {
+    clearHeldStates(this);
   }
 
   handleRawReport(report: ControllerRawReport): void {

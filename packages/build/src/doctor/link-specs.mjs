@@ -34,7 +34,7 @@ const fromWorkspaceFile = (dir) => {
 
 /**
  * @param {string} rootDir the app folder
- * @returns {LinkSpec[]} the link: and file: dependencies and pnpm overrides of the app and its workspace
+ * @returns {LinkSpec[]} the link: and file: specs and pnpm overrides
  */
 const linkSpecs = (rootDir) => {
   const workspace = findWorkspaceRoot(rootDir);

@@ -17,8 +17,8 @@ const settle = async (check, ctx) => {
 };
 
 /**
- * @param {{ rootDir: string, config: import('../config.mjs').BrockConfig | null }} ctx the app folder and its brock.config.ts, null when it has none
- * @returns {Promise<{ ok: boolean, lines: string[] }>} one line per check when it is fine, one line per problem otherwise
+ * @param {{ rootDir: string, config: import('../config.mjs').BrockConfig | null }} ctx the app folder and its config, null when none
+ * @returns {Promise<{ ok: boolean, lines: string[] }>} one line per check, or per problem
  */
 const runAppChecks = async (ctx) => {
   const lines = [];

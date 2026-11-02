@@ -24,7 +24,7 @@ const dropStale = (dir, name, keep) => {
  * @param {string} rootDir the folder eslint runs in
  * @param {string} name which run the cache belongs to
  * @param {NodeJS.ProcessEnv} env BROCK_LINT_CACHE_DIR moves the folder
- * @returns {string | null} the cache file for the current types, or null when they cannot be stamped
+ * @returns {string | null} the cache file, null when types cannot be stamped
  */
 const lintCacheFile = (rootDir, name, env) => {
   const stamp = typesStamp(rootDir);

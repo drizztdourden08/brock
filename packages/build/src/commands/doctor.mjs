@@ -19,7 +19,33 @@ const appTargets = async (rootDir) => {
 };
 
 /**
- * @param {{ rootDir: string, args?: string[] }} ctx args name platforms and check the machine alone; none also checks the app
+ * @param {string} rootDir
+ * @param {string[]} args
+ * @param {{ targets: string[], modules: string[] }} app
+ * @returns {boolean} true when nothing is missing on the machine
+ */
+const printMachine = (rootDir, args, app) => {
+  const targets = args.length ? args : app.targets;
+  const machine = checkMachine({ rootDir, targets, modules: app.modules });
+  console.log(`brock doctor: ${machine.platforms.join(', ') || 'no platform'} on ${process.platform} (checks only, installs nothing)\n`);
+  for (const line of machine.lines) console.log(line);
+  return machine.ok;
+};
+
+/**
+ * @param {string} rootDir
+ * @param {import('../config.mjs').BrockConfig | null} config
+ * @returns {Promise<boolean>} true when every app check is ok
+ */
+const printAppChecks = async (rootDir, config) => {
+  const checks = await runAppChecks({ rootDir, config });
+  console.log('\n  The app');
+  for (const line of checks.lines) console.log(line);
+  return checks.ok;
+};
+
+/**
+ * @param {{ rootDir: string, args?: string[] }} ctx args name platforms; none also checks the app
  * @returns {Promise<number>} 0 when nothing is missing and every app check is ok
  */
 const runDoctorCommand = async ({ rootDir, args = [] }) => {
@@ -29,15 +55,10 @@ const runDoctorCommand = async ({ rootDir, args = [] }) => {
     return 1;
   }
   const app = await appTargets(rootDir);
-  const targets = args.length ? args : app.targets;
-  const machine = checkMachine({ rootDir, targets, modules: app.modules });
-  console.log(`brock doctor: ${machine.platforms.join(', ') || 'no platform'} on ${process.platform} (checks only, installs nothing)\n`);
-  for (const line of machine.lines) console.log(line);
-  if (args.length) return machine.ok ? 0 : 1;
-  const checks = await runAppChecks({ rootDir, config: app.config });
-  console.log('\n  The app');
-  for (const line of checks.lines) console.log(line);
-  return machine.ok && checks.ok ? 0 : 1;
+  const machineOk = printMachine(rootDir, args, app);
+  if (args.length) return machineOk ? 0 : 1;
+  const appOk = await printAppChecks(rootDir, app.config);
+  return machineOk && appOk ? 0 : 1;
 };
 
 export { runDoctorCommand };

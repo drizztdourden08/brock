@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 /**
  * @param {string} appDir
  * @param {string} name
- * @returns {{ version?: string, peerDependencies?: Record<string, string> } | null} the installed package.json, found by walking up from the app folder
+ * @returns {{ version?: string, peerDependencies?: Record<string, string> } | null} the installed package.json, found by walking up
  */
 const readInstalled = (appDir, name) => {
   let current = appDir;

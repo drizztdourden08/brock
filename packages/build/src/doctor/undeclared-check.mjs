@@ -5,7 +5,7 @@ import { findWorkspaceRoot } from '../workspace.mjs';
 import { declaredSpecs, readAppPackage } from './app-package.mjs';
 import { importedPackages } from './source-imports.mjs';
 
-/** @param {string} rootDir @returns {string[]} the prefixes tsconfig.json paths maps (an unreadable file maps none) */
+/** @param {string} rootDir @returns {string[]} the prefixes tsconfig.json paths maps */
 const tsconfigAliases = (rootDir) => {
   try {
     const paths = JSON.parse(readFileSync(join(rootDir, 'tsconfig.json'), 'utf8')).compilerOptions?.paths ?? {};

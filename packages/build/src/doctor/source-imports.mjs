@@ -25,7 +25,7 @@ const specifiersOf = (source) => [...source.matchAll(STATEMENT), ...source.match
 /**
  * @param {string} rootDir the app folder
  * @param {string[]} [aliases] path alias prefixes the app maps itself
- * @returns {Map<string, string[]>} each package the app source imports and the files that import it, relative to the app
+ * @returns {Map<string, string[]>} each imported package and the app files that import it
  */
 const importedPackages = (rootDir, aliases = []) => {
   const found = new Map();

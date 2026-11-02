@@ -37,7 +37,7 @@ const catalogLines = (yaml, catalog) => {
  * @param {string} rootDir the app folder
  * @param {string} spec a catalog: spec
  * @param {string} name
- * @returns {string | null} the range the workspace catalog gives the package, null when it cannot be read
+ * @returns {string | null} the catalog range, null when it cannot be read
  */
 const catalogRange = (rootDir, spec, name) => {
   const dir = [rootDir, findWorkspaceRoot(rootDir)].find((candidate) => candidate && existsSync(join(candidate, 'pnpm-workspace.yaml')));

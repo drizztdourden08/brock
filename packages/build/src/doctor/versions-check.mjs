@@ -43,7 +43,7 @@ const rangeProblems = (rootDir, specs, linked) => {
 
 /**
  * @param {string} rootDir @param {Map<string, string>} installed
- * @returns {string[]} the brock-* packages that sit off the release line of the others
+ * @returns {string[]} the brock-* packages off the release line
  */
 const lineProblems = (rootDir, installed) => {
   const brock = [...installed].filter(([name]) => BROCK.test(name));

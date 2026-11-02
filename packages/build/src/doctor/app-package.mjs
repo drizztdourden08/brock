@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 /**
  * @param {string} dir
- * @returns {Record<string, any> | null} the package.json of the folder, null when it is missing or unreadable
+ * @returns {Record<string, any> | null} the package.json, null when missing or unreadable
  */
 const readAppPackage = (dir) => {
   try {

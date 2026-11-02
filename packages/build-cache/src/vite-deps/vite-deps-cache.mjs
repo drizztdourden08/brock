@@ -9,6 +9,7 @@ import { commitEntry } from '../store/commit-entry.mjs';
 import { entryPaths } from '../store/entry-path.mjs';
 import { readEntry, touchEntry } from '../store/read-entry.mjs';
 import { CACHE_ENV, KIND } from '../store/store.constants.mjs';
+import { localBundles, portableBundles } from './deps-files.mjs';
 import { filesPresent, localMetadata, matchesHashes, portableMetadata, readMetadata, sourcesPresent } from './deps-metadata.mjs';
 import { ENTRY_NAME, LAYOUT, METADATA_FILE, RESTORE_SUFFIX } from './vite-deps.constants.mjs';
 
@@ -20,6 +21,11 @@ const started = new Set();
  */
 
 const idOf = ({ root = cacheRoot(), version, buildKey }) => ({ root, kind: KIND.VITE_DEPS, name: ENTRY_NAME, version, buildKey });
+
+const currentEntry = (id, options) => {
+  const entry = readEntry(id, options);
+  return entry?.manifest?.buildSettings?.layout === LAYOUT ? entry : null;
+};
 
 const accepted = (depsDir, hashes) => {
   const metadata = readMetadata(depsDir);
@@ -55,6 +61,7 @@ const copyIn = (entry, { depsDir, installRoot, hashes }) => {
     if (!local || !sourcesPresent(local)) return 'missing';
     rmSync(partial, { recursive: true, force: true });
     cpSync(entry.filesDir, partial, { recursive: true });
+    localBundles(partial, installRoot);
     writeFileSync(join(partial, METADATA_FILE), `${JSON.stringify(local, null, 2)}\n`);
     if (!accepted(partial, hashes)) return 'missing';
     replaceDir(partial, depsDir);
@@ -74,7 +81,7 @@ const copyIn = (entry, { depsDir, installRoot, hashes }) => {
 const restoreViteDeps = (input) => {
   if (accepted(input.depsDir, input.hashes)) return 'ready';
   if (!insideInstall(input)) return 'missing';
-  const entry = readEntry(idOf(input));
+  const entry = currentEntry(idOf(input));
   return entry ? copyIn(entry, input) : 'missing';
 };
 
@@ -89,7 +96,7 @@ const storeViteDeps = async (input) => {
   const metadata = readMetadata(depsDir);
   if (!metadata || !matchesHashes(metadata, hashes) || !filesPresent(metadata, depsDir)) return 'not-ready';
   const id = idOf(input);
-  const present = readEntry(id);
+  const present = currentEntry(id);
   if (present) {
     touchEntry(present);
     return 'present';
@@ -102,6 +109,7 @@ const storeViteDeps = async (input) => {
       fill: async (filesDir) => {
         await cp(depsDir, filesDir, { recursive: true });
         if (!unchanged(depsDir, before) || !unchanged(filesDir, before) || !filesPresent(metadata, filesDir)) throw new Error('build-cache: the dependency folder changed while it was copied');
+        portableBundles(filesDir, installRoot);
         writeFileSync(join(filesDir, METADATA_FILE), `${JSON.stringify(portableMetadata(metadata, { depsDir, installRoot }), null, 2)}\n`);
       },
     });
@@ -119,7 +127,7 @@ const storeViteDepsDetached = (input) => {
   const id = idOf(input);
   const { dir } = entryPaths(id);
   if (started.has(dir)) return 'skipped';
-  const present = readEntry(id, { verify: false });
+  const present = currentEntry(id, { verify: false });
   if (present) {
     touchEntry(present);
     return 'present';

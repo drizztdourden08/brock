@@ -75,8 +75,18 @@ interface DragSession {
   payload: unknown;
 }
 
+type IndexAmongAxis = 'x' | 'y';
+
+interface MeasuredItem {
+  getBoundingClientRect: () => { left: number; right: number; top: number; bottom: number };
+}
+
+interface MeasuredList {
+  querySelectorAll: (selector: string) => ArrayLike<MeasuredItem>;
+}
+
 interface DragOutHost {
   start: (paths: readonly string[]) => Promise<boolean>;
 }
 
-export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, RejectedFile };
+export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, MeasuredItem, MeasuredList, RejectedFile };

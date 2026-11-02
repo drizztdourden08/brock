@@ -1,5 +1,5 @@
 /* @layer electron-main @kind logic */
-import { contextBridge, webUtils } from 'electron';
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
 import type { InvokeMap, SendMap, EventMap, IpcApi } from '@drizztdourden08/brock-core/ipc';
 import type { BridgeTools, PreloadBridgeOptions } from './create-preload-bridge.type';
 import { invoke } from './invoke';
@@ -11,6 +11,8 @@ import { buildEvents } from './build-events';
 import { createAnswerer } from './create-answerer';
 import { readStartupInfo } from './read-startup-info';
 import { readInstanceInfo } from './read-instance-info';
+import { captureDrops } from './drop-capture';
+import { DROP_TICKET_CHANNEL } from './drop-ticket.constants';
 
 const createPreloadBridge = <I extends InvokeMap, S extends SendMap, E extends EventMap>(
   options: PreloadBridgeOptions<I, S, E>,
@@ -40,6 +42,7 @@ const createPreloadBridge = <I extends InvokeMap, S extends SendMap, E extends E
     api[namespace.id] = namespace.build(tools);
   }
 
+  captureDrops(window, (file) => webUtils.getPathForFile(file), (paths) => ipcRenderer.send(DROP_TICKET_CHANNEL, paths));
   contextBridge.exposeInMainWorld(exposeAs, api);
   if (debugGlobal) contextBridge.exposeInMainWorld(debugGlobal.name, debugGlobal.values);
   return api as unknown as IpcApi<I, S, E>;

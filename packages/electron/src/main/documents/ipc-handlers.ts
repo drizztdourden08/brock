@@ -9,6 +9,7 @@ import { registerFolderHandlers } from './folder-handlers';
 import { isUnrecorded } from './is-unrecorded';
 import { markOfTheWeb } from './mark-of-the-web';
 import { pickAnswer } from './pick-answer';
+import { dropTickets } from './shared-drop-tickets';
 import { registerRecentHandlers } from './recent-handlers';
 import { registerRecoveryHandlers } from './recovery-handlers';
 import { registerWatchHandlers } from './watch-handlers';
@@ -60,7 +61,7 @@ const documentHandlers: HandlerGroup = {
       return real;
     });
 
-    handle('document:vetDrop', (_event, paths) => vetDrop(documents, paths));
+    handle('document:vetDrop', (event, paths) => vetDrop(documents, paths, (path) => dropTickets.take(event.sender.id, path)));
     handle('document:list', (_event, folder, options) => documents.list(folder, options));
     handle('document:read', async (_event, path) => toArrayBuffer(await readFile(await documents.resolve(path))));
     handle('document:readText', async (_event, path) => readFile(await documents.resolve(path), 'utf8'));

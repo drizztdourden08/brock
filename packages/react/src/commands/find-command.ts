@@ -10,9 +10,12 @@ const inScope = (def: CommandDef, route: string | null): boolean => def.scope ==
 
 const inZone = (def: CommandDef, zones: readonly string[]): boolean => def.zone === undefined || zones.includes(def.zone);
 
+const inWidget = (def: CommandDef, widget: string | null): boolean => def.widget === undefined || def.widget === widget;
+
 const rank = (def: CommandDef, zones: readonly string[]): number => {
   if (def.zone !== undefined) return zones.indexOf(def.zone);
-  return zones.length + (def.scope === undefined ? 1 : 0);
+  if (def.widget !== undefined) return zones.length;
+  return zones.length + (def.scope === undefined ? 2 : 1);
 };
 
 const typingAllowed = (def: CommandDef, chord: string, mac: boolean): boolean => {
@@ -29,7 +32,7 @@ const fires = (def: CommandDef, event: ChordEvent, state: CommandState, typing: 
 };
 
 const findCommand = (event: ChordEvent, state: CommandState, lookup: CommandLookup): CommandDef | undefined => {
-  const hits = listCommands(state).filter((def) => inScope(def, lookup.route) && inZone(def, lookup.zones) && fires(def, event, state, lookup.typing));
+  const hits = listCommands(state).filter((def) => inScope(def, lookup.route) && inZone(def, lookup.zones) && inWidget(def, lookup.widget) && fires(def, event, state, lookup.typing));
   return hits.reduce<CommandDef | undefined>((best, def) => (best === undefined || rank(def, lookup.zones) < rank(best, lookup.zones) ? def : best), undefined);
 };
 

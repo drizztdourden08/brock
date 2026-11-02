@@ -12,6 +12,7 @@ import { WidgetBody } from '../WidgetBody';
 import { widgetToolsOf } from '../widget-tools-of';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
 import { useWidgetRelayStore } from '../useWidgetRelayStore';
+import { useTrackActiveWidget } from '../active-widget/useTrackActiveWidget';
 import { WindowGuide } from '../WindowGuide';
 import { usePoppedDisabled } from './behavior/usePoppedDisabled';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
@@ -37,6 +38,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const off = usePoppedDisabled(definition, widgetDisabled);
   useWidgetRelay(id);
   useWidgetWindowEscape();
+  useTrackActiveWidget(id);
   useWidgetTourClick(id);
 
   const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);

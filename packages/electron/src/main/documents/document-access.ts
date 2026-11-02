@@ -2,6 +2,7 @@
 import { realpathSync } from 'fs';
 import { absolutePath } from './absolute-path';
 import type { DocumentAccess, DocumentAccessDeps } from './document-access.type';
+import { canWrite } from './can-write';
 import { copyItem } from './copy-item';
 import { folderRefusalOf } from './folder-refusal-of';
 import { createFolderGrants } from './folder-grants';
@@ -63,6 +64,7 @@ const createDocumentAccess = (deps: DocumentAccessDeps = {}): DocumentAccess => 
     }),
     recent: (profileId) => deps.recent?.(profileId) ?? Promise.resolve([]),
     trash: (path) => trashItem(folders, trash, path),
+    canWrite: (folder) => canWrite(folders, folder),
     reveal: (path) => revealItem(resolve, deps.showItemInFolder, path),
     rename: (from, to, options) => renameItem(folders, from, to, options),
     copy: (from, to, options) => copyItem({ folders, resolveSource: resolve }, from, to, options),

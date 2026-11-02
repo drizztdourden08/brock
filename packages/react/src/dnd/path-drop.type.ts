@@ -30,9 +30,14 @@ interface PathDropOptions {
   expand?: PathDropExpand;
 }
 
+interface FileListDragOptions {
+  paths: () => readonly DroppedPath[];
+  disabled?: boolean | (() => boolean);
+}
+
 interface WindowFileDropOptions {
   paths?: PathDropOptions;
   canDrop?: (drop: PathDrop) => boolean;
 }
 
-export type { DroppedPath, PathDrop, PathDropExpand, PathDropOptions, RejectedFile, WindowFileDropOptions };
+export type { DroppedPath, FileListDragOptions, PathDrop, PathDropExpand, PathDropOptions, RejectedFile, WindowFileDropOptions };

@@ -5,6 +5,7 @@ interface TargetEntry {
   element: DndElement;
   options: DropTargetOptions<unknown>;
   names: ReadonlySet<string>;
+  windowWide?: boolean;
 }
 
 interface Hover {

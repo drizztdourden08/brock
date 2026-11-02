@@ -33,13 +33,8 @@ afterEach(() => {
 });
 
 describe('K1 brock knip noise from usage entries and esbuild scripts', () => {
-  it('K1 drops the no matches hint of a usage entry whose folder the app lacks', { tags: ['critical'] }, () => {
-    const data = { cwd: '.', issues: {}, counters: {}, configurationHints: [hint('entry-empty', 'src/primitives/**/*.usage.ts'), hint('entry-empty', 'src/composites/**/*.usage.ts')] };
-    expect(dropBrockKnipNoise(data).configurationHints).toEqual([]);
-  });
-
-  it('K1 keeps every other configuration hint', { tags: ['critical'] }, () => {
-    const keep = [hint('entry-empty', 'src/views/*.ts'), hint('project-empty', 'src/primitives/**/*.usage.ts'), hint('ignoreDependencies', 'zustand')];
+  it('K1 keeps every configuration hint, empty usage entries included', { tags: ['critical'] }, () => {
+    const keep = [hint('entry-empty', 'src/primitives/**/*.usage.ts'), hint('project-empty', 'src/views/*.ts'), hint('ignoreDependencies', 'zustand')];
     expect(dropBrockKnipNoise({ cwd: '.', issues: {}, counters: {}, configurationHints: keep }).configurationHints).toEqual(keep);
   });
 

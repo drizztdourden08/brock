@@ -2,7 +2,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
-const EMPTY_USAGE_ENTRY = /^[^*]+\/\*\*\/\*\.usage\.ts$/;
 const ESBUILD_ENTRY = /\besbuild\s+(?:-\S+\s+)*([^\s.\-/][^\s]*)/g;
 const SCRIPT_ISSUE_TYPES = ['unresolved', 'unlisted'];
 
@@ -39,15 +38,10 @@ const withoutScriptEntryIssues = (data) =>
     return { ...out, issues: { ...out.issues, [type]: after }, counters: { ...out.counters, [type]: (out.counters?.[type] ?? 0) - dropped } };
   }, data);
 
-const withoutEmptyUsageHints = (data) => ({
-  ...data,
-  configurationHints: (data.configurationHints ?? []).filter((hint) => !(hint.type === 'entry-empty' && EMPTY_USAGE_ENTRY.test(String(hint.identifier)))),
-});
-
 /**
- * @param {{ cwd: string, issues: Record<string, Record<string, Record<string, unknown>>>, counters: Record<string, number>, configurationHints?: { type: string, identifier: unknown }[] }} data the knip results
- * @returns {object} the results, minus empty usage entry hints and bare esbuild script entries
+ * @param {{ cwd: string, issues: Record<string, Record<string, Record<string, unknown>>>, counters: Record<string, number> }} data the knip results
+ * @returns {object} the results, minus bare esbuild script entries that exist
  */
-const dropBrockKnipNoise = (data) => withoutScriptEntryIssues(withoutEmptyUsageHints(data));
+const dropBrockKnipNoise = (data) => withoutScriptEntryIssues(data);
 
 export { dropBrockKnipNoise };

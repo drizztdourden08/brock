@@ -66,8 +66,14 @@ interface WidgetTitleState {
   set: (id: string, text: string | null) => void;
 }
 
+interface FocusKeep {
+  widgets: readonly string[];
+  toolbars: readonly string[];
+}
+
 interface FocusModeState {
   on: boolean;
+  keep: FocusKeep;
   saved: { widgets: WidgetLayout; toolbars: ToolbarLayout; kit: string | null } | null;
 }
 
@@ -157,5 +163,5 @@ interface LayoutHolder {
 }
 
 export type {
-  DockOrigin, FocusModeState, ForcedWidgetState, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WidgetTitleState, WindowKind,
+  DockOrigin, FocusKeep, FocusModeState, ForcedWidgetState, LayoutHolder, PopOutRequest, ProfileViews, ProfileViewsTake, SettingsSlice, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutReading, WidgetLayoutState, WidgetRegistryState, WidgetRelayState, WidgetTitleState, WindowKind,
 };

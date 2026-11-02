@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import { createDefaultLayout, hideToolbar } from '@drizztdourden08/tessera/composites';
 import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
+import { toolbarsHidden, widgetsHidden } from './focus-hide';
 import { useFocusModeStore } from './useFocusModeStore';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
 
@@ -12,8 +12,9 @@ const enter = (): void => {
   const kits = useWidgetKitStore.getState();
   useFocusModeStore.setState({ on: true, saved: { widgets: widgets.layout, toolbars: toolbars.layout, kit: kits.active } });
   if (kits.active !== null) kits.close();
-  widgets.setLayout(createDefaultLayout());
-  toolbars.setLayout(toolbars.definitions.reduce((layout, def) => hideToolbar(layout, def.id), toolbars.layout));
+  const { keep } = useFocusModeStore.getState();
+  widgets.setLayout(widgetsHidden(widgets.layout, widgets.definitions, keep));
+  toolbars.setLayout(toolbarsHidden(toolbars.layout, toolbars.definitions, keep));
 };
 
 const leave = (): void => {

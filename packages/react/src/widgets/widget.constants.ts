@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import type { Size } from '@drizztdourden08/tessera/composites';
 import type { MenuItem } from '../menu/menu.type';
-import type { WidgetDef } from './widget.type';
+import type { FocusKeep, WidgetDef } from './widget.type';
 
 const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'render'> = {
   defaultVisibility: 'always',
@@ -15,6 +15,7 @@ const CONTEXT_DEFAULTS: Pick<WidgetDef, 'defaultVisibility'> = { defaultVisibili
 const PROFILE_VIEWS_PREFIX = 'profile:';
 const FLUSH_EVENTS = ['beforeunload', 'pagehide'] as const;
 const NO_WIDGETS: readonly WidgetDef[] = [];
+const NO_FOCUS_KEEP: FocusKeep = { widgets: [], toolbars: [] };
 const WIDGET_KEY_PREFIX = 'widget-';
 const WIDGET_QUERY_KEY = 'widget';
 const RELAY_DELAY_MS = 200;
@@ -40,6 +41,6 @@ const WIDGETS_DEVELOPER_KEY = 'widgets-developer';
 const WIDGETS_DEVELOPER_ENTRY: Omit<MenuItem, 'children'> = { key: WIDGETS_DEVELOPER_KEY, label: 'Developer', icon: 'braces', devOnly: true };
 
 export {
-  CONTEXT_DEFAULTS, DOCK_STAGE_SELECTOR, DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOAT_SNAP_PX, FLOATING_MIN, FLUSH_EVENTS, LAYOUT_MAIN, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, RESET_LAYOUT_ENTRY, REVIEW_OPTIONS_SLICE, REVISION_OFFER_MESSAGE, REVISION_RESET_LABEL, UNDER_MAIN_MIN, UNDER_MAIN_SHARE, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
+  CONTEXT_DEFAULTS, DOCK_STAGE_SELECTOR, DRAG_SLOP_PX, DRAWN_WIDGET_SELECTOR, FLOAT_SNAP_PX, FLOATING_MIN, FLUSH_EVENTS, LAYOUT_MAIN, NO_FOCUS_KEEP, NO_WIDGETS, PROFILE_VIEWS_PREFIX, RELAY_DELAY_MS, RELAY_LOG_LIMIT, RELAY_SLICES, RELEASE_TIMEOUT_MS, RESET_LAYOUT_ENTRY, REVIEW_OPTIONS_SLICE, REVISION_OFFER_MESSAGE, REVISION_RESET_LABEL, UNDER_MAIN_MIN, UNDER_MAIN_SHARE, WIDGET_DEFAULTS, WIDGET_KEY_PREFIX,
   WIDGET_LAYOUT_GLOBAL, WIDGET_QUERY_KEY, WIDGET_SETTINGS_TAB, WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY,
 };

@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind constants */
-const KEY_VERSION = 3;
+const KEY_VERSION = 4;
 const KEY_LENGTH = 16;
 const DEPS_FOLDER = 'deps';
 const STORE_TOKEN = '@store';

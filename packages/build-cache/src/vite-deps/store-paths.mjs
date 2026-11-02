@@ -23,13 +23,27 @@ const below = (root, path) => {
 
 /**
  * @param {string} installRoot the folder whose node_modules pnpm filled
+ * @returns {string[]} the store as named, linked and resolved
+ */
+const storeRootsOf = (installRoot) => {
+  const named = virtualStoreOf(installRoot);
+  const own = join(installRoot, 'node_modules', '.pnpm');
+  return [...new Set([named, realOrSelf(named), own, realOrSelf(own)])];
+};
+
+/**
+ * @param {string} installRoot the folder whose node_modules pnpm filled
+ * @returns {string} its package store as Vite resolves it, links followed
+ */
+const realStoreOf = (installRoot) => realOrSelf(virtualStoreOf(installRoot));
+
+/**
+ * @param {string} installRoot the folder whose node_modules pnpm filled
  * @returns {(path: string) => string | null} the path below the store, null outside
  */
 const storeRelativeOf = (installRoot) => {
-  const named = virtualStoreOf(installRoot);
-  const own = join(installRoot, 'node_modules', '.pnpm');
-  const roots = [...new Set([named, realOrSelf(named), own, realOrSelf(own)])];
+  const roots = storeRootsOf(installRoot);
   return (path) => roots.map((root) => below(root, path)).find((found) => found !== null) ?? null;
 };
 
-export { below, storeRelativeOf };
+export { below, realStoreOf, storeRelativeOf, storeRootsOf };

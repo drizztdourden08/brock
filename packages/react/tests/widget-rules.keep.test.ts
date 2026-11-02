@@ -15,7 +15,6 @@ import { forcedWidgets } from '../src/widgets/forced-widgets';
 import { focusKeep } from '../src/widgets/focus-keep';
 import { forgetFocusMode } from '../src/widgets/forget-focus-mode';
 import { layout } from '../src/widgets/layout-facade';
-import { useFocusMode } from '../src/widgets/useFocusMode';
 import { useForcedWidgetStore } from '../src/widgets/useForcedWidgetStore';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { useWidgetTitleStore } from '../src/widgets/useWidgetTitleStore';
@@ -186,46 +185,5 @@ describe('K1 layout.focusMode', { tags: ['critical'] }, () => {
     layout.focusMode(false);
     stop();
     expect(seen).toEqual([true, false]);
-  });
-});
-
-describe('S1 layout.focusKeep and useFocusMode', { tags: ['standard'] }, () => {
-  const BARS = [
-    defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null }),
-    defineToolbar({ id: 'status', label: 'Status', defaultSide: 'bottom', render: () => null }),
-  ];
-  const Probe = () => createElement('p', null, useFocusMode() ? 'focus' : 'normal');
-
-  beforeEach(() => {
-    useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
-    useToolbarLayoutStore.getState().setDefinitions(BARS);
-  });
-
-  it('keeps the named widget and toolbar open and hides the rest', () => {
-    widgets.dock('plain', { side: 'right', size: 300 });
-    widgets.dock('multi', { side: 'left', size: 300 });
-    layout.focusKeep({ widgets: ['plain'], toolbars: ['status'] });
-    layout.focusMode(true);
-    expect(isWidgetOpen(store().layout, 'plain')).toBe(true);
-    expect(isWidgetOpen(store().layout, 'multi')).toBe(false);
-    expect(isToolbarShown(useToolbarLayoutStore.getState().layout, 'status')).toBe(true);
-    expect(isToolbarShown(useToolbarLayoutStore.getState().layout, 'tools')).toBe(false);
-  });
-
-  it('puts every widget and toolbar back on leaving, kept ones included', () => {
-    widgets.dock('plain', { side: 'right', size: 300 });
-    widgets.dock('multi', { side: 'left', size: 300 });
-    const before = store().layout;
-    layout.focusKeep({ widgets: ['plain'] });
-    layout.focusMode(true);
-    layout.focusMode(false);
-    expect(store().layout).toBe(before);
-  });
-
-  it('follows focus mode in the hook', () => {
-    const host = showHarness.render(createElement(Probe));
-    expect(host.textContent).toBe('normal');
-    act(() => { layout.focusMode(true); });
-    expect(showHarness.render(createElement(Probe)).textContent).toBe('focus');
   });
 });

@@ -2,13 +2,8 @@
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
 import { bindingKey } from './binding-key';
 import { parseBindingKey } from './parse-binding-key';
-import type { BoundArgs, ChordInput, CommandContext, CommandDef } from './command.type';
-
-interface Wanted {
-  base: CommandDef;
-  bound: BoundArgs;
-  chord?: ChordInput;
-}
+import type { Wanted } from './bound-commands.type';
+import type { BoundArgs, CommandContext, CommandDef } from './command.type';
 
 const argsLabel = (base: CommandDef, args: BoundArgs['args']): string =>
   Object.entries(args).map(([name, value]) => base.args?.[name]?.options?.find((option) => option.value === value)?.label ?? String(value)).join(', ');

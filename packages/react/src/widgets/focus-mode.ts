@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind logic */
 import { useToolbarLayoutStore } from '../toolbars/useToolbarLayoutStore';
 import { useWidgetKitStore } from './kits/useWidgetKitStore';
-import { toolbarsHidden, widgetsHidden } from './focus-hide';
+import { toolbarsHidden } from './toolbars-hidden';
 import { useFocusModeStore } from './useFocusModeStore';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
+import { widgetsHidden } from './widgets-hidden';
 
 const enter = (): void => {
   if (useFocusModeStore.getState().on) return;

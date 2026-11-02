@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
+import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -45,9 +46,9 @@ const pressTab = (shiftKey = false): void => {
 
 type PickGroup = ReturnType<typeof pickGroups>[number];
 
-const itemLabels = (group: PickGroup): string[] => group.items.map((item) => item.label);
+const itemLabels = (group: PickGroup): ReactNode[] => group.items.map((item) => item.label);
 
-const groupSummary = (group: PickGroup): [string, string, string[]] => [group.id, group.label, itemLabels(group)];
+const groupSummary = (group: PickGroup): [string, string, ReactNode[]] => [group.id, group.label, itemLabels(group)];
 
 describe('K1 scoped pick', () => {
   it('opens in the given scope and Tab and Shift+Tab move between scopes', { tags: ['critical'] }, () => {

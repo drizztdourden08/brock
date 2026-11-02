@@ -1,17 +1,19 @@
 /* @layer renderer-shell @kind logic */
-import { FILES_DRAG_TYPE, FILES_TRANSFER_TYPE } from './dnd.constants';
+import { claimDrop } from './claim-drop';
+import { isClaimed } from './is-claimed';
+import { FILES_DRAG_TYPE, FILES_TRANSFER_TYPE, PATHS_DRAG_TYPE } from './dnd.constants';
 import type { DragPoint } from './dnd.type';
+import { deliverFileDrop } from './deliver-file-drop';
 import { sendFeedback } from './drop-feedback';
-import { resolveDroppedFiles } from './resolve-dropped-files';
 import type { Hover, Probe, TargetEntry } from './target-entry.type';
 
 const carriesFiles = (event: DragEvent): boolean => event.dataTransfer?.types.includes(FILES_TRANSFER_TYPE) === true;
 
-const probeOf = (event: DragEvent): Probe => ({ point: { x: event.clientX, y: event.clientY }, type: FILES_DRAG_TYPE, payload: null, source: null });
-
 const indexAt = (entry: TargetEntry, point: DragPoint): number | null => entry.options.index?.(point, entry.element) ?? null;
 
 const watchFileDrops = (entry: TargetEntry): (() => void) => {
+  const type = entry.names.has(FILES_DRAG_TYPE) ? FILES_DRAG_TYPE : PATHS_DRAG_TYPE;
+  const probeOf = (event: DragEvent): Probe => ({ point: { x: event.clientX, y: event.clientY }, type, payload: null, source: null });
   let hover: Hover | null = null;
 
   const leave = (probe: Probe): void => {
@@ -19,9 +21,19 @@ const watchFileDrops = (entry: TargetEntry): (() => void) => {
     hover = null;
   };
 
+  const yields = (drag: DragEvent): boolean => {
+    if (!entry.windowWide) {
+      claimDrop(drag);
+      return false;
+    }
+    if (!isClaimed(drag)) return false;
+    leave(probeOf(drag));
+    return true;
+  };
+
   const over = (event: Event): void => {
     const drag = event as DragEvent;
-    if (!carriesFiles(drag)) return;
+    if (!carriesFiles(drag) || yields(drag)) return;
     drag.preventDefault();
     if (drag.dataTransfer) drag.dataTransfer.dropEffect = 'copy';
     const probe = probeOf(drag);
@@ -38,15 +50,12 @@ const watchFileDrops = (entry: TargetEntry): (() => void) => {
 
   const drop = (event: Event): void => {
     const drag = event as DragEvent;
-    if (!carriesFiles(drag)) return;
+    if (!carriesFiles(drag) || yields(drag)) return;
     drag.preventDefault();
     const probe = probeOf(drag);
     const list = [...(drag.dataTransfer?.files ?? [])];
     leave(probe);
-    void resolveDroppedFiles(list).then((dropped) => {
-      const info = { type: FILES_DRAG_TYPE, point: probe.point, index: indexAt(entry, probe.point), source: null };
-      if (entry.options.canDrop?.(dropped, info) ?? true) entry.options.onDrop(dropped, info);
-    });
+    void deliverFileDrop(entry, list, { type, point: probe.point, index: indexAt(entry, probe.point), source: null });
   };
 
   const listeners = { dragenter: over, dragover: over, dragleave: out, drop };

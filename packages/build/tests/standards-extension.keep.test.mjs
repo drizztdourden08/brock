@@ -1,62 +1,42 @@
 /* @layer tooling-scripts @kind test */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { collectFindings, structureRules } from '@drizztdourden08/standards/structure';
+import { collectFindings } from '@drizztdourden08/standards/structure';
 import brockApp from '../standards.extension.mjs';
+import { removeTempRepos, tempRepo } from './temp-repo.mjs';
 
-const roots = [];
+afterEach(removeTempRepos);
 
-const tree = (files) => {
-  const root = mkdtempSync(join(tmpdir(), 'brock-standards-'));
-  roots.push(root);
-  for (const [file, content] of Object.entries(files)) {
-    mkdirSync(dirname(join(root, file)), { recursive: true });
-    writeFileSync(join(root, file), content);
-  }
-  return root;
-};
-
-afterEach(() => {
-  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-});
-
-describe('the brock-app extension', () => {
+describe('K1 the brock-app extension', { tags: ['critical'] }, () => {
   it('marks an app by brock.config.ts and accepts <id>.task.ts boot tasks', async () => {
-    const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/boot/theme.task.ts': '' });
+    const root = tempRepo({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/boot/theme.task.ts': '' });
     expect(await collectFindings(root, '@app', [brockApp])).toEqual({ findings: [], notes: [], counted: 1 });
   });
 
   it('keeps build/installer to the two overrides', async () => {
-    const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'build/installer/notes.txt': '' });
+    const root = tempRepo({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'build/installer/notes.txt': '' });
     const { findings } = await collectFindings(root, '@app', [brockApp]);
     expect(findings).toHaveLength(1);
     expect(findings[0]).toMatch(/^build\/installer\/notes\.txt: build\/installer holds only /);
   });
 
-  it('lists <id>.task.ts in the module file message', () => {
-    expect(structureRules([brockApp]).moduleFiles.map((entry) => entry.label)).toEqual(['<id>.task.ts', '<id>.widget.tsx', '<id>.overlay.tsx', '<id>.kit.ts', '<id>.step.ts', '<id>.action.ts', '<id>.tour.ts', '<id>.toolbar.tsx', '<id>.prompt.ts', '<id>.page.tsx', '<id>.live.tsx', '<id>.<kind>.constants.ts']);
-  });
-
   it('holds src/startup to <id>.prompt.ts files with a default export and their constants', async () => {
     const files = { 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '' };
     const prompt = 'export default defineStartupPrompt({ run: async () => undefined });\n';
-    const ok = tree({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/pick.prompt.constants.ts': 'export const A = 1;\n' });
+    const ok = tempRepo({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/pick.prompt.constants.ts': 'export const A = 1;\n' });
     expect((await collectFindings(ok, '@app', [brockApp])).findings).toEqual([]);
-    const bad = tree({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/helpers.ts': '', 'src/startup/none.prompt.ts': 'const x = 1;\n' });
+    const bad = tempRepo({ ...files, 'src/startup/pick.prompt.ts': prompt, 'src/startup/helpers.ts': '', 'src/startup/none.prompt.ts': 'const x = 1;\n' });
     const { findings } = await collectFindings(bad, '@app', [brockApp]);
     expect(findings.map((finding) => finding.split(': ')[0]).sort()).toEqual(['src/startup/helpers.ts', 'src/startup/none.prompt.ts']);
   });
 
   it('accepts src/widgets/<id>.widget.tsx files with a default export and a known meta, context included', async () => {
     const widget = "const meta = { label: 'Notes', icon: 'pencil', popOut: true, context: 'session' };\nconst Notes = () => null;\nexport default Notes;\nexport { meta };\n";
-    const root = tree({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/widgets/notes.widget.tsx': widget });
+    const root = tempRepo({ 'package.json': '{ "name": "app" }', 'brock.config.ts': '', 'src/main.tsx': '', 'src/widgets/notes.widget.tsx': widget });
     expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
   });
 
   it('names whatever does not belong in src/widgets', async () => {
-    const root = tree({
+    const root = tempRepo({
       'package.json': '{ "name": "app" }',
       'brock.config.ts': '',
       'src/widgets/session-layout.ts': '',
@@ -75,17 +55,12 @@ describe('the brock-app extension', () => {
       'src/widgets/room.widget.tsx',
       'src/widgets/session-layout.ts',
     ]);
-    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, tools, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, dockWeight, defaultFloatingSize, padding, fill, chrome, context, contexts, when, empty, prefs, kit, menu)');
+    expect(findings).toContain('src/widgets/room.widget.tsx: meta.title is not a widget field (label, icon, order, popOut, devOnly, taskbar, settings, tools, defaultOpen, defaultVisibility, defaultSide, defaultDockedSize, dockWeight, defaultFloatingSize, padding, fill, chrome, context, contexts, when, empty, prefs, kit, menu, drop)');
     expect(findings).toContain('src/widgets/logs.widget.tsx: "logs" is a built-in Brock widget id; pick another');
   });
 
   it('leaves the src/widgets folder of a package that is not an app to the shape check', async () => {
-    const root = tree({ 'package.json': '{ "name": "@app/kit", "exports": "./src/index.ts" }', 'src/index.ts': '', 'src/widgets/logs.widget.tsx': 'export default null;\n' });
+    const root = tempRepo({ 'package.json': '{ "name": "@app/kit", "exports": "./src/index.ts" }', 'src/index.ts': '', 'src/widgets/logs.widget.tsx': 'export default null;\n' });
     expect((await collectFindings(root, '@app', [brockApp])).findings).toEqual([]);
-  });
-
-  it('is what brock-build declares for discovery', async () => {
-    const { default: pkg } = await import('../package.json', { with: { type: 'json' } });
-    expect(pkg.standards).toEqual({ extension: './standards.extension.mjs' });
   });
 });

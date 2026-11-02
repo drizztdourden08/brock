@@ -68,7 +68,7 @@ const mountPoppedClick = (list: readonly TourDef[] = [CLICK]) => {
 
 afterEach(tourHarness.cleanUp);
 
-describe('a click step on a popped widget', () => {
+describe('S2 a click step on a popped widget', { tags: ['standard'] }, () => {
   it('hides Next, keeps the hint, and goes on when the widget window relays a click on the target', async () => {
     const relay = fakeRelay();
     mountPoppedClick();
@@ -107,10 +107,9 @@ describe('a click step on a popped widget', () => {
     expect(relay.advanced).toEqual(['lit:0']);
     expect(stepShown()).toBe('after');
   });
-
 });
 
-describe('the popped widget click relay', () => {
+describe('S2 the popped widget click relay', { tags: ['standard'] }, () => {
   it('drops the relay and the widget window listener when the widget docks back or the tour closes', async () => {
     const relay = fakeRelay();
     const root = mountPoppedClick();

@@ -24,7 +24,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('writeAtomic', () => {
+describe('K3 writeAtomic', { tags: ['critical'] }, () => {
   it('replaces an existing file and leaves no temp file behind', async () => {
     await writeAtomic(target, new Uint8Array([1, 2, 3]));
     expect([...(await readFile(target))]).toEqual([1, 2, 3]);
@@ -58,7 +58,7 @@ describe('writeAtomic', () => {
 
 });
 
-describe('writeAtomic on a busy target', () => {
+describe('K3 writeAtomic on a busy target', { tags: ['critical'] }, () => {
   it('retries a rename that Windows refuses while the target is busy', async () => {
     let refused = 0;
     const busy = noWait({

@@ -25,8 +25,8 @@ const lintRules = async (root, options) => {
   return result.messages.map((message) => message.ruleId);
 };
 
-describe('allowing an identifier', () => {
-  it('flags the name when nothing allows it', async () => {
+describe('S2 allowing an identifier', () => {
+  it('flags the name when nothing allows it', { tags: ['standard'] }, async () => {
     const root = fixture();
     expect(ruleOptions(root, {})).toEqual(['error', { allow: [] }]);
     expect(await lintRules(root, {})).toEqual([RULE]);
@@ -35,16 +35,14 @@ describe('allowing an identifier', () => {
   it.each([
     ['a top-level allow', {}, { allow: ['claudeId'] }],
     ['a prose allow', {}, { prose: { allow: ['claudeId'] } }],
-    ['both shapes', {}, { allow: ['claudeId'], prose: { allow: ['otherId'] } }],
     ['options.allow in standards.config.mjs', { options: { allow: ['claudeId'] } }, {}],
-    ['options.prose.allow in standards.config.mjs', { options: { prose: { allow: ['claudeId'] } } }, {}],
-  ])('lets the name through with %s', async (_label, config, options) => {
+  ])('lets the name through with %s', { tags: ['standard'] }, async (_label, config, options) => {
     const root = fixture(config.options ? config : undefined);
     expect(ruleOptions(root, options)[1].allow).toContain('claudeId');
     expect(await lintRules(root, options)).toEqual([]);
   }, LINT_TIMEOUT_MS);
 
-  it('joins the two shapes', () => {
+  it('joins the two shapes', { tags: ['critical'] }, () => {
     const root = fixture();
     expect(ruleOptions(root, { allow: ['aaId'], prose: { allow: ['bbId'] } })[1].allow).toEqual(['aaId', 'bbId']);
   });

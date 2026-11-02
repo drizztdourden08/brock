@@ -27,7 +27,7 @@ beforeEach(() => {
   opened.length = 0;
 });
 
-describe('buildBugReportPayload', () => {
+describe('K1 buildBugReportPayload', { tags: ['critical'] }, () => {
   it('carries the trimmed text, the app, the debug text, the system facts and the recent log, redacted', () => {
     const logs = Array.from({ length: 250 }, (_, i) => entry(i, i === 249 ? 'token=abc123secret' : `line ${i}`));
     const built = buildBugReportPayload({
@@ -46,7 +46,7 @@ describe('buildBugReportPayload', () => {
   });
 });
 
-describe('resolveBugReportTarget', () => {
+describe('K1 resolveBugReportTarget', { tags: ['critical'] }, () => {
   const send = vi.fn();
 
   it('prefers the app transport, then the main one, then the GitHub issue, then the clipboard', () => {
@@ -59,7 +59,7 @@ describe('resolveBugReportTarget', () => {
   });
 });
 
-describe('deliverReport', () => {
+describe('K1 deliverReport', { tags: ['critical'] }, () => {
   it('hands the payload to the transport and shows its message with a link to the report', async () => {
     const send = vi.fn().mockResolvedValue({ success: true, value: { message: 'Report 42 filed.', url: 'https://reports.example/42', id: '42' } });
     expect(await deliverReport({ kind: 'transport', label: 'Send', send }, payload())).toBeNull();
@@ -85,7 +85,7 @@ describe('deliverReport', () => {
   });
 });
 
-describe('receiptLinks', () => {
+describe('K1 receiptLinks', { tags: ['critical'] }, () => {
   const links = [{ label: 'View report', url: 'https://reports.example/1' }, { label: 'Files', url: 'https://reports.example/files' }];
 
   it('keeps the single url as Open and adds it ahead of the links unless one of them carries it', () => {
@@ -102,7 +102,7 @@ describe('receiptLinks', () => {
   });
 });
 
-describe('mainTransport', () => {
+describe('K1 mainTransport', { tags: ['critical'] }, () => {
   it('turns the retry id main sends back into a retry that asks main again', async () => {
     const api = {
       sendBugReport: vi.fn().mockResolvedValue({ success: true, value: { id: '7', retryId: '1' } }),

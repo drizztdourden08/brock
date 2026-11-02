@@ -14,7 +14,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('install links', () => {
+describe('K4 install links', { tags: ['critical'] }, () => {
   const links = createCatalogLinks('my-app');
 
   it('reads exactly an install link of the app scheme and writes it back', () => {
@@ -32,7 +32,7 @@ describe('install links', () => {
   });
 });
 
-describe('the download checks', () => {
+describe('K4 the download checks', { tags: ['critical'] }, () => {
   const config = { label: 'Library', installers: { zip: {} as CatalogInstaller }, maxBytes: 100 };
 
   it('parses a grant and refuses one it cannot trust', () => {
@@ -56,7 +56,7 @@ describe('the download checks', () => {
   });
 });
 
-describe('the catalogue client', () => {
+describe('K2 the catalogue client', { tags: ['critical'] }, () => {
   it('fills route params and drops empty query values', () => {
     expect(urlOf('https://api.example.com/', { route: { method: 'GET', path: '/items/:id' }, params: { id: 'a b' }, query: { kind: null, cursor: 'c' } })).toBe('https://api.example.com/items/a%20b?cursor=c');
   });
@@ -69,7 +69,7 @@ describe('the catalogue client', () => {
   });
 });
 
-describe('installing and uninstalling', () => {
+describe('S2 installing and uninstalling', { tags: ['standard'] }, () => {
   it('installs through a job, records it, and tells the window', async () => {
     const { catalog, jobs, emit, installed } = setup();
     expect(await catalog.reads().list()).toEqual([{ id: 'abc' }]);

@@ -41,7 +41,7 @@ const input = (extra: Partial<CatalogInput> = {}): CatalogInput => ({
   ...extra,
 });
 
-describe('rankEntries', () => {
+describe('K1 rankEntries', { tags: ['critical'] }, () => {
   it('returns nothing for a blank query', () => {
     expect(rankEntries([entry('a', 'Alpha')], '   ')).toEqual([]);
   });
@@ -62,7 +62,7 @@ describe('rankEntries', () => {
   });
 });
 
-describe('buildCatalog', () => {
+describe('K1 buildCatalog', { tags: ['critical'] }, () => {
   it('keeps one entry per screen when the menu and the registry both name it', () => {
     const catalog = buildCatalog(input({
       menu: [{ key: 'lib', label: 'My library', screen: 'library' }],

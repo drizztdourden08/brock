@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ButtonVariant, IconName } from '@drizztdourden08/tessera/primitives';
 import type { DeviceEntry } from '../device.type';
+import type { DiagnosticsRunResult } from './diagnostics-run-result.type';
 
 interface DeviceCardAction {
   id: string;
@@ -9,7 +10,7 @@ interface DeviceCardAction {
   variant?: ButtonVariant;
   disabled?: boolean | ((entry: DeviceEntry) => boolean);
   visible?: (entry: DeviceEntry) => boolean;
-  onSelect: (entry: DeviceEntry) => void | Promise<void>;
+  onSelect: (entry: DeviceEntry, result?: DiagnosticsRunResult) => void | Promise<void>;
 }
 
 interface ShownDeviceCardAction {

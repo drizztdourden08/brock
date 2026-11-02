@@ -21,7 +21,7 @@ const linksUnder = (dir, found = []) => {
 
 const clone = (target, source) => cloneInstall({ target, main: source, log: () => undefined, worktrees: [] });
 
-describe('cloneInstall', () => {
+describe('K3 cloneInstall', { tags: ['standard'] }, () => {
   it('links node_modules from a checkout of the same lockfile, every link outside the source checkout, root packages above the store', async () => {
     const source = installedCheckout();
     const target = freshCheckout();
@@ -61,8 +61,8 @@ describe('cloneInstall', () => {
 
 });
 
-describe('cloneInstall source pick', () => {
-  it('clones from a checkout whose own install rewrote its committed lockfile, and only when the install inputs match', async () => {
+describe('S2 cloneInstall source pick', () => {
+  it('clones from a checkout whose own install rewrote its committed lockfile, and only when the install inputs match', { tags: ['e2e'] }, async () => {
     const source = installedCheckout();
     put(source, '.npmrc', 'auto-install-peers=true\n');
     const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
@@ -84,7 +84,7 @@ describe('cloneInstall source pick', () => {
     expect(await clone(restored, source)).not.toBeNull();
   });
 
-  it('copies a git-ignored local pnpmfile of the source along, so a later install resolves the same way', async () => {
+  it('copies a git-ignored local pnpmfile of the source along, so a later install resolves the same way', { tags: ['e2e'] }, async () => {
     const source = installedCheckout();
     const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
     git('init', '-q');
@@ -100,12 +100,12 @@ describe('cloneInstall source pick', () => {
     expect(readFileSync(join(target, '.pnpmfile.cjs'), 'utf8')).toBe('module.exports = {};\n');
   });
 
-  it('treats a lockfile git checked out with CRLF line ends as the same lockfile', async () => {
+  it('treats a lockfile git checked out with CRLF line ends as the same lockfile', { tags: ['standard'] }, async () => {
     const source = installedCheckout();
     expect(await clone(freshCheckout(LOCKFILE.replace(/\n/g, '\r\n')), source)).not.toBeNull();
   });
 
-  it('builds the shared store once and reuses it for the next checkout', async () => {
+  it('builds the shared store once and reuses it for the next checkout', { tags: ['standard'] }, async () => {
     const source = installedCheckout();
     const first = await clone(freshCheckout(), source);
     const second = await clone(freshCheckout(), source);
@@ -113,7 +113,7 @@ describe('cloneInstall source pick', () => {
     expect(readdirSync(storeRootOf()).filter((name) => name !== '.tmp')).toHaveLength(1);
   });
 
-  it('removing a cloned worktree leaves the shared store whole', async () => {
+  it('removing a cloned worktree leaves the shared store whole', { tags: ['standard'] }, async () => {
     const source = installedCheckout();
     const target = freshCheckout();
     const { store } = await clone(target, source);

@@ -31,7 +31,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('the review points at a settings row that has hints', () => {
+describe('S2 the review points at a settings row that has hints', { tags: ['standard'] }, () => {
   it('passes over a first toggle row with no hints and points at the next one', async () => {
     const page = mountRows([BULK, SOUND]);
     const pointed = await pointSettingRow(page);

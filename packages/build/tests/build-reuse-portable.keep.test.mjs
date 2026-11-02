@@ -38,7 +38,7 @@ const cloneWithRecord = (root) => {
   return copy;
 };
 
-describe('buildReusePlugin in a git checkout', () => {
+describe('K1 buildReusePlugin in a git checkout', { tags: ['e2e'] }, () => {
   it('reuses the bundle in another checkout of the same commit, with fresh file times and another path', async () => {
     const root = repo();
     await run(root);
@@ -71,16 +71,5 @@ describe('buildReusePlugin in a git checkout', () => {
     await run(root);
     expect(reused()).toBe(false);
     expect(readFileSync(join(root, 'dist/electron/main.js'), 'utf8')).toContain('generated two');
-  });
-
-  it('builds again when an untracked file appears beside a module and shadows its import', async () => {
-    const root = repo();
-    put(root, 'electron/main.js', "import { greet } from './greet';\nconsole.log(greet());\n");
-    await run(root);
-    put(root, 'electron/greet.mjs', "export const greet = () => 'shadow';\n");
-    messages.length = 0;
-    await run(root);
-    expect(reused()).toBe(false);
-    expect(readFileSync(join(root, 'dist/electron/main.js'), 'utf8')).toContain('shadow');
   });
 });

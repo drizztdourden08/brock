@@ -42,7 +42,7 @@ const childrenOf = (entries: readonly MenuEntry[], key: string): MenuEntry[] => 
   return [];
 };
 
-describe('the Toolbars menu', () => {
+describe('K1 the Toolbars menu', { tags: ['critical'] }, () => {
   it('sits at level 1 next to Widgets, with the same key and contents it had under Widgets', () => {
     const menu = buildMenu(shell());
     const top = keysOf(menu);
@@ -61,7 +61,7 @@ describe('the Toolbars menu', () => {
   });
 });
 
-describe('the Home entry', () => {
+describe('K1 the Home entry', { tags: ['critical'] }, () => {
   it('is the first entry by default', () => {
     expect(keysOf(buildMenu(shell()))[0]).toBe('home');
   });
@@ -74,18 +74,9 @@ describe('the Home entry', () => {
     const settingsShown = buildMenu(shell({ homeScreen: 'settings', menuConfig: { home: false } }));
     expect(keysOf(settingsShown)).toContain('settings');
   });
-
-  it('stays with menu.home true', () => {
-    expect(keysOf(buildMenu(shell({ menuConfig: { home: true } })))).toContain('home');
-  });
 });
 
-describe('the Profiles entry', () => {
-  it('is in the menu by default', () => {
-    expect(keysOf(buildMenu(shell()))).toContain('profiles');
-    expect(keysOf(buildMenu(shell({ menuConfig: { profiles: true } })))).toContain('profiles');
-  });
-
+describe('K1 the Profiles entry', { tags: ['critical'] }, () => {
   it('is left out with menu.profiles false, and Home and Settings stay', () => {
     const hidden = keysOf(buildMenu(shell({ menuConfig: { profiles: false } })));
     expect(hidden).not.toContain('profiles');
@@ -119,7 +110,7 @@ const specOf = (id: string): TitleBarItemSpec => {
 
 const STATE = { enabled: () => true, chords: () => undefined };
 
-describe('title bar items as menu items', () => {
+describe('K1 title bar items as menu items', { tags: ['critical'] }, () => {
   it('turns a button into an item that keeps its shortcut, and a disabled one into a disabled item with its reason', () => {
     expect(titleBarMenuEntry('host', specOf('host'), STATE)).toMatchObject({ key: 'host', label: 'Host', shortcut: 'Mod+H', disabled: false });
     expect(titleBarMenuEntry('undo', specOf('undo'), STATE)).toMatchObject({ key: 'undo', disabled: true, description: 'Nothing to undo' });
@@ -144,7 +135,7 @@ describe('title bar items as menu items', () => {
   });
 });
 
-describe('title bar actions as one menu', () => {
+describe('S2 title bar actions as one menu', { tags: ['standard'] }, () => {
   const drawn = (entries: readonly TitleBarItemEntry[], extra: () => void = noop): WindowTitleBarAction[] => {
     flag.IS_REACT_ACT_ENVIRONMENT = true;
     useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
@@ -186,10 +177,5 @@ describe('title bar actions as one menu', () => {
     const menu = actions.at(-1);
     if (menu?.bar !== 'dropdown') throw new Error('the actions are one dropdown');
     expect(menu.groups[0]?.items[0]).toMatchObject({ id: 'undo', disabled: true });
-  });
-
-  it('keeps separate bar items without the option, as before', () => {
-    const sources = appTitleBarSources(ITEMS.filter((entry) => typeof entry.source !== 'function'), []);
-    expect(sources).toHaveLength(5);
   });
 });

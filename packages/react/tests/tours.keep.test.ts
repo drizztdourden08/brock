@@ -16,7 +16,7 @@ const reset = (): void => {
 beforeEach(reset);
 afterEach(reset);
 
-describe('tourProgress', () => {
+describe('K1 tourProgress', { tags: ['critical'] }, () => {
   it('reads only well formed progress from ui-views', () => {
     expect(tourProgress.read(null)).toEqual(EMPTY_PROGRESS);
     expect(tourProgress.read({ completed: ['a', 3], started: 'x', last: { a: 2, b: -1, c: 1.5, d: 'x' } })).toEqual({ completed: ['a'], started: [], last: { a: 2 } });
@@ -44,7 +44,7 @@ describe('tourProgress', () => {
   });
 });
 
-describe('tours', () => {
+describe('K1 tours', { tags: ['critical'] }, () => {
   it('starts, steps, goes back and completes on Next at the last step', () => {
     useTourStore.getState().setTours([WELCOME]);
     expect(tours.start('missing')).toBe(false);

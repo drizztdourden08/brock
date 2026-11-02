@@ -4,7 +4,7 @@ import { aboutChecks } from '../src/review/checks/about-checks';
 import { failed, reasonOf } from './review-outcomes';
 
 
-describe('aboutChecks', () => {
+describe('K1 aboutChecks', { tags: ['critical'] }, () => {
   it('compares the version row with the app version', () => {
     expect(failed(aboutChecks({ logoLoaded: true, version: '1.0.0', appVersion: '1.0.0' }))).toEqual([]);
     expect(failed(aboutChecks({ logoLoaded: null, version: '0.0.0', appVersion: '1.0.0' }))).toEqual(['about-logo', 'about-version']);

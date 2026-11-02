@@ -20,7 +20,7 @@ const resolved = (entries: readonly MenuEntry[]): MenuEntry[] => {
   return found.menu;
 };
 
-describe('a menu entry with a disabled hook', () => {
+describe('S2 a menu entry with a disabled hook', { tags: ['standard'] }, () => {
   it('is disabled while the hook says so, and a static disabled still wins', () => {
     const state = { running: false };
     const useNotRunning = (): boolean => !state.running;

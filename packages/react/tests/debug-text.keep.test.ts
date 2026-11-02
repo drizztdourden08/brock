@@ -25,7 +25,7 @@ const SYSTEM: SystemDiagnostics = {
 
 const log = (id: number, message: string): LogEntry => ({ id, timestamp: 0, channel: 'app', level: 'warn', message });
 
-describe('runtimeLabels', () => {
+describe('K1 runtimeLabels', { tags: ['critical'] }, () => {
   it('reads the Electron and Chromium versions from the user agent', () => {
     expect(runtimeLabels(INFO, AGENT)).toEqual({ runtime: 'Electron 38.1.0', engine: 'Chromium 140.0.1.2', platform: 'Windows' });
   });
@@ -35,7 +35,7 @@ describe('runtimeLabels', () => {
   });
 });
 
-describe('formatLogLine', () => {
+describe('K1 formatLogLine', { tags: ['critical'] }, () => {
   it('writes level, channel and message and cuts a long line', () => {
     const line = formatLogLine(log(1, 'a'.repeat(50)), 30);
     expect(line).toMatch(/^\d\d:\d\d:\d\d WARN \[app\] a+\.\.\.$/);
@@ -43,7 +43,7 @@ describe('formatLogLine', () => {
   });
 });
 
-describe('buildDebugText', () => {
+describe('K1 buildDebugText', { tags: ['critical'] }, () => {
   const text = buildDebugText({
     productName: 'My App',
     version: '1.2.3',

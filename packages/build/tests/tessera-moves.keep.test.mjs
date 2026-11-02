@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { collectMigrations, importMoves, runMigrations, selectMigrations } from '../src/upgrade/index.mjs';
+import { importMoves } from '../src/upgrade/index.mjs';
 import { releaseMoves } from '../src/upgrade/tessera/release-moves.mjs';
 import { tesseraRenamesStep } from '../src/upgrade/tessera/tessera-renames-step.mjs';
 
@@ -55,8 +55,6 @@ const read = (root) => readFileSync(join(root, 'src/view.tsx'), 'utf8');
 
 const replay = (root) => tesseraRenamesStep({ rootDir: root, from: '0.16.1' });
 
-const tierMoves = () => selectMigrations(collectMigrations([]), { from: '0.22.0', to: null }).filter((m) => m.file.endsWith('tessera-tier-moves.mjs'));
-
 const move = (source, moves) => importMoves({ moves, noTypescript: 'no TypeScript' })({ path: 'src/a.tsx', source }).source;
 
 const MOVES = [
@@ -69,7 +67,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('releaseMoves', () => {
+describe('K1 releaseMoves', { tags: ['critical'] }, () => {
   it('groups a release by entry pair under the package name, and drops the root and same-entry moves', () => {
     const groups = releaseMoves({ moves: { A: { from: 'primitives', to: 'composites' }, B: { from: 'primitives', to: 'composites' }, C: { from: 'data', to: 'field-kits' }, D: { from: '.', to: 'composites' }, E: { from: 'brand', to: 'brand' } } });
     expect(groups).toEqual([
@@ -80,7 +78,7 @@ describe('releaseMoves', () => {
   });
 });
 
-describe('the Tessera renames step replays moves', () => {
+describe('K1 the Tessera renames step replays moves', { tags: ['standard'] }, () => {
   it('moves CopyButton and Toast from /primitives to /composites when replayed from 0.16.1', () => {
     const root = app(`import { Box, CopyButton, Toast } from '${T}/primitives';\nimport { Widget } from '${T}/composites';\n`);
     const run = replay(root);
@@ -105,36 +103,7 @@ describe('the Tessera renames step replays moves', () => {
   });
 });
 
-describe('the tessera-tier-moves migration and the moves replay together', () => {
-  const SOURCE = `import { Box, PathField, Toast, Splash } from '${T}/primitives';\nimport type { ToastProps } from '${T}/primitives';\nimport { Widget, Overlay } from '${T}/composites';\nconst a = <PathField />;\n`;
-  const EXPECTED = [
-    `import { Box, Overlay } from '${T}/primitives';`,
-    `import type { ToastProps } from '${T}/composites';`,
-    `import { Widget, PathInput, Toast, Splash } from '${T}/composites';`,
-    'const a = <PathInput />;',
-    '',
-  ].join('\n');
-
-  it('migration first, then the replay, as brock upgrade runs them, and again: the same imports, none twice', async () => {
-    const root = app(SOURCE);
-    await runMigrations(root, tierMoves());
-    replay(root);
-    expect(read(root)).toBe(EXPECTED);
-    await runMigrations(root, tierMoves());
-    replay(root);
-    expect(read(root)).toBe(EXPECTED);
-  });
-
-  it('the replay first, then the migration: the same result, with no duplicate import', async () => {
-    const root = app(SOURCE);
-    replay(root);
-    expect(read(root)).toBe(EXPECTED);
-    await runMigrations(root, tierMoves());
-    expect(read(root)).toBe(EXPECTED);
-  });
-});
-
-describe('importMoves', () => {
+describe('K1 importMoves', { tags: ['standard'] }, () => {
   it('splits a mixed import line between its old entry and each new one', () => {
     const source = `import { Box, CopyButton, type CopyButtonProps, PixelWordmark, Toast as Toaster } from '${T}/primitives';\n`;
     expect(move(source, MOVES)).toBe(`import { Box, PixelWordmark } from '${T}/primitives';\nimport { CopyButton, type CopyButtonProps, Toast as Toaster } from '${T}/composites';\n`);

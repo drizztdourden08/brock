@@ -24,7 +24,7 @@ const nodeTool = (hooks: ToolHooks, pathEnv: PathSource = nodeDir) => {
   return tools;
 };
 
-describe('a tool probe', () => {
+describe('S2 a tool probe', { tags: ['standard'] }, () => {
   it('runs --version on the found binary and reads the version into the state', async () => {
     const tools = nodeTool({ probe: {} });
     expect(await tools.state('runtime')).toMatchObject({ status: 'ready', source: 'path', version: nodeVersion });
@@ -46,13 +46,15 @@ describe('a tool probe', () => {
     const read = nodeTool({ probe: { args: ['-e', 'console.log("build 7")'], read: (out) => ({ ok: out.stdout.includes('build'), version: 'custom' }) } });
     expect((await read.state('runtime'))?.version).toBe('custom');
   });
+});
 
+describe('K1 a probe declaration', { tags: ['critical'] }, () => {
   it('refuses a probe of a binary the tool does not declare', () => {
     expect(() => defineTool({ id: 'x', label: 'X', binaries: ['a'], probe: { binary: 'b' } })).toThrow(/not one of its binaries/);
   });
 });
 
-describe('a run hook', () => {
+describe('S2 a run hook', { tags: ['standard'] }, () => {
   it('wraps every run, the probe included, and can change the call and the result', async () => {
     const seen: string[] = [];
     const tools = nodeTool({
@@ -68,7 +70,7 @@ describe('a run hook', () => {
   });
 });
 
-describe('a live PATH', () => {
+describe('K1 a live PATH', { tags: ['critical'] }, () => {
   it('reads the PATH on each lookup, so a tool added while the app runs is found', async () => {
     let pathEnv = '';
     const tools = toolsOn(() => pathEnv);

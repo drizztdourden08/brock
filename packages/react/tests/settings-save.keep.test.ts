@@ -16,7 +16,7 @@ const DEFAULTS = { volume: 0.5 };
 const storeWith = (save: (profileId: string, settings: typeof DEFAULTS) => Promise<void>) =>
   createSettingsStore({ defaults: DEFAULTS, load: () => Promise.resolve(null), save, saveDelayMs: 1 });
 
-describe('settings saves', () => {
+describe('K3 settings saves', { tags: ['standard'] }, () => {
   it('marks a write as saved', async () => {
     const store = storeWith(() => Promise.resolve());
     await store.getState().hydrate('p1');

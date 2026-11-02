@@ -17,7 +17,7 @@ const portWith = (keepFileName?: boolean): PortDefinition => testPort({
   ...(keepFileName === undefined ? {} : { keepFileName }),
 });
 
-describe('createRomStore file names', () => {
+describe('K3 createRomStore file names', { tags: ['critical'] }, () => {
   it('stores a ROM under its identity id by default', async () => {
     const { files, disk } = memoryFiles();
     const store = createRomStore(files, portWith());
@@ -65,7 +65,7 @@ describe('createRomStore file names', () => {
   });
 });
 
-describe('createRomStore name list', () => {
+describe('K3 createRomStore name list', { tags: ['critical'] }, () => {
   it('lists the stored ROM names without reading a byte', async () => {
     const { files, disk } = memoryFiles();
     const reads: string[] = [];

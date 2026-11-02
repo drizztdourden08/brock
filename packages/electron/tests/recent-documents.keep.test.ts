@@ -51,7 +51,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('the recent documents list', () => {
+describe('K3 the recent documents list', { tags: ['critical'] }, () => {
   it('lists the newest first with the name and the last opened time', async () => {
     const { recent, a, b } = await seeded();
     expect(await recent.list('p1')).toEqual([
@@ -78,7 +78,7 @@ describe('the recent documents list', () => {
   });
 });
 
-describe('the recent documents list on disk', () => {
+describe('K3 the recent documents list on disk', { tags: ['critical'] }, () => {
   it('keeps a list per profile', async () => {
     const { recent } = setup();
     await recent.record('p1', await make('a.bxel'));
@@ -116,7 +116,7 @@ describe('the recent documents list on disk', () => {
   });
 });
 
-describe('reopening a recent document', () => {
+describe('K3 reopening a recent document', { tags: ['critical'] }, () => {
   it('allows the path in main only after the check, and moves it to the top', async () => {
     const { access, recent, a, b } = await seeded();
     expect(await access.isAllowed(a)).toBe(false);

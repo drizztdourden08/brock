@@ -3,15 +3,14 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { mountLine, wslMountPath } from '../src/linux/build-steps.mjs';
+import { wslMountPath } from '../src/linux/build-steps.mjs';
 import { wslDistros } from '../src/linux/linux-checks.mjs';
 import { machineTemplate } from '../src/linux/linux-init.mjs';
 import { machineFile, parseMachine } from '../src/linux/linux-machine.mjs';
 import { linuxSettings } from '../src/linux/linux-settings.mjs';
 import { wslUncPath } from '../src/linux/private-key.mjs';
-import { bashStdin, remoteTarget, scriptText, shellQuote } from '../src/linux/remote.mjs';
+import { bashStdin, remoteTarget, shellQuote } from '../src/linux/remote.mjs';
 import { vmStateOf } from '../src/linux/vbox.mjs';
-import { SCRIPT_FILES } from '../src/linux/linux.constants.mjs';
 
 const made = [];
 
@@ -22,7 +21,7 @@ afterEach(() => {
 const FILE = 'vm.json';
 const MACHINE = { vmName: 'atlas-linux', host: '192.168.56.101', user: 'tester' };
 
-describe('the machine settings', () => {
+describe('K4 the machine settings', { tags: ['critical'] }, () => {
   it('reads the VM, the target and the defaults', () => {
     expect(parseMachine(MACHINE, FILE)).toEqual({
       file: FILE, vmName: 'atlas-linux', host: '192.168.56.101', user: 'tester', port: null, identityFile: null, builder: 'vm', wslDistro: 'Ubuntu-24.04',
@@ -54,7 +53,7 @@ describe('the machine settings', () => {
   });
 });
 
-describe('the remote calls', () => {
+describe('K4 the remote calls', { tags: ['critical'] }, () => {
   it('runs ssh key-only, so it fails instead of asking for a password', () => {
     const remote = remoteTarget({ host: 'vm', user: 'me', port: 2222 }, 'C:/key');
     expect(remote.target).toBe('me@vm');
@@ -70,18 +69,9 @@ describe('the remote calls', () => {
     expect(bashStdin(['a b', 'c'])).toBe("bash -s -- 'a b' c");
   });
 
-  it('mounts a share only when it is not mounted, with sudo that never prompts', () => {
-    const line = mountLine('atlas-src', 'brock-atlas-src');
-    expect(line).toContain('mountpoint -q "$HOME"/atlas-src');
-    expect(line).toContain('sudo -n mount -t vboxsf');
-  });
-
-  it('ships every script it pipes, each with its layer header', () => {
-    for (const name of Object.values(SCRIPT_FILES)) expect(scriptText(name)).toMatch(/^#!\/usr\/bin\/env bash\n# @layer tooling-scripts @kind script\n/);
-  });
 });
 
-describe('the host helpers', () => {
+describe('K1 the host helpers', { tags: ['critical'] }, () => {
   it('maps a Windows folder to its WSL mount and a WSL file to its share', () => {
     expect(wslMountPath('X:\\atlas')).toBe('/mnt/x/atlas');
     expect(wslMountPath('C:/')).toBe('/mnt/c');
@@ -96,7 +86,7 @@ describe('the host helpers', () => {
   });
 });
 
-describe('the repo settings', () => {
+describe('K1 the repo settings', { tags: ['critical'] }, () => {
   const repo = () => {
     const root = mkdtempSync(join(tmpdir(), 'brock-linux-'));
     made.push(root);

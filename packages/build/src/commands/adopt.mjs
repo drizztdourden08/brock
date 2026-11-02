@@ -66,6 +66,7 @@ const NEVER_OVERWRITE = new Set(['pnpm-workspace.yaml', '.npmrc', TESSERA_CONFIG
 
 const SCRIPTS = {
   lint: 'brock lint && stylelint "**/*.css" --ignore-path .gitignore --allow-empty-input && brock prose && brock knip && jscpd .',
+  'lint:all': 'brock lint --all && stylelint "**/*.css" --ignore-path .gitignore --allow-empty-input && brock prose && brock knip && jscpd .',
   'lint:md': 'markdownlint-cli2',
   structure: 'brock structure --check',
   prose: 'brock prose',

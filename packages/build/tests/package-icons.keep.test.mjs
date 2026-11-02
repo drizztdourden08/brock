@@ -23,7 +23,7 @@ const PRODUCT = { id: 'atlas', name: 'Atlas', appId: 'com.example.atlas', author
 
 const ELECTRON_BUILDER_SET_NAME = /^\d+(?:x\d+)?\.png$/i;
 
-describe('brock package from a clean checkout', () => {
+describe('K1 brock package from a clean checkout', { tags: ['critical'] }, () => {
   it('writes the icons electron-builder takes on every platform before it runs', () => {
     const root = cleanCheckout();
     expect(existsSync(join(root, 'build', 'icons'))).toBe(false);

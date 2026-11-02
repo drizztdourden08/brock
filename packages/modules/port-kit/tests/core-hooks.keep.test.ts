@@ -38,7 +38,7 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, 'TestCore');
 });
 
-describe('watchCoreCrash', () => {
+describe('K1 watchCoreCrash', { tags: ['critical'] }, () => {
   it('ignores crashes before the arm delay and reports the first one after it', () => {
     vi.useFakeTimers();
     const seen: CoreCrash[] = [];
@@ -55,7 +55,7 @@ describe('watchCoreCrash', () => {
   });
 });
 
-describe('createGameCore options', () => {
+describe('S2 createGameCore options', { tags: ['standard'] }, () => {
   it('boots from a precompiled module and hands a crash to onCrash', async () => {
     const compiled = await WebAssembly.compile(EMPTY_WASM);
     let given: WebAssembly.Module | null = null;
@@ -73,7 +73,7 @@ describe('createGameCore options', () => {
   });
 });
 
-describe('a crash watch armed at start', () => {
+describe('K1 a crash watch armed at start', { tags: ['critical'] }, () => {
   const crashingFactory = (crashWhileBooting: boolean) => (): Promise<EmscriptenModule> => {
     if (crashWhileBooting) window.dispatchEvent(crashEvent());
     return Promise.resolve(fakeModule());
@@ -120,7 +120,7 @@ describe('a crash watch armed at start', () => {
   });
 });
 
-describe('parts without createGameCore', () => {
+describe('K1 parts without createGameCore', { tags: ['critical'] }, () => {
   it('pushes live settings through plain calls', () => {
     const log: string[] = [];
     const settings = createLiveSettings<{ volume: number }>({ calls: () => calls(log), apply: (value, core) => core.call('SetVolume', value.volume) });
@@ -169,7 +169,7 @@ describe('parts without createGameCore', () => {
   });
 });
 
-describe('save transform hooks', () => {
+describe('K1 save transform hooks', { tags: ['critical'] }, () => {
   it('transforms the state on save and on load', async () => {
     const { core, loaded } = fakeCore(testPort({ extensions: ['.sfc'], known: {} }), new Uint8Array([5, 5]));
     const { files, disk } = memoryFiles();

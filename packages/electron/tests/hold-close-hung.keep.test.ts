@@ -20,7 +20,7 @@ const guardedWindow = () => {
   return made;
 };
 
-describe('the close hold with a renderer that hangs', () => {
+describe('K1 the close hold with a renderer that hangs', { tags: ['critical'] }, () => {
   it('closes when the renderer does not acknowledge within the ping time', async () => {
     const { raw, contents, attempt } = guardedWindow();
     attempt();

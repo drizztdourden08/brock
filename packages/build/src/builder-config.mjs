@@ -10,7 +10,7 @@ import { builderIcons } from './packaging/builder-icons.mjs';
 import { electronFusesOf } from './packaging/electron-fuses.mjs';
 import { linuxMetadata } from './packaging/linux-metadata.mjs';
 import { copyrightOf, windowsVersionStrings } from './packaging/windows-version-info.mjs';
-import { VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
+import { KOFFI_ASAR_UNPACK, VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
 import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 import { helperResources } from './helper-scripts/helper-resources.mjs';
 
@@ -76,7 +76,7 @@ const createBuilderConfig = (product, { rootDir, packaging = {}, helpers, fuses,
     directories: { output: join(rootDir, 'release'), ...(product.icons?.brand ? { buildResources: 'build' } : {}) },
     electronLanguages: ['en-US'],
     files: APP_FILES,
-    asarUnpack: [VELOPACK_ASAR_UNPACK],
+    asarUnpack: [VELOPACK_ASAR_UNPACK, ...KOFFI_ASAR_UNPACK],
     electronFuses: electronFusesOf({ platform, helpers, fuses }),
     copyright: copyrightOf(product),
     afterPack: createAfterPack(rootDir, { ico: icons.win, versionStrings: windowsVersionStrings(product) }, appAfterPack(packaging.afterPack)),

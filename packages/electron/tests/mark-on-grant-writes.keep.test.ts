@@ -10,7 +10,7 @@ const marked = vi.hoisted(() => vi.fn<(path: string) => Promise<void>>());
 vi.mock('electron', () => ({ dialog: {}, app: { addRecentDocument: () => undefined, clearRecentDocuments: () => undefined } }));
 vi.mock('../src/main/documents/mark-of-the-web', () => ({ markOfTheWeb: marked }));
 
-describe('writes through a folder grant', () => {
+describe('K4 writes through a folder grant', { tags: ['critical'] }, () => {
   let base = '';
   let granted = '';
   let call: Call;

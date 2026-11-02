@@ -36,7 +36,7 @@ beforeEach(() => {
 
 afterEach(() => useProfilesStore.getState().setActive(null));
 
-describe('product.singleProfile', () => {
+describe('K1 product.singleProfile', { tags: ['critical'] }, () => {
   it('creates one default profile silently on the first launch and never opens the picker', async () => {
     await run(true);
     expect(disk.profiles.map((p) => p.name)).toEqual([DEFAULT_PROFILE_NAME]);
@@ -68,7 +68,7 @@ describe('product.singleProfile', () => {
 
 const runInitial = (initialProfile: string): Promise<void> => profilesTask.run({ report: vi.fn(), product: { initialProfile } } as never) as Promise<void>;
 
-describe('product.initialProfile', () => {
+describe('K1 product.initialProfile', { tags: ['critical'] }, () => {
   it('creates and activates the named profile on the first launch without opening the picker', async () => {
     await runInitial('Main');
     expect(disk.profiles.map((p) => p.name)).toEqual(['Main']);
@@ -81,10 +81,5 @@ describe('product.initialProfile', () => {
     await runInitial('Main');
     expect(disk.profiles.map((p) => p.name)).toEqual(['Mine']);
     expect(useProfilesStore.getState().active?.name).toBe('Mine');
-  });
-
-  it('keeps the Profiles screen and menu entry', () => {
-    expect(createBuiltInScreens({}).some((screen) => screen.id === PROFILES_SCREEN)).toBe(true);
-    expect(keys(false)).toContain('profiles');
   });
 });

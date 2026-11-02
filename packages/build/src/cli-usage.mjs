@@ -89,7 +89,10 @@ Usage:
                              steps and doctor; add and remove rewrite targets and regenerate both workflows
   brock doctor [id | bundle...]
                              check this machine for what the targets need (Node, pnpm, .NET and vpk, MSVC,
-                             JDK 21, the Android SDK, module libraries); prints install commands, installs nothing
+                             JDK 21, the Android SDK, module libraries), then the app: package versions against
+                             their ranges, broken link: and file: dependencies, generated files that differ from
+                             brock sync, packages the source imports that package.json lacks. One line each, with
+                             the fix; installs nothing; exit 1 on any problem. With ids it checks the machine alone
   brock prewarm              pre-bundle the renderer dependencies of brock dev now, so the first launch finds
                              them ready; worktree create starts it in the background after the install
   brock cache [list]         the per-user build cache (compiled package versions, Electron binaries): each entry,
@@ -128,8 +131,9 @@ Thread lifecycle (brock.workspace.mjs, one worktree per thread):
                              push and open ask: work leaves the machine
   brock pr merge --local PR-n [--head <b> --base <b>] [--keep-branch]
                              merge a local pull request with git here once its required checks pass
-  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all]
-                             run the CI steps locally in a temp worktree and write ~/.coord/ci/<project>/<run>.json
+  brock ci [check] [--commit <sha>] [--pr PR-n] [--job gate|upgrade|all] [--localpkg | --here]
+                             run the CI steps locally in a temp worktree and write ~/.coord/ci/<project>/<run>.json;
+                             --here runs them in this checkout with no install (HEAD is the commit, tracked tree clean)
   brock mobile push          web build, cap sync, gradle, adb install and start
   brock mobile build [--release] [--out <file>]
                              web build, cap sync, gradle assembleDebug (or a signed assembleRelease)

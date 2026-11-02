@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('renderer jobs', () => {
+describe('K1 renderer jobs', { tags: ['critical'] }, () => {
   it('starts a job in the renderer that the job store shows, with no main process', async () => {
     const result = await jobs.start('extract', STEPS, { title: 'Extracting' }).run(async (job) => {
       job.step('read');

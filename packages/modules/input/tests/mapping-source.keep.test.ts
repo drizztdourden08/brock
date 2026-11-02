@@ -37,7 +37,7 @@ const setup = async (userText: string | null) => {
   return db;
 };
 
-describe('the source of a mapping', () => {
+describe('K1 the source of a mapping', { tags: ['standard'] }, () => {
   it('counts only bound inputs', () => {
     expect(parseMapping(BUILTIN)?.inputCount).toBe(2);
     expect(parseMapping('xinput,XInput,a:b0,crc:1234,hint:SDL_X:=1,type:xbox360,face:abxy,platform:Windows,')?.inputCount).toBe(1);

@@ -12,7 +12,7 @@ const memoryFiles = (initial: Record<string, string>) => {
   return { files: files as FileStore, read: () => JSON.parse(texts.get('ui-views.json') ?? '{}') as Record<string, unknown> };
 };
 
-describe('the ui-views file in main', () => {
+describe('K3 the ui-views file in main', { tags: ['critical'] }, () => {
   it('merges each patch into the file on disk, one after another, and removes a key patched to null', async () => {
     const disk = memoryFiles({ 'ui-views.json': JSON.stringify({ 'profile:p1': { a: 1 }, 'app:editor': { zoom: 2 } }) });
     const views = createUiViewsStore(disk.files);

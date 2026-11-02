@@ -5,7 +5,7 @@ import { MARKED_EXTENSIONS, ZONE_CONTENT } from '../src/main/documents/mark-of-t
 
 const REPRESENTATIVE = ['.exe', '.docm', '.doc', '.zip', '.msc'];
 
-describe('the extensions that get a Mark of the Web', () => {
+describe('K4 the extensions that get a Mark of the Web', { tags: ['critical'] }, () => {
   it('include a representative of each group and leave harmless ones out', () => {
     for (const extension of REPRESENTATIVE) expect(MARKED_EXTENSIONS.has(extension)).toBe(true);
     expect(MARKED_EXTENSIONS.has('.png')).toBe(false);

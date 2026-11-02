@@ -53,7 +53,7 @@ const prewarm = async (rootDir) => {
   return { code, lines: log.mock.calls.map(([line]) => line) };
 };
 
-describe('the prewarm skip of the renderer pre-bundle', () => {
+describe('S2 the prewarm skip of the renderer pre-bundle', { tags: ['standard'] }, () => {
   it('skips on a build reuse hit when an entry holds this Vite version and lockfile, without importing Vite', async () => {
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', tempDir());
     await cacheEntryFor(LOCKFILE);

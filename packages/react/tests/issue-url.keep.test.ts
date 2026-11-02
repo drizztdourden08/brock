@@ -12,7 +12,7 @@ const draft = (extra: Partial<IssueDraft> = {}): IssueDraft => ({
 
 const bodyOf = (url: string): string => new URL(url).searchParams.get('body') ?? '';
 
-describe('buildIssueBody', () => {
+describe('K1 buildIssueBody', { tags: ['critical'] }, () => {
   it('keeps a bare description when nothing is attached', () => {
     expect(buildIssueBody('  broken  ', null)).toBe('broken');
   });
@@ -24,7 +24,7 @@ describe('buildIssueBody', () => {
   });
 });
 
-describe('buildIssueUrl', () => {
+describe('K1 buildIssueUrl', { tags: ['critical'] }, () => {
   it('points at the new issue form of the product repo with a prefilled title and body', () => {
     const url = new URL(buildIssueUrl(draft()));
     expect(`${url.origin}${url.pathname}`).toBe('https://github.com/someone/my-app/issues/new');

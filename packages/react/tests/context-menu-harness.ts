@@ -91,8 +91,6 @@ const mountMenus = (): void => {
   act(() => state.root?.render(createElement(Harness)));
 };
 
-const rerenderMenus = (): void => act(() => state.root?.render(createElement(Harness)));
-
 const unmountMenus = (): void => {
   vi.useRealTimers();
   act(() => {
@@ -146,4 +144,4 @@ const rectOf = (id: string, left: number, bottom: number): HTMLElement => {
   return element;
 };
 
-export { byId, contextmenu, entries, item, mountMenus, openPoint, opened, pointer, press, ran, rectOf, rerenderMenus, rightClick, seen, unmountMenus };
+export { byId, contextmenu, entries, item, mountMenus, openPoint, opened, pointer, press, ran, rectOf, rightClick, seen, unmountMenus };

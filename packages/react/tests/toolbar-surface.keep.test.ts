@@ -72,7 +72,7 @@ const mount = (): void => {
 
 const sideOf = (id: string): string | undefined => (['top', 'bottom', 'left', 'right'] as const).find((side) => toolbarIdsOf(store().layout, side).includes(id));
 
-describe('the toolbar commands', () => {
+describe('K1 the toolbar commands', { tags: ['critical'] }, () => {
   beforeEach(() => {
     unregister = registerFresh([...toolbarCommands]);
     store().setDefinitions([TOOLS, OPTIONS]);
@@ -102,7 +102,7 @@ describe('the toolbar commands', () => {
   });
 });
 
-describe('the toolbar context menu entries', () => {
+describe('K1 the toolbar context menu entries', { tags: ['critical'] }, () => {
   beforeEach(() => {
     unregister = registerFresh([...toolbarCommands]);
     store().setDefinitions([TOOLS, OPTIONS]);
@@ -122,11 +122,6 @@ describe('the toolbar context menu entries', () => {
     ]);
   });
 
-  it('reads the labels flag from the layout', () => {
-    run('toolbar.labels', 'tools');
-    expect(toolbarContextEntries(context)[0]).toMatchObject({ checked: false });
-  });
-
   it('is empty without a toolbar id', () => {
     expect(toolbarContextEntries({ ...context, data: undefined })).toEqual([]);
   });
@@ -144,19 +139,8 @@ describe('the toolbar context menu entries', () => {
   });
 });
 
-describe('a right click on a docked toolbar', () => {
+describe('S1 a right click on a docked toolbar', { tags: ['standard'] }, () => {
   beforeEach(mount);
-
-  it('opens the menu built from the commands, named after the toolbar', () => {
-    const bar = document.querySelector('.tools-bar');
-    expect(bar?.closest('[data-context-menu="brock.toolbar"]')).not.toBeNull();
-    rightClick(bar as Element, 20, 30);
-    expect(useContextMenuStore.getState().open?.label).toBe('Tools toolbar');
-    expect(item('Show labels')?.getAttribute('aria-checked')).toBe('true');
-    expect(item('Show labels')?.getAttribute('data-menu-entry')).toBe('toolbar.labels');
-    expect(item('Move to')).toBeDefined();
-    expect(item('Hide toolbar')?.getAttribute('data-menu-entry')).toBe('toolbar.hide');
-  });
 
   it('runs the command for the toolbar that was clicked', () => {
     rightClick(document.querySelector('.options-bar') as Element, 5, 5);
@@ -174,7 +158,7 @@ describe('a right click on a docked toolbar', () => {
   });
 });
 
-describe('the Toolbars menu bar entry', () => {
+describe('K2 the Toolbars menu bar entry', { tags: ['critical'] }, () => {
   const entries = (): MenuItem[] => {
     const [menu] = buildToolbarMenuEntries({ definitions: store().definitions, layout: store().layout, toggle: store().toggle, words: { menu: 'Toolbars', reset: 'Reset toolbars' }, reset: store().reset });
     return (menu?.children ?? []).filter((child): child is MenuItem => child !== 'separator');

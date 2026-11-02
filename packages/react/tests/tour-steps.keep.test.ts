@@ -18,7 +18,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('toGuidedSteps', () => {
+describe('K1 toGuidedSteps', { tags: ['standard'] }, () => {
   it('lets Tessera wait for a click on the lit part, waits for the app on an event, and uses Next otherwise', () => {
     const steps = toGuidedSteps(WELCOME);
     expect(steps.map((step) => step.advance)).toEqual(['next', 'click', 'next']);
@@ -41,10 +41,9 @@ describe('toGuidedSteps', () => {
     const click = step?.clickTarget;
     expect(click && 'current' in click ? click.current : null).toBe(document.querySelector('.entry'));
   });
-
 });
 
-describe('toGuidedSteps targets and entry', () => {
+describe('S2 toGuidedSteps targets and entry', { tags: ['standard'] }, () => {
   it('finds targets when the step looks, and none for a widget in its own window', () => {
     document.body.innerHTML = '<div data-widget-id="notes">Notes</div><div class="window-title-bar"><div class="window-title-bar__start"><button class="dropdown-trigger">Menu</button></div></div>';
     const [menu, notes] = toGuidedSteps(WELCOME);
@@ -93,7 +92,7 @@ describe('toGuidedSteps targets and entry', () => {
   });
 });
 
-describe('the Take the tour entry', () => {
+describe('K1 the Take the tour entry', { tags: ['critical'] }, () => {
   it('starts the only tour, or lists them when there are several', () => {
     const start = vi.fn();
     tourMenu.entry([WELCOME], start)?.onClick?.();
@@ -103,7 +102,7 @@ describe('the Take the tour entry', () => {
   });
 });
 
-describe('touring keys', () => {
+describe('K1 touring keys', { tags: ['critical'] }, () => {
   const key = (name: string, mods: Partial<Record<'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey', boolean>> = {}) =>
     ({ key: name, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, ...mods });
 

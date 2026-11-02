@@ -11,14 +11,14 @@ const freshModules = async () => {
 
 beforeAll(async () => {
   await import('../src/widgets/profile-views');
-}, 60_000);
+});
 
 afterEach(() => {
   vi.doUnmock('../src/platform/get-platform');
   vi.unstubAllGlobals();
 });
 
-describe('ui-views writes', () => {
+describe('K3 ui-views writes', { tags: ['standard'] }, () => {
   it('sends only the keys that changed, so an app key written by someone else survives', async () => {
     const disk = fakeMain({ 'profile:p1': { screens: {} }, 'app:layout-editor': { zoom: 2 } });
     const { profileViews } = await freshModules();
@@ -45,7 +45,7 @@ describe('ui-views writes', () => {
   });
 });
 
-describe('ui-views on Capacitor', () => {
+describe('K3 ui-views on Capacitor', { tags: ['standard'] }, () => {
   it('live in ui-views.json of the file store, so they outlast a restart', async () => {
     const disk = new Map<string, string>([['ui-views.json', JSON.stringify({ 'app:editor': { zoom: 2 } })]]);
     const files = {

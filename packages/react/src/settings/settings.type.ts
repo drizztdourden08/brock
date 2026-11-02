@@ -54,6 +54,8 @@ interface RunSettingActionOptions {
 
 type SettingDescription = SettingsDescription;
 
+type SettingVisibleWhen = { key: string; equals: unknown } | { key: string; notEquals: unknown };
+
 interface SettingItemFields {
   key: string;
   label: string;
@@ -65,6 +67,7 @@ interface SettingItemFields {
   chrome?: boolean;
   actions?: readonly SettingAction[];
   visible?: (settings: SettingValues) => boolean;
+  visibleWhen?: SettingVisibleWhen;
 }
 
 type SettingItem = SettingItemFields & SettingDescription;
@@ -143,5 +146,5 @@ interface TabDef<S extends object> {
 
 export type {
   LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause, SettingValues,
-  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SubSection, TabDef, TabRenderContext,
+  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SettingVisibleWhen, SubSection, TabDef, TabRenderContext,
 };

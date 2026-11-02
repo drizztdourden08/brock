@@ -15,7 +15,7 @@ const run = (rootDir, extraImports, imports) => {
   return errors;
 };
 
-describe('declared externals with the build cache', () => {
+describe('K1 declared externals with the build cache', { tags: ['critical'] }, () => {
   it('reads a placed file path or a file URL as no package', () => {
     expect(packageNameOf('X:/app/node_modules/.build-cache/node_modules/@s/a/main.js')).toBeNull();
     expect(packageNameOf('file:///X:/app/main.js')).toBeNull();

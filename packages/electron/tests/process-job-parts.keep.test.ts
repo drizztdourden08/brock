@@ -11,7 +11,7 @@ const WIN_TOOL = 'C:\\tools\\setup.exe';
 const ESC = String.fromCharCode(27);
 const BEL = String.fromCharCode(7);
 
-describe('buildProcessEnv', () => {
+describe('K1 buildProcessEnv', { tags: ['critical'] }, () => {
   it('keeps only allowlisted variables and adds what the app gives', () => {
     const base = { PATH: '/bin', Path: undefined, HOME: '/home/app', SECRET_TOKEN: 'abc', NODE_OPTIONS: '--inspect', ELECTRON_RUN_AS_NODE: '1' };
     const env = buildProcessEnv(base, { APP_MODE: 'install' }, 'linux');
@@ -24,7 +24,7 @@ describe('buildProcessEnv', () => {
   });
 });
 
-describe('splitLines and cleanLine', () => {
+describe('K1 splitLines and cleanLine', { tags: ['critical'] }, () => {
   it('splits on any line ending and keeps a partial line until it ends', () => {
     const seen: string[] = [];
     const splitter = splitLines((line) => seen.push(line), 100);
@@ -56,7 +56,7 @@ describe('splitLines and cleanLine', () => {
   });
 });
 
-describe('checkProcessSpec on a POSIX host', () => {
+describe('K4 checkProcessSpec on a POSIX host', { tags: ['critical'] }, () => {
   it('accepts an absolute command with plain arguments', () => {
     expect(checkProcessSpec({ command: TOOL, args: ['--flag', 'a value'], cwd: '/opt', env: { A_B: '1' } }, {}, 'linux')).toBeNull();
   });
@@ -79,7 +79,7 @@ describe('checkProcessSpec on a POSIX host', () => {
   });
 });
 
-describe('checkProcessSpec on Windows', () => {
+describe('K4 checkProcessSpec on Windows', { tags: ['critical'] }, () => {
   it('accepts a normalised drive letter .exe path', () => {
     expect(checkProcessSpec({ command: WIN_TOOL, args: [], cwd: 'C:\\work' }, {}, 'win32')).toBeNull();
     expect(checkProcessSpec({ command: 'C:/tools/../tools/setup.COM', args: [] }, {}, 'win32')).toBeNull();
@@ -109,7 +109,7 @@ describe('checkProcessSpec on Windows', () => {
   });
 });
 
-describe('checkProcessSpec environment', () => {
+describe('K4 checkProcessSpec environment', { tags: ['critical'] }, () => {
   it.each(['NODE_OPTIONS', 'ELECTRON_RUN_AS_NODE', 'LD_PRELOAD', 'DYLD_INSERT_LIBRARIES', 'PATH'])('refuses %s unless the definition allows it', (name) => {
     expect(checkProcessSpec({ command: TOOL, args: [], env: { [name]: 'x' } }, {}, 'linux')).toBe(`The environment may not set ${name}.`);
     expect(checkProcessSpec({ command: TOOL, args: [], env: { [name]: 'x' } }, { env: [name] }, 'linux')).toBeNull();
@@ -122,7 +122,7 @@ describe('checkProcessSpec environment', () => {
   });
 });
 
-describe('exitOutcome', () => {
+describe('K1 exitOutcome', { tags: ['critical'] }, () => {
   const base = { code: 0, signal: null, killed: false, timedOut: false, tail: [] };
 
   it('says done for a success exit that came before any kill', () => {

@@ -14,7 +14,7 @@ const logs = [];
 const clone = (target, source) => cloneInstall({ target, main: source, log: (line) => logs.push(line), worktrees: [] });
 const DEP = 'node_modules/.pnpm/dep@1.0.0/node_modules/dep';
 
-describe('the shared store survives damage', () => {
+describe('K3 the shared store survives damage', { tags: ['standard'] }, () => {
   it('reads an emptied package folder as damage, tells a cloned worktree so, leaves the entry where it is and links the next clone to a fresh one', async () => {
     const source = installedCheckout();
     const first = freshCheckout();
@@ -67,7 +67,7 @@ describe('the shared store survives damage', () => {
   });
 });
 
-describe('what a clone may take links from', () => {
+describe('K4 what a clone may take links from', { tags: ['standard'] }, () => {
   it('refuses a checkout whose node_modules is a link', async () => {
     const real = installedCheckout();
     const linked = tempFolder('brock-linked-');
@@ -104,7 +104,7 @@ describe('what a clone may take links from', () => {
   });
 });
 
-describe('the store manifest', () => {
+describe('K3 the store manifest', { tags: ['standard'] }, () => {
   it('judges a store whole right after it is built, even with links between scoped packages, and flags an emptied package', async () => {
     const source = installedCheckout();
     const store = join(source, 'node_modules/.pnpm');

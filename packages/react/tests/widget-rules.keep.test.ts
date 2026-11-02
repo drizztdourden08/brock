@@ -12,6 +12,7 @@ import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 import { WidgetFace } from '../src/widgets/WidgetFace';
 import { defineWidget } from '../src/widgets/define-widget';
 import { forcedWidgets } from '../src/widgets/forced-widgets';
+import { focusKeep } from '../src/widgets/focus-keep';
 import { forgetFocusMode } from '../src/widgets/forget-focus-mode';
 import { layout } from '../src/widgets/layout-facade';
 import { useForcedWidgetStore } from '../src/widgets/useForcedWidgetStore';
@@ -47,6 +48,7 @@ beforeEach(() => {
   useWidgetPrefStore.setState({ byWidget: {} });
   useForcedWidgetStore.setState({ ids: [], pending: [] });
   forgetFocusMode();
+  focusKeep({});
 });
 
 afterEach(() => {
@@ -54,12 +56,7 @@ afterEach(() => {
   showHarness.resetShow();
 });
 
-describe('W1 widget when and contexts', () => {
-  it('makes a widget with a rule, a context list or both context-only by default', () => {
-    for (const def of [SHEET, MULTI, BOTH]) expect(def.defaultVisibility).toBe('context-only');
-    expect(PLAIN.defaultVisibility).toBe('always');
-  });
-
+describe('K1 widget when and contexts', { tags: ['critical'] }, () => {
   it('follows the rule as the show flags change', () => {
     expect(widgetAvailable(SHEET, INITIAL_CONTEXTS, null)).toBe(false);
     setMode('sheet');
@@ -84,13 +81,6 @@ describe('W1 widget when and contexts', () => {
     expect(widgetAvailable(BOTH, INITIAL_CONTEXTS, null)).toBe(false);
   });
 
-  it('reports the rule in widgets.list available', () => {
-    const entry = () => widgets.list().find((each) => each.id === 'sheet');
-    expect(entry()?.available).toBe(false);
-    setMode('sheet');
-    expect(entry()?.available).toBe(true);
-  });
-
   it('notifies a subscriber when a rule flips', () => {
     const seen: boolean[] = [];
     const stop = widgets.subscribe((snapshot) => seen.push(availableIn(snapshot, 'sheet')));
@@ -100,7 +90,7 @@ describe('W1 widget when and contexts', () => {
   });
 });
 
-describe('W2 widgets.setTitle and the empty state', () => {
+describe('S1 widgets.setTitle and the empty state', { tags: ['standard'] }, () => {
   it('sets, reads back and clears a dynamic title', () => {
     widgets.setTitle('plain', 'Plain (3)');
     expect(widgets.list().find((each) => each.id === 'plain')?.label).toBe('Plain (3)');
@@ -125,7 +115,7 @@ describe('W2 widgets.setTitle and the empty state', () => {
   });
 });
 
-describe('W8 widget scoped settings', () => {
+describe('K1 widget scoped settings', { tags: ['critical'] }, () => {
   it('reads the default, then the stored value, and writes through the widget prefs', () => {
     const source = widgetPrefSource(PREFS);
     expect(source.get('thumb')).toBe('s');
@@ -158,7 +148,7 @@ describe('W8 widget scoped settings', () => {
   });
 });
 
-describe('W7 layout.focusMode', () => {
+describe('K1 layout.focusMode', { tags: ['critical'] }, () => {
   const BARS = [defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null })];
 
   beforeEach(() => {

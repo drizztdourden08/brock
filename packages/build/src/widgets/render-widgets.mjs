@@ -56,4 +56,4 @@ const renderWidgetsFiles = (rootDir) => {
   ];
 };
 
-export { renderWidgets, renderWidgetsFiles };
+export { renderWidgetsFiles };

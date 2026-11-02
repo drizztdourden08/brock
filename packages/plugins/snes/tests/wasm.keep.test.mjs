@@ -15,7 +15,7 @@ writeFileSync('${OUTPUT}/game.js', '');
 writeFileSync('built-with.txt', process.env.EMSDK ?? '');
 `;
 
-describe('snes wasm, on the port kit stale check', () => {
+describe('S2 snes wasm, on the port kit stale check', { tags: ['standard'] }, () => {
   const dirs = [];
   let savedEmsdk;
   beforeEach(() => {

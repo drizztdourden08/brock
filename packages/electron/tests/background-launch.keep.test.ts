@@ -67,7 +67,7 @@ afterEach(() => {
   resetSim();
 });
 
-describe('deciding to skip the window', () => {
+describe('K1 deciding to skip the window', { tags: ['critical'] }, () => {
   it('skips on a --background launch and creates the window on a normal one', async () => {
     const options = {};
     const background = { ...context(), flags: { ...flags, isBackgroundLaunch: () => true } } as MainContext;
@@ -103,7 +103,7 @@ describe('deciding to skip the window', () => {
   });
 });
 
-describe('entering background mode', () => {
+describe('K1 entering background mode', { tags: ['critical'] }, () => {
   it('turns the mode on and drops the splash without closing the app', () => {
     const splash = new FakeWindow({ title: 'splash' });
     splash.on('closed', () => { if (!backgroundMode.active) shared.quit(); });
@@ -116,7 +116,7 @@ describe('entering background mode', () => {
   });
 });
 
-describe('showing the window on demand', () => {
+describe('K1 showing the window on demand', { tags: ['critical'] }, () => {
   it('creates the window when there is none', async () => {
     await showMainWindow();
     expect(opener).toHaveBeenCalledTimes(1);
@@ -143,7 +143,7 @@ describe('showing the window on demand', () => {
   });
 });
 
-describe('the single instance lock', () => {
+describe('K1 the single instance lock', { tags: ['critical'] }, () => {
   const second = (...extra: string[]): void => fire('second-instance', {}, ['app.exe', ...extra], '/work');
 
   it('shows the window when a normal second launch arrives and there is none', () => {
@@ -187,7 +187,7 @@ describe('the single instance lock', () => {
   });
 });
 
-describe('the app lifecycle', () => {
+describe('K1 the app lifecycle', { tags: ['critical'] }, () => {
   const install = (ctx = context()): { recreate: ReturnType<typeof vi.fn>; ctx: MainContext } => {
     const recreate = vi.fn();
     installAppLifecycle({ ctx, modules: [], recreateWindow: recreate });

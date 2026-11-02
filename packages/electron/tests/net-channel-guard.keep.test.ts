@@ -21,7 +21,7 @@ const open = (): Handler => {
   return handlers.get('net:read') as Handler;
 };
 
-describe('net:read frame check', () => {
+describe('K4 net:read frame check', { tags: ['critical'] }, () => {
   it('refuses a call that is not from the app frame, before any request', async () => {
     const read = open();
     const sender = senderOf();

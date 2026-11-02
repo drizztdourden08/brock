@@ -9,7 +9,7 @@ afterEach(cleanup);
 
 const BODY = "const LINES = ['a'];\n\nexport { LINES };\n";
 
-describe('brock structure: the verbatim files', () => {
+describe('K2 brock structure: the verbatim files', { tags: ['critical'] }, () => {
   it('lists every @kind verbatim file with the source its header names', () => {
     const root = tempDir();
     put(root, 'src/legal/font-licence.ts', `/* @layer shared-legal @kind verbatim @source the font licence, SIL OFL 1.1 */\n${BODY}`);

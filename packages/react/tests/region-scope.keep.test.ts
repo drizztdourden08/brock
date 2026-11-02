@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { focusedId, markRegion, mount, next, SHELL, useShellRegionCommands } from './region-fixtures';
 
-describe('what joins the region cycle', () => {
+describe('S3 what joins the region cycle', { tags: ['standard'] }, () => {
   useShellRegionCommands();
 
   it('adds an element an app marks with focusRegion, even inside the main area', () => {

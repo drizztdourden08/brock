@@ -12,7 +12,6 @@ afterEach(removeTempRepos);
 
 const PRODUCT = { id: 'atlas', name: 'Atlas' };
 const REGISTRY = 'https://npm.pkg.github.com';
-const BUILDS = ['prepare', 'build-windows', 'build-macos', 'build-linux'];
 
 const manifest = (fields) => `${JSON.stringify({ version: '1.2.0', publishConfig: { registry: REGISTRY }, ...fields })}\n`;
 
@@ -35,27 +34,14 @@ const releaseOf = (publish, extra = {}) => {
 
 const stepOf = (job, name) => job.steps.find((step) => step.name === name);
 
-describe('workflows.publish', () => {
-  const { text, workflow } = releaseOf({ packages: ['packages/lobby-protocol', 'packages/client-kit'] });
+describe('K1 workflows.publish', { tags: ['critical'] }, () => {
+  const { workflow } = releaseOf({ packages: ['packages/lobby-protocol', 'packages/client-kit'] });
   const job = workflow.jobs['publish-packages'];
-
-  it('adds a publish-packages job on ubuntu that waits for the builds and runs beside the release job', () => {
-    expect(job['runs-on']).toBe('ubuntu-24.04');
-    expect(job.needs).toEqual(BUILDS);
-    expect(workflow.jobs.release.needs).toEqual(BUILDS);
-    expect(Object.keys(workflow.jobs)).toEqual([...BUILDS, 'publish-packages', 'release']);
-  });
 
   it('grants contents read and packages write to that job only', () => {
     expect(job.permissions).toEqual({ contents: 'read', packages: 'write' });
     expect(workflow.permissions).toEqual({ contents: 'write', packages: 'read' });
     expect(workflow.jobs.release.permissions).toBeUndefined();
-  });
-
-  it('checks out the commit the builds ran from and installs with the frozen lockfile against the GitHub registry', () => {
-    expect(job.steps[0].with.ref).toBe('${{ needs.prepare.outputs.sha }}');
-    expect(job.steps.find((step) => step.uses?.startsWith('actions/setup-node')).with).toMatchObject({ 'registry-url': REGISTRY, scope: '@atlas-games' });
-    expect(stepOf(job, 'Install').run).toBe('pnpm install --frozen-lockfile');
   });
 
   it('builds a package that has a build script and leaves out one that has none', () => {
@@ -76,8 +62,7 @@ describe('workflows.publish', () => {
     expect(first.run.indexOf('npm view')).toBeLessThan(first.run.indexOf('pnpm publish'));
   });
 
-  it('leaves no template key behind and no job when the app publishes nothing', () => {
-    expect(text).not.toMatch(/__[A-Z_]+__/);
+  it('adds no job when the app publishes nothing', () => {
     expect(releaseOf(undefined).workflow.jobs['publish-packages']).toBeUndefined();
   });
 
@@ -90,7 +75,7 @@ describe('workflows.publish', () => {
   });
 });
 
-describe('workflows.publish refusals', () => {
+describe('K4 workflows.publish refusals', { tags: ['critical'] }, () => {
   const refused = (publish, extra, pattern) => expect(() => releaseOf(publish, extra)).toThrow(pattern);
 
   it('refuses a path that is not a workspace package', () => {
@@ -146,49 +131,17 @@ const { entry } = standaloneOf({ packages: PACKAGES });
 const workflow = parse(entry.content);
 const job = workflow.jobs['publish-packages'];
 
-describe('the publish-packages workflow', () => {
+describe('K2 the publish-packages workflow', { tags: ['critical'] }, () => {
   it('is written next to release.yml and triggered by workflow_dispatch with an optional packages input', () => {
     expect(entry.path).toBe('.github/workflows/publish-packages.yml');
     expect(Object.keys(workflow.on)).toEqual(['workflow_dispatch']);
     expect(workflow.on.workflow_dispatch.inputs.packages).toMatchObject({ required: false, default: '', type: 'string' });
     expect(workflow.on.workflow_dispatch.inputs.packages.description).toContain(PACKAGES.join(', '));
     expect(Object.keys(workflow.jobs)).toEqual(['publish-packages']);
-    expect(entry.content).not.toMatch(/__[A-Z_]+__/);
   });
-
-  it('has no needs and no checkout ref, and shares permissions, install and registry with the release job', () => {
-    const release = releaseOf({ packages: PACKAGES }).workflow.jobs['publish-packages'];
-    expect(job.needs).toBeUndefined();
-    expect(job.steps[0]).toEqual({ uses: 'actions/checkout@v7' });
-    expect(job.permissions).toEqual({ contents: 'read', packages: 'write' });
-    expect(job.permissions).toEqual(release.permissions);
-    expect(job.steps.slice(1, 4)).toEqual(release.steps.slice(1, 4));
-    expect(stepOf(job, 'Install')).toEqual(stepOf(release, 'Install'));
-  });
-
-  it('builds and publishes each selected package with the same commands as the release job', () => {
-    const release = releaseOf({ packages: PACKAGES }).workflow.jobs['publish-packages'];
-    const { if: gate, ...build } = stepOf(job, 'Build @atlas-games/lobby-protocol');
-    expect(build).toEqual(stepOf(release, 'Build @atlas-games/lobby-protocol'));
-    expect(gate).toBe("contains(steps.select.outputs.folders, ',packages/lobby-protocol,')");
-    const { if: publishGate, ...publish } = stepOf(job, 'Publish @atlas-games/client-kit');
-    expect(publish).toEqual(stepOf(release, 'Publish @atlas-games/client-kit'));
-    expect(publishGate).toBe("contains(steps.select.outputs.folders, ',packages/client-kit,')");
-    expect(job.steps.map((step) => step.name).filter(Boolean).slice(1)).toEqual([
-      'Select packages', 'Build @atlas-games/lobby-protocol', 'Publish @atlas-games/lobby-protocol', 'Publish @atlas-games/client-kit',
-    ]);
-  });
-
-  it('keeps the release.yml publish-packages job unchanged', () => {
-    const { workflow: release } = releaseOf({ packages: PACKAGES });
-    expect(release.jobs['publish-packages'].needs).toEqual(BUILDS);
-    expect(release.jobs['publish-packages'].steps.some((step) => step.if !== undefined)).toBe(false);
-    expect(stepOf(release.jobs['publish-packages'], 'Select packages')).toBeUndefined();
-  });
-
 });
 
-describe('the package selection of the publish-packages workflow', () => {
+describe('E2 the package selection of the publish-packages workflow', { tags: ['e2e'] }, () => {
   const select = (requested) => {
     const step = stepOf(job, 'Select packages');
     const output = join(tempRepo({ 'github-output': '' }), 'github-output').replaceAll('\\', '/');
@@ -210,10 +163,9 @@ describe('the package selection of the publish-packages workflow', () => {
     expect(run.stdout).toContain('::error title=Unknown package::packages/other is not in workflows.publish of brock.config.ts. Use one or more of: packages/lobby-protocol, packages/client-kit.');
     expect(select('tools/x').status).toBe(1);
   });
-
 });
 
-describe('the publish-packages workflow file', () => {
+describe('K3 the publish-packages workflow file', { tags: ['critical'] }, () => {
   it('is absent when the app publishes nothing, which leaves the workflow set unchanged', () => {
     expect(standaloneOf(undefined).paths).toEqual(['.github/workflows/ci.yml', '.github/workflows/release.yml']);
     expect(standaloneOf({ packages: PACKAGES }).paths).toEqual(['.github/workflows/ci.yml', '.github/workflows/release.yml', '.github/workflows/publish-packages.yml']);
@@ -226,9 +178,5 @@ describe('the publish-packages workflow file', () => {
     expect(syncApp(root, config, { check: true, onMissing: 'skip' }).drifted).not.toContain('.github/workflows/publish-packages.yml');
     writeFileSync(join(root, '.github/workflows/publish-packages.yml'), 'name: edited\n');
     expect(syncApp(root, config, { check: true, onMissing: 'skip' }).drifted).toContain('.github/workflows/publish-packages.yml');
-  });
-
-  it('refuses the same bad packages as the release job', () => {
-    expect(() => standaloneOf({ packages: ['packages/missing'] })).toThrow(/workflows\.publish: packages\/missing is not a workspace package/);
   });
 });

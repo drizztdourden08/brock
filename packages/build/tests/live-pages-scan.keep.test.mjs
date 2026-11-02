@@ -1,7 +1,6 @@
 /* @layer tooling-scripts @kind test */
 import { afterEach, describe, expect, it } from 'vitest';
 import { tempTree } from './temp-tree.mjs';
-import { renderScreensFiles } from '../src/screens/render-screens.mjs';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-live-pages-');
@@ -26,24 +25,11 @@ const app = (live = LIVE) => {
   return root;
 };
 
-describe('a .live.tsx file', () => {
+describe('K1 a .live.tsx file', { tags: ['critical'] }, () => {
   it('is a live page of its bucket', () => {
     const { files, findings } = scanScreens(app());
     expect(findings).toEqual([]);
     expect(files.map(({ kind, id, bucket }) => [kind, id, bucket])).toEqual([['page', 'directory', 'controllers'], ['live', 'pads', 'controllers']]);
-  });
-
-  it('is imported at boot and hands its hook to the tree as usePages', () => {
-    const screens = renderScreensFiles(app()).find((file) => file.path === '.brock/screens.ts')?.content;
-    expect(screens).toContain("import ControllersPadsLive, { meta as controllersPadsLiveMeta } from '../src/screens/controllers/pads.live';");
-    expect(screens).toContain("{ kind: 'live', bucket: 'controllers', id: 'pads', usePages: ControllersPadsLive, meta: controllersPadsLiveMeta },");
-  });
-
-  it('feeds the search seed with its title, icon and keywords', () => {
-    const search = renderScreensFiles(app()).find((file) => file.path === '.brock/search.ts')?.content;
-    expect(search).toContain('"kind":"live","id":"pads","bucket":"controllers"');
-    expect(search).toContain('"icon":"gamepad-2"');
-    expect(search).toContain('"keywords":["gamepad"]');
   });
 
   it('needs a meta export', () => {

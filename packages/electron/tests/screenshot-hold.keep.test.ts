@@ -38,7 +38,7 @@ const shooting = async () => {
   return { captureHolds, bootEvents };
 };
 
-describe('--screenshot', () => {
+describe('K1 --screenshot', { tags: ['critical'] }, () => {
   it('waits for the reveal, then for every hold the app took to be released', async () => {
     const { captureHolds, bootEvents } = await shooting();
     captureHolds.set(2);
@@ -104,7 +104,7 @@ const armed = async (timeout: string | null, defaultMs?: number, bootWatchdogMs?
   return { captureHolds, bootEvents };
 };
 
-describe('the --screenshot watchdog', () => {
+describe('K1 the --screenshot watchdog', { tags: ['critical'] }, () => {
   it('captures what there is and exits 2 when the window is never revealed in time', async () => {
     await armed(null);
     await vi.advanceTimersByTimeAsync(19_999);
@@ -145,7 +145,7 @@ describe('the --screenshot watchdog', () => {
   });
 });
 
-describe('the --screenshot watchdog default', () => {
+describe('K1 the --screenshot watchdog default', { tags: ['critical'] }, () => {
   it('waits as long as the boot watchdog when that is longer, such as the 120 s of a dev launch', async () => {
     await armed(null, undefined, 120_000);
     await vi.advanceTimersByTimeAsync(119_999);
@@ -168,7 +168,7 @@ describe('the --screenshot watchdog default', () => {
   });
 });
 
-describe('review captures', () => {
+describe('K1 review captures', { tags: ['critical'] }, () => {
   it('wait for the same holds as --screenshot, stable for a frame, and report the holds still open when the wait runs out', async () => {
     vi.resetModules();
     vi.useFakeTimers();

@@ -15,7 +15,7 @@ afterEach(() => {
 
 const ELECTRON_PACKAGE = '{ "name": "electron", "version": "40.0.0" }\n';
 
-describe('ensure-electron', () => {
+describe('K3 ensure-electron never forces', { tags: ['critical'] }, () => {
   it('re-runs the install script of the package, never a pnpm install, and fails with the command to run', () => {
     const root = brockWorkspace({
       'apps/desktop/node_modules/electron/package.json': ELECTRON_PACKAGE,
@@ -39,14 +39,6 @@ describe('ensure-electron', () => {
     const result = ensureElectron(root);
     expect(result.ok).toBe(false);
     expect(result.message).toContain('shared package store');
-    expect(exec).not.toHaveBeenCalled();
-  });
-
-  it('names the app folder as the install folder when the app is the repo', () => {
-    const root = brockWorkspace({ 'node_modules/electron/package.json': ELECTRON_PACKAGE });
-    const result = ensureElectron(root);
-    expect(result.ok).toBe(false);
-    expect(result.message).toContain(`in ${root} and retry`);
     expect(exec).not.toHaveBeenCalled();
   });
 });

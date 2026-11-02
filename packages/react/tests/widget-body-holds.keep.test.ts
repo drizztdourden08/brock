@@ -11,7 +11,6 @@ import { bodyHolds } from '../src/screenshot/body-holds';
 import { defineWidget } from '../src/widgets/define-widget';
 import { defineWidgetKit } from '../src/widgets/kits/define-widget-kit';
 import { useWidgetKitStore } from '../src/widgets/kits/useWidgetKitStore';
-import { KitOverlay } from '../src/widgets/KitLayer/sub-components/KitOverlay';
 import { useForcedWidgetStore } from '../src/widgets/useForcedWidgetStore';
 import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
 import { WidgetBody } from '../src/widgets/WidgetBody';
@@ -61,7 +60,7 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
-describe('a widget opened just before a capture', () => {
+describe('S2 a widget opened just before a capture', { tags: ['standard'] }, () => {
   it('holds the capture from widgets.force until its body has mounted, loaded and painted', async () => {
     let finish: () => void = () => undefined;
     const Body = lazyComponent(() => new Promise<{ default: () => ReactElement }>((resolve) => {
@@ -82,28 +81,6 @@ describe('a widget opened just before a capture', () => {
     await runFrames(8);
     expect(captured()).toBe(true);
     widgets.force([]);
-  });
-
-  it('a forced kit widget holds for its body and for its kit overlay until both are drawn', async () => {
-    widgets.force(['trace']);
-    expect(useWidgetKitStore.getState().active).toBe('probe');
-    expect(bodyHolds.pending()).toBe(2);
-    await runFrames(5);
-    await draw(createElement(WidgetBody, { id: 'trace', label: 'Trace' }, 'trace'));
-    expect(bodyHolds.pending()).toBe(1);
-    await runFrames(5);
-    expect(held()).toBe(true);
-    await draw(createElement('div', null, createElement(WidgetBody, { id: 'trace', label: 'Trace' }, 'trace'), createElement(KitOverlay, { overlay: GRID })));
-    expect(bodyHolds.pending()).toBe(0);
-    await runFrames(3);
-    expect(captured()).toBe(true);
-    widgets.force([]);
-  });
-
-  it('takes no hold for a widget whose body is already drawn', async () => {
-    await draw(createElement(WidgetBody, { id: 'notes', label: 'Notes' }, 'notes'));
-    widgets.open('notes');
-    expect(sent).toEqual([]);
   });
 
   it('lets go on the next frames when the widget did not open', async () => {

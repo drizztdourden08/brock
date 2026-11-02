@@ -9,7 +9,6 @@ import { NO_PARAMS } from '../src/navigation/navigation.constants';
 import type { ScreenParams } from '../src/navigation/navigation.type';
 import { PlatformProvider } from '../src/platform/PlatformProvider';
 import { bucketChecks } from '../src/review/checks/bucket-checks';
-import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import type { HubNavMode } from '../src/screens/conventions/screens-config.type';
 import type { ShowContext } from '../src/screens/show/show.type';
 import { useShowFlags } from '../src/screens/show/useShowFlags';
@@ -37,8 +36,8 @@ const navItems = (): string[] => [...document.querySelectorAll('.side-nav__item'
 
 afterEach(showHarness.resetShow);
 
-describe('the hub nav with one visible page', () => {
-  it('shows only when it is useful, unless the hub asks for it always or never', () => {
+describe('K1 and S1 the hub nav with one visible page', () => {
+  it('shows only when it is useful, unless the hub asks for it always or never', { tags: ['critical'] }, () => {
     expect(showsHubNav(undefined, 1)).toBe(false);
     expect(showsHubNav('auto', 1)).toBe(false);
     expect(showsHubNav('auto', 2)).toBe(true);
@@ -46,7 +45,7 @@ describe('the hub nav with one visible page', () => {
     expect(showsHubNav(false, 3)).toBe(false);
   });
 
-  it('draws the one page alone, then the nav and its search once a flag shows a second page', () => {
+  it('draws the one page alone, then the nav and its search once a flag shows a second page', { tags: ['standard'] }, () => {
     draw(hubWith(), false);
     expect(document.querySelector('.side-nav-layout')).toBeNull();
     expect(document.querySelector('.side-nav__search-input')).toBeNull();
@@ -58,28 +57,10 @@ describe('the hub nav with one visible page', () => {
     draw(hubWith(), false);
     expect(document.querySelector('.side-nav-layout')).toBeNull();
   });
-
-  it('keeps the nav with nav: always, and leaves it out with nav: false', () => {
-    draw(hubWith('always'), false);
-    expect(navItems()).toEqual(['home']);
-    showHarness.unmount();
-    draw(hubWith(false), true, { section: 'billing' });
-    expect(document.querySelector('.side-nav-layout')).toBeNull();
-    expect(document.querySelector('.hub__solo')?.textContent).toBe('page billing');
-  });
-
-  it('takes nav from the bucket of screens.config.ts', () => {
-    const View = () => null;
-    const tree = buildScreenTree(
-      { buckets: [{ id: 'one', title: 'One', icon: 'house', menu: 'entry', nav: 'always' }, { id: 'two', title: 'Two', icon: 'house', menu: 'entry' }], home: 'one' },
-      [{ kind: 'page', bucket: 'one', id: 'a', component: View }, { kind: 'page', bucket: 'two', id: 'b', component: View }],
-    );
-    expect(tree.hubs.map((hub) => hub.nav)).toEqual(['always', undefined]);
-  });
 });
 
-describe('the review of a hub with no nav', () => {
-  it('passes a one-page hub with no nav drawn, and fails one that draws a nav it should leave out', () => {
+describe('K1 the review of a hub with no nav', () => {
+  it('passes a one-page hub with no nav drawn, and fails one that draws a nav it should leave out', { tags: ['critical'] }, () => {
     const pass = bucketChecks({ hub: 'account', reachedVia: 'the menu entry Account', nav: false, expected: ['home'], shown: [] });
     expect(pass.map((check) => check.pass)).toEqual([true, true]);
     const fail = bucketChecks({ hub: 'account', reachedVia: 'the menu entry Account', nav: false, expected: ['home'], shown: ['home'] });

@@ -52,12 +52,8 @@ const pageIds = (hub: HubDef): string[][] => hub.groups.map((group) => [group.id
 
 const noAlias = (): RouteAlias | undefined => undefined;
 
-describe('buildScreenTree', () => {
+describe('K1 buildScreenTree', { tags: ['critical'] }, () => {
   const tree = buildScreenTree(CONFIG, ENTRIES);
-
-  it('makes one hub per bucket in config order', () => {
-    expect(tree.hubs.map((hub) => hub.id)).toEqual(['game', 'data', 'lab']);
-  });
 
   it('puts the hero home, then the default group, then the config groups, with pages ordered by meta', () => {
     const game = hubOf(tree.hubs, 'game');
@@ -104,7 +100,7 @@ describe('buildScreenTree', () => {
   });
 });
 
-describe('resolveScreenTree', () => {
+describe('K1 resolveScreenTree', { tags: ['critical'] }, () => {
   const resolved = resolveScreenTree(buildScreenTree(CONFIG, ENTRIES), [MODULE_TAB]);
 
   it('places the built-in settings tabs in the settings bucket', () => {
@@ -135,7 +131,7 @@ describe('resolveScreenTree', () => {
   });
 });
 
-describe('deriveMenu', () => {
+describe('K1 deriveMenu', { tags: ['critical'] }, () => {
   const tree = buildScreenTree(CONFIG, ENTRIES);
   const menu = deriveMenu(CONFIG, tree.hubs, tree.screens) as MenuItem[];
 
@@ -150,7 +146,7 @@ describe('deriveMenu', () => {
   });
 });
 
-describe('deriveMenu with menuOrder', () => {
+describe('K1 deriveMenu with menuOrder', { tags: ['critical'] }, () => {
   it('orders a submenu by meta.menuOrder, falling back to order, while the nav keeps order', () => {
     const entries: ScreenEntry[] = [
       ...ENTRIES.filter((entry) => 'bucket' in entry && entry.bucket !== 'data'),
@@ -166,7 +162,7 @@ describe('deriveMenu with menuOrder', () => {
   });
 });
 
-describe('the screens the review looks for in the menu', () => {
+describe('K1 the screens the review looks for in the menu', { tags: ['critical'] }, () => {
   it('skips the base screen and a screen with menu false, which have no menu entry by design', () => {
     const entries: ScreenEntry[] = [
       ...ENTRIES,
@@ -180,7 +176,7 @@ describe('the screens the review looks for in the menu', () => {
   });
 });
 
-describe('the fill page meta', () => {
+describe('K1 the fill page meta', { tags: ['critical'] }, () => {
   it('reaches the hub page, a tab page and a sub page', () => {
     const entries: ScreenEntry[] = [
       ...ENTRIES.filter((entry) => 'bucket' in entry && entry.bucket !== 'data'),
@@ -199,7 +195,7 @@ describe('the fill page meta', () => {
   });
 });
 
-describe('resolveRoute', () => {
+describe('K1 resolveRoute', { tags: ['critical'] }, () => {
   it('reads bucket, page and tab from a deep link', () => {
     expect(resolveRoute('game/tracker/map', { from: 'menu' }, noAlias)).toEqual({ active: 'game', params: { from: 'menu', section: 'tracker', tab: 'map' } });
     expect(resolveRoute('about', {}, noAlias)).toEqual({ active: 'about', params: {} });

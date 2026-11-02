@@ -1,5 +1,6 @@
 /* @layer electron-main @kind types */
 import type { Stats } from 'fs';
+import type { KoffiDecode, NativeFunction } from '../os-integration/koffi.type';
 import type { AskChannel, EventChannel, InvokeChannel, InvokeSignature, VoidSignature } from '@drizztdourden08/brock-core/ipc';
 
 type BridgeRoute<F extends InvokeSignature = InvokeSignature> = InvokeChannel<string, F>;
@@ -134,6 +135,27 @@ interface SystemToolOptions {
   env?: Record<string, string>;
 }
 
+type AclEntryKind = 'allow' | 'deny' | 'other';
+
+interface AclEntry {
+  kind: AclEntryKind;
+  sid: string;
+}
+
+interface FileSecurity {
+  ownerSid: string;
+  entries: AclEntry[];
+}
+
+type FileSecurityReader = (file: string) => FileSecurity;
+
+interface SecurityBindings {
+  getSecurity: NativeFunction;
+  convertSid: NativeFunction;
+  free: NativeFunction;
+  decode: KoffiDecode;
+}
+
 type SystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) => Buffer;
 
 type AsyncSystemToolRun = (exe: string, args: string[], options?: SystemToolOptions) => Promise<Buffer>;
@@ -142,4 +164,5 @@ export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionLink, BridgeConnectionListener, BridgeDiscovery, BridgeErrorOptions, BridgeEvent,
   BridgeHandler, BridgeHello, BridgeReply, BridgeReplyWriter, BridgeRequest, BridgeRequestId, BridgeRoute, BridgeRouteEntry, BridgeRouteOptions,
   BridgeRequestRoute, BridgeServer, BridgeServerMessage, BridgeServerOptions, BridgeSession, BridgeWriteLimits, DiscoveryHost, PathStat, PrivateEndpoint, SystemToolRun, AsyncSystemToolRun, WindowsUser,
+  AclEntry, AclEntryKind, FileSecurity, FileSecurityReader, SecurityBindings,
 };

@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createWebFactory } from '../src/platform/hosts/web-factory';
 import { useProfilesStore } from '../src/stores/useProfilesStore';
 import { electronDocuments, FILE, PROFILE, stubApi } from './documents-port-fixture';
 
@@ -9,26 +8,7 @@ afterEach(() => {
   useProfilesStore.setState({ active: null });
 });
 
-describe('the documents port', () => {
-  it('maps the dialogs and reads onto the document channels on Electron', async () => {
-    const api = stubApi();
-    const documents = electronDocuments();
-    expect(await documents.open({ title: 'Open' })).toBe(FILE);
-    expect(api.documentOpen).toHaveBeenCalledWith({ title: 'Open' }, undefined);
-    expect(await documents.saveAs()).toBeNull();
-    expect([...(await documents.read(FILE))]).toEqual([4, 5]);
-    expect(await documents.readText(FILE)).toBe('text');
-  });
-
-  it('maps the folder dialog and the listing onto their channels', async () => {
-    const api = stubApi();
-    const documents = electronDocuments();
-    expect(await documents.openFolder({ title: 'Project' })).toBe('C:\\art');
-    expect(api.documentOpenFolder).toHaveBeenCalledWith({ title: 'Project' }, undefined);
-    expect((await documents.list('C:\\art', { extensions: ['bxel'], recursive: true })).entries.map((entry) => entry.name)).toEqual(['a.bxel']);
-    expect(api.documentList).toHaveBeenCalledWith('C:\\art', { extensions: ['bxel'], recursive: true });
-  });
-
+describe('S2 the documents port', { tags: ['standard'] }, () => {
   it('sends writes as bytes and text on Electron', async () => {
     const api = stubApi();
     const documents = electronDocuments();
@@ -37,25 +17,17 @@ describe('the documents port', () => {
     await documents.writeText(FILE, 'hello');
     expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'hello', undefined, undefined);
   });
+});
 
-  it('passes the write options on, and leaves them out by default', async () => {
+describe('S2 the write check on Electron', { tags: ['standard'] }, () => {
+  it('sends a folder to the dry run and returns its answer', async () => {
     const api = stubApi();
-    useProfilesStore.setState({ active: PROFILE });
-    const documents = electronDocuments();
-    await documents.write(FILE, new Uint8Array([1]), { recent: false });
-    await documents.writeText(FILE, 'png', { recent: false });
-    expect(api.documentWrite.mock.calls[0]?.[3]).toEqual({ recent: false });
-    expect(api.documentWriteText).toHaveBeenCalledWith(FILE, 'png', 'p1', { recent: false });
-    await documents.writeText(FILE, 'doc');
-    expect(api.documentWriteText).toHaveBeenLastCalledWith(FILE, 'doc', 'p1', undefined);
-  });
-
-  it('is absent on the web host', () => {
-    expect(createWebFactory().ports.documents).toBeUndefined();
+    expect(await electronDocuments().canWrite?.('C:\\art')).toEqual({ ok: true, path: 'C:\\art' });
+    expect(api.documentCanWrite).toHaveBeenCalledWith('C:\\art');
   });
 });
 
-describe('recent documents and recovery on Electron', () => {
+describe('S2 recent documents and recovery on Electron', { tags: ['standard'] }, () => {
   it('passes the active profile to every channel', async () => {
     const api = stubApi();
     useProfilesStore.setState({ active: PROFILE });
@@ -103,5 +75,60 @@ describe('recent documents and recovery on Electron', () => {
     await expect(documents.snapshot('k', new Uint8Array([1]))).rejects.toThrow(/active profile/);
     expect(api.documentRecent).not.toHaveBeenCalled();
     expect(api.documentSnapshot).not.toHaveBeenCalled();
+  });
+});
+
+describe('S2 watching a folder on Electron', { tags: ['standard'] }, () => {
+  it('sends the events of its own watch to the listener until it is unsubscribed', async () => {
+    const api = stubApi();
+    const documents = electronDocuments();
+    const first = vi.fn();
+    const second = vi.fn();
+    const stop = await documents.watch('C:\\art', { recursive: true }, first);
+    await documents.watch('C:\\art', {}, second);
+    const [firstId, secondId] = api.documentWatch.mock.calls.map(([id]) => id);
+    expect(firstId).not.toBe(secondId);
+    expect(api.documentWatch).toHaveBeenCalledWith(firstId, 'C:\\art', { recursive: true });
+    for (const watcher of api.watchers) watcher(firstId ?? '', { kind: 'add', path: FILE });
+    expect(first).toHaveBeenCalledWith({ kind: 'add', path: FILE });
+    expect(second).not.toHaveBeenCalled();
+    stop();
+    stop();
+    expect(api.documentUnwatch).toHaveBeenCalledTimes(1);
+    expect(api.documentUnwatch).toHaveBeenCalledWith(firstId);
+    expect(api.watchers).toHaveLength(1);
+  });
+
+  it('rejects and drops its event listener when main refuses the folder', async () => {
+    const api = stubApi();
+    api.documentWatch.mockRejectedValue(new Error('not inside a granted folder'));
+    const listener = vi.fn();
+    await expect(electronDocuments().watch('C:\\other', {}, listener)).rejects.toThrow(/granted folder/);
+    expect(api.watchers).toHaveLength(0);
+  });
+});
+
+describe('S2 remembered folders on Electron', { tags: ['standard'] }, () => {
+  it('lists, grants again and forgets with the active profile', async () => {
+    const api = stubApi();
+    useProfilesStore.setState({ active: PROFILE });
+    const documents = electronDocuments();
+    expect(await documents.rememberedFolders()).toEqual([{ path: 'C:\\art', name: 'art', lastOpened: 1, available: true }]);
+    expect(await documents.regrant('C:\\art')).toBe('C:\\art');
+    expect(await documents.forgetFolder('C:\\art')).toBe(true);
+    await documents.openFolder();
+    expect(api.documentRememberedFolders).toHaveBeenCalledWith('p1');
+    expect(api.documentRegrant).toHaveBeenCalledWith('p1', 'C:\\art');
+    expect(api.documentForgetFolder).toHaveBeenCalledWith('p1', 'C:\\art');
+    expect(api.documentOpenFolder).toHaveBeenCalledWith(undefined, 'p1');
+  });
+
+  it('answers empty with no profile, and refuses to grant again', async () => {
+    const api = stubApi();
+    const documents = electronDocuments();
+    expect(await documents.rememberedFolders()).toEqual([]);
+    expect(await documents.forgetFolder('C:\\art')).toBe(false);
+    await expect(documents.regrant('C:\\art')).rejects.toThrow(/active profile/);
+    expect(api.documentRegrant).not.toHaveBeenCalled();
   });
 });

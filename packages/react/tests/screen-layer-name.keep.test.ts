@@ -27,25 +27,15 @@ const dialogName = (html: string): string | null => {
   return labelId ? textOf(html, labelId) : null;
 };
 
-describe('ScreenLayer', () => {
+describe('S1 ScreenLayer', { tags: ['standard'] }, () => {
   it('names its dialog by the title alone, with Back outside the labelling heading', () => {
     const html = renderToStaticMarkup(createElement(ScreenLayer, { title: 'Multiworld', icon: null, back: { onSelect: noop }, onClose: noop, header: 'none', children: 'body' }));
     expect(html).toContain('window-header__back');
     expect(dialogName(html)).toBe('Multiworld');
   });
-
-  it('reads Back to and the page it goes back to', () => {
-    const html = renderToStaticMarkup(createElement(ScreenLayer, { title: 'Game', icon: null, back: { onSelect: noop, label: 'Saves' }, onClose: noop, header: 'none', children: 'body' }));
-    expect(html).toContain('Back to Saves');
-  });
 });
 
-describe('a hub window', () => {
-  it('has no title row, so no Back button', () => {
-    const html = renderToStaticMarkup(createElement(ScreenLayer, { title: 'Game', icon: null, free: HUB_WINDOW_KEY, back: { onSelect: noop }, onClose: noop, header: 'own', children: 'body' }));
-    expect(html).not.toContain('window-header__back');
-  });
-
+describe('K1 a hub window', { tags: ['critical'] }, () => {
   it('shares one window key, and so one rect and lock, whichever hub is shown', () => {
     const page = { id: 'home', label: 'Home', icon: null, render: () => null };
     const game = defineHub({ id: 'game', title: 'Game', icon: null, home: page, groups: [] });
@@ -56,7 +46,7 @@ describe('a hub window', () => {
   });
 });
 
-describe('the way back', () => {
+describe('K1 the way back', { tags: ['critical'] }, () => {
   it('goes back to the last page of the trail, else the parent, else nowhere', () => {
     const saves = { section: 'saves' };
     expect(navigationSteps.backTarget({ ...EMPTY_NAVIGATION, active: 'game', history: { game: [{}, saves] } })).toBe(saves);

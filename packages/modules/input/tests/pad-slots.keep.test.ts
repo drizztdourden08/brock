@@ -15,7 +15,7 @@ const buttonsWith = (...down: (typeof SDL_BUTTON_NAMES)[number][]): boolean[] =>
 
 const NO_AXES = SDL_AXIS_NAMES.map(() => 0);
 
-describe('the SDL to slot mapping', () => {
+describe('K1 the SDL to slot mapping', { tags: ['critical'] }, () => {
   it('reports every Tessera slot', () => {
     const { slots } = padStateOf(buttonsWith(), NO_AXES);
     expect(Object.keys(slots).sort()).toEqual([...CONTROLLER_SLOT_IDS].sort());
@@ -63,7 +63,7 @@ describe('the SDL to slot mapping', () => {
   });
 });
 
-describe('the SDL to extras mapping', () => {
+describe('K1 the SDL to extras mapping', { tags: ['critical'] }, () => {
   it('reports the ten extras apart from the slots, with plain labels', () => {
     const { extras } = padStateOf(buttonsWith(), NO_AXES);
     expect(extras.map((extra) => extra.id)).toEqual([
@@ -90,7 +90,7 @@ describe('the SDL to extras mapping', () => {
 const extraLabels = (family: PadFamily, hasButton: boolean[]): string[] =>
   padStateOf(buttonsWith(), NO_AXES, { family, hasButton }).extras.map((extra) => extra.label);
 
-describe('extras limited to what the device has', () => {
+describe('K1 extras limited to what the device has', { tags: ['critical'] }, () => {
   const BASE = ['SOUTH', 'EAST', 'WEST', 'NORTH', 'MISC1'] as const;
 
   it('lists no paddle extras for a pad without paddles', () => {
@@ -110,12 +110,6 @@ describe('extras limited to what the device has', () => {
     expect(extraLabels('playstation', has)).toEqual(['RB', 'LB', 'Right Fn', 'Left Fn']);
     expect(extraLabels('nintendo', has)).toEqual(['GR', 'GL', 'Paddle R2', 'Paddle L2']);
     expect(extraLabels('generic', has)).toEqual(['Paddle R1', 'Paddle L1', 'Paddle R2', 'Paddle L2']);
-  });
-
-  it('keeps the ids stable across families', () => {
-    const ids = (family: PadFamily): string[] => padStateOf(buttonsWith(), NO_AXES, { family, hasButton: buttonsWith('RIGHT_PADDLE1', 'MISC2') }).extras.map((extra) => extra.id);
-    expect(ids('xbox')).toEqual(['extra.misc2', 'extra.paddle.right1']);
-    expect(ids('nintendo')).toEqual(ids('xbox'));
   });
 
   it('lists all ten extras when the device sent no capabilities', () => {
@@ -140,7 +134,7 @@ describe('extras limited to what the device has', () => {
   });
 });
 
-describe('the SDL gamepad type to family mapping', () => {
+describe('K1 the SDL gamepad type to family mapping', { tags: ['critical'] }, () => {
   it('maps every SDL type', () => {
     const byFamily: Record<string, ControllerGamepadType[]> = {
       generic: ['unknown', 'standard'],

@@ -19,7 +19,7 @@ const impostorServer = (heard: string[]) => createServer((socket) => {
   socket.write(`${JSON.stringify({ v: BRIDGE_PROTOCOL, hello: bridgeProof.nonce(), proof: 'forged' })}\n`);
 });
 
-describe('the bridge handshake', () => {
+describe('K4 the bridge handshake', { tags: ['standard'] }, () => {
   it('answers typed requests from several clients at once', async () => {
     const { file } = await serve();
     const first = client(file);
@@ -76,7 +76,7 @@ describe('the bridge handshake', () => {
   });
 });
 
-describe('the bridge limits', () => {
+describe('K4 the bridge limits', { tags: ['standard'] }, () => {
   it('gives up on an endpoint that never answers the handshake', async () => {
     const endpoint = impostorEndpoint();
     const silent = createServer(() => undefined);
@@ -90,7 +90,10 @@ describe('the bridge limits', () => {
   it('caps the connections still in the handshake and drops them after the deadline', async () => {
     const { server, file } = await serve({ maxPending: 2, handshakeMs: 300 });
     const idle = [rawSession(server.endpoint), rawSession(server.endpoint)];
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await Promise.all(idle.map(async (session) => {
+      session.send({ v: BRIDGE_PROTOCOL, hello: bridgeProof.nonce() });
+      await session.next();
+    }));
     const extra = rawSession(server.endpoint);
     await extra.closed;
     await Promise.all(idle.map((session) => session.closed));
@@ -109,14 +112,20 @@ describe('the bridge limits', () => {
   it('rejects pending requests when the app closes the bridge, and times out a silent handler', async () => {
     const { server, file } = await serve();
     await expect(client(file, 200).request(ROUTES.slow)).rejects.toThrow('timed out after 200 ms');
-    const waiting = client(file).request(ROUTES.slow);
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    const hang = invoke<() => Promise<string>>()('test:hang');
+    const reached = vi.fn();
+    server.handle(hang, () => {
+      reached();
+      return new Promise<string>(() => undefined);
+    });
+    const waiting = client(file).request(hang);
+    await vi.waitFor(() => expect(reached).toHaveBeenCalledTimes(1));
     server.close();
     await expect(waiting).rejects.toThrow();
   });
 });
 
-describe('bridge handlers', () => {
+describe('K2 bridge handlers', { tags: ['standard'] }, () => {
   it('checks arguments with the route validator before the handler runs', async () => {
     const { server, file } = await serve();
     const handler = vi.fn((n: number) => n * 2);

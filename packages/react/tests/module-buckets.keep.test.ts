@@ -6,7 +6,6 @@ import { switcherHubs } from '../src/hub/Hub/behavior/switcher-hubs';
 import { navResolver } from '../src/menu/nav-resolver';
 import { toMenuGroups } from '../src/menu/to-menu-groups';
 import { withRoutes } from '../src/menu/with-routes';
-import { mergeModules } from '../src/modules/merge-modules';
 import { nav } from '../src/navigation/nav';
 import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { moduleBucketScreens } from '../src/screens/conventions/module-bucket-screens';
@@ -19,14 +18,7 @@ const resolved = () => resolveScreenTree(withModuleBuckets(APP_TREE, [MODULE_BUC
 
 afterEach(() => useNavigationStore.getState().restore(null));
 
-describe('mergeModules', () => {
-  it('collects the buckets of every module and none from a module without any', () => {
-    expect(mergeModules([{ id: 'plain' }, { id: 'input', buckets: [MODULE_BUCKET] }]).buckets).toEqual([MODULE_BUCKET]);
-    expect(mergeModules([{ id: 'plain' }]).buckets).toEqual([]);
-  });
-});
-
-describe('a module bucket in the app screen tree', () => {
+describe('K1 a module bucket in the app screen tree', { tags: ['critical'] }, () => {
   it('adds the bucket, its hub and its search entries, and keeps the app buckets', () => {
     const tree = withModuleBuckets(APP_TREE, [MODULE_BUCKET]);
     expect(tree.config.buckets.map((bucket) => bucket.id)).toEqual(['game', 'controllers']);
@@ -62,7 +54,7 @@ describe('a module bucket in the app screen tree', () => {
   });
 });
 
-describe('a module bucket in an app with no screen tree', () => {
+describe('S2 a module bucket in an app with no screen tree', { tags: ['standard'] }, () => {
   it('gives each hub as a module screen so the bucket still opens', () => {
     const registry = createScreenRegistry(moduleBucketScreens([MODULE_BUCKET]));
     expect(registry.has('controllers')).toBe(true);

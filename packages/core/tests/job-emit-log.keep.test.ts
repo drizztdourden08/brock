@@ -4,7 +4,7 @@ import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
 import { createJobRegistry } from '../src/jobs/create-job-registry';
 import { tailLog } from '../src/jobs/tail-log';
 
-describe('tailLog', () => {
+describe('K1 tailLog', { tags: ['critical'] }, () => {
   it('keeps the newest lines that fit the byte cap and always at least one', () => {
     const log = ['a', 'b', 'c', 'd'].map((message, at) => ({ at, level: 'info' as const, message: message.repeat(100) }));
     expect(tailLog(log, 300).map((line) => line.message[0])).toEqual(['c', 'd']);
@@ -14,7 +14,7 @@ describe('tailLog', () => {
   });
 });
 
-describe('job emits', () => {
+describe('K1 job emits', { tags: ['critical'] }, () => {
   it('cap the log in each emitted snapshot while the registry keeps every line', () => {
     const emitted: JobSnapshot[] = [];
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot));

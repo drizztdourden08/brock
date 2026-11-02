@@ -18,6 +18,7 @@ const DOCUMENT_INVOKE_MAP = {
   documentRememberedFolders: 'document:rememberedFolders',
   documentRegrant: 'document:regrant',
   documentForgetFolder: 'document:forgetFolder',
+  documentCanWrite: 'document:canWrite',
   documentRead: 'document:read',
   documentReadText: 'document:readText',
   documentWrite: 'document:write',

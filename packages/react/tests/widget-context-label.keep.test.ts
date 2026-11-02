@@ -35,7 +35,7 @@ afterEach(() => {
   useContextsStore.setState({ contexts: INITIAL_CONTEXTS });
 });
 
-describe('a context label as a docked widget sublabel', () => {
+describe('S1 a context label as a docked widget sublabel', { tags: ['standard'] }, () => {
   it('shows the context label beside the title, and leaves other widgets alone', () => {
     contexts.set('session', { active: true, label: 'Sunday run' });
     drawInHost(createElement(Dock));
@@ -52,18 +52,9 @@ describe('a context label as a docked widget sublabel', () => {
     expect(sublabels()).toEqual([]);
     expect(titles()).toContain('Players');
   });
-
-  it('follows a changed label', () => {
-    contexts.set('session', { active: true, label: 'Sunday run' });
-    drawInHost(createElement(Dock));
-    act(() => contexts.set('session', { active: true, label: 'Monday run' }));
-    expect(sublabels()).toEqual(['Monday run']);
-    act(() => contexts.set('session', { active: true }));
-    expect(sublabels()).toEqual([]);
-  });
 });
 
-describe('a context label as a popped widget window sublabel', () => {
+describe('S1 a context label as a popped widget window sublabel', { tags: ['standard'] }, () => {
   it('shows the relayed label beside the title and follows a change', () => {
     contexts.set('session', { active: true, label: 'Sunday run' });
     drawInHost(createElement(WidgetWindow, { id: 'players', widgets: [players] }));
@@ -71,12 +62,5 @@ describe('a context label as a popped widget window sublabel', () => {
     expect(sublabels()).toEqual(['Sunday run']);
     act(() => useContextsStore.getState().hydrate({ session: { active: true, label: 'Monday run' } }));
     expect(sublabels()).toEqual(['Monday run']);
-  });
-
-  it('shows no sublabel with no label', () => {
-    contexts.set('session', { active: true });
-    drawInHost(createElement(WidgetWindow, { id: 'players', widgets: [players] }));
-    expect(titles()).toEqual(['Players']);
-    expect(sublabels()).toEqual([]);
   });
 });

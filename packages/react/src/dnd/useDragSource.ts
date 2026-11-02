@@ -15,6 +15,7 @@ const useDragSource = <T,>(ref: RefObject<DndElement | null>, options: DragSourc
       get type() { return latest.current.type; },
       get payload() { return latest.current.payload; },
       get disabled() { return latest.current.disabled; },
+      get preview() { return latest.current.preview; },
       onStart: (payload) => latest.current.onStart?.(payload),
       onEnd: (end) => latest.current.onEnd?.(end),
     });

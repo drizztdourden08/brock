@@ -4,7 +4,7 @@ import { copyFixtures } from '../src/review/app/copy-fixtures';
 
 const NOTE = 'Review notes: a fixture file.\n';
 
-describe('copyFixtures in a production build', () => {
+describe('K1 copyFixtures in a production build', { tags: ['critical'] }, () => {
   it('decodes a fixture Vite inlined as a data URL, which the renderer CSP would refuse to fetch', async () => {
     const written: Record<string, string> = {};
     const checks: { id: string; pass: boolean }[] = [];

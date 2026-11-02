@@ -24,7 +24,7 @@ const syncedApp = () => {
 
 const logged = (spy) => spy.mock.calls.map((call) => String(call[0]));
 
-describe('ensureSyncedLater', () => {
+describe('K1 ensureSyncedLater', { tags: ['critical'] }, () => {
   it('returns before the cold-start guide runs, and runs it only when the guide function is called', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { problem, guide } = await ensureSyncedLater(syncedApp(), 'brock dev');
@@ -41,7 +41,7 @@ describe('ensureSyncedLater', () => {
   });
 });
 
-describe('ensureSynced with sync switched off', () => {
+describe('K3 ensureSynced with sync switched off', { tags: ['critical'] }, () => {
   it('leaves a stale .brock alone, so a gate run never writes the managed files', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const root = syncedApp();

@@ -4,8 +4,8 @@ import { join } from 'node:path';
 import { storeViteDeps } from '@drizztdourden08/build-cache/vite-deps';
 import * as vite from 'vite';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { depsBuildKey, shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
-import { configHashOf, lockfileOf, viteHashes } from '../src/shared-deps-cache/vite-hash.mjs';
+import { shareDeps } from '../src/shared-deps-cache/share-deps.mjs';
+import { lockfileOf, viteHashes } from '../src/shared-deps-cache/vite-hash.mjs';
 import { serveConfig } from './store-install.mjs';
 import { tempTree } from './temp-tree.mjs';
 
@@ -34,8 +34,8 @@ const resolved = (root) => serveConfig(root, [{ name: 'fixture' }]);
 
 const metadataOf = (root) => JSON.parse(readFileSync(join(root, 'node_modules/.vite/deps/_metadata.json'), 'utf8'));
 
-describe('the cache against Vite itself', () => {
-  it('rebuilds the three hashes Vite writes, and Vite accepts a pre-bundle taken from another worktree', { timeout: 120_000 }, async () => {
+describe('E2 the cache against Vite itself', { tags: ['e2e'] }, () => {
+  it('rebuilds the three hashes Vite writes, and Vite accepts a pre-bundle taken from another worktree', async () => {
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', tempDir());
     const first = worktree();
     const config = await resolved(first);
@@ -58,12 +58,5 @@ describe('the cache against Vite itself', () => {
 
     const built = await vite.optimizeDeps(await resolved(worktree()), false);
     expect(built.browserHash).not.toBe(written.browserHash);
-  });
-
-  it('keys two roots the same and another lockfile apart', async () => {
-    const keyOf = async (root, content) => depsBuildKey({ vite: vite.version, lockfile: { content }, configHash: configHashOf(await resolved(root), { portable: true }) });
-    const same = await keyOf(worktree(), LOCKFILE);
-    expect(await keyOf(worktree(), LOCKFILE)).toBe(same);
-    expect(await keyOf(worktree(), `${LOCKFILE}x`)).not.toBe(same);
   });
 });

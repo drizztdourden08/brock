@@ -18,6 +18,8 @@ on a machine without Brock offers to install it.
 brock <anything>           the project's own brock-build, found by walking up from the current folder
                            to node_modules/@drizztdourden08/brock-build; outside a project, or before
                            pnpm install, the brock-build this package carries
+brock <thread verb>        with no project brock-build but a project brock-thread, that brock-thread
+                           (worktree, launch, pr, release, upgrade, ci, replay and the rest)
 brock create <dir> [...]   create-brock, the scaffolder
 brock --version            this package's version, and the project's brock-build version inside one
 ```

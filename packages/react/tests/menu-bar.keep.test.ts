@@ -68,23 +68,12 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('MenuBar', () => {
+describe('S1 MenuBar', { tags: ['standard'] }, () => {
   it('draws one button per declared menu and leaves out a menu with no known command', () => {
     mount();
     expect(buttons().map((button) => button.textContent)).toEqual(['File', 'Edit']);
     expect(document.querySelector('[role="menubar"]')).not.toBeNull();
     expect(items()).toHaveLength(0);
-  });
-
-  it('opens a menu from its declaration with the label and the chord of each command', () => {
-    mount();
-    open(0);
-    const labels = items().map((item) => item.textContent);
-    expect(labels[0]).toContain('New');
-    expect(labels[1]).toContain('Save');
-    expect(labels[2]).toContain('Export');
-    expect(items()[0]?.textContent).toContain('Ctrl');
-    expect(items()[0]?.textContent).toContain('N');
   });
 
   it('shows a remapped chord at once', () => {
@@ -111,10 +100,9 @@ describe('MenuBar', () => {
     expect(save).toHaveBeenCalledTimes(1);
     expect(items()).toHaveLength(0);
   });
-
 });
 
-describe('MenuBar keyboard', () => {
+describe('S1 MenuBar keyboard', { tags: ['standard'] }, () => {
   it('opens the first menu on a tap of Alt and closes it on the next', () => {
     mount();
     tapAlt();

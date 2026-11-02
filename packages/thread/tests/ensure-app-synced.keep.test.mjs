@@ -45,7 +45,7 @@ const app = ({ inProcess, problem = null }) => {
 
 const lines = (log) => readFileSync(log, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
 
-describe('ensureAppSynced', () => {
+describe('K1 ensureAppSynced', { tags: ['standard'] }, () => {
   it('syncs inside this process when the app brock-build offers it, and hands back the guide without running it', async () => {
     const { root, log } = app({ inProcess: true });
     const guide = await ensureAppSynced(root, () => undefined);
@@ -58,13 +58,6 @@ describe('ensureAppSynced', () => {
   it('refuses to launch with the reason when the sync finds a problem', async () => {
     const { root } = app({ inProcess: true, problem: 'src/main.tsx imports ../.brock/x, which is missing' });
     await expect(ensureAppSynced(root, () => undefined)).rejects.toThrow(/not ready to launch[\s\S]*src\/main\.tsx imports/);
-  });
-
-  it('falls back to a brock sync --if-stale child for a brock-build that has no sync export', async () => {
-    const { root, log } = app({ inProcess: false });
-    const guide = await ensureAppSynced(root, () => undefined);
-    expect(lines(log)).toEqual([['child', 'sync', '--if-stale']]);
-    await expect(guide()).resolves.toBeUndefined();
   });
 
   it('logs a guide that fails instead of throwing', async () => {

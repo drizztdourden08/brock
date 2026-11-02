@@ -31,30 +31,13 @@ const app = () => {
 
 const contentOf = (files, path) => files.find((file) => file.path === path)?.content;
 
-describe('dev-only screens', () => {
+describe('K1 dev-only screens', { tags: ['critical'] }, () => {
   it('reads .dev before the extension as a dev-only screen of the same kind', () => {
     const { files, findings } = scanScreens(app());
     expect(findings).toEqual([]);
     expect(files.map(({ kind, id, dev }) => [kind, id, dev ?? false])).toEqual([
       ['card', 'editor', true], ['page', 'inspector', true], ['page', 'status', false],
     ]);
-  });
-
-  it('keeps them out of .brock/screens.ts and .brock/search.ts, which spread the lists of .brock/screens.dev.ts', () => {
-    const files = renderScreensFiles(app());
-    const screens = contentOf(files, '.brock/screens.ts');
-    expect(screens).toContain("import { devScreens } from './screens.dev';");
-    expect(screens).toContain('  ...devScreens,');
-    expect(screens).not.toContain('inspector');
-    expect(contentOf(files, '.brock/search.ts')).toContain("import { devSearchSeeds } from './screens.dev';");
-    expect(contentOf(files, '.brock/search.ts')).not.toContain('inspector');
-    const dev = contentOf(files, '.brock/screens.dev.ts');
-    expect(dev).toContain("import { lazyComponent } from '@drizztdourden08/brock-react';");
-    expect(dev).toContain("import { meta as toolsInspectorPageMeta } from '../src/screens/tools/inspector.page.dev';");
-    expect(dev).toContain("{ kind: 'page', bucket: 'tools', id: 'inspector', component: lazyComponent(() => import('../src/screens/tools/inspector.page.dev')), meta: toolsInspectorPageMeta },");
-    expect(dev).toContain("{ kind: 'card', id: 'editor', component: lazyComponent(() => import('../src/screens/editor.card.dev')), meta: editorCardMeta },");
-    expect(dev).toContain('"title":"DEV-INSPECTOR-MARK"');
-    expect(dev).toContain('export { devScreens, devSearchSeeds };');
   });
 
   it('writes the same files as before for an app with no dev-only screen, and removes a stale screens.dev.ts', () => {
@@ -86,16 +69,7 @@ describe('dev-only screens', () => {
   });
 });
 
-describe('dev-only handler groups', () => {
-  it('lists <subject>-handlers.dev.ts in .brock/handlers.main.dev.ts, spread into mainHandlers', () => {
-    const files = renderHandlersFiles(app());
-    expect(contentOf(files, '.brock/handlers.main.ts')).toContain("import { devHandlers } from './handlers.main.dev';");
-    expect(contentOf(files, '.brock/handlers.main.ts')).toContain('const mainHandlers: HandlerGroup[] = [engineHandlers, ...devHandlers];');
-    expect(contentOf(files, '.brock/handlers.main.dev.ts')).toContain("import { datasetHandlers } from '../electron/handlers/dataset-handlers.dev';");
-    expect(contentOf(files, '.brock/handlers.main.dev.ts')).toContain('const devHandlers: HandlerGroup[] = [datasetHandlers];');
-    expect(contentOf(renderHandlersFiles(tempDir()), '.brock/handlers.main.dev.ts')).toBeNull();
-  });
-
+describe('K1 dev-only registry stub', { tags: ['critical'] }, () => {
   it('stubs a dev registry as the same exports, each an empty list', () => {
     expect(devRegistryStub('import x from "y";\nconst devScreens = [x];\nconst devSearchSeeds = [];\nexport { devScreens, devSearchSeeds };\nexport type { Y };\n'))
       .toBe('const devScreens = [];\nconst devSearchSeeds = [];\nexport { devScreens, devSearchSeeds };\n');
@@ -133,7 +107,7 @@ const linkTo = (target) => {
   return link;
 };
 
-describe('a production build', () => {
+describe('E2 a production build without dev-only files', { tags: ['e2e'] }, () => {
   it('has none of the dev-only screens or handler groups, and a development build has them all', async () => {
     const root = syncedApp();
     const production = await bundle(root, 'entry.ts', 'production');

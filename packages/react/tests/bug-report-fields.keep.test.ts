@@ -10,7 +10,7 @@ const PRODUCT = { id: 'my-app', name: 'My App' };
 const LIMITS = { maxFiles: 2, maxBytes: 100 };
 const file = (name: string, size: number) => ({ name, size });
 
-describe('targetFields', () => {
+describe('K1 targetFields', { tags: ['critical'] }, () => {
   it('turns the transport fields into limits, with defaults', () => {
     expect(targetFields({})).toEqual({ contact: false, attachments: null, afterSend: 'toast', identity: null });
     expect(targetFields({ contact: true, attachments: true, afterSend: 'view' }))
@@ -42,7 +42,7 @@ describe('targetFields', () => {
   });
 });
 
-describe('admitAttachments', () => {
+describe('K1 admitAttachments', { tags: ['critical'] }, () => {
   it('takes files while the count and the total size fit', () => {
     expect(admitAttachments([], [file('a.png', 40), file('b.png', 50)], LIMITS)).toEqual({ admitted: [file('a.png', 40), file('b.png', 50)], refused: null });
   });
@@ -60,7 +60,7 @@ describe('admitAttachments', () => {
   });
 });
 
-describe('buildBugReportPayload extras', () => {
+describe('K1 buildBugReportPayload extras', { tags: ['critical'] }, () => {
   const base = { title: 'a', description: 'b', product: PRODUCT, version: '1', diagnostics: null, system: null, logs: [] };
 
   it('carries the contact, the attachments and the renderer extras only when given', () => {
@@ -76,7 +76,7 @@ describe('buildBugReportPayload extras', () => {
   });
 });
 
-describe('captureExtras', () => {
+describe('K1 captureExtras', { tags: ['critical'] }, () => {
   it('reads the app source and never lets it fail the report', async () => {
     expect(await captureExtras(() => ({ screen: 'home' }))).toEqual({ screen: 'home' });
     expect(await captureExtras(() => Promise.resolve({ count: 2 }))).toEqual({ count: 2 });

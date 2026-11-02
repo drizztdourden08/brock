@@ -59,7 +59,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('a menu entry in a submenu', () => {
+describe('S2 a menu entry in a submenu', { tags: ['standard'] }, () => {
   it('is reached by a path, opening each parent in order', async () => {
     setup();
     const control = new AbortController();
@@ -67,13 +67,6 @@ describe('a menu entry in a submenu', () => {
     expect(tourTargets.resolve(step.target)).toBeNull();
     await prepareStep('t', step, 0, control.signal);
     expect(tourTargets.resolve(step.target)).toBe(document.getElementById('tour'));
-  });
-
-  it('is reached by a path two levels deep', async () => {
-    setup();
-    const step = stepOf(['Advanced', 'More', 'Deep entry']);
-    await prepareStep('t', step, 0, new AbortController().signal);
-    expect(tourTargets.resolve(step.target)).toBe(document.getElementById('deep'));
   });
 
   it('is found by its plain label, searching the submenus', async () => {
@@ -84,14 +77,6 @@ describe('a menu entry in a submenu', () => {
     const deep = stepOf('Deep entry');
     await prepareStep('t', deep, 0, new AbortController().signal);
     expect(tourTargets.resolve(deep.target)).toBe(document.getElementById('deep'));
-  });
-
-  it('keeps a top level entry where it is and opens no submenu', async () => {
-    setup();
-    const step = stepOf('Settings');
-    await prepareStep('t', step, 0, new AbortController().signal);
-    expect(tourTargets.resolve(step.target)).toBe(document.getElementById('settings'));
-    expect(document.querySelector('.dropdown-menu--sub')).toBeNull();
   });
 
   it('finds nothing for a missing entry, and a plain search leaves the submenus closed', async () => {

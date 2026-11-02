@@ -5,7 +5,7 @@ import { resolveEscape } from '../src/escape/resolve-escape';
 
 const NOTHING = { layerOpen: false, dialogOpen: false, screenOpen: false, homeAvailable: true };
 
-describe('resolveEscape', () => {
+describe('K1 resolveEscape', { tags: ['critical'] }, () => {
   it('closes a registered layer before anything else', () => {
     expect(resolveEscape({ ...NOTHING, layerOpen: true, dialogOpen: true, screenOpen: true })).toBe('layer');
   });
@@ -27,7 +27,7 @@ describe('resolveEscape', () => {
   });
 });
 
-describe('escapeLayers', () => {
+describe('K1 escapeLayers', { tags: ['critical'] }, () => {
   it('returns the last open layer and forgets a removed one', () => {
     const first = { isOpen: () => true, close: () => undefined };
     const closed = { isOpen: () => false, close: () => undefined };

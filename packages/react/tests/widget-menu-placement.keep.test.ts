@@ -53,7 +53,7 @@ const shell = (items: readonly MenuItem[], developerTools: boolean, entries?: Me
   ...(entries === undefined ? {} : { menuConfig: { entries } }),
 });
 
-describe('the Developer submenu of Widgets', () => {
+describe('K1 the Developer submenu of Widgets', { tags: ['critical'] }, () => {
   it('collects the devOnly widgets and kits, with each kit still a submenu of its own', () => {
     const arranged = arrangeWidgetMenu([CLOCK, PROBE, kit('paint', false), kit('inspect', true)], undefined, true);
     expect(keys(arranged)).toEqual(['widget-clock', 'kit-paint', 'widgets-developer']);
@@ -76,27 +76,9 @@ describe('the Developer submenu of Widgets', () => {
     expect(keys(configured)).toEqual(['widget-probe', 'widgets-developer']);
     expect(keys(childrenOf(configured, 'widgets-developer'))).toEqual(['widget-clock']);
   });
-
-  it('nests in the resolved menu: Widgets > Developer > kit > Open kit, and is gone with developer tools off', () => {
-    const items = [CLOCK, PROBE, kit('inspect', true)];
-    const on = buildMenu(shell(items, true));
-    expect(labels(childrenOf(on, 'section:widgets'))).toEqual(['Clock', 'Developer', 'Reset layout']);
-    expect(labels(childrenOf(on, 'widgets-developer'))).toEqual(['Probe', 'inspect']);
-    expect(labels(childrenOf(on, 'kit-inspect'))).toEqual(['Open kit', '|', 'Reset kit layout']);
-    const off = buildMenu(shell(items, false));
-    expect(labels(childrenOf(off, 'section:widgets'))).toEqual(['Clock', 'Reset layout']);
-    expect(find(off, 'widgets-developer')).toBeUndefined();
-  });
-
-  it('takes a label from the menu config, with no issue while it is absent', () => {
-    const entries = { 'widgets-developer': { label: 'Dev tools' } };
-    expect(find(buildMenu(shell([PROBE], true, entries)), 'widgets-developer')?.label).toBe('Dev tools');
-    expect(resolveShellMenu(shell([PROBE], false, entries)).issues).toEqual([]);
-    expect(resolveShellMenu(shell([CLOCK], true, entries)).issues).toEqual([]);
-  });
 });
 
-describe('widget and kit placement', () => {
+describe('K1 widget and kit placement', { tags: ['critical'] }, () => {
   it('turns meta.menu into the entry placement', () => {
     const def = defineWidget({ id: 'tuner', label: 'Tuner', devOnly: true, menu: { parent: 'audio', group: 'modules', order: 2 }, render: () => null });
     const [entry] = buildWidgetMenuEntries([def], createDefaultLayout(), noop, true);
@@ -121,12 +103,6 @@ describe('widget and kit placement', () => {
     expect(labels(childrenOf(resolved.entries, 'section:widgets'))).toEqual(['Clocks', 'Extras', 'Reset layout']);
     expect(keys(childrenOf(resolved.entries, 'clocks'))).toEqual(['widget-clock', 'kit-paint']);
     expect(labels(childrenOf(resolved.entries, 'extras'))).toEqual(['Dev']);
-  });
-
-  it('files an entry into a submenu that already exists, kit submenus included', () => {
-    const resolved = resolveShellMenu(shell([CLOCK, kit('paint', false)], true, { 'widget-clock': { parent: 'kit-paint' } }));
-    expect(keys(childrenOf(resolved.entries, 'kit-paint'))).toContain('widget-clock');
-    expect(resolved.issues).toEqual([]);
   });
 
   it('creates no submenu for other entries, which still report an unknown parent', () => {

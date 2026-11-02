@@ -37,7 +37,7 @@ afterEach(async () => {
   await removeTree(base);
 });
 
-describe('granting the folder of a picked file', () => {
+describe('K4 granting the folder of a picked file', { tags: ['critical'] }, () => {
   it('asks nothing and answers the plain path when the option is not set', async () => {
     expect(await openFile({})).toBe(join(assets, 'hero.json'));
     expect(confirm).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('granting the folder of a picked file', () => {
   });
 });
 
-describe('widening by levels', () => {
+describe('K4 widening by levels', { tags: ['critical'] }, () => {
   it('covers the parent folder with one level and names it in the dialog', async () => {
     const proj = join(base, 'proj');
     const answer = await openFile({ grantFolder: { ask: true, levels: 1 } });
@@ -109,7 +109,7 @@ describe('widening by levels', () => {
   });
 });
 
-describe('refused roots', () => {
+describe('K4 refused roots', { tags: ['critical'] }, () => {
   it('falls back to the widest level that is allowed', async () => {
     start([join(base, 'proj')]);
     const answer = await openFile({ grantFolder: { ask: true, levels: 2 } });
@@ -128,7 +128,7 @@ describe('refused roots', () => {
   });
 });
 
-describe('automation launches', () => {
+describe('K4 automation launches', { tags: ['critical'] }, () => {
   it('never shows the dialog and says the folder was not granted', async () => {
     automation = true;
     const answer = await openFile({ grantFolder: { ask: true, levels: 1 } }, 'p1');

@@ -33,7 +33,7 @@ const sequence = (remote) => remote.state.calls.map((call) => call.join(' '));
 
 const indexOfCall = (calls, prefix) => calls.findIndex((call) => call.startsWith(prefix));
 
-describe('replay plan lockfile step', () => {
+describe('K1 replay plan lockfile step', { tags: ['critical'] }, () => {
   it('lists the lockfile step first for a localpkg consumer and runs nothing', () => {
     makeRelease({ home: t.world.home, version: '1.0.0', createdAt: '2026-10-29T09:00:00Z' });
     const remote = consumerRemote();
@@ -70,7 +70,7 @@ describe('replay plan lockfile step', () => {
   });
 });
 
-describe('replay lockfile step without the localpkg binary', () => {
+describe('K1 replay lockfile step without the localpkg binary', { tags: ['critical'] }, () => {
   const blindRemote = () => {
     vi.stubEnv('LOCALPKG_BIN', '');
     return makeRemote({ prs: PRS, failOn: 'localpkg' });
@@ -101,7 +101,7 @@ describe('replay lockfile step without the localpkg binary', () => {
   });
 });
 
-describe('replay run lockfile step', () => {
+describe('K1 replay run lockfile step', { tags: ['critical'] }, () => {
   beforeEach(() => setMode('remote'));
 
   it('runs off, install, verify and commit in order, then pushes', () => {
@@ -140,7 +140,7 @@ describe('replay run lockfile step', () => {
   });
 });
 
-describe('replay lockfile guard', () => {
+describe('K1 replay lockfile guard', { tags: ['critical'] }, () => {
   const BAD = [
     ['.coord/localpkg', "tarball: 'file:C:/Users/x/.coord/localpkg/tarballs/lib.tgz'\n"],
     ['.coord/localpkg', 'resolution: C:\\Users\\x\\.coord\\localpkg\\lib.tgz\n'],

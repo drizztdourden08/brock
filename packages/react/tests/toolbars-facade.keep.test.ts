@@ -21,7 +21,7 @@ beforeEach(() => {
   useToolbarLayoutStore.getState().setDefinitions(DEFINITIONS);
 });
 
-describe('toolbars.list', () => {
+describe('K2 toolbars.list', { tags: ['critical'] }, () => {
   it('lists each toolbar with its side, row, index and labels flag', () => {
     expect(toolbars.list()).toEqual([
       { id: 'tools', label: 'TOOLS', shown: true, side: 'left', row: 0, index: 0, labels: true, hiddenItems: [], columns: null, available: true },
@@ -31,7 +31,7 @@ describe('toolbars.list', () => {
   });
 });
 
-describe('toolbars.show and toolbars.hide', () => {
+describe('K2 toolbars.show and toolbars.hide', { tags: ['critical'] }, () => {
   it('shows a hidden toolbar and hides a shown one', () => {
     toolbars.show('extra');
     expect(entry('extra')).toMatchObject({ shown: true, side: 'top' });
@@ -48,7 +48,7 @@ describe('toolbars.show and toolbars.hide', () => {
   });
 });
 
-describe('toolbars.moveToSide', () => {
+describe('K2 toolbars.moveToSide', { tags: ['critical'] }, () => {
   it('moves a toolbar to another side', () => {
     toolbars.moveToSide('tools', 'bottom');
     expect(entry('tools')).toMatchObject({ side: 'bottom', row: 0 });
@@ -71,7 +71,7 @@ describe('toolbars.moveToSide', () => {
   });
 });
 
-describe('toolbars.labels and toolbars.reset', () => {
+describe('K2 toolbars.labels and toolbars.reset', { tags: ['critical'] }, () => {
   it('turns the labels of one toolbar on and off', () => {
     toolbars.labels('tools', false);
     expect([entry('tools').labels, entry('options').labels]).toEqual([false, true]);
@@ -88,7 +88,7 @@ describe('toolbars.labels and toolbars.reset', () => {
   });
 });
 
-describe('toolbars.subscribe', () => {
+describe('K2 toolbars.subscribe', { tags: ['critical'] }, () => {
   it('sends a fresh snapshot on a change, not on a no-op, and stops after unsubscribe', () => {
     const listener = vi.fn();
     const stop = toolbars.subscribe(listener);
@@ -103,7 +103,7 @@ describe('toolbars.subscribe', () => {
   });
 });
 
-describe('unknown ids', () => {
+describe('K2 unknown ids', { tags: ['critical'] }, () => {
   it('are rejected by every call that takes one', () => {
     const calls = [() => toolbars.show('zzz'), () => toolbars.hide('zzz'), () => toolbars.moveToSide('zzz', 'top'), () => toolbars.labels('zzz', true)];
     for (const call of calls) expect(call).toThrow(/Unknown toolbar "zzz"\. Known toolbars: tools, options, extra\./);

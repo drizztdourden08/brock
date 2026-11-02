@@ -7,7 +7,7 @@ const ROW = "{ key: 'volume', label: 'Volume', description: 'Level.', hint: 'Dra
 
 const seedsOf = (source) => settingsSeeds(readDefaultResult(source)).map((section) => [section.id, section.rows.map((row) => row.key)]);
 
-describe('the function form of a .settings.ts page', () => {
+describe('K1 the function form of a .settings.ts page', { tags: ['critical'] }, () => {
   it('keeps the rows of an arrow that returns the sections', () => {
     const source = `export default (settings: AppSettings): Section[] => [\n  { id: 'audio', title: 'Audio', items: [${ROW}, { key: 'mute', label: 'Mute', disabled: settings.volume === 0 }] },\n];\n`;
     expect(seedsOf(source)).toEqual([['audio', ['volume', 'mute']]]);

@@ -48,7 +48,7 @@ const MERGED = [
 
 afterEach(showHarness.resetShow);
 
-describe('settings group merge', () => {
+describe('K1 settings group merge', { tags: ['critical'] }, () => {
   it('puts a module tab in the app group with the same id, after the app pages', () => {
     expect(groupsOf(APP_GROUPS, moduleTabs(tab('display', 'App', 'app')))).toEqual(MERGED);
   });
@@ -77,7 +77,7 @@ describe('settings group merge', () => {
   });
 });
 
-describe('navGroupChecks', () => {
+describe('K1 navGroupChecks', { tags: ['critical'] }, () => {
   it('fails a nav with two groups of the same label', () => {
     const [check] = navGroupChecks('settings', ['App', 'Look', 'app']);
     expect(check?.pass).toBe(false);
@@ -85,7 +85,7 @@ describe('navGroupChecks', () => {
   });
 });
 
-describe('useHubNav', () => {
+describe('S1 useHubNav', { tags: ['standard'] }, () => {
   it('groups tabs by id first, then by label', () => {
     const seen: { model: HubNavModel<object> | null } = { model: null };
     const Probe = () => {

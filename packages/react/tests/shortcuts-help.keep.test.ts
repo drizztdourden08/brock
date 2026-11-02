@@ -9,7 +9,7 @@ import { shortcutGroups } from '../src/shortcuts-help/shortcut-groups';
 const run = (): void => {};
 const command = (id: string, label: string, chord: string | undefined, group: string): CommandDef => ({ id, label, chord, group, run });
 
-describe('chordKeys', () => {
+describe('K1 chordKeys', { tags: ['critical'] }, () => {
   it('turns a chord into Tessera keycaps', () => {
     expect(chordKeys('Mod+Comma', false)).toEqual(['ctrl', ',']);
     expect(chordKeys('Ctrl+Shift+p', false)).toEqual(['ctrl', 'shift', 'P']);
@@ -24,7 +24,7 @@ describe('chordKeys', () => {
   });
 });
 
-describe('shortcutGroups', () => {
+describe('K1 shortcutGroups', { tags: ['critical'] }, () => {
   const defs = [
     command('brock.search', 'Search', 'Mod+K', GENERAL_GROUP),
     command('open:settings', 'Settings', 'Mod+Comma', SCREENS_GROUP),

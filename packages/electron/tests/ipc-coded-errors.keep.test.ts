@@ -28,7 +28,7 @@ const register = (channel: string, fn: () => unknown): void => {
   (handle as (channel: string, fn: () => unknown) => void)(channel, fn);
 };
 
-describe('coded errors through ctx.handle and the preload invoke', () => {
+describe('K2 coded errors through ctx.handle and the preload invoke', { tags: ['critical'] }, () => {
   beforeEach(() => wired.handlers.clear());
 
   it('carries the code and data of a thrown AppError', async () => {

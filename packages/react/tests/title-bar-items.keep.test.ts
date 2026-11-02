@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind test */
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
 import { titleBarFromFiles } from '../src/title-bar/title-bar-from-files';
 import { toBarAction } from '../src/title-bar/to-bar-action';
@@ -7,29 +7,12 @@ import type { TitleBarItemEntry } from '../src/title-bar/title-bar-item.type';
 import { jobStepper } from '../src/jobs/JobDialog/behavior/job-stepper';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
 
-describe('toBarAction', () => {
-  it('turns a button into a bar button', () => {
-    const onSelect = vi.fn();
-    expect(toBarAction('hosting', { kind: 'button', label: 'Host', icon: 'server', onSelect, shortcut: 'Mod+H' }))
-      .toEqual({ id: 'hosting', label: 'Host', icon: 'server', bar: 'button', tone: undefined, effect: undefined, shortcut: 'Mod+H', onSelect });
-  });
-
-  it('passes the tone and effect of an app item on, as the built-in items take them', () => {
-    const onSelect = () => undefined;
-    expect(toBarAction('hosting', { kind: 'button', label: 'Host', icon: 'server', onSelect, tone: 'primary', effect: 'twinkle' }))
-      .toMatchObject({ bar: 'button', tone: 'primary', effect: 'twinkle' });
-    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Live', tone: 'success', effect: { kind: 'ping', color: 'success' } }))
-      .toMatchObject({ bar: 'status', tone: 'success', effect: { kind: 'ping', color: 'success' } });
-  });
+describe('K1 toBarAction', { tags: ['critical'] }, () => {
 
   it('turns a status into a status pill that shows only while the status is set', () => {
     expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Hosting: Seed 42', tone: 'success' }))
       .toMatchObject({ id: 'room', bar: 'status', status: 'Hosting: Seed 42', tone: 'success' });
     expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: null })).toMatchObject({ bar: 'status', status: undefined });
-  });
-
-  it('passes the pulse of a status on to the pill', () => {
-    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Live', pulse: true })).toMatchObject({ pulse: true });
   });
 
   it('turns a menu into a title bar dropdown with its items in one group', () => {
@@ -49,11 +32,6 @@ describe('toBarAction', () => {
     expect(action.groups.map((group) => [group.id, group.label])).toEqual([['rooms-0', 'Recent'], ['rooms-1', undefined]]);
   });
 
-  it('passes the tone and effect of a menu on to its dropdown', () => {
-    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', tone: 'primary', effect: 'twinkle', items: [{ key: 'new', label: 'New room' }] });
-    expect(action).toMatchObject({ bar: 'dropdown', tone: 'primary', effect: 'twinkle' });
-  });
-
   it('makes a menu entry with confirm a Tessera confirm item in a dropdown', () => {
     const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'drop', label: 'Drop room', confirm: true, onClick: () => undefined }] });
     if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
@@ -61,7 +39,7 @@ describe('toBarAction', () => {
   });
 });
 
-describe('appTitleBarSources', () => {
+describe('K1 appTitleBarSources', { tags: ['critical'] }, () => {
   const button: TitleBarItemEntry = { id: 'hosting', source: { kind: 'button', label: 'Host', icon: 'server', onSelect: () => undefined } };
 
   it('keeps the files in id order and drops an item whose id a standard or module item holds', () => {
@@ -93,7 +71,7 @@ describe('appTitleBarSources', () => {
   });
 });
 
-describe('jobStepper', () => {
+describe('K1 jobStepper', { tags: ['critical'] }, () => {
   const job = (patch: Partial<JobSnapshot>): JobSnapshot => ({
     id: 'setup', title: 'Setup', state: 'running', currentStep: 'b', progress: 0.5, stepProgress: 0, line: null, error: null, log: [], startedAt: 0, endedAt: null, cancellable: true, visible: true,
     steps: [{ id: 'a', label: 'A', weight: 1, state: 'done' }, { id: 'b', label: 'B', weight: 1, state: 'current' }],

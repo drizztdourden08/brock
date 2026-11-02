@@ -46,7 +46,7 @@ const PRODUCT = {
 
 const read = (root, file) => readFileSync(join(root, file), 'utf8');
 
-describe('filetypeFiles', () => {
+describe('K1 filetypeFiles', { tags: ['critical'] }, () => {
   it('maps the brand folder of an extension to an ico, an icns and the Linux sizes', () => {
     const root = sampleApp(['md']);
     const files = filetypeFiles(brandOf(root), PRODUCT.fileAssociations);
@@ -69,7 +69,7 @@ describe('filetypeFiles', () => {
   });
 });
 
-describe('brand file type icons in an app', () => {
+describe('K2 brand file type icons in an app', { tags: ['critical'] }, () => {
   it('copies the sets of the types the brand has and leaves the others alone', () => {
     const root = sampleApp(['md']);
     const result = copyBrandIcons(root, { product: PRODUCT });

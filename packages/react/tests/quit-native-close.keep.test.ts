@@ -18,7 +18,7 @@ const register = (): { asyncGuard: ReturnType<typeof vi.fn> } => {
   return { asyncGuard };
 };
 
-describe('the guard count the renderer reports to main', () => {
+describe('K1 the guard count the renderer reports to main', { tags: ['critical'] }, () => {
   it('counts sync and async guards and tells a subscriber on every change', () => {
     const listener = vi.fn();
     const stop = quitGuards.subscribe(listener);
@@ -36,7 +36,7 @@ describe('the guard count the renderer reports to main', () => {
   });
 });
 
-describe('a native close answered by the renderer', () => {
+describe('K1 a native close answered by the renderer', { tags: ['critical'] }, () => {
   it('asks the same dialog and runs the same guards as requestQuit', async () => {
     const { asyncGuard } = register();
     const viaMenu = requestQuit(vi.fn());

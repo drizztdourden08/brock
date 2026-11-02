@@ -58,6 +58,8 @@
       "default": "./src/look/app-theme-css.mjs"
     },
     "./sync-if-stale": "./src/freshness/sync-if-stale.mjs",
+    "./restore-shared-build": "./src/build-reuse/shared-build/restore-shared-build.mjs",
+    "./knip-brock-dependencies": "./src/knip-brock-dependencies.mjs",
     "./package.json": "./package.json"
   },
   "files": [
@@ -77,7 +79,7 @@
     "@drizztdourden08/brock-lint-config": "workspace:*",
     "@drizztdourden08/brock-thread": "workspace:*",
     "@drizztdourden08/build-cache": "workspace:*",
-    "@drizztdourden08/standards": ">=0.11.0 <1",
+    "@drizztdourden08/standards": ">=0.13.0 <1",
     "@resvg/resvg-js": "catalog:",
     "pngjs": "catalog:",
     "rcedit": "catalog:"

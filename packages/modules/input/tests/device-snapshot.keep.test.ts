@@ -20,7 +20,7 @@ const keysOf = (live: LiveDevice[], listed: HidListedDevice[]) =>
   buildDeviceSnapshot(new Map(live.map((device) => [device.deviceKey, device])), listed)
     .map((entry) => `${entry.deviceKey} ${entry.status}`);
 
-describe('the device snapshot', () => {
+describe('K1 the device snapshot', { tags: ['critical'] }, () => {
   it('lists a Bluetooth Xbox pad once when its HID face shares a container with XInput', () => {
     const pad = livePad('045e:02ff', 0x045e, 0x02ff, XINPUT_GUID);
     expect(keysOf([pad], [xboxFace(true)])).toEqual(['045e:02ff ready']);

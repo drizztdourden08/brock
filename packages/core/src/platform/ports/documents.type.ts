@@ -107,6 +107,8 @@ interface DocumentRevealResult {
   reason?: string;
 }
 
+type DocumentWriteCheck = { ok: true; path: string } | { ok: false; reason: string };
+
 interface DocumentWriteOptions {
   recent?: boolean;
 }
@@ -157,6 +159,7 @@ interface DocumentsPort extends DocumentFileOperations {
   reveal: (path: string) => Promise<DocumentRevealResult>;
   write: (path: string, data: Uint8Array, options?: DocumentWriteOptions) => Promise<void>;
   writeText: (path: string, text: string, options?: DocumentWriteOptions) => Promise<void>;
+  canWrite?: (path: string) => Promise<DocumentWriteCheck>;
   recent: () => Promise<RecentDocument[]>;
   clearRecent: () => Promise<void>;
   openRecent: (path: string) => Promise<string | null>;
@@ -166,4 +169,4 @@ interface DocumentsPort extends DocumentFileOperations {
   discardSnapshot: (key: string) => Promise<void>;
 }
 
-export type { DocumentCopyOptions, DocumentFileOperations, DocumentDialogOptions, DocumentDropKind, DocumentDropResult, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };
+export type { DocumentCopyOptions, DocumentFileOperations, DocumentDialogOptions, DocumentDropKind, DocumentDropResult, DocumentEntry, DocumentEntryKind, DocumentFilter, DocumentFolderAsk, DocumentFolderOptions, DocumentGrantFolder, DocumentGrantingOptions, DocumentPick, DocumentPicker, DocumentListing, DocumentListOptions, DocumentMkdirOptions, DocumentRenameOptions, DocumentRevealResult, DocumentsPort, DocumentWatchEvent, DocumentWatchKind, DocumentWatchListener, DocumentWatchOptions, DocumentWriteCheck, DocumentWriteOptions, RecentDocument, RememberedFolder, RecoverableSnapshot, SnapshotMeta, SnapshotWrite };

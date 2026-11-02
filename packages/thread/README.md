@@ -94,7 +94,7 @@ In `local` mode this package never calls `gh` and never runs `git fetch`, `push`
 
 ```
 <repo> ci [check] [--commit <sha>] [--pr PR-n] [--job <job>|all] [--trigger push|pr|manual|release]
-          [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>]
+          [--only <step>[,<step>]] [--workflow <file>] [--project <key>] [--branch <name>] [--wait-minutes <n>] [--localpkg | --here]
 <repo> pr merge --local PR-n [--head <branch> --base <branch>] [--keep-branch]
 ```
 
@@ -111,6 +111,10 @@ The promise is that local CI runs the same steps as the GitHub workflow. The run
 - Without a workflow file the steps are the install plus the `gate.scripts` of `brock.workspace.mjs`, else `brock gate`.
 
 Every step is one record entry named `<job> / <step name or the first line of run>`, with the job in its `job` field (a matrix entry is `<job> (<values>)`, as GitHub names it). `publish: { requiredChecks: ['lint', 'quality'] }` in `brock.workspace.mjs` names the steps a merge needs, each by the full step name, the bare step name or the job; a job name makes every runnable step of the job required. The default is every step that runs. `--job` runs one job by its id, `--only` runs the named steps (and the gate install when a gate step is among them); the record is then marked `partial` and a merge refuses it.
+
+`--localpkg` is for a branch that needs unpushed local builds (an `@drizztdourden08/*` package packed by `localpkg`). It runs `localpkg use <temporary worktree> --no-install --unmerged` on the temporary worktree, installs with `pnpm install --offline --no-frozen-lockfile`, and runs `localpkg off` on it before the worktree is dropped, so the committed lockfile stays the registry one and localpkg's consumer list keeps no dead path. The run exits 2 before any step when localpkg is not found (`LOCALPKG_BIN`, else the PATH). The record carries `localpkg: true` and `localBuilds` (`name@version` with `unmerged`), the summary says the run used local builds, and a cached step result is reused only by a run with the same local builds.
+
+`--here` is the cheap gate for a merge. It runs the same planned steps in the current checkout instead of a temporary worktree and skips the install steps (they show as skipped-local), so a run costs the steps and nothing else. It is allowed only when HEAD is the commit under test and the tracked tree is clean; otherwise it exits 2 with one sentence. It cannot combine with `--localpkg` (exit 2). The lock, the step time limits, the tree cache and the record are the same, and the record carries `place: 'here'` (`'worktree'` otherwise). `pr merge --local` accepts a passing `--here` record exactly like any other. `--here`, `--localpkg` and `--no-cache` are flags: a word after them is a job or step name, never their value.
 
 Exit codes: 0 pass (or only skipped-local steps), 1 a step failed or the run was cancelled, 2 a usage or setup error, and then no record is written. The first line printed is the record path. One run per repo at a time: a second run writes a `queued` record, waits on `~/.coord/ci/<project>/.lock` (`--wait-minutes`, default 30) and starts when the first ends. The lock of a dead process is taken over. The project is `--project`, else `COORD_PROJECT`, else the workspace name.
 

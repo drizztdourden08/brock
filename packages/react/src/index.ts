@@ -53,3 +53,4 @@ export * from './storage';
 export * from './screenshot';
 export * from './lazy';
 export * from './dnd';
+export * from './file-drop';

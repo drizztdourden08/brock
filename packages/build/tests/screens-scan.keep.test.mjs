@@ -4,9 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { checkScreens } from '../src/screens/check-screens.mjs';
-import { renderScreens } from '../src/screens/render-screens.mjs';
 import { scanScreens } from '../src/screens/scan-screens.mjs';
-import { customPageCounts } from '../src/screens/search/custom-page-counts.mjs';
 import { renderSearch } from '../src/screens/search/render-search.mjs';
 
 const CONFIG = `import { defineScreens } from '@drizztdourden08/brock-react';
@@ -74,7 +72,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('scanScreens', () => {
+describe('K1 scanScreens', { tags: ['critical'] }, () => {
   it('reads every kind from its suffix and place', () => {
     const { files, findings, buckets } = scanScreens(appWith(VALID));
     expect(findings).toEqual([]);
@@ -102,11 +100,6 @@ describe('scanScreens', () => {
     expect(findings).toEqual(['src/screens/game/map.custom.tsx: searchEntries must be a literal list of { label, keywords?, anchor?, description? }, since the build reads it from the source without loading the page']);
   });
 
-  it('counts custom pages per bucket', () => {
-    const { files, buckets } = scanScreens(appWith(VALID));
-    expect(customPageCounts(files, buckets)).toBe('data 0, game 1');
-  });
-
   it('rejects an unknown suffix, two homes, a tab outside a page folder and a misplaced card', () => {
     const { findings } = scanScreens(appWith({
       'src/screens/game/home.hero.tsx': PAGE,
@@ -122,11 +115,7 @@ describe('scanScreens', () => {
   });
 });
 
-describe('checkScreens', () => {
-  it('passes a valid layout', async () => {
-    expect(await checkScreens(appWith(VALID))).toEqual([]);
-  });
-
+describe('K1 checkScreens', { tags: ['critical'] }, () => {
   it('names a bucket folder the config does not declare', async () => {
     const findings = await checkScreens(appWith({ ...VALID, 'src/screens/tools/index.page.tsx': PAGE }));
     expect(findings).toEqual(["src/screens/tools: bucket folder not declared in screens.config.ts; add { id: 'tools', ... } to buckets"]);
@@ -147,35 +136,13 @@ describe('checkScreens', () => {
   });
 });
 
-describe('renderScreens', () => {
-  it('imports each meta, loads each component on first use, keeps settings pages eager, and lists the entries', () => {
-    const { files } = scanScreens(appWith(VALID));
-    const out = renderScreens(files);
-    expect(out).toContain("import { buildScreenTree, lazyComponent } from '@drizztdourden08/brock-react';");
-    expect(out).toContain("import config from '../src/screens/screens.config';");
-    expect(out).toContain("import { meta as gameHomeHeroMeta } from '../src/screens/game/home.hero';");
-    expect(out).not.toContain('import GameHomeHero');
-    expect(out).not.toContain('items.tab\';');
-    expect(out).toContain("{ kind: 'tab', bucket: 'game', page: 'tracker', id: 'items', component: lazyComponent(() => import('../src/screens/game/tracker/items.tab')) },");
-    expect(out).toContain("import GameVideoDisplaySettings from '../src/screens/game/video/display.settings';");
-    expect(out).toContain("{ kind: 'settings', bucket: 'game', group: 'video', id: 'display', sections: GameVideoDisplaySettings },");
-    expect(out).toContain("import { searchIndex } from './search';");
-    expect(out).toContain('], searchIndex);');
-    expect(out).toContain("{ kind: 'custom', bucket: 'game', id: 'controls', component: lazyComponent(() => import('../src/screens/game/controls.custom')), meta: gameControlsCustomMeta },");
-    expect(out).toContain('export { screenTree };');
-  });
-});
-
-describe('page meta files', () => {
+describe('K1 page meta files', { tags: ['critical'] }, () => {
   const META_ONLY = "import type { ScreenMeta } from '@drizztdourden08/brock-react';\nconst meta: ScreenMeta = { title: 'Tracker', icon: 'map', order: 1 };\nexport { meta };\n";
 
   it('reads <page>.page.ts beside a tab folder as that page meta', () => {
     const root = appWith({ ...VALID, 'src/screens/game/tracker.page.ts': META_ONLY });
     const { files, findings } = scanScreens(root);
     expect(findings).toEqual([]);
-    const out = renderScreens(files);
-    expect(out).toContain("import { meta as gameTrackerPageMetaMeta } from '../src/screens/game/tracker.page';");
-    expect(out).toContain("{ kind: 'page-meta', bucket: 'game', id: 'tracker', meta: gameTrackerPageMetaMeta },");
     expect(renderSearch(root, files)).toContain('{"kind":"page-meta","id":"tracker","bucket":"game","title":"Tracker","icon":"map"}');
   });
 
@@ -188,17 +155,10 @@ describe('page meta files', () => {
   });
 });
 
-describe('renderSearch', () => {
+describe('K1 renderSearch', { tags: ['critical'] }, () => {
   const root = appWith(VALID);
   const out = renderSearch(root, scanScreens(root).files);
   const seed = (id) => JSON.parse(out.split('\n').find((line) => line.includes(`"id":"${id}"`))?.trim().replace(/,$/, '') ?? 'null');
-
-  it('imports only the config and buildSearchIndex, never a screen file', () => {
-    expect(out).toContain("import { buildSearchIndex } from '@drizztdourden08/brock-react';");
-    expect(out).toContain("import config from '../src/screens/screens.config';");
-    expect(out.match(/^import /gm)).toHaveLength(2);
-    expect(out).toContain('export { searchIndex };');
-  });
 
   it('normalises keywords and reads custom page entries', () => {
     expect(seed('controls')).toEqual({

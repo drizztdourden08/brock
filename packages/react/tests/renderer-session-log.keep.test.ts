@@ -25,7 +25,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('the renderer session log', () => {
+describe('K1 the renderer session log', { tags: ['critical'] }, () => {
   it('writes the app log to the session log in batches, a second after the first line', () => {
     const bus = quietBus();
     const written: string[][] = [];
@@ -59,7 +59,7 @@ describe('the renderer session log', () => {
   });
 });
 
-describe('the global error handlers', () => {
+describe('K1 the global error handlers', { tags: ['critical'] }, () => {
   it('log an uncaught error and an unhandled rejection to the app log, and stop when removed', () => {
     const bus = quietBus();
     const target = fakeTarget();

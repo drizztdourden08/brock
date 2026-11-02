@@ -36,7 +36,7 @@ afterEach(() => {
   useNavigationStore.getState().restore(null);
 });
 
-describe('scroll marks', () => {
+describe('K1 scroll marks', { tags: ['standard'] }, () => {
   it('reads the scrolled elements of a screen by their place in it and puts the offsets back', () => {
     const root = drawScreen('game');
     pane(root).scrollTop = 240;
@@ -48,7 +48,7 @@ describe('scroll marks', () => {
   });
 });
 
-describe('closing and reopening a window', () => {
+describe('K1 closing and reopening a window', { tags: ['standard'] }, () => {
   it('keeps the scroll of the window Escape closed and puts it back when Escape reopens it', () => {
     nav.open('game/saves');
     pane(drawScreen('game')).scrollTop = 180;

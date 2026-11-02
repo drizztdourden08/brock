@@ -86,7 +86,7 @@ beforeAll(() => {
 
 afterAll(() => rmSync(state.root, { recursive: true, force: true }));
 
-describe('the Tessera renames in scripts', () => {
+describe('K1 the Tessera renames in scripts', { tags: ['standard'] }, () => {
   it('renames a component in its Tessera import, its JSX and its type references', () => {
     expect(state.after.view).toContain("import { ProgressBar, RangeSlider, Tabs } from '@drizztdourden08/tessera/primitives';");
     expect(state.after.view).toContain('React.ComponentProps<typeof Tabs>');
@@ -131,7 +131,7 @@ describe('the Tessera renames in scripts', () => {
   });
 });
 
-describe('the Tessera renames in stylesheets, and a second replay', () => {
+describe('K3 the Tessera renames in stylesheets, and a second replay', { tags: ['standard'] }, () => {
   it('renames selectors with a boundary, longer keys first, and custom properties anywhere', () => {
     expect(state.after.css).toBe([
       '.tabs { color: var(--c-primary); }',

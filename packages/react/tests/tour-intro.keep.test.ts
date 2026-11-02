@@ -26,7 +26,7 @@ const tourOf = (step: Omit<TourStepDef, 'id' | 'title' | 'body'>) =>
 
 afterEach(showHarness.resetShow);
 
-describe('toGuidedSteps intro panel', () => {
+describe('K1 toGuidedSteps intro panel', { tags: ['critical'] }, () => {
   it('passes intro, art and reveal to the guided step', () => {
     const reveal = vi.fn();
     const art = createElement('span', null, 'art');
@@ -59,12 +59,7 @@ describe('toGuidedSteps intro panel', () => {
   });
 });
 
-describe('ProductMark', () => {
-  it('draws the brand mark of a branded product', () => {
-    const root = showHarness.render(createElement(BrockContext.Provider, { value: brockOf('brock') }, createElement(ProductMark)));
-    expect(root.querySelector('svg, img, canvas, [class*="logo"], [class*="brand"]')).not.toBeNull();
-  });
-
+describe('S1 ProductMark', { tags: ['standard'] }, () => {
   it('draws the product logo of an unbranded product', () => {
     const root = showHarness.render(createElement(BrockContext.Provider, { value: brockOf() }, createElement(ProductMark)));
     expect(root.querySelector('img')?.getAttribute('src')).toBe('logo.png');

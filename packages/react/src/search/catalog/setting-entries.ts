@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { Section, SettingItem, SettingValues, TabDef } from '../../settings/settings.type';
+import { itemShown } from '../../settings/item-shown';
 import { sourceValues } from '../../settings/source-values';
 import { tabSections } from '../../settings/tab-sections';
 import { normaliseKeywords } from '../normalise-keywords';
@@ -36,7 +37,7 @@ const tabSettings = (tab: TabDef<object>, input: CatalogInput, settings: object)
   tabSections(tab, settings).flatMap((section) => {
     const shown = sourceValues(section) ?? (settings as SettingValues);
     return groupsOf(section).flatMap((group) => group.items
-      .filter((item) => item.visible === undefined || item.visible(shown))
+      .filter((item) => itemShown(item, shown))
       .map((item) => itemEntry(tab, group, item, input)));
   });
 

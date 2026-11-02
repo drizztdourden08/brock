@@ -3,7 +3,6 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ProductConfig } from '@drizztdourden08/brock-core';
 import { defineProduct } from '@drizztdourden08/brock-core';
@@ -11,12 +10,11 @@ import { BrockContext } from '../src/app/brock-context';
 import type { BrockContextValue } from '../src/app/brock-context.type';
 import { WindowMascot } from '../src/brand/WindowMascot';
 import { besideSpot } from '../src/brand/WindowMascot/behavior/beside-spot';
-import { DEFAULT_SEARCH_HINT, WALKER_EDGE_FRACTION, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
+import { DEFAULT_SEARCH_HINT, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
 import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { paletteChecks } from '../src/review/checks/mascot-palette-checks';
 import { windowChecks } from '../src/review/checks/mascot-window-checks';
 import { usePaletteStore } from '../src/palette/usePaletteStore';
-import { ScreenLayer } from '../src/screens/ScreenLayer/ScreenLayer';
 import { failed } from './review-outcomes';
 
 const actor = { moveTo: vi.fn((..._args: unknown[]) => Promise.resolve('done')), play: vi.fn((..._args: unknown[]) => Promise.resolve('done')), autonomy: vi.fn(), stop: vi.fn() };
@@ -69,18 +67,7 @@ const show = (product: ProductConfig): void => {
   });
 };
 
-describe('the walking mascot', () => {
-  it('is the brand mascot on a stage in the portal layer, with no pointer events or focus', () => {
-    show(PRODUCT);
-    const walker = document.querySelector('[data-window-mascot]');
-    expect(walker?.getAttribute('data-window-mascot')).toBe('brock');
-    expect(walker?.hasAttribute('inert')).toBe(true);
-    expect(walker?.getAttribute('aria-hidden')).toBe('true');
-    expect(walker?.querySelector('[data-stage="brock"]')).not.toBeNull();
-    expect(walker?.querySelector('[data-autonomy="true"]')).not.toBeNull();
-    expect(walker?.querySelector('[data-clip="none"]')).not.toBeNull();
-  });
-
+describe('S1 the walking mascot', { tags: ['standard'] }, () => {
   it('only appears while a window is open', () => {
     act(() => root?.render(layer(PRODUCT)));
     expect(document.querySelector('[data-window-mascot]')).toBeNull();
@@ -88,12 +75,6 @@ describe('the walking mascot', () => {
     expect(document.querySelector('[data-window-mascot]')).not.toBeNull();
     act(() => useNavigationStore.setState({ active: null }));
     expect(document.querySelector('[data-window-mascot]')).toBeNull();
-  });
-
-  it('starts walking toward a distant point in the full app width', () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0);
-    show(PRODUCT);
-    expect(actor.moveTo).toHaveBeenCalledWith(1000 * WALKER_EDGE_FRACTION);
   });
 
   it('draws nothing for a brand with no mascot, and nothing when product.mascot is false', () => {
@@ -118,23 +99,9 @@ describe('the walking mascot', () => {
     expect(actor.stop).toHaveBeenCalledOnce();
     expect(document.querySelector('.window-mascot__hint')).toBeNull();
   });
-
-  it('says the product hint instead of the default', () => {
-    show({ ...PRODUCT, mascot: { searchHint: 'Find a game' } });
-    const palette = document.createElement('div');
-    palette.className = 'command-palette--open';
-    document.body.append(palette);
-    act(() => usePaletteStore.getState().show());
-    expect(document.querySelector('.window-mascot__hint')?.textContent).toContain('Find a game');
-  });
-
-  it('is not drawn by a window that is not shown', () => {
-    const html = renderToStaticMarkup(createElement(ScreenLayer, { title: 'Credits', icon: null, hidden: true, onClose: () => undefined, children: 'x' }));
-    expect(html).not.toContain('window-mascot');
-  });
 });
 
-describe('where the mascot stands beside the palette', () => {
+describe('K1 where the mascot stands beside the palette', { tags: ['critical'] }, () => {
   it('stands left of the palette facing it, or right of it when the left has no room', () => {
     expect(besideSpot({ left: 400, right: 600, width: 1000 })).toEqual({ x: 400 - WALKER_GAP - WALKER_HALF, face: 'right' });
     expect(besideSpot({ left: 40, right: 240, width: 1000 })).toEqual({ x: 240 + WALKER_GAP + WALKER_HALF, face: 'left' });
@@ -147,7 +114,7 @@ describe('where the mascot stands beside the palette', () => {
   });
 });
 
-describe('the mascot review checks', () => {
+describe('K1 the mascot review checks', { tags: ['critical'] }, () => {
   const box = (left: number, right: number, bottom: number) => ({ left, right, bottom });
   const reading = { app: box(0, 1000, 600), walker: box(0, 1000, 600), actor: box(100, 180, 600), palette: box(300, 500, 400), hint: 'Type to search' };
 

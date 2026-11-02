@@ -1,5 +1,5 @@
 /* @layer electron-main @kind test */
-import { mkdir, mkdtemp, realpath, writeFile } from 'fs/promises';
+import { mkdir, mkdtemp, realpath, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import type { BrowserWindow } from 'electron';
@@ -49,7 +49,21 @@ const sessionOf = (given: Partial<MainContext>, sender: unknown = {}): Call => {
   return (channel, ...args) => Promise.resolve().then(() => handlers.get(channel)?.({ sender }, ...args));
 };
 
+interface Granted extends Tree {
+  access: DocumentAccess;
+  call: Call;
+}
+
+const grantedWorld = async (prefix: string): Promise<Granted> => {
+  const tree = await makeTree(prefix);
+  const access = testAccess();
+  access.allowFolder(tree.granted);
+  return { ...tree, access, call: sessionOf({ documents: access }) };
+};
+
+const dropTree = (base: string): Promise<void> => rm(base, { recursive: true, force: true });
+
 const loose = <T>(value: unknown): T => value as T;
 
-export { knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
-export type { Call };
+export { dropTree, grantedWorld, knownProfiles, loose, makeBase, makeTree, refusedBy, sessionOf, testAccess };
+export type { Call, Granted };

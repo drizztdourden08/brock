@@ -2,6 +2,11 @@
 import type { DndElement, DragPoint, DragSourceOptions } from './dnd.type';
 import type { Hover } from './target-entry.type';
 
+interface DragGhost {
+  move: (point: DragPoint) => void;
+  remove: () => void;
+}
+
 interface Run {
   element: DndElement;
   options: DragSourceOptions<unknown>;
@@ -10,7 +15,8 @@ interface Run {
   started: boolean;
   payload: unknown;
   hover: Hover | null;
+  ghost: DragGhost | null;
   detach: () => void;
 }
 
-export type { Run };
+export type { DragGhost, Run };

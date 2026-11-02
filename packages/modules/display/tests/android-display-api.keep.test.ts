@@ -18,7 +18,7 @@ const fakePlugin = (info: Partial<NativeDisplayInfo> = {}, applied = true) => {
   return { plugin, fire: () => { for (const listener of listeners) listener(); } };
 };
 
-describe('the Android display API over the BrockDisplay plugin', () => {
+describe('K2 the Android display API over the BrockDisplay plugin', { tags: ['critical'] }, () => {
   it('reads the panel rates and offers its multiples of 60', async () => {
     const api = createAndroidDisplayApi(fakePlugin().plugin);
     expect(await api.getRefreshRate()).toEqual({ reportedHz: 90, measuredHz: null, modes: [59.94, 90, 120].map((hz) => ({ hz, sameResolution: true })) });

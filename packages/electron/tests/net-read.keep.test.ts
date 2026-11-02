@@ -32,7 +32,7 @@ const sequence = (...hops: NetHop[]): { transport: NetTransport; urls: string[] 
 
 const redirect = (location: string | null, status = 302): NetHop => answer({ status, location, body: null, contentType: null });
 
-describe('net.read', () => {
+describe('K4 net.read', { tags: ['critical'] }, () => {
   it('reads an answer from a listed host over https', async () => {
     const hop = answer({ contentType: 'Application/JSON; charset=utf-8' });
     const { transport, urls } = sequence(hop);
@@ -50,7 +50,7 @@ describe('net.read', () => {
   });
 });
 
-describe('net.read refuses before any request', () => {
+describe('K4 net.read refuses before any request', { tags: ['critical'] }, () => {
   const refuse = async (address: unknown, message: RegExp, cfg: ProductNet | null | 'default' = 'default'): Promise<void> => {
     const { transport, urls } = sequence(answer());
     await expect(netRead(cfg === 'default' ? config : (cfg ?? undefined), transport, address, undefined), String(address)).rejects.toThrow(message);
@@ -95,7 +95,7 @@ describe('net.read refuses before any request', () => {
   });
 });
 
-describe('net.read redirects', () => {
+describe('K4 net.read redirects', { tags: ['critical'] }, () => {
   it('follows redirects between listed hosts, including a relative one', async () => {
     const { transport, urls } = sequence(redirect('https://cdn.lospec.com/a.json'), redirect('/b.json', 301), answer());
     const result = await netRead(config, transport, 'https://lospec.com/x', undefined);
@@ -132,7 +132,7 @@ describe('net.read redirects', () => {
   });
 });
 
-describe('net.read answers', () => {
+describe('K4 net.read answers', { tags: ['critical'] }, () => {
   const refuse = (hop: NetHop, message: RegExp, options?: unknown): Promise<void> =>
     expect(netRead(config, sequence(hop).transport, 'https://lospec.com/x', options)).rejects.toThrow(message);
 
@@ -186,7 +186,7 @@ describe('net.read answers', () => {
 
 });
 
-describe('net.read failures', () => {
+describe('K4 net.read failures', { tags: ['critical'] }, () => {
   const refuse = (hop: NetHop, message: RegExp): Promise<void> => expect(netRead(config, sequence(hop).transport, 'https://lospec.com/x', undefined)).rejects.toThrow(message);
 
   it('refuses a body that ends short of its length header, unless the answer was encoded', async () => {

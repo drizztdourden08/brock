@@ -52,7 +52,7 @@ afterEach(() => {
   release = null;
 });
 
-describe('nav.routes', () => {
+describe('K2 nav.routes', { tags: ['critical'] }, () => {
   it('is empty before the app publishes its screens', () => {
     expect(nav.routes()).toEqual([]);
   });

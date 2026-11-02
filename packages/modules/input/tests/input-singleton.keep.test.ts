@@ -43,7 +43,7 @@ const contextWith = (): MainContext => {
   return partial as MainContext;
 };
 
-describe('input module context', () => {
+describe('S2 input module context', { tags: ['standard'] }, () => {
   beforeEach(() => { runtimes.length = 0; vi.mocked(createInputRuntime).mockClear(); });
 
   it('gives register (a copy of the context) and onWindow (the original) the same InputMain', async () => {

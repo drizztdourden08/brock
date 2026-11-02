@@ -31,7 +31,7 @@ afterEach(() => {
   if (platform) Object.defineProperty(process, 'platform', platform);
 });
 
-describe('pinLevel', () => {
+describe('K1 pinLevel', { tags: ['critical'] }, () => {
   it('keeps a pinned window above the Windows taskbar band, and floating elsewhere', () => {
     expect(pinLevel('win32')).toBe('pop-up-menu');
     expect(pinLevel('darwin')).toBe('floating');
@@ -39,7 +39,7 @@ describe('pinLevel', () => {
   });
 });
 
-describe('a pinned widget synced with the main window', () => {
+describe('K1 a pinned widget synced with the main window', { tags: ['critical'] }, () => {
   it('stays on top once pinned, through the main window focusing, minimizing and restoring', () => {
     const { main, logs } = scene();
     expect(widgetWindowControl.setPin('logs', 'top')).toBe('top');

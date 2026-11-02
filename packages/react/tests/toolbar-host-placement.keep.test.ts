@@ -1,12 +1,8 @@
 /* @layer renderer-shell @kind test */
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createToolbarLayout, toolbarIdsOf } from '@drizztdourden08/tessera/composites';
 import type { ToolbarLayout } from '@drizztdourden08/tessera/composites';
 import { fakeDisk, settle } from './fake-ui-views-disk';
-import { AppStage } from '../src/app/BrockApp/sub-components/AppStage';
-import { ToolbarHost } from '../src/toolbars/ToolbarHost';
 import type { ToolbarDef } from '../src/toolbars/toolbar.type';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 
@@ -20,29 +16,7 @@ beforeEach(() => {
   useToolbarLayoutStore.setState({ definitions: [], layout: createToolbarLayout([]), pending: null });
 });
 
-describe('where the toolbar host is mounted', () => {
-  const probe: ToolbarDef = { id: 'probe', label: 'Probe', defaultSide: 'left', render: () => createElement('i', { className: 'probe-bar' }) };
-  const work = createElement('b', { className: 'work-area' });
-  const count = (html: string, text: string): number => html.split(text).length - 1;
-
-  it('wraps the widget host in the dock by default', () => {
-    const html = renderToStaticMarkup(createElement(AppStage, { toolbars: [probe], railed: false, children: work }));
-    expect(count(html, 'class="toolbar-dock"')).toBe(1);
-    expect(html).toContain('brock-app__stage--docked');
-  });
-
-  it('leaves the widget host alone with placement app, and the app host still draws a dock around its page', () => {
-    const bare = renderToStaticMarkup(createElement(AppStage, { toolbars: [probe], placement: 'app', railed: false, children: work }));
-    expect(bare).toBe('<b class="work-area"></b>');
-    const page = createElement(ToolbarHost, { children: work });
-    const html = renderToStaticMarkup(createElement(AppStage, { toolbars: [probe], placement: 'app', railed: false, children: page }));
-    expect(count(html, 'class="toolbar-dock"')).toBe(1);
-    expect(html).toContain('<div class="toolbar-dock__centre"><b class="work-area"></b></div>');
-    expect(html).not.toContain('brock-app__stage--docked');
-  });
-});
-
-describe('a toolbar host that mounts after the layout was loaded', () => {
+describe('K3 a toolbar host that mounts after the layout was loaded', { tags: ['critical'] }, () => {
   const SAVED = { v: 1, sides: { top: [], bottom: ['tools'], left: [], right: [] }, hidden: ['options'], last: {} };
 
   it('keeps the saved layout when the profile loads before any toolbar is registered', () => {

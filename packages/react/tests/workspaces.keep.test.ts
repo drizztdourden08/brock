@@ -39,7 +39,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('workspaces', { timeout: 60_000 }, () => {
+describe('K3 workspaces', { tags: ['standard'] }, () => {
   it('builds a workspace from its preset the first time and brings the standard layout back', async () => {
     fakeDisk({});
     const app = await startApp();
@@ -84,10 +84,9 @@ describe('workspaces', { timeout: 60_000 }, () => {
     expect(isWidgetOpen(app.widgets().layout, 'c')).toBe(true);
     app.stop();
   });
-
 });
 
-describe('workspaces across a restart', { timeout: 60_000 }, () => {
+describe('K3 workspaces across a restart', { tags: ['standard'] }, () => {
   it('comes back after a restart', async () => {
     const { disk, listeners } = fakeDisk({});
     const first = await startApp();
@@ -126,10 +125,9 @@ describe('workspaces across a restart', { timeout: 60_000 }, () => {
     expect(isWidgetOpen(app.widgets().layout, 'a')).toBe(true);
     app.stop();
   });
-
 });
 
-describe('workspace rules and menu', { timeout: 60_000 }, () => {
+describe('K3 workspace rules and menu', { tags: ['standard'] }, () => {
   it('throws for an unknown workspace and does nothing before the views are loaded', async () => {
     fakeDisk({});
     const app = await startApp();

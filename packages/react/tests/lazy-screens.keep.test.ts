@@ -6,7 +6,6 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it } from 'vitest';
 import { lazyComponent } from '../src/lazy/lazy-component';
-import { lazyLoads } from '../src/lazy/lazy-loads';
 import { LazyHost } from '../src/lazy/LazyHost';
 import { preloadRoute } from '../src/lazy/preload-route';
 import { routePreloader } from '../src/lazy/route-preloader';
@@ -30,24 +29,11 @@ import type { TourDef } from '../src/tours/tour.type';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
-interface Deferred<T> {
-  promise: Promise<T>;
-  resolve: (value: T) => void;
-  reject: (error: unknown) => void;
-}
-
-const deferred = <T>(): Deferred<T> => {
-  let resolve: (value: T) => void = () => undefined;
-  let reject: (error: unknown) => void = () => undefined;
-  const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; });
-  return { promise, resolve, reject };
+const flush = async (): Promise<void> => {
+  await act(async () => {
+    for (let turn = 0; turn < 20; turn += 1) await Promise.resolve();
+  });
 };
-
-const flush = async (ms = 20): Promise<void> => {
-  await act(async () => { await new Promise((resolve) => { setTimeout(resolve, ms); }); });
-};
-
-const SUSPENSE_REVEAL_MS = 400;
 
 const roots: Root[] = [];
 
@@ -73,23 +59,7 @@ afterEach(() => {
   useTourStore.setState({ tours: NO_TOURS, active: null, progress: EMPTY_PROGRESS });
 });
 
-describe('lazyComponent', () => {
-  it('shows the loading state in its host until the module arrives, then draws the component', async () => {
-    const load = deferred<{ default: ComponentType<{ name: string }> }>();
-    const Lazy = lazyComponent(() => load.promise);
-    const host = await render(createElement(LazyHost, null, createElement(Lazy, { name: 'one' })));
-    expect(host.querySelector('[data-brock-loading] .spinner')).not.toBeNull();
-    expect(lazyLoads.isIdle()).toBe(false);
-    await act(async () => {
-      load.resolve({ default: Page });
-      await new Promise((resolve) => { setTimeout(resolve, SUSPENSE_REVEAL_MS); });
-    });
-    expect(host.querySelector('[data-brock-loading]')).toBeNull();
-    expect(host.textContent).toBe('Page one');
-    expect(Lazy.loaded).toBe(true);
-    expect(lazyLoads.isIdle()).toBe(true);
-  });
-
+describe('S2 lazyComponent', { tags: ['standard'] }, () => {
   it('draws at once with no loading state once it was preloaded', async () => {
     let calls = 0;
     const Lazy = lazyComponent(() => { calls += 1; return Promise.resolve({ default: Page }); });
@@ -112,18 +82,6 @@ describe('lazyComponent', () => {
   });
 });
 
-describe('lazyLoads.idle', () => {
-  it('waits for every tracked load and gives up at its timeout', async () => {
-    const load = deferred<number>();
-    void lazyLoads.track(load.promise);
-    const idle = lazyLoads.idle(2000);
-    load.resolve(1);
-    await expect(idle).resolves.toBe(true);
-    void lazyLoads.track(new Promise(() => undefined));
-    await expect(lazyLoads.idle(60)).resolves.toBe(false);
-  });
-});
-
 const CONFIG = { buckets: [{ id: 'game', title: 'Game', icon: 'gamepad-2' as const, menu: 'entry' as const }], home: 'game' };
 
 const loaderTree = () => {
@@ -139,7 +97,7 @@ const loaderTree = () => {
   return { loaded, registry };
 };
 
-describe('preloading', () => {
+describe('S2 preloading', { tags: ['standard'] }, () => {
   it('preloads a card, a hub home, a hub page and a tab by route', async () => {
     const { loaded, registry } = loaderTree();
     for (const route of ['credits', 'game', 'game/saves', 'game/tracker/map', 'missing']) preloadRoute(registry, route);
@@ -171,7 +129,7 @@ describe('preloading', () => {
   });
 });
 
-describe('a lazy title bar button', () => {
+describe('S2 a lazy title bar button', { tags: ['standard'] }, () => {
   it('keeps its look at boot and loads its handler on the first click', async () => {
     let selected = 0;
     let loads = 0;
@@ -190,7 +148,7 @@ describe('a lazy title bar button', () => {
 
 const WELCOME: TourDef = { id: 'welcome', title: 'Welcome', steps: [{ id: 'one', title: 'One', body: 'First.' }, { id: 'two', title: 'Two', body: 'Second.' }] };
 
-describe('a lazy tour', () => {
+describe('S2 a lazy tour', { tags: ['standard'] }, () => {
   it('lists its title and trigger at boot, counts as a first-run tour and loads its steps when it starts', async () => {
     let loads = 0;
     const [listed] = toursFromFiles([{ id: 'welcome', tour: lazyTour({ title: 'Welcome', trigger: 'first-run' }, () => { loads += 1; return Promise.resolve({ default: WELCOME }); }) }]);

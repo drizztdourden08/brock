@@ -12,13 +12,16 @@ const state = () => useNavigationStore.getState();
 const section = (): unknown => state().params.section;
 const trail = (id: string): unknown[] => (state().history[id] ?? []).map((params) => params.section);
 const noAlias = () => undefined;
+const settle = async (): Promise<void> => {
+  for (let turn = 0; turn < 20; turn += 1) await Promise.resolve();
+};
 
 afterEach(() => {
   useNavigationStore.getState().restore(null);
   useDialogStore.setState({ dialog: null });
 });
 
-describe('hub history', () => {
+describe('K1 hub history', { tags: ['critical'] }, () => {
   it('keeps a page history per hub, and Back walks it', () => {
     nav.open('game');
     nav.open('game/saves');
@@ -40,7 +43,7 @@ describe('hub history', () => {
 
 });
 
-describe('Escape and Home in a hub', () => {
+describe('K1 Escape and Home in a hub', { tags: ['critical'] }, () => {
   it('closes the open window on Escape from any page, never going up to its home first', () => {
     nav.open('game');
     nav.open('game/saves');
@@ -88,7 +91,7 @@ describe('Escape and Home in a hub', () => {
 
 });
 
-describe('reopening the last closed window', () => {
+describe('K3 reopening the last closed window', { tags: ['critical'] }, () => {
   it('reopens the last closed window on Escape with nothing open, on its page and with its history', () => {
     nav.open('game');
     nav.open('game/saves');
@@ -127,7 +130,7 @@ describe('reopening the last closed window', () => {
   });
 });
 
-describe('sub-page history', () => {
+describe('K1 sub-page history', { tags: ['critical'] }, () => {
   it('goes up from a sub-page to its page, reusing the history entry when it is the page', () => {
     nav.open('game/saves');
     nav.open('game/saves/42/edit');
@@ -148,7 +151,7 @@ describe('sub-page history', () => {
   });
 });
 
-describe('unsaved changes', () => {
+describe('K3 unsaved changes', { tags: ['critical'] }, () => {
   it('asks "Unsaved changes" in Tessera words before leaving a dirty page, and stays on Keep editing', async () => {
     nav.open('game/saves/new');
     const release = leaveGuards.add(() => true);
@@ -156,23 +159,23 @@ describe('unsaved changes', () => {
     const asked = useDialogStore.getState().dialog;
     expect(asked).toMatchObject({ title: 'Unsaved changes', confirmLabel: 'Discard', cancelLabel: 'Keep editing' });
     asked?.onCancel?.();
-    await new Promise((resolve) => { setTimeout(resolve, 0); });
+    await settle();
     expect(state().active).toBe('game');
     nav.open('game/tracker');
     useDialogStore.getState().dialog?.onConfirm();
-    await new Promise((resolve) => { setTimeout(resolve, 0); });
+    await settle();
     release();
     expect(section()).toBe('tracker');
   });
 });
 
-describe('deep links', () => {
+describe('K2 deep links', { tags: ['critical'] }, () => {
   it('keeps every segment after the page as the tab or sub-page path', () => {
     expect(resolveRoute('game/saves/42/edit', {}, noAlias)).toEqual({ active: 'game', params: { section: 'saves', tab: '42/edit' } });
   });
 });
 
-describe('restoring navigation', () => {
+describe('K3 restoring navigation', { tags: ['critical'] }, () => {
   const known = (id: string) => ['game', 'data'].includes(id);
 
   it('reads a saved state and drops screens the app no longer has', () => {

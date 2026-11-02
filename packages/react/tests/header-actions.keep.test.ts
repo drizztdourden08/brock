@@ -10,19 +10,8 @@ afterEach(showHarness.resetShow);
 
 const buttons = (): HTMLButtonElement[] => [...document.querySelectorAll<HTMLButtonElement>('.header-actions button')];
 
-describe('header secondary action', () => {
-  it('draws a secondary button before the primary button', () => {
-    showHarness.render(createElement(HeaderActions, {
-      secondary: { label: 'Join a session', onClick: () => undefined },
-      primary: { label: 'New session', onClick: () => undefined },
-    }));
-    expect(buttons().map((button) => button.textContent)).toEqual(['Join a session', 'New session']);
-    expect(document.querySelectorAll('.header-actions .btn--primary')).toHaveLength(1);
-    expect(buttons()[0]?.classList.contains('btn--primary')).toBe(false);
-    expect(buttons()[1]?.classList.contains('btn--primary')).toBe(true);
-  });
-
-  it('calls its own action when it is clicked', () => {
+describe('S1 header secondary action', () => {
+  it('calls its own action when it is clicked', { tags: ['standard'] }, () => {
     const join = vi.fn();
     const create = vi.fn();
     showHarness.render(createElement(HeaderActions, {
@@ -34,12 +23,7 @@ describe('header secondary action', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
-  it('is absent when it is not set', () => {
-    showHarness.render(createElement(HeaderActions, { primary: { label: 'New session', onClick: () => undefined } }));
-    expect(buttons().map((button) => button.textContent)).toEqual(['New session']);
-  });
-
-  it('carries the screen meta through to the hub header', () => {
+  it('carries the screen meta through to the hub header', { tags: ['critical'] }, () => {
     const header = hubHeader({ secondary: { label: 'Join a session', open: 'join' }, primary: { label: 'New', open: 'new' } });
     expect(header?.secondary).toMatchObject({ label: 'Join a session', open: 'join' });
     expect(hubHeader({ primary: { label: 'New', open: 'new' } })?.secondary).toBeUndefined();

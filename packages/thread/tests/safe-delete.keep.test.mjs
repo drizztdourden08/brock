@@ -52,7 +52,7 @@ const mainIsWhole = () => {
   expect(run(main, 'status', '--porcelain')).toBe('');
 };
 
-describe('the Archipelia data loss', () => {
+describe('K5 the Archipelia data loss', { tags: ['standard'] }, () => {
   it.runIf(process.platform === 'win32')('reproduces: git worktree remove follows the junctions and deletes tracked files of the main checkout', () => {
     const tree = linkedWorktree(join(base, 'ci-arch'));
     run(main, 'worktree', 'remove', '--force', tree);
@@ -87,7 +87,7 @@ describe('the Archipelia data loss', () => {
   });
 });
 
-describe('deleteTree guards', () => {
+describe('K4 deleteTree guards', { tags: ['standard'] }, () => {
   it('deletes only strictly inside the folder it owns', async () => {
     const owner = join(base, 'owned');
     mkdirSync(join(owner, 'inside'), { recursive: true });
@@ -128,7 +128,7 @@ describe('deleteTree guards', () => {
   });
 });
 
-describe('the ci temporary worktree', () => {
+describe('K4 the ci temporary worktree', { tags: ['standard'] }, () => {
   const sha = () => run(main, 'rev-parse', 'HEAD');
 
   it('lives in its own folder outside the checkout and leaves the sibling files when removed', async () => {

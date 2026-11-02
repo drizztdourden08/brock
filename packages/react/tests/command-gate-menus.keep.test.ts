@@ -12,7 +12,7 @@ import { registerFresh } from './command-fixtures';
 
 const context: ContextMenuContext = { point: { x: 0, y: 0 }, target: null, trigger: 'pointer', data: undefined };
 
-describe('menus read the gates of a command', () => {
+describe('S2 menus read the gates of a command', { tags: ['standard'] }, () => {
   let ready = false;
   let shown = true;
   let unregister = (): void => {};

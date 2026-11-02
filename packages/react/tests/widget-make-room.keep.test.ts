@@ -29,7 +29,7 @@ const savedBeforeMakeRoom = (overlay: 'notes' | null = null): unknown => ({
 const roomOf = (layout: WidgetLayout): Record<string, boolean | undefined> =>
   Object.fromEntries(panesOf(layout.dock).map((pane) => [pane.key, pane.makeRoom]));
 
-describe('docked panes make room by default', () => {
+describe('K3 docked panes make room by default', { tags: ['critical'] }, () => {
   beforeEach(() => {
     useWidgetLayoutStore.getState().replace(null);
     useWidgetLayoutStore.getState().setDefinitions([LOGS, NOTES]);

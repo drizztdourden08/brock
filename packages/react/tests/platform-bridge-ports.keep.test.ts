@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createElectronFactory } from '../src/platform/hosts/electron-factory';
-import { dragOut } from '../src/host/drag-out';
 
 const stubApi = () => {
   const listeners: (() => void)[] = [];
@@ -18,7 +17,6 @@ const stubApi = () => {
       return () => listeners.splice(listeners.indexOf(listener), 1);
     }),
     netRead: vi.fn((_url: string, _options?: unknown) => Promise.resolve({ bytes: new Uint8Array([7]).buffer, contentType: 'application/json', url: 'https://lospec.com/x' })),
-    dragOut: vi.fn((_paths: string[]) => Promise.resolve()),
   };
   vi.stubGlobal('window', { api });
   return Object.assign(api, { listeners });
@@ -28,7 +26,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('clipboard port', () => {
+describe('K2 clipboard port', { tags: ['critical'] }, () => {
   it('sends bytes as array buffers and gives bytes back', async () => {
     const api = stubApi();
     const clipboard = createElectronFactory().ports.clipboard?.();
@@ -58,18 +56,12 @@ describe('clipboard port', () => {
   });
 });
 
-describe('net port and drag out', () => {
+describe('K2 net port', { tags: ['critical'] }, () => {
   it('returns bytes from net.read', async () => {
     const api = stubApi();
     const net = createElectronFactory().ports.net?.();
     if (!net) throw new Error('the Electron host has no net port');
     expect(await net.read('https://lospec.com/x', { maxBytes: 10 })).toEqual({ bytes: new Uint8Array([7]), contentType: 'application/json', url: 'https://lospec.com/x' });
     expect(api.netRead).toHaveBeenCalledWith('https://lospec.com/x', { maxBytes: 10 });
-  });
-
-  it('passes the paths of a drag out to main', async () => {
-    const api = stubApi();
-    await dragOut(['C:\\art\\a.bxel']);
-    expect(api.dragOut).toHaveBeenCalledWith(['C:\\art\\a.bxel']);
   });
 });

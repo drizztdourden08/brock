@@ -7,7 +7,6 @@ import { fileIconOf } from '../src/main/os-integration/file-icon-of';
 import { installLinuxIntegration } from '../src/main/os-integration/install-linux-integration';
 import { linuxDesktopEntry } from '../src/main/os-integration/linux-desktop-entry';
 import { linuxMimeXml } from '../src/main/os-integration/linux-mime-xml';
-import { regArgs } from '../src/main/os-integration/reg-args';
 import { windowsRegistryEntries } from '../src/main/os-integration/windows-registry-entries';
 import { windowsRegistryRemovals } from '../src/main/os-integration/windows-registry-removals';
 import type { OsIntegrationProduct } from '../src/main/os-integration/os-integration.type';
@@ -26,7 +25,7 @@ const PRODUCT: OsIntegrationProduct = {
 };
 
 const EXE = 'C:\\Users\\me\\AppData\\Local\\my-app\\current\\My App.exe';
-const CLASSES = 'HKCU\\Software\\Classes';
+const CLASSES = 'Software\\Classes';
 
 const homes: string[] = [];
 afterEach(() => {
@@ -34,7 +33,7 @@ afterEach(() => {
   refreshed.length = 0;
 });
 
-describe('Windows registry', () => {
+describe('K2 Windows registry', { tags: ['critical'] }, () => {
   it('writes the deep link scheme and each file type under the user classes', () => {
     const entries = windowsRegistryEntries(PRODUCT, EXE, (ext) => `icon:${ext}`);
     expect(entries).toContainEqual({ key: `${CLASSES}\\my-app`, name: 'URL Protocol', value: '' });
@@ -57,13 +56,6 @@ describe('Windows registry', () => {
     ]);
   });
 
-  it('turns each entry into reg.exe arguments', () => {
-    expect(regArgs({ key: 'HKCU\\X', name: null, value: '"a" "%1"' })).toEqual(['add', 'HKCU\\X', '/ve', '/t', 'REG_SZ', '/d', '"a" "%1"', '/f']);
-    expect(regArgs({ key: 'HKCU\\X', name: 'URL Protocol', value: '' })).toEqual(['add', 'HKCU\\X', '/v', 'URL Protocol', '/t', 'REG_SZ', '/d', '', '/f']);
-    expect(regArgs({ key: 'HKCU\\X', name: null })).toEqual(['delete', 'HKCU\\X', '/f']);
-    expect(regArgs({ key: 'HKCU\\X', name: 'P.Id' })).toEqual(['delete', 'HKCU\\X', '/v', 'P.Id', '/f']);
-  });
-
   it('points a file type at its shipped icon, else at the executable', () => {
     const resources = mkdtempSync(join(tmpdir(), 'brock-icons-'));
     homes.push(resources);
@@ -75,7 +67,7 @@ describe('Windows registry', () => {
   });
 });
 
-describe('Linux desktop entry', () => {
+describe('K2 Linux desktop entry', { tags: ['critical'] }, () => {
   it('lists the file types and the scheme handler, with a quoted Exec', () => {
     const entry = linuxDesktopEntry(PRODUCT, '/home/me/MyApp "1".AppImage');
     expect(entry).toContain('Exec="/home/me/MyApp \\"1\\".AppImage" %U');

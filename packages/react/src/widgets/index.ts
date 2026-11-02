@@ -35,3 +35,4 @@ export type { WidgetContextSource, WidgetDisabledHook, WidgetDisabledOf, WidgetH
 export { LogsWidget, LOGS_WIDGET_ID } from './built-in/LogsWidget';
 export { PerformanceWidget, PERFORMANCE_WIDGET_ID } from './built-in/PerformanceWidget';
 export type { FocusKeep, ShareOptions, SharedStore, WidgetDef, WidgetFile, WidgetInput, WidgetMenuPlacement, WidgetMeta, WidgetPrefItem, WidgetLayoutState, WidgetRegistryState, WindowKind } from './widget.type';
+export type { WidgetDrop, WidgetFileDrop } from './widget-drop/widget-drop.type';

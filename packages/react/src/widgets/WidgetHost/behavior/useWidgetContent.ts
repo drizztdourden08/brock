@@ -9,7 +9,7 @@ import type { WidgetDef } from '../../widget.type';
 
 const useWidgetContent = (definitions: readonly WidgetDef[]) => {
   const content = useMemo<Record<string, ReactNode>>(
-    () => Object.fromEntries(definitions.map((def) => [def.id, createElement(WidgetBody, { id: def.id, label: def.label }, def.empty ? createElement(WidgetFace, { def }) : def.render())])),
+    () => Object.fromEntries(definitions.map((def) => [def.id, createElement(WidgetBody, { id: def.id, label: def.label, drop: def.drop }, def.empty ? createElement(WidgetFace, { def }) : def.render())])),
     [definitions],
   );
   const settingsContent = useMemo<Record<string, ReactNode>>(

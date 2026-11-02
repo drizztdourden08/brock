@@ -7,6 +7,7 @@ import type { ShowRule } from '../screens/show/show.type';
 import type { ScreenViews } from '../stores/screen-state.type';
 import type { WidgetPrefs } from '../stores/widget-pref.type';
 import type { LayoutPreset } from './layout-preset.type';
+import type { WidgetFileDrop } from './widget-drop/widget-drop.type';
 
 type WidgetPrefItem = SettingItem & { default?: unknown };
 
@@ -31,6 +32,7 @@ interface WidgetDef extends WidgetDefinition {
   empty?: () => ReactNode;
   prefs?: readonly WidgetPrefItem[];
   menu?: WidgetMenuPlacement;
+  drop?: WidgetFileDrop;
 }
 
 type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;

@@ -79,3 +79,38 @@ describe('K1 a bucket backdrop file', { tags: ['critical'] }, () => {
     expect(screensTs(root)).not.toContain('library.backdrop.constants');
   });
 });
+
+const HEADER = "const LibraryHeader = () => null;\nconst actions = () => null;\n\nexport default LibraryHeader;\nexport { actions };\n";
+
+describe('K2 a bucket header file', { tags: ['critical'] }, () => {
+  it('syncs <bucket>.header.tsx as a lazy header entry with its actions, left out of search', async () => {
+    const root = appWith({ 'src/screens/library/shelf.page.tsx': PAGE, 'src/screens/library/library.header.tsx': HEADER });
+    const screens = screensTs(root);
+    expect(screens).toContain("{ kind: 'header', bucket: 'library', id: 'library', component: lazyComponent(() => import('../src/screens/library/library.header')), actions: lazyComponent(() => import('../src/screens/library/library.header').then((module) => ({ default: module.actions }))) },");
+    expect(searchTs(root)).not.toContain('header');
+    expect(await checkScreens(root)).toEqual([]);
+  });
+
+  it('leaves actions out when the file exports none', () => {
+    const root = appWith({ 'src/screens/library/shelf.page.tsx': PAGE, 'src/screens/library/library.header.tsx': 'const Header = () => null;\n\nexport default Header;\n' });
+    expect(screensTs(root)).toContain("{ kind: 'header', bucket: 'library', id: 'library', component: lazyComponent(() => import('../src/screens/library/library.header')) },");
+  });
+
+  it('takes the bucket name, sits in the bucket folder and is never the only file of a bucket', async () => {
+    const root = appWith({
+      'src/screens/library/shelf.page.tsx': PAGE,
+      'src/screens/library/wall.header.tsx': HEADER,
+      'src/screens/notes/drafts/notes.header.tsx': HEADER,
+    });
+    const findings = await checkScreens(root);
+    expect(findings).toContain('src/screens/library/wall.header.tsx: a bucket header takes the bucket name; rename it library.header.tsx');
+    expect(findings.some((line) => line.startsWith('src/screens/notes/drafts/notes.header.tsx: a bucket header sits directly in its bucket folder'))).toBe(true);
+    const lonely = appWith({ 'src/screens/library/library.header.tsx': HEADER });
+    expect(await checkScreens(lonely)).toContain('src/screens/library: a bucket folder with no screens');
+  });
+
+  it('reports a bucket that also sets header in screens.config.ts', async () => {
+    const root = appWith({ 'src/screens/library/shelf.page.tsx': PAGE, 'src/screens/library/library.header.tsx': HEADER }, config(", header: { render: 'x' }"));
+    expect(await checkScreens(root)).toEqual(['src/screens/library/library.header.tsx: bucket "library" also sets header in screens.config.ts; keep one of them']);
+  });
+});

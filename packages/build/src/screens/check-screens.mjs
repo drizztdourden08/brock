@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { readScreensConfig } from './read-screens-config.mjs';
 import { scanScreens } from './scan-screens.mjs';
-import { SCREENS_CONFIG, SCREENS_DIR } from './screen-conventions.constants.mjs';
+import { BUCKET_FILE_KINDS, SCREENS_CONFIG, SCREENS_DIR } from './screen-conventions.constants.mjs';
 import { searchFindings } from './search/search-findings.mjs';
 
 const CONFIG_PATH = `${SCREENS_DIR}/${SCREENS_CONFIG}`;
@@ -38,13 +38,13 @@ const settingsPageFindings = (config, files) => {
 };
 
 /**
- * @param {{ buckets: { id: string, backdrop?: unknown }[] }} config
+ * @param {{ buckets: ({ id: string } & Record<string, unknown>)[] }} config
  * @param {import('./scan-screens.mjs').ScreenFile[]} files
  * @returns {string[]}
  */
-const backdropFindings = (config, files) => files
-  .filter((file) => file.kind === 'backdrop' && config.buckets.some((bucket) => bucket.id === file.bucket && bucket.backdrop !== undefined))
-  .map((file) => `${file.path}: bucket "${file.bucket}" also sets backdrop in ${SCREENS_CONFIG}; keep one of them`);
+const bucketFileFindings = (config, files) => files
+  .filter((file) => BUCKET_FILE_KINDS.includes(file.kind) && config.buckets.some((bucket) => bucket.id === file.bucket && bucket[file.kind] !== undefined))
+  .map((file) => `${file.path}: bucket "${file.bucket}" also sets ${file.kind} in ${SCREENS_CONFIG}; keep one of them`);
 
 /**
  * @param {string} rootDir the app root
@@ -56,7 +56,7 @@ const checkScreens = async (rootDir) => {
   const findings = [...layout, ...searchFindings(rootDir, files)];
   try {
     const config = await readScreensConfig(rootDir);
-    return [...findings, ...configFindings(config, buckets), ...settingsPageFindings(config, files), ...backdropFindings(config, files)];
+    return [...findings, ...configFindings(config, buckets), ...settingsPageFindings(config, files), ...bucketFileFindings(config, files)];
   } catch (error) {
     return [...findings, `${CONFIG_PATH}: ${error instanceof Error ? error.message : String(error)}`];
   }

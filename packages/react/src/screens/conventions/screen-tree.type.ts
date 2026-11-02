@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
-import type { HubDef, HubSubPage, HubTab, LiveMeta, UseLivePages } from '../../hub/hub.type';
+import type { HubDef, HubRenderContext, HubSubPage, HubTab, LiveMeta, UseLivePages } from '../../hub/hub.type';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import type { RouteAlias, RouteShortcut } from '../../navigation/navigation.type';
 import type { SearchEntry } from '../../search/search.type';
@@ -26,6 +26,13 @@ interface BackdropEntry extends EntryBase {
   kind: 'backdrop';
   bucket: string;
   component: ComponentType;
+}
+
+interface HeaderEntry extends EntryBase {
+  kind: 'header';
+  bucket: string;
+  component: ComponentType<HubRenderContext>;
+  actions?: ComponentType<HubRenderContext>;
 }
 
 interface PageEntry extends EntryBase {
@@ -89,7 +96,7 @@ interface BaseEntry extends EntryBase {
   component: ComponentType<BaseProps>;
 }
 
-type BucketEntry = HeroEntry | BackdropEntry | PageEntry | FreePageEntry | TabEntry | SubEntry | LiveEntry | PageMetaEntry | SettingsEntry;
+type BucketEntry = HeroEntry | BackdropEntry | HeaderEntry | PageEntry | FreePageEntry | TabEntry | SubEntry | LiveEntry | PageMetaEntry | SettingsEntry;
 
 type ScreenEntry = BucketEntry | CardEntry | BaseEntry;
 
@@ -141,6 +148,6 @@ interface PlacedPage {
 }
 
 export type {
-  BackdropEntry, BaseEntry, BucketEntry, CardEntry, FreePageEntry, EntryBase, HeroEntry, LiveEntry, OrderedTab, PageEntry, MenuIconOf, PageMetaEntry, PlacedMenuItem, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
+  BackdropEntry, BaseEntry, BucketEntry, CardEntry, FreePageEntry, EntryBase, HeaderEntry, HeroEntry, LiveEntry, OrderedTab, PageEntry, MenuIconOf, PageMetaEntry, PlacedMenuItem, PlacedPage, ResolvedScreenTree, ScreenEntry, ScreenTree, SettingsEntry, SettingsSource,
   SubEntry, SubMatch, TabEntry,
 };

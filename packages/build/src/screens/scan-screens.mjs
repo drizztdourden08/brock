@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT,
+  ACTIONS_EXPORT, CONSTANTS_FILE, DEV_KINDS, DEV_SCREEN, KIND_SUFFIXES, KINDS_AT, META_EXPORT, MISPLACED, NAMING_HINT, SCREEN_ID, SCREENS_CONFIG, SCREENS_DIR, SEARCH_ENTRIES_EXPORT,
 } from './screen-conventions.constants.mjs';
 import { baseFindings } from './base-findings.mjs';
 import { devScreenFindings } from './dev-screen-findings.mjs';
@@ -11,7 +11,7 @@ import { pageMetaFindings } from './page-meta-findings.mjs';
 import { subPageFindings } from './sub-page-findings.mjs';
 
 /**
- * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, dev?: boolean, hasMeta: boolean, hasSearchEntries: boolean }} ScreenFile
+ * @typedef {{ kind: string, id: string, path: string, bucket?: string, group?: string, page?: string, dev?: boolean, hasMeta: boolean, hasSearchEntries: boolean, hasActions: boolean }} ScreenFile
  * @typedef {{ level: 'root' | 'bucket' | 'group' | 'page', bucket?: string, group?: string, page?: string }} Place
  * @typedef {{ rootDir: string, files: ScreenFile[], findings: string[], buckets: string[] }} ScanState
  */
@@ -47,7 +47,7 @@ const addFile = (state, rel, name, place) => {
     return;
   }
   const source = readFileSync(join(state.rootDir, rel), 'utf8');
-  const exports = { hasMeta: META_EXPORT.test(source), hasSearchEntries: SEARCH_ENTRIES_EXPORT.test(source) };
+  const exports = { hasMeta: META_EXPORT.test(source), hasSearchEntries: SEARCH_ENTRIES_EXPORT.test(source), hasActions: ACTIONS_EXPORT.test(source) };
   if (found.kind === 'page-meta' && !exports.hasMeta) {
     state.findings.push(`${rel}: a page meta file exports meta: ScreenMeta and nothing else`);
     return;

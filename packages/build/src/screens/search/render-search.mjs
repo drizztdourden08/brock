@@ -1,5 +1,5 @@
 /* @layer tooling-scripts @kind logic */
-import { GENERATED_HEADER, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DIR } from '../screen-conventions.constants.mjs';
+import { BUCKET_FILE_KINDS, GENERATED_HEADER, REACT_PACKAGE, SCREENS_CONFIG, SCREENS_DIR } from '../screen-conventions.constants.mjs';
 import { fileSeed } from './file-seed.mjs';
 
 /**
@@ -8,7 +8,7 @@ import { fileSeed } from './file-seed.mjs';
  * @returns {string} the source of .brock/search.ts
  */
 const renderSearch = (rootDir, files) => {
-  const shipped = files.filter((file) => !file.dev && file.kind !== 'backdrop');
+  const shipped = files.filter((file) => !file.dev && !BUCKET_FILE_KINDS.includes(file.kind));
   const hasDev = files.some((file) => file.dev);
   const seeds = [...shipped.map((file) => `  ${JSON.stringify(fileSeed(rootDir, file))},`), ...(hasDev ? ['  ...devSearchSeeds,'] : [])];
   const list = seeds.length ? ['[', ...seeds, ']'].join('\n') : '[]';

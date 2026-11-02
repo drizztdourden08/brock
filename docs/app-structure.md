@@ -131,7 +131,7 @@ Every release has `release-notes/v<version>.md` beside the app: `# <product.name
 
 | Kind of code | Folder | File name | Picked up by |
 |---|---|---|---|
-| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `.live.tsx`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
+| Screen | `src/screens/<bucket>/`, `src/screens/` | `<id>.hero.tsx`, `<bucket>.backdrop.tsx`, `<bucket>.header.tsx`, `.page.tsx`, `.custom.tsx`, `.settings.ts`, `.live.tsx`, `<page>/<tab>.tab.tsx`, `<page>/<sub>.sub.tsx`, `<id>.card.tsx`, `<id>.layer.tsx`, one `<id>.base.tsx`; `<id>.<kind>.constants.ts` (`library.page.constants.ts`) or `<name>.constants.ts` beside them for their constants | `brock sync` into `.brock/screens.ts` and `.brock/search.ts` |
 | Bucket list | `src/screens/` | `screens.config.ts` | the same |
 | Widget | `src/widgets/` | `<id>.widget.tsx` (default export: the component, `meta`), `<id>.widget.constants.ts`, `layout.constants.ts` or `<name>.constants.ts` for constants | `brock sync` into `.brock/widgets.ts` |
 | Widget layout | `src/widgets/` | `layout.ts` (default export: `defineLayoutPreset`) | `brock sync` into `.brock/widgets.ts` as `appWidgetLayout` |
@@ -301,6 +301,28 @@ export default LibraryBackdrop;
 - It loads with the bucket's pages: when the hub or one of its pages preloads (a bucket switch pill or a menu row on hover or focus, the home hub at boot), and otherwise the first time a page header of the bucket draws.
 - A page's own `meta.backdrop` still wins, and `{ kind: 'none' }` there removes it for that page. Keep either the file or `backdrop` in `screens.config.ts`: `brock structure` reports a bucket with both.
 - The file sits in its bucket folder and takes the bucket name; its constants go in `<bucket>.backdrop.constants.ts`.
+
+## A hub header drawn by a component
+
+`header` on a bucket in `screens.config.ts` cannot be set, since it is render code and the config imports nothing but `defineScreens`. A bucket that draws a header in the hub header row puts it in `src/screens/<bucket>/<bucket>.header.tsx`. The default export is the main content and takes the `HubRenderContext`. An optional named export `actions` is a second component, drawn after it on the right:
+
+```tsx
+// src/screens/library/library.header.tsx
+import { ShelfTitle } from '../../views/ShelfTitle';
+import { ShelfActions } from '../../views/ShelfActions';
+import type { HubRenderContext } from '@drizztdourden08/brock-react';
+
+const LibraryHeader = (ctx: HubRenderContext) => <ShelfTitle page={ctx.page.label} />;
+
+const actions = (ctx: HubRenderContext) => <ShelfActions params={ctx.params} />;
+
+export default LibraryHeader;
+export { actions };
+```
+
+- Sync picks it up like a `.backdrop.tsx` and loads both components lazily. The hub builds `{ render, actions? }` from them, so `ctx` follows the open page and the route params.
+- The file wins over `header` in `screens.config.ts`. Keep one of them: `brock structure` reports a bucket that sets both.
+- The file sits in its bucket folder and takes the bucket name; its constants go in `<bucket>.header.constants.ts`. A header alone does not make a bucket: it still needs a hero or a page.
 
 ## A small informational window
 

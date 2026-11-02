@@ -31,7 +31,9 @@ const entryLine = (file) => {
   const place = [['bucket', file.bucket], ['group', file.group], ['page', file.page], ['id', file.id]]
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}: '${value}'`);
-  const body = { settings: [`sections: ${name}`], live: [`usePages: ${name}`], 'page-meta': [] }[file.kind] ?? [`component: ${LAZY_COMPONENT}(() => import('${sourceOf(file)}'))`];
+  const component = `${LAZY_COMPONENT}(() => import('${sourceOf(file)}'))`;
+  const actions = file.kind === 'header' && file.hasActions ? [`actions: ${LAZY_COMPONENT}(() => import('${sourceOf(file)}').then((module) => ({ default: module.actions })))`] : [];
+  const body = { settings: [`sections: ${name}`], live: [`usePages: ${name}`], 'page-meta': [] }[file.kind] ?? [`component: ${component}`, ...actions];
   const meta = file.hasMeta ? [`meta: ${metaName(name)}`] : [];
   return `  { ${[`kind: '${file.kind}'`, ...place, ...body, ...meta].join(', ')} },`;
 };

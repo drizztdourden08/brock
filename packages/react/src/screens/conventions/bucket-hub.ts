@@ -4,6 +4,7 @@ import { contentPage } from './content-page';
 import { heroPage } from './hero-page';
 import { attachSubs } from './attach-subs';
 import { bucketBackdrop } from './bucket-backdrop';
+import { bucketHeader } from './bucket-header';
 import { hubGroups } from './hub-groups';
 import { iconNode } from './icon-node';
 import { livePage } from './live-page';
@@ -38,7 +39,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     backdrop: bucketBackdrop(bucket, entries),
     requiresProfile: bucket.requiresProfile,
     top: bucket.top,
-    header: bucket.header,
+    header: bucketHeader(bucket, entries),
     params: bucket.params,
     home,
     groups: hero ? groups : withoutPage(groups, home),

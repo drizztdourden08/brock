@@ -73,11 +73,14 @@ describe('drag preview', () => {
     expect(body).toHaveLength(0);
   });
 
-  it.each([undefined, 0, () => undefined])('draws no count part when the count is %s', { tags: ['standard'] }, (count) => {
-    const row = new FakeElement();
-    dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item', count } });
-    dragPast(row);
-    expect(ghostOf().children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
+  it('draws no count part when the count is missing, 0 or undefined', { tags: ['standard'] }, () => {
+    for (const count of [undefined, 0, (): undefined => undefined]) {
+      const row = new FakeElement();
+      dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item', count } });
+      dragPast(row);
+      expect(ghostOf().children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
+      dragWorld.win.dispatchEvent(pointer('pointercancel', 40, 40));
+    }
   });
 
   it('draws nothing without a preview and never for a press that stays under the threshold', { tags: ['critical'] }, () => {

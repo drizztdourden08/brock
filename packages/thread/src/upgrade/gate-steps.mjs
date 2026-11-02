@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { brockInstallOf } from './brock-install.mjs';
+import { NO_PURGE_PROMPT } from '../pnpm.constants.mjs';
 import { coversEveryPackage } from './covers-every-package.mjs';
 import { runIn } from './run-in.mjs';
 import { GATE_SCRIPTS, MIGRATIONS_FILE } from './upgrade.constants.mjs';
@@ -36,7 +37,7 @@ const appSteps = (plan, app) => [
   { name: inApp('brock migrate', app), run: () => runIn.brock(app.dir, migrateArgs(plan, app)) },
 ];
 
-const frozenInstall = (path) => ({ name: 'pnpm install --frozen-lockfile', run: () => runIn.pnpm(path, ['install', '--frozen-lockfile']) });
+const frozenInstall = (path) => ({ name: 'pnpm install --frozen-lockfile', run: () => runIn.pnpm(path, ['install', '--frozen-lockfile', NO_PURGE_PROMPT]) });
 
 const checkStep = (app) => ({ name: inApp('brock check', app), run: () => runIn.brock(app.dir, ['check']) });
 

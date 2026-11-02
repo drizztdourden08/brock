@@ -7,6 +7,7 @@ import { appHandlers } from '../app/ipc-handlers';
 import { dialogHandlers } from '../handlers/dialog-handlers';
 import { fileHandlers } from '../handlers/file-handlers';
 import { documentHandlers } from '../documents/ipc-handlers';
+import { dropTicketHandlers } from '../documents/drop-ticket-handlers';
 import { shellHandlers } from '../handlers/shell-handlers';
 import { storageHandlers } from '../handlers/storage-handlers';
 import { profileHandlers } from '../handlers/profile-handlers';
@@ -36,6 +37,7 @@ const baseHandlers = (): HandlerGroup[] => [
   dialogHandlers,
   fileHandlers,
   documentHandlers,
+  dropTicketHandlers,
   shellHandlers,
   storageHandlers,
   dataDomainHandlers,

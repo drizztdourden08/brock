@@ -15,7 +15,7 @@ const pad = (deviceKey: string): ChooserDevice => ({
 const idsOf = (hasByteCapability: boolean, hasChooser: boolean) =>
   visibleSteps(hasByteCapability, hasChooser).map((info) => info.step);
 
-describe('the steps of the diagnostics wizard', () => {
+describe('K1 the steps of the diagnostics wizard', { tags: ['critical'] }, () => {
   it('lists all five steps when the user picks the controller', () => {
     expect(idsOf(true, true)).toEqual(['intro', 'choose-controller', 'byte-capture', 'positional-capture', 'summary']);
   });
@@ -41,7 +41,7 @@ describe('the steps of the diagnostics wizard', () => {
   });
 });
 
-describe('a preselected pad', () => {
+describe('K1 a preselected pad', { tags: ['critical'] }, () => {
   it('is chosen only when it is in the list, with no fallback to another pad', () => {
     const list = [pad('a'), pad('b')];
     expect(pickDeviceKey(list, 'b', true)).toBe('b');
@@ -69,7 +69,7 @@ describe('a preselected pad', () => {
   });
 });
 
-describe('when Next is allowed', () => {
+describe('K1 when Next is allowed', { tags: ['critical'] }, () => {
   const base = { releaseStatus: 'done', restoreStatus: 'done', preselected: false, deviceKey: 'a' } as const;
 
   it('needs a pad on the chooser, a capture on byte capture and the hold back on positional capture', () => {

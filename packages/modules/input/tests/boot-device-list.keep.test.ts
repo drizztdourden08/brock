@@ -38,7 +38,7 @@ const settle = async (): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
-describe('the device list at boot', () => {
+describe('K2 the device list at boot', { tags: ['critical'] }, () => {
   beforeEach(() => {
     vi.resetModules();
     holdListeners.length = 0;

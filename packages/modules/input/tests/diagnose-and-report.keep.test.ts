@@ -16,7 +16,7 @@ const pad: DeviceEntry = {
 
 const action = (id: string, extra: Partial<DeviceCardAction> = {}): DeviceCardAction => ({ id, label: id, onSelect: vi.fn(), ...extra });
 
-describe('one diagnose and report action per pad', () => {
+describe('K1 one diagnose and report action per pad', { tags: ['critical'] }, () => {
   it('takes the action with the report id out of the pad page buttons and keeps the others', () => {
     const shown = shownDeviceCardActions([action(REPORT_ACTION_ID), action('export')], [], pad);
     expect(otherPadActions(shown).map((item) => item.action.id)).toEqual(['export']);
@@ -37,7 +37,7 @@ describe('one diagnose and report action per pad', () => {
   });
 });
 
-describe('the result handed to the report action', () => {
+describe('K1 the result handed to the report action', { tags: ['critical'] }, () => {
   it('carries the pad, its captured layout entry, the mapping and both captures', () => {
     const result = diagnosticsRunResultOf({
       deviceKey: pad.deviceKey,

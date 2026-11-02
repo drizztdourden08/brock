@@ -57,7 +57,7 @@ const current = (): Capture => {
   return mounted.current;
 };
 
-describe('the positional capture step', () => {
+describe('K2 the positional capture step', { tags: ['critical'] }, () => {
   beforeEach(() => {
     Reflect.set(globalThis, 'IS_REACT_ACT_ENVIRONMENT', true);
     mounted.current = null;
@@ -131,7 +131,7 @@ const pressEveryButton = (): void => {
   }
 };
 
-describe('the positional capture result on the summary step', () => {
+describe('K2 the positional capture result on the summary step', { tags: ['critical'] }, () => {
   let root: Root | null = null;
   let container: HTMLElement | null = null;
 

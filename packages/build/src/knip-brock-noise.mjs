@@ -2,7 +2,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
-const ESBUILD_ENTRY = /\besbuild\s+(?:-\S+\s+)*([^\s.\-/][^\s]*)/g;
+const ESBUILD_ENTRY = /\besbuild\s+(?:-\S+\s+)*((?:\.\/)?[^\s.\-/][^\s]*)/g;
+const DOT_SLASH = /^\.\//;
 const SCRIPT_ISSUE_TYPES = ['unresolved', 'unlisted'];
 
 const scriptsOf = (file) => {
@@ -18,7 +19,10 @@ const esbuildEntries = (packageFile) => scriptsOf(packageFile).flatMap((script) 
 const namesOf = (packageFile) => {
   const dir = dirname(packageFile);
   const present = esbuildEntries(packageFile).filter((entry) => existsSync(join(dir, entry)));
-  return new Set(present.flatMap((entry) => [entry, entry.split('/')[0]]));
+  return new Set(present.flatMap((entry) => {
+    const bare = entry.replace(DOT_SLASH, '');
+    return [entry, bare, bare.split('/')[0]];
+  }));
 };
 
 const keptSymbols = (cwd, byFile) =>

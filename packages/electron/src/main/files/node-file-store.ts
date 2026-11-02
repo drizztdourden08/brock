@@ -1,12 +1,10 @@
 /* @layer electron-main @kind logic */
-import { readFile, writeFile, readdir, rm, mkdir, stat } from 'fs/promises';
-import { dirname } from 'path';
+import { readFile, readdir, rm, mkdir, stat } from 'fs/promises';
 import type { FileStore } from '@drizztdourden08/brock-core/platform';
 import type { NodeFileStoreOptions } from './node-file-store.type';
 import { resolveDataPath } from './resolve-data-path';
 import { trashDataPath } from './trash-data-path';
-
-const ensureParent = (full: string): Promise<void> => mkdir(dirname(full), { recursive: true }).then(() => undefined);
+import { writeAtomic } from '../storage/write-atomic';
 
 const createNodeFileStore = (options: NodeFileStoreOptions = {}): FileStore => ({
   readBytes: async (path) => {
@@ -15,16 +13,8 @@ const createNodeFileStore = (options: NodeFileStoreOptions = {}): FileStore => (
   readText: async (path) => {
     try { return await readFile(resolveDataPath(path), 'utf8'); } catch { return null; }
   },
-  writeBytes: async (path, data) => {
-    const full = resolveDataPath(path);
-    await ensureParent(full);
-    await writeFile(full, data);
-  },
-  writeText: async (path, data) => {
-    const full = resolveDataPath(path);
-    await ensureParent(full);
-    await writeFile(full, data, 'utf8');
-  },
+  writeBytes: (path, data) => writeAtomic(resolveDataPath(path), data),
+  writeText: (path, data) => writeAtomic(resolveDataPath(path), data),
   list: async (dir) => {
     try { return await readdir(resolveDataPath(dir)); } catch { return []; }
   },

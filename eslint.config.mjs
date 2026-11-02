@@ -47,6 +47,7 @@ export default brockEslint({
     'packages/modules/port-kit/bin/**',
     'packages/modules/input/bin/**',
     'packages/core/src/log/log-bus.ts',
+    'packages/core/src/storage/keep-corrupt-json.ts',
     'packages/electron/src/main/bootstrap/boot-timing.ts',
     'packages/electron/src/main/bootstrap/create-main-context.ts',
     'packages/electron/src/main/logs/**',

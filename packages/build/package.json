@@ -58,6 +58,7 @@
       "default": "./src/look/app-theme-css.mjs"
     },
     "./sync-if-stale": "./src/freshness/sync-if-stale.mjs",
+    "./restore-shared-build": "./src/build-reuse/shared-build/restore-shared-build.mjs",
     "./knip-brock-dependencies": "./src/knip-brock-dependencies.mjs",
     "./package.json": "./package.json"
   },

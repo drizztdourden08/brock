@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { hasViteDeps } from '@drizztdourden08/build-cache/vite-deps';
-import { viteVersionOf } from './share-deps.mjs';
+import { lockfileKeyText, viteVersionOf } from './share-deps.mjs';
 import { getHash, lockfileOf } from './vite-hash.mjs';
 
 /**
@@ -11,7 +11,7 @@ import { getHash, lockfileOf } from './vite-hash.mjs';
 const lockfileEntryExists = (rootDir, root) => {
   const version = viteVersionOf(rootDir);
   const lockfile = lockfileOf(rootDir);
-  return Boolean(version && lockfile && hasViteDeps({ version, lockfileHash: getHash(lockfile.content), root }));
+  return Boolean(version && lockfile && hasViteDeps({ version, lockfileHash: getHash(lockfileKeyText(lockfile)), root }));
 };
 
 export { lockfileEntryExists };

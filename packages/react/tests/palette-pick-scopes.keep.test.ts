@@ -48,7 +48,7 @@ type PickGroup = ReturnType<typeof pickGroups>[number];
 
 const itemLabels = (group: PickGroup): ReactNode[] => group.items.map((item) => item.label);
 
-const groupSummary = (group: PickGroup): [string, string, ReactNode[]] => [group.id, group.label, itemLabels(group)];
+const groupSummary = (group: PickGroup): [string, ReactNode, ReactNode[]] => [group.id, group.label, itemLabels(group)];
 
 describe('K1 scoped pick', () => {
   it('opens in the given scope and Tab and Shift+Tab move between scopes', { tags: ['critical'] }, () => {

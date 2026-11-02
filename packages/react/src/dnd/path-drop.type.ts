@@ -7,6 +7,12 @@ interface RejectedFile {
   reason: string;
 }
 
+interface Expanded {
+  entries: DocumentEntry[];
+  rejected: RejectedFile[];
+  truncated: boolean;
+}
+
 interface DroppedPath {
   path: string;
   name: string;
@@ -42,4 +48,4 @@ interface WindowFileDropOptions {
   canDrop?: (drop: PathDrop) => boolean;
 }
 
-export type { DroppedPath, FileListDragOptions, PathDrop, PathDropExpand, PathDropOptions, RejectedFile, WindowFileDropOptions };
+export type { DroppedPath, Expanded, FileListDragOptions, PathDrop, PathDropExpand, PathDropOptions, RejectedFile, WindowFileDropOptions };

@@ -10,7 +10,7 @@ import { pickGroups } from '../src/palette/PaletteHost/behavior/pick-groups';
 import { scopeDirection } from '../src/palette/PaletteHost/behavior/pick-scope-keys';
 import { usePickScopes } from '../src/palette/PaletteHost/behavior/usePickScopes';
 import type { PickScopeModel } from '../src/palette/PaletteHost/PaletteHost.type';
-import { stepScope } from '../src/palette/pick-scope';
+import { stepScope } from '../src/palette/step-scope';
 import { usePaletteStore } from '../src/palette/usePaletteStore';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -42,6 +42,12 @@ const probe = (): { latest: () => PickScopeModel } => {
 const pressTab = (shiftKey = false): void => {
   act(() => { window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey, cancelable: true })); });
 };
+
+type PickGroup = ReturnType<typeof pickGroups>[number];
+
+const itemLabels = (group: PickGroup): string[] => group.items.map((item) => item.label);
+
+const groupSummary = (group: PickGroup): [string, string, string[]] => [group.id, group.label, itemLabels(group)];
 
 describe('K1 scoped pick', () => {
   it('opens in the given scope and Tab and Shift+Tab move between scopes', { tags: ['critical'] }, () => {
@@ -91,7 +97,7 @@ describe('K1 scoped pick', () => {
     const onPick = vi.fn();
     const pick: PalettePick = { title: 'Size', options: [option('small'), option('large')], onPick };
     const groups = pickGroups(pick, 'LAR', pick.options ?? [], null);
-    expect(groups.map((group) => [group.id, group.label, group.items.map((item) => item.label)])).toEqual([['pick', 'Size', ['large']]]);
+    expect(groups.map(groupSummary)).toEqual([['pick', 'Size', ['large']]]);
     groups[0]?.items[0]?.run();
     expect(onPick).toHaveBeenCalledWith('large', null);
   });
@@ -102,7 +108,7 @@ describe('S1 ranking and groups', () => {
 
   it('ranks a scoped pick by label, keywords and description', { tags: ['standard'] }, () => {
     const options = [option('cover-note.txt'), option('b.png', { keywords: ['cover'] }), option('c.png', { description: 'the cover art' }), option('d.png')];
-    const labels = pickGroups(pick, 'cover', options, 'project').flatMap((group) => group.items.map((item) => item.label));
+    const labels = pickGroups(pick, 'cover', options, 'project').flatMap(itemLabels);
     expect(labels).toEqual(['cover-note.txt', 'b.png', 'c.png']);
   });
 

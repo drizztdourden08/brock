@@ -49,6 +49,11 @@ const ghostOf = (): FakeNode => {
   return first;
 };
 
+const dragPast = (row: FakeElement): void => {
+  row.dispatchEvent(pointer('pointerdown', 5, 5));
+  win.dispatchEvent(pointer('pointermove', 40, 40));
+};
+
 afterEach(() => {
   win.dispatchEvent(pointer('pointercancel', 0, 0));
   vi.unstubAllGlobals();
@@ -76,13 +81,11 @@ describe('drag preview', () => {
   it('removes the ghost when the drag ends or is cancelled', { tags: ['critical'] }, () => {
     const row = new FakeElement();
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item' } });
-    row.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 40, 40));
+    dragPast(row);
     expect(body).toHaveLength(1);
     win.dispatchEvent(pointer('pointerup', 40, 40));
     expect(body).toHaveLength(0);
-    row.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 40, 40));
+    dragPast(row);
     expect(body).toHaveLength(1);
     win.dispatchEvent(pointer('pointercancel', 40, 40));
     expect(body).toHaveLength(0);
@@ -91,16 +94,14 @@ describe('drag preview', () => {
   it('draws no count part for a label only preview', { tags: ['standard'] }, () => {
     const row = new FakeElement();
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1, preview: { label: 'one item' } });
-    row.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 40, 40));
+    dragPast(row);
     expect(ghostOf().children.map((part) => part.className)).toEqual(['brock-drag-ghost__label']);
   });
 
   it('draws nothing without a preview and never for a press that stays under the threshold', { tags: ['critical'] }, () => {
     const row = new FakeElement();
     dnd.source(row, { type: dnd.type<number>('n'), payload: 1 });
-    row.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 40, 40));
+    dragPast(row);
     expect(body).toHaveLength(0);
     win.dispatchEvent(pointer('pointerup', 40, 40));
     const other = new FakeElement();
@@ -114,8 +115,7 @@ describe('drag preview', () => {
     const row = new FakeElement();
     const picked = [{ path: 'C:\\a.png', name: 'a.png', kind: 'file' as const }, { path: 'C:\\b.png', name: 'b.png', kind: 'file' as const }];
     dnd.source(row, fileListDragSource({ paths: () => picked, preview: { label: 'files', count: (drop) => drop.paths.length } }));
-    row.dispatchEvent(pointer('pointerdown', 5, 5));
-    win.dispatchEvent(pointer('pointermove', 40, 40));
+    dragPast(row);
     expect(ghostOf().children.map((part) => part.textContent)).toEqual(['2', 'files']);
   });
 });

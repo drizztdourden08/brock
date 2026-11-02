@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import './drag-ghost.css';
+import './show-ghost.css';
 import type { DragPoint, DragPreviewOptions } from './dnd.type';
 import type { DragGhost } from './drag-run.type';
 

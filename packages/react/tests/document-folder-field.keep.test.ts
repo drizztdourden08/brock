@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import type { DocumentsPort, Platform } from '@drizztdourden08/brock-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type * as DndModule from '../src/dnd';
 import type { DropTargetOptions, PathDrop } from '../src/dnd';
 import { DocumentFolderField } from '../src/documents/DocumentFolderField';
 import { platformState } from '../src/platform/platform-state';
@@ -12,7 +13,7 @@ import { platformState } from '../src/platform/platform-state';
 const targets = vi.hoisted((): DropTargetOptions<PathDrop>[] => []);
 
 vi.mock('../src/dnd', async (original) => ({
-  ...(await original<typeof import('../src/dnd')>()),
+  ...(await original<typeof DndModule>()),
   useDropTarget: (_ref: unknown, options: DropTargetOptions<PathDrop>): void => {
     targets.push(options);
   },
@@ -47,7 +48,7 @@ const mount = async (documents: Partial<DocumentsPort>, props: { value: string |
 };
 
 const browseButton = (host: HTMLElement): HTMLButtonElement => {
-  const button = [...host.querySelectorAll('button')].find((candidate) => /browse|change/i.test(candidate.textContent ?? ''));
+  const button = [...host.querySelectorAll('button')].find((candidate) => /browse|change/i.test(candidate.textContent));
   if (!button) throw new Error('no Browse button');
   return button;
 };

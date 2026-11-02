@@ -1,11 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { DroppedPath, RejectedFile } from '../dnd';
+import type { Selection } from './file-drop.type';
 import { FILE_DROP_DEFAULT_MAX, FILE_DROP_MAX_CAP, NOT_SUPPORTED_FILE, TOO_MANY_FILES } from './file-drop.constants';
-
-interface Selection {
-  paths: DroppedPath[];
-  rejected: RejectedFile[];
-}
 
 const suffixOf = (name: string): string => {
   const dot = name.lastIndexOf('.');

@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { expandDroppedFolders } from './expand-dropped-folders';
+import { NOT_SUPPORTED, NOT_VETTED } from './to-path-drop.constants';
 import type { DroppedFiles } from './dnd.type';
 import type { DroppedPath, PathDrop, PathDropOptions, RejectedFile } from './path-drop.type';
-
-const NOT_SUPPORTED = 'Not a supported file type';
-const NOT_VETTED = 'The path could not be checked';
 
 const extensionOf = (name: string): string => {
   const dot = name.lastIndexOf('.');

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { PathDrop } from '../dnd';
+import type { DroppedPath, PathDrop, RejectedFile } from '../dnd';
 
 interface FileDropRead {
   path: string;
@@ -17,4 +17,14 @@ interface FileDropOptions {
   onDrop: (drop: FileDrop) => void;
 }
 
-export type { FileDrop, FileDropOptions, FileDropRead };
+interface ReadResult {
+  reads: FileDropRead[];
+  rejected: RejectedFile[];
+}
+
+interface Selection {
+  paths: DroppedPath[];
+  rejected: RejectedFile[];
+}
+
+export type { FileDrop, FileDropOptions, FileDropRead, ReadResult, Selection };

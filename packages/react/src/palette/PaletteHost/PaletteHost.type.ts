@@ -52,4 +52,12 @@ interface StartedScopes {
   ids: Set<string>;
 }
 
-export type { LoadedScopes, PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel, PalettePreload, PickScopeModel, StartedScopes };
+interface ScopeKeyEvent {
+  key: string;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
+export type { LoadedScopes, PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel, PalettePreload, PickScopeModel, ScopeKeyEvent, StartedScopes };

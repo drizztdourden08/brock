@@ -1,13 +1,8 @@
 /* @layer renderer-shell @kind logic */
-import type { DroppedPath, RejectedFile } from '../dnd';
+import type { DroppedPath } from '../dnd';
 import { getPlatform } from '../platform/get-platform';
 import { NOT_READABLE } from './file-drop.constants';
-import type { FileDropRead } from './file-drop.type';
-
-interface ReadResult {
-  reads: FileDropRead[];
-  rejected: RejectedFile[];
-}
+import type { ReadResult } from './file-drop.type';
 
 const toBuffer = (bytes: Uint8Array): ArrayBuffer => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 

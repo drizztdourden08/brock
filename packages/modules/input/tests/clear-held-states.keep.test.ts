@@ -19,6 +19,8 @@ const hostWith = (...pads: ControllerInputState[]): ControllerStateHost => ({
   log: () => undefined,
 });
 
+const isIdle = (state: ControllerInputState): boolean => state.buttons.every((down) => !down);
+
 describe('K1 held input across a release of the gamepad subsystem', { tags: ['critical'] }, () => {
   it('lets go of every button and axis of every pad', () => {
     const host = hostWith(heldPad('a'), heldPad('b'));
@@ -36,7 +38,7 @@ describe('K1 held input across a release of the gamepad subsystem', { tags: ['cr
     host.listeners.add(listener);
     clearHeldStates(host);
     expect(listener).toHaveBeenCalledTimes(2);
-    expect(listener.mock.calls.every(([state]) => state.buttons.every((down) => !down))).toBe(true);
+    expect(listener.mock.calls.every(([state]) => isIdle(state))).toBe(true);
   });
 
   it('does not change what is connected', () => {

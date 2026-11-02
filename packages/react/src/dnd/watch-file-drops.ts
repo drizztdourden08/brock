@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import { claimDrop, isClaimed } from './claim-drop';
+import { claimDrop } from './claim-drop';
+import { isClaimed } from './is-claimed';
 import { FILES_DRAG_TYPE, FILES_TRANSFER_TYPE, PATHS_DRAG_TYPE } from './dnd.constants';
 import type { DragPoint } from './dnd.type';
 import { deliverFileDrop } from './deliver-file-drop';

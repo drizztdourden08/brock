@@ -1,14 +1,6 @@
 /* @layer electron-main @kind logic */
+import type { DropEventLike, DropTarget } from './drop-capture.type';
 import { DROP_TICKET_PATH_LIMIT } from './drop-ticket.constants';
-
-interface DropEventLike {
-  isTrusted: boolean;
-  dataTransfer: { files: ArrayLike<File> } | null;
-}
-
-interface DropTarget {
-  addEventListener(type: 'drop', listener: (event: DropEventLike) => void, capture: boolean): void;
-}
 
 const droppedPaths = (event: DropEventLike, pathOf: (file: File) => string): string[] => {
   const files = Array.from(event.dataTransfer?.files ?? []).slice(0, DROP_TICKET_PATH_LIMIT);

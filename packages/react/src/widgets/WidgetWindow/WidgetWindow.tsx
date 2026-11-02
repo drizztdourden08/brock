@@ -1,22 +1,21 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
-import { Widget, createDefaultLayout, frameOf, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
-import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
+import { Widget, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
 import { uniqueById } from '../../collections/unique-by-id';
 import { hostApi } from '../../host/host-api';
 import { StandardOverlays } from '../../overlays/StandardOverlays/StandardOverlays';
 import { BUILT_IN_WIDGETS } from '../built-in-widgets.constants';
-import { NO_WIDGETS, RELAY_SLICES } from '../widget.constants';
+import { NO_WIDGETS } from '../widget.constants';
 import { WidgetBody } from '../WidgetBody';
 import { widgetToolsOf } from '../widget-tools-of';
 import { useWidgetRegistryStore } from '../useWidgetRegistryStore';
-import { useWidgetRelayStore } from '../useWidgetRelayStore';
 import { useTrackActiveWidget } from '../active-widget/useTrackActiveWidget';
 import { WindowGuide } from '../WindowGuide';
 import { usePoppedDisabled } from './behavior/usePoppedDisabled';
 import { usePoppedWindowState } from './behavior/usePoppedWindowState';
 import { useReviewOptions } from './behavior/useReviewOptions';
+import { useWindowFrame } from './behavior/useWindowFrame';
 import { useWindowTabs } from './behavior/useWindowTabs';
 import { useWidgetRelay } from './behavior/useWidgetRelay';
 import { useWidgetTourClick } from './behavior/useWidgetTourClick';
@@ -32,7 +31,6 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   const { id, widgets = NO_WIDGETS, widgetDisabled } = props;
   const registered = useWidgetRegistryStore((s) => s.registered);
   const definition = useMemo(() => getWidgetDefinition(uniqueById([...BUILT_IN_WIDGETS, ...widgets, ...registered]), id), [widgets, registered, id]);
-  const frames = useWidgetRelayStore((s) => s.slices[RELAY_SLICES.frames]) as WidgetLayout['frame'] | undefined;
   const own = usePoppedWindowState(id);
   const reviewOpen = useReviewOptions(id);
   const off = usePoppedDisabled(definition, widgetDisabled);
@@ -41,7 +39,7 @@ const WidgetWindow = (props: WidgetWindowProps) => {
   useTrackActiveWidget(id);
   useWidgetTourClick(id);
 
-  const frame = frameOf({ ...createDefaultLayout(), frame: frames ?? {} }, id, definition);
+  const frame = useWindowFrame(id, definition);
   const tabs = useWindowTabs(id, definition);
   const popIn = useCallback(() => hostApi()?.dockBackWidget(id), [id]);
   const close = useCallback(() => hostApi()?.dockBackWidget(id, 'close'), [id]);

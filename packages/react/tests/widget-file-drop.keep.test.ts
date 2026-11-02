@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { FileDrop } from '../src/file-drop/file-drop.type';
 
 class FakeElement extends EventTarget {
   attributes = new Map<string, string>();
@@ -46,12 +47,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-type Dropped = { reads: { path: string; data: unknown }[]; rejected: { name: string; reason: string }[]; paths: { name: string }[]; origin: string };
-
 const wire = async (drop: { extensions?: string[]; read?: 'bytes' | 'text' | false; max?: number }) => {
   const ctx = await setup();
-  const drops: Dropped[] = [];
-  const options = { ...drop, onDrop: (value: unknown) => drops.push(value as Dropped) };
+  const drops: FileDrop[] = [];
+  const options = { ...drop, onDrop: (value: FileDrop): void => { drops.push(value); } };
   const widget = ctx.defineWidget({ id: 'tray', label: 'Tray', render: () => null, drop: options });
   const target = new FakeElement();
   const zone = widget.drop as typeof options;
@@ -98,7 +97,7 @@ describe('K5 widget file drop', () => {
   it('takes an app drag with its paths and filters it by extension', { tags: ['critical'] }, async () => {
     const { deliverFileDrop, drops, read } = await wire({ extensions: ['png'], read: 'bytes' });
     const app = { origin: 'app', paths: [{ path: 'C:\\art\\a.png', name: 'a.png', kind: 'file' }, { path: 'C:\\art\\b.txt', name: 'b.txt', kind: 'file' }], rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop(app, { extensions: ['png'], read: 'bytes', onDrop: (value) => drops.push(value as unknown as Dropped) });
+    await deliverFileDrop(app, { extensions: ['png'], read: 'bytes', onDrop: (value) => { drops.push(value); } });
     expect(drops[0]?.origin).toBe('app');
     expect(drops[0]?.paths.map((entry) => entry.name)).toEqual(['a.png']);
     expect(read).toHaveBeenCalledOnce();
@@ -107,7 +106,7 @@ describe('K5 widget file drop', () => {
   it('refuses a path outside every grant through the read port', { tags: ['critical'] }, async () => {
     const { deliverFileDrop, drops } = await wire({ read: 'bytes' });
     const app = { origin: 'app', paths: [{ path: 'D:\\other\\x.png', name: 'x.png', kind: 'file' }], rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop(app, { read: 'bytes', onDrop: (value) => drops.push(value as unknown as Dropped) });
+    await deliverFileDrop(app, { read: 'bytes', onDrop: (value) => { drops.push(value); } });
     expect(drops[0]?.reads).toEqual([]);
     expect(drops[0]?.paths).toEqual([]);
     expect(drops[0]?.rejected).toEqual([{ name: 'x.png', reason: 'The file is outside every granted folder' }]);
@@ -117,8 +116,8 @@ describe('K5 widget file drop', () => {
     const { deliverFileDrop, drops } = await wire({});
     const many = Array.from({ length: 70 }, (_, index) => ({ path: `C:\\art\\${index}.png`, name: `${index}.png`, kind: 'file' as const }));
     const base = { origin: 'app', rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop({ ...base, paths: many.slice(0, 3) }, { max: 2, onDrop: (value) => drops.push(value as unknown as Dropped) });
-    await deliverFileDrop({ ...base, paths: many }, { max: 500, onDrop: (value) => drops.push(value as unknown as Dropped) });
+    await deliverFileDrop({ ...base, paths: many.slice(0, 3) }, { max: 2, onDrop: (value) => { drops.push(value); } });
+    await deliverFileDrop({ ...base, paths: many }, { max: 500, onDrop: (value) => { drops.push(value); } });
     expect(drops[0]?.paths).toHaveLength(2);
     expect(drops[0]?.rejected).toEqual([{ name: '2.png', reason: 'Too many files in one drop' }]);
     expect(drops[1]?.paths).toHaveLength(64);

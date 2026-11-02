@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind logic */
-const claimed = new WeakSet<Event>();
+import { claimedDrops } from './claimed-drops';
 
 const claimDrop = (event: Event): void => {
-  claimed.add(event);
+  claimedDrops.add(event);
 };
 
-const isClaimed = (event: Event): boolean => claimed.has(event);
-
-export { claimDrop, isClaimed };
+export { claimDrop };

@@ -38,18 +38,18 @@ describe('K4 the dry run of a folder write check', { tags: ['critical'] }, () =>
   it('refuses a repository folder with the reason of the write class', async () => {
     await mkdir(join(granted, 'proj', '.git'), { recursive: true });
     const answer = await call('document:canWrite', join(granted, 'proj', '.git'));
-    expect(answer).toMatchObject({ ok: false, reason: expect.stringMatching(/may not be changed/) });
+    expect(answer).toMatchObject({ ok: false, reason: expect.stringMatching(/may not be changed/) as string });
     expect(await call('document:canWrite', join(granted, 'proj'))).toMatchObject({ ok: true });
   });
 
   it('refuses a folder outside every grant and makes no grant', async () => {
-    expect(await call('document:canWrite', outside)).toMatchObject({ ok: false, reason: expect.stringMatching(/granted folder/) });
+    expect(await call('document:canWrite', outside)).toMatchObject({ ok: false, reason: expect.stringMatching(/granted folder/) as string });
     await refusedBy(access)(join(outside, 'secret.txt'));
   });
 
   it('refuses a file, a missing folder and a path that is not absolute', async () => {
-    expect(await call('document:canWrite', join(granted, 'sub', 'in.txt'))).toMatchObject({ ok: false, reason: expect.stringMatching(/not a folder/) });
+    expect(await call('document:canWrite', join(granted, 'sub', 'in.txt'))).toMatchObject({ ok: false, reason: expect.stringMatching(/not a folder/) as string });
     expect(await call('document:canWrite', join(granted, 'missing'))).toMatchObject({ ok: false });
-    expect(await call('document:canWrite', 'relative')).toMatchObject({ ok: false, reason: expect.stringMatching(/absolute/) });
+    expect(await call('document:canWrite', 'relative')).toMatchObject({ ok: false, reason: expect.stringMatching(/absolute/) as string });
   });
 });

@@ -29,6 +29,12 @@ const touch = (target: Element, type: 'pointerdown' | 'focusin' = 'pointerdown')
   target.dispatchEvent(new Event(type, { bubbles: true }));
 };
 
+const swapCommands = (ran: string[]): Parameters<typeof registerFresh>[0] => [
+  { id: 'any-swap', label: 'Swap anywhere', chord: 'X', run: () => { ran.push('any-swap'); } },
+  { id: 'palette-swap', label: 'Swap colours', chord: 'X', widget: 'palette', run: () => { ran.push('palette-swap'); } },
+  { id: 'palette-only', label: 'Add swatch', chord: 'N', widget: 'palette', run: () => { ran.push('palette-only'); } },
+];
+
 describe('K1 active widget', () => {
   const ran: string[] = [];
   let unregister = (): void => {};
@@ -37,11 +43,7 @@ describe('K1 active widget', () => {
   beforeEach(() => {
     ran.length = 0;
     useActiveWidgetStore.setState({ id: null, verify: true });
-    unregister = registerFresh([
-      { id: 'any-swap', label: 'Swap anywhere', chord: 'X', run: () => { ran.push('any-swap'); } },
-      { id: 'palette-swap', label: 'Swap colours', chord: 'X', widget: 'palette', run: () => { ran.push('palette-swap'); } },
-      { id: 'palette-only', label: 'Add swatch', chord: 'N', widget: 'palette', run: () => { ran.push('palette-only'); } },
-    ]);
+    unregister = registerFresh(swapCommands(ran));
     untrack = trackActiveWidget(document);
   });
 
@@ -75,7 +77,7 @@ describe('K1 active widget', () => {
     expect(ran).toEqual(['palette-swap', 'any-swap']);
   });
 
-  it('makes the widget active on focus as well as on a press', { tags: ['standard'] }, () => {
+  it('makes the widget active on focus and on a press', { tags: ['standard'] }, () => {
     const { palette } = mount();
     touch(palette, 'focusin');
     expect(activeWidget()).toBe('palette');

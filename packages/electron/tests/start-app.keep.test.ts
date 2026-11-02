@@ -24,7 +24,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe('startApp', () => {
+describe('K2 startApp', { tags: ['critical'] }, () => {
   it('starts the app detached with no ELECTRON_RUN_AS_NODE, which a helper runs under, and with the launch env on top', async () => {
     vi.stubEnv('ELECTRON_RUN_AS_NODE', '1');
     vi.stubEnv('KEEP_ME', 'yes');

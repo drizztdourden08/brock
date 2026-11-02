@@ -7,7 +7,7 @@ const formatChord = (chord: string, mac: boolean): string => {
   const parsed = parseChord(chord, mac);
   if (parsed === null) return chord;
   const names = mac ? MODIFIER_NAMES.mac : MODIFIER_NAMES.other;
-  return [...heldModifiers(parsed).map((name) => names[name]), parsed.key].join('+');
+  return [...heldModifiers(parsed).map((name) => names[name]), ...(parsed.with ?? []), parsed.key].join('+');
 };
 
 export { formatChord };

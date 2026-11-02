@@ -8,7 +8,7 @@ import { saveSlotPaths } from '../src/saves/save-slot-paths';
 const state = new Uint8Array([10, 20, 30, 40, 50]);
 const meta = { port: 'demo', savedAt: 1700000000000, rom: 'us.sfc' };
 
-describe('saveSlotPaths', () => {
+describe('K3 saveSlotPaths', { tags: ['critical'] }, () => {
   it('names a quick slot save<N> under saves/quick', () => {
     expect(saveSlotPaths('p1', { kind: 'quick', slot: 3 })).toEqual({
       state: 'profiles/p1/saves/quick/save3.sav',
@@ -30,7 +30,7 @@ describe('saveSlotPaths', () => {
   });
 });
 
-describe('quickSlotOf', () => {
+describe('K3 quickSlotOf', { tags: ['critical'] }, () => {
   it('reads the slot number back from a file name', () => {
     expect(quickSlotOf('save11.sav')).toBe(11);
     expect(quickSlotOf('save2.png')).toBeNull();
@@ -38,7 +38,7 @@ describe('quickSlotOf', () => {
   });
 });
 
-describe('save slot container', () => {
+describe('K3 save slot container', { tags: ['critical'] }, () => {
   it('round-trips the metadata and the state bytes', () => {
     const decoded = decodeSaveSlot(encodeSaveSlot({ meta, state }), 'demo');
     expect(decoded.ok).toBe(true);

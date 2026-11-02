@@ -59,7 +59,7 @@ const startServer = (script, discovery) => new Promise((resolveReady, reject) =>
 });
 
 describe('brock.config.ts helpers', () => {
-  it('bundles each helper into one standalone Node file that talks over the bridge', async () => {
+  it('E2 bundles each helper into one standalone Node file that talks over the bridge', { tags: ['e2e'] }, async () => {
     const root = fixtureApp({ 'demo-server': 'src/helper/server.ts', 'demo-client': 'src/helper/client.ts' }, {
       'src/helper/route.ts': "export const ADD = { kind: 'invoke', channel: 'demo:add' } as const;\n",
       'src/helper/server.ts': SERVER,
@@ -75,14 +75,14 @@ describe('brock.config.ts helpers', () => {
     await startServer(join(out, 'demo-server.mjs'), discovery);
     const answer = execFileSync(process.execPath, [join(out, 'demo-client.mjs')], { encoding: 'utf8', timeout: 20000, env: { ...process.env, BROCK_BRIDGE_FILE: discovery } });
     expect(answer).toBe('sum 42');
-  }, 120000);
+  });
 
-  it('refuses a helper that imports Electron', async () => {
+  it('E2 refuses a helper that imports Electron', { tags: ['e2e'] }, async () => {
     const root = fixtureApp({ bad: 'src/bad.ts' }, { 'src/bad.ts': "import { app } from 'electron';\nconsole.log(app);\n" });
     await expect(bundleHelperScripts(root, { helpers: { bad: 'src/bad.ts' } })).rejects.toThrow('cannot import "electron"');
-  }, 60000);
+  });
 
-  it('checks the names and entries and ships the built files as resources', () => {
+  it('K1 checks the names and entries and ships the built files as resources', { tags: ['critical'] }, () => {
     const root = fixtureApp({}, { 'src/helper/main.ts': 'export {};\n' });
     expect(helperEntries(root, undefined)).toEqual([]);
     expect(() => helperEntries(root, { Bad_Name: 'src/helper/main.ts' })).toThrow('not a helper name');

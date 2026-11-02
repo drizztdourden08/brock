@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind config */
+import { defineStandardsVitest } from '@drizztdourden08/standards/vitest';
 import { importFromApp } from './import-from-app.mjs';
 import { findAppDir } from './vitest/find-app-dir.mjs';
 import { vitestBase } from './vitest/vitest-base.mjs';
@@ -20,7 +21,7 @@ const viteOf = async (rootDir, appDir) => {
 const defineBrockVitestConfig = async (rootDir, overrides = {}, { appDir } = {}) => {
   const app = findAppDir(rootDir, appDir);
   const { mergeConfig } = await viteOf(rootDir, app);
-  return mergeConfig(await vitestBase(rootDir, app), overrides);
+  return mergeConfig(defineStandardsVitest(await vitestBase(rootDir, app)), overrides);
 };
 
 export { defineBrockVitestConfig };

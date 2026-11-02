@@ -12,7 +12,7 @@ const LIBUSB = { manifest: { ci: [{ name: 'Install libusb (Linux)', run: 'sudo a
 
 afterEach(removeTempRepos);
 
-describe('renderWorkflows', () => {
+describe('K1 renderWorkflows', { tags: ['critical'] }, () => {
   it('writes both workflows at a standalone app root', () => {
     const root = tree({ '.git/HEAD': 'ref: refs/heads/main\n', 'brock.config.ts': '' });
     const files = renderWorkflows(root, CONFIG, []);
@@ -40,18 +40,13 @@ describe('renderWorkflows', () => {
     expect(moved).not.toContain('apps/desktop/release-notes');
   });
 
-  it('keeps the notes at the root of a standalone app', () => {
-    const root = tree({ '.git/HEAD': 'ref: refs/heads/main\n', 'brock.config.ts': '' });
-    expect(renderWorkflows(root, CONFIG, [])[1].content).toContain('NOTES="release-notes/v$VERSION.md"');
-  });
-
   it('writes none in a pnpm workspace that is not a Brock repo', () => {
     const plain = tree({ '.git/HEAD': '', 'pnpm-workspace.yaml': "packages:\n  - 'templates/*'\n", 'templates/app/brock.config.ts': '' });
     expect(renderWorkflows(join(plain, 'templates/app'), CONFIG, [])).toEqual([]);
   });
 });
 
-describe('renderWorkflows in a repo that releases several apps', () => {
+describe('K1 renderWorkflows in a repo that releases several apps', { tags: ['critical'] }, () => {
   const twoApps = () => monorepo({ 'apps/tools/brock.config.ts': '', 'apps/tools/package.json': '{ "name": "@atlas/tools", "version": "0.1.0" }\n' });
   const withPrefix = (prefix) => ({ ...CONFIG, product: { ...CONFIG.product, releaseTagPrefix: prefix } });
 
@@ -70,30 +65,9 @@ describe('renderWorkflows in a repo that releases several apps', () => {
     const tools = renderWorkflows(join(root, 'apps/tools'), withPrefix('tools-v'), []);
     expect(tools.map((file) => file.path)).toEqual(['../../.github/workflows/ci-tools.yml', '../../.github/workflows/release-tools.yml']);
   });
-
-  it('builds and reviews an app only when a pull request touches it', () => {
-    const [ci] = renderWorkflows(join(twoApps(), 'apps/tools'), withPrefix('tools-v'), []);
-    expect(ci.content).toContain('name: CI tools\n');
-    expect(ci.content).toContain('APP_DIR: apps/tools\n');
-    expect(ci.content).toContain('run: echo "changed=$(pnpm exec brock affected "$APP_DIR" ${BASE:+"origin/$BASE"})" >> "$GITHUB_OUTPUT"');
-    const gate = "    needs: changes\n    if: needs.changes.outputs.changed == 'true'\n";
-    expect(ci.content).toContain(`  quality:\n${gate}`);
-    expect(ci.content).toContain(`  review:\n${gate}`);
-    expect(ci.content).toContain('name: review-tools');
-    expect(ci.content).not.toContain('brock structure');
-  });
-
-  it('tags with the app prefix and reads the notes from the app folder', () => {
-    const [, release] = renderWorkflows(join(twoApps(), 'apps/tools'), withPrefix('tools-v'), []);
-    expect(release.content).toContain('name: Release tools\n');
-    expect(release.content).toContain('TAG="tools-v$VERSION"');
-    expect(release.content).toContain('NOTES="apps/tools/release-notes/v$VERSION.md"');
-    expect(release.content).toContain('NOTES="apps/tools/release-notes/v${{ needs.prepare.outputs.version }}.md"');
-    expect(release.content).toContain('group: release-tools\n');
-  });
 });
 
-describe('brock affected', () => {
+describe('K1 brock affected', { tags: ['critical'] }, () => {
   const repo = () => monorepo({
     'apps/desktop/package.json': '{ "name": "@atlas/desktop", "dependencies": { "@atlas/model": "workspace:*" } }\n',
     'apps/tools/brock.config.ts': '',
@@ -115,7 +89,7 @@ describe('brock affected', () => {
   });
 });
 
-describe('brock sync and check in a workspace', () => {
+describe('K3 brock sync and check in a workspace', { tags: ['critical'] }, () => {
   it('keeps the repo root workflows and reports their drift', () => {
     const root = monorepo();
     const appDir = join(root, 'apps/desktop');

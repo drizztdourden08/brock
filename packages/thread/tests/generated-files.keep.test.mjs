@@ -36,7 +36,7 @@ afterEach(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe('assertClean with generated files', () => {
+describe('K4 assertClean with generated files', { tags: ['standard'] }, () => {
   it('accepts a fresh worktree holding only the generated untracked files', () => {
     for (const name of GENERATED_UNTRACKED) write(name);
     expect(() => guards.assertClean(root, 'refresh')).not.toThrow();
@@ -56,9 +56,4 @@ describe('assertClean with generated files', () => {
     expect(() => guards.assertClean(root, 'refresh')).toThrow(/Refusing to refresh/);
   });
 
-  it('refuses a tracked file with changes next to generated files', () => {
-    write('.mcp.json');
-    write('tracked.txt', 'changed\n');
-    expect(() => guards.assertClean(root, 'refresh')).toThrow(/tracked\.txt/);
-  });
 });

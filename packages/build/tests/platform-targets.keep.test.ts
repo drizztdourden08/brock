@@ -5,7 +5,7 @@ import { expandTargets } from '../src/platforms/expand-targets.mjs';
 import { removeTarget } from '../src/platforms/remove-target.mjs';
 import { readTargets, writeTargets } from '../src/platforms/targets-source.mjs';
 
-describe('expandTargets', () => {
+describe('K1 expandTargets', { tags: ['critical'] }, () => {
   it('expands the bundles into ids, in canonical order, once each', () => {
     expect(expandTargets(['web', 'desktop', 'mobile', 'linux']).platforms).toEqual(['windows', 'macos', 'linux', 'android', 'web']);
   });
@@ -19,7 +19,7 @@ describe('expandTargets', () => {
   });
 });
 
-describe('addTarget and removeTarget', () => {
+describe('K1 addTarget and removeTarget', { tags: ['critical'] }, () => {
   it('adds an id once and keeps a bundle as written', () => {
     expect(addTarget(['desktop'], 'android')).toEqual(['desktop', 'android']);
     expect(addTarget(['desktop'], 'windows')).toEqual(['desktop']);
@@ -33,7 +33,7 @@ describe('addTarget and removeTarget', () => {
   });
 });
 
-describe('readTargets and writeTargets', () => {
+describe('K3 readTargets and writeTargets', { tags: ['critical'] }, () => {
   const source = "export default defineBrockConfig({\n  product: { id: 'a' },\n  targets: ['desktop'],\n  modules: ['updater'],\n});\n";
 
   it('reads and rewrites the targets array only', () => {

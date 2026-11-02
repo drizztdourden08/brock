@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { DocumentDropKind } from '@drizztdourden08/brock-core';
+import type { PathDropOptions, RejectedFile } from './path-drop.type';
 
 interface DragType<T> {
   readonly name: string;
@@ -40,12 +41,18 @@ interface DragEnd {
   target: DndElement | null;
 }
 
+interface DragPreviewOptions<T> {
+  label: string | ((payload: T) => string);
+  count?: number | ((payload: T) => number | undefined);
+}
+
 interface DragSourceOptions<T> {
   type: DragType<T>;
   payload: T | (() => T);
   disabled?: boolean | (() => boolean);
   onStart?: (payload: T) => void;
   onEnd?: (end: DragEnd) => void;
+  preview?: DragPreviewOptions<T>;
 }
 
 interface DropTargetOptions<T> {
@@ -54,6 +61,7 @@ interface DropTargetOptions<T> {
   canDrop?: (payload: T, info: DropInfo) => boolean;
   feedback?: (feedback: DropFeedback<T>) => void;
   index?: (point: DragPoint, element: DndElement) => number | null;
+  paths?: PathDropOptions;
 }
 
 interface DroppedFile {
@@ -61,11 +69,6 @@ interface DroppedFile {
   name: string;
   path: string | null;
   kind: DocumentDropKind;
-}
-
-interface RejectedFile {
-  name: string;
-  reason: string;
 }
 
 interface DroppedFiles {
@@ -78,8 +81,18 @@ interface DragSession {
   payload: unknown;
 }
 
+type IndexAmongAxis = 'x' | 'y';
+
+interface MeasuredItem {
+  getBoundingClientRect: () => { left: number; right: number; top: number; bottom: number };
+}
+
+interface MeasuredList {
+  querySelectorAll: (selector: string) => ArrayLike<MeasuredItem>;
+}
+
 interface DragOutHost {
   start: (paths: readonly string[]) => Promise<boolean>;
 }
 
-export type { DndElement, DragEnd, DragOutHost, DragPoint, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, RejectedFile };
+export type { DndElement, DragEnd, DragOutHost, DragPoint, DragPreviewOptions, DragSession, DragSourceOptions, DragType, DroppedFile, DroppedFiles, DropFeedback, DropInfo, DropPhase, DropTargetOptions, IndexAmongAxis, MeasuredItem, MeasuredList, RejectedFile };

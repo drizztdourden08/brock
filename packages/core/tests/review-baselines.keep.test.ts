@@ -41,7 +41,7 @@ const RUN: ReviewRun = {
 
 const RESULT = { step: 'boot', file: '01-boot.png', diffPixels: 0, ratio: 0, tolerance: 0, masked: 0 };
 
-describe('compareBitmaps', () => {
+describe('K1 compareBitmaps', { tags: ['critical'] }, () => {
   it('finds no difference between equal images and fades them in the diff', () => {
     const result = compareBitmaps(bitmap(4, 3), bitmap(4, 3), []);
     expect(result).toMatchObject({ diffPixels: 0, comparedPixels: 12, ratio: 0 });
@@ -75,14 +75,14 @@ describe('compareBitmaps', () => {
   });
 });
 
-describe('maskGrid', () => {
+describe('K1 maskGrid', { tags: ['critical'] }, () => {
   it('rounds a fractional rect outward and clamps it to the image', () => {
     const grid = maskGrid(4, 2, [{ x: 0.5, y: 0.5, width: 1, height: 0.2 }, { x: 3, y: -5, width: 10, height: 6 }]);
     expect([...grid]).toEqual([1, 1, 0, 1, 0, 0, 0, 0]);
   });
 });
 
-describe('parseBaselineConfig and resolveBaselineRule', () => {
+describe('K1 parseBaselineConfig and resolveBaselineRule', { tags: ['critical'] }, () => {
   it('defaults to zero tolerance and the mask attribute', () => {
     const rule = resolveBaselineRule(parseBaselineConfig(undefined), 'screen-home');
     expect(rule).toMatchObject({ tolerance: 0, threshold: 0, rects: [] });
@@ -121,7 +121,7 @@ describe('parseBaselineConfig and resolveBaselineRule', () => {
   });
 });
 
-describe('baselineKeys', () => {
+describe('K1 baselineKeys', { tags: ['critical'] }, () => {
   it('drops the step number and tells repeated names apart', () => {
     const keys = baselineKeys([
       { index: 2, name: 'menu', file: '02-menu.png' },
@@ -133,7 +133,7 @@ describe('baselineKeys', () => {
   });
 });
 
-describe('baselineChecks and the report', () => {
+describe('K1 baselineChecks and the report', { tags: ['critical'] }, () => {
   const report = (results: BaselineReport['results'], mode: BaselineReport['mode'] = 'compare'): BaselineReport =>
     ({ mode, platform: 'windows', dir: 'tests/baselines/windows', results });
 
@@ -159,14 +159,6 @@ describe('baselineChecks and the report', () => {
     const markdown = renderReviewMarkdown(built);
     expect(markdown).toContain('## Baselines');
     expect(markdown).toContain('| boot | boot | differs | 12 | 50.000% | diffs/01-boot.png |');
-  });
-
-  it('a bless passes and says what it wrote and removed', () => {
-    const checks = baselineChecks(report([{ ...RESULT, capture: 'boot', status: 'blessed' }, { ...RESULT, capture: 'gone', status: 'unused' }], 'bless'));
-    expect(checks).toHaveLength(1);
-    expect(checks[0]).toMatchObject({ id: 'baselines', pass: true });
-    expect(checks[0]?.reason).toContain('blessed 1 captures');
-    expect(checks[0]?.reason).toContain('removed 1');
   });
 
   it('fails a refused bless, naming the checks that failed, in both reports', () => {

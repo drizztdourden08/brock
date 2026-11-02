@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, sep } from 'node:path';
 import { storeRelativeOf } from '@drizztdourden08/build-cache/vite-deps';
+import { portableLockfile } from './portable-lockfile.mjs';
 import { PNPM_LOCKFILE, STORE_TOKEN } from './shared-deps-cache.constants.mjs';
 
 /**
@@ -18,12 +19,15 @@ const replacer = (_key, value) => (typeof value === 'function' || value instance
 
 /**
  * @param {string} root the folder Vite resolves the renderer from
- * @returns {{ path: string, content: string, installRoot: string } | null} the pnpm lockfile Vite hashes and its install folder
+ * @returns {{ path: string, content: string, portable: string, installRoot: string } | null} the lockfile, its portable text and install folder
  */
 const lockfileOf = (root) => {
   for (let dir = root; ; dir = dirname(dir)) {
     const path = join(dir, PNPM_LOCKFILE);
-    if (statSync(path, { throwIfNoEntry: false })?.isFile()) return { path, content: readFileSync(path, 'utf8'), installRoot: dir };
+    if (statSync(path, { throwIfNoEntry: false })?.isFile()) {
+      const content = readFileSync(path, 'utf8');
+      return { path, content, portable: portableLockfile(content, dir), installRoot: dir };
+    }
     if (dirname(dir) === dir) return null;
   }
 };

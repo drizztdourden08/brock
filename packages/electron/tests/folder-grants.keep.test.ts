@@ -47,7 +47,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('a folder grant', () => {
+describe('K4 a folder grant', { tags: ['critical'] }, () => {
   it('lets the renderer read and write files at any depth', async () => {
     access.allowFolder(granted);
     expect(await call('document:readText', join(granted, 'sub', 'in.txt'))).toBe('inside');
@@ -99,7 +99,7 @@ describe('a folder grant', () => {
   });
 });
 
-describe('escaping a folder grant', () => {
+describe('K4 escaping a folder grant', { tags: ['critical'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });
@@ -144,7 +144,7 @@ describe('escaping a folder grant', () => {
 
 });
 
-describe('escaping a folder grant through links', () => {
+describe('K4 escaping a folder grant through links', { tags: ['critical'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });
@@ -176,7 +176,7 @@ describe('escaping a folder grant through links', () => {
   });
 });
 
-describe('the spelling of a path inside a folder grant', () => {
+describe('K4 the spelling of a path inside a folder grant', { tags: ['critical'] }, () => {
   beforeEach(() => {
     access.allowFolder(granted);
   });

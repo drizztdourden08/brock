@@ -5,6 +5,7 @@ import type { DocumentDropResult } from '@drizztdourden08/brock-core/platform';
 import { absolutePath } from './absolute-path';
 import type { DocumentAccess } from './document-access.type';
 import { DROP_LIMIT } from './vet-drop.constants';
+import { DROP_NOT_DROPPED_REASON } from './drop-tickets.constants';
 import { unsafeSegments } from './unsafe-segments';
 
 const refused = (path: string, reason: string, kind: DocumentDropResult['kind'] = null): DocumentDropResult => ({ path, kind, granted: false, reason });
@@ -25,8 +26,9 @@ const vetFile = (documents: DocumentAccess, real: string): DocumentDropResult =>
   return { path: documents.allow(real), kind: 'file', granted: true };
 };
 
-const vetOne = async (documents: DocumentAccess, path: unknown): Promise<DocumentDropResult> => {
+const vetOne = async (documents: DocumentAccess, path: unknown, dropped: (path: string) => boolean): Promise<DocumentDropResult> => {
   const spelled = typeof path === 'string' ? path : '';
+  if (spelled === '' || !dropped(spelled)) return refused(spelled, DROP_NOT_DROPPED_REASON);
   try {
     const full = absolutePath(path);
     if (unsafeSegments(spelled)) return refused(spelled, 'The path is not a plain path');
@@ -40,11 +42,11 @@ const vetOne = async (documents: DocumentAccess, path: unknown): Promise<Documen
   }
 };
 
-const vetDrop = async (documents: DocumentAccess, paths: unknown): Promise<DocumentDropResult[]> => {
+const vetDrop = async (documents: DocumentAccess, paths: unknown, dropped: (path: string) => boolean): Promise<DocumentDropResult[]> => {
   if (!Array.isArray(paths)) throw new Error('A dropped path list must be an array');
   if (paths.length > DROP_LIMIT) throw new Error(`A drop can hold at most ${DROP_LIMIT} items`);
   const answers: DocumentDropResult[] = [];
-  for (const path of paths) answers.push(await vetOne(documents, path));
+  for (const path of paths) answers.push(await vetOne(documents, path, dropped));
   return answers;
 };
 

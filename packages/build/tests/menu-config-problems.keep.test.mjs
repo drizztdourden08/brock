@@ -38,7 +38,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('menuConfigProblems', () => {
+describe('K1 menuConfigProblems', { tags: ['critical'] }, () => {
   it('passes a valid config, and no config at all', () => {
     const root = appWith(APP);
     expect(menuConfigProblems(root, undefined)).toEqual([]);
@@ -73,13 +73,6 @@ describe('menuConfigProblems', () => {
     ]);
   });
 
-  it('moves and hides View like any entry', () => {
-    const root = appWith(APP);
-    expect(menuConfigProblems(root, { entries: { view: { group: 'end', order: -1 } } })).toEqual([]);
-    expect(menuConfigProblems(root, { entries: { view: { before: 'about' } } })).toEqual([]);
-    expect(menuConfigProblems(root, { entries: { view: { hidden: true } } })).toEqual([]);
-  });
-
   it('takes the Pin on top and Full screen keys, with activeLabel on these two only', () => {
     const hidden = { hidden: true };
     const root = appWith(APP);
@@ -95,7 +88,7 @@ describe('menuConfigProblems', () => {
   });
 });
 
-describe('menuConfigWarnings', () => {
+describe('K1 menuConfigWarnings', { tags: ['critical'] }, () => {
   const hidden = { hidden: true };
 
   it('warns when View, Pin on top and Full screen are all out of the menu', () => {

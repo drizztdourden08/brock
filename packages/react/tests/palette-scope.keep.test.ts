@@ -25,7 +25,7 @@ const page = (id: string, label: string): HubPage => ({ id, label, icon: null, r
 const PAGES = [page('home', 'Home'), page('engine', 'Engine'), page('sessions', 'Sessions')];
 const HUB: HubDef = { id: 'multiworld', title: 'Multiworld', icon: null, home: PAGES[0] ?? page('home', 'Home'), groups: [{ id: 'g', label: 'G', pages: PAGES.slice(1) }] };
 
-describe('one ranking, scoped to the open hub', () => {
+describe('K1 one ranking, scoped to the open hub', { tags: ['critical'] }, () => {
   it('splits the shared ranking into the open hub first and the rest after', () => {
     const { inScope, rest } = rankInScope(CATALOG, 'session', 'multiworld');
     const ranked = rankEntries(CATALOG, 'session').map((candidate) => candidate.id);
@@ -49,7 +49,7 @@ describe('one ranking, scoped to the open hub', () => {
   });
 });
 
-describe('placeMenuItems', () => {
+describe('K1 placeMenuItems', { tags: ['critical'] }, () => {
   it('turns an existing entry into a submenu that keeps the entry first', () => {
     const items = placeMenuItems(
       [{ key: 'bucket:data', label: 'Data', icon: 'hard-drive', screen: 'data' }],

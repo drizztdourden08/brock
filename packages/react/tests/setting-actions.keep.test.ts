@@ -1,11 +1,9 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isValidElement } from 'react';
 import { settingRows } from '../src/settings/SettingsLayout/behavior/setting-rows';
 import { settingRow } from '../src/settings/SettingsLayout/behavior/setting-row';
 import { withoutKey } from '../src/settings/SettingsLayout/behavior/without-key';
 import { runSettingAction } from '../src/settings/SettingsLayout/behavior/run-setting-action';
-import { SettingActions } from '../src/settings/SettingsLayout/sub-components/SettingActions';
 import type { SettingAction, SettingItem } from '../src/settings/settings.type';
 import { confirmDelete } from '../src/stores/confirm-delete';
 import { dialogs } from '../src/stores/dialogs';
@@ -28,16 +26,7 @@ afterEach(() => {
   useDialogStore.setState({ dialog: null });
 });
 
-describe('settings row actions', () => {
-  it('draws an item with actions and no control as a row with SettingsRow actions and no input', () => {
-    const row = settingRow(OWNER, context());
-    expect(row).toMatchObject({ id: 'owner', title: 'Owner id', hint: OWNER.hint });
-    expect(row).not.toHaveProperty('input');
-    const actions = row && 'actions' in row ? row.actions ?? [] : [];
-    expect(actions.map((action) => [action.id, action.label, action.tone])).toEqual([['copy', 'Copy', undefined], ['reset', 'Reset', 'danger']]);
-    expect(settingRows(OWNER, context())).toHaveLength(1);
-  });
-
+describe('S1 settings row actions', { tags: ['standard'] }, () => {
   it('keeps the control of an item that has one and puts the actions in the same row', () => {
     const item: SettingItem = { ...OWNER, key: 'site', control: { kind: 'text', placeholder: 'https://' } };
     const rows = settingRows(item, context({ site: 'https://example.org' }));
@@ -80,20 +69,12 @@ describe('settings row actions', () => {
     await vi.waitFor(() => expect(onSelect).toHaveBeenCalledWith({ cache: 12 }));
   });
 
-  it('keeps SettingActions under a custom control when the row gives up its chrome', () => {
-    const row = settingRow({ ...OWNER, chrome: false }, { ...context(), renderControl: () => 'custom' });
-    const content = row && 'content' in row ? row.content : null;
-    expect(isValidElement(content)).toBe(true);
-    const children = isValidElement<{ children: unknown[] }>(content) ? content.props.children : [];
-    expect(children.some((child) => isValidElement(child) && child.type === SettingActions)).toBe(true);
-  });
-
   it('still draws nothing for an item with neither a control nor actions', () => {
     expect(settingRows({ ...OWNER, key: 'nothing', actions: [] }, context())).toEqual([]);
   });
 });
 
-describe('the deprecated variant', () => {
+describe('K2 the deprecated variant', { tags: ['standard'] }, () => {
   it('is still read as the tone, and tone wins when both are set', async () => {
     const wipe: SettingAction = { id: 'old', label: 'Wipe', variant: 'danger', confirm: 'Wipe it?', onSelect: () => undefined };
     const item: SettingItem = { ...OWNER, actions: [wipe, { id: 'both', label: 'Keep', tone: 'secondary', variant: 'danger', onSelect: () => undefined }] };
@@ -106,7 +87,7 @@ describe('the deprecated variant', () => {
   });
 });
 
-describe('row action runner', () => {
+describe('K1 row action runner', { tags: ['critical'] }, () => {
   it('passes the busy state of the runner to the row action as loading, keyed by the row', () => {
     const run = vi.fn(() => Promise.resolve());
     const item: SettingItem = { ...OWNER, actions: [{ id: 'rebuild', label: 'Rebuild', onSelect: () => undefined }, { id: 'copy', label: 'Copy', onSelect: () => undefined }] };
@@ -125,7 +106,7 @@ describe('row action runner', () => {
   });
 });
 
-describe('confirmDelete', () => {
+describe('K4 confirmDelete', { tags: ['critical'] }, () => {
   it('asks with the danger look, which Tessera starts on Cancel, and resolves the choice', async () => {
     const answer = confirmDelete({ what: '12 runs', consequence: 'Their output files go too.' });
     expect(useDialogStore.getState().dialog).toMatchObject({

@@ -24,7 +24,7 @@ afterEach(() => {
   rmSync(app, { recursive: true, force: true });
 });
 
-describe('halfBuildReason', () => {
+describe('K1 halfBuildReason', { tags: ['critical'] }, () => {
   it('passes a full build, where the renderer is written after main', () => {
     write('dist/electron/main.js', 60);
     write('dist/renderer/index.html', 50);
@@ -47,7 +47,7 @@ describe('halfBuildReason', () => {
   });
 });
 
-describe('assertLaunchable', () => {
+describe('K4 assertLaunchable', { tags: ['critical'] }, () => {
   it('refuses a half build instead of opening a blank window', () => {
     write('dist/electron/main.js', 10);
     expect(() => assertLaunchable(app)).toThrow(/blank window/);

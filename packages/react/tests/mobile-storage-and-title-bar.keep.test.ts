@@ -35,7 +35,9 @@ afterEach(() => {
 });
 
 const settle = async (): Promise<void> => {
-  await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
+  await act(async () => {
+    for (let turn = 0; turn < 20; turn += 1) await Promise.resolve();
+  });
 };
 
 const filesystem = {
@@ -44,7 +46,7 @@ const filesystem = {
   getUri: () => Promise.resolve({ uri: 'file:///data/app/files' }),
 };
 
-describe('the Storage page on a phone', () => {
+describe('S1 the Storage page on a phone', { tags: ['standard'] }, () => {
   it('shows each declared folder with its size and no action it cannot run', async () => {
     Object.assign(window, { Capacitor: { isNativePlatform: () => true, getPlatform: () => 'android', Plugins: { Filesystem: filesystem } } });
     setDataDomains([{ domain: 'saves', label: 'Saves', dir: 'saves' }, { domain: 'media', label: 'Media', dir: 'media' }]);
@@ -67,7 +69,7 @@ const platformOn = (formFactor: 'mobile' | 'desktop'): Platform => {
 
 const Probe = ({ onMobile }: { onMobile: boolean }) => (useTitleBarShown(onMobile) ? 'shown' : 'hidden');
 
-describe('the title bar on mobile', () => {
+describe('S1 the title bar on mobile', { tags: ['standard'] }, () => {
   it('stays by default, and an app can leave it out on a phone only', () => {
     const shown = (formFactor: 'mobile' | 'desktop', onMobile: boolean): string => {
       const host = mount(createElement(PlatformContext.Provider, { value: platformOn(formFactor) }, createElement(Probe, { onMobile })));

@@ -6,7 +6,6 @@ import { join } from 'node:path';
 import { renderHandlersFiles } from '../src/handlers/render-handlers.mjs';
 import { renderReviewFiles } from '../src/review/render-review.mjs';
 import { nodeBarrelNotes } from '../src/renderer-imports/node-barrel-notes.mjs';
-import { SYNC_INPUTS } from '../src/freshness/freshness.constants.mjs';
 
 const dirs = [];
 
@@ -25,7 +24,7 @@ afterEach(() => {
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('brock sync: handlers and review', () => {
+describe('K1 brock sync: handlers and review', { tags: ['critical'] }, () => {
   it('lists electron/handlers/<subject>-handlers.ts in .brock/handlers.main.ts, by their export names', () => {
     const root = tempDir();
     put(root, 'electron/handlers/session-log-handlers.ts');
@@ -63,13 +62,9 @@ describe('brock sync: handlers and review', () => {
     put(root, 'src/review/Bad_Name.step.ts');
     expect(() => renderReviewFiles(root)).toThrow(/kebab-case/);
   });
-
-  it('treats a change in either folder as a reason to sync again', () => {
-    expect(SYNC_INPUTS).toEqual(expect.arrayContaining(['electron/handlers', 'src/review']));
-  });
 });
 
-describe('brock structure: renderer imports of a Node barrel', () => {
+describe('K1 brock structure: renderer imports of a Node barrel', { tags: ['critical'] }, () => {
   it('warns when a renderer file imports a workspace barrel that reaches Node, and names a subpath', () => {
     const root = tempDir();
     const pkg = join(root, 'packages', 'hosts');

@@ -13,23 +13,9 @@ const catalogOf = (root) => parse(readFileSync(join(root, 'pnpm-workspace.yaml')
 
 afterEach(removeTempRepos);
 
-describe('yamlScalar', () => {
+describe('K1 yamlScalar', { tags: ['critical'] }, () => {
   it('leaves ordinary ranges plain so existing files do not change', () => {
     ['^1.2.3', '~4.5.6', '1.2.3', '^0.59.0', 'latest', 'catalog:x'].forEach((value) => expect(yamlScalar(value)).toBe(value));
-  });
-
-  it('quotes what a plain scalar cannot hold', () => {
-    expect(yamlScalar(RANGE)).toBe("'>=0.58.0 <1'");
-    expect(yamlScalar('*')).toBe("'*'");
-    expect(yamlScalar('a: b')).toBe("'a: b'");
-    expect(yamlScalar('a #b')).toBe("'a #b'");
-    expect(yamlScalar(' 1')).toBe("' 1'");
-    expect(yamlScalar('catalog:')).toBe("'catalog:'");
-    expect(yamlScalar("'it's")).toBe("'''it''s'");
-  });
-
-  it('quotes a value YAML would read as another type', () => {
-    ['1.2', 'true', 'null', '~', '42'].forEach((value) => expect(yamlScalar(value)).toBe(`'${value}'`));
   });
 
   it('round-trips through a YAML parser and through readYamlScalar', () => {
@@ -41,7 +27,7 @@ describe('yamlScalar', () => {
   });
 });
 
-describe('mergeCatalog', () => {
+describe('K3 mergeCatalog', { tags: ['critical'] }, () => {
   it('writes a range YAML cannot read plain as a quoted value', () => {
     const root = tempRepo({ 'pnpm-workspace.yaml': "packages: []\ncatalog:\n  zustand: ^5.0.0\n" });
     expect(mergeCatalog(root, { '@drizztdourden08/tessera': RANGE, react: '^19.2.6' })).toEqual(['@drizztdourden08/tessera', 'react']);

@@ -47,7 +47,7 @@ afterEach(() => {
   seen.profile = 'Starter';
 });
 
-describe('the buckets step and show rules', () => {
+describe('S2 the buckets step and show rules', { tags: ['standard'] }, () => {
   it('skips a bucket whose when is false for the active profile, and says why', async () => {
     const league = await runStep();
     expect(seen.opened).toEqual(['play']);

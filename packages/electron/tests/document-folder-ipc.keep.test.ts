@@ -20,7 +20,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('the file operations over the document channels', () => {
+describe('K4 the file operations over the document channels', { tags: ['critical'] }, () => {
   it('trash, rename and mkdir work inside the grant and are refused outside it', async () => {
     const { granted, outside, trashed } = world;
     await call('document:mkdir', join(granted, 'a', 'b'), { recursive: true });

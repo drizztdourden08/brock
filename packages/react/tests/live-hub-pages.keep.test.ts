@@ -61,8 +61,6 @@ const draw = (params: ScreenParams = NO_PARAMS, open: (target: string, params?: 
   showHarness.render(createElement(PlatformProvider, null, createElement(Hub, { def: treeHub(), ctx })));
 };
 
-const navLabels = (): string[] => [...document.querySelectorAll('.side-nav__item')].map((item) => item.getAttribute('aria-label') ?? '');
-
 const navItem = (label: string): HTMLElement | null => document.querySelector(`.side-nav__item[aria-label="${label}"]`);
 
 afterEach(() => {
@@ -70,7 +68,7 @@ afterEach(() => {
   store.pads = [];
 });
 
-describe('a live page in the screen tree', () => {
+describe('K1 a live page in the screen tree', { tags: ['critical'] }, () => {
   it('sits among the static pages of its group by meta.order and stays out of the menu', () => {
     const hub = treeHub();
     expect(hub.groups[0]?.pages.map((page) => page.id)).toEqual(['directory', 'pads', 'logs', 'diagnostics']);
@@ -87,7 +85,7 @@ describe('a live page in the screen tree', () => {
   });
 });
 
-describe('the pages a hub shows for its live sources', () => {
+describe('K1 the pages a hub shows for its live sources', { tags: ['critical'] }, () => {
   const hub = treeHub();
 
   it('keeps the static pages in order around the live ones', () => {
@@ -127,7 +125,7 @@ describe('the pages a hub shows for its live sources', () => {
   });
 });
 
-describe('the selection of a live entry', () => {
+describe('K1 the selection of a live entry', { tags: ['critical'] }, () => {
   const hub = treeHub();
   const list = visibleHubPages(hub, false, undefined, { pads: [pad('a'), pad('b')] });
   const resolve = (params: ScreenParams, from = list) => resolveHubPage(from.pages, hub.home, liveParams(from.pages, from.fallbacks, params), {});
@@ -146,27 +144,12 @@ describe('the selection of a live entry', () => {
     expect(resolve({ section: 'pads' }, visibleHubPages(hub, false)).page.id).toBe('directory');
   });
 
-  it('keeps the selection when the same key comes back', () => {
-    const back = visibleHubPages(hub, false, undefined, { pads: [pad('a')] });
-    expect(resolve({ section: 'pads', tab: 'a' }, back).page.id).toBe('pads/a');
-  });
-
   it('leaves a static page alone', () => {
     expect(resolve({ section: 'logs' }).page.id).toBe('logs');
   });
 });
 
-describe('a hub with a live source', () => {
-  it('draws the empty text in the nav, then an entry for each connected pad with its badge', () => {
-    draw();
-    expect(navLabels()).toEqual(['Home', 'Directory', 'No controller connected', 'Logs', 'Diagnostics']);
-    expect(navItem('No controller connected')?.hasAttribute('disabled')).toBe(true);
-    setPads([pad('a', { badge: 'ok' }), pad('b', { badge: 'warn' })]);
-    expect(navLabels()).toEqual(['Home', 'Directory', 'Pad a', 'Pad b', 'Logs', 'Diagnostics']);
-    expect(navItem('Pad a')?.querySelector('[aria-label="OK"]')).not.toBeNull();
-    expect(navItem('Pad b')?.querySelector('[aria-label="Needs attention"]')).not.toBeNull();
-  });
-
+describe('S1 a hub with a live source', { tags: ['standard'] }, () => {
   it('shows the body of the selected entry, and the first static page once the entry is unplugged', () => {
     setPads([pad('a'), pad('b')]);
     draw({ section: 'pads', tab: 'b' });

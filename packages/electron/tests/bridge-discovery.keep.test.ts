@@ -29,7 +29,7 @@ const stat = (kind: 'dir' | 'link' | 'socket', uid: number, mode: number): PathS
   mode,
 });
 
-describe('the bridge discovery file', () => {
+describe('K4 the bridge discovery file', { tags: ['standard'] }, () => {
   it('opens a local pipe or a private socket, never a TCP port', async () => {
     const { server } = await serve();
     if (process.platform !== 'win32') expect(statSync(server.endpoint).mode & 0o777).toBe(0o600);
@@ -57,7 +57,7 @@ describe('the bridge discovery file', () => {
 
 });
 
-describe('stale and forged discovery files', () => {
+describe('K4 stale and forged discovery files', { tags: ['standard'] }, () => {
   it('counts a process it may not signal as gone, and refuses its file', async () => {
     const { server } = await serve();
     const stale = discoveryFor(server, deadPid());
@@ -91,7 +91,7 @@ describe('stale and forged discovery files', () => {
 
 });
 
-describe('the bridge discovery paths', () => {
+describe('K4 the bridge discovery paths', { tags: ['standard'] }, () => {
   it('lives in the per-user app data folder, keyed by app and instance', () => {
     expect(bridgeDiscoveryFile('bxel', null, { env: { APPDATA: 'C:\\Users\\u\\AppData\\Roaming' }, platform: 'win32', home: 'C:\\Users\\u' }))
       .toBe(join('C:\\Users\\u\\AppData\\Roaming', 'bxel', 'bridge.json'));

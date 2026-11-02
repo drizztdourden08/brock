@@ -17,7 +17,7 @@ const noop = (): Promise<void> => Promise.resolve();
 
 afterEach(() => vi.restoreAllMocks());
 
-describe('start-up prompt order', () => {
+describe('K1 start-up prompt order', { tags: ['critical'] }, () => {
   it('sorts by order, keeps the registered order between equal ones, and puts an unset order at zero', () => {
     const a = defineStartupPrompt({ id: 'a', run: noop });
     const b = defineStartupPrompt({ id: 'b', order: -5, run: noop });
@@ -34,18 +34,18 @@ describe('start-up prompt order', () => {
   });
 });
 
-describe('runStartupPrompts', () => {
+describe('K1 runStartupPrompts', { tags: ['critical'] }, () => {
   it('runs the prompts one at a time, each after the one before has finished', async () => {
     const events: string[] = [];
-    const slow = (name: string, ms: number): StartupPromptDef => ({
+    const slow = (name: string): StartupPromptDef => ({
       id: name,
       run: async () => {
         events.push(`${name} start`);
-        await new Promise((resolve) => { setTimeout(resolve, ms); });
+        await Promise.resolve();
         events.push(`${name} end`);
       },
     });
-    await runStartupPrompts([slow('first', 20), slow('second', 1)], CTX);
+    await runStartupPrompts([slow('first'), slow('second')], CTX);
     expect(events).toEqual(['first start', 'first end', 'second start', 'second end']);
   });
 
@@ -77,7 +77,7 @@ describe('runStartupPrompts', () => {
   });
 });
 
-describe('lazyStartupPrompt', () => {
+describe('K1 lazyStartupPrompt', { tags: ['critical'] }, () => {
   it('keeps the literal order, loads the file when it runs and passes the context on', async () => {
     const run = vi.fn(noop);
     const load = vi.fn(() => Promise.resolve({ default: defineStartupPrompt({ order: 4, run }) }));

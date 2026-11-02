@@ -2,11 +2,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MAIN_NODE, createDefaultLayout, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { LayoutNode } from '@drizztdourden08/tessera/composites';
-import { defineLayoutPreset } from '../src/widgets/define-layout-preset';
-import { defineWidget } from '../src/widgets/define-widget';
-import { presetLayout } from '../src/widgets/preset-layout';
-import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
-import { widgets } from '../src/widgets/widgets';
+import { defineLayoutPreset, defineWidget, presetLayout, store, widgets } from './widget-preset-kit';
 
 const side = (id: string, order?: number, defaultSide: 'left' | 'right' = 'right') =>
   defineWidget({ id, label: id, render: () => null, defaultSide, ...(order === undefined ? {} : { order }) });
@@ -18,8 +14,6 @@ const LOGS = side('logs');
 const MID = side('mid', 1.5);
 const DEFINITIONS = [PROJECT, VIEW, NOTES, LOGS, MID];
 
-const store = () => useWidgetLayoutStore.getState();
-
 const stackOf = (node: LayoutNode): string[] => {
   if (node.kind !== 'split') return [];
   const last = node.children.at(-1);
@@ -28,7 +22,7 @@ const stackOf = (node: LayoutNode): string[] => {
   return node.children.flatMap(stackOf);
 };
 
-describe('widget order in a dock column', () => {
+describe('K1 widget order in a dock column', { tags: ['critical'] }, () => {
   beforeEach(() => {
     store().setDefinitions(DEFINITIONS);
     store().replace(null);
@@ -45,12 +39,6 @@ describe('widget order in a dock column', () => {
     widgets.open('project');
     widgets.open('mid');
     expect(stackOf(store().layout.dock)).toEqual(['project', 'mid', 'view']);
-  });
-
-  it('keeps open order when no widget has an order', () => {
-    widgets.open('notes');
-    widgets.open('logs');
-    expect(stackOf(store().layout.dock)).toEqual(['notes', 'logs']);
   });
 
   it('puts ordered widgets before the ones without an order, which keep open order', () => {

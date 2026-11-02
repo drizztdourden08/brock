@@ -11,7 +11,7 @@ const EXTRA: SettingItem = { key: 'extra', label: 'Extra', description: 'No defa
 
 const context = (settings: object, extra = {}) => ({ settings, defaults: DEFAULTS, onChange: vi.fn(), disabled: false, lock: null, ...extra });
 
-describe('settingRow reset', () => {
+describe('K1 settingRow reset', { tags: ['critical'] }, () => {
   it('marks a row changed only when the value differs from its default', () => {
     expect(settingRow(AUDIO, context({ ...DEFAULTS }))).toMatchObject({ changed: false });
     expect(settingRow(AUDIO, context({ ...DEFAULTS, audio: false }))).toMatchObject({ changed: true });

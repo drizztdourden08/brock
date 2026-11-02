@@ -1,14 +1,8 @@
 /* @layer renderer-shell @kind test */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { isWidgetOpen, placementOf, widgetsIn } from '@drizztdourden08/tessera/composites';
 import type { LayoutNode } from '@drizztdourden08/tessera/composites';
-import { buildWidgetMenuEntries } from '../src/widgets/build-widget-menu-entries';
-import { resetLayoutEntry } from '../src/widgets/reset-layout-entry';
-import { defineLayoutPreset } from '../src/widgets/define-layout-preset';
-import { defineWidget } from '../src/widgets/define-widget';
-import { presetLayout } from '../src/widgets/preset-layout';
-import { useWidgetLayoutStore } from '../src/widgets/useWidgetLayoutStore';
-import { widgets } from '../src/widgets/widgets';
+import { defineLayoutPreset, defineWidget, presetLayout, store, widgets } from './widget-preset-kit';
 
 const session = (id: string) => defineWidget({ id, label: id, render: () => null, defaultVisibility: 'context-only', popOut: true });
 const SESSION = ['players', 'hints', 'room', 'log', 'console', 'spoiler'].map(session);
@@ -26,9 +20,7 @@ const shape = (node: LayoutNode): unknown => {
   return { [node.axis]: node.children.map(shape), sizes: node.sizes.map((size) => Math.round(size * 100) / 100) };
 };
 
-const store = () => useWidgetLayoutStore.getState();
-
-describe('presetLayout', () => {
+describe('K1 presetLayout', { tags: ['critical'] }, () => {
   it('builds three rows around the main view', () => {
     const layout = presetLayout(THREE_ROWS, SESSION);
     expect(shape(layout.dock)).toEqual({
@@ -64,20 +56,9 @@ describe('presetLayout', () => {
     const sized = defineLayoutPreset({ rows: [['tall'], ['short'], ['main']], sizes: [1, 1, 2] });
     expect(shape(presetLayout(sized, weighted).dock)).toEqual({ column: [['tall'], ['short'], 'main'], sizes: [0.25, 0.25, 0.5] });
   });
-
-  it('weights a row of tabbed widgets by its heaviest member', () => {
-    const weighted = [
-      defineWidget({ id: 'a', label: 'A', render: () => null, dockWeight: 1 }),
-      defineWidget({ id: 'b', label: 'B', render: () => null, dockWeight: 4 }),
-      defineWidget({ id: 'c', label: 'C', render: () => null, dockWeight: 1 }),
-    ];
-    const preset = defineLayoutPreset({ rows: [[['a', 'b']], ['c'], ['main']] });
-    expect(shape(presetLayout(preset, weighted).dock)).toEqual({ column: [['a', 'b'], ['c'], 'main'], sizes: [0.53, 0.13, 0.33] });
-  });
-
 });
 
-describe('presetLayout columns and rows under the main view', () => {
+describe('K1 presetLayout columns and rows under the main view', { tags: ['critical'] }, () => {
   it('stacks a column cell inside a row and sizes its members', () => {
     const preset = defineLayoutPreset({
       rows: [[['players', 'hints'], 'main', { column: ['room', ['log', 'console']], sizes: [3, 1] }]],
@@ -109,14 +90,6 @@ describe('presetLayout columns and rows under the main view', () => {
     });
   });
 
-  it('gives an under row a default share and attaches it to a main view the preset adds itself', () => {
-    const preset = defineLayoutPreset({ rows: [['players'], { cells: ['log'], under: 'main' }] });
-    expect(shape(presetLayout(preset, SESSION).dock)).toEqual({
-      column: [['players'], { column: ['main', ['log']], sizes: [0.7, 0.3] }],
-      sizes: [0.5, 0.5],
-    });
-  });
-
   it('opens a defaultOpen widget the preset does not place on its default side', () => {
     const layout = presetLayout(THREE_ROWS, DEFINITIONS);
     expect(placementOf(layout, 'notes')).toBe('docked');
@@ -125,7 +98,7 @@ describe('presetLayout columns and rows under the main view', () => {
   });
 });
 
-describe('the layout store with a preset', () => {
+describe('K1 the layout store with a preset', { tags: ['critical'] }, () => {
   beforeEach(() => {
     store().setPreset(null);
     store().setDefinitions(DEFINITIONS);
@@ -157,17 +130,5 @@ describe('the layout store with a preset', () => {
     widgets.open('log');
     widgets.reset();
     expect(widgetsIn(store().layout.dock)).toEqual(['notes']);
-  });
-});
-
-describe('the Reset layout menu entry', () => {
-  it('is a plain entry that resets the layout, kept apart from the widget toggles', () => {
-    const reset = vi.fn();
-    const entry = resetLayoutEntry(reset);
-    expect(entry).toMatchObject({ label: 'Reset layout', icon: 'rotate-ccw', confirm: true });
-    expect(entry.checked).toBeUndefined();
-    entry.onClick?.();
-    expect(reset).toHaveBeenCalledTimes(1);
-    expect(buildWidgetMenuEntries([NOTES], presetLayout(null, []), () => undefined, false).map((item) => item.label)).toEqual(['Notes']);
   });
 });

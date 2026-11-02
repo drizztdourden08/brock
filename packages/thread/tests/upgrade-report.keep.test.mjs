@@ -11,7 +11,7 @@ const reportOf = (results, failed) => renderReport(
   { migrations: null, changelog: [] },
 );
 
-describe('the step table of the upgrade report', () => {
+describe('K1 the step table of the upgrade report', { tags: ['critical'] }, () => {
   it('lists every gate step, brock check and lint:md included, when the gate is green', () => {
     const { results, failed } = runSteps(GATE.map((name) => ({ name, run: () => 0 })), () => {});
     const report = reportOf(results, failed);

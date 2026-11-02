@@ -6,7 +6,7 @@ import { rememberFocus } from '../src/regions/remember-focus';
 import { REGION_COMMANDS } from '../src/regions/regions.constants';
 import { focusedId, mount, next, previous, SHELL, useShellRegionCommands } from './region-fixtures';
 
-describe('region cycling', () => {
+describe('S1 region cycling', { tags: ['standard'] }, () => {
   useShellRegionCommands();
 
   it('is a command with the F6 and Shift+F6 chords, so it shows in the shortcut list and can be rebound', () => {

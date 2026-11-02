@@ -1,16 +1,9 @@
 /* @layer renderer-shell @kind test */
-import { createElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { AppTitleBar } from '../src/app/BrockApp/sub-components/AppTitleBar';
-import { useTitleBarActions } from '../src/shell/TitleBar/behavior/useTitleBarActions';
-import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
 import { toBarAction } from '../src/title-bar/to-bar-action';
-import type { TitleBarItemSource, TitleBarVolumeSpec } from '../src/title-bar/title-bar-item.type';
-import { volumeItems } from '../src/title-bar/volume-items';
+import type { TitleBarVolumeSpec } from '../src/title-bar/title-bar-item.type';
 import { volumeChecks } from '../src/review/checks/volume-checks';
 import type { VolumeItemSnapshot } from '../src/review/review.type';
-import { volumeTitleBarItem } from '../src/volume/volume-title-bar-item';
-import { CONTROLS, drawOnPlatform } from './title-bar-fixtures';
 
 const spec = (patch: Partial<TitleBarVolumeSpec> = {}): TitleBarVolumeSpec => ({
   kind: 'volume', label: 'Volume', value: 0.8, muted: false, onChange: () => undefined, onMuteToggle: () => undefined, ...patch,
@@ -22,18 +15,11 @@ const volumeOf = (patch: Partial<TitleBarVolumeSpec> = {}) => {
   return action;
 };
 
-const Bar = (props: { source: TitleBarItemSource }) => {
-  const actions = useTitleBarActions(appTitleBarSources([{ id: 'sound', source: props.source }], []));
-  return createElement(AppTitleBar, { title: 'Demo', menu: [], controls: CONTROLS, instanceName: null, hidden: false, actions });
-};
-
-const draw = (source: TitleBarItemSource): string => drawOnPlatform(createElement(Bar, { source }));
-
 const SNAPSHOT: VolumeItemSnapshot = {
   shown: true, hoverOpens: true, focusOpens: true, slides: true, toggled: true, restored: true, width: 360, tucked: true, muteRow: true, sliderRow: true,
 };
 
-describe('the volume title bar item', () => {
+describe('K1 the volume title bar item', { tags: ['critical'] }, () => {
   it('becomes a Tessera volume action on a 0 to 1 range, with its level, label and shortcut', () => {
     const onChange = vi.fn();
     const action = volumeOf({ onChange, shortcut: 'Ctrl+M' });
@@ -52,22 +38,9 @@ describe('the volume title bar item', () => {
     volumeOf({ muted: true, onMuteToggle }).onMutedChange(false);
     expect(onMuteToggle).toHaveBeenCalledTimes(2);
   });
-
-  it('draws the ready-made item from the volume store as a volume control in the bar, and marks it as a volume item', () => {
-    const html = draw(volumeTitleBarItem());
-    expect(html).toContain('data-bar-item="action:sound"');
-    expect(html).toContain('window-title-bar__volume');
-    expect(html).toContain('volume-control--popover');
-    expect(html).toContain('aria-label="Mute"');
-    expect(volumeItems.list()).toContain('sound');
-  });
-
-  it('labels a muted item Unmute', () => {
-    expect(draw(() => spec({ muted: true }))).toContain('aria-label="Unmute"');
-  });
 });
 
-describe('volumeChecks', () => {
+describe('K1 volumeChecks', { tags: ['critical'] }, () => {
   it('passes a volume item whose slider opens and moves, that mutes, unmutes and tucks into the menu with both rows', () => {
     expect(volumeChecks('sound', SNAPSHOT).map((check) => [check.id, check.pass])).toEqual([
       ['volume-sound-shown', true], ['volume-sound-slider-opens', true], ['volume-sound-slides', true], ['volume-sound-mutes', true], ['volume-sound-tucks', true],

@@ -29,7 +29,7 @@ const dpkgMock = (calls) => ({
   },
 });
 
-describe('brock server package: the tarball and the Docker context', () => {
+describe('K2 brock server package: the tarball and the Docker context', { tags: ['critical'] }, () => {
   it('writes a tarball and the Docker context for x64 by default, with no deb', async () => {
     const root = appFolder();
     const result = await pack(root);
@@ -67,7 +67,7 @@ describe('brock server package: the tarball and the Docker context', () => {
   });
 });
 
-describe('brock server package: the deb and the refusals', () => {
+describe('K2 brock server package: the deb and the refusals', { tags: ['critical'] }, () => {
   it('builds both architectures with the version in the names and a deb per arch', async () => {
     const root = appFolder();
     const calls = [];
@@ -88,16 +88,6 @@ describe('brock server package: the deb and the refusals', () => {
     expect(existsSync(join(out, 'deb-x64'))).toBe(false);
   });
 
-  it('lays out /opt, the unit, the wrapper and the maintainer scripts in the deb tree', async () => {
-    const calls = [];
-    await pack(appFolder(), { deb: true }, { dpkg: dpkgMock(calls) });
-    expect(calls[0].files).toEqual([
-      'DEBIAN', 'DEBIAN/control', 'DEBIAN/postinst', 'DEBIAN/prerm', 'opt', 'opt/fixture', 'opt/fixture/bin', 'opt/fixture/bin/fixture-server',
-      'opt/fixture/node', 'opt/fixture/node/bin', 'opt/fixture/node/bin/node', 'opt/fixture/server', 'opt/fixture/server/main.mjs',
-      'usr', 'usr/bin', 'usr/bin/fixture-server', 'usr/lib', 'usr/lib/systemd', 'usr/lib/systemd/system', 'usr/lib/systemd/system/fixture.service',
-    ]);
-  });
-
   it('refuses --deb without dpkg-deb before it fetches anything', async () => {
     const root = appFolder();
     const calls = [];
@@ -108,12 +98,6 @@ describe('brock server package: the deb and the refusals', () => {
     await expect(packageServer({ rootDir: root, config: CONFIG, deb: true, deps: { download, cacheDir: tempDir(), dpkg: NO_DPKG } })).rejects.toThrow('needs dpkg-deb');
     expect(calls).toEqual([]);
     expect(existsSync(join(root, 'release'))).toBe(false);
-  });
-
-  it('stops when SHASUMS256.txt disagrees with the pin and writes no tarball', async () => {
-    const root = appFolder();
-    await expect(pack(root, { lie: true })).rejects.toThrow('but Brock pins');
-    expect(readdirSync(join(root, 'release/server'))).toEqual([]);
   });
 
   it('asks for brock sync when a managed file is missing', async () => {

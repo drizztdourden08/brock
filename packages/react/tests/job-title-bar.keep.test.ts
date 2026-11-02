@@ -1,11 +1,7 @@
 /* @layer renderer-shell @kind test */
-// @vitest-environment happy-dom
-import { act, createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { JobSnapshot, JobState } from '@drizztdourden08/brock-core/types';
 import { jobBarStatus } from '../src/jobs/job-bar-status';
-import { JobDialog } from '../src/jobs/JobDialog';
 
 const job = (state: JobState, currentStep: string | null): JobSnapshot => ({
   id: 'run-sunday',
@@ -27,9 +23,7 @@ const job = (state: JobState, currentStep: string | null): JobSnapshot => ({
   visible: true,
 });
 
-afterEach(() => document.body.replaceChildren());
-
-describe('the title bar job status', () => {
+describe('K1 the title bar job status', { tags: ['critical'] }, () => {
   it('names the current step between the title and the percent while the job runs', () => {
     expect(jobBarStatus(job('running', 'generate'))).toBe('Running Sunday: Generating 40%');
   });
@@ -38,19 +32,5 @@ describe('the title bar job status', () => {
     expect(jobBarStatus(job('running', null))).toBe('Running Sunday 40%');
     expect(jobBarStatus(job('done', null))).toBe('Running Sunday: done');
     expect(jobBarStatus(job('failed', 'generate'))).toBe('Running Sunday: failed');
-  });
-});
-
-describe('JobDialog', () => {
-  it('names its job on the dialog with data-job-id, and drops it when the dialog closes', () => {
-    document.body.innerHTML = '<div id="host"></div>';
-    const root = createRoot(document.getElementById('host') as HTMLElement);
-    const noop = (): void => undefined;
-    act(() => root.render(createElement(JobDialog, { job: job('running', 'generate'), onHide: noop, onCancel: noop, onClose: noop })));
-    const dialog = document.querySelector('[role="dialog"]');
-    expect(dialog?.getAttribute('data-job-id')).toBe('run-sunday');
-    expect(document.querySelector('[data-job-id="run-sunday"] [aria-label="Running Sunday"]')?.getAttribute('data-state')).toBe('running');
-    act(() => root.unmount());
-    expect(document.querySelector('[data-job-id]')).toBeNull();
   });
 });

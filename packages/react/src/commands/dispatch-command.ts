@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { activeWidget } from '../widgets/active-widget/active-widget';
 import { activeZones } from './active-zones';
 import { chordsOf } from './chords-of';
 import type { CommandContext, CommandDef, CommandState, ParsedChord } from './command.type';
@@ -26,7 +27,7 @@ const pressHold = (def: CommandDef, event: KeyboardEvent, state: CommandState): 
 
 const dispatchCommand = (event: KeyboardEvent, route: string | null): boolean => {
   const state = useCommandStore.getState();
-  const def = findCommand(event, state, { route, typing: isTyping(event.target), zones: activeZones() });
+  const def = findCommand(event, state, { route, typing: isTyping(event.target), zones: activeZones(), widget: activeWidget() });
   if (def === undefined) return false;
   event.preventDefault();
   if (def.hold === undefined) void def.run();

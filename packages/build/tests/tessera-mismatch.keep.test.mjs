@@ -14,7 +14,7 @@ const installed = (react, tessera, peer = '>=0.78.0 <1') => ({
   ...(tessera ? { 'node_modules/@drizztdourden08/tessera/package.json': JSON.stringify({ version: tessera }) } : {}),
 });
 
-describe('satisfiesRange', () => {
+describe('K1 satisfiesRange', { tags: ['critical'] }, () => {
   it('reads the ranges Brock packages declare', () => {
     expect(satisfiesRange('0.78.0', '>=0.78.0 <1')).toBe(true);
     expect(satisfiesRange('0.65.2', '>=0.78.0 <1')).toBe(false);
@@ -31,7 +31,7 @@ describe('satisfiesRange', () => {
   });
 });
 
-describe('tesseraMismatch', () => {
+describe('K1 tesseraMismatch', { tags: ['critical'] }, () => {
   it('says what brock-react needs, what the app has and the command that fixes it', () => {
     const mismatch = tesseraMismatch(appDir(installed('0.108.0', '0.65.0')));
     expect(mismatch?.line).toBe('brock-react 0.108.0 needs Tessera >=0.78.0 <1, this app has 0.65.0. Run pnpm up "@drizztdourden08/tessera@>=0.78.0 <1".');

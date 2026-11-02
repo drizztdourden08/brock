@@ -20,7 +20,7 @@ const overlayRight = (): LayoutNode => ({ kind: 'split', axis: 'row', sizes: [88
 
 afterEach(() => document.body.replaceChildren());
 
-describe('the main view rect readDockLayout returns', () => {
+describe('K1 the main view rect readDockLayout returns', { tags: ['critical'] }, () => {
   it('is in window terms, like the widget rects: offset by the dock below the title bar', () => {
     stageAt(STAGE);
     const main = mainViewRect(withDock(MAIN_NODE));

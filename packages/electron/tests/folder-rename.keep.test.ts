@@ -11,7 +11,7 @@ vi.mock('../src/main/documents/mark-of-the-web', () => import('./mark-of-the-web
 
 const world = withOpsWorld('brock-rename-');
 
-describe('rename', () => {
+describe('K4 rename', { tags: ['critical'] }, () => {
   it('renames a file and a folder inside the grant, and moves a file to another folder', async () => {
     const { access, granted } = world;
     await access.rename(join(granted, 'sub', 'in.txt'), join(granted, 'sub', 'out.txt'));
@@ -69,7 +69,7 @@ describe('rename', () => {
   });
 });
 
-describe('rename checked as a write', () => {
+describe('K4 rename checked as a write', { tags: ['critical'] }, () => {
   it('refuses repository, autostart, lure and git directory names as the target', async () => {
     const { access, granted } = world;
     const refused = [join('proj', '.git'), join('proj', '.git', 'hooks'), join('proj', '.vscode', 'tasks.json'), join('proj', '.github', 'workflows', 'ci.yml'), '.bashrc', 'a.lnk', 'desktop.ini', 'HEAD'];

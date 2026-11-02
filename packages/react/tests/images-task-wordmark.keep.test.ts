@@ -32,7 +32,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('the images boot task', () => {
+describe('S2 the images boot task', { tags: ['standard'] }, () => {
   it('decodes both wordmark images once, so About and the failure splash draw them at once', async () => {
     expect(await run({ wordmark: { src: './logos/w.svg', dark: './logos/w-dark.svg' } })).toEqual(['./logos/icon-256.png', './logos/w.svg', './logos/w-dark.svg']);
     expect(await run({ wordmark: './logos/w.png' })).toEqual(['./logos/icon-256.png', './logos/w.png']);

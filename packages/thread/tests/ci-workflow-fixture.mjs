@@ -2,8 +2,8 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { afterEach, beforeEach } from 'vitest';
+import { dirname, join } from 'node:path';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { ciWorktreesFolder } from '../src/ci/ci-worktree.mjs';
 
 const WORKFLOW = `name: fixture
@@ -86,35 +86,48 @@ const workspace = { name: 'demo', base: 'main', protectedBranches: ['main'], wor
 const byName = (steps) => Object.fromEntries(steps.map((step) => [step.name, step]));
 
 /**
+ * @param {string} dir the empty folder
+ * @param {Record<string, string>} files relative path to text
+ * @returns {void}
+ */
+const initRepo = (dir, files) => {
+  git(dir, 'init', '-q', '-b', 'main');
+  git(dir, 'config', 'user.name', 't');
+  git(dir, 'config', 'user.email', 't@t');
+  for (const [name, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(dir, name)), { recursive: true });
+    writeFileSync(join(dir, name), text);
+  }
+  git(dir, 'add', '-A');
+  git(dir, 'commit', '-q', '-m', 'init');
+};
+
+/**
+ * @param {Record<string, string>} files the first commit
+ * @returns {{ home: string, repo: string }} set before each test
+ */
+const ciRepo = (files) => {
+  const state = { home: '', repo: '' };
+  beforeEach(() => {
+    vi.stubEnv('COORD_PROJECT', undefined);
+    state.home = mkdtempSync(join(tmpdir(), 'brock-ci-home-'));
+    vi.stubEnv('COORD_HOME', state.home);
+    state.repo = mkdtempSync(join(tmpdir(), 'brock-ci-repo-'));
+    initRepo(state.repo, files);
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    for (const dir of [state.home, state.repo, ciWorktreesFolder(state.repo)]) rmSync(dir, { recursive: true, force: true });
+  });
+  return state;
+};
+
+/**
  * @returns {{ repo: () => string }} a fresh repo for each test
  */
 const fixtureRepo = () => {
-  const state = { home: '', saved: undefined, savedProject: undefined, repo: '' };
-  beforeEach(() => {
-    state.saved = process.env.COORD_HOME;
-    state.savedProject = process.env.COORD_PROJECT;
-    delete process.env.COORD_PROJECT;
-    state.home = mkdtempSync(join(tmpdir(), 'brock-ciw-home-'));
-    process.env.COORD_HOME = state.home;
-    state.repo = mkdtempSync(join(tmpdir(), 'brock-ciw-repo-'));
-    git(state.repo, 'init', '-q', '-b', 'main');
-    git(state.repo, 'config', 'user.name', 't');
-    git(state.repo, 'config', 'user.email', 't@t');
-    mkdirSync(join(state.repo, 'tools'));
-    writeFileSync(join(state.repo, 'tools', 'mark.mjs'), MARKER);
-    git(state.repo, 'add', '-A');
-    git(state.repo, 'commit', '-q', '-m', 'marker');
-  });
-  afterEach(() => {
-    if (state.saved === undefined) delete process.env.COORD_HOME;
-    else process.env.COORD_HOME = state.saved;
-    if (state.savedProject === undefined) delete process.env.COORD_PROJECT;
-    else process.env.COORD_PROJECT = state.savedProject;
-    rmSync(state.home, { recursive: true, force: true });
-    rmSync(state.repo, { recursive: true, force: true });
-    rmSync(ciWorktreesFolder(state.repo), { recursive: true, force: true });
-  });
+  const state = ciRepo({ 'tools/mark.mjs': MARKER });
   return { repo: () => state.repo };
 };
 
-export { BROKEN, byName, fixtureRepo, git, WORKFLOW, workspace };
+export { BROKEN, byName, ciRepo, fixtureRepo, git, WORKFLOW, workspace };

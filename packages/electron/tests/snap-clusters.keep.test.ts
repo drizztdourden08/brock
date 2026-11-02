@@ -38,7 +38,7 @@ const cluster = (free: Rect = box(100, 800, 300, 200)): Scene => {
 const guidesTo = (win: FakeWindow): boolean[] =>
   win.webContents.sent.filter((message) => message.channel === 'widget:guide').map((message) => (message.args[0] as { open: boolean }).open);
 
-describe('moving a snap cluster', () => {
+describe('K1 moving a snap cluster', { tags: ['critical'] }, () => {
   it('takes every window joined by snap links when one widget moves', async () => {
     const s = cluster();
     expect(clusterOf('notes').sort()).toEqual(['logs', 'main', 'notes']);
@@ -76,7 +76,7 @@ describe('moving a snap cluster', () => {
   });
 });
 
-describe('Ctrl and joining', () => {
+describe('K1 Ctrl and joining', { tags: ['critical'] }, () => {
   it('moves one window alone with Ctrl, breaks its links and hands its dependants to a flush window', async () => {
     const s = cluster();
     modifierState.ctrl = true;
@@ -118,7 +118,7 @@ describe('Ctrl and joining', () => {
   });
 });
 
-describe('the cluster acts as one window', () => {
+describe('K1 the cluster acts as one window', { tags: ['critical'] }, () => {
   it('maximizes every member into the work area and restores them', async () => {
     const s = cluster();
     s.main.emit('maximize');
@@ -145,7 +145,7 @@ describe('the cluster acts as one window', () => {
   });
 });
 
-describe('the window guide', () => {
+describe('K1 the window guide', { tags: ['critical'] }, () => {
   it('opens in the widget being moved, not in main, and closes there when the move ends', async () => {
     const s = cluster();
     await moveDrag(s.logs, line({ dx: 30, dy: 0 }, 5), { onStep: () => expect(guidesTo(s.logs).at(-1)).toBe(true) });

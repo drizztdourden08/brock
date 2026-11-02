@@ -52,7 +52,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('a hub page with keepMounted', () => {
+describe('S1 a hub page with keepMounted', { tags: ['standard'] }, () => {
   it('stays mounted, hidden, while another page of the hub is open, and shows again as it was', () => {
     document.body.innerHTML = '<div id="host"></div>';
     root = createRoot(document.getElementById('host') as HTMLElement);

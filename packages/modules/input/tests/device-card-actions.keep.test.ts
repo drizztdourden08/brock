@@ -12,7 +12,7 @@ const entry = (busType: DeviceEntry['busType'] = 'usb'): DeviceEntry => ({
 
 const action = (id: string, extra: Partial<DeviceCardAction> = {}): DeviceCardAction => ({ id, label: id, onSelect: vi.fn(), ...extra });
 
-describe('app actions on the device card', () => {
+describe('K1 app actions on the device card', { tags: ['critical'] }, () => {
   it('shows registered actions first, then the ones given to the card', () => {
     const shown = shownDeviceCardActions([action('report')], [action('export')], entry());
     expect(shown.map((s) => s.action.id)).toEqual(['report', 'export']);

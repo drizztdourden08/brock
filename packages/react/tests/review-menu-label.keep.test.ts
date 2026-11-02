@@ -9,7 +9,7 @@ const html = (markup: string): HTMLElement => {
   return host.firstElementChild as HTMLElement;
 };
 
-describe('the review menu label', () => {
+describe('K1 the review menu label', { tags: ['standard'] }, () => {
   it('reads the shown words of a confirm item, not the hidden copy that keeps its width', () => {
     const item = html('<button class="dropdown__item"><span class="dropdown__label dropdown__label--ask"><span aria-live="polite">Reset layout</span><span class="dropdown__label-room" aria-hidden="true">Click again to reset layout</span></span></button>');
     expect(labelOf(item)).toBe('Reset layout');

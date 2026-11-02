@@ -10,7 +10,7 @@ const SHIPPED = '/app/dist/renderer/logos';
 const DIRS = [SOURCE, SHIPPED];
 const having = (...paths: string[]) => (path: string): boolean => paths.includes(path);
 
-describe('findWindowIcon', () => {
+describe('K1 findWindowIcon', { tags: ['critical'] }, () => {
   it('prefers the ico on Windows and the png elsewhere', () => {
     const exists = having(join(SHIPPED, 'icon.ico'), join(SHIPPED, 'icon-256.png'));
     expect(findWindowIcon({ dirs: DIRS, platform: 'win32', instanceName: null, exists }).path).toBe(join(SHIPPED, 'icon.ico'));
@@ -42,7 +42,7 @@ describe('findWindowIcon', () => {
   });
 });
 
-describe('logosDirs', () => {
+describe('K1 logosDirs', { tags: ['critical'] }, () => {
   const renderer = resolve('/app/dist/renderer/index.html');
 
   it('reads the shipped renderer folder in a packaged build', () => {
@@ -54,7 +54,7 @@ describe('logosDirs', () => {
   });
 });
 
-describe('appUserModelId', () => {
+describe('K1 appUserModelId', { tags: ['critical'] }, () => {
   it('is the product appId, or its instance form', () => {
     expect(appUserModelId('com.example.app', null)).toBe('com.example.app');
     expect(appUserModelId('com.example.app', 'probe')).toBe('com.example.app.instance.probe');

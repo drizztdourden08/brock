@@ -6,13 +6,15 @@ const named = ({ all, changed, paths }) => {
   return changed ? { mode: 'changed', reason: '--changed' } : null;
 };
 
+const fromEnv = (env) => (['all', 'changed'].includes(env.BROCK_LINT_MODE) ? { mode: env.BROCK_LINT_MODE, reason: `BROCK_LINT_MODE=${env.BROCK_LINT_MODE}` } : null);
+
 /**
  * @param {{ all?: boolean, changed?: boolean, paths?: string[], env?: NodeJS.ProcessEnv }} opts
- * @returns {{ mode: 'all' | 'changed' | 'paths', reason: string }} files named, else --all or CI, else changed
+ * @returns {{ mode: 'all' | 'changed' | 'paths', reason: string }} files named, else --all, BROCK_LINT_MODE or CI, else changed
  */
 const chooseMode = ({ all = false, changed = false, paths = [], env = process.env }) => {
   if (all && changed) throw new Error('brock lint: --all and --changed exclude each other');
-  return named({ all, changed, paths }) ?? (env.CI ? { mode: 'all', reason: 'CI is set' } : { mode: 'changed', reason: 'local run' });
+  return named({ all, changed, paths }) ?? fromEnv(env) ?? (env.CI ? { mode: 'all', reason: 'CI is set' } : { mode: 'changed', reason: 'local run' });
 };
 
 export { chooseMode };

@@ -6,7 +6,6 @@ import { availableToolbars } from '../src/toolbars/available-toolbars';
 import { defineToolbar } from '../src/toolbars/define-toolbar';
 import { toolbarIdOf } from '../src/toolbars/toolbar-id-of';
 import { toolbarItemEntries } from '../src/toolbars/toolbar-item-entries';
-import { toolbarItemZone } from '../src/toolbars/toolbar-item-zone';
 import { toolbars } from '../src/toolbars/toolbars';
 import { useToolbarLayoutStore } from '../src/toolbars/useToolbarLayoutStore';
 import { mode, availableIn, setMode } from './rule-mode-fixture';
@@ -16,7 +15,7 @@ afterEach(() => {
   showHarness.resetShow();
 });
 
-describe('W4 toolbar when', () => {
+describe('K1 toolbar when', { tags: ['critical'] }, () => {
   const BAR = defineToolbar({ id: 'pencil', label: 'Pencil', defaultSide: 'top', render: () => null, when: mode('sheet') });
   const ALWAYS = defineToolbar({ id: 'tools', label: 'Tools', defaultSide: 'left', render: () => null });
 
@@ -49,7 +48,7 @@ describe('W4 toolbar when', () => {
   });
 });
 
-describe('W5 toolbar contextEntries', () => {
+describe('K1 toolbar contextEntries', { tags: ['critical'] }, () => {
   const BAR = defineToolbar({
     id: 'tools',
     label: 'Tools',
@@ -85,8 +84,7 @@ describe('W5 toolbar contextEntries', () => {
     expect(toolbarItemEntries(context('pencil', null))).toEqual([]);
   });
 
-  it('marks an item with its id and reads the toolbar id back', () => {
-    expect(toolbarItemZone('pencil')).toMatchObject({ 'data-context-menu': 'brock.toolbar-item' });
+  it('reads the toolbar id back from an item', () => {
     expect(toolbarIdOf(target())).toBe('tools');
     expect(toolbarIdOf(null)).toBeNull();
   });

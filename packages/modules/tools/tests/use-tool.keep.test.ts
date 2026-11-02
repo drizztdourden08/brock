@@ -38,7 +38,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('useTool', () => {
+describe('S1 useTool', { tags: ['standard'] }, () => {
   it('locates the tool again on window focus and when main says it changed', async () => {
     const { api, listeners, setStatus } = fakeApi();
     Object.assign(window, { api: { tools: api } });

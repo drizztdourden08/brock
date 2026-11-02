@@ -2,6 +2,7 @@
 import type { MainContext } from '../types/main-context.type';
 
 const registerFolderHandlers = ({ handle, documents }: Pick<MainContext, 'handle' | 'documents'>): void => {
+  handle('document:canWrite', (_event, folder) => documents.canWrite(folder));
   handle('document:revokeFolder', (_event, path) => Promise.resolve(documents.revokeFolder(path)));
   handle('document:trash', (_event, path) => documents.trash(path));
   handle('document:reveal', (_event, path) => documents.reveal(path));

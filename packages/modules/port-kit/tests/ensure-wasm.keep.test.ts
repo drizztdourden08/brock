@@ -13,7 +13,7 @@ writeFileSync('public/wasm/game.js', '');
 writeFileSync('built-with.txt', process.env.EMSDK ?? '');
 `;
 
-describe('ensureWasm', () => {
+describe('E2 ensureWasm', { tags: ['e2e'] }, () => {
   const scratch = scratchDirs('port-kit-ensure-');
   const scratchDir = scratch.make;
   const log = (): void => undefined;

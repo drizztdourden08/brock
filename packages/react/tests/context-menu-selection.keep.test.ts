@@ -35,7 +35,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('context menus with a selection', () => {
+describe('K1 context menus with a selection', { tags: ['critical'] }, () => {
   it('hands the selection given at open to the menu context as a set', () => {
     expect(contextMenu.open('list', undefined, { selection: ['a', 'b', 'a'] })).toBe(true);
     expect(opened()?.context.selection).toEqual(new Set(['a', 'b']));
@@ -53,7 +53,7 @@ describe('context menus with a selection', () => {
   });
 });
 
-describe('opening a menu at an element', () => {
+describe('K1 opening a menu at an element', { tags: ['critical'] }, () => {
   it('opens the menu of the nearest zone with the given data and selection', () => {
     expect(contextMenu.openAt(el('row'), { id: 9 }, { selection: ['r1'] })).toBe(true);
     expect(opened()?.context.data).toEqual({ id: 9 });

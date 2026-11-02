@@ -20,7 +20,7 @@ afterEach(async () => {
   await rm(world.base, { recursive: true, force: true });
 });
 
-describe('a folder rename and what the folder carries', () => {
+describe('K4 a folder rename and what the folder carries', { tags: ['critical'] }, () => {
   it('refuses the workflow exploit: write x/workflows/ci.yml, then rename x to .github', async () => {
     const { access, granted } = world;
     await put(join(granted, 'x', 'workflows', 'ci.yml'), 'on: push');
@@ -50,7 +50,7 @@ describe('a folder rename and what the folder carries', () => {
 
 });
 
-describe('a folder rename and where its content would land', () => {
+describe('K4 a folder rename and where its content would land', { tags: ['critical'] }, () => {
   it('refuses a folder whose content is not protected where it is but would be at the new place', async () => {
     const { access, granted } = world;
     const cases: [string, string, string][] = [
@@ -93,7 +93,7 @@ describe('a folder rename and where its content would land', () => {
   });
 });
 
-describe('renaming a link', () => {
+describe('K4 renaming a link', { tags: ['critical'] }, () => {
   it('moves the link itself, never its target, even when it leads outside', async () => {
     const { access, granted, outside } = world;
     await symlink(outside, join(granted, 'out'), dirLink);

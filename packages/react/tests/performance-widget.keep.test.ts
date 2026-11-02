@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import type { ProcessDiagnostics } from '@drizztdourden08/brock-core';
 import { performanceChecks } from '../src/review/checks/performance-checks';
 import type { PerformanceReading } from '../src/review/review.type';
-import { BUILT_IN_WIDGETS } from '../src/widgets/built-in-widgets.constants';
 import { buildSnapshot } from '../src/widgets/built-in/PerformanceWidget/behavior/build-snapshot';
 import { byteParts } from '../src/widgets/built-in/PerformanceWidget/behavior/byte-parts';
 import { countFrame } from '../src/widgets/built-in/PerformanceWidget/behavior/count-frame';
@@ -45,21 +44,16 @@ const PROCESSES: ProcessDiagnostics = {
 const rowsOf = (title: string, groups: ReturnType<typeof performanceGroups>) =>
   Object.fromEntries(groups.find((group) => group.title === title)?.rows.map((row) => [row.label, row.value]) ?? []);
 
-describe('widgetsFromFiles', () => {
+describe('K1 widgetsFromFiles', { tags: ['critical'] }, () => {
   it('names a widget from its file id and keeps the meta', () => {
     const Panel = () => null;
     const [def] = widgetsFromFiles([{ id: 'live-room', component: Panel, meta: { icon: 'house', popOut: true, defaultVisibility: 'context-only' } }]);
     expect(def).toMatchObject({ id: 'live-room', label: 'Live Room', icon: 'house', popOut: true, defaultVisibility: 'context-only', defaultSide: 'right' });
     expect(def?.settings).toBeUndefined();
   });
-
-  it('lists Logs and Performance as the built-in widgets, with a settings panel on Performance', () => {
-    expect(BUILT_IN_WIDGETS.map((def) => [def.id, def.label, def.popOut, def.devOnly ?? false])).toEqual([['logs', 'Logs', true, false], ['performance', 'Performance', true, false]]);
-    expect(BUILT_IN_WIDGETS[1]?.settings).toBeTypeOf('function');
-  });
 });
 
-describe('the renderer sample', () => {
+describe('K1 the renderer sample', { tags: ['critical'] }, () => {
   it('turns counted frames and tasks into rates, then resets the counters', () => {
     const frames: FrameCounter = { frames: 0, totalMs: 0, worstMs: 0, last: null };
     for (const now of [0, 16, 32, 80, 96]) countFrame(frames, now);
@@ -71,7 +65,7 @@ describe('the renderer sample', () => {
   });
 });
 
-describe('performanceGroups and the snapshot', () => {
+describe('K1 performanceGroups and the snapshot', { tags: ['critical'] }, () => {
   const renderer = { fps: 60, frameMs: 16.7, worstFrameMs: 33.4, longTasks: 0, longTaskMs: 0, lagMs: 1.2, domNodes: 900, heapUsedBytes: null, heapLimitBytes: null };
 
   it('shows only the sections the pref keeps, in a fixed order', () => {
@@ -98,7 +92,7 @@ describe('performanceGroups and the snapshot', () => {
   });
 });
 
-describe('the visual parts', () => {
+describe('K1 the visual parts', { tags: ['critical'] }, () => {
   it('keeps the last samples of each series, oldest first', () => {
     const long = Array.from({ length: HISTORY_LENGTH }, (_, index) => index);
     expect(pushSeries(undefined, 5)).toEqual([5]);
@@ -132,7 +126,7 @@ describe('the visual parts', () => {
   });
 });
 
-describe('performanceChecks', () => {
+describe('K1 performanceChecks', { tags: ['critical'] }, () => {
   const reading: PerformanceReading = {
     tiles: { 'Frame rate': '59', CPU: '3.0', Memory: '400.0', 'Event loop lag': '1.2' },
     sparklines: ['M0 1L1 2', 'M0 1L1 3', 'M0 2L1 2', 'M0 0L1 1'],

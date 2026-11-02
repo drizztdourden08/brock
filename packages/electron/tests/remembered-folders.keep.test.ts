@@ -52,7 +52,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('remembering the folders the user picked', () => {
+describe('K4 remembering the folders the user picked', { tags: ['critical'] }, () => {
   it('remembers a folder picked in the dialog for the profile, signed', async () => {
     expect(await pick(granted, 'p1')).toBe(granted);
     expect(await access.rememberedFolders('p1')).toEqual([{ path: granted, name: 'granted', lastOpened: expect.any(Number) as number, available: true }]);
@@ -117,7 +117,7 @@ const rememberThenRevoke = async (): Promise<void> => {
   access.revokeFolder(granted);
 };
 
-describe('granting a remembered folder again without the dialog', () => {
+describe('K4 granting a remembered folder again without the dialog', { tags: ['critical'] }, () => {
   beforeEach(rememberThenRevoke);
 
   it('restores the grant, and its files work again', async () => {
@@ -150,7 +150,7 @@ describe('granting a remembered folder again without the dialog', () => {
 
 });
 
-describe('a remembered list that was tampered with', () => {
+describe('K4 a remembered list that was tampered with', { tags: ['critical'] }, () => {
   beforeEach(rememberThenRevoke);
 
   it('refuses an entry that was edited, unsigned, signed by hand or copied from another profile', async () => {
@@ -184,7 +184,7 @@ describe('a remembered list that was tampered with', () => {
 
 });
 
-describe('a remembered folder that is no longer fit to grant', () => {
+describe('K4 a remembered folder that is no longer fit to grant', { tags: ['critical'] }, () => {
   beforeEach(rememberThenRevoke);
 
   it('checks the grant root rules again today', async () => {
@@ -203,7 +203,7 @@ describe('a remembered folder that is no longer fit to grant', () => {
 
 });
 
-describe('forgetting a remembered folder', () => {
+describe('K4 forgetting a remembered folder', { tags: ['critical'] }, () => {
   beforeEach(rememberThenRevoke);
 
   it('is undone by forgetting the folder, which tells whether there was one', async () => {

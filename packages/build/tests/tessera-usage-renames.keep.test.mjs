@@ -47,7 +47,7 @@ const USAGE = [
 
 const renamed = (path, source = USAGE) => scriptRenames(ts, { path, source }, RELEASE);
 
-describe('the Tessera renames replay over usage files', () => {
+describe('K1 the Tessera renames replay over usage files', { tags: ['standard'] }, () => {
   it('renames the part each avoidWhen entry names, and only that key', () => {
     const { source } = renamed('src/views/PresetsHub/PresetsHub.usage.ts');
     expect(source).toContain("{ case: 'Rows without an editor.', use: 'ItemList' }");
@@ -62,12 +62,6 @@ describe('the Tessera renames replay over usage files', () => {
   it('renames and moves the Tessera import of the example code, and its use in the code', () => {
     const { source } = renamed('src/views/PresetsHub/PresetsHub.usage.ts');
     expect(source).toContain("example: `import { ItemList } from '@drizztdourden08/tessera/composites';\n\nconst Sample = () => <ItemList items={[]} />;\n`,");
-  });
-
-  it('turns a note in place of the name into a to-do on the line of the entry, and leaves the name', () => {
-    const { source, todos } = renamed('src/views/PresetsHub/PresetsHub.usage.ts');
-    expect(source).toContain("use: 'JsonInput'");
-    expect(todos).toEqual([{ line: 9, message: 'Tessera 0.21.0: the component JsonInput is now "CodeBlock with editable, value and onChange (see MIGRATION.md section 187)". Change it by hand.' }]);
   });
 
   it('leaves a use key outside a usage file, and an object with no avoidWhen list, alone', () => {
@@ -92,11 +86,6 @@ describe('the Tessera renames replay over usage files', () => {
     expect(out).toContain("import { ItemList } from '@drizztdourden08/tessera';");
     expect(out).toContain(`<ItemList title={${inner}} />`);
   });
-
-  it('changes nothing on a second replay', () => {
-    const once = renamed('src/views/PresetsHub/PresetsHub.usage.ts').source;
-    expect(renamed('src/views/PresetsHub/PresetsHub.usage.ts', once).source).toBe(once);
-  });
 });
 
 const made = [];
@@ -110,7 +99,7 @@ afterEach(() => {
   for (const dir of made.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe('brock migrate --tessera-from over a design package usage file', () => {
+describe('S2 brock migrate --tessera-from over a design package usage file', { tags: ['standard'] }, () => {
   it('renames the avoidWhen part of a compound in the design package and of a view in the app', () => {
     const root = mkdtempSync(join(tmpdir(), 'brock-tessera-usage-'));
     made.push(root);

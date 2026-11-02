@@ -25,7 +25,7 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe('inputApi() on each host', () => {
+describe('K2 inputApi() on each host', { tags: ['critical'] }, () => {
   it('serves the BrockInput plugin on Android and puts it on window.api.input', async () => {
     const plugin = { addListener: vi.fn(() => ({ remove: vi.fn() })), start: vi.fn(() => Promise.resolve({ ok: true, version: '3.4.14' })) };
     const host = nativeWindow({ BrockInput: plugin });

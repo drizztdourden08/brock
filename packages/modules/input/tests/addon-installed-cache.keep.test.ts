@@ -26,7 +26,7 @@ const startFreshLocalWorktree = (): void => {
 beforeEach(fx.setup);
 afterEach(fx.teardown);
 
-describe('the cached installed addon', () => {
+describe('K3 the cached installed addon', { tags: ['standard'] }, () => {
   it('stores the extracted files after a download', async () => {
     await installRemotely();
     expect(readFileSync(entryFile(), 'utf8')).toBe('addon bytes');

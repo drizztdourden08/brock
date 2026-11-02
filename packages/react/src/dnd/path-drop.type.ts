@@ -1,0 +1,51 @@
+/* @layer renderer-shell @kind types */
+import type { DocumentDropKind, DocumentEntry } from '@drizztdourden08/brock-core';
+import type { DragPreviewOptions } from './dnd.type';
+
+interface RejectedFile {
+  name: string;
+  reason: string;
+}
+
+interface Expanded {
+  entries: DocumentEntry[];
+  rejected: RejectedFile[];
+  truncated: boolean;
+}
+
+interface DroppedPath {
+  path: string;
+  name: string;
+  kind: DocumentDropKind;
+}
+
+interface PathDrop {
+  origin: 'os' | 'app';
+  paths: readonly DroppedPath[];
+  rejected: readonly RejectedFile[];
+  entries: readonly DocumentEntry[];
+  truncated: boolean;
+}
+
+interface PathDropExpand {
+  recursive?: boolean;
+  extensions?: readonly string[];
+}
+
+interface PathDropOptions {
+  extensions?: readonly string[];
+  expand?: PathDropExpand;
+}
+
+interface FileListDragOptions {
+  paths: () => readonly DroppedPath[];
+  disabled?: boolean | (() => boolean);
+  preview?: DragPreviewOptions<PathDrop>;
+}
+
+interface WindowFileDropOptions {
+  paths?: PathDropOptions;
+  canDrop?: (drop: PathDrop) => boolean;
+}
+
+export type { DroppedPath, Expanded, FileListDragOptions, PathDrop, PathDropExpand, PathDropOptions, RejectedFile, WindowFileDropOptions };

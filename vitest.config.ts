@@ -1,7 +1,7 @@
 /* @layer root-config @kind config */
-import { defineConfig } from 'vitest/config';
+import { defineStandardsVitest } from '@drizztdourden08/standards/vitest';
 
-export default defineConfig({
+export default defineStandardsVitest({
   esbuild: { jsx: 'automatic' },
   test: {
     include: [
@@ -9,7 +9,5 @@ export default defineConfig({
       'packages/plugins/*/tests/**/*.test.mjs',
     ],
     passWithNoTests: true,
-    testTimeout: 30_000,
-    hookTimeout: 60_000,
   },
 });

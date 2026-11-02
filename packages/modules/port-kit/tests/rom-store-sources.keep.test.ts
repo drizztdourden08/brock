@@ -18,7 +18,7 @@ const portWith = (rom: Partial<RomDefinition> = {}): PortDefinition => testPort(
   ...rom,
 });
 
-describe('createRomStore unknown dumps', () => {
+describe('K3 createRomStore unknown dumps', { tags: ['critical'] }, () => {
   it('refuses an unknown dump by default', async () => {
     const store = createRomStore(memoryFiles().files, portWith());
     expect(await store.importRom('mine.sfc', other)).toMatchObject({ ok: false, reason: 'unknown', hash: sha1Of(other) });
@@ -53,7 +53,7 @@ describe('createRomStore unknown dumps', () => {
   });
 });
 
-describe('createRomStore zip input', () => {
+describe('K3 createRomStore zip input', { tags: ['critical'] }, () => {
   it('picks the one ROM inside a zip, deflated or stored', async () => {
     const { files, disk } = memoryFiles();
     const store = createRomStore(files, portWith());
@@ -86,7 +86,7 @@ describe('createRomStore zip input', () => {
   });
 });
 
-describe('createRomStore kinds and removal', () => {
+describe('K3 createRomStore kinds and removal', { tags: ['critical'] }, () => {
   const kinds = (): RomDefinition['kinds'] => ({
     extra: {
       label: 'Second cartridge', extensions: ['.gba'], known: { [sha1Of(second)]: { id: 'second', label: 'Second' } }, dir: 'roms/extra',

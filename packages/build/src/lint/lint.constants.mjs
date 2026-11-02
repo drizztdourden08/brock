@@ -10,6 +10,7 @@ const CACHE_DIR_ENV = 'BROCK_LINT_CACHE_DIR';
 const HEAP_FLAG = /--max[-_]old[-_]space[-_]size/;
 const BASE_REFS = ['origin/main', 'origin/master', 'main', 'master'];
 const MAX_CHANGED_FILES = 300;
+const TYPES_STAMP_FILES = /\.[cm]?tsx?$|(^|\/)(tsconfig[^/]*\.json|package\.json|pnpm-lock\.yaml)$/;
 const WHOLE_TREE_FILES = /(^|\/)(eslint\.config\.[^/]+|standards\.(config|extension)\.[^/]+|tsconfig[^/]*\.json|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|\.npmrc)$|(^|\/)lint-config\//;
 
 export {
@@ -24,5 +25,6 @@ export {
   MAX_CHANGED_FILES,
   MEMORY_ENV,
   STATS_ENV,
+  TYPES_STAMP_FILES,
   WHOLE_TREE_FILES,
 };

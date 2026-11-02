@@ -33,7 +33,7 @@ const doubling = windowAnswering(([value]) => ({ ok: true, value: Number(value) 
 
 afterEach(closeOpened);
 
-describe('relayAsk', () => {
+describe('K4 relayAsk', { tags: ['standard'] }, () => {
   it('lets a helper call an ask channel and returns the renderer answer', async () => {
     const { server, file } = await serve();
     relayAsk(server, DOUBLE, { window: () => doubling, validate: anyNumber });
@@ -81,7 +81,7 @@ describe('relayAsk', () => {
 
 });
 
-describe('relayAsk limits', () => {
+describe('K4 relayAsk limits', { tags: ['standard'] }, () => {
   it('refuses a ninth request while eight wait for the window, and takes new ones once they are answered', async () => {
     const waiting: number[] = [];
     const mode = { holding: true };

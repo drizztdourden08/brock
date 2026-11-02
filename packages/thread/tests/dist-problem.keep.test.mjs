@@ -24,7 +24,7 @@ afterAll(() => {
   for (const app of made) rmSync(app, { recursive: true, force: true });
 });
 
-describe('distProblem', () => {
+describe('K1 distProblem', { tags: ['critical'] }, () => {
   it('passes a full build', () => {
     expect(distProblem(appWith({ 'dist/electron/main.js': 60, 'dist/preload/preload.mjs': 55, 'dist/renderer/index.html': 50 }))).toBeNull();
   });

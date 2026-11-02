@@ -8,12 +8,17 @@ const IntroStep = (props: IntroStepProps) => {
 
   return (
     <>
-      <Text as="p">Captures every input twice: raw bytes, then by position.</Text>
+      <Text as="p">
+        This runs a full gamepad diagnostic in two passes: a byte-level capture, then a
+        positional capture that asks for every input again once the controller reconnects
+        normally. The last step lines both passes up side by side and lets you save or copy
+        the result.
+      </Text>
       <HoldStatusLine
         status={releaseStatus}
-        pendingText="Pausing your controllers in the app..."
-        doneText="Your controllers are paused in the app while the capture runs."
-        errorText="Could not pause your controllers. Byte capture may stay empty."
+        pendingText="Releasing the hold on every controller..."
+        doneText="The hold is dropped. Move on to pick which controller this run captures."
+        errorText="Couldn't release the hold. The byte-capture step later in this run may stay empty."
       />
     </>
   );

@@ -30,7 +30,7 @@ afterEach(() => {
 
 const contextWith = (lines: string[]): MainContext => ({ log: (message: string) => { lines.push(message); } }) as Partial<MainContext> as MainContext;
 
-describe('sendBugReport', () => {
+describe('K2 sendBugReport', { tags: ['critical'] }, () => {
   it('passes the payload and the context to the app transport', async () => {
     const transport = vi.fn().mockResolvedValue({ success: true, value: { id: '42' } });
     const ctx = contextWith([]);
@@ -49,7 +49,7 @@ describe('sendBugReport', () => {
   });
 });
 
-describe('writeDebugZip', () => {
+describe('K2 writeDebugZip', { tags: ['critical'] }, () => {
   it('zips the report, the log files of Data/debug and the app extras', async () => {
     const debug = folder();
     writeFileSync(join(debug, 'main-console.log'), 'main');
@@ -73,7 +73,7 @@ describe('writeDebugZip', () => {
   });
 });
 
-describe('transportInfo', () => {
+describe('K2 transportInfo', { tags: ['critical'] }, () => {
   const transport = vi.fn();
 
   it('tells the renderer the label and the fields the transport takes', async () => {
@@ -102,7 +102,7 @@ describe('transportInfo', () => {
   });
 });
 
-describe('receipt retry over IPC', () => {
+describe('K2 receipt retry over IPC', { tags: ['critical'] }, () => {
   it('holds the retry in main, sends its id and runs it on bugReport:retry', async () => {
     const retry = vi.fn().mockResolvedValueOnce({ success: false, error: 'offline' }).mockResolvedValueOnce({ success: true, value: { message: 'Uploaded.' } });
     const wire = receiptWire({ success: true, value: { id: '9', links: [{ label: 'View', url: 'https://reports.example/9' }], retry } });
@@ -125,7 +125,7 @@ describe('receipt retry over IPC', () => {
   });
 });
 
-describe('writeDebugZip attachments', () => {
+describe('K2 writeDebugZip attachments', { tags: ['critical'] }, () => {
   it('stores each attachment under attachments/ and keeps only its name, type and size in report.json', async () => {
     const dir = folder();
     const data = new Uint8Array([7, 8, 9]);

@@ -1,8 +1,9 @@
 /* @layer tooling-scripts @kind logic */
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { flag } from '../cli/thread-args.mjs';
+import { ghLoud } from '../gh.mjs';
 import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { checkNoteFile } from '../release-notes/check-note-file.mjs';
 import { findAppDir } from '../release-notes/find-app-dir.mjs';
@@ -55,13 +56,13 @@ const dispatch = (ctx, tag, { options, workflow }) => {
   const inputs = { version: tag, set_latest: latest, prerelease, full: flag(options, 'full') };
   const fields = Object.entries(inputs).flatMap(([key, value]) => ['-f', `${key}=${value}`]);
   ctx.log(`gh workflow run ${workflow} --ref ${ctx.workspace.base} ${fields.join(' ')}`);
-  execFileSync('gh', ['workflow', 'run', workflow, '--ref', ctx.workspace.base, ...fields], { cwd: ctx.rootDir, stdio: 'inherit' });
+  ghLoud(['workflow', 'run', workflow, '--ref', ctx.workspace.base, ...fields], ctx.rootDir);
   ctx.log(`Queued ${tag}. Follow it with: gh run watch`);
 };
 
 const createRelease = (ctx, tag, notes) => {
   ctx.log(`gh release create ${tag} --notes-file ${notes} --title ${tag}`);
-  execFileSync('gh', ['release', 'create', tag, '--notes-file', notes, '--title', tag], { cwd: ctx.rootDir, stdio: 'inherit' });
+  ghLoud(['release', 'create', tag, '--notes-file', notes, '--title', tag], ctx.rootDir);
   ctx.log(`Release ${tag} created.`);
 };
 

@@ -15,7 +15,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('named saves: rename and overwrite', () => {
+describe('K3 named saves: rename and overwrite', { tags: ['critical'] }, () => {
   it('renames a save and keeps its files', async () => {
     const { disk, named } = setup();
     const entry = await named.create('p1', 'normal', 'First', { bytes: bytes(1, 2) });
@@ -45,7 +45,7 @@ describe('named saves: rename and overwrite', () => {
   });
 });
 
-describe('named saves: prune and size', () => {
+describe('K3 named saves: prune and size', { tags: ['critical'] }, () => {
   const seed = async (named: ReturnType<typeof setup>['named'], times: number[]) => {
     const ids: string[] = [];
     for (const time of times) {
@@ -83,7 +83,7 @@ describe('named saves: prune and size', () => {
   });
 });
 
-describe('save companions', () => {
+describe('K3 save companions', { tags: ['critical'] }, () => {
   it('removes the companion files when a slot is written or removed', async () => {
     const { files, disk } = memoryFiles();
     const store = createSaveStore(files, { companions: (profileId, ref) => [`profiles/${profileId}/extra/${ref.kind}.bin`] });

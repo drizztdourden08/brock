@@ -14,6 +14,9 @@ const startControllerInputFeed = (): (() => void) => {
     api.onRemoved((deviceKey) => {
       controllerInputStore.handleControllerRemoved(deviceKey);
     }),
+    api.capture.onHoldChanged(() => {
+      controllerInputStore.clearHeldStates();
+    }),
     api.capture.onRaw((report) => {
       controllerInputStore.handleRawReport(report);
     }),

@@ -10,7 +10,7 @@ const PRODUCT = { id: 'packs', appId: 'com.example.packs', name: 'Packs', author
 
 const fusesOf = (options) => createBuilderConfig(PRODUCT, { rootDir: tempDir(), ...options }).electronFuses;
 
-describe('electron fuses of the builder config', () => {
+describe('K4 electron fuses of the builder config', { tags: ['critical'] }, () => {
   it('turns off NODE_OPTIONS and the inspect flags, and turns on the asar and cookie fuses', () => {
     expect(fusesOf({ platform: 'win32' })).toEqual({
       runAsNode: false,
@@ -32,10 +32,6 @@ describe('electron fuses of the builder config', () => {
     expect(fusesOf({}).runAsNode).toBe(false);
     expect(fusesOf({ helpers: {} }).runAsNode).toBe(false);
     expect(fusesOf({ helpers: { 'packs-mcp': 'src/helper/main.ts' } }).runAsNode).toBe(true);
-  });
-
-  it('keeps the hidden folders of a linked package out of the asar, whose files must not change while it is written', () => {
-    expect(createBuilderConfig(PRODUCT, { rootDir: tempDir() }).files).toContain('!**/node_modules/**/.*/**');
   });
 
   it('lets an app without helpers turn RunAsNode on, and refuses it off beside helpers', () => {

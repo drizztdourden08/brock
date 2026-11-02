@@ -43,23 +43,21 @@ const BRIDGE_ERROR_CODE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 const BRIDGE_CODES = { error: 'error', failed: 'failed', noHandler: 'no-handler', invalidArguments: 'invalid-arguments', tooLarge: 'too-large', timeout: 'timeout', closed: 'closed', noWindow: 'no-window', busy: 'busy' } as const;
 const BRIDGE_WHOAMI = /"(S-[0-9-]+)"/;
 const BRIDGE_SYSTEM32 = 'C:\\Windows\\System32';
-const BRIDGE_POWERSHELL = 'WindowsPowerShell\\v1.0\\powershell.exe';
-const BRIDGE_ACL_ENV = 'BROCK_BRIDGE_ACL_PATH';
-const BRIDGE_ACL_SCRIPT = [
-  `$acl = Get-Acl -LiteralPath $env:${BRIDGE_ACL_ENV}`,
-  '$sid = [System.Security.Principal.SecurityIdentifier]',
-  "'O ' + $acl.GetOwner($sid).Value",
-  "'P ' + $acl.AreAccessRulesProtected",
-  "foreach ($rule in $acl.GetAccessRules($true, $true, $sid)) { 'E ' + $rule.AccessControlType + ' ' + $rule.IdentityReference.Value + ' ' + $rule.FileSystemRights }",
-].join('; ');
-const BRIDGE_ACL_ARGS = ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', BRIDGE_ACL_SCRIPT];
 const BRIDGE_WHOAMI_ARGS = ['/user', '/fo', 'csv', '/nh'];
+const BRIDGE_NOT_PRIVATE = 'its owner or access list names an account other than you, SYSTEM or Administrators';
+const BRIDGE_SE_FILE_OBJECT = 1;
+const BRIDGE_SECURITY_QUERY = 0x00_00_00_05;
+const BRIDGE_KERNEL32_DLL = 'kernel32.dll';
+const BRIDGE_GET_SECURITY_SIGNATURE = 'uint32 GetNamedSecurityInfoW(str16 name, int32 kind, uint32 query, _Out_ void **owner, _Out_ void **group, _Out_ void **dacl, _Out_ void **sacl, _Out_ void **descriptor)';
+const BRIDGE_CONVERT_SID_SIGNATURE = 'int ConvertSidToStringSidW(const void *sid, _Out_ void **text)';
+const BRIDGE_LOCAL_FREE_SIGNATURE = 'void *LocalFree(void *memory)';
+const BRIDGE_ACL_HEADER_BYTES = 8;
+const BRIDGE_ACL_SIZE_OFFSET = 2;
+const BRIDGE_ACL_COUNT_OFFSET = 4;
+const BRIDGE_ACE_SIZE_OFFSET = 2;
+const BRIDGE_ACE_SID_OFFSET = 8;
+const BRIDGE_ACE_KINDS: readonly string[] = ['allow', 'deny'];
 const BRIDGE_ACCEPTED_FILES_MAX = 64;
-const BRIDGE_PLAIN_FILE_NAME = /^[\w.-]+$/;
-const BRIDGE_SDDL_ACCESS_LIST = /^D:[A-Z]*((?:\([^()]*\))+)\s*$/m;
-const BRIDGE_SDDL_ENTRY = /\(([^()]*)\)/g;
-const BRIDGE_SDDL_ALIASES: readonly string[] = ['SY', 'BA'];
-const BRIDGE_SDDL_ENTRY_FIELDS = 6;
 const BRIDGE_TRUSTED_SIDS: readonly string[] = ['S-1-5-18', 'S-1-5-32-544'];
 const BRIDGE_IMPOSTOR = 'the endpoint could not prove it is the app; the bridge refuses it';
 
@@ -68,6 +66,8 @@ export {
   BRIDGE_DIR_MODE, BRIDGE_DISCOVERY_NAME, BRIDGE_LAUNCH_ARG, BRIDGE_LAUNCH_PREFIX, BRIDGE_PROFILE_LAUNCH_FILE, BRIDGE_PROFILE_LAUNCH_TTL_MS, BRIDGE_USER_DATA_ARG, BRIDGE_ASK_TIMED_OUT, BRIDGE_ASK_WINDOW_GONE, BRIDGE_RELAY_MAX_PENDING, BRIDGE_STRIPPED_ENV, BRIDGE_IMPOSTOR, BRIDGE_FAILED, BRIDGE_FILE_ENV, BRIDGE_FILE_MODE, BRIDGE_HANDSHAKE_MS, BRIDGE_HELPER_EXT, BRIDGE_HELPER_NAME,
   BRIDGE_HELPERS_DIR, BRIDGE_LISTEN_TRIES, BRIDGE_MAX_CLIENTS, BRIDGE_MAX_MESSAGE_BYTES, BRIDGE_MAX_PENDING, BRIDGE_NEWLINE, BRIDGE_NONCE,
   BRIDGE_NONCE_BYTES, BRIDGE_OTHERS_MASK, BRIDGE_PERMISSION_BITS, BRIDGE_PIPE_NAME, BRIDGE_PIPE_PREFIX, BRIDGE_PROTOCOL, BRIDGE_REQUEST_TIMEOUT_MS,
-  BRIDGE_ACCEPTED_FILES_MAX, BRIDGE_ACL_ARGS, BRIDGE_PLAIN_FILE_NAME, BRIDGE_SDDL_ACCESS_LIST, BRIDGE_SDDL_ALIASES, BRIDGE_SDDL_ENTRY, BRIDGE_SDDL_ENTRY_FIELDS, BRIDGE_WHOAMI_ARGS,
-  BRIDGE_ACL_ENV, BRIDGE_POWERSHELL, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
+  BRIDGE_SE_FILE_OBJECT, BRIDGE_SECURITY_QUERY, BRIDGE_KERNEL32_DLL, BRIDGE_GET_SECURITY_SIGNATURE, BRIDGE_CONVERT_SID_SIGNATURE, BRIDGE_LOCAL_FREE_SIGNATURE,
+  BRIDGE_ACL_HEADER_BYTES, BRIDGE_ACL_SIZE_OFFSET, BRIDGE_ACL_COUNT_OFFSET, BRIDGE_ACE_SIZE_OFFSET, BRIDGE_ACE_SID_OFFSET, BRIDGE_ACE_KINDS,
+  BRIDGE_ACCEPTED_FILES_MAX, BRIDGE_WHOAMI_ARGS,
+  BRIDGE_NOT_PRIVATE, BRIDGE_TRUSTED_SIDS, BRIDGE_RUN_AS_NODE, BRIDGE_SECRET_BYTES, BRIDGE_SOCKET_FILE, BRIDGE_SYSTEM32, BRIDGE_WHOAMI,
 };

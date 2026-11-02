@@ -35,7 +35,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('revoking a folder from renderer input', () => {
+describe('K4 revoking a folder from renderer input', { tags: ['critical'] }, () => {
   it.runIf(process.platform === 'win32')('refuses network, device and stream shapes without touching the disk', () => {
     for (const shape of SHAPES) expect(access.revokeFolder(shape), shape).toBe(false);
     expect(disk.native).not.toHaveBeenCalled();

@@ -26,7 +26,7 @@ afterEach(() => {
   roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true }));
 });
 
-describe('brockPinOf', () => {
+describe('K1 brockPinOf', { tags: ['critical'] }, () => {
   it('reads the app pin, else the workspace root pin, else null', () => {
     const root = withPackages({
       '.': { name: 'root', brock: { version: '0.30.0' } },
@@ -39,7 +39,7 @@ describe('brockPinOf', () => {
   });
 });
 
-describe('brock migrate without brock.version', () => {
+describe('K4 brock migrate without brock.version', { tags: ['critical'] }, () => {
   it('refuses --from and points to brock adopt', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const root = withPackages({ '.': { name: 'sample-app' } }, { 'main.ts': 'export const a = 1;\n' });

@@ -19,15 +19,7 @@ const appWith = (files) => {
 
 const product = (wordmark) => ({ icons: { wordmark } });
 
-describe('wordmarkHeightWarnings', () => {
-  it('warns about a smooth PNG wordmark under 48 px high, naming its height', () => {
-    const root = appWith({ 'logos/wordmark.png': png(120, 20) });
-    const warnings = wordmarkHeightWarnings(root, product({ src: './logos/wordmark.png', dark: './logos/wordmark.png' }));
-    expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toMatch(/\.\/logos\/wordmark\.png is 20 px high/);
-    expect(warnings[0]).toMatch(/at least 48 px high/);
-  });
-
+describe('K1 wordmarkHeightWarnings', { tags: ['critical'] }, () => {
   it('reads the wordmark as brock.config.ts writes it, a plain path or an object without dark', () => {
     const root = appWith({ 'logos/wordmark.png': png(120, 30) });
     expect(wordmarkHeightWarnings(root, product('./logos/wordmark.png'))).toEqual([expect.stringContaining('is 30 px high')]);

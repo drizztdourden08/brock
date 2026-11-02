@@ -37,7 +37,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('the document path rule', () => {
+describe('K4 the document path rule', { tags: ['critical'] }, () => {
   it('refuses every path the user did not pick and the app did not allow', async () => {
     const mine = join(dir, 'mine.bxel');
     await writeFile(mine, 'secret');
@@ -78,7 +78,7 @@ describe('the document path rule', () => {
 
 });
 
-describe('the document path rule for new files and app allowances', () => {
+describe('K4 the document path rule for new files and app allowances', { tags: ['critical'] }, () => {
   it('lets a Save As path be written even though it did not exist yet', async () => {
     const target = join(dir, 'new.bxel');
     picker.save.mockResolvedValue({ canceled: false, filePath: target });

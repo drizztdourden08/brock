@@ -22,7 +22,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('createJobRegistry', () => {
+describe('K1 createJobRegistry', { tags: ['critical'] }, () => {
   it('reports steps, weighted progress, the current line and log lines', () => {
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot), () => 1000);
     const job = registry.start('setup', STEPS, { title: 'Setting up' });
@@ -80,7 +80,7 @@ describe('createJobRegistry', () => {
   });
 });
 
-describe('JobHandle.setCancellable', () => {
+describe('K1 JobHandle.setCancellable', { tags: ['critical'] }, () => {
   it('turns cancel off part way, so a job past its point of no return runs to the end', () => {
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot));
     const job = registry.start('fetch', STEPS);

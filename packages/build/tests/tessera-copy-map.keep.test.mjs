@@ -42,7 +42,7 @@ const mapRepo = (map) => repo({ 'package.json': { name: 'sample-app' }, [MAP_FIL
 
 const mapOf = (root) => join(root, MAP_FILE);
 
-describe('the copy map of brock migrate --tessera-from-copy', () => {
+describe('K1 the copy map of brock migrate --tessera-from-copy', { tags: ['critical'] }, () => {
   it('takes the folders, stylesheets, props and overlay from the file, from the Tessera baseline by default', () => {
     expect(readCopyMap(mapOf(mapRepo(COPY_MAP))).map).toEqual({ from: '0.3.0', ...COPY_MAP });
     expect(readCopyMap(mapOf(mapRepo({ from: '0.10.0', entries: { ui: 'primitives' } }))).map).toEqual({

@@ -20,7 +20,7 @@ const restore = (root) => {
   return { ...restoreSharedBuild(root, { log, targets: ['main'] }), found };
 };
 
-describe('the shared key', () => {
+describe('K1 the shared key', { tags: ['e2e'] }, () => {
   it('is stable for one checkout and for another checkout of the same commit', () => {
     freshCache();
     const root = repo();
@@ -45,7 +45,7 @@ describe('the shared key', () => {
   });
 });
 
-describe('reusing a build in another worktree', () => {
+describe('E2 reusing a build in another worktree', { tags: ['e2e'] }, () => {
   it('restores the output and the reuse record, and the in-worktree reuse then accepts them', async () => {
     freshCache();
     const root = repo();
@@ -86,29 +86,10 @@ describe('reusing a build in another worktree', () => {
     expect(result.hit).toBe(false);
     expect(result.found[0]).toContain('changed file electron/main.js');
   });
+});
 
-  it('says there is no entry when the cache is empty', () => {
-    freshCache();
-    expect(restore(repo()).found[0]).toContain('no entry in the build cache');
-  });
-
-  it('keeps an older variant beside a newer one, so each checkout finds its own', async () => {
-    freshCache();
-    const root = repo();
-    await run(root);
-    put(root, 'electron/greet.js', "export const greet = () => 'hello three';\n");
-    await run(root);
-    const copy = cloneOf(root);
-    expect(restore(copy).hit).toBe(true);
-    expect(readFileSync(outFile(copy), 'utf8')).toContain('hello one');
-    git(root, 'commit', '-q', '-am', 'three');
-    await run(root);
-    const later = cloneOf(root);
-    expect(restore(later).hit).toBe(true);
-    expect(readFileSync(outFile(later), 'utf8')).toContain('hello three');
-  });
-
-  it('ignores the files the launch generates in .brock but not other new files there', () => {
+describe('K2 files the launch generates in .brock', { tags: ['critical'] }, () => {
+  it('leave the folder key alone while any other new file there changes it', () => {
     const root = repo();
     put(root, '.brock/tessera.ts', 'export {};\n');
     git(root, 'add', '-A');

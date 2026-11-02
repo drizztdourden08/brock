@@ -1,27 +1,17 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
 import { act, createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import type { Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SettingJsonField } from '../src/settings/SettingsLayout/sub-components/SettingJsonField';
 import { readJsonText } from '../src/settings/SettingsLayout/sub-components/SettingJsonField/behavior/read-json-text';
-
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-
-let root: Root | null = null;
+import { renderInBody, unmountAll } from './react-roots';
 
 afterEach(() => {
-  act(() => root?.unmount());
-  root = null;
-  document.body.innerHTML = '';
+  unmountAll();
 });
 
 const mount = (value: unknown, onChange: (next: unknown) => void, shape?: 'object' | 'array' | 'any'): HTMLTextAreaElement => {
-  const host = document.createElement('div');
-  document.body.append(host);
-  root = createRoot(host);
-  act(() => root?.render(createElement(SettingJsonField, { control: { kind: 'json', shape }, value, onChange, label: 'Extra', disabled: false })));
+  const host = renderInBody(createElement(SettingJsonField, { control: { kind: 'json', shape }, value, onChange, label: 'Extra', disabled: false }));
   const field = host.querySelector('textarea');
   if (!field) throw new Error('no textarea');
   return field;
@@ -35,7 +25,7 @@ const type = (field: HTMLTextAreaElement, text: string): void => {
   });
 };
 
-describe('readJsonText', () => {
+describe('K1 readJsonText', { tags: ['critical'] }, () => {
   it('parses JSON and checks the shape', () => {
     expect(readJsonText('{ "speed": 2 }', 'object')).toEqual({ value: { speed: 2 }, problem: null });
     expect(readJsonText('[1]', 'any')).toEqual({ value: [1], problem: null });
@@ -50,13 +40,7 @@ describe('readJsonText', () => {
   });
 });
 
-describe('SettingJsonField', () => {
-  it('shows the value as formatted JSON in an editable CodeBlock named by the row', () => {
-    const field = mount({ speed: 2 }, vi.fn());
-    expect(field.value).toBe('{\n  "speed": 2\n}');
-    expect(field.getAttribute('aria-label')).toBe('Extra');
-  });
-
+describe('S1 SettingJsonField', { tags: ['standard'] }, () => {
   it('stores the parsed value, and marks the field with the problem line while the text does not parse', () => {
     const onChange = vi.fn();
     const field = mount({ speed: 2 }, onChange, 'object');

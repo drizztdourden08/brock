@@ -38,20 +38,20 @@ afterEach(() => {
   setDocumentTitle(null);
 });
 
-describe('composeTitle', () => {
-  it('shows the app title alone when no document is open', () => {
+describe('K1 composeTitle', () => {
+  it('shows the app title alone when no document is open', { tags: ['critical'] }, () => {
     expect(composeTitle('Bxel', null)).toBe('Bxel');
     expect(composeTitle('Bxel', { name: '  ', dirty: true })).toBe('Bxel');
   });
 
-  it('puts the document name first and marks unsaved changes', () => {
+  it('puts the document name first and marks unsaved changes', { tags: ['critical'] }, () => {
     expect(composeTitle('Bxel', { name: 'sprite', dirty: false })).toBe('sprite - Bxel');
     expect(composeTitle('Bxel', { name: 'sprite', dirty: true })).toBe('sprite * - Bxel');
   });
 });
 
-describe('useDocumentTitle', () => {
-  it('sets the document, follows the dirty mark and clears when the editor goes away', () => {
+describe('S1 useDocumentTitle', () => {
+  it('sets the document, follows the dirty mark and clears when the editor goes away', { tags: ['standard'] }, () => {
     const root = mount(createElement(Editor, { document: { name: 'sprite', dirty: false } }));
     expect(useDocumentTitleStore.getState().document).toEqual({ name: 'sprite', dirty: false });
     act(() => root.render(createElement(Editor, { document: { name: 'sprite', dirty: true } })));
@@ -65,8 +65,8 @@ describe('useDocumentTitle', () => {
   });
 });
 
-describe('useWindowTitleSync', () => {
-  it('sends the composed title to the window on each change and the plain title once cleared', () => {
+describe('S2 useWindowTitleSync', () => {
+  it('sends the composed title to the window on each change and the plain title once cleared', { tags: ['standard'] }, () => {
     const setTitle = vi.fn();
     const controls: Partial<Platform['window']> = { setTitle };
     const platform = { window: controls } as Partial<Platform> as Platform;

@@ -26,7 +26,7 @@ const readCurrentMode = (koffi: Koffi): { mode: DevMode; found: unknown; accepte
   return { mode, found, accepted };
 };
 
-describe('koffi 3, through the display driver', () => {
+describe('S4 koffi 3, through the display driver', { tags: ['standard'] }, () => {
   const koffi = koffiOf('koffi');
 
   it('is the koffi the driver loads', () => {
@@ -52,7 +52,7 @@ describe('koffi 3, through the display driver', () => {
   });
 });
 
-describe('koffi 2, with the same declarations', () => {
+describe('S4 koffi 2, with the same declarations', { tags: ['standard'] }, () => {
   const koffi = koffiOf('koffi-v2');
   const struct = devModeStruct(koffi);
 

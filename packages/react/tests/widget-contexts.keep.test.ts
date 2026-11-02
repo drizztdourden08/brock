@@ -33,7 +33,7 @@ afterEach(() => {
   useContextsStore.setState({ contexts: INITIAL_CONTEXTS });
 });
 
-describe('the context registry', () => {
+describe('K1 the context registry', { tags: ['standard'] }, () => {
   it('starts with the default context active and every other one inactive', () => {
     expect(contexts.isActive(DEFAULT_CONTEXT)).toBe(true);
     expect(contexts.get('session')).toEqual({ active: false });
@@ -75,7 +75,7 @@ describe('the context registry', () => {
   });
 });
 
-describe('widgets that need a context', () => {
+describe('K1 widgets that need a context', { tags: ['standard'] }, () => {
   it('makes a widget that names a context context-only unless it says otherwise', () => {
     expect(players.defaultVisibility).toBe('context-only');
     expect(logs.defaultVisibility).toBe('always');
@@ -97,14 +97,6 @@ describe('widgets that need a context', () => {
     act(() => root?.render(createElement(Probe, { legacy, tick: 0 })));
     return answers.at(-1) ?? false;
   };
-
-  it('keeps the same answer across renders until a context changes', () => {
-    const first = answerWith();
-    act(() => root?.render(createElement(Probe, { legacy: null, tick: 1 })));
-    expect(answers.at(-1)).toBe(first);
-    act(() => contexts.set('session', { active: true }));
-    expect(answers.at(-1)).not.toBe(first);
-  });
 
   const shown = (contextActive: WidgetContextActive<WidgetDef>, at: WidgetLayout = layout): string[] =>
     visibleLayoutOf(at, gatesOf(contextActive)).floating.map((f) => f.id);

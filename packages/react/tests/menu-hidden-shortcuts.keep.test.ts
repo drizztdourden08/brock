@@ -15,13 +15,13 @@ const shortcuts = [{ target: 'tools/notes', shortcut: 'Mod+N' }];
 const defs = routeCommands({ registry, shortcuts, allowed: () => true, labelOf: (target) => target });
 const state = { sources: [{ key: 'routes', rank: 2, defs }], overrides: {}, mac: false, persist: null };
 const chord = (key: string): KeyboardEvent => new KeyboardEvent('keydown', { key, ctrlKey: true });
-const targetOf = (key: string): string | undefined => findCommand(chord(key), state, { route: null, typing: false, zones: [] })?.id;
+const targetOf = (key: string): string | undefined => findCommand(chord(key), state, { route: null, typing: false, zones: [], widget: null })?.id;
 
 afterEach(() => {
   useMenuHiddenStore.getState().setRoutes(new Set());
 });
 
-describe('shortcuts of an entry the menu config hides', () => {
+describe('K4 shortcuts of an entry the menu config hides', { tags: ['critical'] }, () => {
   it('open while the entry is only out of the menu', () => {
     expect(targetOf('l')).toBe('open:library');
     expect(targetOf('n')).toBe('open:tools/notes');

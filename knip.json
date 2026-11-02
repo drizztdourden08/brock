@@ -1,11 +1,8 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreDependencies": [
-    "@drizztdourden08/tessera",
     "@electron-toolkit/utils",
-    "@types/react-dom",
-    "react",
-    "react-dom",
+    "koffi",
     "zustand",
     "rimraf",
     "@drizztdourden08/standards"

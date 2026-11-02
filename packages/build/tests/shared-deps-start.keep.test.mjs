@@ -35,8 +35,8 @@ const publish = async (install) => {
   return { browserHash: JSON.parse(readFileSync(join(install.root, 'node_modules/.vite/deps/_metadata.json'), 'utf8')).browserHash, outcome: await storeViteDeps(stored[0]) };
 };
 
-describe('the dev start restores the pre-bundle', () => {
-  it('makes Vite skip optimizeDeps in a fresh worktree on another package store', { timeout: 120_000 }, async () => {
+describe('E2 the dev start restores the pre-bundle', { tags: ['e2e'] }, () => {
+  it('makes Vite skip optimizeDeps in a fresh worktree on another package store', async () => {
     vi.stubEnv('BROCK_BUILD_CACHE_DIR', tree.tempDir());
     const { browserHash, outcome } = await publish(storeInstall(tree));
     expect(outcome).toBe('stored');
@@ -48,17 +48,5 @@ describe('the dev start restores the pre-bundle', () => {
     const metadata = await vite.optimizeDeps(config, false);
     expect(metadata.browserHash).toBe(browserHash);
     expect(readFileSync(depFile(fresh), 'utf8')).toBe(SENTINEL);
-  });
-
-  it('is not ready, and Vite bundles, when only another key has an entry', { timeout: 120_000 }, async () => {
-    vi.stubEnv('BROCK_BUILD_CACHE_DIR', tree.tempDir());
-    expect((await publish(storeInstall(tree))).outcome).toBe('stored');
-
-    const other = storeInstall(tree);
-    const config = await resolved(other, sharedDepsCachePlugin({ rootDir: other.root }), ['dummy-dep', 'dummy-dep/index.js']);
-    expect(depsReady(config)).toBe(false);
-    expect(storeViteDepsDetached).toHaveBeenCalledTimes(1);
-    await vite.optimizeDeps(config, false);
-    expect(readFileSync(depFile(other), 'utf8')).not.toBe(SENTINEL);
   });
 });

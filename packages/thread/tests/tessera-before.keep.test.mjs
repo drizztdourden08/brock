@@ -23,7 +23,7 @@ afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe('tesseraBefore', () => {
+describe('K1 tesseraBefore', { tags: ['critical'] }, () => {
   it('reads the installed Tessera when package.json has no brock.tessera', () => {
     expect(tesseraBefore(repo({ 'package.json': { name: 'app' }, [TESSERA]: { version: '0.3.2' } }))).toBe('0.3.2');
   });

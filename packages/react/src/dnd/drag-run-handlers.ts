@@ -8,6 +8,7 @@ import { runState } from './drag-run-state';
 import type { Run } from './drag-run.type';
 import { sendFeedback } from './drop-feedback';
 import { finishRun } from './finish-run';
+import { showGhost } from './show-ghost';
 import { targetRegistry } from './target-registry';
 
 const pointOf = (event: Event): DragPoint => {
@@ -27,6 +28,8 @@ const begin = (active: Run): void => {
   dragSession.set({ type: active.options.type.name, payload: active.payload });
   document.documentElement.setAttribute(DRAGGING_ATTRIBUTE, active.options.type.name);
   active.options.onStart?.(active.payload);
+  const { preview } = active.options;
+  if (preview) active.ghost = showGhost(preview, active.payload, active.start);
 };
 
 const cancelHover = (active: Run, point: DragPoint): void => {
@@ -42,6 +45,7 @@ const move = (event: Event): void => {
     begin(active);
   }
   hoverAt(active, point);
+  active.ghost?.move(point);
 };
 
 const up = (event: Event): void => {

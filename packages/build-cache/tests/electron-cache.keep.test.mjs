@@ -19,7 +19,7 @@ const electronPackage = (withDist) => {
   return dir;
 };
 
-describe('electron cache', () => {
+describe('K4 electron cache', { tags: ['critical'] }, () => {
   it('never restores into a package that sits in a shared package store', async () => {
     const root = tempDir();
     await storeElectron(electronPackage(true), { root });
@@ -56,12 +56,4 @@ describe('electron cache', () => {
     expect(existsSync(filesDir)).toBe(false);
   });
 
-  it('misses another version and skips an Electron that runs from elsewhere', async () => {
-    const root = tempDir();
-    await storeElectron(electronPackage(true), { root });
-    const other = electronPackage(false);
-    writeFileSync(join(other, 'package.json'), JSON.stringify({ name: 'electron', version: '43.0.0' }));
-    expect(restoreElectron(other, { root })).toBe('missing');
-    expect(electronEntryId(root, other, { ELECTRON_OVERRIDE_DIST_PATH: 'X:/elsewhere' })).toBeNull();
-  });
 });

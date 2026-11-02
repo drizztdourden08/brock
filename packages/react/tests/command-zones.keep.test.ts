@@ -27,7 +27,7 @@ const press = (init: KeyboardEventInit, route: string | null = null): void => {
   document.dispatchEvent(key(init));
 };
 
-describe('focus zones', () => {
+describe('K1 focus zones', { tags: ['critical'] }, () => {
   const ran: string[] = [];
   const run = (id: string) => () => { ran.push(id); };
   let unregister = (): void => {};
@@ -46,10 +46,6 @@ describe('focus zones', () => {
   afterEach(() => {
     unregister();
     document.body.replaceChildren();
-  });
-
-  it('marks an element with a data attribute', () => {
-    expect(commandZone('canvas')).toEqual({ 'data-command-zone': 'canvas' });
   });
 
   it('fires the command of the zone that holds the focus', () => {
@@ -88,7 +84,7 @@ describe('focus zones', () => {
   });
 });
 
-describe('zones and conflicts', () => {
+describe('K1 zones and conflicts', { tags: ['critical'] }, () => {
   let unregister = (): void => {};
 
   beforeEach(() => {
@@ -107,7 +103,7 @@ describe('zones and conflicts', () => {
   });
 });
 
-describe('an edit key owned by a command', () => {
+describe('K1 an edit key owned by a command', { tags: ['critical'] }, () => {
   const copies: string[] = [];
   let unregister = (): void => {};
 

@@ -32,7 +32,7 @@ const counting = () => {
   return { calls, load };
 };
 
-describe('the app look cache', () => {
+describe('K1 the app look cache', { tags: ['critical'] }, () => {
   it('reads every file appLook reads: brock.config and the theme', () => {
     const root = appDir();
     expect(lookFiles(root, PRODUCT)).toEqual([join(root, 'brock.config.ts'), join(root, 'src', 'theme.css')]);

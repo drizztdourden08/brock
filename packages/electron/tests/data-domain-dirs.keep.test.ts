@@ -22,7 +22,7 @@ afterEach(async () => {
   await rm(base, { recursive: true, force: true });
 });
 
-describe('the folder of a data domain', () => {
+describe('K4 the folder of a data domain', { tags: ['critical'] }, () => {
   it('cannot be Data itself or above it, however it is spelled', () => {
     for (const dir of ['', ' ', '.', './', 'x/..', 'x/../', 'a/b/../..', './/.', '..', '../up', 'a/../..']) {
       expect(() => domain(dir), JSON.stringify(dir)).toThrow();
@@ -34,7 +34,7 @@ describe('the folder of a data domain', () => {
   });
 });
 
-describe('the recent signing key', () => {
+describe('K4 the recent signing key', { tags: ['critical'] }, () => {
   it('lives in the user data keys folder, not in the Data tree', async () => {
     const access = testAccess();
     const paths = { userData: (...segments: string[]) => join(base, ...segments), data: (...segments: string[]) => join(base, 'Data', ...segments) };
@@ -46,7 +46,7 @@ describe('the recent signing key', () => {
   });
 });
 
-describe('one listing at a time', () => {
+describe('K4 one listing at a time', { tags: ['critical'] }, () => {
   it('runs the work in turn, queues a few and refuses the rest as busy', async () => {
     const run = createListGate(2);
     const order: string[] = [];

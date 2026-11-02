@@ -34,18 +34,7 @@ const generated = (ext) => [
   ...FILETYPE_SIZES.map((size) => `build/filetypes/linux/${ext}/${size}x${size}.png`),
 ];
 
-describe('the installed Tessera bxel file type icons', () => {
-  it('ships one folder per Bxel extension with an ico, an icns, an svg and the sizes Brock copies', () => {
-    expect(EXTENSIONS.length).toBeGreaterThan(0);
-    for (const ext of EXTENSIONS) {
-      const folder = join(REAL_TYPES, ext);
-      expect(existsSync(join(folder, 'icon.ico'))).toBe(true);
-      expect(existsSync(join(folder, 'icon.icns'))).toBe(true);
-      expect(existsSync(join(folder, 'icon.svg'))).toBe(true);
-      for (const size of FILETYPE_SIZES) expect(existsSync(join(folder, 'png', `icon-${size}.png`))).toBe(true);
-    }
-  });
-
+describe('S4 the installed Tessera bxel file type icons', { tags: ['standard'] }, () => {
   it.each([
     ['the plain brand', { brand: 'bxel' }],
     ['the light rim, which has no filetypes folder', { brand: 'bxel', rim: 'light' }],

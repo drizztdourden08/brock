@@ -20,7 +20,7 @@ const logFileOf = (outcome: { logFile?: string }): string => {
   return readFileSync(outcome.logFile as string, 'utf8');
 };
 
-describe('process job log file', () => {
+describe('E2 process job log file', { tags: ['e2e'] }, () => {
   it('keeps the whole output in a file under the debug folder while the tail stays at 20 lines', async () => {
     const outcome = await fx.processes.run('build:full', { command: fx.command, args: fx.argv('flood', '100') }, { label: 'Build' });
     expect(outcome).toMatchObject({ status: 'failed', exitCode: 3 });
@@ -62,7 +62,7 @@ describe('process job log file', () => {
 
 });
 
-describe('process job log file bounds', () => {
+describe('E2 process job log file bounds', { tags: ['e2e'] }, () => {
   it('keeps the start and the end of an oversized log and notes what was left out', async () => {
     const outcome = await fx.processes.run('big', { command: fx.command, args: fx.argv('flood', '2000') }, { label: 'Big', logFile: { maxBytes: 1000 } });
     const text = logFileOf(outcome as { logFile?: string });

@@ -62,7 +62,7 @@ afterEach(() => {
   platformState.ports = {};
 });
 
-describe('the Capacitor host', () => {
+describe('S2 the Capacitor host', { tags: ['standard'] }, () => {
   it('runs on its own factory: a mobile touch host with the title bar and no window controls', () => {
     onAndroid();
     const { info, capabilities } = getPlatform();
@@ -102,7 +102,7 @@ describe('the Capacitor host', () => {
 
 });
 
-describe('the Capacitor host on a phone', () => {
+describe('S2 the Capacitor host on a phone', { tags: ['standard'] }, () => {
   it('takes the ports a module or the app gives for capacitor', () => {
     onAndroid();
     const own = { getSummary: () => Promise.resolve({ location: { path: 'x', osLabel: 'Mine', canReveal: false }, domains: [], totalBytes: 0 }), getLocation: vi.fn(), reveal: vi.fn(), revealProfile: vi.fn() };

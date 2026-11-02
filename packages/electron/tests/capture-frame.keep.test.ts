@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { WebContents } from 'electron';
 
-describe('captureFrame', () => {
+describe('K1 captureFrame', { tags: ['critical'] }, () => {
   const contents = (devtools: Partial<WebContents['debugger']>, fallback = 'page') => {
     const state = { attached: false };
     return {

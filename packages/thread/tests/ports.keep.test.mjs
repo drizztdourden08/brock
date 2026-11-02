@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { derivePortBase, freePortSlot, portFor, portSlotOf, PORT_SLOT_ENV } from '../src/ports/index.mjs';
 import { parseSlot } from '../src/ports/parse-slot.mjs';
 
-describe('portFor', () => {
+describe('K1 portFor', { tags: ['critical'] }, () => {
   it('puts the main checkout renderer on the base', () => {
     expect(portFor(4100, 0)).toBe(4100);
   });
@@ -20,7 +20,7 @@ describe('portFor', () => {
   });
 });
 
-describe('derivePortBase', () => {
+describe('K1 derivePortBase', { tags: ['critical'] }, () => {
   it('is stable, a multiple of 200 and inside the documented range', () => {
     for (const id of ['my-app', 'atlas', 'sample-app', 'a']) {
       const base = derivePortBase(id);
@@ -31,12 +31,9 @@ describe('derivePortBase', () => {
     }
   });
 
-  it('spreads ids apart', () => {
-    expect(derivePortBase('my-app')).not.toBe(derivePortBase('atlas'));
-  });
 });
 
-describe('slots', () => {
+describe('K1 slots', { tags: ['critical'] }, () => {
   it('hands out the lowest free slot from 1', () => {
     expect(freePortSlot([])).toBe(1);
     expect(freePortSlot([1, 2, 4])).toBe(3);

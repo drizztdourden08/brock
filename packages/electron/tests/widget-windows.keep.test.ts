@@ -15,7 +15,7 @@ import { towedBounds } from '../src/main/widgets/towed-bounds';
 const APP = { x: 100, y: 100, width: 800, height: 600 };
 const box = (x: number, y: number, width = 200, height = 300) => ({ x, y, width, height });
 
-describe('snapTo', () => {
+describe('K1 snapTo', { tags: ['critical'] }, () => {
   it('lands flush on the right edge of the app within reach', () => {
     const hit = snapTo(box(910, 150), [{ to: 'main', bounds: APP }]);
     expect(hit?.bounds).toEqual(box(900, 150));
@@ -51,13 +51,13 @@ describe('snapTo', () => {
   });
 });
 
-describe('dragWanted', () => {
+describe('K1 dragWanted', { tags: ['critical'] }, () => {
   it('follows the cursor at the window size, whatever the event bounds say', () => {
     expect(dragWanted({ x: 500, y: 400 }, { x: 20, y: 10 }, box(0, 0, 360, 480))).toEqual({ x: 480, y: 390, width: 360, height: 480 });
   });
 });
 
-describe('pointInApp', () => {
+describe('K1 pointInApp', { tags: ['critical'] }, () => {
   const dragged = box(850, 120, 300, 200);
 
   it('gives the point inside the app content when the cursor is on the dragged window over the app', () => {
@@ -77,7 +77,7 @@ describe('pointInApp', () => {
   });
 });
 
-describe('window bounds', () => {
+describe('K1 window bounds', { tags: ['critical'] }, () => {
   const area = { x: 0, y: 0, width: 1920, height: 1040 };
 
   it('clamps a remembered window into the work area', () => {
@@ -90,7 +90,7 @@ describe('window bounds', () => {
   });
 });
 
-describe('towedBounds', () => {
+describe('K1 towedBounds', { tags: ['critical'] }, () => {
   const right = box(900, 150);
 
   it('keeps a window on the right edge flush when the app shrinks from the right', () => {
@@ -128,7 +128,7 @@ describe('towedBounds', () => {
   });
 });
 
-describe('isFlush', () => {
+describe('K1 isFlush', { tags: ['critical'] }, () => {
   it('holds while the window sits on the linked edge and shares some span', () => {
     expect(isFlush(box(900, 150), 'right', APP)).toBe(true);
     expect(isFlush(box(901, 150), 'right', APP)).toBe(true);
@@ -141,7 +141,7 @@ describe('isFlush', () => {
   });
 });
 
-describe('rescueBounds', () => {
+describe('K1 rescueBounds', { tags: ['critical'] }, () => {
   const areas = [{ x: 0, y: 0, width: 1920, height: 1040 }, { x: 1920, y: 0, width: 1280, height: 1000 }];
 
   it('leaves a reachable window where it is, even across two displays', () => {
@@ -164,14 +164,14 @@ describe('rescueBounds', () => {
   });
 });
 
-describe('placeAtCursor', () => {
+describe('K1 placeAtCursor', { tags: ['critical'] }, () => {
   it('puts the title bar under the cursor', () => {
     expect(placeAtCursor({ x: 500, y: 400 }, { width: 360, height: 480 })).toEqual({ x: 420, y: 384, width: 360, height: 480 });
     expect(placeAtCursor({ x: 500, y: 400 }, { width: 100, height: 200 })).toEqual({ x: 450, y: 384, width: 100, height: 200 });
   });
 });
 
-describe('coversPoint', () => {
+describe('K1 coversPoint', { tags: ['critical'] }, () => {
   const main = { onTop: false, stamp: 5 };
   const point = { x: 150, y: 150 };
 
@@ -187,7 +187,7 @@ describe('coversPoint', () => {
   });
 });
 
-describe('shouldIntervene', () => {
+describe('K1 shouldIntervene', { tags: ['critical'] }, () => {
   const proposed = box(10, 10);
 
   it('leaves a plain drag to the OS', () => {
@@ -205,7 +205,7 @@ describe('shouldIntervene', () => {
   });
 });
 
-describe('oppositeEdge', () => {
+describe('K1 oppositeEdge', { tags: ['critical'] }, () => {
   it('mirrors each edge', () => {
     expect([oppositeEdge('left'), oppositeEdge('right'), oppositeEdge('top'), oppositeEdge('bottom')]).toEqual(['right', 'left', 'bottom', 'top']);
   });

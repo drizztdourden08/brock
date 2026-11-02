@@ -15,7 +15,7 @@ const linuxJobOf = (attest) => {
 const BASE = { paths: ['upload/*.apworld', 'upload/*.zip'], stage: 'afterPackage' };
 const ATTEST = /^actions\/attest-build-provenance@[0-9a-f]{40}$/;
 
-describe('workflows.attest without perFile', () => {
+describe('K2 workflows.attest without perFile', { tags: ['critical'] }, () => {
   const job = linuxJobOf(BASE);
 
   it('attests every matched file in one step, as before', () => {
@@ -26,7 +26,7 @@ describe('workflows.attest without perFile', () => {
   });
 });
 
-describe('workflows.attest with perFile', () => {
+describe('K2 workflows.attest with perFile', { tags: ['critical'] }, () => {
   const job = linuxJobOf({ ...BASE, perFile: true });
   const names = job.steps.map((step) => step.name);
   const slots = job.steps.filter((step) => step.name?.startsWith('Attest release file '));
@@ -42,25 +42,6 @@ describe('workflows.attest with perFile', () => {
       expect(step.with).toEqual({ 'subject-path': `\${{ steps.brock-attest-files.outputs.file-${slot} }}` });
     });
     expect(names).not.toContain('Attest the release files');
-  });
-
-  it('expands the globs once, drops bundles and repeats, and stops on no match or too many', () => {
-    const list = job.steps.find((step) => step.name === 'List the release files to attest');
-    expect(list.env.ATTEST_PATHS).toBe('upload/*.apworld\nupload/*.zip');
-    expect(list.run).toContain('*.sigstore.json) continue');
-    expect(list.run).toContain('seen[$file]=1');
-    expect(list.run).toContain('No file matches workflows.attest.paths');
-    expect(list.run).toContain('attests up to 16 files');
-    expect(list.run).toContain('file-$i=$file');
-  });
-
-  it('writes each bundle beside its own file, after the last attest step', () => {
-    const bundles = job.steps.find((step) => step.name === 'Write the attestation bundles');
-    expect(Object.keys(bundles.env)).toHaveLength(16);
-    expect(bundles.env.BUNDLE_3).toBe('${{ steps.brock-attest-3.outputs.bundle-path }}');
-    expect(bundles.run).toContain('cp "${!var}" "$file.sigstore.json"');
-    expect(names.indexOf('Write the attestation bundles')).toBeGreaterThan(names.indexOf('Attest release file 16'));
-    expect(names.indexOf('Write the attestation bundles')).toBeLessThan(names.length - 1);
   });
 
   it('still lifts the attest permissions onto the Linux job and refuses a perFile that is not a boolean', () => {

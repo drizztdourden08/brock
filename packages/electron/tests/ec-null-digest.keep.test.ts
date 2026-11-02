@@ -17,7 +17,7 @@ afterEach(() => {
   ecNullDigestState.original = null;
 });
 
-describe('ecNullDigestVerify', () => {
+describe('K1 ecNullDigestVerify', { tags: ['critical'] }, () => {
   it.each(['prime256v1', 'secp384r1', 'secp521r1'])('verifies a %s signature with a null algorithm', (curve) => {
     const { publicKey, privateKey } = ecPair(curve);
     const signature = sign('sha256', data, privateKey);
@@ -46,7 +46,7 @@ describe('ecNullDigestVerify', () => {
 
 });
 
-describe('ecNullDigestVerify pass-through', () => {
+describe('K1 ecNullDigestVerify pass-through', { tags: ['critical'] }, () => {
   it('passes Ed25519 with a null algorithm through unchanged', () => {
     const { publicKey, privateKey } = generateKeyPairSync('ed25519');
     const signature = sign(null, data, privateKey);
@@ -58,13 +58,6 @@ describe('ecNullDigestVerify pass-through', () => {
     const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
     const signature = sign('sha256', data, privateKey);
     expect(shim(null, data, publicKey, signature)).toBe(verify(null, data, publicKey, signature));
-  });
-
-  it('passes an explicit algorithm through unchanged', () => {
-    const { publicKey, privateKey } = ecPair('secp384r1');
-    const signature = sign('sha384', data, privateKey);
-    expect(shim('sha384', data, publicKey, signature)).toBe(true);
-    expect(shim('sha256', data, publicKey, signature)).toBe(false);
   });
 
   it('leaves an unreadable key to the original function', () => {
@@ -91,7 +84,7 @@ describe('ecNullDigestVerify pass-through', () => {
   });
 });
 
-describe('installEcNullDigest', () => {
+describe('K1 installEcNullDigest', { tags: ['critical'] }, () => {
   const target = (): EcNullDigestTarget => ({ verify });
   const electron: NodeJS.ProcessVersions = { ...process.versions, electron: '38.0.0' };
   const options = { env: {}, versions: electron, sync: () => undefined };

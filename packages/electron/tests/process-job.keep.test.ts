@@ -42,7 +42,7 @@ const percent: ProcessProgressParser = (line) => {
   return match?.[1] ? { fraction: Number(match[1]) / 100, label: match[2] } : null;
 };
 
-describe('run a process as a job: output and exit', () => {
+describe('E2 run a process as a job: output and exit', { tags: ['e2e'] }, () => {
   it('streams stdout and stderr lines to the job log and returns the tail', async () => {
     const outcome = await fx.processes.run('lines', { command: fx.command, args: fx.argv('lines') }, { label: 'Lines' });
     expect(outcome.status).toBe('done');
@@ -97,7 +97,7 @@ describe('run a process as a job: output and exit', () => {
   });
 });
 
-describe('run a process as a job: environment and argv', () => {
+describe('E2 run a process as a job: environment and argv', { tags: ['e2e'] }, () => {
   it('starts from the allowlist and adds only what the app gives', async () => {
     vi.stubEnv('BROCK_PROCESS_SECRET', 'hidden');
     const outcome = await fx.processes.run('env', { command: fx.command, args: fx.argv('env'), env: { APP_ADDED: '1' } }, { label: 'Env' });
@@ -121,7 +121,7 @@ describe('run a process as a job: environment and argv', () => {
   });
 });
 
-describe('run a process as a job: cancel and one at a time', () => {
+describe('E2 run a process as a job: cancel and one at a time', { tags: ['e2e'] }, () => {
   const childLine = (): string => fx.messages('tree').find((line) => line.startsWith('CHILD ')) ?? '';
 
   it('cancel ends the whole process tree', async () => {
@@ -151,7 +151,7 @@ describe('run a process as a job: cancel and one at a time', () => {
   });
 });
 
-describe('run a process as a job: what a renderer can start', () => {
+describe('E2 run a process as a job: what a renderer can start', { tags: ['e2e'] }, () => {
   it('rejects a job id main never defined', async () => {
     defineEcho();
     expect(await fx.processes.start('format-disk', { text: 'x' })).toMatchObject({ status: 'rejected', error: 'No such process job.' });

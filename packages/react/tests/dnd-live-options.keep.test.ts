@@ -50,7 +50,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('a drag source reads its options live', () => {
+describe('S1 a drag source reads its options live', { tags: ['standard'] }, () => {
   it('stops dragging when disabled changes after mount', () => {
     const view = mount({ payload: 'a', disabled: false });
     view.render({ payload: 'a', disabled: true });
@@ -86,7 +86,7 @@ describe('a drag source reads its options live', () => {
   });
 });
 
-describe('the browser drag of inner content', () => {
+describe('S1 the browser drag of inner content', { tags: ['standard'] }, () => {
   it('is prevented for a dragstart that starts on an inner image', () => {
     const view = mount({ payload: 'a', disabled: false });
     const image = view.element().querySelector('#inner') as HTMLElement;

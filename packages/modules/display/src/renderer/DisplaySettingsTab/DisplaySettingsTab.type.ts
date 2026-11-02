@@ -10,6 +10,22 @@ interface DisplaySectionProps {
   onChange: (patch: Partial<DisplaySettings>) => void;
 }
 
+type DisplaySectionId = 'window' | 'refreshRate';
+
+type DisplayRowId = 'windowMode' | 'displayMonitor' | 'detectedRate' | 'syncedRateInFullscreen' | 'syncedRateTargetHz' | 'changeRate';
+
+interface DisplaySectionCopy {
+  title: string;
+  description: string;
+}
+
+interface DisplayRowCopy {
+  label: string;
+  description: string;
+  hint: string;
+  keywords: string;
+}
+
 interface RateReadoutProps {
   currentHz: number | null;
 }
@@ -32,4 +48,4 @@ interface ChangeRateDialogProps {
   onCancel: () => void;
 }
 
-export type { DisplaySettingsTabProps, DisplaySectionProps, RateReadoutProps, RefreshRateRowsInput, ChangeRateDialogProps };
+export type { DisplaySettingsTabProps, DisplaySectionProps, DisplaySectionId, DisplayRowId, DisplaySectionCopy, DisplayRowCopy, RateReadoutProps, RefreshRateRowsInput, ChangeRateDialogProps };

@@ -54,7 +54,7 @@ const versionsOf = async (current: string, allowPrerelease: boolean) =>
 
 afterEach(() => { vi.unstubAllGlobals(); });
 
-describe('version list across release indexes', () => {
+describe('K1 version list across release indexes', { tags: ['critical'] }, () => {
   it('finds an older pre-release missing from the newest stable index', async () => {
     serve(HOTFIX_AHEAD, HOTFIX_INDEXES);
     expect(await versionsOf('1.4.1', false)).toEqual(['1.4.2']);
@@ -105,7 +105,7 @@ const runtimeOn = (current: string, allowPrerelease: boolean) => {
   return { rt, emit, checkForUpdatesAsync };
 };
 
-describe('update check from the version list', () => {
+describe('K1 update check from the version list', { tags: ['critical'] }, () => {
   it('offers the pre-release behind a newer stable hotfix only to those who opted in', async () => {
     serve(HOTFIX_AHEAD, HOTFIX_INDEXES);
     const optedIn = runtimeOn('1.4.1', true);

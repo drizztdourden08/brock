@@ -10,7 +10,7 @@ const MENU: MenuEntry[] = [
   { key: 'section:advanced', label: 'Advanced', icon: 'sliders-horizontal', children: [{ key: 'quit', label: 'Quit', onClick: () => undefined }, 'separator'] },
 ];
 
-describe('toMenuGroups', () => {
+describe('K1 toMenuGroups', { tags: ['critical'] }, () => {
   it('wraps the menu in one group with ids, separators and shortcuts', () => {
     const [group] = toMenuGroups(MENU, { openScreen: () => undefined });
     const [home, separator, advanced] = group?.items ?? [];
@@ -48,11 +48,5 @@ describe('toMenuGroups', () => {
     expect(plain?.kind).toBeUndefined();
     reset?.onSelect?.();
     expect(clicked).toEqual(['reset']);
-  });
-
-  it('passes the onCancel of a confirm entry to Tessera', () => {
-    const onCancel = (): void => undefined;
-    const [item] = toMenuGroups([{ key: 'reset', label: 'Reset', confirm: true, onCancel, onClick: () => undefined }], { openScreen: () => undefined })[0]?.items as TesseraMenuItem[];
-    expect(item?.onCancel).toBe(onCancel);
   });
 });

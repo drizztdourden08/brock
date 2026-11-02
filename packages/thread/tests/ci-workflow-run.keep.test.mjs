@@ -9,7 +9,7 @@ import { BROKEN, byName, fixtureRepo, git, WORKFLOW, workspace } from './ci-work
 
 const fixture = fixtureRepo();
 
-describe('a run of the workflow', () => {
+describe('E2 a run of the workflow', { tags: ['e2e'] }, () => {
   const request = (workflowText, extra = {}) => ({
     project: 'demo',
     sha: git(fixture.repo(), 'rev-parse', 'HEAD'),

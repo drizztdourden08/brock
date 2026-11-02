@@ -32,7 +32,7 @@ afterEach(async () => {
   await deleteTree({ owner: tmpdir(), target: base, mains: [] });
 });
 
-describe('the clone lock', () => {
+describe('K5 the clone lock', { tags: ['e2e'] }, () => {
   it('is placed on a cloned worktree and lifted by removeTree after the links are gone, leaving what they pointed at', async () => {
     const shared = join(base, 'store', 'dep');
     mkdirSync(shared, { recursive: true });

@@ -30,7 +30,7 @@ const contextFor = (argv: string[]) => {
   return { ctx, log };
 };
 
-describe('starting SDL3 on a headless launch', () => {
+describe('K1 starting SDL3 on a headless launch', { tags: ['critical'] }, () => {
   beforeEach(() => { vi.clearAllMocks(); claim.mockReturnValue({ ok: true }); });
 
   it('stays off by default', async () => {

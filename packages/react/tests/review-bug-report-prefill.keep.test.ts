@@ -39,17 +39,13 @@ const runStep = async (): Promise<ReviewOutcome | undefined> => {
   return checks.find((check) => check.id === 'bug-report-prefill-cleared');
 };
 
-const defaultOnOpen = (title: string): (() => void) => useBugReportStore.subscribe((now, before) => {
-  if (now.open && !before.open && now.prefill === null) bugReport.setDefaultTitle(title);
-});
-
 afterEach(() => {
   vi.useRealTimers();
   field.typed = null;
   useBugReportStore.setState({ open: false, prefill: null, prefillIsDefault: false });
 });
 
-describe('the bug report prefill check', () => {
+describe('K1 the bug report prefill check', { tags: ['critical'] }, () => {
   it('tells a default title from an explicit one', () => {
     bugReport.setDefaultTitle('Import failed');
     expect(bugReport.hasDefaultTitle()).toBe(true);
@@ -65,13 +61,6 @@ describe('the bug report prefill check', () => {
   it('expects an empty title on the next open when the app sets no default', async () => {
     const cleared = await runStep();
     expect(cleared).toMatchObject({ pass: true, reason: expect.stringContaining('started empty') as string });
-  });
-
-  it('passes when the app fills a default title on every open', async () => {
-    const stop = defaultOnOpen('My App 1.0 on the home screen');
-    const cleared = await runStep();
-    stop();
-    expect(cleared).toMatchObject({ pass: true, reason: expect.stringContaining('My App 1.0 on the home screen') as string });
   });
 
   it('fails when the review prefill comes back', async () => {

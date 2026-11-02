@@ -25,7 +25,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('finished jobs in the title bar', () => {
+describe('K1 finished jobs in the title bar', { tags: ['standard'] }, () => {
   it('clears a hidden job that succeeded 30 seconds after it finished, and keeps a failed one', () => {
     const { upsert } = useJobStore.getState();
     upsert(job('export', 'running'));

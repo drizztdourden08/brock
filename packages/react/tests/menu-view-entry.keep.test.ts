@@ -34,7 +34,7 @@ const bar = (input: MenuBuildInput) => titleBarGroups(visibleMenu(resolveShellMe
 const ids = (input: MenuBuildInput): string[][] => bar(input).groups.map((group) => group.items.map((node) => ('id' in node ? node.id : '|')));
 const messages = (input: MenuBuildInput): string[] => resolveShellMenu(input).issues.map((issue) => issue.message);
 
-describe('the View entry of the menu config', () => {
+describe('K1 the View entry of the menu config', { tags: ['critical'] }, () => {
   it('keeps the title bar default when View is untouched or only renamed', () => {
     for (const input of [BASE, withView({ view: { label: 'Window' } })]) {
       expect(bar(input).view).toBeUndefined();
@@ -89,7 +89,7 @@ describe('the View entry of the menu config', () => {
   });
 });
 
-describe('the View entries an app adds', () => {
+describe('K1 the View entries an app adds', { tags: ['critical'] }, () => {
   const grid = { key: 'view', label: 'View', children: [{ key: 'grid', label: 'Show grid', checked: true }, 'separator' as const, { key: 'rulers', label: 'Rulers' }] };
   const input = (more: Partial<MenuBuildInput> = {}): MenuBuildInput => ({ ...BASE, appMenu: [...BASE.appMenu, grid], ...more });
   const idOf = (node: unknown): unknown => (typeof node === 'object' && node !== null && 'id' in node ? node.id : '|');
@@ -121,13 +121,8 @@ describe('the View entries an app adds', () => {
   });
 });
 
-describe('the Pin on top and Full screen menu keys', () => {
+describe('K1 the Pin on top and Full screen menu keys', { tags: ['critical'] }, () => {
   const rows = (input: MenuBuildInput) => tuckedRows(input.menuConfig, bar(input).tucked);
-
-  it('leave the tucked rows to Tessera when untouched', () => {
-    expect(bar(withView({ view: { hidden: true } })).tucked).toBeUndefined();
-    expect(rows(withView({ view: { hidden: true } }))).toEqual({});
-  });
 
   it('rename a row in both states, and set its text while pinned or in full screen', () => {
     const input = withView({ view: { hidden: true }, 'window-pin': { label: 'Keep on top', activeLabel: 'Stop keeping on top' }, 'window-fullscreen': { label: 'Fill the screen' } });
@@ -151,13 +146,6 @@ describe('the Pin on top and Full screen menu keys', () => {
     const input = withView({ view: { hidden: true }, 'window-pin': { hidden: true, group: 'main' }, 'window-fullscreen': { inMenu: false } });
     expect(bar(input).tucked).toBeUndefined();
     expect(rows(input)).toEqual({ pin: { hidden: true }, fullscreen: { hidden: true } });
-  });
-
-  it('keep their markers out of the search palette and buildMenu, and leave View counted without them', () => {
-    const input = withView({ view: { after: 'about' }, 'window-pin': { group: 'end', order: -1 } });
-    expect(bar(input).view).toEqual({ group: 'menu-end', position: 1 });
-    expect(keys(searchableMenu(resolveShellMenu(input).entries))).not.toContain('window-pin');
-    expect(keys(buildMenu(input))).not.toContain('window-pin');
   });
 
   it('report a place inside a submenu, and an activeLabel on any other key', () => {

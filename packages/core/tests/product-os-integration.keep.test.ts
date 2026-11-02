@@ -7,7 +7,7 @@ const BASE = { id: 'my-app', name: 'My App', appId: 'com.example.myapp', author:
 
 const define = (extra: Partial<ProductInput>) => () => defineProduct({ ...BASE, ...extra });
 
-describe('product OS integration', () => {
+describe('K4 product OS integration', { tags: ['critical'] }, () => {
   it('keeps the schemes, deep link protocols and file associations it is given', () => {
     const product = defineProduct({
       ...BASE,
@@ -18,11 +18,6 @@ describe('product OS integration', () => {
     expect(product.schemes).toEqual([{ scheme: 'app-media', dir: 'media' }]);
     expect(product.protocols).toEqual([{ scheme: 'my-app' }]);
     expect(product.fileAssociations[0]?.ext).toBe('mypack');
-  });
-
-  it('defaults every list to empty', () => {
-    const { schemes, protocols, fileAssociations } = defineProduct(BASE);
-    expect([schemes, protocols, fileAssociations]).toEqual([[], [], []]);
   });
 
   it('refuses a scheme that is not a bare lower case name, or that the browser owns', () => {

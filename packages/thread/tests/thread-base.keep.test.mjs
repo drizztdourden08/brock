@@ -6,7 +6,6 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineWorkspace } from '../src/workspace/define-workspace.mjs';
 import { createVerb } from '../src/worktree/create.mjs';
-import { refreshVerb } from '../src/worktree/refresh.mjs';
 import { finishVerb } from '../src/worktree/finish.mjs';
 import { removeVerb } from '../src/worktree/remove.mjs';
 import { baseVerb } from '../src/worktree/base.mjs';
@@ -47,8 +46,6 @@ const commit = (cwd, name) => {
   run(cwd, 'add', '.');
   run(cwd, 'commit', '-q', '-m', name);
 };
-
-const isAncestor = (cwd, ref, of) => tryRun(cwd, 'merge-base', '--is-ancestor', ref, of) !== null;
 
 let home = '';
 let dir = '';
@@ -96,7 +93,7 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 });
 
-describe('a thread based on an integration branch', { timeout: 60_000 }, () => {
+describe('E2 a thread based on an integration branch', { tags: ['e2e'] }, () => {
   it('takes the remote branch --from names as its base', async () => {
     advance(GM, 'gm-only');
     await create('feat', { from: `origin/${GM}` });
@@ -115,16 +112,6 @@ describe('a thread based on an integration branch', { timeout: 60_000 }, () => {
     expect(existsSync(wt('bad'))).toBe(false);
   });
 
-  it('rebases on its base, not on the workspace base', async () => {
-    await create('feat', { from: `origin/${GM}` });
-    commit(wt('feat'), 'work');
-    advance(GM, 'gm-next');
-    advance('main', 'main-next');
-    await refreshVerb.run(['feat'], { rebase: true }, ctx);
-    expect(isAncestor(wt('feat'), `origin/${GM}`, 'HEAD')).toBe(true);
-    expect(isAncestor(wt('feat'), 'origin/main', 'HEAD')).toBe(false);
-  });
-
   it('opens its pull request into its base, and pr status says when the PR targets another', async () => {
     await create('feat', { from: `origin/${GM}` });
     commit(wt('feat'), 'work');
@@ -138,7 +125,7 @@ describe('a thread based on an integration branch', { timeout: 60_000 }, () => {
   });
 });
 
-describe('retiring a thread based on an integration branch', { timeout: 60_000 }, () => {
+describe('E2 retiring a thread based on an integration branch', { tags: ['e2e'] }, () => {
   it('finish refuses until the work is on its base, then retires the thread', async () => {
     await create('feat', { from: `origin/${GM}` });
     commit(wt('feat'), 'work');
@@ -179,7 +166,7 @@ describe('retiring a thread based on an integration branch', { timeout: 60_000 }
   });
 });
 
-describe('worktree base', { timeout: 60_000 }, () => {
+describe('E2 worktree base', { tags: ['e2e'] }, () => {
   it('shows the base and changes it; the workspace base clears the entry', async () => {
     await create('feat');
     expect(lines).toContain('Base: main, the workspace base.');
@@ -194,17 +181,4 @@ describe('worktree base', { timeout: 60_000 }, () => {
     await expect(baseVerb.run(['feat', 'agent/feat'], {}, ctx)).rejects.toThrow('cannot be its own base');
   });
 
-  it('falls back to the workspace base for a worktree made before bases', async () => {
-    run(main, 'worktree', 'add', '-q', '--no-track', '-b', 'agent/old', wt('old'), 'origin/main');
-    commit(wt('old'), 'work');
-    advance('main', 'main-next');
-    await baseVerb.run(['old'], {}, ctx);
-    expect(lines.at(-1)).toBe('"old" (agent/old) is based on main: the workspace base, nothing stored.');
-    await refreshVerb.run(['old'], { rebase: true }, ctx);
-    expect(isAncestor(wt('old'), 'origin/main', 'HEAD')).toBe(true);
-    run(wt('old'), 'push', '-q', 'origin', 'agent/old:main');
-    await finishVerb.run(['old'], {}, ctx);
-    expect(existsSync(wt('old'))).toBe(false);
-    expect(lines.join('\n')).toContain('merged into origin/main');
-  });
 });

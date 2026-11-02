@@ -26,7 +26,7 @@ const FLAT: FlatWidgetLayout = {
 
 const store = () => useWidgetLayoutStore.getState();
 
-describe('the widget layout store', () => {
+describe('K3 the widget layout store', { tags: ['critical'] }, () => {
   beforeEach(() => {
     store().replace(null);
     store().setDefinitions([LOGS, NOTES]);
@@ -74,7 +74,7 @@ describe('the widget layout store', () => {
   });
 });
 
-describe('dockBack', () => {
+describe('K1 dockBack', { tags: ['critical'] }, () => {
   const context = { definitions: [LOGS, NOTES], main: MAIN };
   const popped = () => {
     store().replace(null);
@@ -111,7 +111,7 @@ describe('dockBack', () => {
   });
 });
 
-describe('buildWidgetMenuEntries', () => {
+describe('K1 buildWidgetMenuEntries', { tags: ['critical'] }, () => {
   it('lists widgets by order, then by label', () => {
     const players = defineWidget({ id: 'players', label: 'Players', render: () => null, order: 1 });
     const consoleWidget = defineWidget({ id: 'console', label: 'Console', render: () => null, order: 2 });

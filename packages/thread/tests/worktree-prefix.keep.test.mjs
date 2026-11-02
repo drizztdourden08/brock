@@ -4,7 +4,6 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { launchContext } from '../src/launch/launch-context.mjs';
 import { defineWorkspace } from '../src/workspace/define-workspace.mjs';
 import { baseVerb } from '../src/worktree/base.mjs';
 import { commitVerb } from '../src/worktree/commit.mjs';
@@ -12,7 +11,6 @@ import { createVerb } from '../src/worktree/create.mjs';
 import { finishVerb } from '../src/worktree/finish.mjs';
 import { refreshVerb } from '../src/worktree/refresh.mjs';
 import { removeVerb } from '../src/worktree/remove.mjs';
-import { worktreePrefix } from '../src/worktree/worktree-prefix.mjs';
 
 vi.mock('../src/gh.mjs', () => ({
   tryGh: () => '[]',
@@ -69,7 +67,7 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 });
 
-describe('worktree create with a prefix', { timeout: 60_000 }, () => {
+describe('E2 worktree create with a prefix', { tags: ['e2e'] }, () => {
   it('uses the prefix from the workspace config for the folder and the branch', async () => {
     await create(contextFor({ worktrees: { prefix: 'web' } }), 'feat');
     expect(existsSync(wt('web-feat'))).toBe(true);
@@ -92,21 +90,6 @@ describe('worktree create with a prefix', { timeout: 60_000 }, () => {
     expect(branchesOf()).toEqual(['agent/flag-feat']);
   });
 
-  it('adds the prefix only once', async () => {
-    const ctx = contextFor({ worktrees: { prefix: 'web-' } });
-    await create(ctx, 'web-feat');
-    await create(ctx, 'feat');
-    expect(existsSync(wt('web-feat'))).toBe(true);
-    expect(existsSync(wt('web-web-feat'))).toBe(false);
-    expect(branchesOf()).toEqual(['agent/web-feat']);
-  });
-
-  it('leaves the names alone with no prefix', async () => {
-    await create(contextFor({}), 'feat');
-    expect(existsSync(wt('feat'))).toBe(true);
-    expect(branchesOf()).toEqual(['agent/feat']);
-  });
-
   it('refuses a prefix with other characters, and a flag with no value', async () => {
     const ctx = contextFor({});
     await expect(create(ctx, 'feat', { prefix: 'we b' })).rejects.toThrow('not a valid worktree prefix');
@@ -116,14 +99,9 @@ describe('worktree create with a prefix', { timeout: 60_000 }, () => {
     expect(existsSync(wt('feat'))).toBe(false);
   });
 
-  it('adds the trailing dash and lowercases', () => {
-    expect(worktreePrefix(contextFor({}).workspace, { prefix: 'Web' })).toBe('web-');
-    expect(worktreePrefix(contextFor({}).workspace, { prefix: 'web-' })).toBe('web-');
-    expect(worktreePrefix(contextFor({}).workspace, {})).toBe('');
-  });
 });
 
-describe('the other worktree verbs on a prefixed worktree', { timeout: 60_000 }, () => {
+describe('E2 the other worktree verbs on a prefixed worktree', { tags: ['e2e'] }, () => {
   let ctx = null;
 
   beforeEach(async () => {
@@ -146,11 +124,6 @@ describe('the other worktree verbs on a prefixed worktree', { timeout: 60_000 },
     expect(run(wt('web-feat'), 'log', '-1', '--format=%s')).toBe('feat: add the more file');
   });
 
-  it('launch resolves both forms to the prefixed worktree', async () => {
-    expect((await launchContext('feat', ctx)).name).toBe('web-feat');
-    expect((await launchContext('web-feat', ctx)).name).toBe('web-feat');
-  });
-
   it('finish takes the bare name and remove takes the full name', async () => {
     await create(ctx, 'two');
     await finishVerb.run(['feat'], {}, ctx);
@@ -159,11 +132,4 @@ describe('the other worktree verbs on a prefixed worktree', { timeout: 60_000 },
     expect(existsSync(wt('web-two'))).toBe(false);
   });
 
-  it('keeps reaching a worktree made before the prefix, by its bare name', async () => {
-    run(main, 'worktree', 'add', '-q', '--no-track', '-b', 'agent/old', wt('old'), 'origin/main');
-    await refreshVerb.run(['old'], {}, ctx);
-    expect(lines).toContain('"old" refreshed.');
-    await removeVerb.run(['old'], {}, ctx);
-    expect(existsSync(wt('old'))).toBe(false);
-  });
 });

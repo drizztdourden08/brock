@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import type { ControllerJoystickSample } from '../../../../../capture.type';
 import type { ResolvedDevice } from '../../../../../family';
 import type { InputItem } from '../../hid-calibration/hid-calibration.type';
+import type { usePositionalActions } from './usePositionalActions';
 import type { usePositionalSession } from './usePositionalSession';
 
 interface PositionalTarget {
@@ -24,12 +25,31 @@ interface PositionalCaptureRecord {
   mismatch: boolean;
 }
 
+type CellState = 'done' | 'skipped' | 'current' | 'pending';
+
+type CallMode = 'act' | 'done' | 'idle';
+
+interface CallInput {
+  current: InputItem | null;
+  instruction: string;
+  answered: number;
+  total: number;
+  paused: boolean;
+}
+
+interface RecordOutcome {
+  kind: 'match' | 'mismatch' | 'skipped';
+  text: string;
+}
+
 type AxisRanges = { min: number; max: number }[];
 
 interface UsePositionalOneByOneProps {
   deviceKey: string | null;
   active: boolean;
   resolvedDevice: ResolvedDevice | null;
+  autoCapture: boolean;
+  onAutoCaptureChange: (on: boolean) => void;
 }
 
 interface PositionalRefs {
@@ -48,6 +68,14 @@ type PositionalAnswer = (status: PositionalCaptureRecord['status'], firedIndex: 
 
 type PositionalSession = ReturnType<typeof usePositionalSession>;
 
+interface AutoCaptureParams {
+  session: PositionalSession;
+  actions: ReturnType<typeof usePositionalActions>;
+  active: boolean;
+  autoCapture: boolean;
+  onAutoCaptureChange: (on: boolean) => void;
+}
+
 interface SampleParams {
   refs: PositionalRefs;
   sample: ControllerJoystickSample;
@@ -56,6 +84,6 @@ interface SampleParams {
 }
 
 export type {
-  AxisRanges, PositionalCaptureRecord, PositionalRefs, PositionalSession, PositionalTarget,
+  AutoCaptureParams, AxisRanges, CallInput, CallMode, CellState, RecordOutcome, PositionalCaptureRecord, PositionalRefs, PositionalSession, PositionalTarget,
   SampleParams, UsePositionalOneByOneProps,
 };

@@ -5,7 +5,7 @@ import { commands } from '../src/commands/commands';
 import type { CommandDef } from '../src/commands/command.type';
 import { registerFresh } from './command-fixtures';
 
-describe('run, describe and meta', () => {
+describe('K1 run, describe and meta', { tags: ['critical'] }, () => {
   let unregister = (): void => {};
   let ready = true;
   let on = false;

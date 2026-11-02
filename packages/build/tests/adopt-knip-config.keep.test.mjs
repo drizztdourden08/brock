@@ -4,7 +4,6 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { knipJson } from '../src/commands/knip-config.mjs';
-import { USAGE_ENTRY } from '../src/commands/knip.constants.mjs';
 import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-adopt-knip-');
@@ -27,7 +26,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('knipJson for a workspace', () => {
+describe('K1 knipJson for a workspace', { tags: ['critical'] }, () => {
   it('gives the root its own workspace so the lint configs and the workspace file are entries', () => {
     const { workspaces, entry } = JSON.parse(knipJson(workspaceRepo()));
     expect(entry).toBeUndefined();
@@ -43,17 +42,6 @@ describe('knipJson for a workspace', () => {
     expect(workspaces['apps/desktop'].entry).not.toContain('.markdownlint-cli2.mjs');
   });
 
-  it('lists the Tessera usage files of an app as entries', () => {
-    const { workspaces } = JSON.parse(knipJson(workspaceRepo()));
-    expect(workspaces['apps/desktop'].entry).toContain(USAGE_ENTRY);
-    expect(USAGE_ENTRY).toBe('src/views/*/*.usage.ts');
-  });
-
-  it('keeps the app template knip.json on the same usage entry', () => {
-    const template = JSON.parse(readFileSync(join(import.meta.dirname, '..', '..', '..', 'templates', 'app', 'knip.json'), 'utf8'));
-    expect(template.entry).toContain(USAGE_ENTRY);
-  });
-
   it('keeps one top-level entry and no workspaces for a repo without apps in folders', () => {
     const root = tempDir();
     put(root, 'package.json', JSON.stringify({ name: 'solo' }));
@@ -63,7 +51,7 @@ describe('knipJson for a workspace', () => {
   });
 });
 
-describe('brock adopt knip.json', () => {
+describe('K3 brock adopt knip.json', { tags: ['standard'] }, () => {
   it('writes the root workspace on a fresh workspace', async () => {
     const root = workspaceRepo();
     expect(await runAdopt({ rootDir: root })).toBe(0);

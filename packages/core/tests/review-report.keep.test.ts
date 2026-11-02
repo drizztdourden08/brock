@@ -24,7 +24,7 @@ const ENDED = { finished: true, finishedAt: 3_500 };
 const checkOf = (run: ReviewRun, id: string, ending = ENDED): ReviewCheck | undefined =>
   buildReviewReport(run, ending).checks.find((check) => check.id === id);
 
-describe('reviewStepFile', () => {
+describe('K1 reviewStepFile', { tags: ['critical'] }, () => {
   it('numbers and slugs a step', () => {
     expect(reviewStepFile(3, 'screen-settings')).toBe('03-screen-settings.png');
     expect(reviewStepFile(12, 'Bug Report?')).toBe('12-bug-report.png');
@@ -32,7 +32,7 @@ describe('reviewStepFile', () => {
   });
 });
 
-describe('buildReviewReport', () => {
+describe('K1 buildReviewReport', { tags: ['critical'] }, () => {
   it('passes a clean finished run and adds the global checks', () => {
     const report = buildReviewReport(RUN, ENDED);
     expect(report.passed).toBe(true);
@@ -79,7 +79,7 @@ describe('buildReviewReport', () => {
   });
 });
 
-describe('renderReviewMarkdown', () => {
+describe('K1 renderReviewMarkdown', { tags: ['critical'] }, () => {
   it('lists the verdict, steps and checks and escapes table pipes', () => {
     const run = { ...RUN, checks: [{ id: 'menu', step: 'menu', pass: false, reason: 'a | b' }] };
     const markdown = renderReviewMarkdown(buildReviewReport(run, ENDED));

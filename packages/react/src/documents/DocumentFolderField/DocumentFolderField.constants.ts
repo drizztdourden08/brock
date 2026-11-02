@@ -4,6 +4,7 @@ import type { FolderCheck } from './DocumentFolderField.type';
 const FOLDER_FIELD_TEXT = {
   placeholder: 'No folder chosen',
   roots: 'Folders of the project',
+  notFolder: 'Drop a folder',
   rootsPlaceholder: 'Pick a folder of the project',
 } as const;
 

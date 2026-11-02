@@ -5,8 +5,18 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import type { DocumentsPort, Platform } from '@drizztdourden08/brock-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { DropTargetOptions, PathDrop } from '../src/dnd';
 import { DocumentFolderField } from '../src/documents/DocumentFolderField';
 import { platformState } from '../src/platform/platform-state';
+
+const targets = vi.hoisted((): DropTargetOptions<PathDrop>[] => []);
+
+vi.mock('../src/dnd', async (original) => ({
+  ...(await original<typeof import('../src/dnd')>()),
+  useDropTarget: (_ref: unknown, options: DropTargetOptions<PathDrop>): void => {
+    targets.push(options);
+  },
+}));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -17,7 +27,12 @@ afterEach(() => {
   root = null;
   document.body.innerHTML = '';
   platformState.platform = null;
+  targets.length = 0;
 });
+
+const DROP_INFO = { type: 'paths', point: { x: 0, y: 0 }, index: null, source: null };
+
+const osDrop = (paths: PathDrop['paths'], rejected: PathDrop['rejected']): PathDrop => ({ origin: 'os', paths, rejected, entries: [], truncated: false });
 
 const settle = (): Promise<void> => act(async () => { await Promise.resolve(); });
 
@@ -76,5 +91,25 @@ describe('K1 DocumentFolderField', { tags: ['critical'] }, () => {
     document.body.innerHTML = '';
     const withoutRoots = await mount({}, { value: null });
     expect(withoutRoots.querySelector('[aria-label="Folders of the project"]')).toBeNull();
+  });
+
+  it('takes a dropped folder, then checks it again once main has granted it', async () => {
+    const canWrite = vi.fn(() => Promise.resolve({ ok: true as const, path: 'C:/art' }));
+    const onChange = vi.fn();
+    const host = await mount({ canWrite }, { value: 'C:/art', onChange });
+    await act(async () => { targets.at(-1)?.onDrop(osDrop([{ path: 'C:/art', name: 'art', kind: 'folder' }], []), DROP_INFO); await Promise.resolve(); });
+    expect(onChange).toHaveBeenCalledWith('C:/art');
+    expect(canWrite).toHaveBeenCalledTimes(2);
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('shows the reason of a refused drop and ignores a dropped file', async () => {
+    const onChange = vi.fn();
+    const host = await mount({}, { value: null, onChange });
+    await act(async () => { targets.at(-1)?.onDrop(osDrop([], [{ name: 'Windows', reason: 'The folder is protected' }]), DROP_INFO); await Promise.resolve(); });
+    expect(host.textContent).toContain('The folder is protected');
+    await act(async () => { targets.at(-1)?.onDrop(osDrop([{ path: 'C:/a.png', name: 'a.png', kind: 'file' }], []), DROP_INFO); await Promise.resolve(); });
+    expect(host.textContent).toContain('Drop a folder');
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

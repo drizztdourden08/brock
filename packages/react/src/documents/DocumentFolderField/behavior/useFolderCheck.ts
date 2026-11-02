@@ -6,7 +6,7 @@ import type { FolderCheck } from '../DocumentFolderField.type';
 
 const reasonOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
-const useFolderCheck = (value: string | null): string | null => {
+const useFolderCheck = (value: string | null, stamp: number): string | null => {
   const [checked, setChecked] = useState<FolderCheck>(NO_CHECK);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const useFolderCheck = (value: string | null): string | null => {
     return () => {
       current = false;
     };
-  }, [value]);
+  }, [value, stamp]);
 
   return value !== null && checked.path === value ? checked.reason : null;
 };

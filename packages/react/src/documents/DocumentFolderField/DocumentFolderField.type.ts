@@ -9,8 +9,15 @@ interface DocumentFolderFieldProps {
   disabled?: boolean;
 }
 
+interface FolderDropState {
+  reason: string | null;
+  stamp: number;
+  change: (path: string | null) => void;
+}
+
 interface FolderFieldState {
   reason: string | null;
+  change: (path: string | null) => void;
   browse: () => Promise<string | null>;
   rootOptions: readonly SelectOption[];
   rootValue: string | null;
@@ -21,4 +28,4 @@ interface FolderCheck {
   reason: string | null;
 }
 
-export type { DocumentFolderFieldProps, FolderCheck, FolderFieldState };
+export type { DocumentFolderFieldProps, FolderCheck, FolderDropState, FolderFieldState };

@@ -16,7 +16,7 @@ const carries = (file, lockfileHash) => {
 };
 
 /**
- * @param {{ version: string, lockfileHash: string, root?: string }} input the Vite version and Vite's hash of the lockfile
+ * @param {{ version: string, lockfileHash: string, root?: string }} input the Vite version and the lockfile key the entry was stored under
  * @returns {boolean} some key holds a pre-bundle for them; the files are not read
  */
 const hasViteDeps = ({ version, lockfileHash, root = cacheRoot() }) => {

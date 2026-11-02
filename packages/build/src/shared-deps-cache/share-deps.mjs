@@ -15,11 +15,17 @@ const viteVersionOf =(rootDir) => {
 };
 
 /**
- * @param {{ vite: string, lockfile: { content: string }, configHash: string }} parts what the pre-bundle depends on
+ * @param {{ content: string, portable?: string }} lockfile what lockfileOf read
+ * @returns {string} the text cache keys hash, alike in every checkout
+ */
+const lockfileKeyText = (lockfile) => lockfile.portable ?? lockfile.content;
+
+/**
+ * @param {{ vite: string, lockfile: { content: string, portable?: string }, configHash: string }} parts what the pre-bundle depends on
  * @returns {string} the build key worktrees with the same inputs share
  */
 const depsBuildKey = ({ vite, lockfile, configHash }) => {
-  const parts = JSON.stringify({ version: KEY_VERSION, vite, platform: `${process.platform}-${process.arch}`, lockfile: getHash(lockfile.content, 40), configHash });
+  const parts = JSON.stringify({ version: KEY_VERSION, vite, platform: `${process.platform}-${process.arch}`, lockfile: getHash(lockfileKeyText(lockfile), 40), configHash });
   return `${process.platform}-${process.arch}-${getHash(parts, KEY_LENGTH)}`;
 };
 
@@ -33,10 +39,10 @@ const shareDeps = ({ config, rootDir, store = storeViteDepsDetached }) => {
   if (!lockfile) return 'no-lockfile';
   if (!version) return 'no-vite';
   const buildKey = depsBuildKey({ vite: version, lockfile, configHash: configHashOf(config, { portable: true, installRoot: lockfile.installRoot }) });
-  const input = { depsDir: join(config.cacheDir, DEPS_FOLDER), installRoot: lockfile.installRoot, version, buildKey, hashes: viteHashes(config, lockfile) };
+  const input = { depsDir: join(config.cacheDir, DEPS_FOLDER), installRoot: lockfile.installRoot, version, buildKey, lockfileKey: getHash(lockfileKeyText(lockfile)), hashes: viteHashes(config, lockfile) };
   const outcome = restoreViteDeps(input);
   if (outcome !== 'restored') store(input);
   return REPORTED[outcome];
 };
 
-export { depsBuildKey, shareDeps, viteVersionOf };
+export { depsBuildKey, lockfileKeyText, shareDeps, viteVersionOf };

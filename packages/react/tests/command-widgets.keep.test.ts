@@ -83,6 +83,29 @@ describe('K1 active widget', () => {
     expect(activeWidget()).toBe('palette');
   });
 
+  it('reports no conflict between one chord with different widgets', { tags: ['critical'] }, () => {
+    unregister();
+    unregister = registerFresh([
+      { id: 'a', label: 'A', chord: 'X', widget: 'palette', run: () => {} },
+      { id: 'b', label: 'B', chord: 'X', widget: 'layers', run: () => {} },
+    ]);
+    expect(findConflicts(useCommandStore.getState())).toEqual([]);
+  });
+});
+
+describe('K1 active widget lifetime', () => {
+  let untrack = (): void => {};
+
+  beforeEach(() => {
+    useActiveWidgetStore.setState({ id: null, verify: true });
+    untrack = trackActiveWidget(document);
+  });
+
+  afterEach(() => {
+    untrack();
+    document.body.replaceChildren();
+  });
+
   it('forgets the active widget once it is no longer drawn', { tags: ['standard'] }, () => {
     const { palette } = mount();
     touch(palette);
@@ -97,14 +120,5 @@ describe('K1 active widget', () => {
     window.dispatchEvent(new Event('blur'));
     expect(activeWidget()).toBeNull();
     stop();
-  });
-
-  it('reports no conflict between one chord with different widgets', { tags: ['critical'] }, () => {
-    unregister();
-    unregister = registerFresh([
-      { id: 'a', label: 'A', chord: 'X', widget: 'palette', run: () => {} },
-      { id: 'b', label: 'B', chord: 'X', widget: 'layers', run: () => {} },
-    ]);
-    expect(findConflicts(useCommandStore.getState())).toEqual([]);
   });
 });

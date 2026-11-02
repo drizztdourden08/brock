@@ -2,27 +2,18 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { commands } from '../src/commands/commands';
-import type { HoldContext } from '../src/commands/command.type';
 import { listenHolds } from '../src/commands/hold-listeners';
-import { down, registerFresh, up } from './command-fixtures';
-
-const presses: string[] = [];
-const releases: HoldContext[] = [];
-const stops: { listeners: () => void; commands: () => void } = { listeners: () => {}, commands: () => {} };
+import { down, presses, releases, startHolds, stopHolds, stops, up } from './command-fixtures';
 
 const setup = (): void => {
-  presses.length = 0;
-  releases.length = 0;
-  stops.commands = registerFresh([
+  startHolds([
     { id: 'tool.hand', label: 'Hand', chord: 'H', hold: { tapMs: 200, release: (context) => { releases.push(context); } }, run: () => { presses.push('hand'); } },
     { id: 'tool.zoom', label: 'Zoom', chord: 'Mod+H', hold: { release: (context) => { releases.push(context); } }, run: () => { presses.push('zoom'); } },
   ]);
-  stops.listeners = listenHolds();
 };
 
 const teardown = (): void => {
-  stops.listeners();
-  stops.commands();
+  stopHolds();
   vi.useRealTimers();
 };
 

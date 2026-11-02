@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 import { dropTree, grantedWorld } from './folder-fixture';
 import type { Call, Granted } from './folder-fixture';
 
-vi.mock('electron', () => ({ dialog: {}, app: { clearRecentDocuments: () => undefined, addRecentDocument: () => undefined } }));
+vi.mock('electron', async () => (await import('./folder-fixture')).electronFolderMock);
 
 const REPO = [
   join('proj', '.git', 'hooks', 'pre-commit'), join('proj', '.git', 'config'), join('proj', '.git', 'info', 'attributes'), join('sub', 'proj', '.git'),

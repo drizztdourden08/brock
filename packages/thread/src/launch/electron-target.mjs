@@ -11,6 +11,7 @@ import { launchSynced } from './ensure-app-synced.mjs';
 import { afterPrewarm } from './prewarm.mjs';
 import { notReadyWith, targetDirs } from './launch-readiness.mjs';
 import { reviewDataDir } from './review-data.mjs';
+import { sharedBuildRestorer } from './shared-build-restorer.mjs';
 import { checkStateWith, stateFlags } from './state-hooks.mjs';
 
 const requireFrom = (dir) => createRequire(join(dir, 'package.json'));
@@ -66,7 +67,12 @@ const electronTarget = ({ app = '.', userData = '.user-data', states = null } = 
     const args = appArgs(request, reviewDataDir(request.passthrough, dirs.userData(worktree)), states);
     const appDir = dirs.app(worktree);
     await afterPrewarm(appDir, worktree.log);
-    return launchSynced(appDir, worktree.log, () => prod ? startProd(appDir, args, worktree.log) : startDev(appDir, args, worktree.log));
+    if (prod) return launchSynced(appDir, worktree.log, () => startProd(appDir, args, worktree.log));
+    const restore = await sharedBuildRestorer(appDir);
+    return launchSynced(appDir, worktree.log, () => {
+      restore?.(appDir, { log: (line) => worktree.log(`Main and preload: ${line}`) });
+      return startDev(appDir, args, worktree.log);
+    });
   };
   return { kind: 'electron', launch, appDir: dirs.app, notReady: notReadyWith(dirs, userData, productionProblem), checkState: checkStateWith(states) };
 };

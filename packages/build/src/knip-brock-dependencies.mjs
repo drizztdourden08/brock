@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import { NODE_POLYFILLS_PACKAGE, NODE_POLYFILLS_SETTING } from './build-options/build-options.constants.mjs';
 import { CLANG_FORMAT_PACKAGE, CLANG_FORMAT_SETTING } from './gate/gate.constants.mjs';
 import { CONFIG_FILE } from './config.mjs';
+import { dropBrockKnipNoise } from './knip-brock-noise.mjs';
 import { sourceDependencies } from './vite-config.mjs';
 import { SOURCE_SCOPE, SOURCE_SPECS } from './vite.constants.mjs';
 
@@ -87,6 +88,6 @@ const keepBundledNeeds = (data) => {
  * @param {{ cwd: string, issues: Record<string, Record<string, Record<string, { workspace?: string }>>>, counters: Record<string, number>, configurationHints?: { type: string, identifier: unknown }[], preprocessorOptions?: string }} data the knip results
  * @returns {object} the results, minus what bundled packages need
  */
-const keepBrockRuntimeDependencies = (data) => keepBundledNeeds(withoutInjectedHints(data));
+const keepBrockRuntimeDependencies = (data) => dropBrockKnipNoise(keepBundledNeeds(withoutInjectedHints(data)));
 
 export default keepBrockRuntimeDependencies;

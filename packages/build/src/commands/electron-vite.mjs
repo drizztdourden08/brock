@@ -13,9 +13,19 @@ import { bundleAppHelperScripts } from '../helper-scripts/bundle-helper-scripts.
 
 const restoreForDev = (mode, rootDir) => (mode === 'dev' ? restoreSharedBuild(rootDir, { log: (line) => console.log(`brock dev: ${line}`) }) : null);
 
+const prepareApp = async (mode, rootDir) => {
+  const config = await loadBrockConfig(rootDir);
+  const copied = copyBrandIcons(rootDir, config);
+  if (copied?.written.length) console.log(`brock ${mode}: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
+  await prepareModules(rootDir, config.modules);
+  writeGeneratedLists(rootDir, mode);
+  restoreForDev(mode, rootDir);
+  return config;
+};
+
 /**
  * @param {'dev' | 'build'} mode
- * @param {{ rootDir: string, noSync?: boolean, passthrough?: string[], beforeStart?: () => Promise<void> }} ctx beforeStart runs once the app is synced, before electron-vite
+ * @param {{ rootDir: string, noSync?: boolean, passthrough?: string[], beforeStart?: () => Promise<void> }} ctx beforeStart runs before electron-vite
  * @returns {Promise<number>} exit code
  */
 const runElectronVite = async (mode, { rootDir, noSync = false, passthrough = [], beforeStart }) => {
@@ -37,12 +47,7 @@ const runElectronVite = async (mode, { rootDir, noSync = false, passthrough = []
     console.error(`brock ${mode}: ${synced.problem}`);
     return 1;
   }
-  const config = await loadBrockConfig(rootDir);
-  const copied = copyBrandIcons(rootDir, config);
-  if (copied?.written.length) console.log(`brock ${mode}: copied ${copied.written.length} brand icon file(s) into build/ and public/logos/`);
-  await prepareModules(rootDir, config.modules);
-  writeGeneratedLists(rootDir, mode);
-  restoreForDev(mode, rootDir);
+  const config = await prepareApp(mode, rootDir);
   await beforeStart?.();
   const guide = synced.guide().catch((error) => console.warn(`brock ${mode}: the Tessera guide did not finish: ${error?.message ?? error}`));
   const code = await bundleAppHelperScripts(rootDir, config, `brock ${mode}`).then((bundled) => (bundled ? runBin(rootDir, 'electron-vite', [mode, ...passthrough]) : 1));

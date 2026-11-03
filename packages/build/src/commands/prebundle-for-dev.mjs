@@ -1,4 +1,5 @@
 /* @layer tooling-scripts @kind logic */
+import { clearInterval, setInterval } from 'node:timers';
 import { DEV_MODE, MODE_ENV } from '../build-reuse/build-reuse.constants.mjs';
 import { importFromApp } from '../import-from-app.mjs';
 import { optimizeRenderer } from '../optimize-deps/optimize-renderer.mjs';
@@ -25,7 +26,7 @@ const prebundle = async (rootDir) => {
 
 /**
  * @param {string} rootDir the app folder
- * @returns {Promise<void>} resolves once the renderer deps are in place; a failure only warns
+ * @returns {Promise<void>} a failure only warns
  */
 const prebundleForDev = async (rootDir) => {
   process.env[MODE_ENV] = DEV_MODE;

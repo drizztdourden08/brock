@@ -8,7 +8,7 @@ const recordIn = (dir) => INSTALL_RECORDS.map((rel) => join(dir, rel)).find((fil
 
 /**
  * @param {string} appDir
- * @returns {number} when the nearest install record changed, 0 when there is none
+ * @returns {number} the newest install record mtime, else 0
  */
 const installChangedAt = (appDir) => {
   const root = findWorkspaceRoot(appDir) ?? appDir;

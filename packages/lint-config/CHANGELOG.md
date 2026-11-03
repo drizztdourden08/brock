@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.116.1
+
+### Patch Changes
+
+- 141b1ab: A bucket header file, src/screens/<bucket>/<bucket>.header.tsx, is a screen file: it may default-export and also export actions.
+- 85fd11c: A bare esbuild script entry such as `esbuild src/index.ts` is no longer reported by knip as an unresolved or unlisted package when the file exists in that workspace. The fix lives in the brock knip preprocessor that both `brock knip` and the lint-config extension load. Empty usage entry hints stay, since Tessera adds those globs and fixes them at the source.
+- def8745: The Brock extension gives standards knip the brock-build dependency preprocessor, so `standards knip` accepts the Electron externals that `brock knip` accepts. It needs standards 0.14 and adds nothing when brock-build does not resolve from the consumer root.
+- 3b4ba4e: Require standards 0.13.0. The lint stack now enforces `local/test-has-one-tag` on every test file: each test carries exactly one of critical, standard or e2e.
+
 ## 0.116.0
 
 ## 0.115.5

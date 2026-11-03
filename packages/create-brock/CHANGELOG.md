@@ -1,5 +1,33 @@
 # @drizztdourden08/create-brock
 
+## 0.116.1
+
+### Patch Changes
+
+- d6d69e6: A new app starts with a `.gitattributes` that holds `* text=auto eol=lf`, so a git worktree on Windows checks files out with LF like the main checkout. `brock adopt` writes the same file when the repo has none and keeps one that exists.
+- e65562a: New apps start on @drizztdourden08/standards 0.14, which the Brock lint preset now needs for its knip preprocessor.
+- Updated dependencies [bd6aab3]
+- Updated dependencies [949e1ec]
+- Updated dependencies [b6b7966]
+- Updated dependencies [97ad896]
+- Updated dependencies [bd6aab3]
+- Updated dependencies [def8745]
+- Updated dependencies [300bdce]
+- Updated dependencies [f521b9c]
+- Updated dependencies [d6d69e6]
+- Updated dependencies [85fd11c]
+- Updated dependencies [7b4676c]
+- Updated dependencies [964bcd5]
+- Updated dependencies [372a5d1]
+- Updated dependencies [3af2a40]
+- Updated dependencies [638384e]
+- Updated dependencies [6c18c29]
+- Updated dependencies [a1cec29]
+- Updated dependencies [505d97a]
+- Updated dependencies [77c0454]
+- Updated dependencies [c7f4e3d]
+  - @drizztdourden08/brock-build@0.116.1
+
 ## 0.116.0
 
 ### Patch Changes

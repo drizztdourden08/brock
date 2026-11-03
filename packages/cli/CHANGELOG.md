@@ -1,5 +1,40 @@
 # @drizztdourden08/brock
 
+## 0.116.1
+
+### Patch Changes
+
+- f5d471e: The global brock no longer falls back to a stale bundled brock-build for thread verbs. With no project brock-build, it runs worktree, launch, pr, release and the other thread verbs through the project's own brock-thread. When the local remote mode is on and the chosen runner does not know it, release, pr, replay and publish are refused with one line that names the runner version and the fix.
+- Updated dependencies [bd6aab3]
+- Updated dependencies [949e1ec]
+- Updated dependencies [b6b7966]
+- Updated dependencies [97ad896]
+- Updated dependencies [bd6aab3]
+- Updated dependencies [def8745]
+- Updated dependencies [def8745]
+- Updated dependencies [300bdce]
+- Updated dependencies [f521b9c]
+- Updated dependencies [bf8c37b]
+- Updated dependencies [d6d69e6]
+- Updated dependencies [85fd11c]
+- Updated dependencies [7b4676c]
+- Updated dependencies [964bcd5]
+- Updated dependencies [372a5d1]
+- Updated dependencies [3af2a40]
+- Updated dependencies [638384e]
+- Updated dependencies [6c18c29]
+- Updated dependencies [a8271cc]
+- Updated dependencies [867ff06]
+- Updated dependencies [a1cec29]
+- Updated dependencies [e65562a]
+- Updated dependencies [505d97a]
+- Updated dependencies [77c0454]
+- Updated dependencies [c7f4e3d]
+- Updated dependencies [f6bdd29]
+  - @drizztdourden08/brock-build@0.116.1
+  - @drizztdourden08/brock-thread@0.116.1
+  - @drizztdourden08/create-brock@0.116.1
+
 ## 0.116.0
 
 ### Patch Changes

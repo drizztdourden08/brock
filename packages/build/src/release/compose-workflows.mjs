@@ -102,10 +102,11 @@ const releaseText = ({ jobs, postJobs }, { appDir, app, branch, ctx, publish, no
  * @param {JobContext} ctx
  * @param {string} key the template key prefix
  * @param {string} job the job id
+ * @param {boolean} [history] check out the full history
  * @returns {Record<string, string>} the setup and the build step points of one CI job
  */
-const jobSteps = (ctx, key, job) => ({
-  [`${key}_SETUP`]: ctx.setup('linux', { job }),
+const jobSteps = (ctx, key, job, history = false) => ({
+  [`${key}_SETUP`]: ctx.setup('linux', { job, history }),
   [`${key}_BEFORE_BUILD`]: ctx.stepsAt('beforeBuild', 'linux', null, job),
   [`${key}_AFTER_BUILD`]: ctx.stepsAt('afterBuild', 'linux', null, job),
 });
@@ -128,7 +129,7 @@ const ciText = (platformJobs, { appDir, app, baselines, branch, ctx, windowless,
   const appJobs = fillTemplate(RELEASE_DIR, 'ci-app-jobs.yml.tmpl', {
     ROOT_STEPS: app ? '' : rootSteps(),
     REVIEW_JOB: windowless ? '' : reviewJob(ctx, { app, review }),
-    ...jobSteps(ctx, 'QUALITY', 'quality'),
+    ...jobSteps(ctx, 'QUALITY', 'quality', !app),
     TEST_ENV: testEnvSteps(testEnv),
     BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux', null, 'quality'),
   });
@@ -183,7 +184,7 @@ const composeWorkflows = ({ targets, appDir = '.', prefix, systemSteps = [], ste
 const workspaceCi = (systemSteps = [], branch = DEFAULT_BRANCH, steps = noWorkflowSteps()) => {
   const ctx = jobContext({ appDir: '.', prefix: '', systemSteps, steps, server: DEFAULT_SERVER }, 'ci');
   return `${fillTemplate(RELEASE_DIR, 'ci-workspace-workflow.yml.tmpl', {
-    SETUP: ctx.setup('linux', { job: 'workspace' }),
+    SETUP: ctx.setup('linux', { job: 'workspace', history: true }),
     BEFORE_TEST: ctx.stepsAt('beforeTest', 'linux', null, 'workspace'),
     ROOT_STEPS: rootSteps(),
     BRANCH: branch,

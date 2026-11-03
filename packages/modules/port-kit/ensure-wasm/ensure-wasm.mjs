@@ -5,7 +5,7 @@ import { wasmStaleReason } from './wasm-stale-reason.mjs';
 
 const buildLine = (reason, sdk) => {
   const from = sdk.mainCheckout ? `, with the SDK of the main checkout (${sdk.dir})` : '';
-  return `Building the wasm core: ${reason}${from}${sdk.activate ? `, with ${sdk.activate}` : ''}.`;
+  return `Building the wasm core: ${reason}${from}.`;
 };
 
 /**

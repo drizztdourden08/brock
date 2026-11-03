@@ -11,10 +11,8 @@ const WASM_DEFAULTS = Object.freeze({
 
 const PACKAGE_KEY = 'portKit';
 
-const EMSDK_ENV_BAT = 'emsdk_env.bat';
-
 const EMCC_FILES = Object.freeze(['emcc', 'emcc.bat', 'emcc.cmd', 'emcc.exe']);
 
 const SKIP_WITHOUT_SDK_FLAG = '--skip-without-sdk';
 
-export { WASM_DEFAULTS, PACKAGE_KEY, EMSDK_ENV_BAT, EMCC_FILES, SKIP_WITHOUT_SDK_FLAG };
+export { WASM_DEFAULTS, PACKAGE_KEY, EMCC_FILES, SKIP_WITHOUT_SDK_FLAG };

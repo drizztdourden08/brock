@@ -6,25 +6,12 @@ import { restoreSharedBuild } from '../build-reuse/shared-build/restore-shared-b
 import { ensureElectron } from '../ensure-electron.mjs';
 import { ensureSyncedLater } from '../freshness/ensure-synced.mjs';
 import { importFromApp } from '../import-from-app.mjs';
+import { optimizeRenderer } from '../optimize-deps/optimize-renderer.mjs';
 import { lockfileEntryExists } from '../shared-deps-cache/lockfile-entry-exists.mjs';
-import { depsReady } from '../shared-deps-cache/shared-deps-cache-plugin.mjs';
 
 const TAG = 'brock prewarm:';
 
 const seconds = (since) => `${Math.round((Date.now() - since) / 1000)} s`;
-
-/**
- * @param {any} vite the app's vite
- * @param {Record<string, any>} renderer the renderer config of electron-vite dev
- * @returns {Promise<number | null>} bundled count; null when restored
- */
-const optimizeRenderer = async (vite, renderer) => {
-  const config = await vite.resolveConfig(renderer, 'serve', DEV_MODE);
-  if (depsReady(config)) return null;
-  const metadata = await vite.optimizeDeps(config);
-  await vite.resolveConfig(renderer, 'serve', DEV_MODE);
-  return Object.keys(metadata?.optimized ?? {}).length;
-};
 
 /**
  * @param {string} rootDir the app folder

@@ -29,7 +29,7 @@ brock clang-format [--check]
                            rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
                            the files that differ with --check
 brock add <id | spec>      install a module package, record its id, sync
-brock dev [-- args]        electron-vite dev
+brock dev [-- args]        electron-vite dev; pre-bundles the renderer dependencies first when they are missing
 brock build [-- args]      electron-vite build; copies the brand icon set first when icons.brand is set
 brock package [--full] [--channel <name>]
                            build, electron-builder --dir, vpk pack into release/velopack,

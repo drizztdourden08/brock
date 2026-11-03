@@ -22,7 +22,8 @@ Usage:
                              electron-vite dev; unknown options and anything after -- reach it; syncs first
                              when .brock is missing or stale, and stops when the renderer entry misses a file;
                              --live-brock serves linked Brock packages as source, with hot reload, instead of
-                             pre-bundling them
+                             pre-bundling them; pre-bundles the renderer dependencies before the window
+                             opens when they are not in place, and prints progress meanwhile
   brock build [--if-stale] [--no-sync] [args]
                              electron-vite build; syncs first like dev, copies the brand icon set when icons.brand is set;
                              --if-stale builds only when dist is missing, half built or older than the app's sources;

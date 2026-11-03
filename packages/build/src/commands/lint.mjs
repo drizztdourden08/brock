@@ -31,7 +31,7 @@ const runInBatches = async (ctx, env, plan) => {
       const listFile = join(listDir, `batch-${index}.json`);
       writeFileSync(listFile, JSON.stringify(batch));
       console.log(`brock lint: batch ${index + 1} of ${plan.batches.length}, ${batch.length} files`);
-      const args = [batchRunner, eslint, listFile, ...cacheArgsFor(ctx, env, `all-${index}`), '--no-warn-ignored', ...(ctx.passthrough ?? [])];
+      const args = [batchRunner, eslint, listFile, ...cacheArgsFor(ctx, env, `all-${index}`), '--no-warn-ignored', '--no-error-on-unmatched-pattern',...(ctx.passthrough ?? [])];
       return runInherit(process.execPath, args, { cwd: ctx.rootDir, env: heavyNodeEnv(env, FULL_TREE_MEMORY_MB) });
     });
     const failed = codes.filter(Boolean).length;
@@ -52,7 +52,7 @@ const runLint = async (ctx) => {
   console.log(plan.line);
   if (!plan.targets.length) return 0;
   if (plan.mode === 'all') return plan.batches ? runInBatches(ctx, env, plan) : runWholeTree(ctx, env, plan);
-  const eslintArgs = [resolveBin(ctx.rootDir, 'eslint'), ...plan.targets, ...cacheArgsFor(ctx, env, 'changed'), '--no-warn-ignored', ...(ctx.passthrough ?? [])];
+  const eslintArgs = [resolveBin(ctx.rootDir, 'eslint'), ...plan.targets, ...cacheArgsFor(ctx, env, 'changed'), '--no-warn-ignored', '--no-error-on-unmatched-pattern',...(ctx.passthrough ?? [])];
   return runInherit(process.execPath, eslintArgs, { cwd: ctx.rootDir, env: heavyNodeEnv(env, DEFAULT_MEMORY_MB) });
 };
 

@@ -11,7 +11,8 @@ const HEAP_FLAG = /--max[-_]old[-_]space[-_]size/;
 const BASE_REFS = ['origin/main', 'origin/master', 'main', 'master'];
 const MAX_CHANGED_FILES = 300;
 const TYPES_STAMP_FILES = /\.[cm]?tsx?$|(^|\/)(tsconfig[^/]*\.json|package\.json|pnpm-lock\.yaml)$/;
-const WHOLE_TREE_FILES = /(^|\/)(eslint\.config\.[^/]+|standards\.(config|extension)\.[^/]+|tsconfig[^/]*\.json|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|\.npmrc)$|(^|\/)lint-config\//;
+const TRANSIENT_FILES = /(^|\/)(electron\.)?vite\.config\.[^/]+\.mjs$/;
+const WHOLE_TREE_FILES =/(^|\/)(eslint\.config\.[^/]+|standards\.(config|extension)\.[^/]+|tsconfig[^/]*\.json|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|\.npmrc)$|(^|\/)lint-config\//;
 
 export {
   BASE_ENV,
@@ -25,6 +26,7 @@ export {
   MAX_CHANGED_FILES,
   MEMORY_ENV,
   STATS_ENV,
+  TRANSIENT_FILES,
   TYPES_STAMP_FILES,
   WHOLE_TREE_FILES,
 };

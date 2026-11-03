@@ -1,5 +1,58 @@
 # @drizztdourden08/brock-input
 
+## 0.116.1
+
+### Patch Changes
+
+- 642161a: Keep the installed SDL3 addon in the build cache too, so a fresh worktree in local mode gets its controller addon without any download. A new `addon-installed` entry kind holds the extracted files with a SHA-256 for each. It is stored after an install, or when the addon on disk is current, and restored when the archive is not cached. `addon:seed` stores an installed copy by hand.
+- 1a4dd9c: Cache the verified SDL3 addon prebuilt per machine and never download it in local mode. The postinstall and the prepare step first look in the build cache (a new `addon-prebuilt` entry kind, keyed by the release tag, the asset name and the platform), check the archive SHA-256 and unpack it with no network. In local mode a cache miss logs one line and falls back to a source build or the addon already on disk; in remote mode it downloads as before and stores the verified archive. `@drizztdourden08/build-cache` gains a `./store` export that loads no compiler.
+- 4cedd9b: The Controllers hub now lists the pads that are plugged in when the app starts. A pad no longer needs a replug to show up. The list loads again when the diagnostics hold is restored.
+
+  The diagnostics wizard runs inside Tessera's `Wizard`, with its step strip and Back and Next bar. It keeps no header row of its own. The capture prompts, the input grid, the byte grid and the result lines are styled again, and the intro, chooser and capture steps use their original text.
+
+  The pad page has one Diagnose button in place of the diagnose icon and the report icon. It runs the diagnostics with that pad already chosen, so the wizard skips Choose a controller. The last step hands the result to the registered Report action (the action with the id `report`) as `onSelect(entry, result)`. With no Report action registered, the flow ends on its result step. The Diagnostics page in the hub keeps its controller picker. `DeviceCardAction.onSelect` takes an optional second argument. The module exports `REPORT_ACTION_ID` and the `DiagnosticsRunResult` type.
+
+  The positional capture step now takes button presses. It used to wait for a first state event before it had a baseline, and SDL only reports a state when it changes, so an idle pad never answered. Auto-capture is on by default, with a checkbox to turn it off. Answers you gave are kept when the device list refreshes.
+
+  The capture grid has equal rows and no wrapping. Each input shows one of three states: answered, current or pending. The current input has a banner that names what to press or move. The animation stops under reduced motion. The Summary step shows the positional capture as a table.
+
+- 388f875: Apply the saved stick calibration and its dead zone to every controller report, as the triggers already were. A stick is centred, scaled to its recorded range, zeroed inside the inner dead zone and rescaled radially up to the outer one. The unprocessed stick values ride along as `rawSticks`, which the stick calibration wizard reads. Also clear the held buttons, d-pad directions and axes of every pad when the gamepad subsystem is released or restored for a capture, so nothing stays pressed across the release or lets go later.
+
+  Also fix `useHoldReleased`, which read the capture hold backwards: the addon reports `held` as true while the gamepads are released, so the hook now reads released then and the Controllers hub keeps the last known devices during a capture.
+
+- Updated dependencies [642161a]
+- Updated dependencies [1a4dd9c]
+- Updated dependencies [bd6aab3]
+- Updated dependencies [0a0bf2f]
+- Updated dependencies [9fdb2d0]
+- Updated dependencies
+- Updated dependencies [949e1ec]
+- Updated dependencies [59011ec]
+- Updated dependencies [4ed7374]
+- Updated dependencies [6a5e194]
+- Updated dependencies [2c11f82]
+- Updated dependencies [a803905]
+- Updated dependencies [92a4788]
+- Updated dependencies [0b2c231]
+- Updated dependencies [ea303a9]
+- Updated dependencies [da4d623]
+- Updated dependencies [372a5d1]
+- Updated dependencies [3af2a40]
+- Updated dependencies [70dd66b]
+- Updated dependencies [a4eaaca]
+- Updated dependencies [638384e]
+- Updated dependencies [6c18c29]
+- Updated dependencies [faa0a61]
+- Updated dependencies [8fe49c0]
+- Updated dependencies [9eaea7d]
+- Updated dependencies [505d97a]
+- Updated dependencies [a1f2aa2]
+- Updated dependencies [77c0454]
+  - @drizztdourden08/build-cache@0.116.1
+  - @drizztdourden08/brock-electron@0.116.1
+  - @drizztdourden08/brock-core@0.116.1
+  - @drizztdourden08/brock-react@0.116.1
+
 ## 0.116.0
 
 ### Patch Changes

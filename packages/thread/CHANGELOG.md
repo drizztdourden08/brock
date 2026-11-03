@@ -1,5 +1,35 @@
 # @drizztdourden08/brock-thread
 
+## 0.116.1
+
+### Patch Changes
+
+- def8745: Add `brock ci --here`, a cheap gate for `pr merge --local`. It runs the planned steps in the current checkout, skips the install, and needs HEAD to be the commit under test with a clean tracked tree. The record carries `place: 'here'`, and `--here`, `--localpkg` and `--no-cache` no longer take the next word as a value.
+- 300bdce: Make the local check run cheap and bounded. A step that passed for the same git tree is reused, every step has a hard time limit that stops its process tree, a queued run treats a holder past its own budget as hung, GitHub-only jobs are left out of the plan, and the steps run cheap first. The tests cover only files changed since the merge base (the last release tag on a release), and `brock lint` reads `BROCK_LINT_MODE` (all or changed) so the runner no longer sets CI.
+- bf8c37b: `brock release` starts `gh` only through the guarded wrapper, so every `gh` call it makes refuses in local mode by itself, not only through the check at the start of the verb. A test now fails if any source file outside the wrapper starts `gh`. The replay verbs are the one exception: they run only in remote mode and with `--go`.
+- 372a5d1: A fresh worktree of an app linked to Brock with `--local` reuses the shared main and preload builds and the renderer pre-bundle. pnpm writes each `link:` version relative to the checkout, so `node_modules/.pnpm/lock.yaml` differed per worktree and both cache keys missed. The keys now read that lockfile with every `link:` path that leaves the install folder as an absolute path; a lockfile without such a link keys as before. `<repo> worktree launch` now restores the shared main and preload builds before `electron-vite dev`, as `brock dev` does, through the new `@drizztdourden08/brock-build/restore-shared-build` export.
+- a8271cc: Add `replay plan` and `replay run --go`. Replay moves local work to GitHub on the owner's go: it pushes the integration branch after a fast-forward check, opens a GitHub pull request for each merged local one, and publishes the exact release tarballs after a sha512 check before it creates the GitHub release. It refuses in local mode and without `--go`, stops at the first failure, and skips what is already done.
+- 867ff06: `replay` regenerates consumer lockfiles and refuses localpkg ones. When localpkg is on for the repo, or a package.json depends on a package localpkg moved, the plan starts with a lockfile step: `localpkg off`, a normal `pnpm install` against the registry, a check that `pnpm-lock.yaml` holds no `file:` outside the repo and no `.coord/localpkg`, and a commit `chore: lockfile for the replayed versions` on the integration branch. The step is BLOCKED while a version it needs is not on the registry. Before any push, `replay` scans every commit to push and stops with exit 1, naming the commit and file, when a committed `pnpm-lock.yaml` points at `.coord/localpkg` or at a `file:` path outside the repo.
+- c7f4e3d: A new worktree starts from what another checkout of the same lockfile already has, instead of installing and building again.
+
+  - `worktree create` links `node_modules` from the main checkout, or the newest other worktree, when its installed lockfile equals the new one byte for byte. Packages point into a shared copy of that checkout's package store, built once per lockfile; workspace packages point into the new worktree. On Archipelia this took 1.4 s instead of two minutes of `pnpm install`, after a one-time copy of the package store (184 s). Any mismatch or failure runs `pnpm install` as before, and `--no-clone` always does.
+  - A plain `pnpm install` in a cloned worktree asks to recreate `node_modules` and never writes into the shared store. `worktree remove` deletes the links only.
+  - `worktree create` also copies the build records, and the generated outputs (`dist`, `guide`, brand icons) when the source's app folder matches the new commit. It skips the background prewarm when the records came over.
+  - The main and preload build records key repository files on their git content instead of their path and file time, so a record written in one checkout is reused in another checkout of the same tree. Records written by an older Brock are built once again.
+  - The shared renderer dependency cache stores sources relative to the package store, so it seeds a cloned worktree too, and the renderer dev server may serve files from the package store wherever pnpm keeps it.
+  - A cloned worktree is locked until `worktree remove` has removed its links. The shared store records what each package folder holds, so a damaged store is detected and reported at start and prewarm; the next create builds a fresh entry beside it and never deletes the old one. A store holds only links inside its entry, a source whose `node_modules` is a link is refused, and Electron in a shared store is never repaired from a worktree.
+  - Each clone records itself in the store entry (`users/<hash>.json`), so Argus can tell which entries are in use.
+
+- f6bdd29: The pnpm installs that `worktree create` and `upgrade` run no longer stop on the purge question. pnpm asks before it rebuilds a node_modules folder it cannot reuse, and with no terminal that ask aborted the install with ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY and left a tree without vitest. The CLI now passes `--config.confirmModulesPurge=false`. When an install still fails, `worktree create` stops with a non-zero exit and an error that names the folder and the pnpm exit code, next to pnpm's own output.
+- Updated dependencies [642161a]
+- Updated dependencies [1a4dd9c]
+- Updated dependencies [bd6aab3]
+- Updated dependencies [372a5d1]
+- Updated dependencies [638384e]
+- Updated dependencies [6c18c29]
+- Updated dependencies [505d97a]
+  - @drizztdourden08/build-cache@0.116.1
+
 ## 0.116.0
 
 ### Minor Changes

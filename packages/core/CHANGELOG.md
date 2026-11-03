@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-core
 
+## 0.116.1
+
+### Patch Changes
+
+- 0a0bf2f: The node file store now writes through the atomic write (temp file, then rename, one write at a time per path), so overlapping writes no longer leave broken JSON. readJson no longer hides a JSON parse error: it logs the path and the message, keeps the bad text in a `.corrupt-<time>` file beside it and returns the fallback.
+- 9fdb2d0: Add `--boot-timeout=<seconds>`, the time a boot task may run when it sets no `timeoutMs`. The default stays 20 s for a normal launch and is 60 s for an automated one (a `--screenshot` or other automation flag, or a headless launch), so a loaded machine no longer stops the boot at "Drawing the first frame". The flag always wins, and a bad value logs a warning and keeps the default. `runBootTasks` takes a `defaultTimeoutMs` option, main applies it to its own tasks and forwards it to the renderer as `--startup-boot-timeout`.
+- 6a5e194: A destination folder field with a dry run of the write check. `documents.canWrite(folder)` (channel `document:canWrite`, optional on the port) runs the checks of a new file in that folder (grant, write classes, links, the app's own folders) and writes nothing and grants nothing. It answers `{ ok: true, path }` with the real folder, or `{ ok: false, reason }`. `DocumentFolderField` takes `value`, `onChange`, `label`, `roots` and `disabled`. It is a Tessera `PathInput` for folders: Browse opens the folder dialog, which grants the pick, a typed or dropped folder is checked with `canWrite` and the reason shows under the field, and `roots` are offered as a short list.
+
 ## 0.116.0
 
 ## 0.115.5

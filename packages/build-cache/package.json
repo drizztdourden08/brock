@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/build-cache",
-  "version": "0.116.0",
+  "version": "0.116.1",
   "description": "A per-user cache of compiled @drizztdourden08 package versions and Electron binaries, shared by every project and worktree on the machine. Imports no Brock or Tessera package.",
   "type": "module",
   "license": "UNLICENSED",
@@ -18,7 +18,7 @@
   "exports": {
     ".": "./src/index.mjs",
     "./store": "./src/store/store-api.mjs",
-    "./vite":"./src/vite/build-cache-plugin.mjs",
+    "./vite": "./src/vite/build-cache-plugin.mjs",
     "./electron": "./src/electron/electron-cache.mjs",
     "./jobs": "./src/jobs/background-job.mjs",
     "./vite-deps": "./src/vite-deps/vite-deps-cache.mjs"

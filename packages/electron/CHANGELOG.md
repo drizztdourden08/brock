@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-electron
 
+## 0.116.1
+
+### Patch Changes
+
+- 0a0bf2f: The node file store now writes through the atomic write (temp file, then rename, one write at a time per path), so overlapping writes no longer leave broken JSON. readJson no longer hides a JSON parse error: it logs the path and the message, keeps the bad text in a `.corrupt-<time>` file beside it and returns the fallback.
+- 9fdb2d0: Add `--boot-timeout=<seconds>`, the time a boot task may run when it sets no `timeoutMs`. The default stays 20 s for a normal launch and is 60 s for an automated one (a `--screenshot` or other automation flag, or a headless launch), so a loaded machine no longer stops the boot at "Drawing the first frame". The flag always wins, and a bad value logs a warning and keeps the default. `runBootTasks` takes a `defaultTimeoutMs` option, main applies it to its own tasks and forwards it to the renderer as `--startup-boot-timeout`.
+- The bridge discovery file check now compares the owner and every access entry by SID. It reads them with `GetNamedSecurityInfoW` through `koffi` and no longer parses account names from `icacls` or `dir /q` text. This fixes false refusals for long account names, localized accounts and elevated apps whose files are owned by Administrators. `icacls` is still used to set the access list when the file is written, never to read it. A file name with spaces or symbols no longer needs special handling.
+- 6a5e194: A destination folder field with a dry run of the write check. `documents.canWrite(folder)` (channel `document:canWrite`, optional on the port) runs the checks of a new file in that folder (grant, write classes, links, the app's own folders) and writes nothing and grants nothing. It answers `{ ok: true, path }` with the real folder, or `{ ok: false, reason }`. `DocumentFolderField` takes `value`, `onChange`, `label`, `roots` and `disabled`. It is a Tessera `PathInput` for folders: Browse opens the folder dialog, which grants the pick, a typed or dropped folder is checked with `canWrite` and the reason shows under the field, and `roots` are offered as a short list.
+- 92a4788: `document:vetDrop` now grants only paths dropped in that window. The preload catches each trusted `drop` event, reads the paths with `webUtils.getPathForFile` and sends them to main on an internal channel that `window.api` never exposes. Main keeps those tickets per window (64 paths, 15 seconds, one use per path) and refuses any other path with `The path was not dropped`. Page script can no longer call `documentVetDrop` to get a folder grant without a user action.
+- 0b2c231: Fix the Electron EC null-digest shim so it applies to a public `KeyObject`. It called `createPublicKey` on a key that was already public, which threw and left no digest picked, so Sigstore verify still failed in Electron. A bare `KeyObject` and `{ key: KeyObject }` now pass through as they are, and a private key is still turned into its public key.
+- 3af2a40: The OS integration makes direct Windows calls and no longer runs `reg.exe` or PowerShell. File associations and protocols are written and removed in process through `koffi` (`RegCreateKeyExW`, `RegSetValueExW`, `RegDeleteTreeW`, `RegDeleteKeyValueW`), and Explorer is told with `SHChangeNotify`, so antivirus no longer sees a child process in the install, update and uninstall hooks. The bridge discovery file check uses `icacls` only and refuses the link with a reason when `icacls` is missing or unsure. `koffi` is a dependency of `brock-electron` and of the app template. The app bundle inlines `brock-electron`, so it loads `koffi` from the app's own `node_modules`: an app declares it, and `brock upgrade` adds `koffi` to the dependencies of an app that uses `brock-electron` and lacks it (run `pnpm install` after). `brock package` unpacks `koffi` from the asar.
+- faa0a61: The `/node` entry exports `recoveryDir(userDataDir, profileId)`, `listRecoverySnapshots(userDataDir, profileId?)` and `SNAPSHOT_EXT`, so an e2e test can poll for the first recovery snapshot without knowing the folder layout. Main and the helpers build the folder from the same functions.
+- Updated dependencies [0a0bf2f]
+- Updated dependencies [9fdb2d0]
+- Updated dependencies [6a5e194]
+  - @drizztdourden08/brock-core@0.116.1
+
 ## 0.116.0
 
 ### Patch Changes

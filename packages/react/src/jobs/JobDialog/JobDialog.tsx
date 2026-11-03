@@ -4,7 +4,7 @@ import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
 import { JobDialog as TaskDialog } from '@drizztdourden08/tessera/composites';
 import { Span } from '@drizztdourden08/tessera/primitives';
 import { jobLogRows } from './behavior/job-log-rows';
-import { jobStepper } from './behavior/job-stepper';
+import { jobStepper } from '../job-stepper';
 import { JOB_ID_ATTRIBUTE, JOB_LOG_KINDS } from './JobDialog.constants';
 import type { JobDialogProps } from './JobDialog.type';
 

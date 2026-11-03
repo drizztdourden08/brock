@@ -52,6 +52,7 @@ import { screenTree } from '../.brock/screens';
 | Accessibility | `announce`, `focusRegion`, `AnnounceOptions`, `Politeness`, `FocusRegionOptions`, `FocusRegionProps` |
 | Links and files | `appOpen`, `useAppOpen`, `createAppOpenRegistry`, `AppOpenHandler` |
 | Toolbars | `defineToolbar`, `ToolbarHost`, `useToolbarLayoutStore`, `useToolbarMenuEntries`, `TOOLBAR_COMMANDS`, `TOOLBAR_ZONE`, `ToolbarDef`, `ToolbarPlacement` |
+| Jobs | `jobs`, `useJob`, `JobDialog`, `jobStepper` (a job snapshot as Tessera `Stepper` props: `<Stepper {...jobStepper(job)} />` shows the steps inline, a failed step in the error look) |
 | Widgets | `WidgetHost`, `defineWidget`, `registerWidgets`, `widgetsFromFiles`, `widgets`, `keepsWidgetFocus`, `WIDGET_KEEPS_FOCUS`, `useWidgetMenuEntries`, `buildWidgetMenuEntries`, `useWidgetLayoutStore`, `LogsWidget`, `PerformanceWidget`, `WidgetMeta`, `WidgetFile` |
 
 ## Layout: menu or rail

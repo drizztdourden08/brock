@@ -8,6 +8,8 @@ interface LaunchAppForTestOptions {
   timeoutMs?: number;
   /** The app's own profile folder; launchAppForTest leaves it in place on close. */
   userData?: string;
+  /** Launch even when dist is older than the sources or the install. */
+  allowStale?: boolean;
 }
 
 type AppPageKind = 'splash' | 'widget' | 'app';
@@ -50,7 +52,7 @@ interface WidgetWindowReading {
 declare const launchAppForTest: (options: LaunchAppForTestOptions) => Promise<LaunchedTestApp>;
 declare const waitForAppPage: (app: ElectronApplication, timeoutMs?: number) => Promise<Page>;
 declare const pageKindOf: (url: string) => AppPageKind | null;
-declare const assertLaunchable: (appDir: string) => string;
+declare const assertLaunchable: (appDir: string, options?: { allowStale?: boolean }) => string;
 declare const unresolvableImports: (outDir: string) => { file: string; spec: string }[];
 declare const readDockLayout: (page: Page, options?: { timeoutMs?: number }) => Promise<DockLayoutReading>;
 declare const widgetWindows: (app: ElectronApplication) => Promise<WidgetWindowReading[]>;

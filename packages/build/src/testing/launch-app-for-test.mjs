@@ -40,12 +40,12 @@ const profileOf = (userData) => {
 };
 
 /**
- * @param {{ appDir: string, args?: string[], env?: Record<string, string>, timeoutMs?: number, userData?: string }} options
+ * @param {{ appDir: string, args?: string[], env?: Record<string, string>, timeoutMs?: number, userData?: string, allowStale?: boolean }} options
  * @returns {Promise<{ app: any, page: any, userData: string, close: () => Promise<void> }>}
  */
-const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST_WINDOW_TIMEOUT_MS, userData: ownProfile }) => {
+const launchAppForTest = async ({ appDir, args = [], env = {}, timeoutMs = FIRST_WINDOW_TIMEOUT_MS, userData: ownProfile, allowStale = false }) => {
   const root = resolve(appDir);
-  const main = assertLaunchable(root);
+  const main = assertLaunchable(root, { allowStale });
   const driver = await loadElectronDriver(root);
   const { userData, drop } = profileOf(ownProfile);
   const app = await driver.launch({

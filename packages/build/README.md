@@ -12,7 +12,7 @@ build step.
 | `/vite-web` | `defineBrockWebConfig(rootDir, overrides?)`: the renderer alone for the web and Android targets (relative base, `dist/web`, the web app manifest) |
 | `/builder` | `createBuilderConfig(product, { rootDir })` and `loadBuilderConfig(rootDir)` for electron-builder |
 | `/vitest` | `defineBrockVitestConfig(rootDir, overrides?)`: the vitest config for an app that tests Brock source (see Unit tests) |
-| `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs?, userData? })` for app e2e tests, `waitForAppPage(app, timeoutMs?)`, `pageKindOf(url)`, `readDockLayout(page)`, `widgetWindows(app)`, `assertLaunchable(appDir)`, `unresolvableImports(outDir)` |
+| `/testing` | `launchAppForTest({ appDir, args?, env?, timeoutMs?, userData?, allowStale? })` for app e2e tests, `waitForAppPage(app, timeoutMs?)`, `pageKindOf(url)`, `readDockLayout(page)`, `widgetWindows(app)`, `assertLaunchable(appDir, { allowStale }?)`, `unresolvableImports(outDir)` |
 | `.` | Everything above plus `syncApp`, `resolveModules`, `ensureElectron` and the built-in module registry |
 
 ## The CLI
@@ -228,7 +228,7 @@ await page.getByRole('button', { name: 'Settings' }).click();
 await close();
 ```
 
-It refuses first when `dist/electron/main.js` or a chunk beside it imports a package or a file Node cannot find from there, and lists each one. It then runs the app's own Electron with `--no-focus --muted` and a fresh `--user-data` under the system temp folder, waits for the app window, the one that loads the renderer index and not `splash.html` or a widget window, and for the splash to close, which means every boot task resolved and the window was revealed (60 s by default). It puts the tail of the main output in the error when that fails, and says when the splash was still open. `close()` quits and removes the folder. Playwright is an optional peer: add `playwright-core` (or `playwright`) to the app's dev dependencies.
+It refuses first when dist is older than the app's sources or its install (the `brock build --if-stale` check), and names what changed; pass `allowStale: true` to skip only that check. It also refuses when `dist/electron/main.js` or a chunk beside it imports a package or a file Node cannot find from there, and lists each one. It then runs the app's own Electron with `--no-focus --muted` and a fresh `--user-data` under the system temp folder, waits for the app window, the one that loads the renderer index and not `splash.html` or a widget window, and for the splash to close, which means every boot task resolved and the window was revealed (60 s by default). It puts the tail of the main output in the error when that fails, and says when the splash was still open. `close()` quits and removes the folder. Playwright is an optional peer: add `playwright-core` (or `playwright`) to the app's dev dependencies.
 
 ```ts
 const { app, page } = await launchAppForTest({ appDir });

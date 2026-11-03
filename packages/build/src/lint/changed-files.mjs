@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { BASE_ENV, BASE_REFS, MAX_CHANGED_FILES, WHOLE_TREE_FILES } from './lint.constants.mjs';
+import { BASE_ENV, BASE_REFS, MAX_CHANGED_FILES, TRANSIENT_FILES, WHOLE_TREE_FILES } from './lint.constants.mjs';
 
 const git = (cwd, args) => {
   const result = spawnSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
@@ -10,6 +10,8 @@ const git = (cwd, args) => {
 };
 
 const lines = (text) => (text ? text.split(/\r?\n/).filter(Boolean) : []);
+
+const lintable = (cwd, files) => [...new Set(files)].filter((file) => !TRANSIENT_FILES.test(file) && existsSync(join(cwd, file))).sort();
 
 const knownRef = (cwd, ref) => Boolean(ref) && git(cwd, ['rev-parse', '--verify', '--quiet', ref]) !== null;
 
@@ -38,8 +40,7 @@ const changedFiles = (cwd, env = process.env) => {
   if (!base) return { failure: `no merge base with ${ref}` };
   const tracked = lines(git(cwd, ['diff', '--name-only', '--diff-filter=ACMR', '--relative', base]));
   const untracked = lines(git(cwd, ['ls-files', '--others', '--exclude-standard']));
-  const files = [...new Set([...tracked, ...untracked])].filter((file) => existsSync(join(cwd, file))).sort();
-  return { files, base: base.slice(0, 8), ref };
+  return { files: lintable(cwd, [...tracked, ...untracked]), base: base.slice(0, 8), ref };
 };
 
 /**
@@ -59,7 +60,7 @@ const needsWholeTree = (files) => {
 const treeFiles = (cwd) => {
   const listed = git(cwd, ['ls-files', '--cached', '--others', '--exclude-standard']);
   if (listed === null) return null;
-  return [...new Set(lines(listed))].filter((file) => existsSync(join(cwd, file))).sort();
+  return lintable(cwd, lines(listed));
 };
 
 export { changedFiles, needsWholeTree, treeFiles };

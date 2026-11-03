@@ -76,6 +76,15 @@ describe('the changed file list', () => {
     expect(changedFiles(root, {})).toMatchObject({ files: ['src/mine.ts'], ref: 'main' });
   });
 
+  it('K1 leaves out the config bundle electron-vite writes for a moment while it starts', { tags: ['critical'] }, () => {
+    const root = repoOnFeatureBranch();
+    put(root, 'apps/desktop/electron.vite.config.1762150000000.mjs', 'export default {};\n');
+    put(root, 'apps/desktop/electron.vite.config.mjs', 'export default {};\n');
+    const found = changedFiles(root, { BROCK_LINT_BASE: 'main' });
+    expect(found.files).toContain('apps/desktop/electron.vite.config.mjs');
+    expect(found.files.some((file) => file.includes('1762150000000'))).toBe(false);
+  });
+
   it('K1 asks for the whole tree when a config or manifest changed, or too many files did', { tags: ['critical'] }, () => {
     expect(needsWholeTree(['src/a.ts', 'eslint.config.mjs'])).toMatch('eslint.config.mjs');
     expect(needsWholeTree(['packages/app/tsconfig.json'])).toMatch('tsconfig.json');

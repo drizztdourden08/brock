@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { LIVE_BROCK_ENV } from '../optimize-deps/optimize-deps.constants.mjs';
 import { runElectronVite } from './electron-vite.mjs';
+import { prebundleForDev } from './prebundle-for-dev.mjs';
 
 /**
  * @param {{ rootDir: string, passthrough?: string[], liveBrock?: boolean }} ctx liveBrock keeps linked Brock as hot source
@@ -8,7 +9,7 @@ import { runElectronVite } from './electron-vite.mjs';
  */
 const runDev = (ctx) => {
   if (ctx.liveBrock) process.env[LIVE_BROCK_ENV] = '1';
-  return runElectronVite('dev', ctx);
+  return runElectronVite('dev', { ...ctx, beforeStart: () => prebundleForDev(ctx.rootDir) });
 };
 
 export { runDev };

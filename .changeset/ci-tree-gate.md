@@ -1,5 +1,5 @@
 ---
-'@drizztdourden08/brock-thread': minor
+'@drizztdourden08/brock-thread': patch
 '@drizztdourden08/brock-build': patch
 ---
 

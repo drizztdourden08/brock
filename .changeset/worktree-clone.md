@@ -1,6 +1,6 @@
 ---
-'@drizztdourden08/brock-build': minor
-'@drizztdourden08/brock-thread': minor
+'@drizztdourden08/brock-build': patch
+'@drizztdourden08/brock-thread': patch
 ---
 
 A new worktree starts from what another checkout of the same lockfile already has, instead of installing and building again.

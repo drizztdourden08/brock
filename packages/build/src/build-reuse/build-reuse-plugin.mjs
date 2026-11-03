@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { virtualStoreOf } from '@drizztdourden08/build-cache/vite-deps';
 import { findWorkspaceRoot } from '../workspace.mjs';
-import { DEV_MODE, MODE_ENV, VIRTUAL_PREFIX } from './build-reuse.constants.mjs';
+import { DEV_MODE, MODE_ENV, STUB_SOURCE, VIRTUAL_PREFIX } from './build-reuse.constants.mjs';
 import { configKey } from './config-key.mjs';
 import { moduleKeys, repoKeysCurrent } from './module-keys.mjs';
 import { repoSnapshot } from './repo-snapshot.mjs';
@@ -96,7 +96,7 @@ const buildReusePlugin = ({ rootDir, target }) => {
       for (const path of watchedFiles(reusing, snapshot)) this.addWatchFile(path);
     },
     resolveId: (id) => (reusing && id.startsWith(VIRTUAL_PREFIX) ? id : null),
-    load: (id) => (reusing && id.startsWith(VIRTUAL_PREFIX) ? 'export {};' : null),
+    load: (id) => (reusing && id.startsWith(VIRTUAL_PREFIX) ? STUB_SOURCE : null),
     generateBundle(_options, bundle) {
       if (!reusing) return;
       for (const name of Object.keys(bundle)) delete bundle[name];

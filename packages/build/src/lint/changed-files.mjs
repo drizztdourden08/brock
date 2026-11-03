@@ -30,7 +30,7 @@ const baseRef = (cwd, env) => {
 /**
  * @param {string} cwd the folder eslint runs in
  * @param {NodeJS.ProcessEnv} [env] BROCK_LINT_BASE names the branch to compare with
- * @returns {{ files: string[], base: string, ref: string } | { failure: string }} changed and untracked files on disk, no transient vite config, or why unknown
+ * @returns {{ files: string[], base: string, ref: string } | { failure: string }} changed and untracked files, or why unknown
  */
 const changedFiles = (cwd, env = process.env) => {
   if (git(cwd, ['rev-parse', '--is-inside-work-tree']) !== 'true') return { failure: 'not a git work tree' };

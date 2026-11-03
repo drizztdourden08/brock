@@ -11,17 +11,17 @@ const scratchDir = scratch.make;
 afterEach(scratch.clean);
 
 describe('K1 emsdkOf', { tags: ['critical'] }, () => {
-  it('finds the activation script on Windows only', () => {
+  it('finds an SDK folder that holds upstream/emscripten, and ignores one that does not', () => {
     const sdk = scratchDir();
-    writeFileSync(join(sdk, 'emsdk_env.bat'), '');
-    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: sdk }, { env: { PATH: '' }, platform: 'win32' })).toMatchObject({ dir: sdk, activate: join(sdk, 'emsdk_env.bat'), found: true });
-    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: sdk }, { env: { PATH: '' }, platform: 'linux' })).toMatchObject({ activate: null, found: false });
+    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: sdk }, { env: { PATH: '' } })).toMatchObject({ dir: sdk, emscripten: null, found: false });
+    mkdirSync(join(sdk, 'upstream/emscripten'), { recursive: true });
+    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: sdk }, { env: { PATH: '' } })).toMatchObject({ dir: sdk, emscripten: join(sdk, 'upstream/emscripten'), found: true });
   });
 
   it('counts emcc on the path as an SDK', () => {
     const bin = scratchDir();
     writeFileSync(join(bin, 'emcc'), '');
-    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: scratchDir() }, { env: { PATH: bin }, platform: 'linux' }).found).toBe(true);
+    expect(emsdkOf('/', { ...WASM_DEFAULTS, emsdkDir: scratchDir() }, { env: { PATH: bin } }).found).toBe(true);
   });
 });
 
@@ -48,7 +48,7 @@ describe('K1 emsdkOf inside a git worktree', { tags: ['critical'] }, () => {
 
   it('takes the SDK folder of the main checkout when the worktree has none', () => {
     const { main, worktree } = checkoutWithWorktree();
-    const host = { env: { PATH: '' }, platform: 'linux' as const };
+    const host = { env: { PATH: '' } };
     expect(emsdkOf(worktree, WASM_DEFAULTS, host)).toMatchObject({ dir: join(main, 'third_party/emsdk'), mainCheckout: true, found: true });
     expect(emsdkOf(join(worktree, 'apps/game'), WASM_DEFAULTS, host)).toMatchObject({ dir: join(main, 'apps/game/third_party/emsdk'), mainCheckout: true });
   });
@@ -56,7 +56,7 @@ describe('K1 emsdkOf inside a git worktree', { tags: ['critical'] }, () => {
   it('keeps the worktree SDK, $EMSDK and an absolute folder first', () => {
     const { worktree } = checkoutWithWorktree();
     mkdirSync(join(worktree, 'third_party/emsdk/upstream/emscripten'), { recursive: true });
-    const host = { env: { PATH: '' }, platform: 'linux' as const };
+    const host = { env: { PATH: '' } };
     expect(emsdkOf(worktree, WASM_DEFAULTS, host)).toMatchObject({ dir: join(worktree, 'third_party/emsdk'), mainCheckout: false });
     const elsewhere = scratchDir();
     expect(emsdkOf(join(worktree, 'apps/game'), WASM_DEFAULTS, { ...host, env: { PATH: '', EMSDK: elsewhere } })).toMatchObject({ dir: elsewhere, mainCheckout: false, found: false });

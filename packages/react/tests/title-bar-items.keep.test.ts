@@ -4,7 +4,7 @@ import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
 import { titleBarFromFiles } from '../src/title-bar/title-bar-from-files';
 import { toBarAction } from '../src/title-bar/to-bar-action';
 import type { TitleBarItemEntry } from '../src/title-bar/title-bar-item.type';
-import { jobStepper } from '../src/jobs/JobDialog/behavior/job-stepper';
+import { jobStepper } from '../src/jobs/job-stepper';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
 
 describe('K1 toBarAction', { tags: ['critical'] }, () => {

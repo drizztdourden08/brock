@@ -7,6 +7,7 @@ import { findWorkspaceRoot } from '../workspace.mjs';
 import { workspaceDirs } from '../workspace-dirs.mjs';
 import { BUILD_INPUTS, BUILD_OUTPUTS, DIST_RENDERER, NOT_SOURCES } from './freshness.constants.mjs';
 import { halfBuildReason } from './half-build-reason.mjs';
+import { installChangedAt } from './install-changed-at.mjs';
 
 const skipped = (name) => name.startsWith('.') || NOT_SOURCES.has(name);
 
@@ -60,7 +61,8 @@ const buildStaleReason = (appDir) => {
   const own = BUILD_INPUTS.find((input) => newestSource(join(appDir, input)) > built);
   if (own) return `${own} changed since the last build`;
   const used = workspacePackagesUsed(appDir).find((dir) => newestSource(dir) > built);
-  return used ? `${relative(appDir, used).replace(/\\/g, '/')} changed since the last build` : null;
+  if (used) return `${relative(appDir, used).replace(/\\/g, '/')} changed since the last build`;
+  return installChangedAt(appDir) > built ? 'the install changed since the last build' : null;
 };
 
 export { buildStaleReason };

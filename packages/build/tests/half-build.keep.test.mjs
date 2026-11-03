@@ -53,3 +53,45 @@ describe('K4 assertLaunchable', { tags: ['critical'] }, () => {
     expect(() => assertLaunchable(app)).toThrow(/blank window/);
   });
 });
+
+const fullBuild = () => {
+  write('package.json', 600);
+  write('src/main.tsx', 600);
+  write('dist/electron/main.js', 60);
+  write('dist/preload/preload.mjs', 55);
+  write('dist/renderer/index.html', 50);
+};
+
+describe('K5 assertLaunchable staleness', { tags: ['critical'] }, () => {
+  it('passes a build newer than its sources and its install', () => {
+    fullBuild();
+    write('node_modules/.modules.yaml', 600);
+    expect(assertLaunchable(app)).toBe(join(app, 'dist/electron/main.js'));
+  });
+
+  it('refuses a dist older than its sources', () => {
+    fullBuild();
+    write('src/main.tsx', 5);
+    expect(() => assertLaunchable(app)).toThrow(/dist is older than its sources: src changed since the last build.*brock build --if-stale/);
+  });
+
+  it('refuses a dist older than the install record', () => {
+    fullBuild();
+    write('node_modules/.modules.yaml', 5);
+    expect(() => assertLaunchable(app)).toThrow(/the install changed since the last build/);
+  });
+
+  it('falls back to the lockfile when there is no modules record', () => {
+    fullBuild();
+    write('pnpm-lock.yaml', 5);
+    expect(() => assertLaunchable(app)).toThrow(/the install changed since the last build/);
+  });
+
+  it('lets allowStale skip only the stale check', () => {
+    fullBuild();
+    write('src/main.tsx', 5);
+    expect(assertLaunchable(app, { allowStale: true })).toBe(join(app, 'dist/electron/main.js'));
+    rmSync(join(app, 'dist/renderer/index.html'));
+    expect(() => assertLaunchable(app, { allowStale: true })).toThrow(/blank window/);
+  });
+});

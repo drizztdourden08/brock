@@ -1,15 +1,17 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
+import { buildStaleReason } from '../freshness/build-stale-reason.mjs';
 import { halfBuildReason } from '../freshness/half-build-reason.mjs';
 import { MAIN_ENTRY } from './testing.constants.mjs';
 import { unresolvableImports } from './unresolvable-imports.mjs';
 
 /**
  * @param {string} appDir the app root
+ * @param {{ allowStale?: boolean }} [options] allowStale skips the stale check
  * @returns {string} the main entry, once every import resolves
  */
-const assertLaunchable = (appDir) => {
+const assertLaunchable = (appDir, { allowStale = false } = {}) => {
   const main = join(appDir, MAIN_ENTRY);
   if (!existsSync(main)) throw new Error(`${main} does not exist. Run the app's build first.`);
   const half = halfBuildReason(appDir);
@@ -19,6 +21,8 @@ const assertLaunchable = (appDir) => {
     const lines = missing.map(({ file, spec }) => `  ${relative(appDir, file)} imports ${spec}`).join('\n');
     throw new Error(`The built main imports what Node cannot resolve, so the app would not start:\n${lines}\nDeclare the package in the app's dependencies, or rebuild.`);
   }
+  const stale = allowStale ? null : buildStaleReason(appDir);
+  if (stale) throw new Error(`dist is older than its sources: ${stale}. Run the app's build first (brock build --if-stale).`);
   return main;
 };
 

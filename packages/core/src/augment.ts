@@ -142,6 +142,8 @@ interface AppServices {}
 
 interface ShowFlags {}
 
+interface ModuleOptions {}
+
 interface Capabilities {
   windowChrome: boolean;
   titleBar?: boolean;
@@ -166,5 +168,5 @@ export type {
   BaseProfile, ProfileExtension, ProfileCreateExtension, ProfilePatchExtension,
   Profile, CreateProfileOptions, ProfilePatch,
   InvokeContract, SendContract, EventContract, AskContract, IpcNamespaces,
-  Capabilities, PlatformPorts, AppServices, ShowFlags,
+  Capabilities, PlatformPorts, AppServices, ShowFlags, ModuleOptions,
 };

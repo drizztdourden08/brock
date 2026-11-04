@@ -89,6 +89,7 @@ interface BrockModuleManifest {
   main?: string;
   preload?: string;
   renderer?: string;
+  helpers?: Record<string, string>;
   automationFlags?: string[];
   dataDirs?: string[];
   peers?: string[];

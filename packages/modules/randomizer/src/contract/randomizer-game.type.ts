@@ -5,6 +5,7 @@ import type { ItemDeliverer } from '../session/delivery/item-deliverer.type';
 import type { SeedApplier } from '../session/applier/seed-applier.type';
 import type { MemoryBridge } from '../memory/memory-bridge.type';
 import type { RandomizerProfileConfig } from '../augment';
+import type { TrackerProvider } from '../tracker/types/tracker-provider.type';
 import type { DefPlacement, RandomizerWorldGame, SchemaSet } from '../world';
 import type { OptionCatalog } from '../world/options/option-catalog.type';
 import type { CoreSignal } from './core-signal.type';
@@ -29,6 +30,7 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   poll?: { intervalMs?: number; completed?(): ReadonlySet<string>; beforePoll?(): void };
   profile: { toConfig(form: RandomizerFormState, options: unknown): RandomizerProfileConfig };
   catalog?: OptionCatalog;
+  tracker?: TrackerProvider<P>;
   views?: RandomizerViews;
   labels?: Partial<RandomizerLabels>;
 };

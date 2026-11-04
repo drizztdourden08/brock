@@ -5,6 +5,7 @@ interface RandomizerLabels {
   options: string;
   logs: string;
   spoiler: string;
+  checks?: string;
   start: string;
   stop: string;
 }

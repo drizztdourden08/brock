@@ -20,6 +20,7 @@
     "./augment": "./src/augment.ts",
     "./world": "./src/world/index.ts",
     "./session": "./src/session/index.ts",
+    "./tracker": "./src/tracker/index.ts",
     "./main": "./src/main/index.ts",
     "./renderer": "./src/renderer/index.ts",
     "./package.json": "./package.json"

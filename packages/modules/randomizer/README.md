@@ -21,3 +21,12 @@ The `worldSchema` of a world definition is a version tag the game owns, such as 
 `createWorldKit<K>()` returns the rule builders, the rule combinators, `always`, `never` and `mainFill` bound to your world keys, so `kit.has('sword')` is checked against `K['holding']` with no type argument.
 
 Licence notes are in `NOTICE.md` and `LICENSE-world`.
+
+## `./tracker`
+
+| Export | Holds |
+|---|---|
+| Types | `TrackerProvider`, `TrackerInput`, `TrackerReading`, `TrackerCounts`, `LocationStatus`, `TrackerAssumption`, `TrackerGrouping`, `VanillaPlacement`, `DefTrackerExtras`, `TrackerFile`. |
+| `TRACKER_SCHEMA` | The schema tag of the marks file, `tracker-v1`. |
+
+A game gives a `TrackerProvider` as `RandomizerGame.tracker`. Brock reads one status per location from it: checked, available or blocked.

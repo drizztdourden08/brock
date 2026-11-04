@@ -7,6 +7,7 @@ interface RandomizerSession {
   start(): Promise<void>;
   stop(): void;
   reportCheck(key: string): void;
+  reported?(): ReadonlySet<string>;
 }
 
 export type { SessionStatus, RandomizerSession };

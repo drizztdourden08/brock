@@ -13,6 +13,7 @@ Optional modules live here, one package each. Each carries a `package.json#brock
 | `catalog` | A content catalogue client: the app's catalogue API and schema, installs as Brock jobs with size and sha256 checks, uninstall, the installed record and guard, install links, `CatalogInstallBar`. |
 | `port-kit` | What a PC port of a game compiled to WebAssembly needs, with no game in it: core lifecycle, saves and SRAM, video, audio, live settings, ROM source, asset pipeline runner, ensure-wasm. |
 | `game-info` | One game info widget shared by every game: the game supplies a provider (snapshot reader, sections, core and lock signals), the module polls, diffs and draws it. |
+| `msu` | The shared MSU-1 and MSU-L music module: pack format, pack storage, the layered player and the session that follows a running game. The game supplies its track loops, music classifier, sound channels and save paths. |
 | `mcp` | Agent control over MCP: a stdio helper on the bridge, screenshot, click, type, keys, scroll, widgets, commands and read UI tools, plus tools the app defines. Off in a packaged build unless `moduleOptions.mcp.packaged` is true. |
 
 `input` carries the source of a native SDL3 addon in `input/native`. Its postinstall downloads the prebuild for the platform from the brock releases, and `brock dev` and `brock build` fetch it too when the install skipped that step. The builder config ships it through `extraResources` in an app that lists `input`, so a blank app carries no SDL3 at all.

@@ -29,6 +29,7 @@ const randomizerRenderer: RendererModule = {
 export default randomizerRenderer;
 export { randomizerRenderer };
 export { addRandomizerPages } from './bucket/add-randomizer-pages';
+export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE } from './wizard/wizard.constants';
 export { registerRandomizerGame } from './game-registry/register-randomizer-game';
 export { useRandomizerGame } from './game-registry/behavior/useRandomizerGame';
 export { useRandomizerSession } from './hooks/behavior/useRandomizerSession';
@@ -42,5 +43,6 @@ export { useOnlineConnection } from './online/hooks/behavior/useOnlineConnection
 export { connectionStep };
 export { NetworkView } from './views/NetworkView';
 export { OnlineView } from './views/OnlineView';
+export type { RegisterOptions } from './game-registry/register-options.type';
 export type { ChecksPrefs, ChecksViewProps } from './views/ChecksView';
 export type { TrackerFeedInput } from './tracker/feed/tracker-feed-state.type';

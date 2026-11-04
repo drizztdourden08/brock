@@ -10,7 +10,8 @@ const randomizerOnlineMode: ProfileModeDef = {
   },
   monogram: ONLINE_MODE_BADGE,
   rank: ONLINE_MODE_RANK,
-  matches: (profile) => profile.randomizer?.mode === ONLINE_MODE,
+  matches: (profile) =>
+    profile.randomizer?.mode === ONLINE_MODE && useRandomizerGameStore.getState().game?.archipelago !== undefined,
 };
 
 export { randomizerOnlineMode };

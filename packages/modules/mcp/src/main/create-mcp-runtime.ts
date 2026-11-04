@@ -6,11 +6,9 @@ import { BUILT_IN_TOOLS } from '../built-in-tools.constants';
 import { createSerialQueue } from '../serial-queue';
 import { createToolRegistry } from '../create-tool-registry';
 import { mcpEnabled } from '../mcp-enabled';
-import { MCP_HELPER_TOOL_NAMES } from './mcp-main.constants';
+import { RESERVED_TOOL_NAMES } from './create-mcp-runtime.constants';
 import { MCP_ROUTES } from './mcp-routes.constants';
 import { createRendererTools } from './renderer-tools';
-
-const RESERVED = [...BUILT_IN_TOOLS.map((spec) => spec.name), ...MCP_HELPER_TOOL_NAMES];
 
 const createMcpRuntime = (ctx: MainContext): McpRuntime => {
   const available = mcpEnabled({
@@ -19,7 +17,7 @@ const createMcpRuntime = (ctx: MainContext): McpRuntime => {
     argv: process.argv,
     env: process.env,
   });
-  const registry = createToolRegistry(RESERVED);
+  const registry = createToolRegistry(RESERVED_TOOL_NAMES);
   let on = available;
   const isOn = (): boolean => available && on;
   const changed = (): void => {

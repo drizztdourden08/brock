@@ -17,7 +17,7 @@ const appBridge = (withOptions: boolean) => {
   const file = join(tempDir(), 'bxel', 'bridge.json');
   const ctx: MainContext = { product: { id: 'bxel' }, log: vi.fn() } as never;
   const options = withOptions ? { register: (server: { handle: (route: typeof ROUTES.add, run: (a: number, b: number) => number) => void }) => { server.handle(ROUTES.add, (a, b) => a + b); } } : null;
-  const bridge = createAppBridge({ options: options as never, file: () => file, ctx: () => ctx });
+  const bridge = createAppBridge({ options, file: () => file, ctx: () => ctx });
   return { bridge, file };
 };
 

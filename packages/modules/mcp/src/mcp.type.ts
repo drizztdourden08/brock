@@ -17,7 +17,7 @@ interface McpImage {
   mimeType: string;
 }
 
-type McpData = { [key: string]: JsonValue };
+type McpData = Record<string, JsonValue>;
 
 interface McpToolResult {
   text: string;
@@ -108,7 +108,7 @@ interface McpToolRegistry {
 }
 
 interface McpSerialQueue {
-  run: <T>(job: () => Promise<T>) => Promise<T>;
+  run: <T>(job: () => T | Promise<T>) => Promise<T>;
   pending: () => number;
 }
 

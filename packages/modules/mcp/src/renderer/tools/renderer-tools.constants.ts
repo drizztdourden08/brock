@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind logic */
+/* @layer renderer-shell @kind constants */
 import type { McpToolDef } from '../../mcp.type';
 import { listCommandsTool } from './list-commands-tool';
 import { listWidgetsTool } from './list-widgets-tool';

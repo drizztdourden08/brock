@@ -5,7 +5,8 @@ import { MCP_OK_TEXT } from './mcp.constants';
 
 const jsonText = (value: unknown): string | null => {
   try {
-    return JSON.stringify(value) ?? 'null';
+    const text: unknown = JSON.stringify(value);
+    return typeof text === 'string' ? text : 'null';
   } catch {
     return null;
   }

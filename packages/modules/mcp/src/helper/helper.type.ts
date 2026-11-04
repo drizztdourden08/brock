@@ -14,7 +14,7 @@ interface TargetOptions {
   appDir: string;
 }
 
-type McpJsonArgs = { [key: string]: JsonValue };
+type McpJsonArgs = Record<string, JsonValue>;
 
 interface McpHello {
   version: number;

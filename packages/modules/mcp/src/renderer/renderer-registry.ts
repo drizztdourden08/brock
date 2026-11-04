@@ -3,7 +3,7 @@ import { BUILT_IN_TOOLS } from '../built-in-tools.constants';
 import { createToolRegistry } from '../create-tool-registry';
 import type { McpToolRegistry } from '../mcp.type';
 import { toolInfoOf } from '../tool-info-of';
-import { RENDERER_TOOLS } from './tools/renderer-tools';
+import { RENDERER_TOOLS } from './tools/renderer-tools.constants';
 
 const appTools = createToolRegistry(BUILT_IN_TOOLS.map((spec) => spec.name));
 

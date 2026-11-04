@@ -23,7 +23,8 @@ const screenshotTool: MainTool = async (args, env) => {
   const image = downscaleImage(frame, readArg.number(args, 'maxWidth', SCREENSHOT_DEFAULT_WIDTH));
   if (image.width === 0) throw new BridgeError(MCP_MESSAGE.badFrame, { code: MCP_ERROR.failed });
   const path = name === null ? null : await saveScreenshot(env.ctx, name, image.png);
-  const cssWidth = win.getContentSize()[0] || image.width;
+  const [contentWidth = 0] = win.getContentSize();
+  const cssWidth = contentWidth === 0 ? image.width : contentWidth;
   const scale = Math.round((image.width / cssWidth) * SCREENSHOT_SCALE_DIGITS) / SCREENSHOT_SCALE_DIGITS;
   return {
     text: `Screenshot ${image.width}x${image.height}${path === null ? '' : `, saved to ${path}`}`,

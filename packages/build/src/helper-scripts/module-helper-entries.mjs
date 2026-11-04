@@ -5,7 +5,7 @@ import { helperEntries } from './helper-entries.mjs';
 /**
  * @param {string} rootDir the app folder
  * @param {import('../config.mjs').BrockConfig} config brock.config.ts
- * @returns {{ name: string, entry: string, packaged: boolean }[]} helpers of the listed modules; packaged when the product opts in
+ * @returns {{ name: string, entry: string, packaged: boolean }[]} module helpers, flagged when packaged
  */
 const moduleHelperEntries = (rootDir, config) => {
   const ids = config.modules ?? [];

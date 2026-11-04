@@ -11,10 +11,15 @@ const valueOf = (argv: readonly string[], prefix: string): string | null => {
   return found;
 };
 
-const parseHelperArgs = (argv: readonly string[], env: Readonly<Record<string, string | undefined>>): HelperArgs => ({
+const fileOfEnv = (env: Readonly<Record<string, string | undefined>>): string | null => {
+  const text = env[BRIDGE_FILE_ENV]?.trim();
+  return text === undefined || text === '' ? null : text;
+};
+
+const parseHelperArgs =(argv: readonly string[], env: Readonly<Record<string, string | undefined>>): HelperArgs => ({
   userData: valueOf(argv, HELPER_ARG.userData),
   instance: valueOf(argv, HELPER_ARG.instance),
-  file: valueOf(argv, HELPER_ARG.file) ?? (env[BRIDGE_FILE_ENV]?.trim() || null),
+  file: valueOf(argv, HELPER_ARG.file) ?? fileOfEnv(env),
 });
 
 export { parseHelperArgs };

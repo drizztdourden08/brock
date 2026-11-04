@@ -34,7 +34,7 @@ describe('K4 tool replies', { tags: ['critical'] }, () => {
   it('turns an unserializable reply into an error', () => {
     const loop: Record<string, unknown> = {};
     loop.self = loop;
-    const result = normalizeReply(loop as never);
+    const result = normalizeReply(loop);
     expect(result.isError).toBe(true);
     expect(result.images).toEqual([]);
   });

@@ -7,7 +7,7 @@ import { moduleHelperEntries } from './module-helper-entries.mjs';
  * @param {import('../config.mjs').BrockConfig} config brock.config.ts
  * @returns {{ name: string, entry: string, packaged: boolean }[]} app helpers, then module helpers
  */
-const plannedHelpers = (rootDir, config) => {
+const helperEntriesToBundle = (rootDir, config) => {
   const planned = [...helperEntries(rootDir, config.helpers).map((helper) => ({ ...helper, packaged: true })), ...moduleHelperEntries(rootDir, config)];
   const seen = new Set();
   for (const { name } of planned) {
@@ -17,4 +17,4 @@ const plannedHelpers = (rootDir, config) => {
   return planned;
 };
 
-export { plannedHelpers };
+export { helperEntriesToBundle };

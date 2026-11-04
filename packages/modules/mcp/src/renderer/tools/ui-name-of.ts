@@ -10,7 +10,7 @@ const labelledBy = (el: Element): string => {
 
 const labelsOf = (el: Element): string => {
   const labels = el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement ? el.labels : null;
-  return labels === null ? '' : [...labels].map((label) => label.textContent ?? '').join(' ');
+  return labels === null ? '' : [...labels].map((label) => label.textContent).join(' ');
 };
 
 const buttonValueOf = (el: Element): string => (el instanceof HTMLInputElement && ['button', 'submit', 'reset'].includes(el.type) ? el.value : '');

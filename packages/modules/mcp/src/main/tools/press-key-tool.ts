@@ -12,7 +12,7 @@ const pressKeyTool: MainTool = async (args, env) => {
   if (chord === null) throw new BridgeError(MCP_MESSAGE.badKey, { code: MCP_ERROR.invalidArguments });
   const contents = needWindow(env).webContents;
   const { keyCode, modifiers, text } = chord;
-  await env.queue.run(async () => {
+  await env.queue.run(() => {
     contents.focus();
     contents.sendInputEvent({ type: 'keyDown', keyCode, modifiers });
     if (text !== null) contents.sendInputEvent({ type: 'char', keyCode: text, modifiers });

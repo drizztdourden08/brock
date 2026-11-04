@@ -30,9 +30,9 @@ const createAppLink = (initialFile: string): AppLink => {
     await state.hello;
     return client;
   };
-  const run = async <T>(use: (client: BridgeClient) => Promise<T>): Promise<T> => {
+  const run = async <T>(action: (client: BridgeClient) => Promise<T>): Promise<T> => {
     try {
-      const value = await use(await ready());
+      const value = await action(await ready());
       if (state.down) {
         state.down = false;
         notify();

@@ -4,7 +4,7 @@ import type { McpSerialQueue } from './mcp.type';
 const createSerialQueue = (): McpSerialQueue => {
   let tail: Promise<void> = Promise.resolve();
   let waiting = 0;
-  const run = async <T>(job: () => Promise<T>): Promise<T> => {
+  const run = async <T>(job: () => T | Promise<T>): Promise<T> => {
     waiting += 1;
     const turn = tail;
     let release = (): void => undefined;

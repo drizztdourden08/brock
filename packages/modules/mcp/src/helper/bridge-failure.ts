@@ -2,14 +2,13 @@
 import { BRIDGE_CODES, BridgeError } from '@drizztdourden08/brock-electron/bridge';
 import { MCP_ERROR } from '../mcp.constants';
 import type { McpErrorCode, McpToolResult } from '../mcp.type';
+import { FORWARDED_CODES } from './bridge-failure.constants';
 import { failureResult } from './failure-result';
 import { HELPER_TEXT } from './helper.constants';
 
-const FORWARDED: readonly McpErrorCode[] = [MCP_ERROR.off, MCP_ERROR.unknownTool, MCP_ERROR.invalidArguments, MCP_ERROR.noWindow];
-
 const remoteCodeOf = (error: BridgeError): McpErrorCode => {
   if (error.code === BRIDGE_CODES.timeout) return MCP_ERROR.timeout;
-  return FORWARDED.find((code) => code === error.code) ?? MCP_ERROR.failed;
+  return FORWARDED_CODES.find((code) => code === error.code) ?? MCP_ERROR.failed;
 };
 
 const bridgeFailure = (error: unknown, file: string): McpToolResult => {

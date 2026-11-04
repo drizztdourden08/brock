@@ -18,9 +18,9 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   world: RandomizerWorldGame;
   placementSchemas: SchemaSet;
   core: CoreSignal;
-  roll: (config: RandomizerProfileConfig) => P;
-  describe: (placement: P) => PlacementSummary;
-  isPlacement?: (raw: unknown) => raw is P;
+  roll(config: RandomizerProfileConfig): P;
+  describe(placement: P): PlacementSummary;
+  isPlacement?(raw: unknown): raw is P;
   memory: MemoryBridge;
   applier: SeedApplier<P, A>;
   deliverer?: ItemDeliverer<A>;

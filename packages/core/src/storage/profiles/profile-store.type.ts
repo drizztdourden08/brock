@@ -3,7 +3,7 @@ import type { CreateProfileOptions, Profile, ProfileExtension, ProfilePatch } fr
 import type { FileStore } from '../../platform/ports/file-store.type';
 
 interface ProfileStoreHooks {
-  build?: (opts: CreateProfileOptions) => ProfileExtension;
+  build?: (opts: CreateProfileOptions) => Partial<ProfileExtension>;
   patchable?: readonly string[];
   onCreate?: (profile: Profile, files: FileStore) => Promise<void>;
 }

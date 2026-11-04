@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { composeTitle } from '../../document-title/compose-title';
+import { useDocumentTitleStore } from '../../document-title/useDocumentTitleStore';
 import { bootChecks } from '../checks/boot-checks';
 import { find } from '../dom/find';
 import { imageLoaded } from '../dom/image-loaded';
@@ -17,7 +19,7 @@ const bootStep: ReviewStep = {
     tour.report(bootChecks({
       titleBarVisible: isShown(find(SELECTORS.titleBar)),
       title: find(SELECTORS.title)?.textContent.trim() ?? null,
-      expectedTitle: product.window.title ?? product.name,
+      expectedTitle: composeTitle(product.window.title ?? product.name, useDocumentTitleStore.getState().document),
       logoLoaded: await imageLoaded(SELECTORS.logo),
       searchButton: find(SELECTORS.searchButton) !== null,
       bugReportButton: find(SELECTORS.bugReportButton) !== null,

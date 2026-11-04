@@ -3,14 +3,21 @@ import { screen } from 'electron';
 import type { BrowserWindow } from 'electron';
 import type { WindowPlan } from './create-window.type';
 import { applyWindowState } from './apply-window-state';
+import { headlessFullscreen } from './headless-fullscreen';
 import { normalBounds } from './normal-bounds';
 import { saveWindowState } from './save-window-state';
 import { trackWindowState } from './track-window-state';
 
+const noop = (): void => undefined;
+
 const placeHiddenWindow = (win: BrowserWindow, { headless, startup, saved }: WindowPlan, persist: boolean): (() => void) => {
   if (headless) {
     if (!startup.windowSize) win.setContentSize(saved.width, saved.height);
-    return () => win.showInactive();
+    const fullscreen = !startup.windowSize && saved.isFullscreen;
+    return () => {
+      if (fullscreen) headlessFullscreen.set(win, true, noop);
+      win.showInactive();
+    };
   }
   const restore = !startup.windowSize;
   const maximized = restore && saved.isMaximized && win.isMaximizable();

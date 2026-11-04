@@ -14,6 +14,14 @@ export type { RandomizerSession, SessionStatus } from './local/randomizer-sessio
 export type { SessionFactory } from './local/session-factory.type';
 export type { PendingBoot } from './store/pending-boot.type';
 export type { PlacementStamp } from './placement/placement-stamp.type';
+export { createDeliveryQueue } from './delivery/create-delivery-queue';
+export { createRafFrameClock } from './delivery/raf-frame-clock';
+export type { DeliveryQueueOptions } from './delivery/delivery-queue-options.type';
+export { DELIVERY_COOLDOWN_FRAMES, DELIVERY_TIMEOUT_FRAMES, REFUSAL_RETRY_FRAMES, REFUSAL_WARN_EVERY } from './delivery/delivery.constants';
+export { createMemoryApStateStore } from './received/memory-ap-state-store';
+export { createReceivedIndex } from './received/received-index';
+export type { ReceivedIndex } from './received/received-index.type';
+export { settlePosition } from './received/settle-position';
 export type { FlagProbe } from '../memory/flag-probe.type';
 export type { MemoryBridge } from '../memory/memory-bridge.type';
 export type { MemoryView } from '../memory/memory-view.type';

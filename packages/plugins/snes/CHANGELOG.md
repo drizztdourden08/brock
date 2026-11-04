@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-plugin-snes
 
+## 0.120.0
+
+### Minor Changes
+
+- 5327092: Add an asset option to copyAssetBlob that names the source blob in the app data assets folder.
+
+### Patch Changes
+
+- @drizztdourden08/brock-port-kit@0.120.0
+- @drizztdourden08/brock-thread@0.120.0
+
 ## 0.119.0
 
 ### Patch Changes

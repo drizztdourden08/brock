@@ -1,5 +1,7 @@
 # @drizztdourden08/brock-core
 
+## 0.120.0
+
 ## 0.119.0
 
 ## 0.118.2

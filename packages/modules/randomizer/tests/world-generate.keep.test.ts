@@ -44,7 +44,7 @@ describe('world generate', { tags: ['critical'] }, () => {
   it('retries a FillError from finish with the retry seed', () => {
     const draws: number[] = [];
     const base = worldGameFromDef(toyWorldDef({ fillPhases: [probeInto(draws), MAIN_FILL] }));
-    const game = {
+    const game: typeof base = {
       ...base,
       finish: (done: Parameters<typeof base.finish>[0]) => {
         if (done.attempts === 1) throw new FillError('toy', 'forced');

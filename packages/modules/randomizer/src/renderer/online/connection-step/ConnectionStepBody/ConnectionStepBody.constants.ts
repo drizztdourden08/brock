@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
+import type { ConnectionTextField } from '../connection-form.type';
+
 const CONNECTION_TEXT = {
   host: 'Host',
   port: 'Port',
@@ -10,4 +12,6 @@ const CONNECTION_TEXT = {
   reachable: 'Server reachable.',
 } as const;
 
-export { CONNECTION_TEXT };
+const CONNECTION_TEXT_FIELDS: readonly ConnectionTextField[] = ['host', 'port', 'slotName'];
+
+export { CONNECTION_TEXT, CONNECTION_TEXT_FIELDS };

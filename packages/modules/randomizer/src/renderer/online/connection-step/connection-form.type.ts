@@ -7,4 +7,6 @@ interface ConnectionForm {
   deathLink: boolean;
 }
 
-export type { ConnectionForm };
+type ConnectionTextField = 'host' | 'port' | 'slotName';
+
+export type { ConnectionForm, ConnectionTextField };

@@ -1,6 +1,6 @@
 /* @layer core @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { GAME, SLOT_NAME, connectedPacket, createRig, gameData, roomInfo } from './archipelago-client.fixture';
+import { GAME, SLOT_NAME, connectedPacket, createRig, gameData, openRoom, roomInfo } from './archipelago-client.fixture';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -9,9 +9,7 @@ afterEach(() => {
 describe('archipelago client handshake', { tags: ['critical'] }, () => {
   it('asks for the data package on a cache miss, then connects', () => {
     const rig = createRig();
-    rig.client.connect(rig.connection);
-    rig.sockets.last().open();
-    rig.sockets.last().receive([roomInfo]);
+    openRoom(rig);
     expect(rig.sent('GetDataPackage')).toEqual([{ cmd: 'GetDataPackage', games: [GAME] }]);
     expect(rig.sent('Connect')).toHaveLength(0);
     rig.sockets.last().receive([{ cmd: 'DataPackage', data: { games: { [GAME]: gameData } } }]);
@@ -23,9 +21,7 @@ describe('archipelago client handshake', { tags: ['critical'] }, () => {
   it('connects without a data package on a cache hit', () => {
     const rig = createRig();
     rig.cache.write(GAME, 'abc', gameData);
-    rig.client.connect(rig.connection);
-    rig.sockets.last().open();
-    rig.sockets.last().receive([roomInfo]);
+    openRoom(rig);
     expect(rig.sent('GetDataPackage')).toHaveLength(0);
     expect(rig.sent('Connect')).toHaveLength(1);
   });
@@ -93,9 +89,7 @@ describe('archipelago client reconnect', { tags: ['critical'] }, () => {
 
   it('stops reconnecting after the server refuses the connection', () => {
     const rig = createRig();
-    rig.client.connect(rig.connection);
-    rig.sockets.last().open();
-    rig.sockets.last().receive([roomInfo]);
+    openRoom(rig);
     rig.sockets.last().receive([{ cmd: 'ConnectionRefused', errors: ['InvalidPassword'] }]);
     vi.advanceTimersByTime(120000);
     expect(rig.sockets.sockets).toHaveLength(1);

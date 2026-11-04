@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind component */
 import { PasswordInput } from '@drizztdourden08/tessera/composites';
 import { Button, Field, Grid, Stack, Text, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
+import { textPatch } from '../behavior/text-patch';
 import { useServerCheck } from '../behavior/useServerCheck';
-import { CONNECTION_TEXT } from './ConnectionStepBody.constants';
+import { CONNECTION_TEXT, CONNECTION_TEXT_FIELDS } from './ConnectionStepBody.constants';
 import type { ConnectionStepBodyProps } from './ConnectionStepBody.type';
 
 const ConnectionStepBody = ({ value, onChange }: ConnectionStepBodyProps) => {
@@ -10,15 +11,11 @@ const ConnectionStepBody = ({ value, onChange }: ConnectionStepBodyProps) => {
   return (
     <Stack gap="md">
       <Grid columns={2} gap="md">
-        <Field label={CONNECTION_TEXT.host}>
-          <TextInput type="text" value={value.host} onChange={(e) => onChange({ host: e.target.value })} />
-        </Field>
-        <Field label={CONNECTION_TEXT.port}>
-          <TextInput type="text" value={value.port} onChange={(e) => onChange({ port: e.target.value })} />
-        </Field>
-        <Field label={CONNECTION_TEXT.slotName}>
-          <TextInput type="text" value={value.slotName} onChange={(e) => onChange({ slotName: e.target.value })} />
-        </Field>
+        {CONNECTION_TEXT_FIELDS.map((key) => (
+          <Field key={key} label={CONNECTION_TEXT[key]}>
+            <TextInput type="text" value={value[key]} onChange={(e) => onChange(textPatch(key, e.target.value))} />
+          </Field>
+        ))}
         <Field label={CONNECTION_TEXT.password}>
           <PasswordInput value={value.password} onChange={(password) => onChange({ password })} />
         </Field>

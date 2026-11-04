@@ -5,3 +5,4 @@ export { exposeLogGlobals } from './expose-log-globals';
 export { catchGlobalErrors } from './catch-global-errors';
 export { writeSessionLog } from './write-session-log';
 export type { AppLogBus } from './app-log.type';
+export { logRowsToText } from './log-rows-to-text';

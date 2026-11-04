@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind component */
 import { useMemo, useState } from 'react';
+import { logRowsToText } from '@drizztdourden08/brock-react';
 import { LogPanel } from '@drizztdourden08/tessera/composites';
 import { useControllerEventLog } from '../../controller-event-log/useControllerEventLog';
 import { logRowsOf } from './behavior/log-rows';
-import { rowsToText } from './behavior/rows-to-text';
 import { CONTROLLER_LOG_COUNT_LABEL, CONTROLLER_LOG_EMPTY, CONTROLLER_LOG_KINDS } from './ControllerLogs.constants';
 
 const ControllerLogs = () => {
@@ -17,7 +17,7 @@ const ControllerLogs = () => {
       kinds={CONTROLLER_LOG_KINDS}
       search={search}
       onSearchChange={setSearch}
-      copyText={rowsToText}
+      copyText={logRowsToText}
       countLabel={CONTROLLER_LOG_COUNT_LABEL}
       emptyLabel={CONTROLLER_LOG_EMPTY}
     />

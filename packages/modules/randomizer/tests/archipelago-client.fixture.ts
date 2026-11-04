@@ -165,5 +165,11 @@ const createRig = (options: { deathLink?: boolean } = {}): Rig => {
   };
 };
 
-export { GAME, SEED, SLOT_NAME, connectedPacket, createRig, dataPackage, gameData, locationInfo, roomInfo };
+const openRoom = (rig: Rig): void => {
+  rig.client.connect(rig.connection);
+  rig.sockets.last().open();
+  rig.sockets.last().receive([roomInfo]);
+};
+
+export { GAME, SEED, SLOT_NAME, connectedPacket, createRig, dataPackage, gameData, locationInfo, openRoom, roomInfo };
 export type { Rig };

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { PasswordInput } from '@drizztdourden08/tessera/composites';
 import { Button, Card, Field, Stack, Text, TextInput } from '@drizztdourden08/tessera/primitives';
-import { useServerSetupForm } from './behavior/useServerSetupForm';
+import { useServerSetupForm } from '../../behavior/useServerSetupForm';
 import { APPLY_LABEL, PASSWORD_LABEL, SETUP_TITLE, SLOT_LABEL, URL_LABEL, URL_PLACEHOLDER } from './ServerSetup.constants';
 
 const ServerSetup = () => {

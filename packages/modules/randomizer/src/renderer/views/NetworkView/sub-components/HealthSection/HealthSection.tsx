@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { Card, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
-import type { NetworkSectionProps } from '../../network-section-props.type';
-import { formatLastPacket, formatPing } from './format-health';
+import type { NetworkSectionProps } from '../../NetworkView.type';
+import { formatLastPacket } from '../../behavior/format-last-packet';
+import { formatPing } from '../../behavior/format-ping';
 import { HEALTH_TITLE, LAST_PACKET_LABEL, PING_LABEL } from './HealthSection.constants';
 
 const HealthSection = ({ status }: NetworkSectionProps) => (

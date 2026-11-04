@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useState } from 'react';
-import { normalizeServerUrl, slotNameError } from '../../../../../../archipelago';
-import { useOnlineConnection } from '../../../../../online/hooks/behavior/useOnlineConnection';
-import type { ServerSetupDraft, ServerSetupForm } from '../ServerSetup.type';
+import { normalizeServerUrl, slotNameError } from '../../../../archipelago';
+import { useOnlineConnection } from '../../../online/hooks/behavior/useOnlineConnection';
+import type { ServerSetupDraft, ServerSetupForm } from '../sub-components/ServerSetup/ServerSetup.type';
 import { draftOf } from './draft-of';
 
 const useServerSetupForm = (): ServerSetupForm => {

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Card, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import { NONE_LABEL, UNKNOWN_LABEL } from '../../NetworkView.constants';
-import type { NetworkSectionProps } from '../../network-section-props.type';
+import type { NetworkSectionProps } from '../../NetworkView.type';
 import { SEED_LABEL, SERVER_TITLE, TAGS_LABEL, VERSION_LABEL } from './ServerSection.constants';
 
 const ServerSection = ({ status }: NetworkSectionProps) => {

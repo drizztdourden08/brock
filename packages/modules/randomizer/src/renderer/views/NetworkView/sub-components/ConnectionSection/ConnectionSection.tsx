@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Card, StatRow, Status } from '@drizztdourden08/tessera/primitives';
-import type { NetworkSectionProps } from '../../network-section-props.type';
+import type { NetworkSectionProps } from '../../NetworkView.type';
 import { CONNECTION_STATUS, CONNECTION_TITLE, STATE_LABEL } from './ConnectionSection.constants';
 
 const ConnectionSection = ({ status }: NetworkSectionProps) => (

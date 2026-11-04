@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Card, ProgressBar, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
-import type { NetworkSectionProps } from '../../network-section-props.type';
+import type { NetworkSectionProps } from '../../NetworkView.type';
 import { CHECKED_LABEL, PROGRESS_TITLE, RECEIVED_LABEL } from './ProgressSection.constants';
 
 const ProgressSection = ({ status }: NetworkSectionProps) => {

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Card, EmptyState, Stack, StatRow, Status, Toggle } from '@drizztdourden08/tessera/primitives';
 import { useOnlineConnection } from '../../../../online/hooks/behavior/useOnlineConnection';
-import type { NetworkSectionProps } from '../../network-section-props.type';
+import type { NetworkSectionProps } from '../../NetworkView.type';
 import { NO_PLAYERS_MESSAGE, PLAYERS_TITLE, TRACK_DESCRIPTION, TRACK_LABEL } from './PlayersSection.constants';
 
 const PlayersSection = ({ status }: NetworkSectionProps) => {

@@ -18,7 +18,7 @@ interface VisibleSection {
 interface SectionViewProps {
   sections: readonly VisibleSection[];
   prefs: GameInfoPrefsValue;
-  customDropped: boolean;
+  customHidden: boolean;
 }
 
 interface BlockViewProps {

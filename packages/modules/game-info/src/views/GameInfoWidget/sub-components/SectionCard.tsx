@@ -4,11 +4,11 @@ import { DROPPED_NOTE } from '../GameInfoWidget.constants';
 import { BlockView } from './BlockView';
 import type { SectionCardProps } from './SectionCard.type';
 
-const SectionCard = ({ section, prefs, customDropped, collapsible = false }: SectionCardProps) => {
+const SectionCard = ({ section, prefs, customHidden, collapsible = false }: SectionCardProps) => {
   const body = (
     <div className="game-info-section">
       {section.blocks.map((block, index) => <BlockView key={index} block={block} prefs={prefs} />)}
-      {customDropped && section.blocks.length === 0 && <Text tone="faint">{DROPPED_NOTE}</Text>}
+      {customHidden && section.blocks.length === 0 && <Text tone="faint">{DROPPED_NOTE}</Text>}
     </div>
   );
   if (collapsible) return <Disclosure summary={section.title} defaultOpen>{body}</Disclosure>;

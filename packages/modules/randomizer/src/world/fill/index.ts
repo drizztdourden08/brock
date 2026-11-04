@@ -2,6 +2,7 @@
 export { FillError } from './fill-error';
 export { MAX_PLACEMENT_ATTEMPTS, MAX_SWAPS_PER_ITEM } from './fill.constants';
 export { MAIN_FILL } from './main-fill.constants';
+export { mainFillPhase } from './main-fill-phase';
 export { canFillLocation } from './can-fill-location';
 export { createAssumedState } from './create-assumed-state';
 export { sweepPlacedItems } from './sweep-placed-items';

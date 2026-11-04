@@ -2,9 +2,9 @@
 import { itemAt } from '../util';
 import { fillRestrictive } from './fill-restrictive';
 import type { Rng } from '../rng';
-import type { FillBuild } from '../types';
+import type { FillBuild, World } from '../types';
 
-const runMainFill = (build: FillBuild, rng: Rng): void => {
+const runMainFill = <W extends World>(build: FillBuild<W>, rng: Rng): void => {
   const { world, relaxWhenBeatable } = build;
   const openLocations = rng.shuffle(build.eligible());
   const progression = rng.shuffle(build.progression);

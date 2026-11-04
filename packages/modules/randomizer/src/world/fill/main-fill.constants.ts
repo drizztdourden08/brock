@@ -1,7 +1,7 @@
 /* @layer core @kind constants */
-import { runMainFill } from './run-main-fill';
-import type { FillPhase } from '../types';
+import { mainFillPhase } from './main-fill-phase';
+import type { FillPhase, WorldKeys } from '../types';
 
-const MAIN_FILL: FillPhase = { id: 'main-fill', run: runMainFill };
+const MAIN_FILL: FillPhase = mainFillPhase<WorldKeys>();
 
 export { MAIN_FILL };

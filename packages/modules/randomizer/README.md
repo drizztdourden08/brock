@@ -16,4 +16,8 @@ Install it with `brock add randomizer`. Today it ships one subpath.
 | `io` | `isOptionsSnapshot` and `isStoredPlacement`, with the schema names passed in. |
 | `rules`, `state`, `fill`, `generate`, `define` | Rule compile, collection state, restrictive fill, the attempt loop and the declarative game definition. |
 
+The `worldSchema` of a world definition is a version tag the game owns, such as `'rotp-world-v1'`. Bump it when locations, items or regions change so placements stored from an older world are recognized.
+
+`createWorldKit<K>()` returns the rule builders, the rule combinators, `always`, `never` and `mainFill` bound to your world keys, so `kit.has('sword')` is checked against `K['holding']` with no type argument.
+
 Licence notes are in `NOTICE.md` and `LICENSE-world`.

@@ -1,8 +1,9 @@
 /* @layer renderer-app @kind component */
-import { RunView } from '../views/RunView';
+import type { ScreenMeta } from '@drizztdourden08/brock-react';
+import { RunView } from '../renderer/views/RunView';
 import { PAGE_METAS } from './pages.constants';
 
-const meta = PAGE_METAS.run;
+const meta: ScreenMeta = PAGE_METAS.run;
 
 const RandomizerRunPage = () => <RunView />;
 

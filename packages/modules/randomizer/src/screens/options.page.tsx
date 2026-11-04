@@ -1,8 +1,9 @@
 /* @layer renderer-app @kind component */
-import { OptionsView } from '../views/OptionsView';
+import type { ScreenMeta } from '@drizztdourden08/brock-react';
+import { OptionsView } from '../renderer/views/OptionsView';
 import { PAGE_METAS } from './pages.constants';
 
-const meta = PAGE_METAS.options;
+const meta: ScreenMeta = PAGE_METAS.options;
 
 const RandomizerOptionsPage = () => <OptionsView />;
 

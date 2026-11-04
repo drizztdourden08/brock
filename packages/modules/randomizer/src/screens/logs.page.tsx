@@ -1,8 +1,9 @@
 /* @layer renderer-app @kind component */
-import { LogsView } from '../views/LogsView';
+import type { ScreenMeta } from '@drizztdourden08/brock-react';
+import { LogsView } from '../renderer/views/LogsView';
 import { PAGE_METAS } from './pages.constants';
 
-const meta = PAGE_METAS.logs;
+const meta: ScreenMeta = PAGE_METAS.logs;
 
 const RandomizerLogsPage = () => <LogsView />;
 

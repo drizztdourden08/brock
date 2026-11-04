@@ -1,5 +1,15 @@
 # @drizztdourden08/brock-build
 
+## 0.118.2
+
+### Patch Changes
+
+- 2b00002: The splash inks, the brand gradient and the installer theme read short hex colours from Tessera's `tokens.json`. Tessera 0.102.0 writes `#000` and `#fff`, so the splash lost the palette's dim text and the installer fell back to its built-in dark colours.
+  - @drizztdourden08/brock-core@0.118.2
+  - @drizztdourden08/brock-lint-config@0.118.2
+  - @drizztdourden08/brock-thread@0.118.2
+  - @drizztdourden08/build-cache@0.118.2
+
 ## 0.118.1
 
 ### Patch Changes

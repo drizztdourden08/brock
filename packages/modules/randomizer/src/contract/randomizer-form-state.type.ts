@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { RandomizerModeId } from '../profile/randomizer-modes.type';
+import type { RandomizerModeId } from '../augment';
 
 interface RandomizerFormState {
   enabled: boolean;

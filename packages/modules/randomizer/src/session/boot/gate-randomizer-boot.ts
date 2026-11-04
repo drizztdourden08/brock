@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { RandomizerProfileConfig } from '../../profile/randomizer-profile.type';
+import type { RandomizerProfileConfig } from '../../augment';
 import { pendingBoot } from '../store/pending-boot';
 import { sessionFactories } from '../store/session-factories';
 import type { GateResult } from './gate-result.type';

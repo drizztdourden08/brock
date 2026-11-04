@@ -4,7 +4,7 @@ import type { FrameClock } from '../session/delivery/frame-clock.type';
 import type { ItemDeliverer } from '../session/delivery/item-deliverer.type';
 import type { SeedApplier } from '../session/applier/seed-applier.type';
 import type { MemoryBridge } from '../memory/memory-bridge.type';
-import type { RandomizerProfileConfig } from '../profile/randomizer-profile.type';
+import type { RandomizerProfileConfig } from '../augment';
 import type { DefPlacement, RandomizerWorldGame, SchemaSet } from '../world';
 import type { OptionCatalog } from '../world/options/option-catalog.type';
 import type { CoreSignal } from './core-signal.type';

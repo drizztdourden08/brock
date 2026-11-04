@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
 import type { RandomizerLog } from '../../contract/randomizer-log.type';
-import type { RandomizerProfileConfig } from '../../profile/randomizer-profile.type';
+import type { RandomizerProfileConfig } from '../../augment';
 import { writePlacement } from '../placement/write-placement';
 
 const rerollPlacement = async <P, A>(

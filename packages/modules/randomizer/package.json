@@ -17,6 +17,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./augment": "./src/augment.ts",
     "./world": "./src/world/index.ts",
     "./session": "./src/session/index.ts",
     "./main": "./src/main/index.ts",

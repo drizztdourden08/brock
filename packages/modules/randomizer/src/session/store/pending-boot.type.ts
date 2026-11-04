@@ -1,5 +1,5 @@
 /* @layer core @kind types */
-import type { RandomizerProfileConfig } from '../../profile/randomizer-profile.type';
+import type { RandomizerProfileConfig } from '../../augment';
 
 interface PendingBoot {
   profileId: string;

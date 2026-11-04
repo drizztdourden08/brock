@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
 import type { RandomizerLog } from '../../contract/randomizer-log.type';
-import type { RandomizerProfileConfig } from '../../profile/randomizer-profile.type';
+import type { RandomizerProfileConfig } from '../../augment';
 import { readPlacement } from '../placement/read-placement';
 import { sizeOfField } from '../placement/size-of-field';
 import type { PendingBoot } from '../store/pending-boot.type';

@@ -1,5 +1,5 @@
 /* @layer core @kind logic */
-import type { RandomizerOptions } from '../../augment';
+import type { RandomizerOptions } from '../../randomizer-options.type';
 import type { OptionCatalog } from './option-catalog.type';
 
 const buildOptionsSnapshot = (catalog: OptionCatalog, overrides: RandomizerOptions = {}): RandomizerOptions => {

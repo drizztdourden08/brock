@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { RandomizerOptions } from './randomizer-options.type';
+
 interface RandomizerModes {
   local: true;
 }
@@ -7,7 +9,6 @@ type RandomizerModeId = keyof RandomizerModes;
 
 interface RandomizerTypeRegistry {}
 
-type RandomizerOptions = Record<string, unknown>;
 
 type RandomizerFrozenSettings = RandomizerTypeRegistry extends { frozenSettings: infer F } ? F : object;
 

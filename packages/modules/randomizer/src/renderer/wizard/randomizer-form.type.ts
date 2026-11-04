@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { RandomizerOptions } from '../../augment';
+import type { RandomizerOptions } from '../../randomizer-options.type';
 
 interface RandomizerOptionsSlice {
   overrides: RandomizerOptions;

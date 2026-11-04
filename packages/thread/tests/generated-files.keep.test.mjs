@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GENERATED_UNTRACKED } from '../src/worktree/generated-files.constants.mjs';
 import { guards } from '../src/worktree/guards.mjs';
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const [INSTRUCTIONS] = GENERATED_UNTRACKED;
 

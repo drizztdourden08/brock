@@ -26,7 +26,7 @@ writeFileSync(join(process.env.COORD_HOME, 'remote.json'), '{"mode":"remote"}');
 
 const GM = 'agent/grand-merge';
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const tryRun = (cwd, ...args) => {
   try {
@@ -72,13 +72,13 @@ beforeEach(() => {
   const origin = join(dir, 'origin.git');
   main = join(dir, 'main');
   other = join(dir, 'other');
-  execFileSync('git', ['init', '-q', '-b', 'main', seed]);
+  execFileSync('git', ['init', '-q', '-b', 'main', seed], { windowsHide: true });
   identity(seed);
   commit(seed, 'first');
   run(seed, 'branch', GM);
-  execFileSync('git', ['clone', '-q', '--bare', seed, origin]);
+  execFileSync('git', ['clone', '-q', '--bare', seed, origin], { windowsHide: true });
   for (const clone of [main, other]) {
-    execFileSync('git', ['clone', '-q', origin, clone]);
+    execFileSync('git', ['clone', '-q', origin, clone], { windowsHide: true });
     identity(clone);
   }
   process.chdir(main);

@@ -52,7 +52,7 @@ const fixtureApp = (helpers, files = {}) => {
 };
 
 const startServer = (script, discovery) => new Promise((resolveReady, reject) => {
-  const child = spawn(process.execPath, [script, discovery], { stdio: ['ignore', 'pipe', 'inherit'] });
+  const child = spawn(process.execPath, [script, discovery], { windowsHide: true, stdio: ['ignore', 'pipe', 'inherit'] });
   children.push(child);
   child.stdout.once('data', () => resolveReady(child));
   child.once('exit', (code) => reject(new Error(`the server helper exited with ${code}`)));
@@ -73,7 +73,7 @@ describe('brock.config.ts helpers', () => {
     expect([...bundled.matchAll(/from\s+['"]([^'"]+)['"]/g)].map(([, spec]) => spec).every((spec) => spec.startsWith('node:') || !spec.includes('/'))).toBe(true);
     const discovery = join(root, 'bridge.json');
     await startServer(join(out, 'demo-server.mjs'), discovery);
-    const answer = execFileSync(process.execPath, [join(out, 'demo-client.mjs')], { encoding: 'utf8', timeout: 20000, env: { ...process.env, BROCK_BRIDGE_FILE: discovery } });
+    const answer = execFileSync(process.execPath, [join(out, 'demo-client.mjs')], { windowsHide: true, encoding: 'utf8', timeout: 20000, env: { ...process.env, BROCK_BRIDGE_FILE: discovery } });
     expect(answer).toBe('sum 42');
   });
 

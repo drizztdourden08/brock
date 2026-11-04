@@ -36,7 +36,7 @@ describe('K1 the managed .gitignore lines', { tags: ['critical'] }, () => {
   });
 });
 
-const git = (cwd, ...args) => spawnSync('git', args, { cwd, encoding: 'utf8' });
+const git = (cwd, ...args) => spawnSync('git', args, { windowsHide: true, cwd, encoding: 'utf8' });
 
 describe('E2 brock check on the managed workflows (real git)', { tags: ['e2e'] }, () => {
   it('fails while git ignores a managed workflow, and passes once !.github/ follows the rule', () => {

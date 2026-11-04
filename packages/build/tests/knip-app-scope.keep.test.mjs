@@ -30,7 +30,7 @@ const workspace = () => appDir({
 });
 
 const knipFrom = (dir) => {
-  const run = spawnSync(process.execPath, [BROCK_BIN, 'knip', '--reporter', 'json'], { cwd: dir, encoding: 'utf8' });
+  const run = spawnSync(process.execPath, [BROCK_BIN, 'knip', '--reporter', 'json'], { windowsHide: true, cwd: dir, encoding: 'utf8' });
   const report = JSON.parse(run.stdout.slice(run.stdout.indexOf('{')));
   return { status: run.status, files: report.issues.flatMap((issue) => issue.files.map((file) => file.name)) };
 };

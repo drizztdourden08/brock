@@ -57,6 +57,6 @@ describe('E2 a main build with a ?modulePath worker', { tags: ['e2e'] }, () => {
     await build({ root, configFile: join(root, 'electron.vite.config.mjs'), logLevel: 'silent' });
     const out = join(root, 'dist/electron');
     expect(readdirSync(out).some((file) => file.startsWith('job.worker'))).toBe(true);
-    expect(execFileSync(process.execPath, [join(out, 'main.js')], { cwd: root, encoding: 'utf8', timeout: 20000 })).toBe('worker answered 42');
+    expect(execFileSync(process.execPath, [join(out, 'main.js')], { windowsHide: true, cwd: root, encoding: 'utf8', timeout: 20000 })).toBe('worker answered 42');
   });
 });

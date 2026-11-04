@@ -7,7 +7,7 @@ import { tempTree } from './temp-tree.mjs';
 
 const { tempDir, put, cleanup } = tempTree('brock-shared-build-');
 
-const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd, stdio: 'pipe' });
+const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { windowsHide: true, cwd, stdio: 'pipe' });
 
 const APP_FILES = {
   'package.json': '{"name":"@scope/app","version":"1.2.3","type":"module"}',

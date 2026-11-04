@@ -8,7 +8,7 @@ import { removeLeftover } from '../src/worktree/remove-leftover.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 import { isUpgradeThrowaway } from '../src/worktree/upgrade-throwaway.mjs';
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const workspace = { branchPrefix: 'agent/', worktreesDir: '.worktrees', base: 'main' };
 

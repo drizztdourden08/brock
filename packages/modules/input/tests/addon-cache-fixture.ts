@@ -24,7 +24,7 @@ const addonCacheFixture = () => {
   const makeArchive = (): string => {
     mkdirSync(join(state.work, 'source'), { recursive: true });
     writeFileSync(join(state.work, 'source', 'sdl3_input.node'), 'addon bytes');
-    execFileSync('tar', ['-czf', 'prebuilt.tar.gz', '-C', 'source', '.'], { cwd: state.work });
+    execFileSync('tar', ['-czf', 'prebuilt.tar.gz', '-C', 'source', '.'], { windowsHide: true, cwd: state.work });
     return join(state.work, 'prebuilt.tar.gz');
   };
 

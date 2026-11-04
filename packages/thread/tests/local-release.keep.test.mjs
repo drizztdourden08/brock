@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runLocalRelease } from '../src/release/local/local-release.mjs';
 
-const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const git = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const NOTE = `<!-- @layer docs @kind doc -->
 # Atlas v1.0.1

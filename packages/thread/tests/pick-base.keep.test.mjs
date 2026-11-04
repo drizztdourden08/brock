@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { pickBase } from '../src/worktree/pick-base.mjs';
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const commit = (cwd, name) => {
   writeFileSync(join(cwd, `${name}.txt`), name);
@@ -24,9 +24,9 @@ beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), 'pick-base-'));
   origin = join(dir, 'origin');
   main = join(dir, 'main');
-  execFileSync('git', ['init', '-q', '-b', 'main', origin]);
+  execFileSync('git', ['init', '-q', '-b', 'main', origin], { windowsHide: true });
   commit(origin, 'first');
-  execFileSync('git', ['clone', '-q', origin, main]);
+  execFileSync('git', ['clone', '-q', origin, main], { windowsHide: true });
   lines.length = 0;
 });
 

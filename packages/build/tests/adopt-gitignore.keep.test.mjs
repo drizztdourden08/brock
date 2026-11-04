@@ -18,13 +18,13 @@ const gitRepo = (files) => {
   const root = mkdtempSync(join(tmpdir(), 'brock-gitignore-'));
   made.push(root);
   Object.entries(files).forEach(([file, text]) => put(root, file, text));
-  execFileSync('git', ['init', '-q'], { cwd: root });
-  execFileSync('git', ['add', '.'], { cwd: root });
+  execFileSync('git', ['init', '-q'], { windowsHide: true, cwd: root });
+  execFileSync('git', ['add', '.'], { windowsHide: true, cwd: root });
   return root;
 };
 
 const linesOf = (root) => readFileSync(join(root, '.gitignore'), 'utf8').split('\n');
-const ignored = (root) => execFileSync('git', ['ls-files', '-ci', '--exclude-standard'], { cwd: root, encoding: 'utf8' });
+const ignored = (root) => execFileSync('git', ['ls-files', '-ci', '--exclude-standard'], { windowsHide: true, cwd: root, encoding: 'utf8' });
 
 afterEach(() => {
   for (const root of made.splice(0)) rmSync(root, { recursive: true, force: true });

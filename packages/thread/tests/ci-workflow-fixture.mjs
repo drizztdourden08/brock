@@ -81,7 +81,7 @@ const BROKEN = `jobs:
 
 const MARKER = "import { appendFileSync } from 'node:fs';\nappendFileSync('order.txt', `${process.argv.slice(2).join(' ')}\\n`);\n";
 
-const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const git = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const workspace = { name: 'demo', base: 'main', protectedBranches: ['main'], worktreesDir: '.worktrees', publish: {}, gate: undefined };
 const byName = (steps) => Object.fromEntries(steps.map((step) => [step.name, step]));
 

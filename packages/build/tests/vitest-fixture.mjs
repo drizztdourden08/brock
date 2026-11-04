@@ -58,7 +58,7 @@ const linkRootTools = (rootDir) => {
 
 const runVitest = (cwd) => {
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('VITEST')));
-  return spawnSync(process.execPath, [join(VITEST_DIR, 'vitest.mjs'), 'run', '--no-color'], { cwd, env, encoding: 'utf8', timeout: 120_000 });
+  return spawnSync(process.execPath, [join(VITEST_DIR, 'vitest.mjs'), 'run', '--no-color'], { windowsHide: true, cwd, env, encoding: 'utf8', timeout: 120_000 });
 };
 
 export { APP_CONFIG, APP_PACKAGE, PROBE, VITEST_CONFIG, installApp, linkRootTools, runVitest };

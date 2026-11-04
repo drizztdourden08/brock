@@ -43,7 +43,7 @@ describe('E2 the server bundle', () => {
     expect(readdirSync(out)).toEqual(['main.mjs']);
     const bundled = readFileSync(join(out, 'main.mjs'), 'utf8');
     expect([...bundled.matchAll(/from\s+['"]([^'"]+)['"]/g)].map(([, spec]) => spec).every((spec) => spec.startsWith('node:'))).toBe(true);
-    const printed = execFileSync(process.execPath, [join(out, 'main.mjs')], { encoding: 'utf8', timeout: 20000 });
+    const printed = execFileSync(process.execPath, [join(out, 'main.mjs')], { windowsHide: true, encoding: 'utf8', timeout: 20000 });
     expect(printed).toBe('started HELLO from-src b42\n');
   });
 
@@ -74,7 +74,7 @@ describe('E2 the server bundle', () => {
     expect(await bundleServer(root, config, 'test')).toBe(true);
     const out = join(root, 'dist/server');
     expect(readdirSync(out)).toEqual(['main.mjs']);
-    expect(execFileSync(process.execPath, [join(out, 'main.mjs')], { encoding: 'utf8', timeout: 20000 })).toBe('native=false loader=false\n');
+    expect(execFileSync(process.execPath, [join(out, 'main.mjs')], { windowsHide: true, encoding: 'utf8', timeout: 20000 })).toBe('native=false loader=false\n');
   });
 
   it('K4 checks the entry name and file', { tags: ['critical'] }, () => {

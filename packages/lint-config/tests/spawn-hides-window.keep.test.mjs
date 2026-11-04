@@ -31,7 +31,7 @@ describe('the spawn-hides-window rule', () => {
     const found = await hideMessages([
       "import { execFileSync as exec } from 'node:child_process';",
       "import * as cp from 'node:child_process';",
-      "const options = { windowsHide: true };",
+      'const options = { windowsHide: true };',
       "exec('git', [], { cwd: '.' });",
       "cp.execSync('ls', options);",
       "cp.execSync('ls', { ...options, windowsHide: true });",

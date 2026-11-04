@@ -146,6 +146,7 @@ describe('E2 the package selection of the publish-packages workflow', { tags: ['
     const step = stepOf(job, 'Select packages');
     const output = join(tempRepo({ 'github-output': '' }), 'github-output').replaceAll('\\', '/');
     const run = spawnSync('bash', ['-c', step.run], {
+    windowsHide: true,
       encoding: 'utf8', env: { ...process.env, GITHUB_OUTPUT: output, REQUESTED: requested, ALLOWED: step.env.ALLOWED, LISTED: step.env.LISTED },
     });
     return { status: run.status, stdout: run.stdout, output: readFileSync(output, 'utf8') };

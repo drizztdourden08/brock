@@ -10,7 +10,7 @@ let granted = '';
 let outside = '';
 let access = testAccess();
 
-const shortNameOf = (path: string): string => execSync(`for %I in ("${path}") do @echo %~sI`).toString().trim();
+const shortNameOf = (path: string): string => execSync(`for %I in ("${path}") do @echo %~sI`, { windowsHide: true }).toString().trim();
 
 const hasShortNames = (): boolean => shortNameOf(granted).toLowerCase() !== granted.toLowerCase();
 

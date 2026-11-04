@@ -13,7 +13,7 @@ useDevelopmentMode(cleanup);
 
 const { messages, customLogger } = reuseLogger();
 
-const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd, stdio: 'pipe' });
+const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { windowsHide: true, cwd, stdio: 'pipe' });
 
 const repo = () => {
   const root = tempDir();

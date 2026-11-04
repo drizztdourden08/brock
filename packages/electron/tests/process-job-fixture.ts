@@ -32,7 +32,7 @@ if (mode === 'lines') {
 } else if (mode === 'env') {
   console.log('ENV ' + Object.keys(process.env).join(','));
 } else if (mode === 'tree') {
-  const child = spawn(process.execPath, ['-e', 'setInterval(() => undefined, 1000)'], { stdio: 'ignore' });
+  const child = spawn(process.execPath, ['-e', 'setInterval(() => undefined, 1000)'], { windowsHide: true, stdio: 'ignore' });
   console.log('CHILD ' + child.pid);
   hold();
 } else {

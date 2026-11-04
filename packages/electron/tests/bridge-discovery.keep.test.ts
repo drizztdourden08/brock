@@ -19,7 +19,7 @@ afterEach(() => {
   closeOpened();
 });
 
-const deadPid = (): number => spawnSync(process.execPath, ['-e', '']).pid;
+const deadPid = (): number => spawnSync(process.execPath, ['-e', ''], { windowsHide: true }).pid;
 
 const stat = (kind: 'dir' | 'link' | 'socket', uid: number, mode: number): PathStat => ({
   isSymbolicLink: () => kind === 'link',

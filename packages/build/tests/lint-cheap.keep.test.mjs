@@ -14,7 +14,7 @@ const { tempDir, put, cleanup } = tempTree('brock-lint-');
 afterEach(cleanup);
 
 const git = (cwd, ...args) => {
-  const { status } = spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', ...args], { cwd, stdio: 'ignore' });
+  const { status } = spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', ...args], { windowsHide: true, cwd, stdio: 'ignore' });
   if (status !== 0) throw new Error(`git ${args.join(' ')} failed`);
 };
 

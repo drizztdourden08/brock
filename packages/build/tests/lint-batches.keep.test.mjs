@@ -14,7 +14,7 @@ afterEach(cleanup);
 
 const repoWith = (count) => {
   const root = tempDir();
-  spawnSync('git', ['init', '-q', '-b', 'main'], { cwd: root });
+  spawnSync('git', ['init', '-q', '-b', 'main'], { windowsHide: true, cwd: root });
   for (let n = 0; n < count; n += 1) put(root, `src/f${String(n).padStart(3, '0')}.ts`, 'export {};\n');
   return root;
 };
@@ -78,9 +78,9 @@ describe('K1 merging the exit codes', { tags: ['critical'] }, () => {
 describe('E2 the full-tree plan with real git', { tags: ['e2e'] }, () => {
   it('lists the tree sorted, without deleted files, and batches it', () => {
     const root = repoWith(5);
-    spawnSync('git', ['add', '.'], { cwd: root });
-    spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'x'], { cwd: root });
-    spawnSync('git', ['rm', '-q', '--cached', 'src/f000.ts'], { cwd: root });
+    spawnSync('git', ['add', '.'], { windowsHide: true, cwd: root });
+    spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'x'], { windowsHide: true, cwd: root });
+    spawnSync('git', ['rm', '-q', '--cached', 'src/f000.ts'], { windowsHide: true, cwd: root });
     put(root, 'a-new.ts');
     const files = treeFiles(root);
     expect(files).toEqual(['a-new.ts', 'src/f000.ts', 'src/f001.ts', 'src/f002.ts', 'src/f003.ts', 'src/f004.ts']);

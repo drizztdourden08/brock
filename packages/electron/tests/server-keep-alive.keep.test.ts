@@ -16,7 +16,7 @@ afterEach(async () => {
 const startChild = async (): Promise<{ child: ReturnType<typeof fork>; exit: Promise<number | null> }> => {
   const root = await mkdtemp(join(tmpdir(), 'brock-keep-'));
   roots.push(root);
-  const child = fork(CHILD, [`--user-data=${join(root, 'data')}`], { stdio: ['ignore', 'ignore', 'inherit', 'ipc'] });
+  const child = fork(CHILD, [`--user-data=${join(root, 'data')}`], { windowsHide: true, stdio: ['ignore', 'ignore', 'inherit', 'ipc'] });
   const exit = new Promise<number | null>((done) => child.once('exit', (code) => done(code)));
   await new Promise<void>((ready) => child.once('message', () => ready()));
   return { child, exit };

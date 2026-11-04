@@ -9,7 +9,7 @@ const { tempDir: emptyDir, put, cleanup } = tempTree('brock-tag-step-');
 afterEach(cleanup);
 
 const git = (cwd, ...args) => {
-  const result = spawnSync('git', ['-c', 'user.name=test', '-c', 'user.email=test@example.com', ...args], { cwd, encoding: 'utf8' });
+  const result = spawnSync('git', ['-c', 'user.name=test', '-c', 'user.email=test@example.com', ...args], { windowsHide: true, cwd, encoding: 'utf8' });
   if (result.status !== 0) throw new Error(`git ${args.join(' ')}: ${result.stderr}`);
   return result.stdout.trim();
 };
@@ -35,7 +35,7 @@ const TAG_STEP = parse(composeWorkflows({ targets: ['desktop'], appDir: 'apps/de
 
 const tagRun = (work) => {
   const script = TAG_STEP.replaceAll('${{ needs.prepare.outputs.tag }}', 'v1.2.0').replaceAll('${{ needs.prepare.outputs.version }}', '1.2.0');
-  const result = spawnSync('bash', ['-e', '-c', script], { cwd: work, encoding: 'utf8', env: { ...process.env, BRANCH: 'main', APP_DIR: 'apps/desktop' } });
+  const result = spawnSync('bash', ['-e', '-c', script], { windowsHide: true, cwd: work, encoding: 'utf8', env: { ...process.env, BRANCH: 'main', APP_DIR: 'apps/desktop' } });
   return { code: result.status, out: `${result.stdout}${result.stderr}` };
 };
 

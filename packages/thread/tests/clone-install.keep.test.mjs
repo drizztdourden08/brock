@@ -65,7 +65,7 @@ describe('S2 cloneInstall source pick', () => {
   it('clones from a checkout whose own install rewrote its committed lockfile, and only when the install inputs match', { tags: ['e2e'] }, async () => {
     const source = installedCheckout();
     put(source, '.npmrc', 'auto-install-peers=true\n');
-    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
+    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { windowsHide: true, cwd: source, stdio: 'pipe' });
     git('init', '-q');
     git('add', 'pnpm-lock.yaml', '.npmrc');
     git('commit', '-q', '-m', 'lockfile');
@@ -86,7 +86,7 @@ describe('S2 cloneInstall source pick', () => {
 
   it('copies a git-ignored local pnpmfile of the source along, so a later install resolves the same way', { tags: ['e2e'] }, async () => {
     const source = installedCheckout();
-    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: source, stdio: 'pipe' });
+    const git = (...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'core.autocrlf=false', ...args], { windowsHide: true, cwd: source, stdio: 'pipe' });
     git('init', '-q');
     put(source, '.gitignore', '/.pnpmfile.cjs\nnode_modules/\n');
     git('add', 'pnpm-lock.yaml', '.gitignore');

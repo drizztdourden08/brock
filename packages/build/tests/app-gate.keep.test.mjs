@@ -15,7 +15,7 @@ afterEach(cleanup);
 
 const pin = (dir, real) => {
   put(dir, 'node_modules/clang-format-node/package.json', JSON.stringify({ name: 'clang-format-node', bin: { 'clang-format': 'cli.mjs' } }));
-  put(dir, 'node_modules/clang-format-node/cli.mjs', `import { spawnSync } from 'node:child_process';\nprocess.exitCode = spawnSync(${JSON.stringify(real)}, process.argv.slice(2), { stdio: 'inherit' }).status ?? 1;\n`);
+  put(dir, 'node_modules/clang-format-node/cli.mjs', `import { spawnSync } from 'node:child_process';\nprocess.exitCode = spawnSync(${JSON.stringify(real)}, process.argv.slice(2), { windowsHide: true, stdio: 'inherit' }).status ?? 1;\n`);
 };
 
 const workspace = () => {

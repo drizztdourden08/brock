@@ -46,7 +46,7 @@ const withRepoKnip = (root) => {
 };
 
 const unusedIn = (root) => {
-  const run = spawnSync(process.execPath, [BROCK_BIN, 'knip', '--reporter', 'json', '--include', 'dependencies'], { cwd: root, encoding: 'utf8' });
+  const run = spawnSync(process.execPath, [BROCK_BIN, 'knip', '--reporter', 'json', '--include', 'dependencies'], { windowsHide: true, cwd: root, encoding: 'utf8' });
   const report = JSON.parse(run.stdout.slice(run.stdout.indexOf('{')));
   return report.issues.flatMap((issue) => issue.dependencies.map((dep) => dep.name));
 };

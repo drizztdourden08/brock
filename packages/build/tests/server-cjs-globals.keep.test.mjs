@@ -41,7 +41,7 @@ describe('E2 the CommonJS globals of a node bundle', { tags: ['e2e'] }, () => {
   it('gives an inlined CommonJS package in the server bundle a working __dirname, __filename and require, beside a module that declares its own', async () => {
     const root = serverApp({ ...CJS_GLOBALS_FILES, ...OWN_GLOBALS_FILES, 'server/main.ts': SERVER_MAIN });
     expect(await bundleServer(root, SERVER_CONFIG, 'test')).toBe(true);
-    const printed = JSON.parse(execFileSync(process.execPath, [join(root, 'dist/server/main.mjs')], { encoding: 'utf8', timeout: 20000 }));
+    const printed = JSON.parse(execFileSync(process.execPath, [join(root, 'dist/server/main.mjs')], { windowsHide: true, encoding: 'utf8', timeout: 20000 }));
     expect(printed).toEqual({ here: 'server', file: 'main.mjs', resolve: 'function', main: 'undefined', cache: 'object', own: ['string', 'own'] });
   });
 });

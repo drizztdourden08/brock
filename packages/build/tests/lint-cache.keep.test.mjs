@@ -15,7 +15,7 @@ const project = () => {
   put(root, 'src/Tags.tsx', "import { mirrors } from './Asset.constants';\nexport const tags = mirrors();\n");
   put(root, 'src/Asset.constants.ts', 'export const mirrors = () => 1;\n');
   put(root, 'notes.md', 'one\n');
-  const git = (...args) => spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...args], { cwd: root, stdio: 'ignore' });
+  const git = (...args) => spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...args], { windowsHide: true, cwd: root, stdio: 'ignore' });
   git('init', '-b', 'main');
   git('add', '.');
   return root;

@@ -23,7 +23,7 @@ writeFileSync(join(process.env.COORD_HOME, 'remote.json'), '{"mode":"remote"}');
 const ENV = 'BROCK_WORKTREE_PREFIX';
 const WHO = { GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t' };
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
 
 const commit = (cwd, name) => {
   writeFileSync(join(cwd, `${name}.txt`), name);
@@ -51,10 +51,10 @@ beforeEach(() => {
   const seed = join(dir, 'seed');
   const origin = join(dir, 'origin.git');
   main = join(dir, 'main');
-  execFileSync('git', ['init', '-q', '-b', 'main', seed]);
+  execFileSync('git', ['init', '-q', '-b', 'main', seed], { windowsHide: true });
   commit(seed, 'first');
-  execFileSync('git', ['clone', '-q', '--bare', seed, origin]);
-  execFileSync('git', ['clone', '-q', origin, main]);
+  execFileSync('git', ['clone', '-q', '--bare', seed, origin], { windowsHide: true });
+  execFileSync('git', ['clone', '-q', origin, main], { windowsHide: true });
   process.chdir(main);
   lines.length = 0;
 });

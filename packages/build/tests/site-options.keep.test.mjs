@@ -90,7 +90,7 @@ describe('K2 brock.site.ts options', () => {
       'apps/docs/brock.site.ts': `import { defineBrockSite } from '${DEFINE_SITE}';\nimport { TOOL_PORTS } from '../../ports.constants.ts';\n\nexport default defineBrockSite({ site: { id: 'docs' }, ports: { offset: TOOL_PORTS.docs }, api: { portOffset: TOOL_PORTS.api } });\n`,
     });
     const url = pathToFileURL(join(root, 'apps/docs/brock.site.ts')).href;
-    const result = spawnSync(process.execPath, ['--input-type=module', '-e', `const site = (await import('${url}')).default; console.log(JSON.stringify([site.ports.offset, site.api.target.portOffset]));`], { encoding: 'utf8' });
+    const result = spawnSync(process.execPath, ['--input-type=module', '-e', `const site = (await import('${url}')).default; console.log(JSON.stringify([site.ports.offset, site.api.target.portOffset]));`], { windowsHide: true, encoding: 'utf8' });
     expect(result.stderr.replace(/.*ExperimentalWarning.*\n?|.*--trace-warnings.*\n?/g, '')).toBe('');
     expect(JSON.parse(result.stdout)).toEqual([3, 4]);
   });

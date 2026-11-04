@@ -41,7 +41,7 @@ const fill = (script: string, values: Record<string, string>): string => {
 };
 
 const runBash = (cwd: string, script: string, env: Record<string, string> = {}) => {
-  const result = spawnSync('bash', ['-e', '-c', script], { cwd, encoding: 'utf8', env: { ...process.env, ...env } });
+  const result = spawnSync('bash', ['-e', '-c', script], { windowsHide: true, cwd, encoding: 'utf8', env: { ...process.env, ...env } });
   return { code: result.status, out: `${result.stdout}${result.stderr}` };
 };
 

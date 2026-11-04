@@ -9,7 +9,7 @@ import { deleteTree } from '../src/worktree/delete-tree.mjs';
 import { ignoredFolders } from '../src/worktree/ignored-folders.mjs';
 import { removeTree } from '../src/worktree/remove-tree.mjs';
 
-const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const run = (cwd, ...args) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 let base = '';
 let main = '';

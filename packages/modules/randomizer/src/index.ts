@@ -17,6 +17,7 @@ export type {
   RandomizerModes,
   RandomizerTypeRegistry,
   RandomizerOptions,
+  RandomizerProfileOptions,
   RandomizerFrozenSettings,
   RandomizerProfileConfig,
 } from './augment';

@@ -19,13 +19,14 @@ type RandomizerModeId = keyof RandomizerModes;
 
 interface RandomizerTypeRegistry {}
 
+type RandomizerProfileOptions = RandomizerTypeRegistry extends { options: infer O } ? O : RandomizerOptions;
 
 type RandomizerFrozenSettings = RandomizerTypeRegistry extends { frozenSettings: infer F } ? F : object;
 
 interface RandomizerProfileConfig extends ArchipelagoConnection {
   mode: RandomizerModeId;
   seed: string;
-  options: RandomizerOptions;
+  options: RandomizerProfileOptions;
   frozenSettings?: RandomizerFrozenSettings;
   origin?: string;
 }
@@ -48,6 +49,7 @@ export type {
   RandomizerModeId,
   RandomizerTypeRegistry,
   RandomizerOptions,
+  RandomizerProfileOptions,
   RandomizerFrozenSettings,
   RandomizerProfileConfig,
 };

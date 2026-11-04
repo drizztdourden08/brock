@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-mcp
 
+## 0.120.0
+
+### Patch Changes
+
+- @drizztdourden08/brock-core@0.120.0
+- @drizztdourden08/brock-electron@0.120.0
+- @drizztdourden08/brock-react@0.120.0
+
 ## 0.119.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-thread
 
+## 0.120.0
+
+### Patch Changes
+
+- @drizztdourden08/build-cache@0.120.0
+
 ## 0.119.0
 
 ### Patch Changes

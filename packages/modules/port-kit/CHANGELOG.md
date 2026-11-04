@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.117.0
+
+### Patch Changes
+
+- e7ca059: The wasm build no longer sources `emsdk_env.bat`. From a Git Bash parent that script printed bash exports and left PATH alone, so the build failed with "emcc is not recognized". `ensure-wasm` now builds the SDK environment in Node (`emsdkEnvOf`) and runs the build script as `node <script>` on every platform. The env sets `EMSDK`, `EM_CONFIG`, `EMSDK_NODE` and, on Windows, `EMSDK_PYTHON`, and puts the SDK folder, `upstream/emscripten`, the SDK Node folder and the Windows Python folder first on the path. `emsdkOf` no longer reports `activate`, and its host option no longer takes a `platform`.
+- Updated dependencies [dafec60]
+- Updated dependencies [784f512]
+  - @drizztdourden08/brock-core@0.117.0
+  - @drizztdourden08/brock-electron@0.117.0
+  - @drizztdourden08/brock-react@0.117.0
+
 ## 0.116.1
 
 ### Patch Changes

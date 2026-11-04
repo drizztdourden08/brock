@@ -3,7 +3,7 @@ import './augment';
 
 export { defineRandomizerGame } from './contract/define-randomizer-game';
 export type { RandomizerGame } from './contract/randomizer-game.type';
-export type { RandomizerViews, RandomizerSubStep, ChecksWidgetViews } from './contract/randomizer-views.type';
+export type { RandomizerViews, RandomizerSubStep, ChecksWidgetViews, OptionsStepProps } from './contract/randomizer-views.type';
 export type { RollContext } from './contract/roll-context.type';
 export type { WorldStamp } from './contract/world-stamp.type';
 export type { RandomizerPoll } from './contract/randomizer-poll.type';

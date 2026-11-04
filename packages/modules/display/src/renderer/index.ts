@@ -20,6 +20,8 @@ export { useRefreshRateStore } from './useRefreshRateStore';
 export type { RefreshRateState } from './refresh-rate-store.type';
 export { useDisplayStore } from './useDisplayStore';
 export type { DisplayState } from './display-store.type';
+export { AspectRatioControl } from './AspectRatioControl';
+export type { AspectRatioControlProps, AspectRatioChange } from './AspectRatioControl';
 export { DisplaySettingsTab } from './DisplaySettingsTab';
 export type { DisplaySettingsTabProps } from './DisplaySettingsTab';
 export type {

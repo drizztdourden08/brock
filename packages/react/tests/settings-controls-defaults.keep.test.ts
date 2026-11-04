@@ -24,7 +24,7 @@ const CHOICE: SettingItem = {
 const controlsOf = (settings: BrockAppSettings<Shape>): SettingsControlsValue => {
   const captured: { value?: SettingsControlsValue } = {};
   const Probe = () => {
-    captured.value = useSettingsControls(settings);
+    captured.value = useSettingsControls(settings, []);
     return null;
   };
   renderToStaticMarkup(createElement(Probe));

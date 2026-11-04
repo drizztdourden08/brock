@@ -3,6 +3,8 @@ import type { ProductConfig } from '@drizztdourden08/brock-core';
 import type { MenuEntry } from '../menu/menu.type';
 import type { RouteShortcut } from '../navigation/navigation.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
+import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
+import type { ProfileWizardStepDef } from '../profiles/wizard/profile-wizard-step.type';
 import type { SettingsControlProps, TabDef } from '../settings/settings.type';
 
 type SettingsControlsValue = Pick<SettingsControlProps<object>, 'defaults' | 'renderControl' | 'isDisabled' | 'lockCauseOf' | 'lockOverlay'>;
@@ -19,6 +21,8 @@ interface BrockContextValue {
   logoSrc: string;
   instanceLogoSrc: string;
   moduleIds: readonly string[];
+  profileModes: readonly ProfileModeDef[];
+  profileWizardSteps: readonly ProfileWizardStepDef[];
 }
 
 export type { BrockContextValue, SettingsControlsValue };

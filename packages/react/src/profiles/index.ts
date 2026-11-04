@@ -11,3 +11,5 @@ export { updateAppState } from './update-app-state';
 export { readConfig } from './read-config';
 export { writeConfig } from './write-config';
 export { setLastProfile } from './set-last-profile';
+export * from './modes';
+export * from './wizard';

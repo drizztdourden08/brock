@@ -1,0 +1,23 @@
+/* @layer renderer-shell @kind component */
+import { Disclosure, SectionHeader, Stack, Text } from '@drizztdourden08/tessera/primitives';
+import { DROPPED_NOTE } from '../GameInfoWidget.constants';
+import { BlockView } from './BlockView';
+import type { SectionCardProps } from './SectionCard.type';
+
+const SectionCard = ({ section, prefs, customHidden, collapsible = false }: SectionCardProps) => {
+  const body = (
+    <Stack className="game-info-section" gap="xs">
+      {section.blocks.map((block, index) => <BlockView key={index} block={block} prefs={prefs} />)}
+      {customHidden && section.blocks.length === 0 && <Text tone="faint">{DROPPED_NOTE}</Text>}
+    </Stack>
+  );
+  if (collapsible) return <Disclosure summary={section.title} defaultOpen>{body}</Disclosure>;
+  return (
+    <Stack className="game-info-section" gap="xs">
+      <SectionHeader title={section.title} />
+      {body}
+    </Stack>
+  );
+};
+
+export { SectionCard };

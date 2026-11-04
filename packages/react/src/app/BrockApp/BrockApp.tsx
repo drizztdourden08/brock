@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
+import { composeProfileHooks } from '@drizztdourden08/brock-core';
 import { TesseraProvider } from '@drizztdourden08/tessera/primitives';
 import { mergeModules } from '../../modules/merge-modules';
 import { NO_TITLE_BAR_ITEMS } from '../../title-bar/title-bar.constants';
@@ -46,7 +47,9 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
   const merged = useMemo(() => mergeModules(modules), [modules]);
   const poppedId = useMemo(widgetWindowId, []);
   const overrides = useTesseraSetup(product);
-  const log = useHostBoot(merged.logChannels, profileHooks, dataDomains);
+  const composedHooks = useMemo(() => composeProfileHooks([...merged.profileHooks, profileHooks]), [merged.profileHooks, profileHooks]);
+  const allProfileModes = useMemo(() => [...merged.profileModes, ...(props.profileModes ?? [])], [merged.profileModes, props.profileModes]);
+  const log = useHostBoot(merged.logChannels, composedHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
   useAppGuards({ moduleSync: merged.beforeQuit, moduleAsync: merged.onBeforeQuit, sync: beforeQuit, async: onBeforeQuit }, profiles);
   useAppRegistrations(tours, merged.tours, { bugReport, showFlags });
@@ -61,13 +64,14 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
 
   const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs, ...widgetSettingsTabs(allWidgets)] as TabDef<object>[]), [settings.tabs, merged.settingsTabs, allWidgets]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, moduleBuckets: merged.buckets, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
-  const settingsControls = useSettingsControls(settings);
+  const settingsControls = useSettingsControls(settings, merged.lockCauses);
   useControlSources({ tabs, settings: settingsStore, screens: registry, tree });
 
   const context = useMemo<BrockContextValue>(() => ({
     product, home, tabs, settingsControls, menu, homeScreen, shortcuts: tree?.shortcuts ?? NO_SHORTCUTS, screenTree: tree,
     logoSrc: product.logos.app, instanceLogoSrc: product.logos.instance, moduleIds: merged.ids,
-  }), [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids]);
+    profileModes: allProfileModes, profileWizardSteps: merged.profileWizardSteps,
+  }), [product, home, tabs, settingsControls, menu, homeScreen, tree, merged.ids, allProfileModes, merged.profileWizardSteps]);
 
   return (
     <TesseraProvider overrides={overrides}>
@@ -79,17 +83,11 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                 <Announcer />
                 {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} widgetDisabled={widgetDisabled} /> : (
                   <AppShell
-                    settingsStore={settingsStore}
-                    bootTasks={allBootTasks}
-                    log={log}
-                    moduleIds={merged.ids}
-                    moduleMenu={merged.menu}
-                    titleBarActions={titleBarActions}
-                    searchActions={merged.searchActions}
+                    settingsStore={settingsStore} bootTasks={allBootTasks} log={log}
+                    moduleIds={merged.ids} moduleMenu={merged.menu} titleBarActions={titleBarActions} searchActions={merged.searchActions}
                     widgets={allWidgets} widgetKits={allKits} toolbars={allToolbars} toolbarPlacement={props.toolbarPlacement} background={props.background}
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
-                    layout={layout}
-                    screenGroups={screenGroups}
+                    layout={layout} screenGroups={screenGroups}
                     review={review} startupPrompts={allStartupPrompts} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation} menuBar={menuBar}
                   />
                 )}

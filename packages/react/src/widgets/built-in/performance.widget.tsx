@@ -10,6 +10,7 @@ const meta: WidgetMeta = {
   defaultFloatingSize: { width: 420, height: 520 },
   popOut: true,
   settings: PerformanceSettings,
+  devOnly: true,
   menu: { developer: true },
 };
 

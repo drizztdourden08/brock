@@ -8,9 +8,9 @@ import { rollPendingPlacement } from './roll-pending-placement';
 
 const randomizerProfileHooks: ProfileStoreHooks = {
   patchable: ['randomizer'],
-  build: (opts) => {
+  build: async (opts) => {
     if (!opts.randomizer) return {};
-    rollPendingPlacement(opts.randomizer);
+    await rollPendingPlacement(opts.randomizer, opts);
     return { randomizer: opts.randomizer };
   },
   onCreate: async (profile, files) => {

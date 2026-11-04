@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind config */
+/* @layer renderer-shell @kind constants */
 import type { ScreenMeta } from '@drizztdourden08/brock-react';
 
 const PAGE_METAS = {

@@ -1,6 +1,6 @@
 /* @layer renderer-app @kind component */
 import { RunView } from '../views/RunView';
-import { PAGE_METAS } from './pages.meta';
+import { PAGE_METAS } from './pages.constants';
 
 const meta = PAGE_METAS.run;
 

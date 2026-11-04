@@ -55,6 +55,23 @@ const linkLocalModule = (rootDir, id, packageName, local) => {
 };
 
 /**
+ * @param {string} rootDir
+ * @param {string} spec
+ * @param {string | undefined} knownId
+ * @param {string} [local] the --local brock repo
+ * @returns {Promise<number>} exit code
+ */
+const installModule = async (rootDir, spec, knownId, local) => {
+  if (local && knownId) {
+    linkLocalModule(rootDir, knownId, packageNameOf(spec), local);
+    console.log(`brock add: linked ${packageNameOf(spec)} from ${local}`);
+    return runPnpm(rootDir, ['install']);
+  }
+  console.log(`brock add: installing ${spec}`);
+  return installSpecs(rootDir, [spec]);
+};
+
+/**
  * @param {{ rootDir: string, input: string, local?: string}} ctx
  * @returns {Promise<number>} exit code
  */
@@ -65,12 +82,7 @@ const runAdd = async ({ rootDir, input, local }) => {
   }
   if (ADD_TARGET_ALIASES.includes(input)) return addTargetAlias(rootDir, input, local);
   const { spec, id: knownId } = parseAddInput(input);
-  const useLocal = Boolean(local && knownId);
-  if (useLocal) {
-    linkLocalModule(rootDir, knownId, packageNameOf(spec), local);
-    console.log(`brock add: linked ${packageNameOf(spec)} from ${local}`);
-  } else console.log(`brock add: installing ${spec}`);
-  const code = useLocal ? await runPnpm(rootDir, ['install']) : await installSpecs(rootDir, [spec]);
+  const code = await installModule(rootDir, spec, knownId, local);
   if (code !== 0) return code;
 
   const id = knownId ?? idOfInstalled(rootDir, packageNameOf(spec));

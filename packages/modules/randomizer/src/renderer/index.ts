@@ -34,5 +34,7 @@ export { useTrackerFeed } from './tracker/hooks/behavior/useTrackerFeed';
 export { useTrackerReading } from './tracker/hooks/behavior/useTrackerReading';
 export { useTrackerMarks } from './tracker/marks/behavior/useTrackerMarks';
 export { ChecksView } from './views/ChecksView';
+export { NetworkView } from './views/NetworkView';
+export { OnlineView } from './views/OnlineView';
 export type { ChecksPrefs, ChecksViewProps } from './views/ChecksView';
 export type { TrackerFeedInput } from './tracker/feed/tracker-feed-state.type';

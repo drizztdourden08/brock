@@ -53,6 +53,8 @@ export type { ArchipelagoClient } from './client/archipelago-client.type';
 export type { DataPackageCache } from './data-package/data-package-cache.type';
 export type { MessageKind, RoomMessage } from './messages/message-log.type';
 export type { ConnectionState, NetworkPlayer, NetworkStatus } from './network/network-status.type';
+export { createNetworkMonitor } from './network/network-monitor';
+export type { NetworkMonitor, NetworkMonitorDeps } from './network/network-monitor.type';
 export type { ProbeConfig, ProbeResult } from './probe/probe.type';
 export { createBrowserSocket } from './socket/browser-socket';
 export { openSocketLink } from './socket/socket-link';

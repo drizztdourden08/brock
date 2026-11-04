@@ -25,6 +25,12 @@ describe('world kit', { tags: ['critical'] }, () => {
     expect(kit.never(stateWith('key'))).toBe(false);
   });
 
+  it('creates a state and computes reachable regions', () => {
+    const world = createWorldFromDef(toyWorldDef(), { seed: 'kit' });
+    const state = kit.createCollectionState(world);
+    expect(kit.computeReachableRegions(state, world).has(world.start)).toBe(true);
+  });
+
   it('reuses the main fill id', () => {
     expect(kit.mainFill.id).toBe(MAIN_FILL.id);
   });

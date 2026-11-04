@@ -9,6 +9,10 @@ import {
 } from '../rules/combinators';
 import { compileRule } from '../rules/compile';
 import { NO_HELPERS } from '../rules/no-helpers.constants';
+import {
+  canCollectLocation, canReachEvent, collectReachableEvents, computeReachableRegions, createCollectionState,
+  reachableEvents,
+} from '../state';
 import type { WorldKeys } from '../types';
 import type { WorldKit } from './world-kit.type';
 
@@ -37,6 +41,13 @@ const createWorldKit = <K extends WorldKeys>(): WorldKit<K> => ({
   helperRule: helperRule<K>,
   placedAt: placedAt<K>,
   placedIn: placedIn<K>,
+  compileRule: compileRule<K>,
+  createCollectionState: createCollectionState<K>,
+  computeReachableRegions: computeReachableRegions<K>,
+  canCollectLocation: canCollectLocation<K>,
+  canReachEvent: canReachEvent<K>,
+  reachableEvents: reachableEvents<K>,
+  collectReachableEvents: collectReachableEvents<K>,
   always: compileRule<K>(TRUE, NO_HELPERS),
   never: compileRule<K>(FALSE, NO_HELPERS),
   mainFill: mainFillPhase<K>(),

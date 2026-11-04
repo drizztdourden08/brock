@@ -25,3 +25,5 @@ export { resumePath, writeMsuResume, readMsuResume, deleteMsuResume } from '../.
 export type { ResumeSlot, WriteMsuResumeParams } from '../../resume';
 export { installMsul, uninstallMsul, settleMsulName } from '../../install';
 export type { InstalledPack, InstallProgress } from '../../install';
+export { withFileRenamed, withLoopSampleCarried } from '../../layer-edit';
+export type { LayerTransform, SoundsByChannel } from '../../layer-edit';

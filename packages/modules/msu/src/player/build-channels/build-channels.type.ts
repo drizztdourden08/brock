@@ -27,4 +27,4 @@ interface BuiltChannels {
   sounds: SoundEntry[];
 }
 
-export type { BuildChannelsParams, BuiltChannels, SoundEntry };
+export type { BuildChannelsParams, BuiltChannels };

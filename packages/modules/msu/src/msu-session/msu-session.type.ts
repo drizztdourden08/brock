@@ -37,4 +37,4 @@ type MsuSessionState = {
   teardown: MsuSessionTeardown | null;
 };
 
-export type { MsuSessionLog, MsuSessionOptions, MsuSessionState, MsuSessionTeardown };
+export type { MsuSessionLog, MsuSessionOptions, MsuSessionState };

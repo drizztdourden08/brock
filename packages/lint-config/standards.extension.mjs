@@ -39,6 +39,6 @@ export default defineExtension({
       oneExportExempt: ['screen', 'widget', 'titleBarAction'],
     },
   },
-  stylelint: { options: { tokens: ['@drizztdourden08/tessera/tokens.css'] } },
+  stylelint: { options: { tokens: ['@drizztdourden08/tessera/tokens.css'], ignoreFiles: ['**/.brock/**'] } },
   knip: { preprocessors: brockKnipPreprocessors() },
 });

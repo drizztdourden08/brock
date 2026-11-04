@@ -9,6 +9,7 @@ const DEFAULT_RANDOMIZER_LABELS: RandomizerLabels = {
   options: 'Options',
   logs: 'Logs',
   spoiler: 'Spoiler',
+  checks: 'Checks',
   start: 'Start',
   stop: 'Stop',
 };

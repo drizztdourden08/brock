@@ -3,7 +3,8 @@ import { Card, EmptyState, Stack, StatRow } from '@drizztdourden08/tessera/primi
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
 import { useRandomizerSession } from '../../hooks/behavior/useRandomizerSession';
-import { NO_GAME_MESSAGE, NO_PLACEMENT_MESSAGE } from './SpoilerView.constants';
+import { ChecksView } from '../ChecksView';
+import { NO_GAME_MESSAGE, NO_PLACEMENT_MESSAGE, SPOILER_CHECKS_PREFS } from './SpoilerView.constants';
 
 const SpoilerView = () => {
   const game = useRandomizerGame();
@@ -12,6 +13,7 @@ const SpoilerView = () => {
   if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
   const Spoiler = game.views?.Spoiler;
   if (Spoiler) return <Spoiler />;
+  if (game.tracker) return <ChecksView initial={SPOILER_CHECKS_PREFS} />;
   if (!summary) return <EmptyState message={NO_PLACEMENT_MESSAGE} />;
 
   return (

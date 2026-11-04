@@ -5,6 +5,7 @@ export type { DefPoolContext } from './def-pool-context.type';
 export type { DefPlacement } from './def-placement.type';
 export type { DefTypes } from './def-types.type';
 export type { WorldKit } from './world-kit.type';
+export type { KitHelperRegistry } from './kit-helper-registry.type';
 export { createWorldKit } from './create-world-kit';
 export { defineWorldGame } from './define-world-game';
 export { worldGameFromDef } from './world-game-from-def';

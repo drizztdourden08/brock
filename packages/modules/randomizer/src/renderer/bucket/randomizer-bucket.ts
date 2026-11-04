@@ -2,6 +2,8 @@
 import { lazyComponent } from '@drizztdourden08/brock-react';
 import type { ModuleBucket } from '@drizztdourden08/brock-react';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
+import { meta as networkMeta } from '../../screens/archipelago/network.page';
+import { meta as onlineMeta } from '../../screens/archipelago/online.page';
 import { meta as logsMeta } from '../../screens/logs.page';
 import { meta as optionsMeta } from '../../screens/options.page';
 import { meta as runMeta } from '../../screens/run.page';
@@ -22,6 +24,8 @@ const randomizerBucket: ModuleBucket = {
   entries: [
     { kind: 'page', bucket, id: 'run', component: lazyComponent(() => import('../../screens/run.page')), meta: runMeta },
     { kind: 'page', bucket, id: 'options', component: lazyComponent(() => import('../../screens/options.page')), meta: optionsMeta },
+    { kind: 'page', bucket, id: 'network', component: lazyComponent(() => import('../../screens/archipelago/network.page')), meta: networkMeta },
+    { kind: 'page', bucket, id: 'online', component: lazyComponent(() => import('../../screens/archipelago/online.page')), meta: onlineMeta },
     { kind: 'live', bucket, id: 'extra', usePages: useExtraPages, meta: EXTRA_PAGES_META },
     { kind: 'page', bucket, id: 'logs', component: lazyComponent(() => import('../../screens/logs.page')), meta: logsMeta },
     { kind: 'page', bucket, id: 'spoiler', component: lazyComponent(() => import('../../screens/spoiler.page')), meta: spoilerMeta },

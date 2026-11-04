@@ -1,4 +1,5 @@
 /* @layer core @kind test */
+import type { TrackerAssumption } from '../src/tracker';
 import type { Exit, GameWorldDef, Region } from '../src/world';
 
 const place = (id: string, name: string, locations: string[], links: readonly Exit[]): Region => ({
@@ -40,4 +41,25 @@ const toyWorldDef = (overrides: Partial<GameWorldDef> = {}): GameWorldDef => ({
   ...overrides,
 });
 
-export { toyWorldDef };
+const toyVanillaItems: Readonly<Record<string, string>> = {
+  t1: 'key',
+  t2: 'rock',
+  f1: 'boat',
+  l1: 'lamp',
+  l2: 'pebble',
+};
+
+const toyVanillaDef = (): GameWorldDef => {
+  const def = toyWorldDef();
+  return {
+    ...def,
+    regions: def.regions.map((region) => ({
+      ...region,
+      locations: region.locations.map((location) => ({ ...location, vanillaItem: toyVanillaItems[location.key] })),
+    })),
+  };
+};
+
+const toyAssumptions: readonly TrackerAssumption[] = [{ id: 'boat', label: 'Boat', initial: false }];
+
+export { toyWorldDef, toyVanillaDef, toyVanillaItems, toyAssumptions };

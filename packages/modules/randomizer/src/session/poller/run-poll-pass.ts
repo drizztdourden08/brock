@@ -9,6 +9,10 @@ const runPollPass = (state: PollerState, hooks: PollerHooks, options: PollerOpti
   options.beforePoll?.();
   const view = options.memory.view();
   if (!view) return;
+  if (options.loaded?.(view) === true) {
+    state.needsRebaseline = true;
+    options.log('[Poller] Game load detected');
+  }
   const pass = { state, hooks, view, completed: options.completed?.() ?? NO_COMPLETED, log: options.log };
   if (state.needsRebaseline) {
     state.needsRebaseline = false;

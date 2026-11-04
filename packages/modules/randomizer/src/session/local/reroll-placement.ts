@@ -11,7 +11,7 @@ const rerollPlacement = async <P, A>(
   log: RandomizerLog,
 ): Promise<P | null> => {
   try {
-    const placement = game.roll(config);
+    const placement = await game.roll(config, { profileId });
     await writePlacement(game, profileId, placement);
     log(`[Boot] Placement file unreadable by this build; rolled seed ${config.seed} again`, 'warn');
     return placement;

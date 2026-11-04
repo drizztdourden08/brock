@@ -8,26 +8,36 @@ import { ONLINE_KIND } from '../online/online-session.constants';
 import { registerSessionFactory } from '../store/register-session-factory';
 import { sessionFactories } from '../store/session-factories';
 import { stopActiveSession } from '../store/stop-active-session';
+import { LIVE_CORE_STATUSES } from './core-live.constants';
+import { runtimeStops } from './runtime-stops';
 import { startPendingBoot } from './start-pending-boot';
 
 const startSessionRuntime = <P, A>(game: RandomizerGame<P, A>, log: RandomizerLog = appRandomizerLog): (() => void) => {
+  const existing = runtimeStops.get(game.id);
+  if (existing !== undefined) return existing;
   if (!sessionFactories.has('local')) registerSessionFactory(createLocalSessionFactory(game, log));
   if (game.archipelago !== undefined && !sessionFactories.has(ONLINE_KIND)) {
     registerSessionFactory(createOnlineSessionFactory(game, log));
   }
-  let wasRunning = false;
+  let wasLive = false;
   let startedForBoot = false;
-  return game.core.subscribe(() => {
-    const running = game.core.state().status === 'running';
-    if (running && !wasRunning) {
-      wasRunning = true;
+  const unsubscribe = game.core.subscribe(() => {
+    const live = LIVE_CORE_STATUSES.has(game.core.state().status);
+    if (live && !wasLive) {
+      wasLive = true;
       if (!startedForBoot) startedForBoot = startPendingBoot(log);
-    } else if (!running && wasRunning) {
-      wasRunning = false;
+    } else if (!live && wasLive) {
+      wasLive = false;
       startedForBoot = false;
       stopActiveSession();
     }
   });
+  const stop = (): void => {
+    unsubscribe();
+    runtimeStops.delete(game.id);
+  };
+  runtimeStops.set(game.id, stop);
+  return stop;
 };
 
 export { startSessionRuntime };

@@ -1,6 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { longHex } from './long-hex.mjs';
 import { TESSERA_TOKENS_JSON } from './look.constants.mjs';
 
 /**
@@ -8,7 +9,7 @@ import { TESSERA_TOKENS_JSON } from './look.constants.mjs';
  * @returns {value is string[]}
  */
 const isGradient = (value) =>
-  Array.isArray(value) && value.length >= 2 && value.length <= 3 && value.every((stop) => typeof stop === 'string' && /^#[0-9a-f]{6}$/i.test(stop));
+  Array.isArray(value) && value.length >= 2 && value.length <= 3 && value.every((stop) => longHex(stop) !== undefined);
 
 /**
  * @param {string} tesseraRoot  The installed Tessera package folder
@@ -20,7 +21,7 @@ const readBrandLook = (tesseraRoot, brand) => {
   if (!brand || !existsSync(file)) return null;
   const entry = JSON.parse(readFileSync(file, 'utf8'))?.brands?.[brand];
   if (!isGradient(entry?.gradient)) return null;
-  return { gradient: entry.gradient, ...(typeof entry.angle === 'number' ? { angle: entry.angle } : {}) };
+  return { gradient: entry.gradient.map(longHex), ...(typeof entry.angle === 'number' ? { angle: entry.angle } : {}) };
 };
 
 export { readBrandLook };

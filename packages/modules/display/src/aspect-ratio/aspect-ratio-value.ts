@@ -1,11 +1,11 @@
 /* @layer core @kind logic */
-import type { CustomRatioInput } from './aspect-ratio.type';
+import type { RatioValueInput } from './aspect-ratio.type';
 import { detectScreenRatio } from './detect-screen-ratio';
 import { detectViewportRatio } from './detect-viewport-ratio';
 import { effectiveCustomRatio } from './effective-custom-ratio';
 import { parseRatioString } from './parse-ratio-string';
 
-const aspectRatioValue = (ratio: string, input: CustomRatioInput): number => {
+const aspectRatioValue = (ratio: string, input: RatioValueInput): number => {
   const { customW, customH, limits, letterbox = false } = input;
   if (ratio === 'auto') {
     const { w, h } = detectViewportRatio(limits, letterbox);

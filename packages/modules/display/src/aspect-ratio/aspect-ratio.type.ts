@@ -26,11 +26,11 @@ interface LandscapePair {
   short: number;
 }
 
-interface CustomRatioInput {
+interface RatioValueInput {
   customW: number;
   customH: number;
   limits: RatioLimits;
   letterbox?: boolean;
 }
 
-export type { RatioLimits, RatioCheck, RatioReadout, RatioPair, LandscapePair, CustomRatioInput };
+export type { RatioLimits, RatioCheck, RatioReadout, RatioPair, LandscapePair, RatioValueInput };

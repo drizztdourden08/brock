@@ -9,4 +9,4 @@ export { niceRatio } from './nice-ratio';
 export { effectiveCustomRatio } from './effective-custom-ratio';
 export { parseRatioString } from './parse-ratio-string';
 export { aspectRatioValue } from './aspect-ratio-value';
-export type { RatioLimits, RatioCheck, RatioReadout, RatioPair, CustomRatioInput } from './aspect-ratio.type';
+export type { RatioLimits, RatioCheck, RatioReadout, RatioPair, RatioValueInput } from './aspect-ratio.type';

@@ -110,7 +110,7 @@ const resolveWidgets = (widgets: ProductInput['widgets'] = {}): ProductWidgets =
   keepFocusWithApp: widgets.keepFocusWithApp ?? DEFAULT_WIDGETS.keepFocusWithApp,
 });
 
-const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, menu, mascot, tray, net }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'initialProfile' | 'boot' | 'menu' | 'mascot' | 'tray' | 'net'> => ({
+const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, menu, mascot, tray, net, moduleOptions }: ProductInput): Pick<ProductConfig, 'profilesRoute' | 'singleProfile' | 'initialProfile' | 'boot' | 'menu' | 'mascot' | 'tray' | 'net' | 'moduleOptions'> => ({
   ...(profilesRoute ? { profilesRoute } : {}),
   ...(singleProfile ? { singleProfile } : {}),
   ...(initialProfile ? { initialProfile } : {}),
@@ -119,6 +119,7 @@ const optionalParts = ({ profilesRoute, singleProfile, initialProfile, boot, men
   ...(mascot !== undefined ? { mascot } : {}),
   ...(tray ? { tray } : {}),
   ...(net ? { net: resolveNet(net) } : {}),
+  ...(moduleOptions ? { moduleOptions } : {}),
 });
 
 const defineProduct = (input: ProductInput): ProductConfig => {

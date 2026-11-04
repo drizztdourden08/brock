@@ -18,6 +18,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./augment": "./src/augment.ts",
+    "./args": "./src/args/index.ts",
     "./product": "./src/product/index.ts",
     "./ipc": "./src/ipc/index.ts",
     "./platform": "./src/platform/index.ts",

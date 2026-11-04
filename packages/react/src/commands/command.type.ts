@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
+import type { ArgField, ArgOption, ArgSchema, ArgValue } from '@drizztdourden08/brock-core/args';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 
 type ChordList = string | readonly string[];
@@ -21,24 +22,6 @@ interface CommandContext {
   args?: unknown;
   selection?: ReadonlySet<string>;
 }
-
-type ArgValue = string | number | boolean;
-
-interface ArgOption {
-  value: ArgValue;
-  label: string;
-}
-
-interface ArgField {
-  type: 'string' | 'number' | 'boolean';
-  label?: string;
-  options?: readonly ArgOption[];
-  min?: number;
-  max?: number;
-  optional?: boolean;
-}
-
-type ArgSchema = Readonly<Record<string, ArgField>>;
 
 interface BoundArgs {
   id: string;

@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { ProductLook } from '../look/look.type';
+import type { ModuleOptions } from '../augment';
 
 interface ProductAuthor {
   name: string;
@@ -202,6 +203,7 @@ interface ProductConfig {
   mascot?: false | ProductMascot;
   tray?: ProductTray;
   net?: ProductNet;
+  moduleOptions?: Partial<ModuleOptions>;
 }
 
 type ProductIconsInput = Omit<ProductIcons, 'wordmark'> & { wordmark?: ProductWordmarkInput };

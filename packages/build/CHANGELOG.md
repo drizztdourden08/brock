@@ -1,5 +1,27 @@
 # @drizztdourden08/brock-build
 
+## 0.117.0
+
+### Minor Changes
+
+- dafec60: New `mcp` module (`brock add mcp`): an outside agent drives the running app over MCP through a stdio helper on the Brock bridge. Built-in tools take screenshots, click, type, press keys, scroll, list and open widgets, list and run commands, and read the visible UI. An app adds its own with `defineMcpTool` in main (`getMcp(ctx).tools.register`) or in the renderer (`useMcpTools`). It is on in development and off in a packaged build unless `product.moduleOptions.mcp.packaged` is true; the config file is the only control. `nav.route()` in brock-react answers the full current route (screen, section and tab, or the base view when no screen is open).
+
+  The module needed four foundations. brock-core gets `@drizztdourden08/brock-core/args` (`ArgSchema` and `validateArgs`, which brock-react still re-exports), the open `ModuleOptions` interface with `product.moduleOptions`, and `helpers` in the module manifest. brock-electron gets `ctx.bridge.extend` so a module adds bridge routes, `bridgeFileFor`, and `waitCaptureHolds` beside `captureFrame`. brock-build bundles a module's helpers to `dist/helpers/<name>.mjs` and ships them, with the `RunAsNode` fuse, only when `moduleOptions[id].packaged` is true. brock-react changes nothing for apps.
+
+### Patch Changes
+
+- 6a6051c: `brock add` works in localpkg mode. When the app or its workspace root holds a localpkg `.pnpmfile.cjs`, a `@drizztdourden08/*` module or peer is written into `package.json` as `^<version>` from the localpkg index and installed with `pnpm install --no-frozen-lockfile`, instead of `pnpm add`, which failed with ECONNREFUSED on the guarded scope registry. A package missing from the index fails with a note to run `localpkg publish <producer>`.
+- d546f9a: The generated ci.yml checks out the full history in the job that runs `test:pr`. `standards test pr` compares with the base branch and failed on a shallow checkout with "no default branch found". Run `brock sync` to take it.
+- 54b1bc8: `brock dev` now pre-bundles the renderer dependencies before it starts electron-vite, so the window no longer opens blank for minutes after a lockfile change. It prints a line when the pre-bundle starts, one every 15 seconds, and the count when it ends. When the dependencies are already in place it adds only the config check, and a failed pre-bundle only warns and leaves the work to the dev server.
+- c3c8450: `launchAppForTest` and `assertLaunchable` now refuse a dist that is older than the app's sources, and say which input changed, instead of running the old build with no warning. The staleness check also notices an install that is newer than the build (`node_modules/.modules.yaml`, else `pnpm-lock.yaml`, found by walking up to the workspace root). Pass `allowStale: true` to skip only this check.
+- 8afc538: `brock lint` no longer fails with "No files matching" when an app starts during a lint. The file list leaves out the config bundle that electron-vite and Vite write for a moment (`electron.vite.config.<stamp>.mjs`), and a listed file that vanishes before ESLint reads it is skipped instead of failing the run.
+- fe8ebcd: A reused main or preload bundle no longer prints "Generated an empty chunk". The stub entry now exports one value, so Rollup sees no empty chunk. A real empty chunk still warns.
+- Updated dependencies [dafec60]
+  - @drizztdourden08/brock-core@0.117.0
+  - @drizztdourden08/brock-lint-config@0.117.0
+  - @drizztdourden08/brock-thread@0.117.0
+  - @drizztdourden08/build-cache@0.117.0
+
 ## 0.116.1
 
 ### Patch Changes

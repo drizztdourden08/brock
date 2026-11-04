@@ -83,17 +83,11 @@ const BrockApp = <S extends object>(props: BrockAppProps<S>) => {
                 <Announcer />
                 {poppedId !== null ? <WidgetWindow id={poppedId} widgets={allWidgets} widgetDisabled={widgetDisabled} /> : (
                   <AppShell
-                    settingsStore={settingsStore}
-                    bootTasks={allBootTasks}
-                    log={log}
-                    moduleIds={merged.ids}
-                    moduleMenu={merged.menu}
-                    titleBarActions={titleBarActions}
-                    searchActions={merged.searchActions}
+                    settingsStore={settingsStore} bootTasks={allBootTasks} log={log}
+                    moduleIds={merged.ids} moduleMenu={merged.menu} titleBarActions={titleBarActions} searchActions={merged.searchActions}
                     widgets={allWidgets} widgetKits={allKits} toolbars={allToolbars} toolbarPlacement={props.toolbarPlacement} background={props.background}
                     widgetLayout={widgetLayout} widgetContext={widgetContext} widgetDisabled={widgetDisabled}
-                    layout={layout}
-                    screenGroups={screenGroups}
+                    layout={layout} screenGroups={screenGroups}
                     review={review} startupPrompts={allStartupPrompts} volume={volume ?? merged.volume} restoreNavigation={restoreNavigation} menuBar={menuBar}
                   />
                 )}

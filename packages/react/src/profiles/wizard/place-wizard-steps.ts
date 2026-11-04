@@ -1,8 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { WizardStepDef } from '@drizztdourden08/tessera/composites';
 import type { ProfileWizardStepDef, ProfileWizardValues } from './profile-wizard-step.type';
-
-const DEFAULT_ANCHOR = 'review';
+import { DEFAULT_ANCHOR } from './place-wizard-steps.constants';
 
 const placeWizardSteps = <V extends ProfileWizardValues>(app: readonly WizardStepDef<V>[], modules: readonly ProfileWizardStepDef[]): WizardStepDef<V>[] => {
   const placed = modules.map((module) => ({ before: module.before ?? DEFAULT_ANCHOR, def: { ...module.step, id: module.id } as WizardStepDef<V> }));

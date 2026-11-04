@@ -8,7 +8,7 @@ const trackerConnectPacket = (config: TrackerLinkConfig, info: ApRoomInfoPacket)
   cmd: 'Connect',
   game: '',
   name: config.name,
-  password: (config.password === '' ? undefined : config.password) ?? null,
+  password: config.password === '' ? null : (config.password ?? null),
   uuid: config.uuid,
   version: info.version ?? { ...FALLBACK_VERSION },
   items_handling: NO_ITEMS_HANDLING,

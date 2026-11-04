@@ -22,7 +22,7 @@ const PlayersSection = ({ status }: NetworkSectionProps) => {
           label={TRACK_LABEL}
           description={TRACK_DESCRIPTION}
           checked={connection.trackOtherPlayers === true}
-          onChange={(trackOtherPlayers) => patch({ trackOtherPlayers })}
+          onChange={(trackOtherPlayers) => void patch({ trackOtherPlayers })}
         />
       </Stack>
     </Card>

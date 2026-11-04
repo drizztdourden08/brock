@@ -10,6 +10,7 @@ interface ServerSetupForm {
   set(field: keyof ServerSetupDraft, value: string): void;
   slotError: string | null;
   canApply: boolean;
+  applyError: string | null;
   apply(): void;
 }
 

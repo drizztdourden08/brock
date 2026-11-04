@@ -1,11 +1,11 @@
 /* @layer renderer-shell @kind component */
 import { PasswordInput } from '@drizztdourden08/tessera/composites';
-import { Button, Card, Field, Stack, TextInput } from '@drizztdourden08/tessera/primitives';
+import { Button, Card, Field, Stack, Text, TextInput } from '@drizztdourden08/tessera/primitives';
 import { useServerSetupForm } from './behavior/useServerSetupForm';
 import { APPLY_LABEL, PASSWORD_LABEL, SETUP_TITLE, SLOT_LABEL, URL_LABEL, URL_PLACEHOLDER } from './ServerSetup.constants';
 
 const ServerSetup = () => {
-  const { draft, set, slotError, canApply, apply } = useServerSetupForm();
+  const { draft, set, slotError, canApply, applyError, apply } = useServerSetupForm();
 
   return (
     <Card title={SETUP_TITLE}>
@@ -20,6 +20,7 @@ const ServerSetup = () => {
           <PasswordInput value={draft.password} onChange={(value) => set('password', value)} />
         </Field>
         <Button variant="primary" disabled={!canApply} onClick={apply}>{APPLY_LABEL}</Button>
+        {applyError !== null && <Text variant="caption">{applyError}</Text>}
       </Stack>
     </Card>
   );

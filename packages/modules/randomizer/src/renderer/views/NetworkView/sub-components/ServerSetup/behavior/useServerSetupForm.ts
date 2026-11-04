@@ -13,11 +13,13 @@ const useServerSetupForm = (): ServerSetupForm => {
   const dirty = draft.serverUrl !== saved.serverUrl || draft.slotName !== saved.slotName || draft.password !== saved.password;
   const canApply = dirty && slotError === null && draft.serverUrl.trim() !== '';
   const set = useCallback((field: keyof ServerSetupDraft, value: string) => setDraft((prev) => ({ ...prev, [field]: value })), []);
+  const [applyError, setApplyError] = useState<string | null>(null);
   const apply = useCallback(() => {
-    patch({ serverUrl: normalizeServerUrl(draft.serverUrl), slotName: draft.slotName, password: draft.password });
+    const fields = { serverUrl: normalizeServerUrl(draft.serverUrl), slotName: draft.slotName, password: draft.password };
+    void patch(fields).then(setApplyError);
   }, [draft, patch]);
 
-  return { draft, set, slotError, canApply, apply };
+  return { draft, set, slotError, canApply, applyError, apply };
 };
 
 export { useServerSetupForm };

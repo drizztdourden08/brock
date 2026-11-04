@@ -20,13 +20,13 @@ const OnlineView = () => {
             label={DEATH_LINK_LABEL}
             description={DEATH_LINK_DESCRIPTION}
             checked={connection.deathLink === true}
-            onChange={(deathLink) => patch({ deathLink })}
+            onChange={(deathLink) => void patch({ deathLink })}
           />
           <Toggle
             label={TRACK_LABEL}
             description={TRACK_DESCRIPTION}
             checked={connection.trackOtherPlayers === true}
-            onChange={(trackOtherPlayers) => patch({ trackOtherPlayers })}
+            onChange={(trackOtherPlayers) => void patch({ trackOtherPlayers })}
           />
         </Stack>
       </Card>

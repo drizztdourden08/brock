@@ -142,6 +142,16 @@
         "tests/**/*.ts"
       ]
     },
+    "packages/modules/mcp": {
+      "entry": [
+        "src/helper/main.ts",
+        "tests/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "tests/**/*.ts"
+      ]
+    },
     "packages/modules/updater": {
       "entry": [
         "tests/**/*.test.ts"

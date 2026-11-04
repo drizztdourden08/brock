@@ -8,11 +8,11 @@ vi.mock('../src/modules/install-peers.mjs', () => ({ installPeers: vi.fn(async (
 vi.mock('../src/modules/resolve.mjs', () => ({ resolveModules: vi.fn(() => ({ missing: [] })) }));
 vi.mock('../src/commands/sync.mjs', () => ({ runSync: vi.fn(async () => 0) }));
 vi.mock('../src/commands/platform-add.mjs', () => ({ runPlatformAdd }));
-vi.mock('node:fs', async (original) => ({
-  ...(await original()),
-  readFileSync: vi.fn(() => "modules: ['updater']"),
-  writeFileSync: vi.fn(),
-}));
+vi.mock('node:fs', async (original) => {
+  const fs = await original();
+  const readConfigOnly = (path, ...rest) => (String(path).endsWith('brock.config.ts') ? "modules: ['updater']" : fs.readFileSync(path, ...rest));
+  return { ...fs, readFileSync: vi.fn(readConfigOnly), writeFileSync: vi.fn() };
+});
 
 const { runAdd } = await import('../src/commands/add.mjs');
 

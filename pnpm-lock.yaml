@@ -462,7 +462,11 @@ importers:
         specifier: 'catalog:'
         version: 19.3.0
 
-  packages/modules/randomizer: {}
+  packages/modules/randomizer:
+    dependencies:
+      '@drizztdourden08/brock-core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/modules/secrets:
     dependencies:

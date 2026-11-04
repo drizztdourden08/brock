@@ -110,7 +110,7 @@ describe('archipelago client goal and DeathLink', { tags: ['critical'] }, () => 
     const rig = createRig({ deathLink: true });
     rig.boot();
     rig.probe.die('fell');
-    const [bounce] = rig.sent('Bounce');
+    const bounce = rig.sent('Bounce').find((packet) => Array.isArray(packet.tags) && packet.tags.includes('DeathLink'));
     expect(bounce).toMatchObject({ tags: ['DeathLink'], data: { source: SLOT_NAME } });
     rig.sockets.last().receive([{ cmd: 'Bounced', tags: ['DeathLink'], data: bounce?.data }]);
     expect(rig.probe.killed).toBe(0);

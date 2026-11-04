@@ -16,7 +16,7 @@ import { navLabels } from '../dom/nav-labels';
 import { waitFor } from '../dom/wait-for';
 import { SELECTORS } from '../review.constants';
 import type { ReviewStep } from '../review.type';
-import { isUnlinked } from './bucket-route';
+import { isUnlinked } from './is-unlinked';
 import { hubBackCheck } from './hub-back-check';
 import { openBucket } from './open-bucket';
 import { resetUi } from './reset-ui';

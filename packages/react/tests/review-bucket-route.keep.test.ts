@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { HubDef } from '../src/hub/hub.type';
 import type { ResolvedScreenTree } from '../src/screens/conventions/screen-tree.type';
 import type { ReviewEnv } from '../src/review/review.type';
-import { bucketRoute, isUnlinked } from '../src/review/steps/bucket-route';
+import { bucketRoute } from '../src/review/steps/bucket-route';
+import { isUnlinked } from '../src/review/steps/is-unlinked';
 
 const hub = (id: string, switcher?: boolean): HubDef => ({ id, title: id, icon: null, home: { id: `${id}-home`, label: id, icon: null, render: () => null }, groups: [], switcher });
 

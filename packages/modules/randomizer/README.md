@@ -30,3 +30,12 @@ Licence notes are in `NOTICE.md` and `LICENSE-world`.
 | `TRACKER_SCHEMA` | The schema tag of the marks file, `tracker-v1`. |
 
 A game gives a `TrackerProvider` as `RandomizerGame.tracker`. Brock reads one status per location from it: checked, available or blocked.
+
+## `./archipelago`
+
+| Export | Holds |
+|---|---|
+| Types | `ArchipelagoSocket`, `OnlineHost`, `OnlineConnection`, `ReceivedItem`, `ScoutedLocation`, `ScoutedInput`, `SlotReading`, `ArchipelagoClient`, `DataPackageCache`, `NetworkStatus`, `RoomMessage`, `ProbeResult` and the Archipelago packet types. |
+| `ARCHIPELAGO_PROTOCOL_VERSION` | The protocol version sent when the game gives none. |
+
+A game gives an `ArchipelagoGame` as `RandomizerGame.archipelago`. The client is pure TypeScript and talks to the game only through `OnlineHost`.

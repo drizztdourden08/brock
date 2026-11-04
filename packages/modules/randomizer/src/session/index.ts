@@ -1,6 +1,7 @@
 /* @layer core @kind barrel */
 export type { ArmedSeed } from './applier/armed-seed.type';
 export type { ApplyContext } from './applier/apply-context.type';
+export type { ForeignItem } from './applier/foreign-item.type';
 export type { ApplyResult } from './applier/apply-result.type';
 export type { SeedApplier } from './applier/seed-applier.type';
 export type { DeliveryQueue, DeliveryRequest } from './delivery/delivery-request.type';

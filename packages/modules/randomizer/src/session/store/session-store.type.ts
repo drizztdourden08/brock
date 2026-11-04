@@ -6,6 +6,7 @@ interface SessionStoreState {
   placement: unknown;
   status: SessionStatus;
   setSession(session: RandomizerSession | null, placement?: unknown): void;
+  setPlacement(placement: unknown | null): void;
   setStatus(status: SessionStatus): void;
 }
 

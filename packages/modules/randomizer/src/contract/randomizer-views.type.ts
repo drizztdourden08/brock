@@ -17,6 +17,7 @@ interface RandomizerViews {
   Options?: ComponentType;
   Spoiler?: ComponentType;
   Checks?: ComponentType;
+  Online?: ComponentType;
   checksWidget?: ChecksWidgetViews;
   runPanels?: readonly ComponentType[];
   optionsStep?: ComponentType;

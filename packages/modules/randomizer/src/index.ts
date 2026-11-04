@@ -9,7 +9,10 @@ export type { RandomizerLog } from './contract/randomizer-log.type';
 export type { PlacementSummary } from './contract/placement-summary.type';
 export type { RandomizerLabels } from './contract/randomizer-labels.type';
 export type { RandomizerFormState } from './contract/randomizer-form-state.type';
+export type { ArchipelagoGame } from './contract/archipelago-game.type';
+export type { ForeignItem } from './session/applier/foreign-item.type';
 export type {
+  ArchipelagoConnection,
   RandomizerModeId,
   RandomizerModes,
   RandomizerTypeRegistry,

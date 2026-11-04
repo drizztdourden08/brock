@@ -8,6 +8,7 @@ import type { RandomizerProfileConfig } from '../augment';
 import type { TrackerProvider } from '../tracker/types/tracker-provider.type';
 import type { DefPlacement, RandomizerWorldGame, SchemaSet } from '../world';
 import type { OptionCatalog } from '../world/options/option-catalog.type';
+import type { ArchipelagoGame } from './archipelago-game.type';
 import type { CoreSignal } from './core-signal.type';
 import type { PlacementSummary } from './placement-summary.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
@@ -28,7 +29,10 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   apState?: ApStateStore;
   frames?: FrameClock;
   poll?: { intervalMs?: number; completed?(): ReadonlySet<string>; beforePoll?(): void };
-  profile: { toConfig(form: RandomizerFormState, options: unknown): RandomizerProfileConfig };
+  profile: {
+    toConfig(form: RandomizerFormState, options: unknown, values?: Readonly<Record<string, unknown>>): RandomizerProfileConfig;
+  };
+  archipelago?: ArchipelagoGame<P, A>;
   catalog?: OptionCatalog;
   tracker?: TrackerProvider<P>;
   views?: RandomizerViews;

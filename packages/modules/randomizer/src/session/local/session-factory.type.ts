@@ -9,6 +9,7 @@ interface SessionFactory {
   gate(profileId: string, config: RandomizerProfileConfig): Promise<PendingBoot | null>;
   create(pending: PendingBoot): RandomizerSession;
   allowsStart?(): boolean;
+  blockedReason?(config: RandomizerProfileConfig): string | null;
 }
 
 export type { SessionFactory };

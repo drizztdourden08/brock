@@ -11,7 +11,7 @@ import './AspectRatioControl.css';
 const AspectRatioControl = (props: AspectRatioControlProps) => {
   const { label, value, options, recommendedNote } = props;
   useSafeAreaInsets();
-  const { pair, groups, mainValue, handleMain, handlePreset, text, readout, showRecommended } = useAspectRatioView(props);
+  const { pair, groups, mainValue, handleMain, handlePreset, text, readout, showRecommended, disabled, lockedNote } = useAspectRatioView(props);
 
   return (
     <Box className="aspect-ratio-control">
@@ -19,20 +19,21 @@ const AspectRatioControl = (props: AspectRatioControlProps) => {
         <Span className="aspect-ratio-control__label">{label}</Span>
         {text !== undefined && <Small tone="dim">{text}</Small>}
       </Box>
+      {lockedNote !== undefined && <Small tone="dim">{lockedNote}</Small>}
       <Box className="aspect-ratio-control__body">
-        <SegmentedControl aria-label={label} value={mainValue} options={options} onChange={handleMain} />
+        <SegmentedControl aria-label={label} value={mainValue} options={options} disabled={disabled} onChange={handleMain} />
         {showRecommended && <Text className="aspect-ratio-control__recommended">{recommendedNote}</Text>}
         {PRESET_GROUP_IDS.map((id) => {
           const groupOptions = groups[id];
           return mainValue === id && groupOptions && (
             <Box key={id} className="aspect-ratio-control__custom">
-              <SegmentedControl value={value} options={groupOptions} onChange={handlePreset} />
+              <SegmentedControl value={value} options={groupOptions} disabled={disabled} onChange={handlePreset} />
             </Box>
           );
         })}
         {readout && <RatioDetected detected={readout.detected} used={readout.used} capped={readout.capped} />}
         {value === 'custom' && (
-          <RatioPairFields w={pair.w} h={pair.h} check={pair.check} onWidth={pair.handleWidth} onHeight={pair.handleHeight} />
+          <RatioPairFields w={pair.w} h={pair.h} check={pair.check} onWidth={pair.handleWidth} onHeight={pair.handleHeight} disabled={disabled} />
         )}
       </Box>
     </Box>

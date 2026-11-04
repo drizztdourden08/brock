@@ -24,6 +24,8 @@ interface AspectRatioControlProps {
   customH: number;
   limits: RatioLimits;
   letterbox?: boolean;
+  disabled?: boolean;
+  lockedMessage?: string;
   onChange: (change: AspectRatioChange) => void;
 }
 
@@ -54,6 +56,7 @@ interface RatioPairFieldsProps {
   check: RatioCheck;
   onWidth: (n: number) => void;
   onHeight: (n: number) => void;
+  disabled?: boolean;
 }
 
 interface RatioDetectedProps {

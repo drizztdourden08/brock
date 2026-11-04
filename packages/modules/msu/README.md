@@ -29,6 +29,7 @@ The core is reached through an `MsuHost`: the audio target, the switch from core
 | Import | Holds |
 |---|---|
 | `@drizztdourden08/brock-msu` | The types, `defineMsuGame`, `MSUL_MANIFEST_NAME` and `parseManifest`. |
+| `@drizztdourden08/brock-msu/format` | The MSU-1 format constants and frame count. |
 | `@drizztdourden08/brock-msu/packs` | Pack storage and editing. |
 | `@drizztdourden08/brock-msu/player` | The layered music engine. |
 | `@drizztdourden08/brock-msu/session` | The session that follows a running game. |

@@ -4,7 +4,7 @@ import type { RuleNode } from './rule-node.type';
 import type { World } from './world.type';
 import type { WorldKeys } from './world-keys.type';
 
-type Rule<K extends WorldKeys = WorldKeys> = ((state: CollectionState<World<K>>) => boolean)
+type Rule<K extends WorldKeys = WorldKeys> = { check(state: CollectionState<World<K>>): boolean }['check']
   & { readonly node: RuleNode<K> };
 
 export type { Rule };

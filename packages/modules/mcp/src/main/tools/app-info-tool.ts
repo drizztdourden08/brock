@@ -5,7 +5,7 @@ import { windowScale } from './window-scale';
 
 const appInfoTool: MainTool = async (_args, { ctx, win }) => {
   const open = win !== null && !win.isDestroyed();
-  const [width, height] = open ? win.getContentSize() : [0, 0];
+  const [width = 0, height = 0] = open ? win.getContentSize() : [];
   return {
     data: {
       id: ctx.product.id,

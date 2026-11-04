@@ -3,6 +3,7 @@ import { validateArgs } from '@drizztdourden08/brock-core/args';
 import { commands } from '@drizztdourden08/brock-react';
 import { defineMcpTool } from '../../define-mcp-tool';
 import { MCP_ERROR } from '../../mcp.constants';
+import type { McpReply } from '../../mcp.type';
 import { toolFailure } from '../tool-failure';
 import { argsReader } from './args-reader';
 import { descriptorOf } from './descriptor-of';
@@ -10,7 +11,7 @@ import { parseCommandArgs } from './parse-command-args';
 
 const runCommandTool = defineMcpTool({
   ...descriptorOf('run_command'),
-  run: async (args) => {
+  run: async (args): Promise<McpReply> => {
     const id = argsReader.text(args, 'id') ?? '';
     const def = commands.list({ includeHidden: true }).find((each) => each.id === id);
     if (def === undefined) return toolFailure(MCP_ERROR.invalidArguments, `Unknown command "${id}".`);

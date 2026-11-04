@@ -58,7 +58,7 @@ describe('K1 the upgrade gate in a monorepo', { tags: ['critical'] }, () => {
     const names = gateSteps({ path: root, name: 'brock-0-17-0', plan: { mode: 'link', target: '0.17.0' }, review: true, apps }).map((step) => step.name);
     expect(names).toEqual([
       'brock sync in apps/desktop', 'brock migrate in apps/desktop',
-      'pnpm install --frozen-lockfile', 'brock check in apps/desktop',
+      'pnpm install after the migrations', 'brock check in apps/desktop',
       'pnpm lint', 'pnpm typecheck', 'pnpm lint:md', 'pnpm structure', 'pnpm test',
       'pnpm lint in apps/desktop', 'pnpm typecheck in apps/desktop', 'pnpm lint:md in apps/desktop', 'pnpm structure in apps/desktop', 'pnpm test in apps/desktop',
       'brock gate in apps/desktop',

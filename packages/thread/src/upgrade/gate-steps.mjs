@@ -37,7 +37,7 @@ const appSteps = (plan, app) => [
   { name: inApp('brock migrate', app), run: () => runIn.brock(app.dir, migrateArgs(plan, app)) },
 ];
 
-const installAfterMigrate = (path) => ({ name: 'pnpm install', run: () => runIn.pnpm(path, ['install', '--no-frozen-lockfile', NO_PURGE_PROMPT]) });
+const installAfterMigrate = (path) => ({ name: 'pnpm install after the migrations', run: () => runIn.pnpm(path, ['install', '--no-frozen-lockfile', NO_PURGE_PROMPT]) });
 
 const checkStep = (app) => ({ name: inApp('brock check', app), run: () => runIn.brock(app.dir, ['check']) });
 

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { ComponentType } from 'react';
+import type { ReactNode } from 'react';
 import type { CreateProfileOptions } from '@drizztdourden08/brock-core';
 import type { WizardStepDef } from '@drizztdourden08/tessera/composites';
 
@@ -17,8 +17,8 @@ interface ProfileWizardStepDef<V extends object = object> {
   initial: () => V;
   before?: string;
   step: Omit<WizardStepDef<ProfileWizardValues>, 'id'>;
-  Body: ComponentType<ProfileWizardStepBodyProps<V>>;
-  toCreate?: (value: V, values: ProfileWizardValues) => Partial<CreateProfileOptions>;
+  Body(props: ProfileWizardStepBodyProps<V>): ReactNode;
+  toCreate?(value: V, values: ProfileWizardValues): Partial<CreateProfileOptions>;
 }
 
 export type { ProfileWizardStepBodyProps, ProfileWizardStepDef, ProfileWizardValues };

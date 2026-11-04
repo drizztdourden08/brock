@@ -1,0 +1,34 @@
+{
+  "name": "@drizztdourden08/brock-randomizer",
+  "version": "0.120.1",
+  "description": "Brock randomizer module: a seeded item randomizer world model with typed rules, collection state, restrictive fill, spheres and a retrying generate loop. The game supplies its own world data.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/randomizer"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    "./world": "./src/world/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "NOTICE.md",
+    "LICENSE-world",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "brock": {
+    "id": "randomizer",
+    "description": "Seeded item randomizer: world model, rules, fill, spoiler."
+  }
+}

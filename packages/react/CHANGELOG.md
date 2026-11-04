@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-react
 
+## 0.118.1
+
+### Patch Changes
+
+- b05fcbd: The app review checks full screen on a registered screen drawn in a screen layer: settings, then profiles, then the first other one. About draws its own layer, so `cluster-fullscreen` never found the square screen there.
+  - @drizztdourden08/brock-core@0.118.1
+
 ## 0.118.0
 
 ### Patch Changes

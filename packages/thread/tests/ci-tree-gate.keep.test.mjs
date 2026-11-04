@@ -97,7 +97,7 @@ describe('K1 hard time limit and process tree kill', { tags: ['critical'] }, () 
   it('kills by pid with taskkill on Windows and falls back to the child', () => {
     const calls = [];
     expect(stopPid(77, { platform: 'win32', exec: (...args) => calls.push(args) })).toBe(true);
-    expect(calls).toEqual([['taskkill', ['/PID', '77', '/T', '/F'], { stdio: 'ignore' }]]);
+    expect(calls).toEqual([['taskkill', ['/PID', '77', '/T', '/F'], { stdio: 'ignore', windowsHide: true }]]);
     const signals = [];
     stopPid(78, { platform: 'linux', kill: (pid, signal) => signals.push([pid, signal]) });
     expect(signals).toEqual([[78, 'SIGTERM']]);

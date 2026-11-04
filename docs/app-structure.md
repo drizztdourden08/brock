@@ -548,6 +548,22 @@ The title bar draws View, the sub-menu with Pin on top and Full screen, so `view
 
 With no active profile, an entry that opens a screen needing a profile shows disabled with "Pick or create a profile first", as Home does, wherever an override put it. The review checks the drawn menu against these overrides: each overridden entry gets a `menu-entry-<key>` check (out of the menu, or drawn at its place between its neighbours), each `hidden` entry a `search-hidden-<key>` check that the palette does not list it, and its built-in, section and last-group checks follow the effective menu.
 
+## Module options
+
+`product.moduleOptions` in `brock.config.ts` holds one options object per module id. A module types its entry through the open `ModuleOptions` interface in `@drizztdourden08/brock-core/augment`. The values are plain JSON, so the build and the running app read the same ones:
+
+```ts
+// brock.config.ts
+product: defineProduct({
+  // ...
+  moduleOptions: { mcp: { packaged: true } },
+}),
+```
+
+- The key is the module id. An id the app does not list in `modules` has no effect.
+- A module with a `helpers` entry ships that helper in a packaged build only when its options say `packaged: true`. The same flag decides whether Electron's `RunAsNode` fuse turns on for it.
+- The `mcp` module reads `{ dev?: boolean = true, packaged?: boolean = false }`. See `packages/modules/mcp/README.md`.
+
 ## Product icons
 
 `product.icons` in `brock.config.ts` names the app's brand art. `brand` picks a Tessera brand, which `brock icons` copies into `public/logos/` and `build/icons/`; `rim` (`'light'`) picks its rimmed set. `wordmark` is the app's name drawn as an image, an SVG or PNG under `public/`, given as the path the page loads it from, like the logos:

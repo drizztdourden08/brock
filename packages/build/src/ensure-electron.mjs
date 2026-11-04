@@ -70,7 +70,7 @@ const runInstallScript = (packageDir) => {
   const script = join(packageDir, 'install.js');
   if (!existsSync(script)) return false;
   try {
-    execSync(`"${process.execPath}" "${script}"`, { cwd: packageDir, stdio: 'inherit' });
+    execSync(`"${process.execPath}" "${script}"`, { windowsHide: true, cwd: packageDir, stdio: 'inherit' });
     return true;
   } catch {
     return false;

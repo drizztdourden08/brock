@@ -8,7 +8,7 @@ const MARK_LINE = /^(\*\*\/)?public\/logos\/mark\.svg$/;
 
 const tracked = (rootDir) => {
   try {
-    return execFileSync('git', ['ls-files', '--', MARK], { cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() !== '';
+    return execFileSync('git', ['ls-files', '--', MARK], { windowsHide: true, cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() !== '';
   } catch {
     return false;
   }

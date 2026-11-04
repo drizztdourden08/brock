@@ -10,7 +10,7 @@ import { vboxManagePath, vmState } from './vbox.mjs';
 const TOOLS = ['node', 'pnpm', 'rsync', 'vpk'];
 const TOOLS_LINE = `export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; export PATH="$HOME/.dotnet/tools:$PATH"; for t in ${TOOLS.join(' ')}; do command -v $t >/dev/null 2>&1 || echo $t; done`;
 
-const quiet = (file, args) => execFileSync(file, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+const quiet = (file, args) => execFileSync(file, args, { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
 const firstLine = (text) => text.trim().split('\n')[0] ?? '';
 
@@ -28,7 +28,7 @@ const probe = (label, run, hint) => {
   }
 };
 
-const sshClient = () => probe('ssh client', () => firstLine(execFileSync('ssh', ['-V'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) || 'found'), 'Install the OpenSSH client (Windows: Settings > Optional features > OpenSSH Client).');
+const sshClient = () => probe('ssh client', () => firstLine(execFileSync('ssh', ['-V'], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) || 'found'), 'Install the OpenSSH client (Windows: Settings > Optional features > OpenSSH Client).');
 
 const virtualBox = () => probe('VirtualBox', () => `VBoxManage ${firstLine(quiet(vboxManagePath(), ['--version']))}`, 'Install VirtualBox, or set VBOXMANAGE to VBoxManage\'s path.');
 

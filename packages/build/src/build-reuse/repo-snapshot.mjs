@@ -11,7 +11,7 @@ const MANIFEST = 'package.json';
 
 const gitOut = (args, cwd) => {
   try {
-    return execFileSync('git', ['-c', 'core.quotepath=off', ...args], { ...GIT_OPTIONS, cwd });
+    return execFileSync('git', ['-c', 'core.quotepath=off', ...args], { windowsHide: true, ...GIT_OPTIONS, cwd });
   } catch {
     return null;
   }

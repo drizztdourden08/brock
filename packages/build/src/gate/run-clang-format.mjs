@@ -14,8 +14,8 @@ const quote = (arg) => (/^[\w./:\\=+-]+$/.test(arg) ? arg : `"${arg.replace(/"/g
 const run = ([bin, ...lead], args) => {
   const options = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 };
   const result = /\.(?:cmd|bat)$/i.test(bin)
-    ? spawnSync([bin, ...lead, ...args].map(quote).join(' '), { ...options, shell: true })
-    : spawnSync(bin, [...lead, ...args], options);
+    ? spawnSync([bin, ...lead, ...args].map(quote).join(' '), { ...options, shell: true, windowsHide: true })
+    : spawnSync(bin, [...lead, ...args], { ...options, windowsHide: true });
   if (result.error) throw new Error(`could not run ${bin}: ${result.error.message}`);
   return { status: result.status ?? 1, out: `${result.stdout ?? ''}${result.stderr ?? ''}` };
 };

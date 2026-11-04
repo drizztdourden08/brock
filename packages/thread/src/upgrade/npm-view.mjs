@@ -5,7 +5,7 @@ import { BROCK_SCOPE, DEFAULT_REGISTRY, NPM_TIMEOUT_MS } from './upgrade.constan
 const onWindows = process.platform === 'win32';
 
 const npm = (args, cwd) =>
-  spawnSync(onWindows ? 'npm.cmd' : 'npm', args, { cwd, encoding: 'utf8', timeout: NPM_TIMEOUT_MS, shell: onWindows, stdio: ['ignore', 'pipe', 'pipe'] });
+  spawnSync(onWindows ? 'npm.cmd' : 'npm', args, { windowsHide: true, cwd, encoding: 'utf8', timeout: NPM_TIMEOUT_MS, shell: onWindows, stdio: ['ignore', 'pipe', 'pipe'] });
 
 const scopeRegistry = (cwd) => {
   const out = npm(['config', 'get', `${BROCK_SCOPE}:registry`], cwd);

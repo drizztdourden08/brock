@@ -33,7 +33,7 @@ const appArgs = ({ worktree, state, visible, sound, passthrough }, userDataDir, 
 const startDev = (appDir, args, log) => {
   ensureElectronBinary(appDir, log);
   log(`${appDir}> electron-vite dev --watch -- ${args.join(' ')}`);
-  return spawn(process.execPath, [electronViteBin(appDir), 'dev', '--watch', '--', ...args], { cwd: appDir, stdio: 'inherit' });
+  return spawn(process.execPath, [electronViteBin(appDir), 'dev', '--watch', '--', ...args], { windowsHide: true, cwd: appDir, stdio: 'inherit' });
 };
 
 const mainEntryOf = (appDir) => {
@@ -51,7 +51,7 @@ const startProd = (appDir, args, log) => {
   delete env.ELECTRON_RUN_AS_NODE;
   const entry = mainEntryOf(appDir) === DIST_MAIN ? '.' : DIST_MAIN;
   log(`${appDir}> electron ${entry} ${args.join(' ')}`);
-  return spawn(electron, [entry, ...args], { cwd: appDir, stdio: 'inherit', env });
+  return spawn(electron, [entry, ...args], { windowsHide: true, cwd: appDir, stdio: 'inherit', env });
 };
 
 const productionProblem = (appDir) => buildIfStale(appDir) ?? distProblem(appDir);

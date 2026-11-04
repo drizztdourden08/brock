@@ -13,7 +13,7 @@ const extractSevenZip = (archive, destination, dropHint) => {
   const sevenZip = findSevenZip();
   if (!sevenZip) throw new Error(`7-Zip is required to unpack ${archive} and was not found on PATH or in Program Files. Install 7-Zip (https://www.7-zip.org), or ${dropHint}`);
   mkdirSync(destination, { recursive: true });
-  execFileSync(sevenZip, ['x', archive, `-o${destination}`, '-y'], { stdio: 'inherit' });
+  execFileSync(sevenZip, ['x', archive, `-o${destination}`, '-y'], { windowsHide: true, stdio: 'inherit' });
 };
 
 export { extractSevenZip };

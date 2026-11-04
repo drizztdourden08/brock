@@ -13,7 +13,7 @@ const PNPM_FIELD = /^pnpm@\d/;
 const pnpmVersion = () => {
   const running = USER_AGENT_PNPM.exec(process.env.npm_config_user_agent ?? '')?.[1];
   if (running) return running;
-  const result = spawnSync('pnpm --version', { shell: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  const result = spawnSync('pnpm --version', { shell: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }, { windowsHide: true });
   const found = result.status === 0 ? result.stdout.trim() : '';
   return VERSION.test(found) ? found : null;
 };

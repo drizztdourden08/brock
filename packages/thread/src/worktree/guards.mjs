@@ -38,7 +38,7 @@ const assertNoStash = (worktreePath, name) => {
 const runningInstancePids = (name) => {
   const script = `Get-CimInstance Win32_Process -Filter "Name='electron.exe'" | Where-Object { $_.CommandLine -like '*--instance=${name}*' } | Select-Object -ExpandProperty ProcessId`;
   try {
-    return execFileSync('powershell', ['-NoProfile', '-Command', script], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execFileSync('powershell', ['-NoProfile', '-Command', script], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return '';
   }

@@ -16,7 +16,7 @@ const pipeOutput = (child) => {
   return child;
 };
 
-const spawnPiped = (args, cwd) => pipeOutput(spawn(process.execPath, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] }));
+const spawnPiped = (args, cwd) => pipeOutput(spawn(process.execPath, args, { windowsHide: true, cwd, stdio: ['ignore', 'pipe', 'pipe'] }));
 
 const appArgs = ({ worktree, state, passthrough }, userDataDir, states) => [`--user-data=${userDataDir}`, ...stateFlags(states, worktree, state), ...passthrough];
 

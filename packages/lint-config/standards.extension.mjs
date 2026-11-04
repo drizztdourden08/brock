@@ -2,6 +2,8 @@
 import { defineExtension } from '@drizztdourden08/standards';
 import { brockKnipPreprocessors } from './brock-knip-preprocessors.mjs';
 import { dataOnly } from './data-only-rule.mjs';
+import { SPAWN_FILE_GLOBS } from './spawn-hides-window.constants.mjs';
+import { spawnHidesWindow } from './spawn-hides-window-rule.mjs';
 import { verbatimSource } from './verbatim-source-rule.mjs';
 
 const SCREEN_FILE_GLOBS = [
@@ -29,9 +31,12 @@ export default defineExtension({
   id: 'brock-lint-config',
   description: 'Brock apps: Tessera names in the raw-control messages, screen, widget, title bar item, tour, toolbar and start-up prompt files, module entries, boot tasks and review steps, Tessera tokens, the brock-build knip preprocessor',
   eslint: {
-    plugins: { brock: { rules: { 'data-only': dataOnly, 'verbatim-source': verbatimSource } } },
+    plugins: { brock: { rules: { 'data-only': dataOnly, 'verbatim-source': verbatimSource, 'spawn-hides-window': spawnHidesWindow } } },
     rules: { 'brock/data-only': 'error', 'brock/verbatim-source': 'error' },
-    configs: [{ name: 'brock/live-hook', files: LIVE_FILE_GLOBS, rules: { 'local/hook-file-named-after-hook': 'off' } }],
+    configs: [
+      { name: 'brock/live-hook', files: LIVE_FILE_GLOBS, rules: { 'local/hook-file-named-after-hook': 'off' } },
+      { name: 'brock/spawn-hides-window', files: SPAWN_FILE_GLOBS, rules: { 'brock/spawn-hides-window': 'error' } },
+    ],
     options: {
       rawControls: RAW_CONTROLS,
       defaultExportGlobs: BROCK_DEFAULT_EXPORTS,

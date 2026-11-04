@@ -30,7 +30,7 @@ const titleCase = (slug) =>
 
 const gitConfig = (key) => {
   try {
-    return execFileSync('git', ['config', key], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() || null;
+    return execFileSync('git', ['config', key], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() || null;
   } catch {
     return null;
   }

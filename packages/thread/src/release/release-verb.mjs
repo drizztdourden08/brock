@@ -41,7 +41,7 @@ const dispatchable = (rootDir, workflow) => {
   return existsSync(file) && readFileSync(file, 'utf8').includes('workflow_dispatch');
 };
 
-const tagExists = (rootDir, tag) => spawnSync('git', ['rev-parse', '-q', '--verify', `refs/tags/${tag}`], { cwd: rootDir }).status === 0;
+const tagExists = (rootDir, tag) => spawnSync('git', ['rev-parse', '-q', '--verify', `refs/tags/${tag}`], { windowsHide: true, cwd: rootDir }).status === 0;
 
 const releaseTag = (positional, rootDir) => {
   const version = positional[0] ?? highestNotesVersion(rootDir);

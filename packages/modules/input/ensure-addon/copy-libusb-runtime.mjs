@@ -13,7 +13,7 @@ const copyWindows = ({ paths, pins }) => {
 
 const systemLibdir = () => {
   try {
-    return execFileSync('pkg-config', ['--variable=libdir', 'libusb-1.0'], { encoding: 'utf8' }).trim();
+    return execFileSync('pkg-config', ['--variable=libdir', 'libusb-1.0'], { windowsHide: true, encoding: 'utf8' }).trim();
   } catch {
     return null;
   }

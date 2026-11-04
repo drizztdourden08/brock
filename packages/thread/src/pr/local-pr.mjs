@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 
 const listFromCoord = (cwd) => {
   try {
-    const out = execFileSync('coord', ['pr', 'list', '--json'], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], shell: process.platform === 'win32' });
+    const out = execFileSync('coord', ['pr', 'list', '--json'], { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], shell: process.platform === 'win32' });
     const parsed = JSON.parse(out);
     return Array.isArray(parsed) ? parsed : (parsed.prs ?? null);
   } catch {

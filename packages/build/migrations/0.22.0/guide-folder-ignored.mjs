@@ -25,7 +25,7 @@ const covers = (lines, out) => lines.some((line) => [out, `${out}/`, `/${out}`, 
 
 const tracked = (configDir, out) => {
   try {
-    return execFileSync('git', ['ls-files', '--', out], { cwd: configDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() !== '';
+    return execFileSync('git', ['ls-files', '--', out], { windowsHide: true, cwd: configDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() !== '';
   } catch {
     return false;
   }

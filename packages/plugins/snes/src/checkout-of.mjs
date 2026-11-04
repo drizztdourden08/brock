@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
  */
 const checkoutOf = (ctx) => {
   try {
-    return execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+    return execFileSync('git', ['rev-parse', '--show-toplevel'], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   } catch {
     return ctx.rootDir;
   }

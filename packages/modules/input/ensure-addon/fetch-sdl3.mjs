@@ -9,7 +9,7 @@ import { readJson } from './read-json.mjs';
 
 const hasSystemLibusb = () => {
   try {
-    execFileSync('pkg-config', ['--exists', 'libusb-1.0'], { stdio: 'ignore' });
+    execFileSync('pkg-config', ['--exists', 'libusb-1.0'], { windowsHide: true, stdio: 'ignore' });
     return true;
   } catch {
     return false;

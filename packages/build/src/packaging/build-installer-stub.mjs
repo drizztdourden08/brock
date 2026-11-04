@@ -14,7 +14,7 @@ const STUB_EXE = 'installer-stub.exe';
 const findVcvars = () => {
   const hint = 'The installer stub needs the Visual Studio C++ build tools (the windows-latest runner has them).';
   if (!existsSync(VSWHERE)) throw new Error(`${VSWHERE} is missing. ${hint}`);
-  const root = execFileSync(VSWHERE, ['-latest', '-products', '*', '-requires', VC_TOOLS, '-property', 'installationPath'], { encoding: 'utf8' }).trim();
+  const root = execFileSync(VSWHERE, ['-latest', '-products', '*', '-requires', VC_TOOLS, '-property', 'installationPath'], { windowsHide: true, encoding: 'utf8' }).trim();
   const vcvars = join(root, 'VC', 'Auxiliary', 'Build', 'vcvars64.bat');
   if (!root || !existsSync(vcvars)) throw new Error(`No C++ toolset found. ${hint}`);
   return vcvars;
@@ -76,7 +76,7 @@ const compile = (out, vcvars) => {
     ...STUB_LIBS,
   ].join(' ');
   const script = `call "${vcvars}" >nul && ${rc} && ${cl}`;
-  execFileSync('cmd.exe', ['/d', '/s', '/c', `"${script}"`], { cwd: out, stdio: 'inherit', windowsVerbatimArguments: true });
+  execFileSync('cmd.exe', ['/d', '/s', '/c', `"${script}"`], { windowsHide: true, cwd: out, stdio: 'inherit', windowsVerbatimArguments: true });
 };
 
 /**

@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 const stopPid = (pid, { platform = process.platform, exec = execFileSync, kill = process.kill } = {}) => {
   if (!pid) return false;
   try {
-    if (platform === 'win32') exec('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' });
+    if (platform === 'win32') exec('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
     else kill(pid, 'SIGTERM');
     return true;
   } catch {

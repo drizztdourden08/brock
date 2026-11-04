@@ -15,7 +15,7 @@ import { versionReport } from '../src/version-report.mjs';
 const OWN_VERSION = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')).version;
 const VERSION_FLAGS = new Set(['--version', '-v']);
 
-const runFile = (file, args) => spawnSync(process.execPath, [file, ...args], { stdio: 'inherit' }).status ?? 1;
+const runFile = (file, args) => spawnSync(process.execPath, [file, ...args], { windowsHide: true, stdio: 'inherit' }).status ?? 1;
 
 const main = () => {
   const [command, ...rest] = process.argv.slice(2);

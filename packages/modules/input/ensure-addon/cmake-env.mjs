@@ -5,7 +5,7 @@ import { bundledCmakeDir } from './bundled-cmake-dir.mjs';
 
 const cmakeOnPath = () => {
   try {
-    execFileSync('cmake', ['--version'], { stdio: 'ignore' });
+    execFileSync('cmake', ['--version'], { windowsHide: true, stdio: 'ignore' });
     return true;
   } catch {
     return false;

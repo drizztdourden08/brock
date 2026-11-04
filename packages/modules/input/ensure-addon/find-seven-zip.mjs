@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 const onPath = () => {
   try {
-    execFileSync('7z', ['i'], { stdio: 'ignore' });
+    execFileSync('7z', ['i'], { windowsHide: true, stdio: 'ignore' });
     return '7z';
   } catch {
     return undefined;

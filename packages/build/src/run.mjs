@@ -40,8 +40,8 @@ const runInherit = (command, args, opts) =>
   new Promise((resolve, reject) => {
     const shell = opts.shell ?? false;
     const child = shell
-      ? spawn([command, ...args.map(quoteArg)].join(' '), { cwd: opts.cwd, env: opts.env ?? process.env, stdio: 'inherit', shell: true })
-      : spawn(command, args, { cwd: opts.cwd, env: opts.env ?? process.env, stdio: 'inherit' });
+      ? spawn([command, ...args.map(quoteArg)].join(' '), { cwd: opts.cwd, env: opts.env ?? process.env, stdio: 'inherit', shell: true, windowsHide: true })
+      : spawn(command, args, { windowsHide: true, cwd: opts.cwd, env: opts.env ?? process.env, stdio: 'inherit' });
     child.on('error', reject);
     child.on('exit', (code, signal) => resolve(code ?? (signal ? 1 : 0)));
   });

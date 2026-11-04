@@ -35,8 +35,8 @@ const withPort = (args, port) => {
 const spawnPiped = (file, args, cwd, port) => {
   const env = port === undefined ? process.env : { ...process.env, PORT: String(port) };
   const stdio = ['ignore', 'pipe', 'pipe'];
-  if (IS_WINDOWS) return spawn([file, ...args].map(quoteArg).join(' '), { cwd, env, stdio, shell: true });
-  return spawn(file, args, { cwd, env, stdio });
+  if (IS_WINDOWS) return spawn([file, ...args].map(quoteArg).join(' '), { cwd, env, stdio, shell: true, windowsHide: true });
+  return spawn(file, args, { windowsHide: true, cwd, env, stdio });
 };
 
 const announceReady = (child, ready, log) => {

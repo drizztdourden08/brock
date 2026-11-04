@@ -10,12 +10,12 @@ const quote = (arg) => (/^[\w@:/.=+-]+$/.test(arg) ? arg : `"${arg.replace(/"/g,
 
 const pnpm = (dir, args) => {
   const result = onWindows
-    ? spawnSync(['pnpm', ...args].map(quote).join(' '), { cwd: dir, stdio: 'inherit', shell: true })
-    : spawnSync('pnpm', args, { cwd: dir, stdio: 'inherit' });
+    ? spawnSync(['pnpm', ...args].map(quote).join(' '), { cwd: dir, stdio: 'inherit', shell: true, windowsHide: true })
+    : spawnSync('pnpm', args, { windowsHide: true, cwd: dir, stdio: 'inherit' });
   return result.status ?? 1;
 };
 
-const node = (dir, args) => spawnSync(process.execPath, args, { cwd: dir, stdio: 'inherit' }).status ?? 1;
+const node = (dir, args) => spawnSync(process.execPath, args, { windowsHide: true, cwd: dir, stdio: 'inherit' }).status ?? 1;
 
 const brockBin = (dir) => join(dir, 'node_modules', ...BUILD_PACKAGE.split('/'), 'bin', 'brock.mjs');
 

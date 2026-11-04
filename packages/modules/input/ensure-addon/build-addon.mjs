@@ -30,7 +30,7 @@ const buildAddon = async (job) => {
     if (paths.cmakeDir) log(`CMake build folders: ${paths.cmakeDir}`);
     await fetchSdl3(job);
     const configDir = buildSdl3(job, env);
-    execFileSync(process.execPath, [cmakeJs, ...cmakeJsArgs(paths, configDir)], { stdio: 'inherit', cwd: paths.nativeDir, env });
+    execFileSync(process.execPath, [cmakeJs, ...cmakeJsArgs(paths, configDir)], { windowsHide: true, stdio: 'inherit', cwd: paths.nativeDir, env });
     copyBuiltArtifacts(paths);
     return existsSync(paths.nodeFile) ? 'built' : 'failed';
   } catch (err) {

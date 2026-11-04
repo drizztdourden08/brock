@@ -28,7 +28,7 @@ const buildSdl3 = (job, env) => {
   const configDir = sdl3ConfigDir(paths.installDir);
   if (configDir && !force && isBuilt(job, markerFile)) return configDir;
   log(`Building SDL ${pins.sdl3Version} with SDL_HIDAPI_LIBUSB=ON for ${paths.platformArch}.`);
-  const cmake = (args) => execFileSync('cmake', args, { cwd: paths.nativeDir, stdio: 'inherit', env });
+  const cmake = (args) => execFileSync('cmake', args, { windowsHide: true, cwd: paths.nativeDir, stdio: 'inherit', env });
   mkdirSync(paths.sdlBuildDir, { recursive: true });
   cmake(sdl3ConfigureArgs(join(paths.thirdPartyDir, `SDL3-${pins.sdl3Version}`), job));
   cmake(['--build', paths.sdlBuildDir, '--config', 'Release', '--parallel']);

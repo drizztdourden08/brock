@@ -12,8 +12,8 @@ const quote = (arg) => (/^[\w./:;@=+-]+$/.test(arg) ? arg : `"${arg.replace(/"/g
 const probe = (command, args) => {
   const options = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: PROBE_TIMEOUT_MS };
   const result = process.platform === 'win32'
-    ? spawnSync([command, ...args].map(quote).join(' '), { ...options, shell: true })
-    : spawnSync(command, args, options);
+    ? spawnSync([command, ...args].map(quote).join(' '), { ...options, shell: true, windowsHide: true })
+    : spawnSync(command, args, { ...options, windowsHide: true });
   return { ok: result.status === 0, out: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim() };
 };
 

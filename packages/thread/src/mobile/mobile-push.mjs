@@ -11,7 +11,7 @@ const adbPath = () => {
   return sdk ? join(sdk, 'platform-tools', name) : name;
 };
 
-const capture = (file, args) => execFileSync(file, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const capture = (file, args) => execFileSync(file, args, { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 const assertAdb = (adb) => {
   try {

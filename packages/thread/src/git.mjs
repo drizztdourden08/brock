@@ -18,7 +18,7 @@ const blockedInLocalMode = (args) => REMOTE_VERBS.has(gitVerb(args)) && isLocalM
 
 const git = (args, cwd) => {
   if (blockedInLocalMode(args)) throw new Error(`git ${gitVerb(args)} is not run in local mode (~/.coord/remote.json).`);
-  return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  return execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 };
 
 const REPO_ENV = Object.freeze(['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR', 'GIT_OBJECT_DIRECTORY', 'GIT_PREFIX']);
@@ -33,7 +33,7 @@ const repoFreeEnv = () => Object.fromEntries(Object.entries(process.env).filter(
  * @param {string} cwd the repository git answers for, never the env
  * @returns {string} the trimmed output
  */
-const gitAt = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoFreeEnv() }).trim();
+const gitAt = (args, cwd) => execFileSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoFreeEnv() }).trim();
 
 /**
  * @param {string[]} args
@@ -61,7 +61,7 @@ const gitLoud = (args, cwd) => {
     console.log(`Local mode: skipped git ${gitVerb(args)} (the remote is used only on the owner's go).`);
     return;
   }
-  execFileSync('git', args, { cwd, stdio: 'inherit' });
+  execFileSync('git', args, { windowsHide: true, cwd, stdio: 'inherit' });
 };
 
 const remoteBranch = (branch, cwd) => {

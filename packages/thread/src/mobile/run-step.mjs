@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
  * @param {{ cwd?: string, shell?: boolean, env?: NodeJS.ProcessEnv }} [opts] shell only matters on Windows
  */
 const runStep = (file, args, { cwd, shell = false, env = process.env } = {}) => {
-  execFileSync(file, args, { cwd, env, stdio: 'inherit', shell: shell && process.platform === 'win32' });
+  execFileSync(file, args, { windowsHide: true, cwd, env, stdio: 'inherit', shell: shell && process.platform === 'win32' });
 };
 
 export { runStep };

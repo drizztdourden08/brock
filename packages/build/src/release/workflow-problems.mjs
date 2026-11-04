@@ -11,7 +11,7 @@ import { hasPnpmPackageManager } from './pnpm-package-manager.mjs';
  */
 const ignoredByGit = (rootDir, paths) => {
   if (!paths.length) return [];
-  const result = spawnSync('git', ['check-ignore', '-z', '--stdin'], { cwd: rootDir, encoding: 'utf8', input: `${paths.join('\0')}\0` });
+  const result = spawnSync('git', ['check-ignore', '-z', '--stdin'], { windowsHide: true, cwd: rootDir, encoding: 'utf8', input: `${paths.join('\0')}\0` });
   if (result.status !== 0) return [];
   const ignored = new Set(result.stdout.split('\0').filter(Boolean).map((path) => resolve(rootDir, path)));
   return paths.filter((path) => ignored.has(resolve(rootDir, path)));

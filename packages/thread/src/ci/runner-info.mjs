@@ -4,7 +4,7 @@ import { hostname, platform, release } from 'node:os';
 
 const pnpmVersion = () => {
   try {
-    return execSync('pnpm --version', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execSync('pnpm --version', { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return 'unknown';
   }

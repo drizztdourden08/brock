@@ -27,7 +27,7 @@ const SINGLE_DOT_FOLDER = /^(?:\/|\*\*\/)?(?:[^!#\s]\S*\/)?\.[^/\s*?[\]!]+\/(?:\
 
 const trackedFiles = (rootDir) => {
   try {
-    return execFileSync('git', ['ls-files', '-z'], { cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }).split('\0').filter(Boolean);
+    return execFileSync('git', ['ls-files', '-z'], { windowsHide: true, cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }).split('\0').filter(Boolean);
   } catch {
     return [];
   }

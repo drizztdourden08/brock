@@ -18,7 +18,7 @@ const createKeystore = (paths, packageId) => {
     '-genkeypair', '-keystore', paths.keystore, '-storetype', 'PKCS12', '-alias', KEY_ALIAS,
     '-keyalg', 'RSA', '-keysize', '2048', '-validity', KEYSTORE_VALIDITY_DAYS,
     '-storepass:file', paths.password, '-keypass:file', paths.password, '-dname', `CN=${packageId}`,
-  ], { stdio: 'inherit' });
+  ], { windowsHide: true, stdio: 'inherit' });
   writeFileSync(paths.base64, readFileSync(paths.keystore).toString('base64'), { encoding: 'utf8', mode: 0o600 });
 };
 

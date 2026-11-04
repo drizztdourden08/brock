@@ -34,7 +34,7 @@ export default brockMarkdownlint({ ignores: ['vendor/**'] });
 | Facet | Adds |
 |---|---|
 | ESLint | raw-control messages that name the Tessera components (`TextInput`, `Select`, `TextArea`), default exports for screen files, widget files (`src/widgets/**/<id>.widget.tsx`) and the widget layout (`src/widgets/layout.ts`), module entries, `brock.workspace.mjs` and `boot/*.task.ts`, and screen and widget files as lists for `local/one-export-per-file` |
-| ESLint | `brock/data-only`, `brock/verbatim-source`, and the `@kind data` and `@kind verbatim` file kinds below |
+| ESLint | `brock/spawn-hides-window` (every `node:child_process` call passes `windowsHide: true` in an options object, so no console window opens on Windows), `brock/data-only`, `brock/verbatim-source`, and the `@kind data` and `@kind verbatim` file kinds below |
 | stylelint | `@drizztdourden08/tessera/tokens.css` as a token source for `brock/no-token-override` and `brock/no-token-shadow` |
 
 ## Allowing a word or an identifier

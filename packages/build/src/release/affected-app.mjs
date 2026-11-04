@@ -49,7 +49,7 @@ const affectsApp = ({ rootDir, appDir, files }) => {
  * @param {string} base a git ref
  * @returns {string[]} the files changed since the merge base with it
  */
-const changedSince = (rootDir, base) => execFileSync('git', ['diff', '--name-only', `${base}...HEAD`], { cwd: rootDir, encoding: 'utf8' })
+const changedSince = (rootDir, base) => execFileSync('git', ['diff', '--name-only', `${base}...HEAD`], { windowsHide: true, cwd: rootDir, encoding: 'utf8' })
   .split('\n').map((line) => line.trim()).filter(Boolean);
 
 export { affectsApp, changedSince };

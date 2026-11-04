@@ -7,6 +7,7 @@ import { DATA_KINDS, DATA_SOURCE, HEADER_BYTES, KIND_HEADER_TEXT, SKIPPED_DIRS }
 const fromGit = (rootDir) => {
   try {
     const out = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
+    windowsHide: true,
       cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024,
     });
     return out.split('\0').filter(Boolean);

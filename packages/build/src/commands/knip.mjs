@@ -36,7 +36,7 @@ const runKnip = (ctx) => {
     return 1;
   }
   const knipArgs = [bin, ...configArgs(rootDir), '--preprocessor', PREPROCESSOR, ...args];
-  return spawnSync(process.execPath, knipArgs, { cwd: rootDir, env: heavyNodeEnv(), stdio: 'inherit' }).status ?? 1;
+  return spawnSync(process.execPath, knipArgs, { windowsHide: true, cwd: rootDir, env: heavyNodeEnv(), stdio: 'inherit' }).status ?? 1;
 };
 
 export { runKnip };

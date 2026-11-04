@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { spawnSync } from 'node:child_process';
 
-const git = (cwd, args) => spawnSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+const git = (cwd, args) => spawnSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
 const identityArgs = (cwd, { authorName, authorEmail }) => {
   const name = git(cwd, ['config', 'user.name']).stdout.trim();

@@ -4,7 +4,7 @@ import { XRANDR_TIMEOUT_MS } from './linux.constants';
 
 const runXrandr = (args: string[]): string | null => {
   try {
-    return execFileSync('xrandr', args, { encoding: 'utf8', timeout: XRANDR_TIMEOUT_MS, stdio: ['ignore', 'pipe', 'ignore'] });
+    return execFileSync('xrandr', args, { windowsHide: true, encoding: 'utf8', timeout: XRANDR_TIMEOUT_MS, stdio: ['ignore', 'pipe', 'ignore'] });
   } catch {
     return null;
   }

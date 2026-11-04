@@ -27,7 +27,7 @@ const installIn = (dir, log) => {
   const args = installArgs(dir);
   log(`Running pnpm ${args.join(' ')} in ${dir}.`);
   try {
-    execFileSync('pnpm', [...args, NO_PURGE_PROMPT], { cwd: dir, stdio: 'inherit', shell: process.platform === 'win32' });
+    execFileSync('pnpm', [...args, NO_PURGE_PROMPT], { windowsHide: true, cwd: dir, stdio: 'inherit', shell: process.platform === 'win32' });
   } catch (error) {
     throw new Error(`pnpm ${args.join(' ')} failed in ${dir} (${error?.status ?? error?.message ?? 'no exit code'}); its output is above. The install is unfinished, so fix the cause and run it again.`, { cause: error });
   }

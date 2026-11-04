@@ -7,7 +7,7 @@ const LOCAL_MESSAGE = 'gh is not called in local mode (~/.coord/remote.json).';
 const tryGh = (args, cwd) => {
   if (isLocalMode()) return null;
   try {
-    return execFileSync('gh', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execFileSync('gh', args, { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return null;
   }
@@ -15,7 +15,7 @@ const tryGh = (args, cwd) => {
 
 const ghLoud = (args, cwd) => {
   if (isLocalMode()) throw new Error(LOCAL_MESSAGE);
-  execFileSync('gh', args, { cwd, stdio: 'inherit' });
+  execFileSync('gh', args, { windowsHide: true, cwd, stdio: 'inherit' });
 };
 
 export { ghLoud, tryGh };

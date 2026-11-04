@@ -8,7 +8,7 @@ import { systemToolFailure } from './system-tool-failure';
 const runSystemToolAsync: AsyncSystemToolRun = (exe, args, { cwd, env } = {}) =>
   new Promise((resolve, reject) => {
     const options = { cwd, env: env ? { ...process.env, ...env } : undefined, windowsHide: true, encoding: 'buffer' } as const;
-    execFile(join(BRIDGE_SYSTEM32, exe), args, options, (error, stdout) => (error ? reject(systemToolFailure(exe, error)) : resolve(stdout)));
+    execFile(join(BRIDGE_SYSTEM32, exe), args, { ...options, windowsHide: true }, (error, stdout) => (error ? reject(systemToolFailure(exe, error)) : resolve(stdout)));
   });
 
 export { runSystemToolAsync };

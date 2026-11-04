@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { BASE_ENV, BASE_REFS, MAX_CHANGED_FILES, TRANSIENT_FILES, WHOLE_TREE_FILES } from './lint.constants.mjs';
 
 const git = (cwd, args) => {
-  const result = spawnSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const result = spawnSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   return result.status === 0 ? result.stdout.trim() : null;
 };
 

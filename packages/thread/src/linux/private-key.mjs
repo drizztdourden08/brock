@@ -15,8 +15,8 @@ const isWindowsPath = (path) => /^[A-Za-z]:[\\/]/.test(path) || path.startsWith(
 
 const restrictToUser = (file) => {
   const user = process.env.USERNAME ?? '';
-  execFileSync('icacls', [file, '/inheritance:r'], { stdio: 'ignore' });
-  execFileSync('icacls', [file, '/grant:r', `${user}:F`], { stdio: 'ignore' });
+  execFileSync('icacls', [file, '/inheritance:r'], { windowsHide: true, stdio: 'ignore' });
+  execFileSync('icacls', [file, '/grant:r', `${user}:F`], { windowsHide: true, stdio: 'ignore' });
 };
 
 /**

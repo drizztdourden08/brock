@@ -15,7 +15,7 @@ const assertName = (name) => {
 const isWorktreeName = (name) => NAME_RULE.test(name) && name !== MAIN_CHECKOUT;
 
 const mainCheckout = (cwd = process.cwd()) => {
-  const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { windowsHide: true, cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   return resolve(common, '..');
 };
 
@@ -26,7 +26,7 @@ const isWorktreeCheckout = (dir) => {
 
 const registeredWorktrees = (main) => {
   try {
-    return execFileSync('git', ['worktree', 'list', '--porcelain'], { cwd: main, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+    return execFileSync('git', ['worktree', 'list', '--porcelain'], { windowsHide: true, cwd: main, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
       .split('\n')
       .filter((line) => line.startsWith('worktree '))
       .map((line) => resolve(line.slice(9)));

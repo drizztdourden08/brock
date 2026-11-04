@@ -26,7 +26,7 @@ const manifestUrlOf = ({ repo }) =>
  */
 const renderScreens = (exe, dir, screens) => screens.map((screen) => {
   const file = join(dir, `${screen}.png`);
-  execFileSync(exe, [`--render-png=${file}`, `--screen=${screen}`, `--scale=${PREVIEW_SCALE}`]);
+  execFileSync(exe, [`--render-png=${file}`, `--screen=${screen}`, `--scale=${PREVIEW_SCALE}`], { windowsHide: true });
   if (!existsSync(file)) throw new Error(`The installer stub did not write ${file}`);
   return `${screen}.png`;
 });

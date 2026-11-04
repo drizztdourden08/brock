@@ -48,7 +48,7 @@ const bashStdin = (args) => ['bash', '-s', '--', ...args.map(shellQuote)].join('
  * @param {string[]} args
  */
 const runRemoteScript = (remote, script, args) => {
-  execFileSync('ssh', [...remote.ssh, remote.target, bashStdin(args)], { input: scriptText(script), stdio: ['pipe', 'inherit', 'inherit'] });
+  execFileSync('ssh', [...remote.ssh, remote.target, bashStdin(args)], { windowsHide: true, input: scriptText(script), stdio: ['pipe', 'inherit', 'inherit'] });
 };
 
 /**
@@ -56,7 +56,7 @@ const runRemoteScript = (remote, script, args) => {
  * @param {string} command one shell line
  * @returns {string} its output; throws when it fails
  */
-const remoteCapture = (remote, command) => execFileSync('ssh', ['-n', ...remote.ssh, remote.target, command], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const remoteCapture = (remote, command) => execFileSync('ssh', ['-n', ...remote.ssh, remote.target, command], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
 /**
  * @param {RemoteTarget} remote
@@ -64,7 +64,7 @@ const remoteCapture = (remote, command) => execFileSync('ssh', ['-n', ...remote.
  * @param {string} to a path under the VM user's home
  */
 const copyTo = (remote, from, to) => {
-  execFileSync('scp', [...remote.scp, from, `${remote.target}:${to}`], { stdio: 'inherit' });
+  execFileSync('scp', [...remote.scp, from, `${remote.target}:${to}`], { windowsHide: true, stdio: 'inherit' });
 };
 
 export { shellQuote, remoteTarget, scriptText, bashStdin, runRemoteScript, remoteCapture, copyTo };

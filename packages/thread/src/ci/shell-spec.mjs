@@ -11,7 +11,7 @@ let gitBashPath;
 
 const gitPaths = () => {
   try {
-    return execFileSync('where', ['git'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).split(/\r?\n/).filter(Boolean);
+    return execFileSync('where', ['git'], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).split(/\r?\n/).filter(Boolean);
   } catch {
     return [];
   }

@@ -8,6 +8,7 @@ import { execFileSync } from 'node:child_process';
  * @returns {string}
  */
 const vaultGit = (args, cwd, env) => execFileSync('git', args, {
+    windowsHide: true,
   cwd,
   encoding: 'utf8',
   stdio: ['ignore', 'pipe', 'pipe'],

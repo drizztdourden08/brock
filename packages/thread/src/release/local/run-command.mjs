@@ -14,6 +14,7 @@ const quote = (arg) => (/[\s"&|<>^%]/.test(arg) ? `"${arg.replace(/"/g, '\\"')}"
  */
 const runCommand = (command, args, { cwd, env = {} }) =>
   execFileSync(command, WINDOWS ? args.map(quote) : args, {
+    windowsHide: true,
     cwd,
     env: { ...process.env, ...env },
     encoding: 'utf8',

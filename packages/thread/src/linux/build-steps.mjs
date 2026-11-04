@@ -69,9 +69,9 @@ const buildInVm = (remote, machine, settings, run) => {
 const buildInWsl = (remote, machine, settings, run) => {
   const built = `${settings.repoName}-out/${settings.product.id}.AppImage`;
   run.log(`Building ${settings.appDir} in WSL (${machine.wslDistro}): ${settings.build.join(' ')}`);
-  execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-c', `mkdir -p "$HOME/${settings.repoName}-out"`], { stdio: 'inherit' });
-  execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-s', '--', ...buildArgs(settings, wslMountPath(run.checkout), built)], { input: scriptText(SCRIPT_FILES.build), stdio: ['pipe', 'inherit', 'inherit'] });
-  const hostCopy = execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-c', `wslpath -w "$HOME/${built}"`], { encoding: 'utf8' }).trim();
+  execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-c', `mkdir -p "$HOME/${settings.repoName}-out"`], { windowsHide: true, stdio: 'inherit' });
+  execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-s', '--', ...buildArgs(settings, wslMountPath(run.checkout), built)], { windowsHide: true, input: scriptText(SCRIPT_FILES.build), stdio: ['pipe', 'inherit', 'inherit'] });
+  const hostCopy = execFileSync('wsl', ['-d', machine.wslDistro, '-e', 'bash', '-c', `wslpath -w "$HOME/${built}"`], { windowsHide: true, encoding: 'utf8' }).trim();
   run.log(`Copying the AppImage into ${machine.vmName}`);
   copyTo(remote, hostCopy, run.staged);
 };

@@ -17,17 +17,17 @@ const installedVersion = (dir) => {
 
 const emsdkCommand = (dir, args) => {
   const opts = { cwd: dir, stdio: 'inherit' };
-  if (process.platform === 'win32') execFileSync('cmd', ['/d', '/c', join(dir, 'emsdk.bat'), ...args], opts);
-  else execFileSync(join(dir, 'emsdk'), args, opts);
+  if (process.platform === 'win32') execFileSync('cmd', ['/d', '/c', join(dir, 'emsdk.bat'), ...args], { ...opts, windowsHide: true });
+  else execFileSync(join(dir, 'emsdk'), args, { ...opts, windowsHide: true });
 };
 
 const fetchSdk = (dir, repo) => {
   if (existsSync(join(dir, 'emsdk.py'))) {
-    execFileSync('git', ['pull', '--ff-only'], { cwd: dir, stdio: 'inherit' });
+    execFileSync('git', ['pull', '--ff-only'], { windowsHide: true, cwd: dir, stdio: 'inherit' });
     return;
   }
   mkdirSync(dirname(dir), { recursive: true });
-  execFileSync('git', ['clone', '--depth', '1', repo, dir], { stdio: 'inherit' });
+  execFileSync('git', ['clone', '--depth', '1', repo, dir], { windowsHide: true, stdio: 'inherit' });
 };
 
 /**

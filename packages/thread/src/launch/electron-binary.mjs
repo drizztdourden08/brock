@@ -55,7 +55,7 @@ const ensureElectronBinary = (appDir, log) => {
   }
   if (!packageDir) throw new Error(`electron is not installed for ${appDir}. Run pnpm install.`);
   log('The electron binary is missing (its install script did not run). Downloading it now...');
-  execFileSync(process.execPath, [join(packageDir, 'install.js')], { cwd: packageDir, stdio: 'inherit' });
+  execFileSync(process.execPath, [join(packageDir, 'install.js')], { windowsHide: true, cwd: packageDir, stdio: 'inherit' });
   const installed = binaryOf(requireFromApp);
   if (!installed) throw new Error(`electron is still missing its binary after install.js ran in ${packageDir}. Delete node_modules and install again.`);
   keepInCache(packageDir);

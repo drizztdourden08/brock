@@ -21,7 +21,7 @@ const vmStateOf = (text) => /^VMState="([^"]+)"/m.exec(text)?.[1] ?? null;
  */
 const vmState = (vmName) => {
   try {
-    return vmStateOf(execFileSync(vboxManagePath(), ['showvminfo', vmName, '--machinereadable'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
+    return vmStateOf(execFileSync(vboxManagePath(), ['showvminfo', vmName, '--machinereadable'], { windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
   } catch {
     return null;
   }
@@ -35,7 +35,7 @@ const vmState = (vmName) => {
 const addTransientShare = (vmName, name, hostPath) => {
   mkdirSync(hostPath, { recursive: true });
   try {
-    execFileSync(vboxManagePath(), ['sharedfolder', 'add', vmName, '--name', name, '--hostpath', hostPath, '--transient'], { stdio: 'ignore' });
+    execFileSync(vboxManagePath(), ['sharedfolder', 'add', vmName, '--name', name, '--hostpath', hostPath, '--transient'], { windowsHide: true, stdio: 'ignore' });
   } catch {
     return false;
   }

@@ -39,6 +39,7 @@ const recordModules = (targetDir, modules) => {
 const runInstall = (targetDir) => {
   const isWindows = process.platform === 'win32';
   const result = spawnSync(isWindows ? 'pnpm.cmd' : 'pnpm', ['install'], {
+    windowsHide: true,
     cwd: targetDir,
     stdio: 'inherit',
     shell: isWindows,

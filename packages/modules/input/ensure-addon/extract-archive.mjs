@@ -6,7 +6,7 @@ const forwardSlashes = (path) => path.replace(/\\/g, '/');
 
 const tarIsGnu = () => {
   try {
-    return /GNU tar/i.test(execFileSync('tar', ['--version'], { encoding: 'utf8' }));
+    return /GNU tar/i.test(execFileSync('tar', ['--version'], { windowsHide: true, encoding: 'utf8' }));
   } catch {
     return false;
   }
@@ -21,7 +21,7 @@ const extractArchive = (archive, destination) => {
   mkdirSync(destination, { recursive: true });
   const localFlag = tarIsGnu() ? ['--force-local'] : [];
   try {
-    execFileSync('tar', [...localFlag, '-xf', forwardSlashes(archive), '-C', forwardSlashes(destination)], { stdio: 'inherit' });
+    execFileSync('tar', [...localFlag, '-xf', forwardSlashes(archive), '-C', forwardSlashes(destination)], { windowsHide: true, stdio: 'inherit' });
     return true;
   } catch {
     return false;

@@ -1,10 +1,8 @@
 /* @layer core @kind logic */
-import type { OnlineHost } from '../../archipelago';
 import { isDeliveryReady } from './is-delivery-ready';
 import { ONLINE_SOURCE } from './online-session.constants';
+import type { DeliveryHost } from './host-delivery.type';
 import type { OnlineParts } from './online-parts.type';
-
-type DeliveryHost = Pick<OnlineHost, 'deliver' | 'cancelDeliveries' | 'onDeliveryReady'>;
 
 const hostDelivery = <P, A>(parts: OnlineParts<P, A>): DeliveryHost => {
   const { run, ap, received } = parts;

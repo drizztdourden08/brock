@@ -7,7 +7,4 @@ const receivedQueueNext = (state: ReceivedQueueState, saved: number): number => 
   return next;
 };
 
-const receivedQueueIsNew = (state: ReceivedQueueState, saved: number, index: number): boolean =>
-  index >= saved && !state.handed.has(index) && !state.settled.has(index);
-
-export { receivedQueueIsNew, receivedQueueNext };
+export { receivedQueueNext };

@@ -1,11 +1,6 @@
 /* @layer core @kind logic */
-import type { OnlineHost } from '../../archipelago';
+import type { GameLinkHost } from './host-game-link.type';
 import type { OnlineParts } from './online-parts.type';
-
-type GameLinkHost = Pick<
-  OnlineHost,
-  'isFileInPlay' | 'onSaveSwap' | 'goalReached' | 'setDeathLink' | 'killLink' | 'onLinkDied'
->;
 
 const noUnsubscribe = (): void => undefined;
 

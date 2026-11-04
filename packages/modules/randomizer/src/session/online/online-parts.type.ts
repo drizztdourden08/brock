@@ -10,7 +10,7 @@ import type { OnlineRun } from './online-run.type';
 
 interface OnlineLate {
   client(): ArchipelagoSession;
-  publishPlacement(placement: unknown | null): void;
+  publishPlacement(placement: unknown): void;
   refuse(reason: string): void;
 }
 

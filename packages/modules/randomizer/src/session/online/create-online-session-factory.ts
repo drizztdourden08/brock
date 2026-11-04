@@ -7,9 +7,7 @@ import { createOnlineSession } from './create-online-session';
 import { onlineBlockedReason } from './online-blocked-reason';
 import { onlineConnectionOf } from './online-connection-of';
 import { onlineGate } from './online-gate';
-import { ONLINE_KIND } from './online-session.constants';
-
-const NO_ARCHIPELAGO = 'This game has no Archipelago support';
+import { NO_ARCHIPELAGO, ONLINE_KIND } from './online-session.constants';
 
 const createOnlineSessionFactory = <P, A>(
   game: RandomizerGame<P, A>,

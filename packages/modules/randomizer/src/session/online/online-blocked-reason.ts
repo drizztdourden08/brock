@@ -2,10 +2,9 @@
 import type { RandomizerProfileConfig } from '../../augment';
 import type { ArchipelagoGame } from '../../contract/archipelago-game.type';
 import { onlineConnectionOf } from './online-connection-of';
-
-const NO_SERVER_REASON = 'No server address is set for this profile';
+import { NO_SERVER } from './online-session.constants';
 
 const onlineBlockedReason = <P, A>(ap: ArchipelagoGame<P, A>, config: RandomizerProfileConfig): string | null =>
-  ap.allows?.() ?? (onlineConnectionOf(config) === null ? NO_SERVER_REASON : null);
+  ap.allows?.() ?? (onlineConnectionOf(config) === null ? NO_SERVER : null);
 
 export { onlineBlockedReason };

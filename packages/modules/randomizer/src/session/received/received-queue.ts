@@ -2,8 +2,10 @@
 import { createMemoryApStateStore } from './memory-ap-state-store';
 import { createReceivedIndex } from './received-index';
 import type { ReceivedQueue, ReceivedQueueOptions } from './received-queue.type';
-import { markHanded, markSettled } from './received-queue-mark';
-import { receivedQueueIsNew, receivedQueueNext } from './received-queue-next';
+import { markHanded } from './received-queue-mark';
+import { receivedQueueIsNew } from './received-queue-is-new';
+import { receivedQueueNext } from './received-queue-next';
+import { markSettled } from './received-queue-settle';
 import { resetReceivedQueue } from './received-queue-reset';
 import { createReceivedQueueState } from './received-queue-state';
 

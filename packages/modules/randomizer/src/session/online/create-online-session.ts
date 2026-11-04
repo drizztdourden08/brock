@@ -1,20 +1,17 @@
 /* @layer renderer-shell @kind logic */
-import type { ArchipelagoSession, ClientEvent } from '../../archipelago';
+import type { ArchipelagoSession } from '../../archipelago';
 import type { SessionStatus } from '../local/randomizer-session.type';
 import { useSessionStore } from '../store/behavior/useSessionStore';
 import { createOnlineClient } from './create-online-client';
 import { createOnlineHost } from './create-online-host';
 import { createOnlineParts } from './create-online-parts';
 import { disarmOnlineRun } from './disarm-online-run';
-import { onlineEvents } from './online-events';
-import { ONLINE_KIND, ONLINE_TAG } from './online-session.constants';
+import { onlineEventHandler } from './online-event-handler';
+import { NO_SERVER, ONLINE_KIND, ONLINE_TAG } from './online-session.constants';
 import type { OnlineParts } from './online-parts.type';
 import type { OnlineSessionOptions } from './online-session-options.type';
 import type { OnlineSession } from './online-session.type';
 import { reportedOnline } from './reported-online';
-import { statusAfterEvent } from './status-after-event';
-
-const NO_SERVER = 'No server address is set for this profile';
 
 const createOnlineSession = <P, A>(options: OnlineSessionOptions<P, A>): OnlineSession => {
   const { source, log } = options;
@@ -36,11 +33,7 @@ const createOnlineSession = <P, A>(options: OnlineSessionOptions<P, A>): OnlineS
     },
   });
   const client: ArchipelagoSession = createOnlineClient(parts, createOnlineHost(parts));
-  const onEvent = (event: ClientEvent): void => {
-    onlineEvents.emit(event);
-    if (event.type === 'connected') setStatus('active');
-    if (event.type === 'disconnected') setStatus(statusAfterEvent(client.status().connection));
-  };
+  const onEvent = onlineEventHandler(client, setStatus);
 
   const session: OnlineSession = {
     kind: ONLINE_KIND,

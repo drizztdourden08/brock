@@ -8,12 +8,10 @@ const OPTIONS_STEP_ID = 'randomizer-options';
 const RANDOMIZER_SLICE = 'randomizer';
 const OPTIONS_SLICE = 'randomizerOptions';
 
-const MODE_LABELS: Record<RandomizerModeId, string> = { local: 'Local' };
-
-const MODE_OPTIONS = Object.entries(MODE_LABELS).map(([value, label]) => ({ value, label }));
+const MODE_LABELS: Partial<Record<RandomizerModeId, string>> = { local: 'Local', online: 'Online' };
 
 const initialForm = (): RandomizerFormState => ({ enabled: false, seed: '', mode: 'local' });
 
 const initialOptionsSlice = (): RandomizerOptionsSlice => ({ overrides: {} });
 
-export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE, MODE_OPTIONS, initialForm, initialOptionsSlice };
+export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE, MODE_LABELS, initialForm, initialOptionsSlice };

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { MsuGameConfig } from '../src/config/msu-game-config.type';
 import type { MsuHost } from '../src/config/msu-host.type';
 import { publishSoundClaims } from '../src/msu-sound-claims/publish-sound-claims';
+import { demoConfig } from './demo-config.fixture';
 import type { MsuPackManifest } from '../src/types';
 
 const channels: MsuGameConfig['soundChannels'] = [
@@ -11,15 +12,7 @@ const channels: MsuGameConfig['soundChannels'] = [
   { name: 'fx-b', kind: 'additive', bus: 'sfx', coreIndex: 9, previewSeconds: 10 },
 ];
 
-const config: MsuGameConfig = {
-  id: 'demo',
-  packRoot: 'msu',
-  soundChannels: channels,
-  soundIdCount: 32,
-  trackLoops: () => true,
-  classifyMusic: () => ({ kind: 'ignore' }),
-  resumePath: (profile, kind, id) => `${profile}/${kind}/${id}.json`,
-};
+const config = demoConfig(channels);
 
 const manifest: MsuPackManifest = {
   version: 1,

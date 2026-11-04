@@ -8,8 +8,7 @@ import { createAppBridge } from '../src/main/bridge/create-app-bridge';
 import { helperLaunch } from '../src/main/bridge/helper-launch';
 import { ROUTES, closeOpened, tempDir } from './bridge-fixture';
 
-const fakeApp = vi.hoisted(() => ({ once: (): void => undefined, isPackaged: false, getAppPath: (): string => '/app/dist/electron' }));
-vi.mock('electron', () => ({ app: fakeApp }));
+vi.mock('electron', () => import('./electron-app.fake'));
 
 afterEach(closeOpened);
 

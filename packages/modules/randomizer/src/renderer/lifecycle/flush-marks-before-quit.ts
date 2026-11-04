@@ -4,7 +4,7 @@ import { flushTrackerMarks } from '../tracker/marks/flush-tracker-marks';
 
 const flushMarksBeforeQuit: OnBeforeQuit = async () => {
   await flushTrackerMarks();
-  return 'quit';
+  return 'quit' as const;
 };
 
 export { flushMarksBeforeQuit };

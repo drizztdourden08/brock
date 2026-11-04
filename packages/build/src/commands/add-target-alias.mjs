@@ -11,7 +11,7 @@ const addTargetAlias = async (rootDir, input, local) => {
   if (local) console.log(`brock add: ${input} is a platform target, so --local does not apply`);
   const code = await runPlatformAdd(rootDir, [input]);
   if (code !== 0) return code;
-  console.log('brock add: next, run `<app> mobile build` for the APK and `<app> mobile keystore` for the release keystore');
+  console.log('brock add: next, run `brock mobile build` for the APK and `brock mobile keystore` for the release keystore');
   return 0;
 };
 

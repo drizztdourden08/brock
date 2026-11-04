@@ -7,7 +7,6 @@ interface PollerState {
   hooks: PollerHooks | null;
   reported: Set<string>;
   suppressed: Set<string>;
-  baseline: Map<string, boolean>;
   timer: ReturnType<typeof setInterval> | null;
   needsRebaseline: boolean;
   stopStateLoad: (() => void) | null;

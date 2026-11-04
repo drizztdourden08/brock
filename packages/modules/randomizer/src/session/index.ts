@@ -14,6 +14,10 @@ export type { RandomizerSession, SessionStatus } from './local/randomizer-sessio
 export type { SessionFactory } from './local/session-factory.type';
 export type { PendingBoot } from './store/pending-boot.type';
 export type { PlacementStamp } from './placement/placement-stamp.type';
+export { createLocationPoller } from './poller/create-location-poller';
+export { POLL_INTERVAL_MS } from './poller/poller.constants';
+export { probeMet } from '../memory/probe-met';
+export { thresholdMet } from '../memory/threshold-met';
 export type { FlagProbe } from '../memory/flag-probe.type';
 export type { MemoryBridge } from '../memory/memory-bridge.type';
 export type { MemoryView } from '../memory/memory-view.type';

@@ -20,4 +20,4 @@ interface ChecksViewProps {
   initial?: Partial<ChecksPrefs>;
 }
 
-export type { ChecksPrefs, ChecksPrefState, ChecksViewProps, PrefPair, StatusFilter };
+export type { ChecksPrefs, ChecksPrefState, ChecksViewProps, StatusFilter };

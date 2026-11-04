@@ -1,41 +1,17 @@
 /* @layer renderer-shell @kind component */
-import { useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from '@drizztdourden08/brock-react';
 import { Box, SegmentedControl, Small, Span, Text } from '@drizztdourden08/tessera/primitives';
-import { screenReadout, viewportReadout } from '../../aspect-ratio/index';
 import { PRESET_GROUP_IDS } from './AspectRatioControl.constants';
 import type { AspectRatioControlProps } from './AspectRatioControl.type';
-import { mainValueOf } from './behavior/main-value-of';
-import { ratioChangeFor } from './behavior/ratio-change-for';
-import { useRatioPair } from './behavior/useRatioPair';
+import { useAspectRatioView } from './behavior/useAspectRatioView';
 import { RatioDetected } from './sub-components/RatioDetected';
 import { RatioPairFields } from './sub-components/RatioPairFields';
 import './AspectRatioControl.css';
 
 const AspectRatioControl = (props: AspectRatioControlProps) => {
-  const {
-    label, description, value, options, presetOptions, widePresets, tallPresets, descriptions,
-    recommendedValue, recommendedNote, customW, customH, limits, letterbox = false, onChange,
-  } = props;
-
+  const { label, value, options, recommendedNote } = props;
   useSafeAreaInsets();
-  const pair = useRatioPair({ customW, customH, limits, letterbox, onChange });
-  const groups = useMemo(
-    () => ({ wide: widePresets, tall: tallPresets, preset: presetOptions }),
-    [widePresets, tallPresets, presetOptions],
-  );
-  const mainValue = mainValueOf(value, groups);
-
-  const handleMain = useCallback((next: string) => {
-    onChange(ratioChangeFor(next, { value, groups, customW, customH, limits, letterbox }));
-  }, [value, groups, customW, customH, limits, letterbox, onChange]);
-
-  const handlePreset = useCallback((next: string) => onChange({ value: next }), [onChange]);
-
-  const text = descriptions?.[mainValue] ?? description;
-  const viewport = mainValue === 'auto' ? viewportReadout(limits, letterbox) : null;
-  const screen = mainValue === 'screen' ? screenReadout(limits) : null;
-  const readout = viewport ?? screen;
+  const { pair, groups, mainValue, handleMain, handlePreset, text, readout, showRecommended } = useAspectRatioView(props);
 
   return (
     <Box className="aspect-ratio-control">
@@ -45,9 +21,7 @@ const AspectRatioControl = (props: AspectRatioControlProps) => {
       </Box>
       <Box className="aspect-ratio-control__body">
         <SegmentedControl aria-label={label} value={mainValue} options={options} onChange={handleMain} />
-        {Boolean(recommendedValue) && mainValue === recommendedValue && recommendedNote && (
-          <Text className="aspect-ratio-control__recommended">{recommendedNote}</Text>
-        )}
+        {showRecommended && <Text className="aspect-ratio-control__recommended">{recommendedNote}</Text>}
         {PRESET_GROUP_IDS.map((id) => {
           const groupOptions = groups[id];
           return mainValue === id && groupOptions && (

@@ -10,7 +10,7 @@ const hasMarker = (dir) => {
 
 /**
  * @param {string} rootDir the app folder
- * @returns {boolean} true while a localpkg hook sits in the app or its workspace root
+ * @returns {boolean} true when a localpkg hook is in the app or its root
  */
 const isLocalpkgMode = (rootDir) => {
   let current = rootDir;

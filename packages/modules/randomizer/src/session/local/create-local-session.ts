@@ -1,9 +1,10 @@
 /* @layer core @kind logic */
 import { sizeOfField } from '../placement/size-of-field';
+import { checkSignal } from '../signal/check-signal';
 import { armedSummary } from './armed-summary';
 import { armLocalRun } from './arm-local-run';
 import { disarmLocalRun } from './disarm-local-run';
-import { LOCAL_KIND, LOCAL_TAG } from './local-session.constants';
+import { LOCAL_KIND, LOCAL_TAG, NO_REPORTED } from './local-session.constants';
 import type { LocalRun } from './local-run.type';
 import type { LocalSessionOptions } from './local-session-options.type';
 import type { RandomizerSession, SessionStatus } from './randomizer-session.type';
@@ -22,7 +23,9 @@ const createLocalSession = <P, A>(options: LocalSessionOptions<P, A>): Randomize
     reportCheck: (key) => {
       const current = run;
       current?.armed.onCheck(key, (request) => current.queue?.enqueue(request) ?? null);
+      checkSignal.notify(game.memory.view());
     },
+    reported: () => run?.poller.reported() ?? NO_REPORTED,
     start: async () => {
       status = 'starting';
       log(`${LOCAL_TAG} Starting session: seed ${seed}, ${sizeOfField(placement, 'locations')} locations`);

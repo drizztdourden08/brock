@@ -13,9 +13,10 @@ const runPollPass = (state: PollerState, hooks: PollerHooks, options: PollerOpti
   if (state.needsRebaseline) {
     state.needsRebaseline = false;
     applyRebaseline(pass);
-    return;
+  } else {
+    reportCompleted(pass);
   }
-  reportCompleted(pass);
+  options.afterPoll?.(view);
 };
 
 export { runPollPass };

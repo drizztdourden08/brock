@@ -2,6 +2,7 @@
 import { createDeliveryQueue } from '../delivery/create-delivery-queue';
 import { createRafFrameClock } from '../delivery/raf-frame-clock';
 import { createLocationPoller } from '../poller/create-location-poller';
+import { checkSignal } from '../signal/check-signal';
 import { adoptNextFrame } from './adopt-next-frame';
 import { LOCAL_TAG } from './local-session.constants';
 import type { LocalRun } from './local-run.type';
@@ -14,7 +15,12 @@ const armLocalRun = async <P, A>(
   session: RandomizerSession,
 ): Promise<LocalRun<A> | null> => {
   const { game, placement, log } = options;
-  const poller = createLocationPoller({ memory: game.memory, ...game.poll, log });
+  const poller = createLocationPoller({
+    memory: game.memory,
+    ...game.poll,
+    afterPoll: (view) => checkSignal.notify(view),
+    log,
+  });
   const clock = game.frames ?? createRafFrameClock();
   const queue = game.deliverer ? createDeliveryQueue<A>({ deliverer: game.deliverer, clock, log }) : null;
   const result = await game.applier.apply(placement, {

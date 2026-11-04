@@ -11,7 +11,8 @@ import { poppedEntry } from './popped-entry';
 import { probe } from './probe';
 import { sameRect } from './same-rect';
 import { soon } from './soon';
-import { EDGE_DROP, MAIN_LINK, SMALL_AREA, SNAP_NEAR, SQUARE_SCREEN, SQUARE_SELECTOR } from './widget-review.constants';
+import { squareScreen } from './square-screen';
+import { EDGE_DROP, MAIN_LINK, SMALL_AREA, SNAP_NEAR, SQUARE_SELECTOR } from './widget-review.constants';
 
 const pair = (facts: WidgetProbeFacts | undefined, id: string): ClusterPair | null => {
   const main = facts?.windows[MAIN_LINK];
@@ -53,8 +54,9 @@ const exitFullscreen = async (id: string, before: ClusterPair): Promise<boolean>
 };
 
 const checkFullscreen = async (tour: StepTour, id: string, before: ClusterPair): Promise<void> => {
-  nav.open(SQUARE_SCREEN);
-  const missed = await enterFullscreen(id, before);
+  const screen = squareScreen(tour.env);
+  if (screen !== null) nav.open(screen);
+  const missed = screen === null ? 'no registered screen draws a screen layer' : await enterFullscreen(id, before);
   tour.check('cluster-fullscreen', missed === null, 'full screen filled the display with the snapped windows, opened the black backdrop and sent the square flag to each of them, and the open screen drew square', `full screen missed the backdrop, the square flag or the display (${missed ?? ''})`);
   await requireHostApi().reviewCaptureGroup('cluster-fullscreen');
   const left = await exitFullscreen(id, before);

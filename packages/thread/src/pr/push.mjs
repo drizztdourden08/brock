@@ -2,13 +2,20 @@
 import { pushBranch } from '../git.mjs';
 import { deferredNote, isLocalMode } from '../local/remote-mode.mjs';
 import { prBranch } from './branch.mjs';
+import { pushBase } from './push-base.mjs';
+import { baseTarget } from './push-base-target.mjs';
 
 /** @type {import('../workspace/workspace.type.mjs').Verb} */
 const pushVerb = {
-  usage: '  brock pr push   [name]                        asks: work leaves the machine',
+  usage: '  brock pr push   [name]                        pushes a worktree branch, or the base branch from the main checkout; asks',
   asks: true,
   run: async (positional, options, ctx) => {
     const { log } = ctx;
+    const base = baseTarget(positional, ctx);
+    if (base) {
+      pushBase(base, ctx);
+      return;
+    }
     const { name, path, branch } = prBranch.target(positional, options, ctx);
     prBranch.warnIfDirty(path, log);
     if (isLocalMode()) {

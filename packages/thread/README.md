@@ -11,7 +11,7 @@ The thread lifecycle every Brock repo runs: one git worktree per piece of work, 
 <repo> worktree commit [name] --message "<text>"
 <repo> worktree finish [name] | remove <name | path>
 <repo> worktree base [name] [<new base>]
-<repo> pr push | open | status [name]
+<repo> pr push | open | status [name]     push also sends the base branch from the main checkout, fast-forward only
 <repo> pr merge --local PR-n
 <repo> ci [check] [--commit <sha>] [--pr PR-n]
 <repo> upgrade [version] [--check] [--no-review] [--local <brockRepo>]

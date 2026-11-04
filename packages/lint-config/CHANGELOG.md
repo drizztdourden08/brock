@@ -1,5 +1,11 @@
 # @drizztdourden08/brock-lint-config
 
+## 0.120.1
+
+### Patch Changes
+
+- 302d55f: Electron apps and apps started for the user show their window again on Windows.
+
 ## 0.120.0
 
 ## 0.119.0

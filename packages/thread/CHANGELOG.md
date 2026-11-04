@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-thread
 
+## 0.120.1
+
+### Patch Changes
+
+- 302d55f: Electron apps and apps started for the user show their window again on Windows.
+  - @drizztdourden08/build-cache@0.120.1
+
 ## 0.120.0
 
 ### Patch Changes

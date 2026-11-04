@@ -19,7 +19,6 @@ type McpJsonArgs = Record<string, JsonValue>;
 interface McpHello {
   version: number;
   app: string;
-  enabled: boolean;
 }
 
 interface AppLink {

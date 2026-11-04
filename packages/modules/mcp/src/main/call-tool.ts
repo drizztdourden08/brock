@@ -7,7 +7,6 @@ import type { McpRuntime } from './mcp-main.type';
 import { BUILT_IN_TOOLS } from '../built-in-tools.constants';
 import { MCP_ERROR, MCP_TIMEOUT_MS } from '../mcp.constants';
 import { normalizeReply } from '../normalize-reply';
-import { assertOn } from './assert-on';
 import { callFailure } from './call-failure';
 import { mainTools } from './tools/main-tools';
 import { timedCall } from './timed-call';
@@ -39,15 +38,13 @@ const dispatch = async (runtime: McpRuntime, name: string, args: McpArgs): Promi
   return callRenderer(runtime, name, args);
 };
 
-const callTool = async (runtime: McpRuntime, name: string, args: McpArgs = {}): Promise<McpToolResult> => {
-  assertOn(runtime);
-  return timedCall(runtime.ctx, name, async () => {
+const callTool = (runtime: McpRuntime, name: string, args: McpArgs = {}): Promise<McpToolResult> =>
+  timedCall(runtime.ctx, name, async () => {
     try {
       return await dispatch(runtime, name, args);
     } catch (error) {
       throw callFailure(name, error);
     }
   });
-};
 
 export { callTool };

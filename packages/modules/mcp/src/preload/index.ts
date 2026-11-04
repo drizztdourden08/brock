@@ -1,11 +1,9 @@
 /* @layer electron-preload @kind barrel */
 import '../augment';
 import type { PreloadNamespace, BridgeTools } from '@drizztdourden08/brock-electron/preload';
-import type { McpApi } from '../mcp-api.type';
+import type { McpApi } from '../mcp.type';
 
-const buildMcpApi = ({ invoke, send }: BridgeTools): McpApi => ({
-  status: () => invoke('mcp:status'),
-  setEnabled: (on) => invoke('mcp:setEnabled', on),
+const buildMcpApi = ({ send }: BridgeTools): McpApi => ({
   toolsChanged: () => send('mcp:tools-changed'),
 });
 
@@ -16,4 +14,4 @@ const mcpPreload: PreloadNamespace = {
 
 export default mcpPreload;
 export { mcpPreload, buildMcpApi };
-export type { McpApi } from '../mcp-api.type';
+export type { McpApi } from '../mcp.type';

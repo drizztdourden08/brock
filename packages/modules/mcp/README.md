@@ -70,7 +70,7 @@ A packaged build that opted in runs the helper with the app executable as Node:
 | `read_ui` | The visible interactive elements and headings with role, name and box. Never a password value. `query` and `max` (default 300). |
 | `select_app` | Helper side: switch to another `userData`, `instance` or discovery `file`. |
 
-A failure is a tool error with a code: `mcp-off`, `unknown-tool`, `invalid-arguments`, `no-window`, `timeout` or `failed`.
+A failure is a tool error with a code: `unknown-tool`, `invalid-arguments`, `no-window`, `timeout`, `failed` or `app-down`. The helper raises `app-down` when the app is not running or its bridge is not reachable; the message says how to start it.
 
 ## Adding app tools
 
@@ -113,16 +113,20 @@ export const Table = () => {
 };
 ```
 
-`mcpTools.register(def)` is the same without a component. `getMcp(ctx).status()` returns `{ enabled, packaged, tools }`, and `setEnabled(on)` switches the module at run time. `mcpApi()` in the renderer reads the status and flips the switch, for a settings toggle.
+`mcpTools.register(def)` is the same without a component.
 
-## Turning it off
+## Turning it on and off
 
-- `--no-mcp` on the app command line.
-- `BROCK_MCP=off` (or `0`, `false`) in the environment.
-- `moduleOptions: { mcp: { dev: false } }` to keep it off in development.
-- `getMcp(ctx).setEnabled(false)` at run time. Every route then answers `mcp-off`.
+The config file is the only control. There is no flag, no environment switch, no run-time toggle and nothing in the UI.
 
-The environment never turns on a packaged build that did not opt in. Without `packaged: true`, a packaged app registers no routes, ships no helper and keeps the `RunAsNode` fuse off for it.
+```ts
+product: { moduleOptions: { mcp: { dev: false, packaged: true } } }
+```
+
+- `dev` (default true): the module runs in an unpackaged build. `dev: false` keeps it off in development.
+- `packaged` (default false): the module runs in a packaged build.
+
+When the config leaves the module off, the app registers no routes and ships no helper, so a helper reports `app-down`. A packaged app that did not opt in with `packaged: true` also keeps the `RunAsNode` fuse off for it.
 
 ## Security
 

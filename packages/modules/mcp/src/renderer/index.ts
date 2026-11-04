@@ -12,5 +12,4 @@ export default mcpRenderer;
 export { mcpRenderer };
 export { mcpTools } from './mcp-tools';
 export { useMcpTools } from './useMcpTools';
-export { mcpApi } from './mcp-api';
-export type { McpToolDef, McpToolResult, McpToolInfo, McpArgs, McpCallContext, McpStatus } from '../mcp.type';
+export type { McpToolDef, McpToolResult, McpToolInfo, McpArgs, McpCallContext } from '../mcp.type';

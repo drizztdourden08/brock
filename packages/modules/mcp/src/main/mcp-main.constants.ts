@@ -7,7 +7,6 @@ const MCP_ASK_TIMED_OUT = /timed out/;
 const MCP_ASK_WINDOW_GONE = /window (is )?closed|closed before/;
 
 const MCP_MESSAGE = {
-  off: 'MCP is switched off in this app.',
   noWindow: 'The app has no window open.',
   timeout: 'The window did not answer in time.',
   badKey: 'The key or chord is not known.',

@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-mcp",
   "version": "0.116.1",
-  "description": "Brock mcp module: lets an AI agent drive the running app over MCP, with screenshots, input, widgets, commands and app-defined tools, through a stdio helper on the Brock bridge.",
+  "description": "Brock mcp module: lets an outside agent drive the running app over MCP, with screenshots, input, widgets, commands and app-defined tools, through a stdio helper on the Brock bridge.",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {

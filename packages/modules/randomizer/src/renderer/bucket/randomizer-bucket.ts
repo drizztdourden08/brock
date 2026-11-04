@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind config */
 import { lazyComponent } from '@drizztdourden08/brock-react';
 import type { ModuleBucket } from '@drizztdourden08/brock-react';
-import { useRandomizerGameStore } from '../game-registry/randomizer-game-store';
+import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { meta as logsMeta } from '../screens/logs.page';
 import { meta as optionsMeta } from '../screens/options.page';
 import { meta as runMeta } from '../screens/run.page';

@@ -26,8 +26,8 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   deliverer?: ItemDeliverer<A>;
   apState?: ApStateStore;
   frames?: FrameClock;
-  poll?: { intervalMs?: number; completed?: () => ReadonlySet<string>; beforePoll?: () => void };
-  profile: { toConfig: (form: RandomizerFormState, options: unknown) => RandomizerProfileConfig };
+  poll?: { intervalMs?: number; completed?(): ReadonlySet<string>; beforePoll?(): void };
+  profile: { toConfig(form: RandomizerFormState, options: unknown): RandomizerProfileConfig };
   catalog?: OptionCatalog;
   views?: RandomizerViews;
   labels?: Partial<RandomizerLabels>;

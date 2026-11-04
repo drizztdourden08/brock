@@ -24,5 +24,5 @@ export default randomizerRenderer;
 export { randomizerRenderer };
 export { addRandomizerPages } from './bucket/add-randomizer-pages';
 export { registerRandomizerGame } from './game-registry/register-randomizer-game';
-export { useRandomizerGame } from './game-registry/use-randomizer-game';
-export { useRandomizerSession } from './hooks/use-randomizer-session';
+export { useRandomizerGame } from './game-registry/behavior/useRandomizerGame';
+export { useRandomizerSession } from './hooks/behavior/useRandomizerSession';

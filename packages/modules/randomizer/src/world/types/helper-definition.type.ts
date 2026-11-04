@@ -8,8 +8,8 @@ import type { World } from './world.type';
 interface HelperDefinition<W extends World = World> {
   name: KeysOf<W>['helper'];
   params: readonly string[];
-  body: (state: CollectionState<W>, ...args: readonly RuleOptionValue[]) => boolean;
-  expand?: (world: W, ...args: readonly RuleOptionValue[]) => RuleNode<KeysOf<W>>;
+  body(state: CollectionState<W>, ...args: readonly RuleOptionValue[]): boolean;
+  expand?(world: W, ...args: readonly RuleOptionValue[]): RuleNode<KeysOf<W>>;
 }
 
 export type { HelperDefinition };

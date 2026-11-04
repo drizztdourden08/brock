@@ -7,7 +7,7 @@ interface LocalRun<A> {
   armed: ArmedSeed<A>;
   poller: LocationPoller;
   queue: DeliveryQueue<A> | null;
-  stopAdopt: () => void;
+  stopAdopt(): void;
 }
 
 export type { LocalRun };

@@ -3,7 +3,7 @@ import type { RandomizerLog } from '../../contract/randomizer-log.type';
 import { appRandomizerLog } from '../log/app-randomizer-log';
 import { sessionFactories } from './session-factories';
 import type { PendingBoot } from './pending-boot.type';
-import { useSessionStore } from './session-store';
+import { useSessionStore } from './behavior/useSessionStore';
 import { stopActiveSession } from './stop-active-session';
 
 const startSession = async (pending: PendingBoot, log: RandomizerLog = appRandomizerLog): Promise<void> => {

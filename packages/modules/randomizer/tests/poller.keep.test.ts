@@ -68,6 +68,9 @@ describe('location poller', { tags: ['critical'] }, () => {
     expect(poller.reported().has('c')).toBe(true);
   });
 
+});
+
+describe('location poller probes', { tags: ['critical'] }, () => {
   it('gives a mask precedence over a compare and reads a word little endian', () => {
     const memory = toyMemory();
     const reports: string[] = [];
@@ -81,6 +84,15 @@ describe('location poller', { tags: ['critical'] }, () => {
     memory.poke('ram', 9, 1);
     poller.pollOnce();
     expect(reports).toEqual(['word']);
+  });
+});
+
+describe('location poller shutdown', { tags: ['critical'] }, () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('stops polling and drops the state load listener on stop', () => {

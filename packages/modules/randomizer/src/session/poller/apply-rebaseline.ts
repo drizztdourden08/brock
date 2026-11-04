@@ -1,14 +1,8 @@
 /* @layer core @kind logic */
-import type { RandomizerLog } from '../../contract/randomizer-log.type';
-import type { MemoryView } from '../../memory/memory-view.type';
 import { entryComplete } from './entry-complete';
-import type { PollerHooks } from './location-poller.type';
-import type { PollerState } from './poller-state.type';
+import type { PollPass } from './poll-pass.type';
 
-const applyRebaseline = (
-  state: PollerState, hooks: PollerHooks,
-  view: MemoryView, completed: ReadonlySet<string>, log: RandomizerLog,
-): void => {
+const applyRebaseline = ({ state, hooks, view, completed, log }: PollPass): void => {
   const next = new Set<string>(state.suppressed);
   const toReport: string[] = [];
   for (const entry of state.entries) {

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerProfileConfig } from '../../augment';
-import { useRandomizerGameStore } from '../game-registry/randomizer-game-store';
+import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { pendingPlacements } from './pending-placements';
 
 const rollPendingPlacement = (config: RandomizerProfileConfig): void => {

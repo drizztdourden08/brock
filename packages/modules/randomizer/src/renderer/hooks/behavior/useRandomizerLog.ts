@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { getAppLog } from '@drizztdourden08/brock-react';
 import type { LogEntry } from '@drizztdourden08/brock-core';
-import { RANDOMIZER_CHANNEL } from '../../session/log/log.constants';
-import { MAX_LOG_ENTRIES } from './hooks.constants';
+import { RANDOMIZER_CHANNEL } from '../../../session/log/log.constants';
+import { MAX_LOG_ENTRIES } from '../hooks.constants';
 
 const isRandomizerEntry = (entry: LogEntry): boolean => entry.channel === RANDOMIZER_CHANNEL || entry.channel === 'error';
 

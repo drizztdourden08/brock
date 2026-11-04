@@ -7,7 +7,8 @@ const defineRandomizerGame = <P = DefPlacement, A = unknown>(
   game: RandomizerGame<P, A>,
 ): RandomizerGame<P, A> => {
   for (const field of REQUIRED_GAME_FIELDS) {
-    if (game[field] === undefined || game[field] === null) {
+    const value: unknown = game[field];
+    if (value === undefined || value === null) {
       throw new Error(`defineRandomizerGame: missing required field "${field}"`);
     }
   }

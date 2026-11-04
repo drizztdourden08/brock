@@ -12,7 +12,7 @@ interface RandomizerViews {
   Spoiler?: ComponentType;
   runPanels?: readonly ComponentType[];
   optionsStep?: ComponentType;
-  optionSubSteps?: (values: Record<string, unknown>) => readonly RandomizerSubStep[];
+  optionSubSteps?(values: Record<string, unknown>): readonly RandomizerSubStep[];
 }
 
 export type { RandomizerSubStep, RandomizerViews };

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Stack, Text } from '@drizztdourden08/tessera/primitives';
-import { useRandomizerGame } from '../../game-registry/use-randomizer-game';
+import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { OptionField } from './sub-components/OptionField';
 import { NO_OPTIONS_TEXT } from './OptionsStepBody.constants';
 import type { OptionsStepBodyProps } from './OptionsStepBody.type';

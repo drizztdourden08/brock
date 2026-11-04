@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { ActiveRun } from './active-run.type';
 import { sessionFactories } from './session-factories';
-import { useSessionStore } from './session-store';
+import { useSessionStore } from './behavior/useSessionStore';
 
 const currentRun = (): ActiveRun => {
   const { session, placement } = useSessionStore.getState();

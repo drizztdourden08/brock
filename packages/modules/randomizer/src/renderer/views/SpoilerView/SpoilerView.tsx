@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { Card, EmptyState, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
-import { useRandomizerGame } from '../../game-registry/use-randomizer-game';
-import { useRandomizerLabels } from '../../hooks/use-randomizer-labels';
-import { useRandomizerSession } from '../../hooks/use-randomizer-session';
+import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
+import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
+import { useRandomizerSession } from '../../hooks/behavior/useRandomizerSession';
 import { NO_GAME_MESSAGE, NO_PLACEMENT_MESSAGE } from './SpoilerView.constants';
 
 const SpoilerView = () => {

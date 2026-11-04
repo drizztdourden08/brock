@@ -31,7 +31,7 @@ export { createLocalSession } from './local/create-local-session';
 export { createLocalSessionFactory } from './local/local-session-factory';
 export type { ActiveRun } from './store/active-run.type';
 export type { SessionStoreState } from './store/session-store.type';
-export { useSessionStore } from './store/session-store';
+export { useSessionStore } from './store/behavior/useSessionStore';
 export { startSession } from './store/start-session';
 export { stopActiveSession } from './store/stop-active-session';
 export { pendingBoot } from './store/pending-boot';

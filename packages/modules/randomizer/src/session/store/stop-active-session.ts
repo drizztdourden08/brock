@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { useSessionStore } from './session-store';
+import { useSessionStore } from './behavior/useSessionStore';
 
 const stopActiveSession = (): void => {
   const { session, setSession, setStatus } = useSessionStore.getState();

@@ -101,6 +101,9 @@ describe('delivery queue', { tags: ['critical'] }, () => {
     expect(rig.events.slice(-2)).toEqual(['granted:a', 'complete:a']);
   });
 
+});
+
+describe('delivery queue holds and clears', { tags: ['critical'] }, () => {
   it('times out an in-flight item after 600 frames', () => {
     const rig = makeRig();
     rig.queue.start();

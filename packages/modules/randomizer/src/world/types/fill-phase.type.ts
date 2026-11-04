@@ -4,7 +4,7 @@ import type { FillBuild } from './fill-build.type';
 
 interface FillPhase<B extends FillBuild = FillBuild> {
   id: string;
-  run: (build: B, rng: Rng) => void;
+  run(build: B, rng: Rng): void;
 }
 
 export type { FillPhase };

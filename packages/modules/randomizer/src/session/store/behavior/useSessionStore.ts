@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { create } from 'zustand';
-import type { SessionStoreState } from './session-store.type';
+import type { SessionStoreState } from '../session-store.type';
 
 const useSessionStore = create<SessionStoreState>((set) => ({
   session: null,

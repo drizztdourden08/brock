@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { ProfileStoreHooks } from '@drizztdourden08/brock-core';
-import { useRandomizerGameStore } from '../game-registry/randomizer-game-store';
+import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { writePlacement } from '../../session/placement/write-placement';
 import { mergeFrozenSettings } from './merge-frozen-settings';
 import { pendingPlacements } from './pending-placements';

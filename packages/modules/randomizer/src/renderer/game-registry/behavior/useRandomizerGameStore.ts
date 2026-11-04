@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { create } from 'zustand';
-import type { RandomizerGameState } from './randomizer-game-state.type';
+import type { RandomizerGameState } from '../randomizer-game-state.type';
 
 const useRandomizerGameStore = create<RandomizerGameState>((set) => ({
   game: null,

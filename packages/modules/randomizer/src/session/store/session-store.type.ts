@@ -5,8 +5,8 @@ interface SessionStoreState {
   session: RandomizerSession | null;
   placement: unknown;
   status: SessionStatus;
-  setSession: (session: RandomizerSession | null, placement?: unknown) => void;
-  setStatus: (status: SessionStatus) => void;
+  setSession(session: RandomizerSession | null, placement?: unknown): void;
+  setStatus(status: SessionStatus): void;
 }
 
 export type { SessionStoreState };

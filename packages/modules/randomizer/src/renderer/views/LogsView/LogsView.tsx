@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo, useState } from 'react';
 import { LogPanel } from '@drizztdourden08/tessera/composites';
-import { useRandomizerLog } from '../../hooks/use-randomizer-log';
+import { useRandomizerLog } from '../../hooks/behavior/useRandomizerLog';
 import { logRowsOf } from './behavior/log-rows';
 import { rowsToText } from './behavior/rows-to-text';
 import { LOG_COUNT_LABEL, LOG_EMPTY_LABEL, LOG_KINDS } from './LogsView.constants';

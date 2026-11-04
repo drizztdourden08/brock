@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useSyncExternalStore } from 'react';
-import { useSessionStore } from '../../session';
-import type { DefPlacement } from '../../world';
-import { useRandomizerGame } from '../game-registry/use-randomizer-game';
-import type { RandomizerSessionView } from './use-randomizer-session.type';
+import { useSessionStore } from '../../../session';
+import type { DefPlacement } from '../../../world';
+import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
+import type { RandomizerSessionView } from '../use-randomizer-session.type';
 
 const noUnsubscribe = (): void => undefined;
 

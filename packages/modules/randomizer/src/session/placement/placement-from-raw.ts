@@ -7,7 +7,7 @@ const placementFromRaw = <P, A>(game: RandomizerGame<P, A>, raw: unknown): P | n
   if (!isRecord(raw)) return null;
   const guard = game.isPlacement;
   const { stamp, ...body } = raw;
-  if (stamp === undefined) return guard !== undefined && guard(raw) ? raw : null;
+  if (stamp === undefined) return guard?.(raw) ? raw : null;
   if (!stampAccepted(game, stamp)) return null;
   if (guard === undefined) return body as P;
   return guard(body) ? body : null;

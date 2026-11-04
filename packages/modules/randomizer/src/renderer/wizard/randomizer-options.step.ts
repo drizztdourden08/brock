@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
-import { useRandomizerGameStore } from '../game-registry/randomizer-game-store';
+import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { buildOptionsSnapshot } from '../../world/options/build-options-snapshot';
 import { OptionsStepBody } from './OptionsStepBody';
 import { formOf } from './form-of';

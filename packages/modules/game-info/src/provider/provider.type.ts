@@ -20,7 +20,7 @@ interface GameInfoProvider<S> {
 }
 
 interface ProviderState {
-  provider: GameInfoProvider<never> | null;
+  provider: GameInfoProvider<unknown> | null;
 }
 
 export type { GameInfoProvider, GameInfoSection, ProviderState };

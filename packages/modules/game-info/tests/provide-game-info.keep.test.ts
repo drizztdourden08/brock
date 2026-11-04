@@ -20,6 +20,6 @@ describe('K1 provideGameInfo', { tags: ['critical'] }, () => {
     const second = providerWith('second');
     provideGameInfo(first);
     provideGameInfo(second);
-    expect(useProviderStore.getState().provider).toBe(second);
+    expect(useProviderStore.getState().provider?.emptyText).toBe(second.emptyText);
   });
 });

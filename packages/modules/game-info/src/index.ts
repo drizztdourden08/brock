@@ -11,3 +11,7 @@ export { useProviderStore } from './provider/useProviderStore';
 export { GAME_INFO_PREFS } from './settings/game-info-prefs';
 export type { GameInfoPublish, GameInfoState, SectionBlocks } from './store/game-info-state.type';
 export { useGameInfoStore } from './store/useGameInfoStore';
+export { startGameInfoRuntime } from './runtime/start-poller';
+export { useGameInfoDisabled } from './runtime/useGameInfoDisabled';
+export { useGameInfoView } from './runtime/useGameInfoView';
+export type { GameInfoView } from './runtime/game-info-view.type';

@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { TESSERA_TOKENS_JSON } from '../look/look.constants.mjs';
-import { HEX_COLOR } from '../packaging/packaging.constants.mjs';
+import { longHex } from '../look/long-hex.mjs';
 import { OPTIONAL_THEME_KEYS, THEME_KEYS } from './installer.constants.mjs';
 
 /**
@@ -11,9 +11,9 @@ import { OPTIONAL_THEME_KEYS, THEME_KEYS } from './installer.constants.mjs';
 
 /**
  * @param {unknown} value
- * @returns {value is string}
+ * @returns {boolean}
  */
-const isHex = (value) => typeof value === 'string' && HEX_COLOR.test(value);
+const isHex = (value) => longHex(value) !== undefined;
 
 /**
  * @param {any} tokens  The parsed tokens.json
@@ -36,7 +36,7 @@ const readThemeTokens = (tesseraRoot, palette = null) => {
   const dark = darkOf(JSON.parse(readFileSync(file, 'utf8')), palette);
   if (!dark || !THEME_KEYS.every((key) => isHex(dark[key]))) return null;
   const keys = [...THEME_KEYS, ...OPTIONAL_THEME_KEYS.filter((key) => isHex(dark[key]))];
-  return Object.fromEntries(keys.map((key) => [key, dark[key].toLowerCase()]));
+  return Object.fromEntries(keys.map((key) => [key, longHex(dark[key])]));
 };
 
 export { readThemeTokens };

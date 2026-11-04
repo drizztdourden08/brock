@@ -1,16 +1,15 @@
 /* @layer tooling-scripts @kind logic */
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { longHex } from './long-hex.mjs';
 import { TESSERA_TOKENS_JSON } from './look.constants.mjs';
-
-const isHex = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
 
 const readTokens = (tesseraRoot) => {
   const file = join(tesseraRoot, TESSERA_TOKENS_JSON);
   return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
 };
 
-const dimOf = (tokens, brand) => [tokens.palettes?.[brand]?.dark?.textDim, tokens.theme.dark.textDim].find(isHex);
+const dimOf = (tokens, brand) => [tokens.palettes?.[brand]?.dark?.textDim, tokens.theme.dark.textDim].map(longHex).find(Boolean);
 
 /**
  * @param {string} tesseraRoot  The installed Tessera package folder
@@ -19,10 +18,11 @@ const dimOf = (tokens, brand) => [tokens.palettes?.[brand]?.dark?.textDim, token
  */
 const readLookInks = (tesseraRoot, brand) => {
   const tokens = readTokens(tesseraRoot);
-  const dark = tokens?.theme?.dark;
-  if (!isHex(dark?.text) || !isHex(dark?.bg)) return undefined;
+  const light = longHex(tokens?.theme?.dark?.text);
+  const ground = longHex(tokens?.theme?.dark?.bg);
+  if (!light || !ground) return undefined;
   const dim = dimOf(tokens, brand);
-  return { light: dark.text, dark: dark.bg, ...(dim ? { dim } : {}) };
+  return { light, dark: ground, ...(dim ? { dim } : {}) };
 };
 
 export { readLookInks };

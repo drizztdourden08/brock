@@ -3,7 +3,7 @@ import type { WidgetWindowPoint } from '@drizztdourden08/brock-core';
 import { floatInMain, getWidgetDefinition } from '@drizztdourden08/tessera/composites';
 import { LOGS_WIDGET_ID } from '../../widgets/built-in/LogsWidget/LogsWidget.constants';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
-import { FLOATING_MIN } from '../../widgets/widget.constants';
+import { FLOAT_SNAP_PX, FLOATING_MIN } from '../../widgets/widget.constants';
 import { widgetMainRect } from '../../widgets/widget-main-rect';
 import { widgets } from '../../widgets/widgets';
 import { find } from '../dom/find';
@@ -27,11 +27,13 @@ const handlePoint = (id: string): WidgetWindowPoint | null => {
 const sized = (box: DOMRect | undefined, width: number, height: number): boolean =>
   box !== undefined && Math.abs(box.width - width) <= FLOAT_TOLERANCE && Math.abs(box.height - height) <= FLOAT_TOLERANCE;
 
+const reach = (wanted: number, room: number): number => (room - wanted <= FLOAT_SNAP_PX ? room : wanted);
+
 const grownSize = (start: DOMRect): { width: number; height: number } => {
   const main = find(MAIN_VIEW)?.getBoundingClientRect();
   const width = start.width + GROW;
   const height = start.height + GROW;
-  return main ? { width: Math.min(width, main.right - start.left), height: Math.min(height, main.bottom - start.top) } : { width, height };
+  return main ? { width: reach(width, main.right - start.left), height: reach(height, main.bottom - start.top) } : { width, height };
 };
 
 const mouse = (action: 'down' | 'move' | 'up', point: WidgetWindowPoint) => probe({ kind: 'mouse', id: MAIN_LINK, action, point });
@@ -68,7 +70,7 @@ const checkGrow = async (tour: StepTour, id: string, from: WidgetWindowPoint): P
   tour.check(
     'floating-widget-resizes',
     resized,
-    `dragging the corner of the floating "${id}" widget grew it by up to ${GROW} pixels each way, inside the main view, and kept the size`,
+    `dragging the corner of the floating "${id}" widget grew it by ${GROW} pixels each way, or to the main view's edge when it came within ${FLOAT_SNAP_PX} pixels, and kept the size`,
     `the floating "${id}" widget went from ${sizeText(start)} to ${sizeText(grown)}, expected ${Math.round(expected?.width ?? 0)}x${Math.round(expected?.height ?? 0)} (resizing shown: ${String(live.resizing)})`,
   );
 };

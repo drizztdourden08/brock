@@ -9,7 +9,7 @@ import { reconnectSession } from './reconnect-session';
 
 interface PatchRequest {
   profile: Profile | null;
-  game: RandomizerGame | null;
+  game: RandomizerGame<unknown> | null;
   fields: ArchipelagoConnection;
 }
 

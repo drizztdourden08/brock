@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { ClientEvent } from '../../archipelago';
+import type { ArchipelagoSession, ClientEvent } from '../../archipelago';
 import type { SessionStatus } from '../local/randomizer-session.type';
 import { useSessionStore } from '../store/behavior/useSessionStore';
 import { createOnlineClient } from './create-online-client';
@@ -8,6 +8,7 @@ import { createOnlineParts } from './create-online-parts';
 import { disarmOnlineRun } from './disarm-online-run';
 import { onlineEvents } from './online-events';
 import { ONLINE_KIND, ONLINE_TAG } from './online-session.constants';
+import type { OnlineParts } from './online-parts.type';
 import type { OnlineSessionOptions } from './online-session-options.type';
 import type { OnlineSession } from './online-session.type';
 import { reportedOnline } from './reported-online';
@@ -24,7 +25,7 @@ const createOnlineSession = <P, A>(options: OnlineSessionOptions<P, A>): OnlineS
     status = next;
     if (isCurrent()) useSessionStore.getState().setStatus(next);
   };
-  const parts = createOnlineParts(options, {
+  const parts: OnlineParts<P, A> = createOnlineParts(options, {
     client: () => client,
     publishPlacement: (placement) => {
       if (isCurrent()) useSessionStore.getState().setPlacement(placement);
@@ -34,7 +35,7 @@ const createOnlineSession = <P, A>(options: OnlineSessionOptions<P, A>): OnlineS
       setStatus('error');
     },
   });
-  const client = createOnlineClient(parts, createOnlineHost(parts));
+  const client: ArchipelagoSession = createOnlineClient(parts, createOnlineHost(parts));
   const onEvent = (event: ClientEvent): void => {
     onlineEvents.emit(event);
     if (event.type === 'connected') setStatus('active');

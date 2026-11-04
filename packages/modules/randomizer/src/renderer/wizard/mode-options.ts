@@ -8,9 +8,9 @@ interface ModeOption {
   label: string;
 }
 
-const modeLabel = (game: RandomizerGame | null, id: RandomizerModeId): string => game?.labels?.modes?.[id] ?? MODE_LABELS[id] ?? id;
+const modeLabel = (game: RandomizerGame<unknown> | null, id: RandomizerModeId): string => game?.labels?.modes?.[id] ?? MODE_LABELS[id] ?? id;
 
-const modeOptions = (game: RandomizerGame | null): ModeOption[] =>
+const modeOptions = (game: RandomizerGame<unknown> | null): ModeOption[] =>
   (Object.keys(MODE_LABELS) as RandomizerModeId[])
     .filter((id) => id !== 'online' || game?.archipelago !== undefined)
     .map((id) => ({ value: id, label: modeLabel(game, id) }));

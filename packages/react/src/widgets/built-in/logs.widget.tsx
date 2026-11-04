@@ -11,6 +11,7 @@ const meta: WidgetMeta = {
   popOut: true,
   padding: 'none',
   fill: true,
+  devOnly: true,
   menu: { developer: true },
 };
 

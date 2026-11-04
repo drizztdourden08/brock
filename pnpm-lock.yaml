@@ -117,8 +117,8 @@ importers:
         specifier: workspace:*
         version: link:packages/lint-config
       '@drizztdourden08/standards':
-        specifier: ^0.14.0
-        version: 0.14.8(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@24.19.0)(happy-dom@20.14.5)(vite@7.3.6(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))
+        specifier: ^0.15.0
+        version: 0.15.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@24.19.0)(happy-dom@20.14.5)(vite@7.3.6(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
         version: 0.102.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
@@ -292,8 +292,8 @@ importers:
   packages/lint-config:
     dependencies:
       '@drizztdourden08/standards':
-        specifier: '>=0.14.0 <1'
-        version: 0.14.8(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@26.6.3)(happy-dom@20.14.5)(vite@7.3.6(@types/node@26.6.3)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))
+        specifier: '>=0.15.0 <1'
+        version: 0.15.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@26.6.3)(happy-dom@20.14.5)(vite@7.3.6(@types/node@26.6.3)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))
       eslint:
         specifier: ^10.0.0
         version: 10.11.0(jiti@2.7.0)
@@ -865,6 +865,16 @@ packages:
 
   '@drizztdourden08/standards@0.14.8':
     resolution: {integrity: sha512-IujsTfkmpfnsLD49Im3cDpb5V7FOi7mnQJUde1zmWgcc9TVC+EqFP62HWRJHLBEBrP3O4twEbNYcRqu1If0Gng==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/standards/0.14.8/94b7eaa94ad1a642287802b2db2074560479eb35}
+    engines: {node: '>=24'}
+    hasBin: true
+    peerDependencies:
+      eslint: ^10.0.0
+      stylelint: ^17.0.0
+      typescript: ^6.0.0
+      vitest: ^4.1.0
+
+  '@drizztdourden08/standards@0.15.0':
+    resolution: {integrity: sha512-D+ZIULe5ETekfEw3NaYEpNIZaJfFE922n7ydwz6Q68keh9GIvUk0PJfSyrqEGeVjMbZPU8zIdxHucTTRwezZuA==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/standards/0.15.0/48e0721680677b127083ba0cd65059ac4a07be00}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -5596,6 +5606,38 @@ snapshots:
       - supports-color
 
   '@drizztdourden08/standards@0.14.8(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@26.6.3)(happy-dom@20.14.5)(vite@7.3.6(@types/node@26.6.3)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))':
+    dependencies:
+      '@eslint/js': 10.0.1(eslint@10.11.0(jiti@2.7.0))
+      eslint: 10.11.0(jiti@2.7.0)
+      eslint-plugin-react-hooks: 7.1.1(eslint@10.11.0(jiti@2.7.0))
+      jscpd: 5.4.0
+      knip: 6.39.0
+      markdownlint-cli2: 0.22.1
+      stylelint: 17.15.0(typescript@6.0.3)
+      stylelint-config-standard: 40.0.0(stylelint@17.15.0(typescript@6.0.3))
+      typescript: 6.0.3
+      typescript-eslint: 8.71.0(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3)
+      vitest: 4.1.11(@types/node@26.6.3)(happy-dom@20.14.5)(vite@7.3.6(@types/node@26.6.3)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - supports-color
+
+  '@drizztdourden08/standards@0.15.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@24.19.0)(happy-dom@20.14.5)(vite@7.3.6(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))':
+    dependencies:
+      '@eslint/js': 10.0.1(eslint@10.11.0(jiti@2.7.0))
+      eslint: 10.11.0(jiti@2.7.0)
+      eslint-plugin-react-hooks: 7.1.1(eslint@10.11.0(jiti@2.7.0))
+      jscpd: 5.4.0
+      knip: 6.39.0
+      markdownlint-cli2: 0.22.1
+      stylelint: 17.15.0(typescript@6.0.3)
+      stylelint-config-standard: 40.0.0(stylelint@17.15.0(typescript@6.0.3))
+      typescript: 6.0.3
+      typescript-eslint: 8.71.0(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3)
+      vitest: 4.1.11(@types/node@24.19.0)(happy-dom@20.14.5)(vite@7.3.6(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - supports-color
+
+  '@drizztdourden08/standards@0.15.0(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@26.6.3)(happy-dom@20.14.5)(vite@7.3.6(@types/node@26.6.3)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))':
     dependencies:
       '@eslint/js': 10.0.1(eslint@10.11.0(jiti@2.7.0))
       eslint: 10.11.0(jiti@2.7.0)

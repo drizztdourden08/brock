@@ -1,0 +1,57 @@
+{
+  "name": "@drizztdourden08/brock-mcp",
+  "version": "0.116.1",
+  "description": "Brock mcp module: lets an AI agent drive the running app over MCP, with screenshots, input, widgets, commands and app-defined tools, through a stdio helper on the Brock bridge.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/mcp"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "brock": {
+    "id": "mcp",
+    "description": "Agent control over MCP: screenshots, input, widgets, commands and app-defined tools through a stdio helper.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts",
+    "helpers": {
+      "brock-mcp": "./src/helper/main.ts"
+    }
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*",
+    "@modelcontextprotocol/sdk": "1.32.1"
+  },
+  "devDependencies": {
+    "electron": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "electron": ">=38",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

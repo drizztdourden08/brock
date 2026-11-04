@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind data */
+/* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
 import type { WidgetDef } from '@drizztdourden08/brock-react';
 import { GAME_INFO_WIDGET_ID } from '../game-info.constants';

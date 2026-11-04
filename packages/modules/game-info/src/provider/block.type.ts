@@ -58,13 +58,13 @@ interface ProgressBlock {
   items: InfoProgressItem[];
 }
 
-interface CustomBlock {
+interface AppRenderedBlock {
   kind: 'custom';
   render: () => ReactNode;
 }
 
-type Block = RowsBlock | MembersBlock | ListBlock | ProgressBlock | CustomBlock;
+type Block = RowsBlock | MembersBlock | ListBlock | ProgressBlock | AppRenderedBlock;
 
 export type {
-  Block, CustomBlock, InfoBar, InfoListItem, InfoMember, InfoProgressItem, InfoRow, InfoValue, ListBlock, MembersBlock, ProgressBlock, RowsBlock,
+  Block, AppRenderedBlock, InfoBar, InfoListItem, InfoMember, InfoProgressItem, InfoRow, InfoValue, ListBlock, MembersBlock, ProgressBlock, RowsBlock,
 };

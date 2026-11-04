@@ -4,8 +4,7 @@ import type { Block } from '../provider/block.type';
 import type { SectionBlocks } from '../store/game-info-state.type';
 import { useGameInfoStore } from '../store/useGameInfoStore';
 import type { GameInfoView } from './game-info-view.type';
-
-const GAME_INFO_SLICE = 'game-info';
+import { GAME_INFO_SLICE } from './share-game-info.constants';
 
 const isPlain = (block: Block): boolean => block.kind !== 'custom';
 
@@ -27,4 +26,4 @@ const shareGameInfo = (): (() => void) =>
     }),
   });
 
-export { GAME_INFO_SLICE, shareGameInfo };
+export { shareGameInfo };

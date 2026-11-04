@@ -1,8 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { create } from 'zustand';
 import type { GameInfoState } from './game-info-state.type';
-
-const EMPTY = { snapshotAt: null, blocks: {}, compact: {}, changed: [], running: false } as const;
+import { EMPTY } from './useGameInfoStore.constants';
 
 const useGameInfoStore = create<GameInfoState>((set) => ({
   ...EMPTY,

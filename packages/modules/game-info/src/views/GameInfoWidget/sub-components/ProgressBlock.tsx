@@ -1,13 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { ProgressBar } from '@drizztdourden08/tessera/primitives';
-import type { ProgressBlock as ProgressBlockData } from '../../../provider/block.type';
-import type { GameInfoPrefsValue } from '../GameInfoWidget.type';
 import { Spoiler } from './Spoiler';
-
-interface ProgressBlockProps {
-  block: ProgressBlockData;
-  prefs: GameInfoPrefsValue;
-}
+import type { ProgressBlockProps } from './ProgressBlock.type';
 
 const ProgressBlock = ({ block, prefs }: ProgressBlockProps) => (
   <>

@@ -2,9 +2,8 @@
 import { useWidgetSlice, widgetWindowId } from '@drizztdourden08/brock-react';
 import { useGameInfoStore } from '../store/useGameInfoStore';
 import type { GameInfoView } from './game-info-view.type';
-import { GAME_INFO_SLICE } from './share-game-info';
-
-const EMPTY_VIEW: GameInfoView = { blocks: {}, compact: {}, changed: [], running: false, snapshotAt: null, customHidden: false };
+import { GAME_INFO_SLICE } from './share-game-info.constants';
+import { EMPTY_VIEW } from './useGameInfoView.constants';
 
 const useGameInfoView = (): GameInfoView => {
   const slice = useWidgetSlice<GameInfoView>(GAME_INFO_SLICE, EMPTY_VIEW);

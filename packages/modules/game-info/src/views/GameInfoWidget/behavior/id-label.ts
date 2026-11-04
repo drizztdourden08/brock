@@ -1,7 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { InfoValue } from '../../../provider/block.type';
-
-type IdValueShape = Extract<InfoValue, object>;
+import type { IdValueShape } from './id-label.type';
 
 const hexOf = (value: IdValueShape) => `0x${value.id.toString(16).toUpperCase().padStart(value.width, '0')}`;
 
@@ -11,4 +9,3 @@ const idLabel = (value: IdValueShape, hexIds: boolean): string => {
 };
 
 export { idLabel };
-export type { IdValueShape };

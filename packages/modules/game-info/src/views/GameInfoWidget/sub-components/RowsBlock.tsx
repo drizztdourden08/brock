@@ -1,14 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { StatRow } from '@drizztdourden08/tessera/primitives';
-import type { RowsBlock as RowsBlockData } from '../../../provider/block.type';
-import type { GameInfoPrefsValue } from '../GameInfoWidget.type';
 import { IdValue } from './IdValue';
 import { Spoiler } from './Spoiler';
-
-interface RowsBlockProps {
-  block: RowsBlockData;
-  prefs: GameInfoPrefsValue;
-}
+import type { RowsBlockProps } from './RowsBlock.type';
 
 const RowsBlock = ({ block, prefs }: RowsBlockProps) => (
   <>

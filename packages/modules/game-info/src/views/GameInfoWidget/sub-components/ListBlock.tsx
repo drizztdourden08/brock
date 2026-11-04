@@ -1,15 +1,9 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
 import { SegmentedControl, StatRow } from '@drizztdourden08/tessera/primitives';
-import type { ListBlock as ListBlockData } from '../../../provider/block.type';
 import { ALL_FILTER } from '../GameInfoWidget.constants';
-import type { GameInfoPrefsValue } from '../GameInfoWidget.type';
 import { Spoiler } from './Spoiler';
-
-interface ListBlockProps {
-  block: ListBlockData;
-  prefs: GameInfoPrefsValue;
-}
+import type { ListBlockProps } from './ListBlock.type';
 
 const ListBlock = ({ block, prefs }: ListBlockProps) => {
   const [filter, setFilter] = useState(ALL_FILTER);

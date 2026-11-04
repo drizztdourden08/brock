@@ -3,7 +3,7 @@ import { useProviderStore } from '../provider/useProviderStore';
 import { useGameInfoStore } from '../store/useGameInfoStore';
 import { buildSections } from './build-sections';
 import { diffSections } from './diff-sections';
-import { readSections } from './read-prefs';
+import { readSections } from './read-sections';
 
 const pollOnce = (): void => {
   const provider = useProviderStore.getState().provider;

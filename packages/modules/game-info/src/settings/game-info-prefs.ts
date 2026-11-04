@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind data */
+/* @layer renderer-shell @kind logic */
 import type { WidgetPrefItem } from '@drizztdourden08/brock-react';
 import { DEFAULT_REFRESH_HZ, DEFAULT_SECTION_IDS, REFRESH_CHOICES, SECTION_IDS } from '../game-info.constants';
 

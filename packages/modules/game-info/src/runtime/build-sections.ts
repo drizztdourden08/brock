@@ -1,12 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { GameInfoProvider } from '../provider/provider.type';
 import type { SectionId } from '../provider/section-id.type';
-import type { SectionBlocks } from '../store/game-info-state.type';
-
-interface BuiltSections {
-  blocks: SectionBlocks;
-  compact: SectionBlocks;
-}
+import type { BuiltSections } from './built-sections.type';
 
 const buildSections = (provider: GameInfoProvider<unknown>, snapshot: unknown, enabled: readonly SectionId[]): BuiltSections => {
   const built: BuiltSections = { blocks: {}, compact: {} };
@@ -19,4 +14,3 @@ const buildSections = (provider: GameInfoProvider<unknown>, snapshot: unknown, e
 };
 
 export { buildSections };
-export type { BuiltSections };

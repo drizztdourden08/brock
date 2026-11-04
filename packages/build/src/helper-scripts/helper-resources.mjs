@@ -5,10 +5,11 @@ import { HELPER_EXT, HELPERS_OUT, HELPERS_RESOURCES } from './helper-scripts.con
 /**
  * @param {string} rootDir the app folder
  * @param {Record<string, string> | undefined} helpers helpers of brock.config.ts
+ * @param {string[]} [moduleNames] module helpers that ship
  * @returns {{ from: string, to: string, filter: string[] }[]} extraResources, outside the asar
  */
-const helperResources = (rootDir, helpers) => {
-  const names = helperEntries(rootDir, helpers).map(({ name }) => `${name}${HELPER_EXT}`);
+const helperResources = (rootDir, helpers, moduleNames = []) => {
+  const names = [...helperEntries(rootDir, helpers).map(({ name }) => name), ...moduleNames].map((name) => `${name}${HELPER_EXT}`);
   return names.length ? [{ from: HELPERS_OUT, to: HELPERS_RESOURCES, filter: names }] : [];
 };
 

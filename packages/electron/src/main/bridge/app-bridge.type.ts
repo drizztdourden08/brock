@@ -2,6 +2,7 @@
 import type { BrowserWindow } from 'electron';
 import type { MainContext } from '../types/main-context.type';
 import type { BridgeArgsCheck, BridgeServer } from './bridge.type';
+import type { BridgeExtension } from './bridge-extension.type';
 
 interface AppBridgeOptions {
   register: (bridge: BridgeServer, ctx: MainContext) => void | Promise<void>;
@@ -16,6 +17,8 @@ interface AppBridge {
   close: () => void;
   current: () => BridgeServer | null;
   discoveryFile: () => string;
+  extend: (extension: BridgeExtension) => () => void;
+  extensionsAskForBoot: () => boolean;
 }
 
 interface AppBridgeInput {

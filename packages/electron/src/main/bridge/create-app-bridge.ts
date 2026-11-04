@@ -4,6 +4,8 @@ import type { BridgeServer } from './bridge.type';
 import type { AppBridge, AppBridgeInput, AppBridgeOptions, OpenedAppBridge } from './app-bridge.type';
 import { BRIDGE_STALE_OPEN } from './bridge.constants';
 import { appBridgeFile } from './app-bridge-file';
+import { createBridgeExtensions } from './bridge-extensions';
+import { mergeBridgeOptions } from './merge-bridge-options';
 import { startAppBridge } from './start-app-bridge';
 
 const createAppBridge = (input: AppBridgeInput): AppBridge => {
@@ -14,6 +16,7 @@ const createAppBridge = (input: AppBridgeInput): AppBridge => {
     opened: null as OpenedAppBridge | null,
     hooked: false,
   };
+  const extensions = createBridgeExtensions();
   appBridgeFile.current = input.file;
   const close = (): void => {
     state.generation += 1;
@@ -41,8 +44,8 @@ const createAppBridge = (input: AppBridgeInput): AppBridge => {
   return {
     open: (options) => {
       if (state.opening) return state.opening;
-      const chosen = options ?? input.options;
-      if (!chosen) return Promise.reject(new Error('ctx.bridge.open needs options, or a bridge option on bootstrapApp'));
+      const chosen = mergeBridgeOptions(options ?? input.options, extensions.list());
+      if (!chosen) return Promise.reject(new Error('ctx.bridge.open needs options, a bridge option on bootstrapApp, or a bridge extension'));
       hook();
       const generation = state.generation;
       const opening = state.chain.then(() => start(generation, chosen));
@@ -56,6 +59,8 @@ const createAppBridge = (input: AppBridgeInput): AppBridge => {
     close,
     current: () => state.opened?.server ?? null,
     discoveryFile: input.file,
+    extend: extensions.add,
+    extensionsAskForBoot: extensions.asksForBoot,
   };
 };
 

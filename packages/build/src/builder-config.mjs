@@ -13,6 +13,7 @@ import { copyrightOf, windowsVersionStrings } from './packaging/windows-version-
 import { KOFFI_ASAR_UNPACK, VELOPACK_ASAR_UNPACK } from './packaging/packaging.constants.mjs';
 import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 import { helperResources } from './helper-scripts/helper-resources.mjs';
+import { shippedModuleHelpers } from './helper-scripts/shipped-module-helpers.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
@@ -113,9 +114,11 @@ const createBuilderConfig = (product, { rootDir, packaging = {}, helpers, fuses,
  */
 const loadBuilderConfig = async (rootDir) => {
   const cfg = await loadBrockConfig(rootDir);
-  const config = createBuilderConfig(cfg.product, { rootDir, packaging: cfg.packaging, helpers: cfg.helpers, fuses: cfg.fuses });
+  const moduleHelpers = shippedModuleHelpers(rootDir, cfg);
+  const helpers = { ...cfg.helpers, ...moduleHelpers };
+  const config = createBuilderConfig(cfg.product, { rootDir, packaging: cfg.packaging, helpers, fuses: cfg.fuses });
   const modules = modulePackaging(rootDir, cfg.modules);
-  const extraResources = [...modules.extraResources, ...helperResources(rootDir, cfg.helpers), ...appExtraResources(cfg.packaging?.extraResources)];
+  const extraResources = [...modules.extraResources, ...helperResources(rootDir, cfg.helpers, Object.keys(moduleHelpers)), ...appExtraResources(cfg.packaging?.extraResources)];
   return {
     ...config,
     files: [...APP_FILES, ...modules.exclude],

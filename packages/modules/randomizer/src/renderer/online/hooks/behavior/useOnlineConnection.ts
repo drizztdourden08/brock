@@ -4,9 +4,8 @@ import { useProfilesStore } from '@drizztdourden08/brock-react';
 import type { ArchipelagoConnection } from '../../../../augment';
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
 import type { OnlineConnectionApi } from '../connection-patch.type';
+import { NO_CONNECTION } from './useOnlineConnection.constants';
 import { patchConnection } from '../patch-connection';
-
-const NO_CONNECTION: ArchipelagoConnection = {};
 
 const useOnlineConnection = (): OnlineConnectionApi => {
   const game = useRandomizerGame();

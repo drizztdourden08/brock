@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { PasswordInput } from '@drizztdourden08/tessera/composites';
 import { Button, Field, Grid, Stack, Text, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
 import { useServerCheck } from '../behavior/useServerCheck';
 import { CONNECTION_TEXT } from './ConnectionStepBody.constants';
@@ -19,7 +20,7 @@ const ConnectionStepBody = ({ value, onChange }: ConnectionStepBodyProps) => {
           <TextInput type="text" value={value.slotName} onChange={(e) => onChange({ slotName: e.target.value })} />
         </Field>
         <Field label={CONNECTION_TEXT.password}>
-          <TextInput type="password" value={value.password} onChange={(e) => onChange({ password: e.target.value })} />
+          <PasswordInput value={value.password} onChange={(password) => onChange({ password })} />
         </Field>
       </Grid>
       <Toggle label={CONNECTION_TEXT.deathLink} checked={value.deathLink} onChange={(deathLink) => onChange({ deathLink })} />

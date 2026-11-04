@@ -4,12 +4,8 @@ import type { LogRow } from '@drizztdourden08/tessera/composites';
 import type { LogEntry } from '@drizztdourden08/brock-core';
 import type { RoomMessage } from '../../../../archipelago';
 import { logRowOf } from './log-row-of';
+import type { TimedRow } from './merge-room-rows.type';
 import { ROOM_TAG } from '../LogsView.constants';
-
-interface TimedRow {
-  at: number;
-  row: LogRow;
-}
 
 const roomRowOf = (message: RoomMessage): TimedRow => ({
   at: message.at,

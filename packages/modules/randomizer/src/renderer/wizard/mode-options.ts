@@ -1,12 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerModeId } from '../../augment';
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
+import type { ModeOption } from './mode-options.type';
 import { MODE_LABELS } from './wizard.constants';
-
-interface ModeOption {
-  value: string;
-  label: string;
-}
 
 const modeLabel = (game: RandomizerGame<unknown> | null, id: RandomizerModeId): string => game?.labels?.modes?.[id] ?? MODE_LABELS[id] ?? id;
 

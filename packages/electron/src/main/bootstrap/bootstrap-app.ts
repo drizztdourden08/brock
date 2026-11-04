@@ -2,6 +2,7 @@
 import nodeCrypto from 'node:crypto';
 import { app } from 'electron';
 import type { ProductConfig } from '@drizztdourden08/brock-core/product';
+import { composeProfileHooks } from '@drizztdourden08/brock-core/storage';
 import type { BootstrapOptions } from '../types/main-context.type';
 import type { WindowSetup } from '../window/window-setup.type';
 import type { ReadyInput } from './bootstrap-app.type';
@@ -118,7 +119,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   pinReviewRendering(flags);
 
   const ctx = createMainContext({
-    product, flags, instance, profileHooks: options.profileHooks, dataDomains: options.dataDomains, icon,
+    product, flags, instance, profileHooks: composeProfileHooks([...modules.map((m) => m.profileHooks), options.profileHooks]), dataDomains: options.dataDomains, icon,
     bridge: { options: options.bridge ?? null, key: bridgeKeyOf(instance.name, userDataOverride ?? portableData) },
   });
   const dataDirs = [...product.dataDirs, ...modules.flatMap((m) => m.dataDirs ?? [])];

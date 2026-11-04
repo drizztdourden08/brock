@@ -75,6 +75,7 @@ interface MainModule {
   dataDirs?: string[];
   schemes?: PrivilegedScheme[];
   bootTasks?: BootTask<MainContext>[];
+  profileHooks?: ProfileStoreHooks;
 }
 
 interface HandlerGroup {

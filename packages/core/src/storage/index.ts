@@ -19,6 +19,7 @@ export { createProfileStore } from './profiles/profile-store';
 export { profileDir } from './profiles/profile-dir';
 export { profileFile } from './profiles/profile-file';
 export { configFile } from './profiles/config-file';
+export { composeProfileHooks } from './profiles/compose-profile-hooks';
 export type { ProfileStore, ProfileStoreHooks } from './profiles/profile-store.type';
 export type {
   BaseProfile, Profile, ProfileExtension, ProfileCreateExtension, ProfilePatchExtension,

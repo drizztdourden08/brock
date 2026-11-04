@@ -2,5 +2,6 @@
 export { isOptionsSnapshot } from './is-options-snapshot';
 export { isStoredPlacement } from './is-stored-placement';
 export { schemaMatches } from './schema-matches';
+export { schemaRecordOf } from './schema-record-of';
 export type { OptionsSnapshotShape } from './options-snapshot-shape.type';
 export type { StoredPlacementShape } from './stored-placement-shape.type';

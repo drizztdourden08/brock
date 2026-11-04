@@ -26,6 +26,9 @@
     "README.md",
     "CHANGELOG.md"
   ],
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*"
+  },
   "sideEffects": false,
   "brock": {
     "id": "randomizer",

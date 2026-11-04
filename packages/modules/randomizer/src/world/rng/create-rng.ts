@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import { hashSeed } from './hash-seed';
-import { mulberry32 } from './mulberry32';
+import { mulberry32 } from '@drizztdourden08/brock-core/util';
 import type { Rng } from './rng.type';
 
 const swapAt = <T>(list: T[], i: number, j: number): void => {

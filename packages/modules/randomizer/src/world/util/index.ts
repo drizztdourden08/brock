@@ -1,2 +1,2 @@
 /* @layer core @kind barrel */
-export { itemAt } from './item-at';
+export { itemAt } from '@drizztdourden08/brock-core/util';

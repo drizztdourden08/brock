@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-randomizer",
   "version": "0.120.1",
-  "description": "Brock randomizer module: a seeded item randomizer world model with typed rules, collection state, restrictive fill, spheres and a retrying generate loop. The game supplies its own world data.",
+  "description": "Brock randomizer module: a seeded item randomizer world model with typed rules, collection state, restrictive fill, spheres and a retrying generate loop, plus the game-agnostic session and screens. The game supplies its own world data and adapters.",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {
@@ -16,7 +16,11 @@
     "node": ">=24"
   },
   "exports": {
+    ".": "./src/index.ts",
     "./world": "./src/world/index.ts",
+    "./session": "./src/session/index.ts",
+    "./main": "./src/main/index.ts",
+    "./renderer": "./src/renderer/index.ts",
     "./package.json": "./package.json"
   },
   "files": [
@@ -27,11 +31,27 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@drizztdourden08/brock-core": "workspace:*"
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
   },
-  "sideEffects": false,
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": ">=0.87.0 <1",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  },
+  "sideEffects": [
+    "./src/renderer/index.ts"
+  ],
   "brock": {
     "id": "randomizer",
-    "description": "Seeded item randomizer: world model, rules, fill, spoiler."
+    "description": "Seeded item randomizer: world model, rules, fill, spoiler, session and screens.",
+    "main": "./src/main/index.ts",
+    "renderer": "./src/renderer/index.ts"
   }
 }

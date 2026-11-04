@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Text } from '@drizztdourden08/tessera/primitives';
 import type { InfoValue } from '../../../provider/block.type';
-import { idLabel } from './id-label';
+import { idLabel } from '../behavior/id-label';
 
 interface IdValueProps {
   value: InfoValue;

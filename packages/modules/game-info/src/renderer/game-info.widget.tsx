@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import type { WidgetDef } from '@drizztdourden08/brock-react';
 import { GAME_INFO_WIDGET_ID } from '../game-info.constants';
 import { GAME_INFO_PREFS } from '../settings/game-info-prefs';
-import { GameInfoWidget } from '../views/GameInfoWidget/GameInfoWidget';
+import { GameInfoWidget } from '../views/GameInfoWidget';
 
 const gameInfoWidget: WidgetDef = {
   id: GAME_INFO_WIDGET_ID,

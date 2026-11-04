@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
-import type { SectionViewProps } from './GameInfoWidget.type';
-import { SectionCard } from './sub-components/SectionCard';
+import type { SectionViewProps } from '../GameInfoWidget.type';
+import { SectionCard } from './SectionCard';
 
 const FullView = ({ sections, prefs, customHidden }: SectionViewProps) => (
   <div className="game-info">

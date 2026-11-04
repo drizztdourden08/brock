@@ -1,6 +1,6 @@
 /* @layer core @kind test */
 import { describe, expect, it } from 'vitest';
-import { idLabel } from '../src/views/GameInfoWidget/sub-components/id-label';
+import { idLabel } from '../src/views/GameInfoWidget/behavior/id-label';
 
 describe('K2 idLabel', { tags: ['critical'] }, () => {
   it('gives the name when present and hex ids are off', () => {

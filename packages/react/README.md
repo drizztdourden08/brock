@@ -43,7 +43,7 @@ import { screenTree } from '../.brock/screens';
 | Compounds | `AboutPanel`, `ProfilesPanel`, `ReleaseNotesPanel`, with their props types |
 | Modules | `RendererModule`, `ModuleBucket`, `mergeModules` |
 | Menu | `MenuEntry`, `MenuItem`, `MenuSection`, `MENU_SECTIONS`, `toMenuGroups`, `MenuResolver` |
-| Host, log, profiles | `hostApi`, `requireHostApi`, `exposeHostNamespace`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions |
+| Host, log, profiles | `hostApi`, `requireHostApi`, `exposeHostNamespace`, `instanceName`, `instanceProfile`, `isAutomationLaunch`, `isInstanceLaunch`, `createAppLog`, `getAppLog`, `exposeLogGlobals`, the renderer profile store functions, `resolveProfileMode`, `useProfileModes`, `placeWizardSteps`, `wizardInitialSlices`, `wizardCreateOptions`, `useModuleWizardSteps`, `composeLockCauses`, `LOCK_CAUSE_ORDER` |
 | Hooks | `useSafeAreaInsets`, `applyNotchMode`, `useWidgetPref` |
 | Standard overlays | `StandardOverlays`, `STANDARD_TITLE_BAR_ACTIONS` |
 | Search | `PaletteHost`, `SearchButton`, `palette`, `usePaletteOpen`, `buildSearchIndex`, `useSearchIndex`, `useSearchEntries`, `registerSearchActions`, `useSearchActions`, `rankEntries`, `entriesInBucket`, `openSearchTarget`, `buildCatalog` |

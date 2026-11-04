@@ -11,3 +11,4 @@ export type { CatalogChoice, CatalogControl, CatalogItem, CatalogScreen, Catalog
 export type { TabRegistry } from './tab-registry.type';
 export * from './SettingsLayout';
 export * from './SettingsHub';
+export * from './lock-causes';

@@ -17,6 +17,10 @@ import type { TourDef } from '../tours/tour.type';
 import type { ToolbarDef } from '../toolbars/toolbar.type';
 import type { VolumeSource } from '../volume/volume.type';
 import type { CommandDef } from '../commands/command.type';
+import type { ProfileStoreHooks } from '@drizztdourden08/brock-core';
+import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
+import type { ProfileWizardStepDef } from '../profiles/wizard/profile-wizard-step.type';
+import type { LockCauseProvider } from '../settings/lock-causes/lock-cause-provider.type';
 
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
@@ -48,6 +52,10 @@ interface RendererModule {
   startupPrompts?: readonly StartupPromptDef[];
   volume?: VolumeSource;
   commands?: readonly CommandDef[];
+  profileModes?: readonly ProfileModeDef[];
+  profileWizardSteps?: readonly ProfileWizardStepDef[];
+  lockCauses?: readonly LockCauseProvider[];
+  profileHooks?: ProfileStoreHooks;
 }
 
 interface MergedModules {
@@ -71,6 +79,10 @@ interface MergedModules {
   startupPrompts: StartupPromptDef[];
   volume?: VolumeSource;
   commands: CommandDef[];
+  profileModes: ProfileModeDef[];
+  profileWizardSteps: ProfileWizardStepDef[];
+  lockCauses: LockCauseProvider[];
+  profileHooks: ProfileStoreHooks[];
 }
 
 export type { MergedModules, ModuleBucket, RendererModule, TitleBarActionHook, TitleBarActionSource };

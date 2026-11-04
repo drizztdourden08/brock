@@ -9,7 +9,7 @@ import { useRatioPair } from './useRatioPair';
 const useAspectRatioView = (props: AspectRatioControlProps) => {
   const {
     description, value, presetOptions, widePresets, tallPresets, descriptions,
-    recommendedValue, recommendedNote, customW, customH, limits, letterbox = false, disabled = false, lockedMessage, onChange,
+    recommendedValue, recommendedNote, customW, customH, limits, letterbox = false, disabled, lockedMessage, onChange,
   } = props;
 
   const pair = useRatioPair({ customW, customH, limits, letterbox, onChange });
@@ -36,8 +36,8 @@ const useAspectRatioView = (props: AspectRatioControlProps) => {
     handlePreset,
     text: descriptions?.[mainValue] ?? description,
     readout: viewport ?? screen,
-    disabled,
-    lockedNote: disabled ? lockedMessage : undefined,
+    disabled: disabled === true,
+    lockedNote: disabled === true ? lockedMessage : undefined,
     showRecommended: Boolean(recommendedValue) && mainValue === recommendedValue && Boolean(recommendedNote),
   };
 };

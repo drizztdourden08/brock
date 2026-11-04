@@ -23,13 +23,14 @@ const copyRom = ({ source, romsDir, log }) => {
   return file;
 };
 
-const copyBlob = ({ romFile, sourceAssets, assetsDir, roms, log }) => {
+const copyBlob = ({ romFile, sourceAssets, assetsDir, roms, asset: sourceName, log }) => {
   const asset = `${stemOf(romFile)}${roms.assetExtension}`;
   const dest = join(assetsDir, asset);
   if (existsSync(dest)) return;
-  const source = join(sourceAssets, asset);
+  const blob = sourceName ?? asset;
+  const source = join(sourceAssets, blob);
   if (!existsSync(source)) {
-    log(`No pre-extracted asset blob for ${romFile}; the first launch extracts it.`);
+    log(`No pre-extracted asset blob ${blob} in ${sourceAssets}; nothing copied.`);
     return;
   }
   mkdirSync(assetsDir, { recursive: true });
@@ -45,10 +46,10 @@ const noteRomOnProfile = ({ worktree, romFile, states }) => {
 };
 
 /**
- * @param {{ realDataDir?: string, rom?: string, dir?: string, extensions?: string[] }} [options]
+ * @param {{ realDataDir?: string, rom?: string, asset?: string, dir?: string, extensions?: string[] }} [options]
  * @returns {{ name: string, run: (worktree: object) => void }}
  */
-const copyAssetBlob = ({ realDataDir, rom, ...overrides } = {}) => ({
+const copyAssetBlob = ({ realDataDir, rom, asset, ...overrides } = {}) => ({
   name: 'asset-blob',
   run: (worktree) => {
     const roms = snesOptions('roms', worktree.workspace, overrides);
@@ -61,7 +62,7 @@ const copyAssetBlob = ({ realDataDir, rom, ...overrides } = {}) => ({
       throw new Error(`No ROM found. Pass rom: "<path>" to copyAssetBlob(), or place one (${roms.extensions.join(', ')}) under ${roms.dir}/ in the worktree or the main checkout.`);
     }
     const romFile = copyRom({ source, romsDir: join(dataDir, 'roms'), log: worktree.log });
-    copyBlob({ romFile, sourceAssets, assetsDir: join(dataDir, 'assets'), roms, log: worktree.log });
+    copyBlob({ romFile, sourceAssets, assetsDir: join(dataDir, 'assets'), roms, asset, log: worktree.log });
     noteRomOnProfile({ worktree, romFile, states });
   },
 });

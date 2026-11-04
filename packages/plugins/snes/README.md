@@ -12,6 +12,8 @@ The SNES PC-port bundle for the Brock thread CLI: everything a port of a SNES ga
 
 Provision steps a workspace places itself: `snes.copyAssetBlob()` (the ROM and its extracted asset blob into the worktree's user data), `snes.seedSaveStates()` (the fixture saves into the profile). Build step: `snes.wasmBuild()`. Launch hook: `snes.saveStateOf` turns a state name or a quick-slot number into the app's launch flags and refuses a state that does not exist.
 
+`snes.copyAssetBlob({ asset: 'ct_assets.dat' })` names the source blob in the app data assets folder. It is still copied to `<ROM stem><assetExtension>` in the worktree. Without `asset`, the source has that same name.
+
 The wasm stale check and the build run are port kit's (`@drizztdourden08/brock-port-kit/ensure-wasm`), a dependency of this plugin. The plugin starts from port kit's defaults (the core under `core/`, the output in `public/wasm`) and adds the pinned SDK install and the SDK folder of the main checkout, which every worktree builds with. The save-state fixtures the vault holds may be raw core states or port kit `PKSV` containers; port kit loads both.
 
 ## Options

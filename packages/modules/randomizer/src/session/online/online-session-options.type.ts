@@ -14,4 +14,4 @@ interface OnlineSessionOptions<P, A> {
   log: RandomizerLog;
 }
 
-export type { OnlineSessionOptions, OnlineSource };
+export type { OnlineSessionOptions };

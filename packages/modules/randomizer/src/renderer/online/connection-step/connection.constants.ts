@@ -8,4 +8,4 @@ const NO_SLOT_NAME = 'Enter a slot name.';
 
 const initialConnection = (): ConnectionForm => ({ host: '', port: DEFAULT_PORT, slotName: '', password: '', deathLink: false });
 
-export { CONNECTION_STEP_ID, CONNECTION_SLICE, DEFAULT_PORT, NO_SLOT_NAME, initialConnection };
+export { CONNECTION_STEP_ID, CONNECTION_SLICE, NO_SLOT_NAME, initialConnection };

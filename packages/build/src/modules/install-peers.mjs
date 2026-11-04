@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { runPnpm } from '../run.mjs';
+import { installSpecs } from './install-specs.mjs';
 
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'));
 
@@ -29,7 +29,7 @@ const installPeers = async (rootDir, packageName) => {
   const specs = missingPeerSpecs(rootDir, packageName);
   if (!specs.length) return 0;
   console.log(`brock add: the module needs ${specs.join(', ')} in the app`);
-  return runPnpm(rootDir, ['add', ...specs]);
+  return installSpecs(rootDir, specs);
 };
 
 export { installPeers };

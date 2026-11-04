@@ -123,7 +123,7 @@ else the only app of the workspace, and run from that folder. With several apps 
 lists them. `dev`, `build` and `start` check the Electron binary first and re-run its install
 script when the postinstall was skipped or interrupted. If the binary is still missing they exit
 1 and print `pnpm install` for the repo root. They never run `pnpm install --force` themselves. Everything after `--` reaches electron-vite or the app unchanged.
-`brock add` installs with `pnpm add`.
+`brock add` installs with `pnpm add`. While a localpkg hook is on (a `.pnpmfile.cjs` holding the `localpkg: generated` marker in the app or its workspace root), `pnpm add` cannot resolve a `@drizztdourden08/*` spec, because it asks the dead scope registry before the hook runs. In that mode `brock add` writes the dependency into `package.json` as `^<version>` from the localpkg index (`$LOCALPKG_HOME`, else `~/.coord/localpkg/index.json`), then runs `pnpm install --no-frozen-lockfile`. Module peers under the scope go the same way; other peers keep `pnpm add`. A package missing from the index fails with a note to run `localpkg publish <producer>` first.
 
 ## The lint step
 

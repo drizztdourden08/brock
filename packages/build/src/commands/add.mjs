@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path';
 import { keepCrossDriveLinks, linkSpec } from '@drizztdourden08/brock-thread';
 import { CONFIG_FILE } from '../config.mjs';
 import { installPeers } from '../modules/install-peers.mjs';
+import { installSpecs } from '../modules/install-specs.mjs';
 import { packageNameOf, parseAddInput } from '../modules/registry.mjs';
 import { resolveModules } from '../modules/resolve.mjs';
 import { runPnpm } from '../run.mjs';
@@ -66,7 +67,7 @@ const runAdd = async ({ rootDir, input, local }) => {
     linkLocalModule(rootDir, knownId, packageNameOf(spec), local);
     console.log(`brock add: linked ${packageNameOf(spec)} from ${local}`);
   } else console.log(`brock add: installing ${spec}`);
-  const code = await runPnpm(rootDir, useLocal ? ['install'] : ['add', spec]);
+  const code = useLocal ? await runPnpm(rootDir, ['install']) : await installSpecs(rootDir, [spec]);
   if (code !== 0) return code;
 
   const id = knownId ?? idOfInstalled(rootDir, packageNameOf(spec));

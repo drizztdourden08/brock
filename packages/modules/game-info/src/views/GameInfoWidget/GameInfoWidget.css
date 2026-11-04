@@ -1,0 +1,30 @@
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-sm);
+}
+
+.game-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.game-info-members {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.game-info-member {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.game-info-member-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}

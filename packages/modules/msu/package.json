@@ -1,0 +1,35 @@
+{
+  "name": "@drizztdourden08/brock-msu",
+  "version": "0.120.1",
+  "description": "Brock MSU module: the shared MSU-1 and MSU-L music pack format, pack storage, the layered music player and the session that follows a running game. The game supplies its track loops, music classifier, sound channels and save paths.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/msu"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./packs": "./src/entries/packs.ts",
+    "./player": "./src/entries/player.ts",
+    "./session": "./src/entries/session.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "jszip": "^3.10.1"
+  }
+}

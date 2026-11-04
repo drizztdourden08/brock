@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
 
-type RegisteredGame = RandomizerGame<unknown, unknown>;
+type RegisteredGame = RandomizerGame<unknown>;
 
 interface RandomizerGameState {
   game: RegisteredGame | null;

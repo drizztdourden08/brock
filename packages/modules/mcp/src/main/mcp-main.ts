@@ -5,7 +5,6 @@ import { createMcpRuntime } from './create-mcp-runtime';
 import { mcpInstances } from './mcp-instances';
 import { MCP_MODULE_ID } from './mcp-main.constants';
 import { registerRoutes } from './register-routes';
-import { registerStatusHandlers } from './status-handlers';
 
 const createMcpMain = (): MainModule => ({
   id: MCP_MODULE_ID,
@@ -19,7 +18,6 @@ const createMcpMain = (): MainModule => ({
       ...MCP_BRIDGE_LIMITS,
       register: (bridge) => registerRoutes(bridge, runtime),
     });
-    registerStatusHandlers(runtime);
     ctx.on(MCP_RENDERER_CHANNEL.toolsChanged, () => runtime.changed());
   },
 });

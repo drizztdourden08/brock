@@ -2,7 +2,7 @@
 import type { BrowserWindow } from 'electron';
 import type { MainContext } from '@drizztdourden08/brock-electron/main';
 import type {
-  McpArgs, McpReply, McpSerialQueue, McpStatus, McpToolInfo, McpToolRegistry, McpToolResult,
+  McpArgs, McpReply, McpSerialQueue, McpToolInfo, McpToolRegistry, McpToolResult,
 } from '../mcp.type';
 
 interface McpHello {
@@ -10,13 +10,10 @@ interface McpHello {
   app: string;
   name: string;
   appVersion: string;
-  enabled: boolean;
 }
 
 interface McpMain {
   tools: McpToolRegistry;
-  setEnabled: (on: boolean) => void;
-  status: () => McpStatus;
 }
 
 interface RendererTools {
@@ -31,7 +28,6 @@ interface McpRuntime {
   queue: McpSerialQueue;
   renderer: RendererTools;
   mcp: McpMain;
-  isOn: () => boolean;
   changed: () => void;
 }
 

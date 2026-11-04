@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { currentRoute } from './current-route';
 import { NO_PARAMS } from './navigation.constants';
 import type { ScreenParams } from './navigation.type';
 import { navRoutes } from './nav-routes';
@@ -22,6 +23,7 @@ const nav = {
   },
   canGoBack: (): boolean => navigationSteps.canGoBack(useNavigationStore.getState()),
   active: (): string | null => useNavigationStore.getState().active,
+  route: currentRoute,
   routes: navRoutes,
   toggle: (id: string, params?: ScreenParams): void => {
     const state = useNavigationStore.getState();

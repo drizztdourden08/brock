@@ -1,8 +1,7 @@
 /* @layer core @kind types */
 import type { AskContractOf, InvokeContractOf, SendContractOf } from '@drizztdourden08/brock-core/ipc';
 import type { MCP_CHANNELS } from './mcp-channels.constants';
-import type { McpApi } from './mcp-api.type';
-import type { McpModuleOptions } from './mcp.type';
+import type { McpApi, McpModuleOptions } from './mcp.type';
 
 declare module '@drizztdourden08/brock-core/augment' {
   interface ModuleOptions {

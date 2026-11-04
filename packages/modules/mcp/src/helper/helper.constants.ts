@@ -26,7 +26,7 @@ const HELPER_TEXT = {
     'Controls a running Brock app: screenshots, input, widgets, commands and app tools. When the app is down, tools fail with a hint on how to start it. Call select_app to point at another app launch.',
   noApp: 'The helper does not know which app to reach. Pass --bridge-file=<file> or set BROCK_BRIDGE_FILE.',
   appDown: (file: string) => `The app is not running or its bridge is not reachable (looked at ${file}).`,
-  startHint: 'Start it with "pnpm start:headless -- --user-data=<folder>", using the same folder as --user-data of this helper, then call the tool again.',
+  startHint: 'Start the app with its own launch verb, for example "<app> launch main none", or plainly with "pnpm start:headless -- --user-data=<folder>". Use the same folder as --user-data of this helper, then call the tool again.',
   tooLarge: (bytes: number, max: number) => `The request is ${bytes} bytes; the most one call may carry is ${max}.`,
   protocol: (got: number, want: number) => `The app speaks MCP bridge protocol ${got} and this helper speaks ${want}. Rebuild the app and the helper from the same Brock version.`,
   selectNothing: 'Give userData, instance or file.',

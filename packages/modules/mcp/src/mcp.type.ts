@@ -87,17 +87,13 @@ interface McpToolInfo {
   destructive: boolean;
 }
 
-interface McpStatus {
-  enabled: boolean;
-  packaged: boolean;
-  tools: number;
+interface McpApi {
+  toolsChanged: () => void;
 }
 
 interface McpEnabledInput {
   isPackaged: boolean;
   options: McpModuleOptions | undefined;
-  argv: readonly string[];
-  env: Readonly<Record<string, string | undefined>>;
 }
 
 interface McpToolRegistry {
@@ -115,5 +111,5 @@ interface McpSerialQueue {
 export type {
   McpModuleOptions, McpErrorCode, McpArgs, McpImage, McpData, McpToolResult, McpReplyEnvelope, McpReply,
   McpCallContext, McpToolDescriptor, McpToolDef, McpToolSide, McpBuiltInSpec, McpJsonProperty,
-  McpJsonSchema, McpToolInfo, McpStatus, McpEnabledInput, McpToolRegistry, McpSerialQueue,
+  McpJsonSchema, McpToolInfo, McpApi, McpEnabledInput, McpToolRegistry, McpSerialQueue,
 };

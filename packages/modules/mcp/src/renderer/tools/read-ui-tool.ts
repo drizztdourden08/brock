@@ -11,7 +11,7 @@ const readUiTool = defineMcpTool({
   run: (args) => {
     const query = (argsReader.text(args, 'query') ?? '').trim().toLowerCase();
     const { nodes, truncated } = collectUiNodes(document, query, argsReader.count(args, 'max') ?? READ_UI_MAX_DEFAULT);
-    return { data: { route: nav.active(), nodes, truncated } };
+    return { data: { route: nav.route(), nodes, truncated } };
   },
 });
 

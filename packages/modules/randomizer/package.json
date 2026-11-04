@@ -19,6 +19,7 @@
     ".": "./src/index.ts",
     "./augment": "./src/augment.ts",
     "./world": "./src/world/index.ts",
+    "./memory": "./src/memory/index.ts",
     "./session": "./src/session/index.ts",
     "./tracker": "./src/tracker/index.ts",
     "./archipelago": "./src/archipelago/index.ts",

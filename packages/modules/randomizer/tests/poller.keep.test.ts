@@ -56,6 +56,22 @@ describe('location poller', { tags: ['critical'] }, () => {
     expect(poller.reported().size).toBe(0);
   });
 
+  it('rebaselines in the pass where loaded returns true', () => {
+    const memory = toyMemory();
+    const logs: string[] = [];
+    const reports: string[] = [];
+    let loaded = false;
+    const poller = createLocationPoller({ memory: memory.bridge, log: (msg) => logs.push(msg), loaded: () => loaded });
+    poller.start(ENTRIES, { report: (key) => reports.push(key), isKnownReported: (key) => key === 'a' });
+    poller.pollOnce();
+    memory.poke('ram', 0, 0x10);
+    loaded = true;
+    poller.pollOnce();
+    expect(logs).toContain('[Poller] Game load detected');
+    expect(logs).toContain('[Poller] Re-baselined: 1/3 already complete, 0 unreported');
+    expect(reports).toEqual([]);
+  });
+
   it('keeps a suppressed check out of the reports and the rebaseline', () => {
     const { memory, poller, reports } = rig();
     poller.pollOnce();

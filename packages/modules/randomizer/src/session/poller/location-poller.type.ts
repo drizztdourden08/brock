@@ -8,6 +8,7 @@ type PollerOptions = {
   memory: MemoryBridge;
   completed?(): ReadonlySet<string>;
   beforePoll?(): void;
+  loaded?(view: MemoryView): boolean;
   afterPoll?(view: MemoryView): void;
   intervalMs?: number;
   log: RandomizerLog;

@@ -10,7 +10,7 @@ const composeProfileHooks = (list: readonly (ProfileStoreHooks | undefined)[]): 
   const composed: ProfileStoreHooks = {};
   if (builders.length > 0) {
     composed.build = async (opts) => {
-      const parts = await Promise.all(builders.map((build) => build(opts)));
+      const parts = await Promise.all(builders.map(async (build) => build(opts)));
       return parts.reduce<Partial<ProfileExtension>>((acc, ext) => ({ ...acc, ...ext }), {});
     };
   }

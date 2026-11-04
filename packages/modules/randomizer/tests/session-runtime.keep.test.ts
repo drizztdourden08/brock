@@ -26,7 +26,8 @@ const fakeCore = (): FakeCore => {
       return () => listeners.delete(fn);
     },
   };
-  const game = Object.assign(Object.create(null), { id: 'toy', core });
+  const shell: unknown = Object.create(null);
+  const game = Object.assign(shell as RandomizerGame, { id: 'toy', core });
   return {
     game,
     set: (next) => {

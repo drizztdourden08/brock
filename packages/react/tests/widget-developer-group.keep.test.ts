@@ -21,7 +21,7 @@ describe('K1 the built-in Logs and Performance widgets', { tags: ['critical'] },
     expect(group !== undefined && group !== 'separator' ? keysOf(group.children ?? []) : []).toEqual(['widget-logs', 'widget-performance']);
   });
 
-  it('stay in the Widgets list while developer tools are off, so they remain reachable', () => {
-    expect(keysOf(arranged(false))).toEqual(['widget-logs', 'widget-performance']);
+  it('leave the Widgets menu while developer tools are off', () => {
+    expect(keysOf(arranged(false))).toEqual([]);
   });
 });

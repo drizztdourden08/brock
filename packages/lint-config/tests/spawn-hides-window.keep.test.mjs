@@ -19,11 +19,16 @@ describe('the spawn-hides-window rule', () => {
   it('reports a call whose options object lacks windowsHide', { tags: ['critical'] }, async () => {
     const found = await hideMessages("import { spawn } from 'node:child_process';\nspawn('git', [], { cwd: '.' });\n");
     expect(found).toHaveLength(1);
-    expect(found[0].message).toMatch(/windowsHide: true/);
+    expect(found[0].message).toMatch(/Pass windowsHide/);
   }, LINT_TIMEOUT_MS);
 
-  it('reports windowsHide false', { tags: ['critical'] }, async () => {
-    const found = await hideMessages("import { spawn } from 'child_process';\nspawn('git', [], { windowsHide: false });\n");
+  it('passes windowsHide false for a GUI app', { tags: ['critical'] }, async () => {
+    const found = await hideMessages("import { spawn } from 'child_process';\nspawn('app', [], { windowsHide: false });\n");
+    expect(found).toEqual([]);
+  }, LINT_TIMEOUT_MS);
+
+  it('reports a spread with no windowsHide key', { tags: ['critical'] }, async () => {
+    const found = await hideMessages("import { spawn } from 'child_process';\nconst base = { windowsHide: true };\nspawn('app', [], { ...base });\n");
     expect(found).toHaveLength(1);
   }, LINT_TIMEOUT_MS);
 

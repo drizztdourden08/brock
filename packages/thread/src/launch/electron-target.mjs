@@ -51,7 +51,7 @@ const startProd = (appDir, args, log) => {
   delete env.ELECTRON_RUN_AS_NODE;
   const entry = mainEntryOf(appDir) === DIST_MAIN ? '.' : DIST_MAIN;
   log(`${appDir}> electron ${entry} ${args.join(' ')}`);
-  return spawn(electron, [entry, ...args], { windowsHide: true, cwd: appDir, stdio: 'inherit', env });
+  return spawn(electron, [entry, ...args], { windowsHide: false, cwd: appDir, stdio: 'inherit', env });
 };
 
 const productionProblem = (appDir) => buildIfStale(appDir) ?? distProblem(appDir);

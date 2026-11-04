@@ -3,8 +3,8 @@ import { CHILD_PROCESS_MODULES, SPAWN_FUNCTIONS, SPAWN_HIDES_WINDOW_MESSAGE } fr
 
 const keyName = (property) => (property.key.type === 'Identifier' ? property.key.name : property.key.value);
 
-const hidesWindow = (node) => node.type === 'ObjectExpression' && node.properties.some(
-  (property) => property.type === 'Property' && !property.computed && keyName(property) === 'windowsHide' && property.value.type === 'Literal' && property.value.value === true,
+const setsWindowsHide = (node) => node.type === 'ObjectExpression' && node.properties.some(
+  (property) => property.type === 'Property' && !property.computed && keyName(property) === 'windowsHide',
 );
 
 const spawnName = (callee, named, spaces) => {
@@ -17,7 +17,7 @@ const spawnName = (callee, named, spaces) => {
 const spawnHidesWindow = {
   meta: {
     type: 'problem',
-    docs: { description: 'A child process call from node:child_process passes an options object with windowsHide: true' },
+    docs: { description: 'A child process call from node:child_process passes an options object with a windowsHide property' },
     schema: [],
     messages: { hide: SPAWN_HIDES_WINDOW_MESSAGE },
   },
@@ -34,7 +34,7 @@ const spawnHidesWindow = {
       },
       CallExpression(node) {
         const name = spawnName(node.callee, named, spaces);
-        if (name && !node.arguments.some(hidesWindow)) context.report({ node, messageId: 'hide', data: { name } });
+        if (name && !node.arguments.some(setsWindowsHide)) context.report({ node, messageId: 'hide', data: { name } });
       },
     };
   },

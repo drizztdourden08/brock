@@ -13,7 +13,7 @@ const startApp = (launch: AppLaunch): Promise<number> =>
       reject(new Error(`The app is not at ${launch.command}; it may have moved or been uninstalled.`));
       return;
     }
-    const child = spawn(launch.command, launch.args, { windowsHide: true, env: startEnv(launch.env), detached: true, stdio: 'ignore' });
+    const child = spawn(launch.command, launch.args, { windowsHide: false, env: startEnv(launch.env), detached: true, stdio: 'ignore' });
     child.once('error', reject);
     child.once('spawn', () => {
       child.unref();

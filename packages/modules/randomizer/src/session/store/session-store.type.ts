@@ -3,8 +3,9 @@ import type { RandomizerSession, SessionStatus } from '../local/randomizer-sessi
 
 interface SessionStoreState {
   session: RandomizerSession | null;
+  placement: unknown;
   status: SessionStatus;
-  setSession: (session: RandomizerSession | null) => void;
+  setSession: (session: RandomizerSession | null, placement?: unknown) => void;
   setStatus: (status: SessionStatus) => void;
 }
 

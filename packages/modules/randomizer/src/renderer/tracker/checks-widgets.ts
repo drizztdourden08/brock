@@ -2,8 +2,8 @@
 import { widgetsFromFiles } from '@drizztdourden08/brock-react';
 import type { WidgetDef } from '@drizztdourden08/brock-react';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
-import { CHECKS_WIDGET_ID } from './checks-widget.constants';
-import ChecksWidget, { meta } from './checks.widget';
+import { CHECKS_WIDGET_ID } from '../../widgets/checks.widget.constants';
+import ChecksWidget, { meta } from '../../widgets/checks.widget';
 
 const slotOf = () => useRandomizerGameStore.getState().game?.views?.checksWidget;
 

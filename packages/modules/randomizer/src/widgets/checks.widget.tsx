@@ -1,11 +1,11 @@
-/* @layer renderer-shell @kind component */
+/* @layer renderer-app @kind component */
 import type { WidgetMeta } from '@drizztdourden08/brock-react';
-import { DEFAULT_RANDOMIZER_LABELS } from '../bucket/randomizer-bucket.constants';
-import { useRandomizerGame } from '../game-registry/behavior/useRandomizerGame';
-import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
-import { ChecksView } from '../views/ChecksView';
-import { CHECKS_DOCKED_SIZE, CHECKS_FLOATING_SIZE, CHECKS_WIDGET_ICON, CHECKS_WIDGET_ID } from './checks-widget.constants';
-import { ChecksWidgetSettings } from './ChecksWidgetSettings';
+import { DEFAULT_RANDOMIZER_LABELS } from '../renderer/bucket/randomizer-bucket.constants';
+import { useRandomizerGame } from '../renderer/game-registry/behavior/useRandomizerGame';
+import { useRandomizerGameStore } from '../renderer/game-registry/behavior/useRandomizerGameStore';
+import { ChecksView } from '../renderer/views/ChecksView';
+import { CHECKS_DOCKED_SIZE, CHECKS_FLOATING_SIZE, CHECKS_WIDGET_ICON, CHECKS_WIDGET_ID } from './checks.widget.constants';
+import { ChecksWidgetSettings } from '../renderer/tracker/ChecksWidgetSettings';
 
 const ChecksWidget = () => {
   const Checks = useRandomizerGame()?.views?.Checks;

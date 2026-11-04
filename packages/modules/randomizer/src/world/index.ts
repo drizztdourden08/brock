@@ -8,3 +8,4 @@ export * from './state';
 export * from './fill';
 export * from './generate';
 export * from './define';
+export * from './options';

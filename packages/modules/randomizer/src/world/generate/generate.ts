@@ -8,7 +8,7 @@ const generate = <T extends WorldGameTypes>(
   game: RandomizerWorldGame<T>, request: T['request'],
 ): T['placement'] => {
   const limit = game.maxAttempts ?? MAX_PLACEMENT_ATTEMPTS;
-  const prep = (game.prepare ? game.prepare(request) : undefined) as T['prep'];
+  const prep = game.prepare ? game.prepare(request) : undefined;
   let lastMessage = '';
   for (let attempt = 0; attempt < limit; attempt += 1) {
     try {

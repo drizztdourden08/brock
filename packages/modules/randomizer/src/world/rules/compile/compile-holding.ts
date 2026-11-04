@@ -14,7 +14,7 @@ const compileHolding = <K extends WorldKeys>(node: HoldingNode<K>): RuleCheck<Wo
   switch (node.op) {
     case 'has': {
       const { item, count = 1 } = node;
-      if (typeof item === 'object') return (state) => state.has(String(ruleArgOf(state, item)) as K['holding'], count);
+      if (typeof item === 'object') return (state) => state.has(String(ruleArgOf(state, item)), count);
       return (state) => state.has(item, count);
     }
     case 'hasAny': {

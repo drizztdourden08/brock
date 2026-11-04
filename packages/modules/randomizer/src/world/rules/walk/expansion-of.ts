@@ -1,5 +1,4 @@
 /* @layer core @kind logic */
-import { helperDefinitionOf } from '../helper-definition-of';
 import { isPlainArg } from '../is-plain-arg';
 import type { HelperNode } from '../../types/helper-node.type';
 import type { HelperRegistry } from '../../types/helper-registry.type';

@@ -1,18 +1,17 @@
 /* @layer core @kind logic */
 import { updateReachableRegions } from './update-reachable-regions';
-import type { CollectionState, KeysOf, World, WorldKeys } from '../types';
+import type { CollectionState, World, WorldKeys } from '../types';
 
 const createCollectionState = <K extends WorldKeys>(world: World<K>): CollectionState<World<K>> => {
-  type Held = KeysOf<World<K>>['holding'];
-  const progItems = new Map<Held, number>();
+  const progItems = new Map<K['holding'], number>();
   const hooks = world.collection;
-  const add = (item: Held, delta: number): void => {
+  const add = (item: K['holding'], delta: number): void => {
     const next = (progItems.get(item) ?? 0) + delta;
     if (next <= 0) progItems.delete(item);
     else progItems.set(item, next);
   };
-  const usable = (item: Held): boolean => hooks?.isUsable === undefined || hooks.isUsable(state, item);
-  const expansionOf = (item: Held): Held | null =>
+  const usable = (item: K['holding']): boolean => hooks?.isUsable === undefined || hooks.isUsable(state, item);
+  const expansionOf = (item: K['holding']): K['holding'] | null =>
     hooks?.expandOnCollect === undefined ? null : hooks.expandOnCollect(item, progItems.get(item) ?? 0);
   const state: CollectionState<World<K>> = {
     world,

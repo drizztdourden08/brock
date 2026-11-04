@@ -1,9 +1,8 @@
 /* @layer core @kind logic */
 import { compileRuleMap } from './compile-rule-map';
 import type { HelperRegistry, ItemRule, Region, RuleOptionValue, World, WorldKeys } from '../types';
+import { ALLOW_ANY_ITEM } from './create-world-from-def.constants';
 import type { GameWorldDef } from './game-world-def.type';
-
-const ALLOW_ANY_ITEM: ItemRule = () => true;
 
 const createWorldFromDef = <K extends WorldKeys>(
   def: GameWorldDef<K>, request: { seed: string },

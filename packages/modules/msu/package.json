@@ -17,9 +17,9 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./packs": "./src/entries/packs.ts",
-    "./player": "./src/entries/player.ts",
-    "./session": "./src/entries/session.ts",
+    "./packs": "./src/entries/packs/index.ts",
+    "./player": "./src/entries/player/index.ts",
+    "./session": "./src/entries/session/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

@@ -1,12 +1,11 @@
 /* @layer core @kind logic */
-import type { MsuDebugEvent, MsuDebugOwner } from '../types';
+import type { MsuDebugOwner } from '../types';
+import type { MusicEventInput } from './record-music-event.type';
 import { MAX_EVENTS } from './music-debug.constants';
 import { musicDebugState } from './music-debug-state';
 import { notifyMusicDebug } from './notify-music-debug';
 
-type NewEvent = Omit<MsuDebugEvent, 'id' | 'at'>;
-
-const appendEvent = (event: NewEvent): void => {
+const appendEvent = (event: MusicEventInput): void => {
   const state = musicDebugState;
   state.events = [...state.events.slice(-(MAX_EVENTS - 1)), { ...event, id: state.nextId++, at: Date.now() }];
 };
@@ -23,7 +22,7 @@ const countEvent = (key: string, channel: string, label: string, owner: MsuDebug
   counters.set(key, row);
 };
 
-const recordMusicEvent = (event: NewEvent, key: string, label: string): void => {
+const recordMusicEvent = (event: MusicEventInput, key: string, label: string): void => {
   appendEvent(event);
   countEvent(key, event.channel, label, event.owner);
   notifyMusicDebug();

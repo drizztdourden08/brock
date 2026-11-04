@@ -1,6 +1,5 @@
 /* @layer core @kind logic */
 import type { FileStore } from '@drizztdourden08/brock-core';
-import type { ArchiveEntry } from '../../archive';
 import type { MsuGameConfig } from '../../config';
 import { writeTrackFile } from '../../edit';
 import type { PackEntries } from './install-msul-pack.type';

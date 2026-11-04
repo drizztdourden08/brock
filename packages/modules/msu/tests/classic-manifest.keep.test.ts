@@ -17,15 +17,15 @@ const config: MsuGameConfig = {
 };
 
 const folderStore = (names: string[]): FileStore => ({
-  list: async () => names,
-  readBytes: async () => null,
-  readText: async () => null,
-  writeBytes: async () => undefined,
-  writeText: async () => undefined,
-  remove: async () => undefined,
-  exists: async () => true,
-  mkdir: async () => undefined,
-  stat: async () => null,
+  list: () => Promise.resolve(names),
+  readBytes: () => Promise.resolve(null),
+  readText: () => Promise.resolve(null),
+  writeBytes: () => Promise.resolve(undefined),
+  writeText: () => Promise.resolve(undefined),
+  remove: () => Promise.resolve(undefined),
+  exists: () => Promise.resolve(true),
+  mkdir: () => Promise.resolve(undefined),
+  stat: () => Promise.resolve(null),
 });
 
 describe('classic folder manifest', { tags: ['critical'] }, () => {

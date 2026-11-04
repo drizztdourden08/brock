@@ -1,5 +1,13 @@
 # @drizztdourden08/create-brock
 
+## 0.119.0
+
+### Patch Changes
+
+- f3562da: Every child process Brock starts now hides its console window on Windows. Bursts of console windows no longer open on the desktop.
+- Updated dependencies [f3562da]
+  - @drizztdourden08/brock-build@0.119.0
+
 ## 0.118.2
 
 ### Patch Changes

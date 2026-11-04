@@ -4,9 +4,9 @@ import type { ReviewEnv } from '../src/review/review.type';
 import type { ScreenDef } from '../src/screens/screen.type';
 import { squareScreen } from '../src/review/widgets/square-screen';
 
-const screen = (id: string, layer?: ScreenDef['layer']): ScreenDef => ({ id, title: id, layer, render: () => null }) as ScreenDef;
+const screen = (id: string, layer?: ScreenDef['layer']): ScreenDef => ({ id, title: id, icon: null, render: () => null, ...(layer === undefined ? {} : { layer }) });
 
-const env = (screens: ScreenDef[]): ReviewEnv => ({ homeScreen: 'home', screens }) as ReviewEnv;
+const env = (screens: ScreenDef[]): Pick<ReviewEnv, 'screens' | 'homeScreen'> => ({ homeScreen: 'home', screens });
 
 describe('K1 squareScreen', { tags: ['critical'] }, () => {
   it('skips own-layer screens such as About and the home screen', () => {

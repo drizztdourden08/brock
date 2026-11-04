@@ -1,5 +1,16 @@
 # @drizztdourden08/brock-react
 
+## 0.118.0
+
+### Patch Changes
+
+- 23d2e87: The app review reads the saved widget layout where the app writes it. With a workspace active, the layout is saved under that workspace in `workspaces`, not as the profile's `widgetLayout`, so `pop-out-bounds-stored` and `pop-out-restart-restores` failed on apps with workspaces even though the bounds were saved. The checks now read the active workspace's layout.
+
+  `floating-widget-resizes` now expects the floating widget's edge to snap to the main view's edge when the grown edge lands within the float snap distance (10 pixels). The resize was right; the check ignored the snap.
+
+- e52aaa7: The app review now fits single-profile apps and buckets reached through the settings gear. It expects the document title the title bar shows, drops the Profiles menu entry under `product.singleProfile`, counts the home bucket and the settings bucket as reachable through Home and the gear, skips a bucket with no route at all, and checks full screen on the About screen.
+  - @drizztdourden08/brock-core@0.118.0
+
 ## 0.117.1
 
 ### Patch Changes

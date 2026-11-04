@@ -8,7 +8,7 @@ const composeProfileHooks = (list: readonly (ProfileStoreHooks | undefined)[]): 
   const patchable = hooks.flatMap((h) => h.patchable ?? []);
   const composed: ProfileStoreHooks = {};
   if (builders.length > 0) {
-    composed.build = (opts) => builders.reduce((acc, build) => ({ ...acc, ...build(opts) }), {});
+    composed.build = (opts) => builders.map((build) => build(opts)).reduce((acc, ext) => ({ ...acc, ...ext }));
   }
   if (hooks.some((h) => h.patchable)) composed.patchable = [...new Set(patchable)];
   if (creators.length > 0) {

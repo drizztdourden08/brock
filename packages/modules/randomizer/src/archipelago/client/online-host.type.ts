@@ -47,7 +47,7 @@ type LinkKill = 'armed' | 'down' | 'unsupported';
 interface OnlineHost {
   arm(): void;
   disarm(): void;
-  armScouted(input: ScoutedInput): readonly number[];
+  armScouted(input: ScoutedInput): readonly number[] | Set<number>;
   deliver(item: ReceivedItem): DeliverResult;
   cancelDeliveries(): void;
   onDeliveryReady(f: () => void): () => void;

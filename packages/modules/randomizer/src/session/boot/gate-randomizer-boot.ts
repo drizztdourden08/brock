@@ -9,6 +9,8 @@ const gateRandomizerBoot = async (profileId: string, config: RandomizerProfileCo
   if (factory === undefined) {
     return { ok: false, reason: `Randomizer boot blocked: no session is registered for mode ${config.mode}` };
   }
+  const blocked = factory.blockedReason?.(config) ?? null;
+  if (blocked !== null) return { ok: false, reason: `Randomizer boot blocked: ${blocked}` };
   const pending = await factory.gate(profileId, config);
   if (pending === null) {
     const what = factory.placementBacked ? 'this profile\'s seed could not be rolled' : 'the session could not be prepared';

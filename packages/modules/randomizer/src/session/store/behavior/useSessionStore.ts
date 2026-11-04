@@ -7,6 +7,7 @@ const useSessionStore = create<SessionStoreState>((set) => ({
   placement: null,
   status: 'idle',
   setSession: (session, placement = null) => set({ session, placement }),
+  setPlacement: (placement) => set({ placement }),
   setStatus: (status) => set({ status }),
 }));
 

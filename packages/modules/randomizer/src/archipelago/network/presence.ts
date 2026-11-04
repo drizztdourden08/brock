@@ -1,5 +1,5 @@
 /* @layer core @kind logic */
-import { isNonGameClient } from './is-non-game-client';
+import { isNonGameClient } from '../messages/non-game-client';
 import { playerStatusOf } from './player-status-of';
 import type { PlayerStatus } from './player-status.type';
 import type { Presence } from './presence.type';

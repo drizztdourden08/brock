@@ -1,9 +1,10 @@
 /* @layer core @kind logic */
-import type { ArchipelagoSocket } from '../protocol/socket.type';
+import { parseServerPackets } from '../handshake/parse-server-packets';
 import type { ApServerPacket } from '../protocol/server-packets.type';
-import { parseServerPackets } from './parse-server-packets';
+import { createReconnector } from '../reconnect/reconnector';
+import { openSocketLink } from '../socket/socket-link';
+import type { SocketLink } from '../socket/socket-link.type';
 import { trackerConnectPacket } from './tracker-connect-packet';
-import { TRACKER_RETRY_MAX_MS, TRACKER_RETRY_MIN_MS } from './tracker-link.constants';
 import type { TrackerLink, TrackerLinkConfig } from './tracker-link.type';
 import { wireList } from './wire-list';
 
@@ -13,45 +14,42 @@ const createTrackerLink = (config: TrackerLinkConfig): TrackerLink => {
   let total: number | null = null;
   let linked = false;
   let ended = false;
-  let socket: ArchipelagoSocket | null = null;
-  let retryMs = TRACKER_RETRY_MIN_MS;
-  let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let link: SocketLink | null = null;
 
   const handle = (packet: ApServerPacket): void => {
     if (packet.cmd === 'RoomInfo') {
-      socket?.send(JSON.stringify([trackerConnectPacket(config, packet)]));
+      link?.send(JSON.stringify([trackerConnectPacket(config, packet)]));
     } else if (packet.cmd === 'Connected') {
       checked.clear();
       for (const id of wireList(packet.checked_locations)) checked.add(id);
       total = checked.size + wireList(packet.missing_locations).length;
       linked = true;
-      retryMs = TRACKER_RETRY_MIN_MS;
+      reconnector.reset();
     } else if (packet.cmd === 'RoomUpdate') {
       for (const id of wireList(packet.checked_locations)) checked.add(id);
     } else if (packet.cmd === 'ConnectionRefused') {
       ended = true;
-      socket?.close();
+      link?.close();
     }
   };
 
   const connect = (): void => {
-    const next = createSocket(url);
-    socket = next;
-    next.onOpen(() => undefined);
-    next.onMessage((text) => {
-      for (const packet of parseServerPackets(text)) handle(packet);
-      onChange();
-    });
-    next.onClose(() => {
-      socket = null;
-      linked = false;
-      if (!ended) {
-        retryTimer = setTimeout(connect, retryMs);
-        retryMs = Math.min(retryMs * 2, TRACKER_RETRY_MAX_MS);
-      }
-      onChange();
+    link = openSocketLink([url], createSocket, {
+      onOpen: () => undefined,
+      onMessage: (text) => {
+        for (const packet of parseServerPackets(text)) handle(packet);
+        onChange();
+      },
+      onClose: () => {
+        link = null;
+        linked = false;
+        if (!ended) reconnector.schedule();
+        onChange();
+      },
     });
   };
+
+  const reconnector = createReconnector(connect);
 
   connect();
 
@@ -60,10 +58,9 @@ const createTrackerLink = (config: TrackerLinkConfig): TrackerLink => {
     get linked() { return linked; },
     close() {
       ended = true;
-      if (retryTimer !== null) clearTimeout(retryTimer);
-      retryTimer = null;
+      reconnector.stop();
       linked = false;
-      socket?.close();
+      link?.close();
     },
   };
 };

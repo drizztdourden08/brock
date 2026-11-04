@@ -30,6 +30,8 @@ export { createMemoryApStateStore } from './received/memory-ap-state-store';
 export { createReceivedIndex } from './received/received-index';
 export type { ReceivedIndex } from './received/received-index.type';
 export { settlePosition } from './received/settle-position';
+export type { ReceivedQueue, ReceivedQueueOptions, ReceivedQueueState } from './received/received-queue.type';
+export { createReceivedQueue } from './received/received-queue';
 export type { LocalSessionOptions } from './local/local-session-options.type';
 export { createLocalSession } from './local/create-local-session';
 export { createLocalSessionFactory } from './local/local-session-factory';

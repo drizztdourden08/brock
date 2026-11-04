@@ -9,7 +9,7 @@ const isOptionsSnapshot = <S extends OptionsSnapshotShape = OptionsSnapshotShape
 ): raw is S => {
   const candidate = schemaRecordOf(raw, schemas);
   return candidate !== null
-    && 
+    && typeof candidate.values === 'object' && candidate.values !== null;
 };
 
 export { isOptionsSnapshot };

@@ -9,7 +9,7 @@ const isStoredPlacement = <S extends StoredPlacementShape = StoredPlacementShape
 ): raw is S => {
   const candidate = schemaRecordOf(raw, schemas);
   return candidate !== null
-    &&  === 'object' && candidate.locations !== null
+    && typeof candidate.locations === 'object' && candidate.locations !== null
     && typeof candidate.stats === 'object' && candidate.stats !== null
     && Array.isArray(candidate.spheres);
 };

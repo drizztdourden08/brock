@@ -59,6 +59,8 @@ export type { JobHandle, JobRegistry, StartJob } from '@drizztdourden08/brock-co
 export type { ProcessAllow, ProcessAuthorize, ProcessJobDef, ProcessJobs, ProcessProgressHint, ProcessProgressParser, ProcessRunOptions, ProcessSpec, ProcessStream } from './jobs/process/process-job.type';
 export type { ProcessJobOutcome } from '@drizztdourden08/brock-core/types';
 export { captureWindow } from './handlers/capture-window';
+export { captureFrame } from './handlers/capture-frame';
+export { waitCaptureHolds } from './handlers/wait-capture-holds';
 export { collectSystemDiagnostics } from './diagnostics/collect-system-diagnostics';
 export { writeDebugZip } from './bug-report/write-debug-zip';
 export { collectDebugFiles } from './bug-report/collect-debug-files';
@@ -72,6 +74,7 @@ export type { RestartOptions, RestartWindow } from './restart/restart.type';
 export { relayAsk } from './bridge/relay-ask';
 export type { AppLaunch, AppLaunchOptions } from './bridge/app-launch.type';
 export type { AppBridge, AppBridgeOptions, HelperLaunch, RelayAskOptions } from './bridge/app-bridge.type';
+export type { BridgeExtension } from './bridge/bridge-extension.type';
 export { BridgeError } from './bridge/bridge-error';
 export type {
   BridgeArgsCheck, BridgeCall, BridgeCallHandler, BridgeConnectionListener, BridgeErrorOptions, BridgeEvent, BridgeHandler, BridgeRoute, BridgeRouteOptions, BridgeServer,

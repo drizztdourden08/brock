@@ -47,6 +47,7 @@ import { startProductTray } from '../tray/start-product-tray';
 import { bugReportTransport } from '../bug-report/bug-report-transport';
 import { fileGuard } from '../files/file-guard-state';
 import { bridgeKeyOf } from '../bridge/bridge-key';
+import { opensBridgeOnBoot } from './opens-bridge-on-boot';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
@@ -91,7 +92,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
   };
   startProductTray(ctx);
   await runMainBoot(mainBootTasks(options, armWindow(ctx, options, openWindow)), ctx);
-  if (!options.bridge || options.bridge.openOnBoot === false || !bootState.mainDone) return;
+  if (!opensBridgeOnBoot(options.bridge, ctx.bridge.extensionsAskForBoot()) || !bootState.mainDone) return;
   await ctx.bridge.open().catch((error: unknown) => ctx.log(`the bridge did not open: ${stackOf(error)}`, 'error'));
 };
 

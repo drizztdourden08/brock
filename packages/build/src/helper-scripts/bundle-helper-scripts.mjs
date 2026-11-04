@@ -1,6 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { importFromApp } from '../import-from-app.mjs';
-import { helperEntries } from './helper-entries.mjs';
+import { plannedHelpers } from './planned-helpers.mjs';
 import { helperViteConfig } from './helper-vite-config.mjs';
 
 /**
@@ -9,10 +9,10 @@ import { helperViteConfig } from './helper-vite-config.mjs';
  * @returns {Promise<string[]>} the helper names, built
  */
 const bundleHelperScripts = async (rootDir, config) => {
-  const helpers = helperEntries(rootDir, config.helpers);
+  const helpers = plannedHelpers(rootDir, config);
   if (helpers.length === 0) return [];
   const vite = await importFromApp(rootDir, 'vite');
-  for (const helper of helpers) await vite.build(helperViteConfig(rootDir, config.build, helper));
+  for (const helper of helpers) await vite.build(helperViteConfig(rootDir, config.build, helper, config.product?.id));
   return helpers.map(({ name }) => name);
 };
 

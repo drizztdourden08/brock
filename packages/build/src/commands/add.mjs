@@ -8,6 +8,8 @@ import { installSpecs } from '../modules/install-specs.mjs';
 import { packageNameOf, parseAddInput } from '../modules/registry.mjs';
 import { resolveModules } from '../modules/resolve.mjs';
 import { runPnpm } from '../run.mjs';
+import { addTargetAlias } from './add-target-alias.mjs';
+import { ADD_TARGET_ALIASES } from './platform.constants.mjs';
 import { runSync } from './sync.mjs';
 
 const MODULES_ARRAY = /(modules:\s*\[)([^\]]*)(\])/;
@@ -61,6 +63,7 @@ const runAdd = async ({ rootDir, input, local }) => {
     console.error('Usage: brock add <id | package-spec> [--local <brockRepo>]');
     return 1;
   }
+  if (ADD_TARGET_ALIASES.includes(input)) return addTargetAlias(rootDir, input, local);
   const { spec, id: knownId } = parseAddInput(input);
   const useLocal = Boolean(local && knownId);
   if (useLocal) {

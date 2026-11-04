@@ -29,6 +29,7 @@ brock clang-format [--check]
                            rewrite the C sources of gate.clangFormat to the managed .clang-format, or list
                            the files that differ with --check
 brock add <id | spec>      install a module package, record its id, sync
+brock add mobile           same as platform add mobile (Capacitor and Android; a target, not a module)
 brock dev [-- args]        electron-vite dev; pre-bundles the renderer dependencies first when they are missing
 brock build [-- args]      electron-vite build; copies the brand icon set first when icons.brand is set
 brock package [--full] [--channel <name>]

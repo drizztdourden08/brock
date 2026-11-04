@@ -18,6 +18,7 @@ Usage:
                              the files that differ with --check
   brock add <id | spec> [--local <brockRepo>]
                              install a module package (or link it from a Brock checkout), record its id, sync
+  brock add mobile           same as platform add mobile: wires Capacitor and the Android project (a target, not a module)
   brock dev [--live-brock] [args]
                              electron-vite dev; unknown options and anything after -- reach it; syncs first
                              when .brock is missing or stale, and stops when the renderer entry misses a file;

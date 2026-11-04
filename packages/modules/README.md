@@ -1,7 +1,7 @@
 <!-- @layer docs @kind doc -->
 # Brock modules
 
-Optional modules live here, one package each. Each carries a `package.json#brock` manifest and is installed into an app with `brock add <id>`. The workspace glob `packages/modules/*` points here.
+Optional modules live here, one package each. Each carries a `package.json#brock` manifest and is installed into an app with `brock add <id>`. The workspace glob `packages/modules/*` points here. Capacitor is not a module: it comes from `brock add mobile`, which runs the android platform.
 
 | Module | Holds |
 |---|---|

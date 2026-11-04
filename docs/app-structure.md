@@ -560,7 +560,7 @@ product: defineProduct({
 }),
 ```
 
-- The key is the module id. An id the app does not list in `modules` has no effect.
+- Each key is a module id. An id the app does not list in `modules` has no effect.
 - A module with a `helpers` entry ships that helper in a packaged build only when its options say `packaged: true`. The same flag decides whether Electron's `RunAsNode` fuse turns on for it.
 - The `mcp` module reads `{ dev?: boolean = true, packaged?: boolean = false }`. See `packages/modules/mcp/README.md`.
 

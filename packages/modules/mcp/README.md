@@ -1,6 +1,6 @@
 # Brock mcp
 
-Lets an AI agent drive the running app over MCP: screenshots, mouse and keyboard input, widgets, commands and tools the app defines itself. A stdio helper (`brock-mcp`) talks to the app over the Brock bridge. There is no HTTP port. The contract is in `docs/architecture.md`, "Agent control (MCP)".
+Lets an outside agent drive the running app over MCP: screenshots, mouse and keyboard input, widgets, commands and tools the app defines itself. A stdio helper (`brock-mcp`) talks to the app over the Brock bridge. There is no HTTP port. The contract is in `docs/architecture.md`, "Agent control (MCP)".
 
 ## Setup
 
@@ -24,7 +24,7 @@ product: defineProduct({
 | `dev` | `true` | On in an unpackaged run (`brock dev`, `brock start`). `false` turns it off there. |
 | `packaged` | `false` | `true` turns it on in a packaged build, ships the helper in `resources/helpers` and keeps Electron's `RunAsNode` fuse on for it. |
 
-Point the agent at the helper. For Claude Code, a `.mcp.json` at the repo root, with the path to the app folder and its user data folder:
+Point the agent at the helper. For example, a `.mcp.json` at the repo root, with the path to the app folder and its user data folder:
 
 ```json
 {

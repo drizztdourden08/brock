@@ -502,7 +502,7 @@ Brock chose the bundled Node through `ELECTRON_RUN_AS_NODE` because the user nee
 
 ### Agent control (MCP)
 
-The `mcp` module (`@drizztdourden08/brock-mcp`, `brock add mcp`) lets an AI agent drive the running app through the Model Context Protocol. It is the first user of module helpers and bridge extensions.
+The `mcp` module (`@drizztdourden08/brock-mcp`, `brock add mcp`) lets an outside agent drive the running app through the Model Context Protocol. It is the first user of module helpers and bridge extensions.
 
 Transport. No HTTP and no TCP. The agent's MCP config runs the stdio helper `dist/helpers/brock-mcp.mjs` (a packaged build runs the app executable with `ELECTRON_RUN_AS_NODE=1`). The helper finds the discovery file with `bridgeFileFor` from `--user-data=<dir>`, `--instance=<name>`, `--bridge-file=<path>` or `BROCK_BRIDGE_FILE`, connects with `connectBridge` (which follows a restarted app) and speaks MCP over stdio with `@modelcontextprotocol/sdk` 1.32.1. The SDK lives only in `src/helper` and is inlined by the helper build. Main and the renderer never import it. The helper is app agnostic: it takes the app's id from `process.env.BROCK_HELPER_APP`, which the helper bundle defines as the product id.
 

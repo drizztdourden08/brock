@@ -17,7 +17,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./main": "./src/main/index.ts",
+    "./aspect-ratio": "./src/aspect-ratio/index.ts",
+    "./main":"./src/main/index.ts",
     "./preload": "./src/preload/index.ts",
     "./renderer": "./src/renderer/index.ts",
     "./package.json": "./package.json"

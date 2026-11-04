@@ -10,7 +10,8 @@ const onLocationInfo = (ctx: OnlineContext, packet: PacketOf<'LocationInfo'>): v
   if (room.scouted || room.reading === null) return;
   const input = scoutedInputOf(ctx, wireList(packet.locations));
   deps.placed(room.reading.placement(input));
-  room.serverGrants = new Set(host.armScouted(input));
+  const grants = host.armScouted(input);
+  room.serverGrants = grants instanceof Set ? grants : new Set(grants);
   room.scouted = true;
   releaseHeldReceived(ctx);
   host.startPolling();

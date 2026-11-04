@@ -3,11 +3,10 @@ import type { OnlineContext } from '../client/online-context.type';
 import { acceptsRoom } from '../room/accepts-room';
 import { deliverOne } from './deliver-one';
 import type { PacketOf } from './packet-handlers.type';
+import { FIRST_INDEX } from './receive-items.constants';
 import { receivedItemsOf } from './received-items-of';
 import { requestSync } from './request-sync';
 import { resyncWhenReady } from './resync-when-ready';
-
-const FIRST_INDEX = 0;
 
 const receiveItems = (ctx: OnlineContext, packet: PacketOf<'ReceivedItems'>): void => {
   const { room, host, deps } = ctx;

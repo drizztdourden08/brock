@@ -4,6 +4,7 @@ import { createNetworkFacts } from './facts';
 import { createLifecycle } from './network-lifecycle';
 import type { NetworkMonitor, NetworkMonitorDeps } from './network-monitor.type';
 import { buildNetworkStatus } from './network-status';
+import { notifyListeners } from './notify-listeners';
 import { observeServer } from './observe-server';
 import { createPinger } from './ping';
 import { createPresence } from './presence';
@@ -19,11 +20,7 @@ const createNetworkMonitor = (deps: NetworkMonitorDeps): NetworkMonitor => {
   let address: string | null = null;
   let current: OnlineConnection | null = null;
 
-  const emit = (): void => {
-    for (const listener of listeners) {
-      try { listener(); } catch { continue; }
-    }
-  };
+  const emit = (): void => notifyListeners(listeners);
   const changed = (): void => {
     if (!pinging && facts.connection === 'connected' && facts.slot !== null) {
       pinging = true;

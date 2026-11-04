@@ -1,8 +1,7 @@
 /* @layer core @kind logic */
 import type { OnlineContext } from '../client/online-context.type';
 import type { ReceivedItem } from '../client/online-host.type';
-
-type DeliverStep = 'next' | 'stop';
+import type { DeliverStep } from './deliver-one.type';
 
 const settleNow = (ctx: OnlineContext, item: ReceivedItem): void => {
   const { received } = ctx.deps;
@@ -34,4 +33,3 @@ const deliverOne = (ctx: OnlineContext, item: ReceivedItem): DeliverStep => {
 };
 
 export { deliverOne };
-export type { DeliverStep };

@@ -1,11 +1,6 @@
 /* @layer core @kind logic */
 import type { ClientKit } from './client-kit.type';
-
-interface CheckReporter {
-  reportCheck(locationId: number): void;
-  reportGoal(): void;
-  checkedLocations(): ReadonlySet<number>;
-}
+import type { CheckReporter } from './create-check-reporter.type';
 
 const createCheckReporter = (kit: ClientKit): CheckReporter => ({
   reportCheck(locationId) {
@@ -21,4 +16,3 @@ const createCheckReporter = (kit: ClientKit): CheckReporter => ({
 });
 
 export { createCheckReporter };
-export type { CheckReporter };

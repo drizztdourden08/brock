@@ -5,7 +5,7 @@ import { writeStorage } from '../storage/write-storage';
 import { cacheKey } from './cache-key';
 import { KEY_PREFIX, LEGACY_KEY_PREFIX } from './data-package.constants';
 
-const parseOrNull = (raw: string | null): unknown | null => {
+const parseOrNull = (raw: string | null): unknown => {
   if (!raw) return null;
   try {
     return JSON.parse(raw);

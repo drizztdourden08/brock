@@ -12,10 +12,15 @@ const freshUuid = (): string => {
   return `brock-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 };
 
-const clientUuid = (): string => {
+const legacyOrFresh = (): string => {
+  const legacy = readStorage(LEGACY_UUID_KEY);
+  return legacy === null || legacy === '' ? freshUuid() : legacy;
+};
+
+const clientUuid =(): string => {
   const stored = readStorage(UUID_KEY);
   if (stored) return stored;
-  const next = readStorage(LEGACY_UUID_KEY) || freshUuid();
+  const next = legacyOrFresh();
   if (writeStorage(UUID_KEY, next)) return next;
   pageOnlyUuid.uuid ??= next;
   return pageOnlyUuid.uuid;

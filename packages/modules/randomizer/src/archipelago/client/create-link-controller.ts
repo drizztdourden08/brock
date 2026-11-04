@@ -2,12 +2,11 @@
 import { createReconnector } from '../reconnect/reconnector';
 import type { ClientKit } from './client-kit.type';
 import type { LinkController } from './link-controller.type';
+import { MS_PER_SECOND } from './create-link-controller.constants';
 import { makeCleanup } from './make-cleanup';
 import { makeCloseHandler } from './make-close-handler';
 import { makeConnect } from './make-connect';
 import type { OnlineContext } from './online-context.type';
-
-const MS_PER_SECOND = 1000;
 
 const createLinkController = (kit: ClientKit, getContext: () => OnlineContext): LinkController => {
   const { state } = kit;

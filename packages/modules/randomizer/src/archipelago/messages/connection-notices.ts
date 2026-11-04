@@ -6,20 +6,29 @@ import { noticeOf } from './notice-of';
 import type { OnlineNotice } from './notice.type';
 import { playerPart } from './player-part';
 
+const connectedNotice = (slotName: string, everConnected: boolean): OnlineNotice =>
+  everConnected
+    ? noticeOf('connection', [{ text: 'Reconnected to the room' }])
+    : noticeOf('connection', [{ text: 'Connected to the room as ' }, playerPart(slotName)]);
+
+const reconnectingNotice = (lost: boolean): OnlineNotice =>
+  lost
+    ? noticeOf('connection', [{ text: 'Connection lost, reconnecting' }])
+    : noticeOf('connection', [{ text: 'Could not reach the server, retrying' }]);
+
+const endedNotice = (error: string | undefined): OnlineNotice =>
+  noticeOf('connection', [{ text: error ? error.replace(LOG_PREFIX, '') : 'Connection ended' }]);
+
 const noticeOfChange = (from: ConnectionState, update: ConnectionUpdate, everConnected: boolean): OnlineNotice | null => {
   const { state, error, slotName = '' } = update;
   switch (state) {
     case 'connected':
-      return everConnected
-        ? noticeOf('connection', [{ text: 'Reconnected to the room' }])
-        : noticeOf('connection', [{ text: 'Connected to the room as ' }, playerPart(slotName)]);
+      return connectedNotice(slotName, everConnected);
     case 'reconnecting':
-      return from === 'connected' || everConnected
-        ? noticeOf('connection', [{ text: 'Connection lost, reconnecting' }])
-        : noticeOf('connection', [{ text: 'Could not reach the server, retrying' }]);
+      return reconnectingNotice(from === 'connected' || everConnected);
     case 'refused':
     case 'closed':
-      return noticeOf('connection', [{ text: error ? error.replace(LOG_PREFIX, '') : 'Connection ended' }]);
+      return endedNotice(error);
     case 'idle':
     case 'connecting':
       return null;

@@ -1,8 +1,6 @@
-/* @layer renderer-shell @kind logic */
+/* @layer renderer-shell @kind constants */
 import type { WidgetPrefItem } from '@drizztdourden08/brock-react';
 import { DEFAULT_REFRESH_HZ, DEFAULT_SECTION_IDS, REFRESH_CHOICES, SECTION_IDS } from '../game-info.constants';
-
-const toChoice = (value: string) => ({ value, label: value });
 
 const GAME_INFO_PREFS: readonly WidgetPrefItem[] = [
   {
@@ -25,7 +23,7 @@ const GAME_INFO_PREFS: readonly WidgetPrefItem[] = [
     key: 'sections',
     label: 'Sections',
     description: 'Which sections the widget lists.',
-    control: { kind: 'multi', options: SECTION_IDS.map(toChoice) },
+    control: { kind: 'multi', options: SECTION_IDS.map((value) => ({ value, label: value })) },
     default: [...DEFAULT_SECTION_IDS],
   },
 ];

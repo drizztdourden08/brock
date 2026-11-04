@@ -9,6 +9,7 @@ import { watchCoreCrash } from '../src/renderer/core/watch-core-crash';
 import { createSaveSlots } from '../src/renderer/saves/create-save-slots';
 import { createSramSync } from '../src/renderer/saves/create-sram-sync';
 import { createLiveSettings } from '../src/renderer/settings/create-live-settings';
+import { createPortSession } from '../src/renderer/session/create-port-session';
 import { createSaveStore } from '../src/saves/create-save-store';
 import { decodeSaveSlot } from '../src/saves/decode-save-slot';
 import { fakeCore } from './fakes/fake-core';
@@ -188,5 +189,29 @@ describe('K1 save transform hooks', { tags: ['critical'] }, () => {
     expect(kinds).toEqual(['quick', 'auto']);
     expect(await saves.load({ kind: 'quick', slot: 1 })).toBe(true);
     expect(Array.from(loaded[0] ?? [])).toEqual([5, 5]);
+  });
+});
+
+describe('K1 prepareAssets hook', { tags: ['critical'] }, () => {
+  const sessionOf = (prepare: (assets: Uint8Array) => Promise<Uint8Array | null>) => {
+    const { core } = fakeCore(testPort({ extensions: ['.sfc'], known: {} }), new Uint8Array(0));
+    const started: Uint8Array[] = [];
+    const watched = { ...core, start: vi.fn((request: { assets: Uint8Array }) => { started.push(request.assets); return Promise.resolve(); }), state: () => ({ status: 'error' as const, error: null }) };
+    const { files, disk } = memoryFiles();
+    disk.set('assets/game.dat', new Uint8Array([1, 2]));
+    const session = createPortSession({ core: watched, canvas: document.createElement('canvas'), files, romFile: 'game.sfc', prepareAssets: prepare });
+    return { session, started, start: watched.start };
+  };
+
+  it('returns false before core.start when the hook returns null', async () => {
+    const { session, start } = sessionOf(() => Promise.resolve(null));
+    expect(await session.start()).toBe(false);
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('hands the returned bytes to core.start', async () => {
+    const { session, started } = sessionOf((assets) => Promise.resolve(new Uint8Array([...assets, 9])));
+    await session.start();
+    expect(Array.from(started[0] ?? [])).toEqual([1, 2, 9]);
   });
 });

@@ -9,6 +9,13 @@ import type { FrameLoop, FramePresenter } from '../frame/frame.type';
 import type { SaveSlots, SaveTransform, SramSync } from '../saves/save-session.type';
 import type { LiveSettings } from '../settings/live-settings.type';
 
+interface PrepareContext {
+  profileId: string | null;
+  romFile: string;
+}
+
+type PrepareAssets = (assets: Uint8Array, ctx: PrepareContext) => Promise<Uint8Array | null>;
+
 interface PortSessionOptions<S> {
   core: GameCore<S>;
   canvas: HTMLCanvasElement;
@@ -23,6 +30,7 @@ interface PortSessionOptions<S> {
   onAssetProgress?: AssetProgress;
   saveTransform?: SaveTransform;
   saveFormat?: SaveSlotFormat;
+  prepareAssets?: PrepareAssets;
 }
 
 interface AttachRequest {
@@ -50,4 +58,4 @@ interface PortSession<S> {
   setPaused: (paused: boolean) => void;
 }
 
-export type { PortSessionOptions, AttachRequest, SessionParts, PortSession };
+export type { PrepareContext, PrepareAssets, PortSessionOptions, AttachRequest, SessionParts, PortSession };

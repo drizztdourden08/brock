@@ -70,6 +70,15 @@ describe('K3 createProfileStore', { tags: ['critical'] }, () => {
     expect(same).toEqual({ lastProfileId: 'p2', firstRun: 'done' });
   });
 
+  it('awaits an async build and writes no profile folder when it rejects', async () => {
+    const files = memoryFileStore();
+    const failing = createProfileStore(files, { build: () => Promise.reject(new Error('roll failed')) });
+    await expect(failing.create({ name: 'Bad' })).rejects.toThrow('roll failed');
+    expect(await files.list('profiles')).toEqual([]);
+    const working = createProfileStore(files, { build: () => Promise.resolve({ romFile: 'c.sfc' }) });
+    expect((await working.create({ name: 'Good' })).romFile).toBe('c.sfc');
+  });
+
   it('refuses an unsafe profile id', async () => {
     const store = createProfileStore(memoryFileStore());
     await expect(store.load('../etc')).rejects.toThrow('Unsafe profile id');

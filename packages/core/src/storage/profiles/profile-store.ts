@@ -36,7 +36,7 @@ const createProfileStore = (files: FileStore, hooks: ProfileStoreHooks = {}): Pr
       name: opts.name,
       created: now,
       lastPlayed: now,
-      ...(hooks.build?.(opts) ?? {}),
+      ...((await hooks.build?.(opts)) ?? {}),
     } as Profile;
     await files.mkdir(profileDir(profile.id));
     await writeJson(files, profileFile(profile.id), profile);

@@ -110,7 +110,7 @@ interface SettingsControlProps<S extends object> {
   defaults?: S;
   onChange: SettingsPatch<S>;
   renderControl?: RenderControl<S>;
-  isDisabled?: (key: string, settings: S) => boolean;
+  isDisabled?: (key: string, settings: S, lock: SettingLockCause | null) => boolean;
   lockCauseOf?: (key: string, settings: S) => SettingLockCause | null;
   lockOverlay?: (props: LockOverlayProps) => ReactNode;
 }

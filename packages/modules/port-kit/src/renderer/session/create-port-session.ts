@@ -18,8 +18,10 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
 
   const start = async (): Promise<boolean> => {
     const assets = await createAssetCache(files, roms, core.definition).load(romFile, options.onAssetProgress);
+    const ready = options.prepareAssets ? await options.prepareAssets(assets, { profileId, romFile }) : assets;
+    if (ready === null) return false;
     const sram = profileId ? await store.sram.read(profileId) : null;
-    await core.start({ assets, canvas, config, sram, extraFiles, log });
+    await core.start({ assets: ready, canvas, config, sram, extraFiles, log });
     if (core.state().status !== 'running') return false;
     parts = attachSessionParts({ core, canvas, audio, sram: store.sram, profileId });
     if (settings.last() !== null) settings.reassert();

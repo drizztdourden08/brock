@@ -44,7 +44,7 @@ export { createSaveSlots } from './saves/create-save-slots';
 export type { SramSource, SramSyncOptions, SramSync, SaveTransform, SaveSlotsOptions, SaveSlots } from './saves/save-session.type';
 
 export { createPortSession } from './session/create-port-session';
-export type { PortSessionOptions, PortSession } from './session/port-session.type';
+export type { PrepareContext, PrepareAssets, PortSessionOptions, PortSession } from './session/port-session.type';
 
 export { GameCanvas } from './components/GameCanvas';
 export type { GameCanvasProps } from './components/GameCanvas';

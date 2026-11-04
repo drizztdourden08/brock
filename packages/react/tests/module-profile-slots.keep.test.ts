@@ -48,7 +48,7 @@ describe('M1 module profile slots', { tags: ['critical'] }, () => {
     const moduleHooks: ProfileStoreHooks = { build: () => first, patchable: ['x', 'y'], onCreate: async () => { calls.push('module'); await Promise.resolve(); } };
     const appHooks: ProfileStoreHooks = { build: () => second, patchable: ['y', 'z'], onCreate: async () => { calls.push('app'); await Promise.resolve(); } };
     const composed = composeProfileHooks([moduleHooks, undefined, appHooks]);
-    expect(composed.build?.({ name: 'n' })).toEqual({ romFile: 'a.sfc', language: 'app' });
+    expect(await composed.build?.({ name: 'n' })).toEqual({ romFile: 'a.sfc', language: 'app' });
     expect([...(composed.patchable ?? [])].sort()).toEqual(['x', 'y', 'z']);
     await composed.onCreate?.({ id: 'p', name: 'n' } as Profile, {} as FileStore);
     expect(calls).toEqual(['module', 'app']);

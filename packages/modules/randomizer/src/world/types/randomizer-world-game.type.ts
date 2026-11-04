@@ -11,8 +11,8 @@ interface RandomizerWorldGame<T extends WorldGameTypes = WorldGameTypes> {
   placementSchemas: SchemaSet;
   optionSchemas: SchemaSet;
   maxAttempts?: number;
-  prepare?: (request: T['request']) => T['prep'];
-  build: (ctx: { request: T['request']; prep: T['prep']; rng: Rng; attempt: number }) => T['build'];
+  prepare?(request: T['request']): T['prep'];
+  build(ctx: { request: T['request']; prep: T['prep']; rng: Rng; attempt: number }): T['build'];
   fillPhases: readonly FillPhase<T['build']>[];
   finish: (done: {
     build: T['build'];

@@ -21,9 +21,9 @@ interface GameWorldDef<K extends WorldKeys = WorldKeys> {
   itemRules?: ReadonlyMap<K['location'], ItemRule<K>>;
   helpers?: readonly HelperDefinition<World<K>>[];
   collection?: CollectionHooks<World<K>>;
-  options?: (request: { seed: string }) => Readonly<Record<string, RuleOptionValue>>;
-  goal: (state: CollectionState<World<K>>) => boolean;
-  buildPool: (ctx: DefPoolContext<K>) => DefPool<K>;
+  options?(request: { seed: string }): Readonly<Record<string, RuleOptionValue>>;
+  goal(state: CollectionState<World<K>>): boolean;
+  buildPool(ctx: DefPoolContext<K>): DefPool<K>;
   fillPhases?: readonly FillPhase<FillBuild<World<K>>>[];
 }
 

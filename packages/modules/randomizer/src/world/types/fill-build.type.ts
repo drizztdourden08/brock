@@ -6,7 +6,7 @@ interface FillBuild<W extends World = World> {
   world: W;
   progression: KeysOf<W>['item'][];
   rest: KeysOf<W>['item'][];
-  eligible: () => KeysOf<W>['location'][];
+  eligible(): KeysOf<W>['location'][];
   relaxWhenBeatable: boolean;
 }
 

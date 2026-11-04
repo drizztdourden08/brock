@@ -7,7 +7,7 @@ interface FillRestrictiveInput<W extends World = World> {
   items: KeysOf<W>['item'][];
   locations: KeysOf<W>['location'][];
   assumedItems?: readonly KeysOf<W>['item'][];
-  allowedAt?: (item: KeysOf<W>['item'], location: KeysOf<W>['location']) => boolean;
+  allowedAt?(item: KeysOf<W>['item'], location: KeysOf<W>['location']): boolean;
   relaxWhenBeatable?: boolean;
 }
 

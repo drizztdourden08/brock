@@ -16,7 +16,7 @@ const PRODUCT = { id: 'demo', name: 'Demo', appId: 'com.example.demo', ports: { 
 
 const brockOf = (brand?: 'brock'): BrockContextValue => ({
   product: defineProduct(brand ? { ...PRODUCT, icons: { brand } } : PRODUCT),
-  ...{ home: 'library', homeScreen: 'library', tabs: [], settingsControls: {}, menu: [], shortcuts: [], screenTree: null, moduleIds: [] },
+  ...{ home: 'library', homeScreen: 'library', tabs: [], settingsControls: {}, menu: [], shortcuts: [], screenTree: null, moduleIds: [], profileModes: [], profileWizardSteps: [] },
   logoSrc: 'logo.png',
   instanceLogoSrc: '',
 });

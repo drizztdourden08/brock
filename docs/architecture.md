@@ -1078,6 +1078,15 @@ useContextMenu('canvas', {
 return <canvas {...commandZone('canvas')} {...contextMenuZone('canvas', { focusable: true })} />;
 ```
 
+## Profile slots
+
+A `RendererModule` can add four things to the profile and settings engine, and `mergeModules` collects each as an array in module order.
+
+- `profileModes`: `ProfileModeDef { id, label, monogram, rank, matches(profile, config) }`. `resolveProfileMode(modes, profile, config)` tries the highest rank first, ties keep registration order, and the fallback mode uses rank 0 and always matches. `useProfileModes()` returns the module modes followed by the app's `profileModes` prop of `BrockApp`.
+- `profileWizardSteps`: `ProfileWizardStepDef { id, slice, initial, before?, step, Body, toCreate? }`. Each step owns one key (`slice`) of the wizard values. `placeWizardSteps(appSteps, moduleSteps)` inserts a step before the app step named by `before` (default `review`, else the end). `wizardInitialSlices` builds the starting values and `wizardCreateOptions` merges every `toCreate` into the create options in module order. `useModuleWizardSteps()` reads them.
+- `lockCauses`: `LockCauseProvider { id, order, causeOf(key, settings) }`. `composeLockCauses` sorts by `order` (ties keep registration order) and the first non-null cause wins. `LOCK_CAUSE_ORDER` names the slots: app 0, host 100, developer 200, module 300, parity 400. `settings.lockCauses` on `BrockApp` adds the app providers, and the old `settings.lockCauseOf` still works as a provider with order 0.
+- `profileHooks`: a `ProfileStoreHooks` object. `BrockApp` passes `composeProfileHooks([...moduleHooks, props.profileHooks])` to the renderer store, so the app comes last and its `build` keys win, `patchable` is a union and `onCreate` runs in order. A module that augments `ProfileExtension` registers the same hooks on the main side with `MainModule.profileHooks`.
+
 ## Accessibility
 
 The shell gives every app landmarks, a region shortcut and an announcer, so a keyboard or screen reader user can move around without the app doing anything.

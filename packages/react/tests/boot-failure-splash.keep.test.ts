@@ -12,7 +12,7 @@ import { createWebFactory } from '../src/platform/hosts/web-factory';
 
 const BROCK: BrockContextValue = {
   product: defineProduct({ id: 'demo', name: 'Demo', appId: 'com.example.demo', ports: { base: 35800 }, description: 'A test app.', author: { name: 'tester', email: 'tester@example.com' } }),
-  home: 'home', tabs: [], settingsControls: {}, menu: [], homeScreen: 'home', shortcuts: [], screenTree: null, logoSrc: '', instanceLogoSrc: '', moduleIds: [],
+  home: 'home', tabs: [], settingsControls: {}, menu: [], homeScreen: 'home', shortcuts: [], screenTree: null, logoSrc: '', instanceLogoSrc: '', moduleIds: [], profileModes: [], profileWizardSteps: [],
 };
 
 const platformWith = (desktop: boolean): Platform => {

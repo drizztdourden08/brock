@@ -31,6 +31,8 @@ import type { DeveloperToolsSource } from '../../developer-tools/developer-tools
 import type { CommandDef } from '../../commands/command.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { MenuBarMenu } from '../../menu-bar/menu-bar.type';
+import type { ProfileModeDef } from '../../profiles/modes/profile-mode.type';
+import type { LockCauseProvider } from '../../settings/lock-causes/lock-cause-provider.type';
 
 type BrockAppLayout = 'menu' | 'rail';
 
@@ -42,6 +44,7 @@ interface BrockAppSettings<S extends object> extends SettingsControls<S> {
   effects?: SettingsEffect<S>[];
   normalise?: SettingsNormalise<S>;
   transformPatch?: SettingsPatchTransform<S>;
+  lockCauses?: readonly LockCauseProvider<S>[];
 }
 
 interface BrockAppProfiles {
@@ -65,6 +68,7 @@ interface BrockAppProps<S extends object> {
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
   profileHooks?: ProfileStoreHooks;
+  profileModes?: readonly ProfileModeDef[];
   profiles?: BrockAppProfiles;
   dataDomains?: readonly DataDomainDef[];
   homeScreen?: string;

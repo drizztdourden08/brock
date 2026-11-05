@@ -1,0 +1,32 @@
+/* @layer renderer-shell @kind style */
+.msu-track-row {
+  min-height: var(--size-28);
+}
+
+.msu-track-row__main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+  text-align: start;
+}
+
+.track-list > .msu-track-row--selected.track-list__item {
+  background: var(--c-selected);
+  box-shadow: inset var(--border-width-thick) 0 0 var(--c-primary);
+}
+
+.msu-track-row__file {
+  flex: 0 1 auto;
+  max-width: calc(14 * var(--text-base));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--c-text-dim);
+}
+
+.msu-track-row__file--empty {
+  color: var(--c-text-muted);
+}

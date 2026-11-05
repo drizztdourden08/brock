@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page that shows what the player has found and what is left in a randomized game.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: 'c8d5932d3b008b22',
   avoidWhen: [
     { case: 'A plain list of rows with no grouping or filters.', use: 'Card' },
   ],

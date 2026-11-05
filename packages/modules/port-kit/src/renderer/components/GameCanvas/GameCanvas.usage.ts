@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A game port needs a focusable surface to render frames into.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '653828e1c6bdff7b',
   avoidWhen: [
     { case: 'A chart or a drawing the app owns, not a game frame.', use: 'Card' },
   ],

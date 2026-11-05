@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'The profile wizard step where a player picks the Archipelia lobby to join.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '67e1e2b7aca42eb3',
   avoidWhen: [
     { case: 'A plain Archipelago server with host, port and password.', use: 'Field' },
   ],

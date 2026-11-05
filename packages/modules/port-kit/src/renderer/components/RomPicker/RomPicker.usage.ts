@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A game port needs the player to bring a ROM before it can start.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '1a0e92634b20e3b9',
   avoidWhen: [
     { case: 'Picking any file with a folder dialog and a result line.', use: 'Button' },
     { case: 'A text input for a path or a name.', use: 'Field' },

@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page that shows the options a seed was rolled with.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'A form that edits settings.', use: 'Field' },
   ],

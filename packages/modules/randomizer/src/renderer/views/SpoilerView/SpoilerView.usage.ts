@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page that shows where things were placed in the seed.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'A list of the checks the player has found.', use: 'Card' },
   ],

@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A dashboard that shows a few numbers at a glance, such as checks found or time played.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: 'f74054298dace3fc',
   avoidWhen: [
     { case: 'One number with a chart of its own.', use: 'Card' },
   ],

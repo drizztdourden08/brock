@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A game port runs on touch devices and needs its menu reachable without a menu bar.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '8660b6519271fd0e',
   avoidWhen: [
     { case: 'A drawer for content that is not the app menu.', use: 'Dialog' },
     { case: 'A menu that opens from one button.', use: 'DropdownMenu' },

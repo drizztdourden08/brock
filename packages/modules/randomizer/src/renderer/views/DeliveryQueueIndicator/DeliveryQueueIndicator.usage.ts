@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'The play screen of an online game, so the player sees what is coming in.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '0a5364a8de325c6b',
   avoidWhen: [
     { case: 'A message the player must answer.', use: 'Dialog' },
   ],

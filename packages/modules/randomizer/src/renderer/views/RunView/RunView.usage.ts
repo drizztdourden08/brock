@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'The home page of a randomizer profile.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'A page of unrelated settings.', use: 'Card' },
   ],

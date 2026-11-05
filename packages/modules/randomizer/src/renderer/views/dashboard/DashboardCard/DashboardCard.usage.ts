@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A dashboard or run page lays out panels in a grid.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: 'cdc3f1d4d9d65661',
   avoidWhen: [
     { case: 'A card that is not inside a dashboard grid.', use: 'Card' },
   ],

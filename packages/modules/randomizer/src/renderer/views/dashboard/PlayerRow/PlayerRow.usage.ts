@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A list of the players of an online room.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '6ff32ef425c165b8',
   avoidWhen: [
     { case: 'A row that is not about a player.', use: 'Card' },
   ],

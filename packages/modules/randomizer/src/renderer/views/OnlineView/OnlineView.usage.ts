@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page where the player sets how the run behaves online.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'A single on or off setting with no card.', use: 'Field' },
   ],

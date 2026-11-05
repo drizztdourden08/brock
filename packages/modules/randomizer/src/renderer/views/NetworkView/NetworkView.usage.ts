@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page that shows the state of the Archipelago connection.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'One small status line.', use: 'Card' },
   ],

@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'A page that shows what happened during the run and lets an online player chat.',
   ],
-  propsHash: '0000000000000000',
+  propsHash: '69a6789bb8733db8',
   avoidWhen: [
     { case: 'A log of the app itself, not the run.', use: 'Card' },
   ],

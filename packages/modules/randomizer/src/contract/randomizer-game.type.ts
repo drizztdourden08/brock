@@ -15,6 +15,7 @@ import type { RollContext } from './roll-context.type';
 import type { WorldStamp } from './world-stamp.type';
 import type { PlacementSummary } from './placement-summary.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
+import type { InventoryProvider } from './inventory.type';
 import type { RandomizerGameMode } from './randomizer-game-mode.type';
 import type { RandomizerLabels } from './randomizer-labels.type';
 import type { RandomizerLogText } from './randomizer-log-text.type';
@@ -44,6 +45,7 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   labels?: Partial<RandomizerLabels>;
   logText?: Partial<RandomizerLogText>;
   modes?: readonly RandomizerGameMode[];
+  inventory?: InventoryProvider;
 };
 
 export type { RandomizerGame };

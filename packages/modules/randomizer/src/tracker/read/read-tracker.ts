@@ -18,7 +18,7 @@ const readTracker = <P>(provider: TrackerProvider<P>, input: TrackerInput<P>): T
   collectHeld(state, [...input.held, ...assumedItems]);
   provider.prime?.(state, input);
   const available = availableLocations(state, world, input.checked);
-  const statuses = statusMap(world, input.checked, available);
+  const statuses = provider.statusesOf?.(input) ?? statusMap(world, input.checked, available);
   return {
     world,
     statuses,

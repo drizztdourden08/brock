@@ -132,3 +132,5 @@ export * from './lobby';
 export * from './export';
 export * from './ap-ids';
 export * from './player-yaml';
+export * from './world-model';
+export * from './pre-rolled';

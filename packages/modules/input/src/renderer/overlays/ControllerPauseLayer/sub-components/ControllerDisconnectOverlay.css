@@ -1,0 +1,64 @@
+/* @layer renderer-components @kind style */
+.controller-disconnect-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-scrim);
+  z-index: var(--z-panel);
+  animation: fade-in-overlay 0.3s ease-out;
+}
+
+@keyframes fade-in-overlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.controller-disconnect-overlay__card {
+  background: var(--c-surface);
+  border: var(--border-width-thick) solid var(--c-danger);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl) var(--space-2xl);
+  text-align: center;
+  max-width: calc(400 * var(--size-1));
+  box-shadow: 0 0 var(--size-40) var(--c-danger);
+}
+
+.controller-disconnect-overlay__icon {
+  font-size: var(--text-display);
+  margin-bottom: var(--space-md);
+  opacity: 0.8;
+}
+
+.controller-disconnect-overlay__title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--c-danger);
+  margin: 0 0 var(--space-sm);
+}
+
+.controller-disconnect-overlay__message {
+  font-size: var(--text-base);
+  color: var(--c-text);
+  margin: 0 0 var(--space-lg);
+}
+
+.controller-disconnect-overlay__actions {
+  font-size: var(--text-base);
+  color: var(--c-text-dim);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.controller-disconnect-overlay__actions p {
+  margin: 0;
+}
+
+.controller-disconnect-overlay__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}

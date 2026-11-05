@@ -1,0 +1,29 @@
+/* @layer renderer-shell @kind style */
+.controller-pause-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-scrim-game);
+  backdrop-filter: blur(var(--size-2));
+  z-index: var(--z-panel);
+  animation: controller-pause-fade-in 0.25s ease-out;
+}
+
+@keyframes controller-pause-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.controller-pause-layer__icon {
+  display: flex;
+  gap: var(--space-xl);
+}
+
+.controller-pause-layer__bar {
+  width: calc(36 * var(--size-1));
+  height: calc(120 * var(--size-1));
+  border-radius: var(--radius-md);
+  background: var(--c-border-strong);
+}

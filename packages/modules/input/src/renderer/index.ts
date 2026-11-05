@@ -118,3 +118,15 @@ export type { PositionalCaptureRecord } from '../views/InputTester/sub-component
 export { ControllerDirectory } from '../views/ControllerDirectory';
 export { ControllerLogs } from '../views/ControllerLogs';
 export { ControllerDiagnostics } from '../views/ControllerDiagnostics';
+export {
+  ControllerPauseLayer, decidePauseOverlay, useControllerPause, CONTROLLER_PRESENCE_DELAY_MS, MANUAL_PAUSE_NAME,
+} from './overlays/ControllerPauseLayer';
+export type {
+  ControllerPauseLayerProps, ControllerPauseSource, PauseChangeListener, PauseOverlayKind, PauseState,
+} from './overlays/ControllerPauseLayer';
+export { ProfileSwitcherOverlay } from './overlays/ProfileSwitcherOverlay';
+export type { ProfileSwitcherEntry, ProfileSwitcherOverlayProps } from './overlays/ProfileSwitcherOverlay';
+export {
+  ControllerReportHost, createControllerHooksBootTask, registerControllerHooks, reportDeviceCardAction, useControllerReportStore,
+} from './controller-hooks';
+export type { ControllerHooksConfig, ControllerReportHostProps, ControllerReportState } from './controller-hooks';

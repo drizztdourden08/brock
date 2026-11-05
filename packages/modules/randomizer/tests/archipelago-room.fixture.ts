@@ -9,8 +9,6 @@ const OTHER_GAME = 'Other';
 const OTHER_NAME = 'Zelda';
 const OTHER_SLOT = 2;
 const SERVER_VERSION = { major: 0, minor: 6, build: 3, class: 'Version' };
-const BOTH_ONLINE = '2 players of 2 connected :: Team #1: Me Zelda';
-const OTHER_OFFLINE = '1 players of 2 connected :: Team #1: Me (Zelda)';
 const otherGameData = {
   item_name_to_id: { 'Other Sword': 500 },
   location_name_to_id: { 'Other Place': 900 },
@@ -69,10 +67,6 @@ const playerAt = (rig: Rig, slot: number): NetworkPlayer => {
   return player;
 };
 
-const commandResult = (text: string): Record<string, unknown> => ({
-  cmd: 'PrintJSON', type: 'CommandResult', data: [{ text }],
-});
-
 const presencePacket = (type: 'Join' | 'Part', tags: string[] = []): Record<string, unknown> => ({
   cmd: 'PrintJSON', type, team: 0, slot: OTHER_SLOT, tags, data: [{ text: `${OTHER_NAME} ${type}` }],
 });
@@ -93,7 +87,7 @@ const trackerConnect = (rig: Rig): unknown => {
 };
 
 export {
-  BOTH_ONLINE, OTHER_GAME, OTHER_NAME, OTHER_OFFLINE, OTHER_SLOT, SERVER_VERSION,
-  bootRoom, commandResult, pairRoom, playerAt, presencePacket, reopen, soloRoom,
+  OTHER_GAME, OTHER_NAME, OTHER_SLOT, SERVER_VERSION,
+  bootRoom, pairRoom, playerAt, presencePacket, reopen, soloRoom,
   trackerConnect, trackerSocket, trackingConnection,
 };

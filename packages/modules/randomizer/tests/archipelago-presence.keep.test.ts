@@ -2,12 +2,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { clientUuid } from '../src/archipelago';
 import { clientStatusKey } from '../src/archipelago/network/client-status-key';
-import { SETTLE_AFTER_MS } from '../src/archipelago/network/roster.constants';
 import { createRig } from './archipelago-client.fixture';
 import type { Rig } from './archipelago-client.fixture';
 import {
-  BOTH_ONLINE, OTHER_OFFLINE, SERVER_VERSION, bootRoom, commandResult, pairRoom, playerAt, presencePacket,
-  trackerConnect, trackerSocket, trackingConnection,
+  SERVER_VERSION, bootRoom, pairRoom, playerAt, presencePacket, trackerConnect, trackerSocket, trackingConnection,
 } from './archipelago-room.fixture';
 
 afterEach(() => {
@@ -33,35 +31,33 @@ describe('archipelago presence', { tags: ['critical'] }, () => {
     expect(playerAt(rig, 2).status).toBe('goal');
   });
 
-  it('lets the players reply decide who is online and keeps it out of the log', () => {
+  it('never sends a Say and reads online as null until a Join says otherwise', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom);
-    expect(rig.sent('Say')).toEqual([{ cmd: 'Say', text: '!players' }]);
-    rig.sockets.last().receive([{ cmd: 'Retrieved', keys: { [otherKey]: 5 } }]);
+    expect(rig.sent('Say')).toEqual([]);
+    expect(playerAt(rig, 2).online).toBeNull();
+    rig.sockets.last().receive([presencePacket('Join')]);
     expect(playerAt(rig, 2).online).toBe(true);
-    rig.sockets.last().receive([commandResult(OTHER_OFFLINE)]);
-    expect(rowsOf(rig)[1]).toEqual(['Zelda', 'unknown', false]);
-    expect(rig.client.messages().map(({ text }) => text)).not.toContain(OTHER_OFFLINE);
+    rig.sockets.last().receive([presencePacket('Part')]);
+    expect(playerAt(rig, 2).online).toBe(false);
   });
 
   it('ignores the Join and Part of a tracker link', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom);
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    rig.sockets.last().receive([presencePacket('Join')]);
     const stopped = { ...presencePacket('Part'), data: [{ text: 'Zelda (Team #1) has stopped tracking the game.' }] };
-    rig.sockets.last().receive([presencePacket('Join', ['Tracker', 'NoText']), stopped]);
+    rig.sockets.last().receive([presencePacket('Part', ['Tracker', 'NoText']), stopped]);
     expect(playerAt(rig, 2).online).toBe(true);
-    rig.sockets.last().receive([presencePacket('Part')]);
-    expect(playerAt(rig, 2).online).toBe(false);
   });
 });
 
 describe('archipelago tracker links', { tags: ['critical'] }, () => {
-  it('opens a tracker link for the other player once the roster answers', () => {
+  it('opens a tracker link for the other player right after Connected', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));
-    expect(rig.sockets.sockets).toHaveLength(1);
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    expect(rig.sent('Say')).toEqual([]);
+    expect(rig.sockets.sockets).toHaveLength(2);
     expect(trackerSocket(rig).url).toBe('ws://localhost:38281');
     trackerSocket(rig).open();
     trackerSocket(rig).receive([pairRoom.info]);
@@ -73,29 +69,19 @@ describe('archipelago tracker links', { tags: ['critical'] }, () => {
     ]);
   });
 
-  it('opens the links after the settle time when the server never answers', () => {
-    const rig = createRig();
-    bootRoom(rig, pairRoom, trackingConnection(rig));
-    vi.advanceTimersByTime(SETTLE_AFTER_MS - 1);
-    expect(rig.sockets.sockets).toHaveLength(1);
-    vi.advanceTimersByTime(1);
-    expect(rig.sockets.sockets).toHaveLength(2);
-  });
-
   it('opens no link when tracking other players is off', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom);
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
-    vi.advanceTimersByTime(SETTLE_AFTER_MS);
+    vi.advanceTimersByTime(10000);
     expect(rig.sockets.sockets).toHaveLength(1);
   });
 });
 
 describe('archipelago tracker links across a reconnect', { tags: ['critical'] }, () => {
-  it('closes the links on a drop and reopens them with a new roster query after the reconnect', () => {
+  it('closes the links on a drop and reopens them after the reconnect', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    rig.sockets.last().receive([presencePacket('Join')]);
     expect(playerAt(rig, 2).online).toBe(true);
     rig.sockets.sockets[0]?.drop();
     expect(trackerSocket(rig).closed).toBe(true);
@@ -103,8 +89,7 @@ describe('archipelago tracker links across a reconnect', { tags: ['critical'] },
     vi.advanceTimersByTime(1000);
     rig.sockets.last().open();
     for (const packet of [pairRoom.info, pairRoom.data, pairRoom.connected]) rig.sockets.last().receive([packet]);
-    expect(rig.sent('Say')).toHaveLength(2);
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    expect(rig.sent('Say')).toEqual([]);
     expect(rig.sockets.sockets).toHaveLength(4);
     expect(rig.sockets.last().closed).toBe(false);
   });
@@ -112,7 +97,6 @@ describe('archipelago tracker links across a reconnect', { tags: ['critical'] },
   it('shows the checked and total locations of a linked player', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
     expect(playerAt(rig, 2)).toMatchObject({ checked: null, total: null });
     trackerSocket(rig).open();
     trackerSocket(rig).receive([pairRoom.info]);
@@ -123,7 +107,6 @@ describe('archipelago tracker links across a reconnect', { tags: ['critical'] },
   it('closes the tracker links when the client closes', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));
-    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
     expect(trackerSocket(rig).closed).toBe(false);
     rig.client.close();
     expect(trackerSocket(rig).closed).toBe(true);

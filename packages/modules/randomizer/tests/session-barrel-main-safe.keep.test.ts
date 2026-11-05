@@ -35,7 +35,7 @@ const offends = (file: string): boolean => {
   return source.includes('@drizztdourden08/brock-react') || source.includes('@layer renderer-shell');
 };
 
-describe('session barrel', () => {
+describe('session barrel', { tags: ['critical'] }, () => {
   it('stays main-process safe', () => {
     const entry = resolve(__dirname, '../src/session/index.ts');
     expect(reached(entry).filter(offends)).toEqual([]);

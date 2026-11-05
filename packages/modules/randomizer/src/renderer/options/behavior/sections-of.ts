@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { OptionDef } from '../../../../world/options/option-def.type';
+import type { OptionDef } from '../../../world/options/option-def.type';
 
 const sectionsOf = (catalog: readonly OptionDef[]): ReadonlyArray<readonly [string, readonly OptionDef[]]> => {
   const groups = new Map<string, OptionDef[]>([['', []]]);

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Field, Select, Stack, Text, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
-import { FROZEN_HINT } from '../../OptionsStepBody.constants';
+import { FROZEN_HINT } from '../../OptionsPanel.constants';
 import type { OptionFieldProps } from './OptionField.type';
 
 const OptionField = ({ option, value, onChange }: OptionFieldProps) => {

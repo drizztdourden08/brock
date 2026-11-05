@@ -1,11 +1,18 @@
 /* @layer renderer-shell @kind logic */
 import type { CheckRow, RowFilter } from './check-row.type';
 
-const filterRows = (rows: readonly CheckRow[], { filter, search }: RowFilter): CheckRow[] => {
-  const needle = search.trim().toLowerCase();
+const facetsMatch = (row: CheckRow, { facets, facetMode }: RowFilter): boolean => {
+  if (facets.length === 0) return true;
+  return facetMode === 'all' ? facets.every((id) => row.facets.includes(id)) : facets.some((id) => row.facets.includes(id));
+};
+
+const filterRows = (rows: readonly CheckRow[], filter: RowFilter): CheckRow[] => {
+  const needle = filter.search.trim().toLowerCase();
   return rows.filter((row) => {
-    if (filter !== 'all' && row.status !== filter) return false;
-    return needle === '' || `${row.label} ${row.item ?? ''}`.toLowerCase().includes(needle);
+    if (filter.status !== 'all' && row.status !== filter.status) return false;
+    if (filter.kind !== 'all' && row.kind !== filter.kind) return false;
+    if (!facetsMatch(row, filter)) return false;
+    return needle === '' || `${row.label} ${row.itemLabel ?? ''}`.toLowerCase().includes(needle);
   });
 };
 

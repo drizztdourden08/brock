@@ -26,10 +26,14 @@ const ChecksView = (props: ChecksViewProps) => {
   if (provider === undefined) return <EmptyState message={NO_TRACKER_MESSAGE} />;
   if (reading === null || feed === null) return <EmptyState message={NO_READING_MESSAGE} />;
   const [grouping] = prefs.grouping;
-  const [filter] = prefs.filter;
-  const [showItems] = prefs.showItems;
+  const [status] = prefs.filter;
+  const [kind] = prefs.kind;
+  const [facets] = prefs.facets;
+  const [facetMode] = prefs.facetMode;
+  const [viewMode] = prefs.viewMode;
   const [expanded, setExpanded] = prefs.expanded;
-  const rows = rowsOf({ provider, reading, feed, marks, grouping, showItems });
+  const rows = rowsOf({ provider, reading, feed, marks, grouping });
+  const shown = filterRows(rows, { status, kind, facets, facetMode, search });
 
   return (
     <Stack gap="md">
@@ -41,7 +45,7 @@ const ChecksView = (props: ChecksViewProps) => {
         prefs={prefs}
         active={assumed ?? [...initialAssumed(provider)]}
       />
-      <ChecksGroups root={groupRows(filterRows(rows, { filter, search }))} expanded={expanded} onExpanded={setExpanded} onToggle={toggle} />
+      <ChecksGroups root={groupRows(shown)} viewMode={viewMode} expanded={expanded} onExpanded={setExpanded} onToggle={toggle} />
     </Stack>
   );
 };

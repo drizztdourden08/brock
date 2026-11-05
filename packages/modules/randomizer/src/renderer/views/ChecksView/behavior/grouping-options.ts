@@ -7,7 +7,7 @@ const groupingOptions = (provider: TrackerProvider<unknown>): SegmentOption[] =>
   const base = Object.keys(BASE_GROUPINGS).filter((id) => id !== 'sphere' || provider.sphereOf !== undefined);
   return [
     ...base.map((id) => ({ value: id, label: BASE_GROUPINGS[id] })),
-    ...(provider.groupings ?? []).map((grouping) => ({ value: grouping.id, label: grouping.label })),
+    ...(provider.groupings ?? []).map((grouping) => ({ value: grouping.id, label: grouping.label, title: grouping.description })),
   ];
 };
 

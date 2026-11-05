@@ -102,7 +102,7 @@ describe('archipelago tracker links across a reconnect', { tags: ['critical'] },
     expect(playerAt(rig, 2).online).toBeNull();
     vi.advanceTimersByTime(1000);
     rig.sockets.last().open();
-    rig.sockets.last().receive([pairRoom.info, pairRoom.connected]);
+    for (const packet of [pairRoom.info, pairRoom.data, pairRoom.connected]) rig.sockets.last().receive([packet]);
     expect(rig.sent('Say')).toHaveLength(2);
     rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
     expect(rig.sockets.sockets).toHaveLength(4);

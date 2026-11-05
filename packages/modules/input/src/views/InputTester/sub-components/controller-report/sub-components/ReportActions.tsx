@@ -12,7 +12,7 @@ const ReportActions = (props: ReportDialogPartProps) => {
       <>
         <Button variant="secondary" onClick={closeForm}>Close</Button>
         {filed.recordUrl && <Button variant="secondary" onClick={openRecord}>{recordLinkLabel}</Button>}
-        <Button variant="primary" onClick={openIssue}>Open on GitHub</Button>
+        {filed.issueUrl !== '' && <Button variant="primary" onClick={openIssue}>Open on GitHub</Button>}
       </>
     );
   }

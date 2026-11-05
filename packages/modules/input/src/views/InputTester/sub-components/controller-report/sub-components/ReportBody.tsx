@@ -14,7 +14,7 @@ const ReportBody = (props: ReportDialogPartProps) => {
     return (
       <>
         <Text as="p">Thanks, your report was filed.</Text>
-        <Text as="p" className="controller-report__result-url">{filed.issueUrl}</Text>
+        {filed.issueUrl !== '' && <Text as="p" className="controller-report__result-url">{filed.issueUrl}</Text>}
       </>
     );
   }

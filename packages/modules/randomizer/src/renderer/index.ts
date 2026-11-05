@@ -103,3 +103,8 @@ export { writePlacement } from '../session/placement/write-placement';
 export { gateRandomizerBoot } from '../session/boot/gate-randomizer-boot';
 export { startSessionRuntime } from '../session/boot/start-session-runtime';
 export { appRandomizerLog } from '../session/log/app-randomizer-log';
+export {
+  ArchipeliaConnection, ArchipeliaFields, buildLobbyFacts, lobbyConnectionFieldsOf, lobbyFormOfConnection, lobbyLineOf, lobbyRowChip,
+  lobbyRowsOf, lobbyStatusLine, randomizerFactsOf,
+} from './profile-tab/archipelia';
+export type { ArchipeliaConnectionProps, ArchipeliaFieldsProps, LobbyForm, LobbyStatusLine } from './profile-tab/archipelia';

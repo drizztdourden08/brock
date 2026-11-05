@@ -19,3 +19,10 @@ export { resumeMembership } from './watch/resume-membership';
 export { resumeMemberships } from './watch/resume-memberships';
 export { loadBuildsIndex, worldPackageFor } from './world-package';
 export type { WorldPackageBuild } from './world-package';
+export { LobbySetup } from './LobbySetup';
+export type { LobbyAccess, LobbyLineState, LobbyRow, LobbySetupProps } from './LobbySetup';
+export {
+  EMPTY_LOBBY_DRAFT, browseServersOf, connectModeOf, lobbyRefOf, lobbyServerOf, useBrowsedLobbies, useBundledVersions, useLanServers,
+  useLobbyCheck, useNetworkAccess,
+} from './lobby-setup';
+export type { LobbyConnect, LobbyDraft, LobbyLocation } from './lobby-setup';

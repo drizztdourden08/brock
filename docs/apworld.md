@@ -8,11 +8,11 @@ An Archipelago server imports a small Python package, an apworld, for every game
 - `@drizztdourden08/brock-randomizer` in the app, with an `ApExportSource` for the game (the module's `./archipelago` export).
 - `brock apworld build`, from `@drizztdourden08/brock-build`.
 
-## Step 1: write the JSON export
+## Write the JSON export
 
 Call `exportApWorld(source)` from `@drizztdourden08/brock-randomizer/archipelago`. It returns six files as a map from file name to data: `game.json`, `locations.json`, `regions.json`, `items.json`, `rules.json` and `options.json`. Write each one into a folder, by default `build/apworld-data` in the app. A small script of your own does it; run it with whatever loads your game's TypeScript.
 
-## Step 2: build the apworld
+## Build the apworld
 
 ```sh
 brock apworld build --ap-version 0.6.2 --ap-version 0.6.3

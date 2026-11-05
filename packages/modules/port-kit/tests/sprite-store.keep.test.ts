@@ -5,7 +5,8 @@ import { spriteBaseUrl } from '../src/sprites/sprite-base-url';
 import { memoryFiles } from './fakes/memory-files';
 
 const bytes = new Uint8Array([1, 2, 3]);
-const buffers = [{ name: 'a.png', bytes }, { name: 'b.png', bytes }];
+const first = { name: 'a.png', bytes };
+const buffers = [first, { name: 'b.png', bytes }];
 const stamp = { file: 'stamp.txt', parse: (text: string | null) => text?.trim() ?? null };
 const store = createSpriteStore({ manifest: { expected: ['a.png', 'b.png'], stamp } });
 
@@ -25,7 +26,7 @@ describe('K3 sprite store', { tags: ['critical'] }, () => {
 
   it('lists the expected files that are absent', async () => {
     const { files } = memoryFiles();
-    await store.write(files, 'game.sfc', [buffers[0]]);
+    await store.write(files, 'game.sfc', [first]);
     expect(await store.missing(files, 'game.sfc')).toEqual(['b.png']);
     expect(await store.check(files, 'game.sfc')).toEqual({ extracted: false, count: 1 });
   });
@@ -33,7 +34,7 @@ describe('K3 sprite store', { tags: ['critical'] }, () => {
   it('is stale when files are partial or the stamp differs', async () => {
     const { files } = memoryFiles();
     expect(await store.isStale(files, 'game.sfc', '2')).toBe(false);
-    await store.write(files, 'game.sfc', [buffers[0]]);
+    await store.write(files, 'game.sfc', [first]);
     expect(await store.isStale(files, 'game.sfc', '2')).toBe(true);
     await store.write(files, 'game.sfc', buffers);
     await files.writeText('sprites/game/stamp.txt', '1');

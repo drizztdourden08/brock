@@ -1,34 +1,16 @@
 /* @layer renderer-shell @kind component */
-import { PasswordInput } from '@drizztdourden08/tessera/composites';
-import { Button, Field, Grid, Stack, Text, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
-import { textPatch } from '../behavior/text-patch';
-import { useServerCheck } from '../behavior/useServerCheck';
-import { CONNECTION_TEXT, CONNECTION_TEXT_FIELDS } from './ConnectionStepBody.constants';
+import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
+import { formOf } from '../../../wizard/form-of';
+import { forwardPatch } from './behavior/forward-patch';
+import { ServerFields } from './sub-components/ServerFields';
 import type { ConnectionStepBodyProps } from './ConnectionStepBody.type';
 
-const ConnectionStepBody = ({ value, onChange }: ConnectionStepBodyProps) => {
-  const { phase, message, check } = useServerCheck(value);
-  return (
-    <Stack gap="md">
-      <Grid columns={2} gap="md">
-        {CONNECTION_TEXT_FIELDS.map((key) => (
-          <Field key={key} label={CONNECTION_TEXT[key]}>
-            <TextInput type="text" value={value[key]} onChange={(e) => onChange(textPatch(key, e.target.value))} />
-          </Field>
-        ))}
-        <Field label={CONNECTION_TEXT.password}>
-          <PasswordInput value={value.password} onChange={(password) => onChange({ password })} />
-        </Field>
-      </Grid>
-      <Toggle label={CONNECTION_TEXT.deathLink} checked={value.deathLink} onChange={(deathLink) => onChange({ deathLink })} />
-      <Stack gap="sm">
-        <Button variant="secondary" size="sm" onClick={check} loading={phase === 'checking'} disabled={phase === 'checking'}>
-          {CONNECTION_TEXT.check}
-        </Button>
-        {message !== null && <Text variant="caption">{message}</Text>}
-      </Stack>
-    </Stack>
-  );
+const ConnectionStepBody = (props: ConnectionStepBodyProps) => {
+  const { values, onChange } = props;
+  const form = formOf(values);
+  const GameBody = useRandomizerGame()?.views?.connection?.[form.mode];
+  if (GameBody) return <GameBody value={form} values={values} onChange={forwardPatch(onChange)} />;
+  return <ServerFields {...props} />;
 };
 
 export { ConnectionStepBody };

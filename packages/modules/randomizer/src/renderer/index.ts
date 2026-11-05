@@ -47,3 +47,7 @@ export { OnlineView } from './views/OnlineView';
 export type { RegisterOptions } from './game-registry/register-options.type';
 export type { ChecksPrefs, ChecksViewProps } from './views/ChecksView';
 export type { TrackerFeedInput } from './tracker/feed/tracker-feed-state.type';
+export { useOptionTab } from './options/behavior/useOptionTab';
+export { randomizerReviewSections } from './options/review/randomizer-review-sections';
+export { useRollProgress } from './profile-hooks/roll-progress';
+export type { OptionTabModel, OptionTabItem } from './options/behavior/option-tab-model.type';

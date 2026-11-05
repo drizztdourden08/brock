@@ -14,7 +14,7 @@ const useAsideTab = (narrow: boolean, select: (id: string) => void): AsideTab =>
   };
   if (!Aside) return { extra: [], choose };
   if (!narrow) return { Side: Aside, extra: [], choose };
-  const label = views?.optionsAsideLabel ?? ASIDE_TAB_LABEL;
+  const label = views.optionsAsideLabel ?? ASIDE_TAB_LABEL;
   return { Body: picked ? Aside : undefined, extra: [{ id: ASIDE_TAB_ID, label }], choose };
 };
 

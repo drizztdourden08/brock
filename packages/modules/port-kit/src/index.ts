@@ -28,6 +28,15 @@ export type { AssetChunk, AssetExtractor, AssetPacker, AssetProgress, AssetPipel
 export type { AssetCache } from './assets/asset-cache.type';
 export type { AssetStepReport, AssetWorkerStep, AssetWorkerSteps, AssetWorkerStepDef } from './assets/worker/asset-worker.type';
 
+export { createSpriteStore } from './sprites/create-sprite-store';
+export { spriteBaseUrl } from './sprites/sprite-base-url';
+export { spriteDigestOf } from './sprites/sprite-digest-of';
+export { DEFAULT_SPRITE_SCHEME } from './sprites/sprites.constants';
+export type {
+  SpriteStamp, SpriteManifest, ExtractionReceipt, SpriteBuffer, SpriteCheck, SpriteRemoval, SpriteUrlOptions,
+  SpriteStore, SpriteStoreOptions,
+} from './sprites/sprites.type';
+
 export { encodeSaveSlot } from './saves/encode-save-slot';
 export { decodeSaveSlot } from './saves/decode-save-slot';
 export { saveSlotPaths } from './saves/save-slot-paths';

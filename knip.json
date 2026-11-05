@@ -88,6 +88,9 @@
       ]
     },
     "packages/modules/*": {
+      "entry": [
+        "src/**/*.usage.ts"
+      ],
       "project": [
         "src/**/*.{ts,tsx}"
       ]

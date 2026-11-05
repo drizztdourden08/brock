@@ -1,0 +1,14 @@
+/* @layer renderer-shell @kind constants */
+import type { StatusTone } from '@drizztdourden08/tessera/primitives';
+import type { MembershipState } from '../../archipelia/membership/membership.type';
+
+const ROW_CHIPS: Readonly<Record<MembershipState['kind'], { label: string; tone: StatusTone } | null>> = {
+  pending: { label: 'Waiting', tone: 'warning' },
+  failed: { label: 'Waiting', tone: 'warning' },
+  approved: { label: 'Approved', tone: 'success' },
+  refused: { label: 'Refused', tone: 'danger' },
+  gone: { label: 'Lobby gone', tone: 'danger' },
+  started: null,
+};
+
+export { ROW_CHIPS };

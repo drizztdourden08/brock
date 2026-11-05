@@ -1,7 +1,7 @@
 /* @layer tooling-scripts @kind logic */
-import { readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { DEFAULT_DATA_DIR, DEFAULT_OUT_DIR } from './apworld.constants.mjs';
+import { readAppVersion } from './read-app-version.mjs';
 
 /**
  * @param {string} id The product id
@@ -21,7 +21,7 @@ const moduleOf = (id) => {
 const apworldJob = (rootDir, config, options) => {
   const versions = options.ap ?? [];
   if (!versions.length) throw new Error('give at least one Archipelago version: --ap-version 0.6.2 (repeat it, oldest first)');
-  const appVersion = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')).version;
+  const appVersion = readAppVersion(rootDir);
   return {
     dataDir: resolve(rootDir, options.data ?? DEFAULT_DATA_DIR),
     outDir: resolve(rootDir, options.out ?? DEFAULT_OUT_DIR),

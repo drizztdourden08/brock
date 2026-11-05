@@ -1,4 +1,5 @@
 /* @layer core @kind types */
+import type { RandomizerLanApi } from './lan-host-api.type';
 import type { LobbySocketEvent } from './lobby-socket-event.type';
 import type { SaveArchipelagoFilesRequest, SaveArchipelagoFilesResult } from './save-files.type';
 
@@ -11,6 +12,7 @@ type RandomizerLobbySocketApi = {
 
 type RandomizerHostApi = {
   lobbySocket: RandomizerLobbySocketApi;
+  lan: RandomizerLanApi;
   saveArchipelagoFiles: (request: SaveArchipelagoFilesRequest) => Promise<SaveArchipelagoFilesResult>;
 };
 

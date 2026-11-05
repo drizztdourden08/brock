@@ -1,18 +1,12 @@
 /* @layer electron-main @kind barrel */
 import '../augment';
-import type { MainModule } from '@drizztdourden08/brock-electron/main';
-import { registerLobbySocketHandlers } from './lobby-socket/register-lobby-socket-handlers';
-import { randomizerMainHooks } from './randomizer-main-hooks';
-import { registerSaveFilesHandler } from './save-files/register-save-files-handler';
+import { createRandomizerMain } from './create-randomizer-main';
 
-const randomizerMain: MainModule = {
-  id: 'randomizer',
-  register: (ctx) => {
-    registerLobbySocketHandlers(ctx);
-    registerSaveFilesHandler(ctx);
-  },
-  profileHooks: randomizerMainHooks,
-};
+const randomizerMain = createRandomizerMain();
 
 export default randomizerMain;
-export { randomizerMain };
+export { randomizerMain, createRandomizerMain };
+export { launchRendererFlags } from './launch-flags/launch-renderer-flags';
+export { parseLobbyJoin, parseApConnect } from '../archipelago/launch-flags';
+export type { RandomizerMainOptions } from './main-options.type';
+export type { FirewallStatus, MdnsBrowser, MdnsEngine, MdnsFactory, MdnsService } from './lan/lan.type';

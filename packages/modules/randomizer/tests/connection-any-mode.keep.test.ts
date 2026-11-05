@@ -15,7 +15,7 @@ const Body: ConnectionBody = () => null;
 const register = (views: RandomizerViews): void =>
   useRandomizerGameStore.getState().register({ id: 'toy', views } as RandomizerGame<unknown>);
 
-const lobbyViews = (entry: ConnectionBody | ConnectionView): RandomizerViews => ({ connection: { [LOBBY]: entry } }) as RandomizerViews;
+const lobbyViews = (entry: ConnectionBody | ConnectionView): RandomizerViews => ({ connection: { [LOBBY]: entry } });
 
 const valuesFor = (mode: RandomizerModeId, connection: Record<string, unknown> = {}) => ({
   randomizer: { enabled: true, seed: '', mode },

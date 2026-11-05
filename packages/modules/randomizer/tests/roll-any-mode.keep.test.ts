@@ -17,14 +17,13 @@ const LOBBY = 'lobby' as string as RandomizerModeId;
 const SEAT_VALUES = { lobby: 'abc', seat: 2 };
 const JOIN_RESULT = { lobbyId: 'abc', seat: 2 };
 
-const roll = vi.fn(() => joinedRoll(JOIN_RESULT));
+const roll = vi.fn<RandomizerGame<unknown>['roll']>(() => joinedRoll(JOIN_RESULT));
 const onJoined = vi.fn();
 
 const register = (): void =>
-  useRandomizerGameStore.getState().register({ id: 'toy', roll, onJoined } as unknown as RandomizerGame<unknown>);
+  useRandomizerGameStore.getState().register({ id: 'toy', roll, onJoined } as RandomizerGame<unknown>);
 
-const configFor = (mode: RandomizerModeId): RandomizerProfileConfig =>
-  ({ mode, seed: 'seed', options: {} }) as RandomizerProfileConfig;
+const configFor = (mode: RandomizerModeId): RandomizerProfileConfig => ({ mode, seed: 'seed', options: {} });
 
 const build = (config: RandomizerProfileConfig) =>
   randomizerProfileHooks.build?.({ name: 'Run', randomizer: config, randomizerConnection: SEAT_VALUES });
@@ -39,7 +38,10 @@ describe('roll for any mode', { tags: ['critical'] }, () => {
     register();
     const config = configFor(LOBBY);
     await build(config);
-    expect(roll).toHaveBeenCalledWith(config, expect.objectContaining({ mode: LOBBY, connection: SEAT_VALUES, onProgress: expect.any(Function) }));
+    const [rolled, ctx] = roll.mock.calls[0] ?? [];
+    expect(rolled).toBe(config);
+    expect(ctx).toMatchObject({ mode: LOBBY, connection: SEAT_VALUES });
+    expect(typeof ctx?.onProgress).toBe('function');
   });
 
   it('does not roll online', async () => {

@@ -46,3 +46,4 @@ export { buildDeviceProfile, buildDeviceProfileFromResolved, buildDeviceProfileF
 export type { DeviceProfile, DeviceProfileAxis, DeviceProfileButton, DeviceProfileIdentity } from './device-profile';
 export { resolveDeviceFromEntry } from './runtime/resolve-device';
 export { recallControllerSdlType } from './runtime/controller-family-cache';
+export * from './bindings';

@@ -1,5 +1,8 @@
 /* @layer renderer-shell @kind barrel */
-export { msuRenderer } from './msu-renderer';
+import { msuRenderer } from './msu-renderer';
+
+export default msuRenderer;
+export { msuRenderer };
 export { msuApi } from './msu-api';
 export * from './game';
 export { createMsuStore } from './store';

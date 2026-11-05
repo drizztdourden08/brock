@@ -3,8 +3,8 @@ import type { MsuStudioGame } from '../game/msu-studio-game.type';
 import type { MsuStore } from '../store/msu-store.type';
 import type { DeleteConfirm, MsuPackOrigin } from './msu-origin.type';
 
-interface MsuStudioPageProps {
-  game: MsuStudioGame<never, never>;
+interface MsuStudioPageProps<Ctx = unknown, Target = unknown> {
+  game: MsuStudioGame<Ctx, Target>;
   store: MsuStore;
   onDeleteConfirm: DeleteConfirm;
   onRefresh: () => void;

@@ -27,7 +27,7 @@ import { writeMsuManifest } from './write-msu-manifest';
 import { writeMsuResume } from './write-msu-resume';
 import { writeMsuTrackFile } from './write-msu-track-file';
 
-const createMsuStore = (game: MsuStudioGame<never, never>, deps: MsuStoreDeps) => {
+const createMsuStore = <Ctx = unknown, Target = unknown>(game: MsuStudioGame<Ctx, Target>, deps: MsuStoreDeps) => {
   const env: MsuStoreEnv = {
     game: game as never,
     files: deps.files,

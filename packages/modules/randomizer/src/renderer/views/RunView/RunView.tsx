@@ -1,30 +1,44 @@
 /* @layer renderer-shell @kind component */
-import { Card, EmptyState, Grid, StatRow, Stack } from '@drizztdourden08/tessera/primitives';
+import { EmptyState, Grid } from '@drizztdourden08/tessera/primitives';
+import { useProfilesStore } from '@drizztdourden08/brock-react';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
-import { useRandomizerSession } from '../../hooks/behavior/useRandomizerSession';
-import {
-  GAME_LABEL, GAME_STATE_TEXT, MODE_LABEL, NO_GAME_MESSAGE, NO_MODE, NO_RUN_MESSAGE, PANEL_MIN_WIDTH, SEED_LABEL, STATUS_LABEL,
-} from './RunView.constants';
+import { DashboardCard } from '../dashboard/DashboardCard';
+import { PANEL_MIN_WIDTH } from '../dashboard/dashboard.constants';
+import { useOpenPage } from './behavior/useOpenPage';
+import { NO_GAME_MESSAGE, NO_PROFILE_MESSAGE } from './RunView.constants';
+import { GamePanel } from './sub-components/GamePanel';
+import { RecentActivity } from './sub-components/RecentActivity';
+import { RunPlayers } from './sub-components/RunPlayers';
+import { RunProgress } from './sub-components/RunProgress';
+import { RunSettings } from './sub-components/RunSettings';
+import { RunSummary } from './sub-components/RunSummary';
 
 const RunView = () => {
   const game = useRandomizerGame();
   const labels = useRandomizerLabels();
-  const { session, status, summary, gameRunning } = useRandomizerSession();
+  const profile = useProfilesStore((state) => state.active);
+  const open = useOpenPage();
   if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
-  const panels = game.views?.runPanels ?? [];
+  const config = profile?.randomizer;
+  if (!profile || !config) {
+    return (
+      <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
+        <DashboardCard span="full" title={labels.run}><EmptyState message={NO_PROFILE_MESSAGE} /></DashboardCard>
+      </Grid>
+    );
+  }
 
   return (
     <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
-      <Card title={labels.run}>
-        <Stack gap="sm">
-          <StatRow label={STATUS_LABEL} value={status} />
-          <StatRow label={MODE_LABEL} value={session?.kind ?? NO_MODE} />
-          <StatRow label={GAME_LABEL} value={gameRunning ? GAME_STATE_TEXT.running : GAME_STATE_TEXT.stopped} />
-          {summary ? <StatRow label={SEED_LABEL} value={summary.seed} mono /> : <EmptyState message={NO_RUN_MESSAGE} size="sm" />}
-        </Stack>
-      </Card>
-      {panels.map((Panel, index) => <Panel key={index} />)}
+      <RunSummary profileName={profile.name} config={config} open={open} />
+      <RunProgress />
+      <RecentActivity open={open} />
+      {config.mode === 'online' && <RunPlayers />}
+      <RunSettings config={config} open={open} />
+      {(game.views?.runPanels ?? []).map((panel, index) => (
+        <GamePanel key={index} panel={panel} config={config} open={open} />
+      ))}
     </Grid>
   );
 };

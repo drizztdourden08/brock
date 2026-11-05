@@ -3,7 +3,7 @@ import { MsuStudioProvider } from '../game/MsuStudioProvider';
 import { MsuStudioBody } from './MsuStudioBody';
 import type { MsuStudioPageProps } from './MsuStudioPage.type';
 
-const MsuStudioPage = (props: MsuStudioPageProps) => {
+const MsuStudioPage = <Ctx = unknown, Target = unknown>(props: MsuStudioPageProps<Ctx, Target>) => {
   const { game, store, ...body } = props;
 
   return (

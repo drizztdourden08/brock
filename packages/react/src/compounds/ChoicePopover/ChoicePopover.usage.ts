@@ -3,6 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A small menu anchored to an element where the player picks one option, each with an optional sprite, tone and pick-all action.',
+  propsHash: '0000000000000000',
   useWhen: ['A cheats panel lets the player give, set or remove one thing from a short list.'],
   avoidWhen: [{ case: 'A menu of app commands.', use: 'ContextMenu' }],
   rules: [

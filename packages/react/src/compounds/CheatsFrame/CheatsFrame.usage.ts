@@ -3,6 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'The frame of a cheats widget: a tab bar over a scrolling body, where the game supplies each tab and its content.',
+  propsHash: '0000000000000000',
   useWhen: ['As the body of a game cheats widget, with one tab per area such as the player, the items or the rules.'],
   avoidWhen: [{ case: 'Tabs of a settings screen.', use: 'Tabs' }],
   rules: [

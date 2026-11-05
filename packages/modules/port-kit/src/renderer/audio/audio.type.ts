@@ -14,6 +14,8 @@ interface SampleBlock {
 
 interface AudioAdapterOptions {
   leadS?: number;
+  sampleRate?: number;
+  channels?: number;
   log?: CoreLog;
 }
 

@@ -26,6 +26,8 @@ interface PortSessionOptions<S> {
   config?: string;
   volume?: number;
   audioLeadS?: number;
+  audioSampleRate?: number;
+  audioChannels?: number;
   schedule?: FrameSchedule;
   extraFiles?: Record<string, Uint8Array | string>;
   log?: CoreLog;

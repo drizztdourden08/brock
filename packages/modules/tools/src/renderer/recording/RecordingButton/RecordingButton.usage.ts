@@ -3,7 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A button that starts and stops a frame recording of the app, checks that ffmpeg is installed first, and hands the frames to the main process to encode.',
-  propsHash: '0000000000000000',
+  propsHash: '18227a0dc67ba81a',
   useWhen: [
     'A debug or bug report flow where the user records what went wrong.',
     'Any screen that records frames and wants them encoded to a video.',

@@ -6,10 +6,12 @@ import { MAX_SETTING_TILES } from './settings-tiles.constants';
 const isPlain = (value: unknown): value is string | number | boolean =>
   typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
 
-const settingTilesOf = (config: RandomizerProfileConfig): RunTile[] =>
-  Object.entries(config.options as Record<string, unknown>)
+const settingTilesOf = (config: RandomizerProfileConfig): RunTile[] => {
+  const entries: [string, unknown][] = Object.entries(config.options);
+  return entries
     .filter(([, value]) => isPlain(value))
     .slice(0, MAX_SETTING_TILES)
     .map(([label, value]) => ({ label, value: String(value) }));
+};
 
 export { settingTilesOf };

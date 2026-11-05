@@ -11,7 +11,10 @@ const memoryFiles = (): { files: FileStore; disk: Map<string, Uint8Array> } => {
     writeBytes: (path, data) => Promise.resolve(void disk.set(path, data)),
     writeText: (path, data) => Promise.resolve(void disk.set(path, new TextEncoder().encode(data))),
     list: (dir) => Promise.resolve(childrenOf(dir)),
-    remove: (path) => Promise.resolve(void disk.delete(path)),
+    remove: (path) => {
+      for (const key of [...disk.keys()]) if (key === path || key.startsWith(`${path}/`)) disk.delete(key);
+      return Promise.resolve();
+    },
     exists: (path) => Promise.resolve(disk.has(path)),
     mkdir: () => Promise.resolve(),
     stat: (path) => {

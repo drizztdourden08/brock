@@ -25,9 +25,10 @@ describe('K3 sprite store', { tags: ['critical'] }, () => {
   });
 
   it('lists the expected files that are absent', async () => {
-    const { files } = memoryFiles();
+    const { files, disk } = memoryFiles();
     await store.write(files, 'game.sfc', [first]);
     expect(await store.missing(files, 'game.sfc')).toEqual(['b.png']);
+    disk.delete('sprites/game/extraction.json');
     expect(await store.check(files, 'game.sfc')).toEqual({ extracted: false, count: 1 });
   });
 

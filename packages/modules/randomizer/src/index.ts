@@ -10,6 +10,7 @@ export type { RandomizerPoll } from './contract/randomizer-poll.type';
 export type { CoreSignal } from './contract/core-signal.type';
 export type { RandomizerLog } from './contract/randomizer-log.type';
 export type { PlacementSummary } from './contract/placement-summary.type';
+export type { RandomizerGameMode } from './contract/randomizer-game-mode.type';
 export type { RandomizerLabels } from './contract/randomizer-labels.type';
 export type { RandomizerFormState } from './contract/randomizer-form-state.type';
 export type { ArchipelagoGame } from './contract/archipelago-game.type';

@@ -8,7 +8,7 @@ export type { RollContext } from './contract/roll-context.type';
 export type { WorldStamp } from './contract/world-stamp.type';
 export type { RandomizerPoll } from './contract/randomizer-poll.type';
 export type { CoreSignal } from './contract/core-signal.type';
-export type { RandomizerLog } from './contract/randomizer-log.type';
+export type { RandomizerLog, RandomizerLogLine } from './contract/randomizer-log.type';
 export type { PlacementSummary } from './contract/placement-summary.type';
 export type { RandomizerGameMode } from './contract/randomizer-game-mode.type';
 export type { RandomizerLabels } from './contract/randomizer-labels.type';

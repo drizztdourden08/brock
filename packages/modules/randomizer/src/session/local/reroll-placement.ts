@@ -18,7 +18,7 @@ const rerollPlacement = async <P, A>(
     return placement;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    log(resolveLogText(game.logText).rerollFailed(message), 'error');
+    log(resolveLogText(game.logText).rerollFailed(message), 'error', 'rerollFailed');
     return null;
   }
 };

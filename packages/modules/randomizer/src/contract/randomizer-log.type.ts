@@ -1,4 +1,8 @@
 /* @layer core @kind types */
-type RandomizerLog = (msg: string, level?: 'info' | 'warn' | 'error') => void;
+import type { RandomizerLogText } from './randomizer-log-text.type';
 
-export type { RandomizerLog };
+type RandomizerLogLine = keyof RandomizerLogText;
+
+type RandomizerLog = (msg: string, level?: 'info' | 'warn' | 'error', line?: RandomizerLogLine) => void;
+
+export type { RandomizerLog, RandomizerLogLine };

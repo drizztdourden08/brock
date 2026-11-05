@@ -132,3 +132,5 @@ export * from './lobby';
 export * from './export';
 export * from './ap-ids';
 export * from './player-yaml';
+export * from './game-defaults';
+export * from './scouts';

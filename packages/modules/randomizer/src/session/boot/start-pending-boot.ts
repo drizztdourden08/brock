@@ -11,7 +11,7 @@ const startPendingBoot = (log: RandomizerLog, text: RandomizerLogText): boolean 
   pendingBoot.clear();
   const allows = sessionFactories.get(pending.mode)?.allowsStart;
   if (allows !== undefined && !allows()) return false;
-  log(text.autoStart(pending.mode, pending.config.seed));
+  log(text.autoStart(pending.mode, pending.config.seed), 'info', 'autoStart');
   void startSession(pending, log);
   return true;
 };

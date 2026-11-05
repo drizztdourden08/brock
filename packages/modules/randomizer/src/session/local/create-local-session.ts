@@ -37,7 +37,7 @@ const createLocalSession = <P, A>(options: LocalSessionOptions<P, A>): Randomize
       }
       run = armedRun;
       const armedLine = resolveLogText(game.logText).armed(armedSummary(armedRun.armed.counts));
-      if (armedLine !== null) log(armedLine);
+      if (armedLine !== null) log(armedLine, 'info', 'armed');
       status = 'active';
     },
     stop: () => {

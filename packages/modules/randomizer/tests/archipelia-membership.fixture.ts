@@ -1,31 +1,14 @@
 /* @layer core @kind test */
 import type { LobbyJoinState, LobbyStart, StartedRoom } from '../src/archipelago/lobby';
+import { initialState } from '../src/archipelago/lobby/session/initial-state';
 import type { ArchipeliaMembership } from '../src/renderer/archipelia/membership/membership.type';
 
 const JOIN_STATE: LobbyJoinState = {
+  ...initialState('token-1'),
   status: 'approved',
-  token: 'token-1',
   memberId: 'member-1',
-  resumed: false,
-  trust: null,
   admission: 'approved',
-  admissionReason: null,
-  lobby: null,
-  phase: null,
-  uploads: [],
   uploadsDone: true,
-  slots: [],
-  others: null,
-  ready: false,
-  progress: null,
-  generationFailure: null,
-  started: null,
-  room: null,
-  problem: null,
-  failure: null,
-  reconnecting: false,
-  end: null,
-  forgetToken: false,
 };
 
 const MEMBERSHIP: ArchipeliaMembership = {

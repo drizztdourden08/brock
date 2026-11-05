@@ -42,7 +42,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
           narrow={narrow}
           isRescanPending={ctrl.isRescanPending}
           onRescan={ctrl.handleRescan}
-          onPreset={setConfirmPreset}
+          onPreset={ctrl.setConfirmPreset}
           onAddMapping={ctrl.addMapping}
         />
       </SearchAnchor>

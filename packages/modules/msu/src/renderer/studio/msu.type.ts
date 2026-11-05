@@ -38,11 +38,6 @@ interface ActionResult {
   message: string;
 }
 
-interface MsuManagerProps {
-  onDeleteConfirm: (title: string, message: string, onConfirm: () => void) => void;
-  onRefresh: () => void;
-}
-
 interface MsuEffectsPanelProps {
   tabId: string;
   channels: readonly [string, string];
@@ -120,7 +115,6 @@ export type {
   TrackInfo,
   MatchedTrack,
   ActionResult,
-  MsuManagerProps,
   MsuEffectsPanelProps,
   TrackPreviewControls,
   TrackRowProps,

@@ -11,4 +11,3 @@ const useImportProgress = (kind: ImportKind): ImportProgressState => {
 };
 
 export { useImportProgress };
-export type { ImportProgressState, ImportKind };

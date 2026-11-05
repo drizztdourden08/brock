@@ -16,4 +16,4 @@ interface FileAuditionRun {
   setters: FileAuditionSetters;
 }
 
-export type { FileAuditionRun, FileAuditionSetters };
+export type { FileAuditionRun };

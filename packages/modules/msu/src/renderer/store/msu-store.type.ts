@@ -41,5 +41,5 @@ type MsuTrackSource = (report: ImportReport) => Promise<{ bytes: Uint8Array; nam
 type MsuStore = ReturnType<typeof createMsuStore>;
 
 export type {
-  FetchBytes, FetchProgress, MsuResult, MsuStore, MsuStoreDeps, MsuStoreEnv, MsuTrackEntry, MsuTrackSource, RunJob,
+  FetchProgress, MsuResult, MsuStore, MsuStoreDeps, MsuStoreEnv, MsuTrackEntry, MsuTrackSource,
 };

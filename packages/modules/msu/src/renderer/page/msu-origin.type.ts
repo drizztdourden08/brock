@@ -23,4 +23,4 @@ interface MsuOriginArgs {
 
 type MsuPackOrigin = (args: MsuOriginArgs) => MsuOriginState;
 
-export type { DeleteConfirm, MsuOriginArgs, MsuOriginState, MsuPackOrigin };
+export type { DeleteConfirm, MsuOriginState, MsuPackOrigin };

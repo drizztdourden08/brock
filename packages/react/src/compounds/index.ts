@@ -3,6 +3,7 @@ export * from './AboutPanel';
 export * from './ProfilesPanel';
 export * from './ReleaseNotesPanel';
 export * from './CheatsFrame';
+export * from './AnchoredCard';
 export * from './ChoicePopover';
 export * from './ControlLegend';
 export * from './NumberSetter';

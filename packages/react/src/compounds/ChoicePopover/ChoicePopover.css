@@ -1,26 +1,4 @@
 /* @layer renderer-shell @kind style */
-.choice-popover {
-  --anchored-gap: var(--space-2xs);
-
-  pointer-events: auto;
-  display: grid;
-  gap: var(--space-2xs);
-  min-width: var(--size-160);
-  padding: var(--space-xs);
-  background: var(--c-surface);
-  border: var(--border-width-thin) solid var(--c-primary);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-dropdown);
-}
-
-.choice-popover__title {
-  font-size: var(--text-xs);
-  letter-spacing: calc(1.2 * var(--size-1));
-  text-transform: uppercase;
-  color: var(--c-text-muted);
-  padding: var(--space-2xs) var(--space-xs) var(--space-xs);
-}
-
 .choice-popover__row {
   display: flex;
   align-items: center;

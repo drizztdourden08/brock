@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
-import { Anchored, Box, Image, Pressable, Text } from '@drizztdourden08/tessera/primitives';
+import { Box, Image, Pressable, Text } from '@drizztdourden08/tessera/primitives';
 import { useAnchorRef } from '../../hooks/useAnchorRef';
+import { AnchoredCard } from '../AnchoredCard';
 import type { ChoiceOption, ChoicePopoverProps } from './ChoicePopover.type';
 import './ChoicePopover.css';
 
@@ -12,8 +13,7 @@ const ChoicePopover = (props: ChoicePopoverProps) => {
   const anchorRef = useAnchorRef(anchor);
 
   return (
-    <Anchored anchorRef={anchorRef} placement="bottom-start" layer="popover" className="choice-popover" role="menu" aria-label={title} onDismiss={onClose}>
-      <Text className="choice-popover__title">{title}</Text>
+    <AnchoredCard anchorRef={anchorRef} title={title} role="menu" onDismiss={onClose}>
       {options.map((option) => (
         <Pressable
           key={option.key}
@@ -41,7 +41,7 @@ const ChoicePopover = (props: ChoicePopoverProps) => {
           )}
         </Pressable>
       ))}
-    </Anchored>
+    </AnchoredCard>
   );
 };
 

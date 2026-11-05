@@ -1,12 +1,12 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import { Anchored, Box, Button, Pressable, Text, TextInput } from '@drizztdourden08/tessera/primitives';
+import { Box, Button, Pressable, TextInput } from '@drizztdourden08/tessera/primitives';
 import { useAnchorRef } from '../../hooks/useAnchorRef';
+import { AnchoredCard } from '../AnchoredCard';
 import { nudgeTarget } from './behavior/nudge-target';
 import { NO_STEPS } from './NumberSetter.constants';
 import type { NumberSetterProps } from './NumberSetter.type';
-import '../ChoicePopover/ChoicePopover.css';
 import './NumberSetter.css';
 
 const clampTo = (min: number, max: number, n: number): number => Math.min(max, Math.max(min, Math.round(n)));
@@ -32,8 +32,7 @@ const NumberSetter = (props: NumberSetterProps) => {
   const byStep = (amount: number) => commit(value + amount);
   const nudge = (dir: 1 | -1) => { const next = nudgeTarget({ ladder, steps: stepList, value, dir }); if (next !== null) commit(next); };
   return (
-    <Anchored anchorRef={anchorRef} placement="bottom-start" layer="popover" className="choice-popover" role="dialog" aria-label={title} onDismiss={onClose}>
-      <Text className="choice-popover__title">{title}</Text>
+    <AnchoredCard anchorRef={anchorRef} title={title} role="dialog" onDismiss={onClose}>
       <Box className="number-setter__row">
         <Button variant="tertiary" size="sm" aria-label="Down" onClick={() => nudge(-1)}>-</Button>
         <TextInput
@@ -68,7 +67,7 @@ const NumberSetter = (props: NumberSetterProps) => {
         <Pressable className="number-setter__end" onClick={() => commit(min)}>Min {format(min)}</Pressable>
         <Pressable className="number-setter__end" onClick={() => commit(max)}>Max {format(max)}</Pressable>
       </Box>
-    </Anchored>
+    </AnchoredCard>
   );
 };
 

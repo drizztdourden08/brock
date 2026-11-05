@@ -45,3 +45,5 @@ export type { GateResult } from './boot/gate-result.type';
 export type { FlagProbe } from '../memory/flag-probe.type';
 export type { MemoryBridge } from '../memory/memory-bridge.type';
 export type { MemoryView } from '../memory/memory-view.type';
+export { deliverServerItem } from './delivery/deliver-server-item';
+export type { ServerDeliveryDeps, ServerDeliveryEntry } from './delivery/server-delivery.type';

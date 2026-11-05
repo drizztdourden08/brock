@@ -29,6 +29,12 @@ const OPTIONS = {
   report: { type: 'string' },
   brand: { type: 'string' },
   api: { type: 'string' },
+  'ap-version': { type: 'string', multiple: true },
+  'ap-data': { type: 'string' },
+  'ap-out': { type: 'string' },
+  'ap-module': { type: 'string' },
+  'ap-author': { type: 'string' },
+  'ap-public': { type: 'string' },
   help: { type: 'boolean', short: 'h', default: false },
   version: { type: 'boolean', short: 'v', default: false },
 };

@@ -42,7 +42,10 @@ Usage:
                              splash as PNGs into release/installer-preview; installs nothing, packs nothing
   brock icons [--force]      copy the Tessera brand set (icons.brand) into build/icons, build/splash and public/logos
                              (skips a file newer than its source; --force copies all)
-  brock start [args]         run dist/electron/main.js with Electron; unknown options reach the app
+  brock apworld build --ap-version <v>... [--ap-data <dir>] [--ap-out <dir>] [--ap-module <name>] [--ap-author <name>] [--ap-public <dir>]
+                             pack the generic Archipelago loader and the game's JSON export into .apworld files
+                             (docs/apworld.md)
+  brock start [args]       run dist/electron/main.js with Electron; unknown options reach the app
                              (pnpm start --user-data=x works with or without the --)
   brock adopt [--scope @x] [--local <brockRepo>] [--force]
                              give any repo the lint configs, pnpm files and the lint-config dependency,

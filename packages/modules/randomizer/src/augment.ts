@@ -1,4 +1,7 @@
 /* @layer core @kind types */
+import type { LobbySocketEvent } from './ipc/lobby-socket-event.type';
+import type { RandomizerHostApi } from './ipc/randomizer-host-api.type';
+import type { SaveArchipelagoFilesRequest, SaveArchipelagoFilesResult } from './ipc/save-files.type';
 import type { RandomizerOptions } from './randomizer-options.type';
 
 interface RandomizerModes {
@@ -44,6 +47,18 @@ declare module '@drizztdourden08/brock-core/augment' {
   }
   interface ProfilePatchExtension {
     randomizer?: RandomizerProfileConfig;
+  }
+  interface InvokeContract {
+    'randomizer:lobby-socket:open': (id: string, url: string) => Promise<void>;
+    'randomizer:lobby-socket:send': (id: string, data: string) => Promise<void>;
+    'randomizer:lobby-socket:close': (id: string) => Promise<void>;
+    'randomizer:archipelago:save-files': (request: SaveArchipelagoFilesRequest) => Promise<SaveArchipelagoFilesResult>;
+  }
+  interface EventContract {
+    'randomizer:lobby-socket:event': (event: LobbySocketEvent) => void;
+  }
+  interface IpcNamespaces {
+    randomizer: RandomizerHostApi;
   }
 }
 

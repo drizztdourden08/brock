@@ -1,7 +1,7 @@
 {
   "name": "@drizztdourden08/brock-randomizer",
   "version": "0.120.1",
-  "description": "Brock randomizer module: a seeded item randomizer world model with typed rules, collection state, restrictive fill, spheres and a retrying generate loop, plus the game-agnostic session and screens. The game supplies its own world data and adapters.",
+  "description": "Brock randomizer module: a seeded item randomizer world model with typed rules, collection state, restrictive fill, spheres and a retrying generate loop, plus the game-agnostic session and screens, the Archipelia lobby client and the Archipelago world export. The game supplies its own world data and adapters.",
   "type": "module",
   "license": "UNLICENSED",
   "repository": {
@@ -24,6 +24,7 @@
     "./tracker": "./src/tracker/index.ts",
     "./archipelago": "./src/archipelago/index.ts",
     "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
     "./renderer": "./src/renderer/index.ts",
     "./package.json": "./package.json"
   },
@@ -35,16 +36,20 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
+    "@drizztdourden08/archipelia-client-kit": "catalog:",
+    "@drizztdourden08/archipelia-lobby-protocol": "catalog:",
     "@drizztdourden08/brock-core": "workspace:*",
     "@drizztdourden08/brock-electron": "workspace:*",
     "@drizztdourden08/brock-react": "workspace:*"
   },
   "devDependencies": {
     "@drizztdourden08/tessera": "catalog:",
+    "electron": "catalog:",
     "react": "catalog:",
     "zustand": "catalog:"
   },
   "peerDependencies": {
+    "electron": ">=38",
     "@drizztdourden08/tessera": ">=0.87.0 <1",
     "react": "^19.0.0",
     "zustand": "^5.0.0"
@@ -56,6 +61,7 @@
     "id": "randomizer",
     "description": "Seeded item randomizer: world model, rules, fill, spoiler, session and screens.",
     "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
     "renderer": "./src/renderer/index.ts"
   }
 }

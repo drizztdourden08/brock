@@ -5,6 +5,7 @@ import type { OnlineConnection, ReceivedItem, SlotReading } from '../archipelago
 import type { RandomizerProfileConfig } from '../augment';
 import type { DeliveryRequest } from '../session/delivery/delivery-request.type';
 import type { PollEntry } from '../session/poller/poll-entry.type';
+import type { ArchipeliaGame } from './archipelia-game.type';
 
 type ArchipelagoGame<P, A> = {
   name: string;
@@ -29,6 +30,7 @@ type ArchipelagoGame<P, A> = {
   allows?(): string | null;
   visible?(flags: ReadonlySet<string>): boolean;
   patched?(config: RandomizerProfileConfig): RandomizerProfileConfig;
+  archipelia?: ArchipeliaGame;
 };
 
 export type { ArchipelagoGame };

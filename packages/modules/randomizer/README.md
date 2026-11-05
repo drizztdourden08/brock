@@ -39,3 +39,9 @@ A game gives a `TrackerProvider` as `RandomizerGame.tracker`. Brock reads one st
 | `ARCHIPELAGO_PROTOCOL_VERSION` | The protocol version sent when the game gives none. |
 
 A game gives an `ArchipelagoGame` as `RandomizerGame.archipelago`. The client is pure TypeScript and talks to the game only through `OnlineHost`.
+
+## Archipelia
+
+A game that joins Archipelia gives an `ArchipeliaGame` as `ArchipelagoGame.archipelia`: the apworld module name, the world version, the client identity, a `playerFile` builder and two optional hooks. `./archipelago` then carries the lobby client, the world export, the id lookups and the player YAML. `./renderer` carries the membership, watch, join and browse helpers.
+
+The `./preload` subpath adds `window.api.randomizer`: a lobby socket (`open`, `send`, `close`, `onEvent`) and `saveArchipelagoFiles`. The main module registers the four channels behind it. An app that adds this module also lists `@drizztdourden08/archipelia-lobby-protocol` in its own package.json for the main bundle.

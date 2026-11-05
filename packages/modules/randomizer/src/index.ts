@@ -20,6 +20,7 @@ export type { RandomizerLabels } from './contract/randomizer-labels.type';
 export type { RandomizerLogText } from './contract/randomizer-log-text.type';
 export type { RandomizerFormState } from './contract/randomizer-form-state.type';
 export type { ArchipelagoGame } from './contract/archipelago-game.type';
+export type { ArchipeliaGame } from './contract/archipelia-game.type';
 export type { ForeignItem } from './session/applier/foreign-item.type';
 export type {
   ArchipelagoConnection,

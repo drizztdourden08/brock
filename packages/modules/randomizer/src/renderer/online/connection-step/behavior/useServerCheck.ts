@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { probeServer, serverAddressError } from '../../../../archipelago';
 import type { ProbeConfig } from '../../../../archipelago';
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
-import { CONNECTION_TEXT } from '../ConnectionStepBody/ConnectionStepBody.constants';
+import { CONNECTION_TEXT } from '../ServerFields/ServerFields.constants';
 import { connectionAddress } from '../connection-address';
 import type { ConnectionForm } from '../connection-form.type';
 import type { ServerCheck, ServerCheckPhase } from '../server-check.type';

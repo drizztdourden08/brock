@@ -1,6 +1,6 @@
 /* @layer renderer-components @kind hook */
 import { useCallback } from 'react';
-import type { UseGlobalRowsArgs } from '../ControlsBehavior.type';
+import type { UseGlobalRowsArgs } from './controls-behavior.type';
 import type { ActionDef } from '../ControlsSettings.type';
 import { buildActionRows } from './build-action-rows';
 

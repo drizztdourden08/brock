@@ -3,7 +3,7 @@ import { UNBOUND } from '../../../bindings/bindings.constants';
 import { findLiveDevice } from '../../../bindings/detected/find-live-device';
 import { padHexOrNull } from '../../../bindings/device-keys/pad-hex-or-null';
 import { resolveIconByVidPid } from '../../../bindings/icons/resolve-icon-by-vid-pid';
-import type { ActionRow, ActionRowParams } from '../ControlsBehavior.type';
+import type { ActionRow, ActionRowParams } from './controls-behavior.type';
 import { liveDeviceIcon } from './live-device-icon';
 
 const actionRow = ({ action, mapping, mappingIndex, multiController, devices }: ActionRowParams): ActionRow => {

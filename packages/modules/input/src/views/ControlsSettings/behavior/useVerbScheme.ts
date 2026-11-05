@@ -5,7 +5,7 @@ import {
   setSlotBinding,
 } from '../../../bindings';
 import type { BindingSlot, InputBinding, SlotListEdit, VerbBindings } from '../../../bindings';
-import type { UseVerbSchemeArgs } from '../ControlsBehavior.type';
+import type { UseVerbSchemeArgs } from './controls-behavior.type';
 import { slotDisplayFor } from './slot-display-for';
 
 const useVerbScheme = ({ game, activeProfile, updateActiveProfile, controls }: UseVerbSchemeArgs) => {

@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ListeningLabelParams } from '../ControlsBehavior.type';
+import type { ListeningLabelParams } from './controls-behavior.type';
 
 const listeningLabel = ({ target, game }: ListeningLabelParams): string => {
   switch (target.type) {

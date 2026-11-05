@@ -1,10 +1,10 @@
 /* @layer renderer-components @kind types */
-import type { ActionBinding, BindingSlot, ButtonIcon, InputBinding, VerbBindings } from '../../bindings';
-import type { DetectedDevice } from '../../bindings/detected/detected.type';
-import type { InputProfile } from '../../bindings/input-profile.type';
-import type { DeviceEntry } from '../../device.type';
-import type { ResolvedControl } from '../../family/family.type';
-import type { ActionDef, ControlsGame, ControlsLabels, GlobalBindingsStore, PresetDevice } from './ControlsSettings.type';
+import type { ActionBinding, BindingSlot, ButtonIcon, InputBinding, VerbBindings } from '../../../bindings';
+import type { DetectedDevice } from '../../../bindings/detected/detected.type';
+import type { InputProfile } from '../../../bindings/input-profile.type';
+import type { DeviceEntry } from '../../../device.type';
+import type { ResolvedControl } from '../../../family/family.type';
+import type { ActionDef, ControlsGame, ControlsLabels, GlobalBindingsStore, PresetDevice } from '../ControlsSettings.type';
 
 type ActionScope = 'profile' | 'global';
 

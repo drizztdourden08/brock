@@ -4,7 +4,7 @@ import type { ButtonIcon } from '../../../bindings';
 import { findLiveDevice } from '../../../bindings/detected/find-live-device';
 import { padHex } from '../../../bindings/device-keys/pad-hex';
 import { resolveIconByVidPid } from '../../../bindings/icons/resolve-icon-by-vid-pid';
-import type { UseVerbIconsArgs } from '../ControlsBehavior.type';
+import type { UseVerbIconsArgs } from './controls-behavior.type';
 
 const useVerbIcons = ({ activeProfile, devices, verbBindings }: UseVerbIconsArgs) =>
   useMemo(() => {

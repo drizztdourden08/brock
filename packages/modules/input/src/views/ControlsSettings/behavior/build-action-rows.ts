@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind logic */
-import type { ActionRow, BuildActionRowsParams } from '../ControlsBehavior.type';
+import type { ActionRow, BuildActionRowsParams } from './controls-behavior.type';
 import { actionRow } from './action-row';
 
 /** One row per bound mapping of each action, or one empty row when the action has none. */

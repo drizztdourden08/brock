@@ -1,7 +1,7 @@
 /* @layer renderer-components @kind hook */
 import { useCallback } from 'react';
 import type { BindingSlot } from '../../../bindings';
-import type { ActionScope, UseRebindTargetArgs } from '../ControlsBehavior.type';
+import type { ActionScope, UseRebindTargetArgs } from './controls-behavior.type';
 
 const useRebindTarget = ({ setListeningFor }: UseRebindTargetArgs) => {
   const handleActionRebind = useCallback((scope: ActionScope, id: string) => {

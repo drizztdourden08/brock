@@ -3,7 +3,7 @@ import { controlsForDevice } from '../../../bindings/detected/controls-for-devic
 import { presetDeviceFamily } from '../../../bindings/detected/preset-device-family';
 import { padHexOrNull } from '../../../bindings/device-keys/pad-hex-or-null';
 import type { InputProfile } from '../../../bindings/input-profile.type';
-import type { BuildPresetProfileParams } from '../ControlsBehavior.type';
+import type { BuildPresetProfileParams } from './controls-behavior.type';
 
 const buildPresetProfile = ({ preset, profile, game, entries }: BuildPresetProfileParams): InputProfile => {
   const vid = padHexOrNull(preset.vid) ?? '';

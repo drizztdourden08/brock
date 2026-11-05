@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react';
 import type { DragEvent } from 'react';
 import { DRAG_SDL_TYPE } from '../ControlsSettings.constants';
-import type { UseDragDropArgs } from '../ControlsBehavior.type';
+import type { UseDragDropArgs } from './controls-behavior.type';
 import type { PresetDevice } from '../ControlsSettings.type';
 import { buildPresetProfile } from './build-preset-profile';
 import { readDroppedPreset } from './read-dropped-preset';

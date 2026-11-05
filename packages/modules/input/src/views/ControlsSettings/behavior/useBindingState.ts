@@ -1,7 +1,7 @@
 /* @layer renderer-components @kind hook */
 import { useCallback, useMemo, useState } from 'react';
 import { bindGlobalAction, bindProfileAction, clearProfileAction, mergeGlobalDefaults, padHexOrNull, UNBOUND } from '../../../bindings';
-import type { ActionCapture, ListeningTarget, UseBindingStateArgs } from '../ControlsBehavior.type';
+import type { ActionCapture, ListeningTarget, UseBindingStateArgs } from './controls-behavior.type';
 import type { BindingCapture } from '../sub-components/BindingListener.type';
 import { useRebindTarget } from './useRebindTarget';
 

@@ -1,11 +1,12 @@
 /* @layer renderer-shell @kind hook */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { deathLinkOnlineNotice, queueNotice } from '../../../../archipelago';
 import type { NoticeEntry, NoticeKind, OnlineNotice } from '../../../../archipelago';
 import { onlineEvents } from '../../../../session/online/online-events';
+import { useToastEntries } from './useToastEntries';
 
 const useOnlineNoticeToasts = (enabled: boolean, shown: ((kind: NoticeKind) => boolean) | undefined) => {
-  const [entries, setEntries] = useState<readonly NoticeEntry[]>([]);
+  const { entries, setEntries, dismiss } = useToastEntries<NoticeEntry>();
   const serial = useRef(0);
   const shownRef = useRef(shown);
   shownRef.current = shown;
@@ -21,10 +22,6 @@ const useOnlineNoticeToasts = (enabled: boolean, shown: ((kind: NoticeKind) => b
       if (event.type === 'death-link') admit(deathLinkOnlineNotice(event.notice));
     });
   }, [enabled]);
-
-  const dismiss = useCallback((id: string) => {
-    setEntries((prev) => prev.filter((entry) => entry.id !== id));
-  }, []);
 
   return { entries, dismiss };
 };

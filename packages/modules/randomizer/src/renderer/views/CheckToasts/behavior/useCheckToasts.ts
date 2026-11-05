@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind hook */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
 import { useTrackerFeed } from '../../../tracker/hooks/behavior/useTrackerFeed';
 import { useTrackerReading } from '../../../tracker/hooks/behavior/useTrackerReading';
@@ -7,12 +7,13 @@ import type { CheckToastEntry } from '../CheckToasts.type';
 import { admitToasts } from './admit-toasts';
 import { newCompletedKeys } from './new-completed-keys';
 import { toastRowsOf } from './toast-rows-of';
+import { useToastEntries } from './useToastEntries';
 
 const useCheckToasts = (enabled: boolean, quietMs: number) => {
   const provider = useRandomizerGame()?.tracker;
   const feed = useTrackerFeed();
   const reading = useTrackerReading();
-  const [entries, setEntries] = useState<readonly CheckToastEntry[]>([]);
+  const { entries, setEntries, dismiss } = useToastEntries<CheckToastEntry>();
   const known = useRef<ReadonlySet<string> | null>(null);
   const mountedAt = useRef(Date.now());
   const serial = useRef(0);
@@ -25,10 +26,6 @@ const useCheckToasts = (enabled: boolean, quietMs: number) => {
     const rows = toastRowsOf(provider, reading, feed, newCompletedKeys(previous, feed.completed));
     if (rows.length > 0) setEntries((prev) => admitToasts(prev, rows, () => `check-toast-${serial.current++}`));
   }, [feed, reading, provider, enabled, quietMs]);
-
-  const dismiss = useCallback((id: string) => {
-    setEntries((prev) => prev.filter((entry) => entry.id !== id));
-  }, []);
 
   return { entries, dismiss };
 };

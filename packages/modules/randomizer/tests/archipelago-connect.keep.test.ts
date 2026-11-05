@@ -101,6 +101,6 @@ describe('archipelago resync', { tags: ['critical'] }, () => {
     const replay = [received(1), received(2), received(3), received(4)];
     rig.sockets.last().receive([{ cmd: 'ReceivedItems', index: 0, items: replay }]);
     expect(rig.probe.delivered.map((item) => item.location)).toEqual([1, 2, 3, 4]);
-    expect(rig.queue.saved()).toBe(4);
+    expect(rig.queue.next()).toBe(4);
   });
 });

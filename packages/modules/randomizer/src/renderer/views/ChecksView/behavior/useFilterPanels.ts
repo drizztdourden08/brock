@@ -1,12 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useState } from 'react';
-
-interface FilterPanels {
-  filters: boolean;
-  tags: boolean;
-  toggleFilters(): void;
-  toggleTags(): void;
-}
+import type { FilterPanels } from './filter-panels.type';
 
 const useFilterPanels = (): FilterPanels => {
   const [filters, setFilters] = useState(false);

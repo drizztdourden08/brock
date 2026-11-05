@@ -2,9 +2,7 @@
 import { useMemo } from 'react';
 import type { LogRule } from '../../../../contract/randomizer-views.type';
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
-import { ACTIVITY_RULES } from '../activity-rules.constants';
-
-const NO_RULES: readonly LogRule[] = [];
+import { ACTIVITY_RULES, NO_RULES } from '../activity-rules.constants';
 
 const useActivityRules = (): { rules: readonly LogRule[]; gameRules: readonly LogRule[] } => {
   const gameRules = useRandomizerGame()?.views?.logRules ?? NO_RULES;

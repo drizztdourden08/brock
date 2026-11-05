@@ -15,7 +15,7 @@ const TabBody = ({ tab, ...props }: TabBodyProps) => {
         {options.map((option) => (
           <OptionField
             key={option.key}
-            option={{ ...option, frozen: option.frozen || frozen }}
+            option={{ ...option, frozen: frozen || option.frozen === true }}
             value={overrides[option.key] ?? option.default}
             onChange={(next) => onChange?.({ ...overrides, [option.key]: next })}
           />

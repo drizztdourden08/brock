@@ -53,7 +53,7 @@ describe('checks tracker model', { tags: ['critical'] }, () => {
     expect(sizes).toEqual({ Town: 2, Forest: 1, Lake: 2 });
   });
 
-  it('filters by facet in any and all mode', () => {
+  it('filters by facet in the any mode and the all mode', () => {
     const rows = build([], 'region');
     expect(filterRows(rows, { ...open, facets: ['town'] }).map((row) => row.key).sort()).toEqual(['t1', 't2']);
     expect(filterRows(rows, { ...open, facets: ['town', 'wild'], facetMode: 'any' })).toHaveLength(5);

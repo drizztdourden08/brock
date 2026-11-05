@@ -1,9 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerProfileConfig } from '../../../../augment';
 import type { RunTile } from '../../dashboard/run-tile.type';
-
-const NO_VALUE = 'none';
-const DEFAULT_SLOT = 'Player';
+import { DEFAULT_SLOT, NO_VALUE } from './summary-tiles.constants';
 
 const summaryTilesOf = (profileName: string, config: RandomizerProfileConfig, modeLabel: string | undefined): RunTile[] => {
   const tiles: RunTile[] = [

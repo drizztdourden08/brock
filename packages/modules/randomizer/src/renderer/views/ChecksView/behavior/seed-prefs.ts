@@ -3,8 +3,8 @@ import type { ChecksPrefs, ChecksViewProps } from '../ChecksView.type';
 
 const seedPrefs = (defaults: ChecksPrefs, initial: ChecksViewProps['initial']): ChecksPrefs => {
   const { showItems, ...rest } = initial ?? {};
-  const mode = showItems === undefined ? defaults.viewMode : (showItems ? 'detailed' : 'compact');
-  return { ...defaults, viewMode: mode, ...rest };
+  if (showItems === undefined) return { ...defaults, ...rest };
+  return { ...defaults, viewMode: showItems ? 'detailed' : 'compact', ...rest };
 };
 
 export { seedPrefs };

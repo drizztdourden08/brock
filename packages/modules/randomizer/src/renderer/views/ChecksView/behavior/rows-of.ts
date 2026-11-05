@@ -9,31 +9,30 @@ const artFor = (provider: TrackerProvider<unknown>, key: string, item: string | 
   return kind === 'event' || item === null ? art(key) : art(item);
 };
 
+const itemLabelFor = (provider: TrackerProvider<unknown>, item: string | null): string | null =>
+  item === null ? null : (provider.itemLabelOf?.(item) ?? item);
+
+const describedFor = (provider: TrackerProvider<unknown>, key: string, item: string | null) => {
+  const kind = provider.kindOf?.(key) ?? 'item';
+  return {
+    label: provider.labelOf?.(key) ?? key,
+    itemLabel: itemLabelFor(provider, item),
+    art: artFor(provider, key, item, kind),
+    kind,
+    facets: provider.facetsOf?.(key) ?? [],
+    badges: provider.badgesOf?.(key, item) ?? [],
+  };
+};
+
 const rowsOf = (input: RowsInput): CheckRow[] => {
   const { provider, reading, marks } = input;
   const groupOf = rowGroupOf(input);
-  const rows: CheckRow[] = [];
-  for (const [key, status] of reading.statuses) {
+  return [...reading.statuses].map(([key, status]) => {
     const region = reading.world.locationsByKey.get(key)?.region ?? '';
     const item = reading.world.placedItems.get(key) ?? null;
-    const kind = provider.kindOf?.(key) ?? 'item';
     const { label: group, order } = groupOf({ key, region, status });
-    rows.push({
-      key,
-      label: provider.labelOf?.(key) ?? key,
-      item,
-      itemLabel: item === null ? null : (provider.itemLabelOf?.(item) ?? item),
-      art: artFor(provider, key, item, kind),
-      status,
-      marked: marks.has(key),
-      kind,
-      facets: provider.facetsOf?.(key) ?? [],
-      badges: provider.badgesOf?.(key, item) ?? [],
-      group,
-      order,
-    });
-  }
-  return rows;
+    return { key, item, status, marked: marks.has(key), group, order, ...describedFor(provider, key, item) };
+  });
 };
 
 export { rowsOf };

@@ -1,8 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerProfileConfig } from '../../../../augment';
 import type { RunTile } from '../../dashboard/run-tile.type';
-
-const MAX_SETTING_TILES = 12;
+import { MAX_SETTING_TILES } from './settings-tiles.constants';
 
 const isPlain = (value: unknown): value is string | number | boolean =>
   typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';

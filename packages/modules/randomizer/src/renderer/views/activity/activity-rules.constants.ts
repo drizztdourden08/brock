@@ -18,4 +18,6 @@ const ERROR_CLASS: ActivityClass = { kind: 'error', tag: 'ERROR' };
 const WARN_CLASS: ActivityClass = { kind: 'warn', tag: 'WARN' };
 const INFO_CLASS: ActivityClass = { kind: 'info', tag: 'INFO' };
 
-export { ACTIVITY_RULES, ERROR_CLASS, INFO_CLASS, ROOM_TAG, WARN_CLASS };
+const NO_RULES: readonly LogRule[] = [];
+
+export { ACTIVITY_RULES, ERROR_CLASS, INFO_CLASS, NO_RULES, ROOM_TAG, WARN_CLASS };

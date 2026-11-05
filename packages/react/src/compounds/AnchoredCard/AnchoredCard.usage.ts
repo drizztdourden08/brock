@@ -3,7 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A small card anchored below an element, with a title line and any content, dismissed by Escape or an outside click.',
-  propsHash: '0000000000000000',
+  propsHash: 'e55192e838abea2b',
   useWhen: ['A popover built from your own controls needs the shared card look and a title.'],
   avoidWhen: [
     { case: 'A menu of app commands.', use: 'DropdownMenu' },

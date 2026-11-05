@@ -36,3 +36,4 @@ export type {
 export { frozenKeysOf } from './profile/frozen-keys-of';
 export type { OptionCatalog } from './world/options/option-catalog.type';
 export type { OptionDef } from './world/options/option-def.type';
+export type { OptionDetail, OptionImplementation, OptionKind, OptionRange } from './world/options/option-parts.type';

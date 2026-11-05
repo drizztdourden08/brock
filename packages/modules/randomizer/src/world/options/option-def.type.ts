@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { RuleOptionValue } from '../types/rule-option-value.type';
+import type { OptionDetail, OptionImplementation, OptionKind, OptionRange } from './option-parts.type';
 
 interface OptionDef {
   key: string;
@@ -10,6 +11,12 @@ interface OptionDef {
   choiceLabels?: Readonly<Record<string, string>>;
   section?: string;
   hint?: string;
+  kind?: OptionKind;
+  range?: OptionRange;
+  group?: string;
+  description?: string;
+  details?: readonly OptionDetail[];
+  implementation?: OptionImplementation;
 }
 
 export type { OptionDef };

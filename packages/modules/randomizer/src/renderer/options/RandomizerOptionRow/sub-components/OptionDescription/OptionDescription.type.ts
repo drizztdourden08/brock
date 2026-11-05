@@ -1,10 +1,8 @@
 /* @layer renderer-shell @kind types */
 import type { OptionDef } from '../../../../../world/options/option-def.type';
 
-interface OptionFieldProps {
+interface OptionDescriptionProps {
   option: OptionDef;
-  value: unknown;
-  onChange(value: unknown): void;
 }
 
-export type { OptionFieldProps };
+export type { OptionDescriptionProps };

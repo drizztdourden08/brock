@@ -58,13 +58,28 @@ interface ProgressBlock {
   items: InfoProgressItem[];
 }
 
+type DescribedTone = 'success' | 'warning' | 'danger' | 'info' | 'muted' | 'dim' | 'faint';
+
+interface DescribedRow {
+  label: string;
+  value: string;
+  description: string;
+  tone?: DescribedTone;
+  badge?: string;
+}
+
+interface DescribedBlock {
+  kind: 'described';
+  rows: DescribedRow[];
+}
+
 interface AppRenderedBlock {
   kind: 'custom';
   render: () => ReactNode;
 }
 
-type Block = RowsBlock | MembersBlock | ListBlock | ProgressBlock | AppRenderedBlock;
+type Block = RowsBlock | MembersBlock | ListBlock | ProgressBlock | DescribedBlock | AppRenderedBlock;
 
 export type {
-  Block, AppRenderedBlock, InfoBar, InfoListItem, InfoMember, InfoProgressItem, InfoRow, InfoValue, ListBlock, MembersBlock, ProgressBlock, RowsBlock,
+  Block, AppRenderedBlock, DescribedBlock, DescribedRow, DescribedTone, InfoBar, InfoListItem, InfoMember, InfoProgressItem, InfoRow, InfoValue, ListBlock, MembersBlock, ProgressBlock, RowsBlock,
 };

@@ -12,3 +12,5 @@ const gameInfoRenderer: RendererModule = {
 
 export default gameInfoRenderer;
 export { gameInfoRenderer };
+export { CheatsShell, CHEATS_WIDGET_ID } from '../views/CheatsShell';
+export type { CheatsShellProps, CheatsTab } from '../views/CheatsShell';

@@ -28,3 +28,29 @@
   align-items: center;
   gap: var(--space-xs);
 }
+
+.game-info-described__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.game-info-described__label {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: var(--size-2);
+}
+
+.game-info-described__value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.game-info-described__body {
+  font-size: var(--text-xs);
+  color: var(--c-text-dim);
+  padding: var(--space-2xs) 0 var(--space-xs);
+  border-bottom: var(--size-1) solid var(--c-hover);
+}

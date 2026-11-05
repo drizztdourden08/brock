@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import type { BlockViewProps } from '../GameInfoWidget.type';
+import { DescribedBlock } from './DescribedBlock';
 import { ListBlock } from './ListBlock';
 import { MembersBlock } from './MembersBlock';
 import { ProgressBlock } from './ProgressBlock';
@@ -11,6 +12,7 @@ const BlockView = ({ block, prefs }: BlockViewProps) => {
     case 'members': return <MembersBlock block={block} />;
     case 'list': return <ListBlock block={block} prefs={prefs} />;
     case 'progress': return <ProgressBlock block={block} prefs={prefs} />;
+    case 'described': return <DescribedBlock block={block} />;
     case 'custom': return <>{block.render()}</>;
   }
 };

@@ -8,7 +8,7 @@ interface PlayToggleButtonsProps {
   playingOriginal: boolean;
   onPlay: () => void;
   onStop: () => void;
-  onPlayOriginal: () => void;
+  onPlayOriginal?: () => void;
 }
 
 export type { PlayToggleButtonsProps };

@@ -5,7 +5,7 @@ import type { PlayToggleButtonsProps } from './PlayToggleButtons.type';
 
 const PlayToggleButtons = (props: PlayToggleButtonsProps) => {
   const { subject, playLabel, hasReplacement, playing, playingOriginal, onPlay, onStop, onPlayOriginal } = props;
-  const canCompare = useMsuStudioGame<never, never>().preview !== undefined;
+  const canCompare = useMsuStudioGame<never, never>().preview !== undefined && onPlayOriginal !== undefined;
   const stoppable = props.stoppable ?? playing;
 
   return (

@@ -11,11 +11,12 @@ const readFold = (storageKey: string): boolean | null => {
   }
 };
 
-const writeFold = (storageKey: string, collapsed: boolean): void => {
+const writeFold = (storageKey: string, collapsed: boolean): boolean => {
   try {
     localStorage.setItem(storageKey, String(collapsed));
+    return true;
   } catch {
-    return;
+    return false;
   }
 };
 

@@ -17,7 +17,7 @@ const makeCleanup =
     kit.deathLinks.dispose();
     deps.host.cancelDeliveries();
     deps.host.pausePolling();
-    deps.host.disarm();
+    if (!wasFailed) deps.host.disarm();
     state.link?.close();
     state.link = null;
     state.connection = null;

@@ -130,4 +130,24 @@ describe('archipelago client goal and DeathLink', { tags: ['critical'] }, () => 
     rig.sockets.last().receive([{ cmd: 'Bounced', tags: ['DeathLink'], data: { source: 'Other', cause: 'lava' } }]);
     expect(rig.probe.killed).toBe(1);
   });
+
+  it('turns DeathLink off when the slot data says it is off', () => {
+    const rig = createRig({ deathLink: true, slotDeathLink: false });
+    rig.boot();
+    const updates = rig.sent('ConnectUpdate');
+    expect(updates).toHaveLength(1);
+    expect(updates[0]?.tags).toEqual([]);
+  });
+});
+
+describe('archipelago refused session', { tags: ['critical'] }, () => {
+  it('disarms the game once, and a later close does not disarm again', () => {
+    const rig = createRig();
+    openRoom(rig);
+    rig.sockets.last().receive([{ cmd: 'ConnectionRefused', errors: ['IncompatibleVersion'] }]);
+    expect(rig.client.status().connection).toBe('refused');
+    expect(rig.probe.disarms).toBe(1);
+    rig.client.close();
+    expect(rig.probe.disarms).toBe(1);
+  });
 });

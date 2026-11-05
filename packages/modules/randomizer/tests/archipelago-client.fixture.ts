@@ -16,6 +16,7 @@ interface HostProbe {
   host: OnlineHost;
   delivered: ReceivedItem[];
   killed: number;
+  disarms: number;
   grants: number[];
   collected: number[];
   polling: boolean;
@@ -35,6 +36,7 @@ const createHostProbe = (): HostProbe => {
   const probe: HostProbe = {
     delivered: [],
     killed: 0,
+    disarms: 0,
     grants: [],
     collected: [],
     polling: false,
@@ -46,7 +48,9 @@ const createHostProbe = (): HostProbe => {
     ready: () => [...readies].forEach((f) => f()),
     host: {
       arm: () => undefined,
-      disarm: () => undefined,
+      disarm() {
+        probe.disarms += 1;
+      },
       armScouted: () => probe.grants,
       deliver(item) {
         if (probe.nextDelivery === 'delivered') probe.delivered.push(item);
@@ -135,7 +139,7 @@ interface Rig {
   sent(cmd: string): Record<string, unknown>[];
 }
 
-const createRig = (options: { deathLink?: boolean } = {}): Rig => {
+const createRig = (options: { deathLink?: boolean; slotDeathLink?: boolean } = {}): Rig => {
   vi.useFakeTimers();
   const sockets = createFakeSocketFactory();
   const probe = createHostProbe();
@@ -150,7 +154,7 @@ const createRig = (options: { deathLink?: boolean } = {}): Rig => {
     received: queue,
     slot(raw) {
       slotData.push(raw);
-      return { kind: 'ok', deathLink: options.deathLink === true, placement: (input) => input };
+      return { kind: 'ok', deathLink: options.slotDeathLink ?? options.deathLink === true, placement: (input) => input };
     },
     locationKeyOf: (_id, name) => name,
     placed: (placement) => placed.push(placement),

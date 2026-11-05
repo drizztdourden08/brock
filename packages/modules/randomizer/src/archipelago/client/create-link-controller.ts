@@ -42,6 +42,7 @@ const createLinkController = (kit: ClientKit, getContext: () => OnlineContext): 
       kit.log(logLine, 'error');
       reconnector.stop();
       kit.deps.host.pausePolling();
+      kit.deps.host.disarm();
       kit.network.refused();
       kit.notifyConnection({ state: 'refused', error: message });
       kit.emit({ type: 'disconnected', reason: message });

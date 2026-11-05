@@ -1,0 +1,49 @@
+/* @layer renderer-shell @kind component */
+import { Text } from '@drizztdourden08/tessera/primitives';
+import { describeReportContact } from '../behavior/describe-report-contact';
+import { stringifyOrEmpty } from '../behavior/stringify-or-empty';
+import type { ConfirmStepProps } from '../controller-report-form.type';
+import { ReportSection } from './ReportSection';
+
+const ConfirmStep = (props: ConfirmStepProps) => {
+  const { identity, email, name, additionalInfo, debugText, detection, calibrationMap, diagnosticsReport, status } = props;
+  const contact = describeReportContact({ identity, email, name });
+
+  return (
+    <>
+      <Text as="p">
+        <Text as="strong">{identity ? 'Reporting as:' : 'Contact:'}</Text> {contact}
+      </Text>
+      <ReportSection label="Additional info you entered" text={additionalInfo.trim() || '(none provided)'} />
+
+      <Text as="p">
+        <Text as="strong">Detected as:</Text> {detection.detectedName} ({detection.vendorId}:{detection.productId})
+      </Text>
+      <Text as="p">
+        <Text as="strong">Closest SDL match:</Text> {detection.sdlMatch ?? 'none found'}
+      </Text>
+      <Text as="p">
+        <Text as="strong">Input type:</Text> {detection.inputApi}
+      </Text>
+
+      <ReportSection label="Full HID read" text={detection.hidReport} />
+      <ReportSection label="Byte-level calibration map (JSON)" text={stringifyOrEmpty(calibrationMap)} />
+      <ReportSection label="Gamepad diagnostics report (JSON)" text={stringifyOrEmpty(diagnosticsReport)} />
+      <ReportSection label="Debug info (app/OS/hardware)" text={debugText ?? 'Collecting...'} />
+
+      <Text as="p" className="controller-report__disclaimer">
+        Everything above (every section here and the debug info) will be recorded in a public issue
+        on the project's GitHub repository.
+        {identity ? ' The issue names your account.' : ' Your email stays on the report record and never in the issue.'}
+      </Text>
+
+      {status === 'error' && (
+        <Text className="controller-report__status controller-report__status--error">
+          Couldn't file the report. Try again in a moment.
+        </Text>
+      )}
+    </>
+  );
+};
+
+export { ConfirmStep };

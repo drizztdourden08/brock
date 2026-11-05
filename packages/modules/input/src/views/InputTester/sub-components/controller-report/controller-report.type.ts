@@ -6,7 +6,7 @@ type SubmitStatus = 'idle' | 'submitting' | 'done' | 'error';
 interface FiledControllerReport {
   reportId: string;
   issueUrl: string;
-  sanctuaryUrl: string;
+  recordUrl?: string;
 }
 
 interface DetectionContext {
@@ -16,6 +16,31 @@ interface DetectionContext {
   vendorId: string;
   productId: string;
   hidReport: string;
+}
+
+interface ReportIdentity {
+  displayName: string;
+  githubHandle: string | null;
+}
+
+interface ControllerReportPayload {
+  detectedName: string;
+  sdlMatch: string | null;
+  inputApi: string;
+  vendorId: string;
+  productId: string;
+  hidReport: string;
+  calibrationMap: string;
+  positionalCapture?: string;
+  diagnosticsReport?: string;
+}
+
+interface ControllerReportSubmission {
+  subject: string;
+  description: string;
+  debugInfo: string;
+  contactEmail: string | null;
+  controllerReport: ControllerReportPayload;
 }
 
 interface ReportSectionProps {
@@ -29,6 +54,6 @@ interface StepIndicatorProps {
 }
 
 export type {
-  DetectionContext, FiledControllerReport, ReportSectionProps, ReportStep,
-  StepIndicatorProps, SubmitStatus,
+  ControllerReportPayload, ControllerReportSubmission, DetectionContext, FiledControllerReport, ReportIdentity,
+  ReportSectionProps, ReportStep, StepIndicatorProps, SubmitStatus,
 };

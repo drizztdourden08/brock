@@ -130,3 +130,7 @@ export {
   ControllerReportHost, createControllerHooksBootTask, registerControllerHooks, reportDeviceCardAction, useControllerReportStore,
 } from './controller-hooks';
 export type { ControllerHooksConfig, ControllerReportHostProps, ControllerReportState } from './controller-hooks';
+export { ControllerReportDialog, DEFAULT_RECORD_LINK_LABEL } from '../views/InputTester/sub-components/controller-report';
+export type {
+  ControllerReportDialogProps, ControllerReportPayload, ControllerReportSubmission, ReportIdentity,
+} from '../views/InputTester/sub-components/controller-report';

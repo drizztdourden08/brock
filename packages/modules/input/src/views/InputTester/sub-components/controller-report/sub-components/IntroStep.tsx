@@ -1,0 +1,21 @@
+/* @layer renderer-shell @kind component */
+import { Text } from '@drizztdourden08/tessera/primitives';
+
+const IntroStep = () => {
+  return (
+    <>
+      <Text as="p">
+        This walks through reporting a controller that isn't working right. It takes four short steps:
+        a quick explanation (this one), your contact info, a guided run through the controller's inputs
+        (Gamepad Diagnostics), and a final review before anything is sent.
+      </Text>
+      <Text as="p">
+        The report includes the controller model we detected, the closest match in our known-controller
+        database, the type of connection detected, the raw HID data read from the device, and the
+        diagnostics report captured in the next step, all of it visible to you before you send it.
+      </Text>
+    </>
+  );
+};
+
+export { IntroStep };

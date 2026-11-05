@@ -1,0 +1,18 @@
+/* @layer renderer-shell @kind component */
+import { Text } from '@drizztdourden08/tessera/primitives';
+import type { ReportIdentity } from '../controller-report.type';
+import './ReportingAsLine.css';
+
+const ReportingAsLine = (props: ReportIdentity) => {
+  const { displayName, githubHandle } = props;
+  const who = githubHandle ? `${displayName} (@${githubHandle})` : displayName;
+
+  return (
+    <Text as="p" className="reporting-as">
+      <Text as="span" tone="faint" className="reporting-as__label">reporting as</Text>
+      <Text as="span" className="reporting-as__who">{who}</Text>
+    </Text>
+  );
+};
+
+export { ReportingAsLine };

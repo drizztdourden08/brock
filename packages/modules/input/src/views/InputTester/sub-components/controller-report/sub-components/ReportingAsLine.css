@@ -1,0 +1,17 @@
+/* @layer renderer-shell @kind style */
+.reporting-as {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+}
+
+.reporting-as__label {
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: calc(0.05 * var(--text-xs));
+}
+
+.reporting-as__who {
+  color: var(--c-primary);
+}

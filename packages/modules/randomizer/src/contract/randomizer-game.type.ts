@@ -17,6 +17,7 @@ import type { PlacementSummary } from './placement-summary.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
 import type { RandomizerGameMode } from './randomizer-game-mode.type';
 import type { RandomizerLabels } from './randomizer-labels.type';
+import type { RandomizerLogText } from './randomizer-log-text.type';
 import type { RandomizerViews } from './randomizer-views.type';
 
 type RandomizerGame<P = DefPlacement, A = unknown> = {
@@ -41,6 +42,7 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   tracker?: TrackerProvider<P>;
   views?: RandomizerViews;
   labels?: Partial<RandomizerLabels>;
+  logText?: Partial<RandomizerLogText>;
   modes?: readonly RandomizerGameMode[];
 };
 

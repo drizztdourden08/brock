@@ -1,4 +1,5 @@
 /* @layer core @kind logic */
+import { resolveLogText } from '../boot/resolve-log-text';
 import { sizeOfField } from '../placement/size-of-field';
 import { checkSignal } from '../signal/check-signal';
 import { armedSummary } from './armed-summary';
@@ -35,7 +36,8 @@ const createLocalSession = <P, A>(options: LocalSessionOptions<P, A>): Randomize
         return;
       }
       run = armedRun;
-      log(`${LOCAL_TAG} Session armed: ${armedSummary(armedRun.armed.counts)}`);
+      const armedLine = resolveLogText(game.logText).armed(armedSummary(armedRun.armed.counts));
+      if (armedLine !== null) log(armedLine);
       status = 'active';
     },
     stop: () => {

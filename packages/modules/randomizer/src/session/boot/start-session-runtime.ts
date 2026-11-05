@@ -10,6 +10,7 @@ import { sessionFactories } from '../store/session-factories';
 import { stopActiveSession } from '../store/stop-active-session';
 import { LIVE_CORE_STATUSES } from './core-live.constants';
 import { runtimeStops } from './runtime-stops';
+import { resolveLogText } from './resolve-log-text';
 import { startPendingBoot } from './start-pending-boot';
 
 const startSessionRuntime = <P, A>(game: RandomizerGame<P, A>, log: RandomizerLog = appRandomizerLog): (() => void) => {
@@ -25,7 +26,7 @@ const startSessionRuntime = <P, A>(game: RandomizerGame<P, A>, log: RandomizerLo
     const live = LIVE_CORE_STATUSES.has(game.core.state().status);
     if (live && !wasLive) {
       wasLive = true;
-      if (!startedForBoot) startedForBoot = startPendingBoot(log);
+      if (!startedForBoot) startedForBoot = startPendingBoot(log, resolveLogText(game.logText));
     } else if (!live && wasLive) {
       wasLive = false;
       startedForBoot = false;

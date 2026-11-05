@@ -2,6 +2,7 @@
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
 import type { RandomizerLog } from '../../contract/randomizer-log.type';
 import type { RandomizerProfileConfig } from '../../augment';
+import { resolveLogText } from '../boot/resolve-log-text';
 import { writePlacement } from '../placement/write-placement';
 
 const rerollPlacement = async <P, A>(
@@ -16,7 +17,8 @@ const rerollPlacement = async <P, A>(
     log(`[Boot] Placement file unreadable by this build; rolled seed ${config.seed} again`, 'warn');
     return placement;
   } catch (error) {
-    log(`Randomizer generation failed: ${error instanceof Error ? error.message : String(error)}`, 'error');
+    const message = error instanceof Error ? error.message : String(error);
+    log(resolveLogText(game.logText).rerollFailed(message), 'error');
     return null;
   }
 };

@@ -11,7 +11,7 @@ import { attachSessionParts } from './attach-session-parts';
 
 const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> => {
   const { core, canvas, files, romFile, profileId = null, settings: initial, config, volume, extraFiles, log } = options;
-  const audio = createAudioAdapter(volume, { leadS: options.audioLeadS, log });
+  const audio = createAudioAdapter(volume, { leadS: options.audioLeadS, sampleRate: options.audioSampleRate, channels: options.audioChannels, log });
   const settings = createLiveSettings({ calls: core.calls, definition: core.definition });
   const store = createSaveStore(files);
   const roms = createRomStore(files, core.definition);

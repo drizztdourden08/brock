@@ -33,6 +33,14 @@ export { addRandomizerPages } from './bucket/add-randomizer-pages';
 export type { RandomizerPage } from './bucket/randomizer-page.type';
 export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE } from './wizard/wizard.constants';
 export { CONNECTION_SLICE } from './online/connection-step/connection.constants';
+export { launchConnect, launchesConnection, awaitLaunchConnection } from './launch-connect';
+export type {
+  ConnectionSignal,
+  ConnectionVerdict,
+  ConnectionWatch,
+  LaunchConnectHost,
+  LaunchLogLevel,
+} from './launch-connect';
 export { registerRandomizerGame } from './game-registry/register-randomizer-game';
 export { defaultOptionTabs } from './options/behavior/default-option-tabs';
 export { useRandomizerGame } from './game-registry/behavior/useRandomizerGame';
@@ -81,6 +89,9 @@ export { useDeliveryQueue } from './views/DeliveryQueueIndicator/behavior/useDel
 export { ProfileRandomizerTab } from './profile-tab/ProfileRandomizerTab';
 export type { ProfileRandomizerTabProps } from './profile-tab/ProfileRandomizerTab';
 export * from './archipelia';
+export { ArchipelagoFiles, ArchipelagoFilesSlot } from './views/ArchipelagoFiles';
+export type { ArchipelagoFilesProps, ArchipelagoFilesSlotProps, ArchipelagoFilesSource, ArchipelagoPlayerFile } from './views/ArchipelagoFiles';
+export { onlineSettingsSections } from './online-settings';
 export { createLocalSessionFactory } from '../session/local/local-session-factory';
 export { createOnlineSessionFactory } from '../session/online/create-online-session-factory';
 export { useSessionStore } from '../session/store/behavior/useSessionStore';
@@ -92,3 +103,8 @@ export { writePlacement } from '../session/placement/write-placement';
 export { gateRandomizerBoot } from '../session/boot/gate-randomizer-boot';
 export { startSessionRuntime } from '../session/boot/start-session-runtime';
 export { appRandomizerLog } from '../session/log/app-randomizer-log';
+export {
+  ArchipeliaConnection, ArchipeliaFields, buildLobbyFacts, lobbyConnectionFieldsOf, lobbyFormOfConnection, lobbyLineOf, lobbyRowChip,
+  lobbyRowsOf, lobbyStatusLine, randomizerFactsOf,
+} from './profile-tab/archipelia';
+export type { ArchipeliaConnectionProps, ArchipeliaFieldsProps, LobbyForm, LobbyStatusLine } from './profile-tab/archipelia';

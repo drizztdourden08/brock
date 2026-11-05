@@ -3,6 +3,7 @@ import type { AudioAdapter, AudioAdapterOptions, AudioOutput, SampleBlock } from
 import { armGestureResume } from './arm-gesture-resume';
 import { audioStateSnapshot } from './audio-state-snapshot';
 import { scheduleSamples } from './schedule-samples';
+import { shapeBlock } from './shape-block';
 import { watchAudioState } from './watch-audio-state';
 
 const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = {}): AudioAdapter => {
@@ -33,7 +34,8 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
     node.connect(target.node);
   };
 
-  const pushSamples = (block: SampleBlock): void => {
+  const pushSamples = (raw: SampleBlock): void => {
+    const block = shapeBlock(raw, options);
     if (!out) {
       owned = true;
       wire(new AudioContext({ sampleRate: block.sampleRate }));

@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind types */
+import type { CoreLog } from '../core/game-core.type';
+
 interface AudioOutput {
   context: AudioContext;
   node: AudioNode;
@@ -12,6 +14,13 @@ interface SampleBlock {
 
 interface AudioAdapterOptions {
   leadS?: number;
+  log?: CoreLog;
+}
+
+interface AudioWatchOptions {
+  output: AudioOutput;
+  log: CoreLog;
+  isHeld: () => boolean;
 }
 
 interface AudioAdapter {
@@ -24,4 +33,4 @@ interface AudioAdapter {
   dispose: () => void;
 }
 
-export type { AudioOutput, SampleBlock, AudioAdapter, AudioAdapterOptions };
+export type { AudioOutput, SampleBlock, AudioAdapter, AudioAdapterOptions, AudioWatchOptions };

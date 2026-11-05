@@ -5,6 +5,7 @@ import { usePreviewSession } from './usePreviewSession';
 import type { PreviewReport } from '../../preview-report/preview-report-store.type';
 import { trackPreviewKey } from './preview-key';
 import { singleTrackManifest } from './pack-manifest';
+import { useMsuStudioGame } from '../../game/useMsuStudioGame';
 
 const readTrack = (engine: MsuEngine): PreviewReport | null => {
   const report = engine.report();
@@ -18,6 +19,7 @@ const readTrack = (engine: MsuEngine): PreviewReport | null => {
 };
 
 const useTrackPreview = (pack: string | null, manifest: MsuPackManifest) => {
+  const game = useMsuStudioGame();
   const { start, stop: stopSession, error, reportStore } = usePreviewSession(pack);
   const [playing, setPlaying] = useState<number | null>(null);
 
@@ -31,10 +33,10 @@ const useTrackPreview = (pack: string | null, manifest: MsuPackManifest) => {
     const started = await start({
       manifest: singleTrackManifest(manifest, trackNum),
       read: readTrack,
-      begin: (engine) => engine.onMusicCtrl({ ctrl: trackNum, scene: 0, context: { entrance: 0, overworldArea: 0 } }),
+      begin: (engine) => engine.onMusicCtrl({ ctrl: trackNum, scene: 0, context: game.previewContext }),
     });
     if (!started) setPlaying((current) => (current === trackNum ? null : current));
-  }, [manifest, start]);
+  }, [manifest, start, game]);
 
   useEffect(() => stop, [pack, stop]);
 

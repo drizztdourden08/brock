@@ -13,7 +13,7 @@ const overlapNote = (setCount: number, voiceCap: number | null): string | null =
   return voiceCap === null ? `${setCount} overlapping` : `${setCount} of ${voiceCap} overlapping`;
 };
 
-const readChannel = (engine: MsuEngine<never>, channel: string): PreviewReport | null => {
+const readChannel = (engine: MsuEngine, channel: string): PreviewReport | null => {
   const report = engine.reportChannel(channel);
   if (report === null) return null;
   return {
@@ -36,7 +36,7 @@ const useSoundPreview = (pack: string | null, manifest: MsuPackManifest) => {
 
   const play = useCallback(async (channel: string, soundId: number) => {
     const key = soundPreviewKey(channel, soundId);
-    const fire = (engine: MsuEngine<never>): void => {
+    const fire = (engine: MsuEngine): void => {
       engine.onGameSound(channelIndexOf(config, channel), soundId, 0);
     };
     if (playing === key && isAdditiveChannel(config, channel) && retrigger(fire)) return;

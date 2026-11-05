@@ -8,9 +8,9 @@ import { isCurrentSession } from './is-current-session';
 import { previewLoader } from './preview-loader';
 import type { PreviewRun, PreviewSession } from './preview-session.type';
 
-const usePreviewSession = (pack: string | null) => {
-  const { game, store } = useMsuStudio<never, never>();
-  const sessionRef = useRef<PreviewSession | null>(null);
+const usePreviewSession = <Ctx = unknown>(pack: string | null) => {
+  const { game, store } = useMsuStudio<Ctx>();
+  const sessionRef = useRef<PreviewSession<Ctx> | null>(null);
   const frameRef = useRef<number | null>(null);
   const storeRef = useRef(createPreviewReportStore());
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +40,7 @@ const usePreviewSession = (pack: string | null) => {
     void session.ctx.close();
   }, []);
 
-  const start = useCallback(async (run: PreviewRun): Promise<boolean> => {
+  const start = useCallback(async (run: PreviewRun<Ctx>): Promise<boolean> => {
     stop();
     if (!pack) return false;
     setError(null);
@@ -62,7 +62,7 @@ const usePreviewSession = (pack: string | null) => {
     return true;
   }, [pack, game, store, stop, startPolling]);
 
-  const retrigger = useCallback((fire: (engine: MsuEngine<never>) => void): boolean => {
+  const retrigger = useCallback((fire: (engine: MsuEngine<Ctx>) => void): boolean => {
     const session = sessionRef.current;
     if (!session) return false;
     fire(session.engine);

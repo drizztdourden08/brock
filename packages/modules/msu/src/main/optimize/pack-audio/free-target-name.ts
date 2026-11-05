@@ -2,7 +2,7 @@
 import { OPTIMIZE_TARGET_EXTENSION } from '../../../optimize';
 import { stemOf } from './stem-of';
 
-const freeTargetName = (name: string, taken: Set<string>): string => {
+const freeTargetName = (name: string, taken: ReadonlySet<string>): string => {
   const stem = stemOf(name);
   const plain = `${stem}.${OPTIMIZE_TARGET_EXTENSION}`;
   if (!taken.has(plain)) return plain;

@@ -24,6 +24,7 @@ interface MsuStudioGame<Ctx = unknown, Target = unknown> {
   sounds: MsuSoundSource;
   soundFilterPlaceholder: string;
   maxCrossfadeSeconds: number;
+  previewContext: Ctx;
   preview?: MsuPreviewBinding<Target>;
   debug: MsuDebugChannels;
 }

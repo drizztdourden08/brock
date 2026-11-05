@@ -2,18 +2,18 @@
 import type { MsuEngine, MsuPackManifest } from '../../../types';
 import type { PreviewReport } from '../../preview-report';
 
-type ReadReport = (engine: MsuEngine<never>) => PreviewReport | null;
+type ReadReport<Ctx = unknown> = (engine: MsuEngine<Ctx>) => PreviewReport | null;
 
-interface PreviewRun {
+interface PreviewRun<Ctx = unknown> {
   manifest: MsuPackManifest;
-  read: ReadReport;
-  begin: (engine: MsuEngine<never>) => void;
+  read: ReadReport<Ctx>;
+  begin: (engine: MsuEngine<Ctx>) => void;
 }
 
-interface PreviewSession {
+interface PreviewSession<Ctx = unknown> {
   ctx: AudioContext;
-  engine: MsuEngine<never>;
-  read: ReadReport;
+  engine: MsuEngine<Ctx>;
+  read: ReadReport<Ctx>;
 }
 
 export type { PreviewRun, PreviewSession };

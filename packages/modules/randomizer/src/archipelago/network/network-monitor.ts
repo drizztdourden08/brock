@@ -41,10 +41,10 @@ const createNetworkMonitor = (deps: NetworkMonitorDeps): NetworkMonitor => {
     },
   });
   const forgetConnection = (): void => {
+    trackers.closeAll();
     pinging = false;
     pinger.reset();
     roster.reset();
-    trackers.closeAll();
     presence.clear();
   };
   const remember = (url: string | null, connection: OnlineConnection | null): void => {

@@ -6,6 +6,7 @@ const resetConnection = (room: OnlineRoom): void => {
   room.connected = false;
   room.heldReceived = [];
   room.syncPending = false;
+  room.scoutIds = [];
   room.resyncWait?.();
   room.resyncWait = null;
 };

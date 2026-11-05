@@ -38,6 +38,17 @@ describe('archipelago client handshake', { tags: ['critical'] }, () => {
     rig.sockets.last().receive([connectedPacket]);
     expect(rig.sent('LocationScouts')).toHaveLength(1);
   });
+
+  it('scouts again after a reconnect when the link dropped before the scout reply', () => {
+    const rig = createRig();
+    rig.boot();
+    rig.sockets.last().drop();
+    vi.advanceTimersByTime(1000);
+    rig.sockets.last().open();
+    rig.sockets.last().receive([roomInfo]);
+    rig.sockets.last().receive([connectedPacket]);
+    expect(rig.sent('LocationScouts')).toHaveLength(2);
+  });
 });
 
 describe('archipelago client receiving', { tags: ['critical'] }, () => {

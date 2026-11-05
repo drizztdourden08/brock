@@ -17,6 +17,8 @@ interface HostProbe {
   delivered: ReceivedItem[];
   killed: number;
   grants: number[];
+  collected: number[];
+  polling: boolean;
   nextDelivery: DeliverResult;
   fileInPlay: boolean;
   goal: boolean;
@@ -34,6 +36,8 @@ const createHostProbe = (): HostProbe => {
     delivered: [],
     killed: 0,
     grants: [],
+    collected: [],
+    polling: false,
     nextDelivery: 'delivered',
     fileInPlay: true,
     goal: false,
@@ -59,13 +63,17 @@ const createHostProbe = (): HostProbe => {
         return () => swaps.delete(f);
       },
       goalReached: () => probe.goal,
-      startPolling: () => undefined,
-      pausePolling: () => undefined,
+      startPolling() {
+        probe.polling = true;
+      },
+      pausePolling() {
+        probe.polling = false;
+      },
       readCursor: () => cursor,
       writeCursor: (next) => {
         cursor = next;
       },
-      markCollected: () => undefined,
+      markCollected: (ids) => probe.collected.push(...ids),
       setDeathLink: () => undefined,
       killLink() {
         probe.killed += 1;
@@ -120,6 +128,7 @@ interface Rig {
   client: ArchipelagoSession;
   logs: string[];
   placed: unknown[];
+  slotData: unknown[];
   connection: OnlineConnection;
   boot(): void;
   scout(): void;
@@ -134,11 +143,15 @@ const createRig = (options: { deathLink?: boolean } = {}): Rig => {
   const queue = createReceivedQueue({ store: createMemoryApStateStore(), roomHash: () => roomHashOf(SEED) });
   const logs: string[] = [];
   const placed: unknown[] = [];
+  const slotData: unknown[] = [];
   const client = createArchipelagoClient({
     game: GAME,
     host: probe.host,
     received: queue,
-    slot: () => ({ kind: 'ok', deathLink: options.deathLink === true, placement: (input) => input }),
+    slot(raw) {
+      slotData.push(raw);
+      return { kind: 'ok', deathLink: options.deathLink === true, placement: (input) => input };
+    },
     locationKeyOf: (_id, name) => name,
     placed: (placement) => placed.push(placement),
     createSocket: sockets.createSocket,
@@ -151,7 +164,7 @@ const createRig = (options: { deathLink?: boolean } = {}): Rig => {
   const sent = (cmd: string): Record<string, unknown>[] =>
     (sockets.sentPackets().flat() as Record<string, unknown>[]).filter((packet) => packet.cmd === cmd);
   return {
-    sockets, probe, queue, cache, client, logs, placed, connection, sent,
+    sockets, probe, queue, cache, client, logs, placed, slotData, connection, sent,
     boot() {
       client.connect(connection);
       sockets.last().open();
@@ -165,10 +178,10 @@ const createRig = (options: { deathLink?: boolean } = {}): Rig => {
   };
 };
 
-const openRoom = (rig: Rig): void => {
+const openRoom = (rig: Rig, info: Record<string, unknown> = roomInfo): void => {
   rig.client.connect(rig.connection);
   rig.sockets.last().open();
-  rig.sockets.last().receive([roomInfo]);
+  rig.sockets.last().receive([info]);
 };
 
 export { GAME, SEED, SLOT_NAME, connectedPacket, createRig, dataPackage, gameData, locationInfo, openRoom, roomInfo };

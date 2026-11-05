@@ -4,8 +4,8 @@
   "parts": {
     "primitives": ["packages/modules/input/src/primitives"],
     "composites": ["packages/modules/input/src/composites"],
-    "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds", "packages/modules/catalog/src/compounds"],
-    "views": ["packages/modules/input/src/views"]
+    "compounds": ["packages/react/src/compounds", "packages/modules/input/src/compounds", "packages/modules/catalog/src/compounds", "packages/modules/port-kit/src/renderer/components", "packages/modules/randomizer/src/renderer/archipelia", "packages/modules/randomizer/src/renderer/profile-tab/archipelia", "packages/modules/randomizer/src/renderer/views/ArchipelagoFiles/sub-components"],
+    "views": ["packages/modules/input/src/views", "packages/modules/randomizer/src/renderer/views"]
   },
   "stories": "packages/react/stories",
   "guide": { "usage": "enforce", "tree": "packages/react/src/compounds/app-tree.constants.ts" }

@@ -9,6 +9,12 @@ catalogs:
     '@changesets/cli':
       specifier: ^2.29.7
       version: 2.31.1
+    '@drizztdourden08/archipelia-client-kit':
+      specifier: ^0.5.0
+      version: 0.5.0
+    '@drizztdourden08/archipelia-lobby-protocol':
+      specifier: ^1.5.0
+      version: 1.5.0
     '@drizztdourden08/tessera':
       specifier: ^0.102.0
       version: 0.102.0
@@ -480,6 +486,12 @@ importers:
 
   packages/modules/randomizer:
     dependencies:
+      '@drizztdourden08/archipelia-client-kit':
+        specifier: 'catalog:'
+        version: 0.5.0
+      '@drizztdourden08/archipelia-lobby-protocol':
+        specifier: 'catalog:'
+        version: 1.5.0
       '@drizztdourden08/brock-core':
         specifier: workspace:*
         version: link:../../core
@@ -493,6 +505,9 @@ importers:
       '@drizztdourden08/tessera':
         specifier: 'catalog:'
         version: 0.102.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
+      electron:
+        specifier: 'catalog:'
+        version: 42.11.8
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -909,6 +924,15 @@ packages:
     engines: {node: '>=20.19.0'}
     peerDependencies:
       postcss-selector-parser: ^7.1.1
+
+  '@drizztdourden08/archipelia-client-kit@0.5.0':
+    resolution: {integrity: sha512-XxGtttWthvXj6d90KEr7cr0Af2SBectcJEra4d70o6NFyuX4uJUT3QYkvEXEl+I5YJkZcBa4POJlFq0+DI5bpQ==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/archipelia-client-kit/0.5.0/f21865c7dd9f3c89054f429b7ece90f0ab239391}
+    engines: {node: '>=24'}
+    hasBin: true
+
+  '@drizztdourden08/archipelia-lobby-protocol@1.5.0':
+    resolution: {integrity: sha512-QScXWUdbILI5pSGM6MiXK2SicGwG7RxuxbwbH1K4VDbKQwWkMu5Wo8UaKu67vte2N2/TVHFRHuU8I7JmkD36eg==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/archipelia-lobby-protocol/1.5.0/2030318f7154f97990634f38c6b1ebc9916ed175}
+    engines: {node: '>=24'}
 
   '@drizztdourden08/standards@0.14.8':
     resolution: {integrity: sha512-IujsTfkmpfnsLD49Im3cDpb5V7FOi7mnQJUde1zmWgcc9TVC+EqFP62HWRJHLBEBrP3O4twEbNYcRqu1If0Gng==, tarball: https://npm.pkg.github.com/download/@drizztdourden08/standards/0.14.8/94b7eaa94ad1a642287802b2db2074560479eb35}
@@ -3128,6 +3152,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   file-entry-cache@11.1.5:
     resolution: {integrity: sha512-+PFTHITI08JIGhnNpGNI8T8inUpgZfk3GNEqfT9R2zZV2iFXg3CvqzSl/uEhs7TSGujYRELEANyDvS8Fj7+S7Q==}
@@ -5651,6 +5678,12 @@ snapshots:
     dependencies:
       postcss-selector-parser: 7.1.6
 
+  '@drizztdourden08/archipelia-client-kit@0.5.0':
+    dependencies:
+      fflate: 0.8.3
+
+  '@drizztdourden08/archipelia-lobby-protocol@1.5.0': {}
+
   '@drizztdourden08/standards@0.14.8(eslint@10.11.0(jiti@2.7.0))(stylelint@17.15.0(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.11(@types/node@24.19.0)(happy-dom@20.14.5)(vite@7.3.6(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)))':
     dependencies:
       '@eslint/js': 10.0.1(eslint@10.11.0(jiti@2.7.0))
@@ -7856,6 +7889,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  fflate@0.8.3: {}
 
   file-entry-cache@11.1.5:
     dependencies:

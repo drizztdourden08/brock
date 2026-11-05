@@ -32,7 +32,7 @@ const useControllerReportForm = (params: ControllerReportFormParams) => {
   const backToDiagnostics = useCallback(() => setStep('diagnostics'), []);
 
   const submit = useCallback(async () => {
-    if (!canSubmit || debugText === null) return;
+    if (!canSubmit) return;
     setStatus('submitting');
     try {
       const request = buildReportRequest({

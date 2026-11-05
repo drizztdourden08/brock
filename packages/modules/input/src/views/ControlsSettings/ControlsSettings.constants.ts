@@ -28,7 +28,6 @@ const CONTROLS_ROOT_SELECTOR = '.controls-settings';
 const KEYBOARD_ICON_FAMILY = 'keyboard';
 const GENERIC_ICON_FAMILY = 'generic';
 
-
 const DRAG_SDL_TYPE = 'application/x-sdl-type';
 const DRAG_DEVICE_NAME = 'application/x-device-name';
 const DRAG_VID = 'application/x-vid';

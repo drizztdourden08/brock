@@ -89,6 +89,9 @@ export { useDeliveryQueue } from './views/DeliveryQueueIndicator/behavior/useDel
 export { ProfileRandomizerTab } from './profile-tab/ProfileRandomizerTab';
 export type { ProfileRandomizerTabProps } from './profile-tab/ProfileRandomizerTab';
 export * from './archipelia';
+export { ArchipelagoFiles, ArchipelagoFilesSlot } from './views/ArchipelagoFiles';
+export type { ArchipelagoFilesProps, ArchipelagoFilesSlotProps, ArchipelagoFilesSource, ArchipelagoPlayerFile } from './views/ArchipelagoFiles';
+export { onlineSettingsSections } from './online-settings';
 export { createLocalSessionFactory } from '../session/local/local-session-factory';
 export { createOnlineSessionFactory } from '../session/online/create-online-session-factory';
 export { useSessionStore } from '../session/store/behavior/useSessionStore';

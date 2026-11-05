@@ -135,3 +135,4 @@ export * from './ap-ids';
 export * from './player-yaml';
 export * from './game-defaults';
 export * from './scouts';
+export * from './online-notice-settings';

@@ -13,7 +13,10 @@ const resolveVerbBindings = (defs: readonly VerbDef[], source: VerbSource): Verb
   const base = baseVerbBindings(defs, source);
   if (!source.stored) return base;
   const verbs: VerbBindings = {};
-  for (const def of defs) verbs[def.id] = source.stored[def.id] ?? base[def.id];
+  for (const def of defs) {
+    const binding = source.stored[def.id] ?? base[def.id];
+    if (binding) verbs[def.id] = binding;
+  }
   return verbs;
 };
 

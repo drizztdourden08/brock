@@ -2,10 +2,10 @@
 import { SDL_AXIS } from '../../input.constants';
 
 const AXIS_FALLBACK_GLYPHS: Record<number, Record<'-' | '+', string>> = {
-  [SDL_AXIS.LEFT_X]: { '-': 'generic-stick-left', '+': 'generic-stick-right' },
-  [SDL_AXIS.RIGHT_X]: { '-': 'generic-stick-left', '+': 'generic-stick-right' },
-  [SDL_AXIS.LEFT_Y]: { '-': 'generic-stick-up', '+': 'generic-stick-down' },
-  [SDL_AXIS.RIGHT_Y]: { '-': 'generic-stick-up', '+': 'generic-stick-down' },
+  [SDL_AXIS.LEFTX]: { '-': 'generic-stick-left', '+': 'generic-stick-right' },
+  [SDL_AXIS.RIGHTX]: { '-': 'generic-stick-left', '+': 'generic-stick-right' },
+  [SDL_AXIS.LEFTY]: { '-': 'generic-stick-up', '+': 'generic-stick-down' },
+  [SDL_AXIS.RIGHTY]: { '-': 'generic-stick-up', '+': 'generic-stick-down' },
   [SDL_AXIS.LEFT_TRIGGER]: { '-': 'generic-trigger-a', '+': 'generic-trigger-a' },
   [SDL_AXIS.RIGHT_TRIGGER]: { '-': 'generic-trigger-b', '+': 'generic-trigger-b' },
 };

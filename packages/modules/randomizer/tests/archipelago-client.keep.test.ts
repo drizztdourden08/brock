@@ -1,6 +1,15 @@
 /* @layer core @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GAME, SLOT_NAME, connectedPacket, createRig, gameData, openRoom, roomInfo } from './archipelago-client.fixture';
+import type { Rig } from './archipelago-client.fixture';
+
+const reconnect = (rig: Rig): void => {
+  rig.sockets.last().drop();
+  vi.advanceTimersByTime(1000);
+  rig.sockets.last().open();
+  rig.sockets.last().receive([roomInfo]);
+  rig.sockets.last().receive([connectedPacket]);
+};
 
 afterEach(() => {
   vi.useRealTimers();
@@ -31,22 +40,14 @@ describe('archipelago client handshake', { tags: ['critical'] }, () => {
     rig.boot();
     expect(rig.sent('LocationScouts')).toEqual([{ cmd: 'LocationScouts', locations: [100, 101], create_as_hint: 0 }]);
     rig.scout();
-    rig.sockets.last().drop();
-    vi.advanceTimersByTime(1000);
-    rig.sockets.last().open();
-    rig.sockets.last().receive([roomInfo]);
-    rig.sockets.last().receive([connectedPacket]);
+    reconnect(rig);
     expect(rig.sent('LocationScouts')).toHaveLength(1);
   });
 
   it('scouts again after a reconnect when the link dropped before the scout reply', () => {
     const rig = createRig();
     rig.boot();
-    rig.sockets.last().drop();
-    vi.advanceTimersByTime(1000);
-    rig.sockets.last().open();
-    rig.sockets.last().receive([roomInfo]);
-    rig.sockets.last().receive([connectedPacket]);
+    reconnect(rig);
     expect(rig.sent('LocationScouts')).toHaveLength(2);
   });
 });

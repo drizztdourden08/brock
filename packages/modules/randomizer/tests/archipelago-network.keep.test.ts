@@ -71,9 +71,9 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     const rig = startedRig();
     bootRoom(rig, pairRoom);
     rig.sockets.last().receive([presencePacket('Join')]);
-    expect(playerAt(rig, 2).online).toBe(true);
+    expect(playerAt(rig, 2)).toMatchObject({ online: true });
     rig.sockets.last().receive([presencePacket('Part')]);
-    expect(playerAt(rig, 2).online).toBe(false);
+    expect(playerAt(rig, 2)).toMatchObject({ online: false });
   });
 });
 

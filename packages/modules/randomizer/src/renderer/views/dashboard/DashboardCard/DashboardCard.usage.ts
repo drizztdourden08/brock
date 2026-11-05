@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'The title is the card heading.',
   ],
-  example: `import { DashboardCard } from './DashboardCard';
+  example: `import { DashboardCard } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Panel = () => <DashboardCard span={2} title="Progress">12 of 40 checks</DashboardCard>;
 `,

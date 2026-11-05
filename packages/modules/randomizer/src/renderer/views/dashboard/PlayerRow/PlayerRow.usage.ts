@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'The status is written as text beside the dot, so colour is not the only signal.',
   ],
-  example: `import { PlayerRow } from './PlayerRow';
+  example: `import { PlayerRow } from '@drizztdourden08/brock-randomizer/renderer';
 
 import type { ComponentProps } from 'react';
 

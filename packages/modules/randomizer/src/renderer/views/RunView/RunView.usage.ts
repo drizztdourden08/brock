@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'Each panel is a titled card; the empty states are plain text.',
   ],
-  example: `import { RunView } from './RunView';
+  example: `import { RunView } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Run = () => <RunView />;
 `,

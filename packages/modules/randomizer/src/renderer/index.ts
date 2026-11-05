@@ -55,6 +55,10 @@ export { useOnlineConnection } from './online/hooks/behavior/useOnlineConnection
 export { connectionStep };
 export { NetworkView } from './views/NetworkView';
 export { OnlineView } from './views/OnlineView';
+export { LogsView } from './views/LogsView';
+export { OptionsView } from './views/OptionsView';
+export { RunView } from './views/RunView';
+export { SpoilerView } from './views/SpoilerView';
 export type { RegisterOptions } from './game-registry/register-options.type';
 export type { ChecksPrefs, ChecksViewProps } from './views/ChecksView';
 export type { TrackerFeedInput } from './tracker/feed/tracker-feed-state.type';
@@ -78,9 +82,9 @@ export { randomizerReviewSections } from './options/review/randomizer-review-sec
 export { useRollProgress } from './profile-hooks/roll-progress';
 export type { OptionTabModel, OptionTabItem } from './options/behavior/option-tab-model.type';
 export {
-  DashboardCard, PANEL_MIN_WIDTH, StatTiles, formatTime, sessionToneOf, tallyOutOf, tallyTile,
+  DashboardCard, PANEL_MIN_WIDTH, PlayerRow, StatTiles, formatTime, sessionToneOf, tallyOutOf, tallyTile,
 } from './views/dashboard';
-export type { DashboardCardProps, DashboardSpan, RunTile, StatTilesProps, Tally, TileMeter } from './views/dashboard';
+export type { DashboardCardProps, DashboardSpan, PlayerRowProps, RunTile, StatTilesProps, Tally, TileMeter } from './views/dashboard';
 export { CheckToasts } from './views/CheckToasts';
 export type { CheckToastsProps } from './views/CheckToasts';
 export { DeliveryQueueIndicator } from './views/DeliveryQueueIndicator';

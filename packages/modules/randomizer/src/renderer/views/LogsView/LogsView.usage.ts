@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'The search and the say box are labelled inputs.',
   ],
-  example: `import { LogsView } from './LogsView';
+  example: `import { LogsView } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Logs = () => <LogsView />;
 `,

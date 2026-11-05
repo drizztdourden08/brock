@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'Rows are label and value text, and the empty state is plain text.',
   ],
-  example: `import { OptionsView } from './OptionsView';
+  example: `import { OptionsView } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Options = () => <OptionsView />;
 `,

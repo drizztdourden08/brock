@@ -2,6 +2,8 @@
 export { DashboardCard } from './DashboardCard';
 export type { DashboardCardProps, DashboardSpan } from './DashboardCard';
 export { StatTiles } from './StatTiles';
+export { PlayerRow } from './PlayerRow';
+export type { PlayerRowProps } from './PlayerRow/PlayerRow.type';
 export type { StatTilesProps } from './StatTiles';
 export type { RunTile, TileMeter } from './run-tile.type';
 export type { Tally } from './tally.type';

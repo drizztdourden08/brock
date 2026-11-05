@@ -19,7 +19,7 @@ const usage = {
     'It shows LobbySetup, so every input has a label.',
   ],
   tree: { path: ['a value the user sets', 'a whole record', 'edit it in place'], rule: 'The Archipelia lobby a profile joins.' },
-  example: `import { ArchipeliaFields } from './ArchipeliaFields';
+  example: `import { ArchipeliaFields } from '@drizztdourden08/brock-randomizer/renderer';
 
 import type { ComponentProps } from 'react';
 

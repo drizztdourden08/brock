@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'Rows are label and value text, and the empty state is plain text.',
   ],
-  example: `import { SpoilerView } from './SpoilerView';
+  example: `import { SpoilerView } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Spoiler = () => <SpoilerView />;
 `,

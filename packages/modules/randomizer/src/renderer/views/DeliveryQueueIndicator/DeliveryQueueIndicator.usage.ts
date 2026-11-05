@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'The card has a title and a count, and the overflow is plain text.',
   ],
-  example: `import { DeliveryQueueIndicator } from './DeliveryQueueIndicator';
+  example: `import { DeliveryQueueIndicator } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Mounted = () => <DeliveryQueueIndicator maxVisible={5} />;
 `,

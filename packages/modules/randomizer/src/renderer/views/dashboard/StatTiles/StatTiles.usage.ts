@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'The meter carries the tile label as its name.',
   ],
-  example: `import { StatTiles } from './StatTiles';
+  example: `import { StatTiles } from '@drizztdourden08/brock-randomizer/renderer';
 
 import type { ComponentProps } from 'react';
 

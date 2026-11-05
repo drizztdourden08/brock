@@ -18,7 +18,7 @@ const usage = {
   a11y: [
     'Each toast has a text label, and the part renders nothing when no toast is waiting.',
   ],
-  example: `import { CheckToasts } from './CheckToasts';
+  example: `import { CheckToasts } from '@drizztdourden08/brock-randomizer/renderer';
 
 const Mounted = () => <CheckToasts duration={4000} />;
 `,

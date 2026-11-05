@@ -6,9 +6,9 @@ import { exportRules } from './export-rules';
 import { exportedOptionsOf } from './exported-options-of';
 import type { ApExportSource } from './export-source.type';
 import type { WorldExport } from './export.type';
-import type { World } from '../../world';
+import type { WorldKeys } from '../../world';
 
-const exportApWorld = <W extends World>(source: ApExportSource<W>): WorldExport => {
+const exportApWorld = <K extends WorldKeys>(source: ApExportSource<K>): WorldExport => {
   const world = source.world();
   return {
     'game.json': { game: source.game, worldVersion: source.worldVersion, goalEvent: source.goalEvent },

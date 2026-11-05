@@ -3,15 +3,15 @@ import { TRUE } from '../../world';
 import { claimName } from './claim-name';
 import type { ApExportSource } from './export-source.type';
 import type { ExportedLocation } from './export.type';
-import type { KeysOf, World, WorldLocation } from '../../world';
+import type { World, WorldKeys, WorldLocation } from '../../world';
 
-const idOf = <W extends World>(source: ApExportSource<W>, location: WorldLocation<KeysOf<W>>): number => {
+const idOf = <K extends WorldKeys>(source: ApExportSource<K>, location: WorldLocation<K>): number => {
   const id = source.locationIds[location.key];
   if (id === undefined) throw new Error(`location has no Archipelago id: ${location.key}`);
   return id;
 };
 
-const exportLocations = <W extends World>(source: ApExportSource<W>, world: W): ExportedLocation[] => {
+const exportLocations = <K extends WorldKeys>(source: ApExportSource<K>, world: World<K>): ExportedLocation[] => {
   const names = new Set<string>();
   return [...world.locationsByKey.values()].map((location) => {
     const id = idOf(source, location);

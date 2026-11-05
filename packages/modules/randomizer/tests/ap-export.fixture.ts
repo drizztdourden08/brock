@@ -30,7 +30,7 @@ const toyExportWorld = (): World => {
   }, { seed: 'export' });
 };
 
-const toySource = (overrides: Partial<ApExportSource<World>> = {}): ApExportSource<World> => ({
+const toySource = (overrides: Partial<ApExportSource> = {}): ApExportSource => ({
   game: 'Toy',
   worldVersion: '0.1.0',
   goalEvent: 'win',

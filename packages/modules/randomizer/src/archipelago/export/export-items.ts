@@ -2,9 +2,9 @@
 import { claimName } from './claim-name';
 import type { ApExportSource } from './export-source.type';
 import type { ExportedItem } from './export.type';
-import type { World } from '../../world';
+import type { WorldKeys } from '../../world';
 
-const exportItems = <W extends World>(source: ApExportSource<W>): ExportedItem[] => {
+const exportItems = <K extends WorldKeys>(source: ApExportSource<K>): ExportedItem[] => {
   const items = Object.entries(source.itemIds).map(([key, id]): ExportedItem => {
     const name = source.itemNames[id];
     if (name === undefined) throw new Error(`item has no Archipelago name: ${key}`);

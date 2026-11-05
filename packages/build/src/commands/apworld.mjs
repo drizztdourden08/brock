@@ -1,19 +1,30 @@
 /* @layer tooling-scripts @kind logic */
 import { APWORLD_USAGE } from '../apworld/apworld.constants.mjs';
 import { buildApworld } from '../apworld/build-apworld.mjs';
+import { ensureApworld } from '../apworld/ensure-apworld.mjs';
+import { exportApworld } from '../apworld/export-apworld.mjs';
+import { writePlayerFile } from '../apworld/write-player-file.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 
+const VERBS = {
+  build: (rootDir, options) => loadBrockConfig(rootDir).then((config) => buildApworld(rootDir, config, options)),
+  export: (rootDir, options) => exportApworld(rootDir, options),
+  ensure: (rootDir, options) => loadBrockConfig(rootDir).then((config) => ensureApworld(rootDir, config, options)),
+  'player-file': (rootDir, options) => writePlayerFile(rootDir, options),
+};
+
 /**
- * @param {{ rootDir: string, args?: string[], ap?: string[], data?: string, out?: string, module?: string, author?: string, public?: string }} ctx args are the words after apworld
+ * @param {{ rootDir: string, args?: string[] }} ctx args are the words after apworld; the rest are the command options
  * @returns {Promise<number>} exit code
  */
 const runApworld = async ({ rootDir, args = [], ...options }) => {
-  if (args[0] !== 'build') {
+  const verb = VERBS[args[0]];
+  if (!verb) {
     console.error(APWORLD_USAGE);
     return 1;
   }
   try {
-    console.log(`brock apworld: ${await buildApworld(rootDir, await loadBrockConfig(rootDir), options)}`);
+    console.log(`brock apworld: ${await verb(rootDir, options)}`);
     return 0;
   } catch (error) {
     console.error(`brock apworld: ${error instanceof Error ? error.message : String(error)}`);

@@ -10,7 +10,13 @@ An Archipelago server imports a small Python package, an apworld, for every game
 
 ## Write the JSON export
 
-Call `exportApWorld(source)` from `@drizztdourden08/brock-randomizer/archipelago`. It returns six files as a map from file name to data: `game.json`, `locations.json`, `regions.json`, `items.json`, `rules.json` and `options.json`. Write each one into a folder, by default `build/apworld-data` in the app. A small script of your own does it; run it with whatever loads your game's TypeScript.
+Call `exportApWorld(source)` from `@drizztdourden08/brock-randomizer/archipelago`. It returns six files as a map from file name to data: `game.json`, `locations.json`, `regions.json`, `items.json`, `rules.json` and `options.json`. Write each one into a folder, by default `build/apworld-data` in the app. You do not need a script of your own. `brock apworld export` does it.
+
+```sh
+brock apworld export --entry packages/game-core/src/randomizer/archipelago/index.ts --fn exportCtWorld
+```
+
+`--entry` is the game's TypeScript file and `--fn` is the function it exports. The function takes nothing and returns the six files as a map from file name to data. The command loads the entry with the app's own Vite, as a module loader only, so the app needs no extra dependency. It writes the files to `--ap-data` (default `build/apworld-data`).
 
 ## Build the apworld
 
@@ -29,6 +35,22 @@ Give each Archipelago version you support, oldest first. The first and last set 
 | `--ap-public <dir>` | none; with it, each build is also copied to `<dir>/<version>/<module>.apworld` with a `builds.json` index |
 
 The app version comes from the app's `package.json`. The game name and world version come from `game.json`. The command finds the Archipelia client kit through the randomizer module, so the app needs no extra dependency.
+
+## Rebuild only when needed
+
+```sh
+brock apworld ensure --entry <ts file> --fn <export name> --ap-version 0.6.2
+```
+
+`ensure` takes the options of `export` and `build`. It compares the built `<module>.apworld` with the newest file under each `--ap-source` folder (repeat it; the default is the entry's folder), the app's `package.json` and the loader. When nothing is newer it prints `up to date` and does nothing. Otherwise it runs export, then build.
+
+## Write a player file
+
+```sh
+brock apworld player-file --entry <ts file> --fn <export name> --name Hero --out build/hero.yaml
+```
+
+The function gets one object: `slotName` (from `--name`), `options` (values from a `--options <file.json>` and from repeated `--set key=value`), `seedText` (from `--seed`, default the slot name) and `appVersion` (from `package.json`). It returns the yaml text, or an object with a `yaml` string. The command writes it to `--out`.
 
 ## What the player file carries
 

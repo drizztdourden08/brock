@@ -1,0 +1,12 @@
+/* @layer renderer-shell @kind style */
+.msu-file-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.msu-file-summary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}

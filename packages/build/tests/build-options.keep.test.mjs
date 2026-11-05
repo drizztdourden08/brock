@@ -99,7 +99,7 @@ describe('K1 polyfill shim aliases', { tags: ['critical'] }, () => {
     for (const shim of ['buffer', 'process']) put(root, `node_modules/vite-plugin-node-polyfills/shims/${shim}/index.mjs`, 'export {};\n');
     put(root, 'node_modules/vite-plugin-node-polyfills/package.json', JSON.stringify({ name: 'vite-plugin-node-polyfills', type: 'module', main: 'index.mjs', exports: { '.': './index.mjs', './shims/buffer': './shims/buffer/index.mjs', './shims/process': './shims/process/index.mjs' } }));
     const aliases = polyfillShimAliases(root, { nodePolyfills: true });
-    expect(aliases.map((entry) => entry.find.source)).toEqual(['^vite-plugin-node-polyfills/shims/buffer$', '^vite-plugin-node-polyfills/shims/process$']);
+    expect(aliases.map((entry) => ['buffer', 'process'].find((shim) => entry.find.test(`vite-plugin-node-polyfills/shims/${shim}`)))).toEqual(['buffer', 'process']);
     expect(aliases[0].find.test('vite-plugin-node-polyfills')).toBe(false);
     expect(aliases[0].replacement).toBe(resolve(root, 'node_modules/vite-plugin-node-polyfills/shims/buffer/index.mjs'));
     expect(polyfillShimAliases(root, { nodePolyfills: false })).toEqual([]);

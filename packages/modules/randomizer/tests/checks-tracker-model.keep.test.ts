@@ -18,7 +18,7 @@ const provider = trackerFromDef(toyVanillaDef(), {
   facetsOf: (key) => (key.startsWith('t') ? ['town'] : ['wild']),
   kindOf: (key): TrackerKind => (EVENTS.has(key) ? 'event' : 'item'),
   badgesOf: (key) => (key === 't1' ? [{ id: 'now', label: 'now', tone: 'success' }] : []),
-  artOf: (key) => (key === 't1' ? 'art/t1.png' : null),
+  artOf: (key) => (key === 'key' ? 'art/key.png' : null),
 });
 
 const placement = (): DefPlacement => {
@@ -41,7 +41,7 @@ describe('checks tracker model', { tags: ['critical'] }, () => {
     expect(rows.map((row) => row.key).sort()).toEqual(['f1', 'l1', 'l2', 't1', 't2']);
     const first = rows.find((row) => row.key === 't1');
     expect(first?.label).toBe('Spot t1');
-    expect(first?.art).toBe('art/t1.png');
+    expect(first?.art).toBe('art/key.png');
     expect(first?.badges).toHaveLength(1);
     expect(rows.find((row) => row.key === 'f1')?.marked).toBe(true);
     expect(rows.find((row) => row.key === 'l1')?.kind).toBe('event');

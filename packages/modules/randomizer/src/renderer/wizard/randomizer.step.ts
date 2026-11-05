@@ -3,6 +3,8 @@ import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
 import type { RandomizerFormState } from '../../contract/randomizer-form-state.type';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { buildOptionsSnapshot } from '../../world/options/build-options-snapshot';
+import { connectionShown } from '../online/connection-step/connection-shown';
+import { connectionValuesOf } from '../online/connection-step/connection-values-of';
 import { withConnection } from '../online/connection-step/with-connection';
 import { RandomizerStepBody } from './RandomizerStepBody';
 import { formOf } from './form-of';
@@ -24,7 +26,8 @@ const randomizerStep: ProfileWizardStepDef<RandomizerFormState> = {
     const game = useRandomizerGameStore.getState().game;
     if (!game || !form.enabled) return {};
     const options = buildOptionsSnapshot(game.catalog ?? [], optionsSliceOf(values).overrides);
-    return { randomizer: withConnection(game.profile.toConfig(form, options, values), values) };
+    const randomizer = withConnection(game.profile.toConfig(form, options, values), values);
+    return connectionShown(values) ? { randomizer, randomizerConnection: connectionValuesOf(values) } : { randomizer };
   },
 };
 

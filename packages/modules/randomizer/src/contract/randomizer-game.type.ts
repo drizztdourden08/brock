@@ -12,6 +12,7 @@ import type { ArchipelagoGame } from './archipelago-game.type';
 import type { CoreSignal } from './core-signal.type';
 import type { RandomizerPoll } from './randomizer-poll.type';
 import type { RollContext } from './roll-context.type';
+import type { JoinedContext, RollOutcome } from './roll-outcome.type';
 import type { WorldStamp } from './world-stamp.type';
 import type { PlacementSummary } from './placement-summary.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
@@ -26,7 +27,8 @@ type RandomizerGame<P = DefPlacement, A = unknown> = {
   world: WorldStamp;
   placementSchemas: SchemaSet;
   core: CoreSignal;
-  roll(config: RandomizerProfileConfig, ctx: RollContext): P | Promise<P>;
+  roll(config: RandomizerProfileConfig, ctx: RollContext): RollOutcome<P> | Promise<RollOutcome<P>>;
+  onJoined?(result: unknown, ctx: JoinedContext): void | Promise<void>;
   describe(placement: P): PlacementSummary;
   isPlacement?(raw: unknown): raw is P;
   memory: MemoryBridge;

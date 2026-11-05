@@ -5,7 +5,11 @@ export { defineRandomizerGame } from './contract/define-randomizer-game';
 export type { RandomizerGame } from './contract/randomizer-game.type';
 export type { RandomizerViews, RandomizerSubStep, ChecksWidgetViews, OptionsStepProps, OptionTab, OptionTabProps, ConnectionBodies, RunPanelDef, RunPanelProps, LogRule } from './contract/randomizer-views.type';
 export type { InventoryArea, InventoryLayout, InventoryProvider, InventorySlot, InventoryWidgetSlot } from './contract/inventory.type';
+export type { ConnectionBody, ConnectionView } from './contract/connection-view.type';
 export type { RollContext } from './contract/roll-context.type';
+export type { JoinedContext, RollJoined, RollOutcome } from './contract/roll-outcome.type';
+export { joinedRoll } from './contract/joined-roll';
+export { isJoinedRoll } from './contract/is-joined-roll';
 export type { WorldStamp } from './contract/world-stamp.type';
 export type { RandomizerPoll } from './contract/randomizer-poll.type';
 export type { CoreSignal } from './contract/core-signal.type';
@@ -19,6 +23,7 @@ export type { ArchipelagoGame } from './contract/archipelago-game.type';
 export type { ForeignItem } from './session/applier/foreign-item.type';
 export type {
   ArchipelagoConnection,
+  RandomizerConnectionValues,
   RandomizerModeId,
   RandomizerModes,
   RandomizerTypeRegistry,

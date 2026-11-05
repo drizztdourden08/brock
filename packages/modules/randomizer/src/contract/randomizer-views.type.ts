@@ -4,7 +4,7 @@ import type { ProfileWizardStepBodyProps } from '@drizztdourden08/brock-react';
 import type { RandomizerModeId, RandomizerProfileConfig } from '../augment';
 import type { RandomizerOptions } from '../randomizer-options.type';
 import type { RuleOptionValue } from '../world/types/rule-option-value.type';
-import type { RandomizerFormState } from './randomizer-form-state.type';
+import type { ConnectionBody, ConnectionView } from './connection-view.type';
 import type { WidgetSlot } from './widget-slot.type';
 
 interface RandomizerSubStep {
@@ -57,7 +57,7 @@ interface OptionTab {
   Body?: ComponentType<OptionTabProps>;
 }
 
-type ConnectionBodies = Partial<Record<RandomizerModeId, ComponentType<ProfileWizardStepBodyProps<RandomizerFormState>>>>;
+type ConnectionBodies = Partial<Record<RandomizerModeId, ConnectionBody | ConnectionView>>;
 
 interface RandomizerViews {
   Options?: ComponentType;

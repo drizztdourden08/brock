@@ -17,6 +17,8 @@ interface ArchipelagoConnection {
 
 type RandomizerModeId = keyof RandomizerModes;
 
+type RandomizerConnectionValues = Readonly<Record<string, unknown>>;
+
 interface RandomizerTypeRegistry {}
 
 type RandomizerProfileOptions = RandomizerTypeRegistry extends { options: infer O } ? O : RandomizerOptions;
@@ -38,6 +40,7 @@ declare module '@drizztdourden08/brock-core/augment' {
   }
   interface ProfileCreateExtension {
     randomizer?: RandomizerProfileConfig;
+    randomizerConnection?: RandomizerConnectionValues;
   }
   interface ProfilePatchExtension {
     randomizer?: RandomizerProfileConfig;
@@ -48,6 +51,7 @@ export type {
   ArchipelagoConnection,
   RandomizerModes,
   RandomizerModeId,
+  RandomizerConnectionValues,
   RandomizerTypeRegistry,
   RandomizerOptions,
   RandomizerProfileOptions,

@@ -1,0 +1,35 @@
+/* @layer renderer-components @kind style */
+.binding-section {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width-thin) solid var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.binding-section--drag-over {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 var(--size-12) var(--c-primary-soft), inset 0 0 var(--size-12) var(--c-primary-soft);
+}
+
+.binding-section__header {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semi);
+  text-transform: uppercase;
+  letter-spacing: calc(0.5 * var(--size-1));
+  color: var(--c-text-dim);
+  padding: var(--space-sm) var(--space-md) var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.binding-section__list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) auto;
+}
+
+.binding-section__list > * { grid-column: 1 / -1; }

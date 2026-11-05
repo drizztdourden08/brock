@@ -9,11 +9,11 @@ import { BUILT_IN_STEP_NAMES, STEPS_AFTER_SEED, STEPS_BEFORE_SEED } from './run-
 import type { ReviewEnv } from './review.type';
 import { resetUi } from './steps/reset-ui';
 
-const runReview = async (env: ReviewEnv): Promise<void> => {
+const runReview = async (readEnv: () => ReviewEnv): Promise<void> => {
   await settle();
-  const steps = [...STEPS_BEFORE_SEED, ...seedSteps(env.review), ...STEPS_AFTER_SEED, ...appSteps(env.review, BUILT_IN_STEP_NAMES)];
+  const steps = [...STEPS_BEFORE_SEED, ...seedSteps(readEnv().review), ...STEPS_AFTER_SEED, ...appSteps(readEnv().review, BUILT_IN_STEP_NAMES)];
   for (const step of steps) {
-    const tour = createStepTour(env, step.name);
+    const tour = createStepTour(readEnv(), step.name);
     if (step.timeoutMs !== undefined) declareStepLimit(step.timeoutMs);
     try {
       await step.run(tour);

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Box } from '@drizztdourden08/tessera/primitives';
-import '../ControllerPauseLayer.css';
+import './ManualPauseOverlay.css';
 
 const ManualPauseOverlay = () => (
   <Box className="controller-pause-layer">

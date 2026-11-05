@@ -1,0 +1,27 @@
+/* @layer renderer-shell @kind style */
+.counter-table {
+  block-size: calc(3 * var(--size-20));
+  background: var(--c-inset);
+  border: var(--border-width-thin) solid var(--c-hairline);
+  border-radius: var(--radius-md);
+  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+}
+
+.counter-table__row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.counter-table__label {
+  color: var(--c-text-muted);
+}
+
+.counter-table__value {
+  inline-size: 24ch;
+  color: var(--c-text);
+  text-align: end;
+}
+
+.counter-table__row[data-empty='yes'] .counter-table__label {
+  color: var(--c-text-muted);
+}

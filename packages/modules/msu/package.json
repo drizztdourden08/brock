@@ -17,9 +17,13 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./augment": "./src/augment.ts",
     "./format": "./src/entries/format/index.ts",
+    "./main": "./src/main/index.ts",
     "./packs": "./src/entries/packs/index.ts",
     "./player": "./src/entries/player/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
     "./session": "./src/entries/session/index.ts",
     "./package.json": "./package.json"
   },
@@ -28,9 +32,33 @@
     "README.md",
     "CHANGELOG.md"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css",
+    "./src/augment.ts"
+  ],
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*",
+    "@drizztdourden08/brock-tools": "workspace:*",
     "jszip": "^3.10.1"
+  },
+  "brock": {
+    "id": "msu",
+    "description": "MSU packs: studio, music debugger, .msul open and the optimize handlers",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts"
+  },
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "@types/node": "catalog:",
+    "electron": "catalog:",
+    "react": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": ">=0.87.0 <1",
+    "electron": ">=38",
+    "react": "^19.0.0"
   }
 }

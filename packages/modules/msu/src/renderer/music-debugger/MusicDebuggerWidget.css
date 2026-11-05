@@ -1,0 +1,22 @@
+/* @layer renderer-shell @kind style */
+.music-widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  block-size: 100%;
+  padding: var(--space-md);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.music-widget__section {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.music-widget__section--feed {
+  flex: 1;
+  min-block-size: var(--size-96);
+}

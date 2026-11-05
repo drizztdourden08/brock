@@ -33,3 +33,15 @@ The core is reached through an `MsuHost`: the audio target, the switch from core
 | `@drizztdourden08/brock-msu/packs` | Pack storage and editing. |
 | `@drizztdourden08/brock-msu/player` | The layered music engine. |
 | `@drizztdourden08/brock-msu/session` | The session that follows a running game. |
+| `@drizztdourden08/brock-msu/augment` | The IPC contract of the `msu` namespace. |
+| `@drizztdourden08/brock-msu/main` | The main process handlers: `.msul` read, optimize, audio probe. |
+| `@drizztdourden08/brock-msu/preload` | The preload bridge of the `msu` namespace. |
+| `@drizztdourden08/brock-msu/renderer` | The studio game config, the music debugger widget, file audition and `.msul` open. |
+
+## Studio
+
+The studio is the UI side. A game calls `defineMsuStudio` with its `MsuGameConfig` and the pieces the UI cannot guess: track names, base and extended slot counts, sound tabs, the sound source and an optional preview binding. `defineMsuStudio` throws when a sound tab names a channel the config does not have, and fills the rest with defaults.
+
+Wrap the studio screens in `MsuStudioProvider` and read the game with `useMsuStudioGame`. The music debugger is the `MusicDebuggerWidget` with its `MUSIC_DEBUGGER_META`; it reads the channel names, titles and layer slot counts from `game.debug`.
+
+On the main side, call `configureMsuMain` once with the game and the pack write guard, then register `msuMain`. ffmpeg is reached only through the tools module, so the app adds the tools module and the `ffmpegTool` definition comes from this one. `useMsulOpen` imports a `.msul` file that the app is asked to open.

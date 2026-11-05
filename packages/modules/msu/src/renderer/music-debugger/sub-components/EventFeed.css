@@ -1,0 +1,36 @@
+/* @layer renderer-shell @kind style */
+.event-feed {
+  flex: 1;
+  min-block-size: 0;
+  background: var(--c-inset);
+  border: var(--border-width-thin) solid var(--c-hairline);
+  border-radius: var(--radius-md);
+  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+}
+
+.event-feed__row {
+  grid-template-columns: auto auto auto minmax(0, 1fr);
+}
+
+.event-feed__time {
+  inline-size: 12ch;
+}
+
+.event-feed__owner {
+  inline-size: 8ch;
+}
+
+.event-feed__channel {
+  inline-size: 8ch;
+  color: var(--c-text-dim);
+}
+
+.event-feed__detail {
+  color: var(--c-text);
+}
+
+.event-feed__row[data-empty='yes'] .event-feed__detail {
+  grid-column: 1 / -1;
+  color: var(--c-text-muted);
+}

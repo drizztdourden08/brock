@@ -1,0 +1,45 @@
+/* @layer renderer-shell @kind style */
+.number-setter__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.number-setter__input {
+  flex: 1;
+  min-width: 0;
+  width: 6ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.number-setter__steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2xs);
+}
+
+.number-setter__rungs {
+  max-width: calc(280 * var(--size-1));
+  max-height: calc(180 * var(--size-1));
+  overflow-y: auto;
+}
+
+.number-setter__ends {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.number-setter__end {
+  font-size: var(--text-xs);
+  color: var(--c-text-muted);
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-sm);
+}
+
+.number-setter__end:hover {
+  color: var(--c-primary);
+  background: var(--c-hover);
+}

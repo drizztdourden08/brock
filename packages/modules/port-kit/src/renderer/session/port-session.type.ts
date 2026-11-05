@@ -5,7 +5,7 @@ import type { SaveSlotFormat } from '../../saves/save-slot.type';
 import type { SramStore } from '../../saves/save-store.type';
 import type { AudioAdapter } from '../audio/audio.type';
 import type { CoreLog, GameCore } from '../core/game-core.type';
-import type { FrameLoop, FramePresenter } from '../frame/frame.type';
+import type { FrameLoop, FramePresenter, FrameSchedule } from '../frame/frame.type';
 import type { SaveSlots, SaveTransform, SramSync } from '../saves/save-session.type';
 import type { LiveSettings } from '../settings/live-settings.type';
 
@@ -26,6 +26,7 @@ interface PortSessionOptions<S> {
   config?: string;
   volume?: number;
   audioLeadS?: number;
+  schedule?: FrameSchedule;
   extraFiles?: Record<string, Uint8Array | string>;
   log?: CoreLog;
   onAssetProgress?: AssetProgress;
@@ -40,6 +41,7 @@ interface AttachRequest {
   audio: AudioAdapter;
   sram: SramStore;
   profileId: string | null;
+  schedule: FrameSchedule;
 }
 
 interface SessionParts {
@@ -57,6 +59,7 @@ interface PortSession<S> {
   start: () => Promise<boolean>;
   stop: () => Promise<void>;
   setPaused: (paused: boolean) => void;
+  setSchedule: (schedule: FrameSchedule) => void;
 }
 
 export type { PrepareContext, PrepareAssets, PortSessionOptions, AttachRequest, SessionParts, PortSession };

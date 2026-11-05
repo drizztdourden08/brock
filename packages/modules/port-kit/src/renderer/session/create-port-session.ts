@@ -5,6 +5,7 @@ import { createSaveStore } from '../../saves/create-save-store';
 import { createAudioAdapter } from '../audio/create-audio-adapter';
 import { createSaveSlots } from '../saves/create-save-slots';
 import { createLiveSettings } from '../settings/create-live-settings';
+import type { FrameSchedule } from '../frame/frame.type';
 import type { PortSession, PortSessionOptions, SessionParts } from './port-session.type';
 import { attachSessionParts } from './attach-session-parts';
 
@@ -15,6 +16,7 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
   const store = createSaveStore(files);
   const roms = createRomStore(files, core.definition);
   let parts: SessionParts | null = null;
+  let schedule: FrameSchedule = options.schedule ?? 'display';
 
   const start = async (): Promise<boolean> => {
     const assets = await createAssetCache(files, roms, core.definition).load(romFile, options.onAssetProgress);
@@ -23,7 +25,7 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
     const sram = profileId ? await store.sram.read(profileId) : null;
     await core.start({ assets: ready, canvas, config, sram, extraFiles, log });
     if (core.state().status !== 'running') return false;
-    parts = attachSessionParts({ core, canvas, audio, sram: store.sram, profileId });
+    parts = attachSessionParts({ core, canvas, audio, sram: store.sram, profileId, schedule });
     if (settings.last() !== null) settings.reassert();
     else if (initial !== undefined) settings.push(initial);
     return true;
@@ -44,6 +46,11 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
     else audio.resume();
   };
 
+  const setSchedule = (next: FrameSchedule): void => {
+    schedule = next;
+    parts?.loop?.setSchedule(next);
+  };
+
   const saves = () => {
     const current = parts;
     if (!current || !profileId) return null;
@@ -52,7 +59,7 @@ const createPortSession = <S>(options: PortSessionOptions<S>): PortSession<S> =>
     });
   };
 
-  return { core, audio, settings, saves, start, stop, setPaused };
+  return { core, audio, settings, saves, start, stop, setPaused, setSchedule };
 };
 
 export { createPortSession };

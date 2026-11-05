@@ -3,7 +3,7 @@ import type { CoreCalls, SampleAudio } from '../../port/port-definition.type';
 import type { AudioAdapter } from '../audio/audio.type';
 import { pcm16ToFloat } from '../audio/pcm16-to-float';
 import type { GameCore } from '../core/game-core.type';
-import type { FrameLoop, FramePresenter } from './frame.type';
+import type { FrameLoop, FramePresenter, FrameSchedule } from './frame.type';
 import { DEFAULT_FPS } from './frame.constants';
 import { createFrameLoop } from './create-frame-loop';
 
@@ -14,7 +14,7 @@ const pushAudio = (calls: CoreCalls, audio: SampleAudio, adapter: AudioAdapter):
   adapter.pushSamples({ samples, channels: audio.channels, sampleRate: audio.sampleRate });
 };
 
-const createHostLoop = (core: GameCore, presenter: FramePresenter, adapter: AudioAdapter): FrameLoop | null => {
+const createHostLoop = (core: GameCore, presenter: FramePresenter, adapter: AudioAdapter, schedule: FrameSchedule = 'display'): FrameLoop | null => {
   const { video, audio, core: coreDef } = core.definition;
   const { runFrame } = coreDef.exports;
   if (!runFrame) return null;
@@ -34,7 +34,7 @@ const createHostLoop = (core: GameCore, presenter: FramePresenter, adapter: Audi
   };
 
   const fps = video.mode === 'framebuffer' ? video.fps ?? DEFAULT_FPS : DEFAULT_FPS;
-  return createFrameLoop({ fps, step, afterSteps });
+  return createFrameLoop({ fps, step, afterSteps, schedule });
 };
 
 export { createHostLoop };

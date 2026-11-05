@@ -5,12 +5,12 @@ import { createHostLoop } from '../frame/create-host-loop';
 import { createSramSync } from '../saves/create-sram-sync';
 import type { AttachRequest, SessionParts } from './port-session.type';
 
-const attachSessionParts = ({ core, canvas, audio, sram, profileId }: AttachRequest): SessionParts => {
+const attachSessionParts = ({ core, canvas, audio, sram, profileId, schedule }: AttachRequest): SessionParts => {
   const { video, saves } = core.definition;
   const presenter = createFramePresenter(canvas, video.mode === 'framebuffer' ? video : null);
   const mod = core.module();
   const detachAudio = mod && core.definition.audio.mode === 'emscripten-sdl' ? attachSdlAudio(mod, audio) : () => undefined;
-  const loop = createHostLoop(core, presenter, audio);
+  const loop = createHostLoop(core, presenter, audio, schedule);
   loop?.start();
   const sync = profileId ? createSramSync({ core, store: sram, profileId, intervalMs: saves.sramSyncMs }) : null;
   sync?.start();

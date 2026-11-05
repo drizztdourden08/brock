@@ -4,6 +4,7 @@ export type { BrowsedEntry } from './browse/browsed-entry.type';
 export { checkLobby } from './check/check-lobby';
 export type { LobbyCheck, LobbyCheckOk } from './check/lobby-check.type';
 export { joinFromForm } from './join/join-from-form';
+export type { JoinFormOptions, JoinOutcome } from './join/join-input.type';
 export { inLobby } from './membership/in-lobby';
 export { isLiveMembership } from './membership/is-live-membership';
 export { isSameLobby } from './membership/is-same-lobby';

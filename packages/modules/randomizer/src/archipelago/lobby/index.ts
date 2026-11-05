@@ -12,6 +12,8 @@ export { sha256Hex } from './crypto/sha256-hex';
 export type { LobbyFailure, LobbyFailureCode, LobbyProblem } from './failure';
 export { lobbyBrowse } from './browse';
 export { formatLobbyRef } from './ref/format-lobby-ref';
+export { openLobbyLink } from './link/open-lobby-link';
+export type { LobbyLink, LobbyLinkHandlers } from './link/lobby-link.type';
 export type { LobbyBrowseDeps, LobbyBrowseResult } from './browse';
 export { lobbyInfo, lobbyInfoProblems } from './info';
 export type { InfoCheckInput, LobbyInfo, LobbyInfoDeps, LobbyInfoResult } from './info';

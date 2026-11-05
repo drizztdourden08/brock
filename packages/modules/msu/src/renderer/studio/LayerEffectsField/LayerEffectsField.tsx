@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Box, Button, Field, Flex, Select } from '@drizztdourden08/tessera/primitives';
-import type { LayerEffect } from '../../../../../types';
+import type { LayerEffect } from '../../../types';
 import { EffectRow } from './sub-components/EffectRow';
 import { DEFAULT_EFFECT, EFFECTS_HINT, EFFECTS_LABEL, PRESETS, PRESET_OPTIONS } from './LayerEffectsField.constants';
 import type { LayerEffectsFieldProps } from './LayerEffectsField.type';

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Status, Box, Field, Flex, NumberInput, Slider } from '@drizztdourden08/tessera/primitives';
 import { useMsuStudioGame } from '../../../../game/useMsuStudioGame';
-import { CROSSFADE_HINT, CROSSFADE_LABEL } from '../PlayModeFields/PlayModeFields.constants';
+import { CROSSFADE_HINT, CROSSFADE_LABEL } from '../../../PlayModeFields/PlayModeFields.constants';
 import type { CrossfadeFieldProps } from './CrossfadeField.type';
 
 const clamp = (value: number, max: number): number => {

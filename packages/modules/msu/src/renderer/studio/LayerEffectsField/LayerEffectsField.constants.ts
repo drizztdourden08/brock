@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind constants */
-import type { LayerEffect } from '../../../../../types';
+import type { LayerEffect } from '../../../types';
 import type { SelectOption } from '@drizztdourden08/tessera/primitives';
 import type { EffectPreset } from './LayerEffectsField.type';
 

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { OptimizeAnalysis } from '../../../../../../optimize';
+import type { OptimizeAnalysis } from '../../../../../optimize';
 
 interface PreviewStepProps {
   analysis: OptimizeAnalysis;

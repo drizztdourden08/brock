@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { LayerEffect } from '../../../../../types';
+import type { LayerEffect } from '../../../types';
 
 interface LayerEffectsFieldProps {
   effects: LayerEffect[];

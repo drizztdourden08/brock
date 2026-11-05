@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { useTool } from '@drizztdourden08/brock-tools/renderer';
 import type { OptimizeAnalysis, OptimizeProgress } from '../../../optimize';
-import type { OptimizeStep } from '../OptimizeDialog/optimize.type';
+import type { OptimizeStep } from '../OptimizeDialog/behavior/optimize.type';
 
 type AutoMeasureParams = {
   open: boolean;

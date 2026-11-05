@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Box, Button, EmptyState, SectionHeader, Text } from '@drizztdourden08/tessera/primitives';
 import { useLayerEditor } from './behavior/useLayerEditor';
-import { LayerCard } from './sub-components/LayerCard';
+import { LayerCard } from '../LayerCard';
 import { LayerEditorFooter } from './sub-components/LayerEditorFooter';
 import { useFileLoopSamples } from './behavior/useFileLoopSamples';
 import { LayerLive } from '../PreviewReadout';

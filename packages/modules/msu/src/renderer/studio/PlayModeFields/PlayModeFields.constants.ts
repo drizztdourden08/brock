@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind constants */
 import type { SegmentOption } from '@drizztdourden08/tessera/primitives';
-import { MODE_LABELS } from '../../behavior/layer-ops.constants';
-import type { PlayModeKind } from '../../behavior/layer-ops.type';
+import { MODE_LABELS } from '../LayerEditor/behavior/layer-ops.constants';
+import type { PlayModeKind } from '../LayerEditor/behavior/layer-ops.type';
 import type { LoopOrder } from './PlayModeFields.type';
 
 const MODE_OPTIONS: SegmentOption<PlayModeKind>[] = (Object.keys(MODE_LABELS) as PlayModeKind[])

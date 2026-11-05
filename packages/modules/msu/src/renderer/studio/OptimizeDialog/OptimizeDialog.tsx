@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { DialogShell } from '@drizztdourden08/tessera/composites';
-import { useOptimize } from './useOptimize';
+import { useOptimize } from './behavior/useOptimize';
 import { OptimizeActions } from './sub-components/OptimizeActions';
 import { OptimizeBody } from './sub-components/OptimizeBody';
 import './OptimizeDialog.css';

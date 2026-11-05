@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Box, SegmentedControl } from '@drizztdourden08/tessera/primitives';
-import { DEFAULT_MODES } from '../../behavior/layer-ops.constants';
-import { IntervalTimes } from '../IntervalTimes';
+import { DEFAULT_MODES } from '../LayerEditor/behavior/layer-ops.constants';
+import { IntervalTimes } from '../LayerEditor/sub-components/IntervalTimes';
 import { MODE_HINTS, MODE_OPTIONS } from './PlayModeFields.constants';
 import { LoopFields } from './sub-components/LoopFields';
 import { RandomFields } from './sub-components/RandomFields';

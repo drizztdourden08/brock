@@ -1,10 +1,10 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useEffect, useState } from 'react';
 import { useTool } from '@drizztdourden08/brock-tools/renderer';
-import type { OptimizeAnalysis, OptimizeProgress, OptimizeRunResult } from '../../../optimize';
-import { msuApi } from '../../msu-api';
-import { optimizeMessage } from '../behavior/optimize-message';
-import { useAutoMeasure } from '../behavior/useAutoMeasure';
+import type { OptimizeAnalysis, OptimizeProgress, OptimizeRunResult } from '../../../../optimize';
+import { msuApi } from '../../../msu-api';
+import { optimizeMessage } from '../../behavior/optimize-message';
+import { useAutoMeasure } from '../../behavior/useAutoMeasure';
 import { ENCODER_TOOL_ID } from './optimize.constants';
 import type { OptimizeParams, OptimizeStep } from './optimize.type';
 

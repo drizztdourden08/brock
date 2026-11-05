@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { LayerPlayMode } from '../../../../../types';
+import type { LayerPlayMode } from '../../../types';
 
 interface PlayModeFieldsProps {
   mode: LayerPlayMode;

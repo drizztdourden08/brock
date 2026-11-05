@@ -2,8 +2,8 @@
 import { useMemo } from 'react';
 import { Box, EmptyState, Icon, Text } from '@drizztdourden08/tessera/primitives';
 import { formatBytes } from '@drizztdourden08/brock-core';
-import { previewTotals } from './preview-totals';
-import { CandidateRow } from './CandidateRow';
+import { previewTotals } from '../../behavior/preview-totals';
+import { CandidateRow } from '../CandidateRow';
 import type { PreviewStepProps } from './PreviewStep.type';
 
 const netLabel = (net: number): string => (net < 0 ? `+${formatBytes(-net)}` : `−${formatBytes(net)}`);

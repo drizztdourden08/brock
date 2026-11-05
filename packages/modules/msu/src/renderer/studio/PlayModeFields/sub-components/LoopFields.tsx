@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { SegmentedControl } from '@drizztdourden08/tessera/primitives';
-import { CrossfadeField } from '../../CrossfadeField';
+import { CrossfadeField } from '../../LayerEditor/sub-components/CrossfadeField';
 import { ORDER_HINTS, ORDER_OPTIONS } from '../PlayModeFields.constants';
 import type { LoopFieldsProps } from './LoopFields.type';
 

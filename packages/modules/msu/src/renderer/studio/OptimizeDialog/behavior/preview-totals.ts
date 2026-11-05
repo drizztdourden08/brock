@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { OptimizeCandidate } from '../../../../../../optimize';
+import type { OptimizeCandidate } from '../../../../optimize';
 import { EMPTY } from './preview-totals.constants';
 import type { PreviewTotals } from './preview-totals.type';
 

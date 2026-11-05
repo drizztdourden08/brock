@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { LayerPlayMode } from '../../../../../../types';
+import type { LayerPlayMode } from '../../../../types';
 
 type LoopFieldsProps = {
   mode: Extract<LayerPlayMode, { kind: 'loop' }>;

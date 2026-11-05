@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import type { OptimizeCandidate } from '../../../../../../optimize';
+import type { OptimizeCandidate } from '../../../../../optimize';
 import { Status, Box, Icon, Text } from '@drizztdourden08/tessera/primitives';
 import { formatBytes } from '@drizztdourden08/brock-core';
 import { UNKNOWN } from './CandidateRow.constants';

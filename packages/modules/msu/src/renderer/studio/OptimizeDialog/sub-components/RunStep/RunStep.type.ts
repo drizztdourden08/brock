@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { OptimizeProgress, OptimizeRunResult } from '../../../../../../optimize';
+import type { OptimizeProgress, OptimizeRunResult } from '../../../../../optimize';
 
 interface RunStepProps {
   progress: OptimizeProgress | null;

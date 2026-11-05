@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback } from 'react';
-import type { LayerPlayMode } from '../../../../../../types';
+import type { LayerPlayMode } from '../../../../types';
 import { SINGLE_DISCARD_TITLE } from '../LayerCard.constants';
 import { singleDiscardMessage } from './single-discard-message';
 import type { ModeChangeParams } from './useModeChange.type';

@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { Card } from '@drizztdourden08/tessera/primitives';
 import { LayerEffectsField } from '../LayerEffectsField';
-import { LayerFileList } from '../LayerFileList';
-import { LoopPointField } from '../LoopPointField';
+import { LayerFileList } from '../LayerEditor/sub-components/LayerFileList';
+import { LoopPointField } from '../LayerEditor/sub-components/LoopPointField';
 import { PlayModeFields } from '../PlayModeFields';
 import { useModeChange } from './behavior/useModeChange';
 import { LayerCardHeader } from './sub-components/LayerCardHeader';

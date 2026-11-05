@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
-import type { MsuLayer } from '../../../../../types';
-import type { ConfirmRequest } from '../../LayerEditor.type';
+import type { MsuLayer } from '../../../types';
+import type { ConfirmRequest } from '../LayerEditor/LayerEditor.type';
 
 interface LayerCardProps {
   layer: MsuLayer;

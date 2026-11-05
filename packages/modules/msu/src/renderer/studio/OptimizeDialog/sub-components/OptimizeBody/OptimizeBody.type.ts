@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { useOptimize } from '../../useOptimize';
+import type { useOptimize } from '../../behavior/useOptimize';
 
 type OptimizeBodyProps = Pick<
   ReturnType<typeof useOptimize>,

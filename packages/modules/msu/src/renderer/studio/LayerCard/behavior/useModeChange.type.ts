@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
-import type { MsuLayer } from '../../../../../../types';
-import type { ConfirmRequest } from '../../../LayerEditor.type';
+import type { MsuLayer } from '../../../../types';
+import type { ConfirmRequest } from '../../LayerEditor/LayerEditor.type';
 
 interface ModeChangeParams {
   layer: MsuLayer;

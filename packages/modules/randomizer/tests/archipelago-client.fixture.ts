@@ -28,6 +28,13 @@ interface HostProbe {
   ready(): void;
 }
 
+const listen =
+  <F>(set: Set<F>) =>
+  (f: F): (() => void) => {
+    set.add(f);
+    return () => set.delete(f);
+  };
+
 const createHostProbe = (): HostProbe => {
   const swaps = new Set<() => void>();
   const deaths = new Set<(cause: string) => void>();
@@ -57,15 +64,9 @@ const createHostProbe = (): HostProbe => {
         return probe.nextDelivery;
       },
       cancelDeliveries: () => undefined,
-      onDeliveryReady(f) {
-        readies.add(f);
-        return () => readies.delete(f);
-      },
+      onDeliveryReady: listen(readies),
       isFileInPlay: () => probe.fileInPlay,
-      onSaveSwap(f) {
-        swaps.add(f);
-        return () => swaps.delete(f);
-      },
+      onSaveSwap: listen(swaps),
       goalReached: () => probe.goal,
       startPolling() {
         probe.polling = true;
@@ -83,10 +84,7 @@ const createHostProbe = (): HostProbe => {
         probe.killed += 1;
         return 'armed';
       },
-      onLinkDied(f) {
-        deaths.add(f);
-        return () => deaths.delete(f);
-      },
+      onLinkDied: listen(deaths),
     },
   };
   return probe;

@@ -47,7 +47,7 @@ describe('archipelago presence', { tags: ['critical'] }, () => {
     bootRoom(rig, pairRoom);
     rig.sockets.last().receive([presencePacket('Join')]);
     const stopped = { ...presencePacket('Part'), data: [{ text: 'Zelda (Team #1) has stopped tracking the game.' }] };
-    rig.sockets.last().receive([presencePacket('Part', ['Tracker', 'NoText']), stopped]);
+    rig.sockets.last().receive([presencePacket('Join', ['Tracker', 'NoText']), stopped]);
     expect(playerAt(rig, 2).online).toBe(true);
   });
 });
@@ -81,7 +81,7 @@ describe('archipelago tracker links across a reconnect', { tags: ['critical'] },
   it('closes the links on a drop and reopens them after the reconnect', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));
-    rig.sockets.last().receive([presencePacket('Join')]);
+    rig.sockets.sockets[0]?.receive([presencePacket('Join')]);
     expect(playerAt(rig, 2).online).toBe(true);
     rig.sockets.sockets[0]?.drop();
     expect(trackerSocket(rig).closed).toBe(true);

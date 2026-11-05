@@ -1,0 +1,32 @@
+/* @layer renderer-shell @kind style */
+.pointer-hint {
+  position: fixed;
+  left: var(--pointer-hint-x, 0);
+  top: var(--pointer-hint-y, 0);
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--c-surface);
+  border: var(--border-width-thin) solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-dropdown);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.pointer-hint__title {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semi);
+  letter-spacing: calc(0.72 * var(--size-1));
+  text-transform: uppercase;
+  color: var(--c-primary);
+}
+
+.pointer-hint .pointer-hint__rows {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xs);
+  margin-top: 0;
+  padding: 0;
+  border: none;
+}

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Text } from '@drizztdourden08/tessera/primitives';
-import { EncoderInstallStep } from '../EncoderInstallStep';
+import { FfmpegInstallStep } from '@drizztdourden08/brock-tools/renderer';
 import { MeasuringStep } from '../MeasuringStep';
 import { PreviewStep } from '../PreviewStep';
 import { RunStep } from '../RunStep';
@@ -11,7 +11,7 @@ const OptimizeBody = (props: OptimizeBodyProps) => {
   return (
     <>
       {step === 'tool' && (
-        <EncoderInstallStep
+        <FfmpegInstallStep
           state={tool.state}
           installing={tool.installing}
           error={tool.error}

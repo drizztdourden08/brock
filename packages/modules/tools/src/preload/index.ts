@@ -8,6 +8,7 @@ const buildToolsApi = ({ invoke, subscribe }: BridgeTools): ToolsApi => ({
   state: (id) => invoke('tools:state', id),
   install: (id) => invoke('tools:install', id),
   onChanged: (listener) => subscribe('tools:changed', listener),
+  finalizeRecording: (input) => invoke('tools:finalizeRecording', input),
 });
 
 const toolsPreload: PreloadNamespace = {

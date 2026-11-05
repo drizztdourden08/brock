@@ -20,6 +20,13 @@ export { createTools } from './create-tools';
 export { toolPlatform } from './tool-platform';
 export { runBinary } from './run-binary';
 export { systemPath } from './system-path';
+export { withSentTagging } from './recording/with-sent-tagging';
+export { markRecordingsSent } from './recording/mark-recordings-sent';
+export { readRecordingManifest } from './recording/read-recording-manifest';
+export { recordingDir } from './recording/recording-dir';
+export { FFMPEG_TOOL_ID } from '../recording.constants';
+export type { SentSelector, SentTaggingOptions } from './recording/recording-main.type';
+export type { RecordingFinalizeInput, RecordingFrame, RecordingManifest, RecordingOutcome, RecordingSentRef } from '../recording.type';
 export { readVersion } from './read-version';
 export type {
   DownloadProgress, FetchFn, ToolRunOptions, ToolRunResult, ToolStream, ToolsEnv, ToolsMain,

@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { Result } from '@drizztdourden08/brock-core/result';
+import type { RecordingFinalizeInput, RecordingOutcome } from './recording.type';
 
 type ToolPlatform = `${'win32' | 'darwin' | 'linux'}-${'x64' | 'arm64'}`;
 
@@ -49,6 +50,7 @@ interface ToolsApi {
   state: (id: string) => Promise<ToolState | null>;
   install: (id: string) => Promise<Result<ToolState>>;
   onChanged: (listener: (id: string) => void) => () => void;
+  finalizeRecording: (input: RecordingFinalizeInput) => Promise<Result<RecordingOutcome>>;
 }
 
 export type {

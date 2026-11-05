@@ -25,6 +25,7 @@ const ActionsTab = ({ tab, ctrl }: ActionsTabProps) => {
   const list = (
     <>
       <BindingListHeader actionLabel={labels.actionHeader} bindingLabel={labels.bindingHeader} middleLabel={tab.middleLabel} />
+      {tab.reserved?.map((row) => <ReservedBindingRow key={row.label} row={row} title={labels.reservedHint} />)}
       {rows.map((row) => (
         <ActionBindingRow
           key={`${row.action.id}-${row.mappingIndex}`}
@@ -39,7 +40,6 @@ const ActionsTab = ({ tab, ctrl }: ActionsTabProps) => {
           onClear={handleClear}
         />
       ))}
-      {tab.reserved?.map((row) => <ReservedBindingRow key={row.label} row={row} title={labels.reservedHint} />)}
     </>
   );
   const gate = tab.gate;

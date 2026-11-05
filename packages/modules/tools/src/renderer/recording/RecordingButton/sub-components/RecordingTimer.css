@@ -1,0 +1,6 @@
+/* @layer renderer-shell @kind style */
+.recording-timer {
+  color: var(--c-danger);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}

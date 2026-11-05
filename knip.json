@@ -147,6 +147,7 @@
     },
     "packages/modules/tools": {
       "entry": [
+        "src/**/*.usage.ts",
         "tests/**/*.test.ts"
       ],
       "project": [

@@ -5,9 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { ApworldRigConfig, GenerationRun } from './apworld-rig.type';
 import { generatorPath } from './generator-path';
-
-const PLAYER_FILE = 'Oracle.yaml';
-const GENERATE_TIMEOUT_MS = 600_000;
+import { GENERATE_TIMEOUT_MS, PLAYER_FILE } from './run-generation.constants';
 
 const runGeneration = async (
   config: ApworldRigConfig, yaml: string, seed: number, extra: readonly string[],

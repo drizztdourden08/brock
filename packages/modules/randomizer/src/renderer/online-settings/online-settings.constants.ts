@@ -1,11 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { NoticeKind } from '../../archipelago';
-
-interface NoticeRowCopy {
-  label: string;
-  description: string;
-  keywords: string;
-}
+import type { NoticeRowCopy } from './online-settings.constants.type';
 
 const NOTICE_WORDS = 'notification toast online archipelago';
 
@@ -37,4 +32,3 @@ const HIGHLIGHT_ROWS = [
 const ONLINE_SECTION_IDS = { session: 'online-session', notifications: 'online-notifications', highlights: 'online-highlights' } as const;
 
 export { HIGHLIGHT_ROWS, NOTICE_ROW_COPY, NOTICE_WORDS, ONLINE_SECTION_IDS, SESSION_ROWS };
-export type { NoticeRowCopy };

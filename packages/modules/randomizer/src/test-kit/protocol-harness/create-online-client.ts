@@ -6,7 +6,8 @@ import type { FakeCore } from '../fake-core';
 import { hashText } from '../fake-core';
 import type { HarnessDeps } from './harness-adapter.type';
 import type { HarnessConfig, HarnessSession } from './harness-session.type';
-import { connectionErrorOf, statusOf } from './harness-status';
+import { connectionErrorOf } from './harness-status';
+import { statusOf } from './status-of';
 
 const connectionOf = (config: HarnessConfig): OnlineConnection => ({
   url: config.url,

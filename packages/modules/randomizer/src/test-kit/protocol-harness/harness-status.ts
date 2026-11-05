@@ -1,21 +1,8 @@
 /* @layer core @kind logic */
 import type { ConnectionState } from '../../archipelago';
-import type { HarnessStatus } from './harness-session.type';
-
-const ONLINE_PREFIX = '[Online] ';
-
-const STATUS_OF: Record<ConnectionState, HarnessStatus> = {
-  idle: 'idle',
-  closed: 'idle',
-  connecting: 'connecting',
-  connected: 'active',
-  reconnecting: 'reconnecting',
-  refused: 'error',
-};
-
-const statusOf = (state: ConnectionState): HarnessStatus => STATUS_OF[state];
+import { ONLINE_PREFIX } from './harness-status.constants';
 
 const connectionErrorOf = (state: ConnectionState, reason: string): string | null =>
   state === 'refused' ? reason.replace(ONLINE_PREFIX, '') : null;
 
-export { connectionErrorOf, statusOf };
+export { connectionErrorOf };

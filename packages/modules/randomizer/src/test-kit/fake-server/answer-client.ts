@@ -3,12 +3,7 @@ import type { ApClientPacket, ApGameData, ApNetworkItem, ApServerPacket, Archipe
 import type { FakeServerWires } from './fake-server-wires.type';
 import { answerStorage } from './answer-storage';
 import { answerTracker } from './answer-tracker';
-
-const pushTo = (wires: FakeServerWires, socket: ArchipelagoSocket, packets: ApServerPacket[]): void => {
-  queueMicrotask(() => {
-    if (wires.open.has(socket)) wires.handlers.get(socket)?.message(JSON.stringify(packets));
-  });
-};
+import { pushTo } from './push-to';
 
 const fullItems = (wires: FakeServerWires): ApServerPacket => ({ cmd: 'ReceivedItems', index: 0, items: [...wires.room.items] });
 
@@ -60,4 +55,4 @@ const answerClient = (wires: FakeServerWires, socket: ArchipelagoSocket, packet:
   }
 };
 
-export { answerClient, pushTo };
+export { answerClient };

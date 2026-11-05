@@ -1,9 +1,6 @@
 /* @layer core @kind logic */
 import type { FakeCore } from './fake-core.type';
-
-type FakeCorePlay = Pick<FakeCore,
-  | 'isFileInPlay' | 'onSaveSwap' | 'setInPlay' | 'swapSave' | 'readReceivedIndex' | 'writeReceivedIndex'
-  | 'readRoomHash' | 'writeRoomHash'>;
+import type { FakeCorePlay } from './fake-core-play.type';
 
 const fakeCorePlay = (self: () => FakeCore): FakeCorePlay => {
   const swapListeners = new Set<() => void>();

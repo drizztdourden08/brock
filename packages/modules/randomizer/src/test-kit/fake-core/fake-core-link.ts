@@ -1,12 +1,7 @@
 /* @layer core @kind logic */
 import type { FakeCore } from './fake-core.type';
+import type { FakeCoreLink } from './fake-core-link.type';
 import type { FakeCoreHooks } from './fake-core-hooks.type';
-
-interface FakeCoreLink {
-  killLink(): 'armed' | 'down';
-  onLinkDied(f: (cause: string) => void): () => void;
-  die: FakeCore['die'];
-}
 
 const fakeCoreLink = (self: () => FakeCore, hooks: FakeCoreHooks): FakeCoreLink => {
   let listener: ((cause: string) => void) | null = null;

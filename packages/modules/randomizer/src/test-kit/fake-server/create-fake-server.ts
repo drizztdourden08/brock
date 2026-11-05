@@ -1,12 +1,11 @@
 /* @layer core @kind logic */
 import type { ApClientPacket, ArchipelagoSocket, CreateSocket } from '../../archipelago';
+import { CLOSED_ABNORMALLY, CLOSED_BY_CLIENT } from './create-fake-server.constants';
 import { VERSION } from './fake-server.constants';
 import type { FakeRoom, FakeServer } from './fake-server.type';
 import type { FakeServerWires } from './fake-server-wires.type';
-import { answerClient, pushTo } from './answer-client';
-
-const CLOSED_BY_CLIENT = 1000;
-const CLOSED_ABNORMALLY = 1006;
+import { answerClient } from './answer-client';
+import { pushTo } from './push-to';
 
 const close = (wires: FakeServerWires, socket: ArchipelagoSocket, code: number): void => {
   wires.open.delete(socket);

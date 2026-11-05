@@ -1,7 +1,6 @@
 /* @layer core @kind logic */
 import type { FakeCore } from './fake-core.type';
-
-type FakeCoreDelivery = Pick<FakeCore, 'deliver' | 'cancelDeliveries' | 'grantNext' | 'becomeReady'>;
+import type { FakeCoreDelivery } from './fake-core-delivery.type';
 
 const fakeCoreDelivery = (self: () => FakeCore): FakeCoreDelivery => ({
   deliver: (itemName, sender, onGranted) => {

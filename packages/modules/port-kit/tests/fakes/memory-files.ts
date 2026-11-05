@@ -12,7 +12,8 @@ const memoryFiles = (): { files: FileStore; disk: Map<string, Uint8Array> } => {
     writeText: (path, data) => Promise.resolve(void disk.set(path, new TextEncoder().encode(data))),
     list: (dir) => Promise.resolve(childrenOf(dir)),
     remove: (path) => {
-      for (const key of [...disk.keys()]) if (key === path || key.startsWith(`${path}/`)) disk.delete(key);
+      const doomed = [...disk.keys()].filter((key) => key === path || key.startsWith(`${path}/`));
+      for (const key of doomed) disk.delete(key);
       return Promise.resolve();
     },
     exists: (path) => Promise.resolve(disk.has(path)),

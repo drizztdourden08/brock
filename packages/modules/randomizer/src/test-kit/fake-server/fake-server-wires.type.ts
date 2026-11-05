@@ -18,4 +18,4 @@ interface FakeServerWires {
   live: ArchipelagoSocket | null;
 }
 
-export type { FakeServerWires, SocketHandlers };
+export type { FakeServerWires };

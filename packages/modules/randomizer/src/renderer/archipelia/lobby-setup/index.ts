@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind barrel */
-export { EMPTY_LOBBY_DRAFT, HOST_NAME } from './lobby-draft.constants';
+export { EMPTY_LOBBY_DRAFT } from './lobby-draft.constants';
 export type { LobbyConnect, LobbyDraft, LobbyLocation } from './lobby-draft.type';
 export { browseServersOf } from './browse-servers-of';
 export { connectModeOf } from './connect-mode-of';

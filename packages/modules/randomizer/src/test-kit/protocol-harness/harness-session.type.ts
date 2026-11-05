@@ -25,4 +25,4 @@ interface HarnessSession {
   stop(): void;
 }
 
-export type { HarnessConfig, HarnessNetwork, HarnessSession, HarnessStatus };
+export type { HarnessConfig, HarnessSession, HarnessStatus };

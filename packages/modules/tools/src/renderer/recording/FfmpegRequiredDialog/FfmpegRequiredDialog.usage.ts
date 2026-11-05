@@ -3,6 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A dialog that tells the user ffmpeg is needed and lets them install it, closing itself once the tool is ready.',
+  propsHash: '0000000000000000',
   useWhen: ['When an action needs ffmpeg and it is not installed.'],
   avoidWhen: [{ case: 'A question with a yes or no answer.', use: 'Dialog' }],
   rules: ['Control open from the caller and close it with onClose.'],

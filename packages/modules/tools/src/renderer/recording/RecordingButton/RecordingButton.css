@@ -6,6 +6,6 @@
 }
 
 .recording-button--active {
-  outline: 1px solid var(--c-danger);
+  outline: var(--border-width-thin) solid var(--c-danger);
   border-radius: var(--radius-md);
 }

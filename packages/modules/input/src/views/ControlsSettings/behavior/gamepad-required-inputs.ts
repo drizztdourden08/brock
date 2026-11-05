@@ -3,20 +3,10 @@ import { splitDeviceKey } from '../../../bindings/device-keys/split-device-key';
 import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import { findLiveDevice } from '../../../bindings/detected/find-live-device';
 import type { InputProfile } from '../../../bindings/input-profile.type';
-import { buildDisplayContext, resolveBrandLogoKey } from '../../../family';
 import { recallControllerName } from '../../../runtime/controller-name-cache/recall-controller-name';
-import { recallControllerSdlType } from '../../../runtime/controller-family-cache/recall-controller-sdl-type';
-import { GENERIC_ICON_FAMILY } from '../ControlsSettings.constants';
 import type { ControlsLabels, RequiredInput } from '../ControlsSettings.type';
 import { deviceIconUrl } from './device-icon-url';
-
-const liveFamilyIcon = (vid: string, pid: string, live: DetectedDevice | undefined): string => {
-  const sdlType = recallControllerSdlType(parseInt(vid, 16), parseInt(pid, 16));
-  const family = sdlType
-    ? (resolveBrandLogoKey(buildDisplayContext({ sdlType })) || GENERIC_ICON_FAMILY)
-    : (live?.deviceFamily ?? GENERIC_ICON_FAMILY);
-  return deviceIconUrl({ sdlType, family }) ?? '';
-};
+import { liveDeviceIcon } from './live-device-icon';
 
 const assignedGamepadInput = (key: string, devices: readonly DetectedDevice[], labels: ControlsLabels): RequiredInput => {
   const [vid, pid] = splitDeviceKey(key);
@@ -26,7 +16,7 @@ const assignedGamepadInput = (key: string, devices: readonly DetectedDevice[], l
   return {
     type: 'gamepad',
     label: `${displayName} (${vid}:${pid})`,
-    iconSrc: liveFamilyIcon(vid, pid, live),
+    iconSrc: liveDeviceIcon(vid, pid, devices) ?? '',
     connected: Boolean(live),
   };
 };

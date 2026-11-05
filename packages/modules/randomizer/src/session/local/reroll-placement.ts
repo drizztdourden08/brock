@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { isJoinedRoll } from '../../contract/is-joined-roll';
 import type { RandomizerGame } from '../../contract/randomizer-game.type';
 import type { RandomizerLog } from '../../contract/randomizer-log.type';
 import type { RandomizerProfileConfig } from '../../augment';
@@ -13,6 +14,7 @@ const rerollPlacement = async <P, A>(
 ): Promise<P | null> => {
   try {
     const placement = await game.roll(config, { profileId });
+    if (isJoinedRoll(placement)) return null;
     await writePlacement(game, profileId, placement);
     log(`[Boot] Placement file unreadable by this build; rolled seed ${config.seed} again`, 'warn');
     return placement;

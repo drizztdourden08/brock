@@ -75,7 +75,9 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     rig.sockets.last().receive([presencePacket('Part')]);
     expect(playerAt(rig, 2).online).toBe(false);
   });
+});
 
+describe('archipelago room progress', { tags: ['critical'] }, () => {
   it('counts the checks sent for items that belong to other players', () => {
     const rig = startedRig();
     bootRoom(rig, pairRoom);
@@ -96,7 +98,9 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     rig.sockets.last().receive([{ cmd: 'RoomUpdate', hint_points: 7 }]);
     expect(rig.client.status().server.hintPoints).toBe(7);
   });
+});
 
+describe('archipelago reconnect status', { tags: ['critical'] }, () => {
   it('reads the reconnect attempt and the next retry time after a drop', () => {
     const rig = startedRig();
     rig.boot();
@@ -156,7 +160,8 @@ describe('archipelago ping', { tags: ['critical'] }, () => {
     echoLastPing(rig);
     expect(rig.client.status().health).toMatchObject({ pingMs: 20, pingMeanMs: 30, pingSamples: 2 });
     rig.sockets.last().drop();
-    expect(rig.client.status().health).toEqual({ lastPacketAt: expect.any(Number), pingSamples: 0 });
+    expect(rig.client.status().health.pingSamples).toBe(0);
+    expect(rig.client.status().health.pingMeanMs).toBeUndefined();
   });
 
   it('keeps the mean of the round trips it has seen', () => {

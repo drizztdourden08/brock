@@ -42,6 +42,14 @@ describe('received queue', { tags: ['critical'] }, () => {
     expect(rig.probe.delivered).toHaveLength(1);
   });
 
+  it('names the server as the sender of a grant from no location', () => {
+    const rig = createRig();
+    rig.boot();
+    rig.scout();
+    rig.sockets.last().receive([{ cmd: 'ReceivedItems', index: 0, items: [item(-2, 1)] }]);
+    expect(rig.logs.some((line) => line.endsWith('from the server'))).toBe(true);
+  });
+
   it('resets on a save swap and asks the server again', () => {
     const rig = createRig();
     rig.boot();

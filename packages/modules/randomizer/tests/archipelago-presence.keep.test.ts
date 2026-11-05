@@ -89,7 +89,9 @@ describe('archipelago tracker links', { tags: ['critical'] }, () => {
     vi.advanceTimersByTime(SETTLE_AFTER_MS);
     expect(rig.sockets.sockets).toHaveLength(1);
   });
+});
 
+describe('archipelago tracker links across a reconnect', { tags: ['critical'] }, () => {
   it('closes the links on a drop and reopens them with a new roster query after the reconnect', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));

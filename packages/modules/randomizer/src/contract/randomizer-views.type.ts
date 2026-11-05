@@ -20,6 +20,8 @@ interface ChecksWidgetViews {
 
 interface RunPanelProps {
   config: RandomizerProfileConfig;
+  mode: RandomizerModeId;
+  romFile: string | null;
   open(page: string): void;
 }
 
@@ -28,6 +30,7 @@ interface RunPanelDef {
   title: string;
   span: 1 | 2 | 'full';
   Body: ComponentType<RunPanelProps>;
+  actions?: ComponentType<RunPanelProps>;
 }
 
 interface LogRule {
@@ -44,6 +47,8 @@ interface OptionTabProps {
   onChange?(next: RandomizerOptions): void;
   frozen: boolean;
   seed: string;
+  mode: RandomizerModeId;
+  romFile: string | null;
 }
 
 interface OptionTab {
@@ -67,6 +72,7 @@ interface RandomizerViews {
   optionSubSteps?(values: Record<string, unknown>): readonly RandomizerSubStep[];
   optionTabs?(values: Readonly<Record<string, RuleOptionValue>>): readonly OptionTab[];
   optionsAside?: ComponentType<OptionTabProps>;
+  optionsAsideLabel?: string;
   connection?: ConnectionBodies;
 }
 

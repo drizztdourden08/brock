@@ -29,6 +29,7 @@ interface RandomizerProfileConfig extends ArchipelagoConnection {
   options: RandomizerProfileOptions;
   frozenSettings?: RandomizerFrozenSettings;
   origin?: string;
+  romFile?: string;
 }
 
 declare module '@drizztdourden08/brock-core/augment' {

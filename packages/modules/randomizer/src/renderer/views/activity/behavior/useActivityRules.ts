@@ -6,7 +6,7 @@ import { ACTIVITY_RULES, NO_RULES } from '../activity-rules.constants';
 
 const useActivityRules = (): { rules: readonly LogRule[]; gameRules: readonly LogRule[] } => {
   const gameRules = useRandomizerGame()?.views?.logRules ?? NO_RULES;
-  return useMemo(() => ({ rules: [...ACTIVITY_RULES, ...gameRules], gameRules }), [gameRules]);
+  return useMemo(() => ({ rules: [...gameRules, ...ACTIVITY_RULES], gameRules }), [gameRules]);
 };
 
 export { useActivityRules };

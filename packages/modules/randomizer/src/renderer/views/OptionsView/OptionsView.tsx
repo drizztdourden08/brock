@@ -16,7 +16,7 @@ const OptionsView = () => {
   const Options = game.views?.Options;
   if (Options) return <Options />;
   if (config && (game.catalog ?? []).length > 0) {
-    return <OptionsPanel title={labels.options} overrides={Object.fromEntries(Object.entries(config.options))} seed={config.seed} />;
+    return <OptionsPanel title={labels.options} overrides={Object.fromEntries(Object.entries(config.options))} seed={config.seed} mode={config.mode} romFile={config.romFile ?? null} />;
   }
 
   return (

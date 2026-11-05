@@ -14,6 +14,8 @@ const OptionsStepBody = (props: OptionsStepBodyProps) => {
       title={PANEL_TITLE}
       overrides={value.overrides}
       seed={formOf(values).seed}
+      mode={formOf(values).mode}
+      romFile={null}
       tab={subStep}
       onTabChange={onSubStepChange}
       onChange={(overrides) => onChange({ overrides })}

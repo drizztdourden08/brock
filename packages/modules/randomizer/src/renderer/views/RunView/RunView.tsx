@@ -19,8 +19,8 @@ const RunView = () => {
   const labels = useRandomizerLabels();
   const profile = useProfilesStore((state) => state.active);
   const open = useOpenPage();
-  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
   const config = profile?.randomizer;
+  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
   if (!profile || !config) {
     return (
       <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
@@ -29,15 +29,17 @@ const RunView = () => {
     );
   }
 
+  const panelProps = { config, mode: config.mode, romFile: config.romFile ?? null, open };
+
   return (
     <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
-      <RunSummary profileName={profile.name} config={config} open={open} />
+      <RunSummary profileName={profile.name} {...panelProps} />
       <RunProgress />
       <RecentActivity open={open} />
       {config.mode === 'online' && <RunPlayers />}
-      <RunSettings config={config} open={open} />
+      <RunSettings {...panelProps} />
       {(game.views?.runPanels ?? []).map((panel, index) => (
-        <GamePanel key={index} panel={panel} config={config} open={open} />
+        <GamePanel key={index} panel={panel} {...panelProps} />
       ))}
     </Grid>
   );

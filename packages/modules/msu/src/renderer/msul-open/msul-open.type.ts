@@ -1,12 +1,12 @@
 /* @layer renderer-shell @kind types */
+import type { MsuStore } from '../store/msu-store.type';
+
 interface MsulInstalled {
   pack: string;
   fileCount: number;
   trackCount: number;
 }
 
-interface MsulInstaller {
-  installMsulFile: (bytes: Uint8Array, stem: string) => Promise<MsulInstalled>;
-}
+type MsulInstaller = Pick<MsuStore, 'installMsulFile'>;
 
 export type { MsulInstalled, MsulInstaller };

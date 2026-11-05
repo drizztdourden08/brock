@@ -7,6 +7,7 @@ interface MsuSoundRoles {
 interface MsuSoundTab {
   id: string;
   label: string;
+  editorLabel?: string;
   channels: readonly [string] | readonly [string, string];
   roles?: MsuSoundRoles;
 }

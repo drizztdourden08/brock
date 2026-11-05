@@ -31,7 +31,7 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
       owned = true;
       wire(new AudioContext({ sampleRate: block.sampleRate }));
     }
-    if (out) nextTime = scheduleSamples(out.context, out.node, block, nextTime, leadS);
+    if (out) nextTime = scheduleSamples(out, block, nextTime, leadS);
   };
 
   const setVolume = (percent: number): void => {

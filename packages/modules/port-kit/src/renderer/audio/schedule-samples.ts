@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import type { SampleBlock } from './audio.type';
+import type { AudioOutput, SampleBlock } from './audio.type';
 import { MAX_QUEUE_S, SCHEDULE_LEAD_S } from './audio.constants';
 
 const fillBuffer = (buffer: AudioBuffer, { samples, channels }: SampleBlock): void => {
@@ -9,7 +9,7 @@ const fillBuffer = (buffer: AudioBuffer, { samples, channels }: SampleBlock): vo
   }
 };
 
-const scheduleSamples = (context: AudioContext, target: AudioNode, block: SampleBlock, startAt: number, leadS = SCHEDULE_LEAD_S): number => {
+const scheduleSamples = ({ context, node }: AudioOutput, block: SampleBlock, startAt: number, leadS = SCHEDULE_LEAD_S): number => {
   const frames = Math.floor(block.samples.length / block.channels);
   if (frames === 0) return startAt;
   const now = context.currentTime;
@@ -18,7 +18,7 @@ const scheduleSamples = (context: AudioContext, target: AudioNode, block: Sample
   fillBuffer(buffer, block);
   const source = context.createBufferSource();
   source.buffer = buffer;
-  source.connect(target);
+  source.connect(node);
   const at = Math.max(startAt, now + leadS);
   source.start(at);
   return at + buffer.duration;

@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { FrameLoop, FrameLoopOptions, FrameSchedule } from './frame.type';
-import { MAX_CATCH_UP_STEPS, TIMER_PERIOD_MS } from './frame.constants';
-import { nextTimerDue } from './next-timer-due';
+import { MAX_CATCH_UP_STEPS } from './frame.constants';
+import { driveLoop } from './drive-loop';
 
 const createFrameLoop = ({ fps, step, afterSteps, schedule = 'display' }: FrameLoopOptions): FrameLoop => {
   const stepMs = 1000 / fps;
@@ -23,31 +23,6 @@ const createFrameLoop = ({ fps, step, afterSteps, schedule = 'display' }: FrameL
     if (stepped) afterSteps?.();
   };
 
-  const driveDisplay = (): void => {
-    const arm = (): void => {
-      const handle = requestAnimationFrame((now) => {
-        advance(now);
-        arm();
-      });
-      cancel = () => cancelAnimationFrame(handle);
-    };
-    arm();
-  };
-
-  const driveTimer = (): void => {
-    let due = performance.now() + TIMER_PERIOD_MS;
-    const arm = (): void => {
-      const handle = setTimeout(() => {
-        const now = performance.now();
-        advance(now);
-        due = nextTimerDue(due, now);
-        arm();
-      }, Math.max(0, due - performance.now()));
-      cancel = () => clearTimeout(handle);
-    };
-    arm();
-  };
-
   const stop = (): void => {
     cancel?.();
     cancel = null;
@@ -59,8 +34,7 @@ const createFrameLoop = ({ fps, step, afterSteps, schedule = 'display' }: FrameL
     running = true;
     last = performance.now();
     owed = 0;
-    if (mode === 'timer') driveTimer();
-    else driveDisplay();
+    cancel = driveLoop(mode, advance);
   };
 
   const setSchedule = (next: FrameSchedule): void => {

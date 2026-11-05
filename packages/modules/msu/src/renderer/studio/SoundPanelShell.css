@@ -1,0 +1,6 @@
+/* @layer renderer-shell @kind style */
+.msu-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}

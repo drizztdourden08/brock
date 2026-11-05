@@ -20,6 +20,7 @@ interface MsuStudioGame<Ctx = unknown, Target = unknown> {
   soundTabs: readonly MsuSoundTab[];
   channelLabels: Record<string, string>;
   channelTags: Record<string, string>;
+  channelPorts?: Record<string, string>;
   sounds: MsuSoundSource;
   soundFilterPlaceholder: string;
   maxCrossfadeSeconds: number;

@@ -7,6 +7,7 @@ import { tempTree } from './temp-tree.mjs';
 import { appAliases } from '../src/build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from '../src/build-options/build-options.constants.mjs';
 import { defineValues } from '../src/build-options/define-values.mjs';
+import { polyfillShimAliases } from '../src/build-options/polyfill-shim-aliases.mjs';
 import { nodePolyfillPlugins } from '../src/build-options/node-polyfills.mjs';
 import { renderManagedFiles } from '../src/managed/templates.mjs';
 import { defineBrockViteConfig } from '../src/vite-config.mjs';
@@ -89,6 +90,19 @@ describe('K1 build.nodePolyfills', { tags: ['critical'] }, () => {
     const root = tempDir();
     put(root, 'package.json', '{}');
     await expect(nodePolyfillPlugins(root, { nodePolyfills: true })).rejects.toThrow(/pnpm add -D vite-plugin-node-polyfills/);
+  });
+});
+
+describe('K1 polyfill shim aliases', { tags: ['critical'] }, () => {
+  it('pins each shim the app has to its copy, exact match only, and skips the rest', () => {
+    const root = fixtureApp({});
+    for (const shim of ['buffer', 'process']) put(root, `node_modules/vite-plugin-node-polyfills/shims/${shim}/index.mjs`, 'export {};\n');
+    put(root, 'node_modules/vite-plugin-node-polyfills/package.json', JSON.stringify({ name: 'vite-plugin-node-polyfills', type: 'module', main: 'index.mjs', exports: { '.': './index.mjs', './shims/buffer': './shims/buffer/index.mjs', './shims/process': './shims/process/index.mjs' } }));
+    const aliases = polyfillShimAliases(root, { nodePolyfills: true });
+    expect(aliases.map((entry) => entry.find.source)).toEqual(['^vite-plugin-node-polyfills/shims/buffer$', '^vite-plugin-node-polyfills/shims/process$']);
+    expect(aliases[0].find.test('vite-plugin-node-polyfills')).toBe(false);
+    expect(aliases[0].replacement).toBe(resolve(root, 'node_modules/vite-plugin-node-polyfills/shims/buffer/index.mjs'));
+    expect(polyfillShimAliases(root, { nodePolyfills: false })).toEqual([]);
   });
 });
 

@@ -6,6 +6,7 @@ import { appTools } from './app-tools.mjs';
 import { appAliases } from './build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
 import { defineValues } from './build-options/define-values.mjs';
+import { withShimAliases } from './build-options/polyfill-shim-aliases.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { buildReusePlugin } from './build-reuse/build-reuse-plugin.mjs';
 import { DEV_MODE, MODE_ENV } from './build-reuse/build-reuse.constants.mjs';
@@ -164,7 +165,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
         splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }), toolbarsPlugin({ rootDir }), startupPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
-      resolve: { alias, dedupe: SHARED_SINGLETONS },
+      resolve: { alias: withShimAliases(alias, rootDir, build), dedupe: SHARED_SINGLETONS },
       server: { ...devServerPort(rootDir, product), fs: { allow: servedDirs(rootDir, sources, workspaceRootOf) } },
       build: {
         outDir: resolve(rootDir, 'dist/renderer'),

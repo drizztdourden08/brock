@@ -592,7 +592,8 @@ build: {
   moves into `src/` or a workspace package.
 - `nodePolyfills`: `true` or the options of `vite-plugin-node-polyfills`, which the app adds as a dev
   dependency (brock-build loads it from the app; `brock knip` counts it as used). The renderer and
-  every worker build get a fresh plugin.
+  every worker build get a fresh plugin, and the plugin's `shims/buffer`, `shims/process` and
+  `shims/global` imports resolve from the app for files in workspace packages too.
 - Workers need no option: the renderer builds them as ES modules (`worker.format: 'es'`), so
   `new Worker(new URL('./x.worker.ts', import.meta.url), { type: 'module' })` and `import X from
   './x.worker?worker'` take static and dynamic imports.

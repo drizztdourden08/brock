@@ -4,6 +4,7 @@ import { appTools } from './app-tools.mjs';
 import { appAliases } from './build-options/app-aliases.mjs';
 import { WORKER_FORMAT } from './build-options/build-options.constants.mjs';
 import { defineValues } from './build-options/define-values.mjs';
+import { withShimAliases } from './build-options/polyfill-shim-aliases.mjs';
 import { nodePolyfillPlugins } from './build-options/node-polyfills.mjs';
 import { devOnlyPlugin } from './dev-only/dev-only-plugin.mjs';
 import { loadBrockConfig } from './load-config.mjs';
@@ -31,7 +32,7 @@ const defineBrockWebConfig = async (rootDir, overrides = {}) => {
     define: defineValues(build?.define, 'brock.config.ts'),
     plugins: [devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), splashPlugin({ rootDir, product }), ...manifest],
     worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
-    resolve: { alias: appAliases(rootDir, build), dedupe: SHARED_SINGLETONS },
+    resolve: { alias: withShimAliases(appAliases(rootDir, build), rootDir, build), dedupe: SHARED_SINGLETONS },
     build: { outDir: resolve(rootDir, WEB_OUT_DIR), emptyOutDir: true, rollupOptions: { input: { index: resolve(src, 'index.html') } } },
   };
   return mergeConfig(base, overrides);

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import type { NoticeKind } from '../../archipelago';
-import type { NoticeRowCopy } from './online-settings.constants.type';
+import type { NoticeRowCopy } from './online-settings.type';
 
 const NOTICE_WORDS = 'notification toast online archipelago';
 

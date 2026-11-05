@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const APWORLD_USAGE = `Usage: brock apworld export --entry <ts file> --fn <export name> [--ap-data <dir>]
-  brock apworld ensure --entry <ts file> --fn <export name> --ap-version <v>... [--ap-source <dir>...] [build options]
+  brock apworld refresh --entry <ts file> --fn <export name> --ap-version <v>... [--ap-source <dir>...] [build options]
   brock apworld player-file --entry <ts file> --fn <export name> --name <slot> --out <file.yaml> [--seed <text>] [--options <file.json>] [--set key=value...]
   brock apworld build --ap-version <v>... [--ap-data <dir>] [--ap-out <dir>] [--ap-module <name>] [--ap-author <name>] [--ap-public <dir>]
   Packs an Archipelago world from the game's JSON export: the generic Python loader that ships with brock-build
@@ -14,7 +14,7 @@ const APWORLD_USAGE = `Usage: brock apworld export --entry <ts file> --fn <expor
   --ap-author   the world's author (default product.name)
   --ap-public   also copy each build to <dir>/<ap version>/<module>.apworld with a builds.json index
   export        calls the named function of the game entry (a TypeScript file) and writes the six JSON files to --ap-data
-  ensure        runs export and build only when --ap-source (default: the entry folder), package.json or the loader is newer than the built apworld
+  refresh       runs export and build only when --ap-source (default: the entry folder), package.json or the loader is newer than the built apworld
   player-file   calls the named function with { slotName, options, seedText, appVersion } and writes the yaml it returns`;
 
 const TEMPLATE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'templates', 'apworld');

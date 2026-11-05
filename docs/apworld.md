@@ -39,10 +39,10 @@ The app version comes from the app's `package.json`. The game name and world ver
 ## Rebuild only when needed
 
 ```sh
-brock apworld ensure --entry <ts file> --fn <export name> --ap-version 0.6.2
+brock apworld refresh --entry <ts file> --fn <export name> --ap-version 0.6.2
 ```
 
-`ensure` takes the options of `export` and `build`. It compares the built `<module>.apworld` with the newest file under each `--ap-source` folder (repeat it; the default is the entry's folder), the app's `package.json` and the loader. When nothing is newer it prints `up to date` and does nothing. Otherwise it runs export, then build.
+`refresh` takes the options of `export` and `build`. It compares the built `<module>.apworld` with the newest file under each `--ap-source` folder (repeat it; the default is the entry's folder), the app's `package.json` and the loader. When nothing is newer it prints `up to date` and does nothing. Otherwise it runs export, then build.
 
 ## Write a player file
 

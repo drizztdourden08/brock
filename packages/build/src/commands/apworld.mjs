@@ -9,12 +9,12 @@ import { loadBrockConfig } from '../load-config.mjs';
 const VERBS = {
   build: (rootDir, options) => loadBrockConfig(rootDir).then((config) => buildApworld(rootDir, config, options)),
   export: (rootDir, options) => exportApworld(rootDir, options),
-  ensure: (rootDir, options) => loadBrockConfig(rootDir).then((config) => ensureApworld(rootDir, config, options)),
+  refresh: (rootDir, options) => loadBrockConfig(rootDir).then((config) => ensureApworld(rootDir, config, options)),
   'player-file': (rootDir, options) => writePlayerFile(rootDir, options),
 };
 
 /**
- * @param {{ rootDir: string, args?: string[] }} ctx args are the words after apworld; the rest are the command options
+ * @param {{ rootDir: string, args?: string[] }} ctx
  * @returns {Promise<number>} exit code
  */
 const runApworld = async ({ rootDir, args = [], ...options }) => {

@@ -1,0 +1,11 @@
+/* @layer renderer-shell @kind style */
+.recording-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.recording-button--active {
+  outline: 1px solid var(--c-danger);
+  border-radius: var(--radius-md);
+}

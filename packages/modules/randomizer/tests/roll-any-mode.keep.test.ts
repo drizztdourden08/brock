@@ -20,8 +20,9 @@ const JOIN_RESULT = { lobbyId: 'abc', seat: 2 };
 const roll = vi.fn<RandomizerGame<unknown>['roll']>(() => joinedRoll(JOIN_RESULT));
 const onJoined = vi.fn();
 
-const register = (): void =>
-  useRandomizerGameStore.getState().register({ id: 'toy', roll, onJoined } as RandomizerGame<unknown>);
+const hooks: Partial<RandomizerGame<unknown>> = { roll, onJoined };
+
+const register = (): void => useRandomizerGameStore.getState().register({ id: 'toy', ...hooks } as RandomizerGame<unknown>);
 
 const configFor = (mode: RandomizerModeId): RandomizerProfileConfig => ({ mode, seed: 'seed', options: {} });
 

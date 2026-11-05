@@ -1,6 +1,6 @@
 /* @layer renderer-components @kind types */
 import type { ReactNode } from 'react';
-import type { ActionBinding, BindingSlot, InputBinding } from '../../bindings/bindings.type';
+import type { ActionBinding, BindingSlot } from '../../bindings/bindings.type';
 import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { InputProfile } from '../../bindings/input-profile.type';
 import type { VerbDef } from '../../bindings/verbs/verbs.type';

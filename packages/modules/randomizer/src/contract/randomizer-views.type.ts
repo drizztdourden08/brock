@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType } from 'react';
 import type { ProfileWizardStepBodyProps } from '@drizztdourden08/brock-react';
-import type { RandomizerModeId } from '../augment';
+import type { RandomizerModeId, RandomizerProfileConfig } from '../augment';
 import type { RandomizerOptions } from '../randomizer-options.type';
 import type { RuleOptionValue } from '../world/types/rule-option-value.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
@@ -16,6 +16,24 @@ interface ChecksWidgetViews {
   context?: string;
   order?: number;
   settings?: ComponentType;
+}
+
+interface RunPanelProps {
+  config: RandomizerProfileConfig;
+  open(page: string): void;
+}
+
+interface RunPanelDef {
+  id: string;
+  title: string;
+  span: 1 | 2 | 'full';
+  Body: ComponentType<RunPanelProps>;
+}
+
+interface LogRule {
+  pattern: RegExp;
+  kind: string;
+  tag: string;
 }
 
 type OptionsStepProps = ProfileWizardStepBodyProps<{ overrides: RandomizerOptions }>;
@@ -43,7 +61,8 @@ interface RandomizerViews {
   Checks?: ComponentType;
   Online?: ComponentType;
   checksWidget?: ChecksWidgetViews;
-  runPanels?: readonly ComponentType[];
+  runPanels?: readonly (ComponentType | RunPanelDef)[];
+  logRules?: readonly LogRule[];
   optionsStep?: ComponentType<OptionsStepProps>;
   optionSubSteps?(values: Record<string, unknown>): readonly RandomizerSubStep[];
   optionTabs?(values: Readonly<Record<string, RuleOptionValue>>): readonly OptionTab[];
@@ -51,4 +70,4 @@ interface RandomizerViews {
   connection?: ConnectionBodies;
 }
 
-export type { ChecksWidgetViews, ConnectionBodies, OptionTab, OptionTabProps, OptionsStepProps, RandomizerSubStep, RandomizerViews };
+export type { ChecksWidgetViews, ConnectionBodies, LogRule, OptionTab, OptionTabProps, OptionsStepProps, RandomizerSubStep, RandomizerViews, RunPanelDef, RunPanelProps };

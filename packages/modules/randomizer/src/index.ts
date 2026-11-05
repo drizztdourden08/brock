@@ -3,7 +3,7 @@ import './augment';
 
 export { defineRandomizerGame } from './contract/define-randomizer-game';
 export type { RandomizerGame } from './contract/randomizer-game.type';
-export type { RandomizerViews, RandomizerSubStep, ChecksWidgetViews, OptionsStepProps, OptionTab, OptionTabProps, ConnectionBodies, RunPanelDef, RunPanelProps, LogRule } from './contract/randomizer-views.type';
+export type { RandomizerViews, ChecksWidgetViews, OptionTab, OptionTabProps, ConnectionBodies, RunPanelDef, RunPanelProps, LogRule } from './contract/randomizer-views.type';
 export type { InventoryArea, InventoryLayout, InventoryProvider, InventorySlot, InventoryWidgetSlot } from './contract/inventory.type';
 export type { ConnectionBody, ConnectionView } from './contract/connection-view.type';
 export type { RollContext } from './contract/roll-context.type';

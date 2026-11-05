@@ -3,7 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'Wraps a panel so any control in it can show a small hint with its keys and mouse buttons that follows the pointer.',
-  propsHash: '0000000000000000',
+  propsHash: '1bc5bf568a454eb2',
   useWhen: ['Around a cheats panel whose controls have different keys and clicks.'],
   avoidWhen: [{ case: 'A plain text hint on a control.', use: 'Tooltip' }],
   rules: [

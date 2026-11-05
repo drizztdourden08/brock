@@ -3,7 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A small dialog anchored to an element that sets a whole number with a text field, step buttons, optional rungs and min and max shortcuts.',
-  propsHash: '0000000000000000',
+  propsHash: '0aca3ee16ea8522f',
   useWhen: ['A cheats panel edits a count, a level or a capacity that has a range.'],
   avoidWhen: [{ case: 'A number in a settings form.', use: 'TextInput' }],
   rules: [

@@ -3,7 +3,6 @@ import { readFileSync, rmSync } from 'node:fs';
 import { TEMPLATE_DIR } from './apworld.constants.mjs';
 
 /**
- * Zips the generic loader and the game's JSON into one .apworld per Archipelago version, plus the index.
  * @param {object} kit The loaded client kit
  * @param {{ outDir: string, moduleName: string, versions: string[], authors: string[], appVersion: string }} job
  * @param {Record<string, unknown>} data File name to parsed JSON, the export

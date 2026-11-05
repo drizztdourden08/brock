@@ -7,7 +7,6 @@ import { readExportDir } from './read-export-dir.mjs';
 import { writePublicBuilds } from './write-public-builds.mjs';
 
 /**
- * Builds the apworld set from the game's JSON export.
  * @param {string} rootDir The app root
  * @param {any} config The app's brock config
  * @param {object} options The command options

@@ -5,14 +5,12 @@ import { pathToFileURL } from 'node:url';
 import { KIT_PACKAGE, KIT_VIA } from './apworld.constants.mjs';
 
 /**
- * Finds the Archipelia client kit the way the app sees it: through the randomizer module that depends on it,
- * else straight from the app. brock-build itself does not depend on the kit.
  * @param {string} rootDir The app root
  * @returns {Promise<{ buildApworldSet: Function, writeReleaseFiles: Function, serializeApworldIndex: Function }>}
  */
 const loadKit = async (rootDir) => {
   const fromApp = createRequire(join(rootDir, 'package.json'));
-  let from = fromApp;
+  let from;
   try {
     from = createRequire(fromApp.resolve(KIT_VIA));
   } catch {

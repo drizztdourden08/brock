@@ -3,7 +3,6 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * Copies the newest build under every Archipelago version and writes the builds.json index beside them.
  * @param {object} kit The loaded client kit
  * @param {{ publicDir: string, moduleName: string, versions: string[] }} target
  * @param {{ bytes: Buffer, index: any }} built

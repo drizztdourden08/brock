@@ -13,7 +13,6 @@ const moduleOf = (id) => {
 };
 
 /**
- * The paths and names one build needs, from the command options and the app's config.
  * @param {string} rootDir The app root
  * @param {{ product: { id: string, name: string } }} config
  * @param {{ ap?: string[], data?: string, out?: string, module?: string, author?: string, public?: string }} options

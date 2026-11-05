@@ -42,5 +42,5 @@
 .location-banner__name {
   color: var(--c-text);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: var(--weight-semi);
 }

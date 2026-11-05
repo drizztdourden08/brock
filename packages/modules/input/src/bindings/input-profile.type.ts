@@ -9,9 +9,9 @@ interface AssignedDevice {
   deviceFamily: DeviceFamily;
 }
 
-interface InputProfileExtension {}
+type InputProfileExtension = Readonly<Record<string, unknown>>;
 
-interface InputProfile extends InputProfileExtension {
+interface InputProfile {
   id: string;
   name: string;
   deviceType: 'gamepad' | 'keyboard';
@@ -23,6 +23,7 @@ interface InputProfile extends InputProfileExtension {
   modifiedAt: number;
   verbs?: VerbBindings;
   slots?: BindingSlot[];
+  extension?: InputProfileExtension;
 }
 
 export type { AssignedDevice, InputProfile, InputProfileExtension };

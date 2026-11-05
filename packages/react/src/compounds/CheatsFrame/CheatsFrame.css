@@ -1,0 +1,21 @@
+/* @layer renderer-shell @kind style */
+.cheats-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-size: var(--text-sm);
+  color: var(--c-text);
+}
+
+.cheats-frame__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+.cheats-frame__content > * {
+  flex: 0 0 auto;
+}

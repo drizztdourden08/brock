@@ -50,6 +50,8 @@ export { GameCanvas } from './components/GameCanvas';
 export type { GameCanvasProps } from './components/GameCanvas';
 export { RomPicker } from './components/RomPicker';
 export type { DroppedRom, RomPickerProps } from './components/RomPicker';
+export { LocationBanner } from './components/LocationBanner';
+export type { LocationBannerProps, LocationNameOf } from './components/LocationBanner';
 export { MobileShell, useMobileBack } from './components/MobileShell';
 export type { MobileShellProps } from './components/MobileShell';
 

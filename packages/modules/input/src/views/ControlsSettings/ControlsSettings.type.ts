@@ -93,6 +93,9 @@ interface ControlsLabels {
   slotHeader: string;
   assignmentHeader: string;
   slotsTitle: string;
+  slotsHint: string;
+  verbsHeader: string;
+  groupHeader: string;
   noSlots: string;
   addSlot: string;
   emptySlotsHint: string;

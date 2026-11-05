@@ -4,7 +4,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 const usage = {
   job: 'The controls screen: a profiles rail, binding tabs and a devices rail, all driven by one game config.',
   useWhen: ['As the controls page of a game settings area, with a game config and a profile store.'],
-  avoidWhen: [{ case: 'A read-only view of one connected controller.', use: 'InputTester' }],
+  avoidWhen: [{ case: 'Only showing which buttons a pad holds right now.', use: 'PressedGrid' }],
   rules: [
     'Describe the tabs, verbs and default bindings in a ControlsGame; every visible string has an English default you can override with game.labels.',
     'Pass an InputProfileStore for the saved profiles; pass a GlobalBindingsStore only when a tab has scope global.',

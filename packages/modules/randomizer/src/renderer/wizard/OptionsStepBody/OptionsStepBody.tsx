@@ -6,10 +6,10 @@ import { PANEL_TITLE } from './OptionsStepBody.constants';
 import type { OptionsStepBodyProps } from './OptionsStepBody.type';
 
 const OptionsStepBody = (props: OptionsStepBodyProps) => {
-  const { value, values, onChange } = props;
+  const { value, values, subStep, onChange } = props;
   const GameBody = useRandomizerGame()?.views?.optionsStep;
   if (GameBody) return <GameBody {...props} />;
-  return <OptionsPanel title={PANEL_TITLE} overrides={value.overrides} seed={formOf(values).seed} onChange={(overrides) => onChange({ overrides })} />;
+  return <OptionsPanel title={PANEL_TITLE} overrides={value.overrides} seed={formOf(values).seed} tab={subStep} onChange={(overrides) => onChange({ overrides })} />;
 };
 
 export { OptionsStepBody };

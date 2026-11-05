@@ -5,6 +5,7 @@ interface OptionsPanelProps {
   title: string;
   overrides: RandomizerOptions;
   seed?: string;
+  tab?: string;
   onChange?(next: RandomizerOptions): void;
 }
 

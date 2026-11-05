@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import type { OptionDef } from '../../../../../../world/options/option-def.type';
-import type { RuleOptionValue } from '../../../../../../world/types/rule-option-value.type';
-import { optionKindOf } from '../../../../behavior/option-kind-of';
+import type { OptionDef } from '../../../../world/options/option-def.type';
+import type { RuleOptionValue } from '../../../../world/types/rule-option-value.type';
+import { optionKindOf } from '../../behavior/option-kind-of';
 
 const readoutOf = (option: OptionDef, value: RuleOptionValue): boolean | string => {
   const kind = optionKindOf(option);

@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { Select, Slider, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
 import { ValueTag } from '@drizztdourden08/tessera/composites';
 import { optionKindOf } from '../../../behavior/option-kind-of';
-import { choiceValueOf } from './behavior/choice-value-of';
-import { readoutOf } from './behavior/readout-of';
-import { selectItemsOf } from './behavior/select-items-of';
-import { textValueOf } from './behavior/text-value-of';
+import { choiceValueOf } from '../../behavior/choice-value-of';
+import { readoutOf } from '../../behavior/readout-of';
+import { selectItemsOf } from '../../behavior/select-items-of';
+import { textValueOf } from '../../behavior/text-value-of';
 import type { OptionControlProps } from './OptionControl.type';
 
 const OptionControl = (props: OptionControlProps) => {

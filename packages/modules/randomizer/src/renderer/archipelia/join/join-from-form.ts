@@ -2,7 +2,6 @@
 import { pickSeat } from '../../../archipelago/lobby';
 import type { LobbyEvent, LobbyJoinState, LobbySession, UploadProgress } from '../../../archipelago/lobby';
 import type { RandomizerProfileConfig } from '../../../augment';
-import type { FormLabels } from '../check/form-labels.type';
 import { formErrorOf } from '../check/form-error-of';
 import type { LobbyCheckOk } from '../check/lobby-check.type';
 import { formLabelsOf } from '../game/form-labels-of';
@@ -26,7 +25,8 @@ const membershipOf = (check: LobbyCheckOk, state: LobbyJoinState): ArchipeliaMem
   updatedAt: Date.now(),
 });
 
-const endOf = (check: LobbyCheckOk, session: LobbySession, event: LobbyEvent, state: LobbyJoinState, labels: FormLabels): JoinOutcome | null => {
+const endOf = (check: LobbyCheckOk, session: LobbySession, event: LobbyEvent, state: LobbyJoinState): JoinOutcome | null => {
+  const labels = formLabelsOf();
   if (event.type === 'failed') return { ok: false, error: formErrorOf(event.failure, check.server, labels, check.lobby), code: event.failure.code };
   if (event.type === 'closed') return { ok: false, error: formErrorOf({ code: 'closed', message: '' }, check.server, labels), code: 'closed' };
   if (event.type === 'problem' && event.problem.code === 'slot-name-taken') {
@@ -46,11 +46,10 @@ const joinFromForm = async (
   const started = await startJoin({ server: check.server, lobby: check.lobby, ap: check.ap, config, seat });
   if ('error' in started) return { ok: false, error: started.error };
   const { session } = started;
-  const labels = formLabelsOf();
   return new Promise((resolve) => {
     const stop = session.subscribe((event, state) => {
       if (state.uploads.length > 0) onProgress(sentOf(state.uploads));
-      const end = endOf(check, session, event, state, labels);
+      const end = endOf(check, session, event, state);
       if (end === null) return;
       stop();
       resolve(end);

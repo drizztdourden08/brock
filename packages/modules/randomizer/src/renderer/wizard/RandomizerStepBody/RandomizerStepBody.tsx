@@ -1,13 +1,12 @@
 /* @layer renderer-shell @kind component */
 import { Field, Grid, Select, Stack, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
 import type { RandomizerModeId } from '../../../augment';
-import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
-import { modeOptions } from '../mode-options';
+import { useVisibleModes } from './behavior/useVisibleModes';
 import { SEED_PLACEHOLDER } from './RandomizerStepBody.constants';
 import type { RandomizerStepBodyProps } from './RandomizerStepBody.type';
 
 const RandomizerStepBody = ({ value, onChange }: RandomizerStepBodyProps) => {
-  const options = modeOptions(useRandomizerGame());
+  const options = useVisibleModes(value.mode, onChange);
   return (
     <Stack gap="md">
       <Toggle label="Randomizer" checked={value.enabled} onChange={(enabled) => onChange({ enabled })} />

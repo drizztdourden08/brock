@@ -19,6 +19,7 @@ export { resolveScreenTree } from './conventions/resolve-screen-tree';
 export { deriveMenu } from './conventions/derive-menu';
 export { isShown } from './show/is-shown';
 export { currentShowContext } from './show/current-show-context';
+export { useShowFlagsStore } from './show/useShowFlagsStore';
 export { useShowFlags } from './show/useShowFlags';
 export type { ShowContext, ShowFlagValues, ShowRule } from './show/show.type';
 export type {

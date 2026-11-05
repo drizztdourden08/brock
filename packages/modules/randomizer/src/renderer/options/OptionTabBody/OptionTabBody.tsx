@@ -4,12 +4,13 @@ import { groupsOf } from '../behavior/groups-of';
 import { OptionGroupList } from '../OptionGroupList';
 import { UPCOMING_TAB_ID, UPCOMING_TITLE } from '../OptionsPanel/OptionsPanel.constants';
 import { UpcomingTabBody } from '../UpcomingTabBody';
+import type { RuleOptionValue } from '../../../world/types/rule-option-value.type';
 import type { OptionTabBodyProps } from './OptionTabBody.type';
 
 const OptionTabBody = ({ tab, values, overrides, onChange, frozen, cellOf }: OptionTabBodyProps) => {
   const game = useRandomizerGame();
   const options = (game?.catalog ?? []).filter((option) => tab.keys?.includes(option.key));
-  const valueOf = (option: { key: string }) => values[option.key];
+  const valueOf = (option: { key: string }): RuleOptionValue => values[option.key] ?? '';
 
   if (tab.id === UPCOMING_TAB_ID) return <UpcomingTabBody title={UPCOMING_TITLE} options={options} valueOf={valueOf} />;
   return (

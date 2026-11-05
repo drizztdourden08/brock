@@ -68,7 +68,10 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
     nextTime = 0;
   };
 
-  return { attachNode, pushSamples, setVolume, output: () => out, suspend: () => hold(true), resume: () => hold(false), dispose };
+  return {
+    attachNode, pushSamples, setVolume, output: () => out,
+    suspend: () => hold(true), resume: () => hold(false), dispose,
+  };
 };
 
 export { createAudioAdapter };

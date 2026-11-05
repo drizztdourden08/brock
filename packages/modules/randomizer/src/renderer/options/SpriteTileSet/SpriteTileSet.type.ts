@@ -6,6 +6,7 @@ interface SpriteTileItem {
   sprite?: string;
   checked: boolean;
   reason?: string;
+  badge?: number;
 }
 
 interface SpriteTileSetProps {

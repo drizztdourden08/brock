@@ -10,7 +10,7 @@ import './VerbsTab.css';
 const VerbsTab = ({ tab, ctrl }: VerbsTabProps) => {
   const { labels, slots } = ctrl;
   const rowLabels = { rebind: labels.rebindHint, clear: labels.clearBinding };
-  const headers = { action: labels.actionHeader, group: '', binding: labels.bindingHeader };
+  const headers = { action: labels.verbsHeader, group: labels.groupHeader, binding: labels.bindingHeader };
   const assignmentOf = (index: number) => tab.slots?.assignmentLabel?.(index) ?? '';
 
   return (
@@ -32,6 +32,7 @@ const VerbsTab = ({ tab, ctrl }: VerbsTabProps) => {
       {tab.slots && (
         <>
           <Box className="verbs-tab__slots-head"><Text className="verbs-tab__slots-title">{labels.slotsTitle}</Text></Box>
+          {labels.slotsHint && <Text variant="caption" className="verbs-tab__slots-hint">{labels.slotsHint}</Text>}
           <BindingListHeader actionLabel={labels.slotHeader} middleLabel={labels.assignmentHeader} bindingLabel={labels.bindingHeader} />
           {slots.map((slot) => (
             <SlotRow

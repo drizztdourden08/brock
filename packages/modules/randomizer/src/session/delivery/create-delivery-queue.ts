@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import { clearQueue } from './clear-queue';
-import { announceQueue } from './delivery-feed';
+import { announceQueue } from './announce-queue';
 import type { DeliveryQueueOptions } from './delivery-queue-options.type';
 import type { DeliveryQueue } from './delivery-request.type';
 import { enqueueRequest } from './enqueue-request';

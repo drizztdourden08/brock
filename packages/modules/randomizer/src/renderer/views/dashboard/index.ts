@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind barrel */
 export { DashboardCard } from './DashboardCard';
 export type { DashboardCardProps, DashboardSpan } from './DashboardCard';
+export { PlayerRow } from './PlayerRow';
+export type { PlayerRowProps } from './PlayerRow';
 export { StatTiles } from './StatTiles';
 export type { StatTilesProps } from './StatTiles';
 export type { RunTile, TileMeter } from './run-tile.type';

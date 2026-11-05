@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind type */
+/* @layer renderer-shell @kind types */
 interface FilterPanels {
   filters: boolean;
   tags: boolean;

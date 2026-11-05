@@ -15,13 +15,15 @@ const AspectRatioControl = (props: AspectRatioControlProps) => {
 
   return (
     <Box className="aspect-ratio-control">
-      <Box className="aspect-ratio-control__header">
-        <Span className="aspect-ratio-control__label">{label}</Span>
-        {text !== undefined && <Small tone="dim">{text}</Small>}
+      <Box className="aspect-ratio-control__top">
+        <Box className="aspect-ratio-control__header">
+          <Span className="aspect-ratio-control__label">{label}</Span>
+          {text !== undefined && <Small tone="dim">{text}</Small>}
+        </Box>
+        <SegmentedControl aria-label={label} value={mainValue} options={options} disabled={disabled} onChange={handleMain} />
       </Box>
       {lockedNote !== undefined && <Small tone="dim">{lockedNote}</Small>}
       <Box className="aspect-ratio-control__body">
-        <SegmentedControl aria-label={label} value={mainValue} options={options} disabled={disabled} onChange={handleMain} />
         {showRecommended && <Text className="aspect-ratio-control__recommended">{recommendedNote}</Text>}
         {PRESET_GROUP_IDS.map((id) => {
           const groupOptions = groups[id];

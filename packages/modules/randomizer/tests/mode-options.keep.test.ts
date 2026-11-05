@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { RandomizerGame } from '../src/contract/randomizer-game.type';
 import { modeOptions } from '../src/renderer/wizard/mode-options';
 
-const ctx = { flags: {} } as unknown as ShowContext;
+const ctx: ShowContext = { profile: null, host: 'electron', formFactor: 'desktop', flags: {}, params: {} };
 
 const gameWith = (extra: Partial<RandomizerGame<unknown>>): RandomizerGame<unknown> =>
   ({ id: 'toy', ...extra }) as RandomizerGame<unknown>;

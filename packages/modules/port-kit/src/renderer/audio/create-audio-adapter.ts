@@ -50,14 +50,9 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
     if (out?.node instanceof GainNode) out.node.gain.value = percent / 100;
   };
 
-  const suspend = (): void => {
-    held = true;
-    void out?.context.suspend();
-  };
-
-  const resume = (): void => {
-    held = false;
-    void out?.context.resume();
+  const hold = (on: boolean): void => {
+    held = on;
+    void (on ? out?.context.suspend() : out?.context.resume());
   };
 
   const dispose = (): void => {
@@ -73,7 +68,7 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
     nextTime = 0;
   };
 
-  return { attachNode, pushSamples, setVolume, output: () => out, suspend, resume, dispose };
+  return { attachNode, pushSamples, setVolume, output: () => out, suspend: () => hold(true), resume: () => hold(false), dispose };
 };
 
 export { createAudioAdapter };

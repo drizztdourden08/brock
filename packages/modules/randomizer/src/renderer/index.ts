@@ -8,6 +8,7 @@ import { randomizerLockCause } from './lock/randomizer-lock-cause';
 import { randomizerMode } from './mode/randomizer-mode';
 import { connectionStep } from './online/connection-step/connection.step';
 import { randomizerOnlineMode } from './online/online-mode';
+import { inventoryWidgets } from './inventory/inventory-widgets';
 import { checksWidgets } from './tracker/checks-widgets';
 import { randomizerProfileHooks } from './profile-hooks/randomizer-profile-hooks';
 import { randomizerOptionsStep } from './wizard/randomizer-options.step';
@@ -21,7 +22,7 @@ const randomizerRenderer: RendererModule = {
   profileWizardSteps: [randomizerStep, randomizerOptionsStep, connectionStep],
   profileHooks: randomizerProfileHooks,
   logChannels: RANDOMIZER_LOG_CHANNELS,
-  widgets: checksWidgets,
+  widgets: [...checksWidgets, ...inventoryWidgets],
   beforeQuit: stopSessionBeforeQuit,
   onBeforeQuit: flushMarksBeforeQuit,
 };

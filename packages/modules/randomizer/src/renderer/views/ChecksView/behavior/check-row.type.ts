@@ -1,14 +1,19 @@
 /* @layer renderer-shell @kind types */
-import type { LocationStatus, TrackerProvider, TrackerReading } from '../../../../tracker';
+import type { LocationStatus, TrackerBadge, TrackerKind, TrackerProvider, TrackerReading } from '../../../../tracker';
 import type { TrackerFeedInput } from '../../../tracker/feed/tracker-feed-state.type';
-import type { StatusFilter } from '../ChecksView.type';
+import type { FacetMode, KindFilter, StatusFilter } from '../ChecksView.type';
 
 interface CheckRow {
   key: string;
   label: string;
   item: string | null;
+  itemLabel: string | null;
+  art: string | null;
   status: LocationStatus;
   marked: boolean;
+  kind: TrackerKind;
+  facets: readonly string[];
+  badges: readonly TrackerBadge[];
   group: string;
   order: number;
 }
@@ -19,7 +24,6 @@ interface RowsInput {
   feed: TrackerFeedInput;
   marks: ReadonlySet<string>;
   grouping: string;
-  showItems: boolean;
 }
 
 interface RowGroup {
@@ -34,7 +38,10 @@ interface RowSubject {
 }
 
 interface RowFilter {
-  filter: StatusFilter;
+  status: StatusFilter;
+  kind: KindFilter;
+  facets: readonly string[];
+  facetMode: FacetMode;
   search: string;
 }
 

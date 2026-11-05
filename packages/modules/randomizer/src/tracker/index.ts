@@ -1,6 +1,9 @@
 /* @layer core @kind barrel */
 export type { LocationStatus } from './types/location-status.type';
 export type { TrackerAssumption } from './types/tracker-assumption.type';
+export type { TrackerBadge, TrackerBadgeTone } from './types/tracker-badge.type';
+export type { TrackerFacetGroup, TrackerFacetOption } from './types/tracker-facet-group.type';
+export type { TrackerKind } from './types/tracker-kind.type';
 export type { TrackerGrouping } from './types/tracker-grouping.type';
 export type { TrackerCounts } from './types/tracker-counts.type';
 export type { TrackerInput } from './types/tracker-input.type';

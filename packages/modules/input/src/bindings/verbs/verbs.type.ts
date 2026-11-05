@@ -2,6 +2,8 @@
 import type { ResolvedControl } from '../../family/family.type';
 import type { InputBinding, VerbPosition } from '../bindings.type';
 
+type AxisVerbPosition = Extract<VerbPosition, { axis: unknown }>;
+
 interface VerbDef {
   id: string;
   label: string;
@@ -16,4 +18,4 @@ interface VerbSource {
   keyboard?: boolean;
 }
 
-export type { VerbDef, VerbSource };
+export type { AxisVerbPosition, VerbDef, VerbSource };

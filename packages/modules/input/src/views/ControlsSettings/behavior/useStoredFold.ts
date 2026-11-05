@@ -15,7 +15,7 @@ const writeFold = (storageKey: string, collapsed: boolean): void => {
   try {
     localStorage.setItem(storageKey, String(collapsed));
   } catch {
-    // storage can be blocked; the fold then lasts for this session only
+    return;
   }
 };
 

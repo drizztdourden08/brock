@@ -3,9 +3,8 @@ import { useEffect, useRef } from 'react';
 import { newProfile } from '../../../bindings/profile/new-profile';
 import type { ActionBinding } from '../../../bindings/bindings.type';
 import type { InputProfile } from '../../../bindings/input-profile.type';
+import { DEFAULT_PROFILE_ID } from '../ControlsSettings.constants';
 import type { UseProfileLoaderArgs } from '../ControlsSettings.type';
-
-const DEFAULT_PROFILE_ID = 'default-keyboard';
 
 const defaultProfile = (keyboardDefaults: readonly ActionBinding[]): InputProfile => ({
   ...newProfile(0, keyboardDefaults),

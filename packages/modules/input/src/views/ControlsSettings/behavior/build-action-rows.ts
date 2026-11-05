@@ -2,7 +2,6 @@
 import type { ActionRow, BuildActionRowsParams } from './controls-behavior.type';
 import { actionRow } from './action-row';
 
-/** One row per bound mapping of each action, or one empty row when the action has none. */
 const buildActionRows = ({ actions, mappings, multiController, devices }: BuildActionRowsParams): ActionRow[] =>
   actions.flatMap((action) => {
     const bound = mappings

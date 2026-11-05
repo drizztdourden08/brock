@@ -4,7 +4,6 @@ import { sameGamepadInput } from '../../../bindings/device-keys/same-gamepad-inp
 import { slotForControl } from '../../../bindings/slots/slot-for-control';
 import type { ResolvedControl } from '../../../family/family.type';
 
-/** Position, icon and label of the control a captured binding presses, or nothing when none matches. */
 const slotDisplayFor = (binding: InputBinding, controls: readonly ResolvedControl[]): SlotDisplay => {
   for (const control of controls) {
     const slot = slotForControl(control);

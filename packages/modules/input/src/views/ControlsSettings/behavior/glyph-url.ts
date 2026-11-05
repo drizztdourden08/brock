@@ -3,7 +3,6 @@ import { lookupGlyph } from '../../../renderer/lookup-glyph';
 import { useGlyphSourceStore } from '../../../renderer/useGlyphSourceStore';
 import type { GlyphSource } from '../../../renderer/glyph-source.type';
 
-/** First URL the registered glyph sources give for the keys, best match first. */
 const glyphUrl = (
   keys: readonly string[],
   sources: readonly GlyphSource[] = useGlyphSourceStore.getState().sources,

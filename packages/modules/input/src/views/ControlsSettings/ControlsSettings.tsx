@@ -1,13 +1,12 @@
 /* @layer renderer-components @kind component */
-import { useCallback } from 'react';
 import { SearchAnchor } from '@drizztdourden08/brock-react';
-import { Dialog } from '@drizztdourden08/tessera/composites';
 import { Flex } from '@drizztdourden08/tessera/primitives';
 import { useControlsNarrow } from './behavior/useControlsNarrow';
 import { useControlsSettings } from './behavior/useControlsSettings';
 import { BindingListener } from './sub-components/BindingListener';
 import { ControlsDevices } from './sub-components/ControlsDevices';
-import { ControlsMain } from './sub-components/ControlsMain';
+import { ControlsDialogs } from './sub-components/ControlsDialogs';
+import { ControlsMain }from './sub-components/ControlsMain';
 import { ControlsProfiles } from './sub-components/ControlsProfiles';
 import type { ControlsSettingsProps } from './ControlsSettings.type';
 import './ControlsSettings.css';
@@ -15,9 +14,7 @@ import './ControlsSettings.css';
 const ControlsSettings = (props: ControlsSettingsProps) => {
   const narrow = useControlsNarrow();
   const ctrl = useControlsSettings(props);
-  const { labels, confirmPreset, deleteTarget, setConfirmPreset, setDeleteTarget } = ctrl;
-  const cancelPreset = useCallback(() => setConfirmPreset(null), [setConfirmPreset]);
-  const cancelDelete = useCallback(() => setDeleteTarget(null), [setDeleteTarget]);
+  const { labels, setDeleteTarget } = ctrl;
 
   return (
     <Flex gap="md" align="stretch" className="controls-settings">
@@ -60,26 +57,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
         />
       )}
 
-      <Dialog
-        open={Boolean(confirmPreset)}
-        title={labels.presetTitle}
-        message={labels.presetMessage(confirmPreset?.deviceName ?? '')}
-        confirmLabel={labels.presetConfirm}
-        cancelLabel={labels.cancel}
-        onConfirm={ctrl.handleApplyPreset}
-        onCancel={cancelPreset}
-      />
-
-      <Dialog
-        open={Boolean(deleteTarget)}
-        title={labels.deleteTitle}
-        message={labels.deleteMessage(deleteTarget?.name ?? '')}
-        variant="danger"
-        confirmLabel={labels.deleteConfirm}
-        cancelLabel={labels.cancel}
-        onConfirm={ctrl.handleDeleteConfirm}
-        onCancel={cancelDelete}
-      />
+      <ControlsDialogs ctrl={ctrl} />
     </Flex>
   );
 };

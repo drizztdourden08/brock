@@ -8,7 +8,6 @@ const isUsable = (input: HTMLInputElement): boolean =>
   input.getClientRects().length > 0 &&
   getComputedStyle(input).visibility === 'visible';
 
-/** Focuses and selects the input once it is visible; returns the cancel function. */
 const focusInputWhenReady = (inputRef: RefObject<HTMLInputElement | null>): (() => void) => {
   let frame = 0;
   let attempts = 0;

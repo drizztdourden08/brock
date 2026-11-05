@@ -5,7 +5,6 @@ import type { GlyphSource } from '../../../renderer/glyph-source.type';
 import { GENERIC_ICON_FAMILY } from '../ControlsSettings.constants';
 import type { DeviceIconIds } from '../ControlsSettings.type';
 
-/** Controller art for the SDL type, then the family, then the generic one. */
 const deviceIconUrl = (
   ids: DeviceIconIds,
   sources: readonly GlyphSource[] = useGlyphSourceStore.getState().sources,

@@ -5,8 +5,7 @@ import type { SdlButtonName } from '../../pad/sdl-button-name.type';
 import { UNBOUND } from '../bindings.constants';
 import type { InputBinding, VerbPosition } from '../bindings.type';
 import { axisEndLabel } from './axis-end-label';
-
-type AxisVerbPosition = Extract<VerbPosition, { axis: unknown }>;
+import type { AxisVerbPosition } from './verbs.type';
 
 const isAxisPosition = (position: VerbPosition): position is AxisVerbPosition => typeof position !== 'string';
 

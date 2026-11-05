@@ -6,7 +6,6 @@ import { recallControllerSdlType } from '../../../runtime/controller-family-cach
 import { GENERIC_ICON_FAMILY } from '../ControlsSettings.constants';
 import { deviceIconUrl } from './device-icon-url';
 
-/** Controller art for a vendor and product pair, from the cached SDL type or the live family. */
 const liveDeviceIcon = (vid: string, pid: string, devices: readonly DetectedDevice[]): string | null => {
   const sdlType = recallControllerSdlType(parseInt(vid, 16), parseInt(pid, 16));
   const family = sdlType

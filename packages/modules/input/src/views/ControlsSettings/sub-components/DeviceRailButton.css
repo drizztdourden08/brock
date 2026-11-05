@@ -1,0 +1,8 @@
+/* @layer renderer-components @kind style */
+.device-rail-button:not(:disabled) {
+  cursor: grab;
+}
+
+.device-rail-button:not(:disabled):active {
+  cursor: grabbing;
+}

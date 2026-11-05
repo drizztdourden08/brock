@@ -12,7 +12,6 @@ const fallbackGlyph = (binding: InputBinding): string | null => {
   return null;
 };
 
-/** Glyph keys to ask the registered glyph source for, best match first. */
 const bindingGlyphKeys = (binding: InputBinding, icon?: ButtonIcon | null): string[] => {
   if (binding.type === 'none') return [];
   const keys: (string | null | undefined)[] = [

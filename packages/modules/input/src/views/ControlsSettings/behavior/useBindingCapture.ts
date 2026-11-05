@@ -6,7 +6,6 @@ import { LISTEN_ARM_DELAY_MS, MODIFIER_CODES } from '../ControlsSettings.constan
 import type { BindingCapture, BindingListenerProps } from '../sub-components/BindingListener.type';
 import { keyboardBindingFromEvent } from './keyboard-binding-from-event';
 
-/** Captures the next key, button or stick push once armed, and Escape cancels. */
 const useBindingCapture = ({ onCapture, onCancel }: Pick<BindingListenerProps, 'onCapture' | 'onCancel'>): void => {
   useEffect(() => {
     let cancelled = false;

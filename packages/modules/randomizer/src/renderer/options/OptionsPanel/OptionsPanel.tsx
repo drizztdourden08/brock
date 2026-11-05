@@ -7,9 +7,9 @@ import { TabBody } from './sub-components/TabBody';
 import { NO_OPTIONS_TEXT } from './OptionsPanel.constants';
 import type { OptionsPanelProps } from './OptionsPanel.type';
 
-const OptionsPanel = ({ title, overrides, seed = '', tab, onChange }: OptionsPanelProps) => {
+const OptionsPanel = ({ title, overrides, seed = '', tab, onTabChange, onChange }: OptionsPanelProps) => {
   const game = useRandomizerGame();
-  const { items, active, values, select } = useOptionTab(overrides, tab);
+  const { items, active, values, select } = useOptionTab(overrides, tab, onTabChange);
   if (!active) return <Text variant="caption">{NO_OPTIONS_TEXT}</Text>;
   const tabProps = { values, overrides, onChange, frozen: onChange === undefined, seed };
   const Aside = game?.views?.optionsAside;

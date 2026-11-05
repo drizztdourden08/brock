@@ -6,6 +6,7 @@ interface OptionsPanelProps {
   overrides: RandomizerOptions;
   seed?: string;
   tab?: string;
+  onTabChange?(tab: string): void;
   onChange?(next: RandomizerOptions): void;
 }
 

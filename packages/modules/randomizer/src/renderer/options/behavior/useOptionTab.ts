@@ -7,16 +7,20 @@ import { optionTabsOf } from './option-tabs-of';
 import { optionValuesOf } from './option-values-of';
 import type { OptionTabModel } from './option-tab-model.type';
 
-const useOptionTab = (overrides: RandomizerOptions, tab?: string): OptionTabModel => {
+const useOptionTab = (overrides: RandomizerOptions, tab?: string, onSelect?: (id: string) => void): OptionTabModel => {
   const game = useRandomizerGame();
-  const [chosen, setChosen] = useState<string | null>(null);
+  const [picked, setPicked] = useState<{ tab: string | undefined; id: string } | null>(null);
   const catalog = game?.catalog ?? [];
   const values = optionValuesOf(catalog, overrides);
   const tabs = optionTabsOf(game, values);
-  const wanted = tab ?? chosen;
+  const wanted = picked !== null && (picked.tab === tab || tab === undefined) ? picked.id : tab;
   const active = tabs.find((each) => each.id === wanted) ?? tabs[0] ?? null;
   const items = tabs.map(({ id, label, keys }) => ({ id, label, badge: changedCountOf(catalog, values, keys) }));
-  return { items, active, values, select: setChosen };
+  const select = (id: string) => {
+    setPicked({ tab, id });
+    onSelect?.(id);
+  };
+  return { items, active, values, select };
 };
 
 export { useOptionTab };

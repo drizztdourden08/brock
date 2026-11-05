@@ -10,6 +10,7 @@ interface ProfileWizardStepBodyProps<V extends object> {
   values: ProfileWizardValues;
   onChange: (patch: Partial<V>) => void;
   subStep?: string;
+  onSubStepChange?: (subStep: string) => void;
 }
 
 interface ProfileWizardStepDef<V extends object = object> {

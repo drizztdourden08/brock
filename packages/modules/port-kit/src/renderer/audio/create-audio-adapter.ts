@@ -11,8 +11,7 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
   let out: AudioOutput | null = null;
   let owned = false;
   let nextTime = 0;
-  let disarm: (() => void) | null = null;
-  let unwatch: (() => void) | null = null;
+  let teardown: (() => void) | null = null;
   let held = false;
   let reported = false;
 
@@ -20,10 +19,11 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
     const gain = context.createGain();
     gain.gain.value = volume / 100;
     gain.connect(context.destination);
-    disarm = armGestureResume(context);
     out = { context, node: gain };
-    unwatch?.();
-    unwatch = watchAudioState({ output: out, log, isHeld: () => held });
+    teardown?.();
+    const stopGesture = armGestureResume(context);
+    const stopWatch = watchAudioState({ output: out, log, isHeld: () => held });
+    teardown = () => { stopGesture(); stopWatch(); };
     return out;
   };
 
@@ -56,10 +56,8 @@ const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = 
   };
 
   const dispose = (): void => {
-    disarm?.();
-    disarm = null;
-    unwatch?.();
-    unwatch = null;
+    teardown?.();
+    teardown = null;
     held = false;
     reported = false;
     if (out && owned) void out.context.close().catch(() => undefined);

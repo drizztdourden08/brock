@@ -1,7 +1,7 @@
 /* @layer core @kind logic */
 import type { ApVersion } from '../protocol/protocol.type';
 import type {
-  ApConnectedPacket, ApReceivedItemsPacket, ApRoomInfoPacket, ApRoomUpdatePacket, ApServerPacket,
+  ApConnectedPacket, ApLocationInfoPacket, ApReceivedItemsPacket, ApRoomInfoPacket, ApRoomUpdatePacket, ApServerPacket,
 } from '../protocol/server-packets.type';
 import type { NetworkFacts } from './network-facts.type';
 import { wireList } from './wire-list';
@@ -29,14 +29,23 @@ const observeConnected = (facts: NetworkFacts, packet: ApConnectedPacket): void 
   facts.games = gamesOf(packet);
   facts.checked = new Set(wireList(packet.checked_locations));
   facts.missing = new Set(wireList(packet.missing_locations));
+  facts.hintPoints = packet.hint_points ?? null;
+  facts.reconnectAttempt = 0;
+  facts.nextRetryAt = null;
+  facts.retryInFlight = false;
 };
 
 const observeRoomUpdate = (facts: NetworkFacts, packet: ApRoomUpdatePacket): void => {
   if (Array.isArray(packet.players)) facts.players = packet.players;
+  if (typeof packet.hint_points === 'number') facts.hintPoints = packet.hint_points;
   for (const id of wireList(packet.checked_locations)) {
     facts.checked.add(id);
     facts.missing.delete(id);
   }
+};
+
+const observeLocationInfo = (facts: NetworkFacts, packet: ApLocationInfoPacket): void => {
+  for (const entry of wireList(packet.locations)) facts.scoutOwners.set(entry.location, entry.player);
 };
 
 const observeReceived = (facts: NetworkFacts, packet: ApReceivedItemsPacket): void => {
@@ -48,6 +57,7 @@ const observeServer = (facts: NetworkFacts, packet: ApServerPacket, now: number)
   if (packet.cmd === 'RoomInfo') observeRoomInfo(facts, packet);
   else if (packet.cmd === 'Connected') observeConnected(facts, packet);
   else if (packet.cmd === 'RoomUpdate') observeRoomUpdate(facts, packet);
+  else if (packet.cmd === 'LocationInfo') observeLocationInfo(facts, packet);
   else if (packet.cmd === 'ReceivedItems') observeReceived(facts, packet);
 };
 

@@ -15,6 +15,12 @@ const createNetworkFacts = (): NetworkFacts => ({
   checked: new Set(),
   missing: new Set(),
   itemsReceived: 0,
+  hintPoints: null,
+  sentChecks: new Set(),
+  scoutOwners: new Map(),
+  reconnectAttempt: 0,
+  nextRetryAt: null,
+  retryInFlight: false,
 });
 
 export { createNetworkFacts };

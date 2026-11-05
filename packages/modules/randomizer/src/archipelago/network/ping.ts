@@ -27,6 +27,12 @@ const createPinger = (deps: PingDeps): Pinger => {
     pending.clear();
   };
 
+  const reset = (): void => {
+    stop();
+    roundTrips.length = 0;
+    samples = 0;
+  };
+
   return {
     get lastMs() { return roundTrips[roundTrips.length - 1] ?? null; },
     get meanMs() {
@@ -39,6 +45,7 @@ const createPinger = (deps: PingDeps): Pinger => {
       timer = setInterval(() => ping(slot), PING_INTERVAL_MS);
     },
     stop,
+    reset,
     handleBounced(packet) {
       if (!isPing(packet)) return false;
       const id = packet.data?.id;

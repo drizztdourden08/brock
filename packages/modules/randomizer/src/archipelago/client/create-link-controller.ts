@@ -12,7 +12,8 @@ const createLinkController = (kit: ClientKit, getContext: () => OnlineContext): 
   const { state } = kit;
   let reason = '';
   const connect = (): void => attempt();
-  const reconnector = createReconnector(connect, (delay) => {
+  const reconnector = createReconnector(connect, (delay, attempt) => {
+    kit.network.scheduled(delay, attempt);
     kit.log(`[Online] ${reason}, retrying in ${Math.round(delay / MS_PER_SECOND)}s`, 'warn');
   });
   const onClose = makeCloseHandler(kit, reconnector, (next) => {

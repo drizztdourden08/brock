@@ -90,6 +90,34 @@ describe('archipelago tracker links', { tags: ['critical'] }, () => {
     expect(rig.sockets.sockets).toHaveLength(1);
   });
 
+  it('closes the links on a drop and reopens them with a new roster query after the reconnect', () => {
+    const rig = createRig();
+    bootRoom(rig, pairRoom, trackingConnection(rig));
+    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    expect(playerAt(rig, 2).online).toBe(true);
+    rig.sockets.sockets[0]?.drop();
+    expect(trackerSocket(rig).closed).toBe(true);
+    expect(playerAt(rig, 2).online).toBeNull();
+    vi.advanceTimersByTime(1000);
+    rig.sockets.last().open();
+    rig.sockets.last().receive([pairRoom.info, pairRoom.connected]);
+    expect(rig.sent('Say')).toHaveLength(2);
+    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    expect(rig.sockets.sockets).toHaveLength(4);
+    expect(rig.sockets.last().closed).toBe(false);
+  });
+
+  it('shows the checked and total locations of a linked player', () => {
+    const rig = createRig();
+    bootRoom(rig, pairRoom, trackingConnection(rig));
+    rig.sockets.last().receive([commandResult(BOTH_ONLINE)]);
+    expect(playerAt(rig, 2)).toMatchObject({ checked: null, total: null });
+    trackerSocket(rig).open();
+    trackerSocket(rig).receive([pairRoom.info]);
+    trackerSocket(rig).receive([{ cmd: 'Connected', checked_locations: [900], missing_locations: [901, 902] }]);
+    expect(playerAt(rig, 2)).toMatchObject({ checked: 1, total: 3 });
+  });
+
   it('closes the tracker links when the client closes', () => {
     const rig = createRig();
     bootRoom(rig, pairRoom, trackingConnection(rig));

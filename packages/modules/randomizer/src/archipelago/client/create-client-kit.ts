@@ -21,7 +21,12 @@ const createClientKit = (deps: ClientDeps): ClientKit => {
   const state = createClientState();
   const events = createListenerSet<[ClientEvent]>();
   const createSocket = full.createSocket ?? createBrowserSocket;
-  const send = (packet: ApClientPacket): void => state.link?.send(JSON.stringify([packet]));
+  const sendRaw = (packet: ApClientPacket): void => state.link?.send(JSON.stringify([packet]));
+  const network = createNetworkMonitor({ send: sendRaw, createSocket, uuid: clientUuid, now: full.now });
+  const send = (packet: ApClientPacket): void => {
+    sendRaw(packet);
+    network.sent(packet);
+  };
   const log = (line: string, level?: 'warn' | 'error'): void => full.log?.(line, level);
   const emit = (event: ClientEvent): void => events.emit(event);
   const notifyConnection = createConnectionNotices((notice) => emit({ type: 'notice', notice }));
@@ -33,7 +38,7 @@ const createClientKit = (deps: ClientDeps): ClientKit => {
     names,
     messages: createMessageLog(),
     goal: createGoalReporter(send),
-    network: createNetworkMonitor({ send, createSocket, uuid: clientUuid, now: full.now }),
+    network,
     deathLinks: createDeathLinkSwitch({
       send,
       slotName: () => state.connection?.slotName ?? '',

@@ -17,10 +17,12 @@ interface NetworkMonitor {
   status(): NetworkStatus;
   subscribe(f: () => void): () => void;
   received(packet: ApServerPacket): boolean;
+  sent(packet: ApClientPacket): void;
   changed(): void;
   connecting(): void;
   opened(url: string, connection: OnlineConnection): void;
   retrying(): void;
+  scheduled(delayMs: number, attempt: number): void;
   refused(): void;
   closed(): void;
   stop(): void;
@@ -28,7 +30,7 @@ interface NetworkMonitor {
 }
 
 type NetworkLifecycle = Pick<
-  NetworkMonitor, 'connecting' | 'opened' | 'retrying' | 'refused' | 'closed' | 'stop' | 'reset'
+  NetworkMonitor, 'connecting' | 'opened' | 'retrying' | 'scheduled' | 'refused' | 'closed' | 'stop' | 'reset'
 >;
 
 interface LifecycleControl {
@@ -36,6 +38,7 @@ interface LifecycleControl {
   changed(): void;
   forgetConnection(): void;
   remember(url: string | null, connection: OnlineConnection | null): void;
+  now(): number;
 }
 
 export type { LifecycleControl, NetworkLifecycle, NetworkMonitor, NetworkMonitorDeps };

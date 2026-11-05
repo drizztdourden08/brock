@@ -37,7 +37,8 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
       connection: 'connected',
       health: { lastPacketAt: CLOCK_START },
       server: { version: '0.6.3', seedName: SEED, tags: ['AP'] },
-      progress: { checked: 0, total: 2, received: 0 },
+      progress: { checked: 0, total: 2, received: 0, sentToOthers: 0 },
+      reconnect: { attempt: 0, nextRetryAt: null, inFlight: false },
     });
   });
 
@@ -46,7 +47,7 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     rig.boot();
     rig.sockets.last().receive([{ cmd: 'RoomUpdate', checked_locations: [100] }]);
     rig.sockets.last().receive([{ cmd: 'ReceivedItems', index: 0, items: [item] }]);
-    expect(rig.client.status().progress).toEqual({ checked: 1, total: 2, received: 1 });
+    expect(rig.client.status().progress).toEqual({ checked: 1, total: 2, received: 1, sentToOthers: 0 });
   });
 
   it('lists each player of the team with the game they play', () => {
@@ -54,8 +55,16 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     bootRoom(rig, pairRoom);
     expect(rig.client.status().players).toMatchObject([
       { slot: 1, name: 'Me', game: GAME, online: true },
-      { slot: 2, name: 'Zelda', game: OTHER_GAME, online: false },
+      { slot: 2, name: 'Zelda', game: OTHER_GAME, online: null },
     ]);
+  });
+
+  it('reads a player as unknown until a Join or roster reply says otherwise', () => {
+    const rig = startedRig();
+    bootRoom(rig, pairRoom);
+    expect(playerAt(rig, 1).online).toBe(true);
+    expect(playerAt(rig, 2).online).toBeNull();
+    expect(playerAt(rig, 2).status).toBe('unknown');
   });
 
   it('marks the other players online on Join and offline on Part', () => {
@@ -65,6 +74,42 @@ describe('archipelago network status', { tags: ['critical'] }, () => {
     expect(playerAt(rig, 2).online).toBe(true);
     rig.sockets.last().receive([presencePacket('Part')]);
     expect(playerAt(rig, 2).online).toBe(false);
+  });
+
+  it('counts the checks sent for items that belong to other players', () => {
+    const rig = startedRig();
+    bootRoom(rig, pairRoom);
+    rig.sockets.last().receive([{
+      cmd: 'LocationInfo',
+      locations: [{ item: 500, location: 100, player: 2, flags: 0 }, { item: 10, location: 101, player: 1, flags: 0 }],
+    }]);
+    rig.client.reportCheck(100);
+    rig.client.reportCheck(101);
+    expect(rig.client.status().progress.sentToOthers).toBe(1);
+  });
+
+  it('takes hint points from Connected, then from each RoomUpdate', () => {
+    const rig = startedRig();
+    expect(rig.client.status().server.hintPoints).toBeUndefined();
+    bootRoom(rig, { ...pairRoom, connected: { ...pairRoom.connected, hint_points: 3 } });
+    expect(rig.client.status().server.hintPoints).toBe(3);
+    rig.sockets.last().receive([{ cmd: 'RoomUpdate', hint_points: 7 }]);
+    expect(rig.client.status().server.hintPoints).toBe(7);
+  });
+
+  it('reads the reconnect attempt and the next retry time after a drop', () => {
+    const rig = startedRig();
+    rig.boot();
+    rig.sockets.last().drop();
+    expect(rig.client.status().reconnect).toEqual({ attempt: 1, nextRetryAt: CLOCK_START + 1000, inFlight: false });
+    vi.advanceTimersByTime(1000);
+    expect(rig.client.status().reconnect).toEqual({ attempt: 1, nextRetryAt: null, inFlight: true });
+    rig.sockets.last().drop();
+    expect(rig.client.status().reconnect).toEqual({ attempt: 2, nextRetryAt: Date.now() + 2000, inFlight: false });
+    vi.advanceTimersByTime(2000);
+    rig.sockets.last().open();
+    rig.sockets.last().receive([soloRoom.info, soloRoom.connected]);
+    expect(rig.client.status().reconnect).toEqual({ attempt: 0, nextRetryAt: null, inFlight: false });
   });
 
   it('reads a drop as reconnecting', () => {
@@ -99,6 +144,19 @@ describe('archipelago ping', { tags: ['critical'] }, () => {
     vi.advanceTimersByTime(20);
     echoLastPing(rig);
     expect(rig.client.status().health.pingMs).toBe(20);
+  });
+
+  it('reports the ping mean and the sample count in the status', () => {
+    const rig = startedRig();
+    rig.boot();
+    vi.advanceTimersByTime(40);
+    echoLastPing(rig);
+    vi.advanceTimersByTime(PING_INTERVAL_MS - 40);
+    vi.advanceTimersByTime(20);
+    echoLastPing(rig);
+    expect(rig.client.status().health).toMatchObject({ pingMs: 20, pingMeanMs: 30, pingSamples: 2 });
+    rig.sockets.last().drop();
+    expect(rig.client.status().health).toEqual({ lastPacketAt: expect.any(Number), pingSamples: 0 });
   });
 
   it('keeps the mean of the round trips it has seen', () => {

@@ -7,15 +7,24 @@ interface NetworkPlayer {
   name: string;
   game: string;
   status: string;
-  online: boolean;
+  online: boolean | null;
+  checked: number | null;
+  total: number | null;
+}
+
+interface ReconnectStatus {
+  attempt: number;
+  nextRetryAt: number | null;
+  inFlight: boolean;
 }
 
 interface NetworkStatus {
   connection: ConnectionState;
-  health: { pingMs?: number; lastPacketAt?: number };
+  health: { pingMs?: number; pingMeanMs?: number; pingSamples: number; lastPacketAt?: number };
+  reconnect: ReconnectStatus;
   players: readonly NetworkPlayer[];
-  server: { version?: string; seedName?: string; tags: readonly string[] };
-  progress: { checked: number; total: number; received: number };
+  server: { version?: string; seedName?: string; hintPoints?: number; tags: readonly string[] };
+  progress: { checked: number; total: number; received: number; sentToOthers: number };
 }
 
 export type { ConnectionState, NetworkPlayer, NetworkStatus };

@@ -14,6 +14,7 @@ interface Pinger {
   readonly samples: number;
   start(slot: number): void;
   stop(): void;
+  reset(): void;
   handleBounced(packet: ApBouncedPacket): boolean;
 }
 

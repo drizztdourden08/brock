@@ -42,7 +42,7 @@ const createNetworkMonitor = (deps: NetworkMonitorDeps): NetworkMonitor => {
   });
   const forgetConnection = (): void => {
     pinging = false;
-    pinger.stop();
+    pinger.reset();
     roster.reset();
     trackers.closeAll();
     presence.clear();
@@ -53,7 +53,7 @@ const createNetworkMonitor = (deps: NetworkMonitorDeps): NetworkMonitor => {
   };
 
   return {
-    status: () => buildNetworkStatus({ facts, ping: pinger, presence }),
+    status: () => buildNetworkStatus({ facts, ping: pinger, presence, trackers }),
     subscribe(f) {
       listeners.add(f);
       return () => { listeners.delete(f); };
@@ -66,8 +66,11 @@ const createNetworkMonitor = (deps: NetworkMonitorDeps): NetworkMonitor => {
       changed();
       return false;
     },
+    sent(packet) {
+      if (packet.cmd === 'LocationChecks') for (const id of packet.locations) facts.sentChecks.add(id);
+    },
     changed,
-    ...createLifecycle({ facts, changed, forgetConnection, remember }),
+    ...createLifecycle({ facts, changed, forgetConnection, remember, now }),
   };
 };
 

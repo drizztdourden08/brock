@@ -16,6 +16,12 @@ interface NetworkFacts {
   checked: Set<number>;
   missing: Set<number>;
   itemsReceived: number;
+  hintPoints: number | null;
+  sentChecks: Set<number>;
+  scoutOwners: Map<number, number>;
+  reconnectAttempt: number;
+  nextRetryAt: number | null;
+  retryInFlight: boolean;
 }
 
 export type { NetworkFacts };

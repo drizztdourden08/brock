@@ -3,10 +3,14 @@ import { createNetworkFacts } from './facts';
 import type { LifecycleControl, NetworkLifecycle } from './network-monitor.type';
 
 const createLifecycle = (control: LifecycleControl): NetworkLifecycle => {
-  const { facts, changed, forgetConnection, remember } = control;
+  const { facts, changed, forgetConnection, remember, now } = control;
   return {
     connecting() {
       facts.connection = 'connecting';
+      if (facts.reconnectAttempt > 0) {
+        facts.nextRetryAt = null;
+        facts.retryInFlight = true;
+      }
       changed();
     },
     opened(url, connection) {
@@ -15,7 +19,15 @@ const createLifecycle = (control: LifecycleControl): NetworkLifecycle => {
       changed();
     },
     retrying() {
+      forgetConnection();
       facts.connection = 'reconnecting';
+      facts.retryInFlight = false;
+      changed();
+    },
+    scheduled(delayMs, attempt) {
+      facts.reconnectAttempt = attempt;
+      facts.nextRetryAt = now() + delayMs;
+      facts.retryInFlight = false;
       changed();
     },
     refused() {

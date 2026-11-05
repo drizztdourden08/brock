@@ -33,6 +33,14 @@ export { addRandomizerPages } from './bucket/add-randomizer-pages';
 export type { RandomizerPage } from './bucket/randomizer-page.type';
 export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE } from './wizard/wizard.constants';
 export { CONNECTION_SLICE } from './online/connection-step/connection.constants';
+export { launchConnect, launchesConnection, awaitLaunchConnection } from './launch-connect';
+export type {
+  ConnectionSignal,
+  ConnectionVerdict,
+  ConnectionWatch,
+  LaunchConnectHost,
+  LaunchLogLevel,
+} from './launch-connect';
 export { registerRandomizerGame } from './game-registry/register-randomizer-game';
 export { defaultOptionTabs } from './options/behavior/default-option-tabs';
 export { useRandomizerGame } from './game-registry/behavior/useRandomizerGame';

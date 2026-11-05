@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { LanDiscoverySettings, LanSighting } from './archipelago/lobby';
+import type { FirewallStatus } from './ipc/lan-host-api.type';
 import type { LobbySocketEvent } from './ipc/lobby-socket-event.type';
 import type { RandomizerHostApi } from './ipc/randomizer-host-api.type';
 import type { SaveArchipelagoFilesRequest, SaveArchipelagoFilesResult } from './ipc/save-files.type';
@@ -53,9 +55,14 @@ declare module '@drizztdourden08/brock-core/augment' {
     'randomizer:lobby-socket:send': (id: string, data: string) => Promise<void>;
     'randomizer:lobby-socket:close': (id: string) => Promise<void>;
     'randomizer:archipelago:save-files': (request: SaveArchipelagoFilesRequest) => Promise<SaveArchipelagoFilesResult>;
+    'randomizer:lan:start': (settings: LanDiscoverySettings) => Promise<void>;
+    'randomizer:lan:stop': () => Promise<void>;
+    'randomizer:lan:firewall-status': () => Promise<FirewallStatus>;
+    'randomizer:lan:firewall-allow': () => Promise<FirewallStatus>;
   }
   interface EventContract {
     'randomizer:lobby-socket:event': (event: LobbySocketEvent) => void;
+    'randomizer:lan:sighting': (sighting: LanSighting) => void;
   }
   interface IpcNamespaces {
     randomizer: RandomizerHostApi;

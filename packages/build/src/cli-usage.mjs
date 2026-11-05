@@ -45,6 +45,12 @@ Usage:
   brock apworld build --ap-version <v>... [--ap-data <dir>] [--ap-out <dir>] [--ap-module <name>] [--ap-author <name>] [--ap-public <dir>]
                              pack the generic Archipelago loader and the game's JSON export into .apworld files
                              (docs/apworld.md)
+  brock apworld export --entry <ts> --fn <name>
+                             call the game's exporter function and write the six JSON files
+  brock apworld ensure --entry <ts> --fn <name> --ap-version <v>...
+                             export and build only when a source is newer than the built apworld
+  brock apworld player-file --entry <ts> --fn <name> --name <slot> --out <yaml>
+                             write a player file from the game's function
   brock start [args]       run dist/electron/main.js with Electron; unknown options reach the app
                              (pnpm start --user-data=x works with or without the --)
   brock adopt [--scope @x] [--local <brockRepo>] [--force]

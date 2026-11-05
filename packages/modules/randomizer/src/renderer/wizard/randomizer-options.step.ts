@@ -2,6 +2,7 @@
 import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { buildOptionsSnapshot } from '../../world/options/build-options-snapshot';
+import { optionSubStepsOf } from '../options/behavior/option-sub-steps-of';
 import { OptionsStepBody } from './OptionsStepBody';
 import { formOf } from './form-of';
 import { optionsSliceOf } from './options-slice-of';
@@ -18,8 +19,9 @@ const randomizerOptionsStep: ProfileWizardStepDef<RandomizerOptionsSlice> = {
     when: (values) => useRandomizerGameStore.getState().game !== null && formOf(values).enabled,
     subSteps: (values) => {
       const game = useRandomizerGameStore.getState().game;
-      const snapshot = buildOptionsSnapshot(game?.catalog ?? [], optionsSliceOf(values).overrides);
-      return (game?.views?.optionSubSteps?.(snapshot) ?? []).map(({ id, label }) => ({ id, label }));
+      const overrides = optionsSliceOf(values).overrides;
+      const legacy = game?.views?.optionSubSteps?.(buildOptionsSnapshot(game.catalog ?? [], overrides));
+      return legacy ? legacy.map(({ id, label }) => ({ id, label })) : optionSubStepsOf(game, overrides);
     },
   },
   Body: OptionsStepBody,

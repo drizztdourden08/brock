@@ -4,8 +4,9 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 const usage = {
   job: 'A run page card holding the save files button, shown only while the active profile is an online one.',
   useWhen: ['A game lists it in its run panels so online profiles can save their player file and world package.'],
+  propsHash: '0000000000000000',
   avoidWhen: [
-    { case: 'The button alone, placed in a card the game builds itself.', use: 'ArchipelagoFiles' },
+    { case: 'The button alone, placed in a card the game builds itself.', use: 'Button' },
     { case: 'A run panel that always shows, whatever the profile mode.', use: 'DashboardCard' },
   ],
   rules: [

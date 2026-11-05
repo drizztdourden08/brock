@@ -4,6 +4,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 const usage = {
   job: 'The form part that says where an Archipelia lobby is, its code and the name to join as.',
   useWhen: ['When a player joins an Archipelia lobby from the profile wizard.'],
+  propsHash: '0000000000000000',
   avoidWhen: [{ case: 'A plain Archipelago server with host, port and password.', use: 'Field' }],
   rules: [
     'Auto lists the lobbies of the found server, with their seats, and takes the chosen one with no code; a closed lobby shows but cannot be chosen; Manual takes an address and a code.',

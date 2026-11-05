@@ -6,9 +6,10 @@ const usage = {
   useWhen: [
     'The run page of an online randomizer profile, so the player can hand the yaml and the apworld to the room host.',
   ],
+  propsHash: '0000000000000000',
   avoidWhen: [
     { case: 'A button that only starts a download with no folder picker or result line.', use: 'Button' },
-    { case: 'A card on the run page that appears only for online profiles.', use: 'ArchipelagoFilesSlot' },
+    { case: 'A card on the run page that appears only for online profiles.', use: 'DashboardCard' },
   ],
   rules: [
     'Pass fileOf to build the slot name and the yaml at the moment of the click.',

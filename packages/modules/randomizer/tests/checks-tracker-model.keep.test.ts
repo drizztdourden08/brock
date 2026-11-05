@@ -1,13 +1,12 @@
 /* @layer core @kind test */
 import { describe, expect, it } from 'vitest';
-import { trackerFromDef } from '../src/tracker';
+import { readTracker, trackerFromDef } from '../src/tracker';
 import type { TrackerKind } from '../src/tracker';
 import { countRows } from '../src/renderer/views/ChecksView/behavior/count-rows';
 import { filterRows } from '../src/renderer/views/ChecksView/behavior/filter-rows';
 import { groupRows } from '../src/renderer/views/ChecksView/behavior/group-rows';
 import { rowsOf } from '../src/renderer/views/ChecksView/behavior/rows-of';
 import type { RowFilter } from '../src/renderer/views/ChecksView/behavior/check-row.type';
-import { readTracker } from '../src/tracker';
 import type { DefPlacement } from '../src/world';
 import { toyVanillaDef } from './toy-world.fixture';
 

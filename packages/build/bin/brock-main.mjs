@@ -2,6 +2,7 @@
 import { resolve } from 'node:path';
 import { parseCli } from '../src/cli-args.mjs';
 import { runAdd } from '../src/commands/add.mjs';
+import { runApworld } from '../src/commands/apworld.mjs';
 import { runAffected } from '../src/commands/affected.mjs';
 import { runAdopt } from '../src/commands/adopt.mjs';
 import { runBuild } from '../src/commands/build.mjs';
@@ -40,6 +41,7 @@ const COMMANDS = {
   prewarm: (ctx) => runPrewarm(ctx),
   package: (ctx) => runPackage(ctx),
   icons: (ctx) => runIcons(ctx),
+  apworld: (ctx) => runApworld(ctx),
   start: (ctx) => runStart(ctx),
   adopt: (ctx) => runAdopt(ctx),
   structure: (ctx) => runStructure(ctx),
@@ -57,7 +59,7 @@ const COMMANDS = {
   'clang-format': (ctx) => runClangFormatCommand(ctx),
 };
 
-const APP_COMMANDS = new Set(['dev', 'prewarm', 'build', 'package', 'icons', 'start', 'add', 'platform', 'web', 'server']);
+const APP_COMMANDS = new Set(['dev', 'prewarm', 'build', 'package', 'icons', 'apworld', 'start', 'add', 'platform', 'web', 'server']);
 
 const rootDirOf = async (command, values) => {
   const start = resolve(values.root ?? process.cwd());
@@ -93,7 +95,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = await rootDirOf(command, values);
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], noSync: values['no-sync'], liveBrock: values['live-brock'], scope: values.scope, local: values.local, force: values.force, all: values.all, changed: values.changed, noCache: values['no-cache'], full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], noSync: values['no-sync'], liveBrock: values['live-brock'], scope: values.scope, local: values.local, force: values.force, all: values.all, changed: values.changed, noCache: values['no-cache'], full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, ap: values['ap-version'], data: values['ap-data'], out: values['ap-out'], module: values['ap-module'], author: values['ap-author'], public: values['ap-public'], passthrough });
 };
 
 main().then(

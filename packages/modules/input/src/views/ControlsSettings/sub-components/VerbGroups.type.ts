@@ -20,4 +20,4 @@ interface VerbGroupsProps {
   onRebind: (verbId: string) => void;
 }
 
-export type { VerbGroupsHeaders, VerbGroupsProps };
+export type { VerbGroupsProps };

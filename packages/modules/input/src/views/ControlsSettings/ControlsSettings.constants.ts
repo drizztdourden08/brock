@@ -1,5 +1,4 @@
 /* @layer renderer-components @kind constants */
-import { BUTTON_INDEX } from '../../family/sdl-capabilities.constants';
 import type { ControllerBusType } from '../../device.type';
 import type { ControlsLabels } from './ControlsSettings.type';
 
@@ -29,9 +28,6 @@ const CONTROLS_ROOT_SELECTOR = '.controls-settings';
 const KEYBOARD_ICON_FAMILY = 'keyboard';
 const GENERIC_ICON_FAMILY = 'generic';
 
-const AXIS_COUNT = 6;
-const ALL_BUTTONS: readonly boolean[] = new Array(Object.keys(BUTTON_INDEX).length).fill(true);
-const ALL_AXES: readonly boolean[] = new Array(AXIS_COUNT).fill(true);
 
 const DRAG_SDL_TYPE = 'application/x-sdl-type';
 const DRAG_DEVICE_NAME = 'application/x-device-name';
@@ -86,8 +82,8 @@ const DEFAULT_LABELS: ControlsLabels = {
 
 export {
   DEFAULT_PROFILE_ID,
-  ALL_AXES, ALL_BUTTONS, BUS_NAME, CANCEL_ARM_DELAY_MS, CONTROLS_ROOT_SELECTOR, DEFAULT_LABELS, DEVICES_FOLD_KEY,
+  BUS_NAME, CANCEL_ARM_DELAY_MS, CONTROLS_ROOT_SELECTOR, DEFAULT_LABELS, DEVICES_FOLD_KEY,
   DEVICES_WIDTH_KEY, FOCUS_DEADLINE_MS, FOCUS_MAX_ATTEMPTS, PROFILES_WIDTH_KEY,
-  DRAG_DEVICE_NAME, DRAG_PID, DRAG_SDL_TYPE, DRAG_VID, FOLD_KEY_PREFIX, GENERIC_ICON_FAMILY, KEYBOARD_ICON_FAMILY,
+  DRAG_DEVICE_NAME, DRAG_PID, DRAG_SDL_TYPE, DRAG_VID, GENERIC_ICON_FAMILY, KEYBOARD_ICON_FAMILY,
   LISTEN_ARM_DELAY_MS, MODIFIER_CODES, NARROW_WIDTH_PX, PROFILES_FOLD_KEY, SIDE_PANEL_SIZE,
 };

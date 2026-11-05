@@ -152,13 +152,6 @@ interface ControlsSettingsProps {
   initialTab?: string;
 }
 
-interface CapturedBinding {
-  binding: InputBinding;
-  deviceKey?: string;
-  vendorId?: string | null;
-  productId?: string | null;
-}
-
 interface RequiredInput {
   type: 'keyboard' | 'gamepad';
   label: string;
@@ -200,9 +193,9 @@ interface DeviceIconIds {
 }
 
 export type {
-  ActionDef, CapturedBinding, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
+  ActionDef, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
   DeviceIconIds, GlobalBindingsStore, InputProfileStore, PresetDevice, RequiredInput, RequiredInputsParams,
-  ReservedRow, SlotsConfig, StoredFold, TabBase, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
+  ReservedRow, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
   UseProfileStateArgs, VerbGroupDef,
 };
 export type { VerbDef };

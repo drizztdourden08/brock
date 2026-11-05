@@ -47,3 +47,7 @@ export { OnlineView } from './views/OnlineView';
 export type { RegisterOptions } from './game-registry/register-options.type';
 export type { ChecksPrefs, ChecksViewProps } from './views/ChecksView';
 export type { TrackerFeedInput } from './tracker/feed/tracker-feed-state.type';
+export {
+  DashboardCard, PANEL_MIN_WIDTH, StatTiles, formatTime, sessionToneOf, tallyOutOf, tallyTile,
+} from './views/dashboard';
+export type { DashboardCardProps, DashboardSpan, RunTile, StatTilesProps, Tally, TileMeter } from './views/dashboard';

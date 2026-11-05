@@ -3,6 +3,7 @@ import type { ComponentUsage } from '@drizztdourden08/tessera';
 
 const usage = {
   job: 'A banner over the game picture that names the place the player just entered, then fades by itself.',
+  propsHash: '0000000000000000',
   useWhen: ['The game knows where the player is and wants the place name to show when it changes.'],
   avoidWhen: [{ case: 'A message the player must read or answer.', use: 'Toast' }],
   rules: [

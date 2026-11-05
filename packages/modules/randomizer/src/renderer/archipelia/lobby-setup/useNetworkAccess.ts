@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { FirewallStatus } from '../../../ipc/lan-host-api.type';
 import { randomizerApi } from '../socket/randomizer-api';
-import type { NetworkAccess } from './useNetworkAccess.type';
+import type { NetworkAccess } from './network-access.type';
 
 const useNetworkAccess = (on: boolean): NetworkAccess => {
   const [status, setStatus] = useState<FirewallStatus>('unknown');

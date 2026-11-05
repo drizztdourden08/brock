@@ -1,11 +1,21 @@
 /* @layer tooling-scripts @kind logic */
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { NODE_POLYFILLS_PACKAGE, NODE_POLYFILLS_SHIMS } from './build-options.constants.mjs';
 
+/**
+ * require.resolve takes the `require` condition, a CommonJS file; the renderer wants the ES module
+ * file the plugin ships beside it, so the `.cjs` path turns into its `.js` twin when that exists.
+ * @param {NodeJS.Require} appRequire require rooted at the app
+ * @param {string} specifier a shim specifier
+ * @returns {string | undefined} the shim file, or undefined when the app cannot resolve it
+ */
 const resolveShim = (appRequire, specifier) => {
   try {
-    return appRequire.resolve(specifier);
+    const file = appRequire.resolve(specifier);
+    const esm = file.replace(/\.cjs$/, '.js');
+    return existsSync(esm) ? esm : file;
   } catch {
     return undefined;
   }

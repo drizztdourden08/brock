@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind types */
+import type { WidgetSlot } from './widget-slot.type';
+
 interface InventorySlot {
   id: string;
   label: string;
@@ -17,14 +19,12 @@ interface InventoryLayout {
   areas: readonly InventoryArea[];
 }
 
-interface InventoryWidgetSlot {
-  context?: string;
-  order?: number;
-}
+type InventoryWidgetSlot = WidgetSlot;
 
 interface InventoryProvider {
   layouts: readonly InventoryLayout[];
   widget?: InventoryWidgetSlot;
+  missingArtNotice?: string;
 }
 
 export type { InventoryArea, InventoryLayout, InventoryProvider, InventorySlot, InventoryWidgetSlot };

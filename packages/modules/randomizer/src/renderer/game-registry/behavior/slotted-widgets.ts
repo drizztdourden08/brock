@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { WidgetDef } from '@drizztdourden08/brock-react';
+import type { WidgetSlot } from '../../../contract/widget-slot.type';
 
-const slottedWidgets = (defs: WidgetDef[], slotOf: () => Pick<WidgetDef, 'context' | 'order'> | undefined): WidgetDef[] =>
+const slottedWidgets = (defs: WidgetDef[], slotOf: () => WidgetSlot | undefined): WidgetDef[] =>
   defs.map((def) => ({
     ...def,
     get context() {
@@ -9,6 +10,15 @@ const slottedWidgets = (defs: WidgetDef[], slotOf: () => Pick<WidgetDef, 'contex
     },
     get order() {
       return slotOf()?.order;
+    },
+    get padding() {
+      return slotOf()?.padding ?? def.padding;
+    },
+    get icon() {
+      return slotOf()?.icon ?? def.icon;
+    },
+    get popOut() {
+      return slotOf()?.popOut ?? def.popOut;
     },
   }));
 

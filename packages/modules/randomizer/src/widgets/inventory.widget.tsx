@@ -21,7 +21,7 @@ const InventoryWidget = () => {
   return (
     <Stack gap="md">
       {options.length > 1 && <SegmentedControl aria-label={LAYOUT_LABEL} size="sm" value={layout.id} options={options} onChange={setLayout} />}
-      <TrackerInventory layout={layout} held={new Set(feed?.held ?? [])} artOf={game?.tracker?.artOf} />
+      <TrackerInventory layout={layout} held={new Set(feed?.held ?? [])} artOf={game?.tracker?.artOf} missingArtNotice={inventory.missingArtNotice} />
     </Stack>
   );
 };

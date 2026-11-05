@@ -5,6 +5,7 @@ import type { RandomizerModeId, RandomizerProfileConfig } from '../augment';
 import type { RandomizerOptions } from '../randomizer-options.type';
 import type { RuleOptionValue } from '../world/types/rule-option-value.type';
 import type { RandomizerFormState } from './randomizer-form-state.type';
+import type { WidgetSlot } from './widget-slot.type';
 
 interface RandomizerSubStep {
   id: string;
@@ -12,9 +13,7 @@ interface RandomizerSubStep {
   Body: ComponentType;
 }
 
-interface ChecksWidgetViews {
-  context?: string;
-  order?: number;
+interface ChecksWidgetViews extends WidgetSlot {
   settings?: ComponentType;
 }
 

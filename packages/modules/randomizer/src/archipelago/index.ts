@@ -133,3 +133,5 @@ export * from './launch-flags';
 export * from './export';
 export * from './ap-ids';
 export * from './player-yaml';
+export * from './game-defaults';
+export * from './scouts';

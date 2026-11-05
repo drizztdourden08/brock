@@ -30,11 +30,11 @@ export { createFrameLoop } from './frame/create-frame-loop';
 export { createFramePresenter } from './frame/create-frame-presenter';
 export { createHostLoop } from './frame/create-host-loop';
 export { captureFrame } from './frame/capture-frame';
-export type { FrameLoopOptions, FrameLoop, FramePresenter, FrameSize } from './frame/frame.type';
+export type { FrameSchedule, FrameLoopOptions, FrameLoop, FramePresenter, FrameSize } from './frame/frame.type';
 
 export { createAudioAdapter } from './audio/create-audio-adapter';
 export { attachSdlAudio } from './audio/attach-sdl-audio';
-export type { AudioOutput, SampleBlock, AudioAdapter } from './audio/audio.type';
+export type { AudioOutput, SampleBlock, AudioAdapter, AudioAdapterOptions } from './audio/audio.type';
 
 export { createLiveSettings } from './settings/create-live-settings';
 export type { LiveSettings, LiveSettingsCalls, LiveSettingsTarget } from './settings/live-settings.type';

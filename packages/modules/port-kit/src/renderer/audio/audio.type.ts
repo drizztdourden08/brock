@@ -10,6 +10,10 @@ interface SampleBlock {
   sampleRate: number;
 }
 
+interface AudioAdapterOptions {
+  leadS?: number;
+}
+
 interface AudioAdapter {
   attachNode: (context: AudioContext, node: AudioNode) => void;
   pushSamples: (block: SampleBlock) => void;
@@ -20,4 +24,4 @@ interface AudioAdapter {
   dispose: () => void;
 }
 
-export type { AudioOutput, SampleBlock, AudioAdapter };
+export type { AudioOutput, SampleBlock, AudioAdapter, AudioAdapterOptions };

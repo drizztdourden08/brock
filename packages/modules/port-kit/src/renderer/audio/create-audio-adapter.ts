@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind logic */
-import type { AudioAdapter, AudioOutput, SampleBlock } from './audio.type';
+import type { AudioAdapter, AudioAdapterOptions, AudioOutput, SampleBlock } from './audio.type';
 import { armGestureResume } from './arm-gesture-resume';
 import { scheduleSamples } from './schedule-samples';
 
-const createAudioAdapter = (initialVolume = 100): AudioAdapter => {
+const createAudioAdapter = (initialVolume = 100, options: AudioAdapterOptions = {}): AudioAdapter => {
+  const { leadS } = options;
   let volume = initialVolume;
   let out: AudioOutput | null = null;
   let owned = false;
@@ -30,7 +31,7 @@ const createAudioAdapter = (initialVolume = 100): AudioAdapter => {
       owned = true;
       wire(new AudioContext({ sampleRate: block.sampleRate }));
     }
-    if (out) nextTime = scheduleSamples(out.context, out.node, block, nextTime);
+    if (out) nextTime = scheduleSamples(out.context, out.node, block, nextTime, leadS);
   };
 
   const setVolume = (percent: number): void => {

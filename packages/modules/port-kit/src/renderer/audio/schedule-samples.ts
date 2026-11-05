@@ -9,7 +9,7 @@ const fillBuffer = (buffer: AudioBuffer, { samples, channels }: SampleBlock): vo
   }
 };
 
-const scheduleSamples = (context: AudioContext, target: AudioNode, block: SampleBlock, startAt: number): number => {
+const scheduleSamples = (context: AudioContext, target: AudioNode, block: SampleBlock, startAt: number, leadS = SCHEDULE_LEAD_S): number => {
   const frames = Math.floor(block.samples.length / block.channels);
   if (frames === 0) return startAt;
   const now = context.currentTime;
@@ -19,7 +19,7 @@ const scheduleSamples = (context: AudioContext, target: AudioNode, block: Sample
   const source = context.createBufferSource();
   source.buffer = buffer;
   source.connect(target);
-  const at = Math.max(startAt, now + SCHEDULE_LEAD_S);
+  const at = Math.max(startAt, now + leadS);
   source.start(at);
   return at + buffer.duration;
 };

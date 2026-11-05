@@ -3,9 +3,13 @@ interface FrameLoopOptions {
   fps: number;
   step: () => void;
   afterSteps?: () => void;
+  schedule?: FrameSchedule;
 }
 
+type FrameSchedule = 'display' | 'timer';
+
 interface FrameLoop {
+  setSchedule: (mode: FrameSchedule) => void;
   start: () => void;
   stop: () => void;
   isRunning: () => boolean;
@@ -21,4 +25,4 @@ interface FrameSize {
   height: number;
 }
 
-export type { FrameLoopOptions, FrameLoop, FramePresenter, FrameSize };
+export type { FrameSchedule, FrameLoopOptions, FrameLoop, FramePresenter, FrameSize };

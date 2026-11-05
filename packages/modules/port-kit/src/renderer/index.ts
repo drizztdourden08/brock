@@ -50,3 +50,7 @@ export { GameCanvas } from './components/GameCanvas';
 export type { GameCanvasProps } from './components/GameCanvas';
 export { RomPicker } from './components/RomPicker';
 export type { DroppedRom, RomPickerProps } from './components/RomPicker';
+export { MobileShell, useMobileBack } from './components/MobileShell';
+export type { MobileShellProps } from './components/MobileShell';
+
+export { isMobileHost } from './platform/is-mobile-host';

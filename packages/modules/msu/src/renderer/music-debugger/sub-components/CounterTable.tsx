@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind component */
-import { Box, ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
+import { ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
 import type { MusicDebugCounter } from '../../../music-debug';
 import { useStableOrder } from '../behavior/useStableOrder';
+import { MusicRow } from './MusicRow';
 import './CounterTable.css';
 
 const splitOf = (row: MusicDebugCounter): string => {
@@ -20,15 +21,15 @@ const CounterTable = (props: { counters: MusicDebugCounter[] }) => {
   return (
     <ScrollArea className="counter-table" fade={false}>
       {rows.length === 0 && (
-        <Box className="music-row counter-table__row" data-empty="yes">
+        <MusicRow className="counter-table__row" empty>
           <Text className="counter-table__label">Nothing counted yet.</Text>
-        </Box>
+        </MusicRow>
       )}
       {rows.map((row) => (
-        <Box key={row.key} className="music-row counter-table__row">
+        <MusicRow key={row.key} className="counter-table__row">
           <Text className="counter-table__label" title={`${row.channel}, ${row.label}`}>{`${row.channel}, ${row.label}`}</Text>
           <Text className="counter-table__value">{splitOf(row)}</Text>
-        </Box>
+        </MusicRow>
       ))}
     </ScrollArea>
   );

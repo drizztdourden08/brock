@@ -33,6 +33,7 @@ export type {
   RandomizerFrozenSettings,
   RandomizerProfileConfig,
 } from './augment';
+export { randomSeed } from './profile/random-seed';
 export { frozenKeysOf } from './profile/frozen-keys-of';
 export type { OptionCatalog } from './world/options/option-catalog.type';
 export type { OptionDef } from './world/options/option-def.type';

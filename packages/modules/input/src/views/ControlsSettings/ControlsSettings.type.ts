@@ -94,6 +94,7 @@ interface ControlsLabels {
   assignmentHeader: string;
   slotsTitle: string;
   noSlots: string;
+  addSlot: string;
   emptySlotsHint: string;
   clearBinding: string;
   reservedHint: string;

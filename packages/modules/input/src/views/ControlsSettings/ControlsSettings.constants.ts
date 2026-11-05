@@ -58,6 +58,7 @@ const DEFAULT_LABELS: ControlsLabels = {
   assignmentHeader: 'Assignment',
   slotsTitle: 'Slots',
   noSlots: 'No slots yet. Add one below.',
+  addSlot: 'Add slot',
   emptySlotsHint: 'Assign a controller to this profile to see its slots.',
   clearBinding: 'Clear binding',
   reservedHint: 'Reserved, cannot be rebound',

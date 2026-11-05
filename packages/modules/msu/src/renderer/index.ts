@@ -1,5 +1,4 @@
 /* @layer renderer-shell @kind barrel */
-export { default } from './msu-renderer';
 export { msuRenderer } from './msu-renderer';
 export { msuApi } from './msu-api';
 export * from './game';

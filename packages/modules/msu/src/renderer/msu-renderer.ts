@@ -7,5 +7,4 @@ const msuRenderer: RendererModule = {
   logChannels: ['msu'],
 };
 
-export default msuRenderer;
 export { msuRenderer };

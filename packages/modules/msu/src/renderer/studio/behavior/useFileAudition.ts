@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMsuStudio } from '../../game/useMsuStudio';
-import { startFileAudition, stopFileAudition } from '../../audition';
+import { stopFileAudition } from '../../audition';
 import type { Audition } from '../../audition';
+import { runFileAudition } from './run-file-audition';
 import type { MsuFile } from '../msu.type';
 
 const useFileAudition = (pack: string, files: MsuFile[]) => {
@@ -44,22 +45,12 @@ const useFileAudition = (pack: string, files: MsuFile[]) => {
     latest.current += 1;
     const press = latest.current;
     setLoading(fileName);
-    void (async () => {
-      try {
-        const bytes = new Uint8Array(await store.readMsuTrackFile(pack, fileName));
-        const started = await startFileAudition(fileName, bytes, () => {
-          if (latest.current === press) { setPlaying(null); setAudition(null); }
-        });
-        if (latest.current !== press) { started.stop(); return; }
-        setLoops((known) => new Map(known).set(fileName, started.loopSeconds));
-        setPlaying(fileName);
-        setAudition(started);
-      } catch {
-        if (latest.current === press) { setPlaying(null); setAudition(null); }
-      } finally {
-        setLoading((name) => (name === fileName ? null : name));
-      }
-    })();
+    void runFileAudition({
+      fileName,
+      read: () => store.readMsuTrackFile(pack, fileName),
+      isCurrent: () => latest.current === press,
+      setters: { setPlaying, setAudition, setLoading, setLoops },
+    });
   }, [store, pack, playing, stop]);
 
   return {

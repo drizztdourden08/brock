@@ -3,9 +3,8 @@ import type { MsuLayerReport } from '../../../types';
 import { clock } from '../../audition/clock';
 import { NONE } from '../MusicDebuggerWidget.constants';
 import { GAP_MODES } from './layer-slot.constants';
+import type { Reading } from './layer-slot.type';
 import type { LayerSlotView } from '../MusicDebuggerWidget.type';
-
-type Reading = { fill: number; label: string };
 
 const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 

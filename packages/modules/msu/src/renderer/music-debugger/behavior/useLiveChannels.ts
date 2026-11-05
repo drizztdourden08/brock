@@ -3,9 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { isMsuSessionActive, msuChannelReport } from '../../../msu-session';
 import type { MsuDebugChannels } from '../../game/msu-debug-channels.type';
 import { createPreviewReportStore } from '../../preview-report';
+import { DEFAULT_SLOTS } from './live-channels.constants';
 import type { LiveChannel } from '../MusicDebuggerWidget.type';
-
-const DEFAULT_SLOTS = 2;
 
 const programDetail = (id: number, overlappingSets: number): string =>
   overlappingSets > 1 ? `id 0x${id.toString(16)}, ${overlappingSets} overlapping` : `id 0x${id.toString(16)}`;

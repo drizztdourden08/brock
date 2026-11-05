@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback } from 'react';
 import { useMsuStudio } from '../game/useMsuStudio';
-import { NO_BADGE, promptFor } from './local-pack-origin';
+import { NO_BADGE } from './local-pack-origin.constants';
+import { promptFor } from './local-pack-origin';
 import type { MsuPackOrigin } from './msu-origin.type';
 
 const useLocalPackOrigin: MsuPackOrigin = (args) => {

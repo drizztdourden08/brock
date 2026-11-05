@@ -1,11 +1,12 @@
 /* @layer renderer-shell @kind component */
 import { Icon, IconButton } from '@drizztdourden08/tessera/primitives';
 import { useMsuStudioGame } from '../game/useMsuStudioGame';
+import { PlayOriginalButton } from './PlayOriginalButton';
 import type { PlayToggleButtonsProps } from './PlayToggleButtons.type';
 
 const PlayToggleButtons = (props: PlayToggleButtonsProps) => {
   const { subject, playLabel, hasReplacement, playing, playingOriginal, onPlay, onStop, onPlayOriginal } = props;
-  const canCompare = useMsuStudioGame<never, never>().preview !== undefined && onPlayOriginal !== undefined;
+  const canCompare = useMsuStudioGame<never, never>().preview !== undefined;
   const stoppable = props.stoppable ?? playing;
 
   return (
@@ -21,18 +22,13 @@ const PlayToggleButtons = (props: PlayToggleButtonsProps) => {
           <Icon name={stoppable ? 'square' : 'play'} />
         </IconButton>
       )}
-      {canCompare && (
-        <IconButton
-          variant="ghost"
-          size="sm"
-          label={playingOriginal
-            ? `Stop ${subject}`
-            : `Play the sound chip's own ${subject}${hasReplacement ? ', to compare' : ''}`}
-          active={playingOriginal}
-          onClick={onPlayOriginal}
-        >
-          <Icon name={playingOriginal ? 'square' : 'volume-2'} />
-        </IconButton>
+      {canCompare && onPlayOriginal !== undefined && (
+        <PlayOriginalButton
+          subject={subject}
+          hasReplacement={hasReplacement}
+          playingOriginal={playingOriginal}
+          onPlayOriginal={onPlayOriginal}
+        />
       )}
     </>
   );

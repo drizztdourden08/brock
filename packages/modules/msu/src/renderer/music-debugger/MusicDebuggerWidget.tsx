@@ -6,7 +6,6 @@ import { useMusicDebugData } from './behavior/useMusicDebugData';
 import { ChannelLive } from './sub-components/ChannelLive';
 import { CounterTable } from './sub-components/CounterTable';
 import { EventFeed } from './sub-components/EventFeed';
-import './music-row.css';
 import './MusicDebuggerWidget.css';
 
 const MusicDebuggerWidget = () => {

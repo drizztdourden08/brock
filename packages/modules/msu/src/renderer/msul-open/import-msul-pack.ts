@@ -1,9 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { getAppLog } from '@drizztdourden08/brock-react';
 import { msuApi } from '../msu-api';
+import { LOG_CHANNEL } from './import-msul-pack.constants';
 import type { MsulInstaller } from './msul-open.type';
-
-const LOG_CHANNEL = 'msu';
 
 const stemOf = (filePath: string): string =>
   (filePath.split(/[\\/]/).pop() ?? '').replace(/\.msul$/i, '');

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { useSessionStore } from '../../../session';
+import { useSessionStore } from '../../../session/store/behavior/useSessionStore';
 import type { TrackerProvider } from '../../../tracker';
 import { NO_KEYS } from './tracker-feed.constants';
 

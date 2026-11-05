@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { currentRun } from '../../../session';
+import { currentRun } from '../../../session/store/current-run';
 import type { TrackerProvider } from '../../../tracker';
 
 const vanillaCache = new WeakMap<object, unknown>();

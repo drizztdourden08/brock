@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { appRandomizerLog } from '../../../session';
+import { appRandomizerLog } from '../../../session/log/app-randomizer-log';
 import { SAMPLER_INTERVAL_MS } from './tracker-feed.constants';
 
 const startSampler = (onTick: () => void): (() => void) => {

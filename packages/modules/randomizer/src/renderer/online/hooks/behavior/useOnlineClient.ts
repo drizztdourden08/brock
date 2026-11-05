@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import type { ArchipelagoClient } from '../../../../archipelago';
-import { useSessionStore } from '../../../../session';
+import { useSessionStore } from '../../../../session/store/behavior/useSessionStore';
 import type { OnlineSessionView } from '../online-session.type';
 
 const useOnlineClient = (): ArchipelagoClient | null =>

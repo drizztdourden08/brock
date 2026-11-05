@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useSyncExternalStore } from 'react';
-import { useSessionStore } from '../../../session';
+import { useSessionStore } from '../../../session/store/behavior/useSessionStore';
 import { LIVE_CORE_STATUSES } from '../../../session/boot/core-live.constants';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import type { RandomizerSessionView } from '../use-randomizer-session.type';

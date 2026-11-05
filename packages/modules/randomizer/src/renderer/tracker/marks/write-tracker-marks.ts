@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { profileDir, writeJson } from '@drizztdourden08/brock-core';
 import { getPlatform } from '@drizztdourden08/brock-react';
-import { appRandomizerLog } from '../../../session';
+import { appRandomizerLog } from '../../../session/log/app-randomizer-log';
 import { TRACKER_SCHEMA } from '../../../tracker';
 import { marksWriteQueue } from './marks-write-queue';
 import { trackerPath } from './tracker-path';

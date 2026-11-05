@@ -59,3 +59,14 @@ export {
 } from './views/dashboard';
 export type { DashboardCardProps, DashboardSpan, RunTile, StatTilesProps, Tally, TileMeter } from './views/dashboard';
 export * from './archipelia';
+export { createLocalSessionFactory } from '../session/local/local-session-factory';
+export { createOnlineSessionFactory } from '../session/online/create-online-session-factory';
+export { useSessionStore } from '../session/store/behavior/useSessionStore';
+export { startSession } from '../session/store/start-session';
+export { stopActiveSession } from '../session/store/stop-active-session';
+export { currentRun } from '../session/store/current-run';
+export { readPlacement } from '../session/placement/read-placement';
+export { writePlacement } from '../session/placement/write-placement';
+export { gateRandomizerBoot } from '../session/boot/gate-randomizer-boot';
+export { startSessionRuntime } from '../session/boot/start-session-runtime';
+export { appRandomizerLog } from '../session/log/app-randomizer-log';

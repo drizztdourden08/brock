@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { currentRun } from '../../../session';
+import { currentRun } from '../../../session/store/current-run';
 import type { RegisteredGame } from '../../game-registry/randomizer-game-state.type';
 
 const samplerWanted = (game: RegisteredGame | null): boolean => {

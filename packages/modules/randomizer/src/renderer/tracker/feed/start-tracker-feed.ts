@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import { checkSignal, useSessionStore } from '../../../session';
+import { checkSignal } from '../../../session';
+import { useSessionStore } from '../../../session/store/behavior/useSessionStore';
 import { useRandomizerGameStore } from '../../game-registry/behavior/useRandomizerGameStore';
 import { useTrackerMarksStore } from '../marks/behavior/useTrackerMarksStore';
 import { followProfileMarks } from '../marks/follow-profile-marks';

@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerProfileConfig } from '../../../augment';
-import { onlineConnectionOf, useSessionStore } from '../../../session';
+import { onlineConnectionOf } from '../../../session';
+import { useSessionStore } from '../../../session/store/behavior/useSessionStore';
 import { ONLINE_MODE } from '../online-mode.constants';
 import type { OnlineSessionView } from './online-session.type';
 

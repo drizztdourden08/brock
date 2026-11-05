@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind constants */
-import type { ConnectionTextField } from '../../../connection-form.type';
+import type { ConnectionTextField } from '../connection-form.type';
 
 const CONNECTION_TEXT = {
   host: 'Host',

@@ -7,7 +7,7 @@ import {
 } from '../../ChecksView.constants';
 import { FacetPanel } from '../FacetPanel';
 import type { ChecksFiltersProps } from './ChecksFilters.type';
-import { useFilterPanels } from './useFilterPanels';
+import { useFilterPanels } from '../../behavior/useFilterPanels';
 
 const ChecksFilters = ({ provider, search, onSearch, prefs }: ChecksFiltersProps) => {
   const panels = useFilterPanels();

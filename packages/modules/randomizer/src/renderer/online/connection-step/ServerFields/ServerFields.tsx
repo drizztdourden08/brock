@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { PasswordInput } from '@drizztdourden08/tessera/composites';
 import { Button, Field, Grid, Stack, Text, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
-import { textPatch } from '../../../behavior/text-patch';
-import { useServerCheck } from '../../../behavior/useServerCheck';
+import { textPatch } from '../behavior/text-patch';
+import { useServerCheck } from '../behavior/useServerCheck';
 import { CONNECTION_TEXT, CONNECTION_TEXT_FIELDS } from './ServerFields.constants';
 import type { ServerFieldsProps } from './ServerFields.type';
 

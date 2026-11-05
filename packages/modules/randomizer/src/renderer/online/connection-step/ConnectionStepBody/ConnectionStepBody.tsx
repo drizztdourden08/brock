@@ -2,7 +2,7 @@
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
 import { formOf } from '../../../wizard/form-of';
 import { forwardPatch } from './behavior/forward-patch';
-import { ServerFields } from './sub-components/ServerFields';
+import { ServerFields } from '../ServerFields';
 import type { ConnectionStepBodyProps } from './ConnectionStepBody.type';
 
 const ConnectionStepBody = (props: ConnectionStepBodyProps) => {

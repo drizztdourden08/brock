@@ -7,7 +7,7 @@ const usage = {
   propsHash: '0000000000000000',
   avoidWhen: [
     { case: 'The button alone, placed in a card the game builds itself.', use: 'Button' },
-    { case: 'A run panel that always shows, whatever the profile mode.', use: 'DashboardCard' },
+    { case: 'A run panel that always shows, whatever the profile mode.', use: 'Card' },
   ],
   rules: [
     'Pass sourceOf to turn the active profile config into the file source.',

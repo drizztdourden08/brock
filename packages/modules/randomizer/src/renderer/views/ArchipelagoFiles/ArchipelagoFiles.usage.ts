@@ -9,7 +9,7 @@ const usage = {
   propsHash: '0000000000000000',
   avoidWhen: [
     { case: 'A button that only starts a download with no folder picker or result line.', use: 'Button' },
-    { case: 'A card on the run page that appears only for online profiles.', use: 'DashboardCard' },
+    { case: 'A card on the run page that appears only for online profiles.', use: 'Card' },
   ],
   rules: [
     'Pass fileOf to build the slot name and the yaml at the moment of the click.',

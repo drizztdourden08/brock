@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import type { LivePage } from '@drizztdourden08/brock-react';
+import type { RandomizerPage } from './randomizer-page.type';
 
-const mergeExtraPages = (current: readonly LivePage[], incoming: readonly LivePage[]): readonly LivePage[] => {
+const mergeExtraPages = (current: readonly RandomizerPage[], incoming: readonly RandomizerPage[]): readonly RandomizerPage[] => {
   const incomingKeys = new Set(incoming.map((page) => page.key));
   return [...current.filter((page) => !incomingKeys.has(page.key)), ...incoming];
 };

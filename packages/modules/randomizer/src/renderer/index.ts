@@ -29,6 +29,7 @@ const randomizerRenderer: RendererModule = {
 export default randomizerRenderer;
 export { randomizerRenderer };
 export { addRandomizerPages } from './bucket/add-randomizer-pages';
+export type { RandomizerPage } from './bucket/randomizer-page.type';
 export { RANDOMIZER_STEP_ID, OPTIONS_STEP_ID, RANDOMIZER_SLICE, OPTIONS_SLICE } from './wizard/wizard.constants';
 export { registerRandomizerGame } from './game-registry/register-randomizer-game';
 export { useRandomizerGame } from './game-registry/behavior/useRandomizerGame';

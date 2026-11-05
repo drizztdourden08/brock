@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind logic */
-import type { LivePage } from '@drizztdourden08/brock-react';
 import { useExtraPagesStore } from './behavior/useExtraPagesStore';
+import type { RandomizerPage } from './randomizer-page.type';
 
-const addRandomizerPages = (pages: readonly LivePage[]): void => {
+const addRandomizerPages = (pages: readonly RandomizerPage[]): void => {
   useExtraPagesStore.getState().add(pages);
 };
 

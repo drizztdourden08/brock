@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind type */
-import type { LivePage } from '@drizztdourden08/brock-react';
+import type { RandomizerPage } from './randomizer-page.type';
 
 interface ExtraPagesState {
-  pages: readonly LivePage[];
-  add(pages: readonly LivePage[]): void;
+  pages: readonly RandomizerPage[];
+  add(pages: readonly RandomizerPage[]): void;
 }
 
 export type { ExtraPagesState };

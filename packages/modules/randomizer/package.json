@@ -26,6 +26,7 @@
     "./main": "./src/main/index.ts",
     "./preload": "./src/preload/index.ts",
     "./renderer": "./src/renderer/index.ts",
+    "./test-kit": "./src/test-kit/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

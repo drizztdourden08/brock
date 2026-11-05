@@ -1,0 +1,6 @@
+/* @layer renderer-shell @kind constants */
+const DEFAULT_BANNER_DISMISS_MS = 3000;
+const BANNER_ENTER_DELAY_MS = 16;
+const BANNER_EXIT_MS = 260;
+
+export { DEFAULT_BANNER_DISMISS_MS, BANNER_ENTER_DELAY_MS, BANNER_EXIT_MS };

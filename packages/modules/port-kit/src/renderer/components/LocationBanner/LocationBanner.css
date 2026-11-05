@@ -1,0 +1,46 @@
+/* @layer renderer-shell @kind style */
+
+.location-banner {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  z-index: var(--z-top);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.location-banner__plate {
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-lg);
+  border: var(--border-width-thin) solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-scrim-game);
+  box-shadow: var(--shadow-overlay);
+  white-space: nowrap;
+  transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+}
+
+.location-banner__plate--enter {
+  opacity: 0;
+  transform: translateY(var(--space-md));
+}
+
+.location-banner__plate--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.location-banner__plate--exit {
+  opacity: 0;
+  transform: translateY(0);
+}
+
+.location-banner__name {
+  color: var(--c-text);
+  font-size: var(--text-base);
+  font-weight: 600;
+}

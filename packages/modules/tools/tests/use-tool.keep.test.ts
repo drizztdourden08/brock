@@ -22,6 +22,7 @@ const fakeApi = () => {
     list: () => Promise.resolve([]),
     state: vi.fn(() => Promise.resolve(stateOf(status))),
     install: () => Promise.resolve({ success: false, error: 'no' }),
+    finalizeRecording: () => Promise.resolve({ success: false, error: 'no' }),
     onChanged: (listener) => {
       listeners.add(listener);
       return () => { listeners.delete(listener); };

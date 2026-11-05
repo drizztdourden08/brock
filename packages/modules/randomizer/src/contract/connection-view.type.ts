@@ -2,9 +2,8 @@
 import type { ComponentType } from 'react';
 import type { ProfileWizardStepBodyProps, ProfileWizardValues } from '@drizztdourden08/brock-react';
 import type { RandomizerConnectionValues } from '../augment';
-import type { RandomizerFormState } from './randomizer-form-state.type';
 
-type ConnectionBody = ComponentType<ProfileWizardStepBodyProps<RandomizerFormState>>;
+type ConnectionBody = ComponentType<ProfileWizardStepBodyProps<RandomizerConnectionValues>>;
 
 interface ConnectionView {
   Body: ConnectionBody;

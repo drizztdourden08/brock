@@ -172,6 +172,7 @@
     },
     "packages/modules/port-kit": {
       "entry": [
+        "src/**/*.usage.ts",
         "tests/**/*.test.ts"
       ],
       "project": [

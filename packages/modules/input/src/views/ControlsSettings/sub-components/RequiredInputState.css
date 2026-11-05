@@ -1,0 +1,13 @@
+/* @layer renderer-components @kind style */
+.required-input-state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.required-input-state__icon {
+  width: calc(18 * var(--size-1));
+  height: calc(18 * var(--size-1));
+  object-fit: contain;
+  opacity: 0.8;
+}

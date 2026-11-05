@@ -136,3 +136,5 @@ export * from './player-yaml';
 export * from './game-defaults';
 export * from './scouts';
 export * from './online-notice-settings';
+export * from './world-model';
+export * from './pre-rolled';

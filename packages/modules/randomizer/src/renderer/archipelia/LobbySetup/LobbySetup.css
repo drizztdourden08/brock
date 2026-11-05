@@ -1,0 +1,10 @@
+/* @layer renderer-shell @kind style */
+
+.lobby-setup__row--closed {
+  opacity: var(--opacity-disabled);
+}
+
+.lobby-setup__code,
+.lobby-setup__address {
+  max-width: 100%;
+}

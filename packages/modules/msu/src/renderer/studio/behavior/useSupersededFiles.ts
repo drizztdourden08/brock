@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useMemo, useState } from 'react';
-import { supersededMap, withSupersededRepointed } from '../../superseded';
+import { supersededMap, withSupersededRepointed } from '../../../superseded';
 import { useMsuStudio } from '../../game/useMsuStudio';
 import { failure } from './failure';
 import type { ActionResult } from '../msu.type';

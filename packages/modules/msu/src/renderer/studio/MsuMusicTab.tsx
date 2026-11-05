@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
 import { StudioLayout } from '@drizztdourden08/tessera/composites';
-import { STUDIO_EDITOR_MIN_WIDTH, StudioPanelContent } from '../../studio-kit';
+import { STUDIO_EDITOR_MIN_WIDTH, StudioPanelContent } from '../studio-kit';
 import { sectionGroup } from './studio-frame/section-group';
 import { MsuTrackPanel } from './MsuTrackPanel';
 import { TrackDetail } from './TrackDetail';

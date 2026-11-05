@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback } from 'react';
-import { withFileRenamed } from '../../layer-edit';
+import { withFileRenamed } from '../../../layer-edit';
 import { useMsuStudio } from '../../game/useMsuStudio';
 import { failure } from './failure';
 import { renameProblem } from './rename-problem';

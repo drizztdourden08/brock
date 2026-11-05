@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { StudioSection } from '../../studio-kit';
+import { StudioSection } from '../studio-kit';
 import { CloseDetailButton } from './CloseDetailButton';
 import { LayerEditor } from './LayerEditor';
 import { PreviewReadout } from './PreviewReadout';

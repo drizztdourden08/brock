@@ -28,7 +28,7 @@ const recorder = (): { events: LobbySocketEvent[]; push: LobbySocketPush } => {
   return { events, push: (event) => { events.push(event); } };
 };
 
-describe('lobby sockets', () => {
+describe('lobby sockets', { tags: ['critical'] }, () => {
   it('destroys a socket that opens after the page closed it', async () => {
     const socket = new PassThrough();
     const destroy = vi.spyOn(socket, 'destroy');

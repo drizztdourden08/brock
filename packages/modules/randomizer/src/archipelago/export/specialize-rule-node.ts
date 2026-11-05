@@ -4,14 +4,10 @@ import { exportExpansionOf } from './export-expansion-of';
 import { PASS_THROUGH_OPS, RULE_FALSE, RULE_TRUE } from './specialize-node.constants';
 import type { Again, IfNode, PassThroughNode, ReadingNode } from './specialize-node.type';
 import type { Readings } from './export.type';
+import type { CallInput } from './specialize-rule-node.type';
 import type {
   HelperNode, HelperRegistry, RuleArg, RuleCount, RuleNode, World, WorldKeys,
 } from '../../world';
-
-interface CallInput<K extends WorldKeys> {
-  readings: Readings;
-  helpers: HelperRegistry<World<K>>;
-}
 
 const valueOf = <K extends WorldKeys>(readings: Readings, ref: RuleArg<K> | RuleCount<K>): string | number | boolean => {
   if (typeof ref !== 'object') return ref;

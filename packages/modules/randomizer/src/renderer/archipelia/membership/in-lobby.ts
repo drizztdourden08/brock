@@ -2,8 +2,7 @@
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { RandomizerProfileConfig } from '../../../augment';
 import { registeredArchipelia } from '../game/registered-archipelia';
-
-const LOBBY_MODE = 'archipelia';
+import { LOBBY_MODE } from './in-lobby.constants';
 
 const defaultIsLobbyProfile = (config: RandomizerProfileConfig): boolean => {
   const mode: string = config.mode;

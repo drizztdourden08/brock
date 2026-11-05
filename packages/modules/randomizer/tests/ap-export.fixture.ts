@@ -4,7 +4,7 @@ import { toyWorldDef } from './toy-world.fixture';
 import type { ApExportSource } from '../src/archipelago/export';
 import type { HelperDefinition, HelperRegistry, RuleNode, World } from '../src/world';
 
-const toyHelpers: readonly HelperDefinition<World>[] = [
+const toyRuleCalls: readonly HelperDefinition[] = [
   { name: 'keyReady', params: [], body: (state) => state.has('key'), expand: () => ({ op: 'has', item: 'key' }) },
   {
     name: 'needs',
@@ -14,7 +14,7 @@ const toyHelpers: readonly HelperDefinition<World>[] = [
   },
 ];
 
-const toyRegistry: HelperRegistry<World> = new Map(toyHelpers.map((helper) => [helper.name, helper]));
+const toyRegistry: HelperRegistry = new Map(toyRuleCalls.map((helper) => [helper.name, helper]));
 
 const needs = (count: number): RuleNode => ({ op: 'helper', name: 'needs', args: [count] });
 
@@ -22,7 +22,7 @@ const toyExportWorld = (): World => {
   const def = toyWorldDef();
   return createWorldFromDef({
     ...def,
-    helpers: toyHelpers,
+    helpers: toyRuleCalls,
     regions: def.regions.map((region) =>
       region.id === 'lake' ? { ...region, events: [{ key: 'win', region: 'lake' }] } : region),
     locationRules: new Map<string, RuleNode>([['l1', { op: 'all', of: [needs(2), needs(1)] }]]),
@@ -51,4 +51,4 @@ const toySource = (overrides: Partial<ApExportSource> = {}): ApExportSource => (
   ...overrides,
 });
 
-export { needs, toyHelpers, toyRegistry, toySource, toyExportWorld };
+export { needs, toyRuleCalls, toyRegistry, toySource, toyExportWorld };

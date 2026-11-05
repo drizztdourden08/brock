@@ -12,7 +12,7 @@ const LABELS = { game: 'Toy Game', shortName: 'Toy' };
 
 const stepOf = (event: LobbyEvent, from = MEMBERSHIP) => nextMembership(from, event, JOIN_STATE);
 
-describe('nextMembership', () => {
+describe('nextMembership', { tags: ['critical'] }, () => {
   it('follows the admission events', () => {
     expect(stepOf({ type: 'admission', state: 'pending', reason: null }).membership.state).toEqual({ kind: 'pending' });
     const refused = stepOf({ type: 'admission', state: 'refused', reason: 'no' }).membership;
@@ -48,7 +48,7 @@ describe('nextMembership', () => {
   });
 });
 
-describe('isSameLobby', () => {
+describe('isSameLobby', { tags: ['critical'] }, () => {
   it('matches the same lobby and refuses another', () => {
     expect(isSameLobby(MEMBERSHIP, 'lobby.example.org', { joinToken: 'join-token-1' })).toBe(true);
     expect(isSameLobby(MEMBERSHIP, 'lobby.example.org', { joinToken: 'join-token-2' })).toBe(false);
@@ -56,7 +56,7 @@ describe('isSameLobby', () => {
   });
 });
 
-describe('room urls', () => {
+describe('room urls', { tags: ['critical'] }, () => {
   it('uses the public address for a remote lobby server', () => {
     expect(roomUrlsOf('lobby.example.org', LOCAL_ROOM)).toEqual({ serverUrl: 'ws://room.example.org:38281' });
   });
@@ -77,7 +77,7 @@ describe('room urls', () => {
   });
 });
 
-describe('formErrorOf', () => {
+describe('formErrorOf', { tags: ['critical'] }, () => {
   it('words the common failures', () => {
     expect(formErrorOf({ code: 'timeout', message: '' }, 'srv', LABELS)).toBe('Could not reach srv.');
     expect(formErrorOf({ code: 'rate-limited', message: '', retryAfter: 5 }, 'srv', LABELS)).toBe('Too many tries. Wait 5 s.');

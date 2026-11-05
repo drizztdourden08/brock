@@ -7,7 +7,7 @@ import { formErrorOf } from '../check/form-error-of';
 import type { LobbyCheckOk } from '../check/lobby-check.type';
 import { formLabelsOf } from '../game/form-labels-of';
 import type { ArchipeliaMembership } from '../membership/membership.type';
-import type { JoinOutcome } from './join-input.type';
+import type { JoinFormOptions, JoinOutcome } from './join-input.type';
 import { startJoin } from './start-join';
 
 const sentOf = (uploads: readonly UploadProgress[]): number => {
@@ -38,8 +38,9 @@ const endOf = (check: LobbyCheckOk, session: LobbySession, event: LobbyEvent, st
 };
 
 const joinFromForm = async (
-  check: LobbyCheckOk, config: RandomizerProfileConfig, wanted: string | null, onProgress: (fraction: number) => void,
+  check: LobbyCheckOk, config: RandomizerProfileConfig, options: JoinFormOptions,
 ): Promise<JoinOutcome> => {
+  const { wanted, onProgress } = options;
   const picked = wanted === null ? null : pickSeat(check.seats, wanted);
   const seat = picked?.ok === true ? picked.seat : undefined;
   const started = await startJoin({ server: check.server, lobby: check.lobby, ap: check.ap, config, seat });

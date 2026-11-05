@@ -3,9 +3,8 @@ import { createBrowserSocket } from '../../../archipelago';
 import type { ArchipelagoSocket, CreateSocket } from '../../../archipelago';
 import type { LobbySocketHandlers } from './lobby-socket-handlers.type';
 import { registerLobbySocket } from './lobby-socket-hub';
+import { CONNECTION_FAILED_CODE } from './create-main-socket.constants';
 import { randomizerApi } from './randomizer-api';
-
-const CONNECTION_FAILED_CODE = 1006;
 
 let counter = 0;
 

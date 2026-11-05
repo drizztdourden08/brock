@@ -26,10 +26,15 @@ type StartJoinInput = {
   token?: string;
 };
 
+type JoinFormOptions = {
+  wanted: string | null;
+  onProgress: (fraction: number) => void;
+};
+
 type JoinOutcome =
   | { ok: true; session: LobbySession; membership: ArchipeliaMembership }
   | { ok: false; error: string; code?: string };
 
 type StartJoinResult = { session: LobbySession } | { error: string };
 
-export type { JoinInput, JoinOutcome, StartJoinInput, StartJoinResult };
+export type { JoinFormOptions, JoinInput, JoinOutcome, StartJoinInput, StartJoinResult };

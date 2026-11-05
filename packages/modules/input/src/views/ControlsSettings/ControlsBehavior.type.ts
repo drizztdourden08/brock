@@ -104,15 +104,9 @@ interface ListeningLabelParams {
   game: ControlsGame;
 }
 
-interface DeviceDragInfo {
-  displayName: string;
-  sdlType?: string | null;
-  vendorId?: string | null;
-  productId?: string | null;
-}
 
 export type {
   ActionCapture, ActionRow, ActionRowParams, ActionScope, BuildActionRowsParams, BuildPresetProfileParams,
-  DeviceDragInfo, ListeningLabelParams, ListeningTarget, ReadDroppedPresetParams, UseBindingStateArgs,
+  ListeningLabelParams, ListeningTarget, ReadDroppedPresetParams, UseBindingStateArgs,
   UseDragDropArgs, UseGlobalRowsArgs, UseProfileRowsArgs, UseRebindTargetArgs, UseVerbIconsArgs, UseVerbSchemeArgs,
 };

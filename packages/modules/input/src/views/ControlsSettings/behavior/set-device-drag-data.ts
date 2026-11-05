@@ -1,7 +1,7 @@
 /* @layer renderer-components @kind logic */
 import type { DragEvent } from 'react';
 import { DRAG_DEVICE_NAME, DRAG_PID, DRAG_SDL_TYPE, DRAG_VID } from '../ControlsSettings.constants';
-import type { DeviceDragInfo } from '../ControlsBehavior.type';
+import type { DeviceDragInfo } from '../sub-components/DeviceRow.type';
 
 const setDeviceDragData = (e: DragEvent, info: DeviceDragInfo): void => {
   e.dataTransfer.setData(DRAG_DEVICE_NAME, info.displayName);

@@ -1,7 +1,7 @@
 /* @layer core @kind types */
 import type {
   CollectionHooks, CollectionState, FillBuild, FillPhase, HelperDefinition, ItemRule, Region, RuleNode,
-  RuleOptionValue, SchemaSet, World, WorldKeys,
+  RuleOptionValue, SchemaSet, SeedValue, World, WorldKeys,
 } from '../types';
 import type { DefPool } from './def-pool.type';
 import type { DefPoolContext } from './def-pool-context.type';
@@ -22,6 +22,7 @@ interface GameWorldDef<K extends WorldKeys = WorldKeys> {
   helpers?: readonly HelperDefinition<World<K>>[];
   collection?: CollectionHooks<World<K>>;
   options?(request: { seed: string }): Readonly<Record<string, RuleOptionValue>>;
+  seedValues?(request: { seed: string }): Readonly<Record<string, SeedValue>>;
   goal(state: CollectionState<World<K>>): boolean;
   buildPool(ctx: DefPoolContext<K>): DefPool<K>;
   fillPhases?: readonly FillPhase<FillBuild<World<K>>>[];

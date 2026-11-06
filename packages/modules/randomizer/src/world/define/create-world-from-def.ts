@@ -28,7 +28,7 @@ const createWorldFromDef = <K extends WorldKeys>(
     itemRules,
     alwaysAllow: new Map(),
     placedItems: new Map(),
-    seedValues: new Map(),
+    seedValues: new Map(Object.entries(def.seedValues?.(request) ?? {})),
     ...(def.collection ? { collection: def.collection } : {}),
     readOption: (key: K['option']): RuleOptionValue => options[key] ?? false,
     getRule: (name) => rules.get(name),

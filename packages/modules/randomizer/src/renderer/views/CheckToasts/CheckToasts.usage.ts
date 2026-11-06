@@ -6,7 +6,7 @@ const usage = {
   useWhen: [
     'The play screen, so the player sees each new check without leaving the game.',
   ],
-  propsHash: '3f7c6e80e4386362',
+  propsHash: '683a46025cf220bd',
   avoidWhen: [
     { case: 'A message the player must read or answer.', use: 'Dialog' },
   ],

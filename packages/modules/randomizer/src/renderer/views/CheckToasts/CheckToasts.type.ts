@@ -7,6 +7,8 @@ interface CheckToastsProps {
   duration?: number;
   quietMs?: number;
   noticeShown?: (kind: NoticeKind) => boolean;
+  itemColor?: string;
+  playerColor?: string;
 }
 
 interface CheckToastEntry {

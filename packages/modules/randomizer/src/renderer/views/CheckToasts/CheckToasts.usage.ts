@@ -14,6 +14,7 @@ const usage = {
     'Pass enabled false to turn the toasts off.',
     'duration sets how long a toast stays; quietMs holds back the burst when the page loads.',
     'noticeShown decides which online notice kinds may show.',
+    'itemColor and playerColor colour item and player names in online notices; without them the primary and secondary bright colours apply.',
   ],
   a11y: [
     'Each toast has a text label, and the part renders nothing when no toast is waiting.',

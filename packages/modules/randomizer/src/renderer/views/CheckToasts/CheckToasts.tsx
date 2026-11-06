@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
-import { Stack } from '@drizztdourden08/tessera/primitives';
+import type { CSSProperties } from 'react';
+import { Box, Stack } from '@drizztdourden08/tessera/primitives';
 import { CheckCard } from '../ChecksView/sub-components/CheckCard';
 import { useCheckToasts } from './behavior/useCheckToasts';
 import { useOnlineNoticeToasts } from './behavior/useOnlineNoticeToasts';
@@ -11,7 +12,7 @@ import { PlayAreaNotice } from './sub-components/PlayAreaNotice';
 import type { PlayAreaNoticeItem } from './sub-components/PlayAreaNotice';
 
 const CheckToasts = (props: CheckToastsProps) => {
-  const { enabled = true, duration = TOAST_DURATION_MS, quietMs = LOAD_QUIET_MS, noticeShown } = props;
+  const { enabled = true, duration = TOAST_DURATION_MS, quietMs = LOAD_QUIET_MS, noticeShown, itemColor, playerColor } = props;
   const checks = useCheckToasts(enabled, quietMs);
   const notices = useOnlineNoticeToasts(enabled, noticeShown);
   const { dismiss: dismissCheck } = checks;
@@ -31,13 +32,20 @@ const CheckToasts = (props: CheckToastsProps) => {
     dismissNotice(id);
   }, [dismissCheck, dismissNotice]);
 
+  const colours = useMemo(
+    () => ({ '--notice-item': itemColor, '--notice-player': playerColor }) as CSSProperties,
+    [itemColor, playerColor],
+  );
+
   if (items.length === 0) return null;
   return (
-    <Stack gap="xs">
-      {items.map((item) => (
-        <PlayAreaNotice key={item.id} item={item} duration={duration} onDismiss={dismiss} />
-      ))}
-    </Stack>
+    <Box style={colours}>
+      <Stack gap="xs">
+        {items.map((item) => (
+          <PlayAreaNotice key={item.id} item={item} duration={duration} onDismiss={dismiss} />
+        ))}
+      </Stack>
+    </Box>
   );
 };
 

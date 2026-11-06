@@ -23,6 +23,10 @@ export default brockEslint({
       ],
       why: 'The overlay grows to the size measured from the pad drawing, and each halo takes its glow level from the live input.',
     },
+    {
+      files: ['packages/modules/randomizer/src/renderer/views/CheckToasts/CheckToasts.tsx'],
+      why: 'The item and player name colours are picked by the user in the app settings, so they can be any colour and no token class can hold them.',
+    },
   ],
   rawColorOffGlobs: ['packages/electron/**', 'templates/app/electron/**'],
   doubleCast: [

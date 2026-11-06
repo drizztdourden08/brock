@@ -6,6 +6,7 @@ export {
   stubLocalStorage,
 } from './protocol-harness';
 export { createApworldRig, parseApSpoiler, replayForward } from './oracle';
+export { treeShapeDiff } from './shape';
 export type { Delivery, FakeCore, FakeCoreHooks } from './fake-core';
 export type { FakeRoom, FakeServer, FakeStorageRoom, FakeTrackedSlot } from './fake-server';
 export type { HarnessAdapter, HarnessConfig, HarnessDeps, HarnessSession } from './protocol-harness';

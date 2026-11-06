@@ -5,7 +5,8 @@
   grid-template-columns: subgrid;
 }
 
-.verb-groups__group { grid-column: 1 / -1; }
+.verb-groups > *,
+.verb-groups__group > * { grid-column: 1 / -1; }
 
 .verb-groups__group-head {
   grid-column: 1 / -1;

@@ -1,4 +1,5 @@
 /* @layer electron-main @kind types */
+import type { MainContext, MainModule } from '@drizztdourden08/brock-electron/main';
 import type { InputStatus } from '../device.type';
 import type { CalibrationStore } from '../calibration/calibration-store.type';
 import type { ControllerSource } from './controller-source.type';
@@ -27,4 +28,17 @@ interface InputMain {
   stop: () => void;
 }
 
-export type { InputOptions, InputRuntime, InputMain };
+/** The part of the main context brock-input reads, so a host can build its own. */
+type InputMainContext = Pick<MainContext, 'handle' | 'emit' | 'files' | 'paths' | 'log' | 'product'> & {
+  flags: Pick<MainContext['flags'], 'isHeadlessLaunch' | 'hasFlag'>;
+};
+
+type InputWindow = Parameters<NonNullable<MainModule['onWindow']>>[0];
+
+interface InputMainModule extends MainModule {
+  register: (ctx: InputMainContext) => void;
+  onWindow: (win: InputWindow, ctx: InputMainContext) => void;
+  onWillQuit: (ctx: InputMainContext) => void;
+}
+
+export type { InputOptions, InputRuntime, InputMain, InputMainContext, InputMainModule };

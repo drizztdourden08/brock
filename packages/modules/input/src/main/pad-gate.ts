@@ -1,10 +1,10 @@
 /* @layer electron-main @kind logic */
-import type { MainContext } from '@drizztdourden08/brock-electron/main';
+import type { InputMainContext } from './input-main.type';
 import type { PadGate } from './pad-gate.type';
 import { INPUT_LIVE_FLAG } from './pad-lock.constants';
 import { createPadLock } from './pad-lock';
 
-const createPadGate = (ctx: MainContext): PadGate => {
+const createPadGate = (ctx: Pick<InputMainContext, 'product' | 'log'>): PadGate => {
   const lock = createPadLock({ product: ctx.product.name });
   let refusalLogged = false;
   const claim = (headless: boolean): boolean => {

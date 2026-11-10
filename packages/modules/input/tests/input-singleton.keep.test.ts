@@ -1,13 +1,13 @@
 /* @layer electron-main @kind test */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { MainContext } from '@drizztdourden08/brock-electron/main';
+import type { InputMainContext } from '../src/main/input-main.type';
 
 const runtimes: { source: { start: ReturnType<typeof vi.fn>; refresh: ReturnType<typeof vi.fn> } }[] = [];
 
 vi.mock('@drizztdourden08/brock-electron/context', () => ({
-  memoByContext: <T>(create: (ctx: MainContext) => T) => {
+  memoByContext: <T>(create: (ctx: InputMainContext) => T) => {
     const memo = new WeakMap<object, T>();
-    return (ctx: MainContext): T => {
+    return (ctx: InputMainContext): T => {
       const found = memo.get(ctx.files) ?? create(ctx);
       memo.set(ctx.files, found);
       return found;
@@ -32,16 +32,15 @@ vi.mock('../src/calibration/calibration-store', () => ({ createCalibrationStore:
 const { default: inputMain, getInput } = await import('../src/main/index');
 const { createInputRuntime } = await import('../src/main/create-input-runtime');
 
-const contextWith = (): MainContext => {
-  const partial: Partial<MainContext> = {
-    flags: { flags: [], isAutomationLaunch: () => false, isBackgroundLaunch: () => false, isHeadlessLaunch: () => false, flagValue: () => null, hasFlag: () => false },
-    paths: { userData: () => 'u', data: () => 'd' },
-    files: {} as MainContext['files'],
-    handle: vi.fn(),
-    log: vi.fn(),
-  };
-  return partial as MainContext;
-};
+const contextWith = (): InputMainContext => ({
+  flags: { isHeadlessLaunch: () => false, hasFlag: () => false },
+  paths: { userData: () => 'u', data: () => 'd' },
+  files: {} as InputMainContext['files'],
+  product: {} as InputMainContext['product'],
+  handle: vi.fn(),
+  emit: vi.fn(),
+  log: vi.fn(),
+});
 
 describe('S2 input module context', { tags: ['standard'] }, () => {
   beforeEach(() => { runtimes.length = 0; vi.mocked(createInputRuntime).mockClear(); });

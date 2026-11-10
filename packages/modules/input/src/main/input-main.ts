@@ -1,13 +1,12 @@
 /* @layer electron-main @kind logic */
 import { memoByContext } from '@drizztdourden08/brock-electron/context';
-import type { MainContext } from '@drizztdourden08/brock-electron/main';
-import type { InputMain, InputOptions, InputRuntime } from './input-main.type';
+import type { InputMain, InputMainContext, InputOptions, InputRuntime } from './input-main.type';
 import { createCalibrationStore } from '../calibration/calibration-store';
 import { createInputRuntime } from './create-input-runtime';
 import { INPUT_LIVE_FLAG } from './pad-lock.constants';
 import { createPadGate } from './pad-gate';
 
-const createInputMain = (ctx: MainContext): InputMain => {
+const createInputMain = (ctx: InputMainContext): InputMain => {
   let options: InputOptions = {};
   let current: InputRuntime | null = null;
   let started = false;
@@ -68,6 +67,6 @@ const createInputMain = (ctx: MainContext): InputMain => {
   };
 };
 
-const getInput = memoByContext<MainContext, InputMain>(createInputMain);
+const getInput = memoByContext<InputMainContext, InputMain>(createInputMain);
 
 export { getInput };

@@ -1,12 +1,12 @@
 /* @layer electron-main @kind barrel */
 import '../augment';
-import type { MainModule } from '@drizztdourden08/brock-electron/main';
+import type { InputMainModule } from './input-main.type';
 import { registerCaptureHandlers } from './capture-handlers';
 import { registerInputHandlers } from './handlers';
 import { getInput } from './input-main';
 import { INPUT_DIR } from '../mapping/mapping-db.constants';
 
-const inputMain: MainModule = {
+const inputMain: InputMainModule = {
   id: 'input',
   dataDirs: [INPUT_DIR],
   register: (ctx) => {
@@ -29,7 +29,7 @@ export { inputMain, getInput };
 export { isMappingLine } from '../mapping/is-mapping-line';
 export { applyStickCalibration } from '../calibration/apply-stick-calibration';
 export { applyTriggerCalibration } from '../calibration/apply-trigger-calibration';
-export type { InputMain, InputOptions, InputRuntime } from './input-main.type';
+export type { InputMain, InputMainContext, InputMainModule, InputOptions, InputRuntime } from './input-main.type';
 export type { ControllerSource } from './controller-source.type';
 export type { HapticPlayer } from '../haptics/haptic-player.type';
 export type { MappingDb } from './mapping-db.type';

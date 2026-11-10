@@ -28,7 +28,6 @@ interface InputMain {
   stop: () => void;
 }
 
-/** The part of the main context brock-input reads, so a host can build its own. */
 type InputMainContext = Pick<MainContext, 'handle' | 'emit' | 'files' | 'paths' | 'log' | 'product'> & {
   flags: Pick<MainContext['flags'], 'isHeadlessLaunch' | 'hasFlag'>;
 };

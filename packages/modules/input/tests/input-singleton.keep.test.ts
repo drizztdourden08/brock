@@ -49,8 +49,8 @@ describe('S2 input module context', { tags: ['standard'] }, () => {
     const ctx = contextWith();
     const copy = { ...ctx };
 
-    await inputMain.register(copy);
-    inputMain.onWindow?.({} as never, ctx);
+    inputMain.register(copy);
+    inputMain.onWindow({} as never, ctx);
     await getInput(ctx).start();
 
     expect(getInput(copy)).toBe(getInput(ctx));
@@ -61,8 +61,8 @@ describe('S2 input module context', { tags: ['standard'] }, () => {
 
   it('serves input:list from the runtime that onWindow started', async () => {
     const ctx = contextWith();
-    await inputMain.register({ ...ctx });
-    inputMain.onWindow?.({} as never, ctx);
+    inputMain.register({ ...ctx });
+    inputMain.onWindow({} as never, ctx);
     const list = vi.mocked(ctx.handle).mock.calls.find(([channel]) => channel === 'input:list')?.[1] as () => Promise<unknown>;
     expect(await list()).toEqual([{ deviceKey: 'cached' }]);
 
@@ -73,8 +73,8 @@ describe('S2 input module context', { tags: ['standard'] }, () => {
 
   it('runs the full scan only on input:refresh', async () => {
     const ctx = contextWith();
-    await inputMain.register({ ...ctx });
-    inputMain.onWindow?.({} as never, ctx);
+    inputMain.register({ ...ctx });
+    inputMain.onWindow({} as never, ctx);
     const refresh = vi.mocked(ctx.handle).mock.calls.find(([channel]) => channel === 'input:refresh')?.[1] as () => Promise<unknown>;
     await refresh();
 

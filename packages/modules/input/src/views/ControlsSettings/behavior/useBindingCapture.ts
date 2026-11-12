@@ -23,12 +23,12 @@ const useBindingCapture = ({ onCapture, onCancel }: Pick<BindingListenerProps, '
       if (cancelled) return;
       e.preventDefault();
       e.stopPropagation();
-      if (e.code === 'Escape') {
+      if (e.code === 'Escape' || e.key === 'Escape' || e.key === 'Esc') {
         onCancel();
         return;
       }
-      if (MODIFIER_CODES.has(e.code)) return;
-      const isClear = e.code === 'Delete' || e.code === 'Backspace';
+      const isClear = ['Delete', 'Backspace'].includes(e.code) || ['Delete', 'Backspace'].includes(e.key);
+      if (!isClear && (e.code === '' || MODIFIER_CODES.has(e.code))) return;
       const binding = isClear ? { type: 'none' as const } : keyboardBindingFromEvent(e);
       finish({ binding, deviceKey: 'keyboard', vendorId: null, productId: null });
     };

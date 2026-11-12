@@ -81,7 +81,8 @@ export { recallControllerName } from '../runtime/controller-name-cache/recall-co
 export { ControlsSettings } from '../views/ControlsSettings';
 export type {
   ActionDef, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
-  GlobalBindingsStore, InputProfileStore, PresetDevice, ReservedRow, SlotsConfig, TabGate, VerbDef, VerbGroupDef,
+  BindingCapture, GlobalBindingsStore, InputProfileStore, ListenerExtraContext, ListenTarget, PresetDevice, ReservedRow,
+  SlotsConfig, TabGate, VerbDef, VerbGroupDef,
 } from '../views/ControlsSettings';
 export { rememberControllerName } from '../runtime/controller-name-cache/remember-controller-name';
 export { resolveDeviceFromEntry } from '../runtime/resolve-device';

@@ -10,7 +10,7 @@ import './BindingListener.css';
 const stopPropagation = (e: MouseEvent) => e.stopPropagation();
 
 const BindingListener = (props: BindingListenerProps) => {
-  const { actionLabel, prompt, hint, onCapture, onCancel } = props;
+  const { actionLabel, prompt, hint, extra, onCapture, onCancel } = props;
   const [canCancel, setCanCancel] = useState(false);
 
   useEffect(() => {
@@ -29,6 +29,7 @@ const BindingListener = (props: BindingListenerProps) => {
           <Box className="binding-listener__prompt">{prompt}</Box>
           <Box className="binding-listener__label">{actionLabel}</Box>
           <Box className="binding-listener__hint">{hint}</Box>
+          {extra && <Box className="binding-listener__extra">{extra}</Box>}
         </Box>
       </Box>
     </Portal>

@@ -17,6 +17,9 @@
   text-align: center;
   box-shadow: 0 0 calc(30 * var(--size-1)) var(--c-primary-soft);
   animation: binding-listener-pulse 1.5s ease-in-out infinite;
+  max-inline-size: calc(100vw - 2 * var(--space-lg));
+  max-block-size: calc(100dvh - 2 * var(--space-lg));
+  overflow: auto;
 }
 
 .binding-listener__prompt {
@@ -35,6 +38,10 @@
 .binding-listener__hint {
   font-size: var(--text-sm);
   color: var(--c-text-muted);
+}
+
+.binding-listener__extra {
+  margin-top: var(--space-lg);
 }
 
 @keyframes binding-listener-pulse {

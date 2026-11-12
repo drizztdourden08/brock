@@ -52,6 +52,11 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
           actionLabel={ctrl.listeningName}
           prompt={labels.listenerPrompt}
           hint={labels.listenerHint}
+          extra={props.game.listenerExtra?.({
+            target: ctrl.listeningFor,
+            capture: ctrl.handleCapture,
+            close: ctrl.cancelListening,
+          })}
           onCapture={ctrl.handleCapture}
           onCancel={ctrl.cancelListening}
         />

@@ -5,6 +5,7 @@ import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { InputProfile } from '../../bindings/input-profile.type';
 import type { VerbDef } from '../../bindings/verbs/verbs.type';
 import type { ResolvedControl } from '../../family/family.type';
+import type { BindingCapture } from './sub-components/BindingListener.type';
 
 interface ActionDef {
   id: string;
@@ -30,6 +31,17 @@ interface VerbGroupDef {
   title: string;
   hint?: string;
   verbs: readonly string[];
+}
+
+type ListenTarget =
+  | { type: 'action'; scope: 'profile' | 'global'; id: string }
+  | { type: 'verb'; id: string }
+  | { type: 'slot'; slot: BindingSlot };
+
+interface ListenerExtraContext {
+  target: ListenTarget;
+  capture: (capture: BindingCapture) => void;
+  close: () => void;
 }
 
 interface ControlsContext {
@@ -131,6 +143,7 @@ interface ControlsGame {
     ctx: { device: PresetDevice; controls: readonly ResolvedControl[] },
   ) => InputProfile;
   onListeningChange?: (listening: boolean) => void;
+  listenerExtra?: (ctx: ListenerExtraContext) => ReactNode;
   labels?: Partial<ControlsLabels>;
 }
 
@@ -197,8 +210,8 @@ interface DeviceIconIds {
 
 export type {
   ActionDef, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
-  DeviceIconIds, GlobalBindingsStore, InputProfileStore, PresetDevice, RequiredInput, RequiredInputsParams,
+  DeviceIconIds, GlobalBindingsStore, InputProfileStore, ListenerExtraContext, ListenTarget, PresetDevice, RequiredInput, RequiredInputsParams,
   ReservedRow, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
   UseProfileStateArgs, VerbGroupDef,
 };
-export type { VerbDef };
+export type { BindingCapture, VerbDef };

@@ -10,6 +10,7 @@ const usage = {
     'Pass an InputProfileStore for the saved profiles; pass a GlobalBindingsStore only when a tab has scope global.',
     'Register button and controller glyphs with registerGlyphSource; without a source the rows show text only.',
     'Use a custom tab for anything the built-in tab kinds do not cover.',
+    'Set game.listenerExtra to render your own content under the hint of the waiting-for-input popover.',
   ],
   a11y: ['Every binding row is a button named after its action; the listener dialog names the action being bound.'],
   buildingBlock: true,

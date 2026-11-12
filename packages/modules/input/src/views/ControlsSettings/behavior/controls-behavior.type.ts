@@ -4,14 +4,11 @@ import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import type { InputProfile } from '../../../bindings/input-profile.type';
 import type { DeviceEntry } from '../../../device.type';
 import type { ResolvedControl } from '../../../family/family.type';
-import type { ActionDef, ControlsGame, ControlsLabels, GlobalBindingsStore, PresetDevice } from '../ControlsSettings.type';
+import type { ActionDef, ControlsGame, ControlsLabels, GlobalBindingsStore, ListenTarget, PresetDevice } from '../ControlsSettings.type';
 
 type ActionScope = 'profile' | 'global';
 
-type ListeningTarget =
-  | { type: 'action'; scope: ActionScope; id: string }
-  | { type: 'verb'; id: string }
-  | { type: 'slot'; slot: BindingSlot };
+type ListeningTarget = ListenTarget;
 
 interface ActionRow {
   action: ActionDef;

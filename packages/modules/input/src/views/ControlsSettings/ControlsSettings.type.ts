@@ -214,4 +214,4 @@ export type {
   ReservedRow, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
   UseProfileStateArgs, VerbGroupDef,
 };
-export type { BindingCapture, VerbDef };
+export type { VerbDef };

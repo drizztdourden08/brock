@@ -18,8 +18,8 @@ buildscript {
 apply plugin: 'com.android.library'
 
 def pins = new JsonSlurper().parse(file('../native/package.json'))
-def sdl3SourceDir = file("../native/third_party/SDL3-${pins.sdl3}").absolutePath.replace('\\', '/')
-def sdlJavaUpstream = file("${sdl3SourceDir}/android-project/app/src/main/java/org/libsdl/app")
+def sdl3PackageDir = file("../native/third_party/SDL3-${pins.sdl3}")
+def sdlJavaUpstream = new File(sdl3PackageDir, 'android-project/app/src/main/java/org/libsdl/app')
 def sdlJavaDir = layout.buildDirectory.dir('generated/sdl3-java').get().asFile
 def inputAbis = (findProperty('brockInputAbis') ?: 'arm64-v8a').toString().split(',').collect { it.trim() }.findAll { it }
 def cmakeDirExplicit = (findProperty('brockInputCmakeDir') ?: System.getenv('BROCK_INPUT_CMAKE_DIR') ?: '').toString().trim()
@@ -27,11 +27,20 @@ def cmakeDirSetting = cmakeDirExplicit ?: (System.getProperty('os.name').toLower
 def cmakeDirInProject = cmakeDirSetting == 'project'
 def cmakeDirBase = cmakeDirSetting == 'temp' ? new File(System.getProperty('java.io.tmpdir'), 'brock-input') : rootProject.file(cmakeDirSetting ?: '.')
 def cmakeStagingDir = cmakeDirSetting && !cmakeDirInProject ? new File(cmakeDirBase, "android-${Integer.toHexString(projectDir.absolutePath.hashCode())}") : null
+def sdl3ShortDir = cmakeStagingDir ? new File(cmakeDirBase, "SDL3-${pins.sdl3}") : null
+def sdl3SourceDir = (sdl3ShortDir ?: sdl3PackageDir).absolutePath.replace('\\', '/')
 
 tasks.register('fetchSdl3Source', Exec) {
-    onlyIf { !file("${sdl3SourceDir}/CMakeLists.txt").exists() }
+    onlyIf { !new File(sdl3PackageDir, 'CMakeLists.txt').exists() }
     workingDir file('..')
     commandLine 'node', 'bin/ensure-sdl3-source.mjs'
+}
+
+tasks.register('mirrorSdl3Source', Sync) {
+    dependsOn 'fetchSdl3Source'
+    onlyIf { sdl3ShortDir != null }
+    from sdl3PackageDir
+    into sdl3ShortDir ?: layout.buildDirectory.dir('unused-sdl3').get().asFile
 }
 
 tasks.register('stageSdlJava', Copy) {
@@ -47,7 +56,7 @@ tasks.register('stageSdlJava', Copy) {
 
 tasks.configureEach { task ->
     if (task.name == 'preBuild') task.dependsOn 'stageSdlJava'
-    if (task.name =~ /CMake|externalNativeBuild|JsonModel/) task.dependsOn 'fetchSdl3Source'
+    if (task.name =~ /CMake|externalNativeBuild|JsonModel/) task.dependsOn 'mirrorSdl3Source'
 }
 
 android {

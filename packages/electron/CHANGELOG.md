@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-electron
 
+## 0.121.0
+
+### Minor Changes
+
+- 8403f85: Module profile hooks reach the main profile store. `composeProfileHooks` merges a list of hooks, and `MainModule.profileHooks` lets a module add its own.
+
+### Patch Changes
+
+- eca6521: Hidden windows restore a saved fullscreen state in headless mode.
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [33ce702]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+  - @drizztdourden08/brock-core@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

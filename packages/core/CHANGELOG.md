@@ -1,5 +1,18 @@
 # @drizztdourden08/brock-core
 
+## 0.121.0
+
+### Minor Changes
+
+- fc626de: New brock-core subpath `util` with the shared `mulberry32` and `itemAt`. The msu, input and randomizer modules now import them from core instead of keeping their own copies.
+- 33ce702: The randomizer session survives a paused core. Roll may be async and gets a RollContext. The world takes a WorldStamp. A poll.loaded hook asks for a rebaseline. registerRandomizerGame starts the runtime. Option defs carry choices, sections and hints, and a game options body gets the step props. A new ./memory subpath ships. Port-kit sessions take prepareAssets. Profile build hooks may be async. The isDisabled function gets the composed lock cause, and useLockCauseOf reads it.
+- 8403f85: Module profile hooks reach the main profile store. `composeProfileHooks` merges a list of hooks, and `MainModule.profileHooks` lets a module add its own.
+
+### Patch Changes
+
+- 4fdf3fc: `composeProfileHooks` no longer seeds the merged profile extension with an empty object, so an app that augments `ProfileExtension` with required keys typechecks.
+- de3e01a: Profile store hooks now build a partial slice of the profile extension, so a module hook no longer has to return the fields an app adds.
+
 ## 0.120.1
 
 ## 0.120.0

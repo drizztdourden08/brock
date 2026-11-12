@@ -1,5 +1,41 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.121.0
+
+### Minor Changes
+
+- 33ce702: The randomizer session survives a paused core. Roll may be async and gets a RollContext. The world takes a WorldStamp. A poll.loaded hook asks for a rebaseline. registerRandomizerGame starts the runtime. Option defs carry choices, sections and hints, and a game options body gets the step props. A new ./memory subpath ships. Port-kit sessions take prepareAssets. Profile build hooks may be async. The isDisabled function gets the composed lock cause, and useLockCauseOf reads it.
+- f09ae70: The audio adapter takes an optional target `sampleRate` and `channels`. Its own AudioContext opens at that rate and each pushed block is resampled (linear) and remixed to it first. Session options `audioSampleRate` and `audioChannels` pass them through.
+- 56a3daa: New `LocationBanner` renderer component: a fading banner over the game that names the place the player entered. A game passes the current `location` and a `locationNameOf` function that returns the place name or null.
+- 0817c43: The port kit renderer exports MobileShell, useMobileBack and isMobileHost: the Android options drawer, opened by the back gesture, with the title and logo taken from the product config.
+- 1bf325c: The frame loop gains setSchedule with a display mode (the default, paced by the display) and a timer mode (a drift-corrected 60 Hz timer). The audio adapter takes an options object with leadS, how far ahead of the audio clock samples are queued, and the port session passes it through as audioLeadS. Omitting both keeps today's behaviour.
+- 3e56930: Add createSpriteStore and spriteBaseUrl to port-kit, a manifest driven store for extracted sprites served through a product scheme. The randomizer renderer now exports defaultOptionTabs.
+- 9c670fa: A port session takes a schedule option, 'display' or 'timer', for its frame loop at start. PortSession.setSchedule switches the live loop, so a V-Sync toggle applies without a restart.
+
+### Patch Changes
+
+- b5a558a: The audio adapter now writes the audio context state, sample rate, sink, base latency and gain to the session log. It logs at the first samples, on every state change and once a minute. When the browser suspends or interrupts the context, the adapter resumes it, unless the game paused the audio on purpose.
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [eca6521]
+- Updated dependencies [33ce702]
+- Updated dependencies [a1382a3]
+- Updated dependencies [11fca93]
+- Updated dependencies [48bec99]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+- Updated dependencies [19f0362]
+- Updated dependencies [9d171e3]
+- Updated dependencies [2238ad1]
+- Updated dependencies [24626e9]
+- Updated dependencies [36c43fe]
+- Updated dependencies [ad2d364]
+- Updated dependencies [c56e771]
+- Updated dependencies [054cf0c]
+  - @drizztdourden08/brock-core@0.121.0
+  - @drizztdourden08/brock-electron@0.121.0
+  - @drizztdourden08/brock-react@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

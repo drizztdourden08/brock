@@ -1,5 +1,34 @@
 # @drizztdourden08/brock-tools
 
+## 0.121.0
+
+### Minor Changes
+
+- 2c06b16: The tools module now records and encodes. A RecordingButton and useRecordingCapture hook sample frames and send them to the main process, which encodes a video when ffmpeg is installed, with an FfmpegInstallStep and FfmpegRequiredDialog for the install. Wrap the bug report transport with withSentTagging to stamp sent recordings with sentAt.
+
+### Patch Changes
+
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [eca6521]
+- Updated dependencies [33ce702]
+- Updated dependencies [a1382a3]
+- Updated dependencies [11fca93]
+- Updated dependencies [48bec99]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+- Updated dependencies [19f0362]
+- Updated dependencies [9d171e3]
+- Updated dependencies [2238ad1]
+- Updated dependencies [24626e9]
+- Updated dependencies [36c43fe]
+- Updated dependencies [ad2d364]
+- Updated dependencies [c56e771]
+- Updated dependencies [054cf0c]
+  - @drizztdourden08/brock-core@0.121.0
+  - @drizztdourden08/brock-electron@0.121.0
+  - @drizztdourden08/brock-react@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

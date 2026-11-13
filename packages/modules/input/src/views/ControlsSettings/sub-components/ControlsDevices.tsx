@@ -1,6 +1,6 @@
 /* @layer renderer-components @kind component */
 import { useCallback, useMemo } from 'react';
-import { Box, EmptyState } from '@drizztdourden08/tessera/primitives';
+import { Box } from '@drizztdourden08/tessera/primitives';
 import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { RescanButton } from '../../../compounds/RescanButton';
 import { controllerGroupEntry } from '../behavior/controller-group-entry';
@@ -10,7 +10,8 @@ import { sideSlotClass } from '../behavior/side-slot-class';
 import { useStoredFold } from '../behavior/useStoredFold';
 import { DEVICES_FOLD_KEY, DEVICES_WIDTH_KEY, NO_EXTRA_DEVICES, SIDE_PANEL_SIZE } from '../ControlsSettings.constants';
 import { DeviceRailButton } from './DeviceRailButton';
-import { DeviceRow } from './DeviceRow';
+import { DevicesBody } from './DevicesBody';
+import { NarrowPanel } from './NarrowPanel';
 import type { ControlsDevicesProps } from './ControlsDevices.type';
 import type { DeviceAssignInfo } from './DeviceRow.type';
 
@@ -31,30 +32,22 @@ const ControlsDevices = (props: ControlsDevicesProps) => {
 
   const rail = entries.map((entry) => <DeviceRailButton key={entry.key} entry={entry} onAssign={handleAssign} />);
 
+  const action = <RescanButton isPending={isRescanPending} onRescan={onRescan} />;
+  const body = <DevicesBody entries={entries} labels={labels} onAssign={handleAssign} onAddMapping={onAddMapping} />;
+  if (narrow) return <NarrowPanel action={action}>{body}</NarrowPanel>;
+
   return (
-    <Box className={sideSlotClass('end', collapsed, narrow)}>
+    <Box className={sideSlotClass('end', collapsed)}>
       <SidePanel
         side="end"
         title={labels.devicesTitle}
         {...SIDE_PANEL_SIZE}
         storageKey={DEVICES_WIDTH_KEY}
-        action={<RescanButton isPending={isRescanPending} onRescan={onRescan} />}
+        action={action}
         railItems={rail}
-        collapsed={narrow ? false : collapsed}
-        collapsible={!narrow}
-        className={narrow ? 'controls-settings__side-fill' : undefined}
+        collapsed={collapsed}
         onCollapsedChange={toggle}
-        containers={[{
-          title: labels.connectedDevices,
-          content: (
-            <>
-              {entries.map((entry) => (
-                <DeviceRow key={entry.key} entry={entry} onAssign={handleAssign} onAddMapping={onAddMapping} />
-              ))}
-              {entries.length === 0 && <EmptyState message={labels.noDevices} />}
-            </>
-          ),
-        }]}
+        containers={[{ title: labels.connectedDevices, content: body }]}
       />
     </Box>
   );

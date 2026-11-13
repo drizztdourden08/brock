@@ -68,63 +68,6 @@
   flex-shrink: 0;
 }
 
-.binding-row__icon-slot {
-  width: var(--size-28);
-  height: var(--size-28);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.binding-row__icon-img {
-  width: var(--size-24);
-  height: var(--size-24);
-  object-fit: contain;
-}
-
-.binding-row__device-icon-slot {
-  width: var(--space-lg);
-  height: var(--space-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  opacity: 0.75;
-}
-
-.binding-row__device-icon-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.binding-row__binding-label {
-  flex: 1;
-  font-size: var(--text-base);
-  color: var(--c-text-dim);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.binding-row__binding-label--none {
-  color: var(--c-text-muted);
-  font-style: italic;
-}
-
-.binding-row__clear {
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity 0.12s;
-}
-
-.binding-row:hover .binding-row__clear,
-.binding-row__clear:focus-visible {
-  opacity: 1;
-}
-
 .binding-row--reserved {
   pointer-events: none;
   opacity: 0.6;

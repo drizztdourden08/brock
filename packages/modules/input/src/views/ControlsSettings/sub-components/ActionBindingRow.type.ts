@@ -1,17 +1,13 @@
 /* @layer renderer-components @kind types */
-import type { ButtonIcon, InputBinding } from '../../../bindings';
-import type { ActionDef } from '../ControlsSettings.type';
+import type { ActionGroupRow } from '../behavior/controls-behavior.type';
 import type { BindingRowLabels } from './BindingRow.type';
 
 interface ActionBindingRowProps {
-  action: ActionDef;
-  mappingIndex: number;
-  binding: InputBinding;
-  bindingIcon?: ButtonIcon | null;
-  deviceIconUrl?: string | null;
+  row: ActionGroupRow;
+  columns: number;
   middleLabel?: string;
   labels: BindingRowLabels;
-  onRebind: (actionId: string) => void;
+  onRebind: (actionId: string, slot: number) => void;
   onClear: (actionId: string, mappingIndex: number) => void;
 }
 

@@ -18,6 +18,11 @@ interface ActionRow {
   deviceIconUrl: string | null;
 }
 
+interface ActionGroupRow {
+  action: ActionDef;
+  cells: ActionRow[];
+}
+
 interface ActionRowParams {
   action: ActionDef;
   mapping: ActionBinding | undefined;
@@ -36,6 +41,7 @@ interface BuildActionRowsParams {
 interface ActionCapture {
   scope: ActionScope;
   id: string;
+  slot?: number;
   binding: InputBinding;
   vid: string | null;
   pid: string | null;
@@ -103,7 +109,7 @@ interface ListeningLabelParams {
 
 
 export type {
-  ActionCapture, ActionRow, ActionRowParams, ActionScope, BuildActionRowsParams, BuildPresetProfileParams,
+  ActionCapture, ActionGroupRow, ActionRow, ActionRowParams, ActionScope, BuildActionRowsParams, BuildPresetProfileParams,
   ListeningLabelParams, ListeningTarget, ReadDroppedPresetParams, UseBindingStateArgs,
   UseDragDropArgs, UseGlobalRowsArgs, UseProfileRowsArgs, UseRebindTargetArgs, UseVerbIconsArgs, UseVerbSchemeArgs,
 };

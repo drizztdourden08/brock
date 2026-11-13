@@ -54,3 +54,12 @@
     inset-inline-end: 0;
   }
 }
+
+.controls-settings__side--tabbed {
+  flex: 1;
+  min-width: 0;
+}
+
+.controls-settings__side--tabbed .controls-settings__side-fill {
+  inline-size: 100%;
+}

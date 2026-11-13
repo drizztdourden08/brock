@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind component */
-import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Box, EmptyState } from '@drizztdourden08/tessera/primitives';
 import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { RescanButton } from '../../../compounds/RescanButton';
@@ -15,10 +15,7 @@ import type { DeviceAssignInfo } from './DeviceRow.type';
 
 const ControlsDevices = (props: ControlsDevicesProps) => {
   const { devices, controllerGroups, labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
-  const { collapsed, toggle, collapse } = useStoredFold(DEVICES_FOLD_KEY, false);
-  useLayoutEffect(() => {
-    if (narrow) collapse();
-  }, [narrow, collapse]);
+  const { collapsed, toggle } = useStoredFold(DEVICES_FOLD_KEY, false);
   const entries = useMemo(() => [
     ...devices.filter((d) => d.type === 'keyboard').map((d) => keyboardEntry(d, labels)),
     ...controllerGroups.map((g) => controllerGroupEntry(g, labels)),
@@ -32,7 +29,7 @@ const ControlsDevices = (props: ControlsDevicesProps) => {
   const rail = entries.map((entry) => <DeviceRailButton key={entry.key} entry={entry} onAssign={handleAssign} />);
 
   return (
-    <Box className={sideSlotClass('end', collapsed)}>
+    <Box className={sideSlotClass('end', collapsed, narrow)}>
       <SidePanel
         side="end"
         title={labels.devicesTitle}
@@ -40,7 +37,9 @@ const ControlsDevices = (props: ControlsDevicesProps) => {
         storageKey={DEVICES_WIDTH_KEY}
         action={<RescanButton isPending={isRescanPending} onRescan={onRescan} />}
         railItems={rail}
-        collapsed={collapsed}
+        collapsed={narrow ? false : collapsed}
+        collapsible={!narrow}
+        className={narrow ? 'controls-settings__side-fill' : undefined}
         onCollapsedChange={toggle}
         containers={[{
           title: labels.connectedDevices,

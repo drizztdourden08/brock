@@ -10,6 +10,8 @@ const usage = {
     'Pass an InputProfileStore for the saved profiles; pass a GlobalBindingsStore only when a tab has scope global.',
     'Register button and controller glyphs with registerGlyphSource; without a source the rows show text only.',
     'Use a custom tab for anything the built-in tab kinds do not cover.',
+    'Below 640px wide the screen shows Profiles, Bindings and Devices as tabs, one full-width panel at a time, with Bindings first; the tab names are labels.',
+    'Return true from game.listenerFullscreen for a target to make the waiting-for-input popover fill the viewport, with listenerExtra taking the free space.',
     'Set game.listenerExtra to render your own content under the hint of the waiting-for-input popover.',
   ],
   a11y: ['Every binding row is a button named after its action; the listener dialog names the action being bound.'],

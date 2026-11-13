@@ -44,6 +44,8 @@ interface ListenerExtraContext {
   close: () => void;
 }
 
+type NarrowTabId = 'profiles' | 'bindings' | 'devices';
+
 interface ControlsContext {
   profile: InputProfile | null;
   devices: readonly DetectedDevice[];
@@ -89,6 +91,9 @@ interface PresetDevice {
 
 interface ControlsLabels {
   profilesTitle: string;
+  tabProfiles: string;
+  tabBindings: string;
+  tabDevices: string;
   profileList: string;
   newProfile: string;
   noProfiles: string;
@@ -144,6 +149,7 @@ interface ControlsGame {
   ) => InputProfile;
   onListeningChange?: (listening: boolean) => void;
   listenerExtra?: (ctx: ListenerExtraContext) => ReactNode;
+  listenerFullscreen?: (target: ListenTarget) => boolean;
   labels?: Partial<ControlsLabels>;
 }
 
@@ -210,7 +216,7 @@ interface DeviceIconIds {
 
 export type {
   ActionDef, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
-  DeviceIconIds, GlobalBindingsStore, InputProfileStore, ListenerExtraContext, ListenTarget, PresetDevice, RequiredInput, RequiredInputsParams,
+  DeviceIconIds, GlobalBindingsStore, InputProfileStore, ListenerExtraContext, ListenTarget, NarrowTabId, PresetDevice, RequiredInput, RequiredInputsParams,
   ReservedRow, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
   UseProfileStateArgs, VerbGroupDef,
 };

@@ -14,6 +14,7 @@ interface BindingListenerProps {
   prompt: string;
   hint: string;
   extra?: ReactNode;
+  fullscreen?: boolean;
   onCapture: (capture: BindingCapture) => void;
   onCancel: () => void;
 }

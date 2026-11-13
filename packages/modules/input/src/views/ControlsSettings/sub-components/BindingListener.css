@@ -48,3 +48,21 @@
   0%, 100% { border-color: var(--c-primary); }
   50% { border-color: var(--c-primary-dim); }
 }
+
+.binding-listener.binding-listener--fullscreen {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100vw;
+  block-size: 100dvh;
+  max-inline-size: none;
+  max-block-size: none;
+  border-radius: 0;
+  border-width: 0;
+  animation: none;
+}
+
+.binding-listener--fullscreen .binding-listener__extra {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+}

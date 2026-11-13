@@ -1,6 +1,6 @@
 /* @layer renderer-components @kind constants */
 import type { ControllerBusType } from '../../device.type';
-import type { ControlsLabels } from './ControlsSettings.type';
+import type { ControlsLabels, NarrowTabId } from './ControlsSettings.type';
 
 const FOLD_KEY_PREFIX = 'brock-input:controls.';
 const PROFILES_FOLD_KEY = `${FOLD_KEY_PREFIX}profiles.collapsed`;
@@ -23,6 +23,7 @@ const LISTEN_ARM_DELAY_MS = 200;
 const SIDE_PANEL_SIZE = { width: 192, minWidth: 160, maxWidth: 360 };
 
 const NARROW_WIDTH_PX = 640;
+const NARROW_TAB_DEFAULT: NarrowTabId = 'bindings';
 const CONTROLS_ROOT_SELECTOR = '.controls-settings';
 
 const KEYBOARD_ICON_FAMILY = 'keyboard';
@@ -37,6 +38,9 @@ const BUS_NAME: Record<ControllerBusType, string | null> = { usb: 'USB', bluetoo
 
 const DEFAULT_LABELS: ControlsLabels = {
   profilesTitle: 'Profiles',
+  tabProfiles: 'Profiles',
+  tabBindings: 'Bindings',
+  tabDevices: 'Devices',
   profileList: 'Profile list',
   newProfile: 'New profile',
   noProfiles: 'No profiles yet',
@@ -87,5 +91,5 @@ export {
   BUS_NAME, CANCEL_ARM_DELAY_MS, CONTROLS_ROOT_SELECTOR, DEFAULT_LABELS, DEVICES_FOLD_KEY,
   DEVICES_WIDTH_KEY, FOCUS_DEADLINE_MS, FOCUS_MAX_ATTEMPTS, PROFILES_WIDTH_KEY,
   DRAG_DEVICE_NAME, DRAG_PID, DRAG_SDL_TYPE, DRAG_VID, GENERIC_ICON_FAMILY, KEYBOARD_ICON_FAMILY,
-  LISTEN_ARM_DELAY_MS, MODIFIER_CODES, NARROW_WIDTH_PX, PROFILES_FOLD_KEY, SIDE_PANEL_SIZE,
+  LISTEN_ARM_DELAY_MS, MODIFIER_CODES, NARROW_TAB_DEFAULT, NARROW_WIDTH_PX, PROFILES_FOLD_KEY, SIDE_PANEL_SIZE,
 };

@@ -1,5 +1,5 @@
 /* @layer renderer-components @kind component */
-import { useCallback, useLayoutEffect } from 'react';
+import { useCallback } from 'react';
 import { Box, Icon, IconButton } from '@drizztdourden08/tessera/primitives';
 import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { sideSlotClass } from '../behavior/side-slot-class';
@@ -11,10 +11,7 @@ import type { ControlsProfilesProps } from './ControlsProfiles.type';
 
 const ControlsProfiles = (props: ControlsProfilesProps) => {
   const { profiles, activeId, newlyCreatedId, labels, narrow, onSelect, onDelete, onRename, onCreate } = props;
-  const { collapsed, toggle, expand, collapse } = useStoredFold(PROFILES_FOLD_KEY, true);
-  useLayoutEffect(() => {
-    if (narrow) collapse();
-  }, [narrow, collapse]);
+  const { collapsed, toggle, expand } = useStoredFold(PROFILES_FOLD_KEY, true);
 
   const handleAdd = useCallback(() => {
     expand();
@@ -31,14 +28,16 @@ const ControlsProfiles = (props: ControlsProfilesProps) => {
   ));
 
   return (
-    <Box className={sideSlotClass('start', collapsed)}>
+    <Box className={sideSlotClass('start', collapsed, narrow)}>
       <SidePanel
         title={labels.profilesTitle}
         {...SIDE_PANEL_SIZE}
         storageKey={PROFILES_WIDTH_KEY}
         action={add}
         railItems={rail}
-        collapsed={collapsed}
+        collapsed={narrow ? false : collapsed}
+        collapsible={!narrow}
+        className={narrow ? 'controls-settings__side-fill' : undefined}
         onCollapsedChange={toggle}
         containers={[{
           title: labels.profileList,

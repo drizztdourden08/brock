@@ -10,7 +10,7 @@ import './BindingListener.css';
 const stopPropagation = (e: MouseEvent) => e.stopPropagation();
 
 const BindingListener = (props: BindingListenerProps) => {
-  const { actionLabel, prompt, hint, extra, onCapture, onCancel } = props;
+  const { actionLabel, prompt, hint, extra, fullscreen = false, onCapture, onCancel } = props;
   const [canCancel, setCanCancel] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const BindingListener = (props: BindingListenerProps) => {
   return (
     <Portal layer="modal">
       <Box className="binding-listener-backdrop" onClick={handleBackdropClick}>
-        <Box className="binding-listener" onClick={stopPropagation}>
+        <Box className={fullscreen ? 'binding-listener binding-listener--fullscreen' : 'binding-listener'} onClick={stopPropagation}>
           <Box className="binding-listener__prompt">{prompt}</Box>
           <Box className="binding-listener__label">{actionLabel}</Box>
           <Box className="binding-listener__hint">{hint}</Box>

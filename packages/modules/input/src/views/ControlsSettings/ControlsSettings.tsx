@@ -1,4 +1,5 @@
 /* @layer renderer-components @kind component */
+import { useState } from 'react';
 import { SearchAnchor } from '@drizztdourden08/brock-react';
 import { Flex } from '@drizztdourden08/tessera/primitives';
 import { useControlsNarrow } from './behavior/useControlsNarrow';
@@ -6,18 +7,24 @@ import { useControlsSettings } from './behavior/useControlsSettings';
 import { BindingListener } from './sub-components/BindingListener';
 import { ControlsDevices } from './sub-components/ControlsDevices';
 import { ControlsDialogs } from './sub-components/ControlsDialogs';
-import { ControlsMain }from './sub-components/ControlsMain';
+import { ControlsMain } from './sub-components/ControlsMain';
+import { ControlsNarrowTabs } from './sub-components/ControlsNarrowTabs';
 import { ControlsProfiles } from './sub-components/ControlsProfiles';
-import type { ControlsSettingsProps } from './ControlsSettings.type';
+import { NARROW_TAB_DEFAULT } from './ControlsSettings.constants';
+import type { ControlsSettingsProps, NarrowTabId } from './ControlsSettings.type';
 import './ControlsSettings.css';
 
 const ControlsSettings = (props: ControlsSettingsProps) => {
   const narrow = useControlsNarrow();
   const ctrl = useControlsSettings(props);
+  const [narrowTab, setNarrowTab] = useState<NarrowTabId>(NARROW_TAB_DEFAULT);
   const { labels, setDeleteTarget } = ctrl;
+  const shows = (tab: NarrowTabId) => !narrow || narrowTab === tab;
 
   return (
-    <Flex gap="md" align="stretch" className="controls-settings">
+    <Flex direction={narrow ? 'column' : 'row'} gap="md" align="stretch" className="controls-settings">
+      {narrow && <ControlsNarrowTabs labels={labels} active={narrowTab} onChange={setNarrowTab} />}
+      {shows('profiles') && (
       <SearchAnchor anchor="input-profiles" className="controls-settings__anchor">
         <ControlsProfiles
           profiles={ctrl.profiles}
@@ -31,9 +38,13 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
           onCreate={ctrl.handleCreate}
         />
       </SearchAnchor>
+      )}
+      {shows('bindings') && (
       <SearchAnchor anchor="bindings" className="controls-settings__anchor controls-settings__anchor--main">
         <ControlsMain tabs={props.game.tabs} ctrl={ctrl} />
       </SearchAnchor>
+      )}
+      {shows('devices') && (
       <SearchAnchor anchor="devices" className="controls-settings__anchor">
         <ControlsDevices
           devices={ctrl.devices}
@@ -46,6 +57,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
           onAddMapping={ctrl.addMapping}
         />
       </SearchAnchor>
+      )}
 
       {ctrl.listeningFor && ctrl.listeningName && (
         <BindingListener
@@ -57,6 +69,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
             capture: ctrl.handleCapture,
             close: ctrl.cancelListening,
           })}
+          fullscreen={props.game.listenerFullscreen?.(ctrl.listeningFor) ?? false}
           onCapture={ctrl.handleCapture}
           onCancel={ctrl.cancelListening}
         />

@@ -59,6 +59,12 @@ describe('the changed file list', () => {
     expect(found).toMatchObject({ files: ['src/committed.ts', 'src/fresh.ts', 'src/old.ts'], ref: 'main' });
   });
 
+  it('K1 ignores edited and untracked files when BROCK_LINT_COMMITTED_ONLY is 1', { tags: ['critical'] }, () => {
+    const root = repoOnFeatureBranch();
+    const found = changedFiles(root, { BROCK_LINT_BASE: 'main', BROCK_LINT_COMMITTED_ONLY: '1' });
+    expect(found.files).toEqual(['src/committed.ts']);
+  });
+
   it('K1 compares with the local main when origin/main is behind it', { tags: ['critical'] }, () => {
     const root = tempDir();
     const commit = (file) => {

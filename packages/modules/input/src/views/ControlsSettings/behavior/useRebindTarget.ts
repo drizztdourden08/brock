@@ -4,8 +4,8 @@ import type { BindingSlot } from '../../../bindings';
 import type { ActionScope, UseRebindTargetArgs } from './controls-behavior.type';
 
 const useRebindTarget = ({ setListeningFor }: UseRebindTargetArgs) => {
-  const handleActionRebind = useCallback((scope: ActionScope, id: string) => {
-    setListeningFor({ type: 'action', scope, id });
+  const handleActionRebind = useCallback((scope: ActionScope, id: string, slot?: number) => {
+    setListeningFor({ type: 'action', scope, id, slot });
   }, [setListeningFor]);
 
   const handleVerbRebind = useCallback((id: string) => {

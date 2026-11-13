@@ -17,6 +17,10 @@ interface BindProfileActionParams {
   pid: string | null;
 }
 
+interface BindProfileSlotParams extends BindProfileActionParams {
+  slot?: number;
+}
+
 interface ClearProfileActionParams {
   profile: InputProfile;
   action: string;
@@ -31,4 +35,4 @@ interface BindGlobalActionParams {
   pid: string | null;
 }
 
-export type { BindGlobalActionParams, BindMappingParams, BindProfileActionParams, ClearProfileActionParams };
+export type { BindGlobalActionParams, BindMappingParams, BindProfileActionParams, BindProfileSlotParams, ClearProfileActionParams };

@@ -34,7 +34,7 @@ interface VerbGroupDef {
 }
 
 type ListenTarget =
-  | { type: 'action'; scope: 'profile' | 'global'; id: string }
+  | { type: 'action'; scope: 'profile' | 'global'; id: string; slot?: number }
   | { type: 'verb'; id: string }
   | { type: 'slot'; slot: BindingSlot };
 

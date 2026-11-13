@@ -28,6 +28,7 @@ export type {
 export { bindGlobalAction } from './profile/bind-global-action';
 export { bindMapping } from './profile/bind-mapping';
 export { bindProfileAction } from './profile/bind-profile-action';
+export { bindProfileSlot } from './profile/bind-profile-slot';
 export { clearProfileAction } from './profile/clear-profile-action';
 export { mergeGlobalDefaults } from './profile/merge-global-defaults';
 export { newProfile } from './profile/new-profile';

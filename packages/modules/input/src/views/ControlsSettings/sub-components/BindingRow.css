@@ -121,8 +121,16 @@
 }
 
 .binding-row:hover .binding-row__clear,
-.binding-row__clear:focus-visible {
+.binding-row__clear:focus-visible,
+.platform-mobile .binding-row__clear,
+[data-form-factor="mobile"] .binding-row__clear {
   opacity: 1;
+}
+
+@media (hover: none) {
+  .binding-row__clear {
+    opacity: 1;
+  }
 }
 
 .binding-row--reserved {

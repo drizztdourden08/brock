@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-mcp",
-  "version": "0.121.0",
+  "version": "0.122.0",
   "description": "Brock mcp module: lets an outside agent drive the running app over MCP, with screenshots, input, widgets, commands and app-defined tools, through a stdio helper on the Brock bridge.",
   "type": "module",
   "license": "UNLICENSED",

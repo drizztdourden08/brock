@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-game-info",
-  "version": "0.121.0",
+  "version": "0.122.0",
   "description": "Brock game info module: one game info widget shared by every game. The game supplies a provider with a snapshot reader, a section list and its core and lock signals, and the module polls, diffs and draws it.",
   "type": "module",
   "license": "UNLICENSED",

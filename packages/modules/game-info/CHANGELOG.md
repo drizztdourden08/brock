@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-game-info
 
+## 0.122.0
+
+### Patch Changes
+
+- Updated dependencies [3dedc49]
+- Updated dependencies [fdc2c9e]
+- Updated dependencies [9a2b877]
+  - @drizztdourden08/brock-react@0.122.0
+
 ## 0.121.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @drizztdourden08/brock-display
 
+## 0.122.0
+
+### Minor Changes
+
+- 1452c69: `aspectRatioValue` takes `keepOrientation`. With it set, 'auto' and 'screen' keep a portrait window or screen portrait (width below height) instead of turning it to landscape. The result is still clamped to the limits, so a very tall screen stops at `limits.min`. `detectViewportRatio` and `detectScreenRatio` take the same flag as a third argument.
+- f832f1d: `lockOrientation(mode)` from `brock-display/renderer` turns and holds the screen on Android: 'landscape' and 'portrait' lock to that orientation, 'any' follows the device again. It resolves to `true` when the lock applied and to `false` off Android, so desktop callers need no check. The `OrientationLock` type is exported with it.
+
+### Patch Changes
+
+- Updated dependencies [3dedc49]
+- Updated dependencies [fdc2c9e]
+- Updated dependencies [9a2b877]
+  - @drizztdourden08/brock-react@0.122.0
+  - @drizztdourden08/brock-core@0.122.0
+  - @drizztdourden08/brock-electron@0.122.0
+
 ## 0.121.0
 
 ### Minor Changes

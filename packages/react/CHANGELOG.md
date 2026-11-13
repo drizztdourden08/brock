@@ -1,5 +1,14 @@
 # @drizztdourden08/brock-react
 
+## 0.122.0
+
+### Patch Changes
+
+- 3dedc49: The Capacitor device port keeps one `brock:back` listener and one handler set per page, however often the platform is rebuilt. Back quits the app only when no handler is registered anywhere.
+- fdc2c9e: The web and Capacitor API shim now answers `answer()` with a no-op handler, so a renderer that registers an ask handler boots off Electron.
+- 9a2b877: The web and Capacitor API shim resolves every base invoke method that returns a list to an empty list, `takeOpenRequests` and the document and widget lists included, so `useAppOpenBridge` no longer throws off Electron.
+  - @drizztdourden08/brock-core@0.122.0
+
 ## 0.121.0
 
 ### Minor Changes

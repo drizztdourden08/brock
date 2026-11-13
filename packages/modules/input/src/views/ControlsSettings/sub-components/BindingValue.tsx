@@ -6,7 +6,7 @@ import { bindingGlyphKeys, getBindingLabel } from '../../../bindings';
 import { useGlyphSourceStore } from '../../../renderer/useGlyphSourceStore';
 import { glyphUrl } from '../behavior/glyph-url';
 import type { BindingValueProps } from './BindingValue.type';
-import './BindingRow.css';
+import './BindingValue.css';
 
 const BindingValue = ({ binding, bindingIcon, deviceIconUrl, clearLabel, onClear }: BindingValueProps) => {
   const sources = useGlyphSourceStore((state) => state.sources);

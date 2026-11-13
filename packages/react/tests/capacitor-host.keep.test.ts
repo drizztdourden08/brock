@@ -157,3 +157,17 @@ describe('S2 the Capacitor host on a phone', { tags: ['standard'] }, () => {
   });
 
 });
+
+describe('S2 the Capacitor back listener', { tags: ['standard'] }, () => {
+  it('keeps one back listener and one handler set when the platform is rebuilt', () => {
+    const { app } = onAndroid();
+    getPlatform();
+    platformState.platform = null;
+    const back = vi.fn();
+    const stop = getPlatform().device.onBackButton(back);
+    backEdge('left');
+    expect(back).toHaveBeenCalledOnce();
+    expect(app.exitApp).not.toHaveBeenCalled();
+    stop();
+  });
+});

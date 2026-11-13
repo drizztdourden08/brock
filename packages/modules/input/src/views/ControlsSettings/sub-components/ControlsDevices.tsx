@@ -8,14 +8,15 @@ import { extraDeviceEntries } from '../behavior/extra-device-entries';
 import { keyboardEntry } from '../behavior/keyboard-entry';
 import { sideSlotClass } from '../behavior/side-slot-class';
 import { useStoredFold } from '../behavior/useStoredFold';
-import { DEVICES_FOLD_KEY, DEVICES_WIDTH_KEY, SIDE_PANEL_SIZE } from '../ControlsSettings.constants';
+import { DEVICES_FOLD_KEY, DEVICES_WIDTH_KEY, NO_EXTRA_DEVICES, SIDE_PANEL_SIZE } from '../ControlsSettings.constants';
 import { DeviceRailButton } from './DeviceRailButton';
 import { DeviceRow } from './DeviceRow';
 import type { ControlsDevicesProps } from './ControlsDevices.type';
 import type { DeviceAssignInfo } from './DeviceRow.type';
 
 const ControlsDevices = (props: ControlsDevicesProps) => {
-  const { devices, controllerGroups, extraDevices = [], labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
+  const { devices, controllerGroups, labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
+  const extraDevices = props.extraDevices ?? NO_EXTRA_DEVICES;
   const { collapsed, toggle, collapse } = useStoredFold(DEVICES_FOLD_KEY, false);
   useLayoutEffect(() => {
     if (narrow) collapse();

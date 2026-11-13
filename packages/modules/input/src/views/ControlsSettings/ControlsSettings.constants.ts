@@ -1,7 +1,9 @@
 /* @layer renderer-components @kind constants */
 import type { ControllerBusType } from '../../device.type';
+import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { ControlsLabels } from './ControlsSettings.type';
 
+const NO_EXTRA_DEVICES: readonly DetectedDevice[] = [];
 const FOLD_KEY_PREFIX = 'brock-input:controls.';
 const PROFILES_FOLD_KEY = `${FOLD_KEY_PREFIX}profiles.collapsed`;
 const DEVICES_FOLD_KEY = `${FOLD_KEY_PREFIX}devices.collapsed`;
@@ -87,5 +89,5 @@ export {
   BUS_NAME, CANCEL_ARM_DELAY_MS, CONTROLS_ROOT_SELECTOR, DEFAULT_LABELS, DEVICES_FOLD_KEY,
   DEVICES_WIDTH_KEY, FOCUS_DEADLINE_MS, FOCUS_MAX_ATTEMPTS, PROFILES_WIDTH_KEY,
   DRAG_DEVICE_NAME, DRAG_PID, DRAG_SDL_TYPE, DRAG_VID, GENERIC_ICON_FAMILY, KEYBOARD_ICON_FAMILY,
-  LISTEN_ARM_DELAY_MS, MODIFIER_CODES, NARROW_WIDTH_PX, PROFILES_FOLD_KEY, SIDE_PANEL_SIZE,
+  LISTEN_ARM_DELAY_MS, MODIFIER_CODES, NARROW_WIDTH_PX, NO_EXTRA_DEVICES, PROFILES_FOLD_KEY, SIDE_PANEL_SIZE,
 };

@@ -3,8 +3,9 @@ import { useMemo } from 'react';
 import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import { detectAllDevices } from '../../../bindings/detected/detect-all-devices';
 import { useControllerDevices } from '../../../renderer/useControllerDevices';
+import { NO_EXTRA_DEVICES } from '../ControlsSettings.constants';
 
-const useDeviceSync = (extraDevices: readonly DetectedDevice[] = []) => {
+const useDeviceSync = (extraDevices: readonly DetectedDevice[] = NO_EXTRA_DEVICES) => {
   const { entries, groups: controllerGroups, isRescanPending, handleRescan, addMapping } = useControllerDevices();
   const devices = useMemo(() => {
     const detected = detectAllDevices(entries);

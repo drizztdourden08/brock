@@ -7,7 +7,7 @@ packages:
 catalog:
   '@drizztdourden08/archipelia-lobby-protocol': ^1.5.0
   '@drizztdourden08/archipelia-client-kit': ^0.5.0
-  '@drizztdourden08/tessera': ^0.102.0
+  '@drizztdourden08/tessera': ^0.128.4
   '@changesets/cli': ^2.29.7
   '@storylite/storylite': ^1.6.0
   jscpd: ^4.0.5

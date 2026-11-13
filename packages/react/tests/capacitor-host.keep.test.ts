@@ -127,18 +127,6 @@ describe('S2 the Capacitor host on a phone', { tags: ['standard'] }, () => {
     expect(back).toHaveBeenCalledTimes(3);
   });
 
-  it('keeps one back listener and one handler set when the platform is rebuilt', () => {
-    const { app } = onAndroid();
-    getPlatform();
-    platformState.platform = null;
-    const back = vi.fn();
-    const stop = getPlatform().device.onBackButton(back);
-    backEdge('left');
-    expect(back).toHaveBeenCalledOnce();
-    expect(app.exitApp).not.toHaveBeenCalled();
-    stop();
-  });
-
   it('filters the file picker by extension, and opens it unfiltered with anyType for an extension Android has no type for', async () => {
     onAndroid();
     const input = { type: '', accept: '', files: null as File[] | null, onchange: null as (() => void) | null, click: vi.fn() };
@@ -168,4 +156,18 @@ describe('S2 the Capacitor host on a phone', { tags: ['standard'] }, () => {
     expect(summary.totalBytes).toBe(15);
   });
 
+});
+
+describe('S2 the Capacitor back listener', { tags: ['standard'] }, () => {
+  it('keeps one back listener and one handler set when the platform is rebuilt', () => {
+    const { app } = onAndroid();
+    getPlatform();
+    platformState.platform = null;
+    const back = vi.fn();
+    const stop = getPlatform().device.onBackButton(back);
+    backEdge('left');
+    expect(back).toHaveBeenCalledOnce();
+    expect(app.exitApp).not.toHaveBeenCalled();
+    stop();
+  });
 });

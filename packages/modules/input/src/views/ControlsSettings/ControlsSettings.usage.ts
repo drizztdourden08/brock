@@ -12,7 +12,7 @@ const usage = {
     'Each action is one row; its bindings sit side by side in columns, at least two on a profile tab and up to four, and an empty column adds a binding.',
     'Use a custom tab for anything the built-in tab kinds do not cover.',
     'Set game.extraDevices to list devices of your own beside the detected ones; they read as connected and take the same preset flow.',
-    'Below 640px wide the screen shows Profiles, Bindings and Devices as tabs, one full-width panel at a time, with Bindings first; the tab names are labels.',
+    'Below 640px wide the screen shows Profiles, Bindings and Devices as tabs, one full-width panel at a time, with Bindings first; the tab names are the profilesTitle, tabBindings and devicesTitle labels.',
     'Return true from game.listenerFullscreen for a target to make the waiting-for-input popover fill the viewport, with listenerExtra taking the free space.',
     'Set game.listenerExtra to render your own content under the hint of the waiting-for-input popover.',
   ],

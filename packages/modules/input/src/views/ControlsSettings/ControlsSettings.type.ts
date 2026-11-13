@@ -91,9 +91,7 @@ interface PresetDevice {
 
 interface ControlsLabels {
   profilesTitle: string;
-  tabProfiles: string;
   tabBindings: string;
-  tabDevices: string;
   profileList: string;
   newProfile: string;
   noProfiles: string;

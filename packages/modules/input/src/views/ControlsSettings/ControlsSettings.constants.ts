@@ -42,9 +42,7 @@ const BUS_NAME: Record<ControllerBusType, string | null> = { usb: 'USB', bluetoo
 
 const DEFAULT_LABELS: ControlsLabels = {
   profilesTitle: 'Profiles',
-  tabProfiles: 'Profiles',
   tabBindings: 'Bindings',
-  tabDevices: 'Devices',
   profileList: 'Profile list',
   newProfile: 'New profile',
   noProfiles: 'No profiles yet',

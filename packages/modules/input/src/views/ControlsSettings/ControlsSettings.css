@@ -55,11 +55,17 @@
   }
 }
 
-.controls-settings__side--tabbed {
+.controls-settings__narrow-panel {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: var(--space-sm);
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.controls-settings__side--tabbed .controls-settings__side-fill {
-  inline-size: 100%;
+.controls-settings__narrow-action {
+  display: flex;
+  justify-content: flex-start;
 }

@@ -1,5 +1,44 @@
 # @drizztdourden08/brock-input
 
+## 0.121.0
+
+### Minor Changes
+
+- 784751d: Controls settings: generic profile extension field, verbs and group column headers, optional slots hint label, and the reserved rows render first.
+- 2a4e9e8: The module now ships a ControlsSettings view with profiles, devices and binding tabs driven by a game config. The renderer entry exports the view and the types of its game config and store ports.
+- 1ab5835: ControlsGame takes listenerExtra: the host renders its own content under the hint of the waiting-for-input popover. ListenTarget, ListenerExtraContext and BindingCapture are exported from the renderer.
+- 3daf4ef: The main side takes a narrowed context, InputMainContext: handle, emit, files, paths, log, product and the two flags isHeadlessLaunch and hasFlag. A host that builds its own Electron main can call getInput and inputMain.register without a cast.
+- b192b5f: The renderer entry gains the in-game controller overlays: ControllerPauseLayer (manual pause and controller disconnect), ProfileSwitcherOverlay, and the controller hooks wiring with a report host and boot task factory. Glyphs, the pause source and the report dialog are passed in by the app.
+- bdd7489: The input renderer exports ControllerReportDialog, the guided controller report dialog. Pass it to ControllerReportHost through renderDialog. The app injects the reporter identity, the debug text and a submit function, so the dialog holds no product name or endpoint. The filed report type now carries an optional recordUrl in place of sanctuaryUrl, with a recordLinkLabel prop for its button. Rumble tests and the report device card action were already exported.
+
+### Patch Changes
+
+- fc626de: New brock-core subpath `util` with the shared `mulberry32` and `itemAt`. The msu, input and randomizer modules now import them from core instead of keeping their own copies.
+- 3d81941: The Android library build now stages its CMake folder in the system temp folder by default on Windows, to stay under the 250 character object path limit; set `brockInputCmakeDir=project` to keep it in the package.
+- a1382a3: Brock React exports logRowsToText, the copy text of a log panel. The input module uses it in place of its own copy.
+- 158c39d: The controller report dialog hides Open on GitHub and the issue link when the report has no issue URL, as with a clipboard submit.
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [eca6521]
+- Updated dependencies [33ce702]
+- Updated dependencies [a1382a3]
+- Updated dependencies [11fca93]
+- Updated dependencies [48bec99]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+- Updated dependencies [19f0362]
+- Updated dependencies [9d171e3]
+- Updated dependencies [2238ad1]
+- Updated dependencies [24626e9]
+- Updated dependencies [36c43fe]
+- Updated dependencies [ad2d364]
+- Updated dependencies [c56e771]
+- Updated dependencies [054cf0c]
+  - @drizztdourden08/brock-core@0.121.0
+  - @drizztdourden08/brock-electron@0.121.0
+  - @drizztdourden08/brock-react@0.121.0
+  - @drizztdourden08/build-cache@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

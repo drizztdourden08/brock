@@ -1,5 +1,26 @@
 # @drizztdourden08/brock-build
 
+## 0.121.0
+
+### Minor Changes
+
+- aab4993: New command `brock apworld build` packs an Archipelago world from a game's JSON export, with a generic Python loader shipped in `templates/apworld`, so a game builds an apworld with no Python of its own. See `docs/apworld.md`.
+- 8510ab6: New commands `brock apworld export`, `brock apworld refresh` and `brock apworld player-file`. Export loads the game's TypeScript entry and writes the six JSON files, `refresh` rebuilds the apworld only when a source is newer, and player-file writes a player yaml from a game function. See `docs/apworld.md`.
+
+### Patch Changes
+
+- 5e9aff0: With `build.nodePolyfills` on, the renderer and web builds alias `vite-plugin-node-polyfills/shims/buffer`, `/process` and `/global` to the copy the app resolves. The plugin injects those imports into every file that uses Buffer, process or global, and a workspace package outside the app could not resolve them under pnpm.
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [33ce702]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+- Updated dependencies [b4b1172]
+  - @drizztdourden08/brock-core@0.121.0
+  - @drizztdourden08/brock-lint-config@0.121.0
+  - @drizztdourden08/brock-thread@0.121.0
+  - @drizztdourden08/build-cache@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

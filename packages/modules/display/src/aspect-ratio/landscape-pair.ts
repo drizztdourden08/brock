@@ -6,7 +6,7 @@ const landscapePair = (width: number, height: number, letterbox: boolean): Lands
   let long = Math.round(width >= height ? width : height);
   const short = Math.round(width >= height ? height : width);
   if (letterbox) long = Math.max(short, Math.round(long - horizontalSafeInset()));
-  return { long, short };
+  return { long, short, portrait: height > width };
 };
 
 export { landscapePair };

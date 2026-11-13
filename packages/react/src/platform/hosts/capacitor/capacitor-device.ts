@@ -8,17 +8,22 @@ const ignore = (): void => undefined;
 
 const edgeOf = (event: Event): BackEdge => ((event as CustomEvent<unknown>).detail === 'right' ? 'right' : 'left');
 
-const listenBackEdge = (listeners: ReadonlySet<(edge: BackEdge) => void>): void => {
-  if (typeof window.addEventListener !== 'function') return;
-  window.addEventListener(BACK_EDGE_EVENT, (event) => {
-    if (listeners.size === 0) capacitorPlugins.app()?.exitApp().catch(ignore);
-    for (const listener of listeners) listener(edgeOf(event));
-  });
+const backListeners = new Set<(edge: BackEdge) => void>();
+const backEdge: { target: Window | null } = { target: null };
+
+const onBackEdge = (event: Event): void => {
+  if (backListeners.size === 0) capacitorPlugins.app()?.exitApp().catch(ignore);
+  for (const listener of backListeners) listener(edgeOf(event));
+};
+
+const listenBackEdge = (): void => {
+  if (backEdge.target === window || typeof window.addEventListener !== 'function') return;
+  backEdge.target = window;
+  window.addEventListener(BACK_EDGE_EVENT, onBackEdge);
 };
 
 const createCapacitorDevice = (): DevicePort => {
-  const backListeners = new Set<(edge: BackEdge) => void>();
-  listenBackEdge(backListeners);
+  listenBackEdge();
   return {
     keepAwake: () => { capacitorPlugins.keepAwake()?.keepAwake().catch(ignore); },
     allowSleep: () => { capacitorPlugins.keepAwake()?.allowSleep().catch(ignore); },

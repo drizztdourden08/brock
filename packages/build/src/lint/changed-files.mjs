@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { BASE_ENV, BASE_REFS, MAX_CHANGED_FILES, TRANSIENT_FILES, WHOLE_TREE_FILES } from './lint.constants.mjs';
+import { BASE_ENV, BASE_REFS, COMMITTED_ONLY_ENV, MAX_CHANGED_FILES, TRANSIENT_FILES, WHOLE_TREE_FILES } from './lint.constants.mjs';
 
 const git = (cwd, args) => {
   const result = spawnSync('git', args, { windowsHide: true, cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
@@ -29,7 +29,7 @@ const baseRef = (cwd, env) => {
 
 /**
  * @param {string} cwd the folder eslint runs in
- * @param {NodeJS.ProcessEnv} [env] BROCK_LINT_BASE names the branch to compare with
+ * @param {NodeJS.ProcessEnv} [env] BROCK_LINT_BASE names the branch, BROCK_LINT_COMMITTED_ONLY=1 ignores the working tree
  * @returns {{ files: string[], base: string, ref: string } | { failure: string }} changed and untracked files, or why unknown
  */
 const changedFiles = (cwd, env = process.env) => {
@@ -38,8 +38,10 @@ const changedFiles = (cwd, env = process.env) => {
   if (!ref) return { failure: `no default branch found (${BASE_REFS.join(', ')})` };
   const base = git(cwd, ['merge-base', 'HEAD', ref]);
   if (!base) return { failure: `no merge base with ${ref}` };
-  const tracked = lines(git(cwd, ['diff', '--name-only', '--diff-filter=ACMR', '--relative', base]));
-  const untracked = lines(git(cwd, ['ls-files', '--others', '--exclude-standard']));
+  const committedOnly = env[COMMITTED_ONLY_ENV] === '1';
+  const diffArgs = ['diff', '--name-only', '--diff-filter=ACMR', '--relative', base, ...(committedOnly ? ['HEAD'] : [])];
+  const tracked = lines(git(cwd, diffArgs));
+  const untracked = committedOnly ? [] : lines(git(cwd, ['ls-files', '--others', '--exclude-standard']));
   return { files: lintable(cwd, [...tracked, ...untracked]), base: base.slice(0, 8), ref };
 };
 

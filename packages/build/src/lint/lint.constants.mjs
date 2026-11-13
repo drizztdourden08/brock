@@ -6,6 +6,7 @@ const BATCH_ENV = 'BROCK_LINT_BATCH_SIZE';
 const STATS_ENV = 'BROCK_LINT_STATS';
 const MEMORY_ENV = 'BROCK_LINT_MEMORY_MB';
 const BASE_ENV = 'BROCK_LINT_BASE';
+const COMMITTED_ONLY_ENV = 'BROCK_LINT_COMMITTED_ONLY';
 const CACHE_DIR_ENV = 'BROCK_LINT_CACHE_DIR';
 const HEAP_FLAG = /--max[-_]old[-_]space[-_]size/;
 const BASE_REFS = ['origin/main', 'origin/master', 'main', 'master'];
@@ -20,6 +21,7 @@ export {
   BATCH_ENV,
   BATCH_SIZE,
   CACHE_DIR_ENV,
+  COMMITTED_ONLY_ENV,
   DEFAULT_MEMORY_MB,
   FULL_TREE_MEMORY_MB,
   HEAP_FLAG,

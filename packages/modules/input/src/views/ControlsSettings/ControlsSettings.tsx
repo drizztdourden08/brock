@@ -25,38 +25,39 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
     <Flex direction={narrow ? 'column' : 'row'} gap="md" align="stretch" className="controls-settings">
       {narrow && <ControlsNarrowTabs labels={labels} active={narrowTab} onChange={setNarrowTab} />}
       {shows('profiles') && (
-      <SearchAnchor anchor="input-profiles" className="controls-settings__anchor">
-        <ControlsProfiles
-          profiles={ctrl.profiles}
-          activeId={ctrl.activeProfile?.id ?? null}
-          newlyCreatedId={ctrl.newlyCreatedId}
-          labels={labels}
-          narrow={narrow}
-          onSelect={ctrl.selectProfile}
-          onDelete={setDeleteTarget}
-          onRename={ctrl.handleRename}
-          onCreate={ctrl.handleCreate}
-        />
-      </SearchAnchor>
+        <SearchAnchor anchor="input-profiles" className="controls-settings__anchor">
+          <ControlsProfiles
+            profiles={ctrl.profiles}
+            activeId={ctrl.activeProfile?.id ?? null}
+            newlyCreatedId={ctrl.newlyCreatedId}
+            labels={labels}
+            narrow={narrow}
+            onSelect={ctrl.selectProfile}
+            onDelete={setDeleteTarget}
+            onRename={ctrl.handleRename}
+            onCreate={ctrl.handleCreate}
+          />
+        </SearchAnchor>
       )}
       {shows('bindings') && (
-      <SearchAnchor anchor="bindings" className="controls-settings__anchor controls-settings__anchor--main">
-        <ControlsMain tabs={props.game.tabs} ctrl={ctrl} />
-      </SearchAnchor>
+        <SearchAnchor anchor="bindings" className="controls-settings__anchor controls-settings__anchor--main">
+          <ControlsMain tabs={props.game.tabs} ctrl={ctrl} />
+        </SearchAnchor>
       )}
       {shows('devices') && (
-      <SearchAnchor anchor="devices" className="controls-settings__anchor">
-        <ControlsDevices
-          devices={ctrl.devices}
-          controllerGroups={ctrl.controllerGroups}
-          labels={labels}
-          narrow={narrow}
-          isRescanPending={ctrl.isRescanPending}
-          onRescan={ctrl.handleRescan}
-          onPreset={ctrl.setConfirmPreset}
-          onAddMapping={ctrl.addMapping}
-        />
-      </SearchAnchor>
+        <SearchAnchor anchor="devices" className="controls-settings__anchor">
+          <ControlsDevices
+            devices={ctrl.devices}
+            extraDevices={props.game.extraDevices}
+            controllerGroups={ctrl.controllerGroups}
+            labels={labels}
+            narrow={narrow}
+            isRescanPending={ctrl.isRescanPending}
+            onRescan={ctrl.handleRescan}
+            onPreset={ctrl.setConfirmPreset}
+            onAddMapping={ctrl.addMapping}
+          />
+        </SearchAnchor>
       )}
 
       {ctrl.listeningFor && ctrl.listeningName && (

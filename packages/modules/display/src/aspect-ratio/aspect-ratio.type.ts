@@ -24,6 +24,7 @@ interface RatioPair {
 interface LandscapePair {
   long: number;
   short: number;
+  portrait: boolean;
 }
 
 interface RatioValueInput {
@@ -31,6 +32,7 @@ interface RatioValueInput {
   customH: number;
   limits: RatioLimits;
   letterbox?: boolean;
+  keepOrientation?: boolean;
 }
 
 export type { RatioLimits, RatioCheck, RatioReadout, RatioPair, LandscapePair, RatioValueInput };

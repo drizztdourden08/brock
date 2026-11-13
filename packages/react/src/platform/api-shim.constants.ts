@@ -1,7 +1,21 @@
 /* @layer renderer-shell @kind constants */
 import type { Returns } from './api-shim.type';
 
-const BASE_LIST_METHODS = ['listProfiles', 'listSessions', 'fileList', 'listJobs', 'listDataDomains', 'domainList'];
+const BASE_LIST_METHODS = [
+  'listProfiles',
+  'listSessions',
+  'fileList',
+  'listJobs',
+  'listDataDomains',
+  'domainList',
+  'takeOpenRequests',
+  'getLanAddresses',
+  'listPoppedWidgets',
+  'documentVetDrop',
+  'documentRememberedFolders',
+  'documentRecent',
+  'documentRecoverable',
+];
 
 const BASE_RETURNS: Returns = {
   getAppState: () => ({ lastProfileId: null }),

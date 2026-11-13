@@ -51,6 +51,18 @@ describe('detectScreenRatio', { tags: ['critical'] }, () => {
     expect(detectScreenRatio(LIMITS)).toEqual({ w: 16, h: 9 });
   });
 
+  it('keeps a portrait screen portrait when asked', () => {
+    vi.stubGlobal('window', { screen: { width: 1080, height: 1920 } });
+    expect(detectScreenRatio(LIMITS, false, true)).toEqual({ w: 9, h: 16 });
+  });
+
+  it('clamps a kept portrait screen to the portrait floor', () => {
+    vi.stubGlobal('window', { screen: { width: 1080, height: 2400 } });
+    const { w, h } = detectScreenRatio(LIMITS, false, true);
+    expect(w / h).toBeGreaterThanOrEqual(MIN_ASPECT - 1e-6);
+    expect(w).toBeLessThan(h);
+  });
+
   it('renders a 5:4 screen at its own (mildly tall) ratio', () => {
     vi.stubGlobal('window', { screen: { width: 1280, height: 1024 } });
     expect(detectScreenRatio(LIMITS)).toEqual({ w: 5, h: 4 });

@@ -18,7 +18,7 @@ const useControlsSettings = ({ game, profiles, globalBindings, initialTab }: Con
   const labels: ControlsLabels = useMemo(() => ({ ...DEFAULT_LABELS, ...game.labels }), [game.labels]);
   const profileActions = useProfileActions({ store: profiles, keyboardDefaults: game.keyboardDefaults });
   const { activeProfile, updateActiveProfile } = profileActions;
-  const deviceSync = useDeviceSync();
+  const deviceSync = useDeviceSync(game.extraDevices);
   const { devices, entries } = deviceSync;
 
   const controls = useMemo(() => controlsForProfile(activeProfile, entries), [activeProfile, entries]);

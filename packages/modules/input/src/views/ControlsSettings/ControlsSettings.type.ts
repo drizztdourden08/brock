@@ -150,6 +150,7 @@ interface ControlsGame {
   onListeningChange?: (listening: boolean) => void;
   listenerExtra?: (ctx: ListenerExtraContext) => ReactNode;
   listenerFullscreen?: (target: ListenTarget) => boolean;
+  extraDevices?: readonly DetectedDevice[];
   labels?: Partial<ControlsLabels>;
 }
 

@@ -24,7 +24,7 @@ const scriptStep = (script, place, scope) => {
   if (!scope) return step;
   if (script === 'test') return { ...step, command: `pnpm run test --base ${scope.testRef}` };
   if (script !== 'lint') return step;
-  return { ...step, stepEnv: { BROCK_LINT_MODE: scope.lintMode, ...(scope.lintBase ? { BROCK_LINT_BASE: scope.lintBase } : {}) } };
+  return { ...step, stepEnv: { BROCK_LINT_MODE: scope.lintMode, BROCK_LINT_COMMITTED_ONLY: '1', ...(scope.lintBase ? { BROCK_LINT_BASE: scope.lintBase } : {}) } };
 };
 
 export { inRunOrder, scriptStep };

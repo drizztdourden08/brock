@@ -5,6 +5,7 @@ import type { ControlsLabels, PresetDevice } from '../ControlsSettings.type';
 
 interface ControlsDevicesProps {
   devices: readonly DetectedDevice[];
+  extraDevices?: readonly DetectedDevice[];
   controllerGroups: readonly ControllerDeviceGroup[];
   labels: ControlsLabels;
   narrow: boolean;

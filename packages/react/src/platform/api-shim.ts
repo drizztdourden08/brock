@@ -30,6 +30,7 @@ const installApiShim = (maps: ApiShimMaps, options: ApiShimOptions = {}): void =
     isDev: false,
     os: osFromUserAgent(),
     getFilePath: () => '',
+    answer: eventStub,
     startup: { fresh: false, automation: false, muted: false, sound: false, flags: {} },
     instance: { name: null, profile: null },
     ...(options.helpers ?? {}),

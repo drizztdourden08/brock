@@ -6,13 +6,13 @@ import { effectiveCustomRatio } from './effective-custom-ratio';
 import { parseRatioString } from './parse-ratio-string';
 
 const aspectRatioValue = (ratio: string, input: RatioValueInput): number => {
-  const { customW, customH, limits, letterbox = false } = input;
+  const { customW, customH, limits, letterbox = false, keepOrientation = false } = input;
   if (ratio === 'auto') {
-    const { w, h } = detectViewportRatio(limits, letterbox);
+    const { w, h } = detectViewportRatio(limits, letterbox, keepOrientation);
     return w / h;
   }
   if (ratio === 'screen') {
-    const { w, h } = detectScreenRatio(limits);
+    const { w, h } = detectScreenRatio(limits, false, keepOrientation);
     return w / h;
   }
   if (ratio === 'custom') {

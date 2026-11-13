@@ -4,9 +4,9 @@ import { SearchAnchor } from '@drizztdourden08/brock-react';
 import { Flex } from '@drizztdourden08/tessera/primitives';
 import { useControlsNarrow } from './behavior/useControlsNarrow';
 import { useControlsSettings } from './behavior/useControlsSettings';
-import { BindingListener } from './sub-components/BindingListener';
 import { ControlsDevices } from './sub-components/ControlsDevices';
 import { ControlsDialogs } from './sub-components/ControlsDialogs';
+import { ControlsListener } from './sub-components/ControlsListener';
 import { ControlsMain } from './sub-components/ControlsMain';
 import { ControlsNarrowTabs } from './sub-components/ControlsNarrowTabs';
 import { ControlsProfiles } from './sub-components/ControlsProfiles';
@@ -60,22 +60,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
         </SearchAnchor>
       )}
 
-      {ctrl.listeningFor && ctrl.listeningName && (
-        <BindingListener
-          actionLabel={ctrl.listeningName}
-          prompt={labels.listenerPrompt}
-          hint={labels.listenerHint}
-          extra={props.game.listenerExtra?.({
-            target: ctrl.listeningFor,
-            capture: ctrl.handleCapture,
-            close: ctrl.cancelListening,
-          })}
-          fullscreen={props.game.listenerFullscreen?.(ctrl.listeningFor) ?? false}
-          onCapture={ctrl.handleCapture}
-          onCancel={ctrl.cancelListening}
-        />
-      )}
-
+      <ControlsListener game={props.game} ctrl={ctrl} />
       <ControlsDialogs ctrl={ctrl} />
     </Flex>
   );

@@ -29,7 +29,10 @@
 
 .binding-section__list {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  grid-template-columns: minmax(var(--size-96), max-content) minmax(var(--size-160), 1fr) auto;
 }
 
 .binding-section__list > * { grid-column: 1 / -1; }

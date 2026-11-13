@@ -26,6 +26,7 @@
 }
 
 .controls-settings__body {
+  min-width: 0;
   flex: 1;
   min-height: 0;
   padding-block-start: var(--space-xl);

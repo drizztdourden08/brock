@@ -1,12 +1,15 @@
 /* @layer renderer-components @kind style */
 .action-grid {
   display: grid;
-  grid-template-columns: max-content max-content repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  grid-template-columns: minmax(var(--size-96), max-content) max-content repeat(2, minmax(var(--size-160), 1fr));
 }
 
-.action-grid--cols-1 { grid-template-columns: max-content max-content minmax(0, 1fr); }
-.action-grid--cols-3 { grid-template-columns: max-content max-content repeat(3, minmax(0, 1fr)); }
-.action-grid--cols-4 { grid-template-columns: max-content max-content repeat(4, minmax(0, 1fr)); }
+.action-grid--cols-1 { grid-template-columns: minmax(var(--size-96), max-content) max-content minmax(var(--size-160), 1fr); }
+.action-grid--cols-3 { grid-template-columns: minmax(var(--size-96), max-content) max-content repeat(3, minmax(var(--size-160), 1fr)); }
+.action-grid--cols-4 { grid-template-columns: minmax(var(--size-96), max-content) max-content repeat(4, minmax(var(--size-160), 1fr)); }
 
 .action-grid > * { grid-column: 1 / -1; }
 

@@ -58,7 +58,9 @@ interface DisplayApi {
   onChanged: (listener: DisplayChangedListener) => () => void;
 }
 
+type OrientationLock = 'landscape' | 'portrait' | 'any';
+
 export type {
   RateMode, RefreshRateInfo, SyncedRateStatus, MonitorInfo, WindowModeState, DisplaySettings,
-  DisplayChangedListener, DisplayApi, WindowMode,
+  DisplayChangedListener, DisplayApi, WindowMode, OrientationLock,
 };

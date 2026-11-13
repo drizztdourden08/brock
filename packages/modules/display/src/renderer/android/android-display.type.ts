@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { NativePlugin } from '@drizztdourden08/brock-core';
-import type { SyncedRateStatus } from '../../display.type';
+import type { OrientationLock, SyncedRateStatus } from '../../display.type';
 
 interface NativeDisplayInfo {
   currentHz: number;
@@ -19,6 +19,7 @@ interface PreferredRateResult {
 interface BrockDisplayPlugin extends NativePlugin {
   getDisplayInfo: () => Promise<NativeDisplayInfo>;
   setPreferredRate: (request: { hz: number }) => Promise<PreferredRateResult>;
+  lockOrientation?: (request: { mode: OrientationLock }) => Promise<PreferredRateResult>;
 }
 
 interface AndroidRateState {

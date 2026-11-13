@@ -15,6 +15,7 @@ export { displayRenderer, DISPLAY_SETTINGS_TAB, DisplayProvider };
 export { displayApi } from './display-api';
 export { measureRefreshRate } from './measure-refresh-rate';
 export { readDisplaySettings } from './read-display-settings';
+export { lockOrientation } from './lock-orientation';
 export { useRefreshRate } from './useRefreshRate';
 export { useRefreshRateStore } from './useRefreshRateStore';
 export type { RefreshRateState } from './refresh-rate-store.type';
@@ -25,5 +26,5 @@ export type { AspectRatioControlProps, AspectRatioChange } from './AspectRatioCo
 export { DisplaySettingsTab } from './DisplaySettingsTab';
 export type { DisplaySettingsTabProps } from './DisplaySettingsTab';
 export type {
-  DisplayApi, DisplaySettings, MonitorInfo, RefreshRateInfo, SyncedRateStatus, WindowModeState,
+  DisplayApi, DisplaySettings, MonitorInfo, OrientationLock, RefreshRateInfo, SyncedRateStatus, WindowModeState,
 } from '../display.type';

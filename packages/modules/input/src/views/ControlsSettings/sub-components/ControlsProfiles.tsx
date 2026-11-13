@@ -5,12 +5,13 @@ import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { sideSlotClass } from '../behavior/side-slot-class';
 import { useStoredFold } from '../behavior/useStoredFold';
 import { PROFILES_FOLD_KEY, PROFILES_WIDTH_KEY, SIDE_PANEL_SIZE } from '../ControlsSettings.constants';
-import { InputProfileList } from './InputProfileList';
+import { NarrowPanel } from './NarrowPanel';
+import { ProfilesBody } from './ProfilesBody';
 import { SidebarProfileButton } from './SidebarProfileButton';
 import type { ControlsProfilesProps } from './ControlsProfiles.type';
 
 const ControlsProfiles = (props: ControlsProfilesProps) => {
-  const { profiles, activeId, newlyCreatedId, labels, narrow, onSelect, onDelete, onRename, onCreate } = props;
+  const { profiles, activeId, labels, narrow, onSelect, onCreate } = props;
   const { collapsed, toggle, expand } = useStoredFold(PROFILES_FOLD_KEY, true);
 
   const handleAdd = useCallback(() => {
@@ -27,32 +28,20 @@ const ControlsProfiles = (props: ControlsProfilesProps) => {
     <SidebarProfileButton key={p.id} profile={p} active={p.id === activeId} onSelect={onSelect} />
   ));
 
+  const body = <ProfilesBody {...props} />;
+  if (narrow) return <NarrowPanel action={add}>{body}</NarrowPanel>;
+
   return (
-    <Box className={sideSlotClass('start', collapsed, narrow)}>
+    <Box className={sideSlotClass('start', collapsed)}>
       <SidePanel
         title={labels.profilesTitle}
         {...SIDE_PANEL_SIZE}
         storageKey={PROFILES_WIDTH_KEY}
         action={add}
         railItems={rail}
-        collapsed={narrow ? false : collapsed}
-        collapsible={!narrow}
-        className={narrow ? 'controls-settings__side-fill' : undefined}
+        collapsed={collapsed}
         onCollapsedChange={toggle}
-        containers={[{
-          title: labels.profileList,
-          content: (
-            <InputProfileList
-              profiles={profiles}
-              activeId={activeId}
-              initialEditId={newlyCreatedId}
-              labels={labels}
-              onSelect={onSelect}
-              onDelete={onDelete}
-              onRename={onRename}
-            />
-          ),
-        }]}
+        containers={[{ title: labels.profileList, content: body }]}
       />
     </Box>
   );

@@ -1,5 +1,12 @@
 # @drizztdourden08/brock-thread
 
+## 0.122.0
+
+### Patch Changes
+
+- 0ecf991: Local CI runs lint only the committed change, so the install in the CI worktree no longer forces a whole-tree lint.
+  - @drizztdourden08/build-cache@0.122.0
+
 ## 0.121.0
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @drizztdourden08/brock-input
 
+## 0.122.0
+
+### Minor Changes
+
+- 1829ad0: The Controls screen shows Profiles, Bindings and Devices as tabs below 640px wide, and `ControlsGame.listenerFullscreen` lets the listening popover fill the viewport.
+- 6e3596e: The Controls bindings tabs show one row per action with its bindings in columns (primary, secondary, up to four). Clearing or rebinding a column changes only that binding, and an empty column adds one. `ListenTarget` actions carry an optional `slot`, and `bindProfileSlot` rebinds one mapping of an action.
+- 773d803: Add `ControlsGame.extraDevices`, so a game can list devices of its own in the Controls settings. They show as connected and take the same preset flow as a detected pad.
+- fd88a6d: Below 640px the Profiles and Devices tabs of the Controls screen show the panel content at full width, with no side panel around it. The panel action (new profile, rescan) is a button at the start of the content. The tab names now come from the `profilesTitle` and `devicesTitle` labels, so the `tabProfiles` and `tabDevices` labels are removed from `ControlsLabels`; `tabBindings` stays.
+
+### Patch Changes
+
+- 389ba03: The Android library build mirrors the SDL3 source into the short CMake folder (on Windows by default), so a second `assembleDebug` no longer fails when SDL's CMake re-checks headers that sit past 260 characters in the pnpm store.
+- 8dced0e: The Controls binding listener cancels on Escape by `key` or `code`, clears on `key` Delete or Backspace, and ignores a key with an empty `code`. Android WebView sends Escape with an empty code, which used to save an empty keyboard binding.
+- 59ef5ca: The binding clear button is always visible under the `platform-mobile` root class, so the desktop mobile preview shows it too.
+- c9058b2: The binding clear button is always visible on devices with no hover or a coarse pointer, such as phones.
+- 60d305e: The controls tables scroll sideways when they are wider than their panel, and binding cells keep a readable minimum width instead of clipping on a phone in portrait.
+- Updated dependencies [3dedc49]
+- Updated dependencies [fdc2c9e]
+- Updated dependencies [9a2b877]
+  - @drizztdourden08/brock-react@0.122.0
+  - @drizztdourden08/brock-core@0.122.0
+  - @drizztdourden08/brock-electron@0.122.0
+  - @drizztdourden08/build-cache@0.122.0
+
 ## 0.121.0
 
 ### Minor Changes

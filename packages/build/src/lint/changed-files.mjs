@@ -29,7 +29,7 @@ const baseRef = (cwd, env) => {
 
 /**
  * @param {string} cwd the folder eslint runs in
- * @param {NodeJS.ProcessEnv} [env] BROCK_LINT_BASE names the branch, BROCK_LINT_COMMITTED_ONLY=1 ignores the working tree
+ * @param {NodeJS.ProcessEnv} [env] BROCK_LINT_BASE names the branch to compare with
  * @returns {{ files: string[], base: string, ref: string } | { failure: string }} changed and untracked files, or why unknown
  */
 const changedFiles = (cwd, env = process.env) => {

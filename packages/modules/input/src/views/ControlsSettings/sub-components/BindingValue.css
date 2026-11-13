@@ -52,12 +52,11 @@
 }
 
 .binding-row:hover .binding-row__clear,
-.binding-row__clear:focus-visible,
-.platform-mobile .binding-row__clear {
+.binding-row__clear:focus-visible {
   opacity: 1;
 }
 
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
   .binding-row__clear {
     opacity: 1;
   }

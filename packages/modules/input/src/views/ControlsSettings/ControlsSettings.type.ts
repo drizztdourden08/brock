@@ -144,6 +144,7 @@ interface ControlsGame {
   ) => InputProfile;
   onListeningChange?: (listening: boolean) => void;
   listenerExtra?: (ctx: ListenerExtraContext) => ReactNode;
+  extraDevices?: readonly DetectedDevice[];
   labels?: Partial<ControlsLabels>;
 }
 

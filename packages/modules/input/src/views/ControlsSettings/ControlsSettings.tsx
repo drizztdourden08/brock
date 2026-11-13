@@ -37,6 +37,7 @@ const ControlsSettings = (props: ControlsSettingsProps) => {
       <SearchAnchor anchor="devices" className="controls-settings__anchor">
         <ControlsDevices
           devices={ctrl.devices}
+          extraDevices={props.game.extraDevices}
           controllerGroups={ctrl.controllerGroups}
           labels={labels}
           narrow={narrow}

@@ -4,6 +4,7 @@ import { Box, EmptyState } from '@drizztdourden08/tessera/primitives';
 import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { RescanButton } from '../../../compounds/RescanButton';
 import { controllerGroupEntry } from '../behavior/controller-group-entry';
+import { extraDeviceEntries } from '../behavior/extra-device-entries';
 import { keyboardEntry } from '../behavior/keyboard-entry';
 import { sideSlotClass } from '../behavior/side-slot-class';
 import { useStoredFold } from '../behavior/useStoredFold';
@@ -14,7 +15,7 @@ import type { ControlsDevicesProps } from './ControlsDevices.type';
 import type { DeviceAssignInfo } from './DeviceRow.type';
 
 const ControlsDevices = (props: ControlsDevicesProps) => {
-  const { devices, controllerGroups, labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
+  const { devices, controllerGroups, extraDevices = [], labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
   const { collapsed, toggle, collapse } = useStoredFold(DEVICES_FOLD_KEY, false);
   useLayoutEffect(() => {
     if (narrow) collapse();
@@ -22,7 +23,8 @@ const ControlsDevices = (props: ControlsDevicesProps) => {
   const entries = useMemo(() => [
     ...devices.filter((d) => d.type === 'keyboard').map((d) => keyboardEntry(d, labels)),
     ...controllerGroups.map((g) => controllerGroupEntry(g, labels)),
-  ], [devices, controllerGroups, labels]);
+    ...extraDeviceEntries(extraDevices, controllerGroups, labels),
+  ], [devices, controllerGroups, extraDevices, labels]);
 
   const handleAssign = useCallback((d: DeviceAssignInfo) => {
     if (!d.sdlType) return;

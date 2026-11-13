@@ -19,8 +19,13 @@ const PlatformProvider = (props: PlatformProviderProps) => {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle('platform-mobile', platform.info.formFactor === 'mobile');
-    return () => root.classList.remove('platform-mobile');
+    const mobile = platform.info.formFactor === 'mobile';
+    root.classList.toggle('platform-mobile', mobile);
+    root.dataset.formFactor = mobile ? 'mobile' : 'desktop';
+    return () => {
+      root.classList.remove('platform-mobile');
+      delete root.dataset.formFactor;
+    };
   }, [platform]);
 
   return <PlatformContext.Provider value={platform}>{children}</PlatformContext.Provider>;

@@ -98,6 +98,8 @@ Both koffi 2 (from 2.9) and koffi 3 work: the peer range is `^2.9.0 || ^3.0.0`, 
 
 On Android the `BrockDisplay` Capacitor plugin that ships in this package (`android/`) answers the same `DisplayApi`, so `displayApi()` and `window.api.display` work unchanged and the provider and the Display tab need no app code. `cap sync` (run by `platform add android` and `<app> mobile build`) puts it in the app's Gradle project.
 
+`lockOrientation(mode)` from `brock-display/renderer` turns and holds the screen there: 'landscape' or 'portrait' locks it, 'any' follows the device again. It resolves to `false` off Android and does nothing, so a desktop build calls it without a check.
+
 | Call | On Android |
 |---|---|
 | `getRefreshRate` | the rate the display reports now and every rate it supports |

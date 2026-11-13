@@ -1,6 +1,7 @@
 package com.drizztdourden08.brock.display;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -72,6 +73,35 @@ public class BrockDisplayPlugin extends Plugin {
             }
             call.resolve(result);
         });
+    }
+
+    @PluginMethod
+    public void lockOrientation(PluginCall call) {
+        String mode = call.getString("mode", "any");
+        int requested = "landscape".equals(mode) ? ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+            : "portrait".equals(mode) ? ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
+            : ActivityInfo.SCREEN_ORIENTATION_FULL_USER;
+        if (getActivity() == null) {
+            call.resolve(noActivity());
+            return;
+        }
+        getActivity().runOnUiThread(() -> {
+            if (getActivity() == null) {
+                call.resolve(noActivity());
+                return;
+            }
+            getActivity().setRequestedOrientation(requested);
+            JSObject result = new JSObject();
+            result.put("applied", true);
+            call.resolve(result);
+        });
+    }
+
+    private JSObject noActivity() {
+        JSObject result = new JSObject();
+        result.put("applied", false);
+        result.put("reason", "The app has no activity yet.");
+        return result;
     }
 
     private JSObject displayInfo() {

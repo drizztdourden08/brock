@@ -1,5 +1,20 @@
 # @drizztdourden08/brock
 
+## 0.121.0
+
+### Minor Changes
+
+- b4b1172: The windowsHide check now comes from standards 0.15.0 as `local/spawn-hides-window`. brock-lint-config drops its own `brock/spawn-hides-window` and needs standards 0.15.0 or later. A consumer bumps `@drizztdourden08/standards` to `^0.15.0`. An exception that named `brock/spawn-hides-window` now names `local/spawn-hides-window`.
+
+### Patch Changes
+
+- Updated dependencies [aab4993]
+- Updated dependencies [8510ab6]
+- Updated dependencies [5e9aff0]
+  - @drizztdourden08/brock-build@0.121.0
+  - @drizztdourden08/create-brock@0.121.0
+  - @drizztdourden08/brock-thread@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @drizztdourden08/brock-react
 
+## 0.121.0
+
+### Minor Changes
+
+- 33ce702: The randomizer session survives a paused core. Roll may be async and gets a RollContext. The world takes a WorldStamp. A poll.loaded hook asks for a rebaseline. registerRandomizerGame starts the runtime. Option defs carry choices, sections and hints, and a game options body gets the step props. A new ./memory subpath ships. Port-kit sessions take prepareAssets. Profile build hooks may be async. The isDisabled function gets the composed lock cause, and useLockCauseOf reads it.
+- a1382a3: Brock React exports logRowsToText, the copy text of a log panel. The input module uses it in place of its own copy.
+- 48bec99: Wizard step bodies get `onSubStepChange`. The randomizer options panel tab strip works while the wizard passes `subStep`, and reports each pick so the stepper can follow.
+- 19f0362: Renderer modules can add profile modes, profile wizard steps, ordered settings lock causes and profile store hooks. `BrockApp` merges them with the app's own `profileModes`, `settings.lockCauses` and `profileHooks`.
+- 9d171e3: New cheats widget shell: `CheatsFrame` (a tab frame where a game passes its tabs as id, label and content), `ChoicePopover`, `NumberSetter`, `ControlLegend`, `PointerHintProvider` and `usePointerHintTarget`.
+- 24626e9: The show flags store is exported, so a module can rerender when a flag changes.
+- 36c43fe: A wizard step body takes an optional subStep, the id of the sub-step the shell has selected, so a body can follow it.
+- 054cf0c: `defineWidgetGates` builds the `widgetDisabled` hook of `BrockApp` from a table of gates. Each widget id lists whether it reads game data and which setting it requires. A widget that reads game data is disabled while the `gameDataBlockedBy` setting is on, and a widget with a required setting is disabled while that setting is off. The app words the reason with `messageOf` and maps a setting to its route with `targetOf`. `resolveWidgetGate` is the pure step and the `WidgetGate` types are exported.
+
+### Patch Changes
+
+- 11fca93: Opening a widget that is a hidden tab in a tab group now brings that tab to the front.
+- 2238ad1: The built-in Logs and Performance widgets are now `devOnly`, so they show only while developer tools are on.
+- ad2d364: Module wizard steps typed on their own slice now fit the module list.
+- c56e771: The review tour gives each step the current app state. A fresh --review run now sees the devOnly entries that the profile step turns on.
+- Updated dependencies [4fdf3fc]
+- Updated dependencies [fc626de]
+- Updated dependencies [33ce702]
+- Updated dependencies [de3e01a]
+- Updated dependencies [8403f85]
+  - @drizztdourden08/brock-core@0.121.0
+
 ## 0.120.1
 
 ### Patch Changes

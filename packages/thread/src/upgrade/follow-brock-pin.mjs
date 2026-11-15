@@ -10,9 +10,9 @@ const brockEntries = (pkg) =>
       .filter(([name]) => BROCK_PACKAGE.test(name))
       .map(([name, spec]) => ({ block, name, spec: String(spec) })));
 
-const rangeStep = (spec, version, keepAhead) => {
+const rangeStep = (spec, version, options) => {
   if (!isRegistrySpec(spec) || spec === `^${version}`) return 'keep';
-  return keepAhead && compareVersions(spec, version) > 0 ? 'ahead' : 'move';
+  return options.keepAhead === true && compareVersions(spec, version) > 0 ? 'ahead' : 'move';
 };
 
 /**
@@ -21,19 +21,16 @@ const rangeStep = (spec, version, keepAhead) => {
  * @param {{ keepAhead?: boolean }} [options] keepAhead leaves a range above the pin as it is
  * @returns {{ pkg: Record<string, any>, changed: string[], ahead: string[] }}
  */
-const followBrockPin = (pkg, fallback, { keepAhead = false } = {}) => {
+const followBrockPin = (pkg, fallback, options = {}) => {
   const entries = brockEntries(pkg);
   if (entries.every(({ spec }) => spec.startsWith('workspace:'))) return { pkg, changed: [], ahead: [] };
   const version = pkg.brock?.version ?? fallback;
   const next = JSON.parse(JSON.stringify(pkg));
-  const changed = [];
+  const changed = pkg.brock?.version === version ? [] : [PIN_FIELD];
   const ahead = [];
-  if (pkg.brock?.version !== version) {
-    next.brock = { ...next.brock, version };
-    changed.push(PIN_FIELD);
-  }
+  next.brock = { ...next.brock, version };
   for (const entry of entries) {
-    const kind = rangeStep(entry.spec, version, keepAhead);
+    const kind = rangeStep(entry.spec, version, options);
     if (kind === 'ahead') ahead.push(`${entry.block}.${entry.name}`);
     if (kind !== 'move') continue;
     next[entry.block][entry.name] = `^${version}`;

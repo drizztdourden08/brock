@@ -20,6 +20,12 @@ const rangeNotices = (before, after, changed, check) =>
       return `brock sync: ${check ? 'would change' : 'changed'} ${field} from ${old} to ${rangeOf(after, field)} because ${PIN_FIELD} in package.json is ${after.brock.version}. To keep ${old}, move the pin with \`brock upgrade ${target}\`.`;
     });
 
+const aheadNotices = (before, after, ahead) =>
+  ahead.map((field) => {
+    const range = rangeOf(before, field);
+    return `brock sync: kept ${field} at ${range}, above ${PIN_FIELD} ${after.brock.version}. Sync never lowers a range. To align them, move the pin with \`brock upgrade ${String(range).replace(RANGE_PREFIX, '')}\`.`;
+  });
+
 /**
  * @param {string} rootDir the app folder
  * @param {string} version pinned when package.json has no brock.version
@@ -30,8 +36,9 @@ const pinApp = (rootDir, version, check) => {
   const file = join(rootDir, 'package.json');
   if (!existsSync(file)) return [];
   const before = JSON.parse(readFileSync(file, 'utf8'));
-  const { pkg, changed } = followBrockPin(before, version);
+  const { pkg, changed, ahead } = followBrockPin(before, version, { keepAhead: true });
   for (const notice of rangeNotices(before, pkg, changed, check)) console.warn(notice);
+  for (const notice of aheadNotices(before, pkg, ahead)) console.warn(notice);
   if (changed.length > 0 && !check) writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
   return changed;
 };

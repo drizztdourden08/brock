@@ -37,6 +37,12 @@ describe('K3 pinApp', { tags: ['critical'] }, () => {
     expect(read(root).dependencies).toEqual({ [CORE]: '^0.2.0', [TESSERA]: '^1.0.0' });
   });
 
+  it('never lowers a range that is above the pin', () => {
+    const root = appWith({ brock: { version: '0.1.0' }, dependencies: { [CORE]: '^0.2.0' } });
+    expect(pinApp(root, '0.1.0', false)).toEqual([]);
+    expect(read(root).dependencies[CORE]).toBe('^0.2.0');
+  });
+
   it('keeps link specs in local mode', () => {
     const root = appWith({ dependencies: { [CORE]: 'link:X:/brock/packages/core' } });
     expect(pinApp(root, '0.1.0', false)).toEqual(['brock.version']);

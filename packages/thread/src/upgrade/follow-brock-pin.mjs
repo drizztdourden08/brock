@@ -10,6 +10,11 @@ const brockEntries = (pkg) =>
       .filter(([name]) => BROCK_PACKAGE.test(name))
       .map(([name, spec]) => ({ block, name, spec: String(spec) })));
 
+const rangeStep = (spec, version, keepAhead) => {
+  if (!isRegistrySpec(spec) || spec === `^${version}`) return 'keep';
+  return keepAhead && compareVersions(spec, version) > 0 ? 'ahead' : 'move';
+};
+
 /**
  * @param {Record<string, any>} pkg an app package.json
  * @param {string} fallback pinned when brock.version is absent
@@ -27,14 +32,12 @@ const followBrockPin = (pkg, fallback, { keepAhead = false } = {}) => {
     next.brock = { ...next.brock, version };
     changed.push(PIN_FIELD);
   }
-  for (const { block, name, spec } of entries) {
-    if (!isRegistrySpec(spec) || spec === `^${version}`) continue;
-    if (keepAhead && compareVersions(spec, version) > 0) {
-      ahead.push(`${block}.${name}`);
-      continue;
-    }
-    next[block][name] = `^${version}`;
-    changed.push(`${block}.${name}`);
+  for (const entry of entries) {
+    const kind = rangeStep(entry.spec, version, keepAhead);
+    if (kind === 'ahead') ahead.push(`${entry.block}.${entry.name}`);
+    if (kind !== 'move') continue;
+    next[entry.block][entry.name] = `^${version}`;
+    changed.push(`${entry.block}.${entry.name}`);
   }
   return { pkg: next, changed, ahead };
 };

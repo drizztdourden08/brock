@@ -29,6 +29,7 @@ import { servicesProxy } from '../services/services-proxy';
 import { openRouter } from '../open/open-router';
 import { createAppBridge } from '../bridge/create-app-bridge';
 import { bridgeFileName } from '../bridge/bridge-file-name';
+import { clockStamp } from '../logs/clock-stamp';
 
 const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [], icon, bridge }: ContextInput): MainContext => {
   const paths = { userData: getLegacyPath, data: getUserDataPath };
@@ -44,7 +45,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
   };
 
   const log = (message: string, level: MainLogLevel = 'info'): void => {
-    console[level](`[main] ${message}`);
+    console[level](`${clockStamp()} [main] ${message}`);
     emitToWindow('log:entry', { channel: 'main', level, message });
   };
 

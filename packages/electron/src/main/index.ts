@@ -21,6 +21,7 @@ export type { NodeFileStoreOptions } from './files/node-file-store.type';
 export type { DocumentAccess, DocumentAccessDeps } from './documents/document-access.type';
 export { createDocumentAccess } from './documents/document-access';
 export { writeAtomic } from './storage/write-atomic';
+export { clockStamp } from './logs/clock-stamp';
 
 export { initPaths } from './paths/init-paths';
 export { getUserDataPath } from './paths/get-user-data-path';

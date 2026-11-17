@@ -4,11 +4,12 @@ import type { NoteOptions } from './forensics-log.type';
 import { appendMainLog } from '../logs/append-main-log';
 import { appendMainLogSync } from '../logs/append-main-log-sync';
 import { TAG } from './forensics-log.constants';
+import { clockStamp } from '../logs/clock-stamp';
 
 const writeTerminal = (level: MainLogLevel, line: string): void => {
   const stream = level === 'error' || level === 'warn' ? process.stderr : process.stdout;
   try {
-    if (stream.writable) stream.write(`${line}\n`);
+    if (stream.writable) stream.write(`${clockStamp()} ${line}\n`);
   } catch (err) {
     appendMainLog('warn', `${TAG} terminal write failed: ${String(err)}`);
   }

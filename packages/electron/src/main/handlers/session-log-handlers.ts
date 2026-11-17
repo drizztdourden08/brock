@@ -3,6 +3,7 @@ import { appendFile } from 'fs/promises';
 import type { HandlerGroup } from '../types/main-context.type';
 import { revealLogs } from '../logs/reveal-logs';
 import { currentLogPath } from './session-log-path';
+import { clockStamp } from '../logs/clock-stamp';
 
 let pendingWrite: Promise<void> = Promise.resolve();
 
@@ -20,7 +21,7 @@ const sessionLogHandlers: HandlerGroup = {
     handle('debug:revealLogs', revealLogs);
     on('debug:mirrorLog', (_event, lines) => {
       if (!Array.isArray(lines)) return;
-      for (const line of lines) if (typeof line === 'string') process.stdout.write(`${line}\n`);
+      for (const line of lines) if (typeof line === 'string') process.stdout.write(`${clockStamp()} ${line}\n`);
     });
     on('debug:appendSessionLog', (_event, lines) => {
       if (!Array.isArray(lines)) return;

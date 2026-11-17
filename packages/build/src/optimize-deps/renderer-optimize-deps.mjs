@@ -96,15 +96,16 @@ const stampPlugin = (stamp) => ({ name: `${STAMP_PLUGIN}:${stamp}`, setup: () =>
  * @param {string} rootDir the app root
  * @param {Record<string, string>} aliases import prefixes and their absolute folders
  * @param {unknown} options build.optimizeDeps of brock.config.ts
+ * @param {string[]} [shims] node polyfill shim specifiers the app resolves
  * @returns {Promise<{ include: string[], exclude?: string[], entries?: string[], esbuildOptions?: { plugins: { name: string, setup: () => void }[] } }>} the renderer optimizeDeps
  */
-const rendererOptimizeDeps = async (rootDir, aliases, options) => {
+const rendererOptimizeDeps = async (rootDir, aliases, options, shims = []) => {
   const { include, exclude, entries, worker, liveBrock } = optimizeDepsOptions(options);
   const live = liveBrock || process.env[LIVE_BROCK_ENV] === '1';
   const crawled = await cachedCrawl(rootDir, { aliases, live }, crawlKnownDeps(rootDir, aliases, live));
   const known = crawled.specs.filter((spec) => !isExcluded(spec, exclude));
   return {
-    include: [...new Set([...known, ...include, ...worker])].sort(),
+    include: [...new Set([...known, ...include, ...worker, ...shims])].sort(),
     ...(exclude.length > 0 ? { exclude } : {}),
     ...(entries.length > 0 ? { entries } : {}),
     ...(crawled.bundled.length > 0 ? { esbuildOptions: { plugins: [stampPlugin(linkedSourcesStamp(crawled.bundled))] } } : {}),

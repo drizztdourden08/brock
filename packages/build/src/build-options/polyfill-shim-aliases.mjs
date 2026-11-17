@@ -29,17 +29,31 @@ const resolveShim = (appRequire, specifier) => {
 /**
  * @param {string} rootDir the app root
  * @param {{ nodePolyfills?: boolean | Record<string, unknown> } | undefined} build build of brock.config.ts
- * @returns {{ find: RegExp, replacement: string }[]} one exact alias per shim the app resolves
+ * @returns {{ specifier: string, replacement: string }[]} one entry per shim the app resolves
  */
-const polyfillShimAliases = (rootDir, build) => {
+const resolvedShims = (rootDir, build) => {
   if (!(build?.nodePolyfills ?? false)) return [];
   const appRequire = createRequire(join(rootDir, 'package.json'));
   return NODE_POLYFILLS_SHIMS.flatMap((shim) => {
     const specifier = `${NODE_POLYFILLS_PACKAGE}/shims/${shim}`;
     const replacement = resolveShim(appRequire, specifier);
-    return replacement ? [{ find: new RegExp(`^${specifier}$`), replacement }] : [];
+    return replacement ? [{ specifier, replacement }] : [];
   });
 };
+
+/**
+ * @param {string} rootDir the app root
+ * @param {{ nodePolyfills?: boolean | Record<string, unknown> } | undefined} build build of brock.config.ts
+ * @returns {{ find: RegExp, replacement: string }[]} one exact alias per shim the app resolves
+ */
+const polyfillShimAliases = (rootDir, build) => resolvedShims(rootDir, build).map(({ specifier, replacement }) => ({ find: new RegExp(`^${specifier}$`), replacement }));
+
+/**
+ * @param {string} rootDir the app root
+ * @param {{ nodePolyfills?: boolean | Record<string, unknown> } | undefined} build build of brock.config.ts
+ * @returns {string[]} the shim specifiers the app resolves
+ */
+const polyfillShimSpecifiers = (rootDir, build) => resolvedShims(rootDir, build).map(({ specifier }) => specifier);
 
 /**
  * @param {Record<string, string>} alias the app aliases
@@ -53,4 +67,4 @@ const withShimAliases = (alias, rootDir, build) => {
   return [...Object.entries(alias).map(([find, replacement]) => ({ find, replacement })), ...shims];
 };
 
-export { polyfillShimAliases, withShimAliases };
+export { polyfillShimAliases, polyfillShimSpecifiers, withShimAliases };

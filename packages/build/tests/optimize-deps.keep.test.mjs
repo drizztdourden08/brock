@@ -171,6 +171,25 @@ describe('K1 linked Brock packages', { tags: ['critical'] }, () => {
   });
 });
 
+describe('K1 node polyfill shims in the dev optimizer', { tags: ['critical'] }, () => {
+  const SHIMS = ['vite-plugin-node-polyfills/shims/buffer', 'vite-plugin-node-polyfills/shims/process'];
+
+  it('adds the shim specifiers it is given to include, and nothing when none are given', async () => {
+    const root = fixtureApp();
+    const withShims = await rendererOptimizeDeps(root, aliasesOf(root), undefined, SHIMS);
+    expect(withShims.include).toEqual(expect.arrayContaining(SHIMS));
+    const without = await rendererOptimizeDeps(root, aliasesOf(root), undefined);
+    expect(without.include.some((spec) => spec.includes('shims/'))).toBe(false);
+  });
+
+  it('passes the shims through the plugin to the dev server config', async () => {
+    const root = fixtureApp();
+    const plugin = optimizeDepsPlugin({ rootDir: root, aliases: aliasesOf(root), options: undefined, shims: SHIMS });
+    const served = await plugin.config({}, { command: 'serve' });
+    expect(served.optimizeDeps.include).toEqual(expect.arrayContaining(SHIMS));
+  });
+});
+
 describe('K1 optimizeDepsPlugin', { tags: ['critical'] }, () => {
   it('sets optimizeDeps on the dev server only, and names the optimizer metadata for the Electron app', async () => {
     const root = fixtureApp();

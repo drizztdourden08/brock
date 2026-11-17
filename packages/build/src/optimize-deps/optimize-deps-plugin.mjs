@@ -4,12 +4,12 @@ import { DEPS_METADATA_ENV, ELECTRON_VITE_MODE_ENV } from './optimize-deps.const
 import { optimizeDepsOptions, rendererOptimizeDeps } from './renderer-optimize-deps.mjs';
 
 /**
- * @param {{ rootDir: string, aliases: Record<string, string>, options: unknown }} input the app root, its aliases and build.optimizeDeps
+ * @param {{ rootDir: string, aliases: Record<string, string>, options: unknown, shims?: string[] }} input the app root, aliases, build.optimizeDeps, shim specifiers
  * @returns {import('vite').Plugin} the dev server optimizeDeps and metadata path
  */
-const optimizeDepsPlugin = ({ rootDir, aliases, options }) => {
+const optimizeDepsPlugin = ({ rootDir, aliases, options, shims }) => {
   optimizeDepsOptions(options);
-  const start = () => rendererOptimizeDeps(rootDir, aliases, options);
+  const start = () => rendererOptimizeDeps(rootDir, aliases, options, shims);
   let pending = process.env[ELECTRON_VITE_MODE_ENV] === 'development' ? start() : null;
   pending?.catch(() => null);
   return {

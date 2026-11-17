@@ -145,6 +145,7 @@ Turn it off with `bootstrapApp(product, { ecNullDigestShim: false })` or by sett
 - `Data/debug/main-console.log` is scoped to one launch: the first write of the process truncates it. One module owns the path and line format, so the dev console mirror and crash forensics land in the same file in the same shape. A line produced before `initPaths` is held back (up to 200 lines) and flushed ahead of the first line that can reach the disk. `appendMainLogSync` exists for handlers that run as the last thing before the process dies; every write is best effort.
 - The dev file logger is never installed in a packaged build; it mirrors main and renderer console output (through the `console-message` event, no renderer changes) so a hard crash leaves the last thing that happened on disk. It must run after `initPaths`, and a logging failure never breaks the app.
 - The renderer log-bus batches reach main on the fire-and-forget `debug:appendSessionLog` channel and are appended to `Data/debug/session.log`; appends are chained on one promise so batches land in arrival order, and a failed write drops that batch. At startup the previous `session.log` rotates to `session-1.log` so the last two sessions stay readable.
+- Renderer warn and error entries reach main on the fire-and-forget `debug:mirrorLog` channel and print on stdout as `[renderer] <level> <channel>: <message>`.
 - `createRendererLogger` sends lines to the in-app console on `log:entry`; a line sent while there is no window is dropped.
 
 ## Handlers

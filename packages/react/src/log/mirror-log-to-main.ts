@@ -8,7 +8,8 @@ const mirrorLogToMain = (bus: AppLogBus): (() => void) =>
   bus.subscribe((entry) => {
     if (entry.level !== 'warn' && entry.level !== 'error') return;
     if (appLogState.bridging) return;
-    hostApi()?.mirrorLog?.([mirrorLogLine(entry)]);
+    const api = hostApi();
+    if (api && 'mirrorLog' in api) api.mirrorLog([mirrorLogLine(entry)]);
   });
 
 export { mirrorLogToMain };

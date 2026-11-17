@@ -11,6 +11,8 @@ interface LogLevelCounts {
 interface AppLogState {
   bus: AppLogBus | null;
   counts: LogLevelCounts;
+  disarm: (() => void) | null;
+  bridging: boolean;
 }
 
 export type { AppLogBus, AppLogState, LogLevelCounts };

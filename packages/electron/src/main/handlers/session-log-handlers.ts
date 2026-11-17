@@ -18,6 +18,10 @@ const sessionLogHandlers: HandlerGroup = {
   id: 'sessionLog',
   register: ({ on, handle }) => {
     handle('debug:revealLogs', revealLogs);
+    on('debug:mirrorLog', (_event, lines) => {
+      if (!Array.isArray(lines)) return;
+      for (const line of lines) if (typeof line === 'string') process.stdout.write(`${line}\n`);
+    });
     on('debug:appendSessionLog', (_event, lines) => {
       if (!Array.isArray(lines)) return;
       appendBatch(lines.filter((line): line is string => typeof line === 'string'));

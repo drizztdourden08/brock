@@ -116,6 +116,7 @@ interface SendContract extends WidgetSendContract, DataSendContract {
   'boot:task': (event: BootTaskEvent) => void;
   'boot:ready': () => void;
   'debug:appendSessionLog': (lines: string[]) => void;
+  'debug:mirrorLog': (lines: string[]) => void;
   'capture:holds': (count: number) => void;
   'review:check': (check: ReviewCheck) => void;
   'review:alive': (stepLimitMs?: number | null) => void;

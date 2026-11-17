@@ -89,3 +89,19 @@ describe('K1 the global error handlers', { tags: ['critical'] }, () => {
     expect(bus.getEntries().map((entry) => `${entry.level} ${entry.message}`)).toEqual([`warn Browser warning: ${message}`]);
   });
 });
+
+describe('K1 the app log arming', { tags: ['critical'] }, () => {
+  it('arms the global handlers and the main mirror at creation, for warn and error only', async () => {
+    const mirrored: string[] = [];
+    const added: string[] = [];
+    vi.stubGlobal('window', { addEventListener: (name: string) => added.push(name), removeEventListener: () => undefined, api: { mirrorLog: (lines: string[]) => mirrored.push(...lines) } });
+    const { createAppLog } = await import('../src/log/create-app-log');
+    const bus = createAppLog(['game']);
+    expect(added.sort()).toEqual(['error', 'unhandledrejection']);
+    bus.log('game', 'fine');
+    bus.log('game', 'careful', 'warn');
+    bus.error('broken');
+    expect(mirrored).toEqual(['[renderer] warn game: careful', '[renderer] error error: broken']);
+    vi.unstubAllGlobals();
+  });
+});

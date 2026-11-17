@@ -89,6 +89,7 @@ const BASE_SEND_MAP = {
   bootTask: 'boot:task',
   bootReady: 'boot:ready',
   appendSessionLog: 'debug:appendSessionLog',
+  mirrorLog: 'debug:mirrorLog',
   captureHolds: 'capture:holds',
   reviewCheck: 'review:check',
   reviewAlive: 'review:alive',

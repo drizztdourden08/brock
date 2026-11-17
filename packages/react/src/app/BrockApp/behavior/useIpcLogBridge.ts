@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import type { LogLevel } from '@drizztdourden08/brock-core';
 import { hostApi } from '../../../host/host-api';
+import { appLogState } from '../../../log/app-log-state';
 import type { AppLogBus } from '../../../log/app-log.type';
 import { LEVELS } from '../BrockApp.constants';
 
@@ -13,7 +14,12 @@ const useIpcLogBridge = (bus: AppLogBus): void => {
     if (!api?.onLogEntry) return;
     return api.onLogEntry((entry) => {
       const channel = bus.channels.includes(entry.channel) ? entry.channel : 'ipc';
-      bus.log(channel, entry.message, asLevel(entry.level));
+      appLogState.bridging = true;
+      try {
+        bus.log(channel, entry.message, asLevel(entry.level));
+      } finally {
+        appLogState.bridging = false;
+      }
     });
   }, [bus]);
 };

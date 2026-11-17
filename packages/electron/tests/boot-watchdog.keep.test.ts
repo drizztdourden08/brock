@@ -12,6 +12,7 @@ import { FakeWindow, resetSim } from './window-sim/fake-electron';
 
 vi.mock('electron', async () => (await import('./window-sim/fake-electron')).fakeElectron);
 vi.mock('../src/main/crash-forensics/note', () => ({ note: (): void => undefined }));
+vi.mock('../src/main/window/dev-server-url', () => ({ devServerUrl: () => null }));
 
 const WATCHDOG = 1000;
 

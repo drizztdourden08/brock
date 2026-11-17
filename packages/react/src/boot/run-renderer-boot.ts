@@ -17,7 +17,7 @@ const runRendererBoot = async (tasks: readonly RendererBootTask[], extras: () =>
   const outcome = await runBootTasks(tasks, {
     extras,
     defaultTimeoutMs: bootTimeoutMs(),
-    onTaskEvent: (event) => api?.bootTask(event),
+    onTaskEvent: (event) => { if (api && 'bootTask' in api) api.bootTask(event); },
     onProgress: (progress) => {
       last = progress;
       api?.bootProgress(progress);

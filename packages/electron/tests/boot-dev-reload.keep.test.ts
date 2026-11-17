@@ -20,7 +20,11 @@ const boot = (): FakeWindow => {
   return app;
 };
 
-const reloads = (app: FakeWindow): ReturnType<typeof vi.fn> => vi.spyOn(app.webContents, 'reload').mockImplementation(() => undefined);
+const reloads = (app: FakeWindow): ReturnType<typeof vi.fn> => {
+  const reload = vi.fn();
+  Object.assign(app.webContents, { reload });
+  return reload;
+};
 
 beforeEach(() => {
   vi.useFakeTimers();

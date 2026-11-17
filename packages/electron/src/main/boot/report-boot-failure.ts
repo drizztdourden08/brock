@@ -2,6 +2,7 @@
 import { note } from '../crash-forensics/note';
 import { SPLASH_CHANNELS } from '../../splash-preload/splash-channels.constants';
 import type { BootFailureRecord } from './boot-state.type';
+import { logBoot } from '../bootstrap/boot-timing';
 import { bootEvents } from './boot-events';
 import { bootState } from './boot-state';
 import { sendToSplash } from './send-to-splash';
@@ -9,7 +10,10 @@ import { sendToSplash } from './send-to-splash';
 const reportBootFailure = (failure: BootFailureRecord): void => {
   if (bootState.failure || bootState.revealing || bootState.revealed) return;
   bootState.failure = failure;
-  if (bootState.watchdog) clearTimeout(bootState.watchdog);
+  if (bootState.watchdog) {
+    clearTimeout(bootState.watchdog);
+    logBoot('watchdog cleared');
+  }
   bootState.watchdog = null;
   const line = `boot stopped at ${failure.side} task "${failure.task}" (${failure.label}): ${failure.message}`;
   note('error', line);

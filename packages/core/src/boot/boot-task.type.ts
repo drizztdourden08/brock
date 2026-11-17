@@ -36,9 +36,18 @@ interface BootFailure {
 
 type BootOutcome = { ok: true } | { ok: false; failure: BootFailure };
 
+interface BootTaskEvent {
+  id: string;
+  label: string;
+  state: 'start' | 'done' | 'fail';
+  ms: number;
+  message?: string;
+}
+
 interface BootRunOptions<X extends object> {
   extras: () => X;
   onProgress?: (progress: BootProgress) => void;
+  onTaskEvent?: (event: BootTaskEvent) => void;
   onTaskDone?: (id: string) => void;
   signal?: AbortSignal;
   defaultTimeoutMs?: number;
@@ -60,5 +69,5 @@ interface BootTimeline {
 
 export type {
   BootFailure, BootOutcome, BootProgress, BootReport, BootRunOptions, BootTask, BootTaskBaseContext, BootTaskContext, BootTaskDef,
-  BootTaskRun, BootTimeline,
+  BootTaskEvent, BootTaskRun, BootTimeline,
 };

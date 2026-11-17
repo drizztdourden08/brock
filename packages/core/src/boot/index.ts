@@ -6,5 +6,5 @@ export { bootGraphProblem } from './boot-graph-problem';
 export { DEFAULT_BOOT_TIMEOUT_MS, DEFAULT_BOOT_WEIGHT } from './boot.constants';
 export type {
   BootFailure, BootOutcome, BootProgress, BootReport, BootRunOptions, BootTask, BootTaskBaseContext, BootTaskContext, BootTaskDef,
-  BootTimeline,
+  BootTaskEvent, BootTimeline,
 } from './boot-task.type';

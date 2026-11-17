@@ -42,6 +42,10 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
 
     const start = (task: BootTask<X>): void => {
       started.add(task.id);
+      const begun = Date.now();
+      const tell = (state: 'start' | 'done' | 'fail', message?: string): void =>
+        options.onTaskEvent?.({ id: task.id, label: task.label, state, ms: state === 'start' ? 0 : Date.now() - begun, message });
+      tell('start');
       current = { label: task.label, detail: null };
       emit();
       const report = (fraction: number, detail: string | null): void => {
@@ -52,7 +56,11 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
       };
       void runBootTask(task, { extras: options.extras, stop: stop.signal, report, defaultTimeoutMs: options.defaultTimeoutMs }).then((outcome) => {
         if (settled) return;
-        if (!outcome.ok) return settle(outcome);
+        if (!outcome.ok) {
+          tell('fail', outcome.failure.message);
+          return settle(outcome);
+        }
+        tell('done');
         shares.set(task.id, 1);
         finished.add(task.id);
         options.onTaskDone?.(task.id);

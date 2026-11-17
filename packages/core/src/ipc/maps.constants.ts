@@ -86,6 +86,7 @@ const BASE_SEND_MAP = {
   setAspectRatioLock: 'window:setAspectRatioLock',
   bootProgress: 'boot:progress',
   bootFailed: 'boot:failed',
+  bootTask: 'boot:task',
   bootReady: 'boot:ready',
   appendSessionLog: 'debug:appendSessionLog',
   captureHolds: 'capture:holds',

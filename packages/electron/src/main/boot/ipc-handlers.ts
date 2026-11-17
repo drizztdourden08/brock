@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import type { HandlerGroup } from '../types/main-context.type';
 import { logBoot } from '../bootstrap/boot-timing';
+import { logBootTask } from '../bootstrap/log-boot-task';
 import { armWatchdog } from './arm-watchdog';
 import { bootEvents } from './boot-events';
 import { bootState } from './boot-state';
@@ -20,6 +21,7 @@ const bootHandlers: HandlerGroup = {
       relayProgress();
       bootEvents.emit('progress', 'renderer');
     });
+    on('boot:task', (_event, task) => logBootTask('renderer', task));
     on('boot:failed', (_event, failure) => reportBootFailure({ ...failure, side: 'renderer' }));
     on('boot:ready', () => {
       bootState.rendererReady = true;

@@ -1,7 +1,7 @@
 /* @layer electron-main @kind logic */
 import { runBootTasks } from '@drizztdourden08/brock-core/boot';
 import type { MainContext } from '../types/main-context.type';
-import { logBoot } from '../bootstrap/boot-timing';
+import { logBootTask } from '../bootstrap/log-boot-task';
 import type { MainBootTask } from './boot-state.type';
 import { bootState } from './boot-state';
 import { relayProgress } from './relay-progress';
@@ -18,7 +18,7 @@ const runMainBoot = async (tasks: readonly MainBootTask[], ctx: MainContext): Pr
       bootState.lastSide = 'main';
       relayProgress();
     },
-    onTaskDone: (id) => logBoot(`main task ${id}`),
+    onTaskEvent: (event) => logBootTask('main', event),
   });
   if (!outcome.ok) {
     reportBootFailure({ ...outcome.failure, side: 'main' });

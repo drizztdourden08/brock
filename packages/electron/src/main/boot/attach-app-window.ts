@@ -6,6 +6,7 @@ import { bootEvents } from './boot-events';
 import { bootState } from './boot-state';
 import { ABORTED_LOAD, INTERFACE_TASK } from './reveal.constants';
 import { rendererHeartbeat } from './renderer-heartbeat';
+import { reloadSilentWindow } from './reload-silent-window';
 import { reportBootFailure } from './report-boot-failure';
 import { watchRendererErrors } from './watch-renderer-errors';
 
@@ -29,6 +30,7 @@ const attachAppWindow = (win: BrowserWindow, present: () => void): void => {
   webContents.on('did-start-loading', rendererHeartbeat);
   webContents.on('dom-ready', rendererHeartbeat);
   webContents.on('did-finish-load', rendererHeartbeat);
+  webContents.once('did-finish-load', () => reloadSilentWindow(win));
   armWatchdog();
   bootEvents.emit('window', win);
 };

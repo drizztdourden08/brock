@@ -4,11 +4,10 @@ import type { SettingAction, SettingActionDef, SettingChoice, SettingChoiceDef, 
 
 type TextOf = (value: Text) => string;
 
-const choiceOf = (choice: SettingChoiceDef, text: TextOf): SettingChoice => ({
-  ...choice,
-  label: text(choice.label),
-  ...(choice.hint === undefined ? {} : { hint: text(choice.hint) }),
-});
+const choiceOf = (choice: SettingChoiceDef, text: TextOf): SettingChoice => {
+  const { label, hint, ...rest } = choice;
+  return { ...rest, label: text(label), ...(hint === undefined ? {} : { hint: text(hint) }) };
+};
 
 const controlOf = (control: SettingControlDef, text: TextOf): SettingControl => {
   if (!('options' in control)) return control;

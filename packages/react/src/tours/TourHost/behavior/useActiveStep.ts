@@ -19,7 +19,7 @@ const useActiveStep = () => {
   const def = active ? list.find((tour) => tour.id === active.id) ?? null : null;
   const step = def && active ? def.steps[active.index] ?? null : null;
   const stuck = stuckClickStep(def, shown);
-  const guided = useMemo(() => (def ? toGuidedSteps(def, text, clickHint) : NO_STEPS), [def, popped, clickHint, text]);
+  const guided = useMemo(() => (def ? toGuidedSteps(def, clickHint, text) : NO_STEPS), [def, popped, clickHint, text]);
   const steps = useMemo(() => nextOnStuck(guided, stuck), [guided, stuck]);
   const key = def && active ? `${def.id}:${active.index}` : '';
   return { list, def, step, steps, index: active?.index ?? 0, key, popped };

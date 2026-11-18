@@ -3,6 +3,7 @@ import type { Section, SettingItem, SettingValues, TabDef } from '../../settings
 import { itemShown } from '../../settings/item-shown';
 import { sourceValues } from '../../settings/source-values';
 import { tabSections } from '../../settings/tab-sections';
+import { fallbackText } from '../../i18n/fallback-text';
 import { normaliseKeywords } from '../normalise-keywords';
 import { SETTING_ID_PREFIX } from '../search.constants';
 import type { CatalogInput, SearchEntry } from '../search.type';
@@ -34,7 +35,7 @@ const itemEntry = (tab: TabDef<object>, group: EntryGroup, item: SettingItem, in
 });
 
 const tabSettings = (tab: TabDef<object>, input: CatalogInput, settings: object): SearchEntry[] =>
-  tabSections(tab, settings, input.text).flatMap((section) => {
+  tabSections(tab, settings, input.text ?? fallbackText).flatMap((section) => {
     const shown = sourceValues(section) ?? (settings as SettingValues);
     return groupsOf(section).flatMap((group) => group.items
       .filter((item) => itemShown(item, shown))

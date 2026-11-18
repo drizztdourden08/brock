@@ -37,7 +37,7 @@ const clone = (items: readonly MenuItemDef[]): MenuItemDef[] => items.map((item)
 
 const placeMenuItems = (items: readonly MenuItemDef[], placed: readonly PlacedMenuItem[], iconOf: IconOf): MenuItemDef[] => {
   const top = clone(items);
-  const sorted = placed.map((entry) => ({ ...entry, label: entry.item.label })).sort(byOrder);
+  const sorted = placed.map((entry) => ({ ...entry, label: typeof entry.item.label === 'string' ? entry.item.label : entry.item.label.key })).sort(byOrder);
   for (const entry of sorted) placeOne(top, entry, iconOf);
   return top;
 };

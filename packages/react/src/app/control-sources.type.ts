@@ -13,4 +13,6 @@ interface ControlSources {
   text: (value: Text) => string;
 }
 
-export type { ControlSources };
+type ControlSourcesInput = Omit<ControlSources, 'text'> & { text?: (value: Text) => string };
+
+export type { ControlSources, ControlSourcesInput };

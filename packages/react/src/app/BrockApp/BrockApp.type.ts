@@ -98,8 +98,8 @@ interface BrockAppProps<S extends object> {
 }
 
 interface MenuBuildInput {
-  appMenu: readonly MenuEntry[];
-  moduleMenu: readonly MenuEntry[];
+  appMenu: readonly MenuEntryDef[];
+  moduleMenu: readonly MenuEntryDef[];
   widgets: readonly MenuItem[];
   toolbars?: readonly MenuItem[];
   homeScreen: string;
@@ -140,6 +140,7 @@ interface RouteCommandsInput {
   shortcuts: readonly RouteShortcut[];
   allowed: (screen: ScreenDef | undefined) => boolean;
   labelOf: (target: string) => Text;
+  text?: (value: Text) => string;
 }
 
 interface AppScreensInput {

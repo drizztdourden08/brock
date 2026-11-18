@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react';
 import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { TourStep, TourTarget } from '@drizztdourden08/tessera/composites';
+import { fallbackText } from '../i18n/fallback-text';
 import { tourArt } from './tour-art';
 import { prepareStep } from './prepare-step';
 import { tourTargets } from './resolve-tour-target';
@@ -51,7 +52,7 @@ const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, extras: G
   };
 };
 
-const toGuidedSteps = (tour: TourDef, text: (value: Text) => string, clickHint?: ReactNode): TourStep[] =>
+const toGuidedSteps = (tour: TourDef, clickHint?: ReactNode, text: (value: Text) => string = fallbackText): TourStep[] =>
   tour.steps.map((step, index) => toGuidedStep(tour, step, index, { clickHint, text }));
 
 export { toGuidedSteps };

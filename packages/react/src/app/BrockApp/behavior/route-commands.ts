@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { SCREENS_GROUP } from '../../../commands/commands.constants';
-import type { CommandInput } from '../../../commands/command.type';
+import { fallbackText } from '../../../i18n/fallback-text';
+import type { CommandDef } from '../../../commands/command.type';
 import { openCommandId } from '../../../commands/open-command-id';
 import { useMenuHiddenStore } from '../../../menu/useMenuHiddenStore';
 import { nav } from '../../../navigation/nav';
@@ -13,13 +13,13 @@ import type { RouteCommandsInput } from '../BrockApp.type';
 
 const menuHides = (route: string): boolean => routeHidden(route, useMenuHiddenStore.getState().routes);
 
-const opener = (route: string, label: Text, chord: string, when: () => boolean): CommandInput => ({
+const opener = (route: string, label: string, chord: string, when: () => boolean): CommandDef => ({
   id: openCommandId(route), label, group: SCREENS_GROUP, chord, when: () => when() && !menuHides(route), run: () => nav.toggle(route),
 });
 
-const routeCommands = ({ registry, shortcuts, allowed, labelOf }: RouteCommandsInput): CommandInput[] => [
-  ...registry.list().flatMap((screen) => (screen.shortcut === undefined ? [] : [opener(screen.id, screen.title, screen.shortcut, () => allowed(screen))])),
-  ...shortcuts.map((entry) => opener(entry.target, labelOf(entry.target), entry.shortcut, () =>
+const routeCommands = ({ registry, shortcuts, allowed, labelOf, text = fallbackText }: RouteCommandsInput): CommandDef[] => [
+  ...registry.list().flatMap((screen) => (screen.shortcut === undefined ? [] : [opener(screen.id, text(screen.title), screen.shortcut, () => allowed(screen))])),
+  ...shortcuts.map((entry) => opener(entry.target, text(labelOf(entry.target)), entry.shortcut, () =>
     allowed(registry.get(resolveRoute(entry.target, {}, routeAliases.get).active)) && !routeHiddenNow(entry.target, registry))),
 ];
 

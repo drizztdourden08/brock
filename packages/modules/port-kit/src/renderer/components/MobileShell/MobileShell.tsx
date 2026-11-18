@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo } from 'react';
-import { useBrock, useVolumeStore, useWidgetMenuEntries } from '@drizztdourden08/brock-react';
+import { useBrock, useMenuHooks, useVolumeStore, useWidgetMenuEntries } from '@drizztdourden08/brock-react';
 import type { MenuEntry } from '@drizztdourden08/brock-react';
 import { Drawer } from '@drizztdourden08/tessera/composites';
 import { useMobileBack } from './behavior/useMobileBack';
@@ -15,9 +15,11 @@ const MobileShell = ({ extraEntries = [], fps = 0, label = MOBILE_DRAWER_LABEL }
   const widgetEntries = useWidgetMenuEntries();
   const { value, muted, toggleMute } = useVolumeStore();
   const { open, close } = useMobileBack();
+  const all = useMemo(() => [...menu, ...extraEntries], [menu, extraEntries]);
+  const resolved = useMenuHooks(all);
   const entries = useMemo(
-    () => [...menu, ...extraEntries, { key: 'widgets', label: 'Widgets', children: [...widgetEntries] }],
-    [menu, extraEntries, widgetEntries],
+    () => [...resolved, { key: 'widgets', label: 'Widgets', children: [...widgetEntries] }],
+    [resolved, widgetEntries],
   );
   const pick = useCallback((entry: MenuEntry) => {
     close();

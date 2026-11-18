@@ -103,7 +103,7 @@ interface SettingsPlace {
 }
 
 interface CatalogInput {
-  text: (value: Text) => string;
+  text?: (value: Text) => string;
   index: readonly SearchEntry[];
   live: readonly SearchEntry[];
   menu: readonly MenuEntry[];

@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuGroups } from '../../../menu/menu-config.type';
+import { fallbackText } from '../../../i18n/fallback-text';
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
+import { resolveMenuEntries } from '../../../menu/resolve-menu-entries';
 import { withRoutes } from '../../../menu/with-routes';
 import {
   ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, SETTINGS_ENTRY_KEY, TOP_ENTRIES,
@@ -32,7 +34,9 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
   entries.filter((entry) => entry === 'separator' || entry.section === undefined);
 
 const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
-  const { appMenu, moduleMenu, widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
+  const { widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
+  const appMenu = resolveMenuEntries(input.appMenu, [], { at: 0 }, fallbackText);
+  const moduleMenu = resolveMenuEntries(input.moduleMenu, [], { at: 0 }, fallbackText);
   const filter = (entries: readonly MenuEntry[]): MenuEntry[] => (filtered ? filterDevEntries(entries, developerTools, show) : [...entries]);
   const tourEntry = input.tours ? tourMenu.entry(input.tours.list, input.tours.start) : null;
   const standard: MenuItem[] = [

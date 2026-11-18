@@ -47,11 +47,11 @@ const assertMascot = (mascot: ProductInput['mascot']): void => {
 
 const assertTray = (tray: ProductInput['tray']): void => {
   if (!tray) return;
-  if (!tray.tooltip.trim()) throw new Error('product.tray.tooltip is required');
+  if (typeof tray.tooltip === 'string' && !tray.tooltip.trim()) throw new Error('product.tray.tooltip is required');
   const ids = new Set<string>();
   for (const item of tray.menu ?? []) {
     if ('type' in item) continue;
-    if (!item.label.trim()) throw new Error('product.tray.menu items need a label');
+    if (typeof item.label === 'string' && !item.label.trim()) throw new Error('product.tray.menu items need a label');
     if (!('id' in item)) continue;
     if (!item.id.trim() || ids.has(item.id)) throw new Error(`product.tray.menu id "${item.id}" must be unique and not empty`);
     ids.add(item.id);

@@ -7,7 +7,8 @@ import { effectiveLocale } from '../effective-locale';
 import { useLocaleChoice } from '../useLocaleChoice';
 import { appLanguageSource } from './app-language-source';
 import { languageKeywords } from './language-keywords';
-import { appLanguageOptions, profileLanguageOptions } from './language-options';
+import { appLanguageOptions } from './language-options';
+import { profileLanguageOptions } from './profile-language-options';
 import { profileLanguageSource } from './profile-language-source';
 
 const select = (options: SettingChoiceDef[]) => ({ kind: 'select', options, searchable: true }) as const;

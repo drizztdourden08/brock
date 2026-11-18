@@ -46,8 +46,8 @@ describe('K1 a hub whose home page is hidden', { tags: ['critical'] }, () => {
 
   it('leaves the home out of the side nav config', () => {
     const list = visibleHubPages(hub, false);
-    expect(buildHubNav(list.homeListed ? hub.home : undefined, list.groups)).not.toHaveProperty('home');
-    expect(buildHubNav(hub.home, list.groups)).toHaveProperty('home');
+    expect(buildHubNav({ home: list.homeListed ? hub.home : undefined, groups: list.groups })).not.toHaveProperty('home');
+    expect(buildHubNav({ home: hub.home, groups: list.groups })).toHaveProperty('home');
   });
 
   it('still opens on the home by route', () => {

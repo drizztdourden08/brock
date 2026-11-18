@@ -6,7 +6,7 @@ const writeWebPreference = (preference: string | null): void => {
     if (preference === null) localStorage.removeItem(STORAGE_KEY);
     else localStorage.setItem(STORAGE_KEY, preference);
   } catch {
-    return;
+    return undefined;
   }
 };
 

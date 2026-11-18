@@ -69,11 +69,11 @@ describe('K1 performanceGroups and the snapshot', { tags: ['critical'] }, () => 
   const renderer = { fps: 60, frameMs: 16.7, worstFrameMs: 33.4, longTasks: 0, longTaskMs: 0, lagMs: 1.2, domNodes: 900, heapUsedBytes: null, heapLimitBytes: null };
 
   it('shows only the sections the pref keeps, in a fixed order', () => {
-    expect(performanceGroups(['app', 'renderer'], renderer, null, FACTS).map((group) => group.id)).toEqual(['renderer', 'app']);
+    expect(performanceGroups({ shown: ['app', 'renderer'], renderer, processes: null, facts: FACTS }).map((group) => group.id)).toEqual(['renderer', 'app']);
   });
 
   it('reads the main process, every process and the widget windows', () => {
-    const rows = rowsOf('Processes', performanceGroups(['processes'], null, { data: PROCESSES, ipcPerSecond: 3.25 }, FACTS));
+    const rows = rowsOf('Processes', performanceGroups({ shown: ['processes'], renderer: null, processes: { data: PROCESSES, ipcPerSecond: 3.25 }, facts: FACTS }));
     expect(rows['All processes']).toBe('5, 4.7% CPU, 270.0 MB');
     expect(rows['System memory']).toBe('7.8 GB, the app holds 3.4%');
     expect(rows['IPC calls']).toBe('3.3/s, 40 total');
@@ -84,7 +84,7 @@ describe('K1 performanceGroups and the snapshot', { tags: ['critical'] }, () => 
   });
 
   it('copies every shown row under a dated title', () => {
-    const groups = performanceGroups(['renderer', 'app'], renderer, null, FACTS);
+    const groups = performanceGroups({ shown: ['renderer', 'app'], renderer, processes: null, facts: FACTS });
     const text = buildSnapshot(groups, new Date('2026-10-04T10:00:00Z'));
     expect(text.split('\n').slice(0, 4)).toEqual(['Performance snapshot, 2026-10-04T10:00:00.000Z', '', 'Renderer', '  Frame rate: 60 fps']);
     expect(text).toContain('  JS heap: not reported');

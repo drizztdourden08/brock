@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind logic */
+/* @layer renderer-shell @kind constants */
 import type { Layer } from '@drizztdourden08/brock-core/i18n';
 import { brockAppLayer } from './brock-app-layer';
 import { brockSettingsLayer } from './brock-settings-layer';

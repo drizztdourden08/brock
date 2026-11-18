@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ProcessDiagnostics } from '@drizztdourden08/brock-core';
-import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { I18n, Text } from '@drizztdourden08/brock-core/i18n';
 import type { StatTrend, StatTrendMeaning } from '@drizztdourden08/tessera/composites';
 import type { SparklineProps, StackedBarColor, StatusTone } from '@drizztdourden08/tessera/primitives';
 
@@ -168,8 +168,16 @@ interface PerformanceDetailsProps {
   groups: readonly PerformanceGroup[];
 }
 
+interface PerformanceGroupsInput {
+  shown: readonly PerformanceSectionId[];
+  renderer: RendererSample | null;
+  processes: ProcessSample | null;
+  facts: AppFacts;
+  i18n?: I18n;
+}
+
 export type {
-  AppFacts, ByteParts, FrameCounter, GaugeReadings, MemoryGroup, MemoryGroupId, PerformanceActivityProps, PerformanceBarProps, PerformanceDetailsProps, PerformanceGaugesProps, PerformanceGroup, PerformanceMemoryProps,
+  AppFacts, ByteParts, FrameCounter, GaugeReadings, MemoryGroup, MemoryGroupId, PerformanceActivityProps, PerformanceBarProps, PerformanceDetailsProps, PerformanceGaugesProps, PerformanceGroup, PerformanceGroupsInput, PerformanceMemoryProps,
   PerformanceRow, PerformanceSectionChoice, PerformanceSectionId, PerformanceSectionProps, PerformanceTileSpec, PerformanceTilesProps, PerformanceWithMemory, ProcessFeed, ProcessSample, ProcessTotals,
   RendererFeed, RendererReading, RendererSample, SeriesChange, TaskCounter,
 };

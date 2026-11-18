@@ -35,5 +35,9 @@
   "subtitle.notSaved": "Not saved",
   "subtitle.retry": "Retry",
   "subtitle.saved": "Saved",
-  "workspace.switch": "Switch workspace"
+  "workspace.switch": "Switch workspace",
+  "command.search": "Search",
+  "command.fullscreen": "Toggle fullscreen",
+  "command.back": "Go back",
+  "titleBar.menu": "Menu"
 }

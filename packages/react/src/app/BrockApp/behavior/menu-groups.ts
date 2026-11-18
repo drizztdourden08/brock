@@ -47,7 +47,7 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
     ...(tourEntry ? [tourEntry] : []),
-    { ...SHORTCUTS_HELP_ENTRY, onClick: onShortcuts },
+    { ...shell(SHORTCUTS_HELP_ENTRY), onClick: onShortcuts },
     { ...shell(REPORT_BUG_ENTRY), onClick: onReportBug },
     { ...shell(DEV_CONSOLE_ENTRY), onClick: onDevConsole },
   ];

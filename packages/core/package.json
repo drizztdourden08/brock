@@ -36,6 +36,7 @@
     "./look": "./src/look/index.ts",
     "./types": "./src/types/index.ts",
     "./jobs": "./src/jobs/index.ts",
+    "./i18n": "./src/i18n/index.ts",
     "./package.json": "./package.json"
   },
   "files": [

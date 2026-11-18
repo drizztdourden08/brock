@@ -1,0 +1,30 @@
+/* @layer core @kind logic */
+import type { Catalog } from './catalog/catalog.type';
+import type { MissingEvent } from './i18n.type';
+import { findInChain } from './catalog/find-in-chain';
+import { isPseudoLocale } from './locale/pseudo/is-pseudo-locale';
+import { sameLanguage } from './locale/same-language';
+
+type ResolveDeps = {
+  readonly catalog: Catalog;
+  readonly locale: string;
+  readonly chain: readonly string[];
+  readonly dev: boolean;
+  readonly report: (event: MissingEvent) => void;
+};
+
+type Resolved = { readonly text: string; readonly locale: string; readonly literal: boolean };
+
+const resolveMessage = (deps: ResolveDeps, key: string): Resolved => {
+  const { locale, report } = deps;
+  const hit = findInChain(deps.catalog, deps.chain, key);
+  if (!hit) {
+    report({ kind: 'missing', key, locale });
+    return { text: deps.dev ? `[[${key}]]` : key, locale, literal: true };
+  }
+  const same = sameLanguage(hit.locale, locale);
+  if (!same && !isPseudoLocale(locale)) report({ kind: 'fallback', key, locale, from: hit.locale });
+  return { text: hit.text, locale: same ? locale : hit.locale, literal: false };
+};
+
+export { resolveMessage };

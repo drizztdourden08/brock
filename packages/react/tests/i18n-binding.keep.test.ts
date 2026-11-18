@@ -25,7 +25,7 @@ const mount = (i18n: I18n): HTMLElement => {
   const host = document.createElement('div');
   document.body.append(host);
   root = createRoot(host);
-  act(() => root?.render(createElement(I18nProvider, { i18n }, createElement(Probe))));
+  act(() => root?.render(createElement(I18nProvider, { i18n, children: createElement(Probe) })));
   return host;
 };
 

@@ -51,6 +51,7 @@ import { bridgeKeyOf } from '../bridge/bridge-key';
 import { opensBridgeOnBoot } from './opens-bridge-on-boot';
 import { createMainI18n } from '../i18n/create-main-i18n';
 import { installMainI18n } from '../i18n/install-main-i18n';
+import { offeredTags } from '../i18n/offered-tags';
 import { watchLocale } from '../i18n/watch-locale';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
@@ -122,7 +123,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   pinHeadlessRendering(flags);
   pinReviewRendering(flags);
 
-  installMainI18n(createMainI18n(options.locales));
+  installMainI18n(createMainI18n(options.locales), offeredTags(options.locales));
   const ctx = createMainContext({
     product, flags, instance, profileHooks: composeProfileHooks([...modules.map((m) => m.profileHooks), options.profileHooks]), dataDomains: options.dataDomains, icon,
     bridge: { options: options.bridge ?? null, key: bridgeKeyOf(instance.name, userDataOverride ?? portableData) },
@@ -135,6 +136,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
     security: options.security,
   };
 
+  for (const module of modules) module.beforeReady?.(ctx);
   if (portableData) ctx.log(`user data lives beside the app: ${portableData}`);
   if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
 

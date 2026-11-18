@@ -8,6 +8,7 @@ export type { MainWindowControl } from './window/main-window-control.type';
 export type { ChooseDialogOptions, ConfirmDialogOptions, DialogChoice, MainDialogs } from './dialogs/dialogs.type';
 export type { TrayControl, TrayItemHandler } from './tray/tray.type';
 export type { MainLocales } from './i18n/main-locales.type';
+export { offeredLocales } from './i18n/offered-locales';
 
 export { handle } from './ipc/handle';
 export { on } from './ipc/on';

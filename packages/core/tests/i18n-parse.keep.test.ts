@@ -30,8 +30,8 @@ describe('I18n message syntax', { tags: ['critical'] }, () => {
       base: 'en',
       layers: [{ locale: 'en', namespace: 'app', messages: { m: 'Read the <link>guide for {name}</link> first' } }],
     });
-    const parts = i18n.parts<string>('app:m', { name: 'Ann' }, { link: (chunks) => `[${chunks.join('')}]` });
-    expect(parts).toEqual(['Read the ', '[guide for Ann]', ' first']);
+    const parts = i18n.parts<{ link: string }>('app:m', { name: 'Ann' }, { link: (chunks) => ({ link: chunks.join('') }) });
+    expect(parts).toEqual(['Read the ', { link: 'guide for Ann' }, ' first']);
   });
 
   it('follows ICU apostrophe quoting', () => {

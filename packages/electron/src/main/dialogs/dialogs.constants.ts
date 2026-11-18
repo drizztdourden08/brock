@@ -1,6 +1,8 @@
 /* @layer electron-main @kind constants */
-const DEFAULT_CONFIRM_KEY = 'brock-main:dialog.ok';
-const DEFAULT_CANCEL_KEY = 'brock-main:dialog.cancel';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
+const DEFAULT_CONFIRM_KEY = msg('brock-main:dialog.ok');
+const DEFAULT_CANCEL_KEY = msg('brock-main:dialog.cancel');
 const CONFIRM_BUTTON = 0;
 const CANCEL_BUTTON = 1;
 const MIN_CHOICES = 2;

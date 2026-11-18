@@ -12,7 +12,7 @@ const useTesseraSetup = (product: ProductConfig): TesseraOverrides => {
   useBrandPalette(product.icons.brand);
   const { i18n, locale } = useI18n();
   return useMemo(() => {
-    const base = tesseraOverrides(product.menu);
+    const base: TesseraOverrides = { ...tesseraOverrides(product.menu), locale: i18n.locale };
     const translated = tesseraStringsOf(i18n);
     return Object.keys(translated).length === 0 ? base : { ...base, strings: mergeStringGroups(translated, base.strings) };
   }, [product.menu, i18n, locale]);

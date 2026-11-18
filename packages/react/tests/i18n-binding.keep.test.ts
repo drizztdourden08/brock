@@ -14,7 +14,7 @@ Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 const EN: Layer = { locale: 'en', namespace: 'app', messages: { hello: 'Hello' } };
 const FR: Layer = { locale: 'fr', namespace: 'app', messages: { hello: 'Bonjour' } };
-const TESSERA_FR: Layer = { locale: 'fr', namespace: 'tessera', messages: { 'common.cancel': 'Annuler' } };
+const TESSERA_FR: Layer = { locale: 'fr', namespace: 'tessera', messages: { 'common.cancel': 'Annuler', 'common.tryOf': 'Essai {attempt} sur {attempts}' } };
 const KEY = 'app:hello' as Parameters<I18n['t']>[0];
 
 let root: Root | null = null;
@@ -57,5 +57,12 @@ describe('renderer i18n binding', { tags: ['critical'] }, () => {
     const strings = tesseraStringsOf(i18n) as Record<string, Record<string, string>>;
     expect(strings.common?.cancel).toBe('Annuler');
     expect(strings.dates?.locale).toBe('fr');
+  });
+
+  it('translates a function string with two params', async () => {
+    const i18n = createI18n({ base: 'en', layers: [EN], load: () => Promise.resolve([FR, TESSERA_FR]) });
+    await i18n.setLocale('fr');
+    const tryOf = (tesseraStringsOf(i18n) as Record<string, Record<string, unknown>>).common?.tryOf;
+    expect(typeof tryOf === 'function' ? tryOf('2', '5') : '').toBe('Essai 2 sur 5');
   });
 });

@@ -1,4 +1,7 @@
 /* @layer renderer-shell @kind types */
-type Groups = Record<string, Record<string, string>>;
+type StringFunction = (...args: string[]) => string;
+type Group = Record<string, string | StringFunction>;
+type Groups = Record<string, Group>;
+type ParamTable = Record<string, Record<string, readonly string[]> | undefined>;
 
-export type { Groups };
+export type { Group, Groups, ParamTable, StringFunction };

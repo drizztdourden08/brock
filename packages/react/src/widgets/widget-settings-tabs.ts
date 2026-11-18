@@ -9,7 +9,7 @@ import { WIDGET_SETTINGS_TAB } from './widget.constants';
 import type { WidgetDef } from './widget.type';
 
 const widgetSettingsTabs = (definitions: readonly WidgetDef[], text: (value: Text) => string = fallbackText): TabDef<object>[] => {
-  const sections = definitions.flatMap((def) => widgetPrefSection(def) ?? []);
+  const sections = definitions.flatMap((def) => widgetPrefSection(def, text) ?? []);
   if (sections.length === 0) return [];
   return [{
     id: WIDGET_SETTINGS_TAB.id,

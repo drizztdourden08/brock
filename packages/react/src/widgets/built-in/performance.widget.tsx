@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind component */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { WidgetMeta } from '../widget.type';
 import { PerformanceSettings, PerformanceWidget } from './PerformanceWidget';
 
 const meta: WidgetMeta = {
-  label: 'Performance',
+  label: msg('brock-app:widgets.performance.label'),
   icon: 'cpu',
   defaultSide: 'right',
   defaultDockedSize: 340,

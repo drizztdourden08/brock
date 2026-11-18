@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import type { WidgetDockBack, WidgetFrameWire } from '@drizztdourden08/brock-core';
 import { WidgetOptions, createDefaultLayout, frameOf } from '@drizztdourden08/tessera/composites';
+import { useText } from '../../../i18n';
 import { hostApi } from '../../../host/host-api';
 import { widgetOptionsOf } from '../../widget-options-of';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
@@ -9,6 +10,7 @@ const noop = (): void => undefined;
 
 const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
   const { id, definition, frame, own, defaultOpen } = props;
+  const text = useText();
   const back = (where?: WidgetDockBack): void => hostApi()?.dockBackWidget(id, where);
   const setFrame = (patch: Partial<WidgetFrameWire>): void => hostApi()?.setWidgetFrame(id, patch);
 
@@ -21,7 +23,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
 
   return (
     <WidgetOptions
-      title={definition?.label ?? id}
+      title={definition ? text(definition.labelText) : id}
       placement="popped"
       makeRoom={false}
       opacity={frame.opacity}

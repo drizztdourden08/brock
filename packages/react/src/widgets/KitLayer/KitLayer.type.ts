@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { KitOverlayDef, WidgetKitDef } from '../kits/widget-kit.type';
 
 interface KitLayerProps {
   kit: WidgetKitDef;
   hidden: readonly string[];
-  reason: string | null;
+  reason: Text | null;
   onClose: () => void;
 }
 
@@ -15,7 +16,7 @@ interface KitBarProps {
 
 interface KitWaitingProps {
   kit: WidgetKitDef;
-  reason: string;
+  reason: Text;
   onClose: () => void;
 }
 

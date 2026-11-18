@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { floatingRect, frameOf, layoutTree, placementOf } from '@drizztdourden08/tessera/composites';
 import type { LeafRect, Rect, WidgetLayout } from '@drizztdourden08/tessera/composites';
+import { controlSources } from '../app/control-sources';
 import { DEFAULT_CONTEXT } from '../contexts/contexts.constants';
 import { useContextsStore } from '../contexts/useContextsStore';
 import { useWidgetLayoutStore } from './useWidgetLayoutStore';
@@ -35,7 +36,7 @@ const snapshotOf = (def: WidgetDef, layout: WidgetLayout, leaves: readonly LeafR
   const floating = layout.floating.find((entry) => entry.id === def.id);
   return {
     id: def.id,
-    label: useWidgetTitleStore.getState().titles[def.id] ?? def.label,
+    label: useWidgetTitleStore.getState().titles[def.id] ?? controlSources.get().text(def.labelText),
     visible: placement !== null,
     placement,
     ...(placement === 'docked' ? dockedOf(layout, leaves, def.id) : NO_DOCK),

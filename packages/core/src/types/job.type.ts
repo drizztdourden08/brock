@@ -1,4 +1,5 @@
 /* @layer core @kind types */
+import type { Text } from '../i18n/text.type';
 type JobStepState = 'upcoming' | 'current' | 'done' | 'failed' | 'skipped';
 
 type JobState = 'running' | 'done' | 'failed' | 'cancelled';
@@ -7,13 +8,13 @@ type JobLogLevel = 'info' | 'warn' | 'error';
 
 interface JobStepDef {
   id: string;
-  label: string;
+  label: Text;
   weight?: number;
 }
 
 interface JobStepWire {
   id: string;
-  label: string;
+  label: Text;
   weight: number;
   state: JobStepState;
 }
@@ -27,7 +28,7 @@ interface JobLogLine {
 type JobDuplicatePolicy = 'throw' | 'queue' | 'parallel' | 'join';
 
 interface JobOptions {
-  title?: string;
+  title?: Text;
   cancellable?: boolean;
   visible?: boolean;
   forwardLog?: boolean;
@@ -36,7 +37,7 @@ interface JobOptions {
 
 interface JobSnapshot {
   id: string;
-  title: string;
+  title: Text;
   state: JobState;
   steps: JobStepWire[];
   currentStep: string | null;

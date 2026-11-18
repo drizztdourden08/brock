@@ -12,21 +12,21 @@ import { kitViewOf } from './kit-view-of';
 import { KIT_ICON, KIT_KEY_PREFIX, KIT_OPEN_ICON, KIT_OVERLAY_ICON, KIT_OVERLAY_KEY_PREFIX, KIT_WORDS, NO_OVERLAYS } from './widget-kit.constants';
 import type { KitMenuState, KitStatus, KitView, WidgetKitDef } from './widget-kit.type';
 
-const sorted = <T extends { label: string; order?: number }>(items: readonly T[]): T[] =>
-  items.map((item) => ({ item, order: item.order ?? UNORDERED, label: item.label })).sort(byOrder).map(({ item }) => item);
+const sorted = <T extends { order?: number }>(items: readonly T[], labelOf: (item: T) => Text, text: (value: Text) => string): T[] =>
+  items.map((item) => ({ item, order: item.order ?? UNORDERED, label: text(labelOf(item)) })).sort(byOrder).map(({ item }) => item);
 
-const partEntries = (kit: WidgetKitDef, state: KitMenuState, view: KitView | null): MenuEntry[] => {
+const partEntries = (kit: WidgetKitDef, state: KitMenuState, view: KitView | null, text: (value: Text) => string): MenuEntry[] => {
   const open = state.active === kit.id;
-  const members = sorted(kitMembers(kit.id, state.members)).map((def): MenuItem => ({
+  const members = sorted(kitMembers(kit.id, state.members), (def) => def.labelText, text).map((def): MenuItem => ({
     key: `${WIDGET_KEY_PREFIX}${def.id}`,
-    label: def.label,
+    label: text(def.labelText),
     icon: def.icon,
     checked: open && view !== null && isWidgetOpen(view.layout, def.id),
     onClick: () => state.toggleMember(def.id),
   }));
-  const overlays = sorted(kit.overlays ?? NO_OVERLAYS).map((overlay): MenuItem => ({
+  const overlays = sorted(kit.overlays ?? NO_OVERLAYS, (overlay) => overlay.label, text).map((overlay): MenuItem => ({
     key: `${KIT_OVERLAY_KEY_PREFIX}${overlay.id}`,
-    label: overlay.label,
+    label: text(overlay.label),
     icon: KIT_OVERLAY_ICON,
     checked: open && view !== null && !view.hidden.includes(overlay.id),
     disabled: !open,
@@ -39,15 +39,15 @@ const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus, tex
   const open = state.active === kit.id;
   return {
     key: `${KIT_KEY_PREFIX}${kit.id}`,
-    label: kit.label,
+    label: text(kit.label),
     icon: kit.icon ?? KIT_ICON,
-    description: status.reason ?? undefined,
+    description: status.reason === null ? undefined : text(status.reason),
     ...(kit.devOnly === true ? { devOnly: true } : {}),
     ...menuPlacementOf(kit.menu),
     children: [
       { key: `${KIT_KEY_PREFIX}${kit.id}-open`, label: text(open ? KIT_WORDS.close : KIT_WORDS.open), icon: open ? 'x' : KIT_OPEN_ICON, onClick: () => state.toggle(kit.id) },
       'separator',
-      ...partEntries(kit, state, kitViewOf(kit.id, state)),
+      ...partEntries(kit, state, kitViewOf(kit.id, state), text),
       'separator',
       { key: `${KIT_KEY_PREFIX}${kit.id}-reset`, label: text(KIT_WORDS.reset), icon: 'rotate-ccw', confirm: true, onClick: () => state.reset(kit.id) },
     ],
@@ -55,7 +55,7 @@ const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus, tex
 };
 
 const buildKitMenuEntries = (state: KitMenuState, statusOf: (kit: WidgetKitDef) => KitStatus, text: (value: Text) => string = fallbackText): MenuItem[] =>
-  sorted(state.kits).flatMap((kit) => {
+  sorted(state.kits, (kit) => kit.label, text).flatMap((kit) => {
     const status = statusOf(kit);
     return status.shown ? [kitEntry(kit, state, status, text)] : [];
   });

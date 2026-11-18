@@ -13,8 +13,8 @@ const KitWaiting = (props: KitWaitingProps) => {
       <EmptyState
         size="md"
         icon={<Icon name="lock" size={24} />}
-        title={t('brock-app:kit.waiting', { label: kit.label })}
-        message={reason}
+        title={t('brock-app:kit.waiting', { label: text(kit.label) })}
+        message={text(reason)}
         action={<Button size="sm" variant="secondary" onClick={onClose}>{text(KIT_WORDS.close)}</Button>}
       />
     </Box>

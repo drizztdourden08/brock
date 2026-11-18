@@ -1,6 +1,7 @@
 /* @layer electron-main @kind logic */
 import { randomUUID } from 'crypto';
 import { app } from 'electron';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { DataImportPlan } from '@drizztdourden08/brock-core/platform';
 import { DATA_EXPORT_JOB, DATA_IMPORT_JOB } from '@drizztdourden08/brock-core/storage';
 import type { HandlerGroup } from '../types/main-context.type';
@@ -29,7 +30,7 @@ const transferHandlers: HandlerGroup = {
       for (const id of ids) storage.def(id);
       const target = await pickTransferPath(window(), product.id, format, 'export');
       if (target === null) return null;
-      return job(DATA_EXPORT_JOB, stepsOf(ids), { title: 'Exporting data' }).run((running) => exportDomains({
+      return job(DATA_EXPORT_JOB, stepsOf(ids), { title: msg('brock-app:storage.job.export') }).run((running) => exportDomains({
         domains: storage, ids, format, target, app: { app: product.id, appVersion: app.getVersion() }, signal: running.signal, report: stepReporter(running, storage),
       }));
     });
@@ -48,7 +49,7 @@ const transferHandlers: HandlerGroup = {
       if (!from) throw new Error('this import is no longer pending; pick the export again');
       pending.delete(token);
       const chosen = ids.filter((id) => storage.list().some((def) => def.domain === id));
-      return job(DATA_IMPORT_JOB, stepsOf(chosen), { title: 'Importing data' }).run((running) => importDomains({
+      return job(DATA_IMPORT_JOB, stepsOf(chosen), { title: msg('brock-app:storage.job.import') }).run((running) => importDomains({
         domains: storage, from, ids: chosen, mode, signal: running.signal, report: stepReporter(running, storage),
       }));
     });

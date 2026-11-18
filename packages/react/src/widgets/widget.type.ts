@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { Profile, ProductMenuGroup, WidgetWindowOpen } from '@drizztdourden08/brock-core';
 import type { ExternalDrag, ScreenPoint, ToolbarLayout, WidgetDefinition, WidgetGates, WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { SettingItem } from '../settings/settings.type';
@@ -19,6 +20,7 @@ interface WidgetMenuPlacement {
 }
 
 interface WidgetDef extends WidgetDefinition {
+  labelText: Text;
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;
@@ -35,9 +37,9 @@ interface WidgetDef extends WidgetDefinition {
   drop?: WidgetFileDrop;
 }
 
-type WidgetInput = Pick<WidgetDef, 'id' | 'label' | 'render'> & Partial<Omit<WidgetDef, 'id' | 'label' | 'render'>>;
+type WidgetInput = Pick<WidgetDef, 'id' | 'render'> & { label: Text } & Partial<Omit<WidgetDef, 'id' | 'label' | 'labelText' | 'render'>>;
 
-type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'render' | 'settings' | 'tools' | 'empty'>> & { settings?: ComponentType; tools?: ComponentType; empty?: ComponentType };
+type WidgetMeta = Partial<Omit<WidgetDef, 'id' | 'label' | 'labelText' | 'render' | 'settings' | 'tools' | 'empty'>> & { label?: Text; settings?: ComponentType; tools?: ComponentType; empty?: ComponentType };
 
 interface WidgetFile {
   id: string;

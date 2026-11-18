@@ -4,6 +4,7 @@ import { useText } from '../i18n';
 import type { MenuItem } from '../menu/menu.type';
 import { useBrock } from '../app/useBrock';
 import { useDeveloperTools } from '../app/useDeveloperTools';
+import { resolveWidgetLabels } from './resolve-widget-labels';
 import { arrangeWidgetMenu } from './arrange-widget-menu';
 import { buildWidgetMenuEntries } from './build-widget-menu-entries';
 import { useKitMenuEntries } from './kits/useKitMenuEntries';
@@ -24,7 +25,7 @@ const useWidgetMenuEntries = (): MenuItem[] => {
   const workspaceEntries = useWorkspaceMenuEntries();
   const text = useText();
   return useMemo(() => {
-    const own = buildWidgetMenuEntries(definitions, layout, toggle, developerTools);
+    const own = buildWidgetMenuEntries(resolveWidgetLabels(definitions, text), layout, toggle, developerTools);
     const shown = kitOpen ? own.map((entry) => ({ ...entry, checked: false })) : own;
     return [...arrangeWidgetMenu([...shown, ...kits, ...workspaceEntries], entries, developerTools, text), resetLayoutEntry(reset, text)];
   }, [definitions, layout, toggle, developerTools, kits, kitOpen, workspaceEntries, reset, entries, text]);

@@ -4,7 +4,7 @@ import type { Size } from '@drizztdourden08/tessera/composites';
 import type { MenuItemDef } from '../menu/menu.type';
 import type { FocusKeep, WidgetDef } from './widget.type';
 
-const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'render'> = {
+const WIDGET_DEFAULTS: Omit<WidgetDef, 'id' | 'label' | 'labelText' | 'render'> = {
   defaultVisibility: 'always',
   defaultSide: 'right',
   defaultDockedSize: 320,

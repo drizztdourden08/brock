@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { WidgetLayout } from '@drizztdourden08/tessera/composites';
 import type { ShowRule } from '../../screens/show/show.type';
 import type { LayoutPreset } from '../layout-preset.type';
@@ -7,19 +8,19 @@ import type { WidgetDef, WidgetMenuPlacement } from '../widget.type';
 
 interface KitRequirement {
   context: string;
-  reason: string;
+  reason: Text;
 }
 
 interface KitOverlayDef {
   id: string;
-  label: string;
+  label: Text;
   order?: number;
   render: () => ReactNode;
 }
 
 interface WidgetKitDef {
   id: string;
-  label: string;
+  label: Text;
   icon?: string;
   order?: number;
   devOnly?: boolean;
@@ -34,7 +35,7 @@ type WidgetKitMeta = Partial<Omit<WidgetKitDef, 'id' | 'overlays'>>;
 
 interface KitOverlayMeta {
   kit: string;
-  label?: string;
+  label?: Text;
   order?: number;
 }
 
@@ -67,7 +68,7 @@ interface KitViewSource {
 
 interface KitStatus {
   shown: boolean;
-  reason: string | null;
+  reason: Text | null;
 }
 
 interface WidgetKitState {

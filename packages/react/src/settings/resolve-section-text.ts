@@ -1,9 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { resolveItemText } from './resolve-item-text';
+import type { TextOf } from './resolve-item-text.type';
 import type { Section, SectionDef, SubSection, SubSectionDef } from './settings.type';
-
-type TextOf = (value: Text) => string;
 
 const subOf = (sub: SubSectionDef, text: TextOf): SubSection => ({
   id: sub.id,

@@ -62,7 +62,7 @@ describe('renderer i18n binding', { tags: ['critical'] }, () => {
   it('translates a function string with two params', async () => {
     const i18n = createI18n({ base: 'en', layers: [EN], load: () => Promise.resolve([FR, TESSERA_FR]) });
     await i18n.setLocale('fr');
-    const tryOf = (tesseraStringsOf(i18n) as Record<string, Record<string, unknown>>).common?.tryOf;
-    expect(typeof tryOf === 'function' ? tryOf('2', '5') : '').toBe('Essai 2 sur 5');
+    const tryOf = (tesseraStringsOf(i18n) as Record<string, Record<string, ((one: string, two: string) => string) | undefined>>).common?.tryOf;
+    expect(tryOf ? tryOf('2', '5') : '').toBe('Essai 2 sur 5');
   });
 });

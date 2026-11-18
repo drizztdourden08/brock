@@ -2,8 +2,6 @@
 import type { SearchResultsGroup } from '@drizztdourden08/tessera/composites';
 import { liveTabGroup } from '../../../settings/SettingsHub/behavior/live-tab-group';
 import { matchTabs } from '../../../settings/SettingsHub/behavior/match-tabs';
-import type { SettingsControlProps, TabDef } from '../../../settings/settings.type';
-import type { HubPage } from '../../hub.type';
 import type { HubLiveInput } from './hub-live-groups.type';
 
 const hubLiveGroups = <S extends object>(input: HubLiveInput<S>): SearchResultsGroup[] => {

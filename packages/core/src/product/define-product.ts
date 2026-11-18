@@ -45,13 +45,15 @@ const assertMascot = (mascot: ProductInput['mascot']): void => {
   if (mascot.searchHint !== undefined && !mascot.searchHint.trim()) throw new Error('product.mascot.searchHint must be a sentence, or left out for the default');
 };
 
+const blankText = (value: string | object): boolean => typeof value === 'string' && !value.trim();
+
 const assertTray = (tray: ProductInput['tray']): void => {
   if (!tray) return;
-  if (typeof tray.tooltip === 'string' && !tray.tooltip.trim()) throw new Error('product.tray.tooltip is required');
+  if (blankText(tray.tooltip)) throw new Error('product.tray.tooltip is required');
   const ids = new Set<string>();
   for (const item of tray.menu ?? []) {
     if ('type' in item) continue;
-    if (typeof item.label === 'string' && !item.label.trim()) throw new Error('product.tray.menu items need a label');
+    if (blankText(item.label)) throw new Error('product.tray.menu items need a label');
     if (!('id' in item)) continue;
     if (!item.id.trim() || ids.has(item.id)) throw new Error(`product.tray.menu id "${item.id}" must be unique and not empty`);
     ids.add(item.id);

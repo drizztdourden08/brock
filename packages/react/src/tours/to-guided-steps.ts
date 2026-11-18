@@ -7,12 +7,8 @@ import { tourArt } from './tour-art';
 import { prepareStep } from './prepare-step';
 import { tourTargets } from './resolve-tour-target';
 import { stepAdvance } from './step-advance';
+import type { GuidedExtras } from './to-guided-steps.type';
 import type { BrockTourTarget, TourDef, TourStepDef } from './tour.type';
-
-interface GuidedExtras {
-  clickHint: ReactNode;
-  text: (value: Text) => string;
-}
 
 const lazyTarget = (target: BrockTourTarget): TourTarget => ({
   get current() {

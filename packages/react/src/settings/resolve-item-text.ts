@@ -1,8 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { TextOf } from './resolve-item-text.type';
 import type { SettingAction, SettingActionDef, SettingChoice, SettingChoiceDef, SettingControl, SettingControlDef, SettingDescription, SettingItem, SettingItemDef } from './settings.type';
-
-type TextOf = (value: Text) => string;
 
 const choiceOf = (choice: SettingChoiceDef, text: TextOf): SettingChoice => {
   const { label, hint, ...rest } = choice;

@@ -3,6 +3,8 @@ import { useCallback, useContext, useMemo } from 'react';
 import { SettingsPage, SettingsSection } from '@drizztdourden08/tessera/composites';
 import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
 import { EmptyState, useTesseraStrings } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../i18n';
+import { resolveSectionText } from '../resolve-section-text';
 import { readSource } from '../read-source';
 import type { SettingItem, SettingsLayoutProps } from '../settings.type';
 import type { ResolvedSection } from './SettingsLayout.type';
@@ -16,7 +18,9 @@ import { SettingsPageContext } from './behavior/settings-page-context';
 import { SettingsPreviewLayout } from './sub-components/SettingsPreviewLayout';
 
 const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
-  const { sections, settings, defaults, onChange, renderControl, isDisabled, lockCauseOf, lockOverlay, emptyMessage, preview, previewPlacement, previewLabel } = props;
+  const { sections: given, settings, defaults, onChange, renderControl, isDisabled, lockCauseOf, lockOverlay, emptyMessage, preview, previewPlacement, previewLabel } = props;
+  const text = useText();
+  const sections = useMemo(() => resolveSectionText(given, text), [given, text]);
   const page = useContext(SettingsPageContext);
   const { panels } = useTesseraStrings();
   const query = page?.variant === 'results' ? page.query : '';

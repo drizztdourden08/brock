@@ -1,11 +1,17 @@
 /* @layer renderer-shell @kind logic */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { TourStep, TourTarget } from '@drizztdourden08/tessera/composites';
 import { tourArt } from './tour-art';
 import { prepareStep } from './prepare-step';
 import { tourTargets } from './resolve-tour-target';
 import { stepAdvance } from './step-advance';
 import type { BrockTourTarget, TourDef, TourStepDef } from './tour.type';
+
+interface GuidedExtras {
+  clickHint: ReactNode;
+  text: (value: Text) => string;
+}
 
 const lazyTarget = (target: BrockTourTarget): TourTarget => ({
   get current() {
@@ -22,7 +28,8 @@ const introOf = (step: TourStepDef): Pick<TourStep, 'intro' | 'art' | 'reveal'> 
   ...(step.reveal ? { reveal: step.reveal } : {}),
 });
 
-const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, clickHint: ReactNode): TourStep => {
+const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, extras: GuidedExtras): TourStep => {
+  const { clickHint, text } = extras;
   const lit = tourTargets.litOf(step);
   const relayed = tourTargets.poppedClick(step) !== null;
   const click = step.target === undefined || relayed ? undefined : tourTargets.clickOf(step);
@@ -31,7 +38,7 @@ const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, clickHint
   const hint = hintOf(step, relayed, clickHint);
   return {
     id: step.id,
-    title: step.title,
+    title: text(step.title),
     body: step.body,
     ...(lit && !popped ? { target: lazyTarget(lit) } : {}),
     ...(click && advance === 'click' ? { clickTarget: lazyTarget(click) } : {}),
@@ -44,7 +51,7 @@ const toGuidedStep = (tour: TourDef, step: TourStepDef, index: number, clickHint
   };
 };
 
-const toGuidedSteps = (tour: TourDef, clickHint?: ReactNode): TourStep[] =>
-  tour.steps.map((step, index) => toGuidedStep(tour, step, index, clickHint));
+const toGuidedSteps = (tour: TourDef, text: (value: Text) => string, clickHint?: ReactNode): TourStep[] =>
+  tour.steps.map((step, index) => toGuidedStep(tour, step, index, { clickHint, text }));
 
 export { toGuidedSteps };

@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import { bindAlternate } from './confirm-alternate';
 import type { ConfirmChoiceOptions } from './dialog.type';
+import { resolveDialogBase } from './resolve-dialog-base';
+import { resolveDialogChoices } from './resolve-dialog-choices';
 import { useDialogStore } from './useDialogStore';
 
 const confirmChoice = <T extends string>(options: ConfirmChoiceOptions<T>): Promise<T | null> =>
@@ -9,8 +11,8 @@ const confirmChoice = <T extends string>(options: ConfirmChoiceOptions<T>): Prom
     const store = useDialogStore.getState();
     store.dismiss();
     store.show({
-      ...rest,
-      choices,
+      ...resolveDialogBase(rest),
+      choices: resolveDialogChoices(choices),
       choice: initial,
       alternate: bindAlternate(alternate, () => resolve(null)),
       onConfirm: () => {

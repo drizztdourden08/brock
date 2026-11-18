@@ -9,10 +9,10 @@ import { validateSetting } from './validate-setting';
 const refuse = (why: SettingSetFailure, reason: string): SettingSetResult => ({ ok: false, why, reason });
 
 const setSetting = (key: string, value: unknown): SettingSetResult => {
-  const { tabs, settings: store } = controlSources.get();
+  const { tabs, settings: store, text } = controlSources.get();
   const state = store?.getState();
   if (state?.hydrated !== true) return refuse('not-ready', 'The settings are not loaded yet.');
-  const found = findSetting(tabs, state.settings, key);
+  const found = findSetting(tabs, state.settings, key, text);
   if (found === null) return refuse('unknown', `No setting has the key "${key}".`);
   if (found.custom) return refuse('scope', `"${key}" is not an app setting.`);
   const problem = validateSetting(found.item.control, readPath(state.settings, key), value);

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ArgField, ArgOption, ArgSchema, ArgValue } from '@drizztdourden08/brock-core/args';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 
@@ -123,6 +124,8 @@ interface CommandState {
   persist: ((overrides: KeymapOverrides) => void) | null;
 }
 
+type CommandInput = Omit<CommandDef, 'label'> & { label: Text };
+
 interface CommandLookup {
   route: string | null;
   typing: boolean;
@@ -157,5 +160,5 @@ interface CommandBinding {
 
 export type {
   ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordEvent, ChordInput, ChordList, ChordLookup, CommandBinding, CommandBlock, CommandConflict, CommandDescription, CommandHold, CommandRunResult, CommandContext, CommandData, CommandTrigger,
-  CommandDef, DefaultBinding, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
+  CommandDef, CommandInput, DefaultBinding, CommandGroup, CommandGroupsView, HeldModifier, HoldCause, HoldContext, KeymapRowInput, CommandLookup, CommandState, ParsedChord, PlatformChords,
 };

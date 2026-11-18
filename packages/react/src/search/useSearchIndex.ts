@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
+import { useText } from '../i18n';
 import { useBrock } from '../app/useBrock';
 import { useDeveloperTools } from '../app/useDeveloperTools';
 import type { MenuEntry } from '../menu/menu.type';
@@ -20,6 +21,7 @@ import { useSearchActionStore } from './useSearchActionStore';
 
 const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: readonly SearchAction[]): SearchEntry[] => {
   const { home, tabs, screenTree } = useBrock();
+  const text = useText();
   const registry = useScreenRegistry();
   const { info } = usePlatform();
   const developerTools = useDeveloperTools();
@@ -34,6 +36,7 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
   const menuHidden = useMenuHiddenStore((s) => s.routes);
 
   return useMemo(() => (enabled ? buildCatalog({
+    text,
     index: screenTree?.search ?? [],
     live,
     menu,
@@ -50,7 +53,7 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
     hasProfile,
     show,
     hidden: new Set([...hiddenRoutes(screenTree?.hubs ?? [], registry.list(), show), ...menuHidden]),
-  }) : []), [enabled, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile, show, menuHidden]);
+  }) : []), [enabled, text, screenTree, live, menu, widgets, registry, home, tabs, hydrated, settings, patch, given, registered, developerTools, info, hasProfile, show, menuHidden]);
 };
 
 export { useSearchIndex };

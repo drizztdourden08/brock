@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { TourEnterContext, TourStepMascot, TourTarget } from '@drizztdourden08/tessera/composites';
 import type { AnchoredPlacement, IconName } from '@drizztdourden08/tessera/primitives';
 import type { AppContext } from '../contexts/contexts.type';
@@ -53,7 +54,7 @@ type TourStepArt = Exclude<ReactNode, string> | TourArtToken | TourArtIcon;
 
 interface TourStepDef {
   readonly id: string;
-  readonly title: string;
+  readonly title: Text;
   readonly body: ReactNode;
   readonly target?: BrockTourTarget;
   readonly intro?: boolean;
@@ -75,8 +76,8 @@ type TourTrigger = 'first-run' | 'manual';
 
 interface TourDef {
   readonly id: string;
-  readonly title: string;
-  readonly description?: string;
+  readonly title: Text;
+  readonly description?: Text;
   readonly steps: readonly TourStepDef[];
   readonly trigger?: TourTrigger;
   readonly load?: TourLoader;
@@ -84,9 +85,11 @@ interface TourDef {
 
 type TourLoader = () => Promise<{ default: TourDef }>;
 
-type TourShell = Pick<TourDef, 'title' | 'description' | 'trigger'>;
+type TourShellText = Text | { readonly key: string };
 
-type TourChoice = Pick<TourDef, 'id' | 'title'>;
+type TourShell = Pick<TourDef, 'trigger'> & { title: TourShellText; description?: TourShellText };
+
+type TourChoice = { id: string; title: string };
 
 type TourEventListener = (name: string) => void;
 
@@ -164,5 +167,5 @@ interface TourApi {
 
 export type {
   ActiveTour, AppTourState, BrockTourTarget, NamedTourTarget, TourAdvanceOn, TourApi, TourChoice, TourClickSlice, TourContextChange, TourDef, TourEntry, TourEventListener, TourProgress, TourResetHandler, TourResetPart, TourResetParts, TourShellPart, TourShellTarget,
-  TourArtIcon, TourStepArt, TourLoader, TourShell, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
+  TourArtIcon, TourStepArt, TourLoader, TourShell, TourShellText, TourShown, TourSpotSlice, TourState, TourStepContext, TourStepDef, TourTrigger, TouringKey,
 };

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SettingsDescription, PathKind } from '@drizztdourden08/tessera/composites';
 import type { ButtonVariant, IconName } from '@drizztdourden08/tessera/primitives';
 import type { ConfirmActionOptions } from '../stores/dialog.type';
@@ -31,6 +32,15 @@ type SettingControl =
   | { kind: 'color' }
   | { kind: 'multi'; options: SettingChoice[] };
 
+type SettingChoiceDef = Omit<SettingChoice, 'label' | 'hint'> & { label: Text; hint?: Text };
+
+type SettingControlDef =
+  | Exclude<SettingControl, { options: SettingChoice[] }>
+  | { kind: 'choice'; options: SettingChoiceDef[]; look?: SettingChoiceLook }
+  | { kind: 'select'; options: SettingChoiceDef[]; searchable?: boolean }
+  | { kind: 'radio'; options: SettingChoiceDef[] }
+  | { kind: 'multi'; options: SettingChoiceDef[] };
+
 type SettingControlKind = SettingControl['kind'];
 
 type SettingValues = Readonly<Record<string, unknown>>;
@@ -45,6 +55,8 @@ interface SettingAction {
   confirm?: string | ConfirmActionOptions;
   onSelect: (settings: SettingValues) => void | Promise<void>;
 }
+
+type SettingActionDef = Omit<SettingAction, 'label'> & { label: Text };
 
 interface RunSettingActionOptions {
   settings?: SettingValues;
@@ -72,6 +84,15 @@ interface SettingItemFields {
 
 type SettingItem = SettingItemFields & SettingDescription;
 
+type SettingDescriptionDef = { description: Text; noDescription?: never } | { noDescription: true; description?: never };
+
+type SettingItemDef = Omit<SettingItemFields, 'label' | 'hint' | 'control' | 'actions'> & {
+  label: Text;
+  hint?: Text;
+  control?: SettingControlDef;
+  actions?: readonly SettingActionDef[];
+} & SettingDescriptionDef;
+
 interface SettingsValueSource {
   get: (key: string) => unknown;
   set: (key: string, value: unknown) => void | Promise<void>;
@@ -89,6 +110,20 @@ interface Section {
   title: string;
   items?: SettingItem[];
   subsections?: SubSection[];
+  source?: SettingsValueSource;
+}
+
+interface SubSectionDef {
+  id: string;
+  title: Text;
+  items: SettingItemDef[];
+}
+
+interface SectionDef {
+  id: string;
+  title: Text;
+  items?: SettingItemDef[];
+  subsections?: SubSectionDef[];
   source?: SettingsValueSource;
 }
 
@@ -116,7 +151,7 @@ interface SettingsControlProps<S extends object> {
 }
 
 interface SettingsLayoutProps<S extends object> extends SettingsControlProps<S> {
-  sections: Section[];
+  sections: SectionDef[];
   emptyMessage?: string;
   preview?: ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
@@ -134,7 +169,7 @@ interface TabDef<S extends object> {
   icon?: string;
   group: string;
   groupId?: string;
-  sections?: (settings: S) => Section[];
+  sections?: (settings: S) => SectionDef[];
   source?: SettingsValueSource;
   preview?: (settings: S) => ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
@@ -145,6 +180,6 @@ interface TabDef<S extends object> {
 }
 
 export type {
-  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause, SettingValues,
-  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SettingVisibleWhen, SubSection, TabDef, TabRenderContext,
+  LockOverlayProps, RenderControl, RunSettingActionOptions, Section, SectionDef, SettingAction, SettingActionDef, SettingChoice, SettingChoiceDef, SettingChoiceLook, SettingControl, SettingControlDef, SettingControlKind, SettingDescription, SettingDescriptionDef, SettingItem, SettingItemDef, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause, SettingValues,
+  SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SettingVisibleWhen, SubSection, SubSectionDef, TabDef, TabRenderContext,
 };

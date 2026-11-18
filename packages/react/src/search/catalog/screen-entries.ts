@@ -10,7 +10,7 @@ const screenEntries = (input: CatalogInput): SearchEntry[] =>
     .map((screen) => ({
       id: `${SCREEN_ID_PREFIX}${screen.id}`,
       kind: 'screen',
-      label: screen.title,
+      label: input.text(screen.title),
       icon: screen.icon,
       breadcrumb: [],
       keywords: normaliseKeywords(screen.group),

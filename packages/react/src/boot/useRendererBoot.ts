@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useRef } from 'react';
+import { useText } from '../i18n';
 import { useBrock } from '../app/useBrock';
 import { openExternal } from '../host/open-external';
 import { getPlatform } from '../platform/get-platform';
@@ -12,6 +13,7 @@ import { useFirstFrameSignal } from './useFirstFrameSignal';
 
 const useRendererBoot = <S extends object>(settings: SettingsStore<S>, contributed: readonly RendererBootTask[]): void => {
   const { product } = useBrock();
+  const text = useText();
   const started = useRef(false);
   useFirstFrameSignal();
 
@@ -19,7 +21,7 @@ const useRendererBoot = <S extends object>(settings: SettingsStore<S>, contribut
     if (started.current) return;
     started.current = true;
     const extras = () => ({ product, profile: useProfilesStore.getState().active, platform: getPlatform(), openExternal });
-    void runRendererBoot(rendererBootTasks(settings, contributed), extras);
+    void runRendererBoot(rendererBootTasks(settings, contributed), extras, text);
   }, []);
 };
 

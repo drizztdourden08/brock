@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
-import type { CommandDef } from './command.type';
+import type { CommandInput } from './command.type';
 
-const defineCommand = (def: CommandDef): CommandDef => def;
+const defineCommand = <T extends CommandInput>(def: T): T => def;
 
 export { defineCommand };

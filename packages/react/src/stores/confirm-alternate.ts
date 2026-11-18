@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { controlSources } from '../app/control-sources';
 import type { ConfirmAlternate, DialogAlternate } from './dialog.type';
 import { useDialogStore } from './useDialogStore';
 
@@ -6,7 +7,7 @@ const bindAlternate = (alternate: ConfirmAlternate | undefined, close: () => voi
   if (!alternate) return undefined;
   const { label, onSelect, tone = 'neutral', closes = false } = alternate;
   return {
-    label,
+    label: controlSources.get().text(label),
     tone,
     onSelect: () => {
       onSelect();

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ProductConfig } from '@drizztdourden08/brock-core';
-import type { MenuEntry } from '../menu/menu.type';
+import type { MenuEntryDef } from '../menu/menu.type';
 import type { RouteShortcut } from '../navigation/navigation.type';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
@@ -14,7 +14,7 @@ interface BrockContextValue {
   home: string;
   tabs: TabDef<object>[];
   settingsControls: SettingsControlsValue;
-  menu: MenuEntry[];
+  menu: MenuEntryDef[];
   homeScreen: string;
   shortcuts: readonly RouteShortcut[];
   screenTree: ResolvedScreenTree | null;

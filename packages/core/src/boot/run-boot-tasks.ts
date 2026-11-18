@@ -1,7 +1,8 @@
 /* @layer core @kind logic */
-import type { BootOutcome, BootProgress, BootRunOptions, BootTask } from './boot-task.type';
+import type { BootOutcome, BootProgress, BootRunOptions, BootTask, BootTaskNamed } from './boot-task.type';
 import { BOOT_GRAPH_LABEL, BOOT_GRAPH_TASK, DEFAULT_BOOT_WEIGHT } from './boot.constants';
 import { bootGraphProblem } from './boot-graph-problem';
+import { plainText } from './plain-text';
 import { runBootTask } from './run-boot-task';
 
 const weightOf = (task: Pick<BootTask, 'weight'>): number => Math.max(0, task.weight ?? DEFAULT_BOOT_WEIGHT);
@@ -40,7 +41,8 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
       resolve(outcome);
     };
 
-    const start = (task: BootTask<X>): void => {
+    const start = (source: BootTask<X>): void => {
+      const task: BootTaskNamed<X> = { ...source, label: (options.text ?? plainText)(source.label) };
       started.add(task.id);
       const begun = Date.now();
       const tell = (state: 'start' | 'done' | 'fail', message?: string): void =>

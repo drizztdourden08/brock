@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+
 interface DialogChoice<T extends string = string> {
   value: T;
   label: string;
@@ -21,7 +23,7 @@ interface DialogAlternate {
 }
 
 interface ConfirmAlternate {
-  label: string;
+  label: Text;
   onSelect: () => void;
   tone?: AlternateTone;
   closes?: boolean;
@@ -43,7 +45,26 @@ interface ConfirmDialogConfig {
   onCancel?: () => void;
 }
 
-type ConfirmBaseOptions = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate' | 'look' | 'searchable'>;
+type ConfirmBase = Omit<ConfirmDialogConfig, 'onConfirm' | 'onCancel' | 'choices' | 'choice' | 'alternate' | 'look' | 'searchable'>;
+
+interface DialogFactInput {
+  label: Text;
+  value: Text;
+}
+
+interface DialogChoiceInput<T extends string = string> {
+  value: T;
+  label: Text;
+  description?: Text;
+}
+
+type ConfirmBaseOptions = Omit<ConfirmBase, 'title' | 'message' | 'confirmLabel' | 'cancelLabel' | 'facts'> & {
+  title: Text;
+  message: Text;
+  confirmLabel?: Text;
+  cancelLabel?: Text;
+  facts?: readonly DialogFactInput[];
+};
 
 interface ConfirmActionOptions extends ConfirmBaseOptions {
   alternate?: ConfirmAlternate;
@@ -52,11 +73,11 @@ interface ConfirmActionOptions extends ConfirmBaseOptions {
 type ConfirmSaveAnswer = 'save' | 'discard' | 'cancel';
 
 interface ConfirmSaveOptions extends ConfirmBaseOptions {
-  discardLabel?: string;
+  discardLabel?: Text;
 }
 
 interface ConfirmChoiceOptions<T extends string> extends ConfirmActionOptions {
-  choices: readonly DialogChoice<T>[];
+  choices: readonly DialogChoiceInput<T>[];
   initial: T;
   look?: ChoiceLook;
   searchable?: boolean;
@@ -64,8 +85,8 @@ interface ConfirmChoiceOptions<T extends string> extends ConfirmActionOptions {
 
 interface ConfirmDeleteOptions {
   what: string;
-  consequence: string;
-  confirmLabel?: string;
+  consequence: Text;
+  confirmLabel?: Text;
 }
 
 interface DialogState {
@@ -75,4 +96,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };
+export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmBase, ConfirmBaseOptions, DialogChoiceInput, DialogFactInput, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };

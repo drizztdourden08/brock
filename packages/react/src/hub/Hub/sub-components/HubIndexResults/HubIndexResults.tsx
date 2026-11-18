@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
 import type { SearchResultsHit } from '@drizztdourden08/tessera/composites';
+import { useText } from '../../../../i18n';
 import { useBrock } from '../../../../app/useBrock';
 import { uniqueById } from '../../../../collections/unique-by-id';
 import { entriesInBucket } from '../../../../search/entries-in-bucket';
@@ -21,6 +22,7 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
   const { def, pages, query, onOpen, onOpenPage } = props;
   const { tabs, settingsControls } = useBrock();
   const { settings, patch } = useSettings<object>();
+  const text = useText();
   const needle = query.trim();
   const normalized = needle.toLowerCase();
   const catalog = useSearchIndex(needle !== '', NO_MENU, NO_ACTIONS);
@@ -31,11 +33,11 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
   }, [catalog, def, pages, needle]);
   const groups = useMemo(() => {
     if (needle === '') return [];
-    const live = hubLiveGroups(pages, tabs, normalized, { settings, onChange: patch, ...settingsControls });
+    const live = hubLiveGroups({ pages, tabs, query: normalized, control: { settings, onChange: patch, ...settingsControls }, text });
     const linked = hubResultGroups(def, pages.filter((page) => page.settingsTab === undefined), ranked);
     const order = rankOrder(def, pages, ranked);
     return [...live, ...linked].sort((a, b) => order(a.id) - order(b.id));
-  }, [def, pages, tabs, normalized, needle, settings, patch, settingsControls, ranked]);
+  }, [def, pages, tabs, normalized, needle, settings, patch, settingsControls, ranked, text]);
   const jumps = useMemo(() => rankedJumps(def, pages, ranked), [def, pages, ranked]);
   const count = groups.reduce((sum, group) => sum + (group.count ?? 0), 0);
 

@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind barrel */
-export type { MenuEntry, MenuItem, MenuSection } from './menu.type';
+export type { MenuEntry, MenuEntryDef, MenuItem, MenuItemDef, MenuSection } from './menu.type';
 export { MENU_SECTIONS } from './menu.constants';
 export { toMenuGroups } from './to-menu-groups';
 export { withRoutes } from './with-routes';

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
-import type { MenuEntry, MenuItem } from '../../menu/menu.type';
+import type { MenuEntryDef, MenuItemDef } from '../../menu/menu.type';
 import type { ScreenDef } from '../screen.type';
 import { menuOrderOf } from './menu-order-of';
 import { menuOverrideOf } from './menu-override-of';
@@ -17,7 +17,7 @@ const placesEntry = (menu: ScreenMenu | undefined): boolean => {
   return override !== null && (override.parent !== undefined || override.group !== undefined || override.before !== undefined || override.after !== undefined);
 };
 
-const pageItem = (bucket: BucketDef, page: HubPage, home: boolean): MenuItem => ({
+const pageItem = (bucket: BucketDef, page: HubPage, home: boolean): MenuItemDef => ({
   key: `${BUCKET_KEY_PREFIX}${bucket.id}:${page.id}`,
   label: page.label,
   icon: page.icon,
@@ -37,7 +37,7 @@ const menuSorted = (pages: readonly HubPage[], home: HubPage): HubPage[] => {
   return pages.includes(home) ? [home, ...rest] : rest;
 };
 
-const bucketEntries = (bucket: BucketDef, hub: HubDef | undefined, home: string): MenuItem[] => {
+const bucketEntries = (bucket: BucketDef, hub: HubDef | undefined, home: string): MenuItemDef[] => {
   const key = `${BUCKET_KEY_PREFIX}${bucket.id}`;
   if (bucket.menu === 'hidden' || hub === undefined) return [];
   if (bucket.menu === 'entry') return bucket.id === home ? [] : [{ key, label: bucket.title, icon: bucket.icon, shortcut: bucket.shortcut, screen: bucket.id, show: hub.show }];
@@ -45,7 +45,7 @@ const bucketEntries = (bucket: BucketDef, hub: HubDef | undefined, home: string)
   return [{ key, label: bucket.title, icon: bucket.icon, show: hub.show, children: pages.map((page) => pageItem(bucket, page, page === hub.home)) }];
 };
 
-const screenItem = (screen: ScreenDef): MenuItem => ({
+const screenItem = (screen: ScreenDef): MenuItemDef => ({
   key: `${SCREEN_KEY_PREFIX}${screen.id}`,
   label: screen.title,
   icon: screen.icon,
@@ -69,7 +69,7 @@ const screenPlacements = (screens: readonly ScreenDef[]): PlacedMenuItem[] => sc
   return path === null ? [] : [{ path, item: screenItem(screen), order: menuOrderOf(screen) }];
 });
 
-const deriveMenu = (config: ScreensConfig, hubs: readonly HubDef[], screens: readonly ScreenDef[]): MenuEntry[] => {
+const deriveMenu = (config: ScreensConfig, hubs: readonly HubDef[], screens: readonly ScreenDef[]): MenuEntryDef[] => {
   const listed = screens.filter((screen) => !BUILT_IN_SCREEN_IDS.includes(screen.id) && placedByDefault(screen.menu));
   const buckets = config.buckets.flatMap((bucket) => bucketEntries(bucket, hubs.find((hub) => hub.id === bucket.id), config.home));
   const iconOf = (label: string) => config.buckets.find((bucket) => bucket.title.toLowerCase() === label.toLowerCase())?.icon;

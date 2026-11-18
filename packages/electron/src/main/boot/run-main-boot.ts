@@ -3,6 +3,7 @@ import { runBootTasks } from '@drizztdourden08/brock-core/boot';
 import type { MainContext } from '../types/main-context.type';
 import { logBootTask } from '../bootstrap/log-boot-task';
 import type { MainBootTask } from './boot-state.type';
+import { mainI18n } from '../i18n/main-i18n';
 import { bootState } from './boot-state';
 import { relayProgress } from './relay-progress';
 import { reportBootFailure } from './report-boot-failure';
@@ -13,6 +14,7 @@ const runMainBoot = async (tasks: readonly MainBootTask[], ctx: MainContext): Pr
   const outcome = await runBootTasks(tasks, {
     extras: () => ctx,
     defaultTimeoutMs: bootTimeout(ctx.flags).ms,
+    text: (value) => mainI18n().text(value),
     onProgress: (progress) => {
       bootState.main = progress;
       bootState.lastSide = 'main';

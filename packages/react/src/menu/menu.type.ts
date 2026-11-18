@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ShowRule } from '../screens/show/show.type';
 
 interface MenuItem extends Omit<ProductMenuEntry, 'label'> {
@@ -30,10 +31,18 @@ interface MenuItem extends Omit<ProductMenuEntry, 'label'> {
 
 type MenuEntry = MenuItem | 'separator';
 
+type MenuItemDef = Omit<MenuItem, 'label' | 'description' | 'children'> & {
+  label: Text;
+  description?: Text;
+  children?: MenuEntryDef[];
+};
+
+type MenuEntryDef = MenuItemDef | 'separator';
+
 interface MenuSection {
   id: string;
   label: string;
   icon: string;
 }
 
-export type { MenuEntry, MenuItem, MenuSection };
+export type { MenuEntry, MenuEntryDef, MenuItem, MenuItemDef, MenuSection };

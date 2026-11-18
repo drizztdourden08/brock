@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { controlSources } from '../../app/control-sources';
 import { nav } from '../../navigation/nav';
 import type { ScreenDef } from '../../screens/screen.type';
 import { frameChecks } from '../checks/frame-checks';
@@ -18,7 +19,8 @@ import { openScreen } from './open-screen';
 import { readFrame } from './read-frame';
 
 const reviewScreen = async (tour: StepTour, screen: ScreenDef): Promise<void> => {
-  const { id, title } = screen;
+  const { id } = screen;
+  const title = controlSources.get().text(screen.title);
   const via = await openScreen(tour.env, id);
   const shown = await waitFor(() => nav.active() === id && (screen.layer === 'own' || find(SELECTORS.layer) !== null));
   tour.check(`${id}-route`, shown !== null, `"${id}" opened through ${via}`, `"${id}" did not open through ${via}`);

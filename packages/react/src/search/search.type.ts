@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { MenuEntry, MenuItem } from '../menu/menu.type';
 import type { ScreenParams } from '../navigation/navigation.type';
 import type { ScreenDef } from '../screens/screen.type';
@@ -102,6 +103,7 @@ interface SettingsPlace {
 }
 
 interface CatalogInput {
+  text: (value: Text) => string;
   index: readonly SearchEntry[];
   live: readonly SearchEntry[];
   menu: readonly MenuEntry[];

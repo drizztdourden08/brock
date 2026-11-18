@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { Text } from '../i18n/text.type';
+
 type BootReport = (fraction: number, detail?: string) => void;
 
 interface BootTaskBaseContext {
@@ -9,7 +11,7 @@ interface BootTaskBaseContext {
 type BootTaskContext<X extends object = object> = BootTaskBaseContext & X;
 
 interface BootTaskDef<X extends object = object> {
-  label: string;
+  label: Text;
   weight?: number;
   after?: string[];
   timeoutMs?: number;
@@ -19,6 +21,8 @@ interface BootTaskDef<X extends object = object> {
 interface BootTask<X extends object = object> extends BootTaskDef<X> {
   id: string;
 }
+
+type BootTaskNamed<X extends object = object> = Omit<BootTask<X>, 'label'> & { label: string };
 
 interface BootProgress {
   done: number;
@@ -51,6 +55,7 @@ interface BootRunOptions<X extends object> {
   onTaskDone?: (id: string) => void;
   signal?: AbortSignal;
   defaultTimeoutMs?: number;
+  text?: (value: Text) => string;
 }
 
 interface BootTaskRun<X extends object> {
@@ -69,5 +74,5 @@ interface BootTimeline {
 
 export type {
   BootFailure, BootOutcome, BootProgress, BootReport, BootRunOptions, BootTask, BootTaskBaseContext, BootTaskContext, BootTaskDef,
-  BootTaskEvent, BootTaskRun, BootTimeline,
+  BootTaskEvent, BootTaskNamed, BootTaskRun, BootTimeline,
 };

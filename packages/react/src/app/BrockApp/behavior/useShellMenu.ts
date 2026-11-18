@@ -3,8 +3,9 @@ import { useMemo } from 'react';
 import { bugReport } from '../../../bug-report/bug-report';
 import { requestQuit } from '../../../quit/request-quit';
 import { shortcutsHelp } from '../../../shortcuts-help/shortcuts-help';
-import type { MenuEntry } from '../../../menu/menu.type';
+import type { MenuEntryDef } from '../../../menu/menu.type';
 import { profileLock } from '../../../menu/profile-lock';
+import { useText } from '../../../i18n';
 import { useMenuHooks } from '../../../menu/useMenuHooks';
 import { useMenuIssues } from '../../../menu/useMenuIssues';
 import { searchableMenu } from '../../../menu/searchable-menu';
@@ -31,8 +32,9 @@ import type { ShellMenu } from '../BrockApp.type';
 import { resolveShellMenu } from './resolve-shell-menu';
 import { stripScreenEntries } from './strip-screen-entries';
 
-const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): ShellMenu => {
+const useShellMenu = (givenModuleMenu: readonly MenuEntryDef[], railed: boolean): ShellMenu => {
   const { menu: givenMenu, homeScreen, product, screenTree } = useBrock();
+  const text = useText();
   const menu = useMenuHooks(givenMenu);
   const moduleMenu = useMenuHooks(givenModuleMenu);
   const show = useShowContext();
@@ -65,14 +67,14 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntry[], railed: boolean): S
       onDevConsole: () => win.openDevTools(),
       onReportBug: () => bugReport.open(),
       onShortcuts: shortcutsHelp.open,
-      tours: { list: tourList, start: tours.start },
+      tours: { list: tourList.map((tour) => ({ id: tour.id, title: text(tour.title) })), start: tours.start },
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
     });
     const entries = withCommandChords(withPreload(resolved.entries, routePreloader(registry)), chords, describe);
     const shown = railed ? stripScreenEntries(entries) : entries;
     return { menu: visibleMenu(shown), searchable: searchableMenu(shown), all: entries, issues: resolved.issues, overrides: resolved.overrides };
-  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, screenTree, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords, describe]);
+  }, [menu, moduleMenu, widgets, toolbars, tourList, homeScreen, screenTree, homeLocked, hasCredits, developerTools, show, win, railed, product.menu, hasProfile, registry, chords, describe, text]);
   useMenuIssues(shell.issues);
   useMenuHiddenRoutes(shell.all);
   return shell;

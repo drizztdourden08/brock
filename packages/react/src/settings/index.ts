@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind barrel */
 export type {
-  LockOverlayProps, RenderControl, Section, SettingAction, SettingChoice, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause,
+  LockOverlayProps, RenderControl, Section, SectionDef, SettingAction, SettingActionDef, SettingChoice, SettingChoiceDef, SettingControlDef, SettingDescriptionDef, SettingItemDef, SubSectionDef, SettingChoiceLook, SettingControl, SettingControlKind, SettingDescription, SettingItem, SettingItemFields, SettingJsonShape, SettingLayout, SettingLockCause,
   SettingsControlProps, SettingsLayoutProps, SettingsPatch, SettingsPreviewPlacement, SettingsValueSource, SettingVisibleWhen, SubSection, TabDef, TabRenderContext,
 } from './settings.type';
 export { createTabRegistry } from './tab-registry';

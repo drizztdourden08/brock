@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { controlSources } from '../../app/control-sources';
 import { nav } from '../../navigation/nav';
 import { tours } from '../../tours/tours';
 import { tourTargets } from '../../tours/resolve-tour-target';
@@ -36,8 +37,9 @@ const walkStep = async (tour: StepTour, def: TourDef, index: number): Promise<bo
   const step = def.steps[index];
   if (!step) return false;
   const name = `tour-${def.id}-${step.id}`;
+  const { text } = controlSources.get();
   const at = await waitFor(() => tourReading.shown(def.id, index), undefined, `step ${index + 1} of tour "${def.id}" to show its bubble`);
-  tour.check(name, at !== null, `step "${step.title}" of "${def.title}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
+  tour.check(name, at !== null, `step "${text(step.title)}" of "${text(def.title)}" shows its bubble`, `step "${step.id}" of tour "${def.id}" never showed its bubble`);
   if (at) targetCheck(tour, name, step, at);
   await quietLayout();
   if (at) await mascotSettles(tour, name);
@@ -56,7 +58,7 @@ const walkTour = async (tour: StepTour, listed: TourDef): Promise<void> => {
   let index = 0;
   while (index < def.steps.length && await walkStep(tour, def, index)) index += 1;
   const closed = (await waitFor(() => tourReading.layer() === null)) !== null;
-  tour.check(`tour-${def.id}-completed`, closed && tours.isCompleted(def.id), `"${def.title}" ran end to end and is kept as completed`, `tour "${def.id}" did not finish (stopped at step ${index + 1})`);
+  tour.check(`tour-${def.id}-completed`, closed && tours.isCompleted(def.id), `"${controlSources.get().text(def.title)}" ran end to end and is kept as completed`, `tour "${def.id}" did not finish (stopped at step ${index + 1})`);
   tours.stop();
 };
 

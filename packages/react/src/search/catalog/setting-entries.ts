@@ -34,7 +34,7 @@ const itemEntry = (tab: TabDef<object>, group: EntryGroup, item: SettingItem, in
 });
 
 const tabSettings = (tab: TabDef<object>, input: CatalogInput, settings: object): SearchEntry[] =>
-  tabSections(tab, settings).flatMap((section) => {
+  tabSections(tab, settings, input.text).flatMap((section) => {
     const shown = sourceValues(section) ?? (settings as SettingValues);
     return groupsOf(section).flatMap((group) => group.items
       .filter((item) => itemShown(item, shown))

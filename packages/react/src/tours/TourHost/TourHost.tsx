@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { GuidedTour, useGuidedTour } from '@drizztdourden08/tessera/composites';
 import type { TourStep } from '@drizztdourden08/tessera/composites';
 import { useSearchActions } from '../../search/useSearchActions';
+import { useText } from '../../i18n';
 import { tourSearchActions } from '../tour-search-actions';
 import { tours } from '../tours';
 import { useTourStore } from '../useTourStore';
@@ -28,13 +29,14 @@ const onStepLeave = (): void => useTourStore.getState().setShown(null);
 
 const TourHost = (props: TourHostProps) => {
   const { ready } = props;
+  const text = useText();
   const { list, def, step, steps, index, key, popped } = useActiveStep();
   const onFinish = useCallback(() => { if (def) tours.complete(def.id); }, [def]);
   const tour = useGuidedTour({ steps, step: index, open: def !== null, onStepChange: tours.goTo, onOpenChange, onFinish, onStepShown, onStepLeave });
 
   useTourProgress();
   useFirstRunTour(ready);
-  useSearchActions(useMemo(() => tourSearchActions(list), [list]));
+  useSearchActions(useMemo(() => tourSearchActions(list, text), [list, text]));
   useAdvanceOn(step, key, tour.next);
   useTourSpot(tour.shown ? step : null, popped);
   useRelayedClick(tour.shown ? step : null, key, popped, tour.next);

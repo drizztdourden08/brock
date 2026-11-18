@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
-import type { MenuEntry } from '../menu/menu.type';
+import type { MenuEntryDef } from '../menu/menu.type';
 import type { SearchAction } from '../search/search.type';
 import type { ModulePorts } from '../platform/platform.type';
 import type { ScreenDef } from '../screens/screen.type';
@@ -16,7 +16,7 @@ import type { StartupPromptDef } from '../startup/startup.type';
 import type { TourDef } from '../tours/tour.type';
 import type { ToolbarDef } from '../toolbars/toolbar.type';
 import type { VolumeSource } from '../volume/volume.type';
-import type { CommandDef } from '../commands/command.type';
+import type { CommandInput } from '../commands/command.type';
 import type { ProfileStoreHooks } from '@drizztdourden08/brock-core';
 import type { Layer } from '@drizztdourden08/brock-core/i18n';
 import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
@@ -43,7 +43,7 @@ interface RendererModule {
   screens?: ScreenDef[];
   buckets?: readonly ModuleBucket[];
   settingsTabs?: TabDef<object>[];
-  menu?: MenuEntry[];
+  menu?: MenuEntryDef[];
   Provider?: ComponentType<{ children: ReactNode }>;
   titleBarActions?: TitleBarActionSource[];
   searchActions?: SearchAction[];
@@ -58,7 +58,7 @@ interface RendererModule {
   toolbars?: readonly ToolbarDef[];
   startupPrompts?: readonly StartupPromptDef[];
   volume?: VolumeSource;
-  commands?: readonly CommandDef[];
+  commands?: readonly CommandInput[];
   profileModes?: readonly ProfileModeDef[];
   profileWizardSteps?: readonly ProfileWizardStepDef[];
   lockCauses?: readonly LockCauseProvider[];
@@ -72,7 +72,7 @@ interface MergedModules {
   screens: ScreenDef[];
   buckets: ModuleBucket[];
   settingsTabs: TabDef<object>[];
-  menu: MenuEntry[];
+  menu: MenuEntryDef[];
   providers: ComponentType<{ children: ReactNode }>[];
   titleBarActions: TitleBarActionSource[];
   searchActions: SearchAction[];
@@ -87,7 +87,7 @@ interface MergedModules {
   toolbars: ToolbarDef[];
   startupPrompts: StartupPromptDef[];
   volume?: VolumeSource;
-  commands: CommandDef[];
+  commands: CommandInput[];
   profileModes: ProfileModeDef[];
   profileWizardSteps: ProfileWizardStepDef[];
   lockCauses: LockCauseProvider[];

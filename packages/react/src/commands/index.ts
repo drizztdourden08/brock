@@ -13,5 +13,5 @@ export { useIsMac } from './useIsMac';
 export { KeymapPage } from './KeymapPage';
 export { useCommandDescribe } from './useCommandDescribe';
 export type {
-  ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordInput, ChordList, CommandBinding, CommandConflict, CommandContext, CommandDef, CommandDescription, CommandHold, DefaultBinding, CommandRunResult, CommandTrigger, HeldModifier, HoldCause, HoldContext, PlatformChords,
+  ArgField, ArgOption, ArgSchema, ArgValue, BoundArgs, ChordInput, ChordList, CommandBinding, CommandConflict, CommandContext, CommandDef, CommandDescription, CommandInput, CommandHold, DefaultBinding, CommandRunResult, CommandTrigger, HeldModifier, HoldCause, HoldContext, PlatformChords,
 } from './command.type';

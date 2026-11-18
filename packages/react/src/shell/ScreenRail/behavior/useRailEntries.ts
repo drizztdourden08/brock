@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useMemo } from 'react';
+import { useText } from '../../../i18n';
 import { useNavigation } from '../../../navigation/useNavigation';
 import { useDeveloperTools } from '../../../app/useDeveloperTools';
 import type { ScreenDef } from '../../../screens/screen.type';
@@ -19,11 +20,12 @@ const useRailEntries = (
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
   const show = useShowContext();
+  const text = useText();
 
   const config = useMemo(() => {
     const listed = screens.filter((screen) => (!screen.devOnly || developerTools) && isShown(screen.show, show));
-    return { groups: groupRail(listed, labels, profile !== null) };
-  }, [screens, labels, profile, developerTools, show]);
+    return { groups: groupRail(listed, labels, profile !== null, text) };
+  }, [screens, labels, profile, developerTools, show, text]);
 
   const select = useCallback((id: string) => {
     if (id === home) close();

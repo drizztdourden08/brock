@@ -1,5 +1,5 @@
 /* @layer core @kind logic */
-import type { BootOutcome, BootTask, BootTaskRun } from './boot-task.type';
+import type { BootOutcome, BootTaskNamed, BootTaskRun } from './boot-task.type';
 import { DEFAULT_BOOT_TIMEOUT_MS } from './boot.constants';
 import { bootTimeoutError } from './boot-timeout-error';
 
@@ -11,7 +11,7 @@ const whenAborted = (signal: AbortSignal): Promise<never> =>
     else signal.addEventListener('abort', () => reject(signal.reason), { once: true });
   });
 
-const runBootTask = async <X extends object>(task: BootTask<X>, { extras, stop, report, defaultTimeoutMs }: BootTaskRun<X>): Promise<BootOutcome> => {
+const runBootTask = async <X extends object>(task: BootTaskNamed<X>, { extras, stop, report, defaultTimeoutMs }: BootTaskRun<X>): Promise<BootOutcome> => {
   const timeoutMs = task.timeoutMs ?? defaultTimeoutMs ?? DEFAULT_BOOT_TIMEOUT_MS;
   const own = new AbortController();
   const abort = (): void => own.abort(stop.reason);

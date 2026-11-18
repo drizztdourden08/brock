@@ -6,6 +6,7 @@ import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { RenderErrorBoundary } from '../../errors/RenderErrorBoundary';
 import { LazyHost } from '../../lazy/LazyHost';
 import { useBackTarget } from '../../navigation/useBackTarget';
+import { useText } from '../../i18n';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { useScreenRegistry } from '../useScreenRegistry';
@@ -46,6 +47,7 @@ const ScreenHost = (props: ScreenHostProps) => {
   const profile = useProfilesStore((s) => s.active);
   const developerTools = useDeveloperTools();
   const show = useShowContext();
+  const text = useText();
 
   const ctx = useMemo<ScreenRenderContext>(() => ({ params, profile, open, close }), [params, profile, open, close]);
 
@@ -63,7 +65,7 @@ const ScreenHost = (props: ScreenHostProps) => {
     return (
       <ScreenLayer
         key={layerKeyOf(screen)}
-        title={screen.title}
+        title={text(screen.title)}
         icon={screen.icon}
         header={screen.header}
         size={screen.size}
@@ -71,7 +73,7 @@ const ScreenHost = (props: ScreenHostProps) => {
         {...chromeOf(screen, ctx)}
         floating={screen.floating?.(ctx)}
         hidden={hidden}
-        back={backable ? { onSelect: back, label: screen.title } : undefined}
+        back={backable ? { onSelect: back, label: text(screen.title) } : undefined}
         onClose={close}
       >
         {guarded(screen, hidden, ctx, close)}

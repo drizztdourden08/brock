@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { BootProgress } from '@drizztdourden08/brock-core';
 import { runBootTasks } from '@drizztdourden08/brock-core';
 import { hostApi } from '../host/host-api';
@@ -9,13 +10,14 @@ import type { RendererBootExtras, RendererBootTask } from './renderer-boot.type'
 import { useBootStore } from './useBootStore';
 import { watchSessionFills } from './watch-session-fills';
 
-const runRendererBoot = async (tasks: readonly RendererBootTask[], extras: () => RendererBootExtras): Promise<void> => {
+const runRendererBoot = async (tasks: readonly RendererBootTask[], extras: () => RendererBootExtras, text: (value: Text) => string): Promise<void> => {
   const api = hostApi();
   let last: BootProgress | null = null;
   const heartbeat = setInterval(() => { if (last) api?.bootProgress(last); }, HEARTBEAT_MS);
   const stopWatch = import.meta.env.DEV ? watchSessionFills(tasks, (message) => getAppLog().log('app', message, 'warn')) : null;
   const outcome = await runBootTasks(tasks, {
     extras,
+    text,
     defaultTimeoutMs: bootTimeoutMs(),
     onTaskEvent: (event) => { if (api && 'bootTask' in api) api.bootTask(event); },
     onProgress: (progress) => {

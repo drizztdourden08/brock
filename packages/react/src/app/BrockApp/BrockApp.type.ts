@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { DataDomainDef, ProductConfig, ProfileStoreHooks } from '@drizztdourden08/brock-core';
-import type { MenuEntry, MenuItem } from '../../menu/menu.type';
+import type { MenuEntry, MenuEntryDef, MenuItem } from '../../menu/menu.type';
 import type { MenuConfig, MenuIssue, MenuOverrideRecord } from '../../menu/menu-config.type';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import type { EscapeStack } from '@drizztdourden08/tessera/primitives';
@@ -28,7 +28,8 @@ import type { ShowContext, ShowFlagValues } from '../../screens/show/show.type';
 import type { BeforeProfileRemove } from '../../stores/profiles.type';
 import type { VolumeSource } from '../../volume/volume.type';
 import type { DeveloperToolsSource } from '../../developer-tools/developer-tools.type';
-import type { CommandDef } from '../../commands/command.type';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { CommandInput } from '../../commands/command.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { MenuBarMenu } from '../../menu-bar/menu-bar.type';
 import type { ProfileModeDef } from '../../profiles/modes/profile-mode.type';
@@ -66,7 +67,7 @@ interface BrockAppProps<S extends object> {
   widgetContext?: WidgetContextSource;
   widgetDisabled?: WidgetDisabledHook;
   home?: string;
-  menu?: MenuEntry[];
+  menu?: MenuEntryDef[];
   layout?: BrockAppLayout;
   screenGroups?: ScreenRailGroup[];
   profileHooks?: ProfileStoreHooks;
@@ -92,7 +93,7 @@ interface BrockAppProps<S extends object> {
   showFlags?: ShowFlagValues;
   volume?: VolumeSource;
   developerTools?: DeveloperToolsSource;
-  commands?: readonly CommandDef[];
+  commands?: readonly CommandInput[];
   menuBar?: readonly MenuBarMenu[];
 }
 
@@ -138,7 +139,7 @@ interface RouteCommandsInput {
   registry: ScreenRegistry;
   shortcuts: readonly RouteShortcut[];
   allowed: (screen: ScreenDef | undefined) => boolean;
-  labelOf: (target: string) => string;
+  labelOf: (target: string) => Text;
 }
 
 interface AppScreensInput {
@@ -148,7 +149,7 @@ interface AppScreensInput {
   builtInTabs: TabDef<object>[];
   moduleScreens: readonly ScreenDef[];
   moduleBuckets: readonly ModuleBucket[];
-  menu?: readonly MenuEntry[];
+  menu?: readonly MenuEntryDef[];
   homeScreen?: string;
   productHome: string;
   profilesRoute?: string;
@@ -162,7 +163,7 @@ interface AppScreens {
   registry: ScreenRegistry;
   tree: ResolvedScreenTree | null;
   tabs: TabDef<object>[];
-  menu: MenuEntry[];
+  menu: MenuEntryDef[];
   homeScreen: string;
 }
 

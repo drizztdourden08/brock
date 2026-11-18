@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { controlSources } from '../../app/control-sources';
 import { getPlatform } from '../../platform/get-platform';
 import { settingsPlaceOf } from '../../search/catalog/settings-place-of';
@@ -23,7 +24,7 @@ const sectionOf = (section: Section, settings: object): CatalogSection => {
   };
 };
 
-const screenOf = (tab: TabDef<object>, settings: object): CatalogScreen => {
+const screenOf = (tab: TabDef<object>, settings: object, text: (value: Text) => string): CatalogScreen => {
   const { tree } = controlSources.get();
   const target = tabTarget(tab, settingsPlaceOf(tree));
   return {
@@ -32,16 +33,16 @@ const screenOf = (tab: TabDef<object>, settings: object): CatalogScreen => {
     group: tab.group,
     route: target.route,
     ...(target.params === undefined ? {} : { params: target.params }),
-    sections: tabSections(tab, settings).map((section) => sectionOf(section, settings)),
+    sections: tabSections(tab, settings, text).map((section) => sectionOf(section, settings)),
   };
 };
 
 const settingsCatalog = (): CatalogScreen[] => {
-  const { tabs, settings: store } = controlSources.get();
+  const { tabs, settings: store, text } = controlSources.get();
   if (store === null) return [];
   const current = store.getState().settings;
   const mobile = getPlatform().info.formFactor === 'mobile';
-  return tabs.filter((tab) => tab.mobileOnly !== true || mobile).map((tab) => screenOf(tab, current));
+  return tabs.filter((tab) => tab.mobileOnly !== true || mobile).map((tab) => screenOf(tab, current, text));
 };
 
 export { settingsCatalog };

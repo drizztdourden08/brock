@@ -1,6 +1,7 @@
 /* @layer core @kind types */
 import type { ProductLook } from '../look/look.type';
 import type { ModuleOptions } from '../augment';
+import type { Text } from '../i18n/text.type';
 
 interface ProductAuthor {
   name: string;
@@ -148,12 +149,12 @@ interface ProductMascot {
 
 type TrayMenuItem =
   | { type: 'separator' }
-  | { label: string; action: 'show' | 'quit' }
-  | { label: string; id: string; enabled?: boolean };
+  | { label: Text; action: 'show' | 'quit' }
+  | { label: Text; id: string; enabled?: boolean };
 
 interface ProductTray {
   icon?: string;
-  tooltip: string;
+  tooltip: Text;
   menu?: readonly TrayMenuItem[];
 }
 

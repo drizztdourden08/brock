@@ -1,15 +1,15 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
 import type { HubDef, HubRenderContext, HubSubPage, HubTab, LiveMeta, UseLivePages } from '../../hub/hub.type';
-import type { MenuEntry, MenuItem } from '../../menu/menu.type';
+import type { MenuEntryDef, MenuItemDef } from '../../menu/menu.type';
 import type { RouteAlias, RouteShortcut } from '../../navigation/navigation.type';
 import type { SearchEntry } from '../../search/search.type';
-import type { Section, TabDef } from '../../settings/settings.type';
+import type { SectionDef, TabDef } from '../../settings/settings.type';
 import type { ScreenDef } from '../screen.type';
 import type { BaseProps, CardProps, HeroProps, PageProps, SubPageProps } from '../kinds/screen-kinds.type';
 import type { ScreenMeta, ScreensConfig } from './screens-config.type';
 
-type SettingsSource = readonly Section[] | ((settings: never) => Section[]);
+type SettingsSource = readonly SectionDef[] | ((settings: never) => SectionDef[]);
 
 interface EntryBase {
   id: string;
@@ -117,7 +117,7 @@ interface ResolvedScreenTree {
   hubs: HubDef[];
   screens: ScreenDef[];
   tabs: TabDef<object>[];
-  menu: MenuEntry[];
+  menu: MenuEntryDef[];
   shortcuts: RouteShortcut[];
   settingsAlias: RouteAlias;
   aliases: Record<string, RouteAlias>;
@@ -132,7 +132,7 @@ type MenuIconOf = (label: string) => ReactNode | undefined;
 
 interface PlacedMenuItem {
   path: string[];
-  item: MenuItem;
+  item: MenuItemDef;
   order: number;
 }
 

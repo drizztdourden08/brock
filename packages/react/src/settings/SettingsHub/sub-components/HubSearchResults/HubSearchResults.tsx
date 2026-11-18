@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
+import { useText } from '../../../../i18n';
 import { liveTabGroup } from '../../behavior/live-tab-group';
 import { matchTabs } from '../../behavior/match-tabs';
 import type { HubSearchResultsProps } from './HubSearchResults.type';
@@ -7,9 +8,10 @@ import { BrandSearchResults } from '../../../../search/BrandSearchResults';
 
 const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => {
   const { tabs, query, onOpenTab, ...control } = props;
+  const text = useText();
   const shown = query.trim();
   const normalized = shown.toLowerCase();
-  const matches = useMemo(() => matchTabs(tabs, control.settings, normalized), [tabs, control.settings, normalized]);
+  const matches = useMemo(() => matchTabs(tabs, control.settings, normalized, text), [tabs, control.settings, normalized, text]);
 
   const groups = matches.withRows.map(({ tab, count }) => liveTabGroup({ tab, count, query: normalized, control }));
 

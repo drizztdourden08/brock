@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { AppLogBus } from '../../../../log/app-log.type';
-import type { MenuEntry } from '../../../../menu/menu.type';
+import type { MenuEntryDef } from '../../../../menu/menu.type';
 import type { TitleBarActionSource } from '../../../../modules/renderer-module.type';
 import type { SearchAction } from '../../../../search/search.type';
 import type { ScreenRailGroup } from '../../../../shell/ScreenRail/ScreenRail.type';
@@ -23,7 +23,7 @@ interface AppShellProps<S extends object> {
   bootTasks: readonly RendererBootTask[];
   log: AppLogBus;
   moduleIds?: readonly string[];
-  moduleMenu: readonly MenuEntry[];
+  moduleMenu: readonly MenuEntryDef[];
   titleBarActions?: readonly TitleBarActionSource[];
   searchActions?: readonly SearchAction[];
   widgets?: readonly WidgetDef[];

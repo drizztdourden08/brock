@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { Profile } from '@drizztdourden08/brock-core';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
@@ -19,7 +20,7 @@ interface ScreenRenderContext {
 
 interface ScreenDef {
   id: string;
-  title: string;
+  title: Text;
   icon: ReactNode;
   header?: ScreenHeader;
   bare?: boolean;

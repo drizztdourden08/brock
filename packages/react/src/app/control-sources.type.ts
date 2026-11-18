@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ResolvedScreenTree } from '../screens/conventions/screen-tree.type';
 import type { ScreenRegistry } from '../screens/screen-registry.type';
 import type { TabDef } from '../settings/settings.type';
@@ -9,6 +10,7 @@ interface ControlSources {
   settings: SettingsStore<object> | null;
   screens: ScreenRegistry | null;
   tree: ResolvedScreenTree | null;
+  text: (value: Text) => string;
 }
 
 export type { ControlSources };

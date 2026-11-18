@@ -1,5 +1,4 @@
 /* @layer renderer-shell @kind logic */
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { TextOf } from './resolve-item-text.type';
 import type { SettingAction, SettingActionDef, SettingChoice, SettingChoiceDef, SettingControl, SettingControlDef, SettingDescription, SettingItem, SettingItemDef } from './settings.type';
 

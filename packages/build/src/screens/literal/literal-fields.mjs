@@ -9,9 +9,14 @@ const isLiteral = (value) => {
   return true;
 };
 
+/** @param {unknown} value @returns {boolean} true for a string or a msg('ns:key') call read as { key } */
+const isText = (value) => typeof value === 'string' || (typeof value === 'object' && value !== null && Object.keys(value).join() === 'key' && typeof value.key === 'string');
+
+const FITS = { string: (value) => typeof value === 'string', text: isText, literal: isLiteral };
+
 /**
  * @param {unknown} value what the literal reader returned
- * @param {Record<string, 'string' | 'literal'>} fields the keys to keep, by the kind each takes
+ * @param {Record<string, 'string' | 'text' | 'literal'>} fields the keys to keep, by the kind each takes
  * @param {readonly string[]} required the keys that must be set
  * @returns {Record<string, unknown> | null} those keys, or null when one does not fit
  */
@@ -20,7 +25,7 @@ const literalFields = (value, fields, required) => {
   const record = /** @type {Record<string, unknown>} */ (value);
   if (required.some((key) => record[key] === undefined)) return null;
   const entries = Object.entries(fields).filter(([key]) => record[key] !== undefined);
-  const fits = entries.every(([key, kind]) => (kind === 'string' ? typeof record[key] === 'string' : isLiteral(record[key])));
+  const fits = entries.every(([key, kind]) => FITS[kind](record[key]));
   return fits ? Object.fromEntries(entries.map(([key]) => [key, record[key]])) : null;
 };
 

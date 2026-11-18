@@ -18,6 +18,8 @@ import { TOURS_DIR } from './src/tours/tour-conventions.constants.mjs';
 import { checkToolbars } from './src/toolbars/check-toolbars.mjs';
 import { TOOLBARS_DIR } from './src/toolbars/toolbar-conventions.constants.mjs';
 import { checkStartup } from './src/startup/check-startup.mjs';
+import { checkLocales } from './src/i18n/check-locales.mjs';
+import { LOCALES_DIR } from './src/i18n/i18n.constants.mjs';
 import { STARTUP_DIR } from './src/startup/startup-conventions.constants.mjs';
 
 const APP_MARKER = 'brock.config.ts';
@@ -36,6 +38,8 @@ const hasToolbars = (dir) => isApp(dir) && existsSync(join(dir, TOOLBARS_DIR));
 
 const hasStartup = (dir) => isApp(dir) && existsSync(join(dir, STARTUP_DIR));
 
+const hasLocales = (dir) => isApp(dir) && existsSync(join(dir, LOCALES_DIR));
+
 const REVIEW_FIXTURES_DIR = 'src/review/fixtures';
 
 const conventionOwned = (dir) => [
@@ -45,6 +49,7 @@ const conventionOwned = (dir) => [
   ...(hasTours(dir) ? [join(dir, TOURS_DIR)] : []),
   ...(hasToolbars(dir) ? [join(dir, TOOLBARS_DIR)] : []),
   ...(hasStartup(dir) ? [join(dir, STARTUP_DIR)] : []),
+  ...(hasLocales(dir) ? [join(dir, LOCALES_DIR)] : []),
   join(dir, REVIEW_FIXTURES_DIR),
 ];
 
@@ -60,6 +65,7 @@ const FOLDER_CHECKS = [
   [hasTours, checkTours],
   [hasToolbars, checkToolbars],
   [hasStartup, checkStartup],
+  [hasLocales, checkLocales],
 ];
 
 const folderFindings = (dir, prefix) => FOLDER_CHECKS.flatMap(([has, check]) => (has(dir) ? check(dir).map((finding) => `${prefix}${finding}`) : []));
@@ -76,7 +82,7 @@ const brockAppChecks = async ({ rootDir, packageDir, label, kind }) => {
 
 export default defineExtension({
   id: 'brock-app',
-  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar, src/tours, src/toolbars, src/startup and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files, <id>.kit.ts widget kits and <id>.overlay.tsx kit overlays, <id>.step.ts review steps, <id>.action.ts title bar items and <id>.tour.ts tours, <id>.toolbar.tsx toolbars and <id>.prompt.ts start-up prompts, each with its <id>.<kind>.constants.ts',
+  description: 'Brock apps: brock.config.ts marks an app, src/screens, src/widgets, src/title-bar, src/tours, src/toolbars, src/startup, src/locales and build/installer have their own checks, <id>.task.ts boot tasks, <id>.widget.tsx widget files, <id>.kit.ts widget kits and <id>.overlay.tsx kit overlays, <id>.step.ts review steps, <id>.action.ts title bar items and <id>.tour.ts tours, <id>.toolbar.tsx toolbars and <id>.prompt.ts start-up prompts, each with its <id>.<kind>.constants.ts',
   structure: {
     appMarkers: [APP_MARKER],
     moduleFiles: [

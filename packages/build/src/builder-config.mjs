@@ -14,6 +14,7 @@ import { KOFFI_ASAR_UNPACK, VELOPACK_ASAR_UNPACK } from './packaging/packaging.c
 import { DEB_POSTINST_FILE } from './platforms/linux/linux.constants.mjs';
 import { helperResources } from './helper-scripts/helper-resources.mjs';
 import { helperEntriesToShip } from './helper-scripts/helper-entries-to-ship.mjs';
+import { electronLanguages } from './i18n/electron-languages.mjs';
 
 /**
  * @typedef {import('@drizztdourden08/brock-core/product').ProductInput} ProductInput
@@ -75,7 +76,7 @@ const createBuilderConfig = (product, { rootDir, packaging = {}, helpers, fuses,
     productName: product.name,
     npmRebuild: false,
     directories: { output: join(rootDir, 'release'), ...(product.icons?.brand ? { buildResources: 'build' } : {}) },
-    electronLanguages: ['en-US'],
+    electronLanguages: electronLanguages(rootDir),
     files: APP_FILES,
     asarUnpack: [VELOPACK_ASAR_UNPACK, ...KOFFI_ASAR_UNPACK],
     electronFuses: electronFusesOf({ platform, helpers, fuses }),

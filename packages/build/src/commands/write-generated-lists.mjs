@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { writeBootFiles } from '../boot/write-boot-files.mjs';
+import { writeI18nFiles } from '../i18n/write-i18n.mjs';
 import { writeStartupFile } from '../startup/write-startup.mjs';
 import { writeTitleBarFile } from '../title-bar/write-title-bar.mjs';
 import { writeToursFile } from '../tours/write-tours.mjs';
@@ -13,6 +14,7 @@ const LISTS = [
   [writeToursFile, 'the tour list'],
   [writeToolbarsFile, 'the toolbar list'],
   [writeStartupFile, 'the start-up prompt list'],
+  [writeI18nFiles, 'the locale files'],
 ];
 
 /**

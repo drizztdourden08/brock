@@ -5,7 +5,7 @@ import { literalFields } from './screens/literal/literal-fields.mjs';
 import { readDefinedDefault } from './screens/literal/read-defined-default.mjs';
 import { DEFAULT_EXPORT } from './widgets/widget-conventions.constants.mjs';
 
-/** @typedef {{ dir: string, suffix: string, idPattern: RegExp, constantsFile: RegExp, noun: string, fileHint: string, folderHint: string, define: string, shell: Record<string, 'string' | 'literal'>, required: readonly string[], extra?: (source: string) => Record<string, unknown> }} ConventionKind */
+/** @typedef {{ dir: string, suffix: string, idPattern: RegExp, constantsFile: RegExp, noun: string, fileHint: string, folderHint: string, define: string, shell: Record<string, 'string' | 'text' | 'literal'>, required: readonly string[], extra?: (source: string) => Record<string, unknown> }} ConventionKind */
 
 /**
  * @param {ConventionKind} kind

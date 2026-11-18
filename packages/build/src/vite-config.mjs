@@ -25,6 +25,7 @@ import { widgetsPlugin } from './widgets/widgets-plugin.mjs';
 import { titleBarPlugin } from './title-bar/title-bar-plugin.mjs';
 import { startupPlugin } from './startup/startup-plugin.mjs';
 import { toursPlugin } from './tours/tours-plugin.mjs';
+import { i18nPlugin } from './i18n/i18n-plugin.mjs';
 import { toolbarsPlugin } from './toolbars/toolbars-plugin.mjs';
 import { splashPlugin } from './splash/splash-plugin.mjs';
 import { servedDirs } from './served-dirs.mjs';
@@ -162,7 +163,7 @@ const defineBrockViteConfig = async (rootDir, overrides = {}) => {
       define,
       plugins: [
         devOnlyPlugin({ rootDir }), metaModulesPlugin({ rootDir }), react(), ...polyfills(), optimizeDepsPlugin({ rootDir, aliases: alias, options: build?.optimizeDeps, shims: polyfillShimSpecifiers(rootDir, build) }), sharedDepsCachePlugin({ rootDir }),
-        splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }), toolbarsPlugin({ rootDir }), startupPlugin({ rootDir }),
+        splashPlugin({ rootDir, product }), screensPlugin({ rootDir }), widgetsPlugin({ rootDir }), titleBarPlugin({ rootDir }), toursPlugin({ rootDir }), toolbarsPlugin({ rootDir }), startupPlugin({ rootDir }), i18nPlugin({ rootDir }),
       ],
       worker: { format: WORKER_FORMAT, plugins: () => [devOnlyPlugin({ rootDir }), ...polyfills()] },
       resolve: { alias: withShimAliases(alias, rootDir, build), dedupe: SHARED_SINGLETONS },

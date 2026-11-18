@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind logic */
 import { IDENTIFIER, NUMBER, TERMINATORS, TYPE_SUFFIX, UNKNOWN, WORD_VALUES } from './literal.constants.mjs';
+import { readMsgCall } from './read-msg-call.mjs';
 import { readQuoted, readTemplate, skipExpression, skipSpace } from './scan-source.mjs';
 
 /**
@@ -71,6 +72,8 @@ const readArray = (src, from, resolve) => {
 
 /** @param {string} src @param {number} i @param {Resolve} resolve @returns {Read} */
 const readWord = (src, i, resolve) => {
+  const call = readMsgCall(src, i);
+  if (call !== null) return call;
   const number = sticky(NUMBER, src, i);
   if (number !== null) return { value: Number(number), end: i + number.length };
   const word = sticky(IDENTIFIER, src, i);

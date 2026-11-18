@@ -99,6 +99,7 @@ interface BrockModuleManifest {
   prepare?: string;
   extraResources?: ModuleExtraResource[];
   packExclude?: string[];
+  locales?: string;
   doctor?: ModuleDoctorCheck[];
   udevRules?: string;
   android?: ModuleAndroidSide;

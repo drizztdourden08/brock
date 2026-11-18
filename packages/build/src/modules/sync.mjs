@@ -22,6 +22,7 @@ import { renderTitleBarFiles } from '../title-bar/render-title-bar.mjs';
 import { renderPaletteFile } from '../tessera/render-palette.mjs';
 import { renderStartupFiles } from '../startup/render-startup.mjs';
 import { renderToursFiles } from '../tours/render-tours.mjs';
+import { renderI18nFiles } from '../i18n/render-i18n.mjs';
 import { renderToolbarsFiles } from '../toolbars/render-toolbars.mjs';
 import { findWorkspaceRoot } from '../workspace.mjs';
 import { sameText, writeIfChanged } from '../write-changed.mjs';
@@ -113,6 +114,7 @@ const rendererSideFiles = (rootDir, config) => [
   ...renderToursFiles(rootDir),
   ...renderToolbarsFiles(rootDir),
   ...renderStartupFiles(rootDir),
+  ...renderI18nFiles(rootDir),
   ...renderPaletteFile(rootDir, config),
   ...renderTesseraEntryFiles(rootDir),
 ];

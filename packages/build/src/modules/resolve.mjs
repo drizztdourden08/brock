@@ -99,4 +99,4 @@ const specifierFor = (packageName, exportsMap, subpath) => {
   return `${packageName}/${normalized.slice(2)}`;
 };
 
-export { resolveModules, specifierFor };
+export { packageReader, resolveModules, specifierFor };

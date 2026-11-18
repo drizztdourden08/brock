@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { memo, useState } from 'react';
 import { Box, Gauge } from '@drizztdourden08/tessera/primitives';
+import { useT } from '../../../../i18n';
 import { gaugeReadings } from '../behavior/gauge-readings';
 import { useGaugeSize } from '../behavior/useGaugeSize';
 import { CPU_THRESHOLDS, MEMORY_THRESHOLDS } from '../PerformanceWidget.constants';
@@ -10,6 +11,7 @@ const share = (value: number): string => (value < 10 ? value.toFixed(1) : value.
 
 const PerformanceGaugesView = (props: PerformanceGaugesProps) => {
   const { renderer, processes, shown } = props;
+  const t = useT();
   const [panel, setPanel] = useState<HTMLElement | null>(null);
   const { cpu, memory, heap } = gaugeReadings(renderer, processes, shown);
   const count = [cpu, memory, heap].filter((value) => value !== null).length;
@@ -18,9 +20,9 @@ const PerformanceGaugesView = (props: PerformanceGaugesProps) => {
 
   return (
     <Box ref={setPanel} className="performance-widget__panel performance-widget__gauges" data-count={count}>
-      {cpu !== null && <Gauge value={cpu} unit="%" label="CPU" size={size} thresholds={CPU_THRESHOLDS} zones format={share} />}
-      {memory !== null && <Gauge value={memory} unit="%" label="Memory" size={size} thresholds={MEMORY_THRESHOLDS} zones format={share} />}
-      {heap !== null && <Gauge value={heap} unit="%" label="JS heap" size={size} zones format={share} />}
+      {cpu !== null && <Gauge value={cpu} unit="%" label={t('brock-app:perf.tile.cpu')} size={size} thresholds={CPU_THRESHOLDS} zones format={share} />}
+      {memory !== null && <Gauge value={memory} unit="%" label={t('brock-app:perf.tile.memory')} size={size} thresholds={MEMORY_THRESHOLDS} zones format={share} />}
+      {heap !== null && <Gauge value={heap} unit="%" label={t('brock-app:perf.row.jsHeap')} size={size} zones format={share} />}
     </Box>
   );
 };

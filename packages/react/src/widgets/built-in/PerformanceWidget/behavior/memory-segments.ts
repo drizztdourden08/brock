@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { ProcessMetric } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { StackedBarSegment } from '@drizztdourden08/tessera/primitives';
+import { fallbackText } from '../../../../i18n/fallback-text';
 import { MAIN_WINDOW, MEMORY_GROUPS } from '../PerformanceWidget.constants';
 import type { MemoryGroupId } from '../PerformanceWidget.type';
 
@@ -13,7 +15,7 @@ const groupOf = (metric: ProcessMetric): MemoryGroupId => {
   return 'other';
 };
 
-const memorySegments = (processes: readonly ProcessMetric[]): StackedBarSegment[] => {
+const memorySegments = (processes: readonly ProcessMetric[], text: (value: Text) => string = fallbackText): StackedBarSegment[] => {
   const bytes = new Map<MemoryGroupId, number>();
   for (const metric of processes) {
     const group = groupOf(metric);
@@ -21,7 +23,7 @@ const memorySegments = (processes: readonly ProcessMetric[]): StackedBarSegment[
   }
   return MEMORY_GROUPS.flatMap((group) => {
     const value = bytes.get(group.id) ?? 0;
-    return value > 0 ? [{ id: group.id, label: group.label, value, color: group.color }] : [];
+    return value > 0 ? [{ id: group.id, label: text(group.label), value, color: group.color }] : [];
   });
 };
 

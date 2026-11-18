@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SettingControl } from '../../../settings.type';
 
 interface SettingJsonFieldProps {
@@ -10,7 +11,7 @@ interface SettingJsonFieldProps {
 }
 
 interface JsonProblem {
-  message: string;
+  message: Text;
   line: number | undefined;
 }
 

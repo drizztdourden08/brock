@@ -6,23 +6,22 @@ import { chordsOf } from '../../chords-of';
 import { commands } from '../../commands';
 import type { CommandDef, KeymapRowInput } from '../../command.type';
 import { formatChord } from '../../format-chord';
-import { KEYMAP_STRINGS } from '../KeymapPage.constants';
 
 const notes = (def: CommandDef, extra: readonly string[], input: KeymapRowInput): string[] => {
-  const { state, shared, labelOf } = input;
+  const { state, shared, labelOf, t } = input;
   const sameKeys = shared
     .filter((each) => each.ids.includes(def.id))
     .flatMap((each) => each.ids.filter((id) => id !== def.id));
   return [
-    ...(def.only === undefined ? [] : [`${KEYMAP_STRINGS.only} ${def.only}.`]),
-    ...(sameKeys.length === 0 ? [] : [`${KEYMAP_STRINGS.sameKeys} ${[...new Set(sameKeys)].map(labelOf).join(', ')}.`]),
-    ...(extra.length > 0 ? [`${KEYMAP_STRINGS.also} ${extra.map((chord) => formatChord(chord, state.mac)).join(', ')}.`] : []),
-    ...(def.hold === undefined ? [] : [KEYMAP_STRINGS.hold]),
+    ...(def.only === undefined ? [] : [t('brock-settings:keymap.only', { where: def.only })]),
+    ...(sameKeys.length === 0 ? [] : [t('brock-settings:keymap.sameKeys', { names: [...new Set(sameKeys)].map(labelOf).join(', ') })]),
+    ...(extra.length > 0 ? [t('brock-settings:keymap.also', { keys: extra.map((chord) => formatChord(chord, state.mac)).join(', ') })] : []),
+    ...(def.hold === undefined ? [] : [t('brock-settings:keymap.hold')]),
   ];
 };
 
 const keymapRow = (def: CommandDef, input: KeymapRowInput): SettingsItem => {
-  const { state, clashes, labelOf } = input;
+  const { state, clashes, labelOf, t } = input;
   const { mac } = state;
   const [first = '', ...extra] = chordsOf(def, state);
   const others = clashes.filter((clash) => clash.ids.includes(def.id)).flatMap((clash) => clash.ids).filter((id) => id !== def.id);
@@ -31,7 +30,7 @@ const keymapRow = (def: CommandDef, input: KeymapRowInput): SettingsItem => {
   return {
     id: def.id,
     title: def.label,
-    hint: KEYMAP_STRINGS.hint,
+    hint: t('brock-settings:keymap.hint'),
     ...description,
     input: {
       kind: 'keybind',
@@ -43,8 +42,8 @@ const keymapRow = (def: CommandDef, input: KeymapRowInput): SettingsItem => {
     },
     changed: state.overrides[def.id] !== undefined,
     onReset: () => commands.reset(def.id),
-    problem: others.length > 0 ? `${KEYMAP_STRINGS.conflict} ${[...new Set(others)].map(labelOf).join(', ')}.` : undefined,
-    actions: first === '' ? [] : [{ id: 'clear', label: KEYMAP_STRINGS.clear, onSelect: () => commands.remap(def.id, []) }],
+    problem: others.length > 0 ? t('brock-settings:keymap.conflict', { names: [...new Set(others)].map(labelOf).join(', ') }) : undefined,
+    actions: first === '' ? [] : [{ id: 'clear', label: t('brock-settings:keymap.clear'), onSelect: () => commands.remap(def.id, []) }],
   };
 };
 

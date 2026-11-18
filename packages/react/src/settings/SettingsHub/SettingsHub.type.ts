@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SideNavConfig } from '@drizztdourden08/tessera/composites';
 import type { SettingsControlProps, TabDef } from '../settings.type';
 
@@ -8,7 +9,7 @@ interface SettingsHubProps<S extends object> extends SettingsControlProps<S> {
   activeTab?: string;
   onTabChange?: (id: string) => void;
   backdrop?: ReactNode;
-  searchPlaceholder?: string;
+  searchPlaceholder?: Text;
   homeTabId?: string;
   className?: string;
 }

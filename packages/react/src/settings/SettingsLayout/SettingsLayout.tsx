@@ -42,7 +42,7 @@ const SettingsLayout = <S extends object>(props: SettingsLayoutProps<S>) => {
 
   const listed = groupListSections({ sections: resolved, settings, defaults, onChange, lockOf, rowsOf });
   const body = listed.length === 0
-    ? <EmptyState message={emptyMessage ?? panels.settingsEmpty} />
+    ? <EmptyState message={emptyMessage === undefined ? panels.settingsEmpty : text(emptyMessage)} />
     : (
       <>
         {listed.map((section) => <SettingsSection key={section.id} {...section} renderLock={lockOverlay} />)}

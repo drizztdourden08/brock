@@ -152,10 +152,10 @@ interface SettingsControlProps<S extends object> {
 
 interface SettingsLayoutProps<S extends object> extends SettingsControlProps<S> {
   sections: SectionDef[];
-  emptyMessage?: string;
+  emptyMessage?: Text;
   preview?: ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
-  previewLabel?: string;
+  previewLabel?: Text;
 }
 
 interface TabRenderContext<S extends object> extends SettingsControlProps<S> {
@@ -173,7 +173,7 @@ interface TabDef<S extends object> {
   source?: SettingsValueSource;
   preview?: (settings: S) => ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
-  previewLabel?: string;
+  previewLabel?: Text;
   render?: (ctx: TabRenderContext<S>) => ReactNode;
   mobileOnly?: boolean;
   moduleId?: string;

@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
-import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { I18n, Text } from '@drizztdourden08/brock-core/i18n';
 import type { ArgField, ArgOption, ArgSchema, ArgValue } from '@drizztdourden08/brock-core/args';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 
@@ -150,6 +150,7 @@ interface KeymapRowInput {
   clashes: readonly CommandConflict[];
   shared: readonly CommandConflict[];
   labelOf: (id: string) => string;
+  t: I18n['t'];
 }
 
 interface CommandBinding {

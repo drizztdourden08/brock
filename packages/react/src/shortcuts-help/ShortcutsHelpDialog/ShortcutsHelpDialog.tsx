@@ -3,6 +3,8 @@ import { Button } from '@drizztdourden08/tessera/primitives';
 import type { ShortcutListGroup } from '@drizztdourden08/tessera/composites';
 import { DialogShell, ShortcutList } from '@drizztdourden08/tessera/composites';
 import { chordKeys } from '../../commands/chord-keys';
+import { groupTitle } from '../../commands/group-title';
+import { useT, useText } from '../../i18n';
 import { useCommandStore } from '../../commands/useCommandStore';
 import { SHORTCUTS_HELP_LABEL } from '../shortcuts-help.constants';
 import { useShortcutsHelpStore } from '../useShortcutsHelpStore';
@@ -14,14 +16,16 @@ const ShortcutsHelpDialog = () => {
   const hide = useShortcutsHelpStore((s) => s.hide);
   const mac = useCommandStore((s) => s.mac);
   const groups = useShortcutGroups();
+  const t = useT();
+  const text = useText();
   const listed: ShortcutListGroup[] = groups.map((group) => ({
-    label: group.title,
-    items: group.rows.map((row) => ({ description: row.label, keys: chordKeys(row.shortcut, mac) })),
+    label: text(groupTitle(group.title)),
+    items: group.rows.map((row) => ({ description: text(row.label), keys: chordKeys(row.shortcut, mac) })),
   }));
 
   return (
-    <DialogShell open={open} onClose={hide} title={SHORTCUTS_HELP_LABEL} className="shortcuts-help" actions={<Button variant="tertiary" onClick={hide}>Close</Button>}>
-      <ShortcutList groups={listed} label={SHORTCUTS_HELP_LABEL} size="md" />
+    <DialogShell open={open} onClose={hide} title={text(SHORTCUTS_HELP_LABEL)} className="shortcuts-help" actions={<Button variant="tertiary" onClick={hide}>{t('brock-settings:shortcuts.close')}</Button>}>
+      <ShortcutList groups={listed} label={text(SHORTCUTS_HELP_LABEL)} size="md" />
     </DialogShell>
   );
 };

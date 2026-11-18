@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
+import { fallbackText } from '../../i18n/fallback-text';
 import type { MenuEntry, MenuItem } from '../../menu/menu.type';
 import { byOrder } from '../../screens/conventions/by-order';
 import { UNORDERED } from '../../screens/conventions/screens.constants';
@@ -33,7 +35,7 @@ const partEntries = (kit: WidgetKitDef, state: KitMenuState, view: KitView | nul
   return [...members, ...overlays];
 };
 
-const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus): MenuItem => {
+const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus, text: (value: Text) => string): MenuItem => {
   const open = state.active === kit.id;
   return {
     key: `${KIT_KEY_PREFIX}${kit.id}`,
@@ -43,19 +45,19 @@ const kitEntry = (kit: WidgetKitDef, state: KitMenuState, status: KitStatus): Me
     ...(kit.devOnly === true ? { devOnly: true } : {}),
     ...menuPlacementOf(kit.menu),
     children: [
-      { key: `${KIT_KEY_PREFIX}${kit.id}-open`, label: open ? KIT_WORDS.close : KIT_WORDS.open, icon: open ? 'x' : KIT_OPEN_ICON, onClick: () => state.toggle(kit.id) },
+      { key: `${KIT_KEY_PREFIX}${kit.id}-open`, label: text(open ? KIT_WORDS.close : KIT_WORDS.open), icon: open ? 'x' : KIT_OPEN_ICON, onClick: () => state.toggle(kit.id) },
       'separator',
       ...partEntries(kit, state, kitViewOf(kit.id, state)),
       'separator',
-      { key: `${KIT_KEY_PREFIX}${kit.id}-reset`, label: KIT_WORDS.reset, icon: 'rotate-ccw', confirm: true, onClick: () => state.reset(kit.id) },
+      { key: `${KIT_KEY_PREFIX}${kit.id}-reset`, label: text(KIT_WORDS.reset), icon: 'rotate-ccw', confirm: true, onClick: () => state.reset(kit.id) },
     ],
   };
 };
 
-const buildKitMenuEntries = (state: KitMenuState, statusOf: (kit: WidgetKitDef) => KitStatus): MenuItem[] =>
+const buildKitMenuEntries = (state: KitMenuState, statusOf: (kit: WidgetKitDef) => KitStatus, text: (value: Text) => string = fallbackText): MenuItem[] =>
   sorted(state.kits).flatMap((kit) => {
     const status = statusOf(kit);
-    return status.shown ? [kitEntry(kit, state, status)] : [];
+    return status.shown ? [kitEntry(kit, state, status, text)] : [];
   });
 
 export { buildKitMenuEntries };

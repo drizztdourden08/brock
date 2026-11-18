@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { useDeveloperTools } from '../../app/useDeveloperTools';
 import { useContextsStore } from '../../contexts/useContextsStore';
+import { useText } from '../../i18n';
 import type { MenuItem } from '../../menu/menu.type';
 import { buildKitMenuEntries } from './build-kit-menu-entries';
 import { kitStatus } from './kit-status';
@@ -14,10 +15,11 @@ const useKitMenuEntries = (): MenuItem[] => {
   const members = useWidgetKitStore((s) => s.members);
   const active = useWidgetKitStore((s) => s.active);
   const views = useWidgetKitStore((s) => s.views);
+  const text = useText();
   return useMemo(() => {
     const { toggle, toggleMember, toggleOverlay, reset } = useWidgetKitStore.getState();
-    return buildKitMenuEntries({ kits, members, active, views, toggle, toggleMember, toggleOverlay, reset }, (kit) => kitStatus(kit, contexts, developerTools));
-  }, [kits, members, active, views, contexts, developerTools]);
+    return buildKitMenuEntries({ kits, members, active, views, toggle, toggleMember, toggleOverlay, reset }, (kit) => kitStatus(kit, contexts, developerTools), text);
+  }, [kits, members, active, views, contexts, developerTools, text]);
 };
 
 export { useKitMenuEntries };

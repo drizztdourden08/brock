@@ -24,6 +24,7 @@ import { useTitleBarSources } from '../behavior/useTitleBarSources';
 import { useSettingsControls } from '../behavior/useSettingsControls';
 import { AppShell } from './AppShell';
 import { WidgetWindow } from '../../../widgets/WidgetWindow';
+import { useText } from '../../../i18n';
 import { widgetSettingsTabs } from '../../../widgets/widget-settings-tabs';
 import { widgetWindowId } from '../../../widgets/widget-window-id';
 import { NO_WIDGETS } from '../../../widgets/widget.constants';
@@ -47,6 +48,7 @@ const BrockAppBody = <S extends object>(props: BrockAppProps<S>) => {
   const poppedId = useMemo(widgetWindowId, []);
   const overrides = useTesseraSetup(product);
   const composedHooks = useMemo(() => composeProfileHooks([...merged.profileHooks, profileHooks]), [merged.profileHooks, profileHooks]);
+  const text = useText();
   const allProfileModes = useMemo(() => [...merged.profileModes, ...(props.profileModes ?? [])], [merged.profileModes, props.profileModes]);
   const log = useHostBoot(merged.logChannels, composedHooks, dataDomains);
   useRendererLogging(log, { sessionLog, popped: poppedId !== null });
@@ -61,7 +63,7 @@ const BrockAppBody = <S extends object>(props: BrockAppProps<S>) => {
   const allStartupPrompts = useAllStartupPrompts(merged.startupPrompts, props.startupPrompts);
   const settingsStore = useProfileSettingsStore(settings, developerTools);
 
-  const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs, ...widgetSettingsTabs(allWidgets)] as TabDef<object>[]), [settings.tabs, merged.settingsTabs, allWidgets]);
+  const builtInTabs = useMemo(() => separateModuleTabs([...(settings.tabs ?? NO_TABS), ...merged.settingsTabs, ...widgetSettingsTabs(allWidgets, text)] as TabDef<object>[]), [settings.tabs, merged.settingsTabs, allWidgets, text]);
   const { base: home, registry, tree, tabs, menu, homeScreen } = useAppScreens({ ...props, builtInTabs, moduleScreens: merged.screens, moduleBuckets: merged.buckets, productHome: product.homeScreen, profilesRoute: product.profilesRoute, singleProfile: product.singleProfile });
   const settingsControls = useSettingsControls(settings, merged.lockCauses);
   useControlSources({ tabs, settings: settingsStore, screens: registry, tree });

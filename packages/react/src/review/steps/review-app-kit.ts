@@ -11,6 +11,7 @@ import { waitFor } from '../dom/wait-for';
 import { closeMenu } from '../menu/close-menu';
 import { menuPathTo } from '../menu/menu-path-to';
 import { walkToKey } from '../menu/walk-to-key';
+import { fallbackText } from '../../i18n/fallback-text';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import type { StepTour } from '../review.type';
 import { kitSelectors } from '../widgets/kit-review.constants';
@@ -23,7 +24,7 @@ const placedByApp = (tour: StepTour, kit: WidgetKitDef): boolean =>
 
 const checkDeveloperPlace = (tour: StepTour, kit: WidgetKitDef, path: readonly string[] | null): void => {
   if (kit.devOnly !== true || placedByApp(tour, kit)) return;
-  const developer = menuPathTo(tour.env.menu, (entry) => entry.key === WIDGETS_DEVELOPER_KEY)?.at(-1) ?? WIDGETS_DEVELOPER_ENTRY.label;
+  const developer = menuPathTo(tour.env.menu, (entry) => entry.key === WIDGETS_DEVELOPER_KEY)?.at(-1) ?? fallbackText(WIDGETS_DEVELOPER_ENTRY.label);
   const inside = path?.slice(0, -2).includes(developer) === true;
   tour.check(`app-kit-${kit.id}-in-developer`, inside, `the devOnly "${kit.id}" kit sits in the ${developer} sub-menu of Widgets`, `the devOnly "${kit.id}" kit is not inside the ${developer} sub-menu`);
 };

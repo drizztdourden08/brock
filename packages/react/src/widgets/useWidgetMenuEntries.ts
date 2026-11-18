@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
+import { useText } from '../i18n';
 import type { MenuItem } from '../menu/menu.type';
 import { useBrock } from '../app/useBrock';
 import { useDeveloperTools } from '../app/useDeveloperTools';
@@ -21,11 +22,12 @@ const useWidgetMenuEntries = (): MenuItem[] => {
   const kits = useKitMenuEntries();
   const kitOpen = useWidgetKitStore((s) => s.active !== null);
   const workspaceEntries = useWorkspaceMenuEntries();
+  const text = useText();
   return useMemo(() => {
     const own = buildWidgetMenuEntries(definitions, layout, toggle, developerTools);
     const shown = kitOpen ? own.map((entry) => ({ ...entry, checked: false })) : own;
-    return [...arrangeWidgetMenu([...shown, ...kits, ...workspaceEntries], entries, developerTools), resetLayoutEntry(reset)];
-  }, [definitions, layout, toggle, developerTools, kits, kitOpen, workspaceEntries, reset, entries]);
+    return [...arrangeWidgetMenu([...shown, ...kits, ...workspaceEntries], entries, developerTools, text), resetLayoutEntry(reset, text)];
+  }, [definitions, layout, toggle, developerTools, kits, kitOpen, workspaceEntries, reset, entries, text]);
 };
 
 export { useWidgetMenuEntries };

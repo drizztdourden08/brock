@@ -37,7 +37,7 @@ const HubBody = (props: HubBodyProps) => {
   const preload = useRoutePreloader();
   const navConfig = useMemo(() => buildHubNav(homeListed ? def.home : undefined, groups, (id) => preload(joinRoute(def.id, id)), def.top), [homeListed, def.home, def.id, def.top, groups, preload]);
   const search = useMemo(() => (def.search && !rail
-    ? { value: query, onChange: setQuery, placeholder: def.search.placeholder ?? text(DEFAULT_SEARCH_PLACEHOLDER) }
+    ? { value: query, onChange: setQuery, placeholder: text(def.search.placeholder ?? DEFAULT_SEARCH_PLACEHOLDER) }
     : undefined), [def.search, rail, query, setQuery, text]);
 
   const openPage = useCallback((id: string) => { clear(); selectPage(id); }, [clear, selectPage]);

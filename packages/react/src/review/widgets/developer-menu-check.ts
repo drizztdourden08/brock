@@ -2,6 +2,7 @@
 import { WIDGETS_SECTION } from '../../app/BrockApp/BrockApp.constants';
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import { MENU_SECTIONS } from '../../menu/menu.constants';
+import { fallbackText } from '../../i18n/fallback-text';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import { KIT_WORDS } from '../../widgets/kits/widget-kit.constants';
 import { closeMenu } from '../menu/close-menu';
@@ -24,7 +25,7 @@ const developerPath = (tour: StepTour): string[] => {
   const known = menuPathTo(menu, (item) => item.key === WIDGETS_DEVELOPER_KEY);
   if (known) return known;
   const section = menuPathTo(menu, (item) => item.key === `${SECTION_KEY_PREFIX}${WIDGETS_SECTION}`) ?? [widgetsLabel];
-  return [...section, product.menu?.entries?.[WIDGETS_DEVELOPER_KEY]?.label ?? WIDGETS_DEVELOPER_ENTRY.label];
+  return [...section, product.menu?.entries?.[WIDGETS_DEVELOPER_KEY]?.label ?? fallbackText(WIDGETS_DEVELOPER_ENTRY.label)];
 };
 
 const panelHas = async (parents: readonly string[], labels: readonly string[], present: boolean): Promise<boolean> =>
@@ -38,8 +39,8 @@ const checkShown = async (tour: StepTour, path: readonly string[]): Promise<void
   const listed = await panelHas(path, [DEV_MENU_WIDGET.label, DEV_MENU_KIT.label], true);
   tour.check('widgets-developer-shown', listed, `with developer tools on, ${route} lists the devOnly widget and the devOnly kit`, `with developer tools on, ${route} does not list the devOnly widget and kit`);
   await closeMenu();
-  const open = await walkMenu([...path, DEV_MENU_KIT.label], KIT_WORDS.open);
-  tour.check('widgets-developer-kit', open !== null, `the devOnly kit is its own sub-menu inside ${route}, with ${KIT_WORDS.open}`, `the devOnly kit has no sub-menu with ${KIT_WORDS.open} inside ${route}`);
+  const open = await walkMenu([...path, DEV_MENU_KIT.label], fallbackText(KIT_WORDS.open));
+  tour.check('widgets-developer-kit', open !== null, `the devOnly kit is its own sub-menu inside ${route}, with ${fallbackText(KIT_WORDS.open)}`, `the devOnly kit has no sub-menu with ${fallbackText(KIT_WORDS.open)} inside ${route}`);
   if (open) await tour.capture('widgets-developer-menu');
   await closeMenu();
 };

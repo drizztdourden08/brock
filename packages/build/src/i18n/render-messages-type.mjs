@@ -2,6 +2,7 @@
 import { GENERATED_HEADER } from '../screens/screen-conventions.constants.mjs';
 import { CORE_AUGMENT, MESSAGES_TYPE_OUTPUT } from './i18n.constants.mjs';
 import { messageArgs } from './message-args.mjs';
+import { moduleLocaleSources } from './module-locale-sources.mjs';
 import { quoted, renderValueType } from './render-value-type.mjs';
 import { scanLocales } from './scan-locales.mjs';
 
@@ -25,6 +26,12 @@ const messageRows = (files) => files.flatMap((file) => Object.entries(file.messa
 }));
 
 /**
+ * @param {{ key: string, values: string, tags: string[] }[]} rows package rows first, app rows last
+ * @returns {{ key: string, values: string, tags: string[] }[]} one row per key, the last one wins
+ */
+const uniqueRows = (rows) => [...new Map(rows.map((row) => [row.key, row])).values()];
+
+/**
  * @param {{ key: string, values: string, tags: string[] }[]} rows
  * @returns {string} the content of .brock/messages.type.ts
  */
@@ -46,12 +53,14 @@ const renderMessagesType = (rows) => {
 
 /**
  * @param {string} rootDir the app root
- * @returns {{ path: string, content: string }[]} .brock/messages.type.ts, always
+ * @returns {{ path: string, content: string }[]} .brock/messages.type.ts, always, with package keys
  */
 const renderMessagesTypeFiles = (rootDir) => {
   const { base, sources } = scanLocales(rootDir);
-  const files = (sources.find((source) => source.kind === 'app')?.files ?? []).filter((file) => file.tag === base);
-  return [{ path: MESSAGES_TYPE_OUTPUT, content: renderMessagesType(messageRows(files)) }];
+  const app = sources.find((source) => source.kind === 'app')?.files ?? [];
+  const packages = moduleLocaleSources(rootDir).flatMap((source) => source.files);
+  const files = [...packages, ...app].filter((file) => file.tag === base);
+  return [{ path: MESSAGES_TYPE_OUTPUT, content: renderMessagesType(uniqueRows(messageRows(files))) }];
 };
 
 export { renderMessagesType, renderMessagesTypeFiles };

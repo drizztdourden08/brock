@@ -83,6 +83,22 @@ describe('K1 renderI18nFiles', { tags: ['critical'] }, () => {
     expect(out['.brock/locales.ts']).not.toContain("'de'");
   });
 
+  it('types the keys of package tables once, and leaves their base out of the bundle', () => {
+    const dir = appDir({
+      'package.json': '{"dependencies":{"pkg-x":"1.0.0"}}',
+      'node_modules/pkg-x/package.json': '{"name":"pkg-x","brock":{"locales":"./src/locales"}}',
+      'node_modules/pkg-x/src/locales/en/pkg-x.json': '{"menu.open":"Open","menu.close":"Close"}',
+      'src/locales/en/app.json': '{"home.title":"Home"}',
+      'src/locales/en/pkg-x.json': '{"menu.open":"Open it"}',
+    });
+    const out = files(dir);
+    const typed = out['.brock/messages.type.ts'];
+    expect(typed).toContain("'pkg-x:menu.close': Record<never, never>;");
+    expect(typed).toContain("'app:home.title': Record<never, never>;");
+    expect(typed.split("'pkg-x:menu.open'").length).toBe(2);
+    expect(out['.brock/locales.ts']).not.toContain('node_modules');
+  });
+
   it('removes the chunk of a language whose folder is gone', () => {
     const dir = appDir({ 'src/locales/en/app.json': EN, '.brock/locales/it.ts': 'old\n' });
     expect(renderI18nFiles(dir).find((file) => file.path === '.brock/locales/it.ts')?.content).toBeNull();

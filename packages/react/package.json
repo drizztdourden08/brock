@@ -24,6 +24,9 @@
     "README.md",
     "CHANGELOG.md"
   ],
+  "brock": {
+    "locales": "./src/locales"
+  },
   "sideEffects": [
     "**/*.css"
   ],

@@ -32,7 +32,8 @@
     "description": "OS language detection, the stored app and profile language, and the Language settings tab.",
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",
-    "renderer": "./src/renderer/index.ts"
+    "renderer": "./src/renderer/index.ts",
+    "locales": "./src/locales"
   },
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",

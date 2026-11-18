@@ -31,6 +31,9 @@
     "README.md",
     "CHANGELOG.md"
   ],
+  "brock": {
+    "locales": "./src/locales"
+  },
   "sideEffects": false,
   "dependencies": {
     "@drizztdourden08/brock-core": "workspace:*",

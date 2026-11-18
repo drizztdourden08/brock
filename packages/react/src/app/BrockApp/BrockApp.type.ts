@@ -32,6 +32,7 @@ import type { CommandDef } from '../../commands/command.type';
 import type { RouteShortcut } from '../../navigation/navigation.type';
 import type { MenuBarMenu } from '../../menu-bar/menu-bar.type';
 import type { ProfileModeDef } from '../../profiles/modes/profile-mode.type';
+import type { AppLocales } from '../../i18n/i18n.type';
 import type { LockCauseProvider } from '../../settings/lock-causes/lock-cause-provider.type';
 
 type BrockAppLayout = 'menu' | 'rail';
@@ -52,6 +53,7 @@ interface BrockAppProfiles {
 }
 
 interface BrockAppProps<S extends object> {
+  locales?: AppLocales;
   product: ProductConfig;
   settings: BrockAppSettings<S>;
   screens?: ScreenDef[];

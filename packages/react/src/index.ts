@@ -15,6 +15,7 @@ export * from './hub';
 export * from './shell';
 export * from './compounds';
 export * from './modules';
+export * from './i18n';
 export * from './menu';
 export * from './escape';
 export * from './host';

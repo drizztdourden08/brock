@@ -18,6 +18,7 @@ import type { ToolbarDef } from '../toolbars/toolbar.type';
 import type { VolumeSource } from '../volume/volume.type';
 import type { CommandDef } from '../commands/command.type';
 import type { ProfileStoreHooks } from '@drizztdourden08/brock-core';
+import type { Layer } from '@drizztdourden08/brock-core/i18n';
 import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
 import type { ProfileWizardStepDef } from '../profiles/wizard/profile-wizard-step.type';
 import type { LockCauseProvider } from '../settings/lock-causes/lock-cause-provider.type';
@@ -25,6 +26,12 @@ import type { LockCauseProvider } from '../settings/lock-causes/lock-cause-provi
 type TitleBarActionHook = () => WindowTitleBarAction | null;
 
 type TitleBarActionSource = WindowTitleBarAction | TitleBarActionHook;
+
+type LocaleSource = {
+  initial: () => Promise<string>;
+  set: (pref: string) => Promise<void>;
+  subscribe: (listener: (tag: string) => void) => () => void;
+};
 
 interface ModuleBucket {
   bucket: BucketDef;
@@ -56,6 +63,8 @@ interface RendererModule {
   profileWizardSteps?: readonly ProfileWizardStepDef[];
   lockCauses?: readonly LockCauseProvider[];
   profileHooks?: ProfileStoreHooks;
+  messages?: readonly Layer[];
+  i18n?: LocaleSource;
 }
 
 interface MergedModules {
@@ -83,6 +92,8 @@ interface MergedModules {
   profileWizardSteps: ProfileWizardStepDef[];
   lockCauses: LockCauseProvider[];
   profileHooks: ProfileStoreHooks[];
+  messages: Layer[];
+  i18n?: LocaleSource;
 }
 
-export type { MergedModules, ModuleBucket, RendererModule, TitleBarActionHook, TitleBarActionSource };
+export type { LocaleSource, MergedModules, ModuleBucket, RendererModule, TitleBarActionHook, TitleBarActionSource };

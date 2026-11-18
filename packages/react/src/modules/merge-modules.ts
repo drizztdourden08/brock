@@ -38,6 +38,8 @@ const mergeModules = (modules: readonly RendererModule[]): MergedModules => ({
   profileWizardSteps: modules.flatMap((m) => m.profileWizardSteps ?? []),
   lockCauses: modules.flatMap((m) => m.lockCauses ?? []),
   profileHooks: modules.flatMap((m) => (m.profileHooks ? [m.profileHooks] : [])),
+  messages: modules.flatMap((m) => m.messages ?? []),
+  i18n: modules.find((m) => m.i18n !== undefined)?.i18n,
 });
 
 export { mergeModules };

@@ -37,6 +37,18 @@ export default brockMarkdownlint({ ignores: ['vendor/**'] });
 | ESLint | `local/spawn-hides-window` from standards 0.15.0 (every `node:child_process` call passes `windowsHide` in an options object: `true` for a console tool, `false` only for a GUI app whose window must show), `brock/data-only`, `brock/verbatim-source`, and the `@kind data` and `@kind verbatim` file kinds below |
 | stylelint | `@drizztdourden08/tessera/tokens.css` as a token source for `brock/no-token-override` and `brock/no-token-shadow` |
 
+## Literal text in the UI (`brock/no-literal-text`)
+
+User-visible text is a `msg('ns:key')` ref, never a literal. The rule reports non-blank JSX text, string and plain template literals in the `title`, `label`, `placeholder`, `aria-label`, `alt`, `description` and `tooltip` attributes, and the `label`, `title`, `description`, `placeholder` and `keywords` properties of objects under a `src` tree (except `main` and `preload`), constants files included. It skips strings with no letter, anything inside a `msg(...)` call, imports, ids, class names and test files. The message is `User-visible text "<text>" is a literal. Put it in the locale table and use msg('ns:key').`
+
+It is off in every config the factory builds. Turn it on with one entry in `extra`:
+
+```js
+brockEslint({ extra: [{ files: ['src/**/*.{ts,tsx}'], rules: { 'brock/no-literal-text': 'error' } }] })
+```
+
+Options, all optional, replace the defaults: `attributes` (names of JSX attributes), `properties` (names of object properties), `ignore` (an array of regex strings; a literal that matches one is allowed). Example: `['error', { ignore: ['^Brock$'] }]`.
+
 ## Allowing a word or an identifier
 
 The writing rules (`local/no-slop-identifiers` and the prose rules) read one list of allowed words. Name a field that the rules would flag, such as `claudeId`, in either shape and `brockEslint` passes it on:

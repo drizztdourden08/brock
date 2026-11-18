@@ -74,4 +74,4 @@ interface ReportPayloadModel {
 
 type ReceiptHandler = (receipt: BugReportReceipt) => void;
 
-export type { AttachmentsModel, BugReportForm, ReceiptHandler, ReceiptRetry, ReportPayloadModel, RetryFailure };
+export type { AttachmentsModel, BugReportForm, ReceiptHandler, ReceiptLink, ReceiptRetry, ReportPayloadModel, RetryFailure };

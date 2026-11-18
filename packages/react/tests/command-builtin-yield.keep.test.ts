@@ -2,6 +2,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
+import { fallbackText } from '../src/i18n/fallback-text';
 import { shellCommands } from '../src/app/BrockApp/behavior/shell-commands';
 import { BROCK_COMMANDS, COMMAND_RANKS } from '../src/commands/commands.constants';
 import { commands } from '../src/commands/commands';
@@ -18,7 +19,7 @@ let properties: Mock<() => void>;
 
 const boot = (): void => {
   useCommandStore.setState({ sources: [], overrides: {}, mac: false, persist: null });
-  setCommandSource('shell', COMMAND_RANKS.brock, shellCommands(() => { toggle(); }));
+  setCommandSource('shell', COMMAND_RANKS.brock, shellCommands(() => { toggle(); }).map((def) => ({ ...def, label: fallbackText(def.label) })));
 };
 
 beforeEach(() => {

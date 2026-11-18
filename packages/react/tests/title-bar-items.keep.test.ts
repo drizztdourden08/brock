@@ -7,6 +7,8 @@ import type { TitleBarItemEntry } from '../src/title-bar/title-bar-item.type';
 import { jobStepper } from '../src/jobs/job-stepper';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
 
+const SKIPPED = 'Skipped';
+
 describe('K1 toBarAction', { tags: ['critical'] }, () => {
 
   it('turns a status into a status pill that shows only while the status is set', () => {
@@ -79,11 +81,11 @@ describe('K1 jobStepper', { tags: ['critical'] }, () => {
   });
 
   it('points at the current step while running and the failed step on failure, with no extra step when done', () => {
-    expect(jobStepper(job({})).currentId).toBe('b');
-    const failed = jobStepper(job({ state: 'failed', steps: [{ id: 'a', label: 'A', weight: 1, state: 'failed' }, { id: 'b', label: 'B', weight: 1, state: 'upcoming' }] }));
+    expect(jobStepper(job({}), SKIPPED).currentId).toBe('b');
+    const failed = jobStepper(job({ state: 'failed', steps: [{ id: 'a', label: 'A', weight: 1, state: 'failed' }, { id: 'b', label: 'B', weight: 1, state: 'upcoming' }] }), SKIPPED);
     expect(failed.currentId).toBe('a');
     expect(failed.steps[0]?.error).toBe(true);
-    const done = jobStepper(job({ state: 'done' }));
+    const done = jobStepper(job({ state: 'done' }), SKIPPED);
     expect(done.steps.map((step) => step.id)).toEqual(['a', 'b']);
   });
 });

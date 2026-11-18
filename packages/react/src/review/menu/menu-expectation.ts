@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
+import { fallbackText } from '../../i18n/fallback-text';
 import type { MenuEntry } from '../../menu/menu.type';
 import { isEndEntry } from '../../shell/TitleBar/behavior/is-end-entry';
 import { BUILT_IN_ENTRIES, NO_KEYS, SECTION_KEY_PREFIX } from '../review.constants';
@@ -17,7 +18,7 @@ const menuExpectation = (menu: readonly MenuEntry[], homeScreen: string, titleBa
   const required = BUILT_IN_ENTRIES
     .filter((entry) => entry.screen === undefined || entry.screen !== homeScreen)
     .filter((entry) => shownAt(entry) !== undefined || !overridden.has(entry.key))
-    .map((entry) => shownAt(entry)?.label ?? entry.label);
+    .map((entry) => shownAt(entry)?.label ?? fallbackText(entry.label));
   const sections = top.filter((item) => item.key.startsWith(SECTION_KEY_PREFIX)).map((item) => item.label);
   const view = viewOf(titleBar);
   const tail = top.filter(isEndEntry).map((item) => item.label);

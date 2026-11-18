@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import { ABOUT_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES } from '../app/BrockApp/BrockApp.constants';
-import type { MenuItem } from '../menu/menu.type';
+import type { MenuItemDef } from '../menu/menu.type';
 import { LOGS_WIDGET_ID } from '../widgets/built-in/LogsWidget/LogsWidget.constants';
 import { PERFORMANCE_WIDGET_ID } from '../widgets/built-in/PerformanceWidget/PerformanceWidget.constants';
 
@@ -53,7 +53,7 @@ const HERO_SLOT_SELECTORS = {
   panel: '.hero__panel',
 } as const;
 
-const BUILT_IN_ENTRIES: readonly Pick<MenuItem, 'key' | 'label' | 'screen'>[] = [HOME_ENTRY, ...TOP_ENTRIES, ABOUT_ENTRY, QUIT_ENTRY];
+const BUILT_IN_ENTRIES: readonly Pick<MenuItemDef, 'key' | 'label' | 'screen'>[] = [HOME_ENTRY, ...TOP_ENTRIES, ABOUT_ENTRY, QUIT_ENTRY];
 
 const SELECTORS = {
   titleBar: '.window-title-bar',

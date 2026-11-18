@@ -1,13 +1,14 @@
 /* @layer renderer-shell @kind test */
-import type { CommandDef, HoldContext } from '../src/commands/command.type';
+import { fallbackText } from '../src/i18n/fallback-text';
+import type { CommandDef, CommandInput, HoldContext } from '../src/commands/command.type';
 import { commands } from '../src/commands/commands';
 import { dispatchCommand } from '../src/commands/dispatch-command';
 import { listenHolds } from '../src/commands/hold-listeners';
 import { useCommandStore } from '../src/commands/useCommandStore';
 
-const registerFresh = (defs: CommandDef[], mac = false): (() => void) => {
+const registerFresh = (defs: readonly CommandInput[], mac = false): (() => void) => {
   useCommandStore.setState({ sources: [], overrides: {}, mac, persist: null });
-  return commands.register(defs);
+  return commands.register(defs.map((def) => ({ ...def, label: fallbackText(def.label) })));
 };
 
 const down = (init: KeyboardEventInit): void => {

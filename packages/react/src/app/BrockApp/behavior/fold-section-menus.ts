@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
+import { fallbackText } from '../../../i18n/fallback-text';
 import { sectionOf } from './section-of';
 
 const sameLabel = (a: string, b: string): boolean => a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0;
@@ -8,7 +9,7 @@ const sectionIds = (entries: readonly MenuEntry[]): string[] =>
   entries.flatMap((entry) => (entry !== 'separator' && entry.section !== undefined ? [entry.section] : []));
 
 const sectionNamed = (label: string, ids: readonly string[]): string | null =>
-  ids.find((id) => sameLabel(sectionOf(id).label, label)) ?? null;
+  ids.find((id) => sameLabel(fallbackText(sectionOf(id).label), label)) ?? null;
 
 const intoSection = (item: MenuItem, section: string): MenuItem[] =>
   (item.children ?? []).filter((child): child is MenuItem => child !== 'separator').map((child) => ({ ...child, section: child.section ?? section }));

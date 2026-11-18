@@ -1,7 +1,10 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
 import type { JobSnapshot, JobState } from '@drizztdourden08/brock-core/types';
+import { FALLBACK_I18N } from '../src/i18n/i18n-context.constants';
 import { jobBarStatus } from '../src/jobs/job-bar-status';
+
+const t = FALLBACK_I18N.t;
 
 const job = (state: JobState, currentStep: string | null): JobSnapshot => ({
   id: 'run-sunday',
@@ -25,12 +28,12 @@ const job = (state: JobState, currentStep: string | null): JobSnapshot => ({
 
 describe('K1 the title bar job status', { tags: ['critical'] }, () => {
   it('names the current step between the title and the percent while the job runs', () => {
-    expect(jobBarStatus(job('running', 'generate'))).toBe('Running Sunday: Generating 40%');
+    expect(jobBarStatus(job('running', 'generate'), t)).toBe('Running Sunday: Generating 40%');
   });
 
   it('keeps the title and the percent when no step is current, and the state once it ends', () => {
-    expect(jobBarStatus(job('running', null))).toBe('Running Sunday 40%');
-    expect(jobBarStatus(job('done', null))).toBe('Running Sunday: done');
-    expect(jobBarStatus(job('failed', 'generate'))).toBe('Running Sunday: failed');
+    expect(jobBarStatus(job('running', null), t)).toBe('Running Sunday 40%');
+    expect(jobBarStatus(job('done', null), t)).toBe('Running Sunday: done');
+    expect(jobBarStatus(job('failed', 'generate'), t)).toBe('Running Sunday: failed');
   });
 });

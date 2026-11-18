@@ -3,7 +3,6 @@ import { WIDGETS_SECTION } from '../../app/BrockApp/BrockApp.constants';
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
 import { fallbackText } from '../../i18n/fallback-text';
 import { MENU_SECTIONS } from '../../menu/menu.constants';
-import { fallbackText } from '../../i18n/fallback-text';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import { KIT_WORDS } from '../../widgets/kits/widget-kit.constants';
 import { closeMenu } from '../menu/close-menu';

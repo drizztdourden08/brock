@@ -48,7 +48,7 @@ beforeEach(() => {
 describe('I1 main surfaces follow the locale', { tags: ['standard'] }, () => {
   it('rebuilds the tray menu and the edit menu with the new labels', async () => {
     const i18n = createI18n({ base: 'en', layers: [brockMainLayer], load: () => Promise.resolve([fr]) });
-    installMainI18n(i18n);
+    installMainI18n(i18n, ['en', 'fr']);
     const tray = createTrayControl({ productName: 'Bxel', icon: '/icons/app.ico', show: () => Promise.resolve(), quit: vi.fn(), log: vi.fn() });
     tray.set({ tooltip: 'Bxel' });
     watchLocale(i18n);

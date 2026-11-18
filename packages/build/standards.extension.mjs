@@ -38,7 +38,9 @@ const hasToolbars = (dir) => isApp(dir) && existsSync(join(dir, TOOLBARS_DIR));
 
 const hasStartup = (dir) => isApp(dir) && existsSync(join(dir, STARTUP_DIR));
 
-const hasLocales = (dir) => isApp(dir) && existsSync(join(dir, LOCALES_DIR));
+const ownsLocales = (dir) => existsSync(join(dir, LOCALES_DIR));
+
+const hasLocales = (dir) => isApp(dir) && ownsLocales(dir);
 
 const REVIEW_FIXTURES_DIR = 'src/review/fixtures';
 
@@ -49,7 +51,7 @@ const conventionOwned = (dir) => [
   ...(hasTours(dir) ? [join(dir, TOURS_DIR)] : []),
   ...(hasToolbars(dir) ? [join(dir, TOOLBARS_DIR)] : []),
   ...(hasStartup(dir) ? [join(dir, STARTUP_DIR)] : []),
-  ...(hasLocales(dir) ? [join(dir, LOCALES_DIR)] : []),
+  ...(ownsLocales(dir) ? [join(dir, LOCALES_DIR)] : []),
   join(dir, REVIEW_FIXTURES_DIR),
 ];
 

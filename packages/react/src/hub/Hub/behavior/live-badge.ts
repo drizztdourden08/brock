@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import type { ReactNode } from 'react';
 import type { LiveBadge } from '../../hub.type';
-import { LiveBadgeView } from '../sub-components/LiveBadge';
+import { LiveBadgeView } from '../sub-components/LiveBadgeView';
 
 const liveBadge = (badge: LiveBadge | undefined): ReactNode => (badge === undefined ? undefined : createElement(LiveBadgeView, { badge }));
 

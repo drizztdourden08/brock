@@ -41,7 +41,7 @@ type MenuEntryDef = MenuItemDef | 'separator';
 
 interface MenuSection {
   id: string;
-  label: string;
+  label: Text;
   icon: string;
 }
 

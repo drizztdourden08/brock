@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { controlSources } from '../app/control-sources';
 import type { ConfirmDialogConfig } from './dialog.type';
 import { OPTION_PREFIX } from './dialog-view.constants';
 import type { DialogAnswerChoice, DialogView } from './dialog-view.type';
@@ -14,17 +16,20 @@ const idOf = (dialog: ConfirmDialogConfig): number => {
   return counter.last;
 };
 
-const answerChoices = (dialog: ConfirmDialogConfig): DialogAnswerChoice[] => [
-  ...(dialog.choices ?? []).map((option): DialogAnswerChoice => ({
-    id: `${OPTION_PREFIX}${option.value}`,
-    label: option.label,
-    kind: 'option',
-    ...(option.description === undefined ? {} : { description: option.description }),
-  })),
-  { id: 'confirm', label: dialog.confirmLabel ?? 'Confirm', kind: 'confirm' },
-  ...(dialog.alternate ? [{ id: 'alternate', label: dialog.alternate.label, kind: 'alternate' } satisfies DialogAnswerChoice] : []),
-  { id: 'cancel', label: dialog.cancelLabel ?? 'Cancel', kind: 'cancel' },
-];
+const answerChoices = (dialog: ConfirmDialogConfig): DialogAnswerChoice[] => {
+  const { text } = controlSources.get();
+  return [
+    ...(dialog.choices ?? []).map((option): DialogAnswerChoice => ({
+      id: `${OPTION_PREFIX}${option.value}`,
+      label: option.label,
+      kind: 'option',
+      ...(option.description === undefined ? {} : { description: option.description }),
+    })),
+    { id: 'confirm', label: dialog.confirmLabel ?? text(msg('brock-shell:dialog.confirm')), kind: 'confirm' },
+    ...(dialog.alternate ? [{ id: 'alternate', label: dialog.alternate.label, kind: 'alternate' } satisfies DialogAnswerChoice] : []),
+    { id: 'cancel', label: dialog.cancelLabel ?? text(msg('brock-shell:dialog.cancel')), kind: 'cancel' },
+  ];
+};
 
 const dialogView = (dialog: ConfirmDialogConfig): DialogView => ({
   id: idOf(dialog),

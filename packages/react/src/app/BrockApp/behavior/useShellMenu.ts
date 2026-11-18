@@ -60,6 +60,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntryDef[], railed: boolean)
       homeLocked,
       singleProfile: product.singleProfile,
       settingsTitle: settingsTitleOf(screenTree),
+      text,
       hasCredits,
       developerTools,
       show,

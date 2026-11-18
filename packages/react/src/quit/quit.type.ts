@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { QuitDecision } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 
 type BeforeQuit = () => string | null | undefined;
 
@@ -17,10 +18,10 @@ interface QuitGuardRegistry {
 interface SaveBeforeQuitOptions {
   dirty: () => boolean;
   save: () => Promise<boolean | void>;
-  title?: string;
-  message?: string;
-  saveLabel?: string;
-  discardLabel?: string;
+  title?: Text;
+  message?: Text;
+  saveLabel?: Text;
+  discardLabel?: Text;
 }
 
 export type { BeforeQuit, OnBeforeQuit, QuitGuardRegistry, SaveBeforeQuitOptions };

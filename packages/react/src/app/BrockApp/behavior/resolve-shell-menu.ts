@@ -15,7 +15,7 @@ const resolveShellMenu = (input: MenuBuildInput): ResolvedMenu => {
   const grown = growParents(plantForest(all), input.menuConfig, widgetMenuGrows);
   const known = new Set([...keysOf(all), ...grown, WIDGETS_DEVELOPER_KEY]);
   const resolved = resolveMenu({ groups: menuGroups(input, true), config: input.menuConfig, known, grows: widgetMenuGrows });
-  return input.locked ? { ...resolved, entries: lockProfileEntries(resolved.entries, input.locked) } : resolved;
+  return input.locked ? { ...resolved, entries: lockProfileEntries(resolved.entries, input.locked, input.text) } : resolved;
 };
 
 export { resolveShellMenu };

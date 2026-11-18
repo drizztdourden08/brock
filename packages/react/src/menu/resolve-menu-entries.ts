@@ -12,7 +12,7 @@ const resolveMenuEntries = (entries: readonly MenuEntryDef[], flags: readonly bo
       ...rest,
       label: text(entry.label),
       ...(description === undefined ? {} : { description: text(description) }),
-      disabled: entry.disabled === true || live,
+      ...(entry.disabled === true || live ? { disabled: true } : {}),
       ...(children ? { children } : {}),
     };
   });

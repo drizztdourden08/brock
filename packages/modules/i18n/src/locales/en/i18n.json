@@ -1,0 +1,13 @@
+{
+  "tab.label": "Language",
+  "section.app.title": "App language",
+  "section.profile.title": "This profile",
+  "row.appLocale.label": "App language",
+  "row.appLocale.description": "The language of the app. It also sets the splash screen, the tray and the profile picker.",
+  "row.locale.label": "Language",
+  "row.locale.description": "The language of this profile. Switching to the profile switches the language with no reload.",
+  "option.system.label": "Match the system",
+  "option.system.hint": "Now {language}",
+  "option.app.label": "Same as the app",
+  "option.app.hint": "Now {language}"
+}

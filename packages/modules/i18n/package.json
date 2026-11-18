@@ -1,0 +1,54 @@
+{
+  "name": "@drizztdourden08/brock-i18n",
+  "version": "0.122.0",
+  "description": "Brock i18n module: OS language detection, the stored app and profile language choice, and a Language tab for the settings hub.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drizztdourden08/brock.git",
+    "directory": "packages/modules/i18n"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./main": "./src/main/index.ts",
+    "./preload": "./src/preload/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "brock": {
+    "id": "i18n",
+    "description": "OS language detection, the stored app and profile language, and the Language settings tab.",
+    "main": "./src/main/index.ts",
+    "preload": "./src/preload/index.ts",
+    "renderer": "./src/renderer/index.ts"
+  },
+  "dependencies": {
+    "@drizztdourden08/brock-core": "workspace:*",
+    "@drizztdourden08/brock-electron": "workspace:*",
+    "@drizztdourden08/brock-react": "workspace:*"
+  },
+  "devDependencies": {
+    "@drizztdourden08/tessera": "catalog:",
+    "electron": "catalog:",
+    "react": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@drizztdourden08/tessera": "*",
+    "electron": ">=38",
+    "react": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

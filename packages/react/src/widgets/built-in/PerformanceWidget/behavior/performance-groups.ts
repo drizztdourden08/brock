@@ -1,19 +1,12 @@
 /* @layer renderer-shell @kind logic */
-import type { I18n } from '@drizztdourden08/brock-core/i18n';
 import { FALLBACK_I18N } from '../../../../i18n/i18n-context.constants';
 import { PERFORMANCE_SECTIONS } from '../PerformanceWidget.constants';
-import type { AppFacts, PerformanceGroup, PerformanceRow, PerformanceSectionId, ProcessSample, RendererSample } from '../PerformanceWidget.type';
+import type { PerformanceGroup, PerformanceGroupsInput, PerformanceRow, PerformanceSectionId } from '../PerformanceWidget.type';
 import { appRows } from './app-rows';
 import { processRows } from './process-rows';
 import { rendererRows } from './renderer-rows';
 
-const performanceGroups = (
-  shown: readonly PerformanceSectionId[],
-  renderer: RendererSample | null,
-  processes: ProcessSample | null,
-  facts: AppFacts,
-  i18n: I18n = FALLBACK_I18N,
-): PerformanceGroup[] => {
+const performanceGroups = ({ shown, renderer, processes, facts, i18n = FALLBACK_I18N }: PerformanceGroupsInput): PerformanceGroup[] => {
   const rowsOf: Record<PerformanceSectionId, () => PerformanceRow[]> = {
     renderer: () => rendererRows(renderer, i18n.t),
     processes: () => processRows(processes, i18n.t),

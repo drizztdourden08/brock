@@ -33,7 +33,7 @@ const PerformanceWidget = () => {
   const facts = useAppFacts();
   const { i18n } = useI18n();
   const text = useText();
-  const groups = useMemo(() => performanceGroups(shown, rendererSample, processSample, facts, i18n), [shown, rendererSample, processSample, facts, i18n]);
+  const groups = useMemo(() => performanceGroups({ shown, renderer: rendererSample, processes: processSample, facts, i18n }), [shown, rendererSample, processSample, facts, i18n]);
   const snapshot = useCallback(() => buildSnapshot(groups, new Date(), text(SNAPSHOT_TITLE)), [groups, text]);
 
   return (

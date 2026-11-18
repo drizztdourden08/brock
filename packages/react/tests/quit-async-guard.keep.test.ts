@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind test */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { fallbackText } from '../src/i18n/fallback-text';
+import { QUIT_SAVE_FAILED } from '../src/quit/quit.constants';
 import { quitGuards } from '../src/quit/quit-guards';
 import { requestQuit } from '../src/quit/request-quit';
 import { saveBeforeQuit } from '../src/quit/save-before-quit';
@@ -145,7 +147,8 @@ describe('K3 saveBeforeQuit', { tags: ['critical'] }, () => {
     const decided = Promise.resolve(saveBeforeQuit({ dirty: () => true, save: () => Promise.reject(new Error('disk full')) })());
     await answer('save', decided);
     await expect(decided).resolves.toBe('stay');
-    expect(toast).toHaveBeenCalledWith(expect.stringContaining('stays open'), { variant: 'danger' });
+    expect(toast).toHaveBeenCalledWith(QUIT_SAVE_FAILED, { variant: 'danger' });
+    expect(fallbackText(QUIT_SAVE_FAILED)).toContain('stays open');
   });
 
   it('stays open when the save answers false', async () => {

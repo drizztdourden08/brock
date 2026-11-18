@@ -16,24 +16,24 @@ const idsOf = (items: readonly { id: string }[] | undefined): string[] => (items
 
 describe('K1 the hub side nav top group', { tags: ['critical'] }, () => {
   it('puts the top pages under Home in the order the hub lists them', () => {
-    const nav = buildHubNav(HOME, GROUPS, undefined, ['notes', 'sessions']);
+    const nav = buildHubNav({ home: HOME, groups: GROUPS, top: ['notes', 'sessions'] });
     expect(nav.home?.id).toBe('home');
     expect(idsOf(nav.top)).toEqual(['notes', 'sessions']);
   });
 
   it('takes the top pages out of their groups and drops a group left empty', () => {
-    const nav = buildHubNav(HOME, GROUPS, undefined, ['sessions', 'notes', 'logs']);
+    const nav = buildHubNav({ home: HOME, groups: GROUPS, top: ['sessions', 'notes', 'logs'] });
     expect(nav.groups.map((group) => [group.id, idsOf(group.items)])).toEqual([['work', ['tasks', 'plans']]]);
   });
 
   it('leaves the nav as it was with no top list or an empty one', () => {
-    expect(buildHubNav(HOME, GROUPS)).not.toHaveProperty('top');
-    expect(buildHubNav(HOME, GROUPS, undefined, [])).not.toHaveProperty('top');
-    expect(idsOf(buildHubNav(HOME, GROUPS).groups)).toEqual(['work', 'more']);
+    expect(buildHubNav({ home: HOME, groups: GROUPS })).not.toHaveProperty('top');
+    expect(buildHubNav({ home: HOME, groups: GROUPS, top: [] })).not.toHaveProperty('top');
+    expect(idsOf(buildHubNav({ home: HOME, groups: GROUPS }).groups)).toEqual(['work', 'more']);
   });
 
   it('skips an id that is not a shown page and a repeated id', () => {
-    const nav = buildHubNav(HOME, GROUPS, undefined, ['unknown', 'tasks', 'tasks']);
+    const nav = buildHubNav({ home: HOME, groups: GROUPS, top: ['unknown', 'tasks', 'tasks'] });
     expect(idsOf(nav.top)).toEqual(['tasks']);
     expect(nav.groups.flatMap((group) => idsOf(group.items))).toEqual(['sessions', 'plans', 'notes', 'logs']);
   });

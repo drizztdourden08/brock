@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
+import { CLIPBOARD_LABEL } from '../src/bug-report/bug-report.constants';
 import { admitAttachments } from '../src/bug-report/admit-attachments';
 import { buildBugReportPayload } from '../src/bug-report/build-bug-report-payload';
 import { captureExtras } from '../src/bug-report/capture-extras';
@@ -30,7 +31,7 @@ describe('K1 targetFields', { tags: ['critical'] }, () => {
     const send = vi.fn();
     expect(resolveBugReportTarget({ app: { label: 'Unused' }, main: { label: 'Upload' }, sendToMain: send, repo: undefined }))
       .toMatchObject({ kind: 'transport', label: 'Upload' });
-    expect(resolveBugReportTarget({ app: {}, main: null, sendToMain: null, repo: undefined })).toEqual({ kind: 'clipboard', label: 'Copy report' });
+    expect(resolveBugReportTarget({ app: {}, main: null, sendToMain: null, repo: undefined })).toEqual({ kind: 'clipboard', label: CLIPBOARD_LABEL });
   });
 
   it('reaches the target of an app or a main transport, never the GitHub issue', () => {

@@ -6,6 +6,8 @@ import { resolveBugReportTarget } from '../src/bug-report/resolve-bug-report-tar
 import { mainTransport } from '../src/bug-report/main-transport';
 import { deliverReport } from '../src/bug-report/BugReportDialog/behavior/deliver-report';
 import { receiptLinks } from '../src/bug-report/BugReportDialog/behavior/receipt-links';
+import { CLIPBOARD_LABEL, GITHUB_LABEL, SEND_LABEL } from '../src/bug-report/bug-report.constants';
+import { OPEN_RECEIPT_LABEL } from '../src/bug-report/BugReportDialog/BugReportDialog.constants';
 
 const toasts = vi.hoisted(() => [] as { message: string; options: { variant?: string; action?: { label: string; onSelect: () => void } } }[]);
 const opened = vi.hoisted(() => [] as string[]);
@@ -52,10 +54,10 @@ describe('K1 resolveBugReportTarget', { tags: ['critical'] }, () => {
   it('prefers the app transport, then the main one, then the GitHub issue, then the clipboard', () => {
     expect(resolveBugReportTarget({ app: { transport: send, label: 'Send to the server' }, main: { label: 'Main' }, sendToMain: send, repo: REPO }))
       .toMatchObject({ kind: 'transport', label: 'Send to the server' });
-    expect(resolveBugReportTarget({ app: { transport: send }, main: null, sendToMain: null, repo: REPO })).toMatchObject({ kind: 'transport', label: 'Send report' });
+    expect(resolveBugReportTarget({ app: { transport: send }, main: null, sendToMain: null, repo: REPO })).toMatchObject({ kind: 'transport', label: SEND_LABEL });
     expect(resolveBugReportTarget({ app: null, main: { label: 'Upload' }, sendToMain: send, repo: REPO })).toMatchObject({ kind: 'transport', label: 'Upload' });
-    expect(resolveBugReportTarget({ app: null, main: null, sendToMain: send, repo: REPO })).toEqual({ kind: 'github', label: 'Open GitHub issue', repo: REPO });
-    expect(resolveBugReportTarget({ app: null, main: null, sendToMain: null, repo: undefined })).toEqual({ kind: 'clipboard', label: 'Copy report' });
+    expect(resolveBugReportTarget({ app: null, main: null, sendToMain: send, repo: REPO })).toEqual({ kind: 'github', label: GITHUB_LABEL, repo: REPO });
+    expect(resolveBugReportTarget({ app: null, main: null, sendToMain: null, repo: undefined })).toEqual({ kind: 'clipboard', label: CLIPBOARD_LABEL });
   });
 });
 
@@ -90,9 +92,9 @@ describe('K1 receiptLinks', { tags: ['critical'] }, () => {
 
   it('keeps the single url as Open and adds it ahead of the links unless one of them carries it', () => {
     expect(receiptLinks({})).toEqual([]);
-    expect(receiptLinks({ url: 'https://reports.example/1' })).toEqual([{ label: 'Open', url: 'https://reports.example/1' }]);
+    expect(receiptLinks({ url: 'https://reports.example/1' })).toEqual([{ label: OPEN_RECEIPT_LABEL, url: 'https://reports.example/1' }]);
     expect(receiptLinks({ url: 'https://reports.example/1', links })).toEqual(links);
-    expect(receiptLinks({ url: 'https://reports.example/2', links })).toEqual([{ label: 'Open', url: 'https://reports.example/2' }, ...links]);
+    expect(receiptLinks({ url: 'https://reports.example/2', links })).toEqual([{ label: OPEN_RECEIPT_LABEL, url: 'https://reports.example/2' }, ...links]);
   });
 
   it('gives the toast the first link', async () => {

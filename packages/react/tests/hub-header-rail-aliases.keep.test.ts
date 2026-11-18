@@ -10,6 +10,7 @@ import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
 import { configAliases } from '../src/screens/conventions/config-aliases';
 import { resolveScreenTree } from '../src/screens/conventions/resolve-screen-tree';
 import { settingsTitleOf } from '../src/screens/conventions/settings-title-of';
+import { fallbackText } from '../src/i18n/fallback-text';
 import type { ScreensConfig } from '../src/screens/conventions/screens-config.type';
 
 describe('K1 hub rail nav', { tags: ['critical'] }, () => {
@@ -60,10 +61,10 @@ describe('K1 the settings bucket title', { tags: ['critical'] }, () => {
   it('names the menu entry after the bucket title, and says Settings with no bucket', () => {
     expect(labelOf(buildMenu(INPUT), 'settings')).toBe('Settings');
     expect(labelOf(buildMenu({ ...INPUT, settingsTitle: 'Options' }), 'settings')).toBe('Options');
-    expect(settingsTitleOf(null)).toBe('Settings');
+    expect(fallbackText(settingsTitleOf(null))).toBe('Settings');
     const View = () => null;
     const config: ScreensConfig = { buckets: [{ id: 'options', title: 'Options', icon: 'settings', menu: 'entry' }], home: 'options' };
     const tree = resolveScreenTree(buildScreenTree(config, [{ kind: 'page', bucket: 'options', id: 'b', component: View }]), []);
-    expect(settingsTitleOf(tree)).toBe('Options');
+    expect(fallbackText(settingsTitleOf(tree))).toBe('Options');
   });
 });

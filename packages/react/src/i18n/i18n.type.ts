@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind types */
-import type { Direction, I18n, Layer } from '@drizztdourden08/brock-core/i18n';
+import type { Direction, I18n, Layer, Text } from '@drizztdourden08/brock-core/i18n';
 
 type AppLocales = {
   readonly base: string;
@@ -18,4 +18,6 @@ type LocaleView = {
   readonly setLocale: (tag: string) => Promise<void>;
 };
 
-export type { AppLocales, I18nValue, LocaleView };
+type TextOf = (value: Text) => string;
+
+export type { AppLocales, I18nValue, LocaleView, TextOf };

@@ -9,7 +9,7 @@ const usedKeys = (rootDir) => new Set(sourceFiles(rootDir).flatMap((file) => [..
 
 /**
  * @param {{ rootDir: string, baseFiles: Map<string, import('../scan-locale-dir.mjs').LocaleFile>, dynamicKeys: string[] }} input the app
- * @returns {string[]} the base keys no literal 'ns:key' in src uses and no dynamicKeys glob covers
+ * @returns {string[]} base keys that no source or glob uses
  */
 const unusedKeys = ({ rootDir, baseFiles, dynamicKeys }) => {
   const used = usedKeys(rootDir);

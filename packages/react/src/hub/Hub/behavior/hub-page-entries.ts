@@ -1,13 +1,11 @@
 /* @layer renderer-shell @kind logic */
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { fallbackText } from '../../../i18n/fallback-text';
+import type { TextOf } from '../../../i18n/i18n.type';
 import { joinRoute } from '../../../navigation/join-route';
 import { normaliseKeywords } from '../../../search/normalise-keywords';
 import { SCREEN_ID_PREFIX } from '../../../search/search.constants';
 import type { SearchEntry } from '../../../search/search.type';
 import type { HubDef, HubPage } from '../../hub.type';
-
-type TextOf = (value: Text) => string;
 
 const tabEntries = (hub: HubDef, page: HubPage, text: TextOf): SearchEntry[] => (page.tabs ?? []).map((tab) => ({
   id: `${SCREEN_ID_PREFIX}${joinRoute(hub.id, page.id, tab.id)}`,

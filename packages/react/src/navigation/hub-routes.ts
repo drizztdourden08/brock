@@ -1,12 +1,10 @@
 /* @layer renderer-shell @kind logic */
-import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { TextOf } from '../i18n/i18n.type';
 import type { HubDef, HubPage } from '../hub/hub.type';
 import { isShown } from '../screens/show/is-shown';
 import type { ShowContext } from '../screens/show/show.type';
 import { joinRoute } from './join-route';
 import type { NavRoute } from './nav-routes.type';
-
-type TextOf = (value: Text) => string;
 
 const pageRoutes = (hub: HubDef, page: HubPage, text: TextOf): NavRoute[] => {
   const route = joinRoute(hub.id, page.id);

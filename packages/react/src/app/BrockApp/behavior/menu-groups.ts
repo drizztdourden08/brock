@@ -1,9 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuGroups } from '../../../menu/menu-config.type';
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { fallbackText } from '../../../i18n/fallback-text';
 import { resolveMenuItem } from '../../../menu/resolve-menu-item';
-import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
+import type { MenuEntry, MenuItem, MenuItemDef } from '../../../menu/menu.type';
 import { PROFILE_FIRST } from '../../../menu/menu.constants';
 import { resolveMenuEntries } from '../../../menu/resolve-menu-entries';
 import { withRoutes } from '../../../menu/with-routes';
@@ -39,7 +38,7 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
 const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const { widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
   const text = input.text ?? fallbackText;
-  const shell = <D extends { label: Text; description?: Text }>(def: D) => resolveMenuItem(def, text);
+  const shell = (def: MenuItemDef): MenuItem => resolveMenuItem(def, text);
   const appMenu = resolveMenuEntries(input.appMenu, [], { at: 0 }, text);
   const moduleMenu = resolveMenuEntries(input.moduleMenu, [], { at: 0 }, text);
   const filter = (entries: readonly MenuEntry[]): MenuEntry[] => (filtered ? filterDevEntries(entries, developerTools, show) : [...entries]);

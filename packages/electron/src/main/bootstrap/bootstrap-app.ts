@@ -40,7 +40,8 @@ import { widgetHandlers } from '../widgets/widget-handlers';
 import { widgetWindowSetup } from '../widgets/widget-window-setup';
 import { logBoot } from './boot-timing';
 import { refreshDevCache } from './dev-cache';
-import { externalProtocols } from '../window/external-protocols';
+import { allowExternalProtocols } from './allow-external-protocols';
+import { logUserDataSource } from './log-user-data-source';
 import { startProcess } from './start-process';
 import { startOpenRouting } from '../open/start-open-routing';
 import { armWindow } from '../background/arm-window';
@@ -113,7 +114,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
     onInstalled: (message) => noteSync('log', message),
   });
   const instance = parseInstanceConfig();
-  if (options.security?.externalProtocols) externalProtocols.allowed = new Set(options.security.externalProtocols);
+  allowExternalProtocols(options);
   const paths = resolvePaths(options.paths);
   const icon = resolveWindowIcon(paths.renderer, instance.name);
   applyAppIdentity(instance.name, { appId: product.appId, iconPath: icon });
@@ -137,8 +138,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   };
 
   for (const module of modules) module.beforeReady?.(ctx);
-  if (portableData) ctx.log(`user data lives beside the app: ${portableData}`);
-  if (userDataOverride) ctx.log(`user data redirected by flag: ${userDataOverride}`);
+  logUserDataSource(ctx, portableData, userDataOverride);
 
   void app.whenReady()
     .then(() => onReady({ ctx, options, dataDirs, schemes, setup }))

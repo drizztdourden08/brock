@@ -14,7 +14,7 @@ const inTags = (tags) => (file) => tags.includes(file.tag);
 
 /**
  * @param {string} rootDir the app root
- * @returns {LocaleScan} the offered tags (base first), and the files of the app and its modules that ship
+ * @returns {LocaleScan} the offered tags, and the files that ship
  */
 const scanLocales = (rootDir) => {
   const { base, draft } = readI18nOptions(rootDir);

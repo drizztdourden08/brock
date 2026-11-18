@@ -19,7 +19,7 @@ const isRenderer = (file) => !isMain(file);
  * @param {import('./module-locale-sources.mjs').LocaleSource[]} sources
  * @param {(file: import('./scan-locale-dir.mjs').LocaleFile) => boolean} pick which files go in
  * @param {number} depth how many folders the output file sits below the app root
- * @returns {{ imports: string[], layers: string[] }} one import and one layer entry per picked file, modules before the app
+ * @returns {{ imports: string[], layers: string[] }} one import and one layer per picked file
  */
 const layerParts = (sources, pick, depth) => {
   const rows = [...sources].sort(byKind).flatMap((source) => source.files.filter(pick).map((file) => ({

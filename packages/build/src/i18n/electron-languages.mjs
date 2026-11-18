@@ -4,7 +4,7 @@ import { scanLocales } from './scan-locales.mjs';
 
 /**
  * @param {string} rootDir the app root
- * @returns {string[]} en-US and every shipped language, for electron-builder electronLanguages
+ * @returns {string[]} en-US and every shipped language
  */
 const electronLanguages = (rootDir) => {
   const tags = scanLocales(rootDir).offered.map((tag) => (tag === 'en' ? ELECTRON_BASE_LANGUAGE : tag));

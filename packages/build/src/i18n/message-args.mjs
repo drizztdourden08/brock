@@ -98,7 +98,7 @@ const readArgument = (st, out) => {
 
 /**
  * @param {string} source an ICU message
- * @returns {MessageArgs} each argument by name with its kind, and the tag names; throws on a message that does not parse
+ * @returns {MessageArgs} argument kinds and tag names
  */
 const messageArgs = (source) => {
   const out = { args: new Map(), tags: new Set() };

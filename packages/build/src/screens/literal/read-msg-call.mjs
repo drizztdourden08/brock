@@ -4,7 +4,7 @@ const MSG_CALL = /msg\(\s*(['"])([^'"\\\n]*)\1\s*\)/y;
 /**
  * @param {string} src a module's source text, never run
  * @param {number} from where a value starts
- * @returns {{ value: { key: string }, end: number } | null} the key of a msg('ns:key') call, or null when there is none here
+ * @returns {{ value: { key: string }, end: number } | null} the key of a msg call, or null
  */
 const readMsgCall = (src, from) => {
   MSG_CALL.lastIndex = from;

@@ -13,7 +13,7 @@ const trimmed = (path) => path.replace(/^\.\//, '').replace(/\/$/, '');
 
 /**
  * @param {string} rootDir the app root
- * @returns {LocaleSource[]} one source per installed module whose manifest sets brock.locales
+ * @returns {LocaleSource[]} one source per module that sets brock.locales
  */
 const moduleLocaleSources = (rootDir) => {
   const read = packageReader(rootDir);

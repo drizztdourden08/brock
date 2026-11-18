@@ -35,7 +35,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe('renderer i18n binding', () => {
+describe('renderer i18n binding', { tags: ['critical'] }, () => {
   it('shows English with only the base layer', () => {
     const host = mount(createI18n({ base: 'en', layers: [EN] }));
     expect(host.textContent).toBe('Hello');
@@ -43,7 +43,7 @@ describe('renderer i18n binding', () => {
   });
 
   it('switches a useT text to fr with no reload', async () => {
-    const i18n = createI18n({ base: 'en', layers: [EN], load: async () => [FR, TESSERA_FR] });
+    const i18n = createI18n({ base: 'en', layers: [EN], load: () => Promise.resolve([FR, TESSERA_FR]) });
     const host = mount(i18n);
     await act(async () => i18n.setLocale('fr'));
     expect(host.textContent).toBe('Bonjour');
@@ -51,7 +51,7 @@ describe('renderer i18n binding', () => {
   });
 
   it('translates the Tessera Cancel string and leaves English alone', async () => {
-    const i18n = createI18n({ base: 'en', layers: [EN], load: async () => [FR, TESSERA_FR] });
+    const i18n = createI18n({ base: 'en', layers: [EN], load: () => Promise.resolve([FR, TESSERA_FR]) });
     expect(tesseraStringsOf(i18n)).toEqual({});
     await i18n.setLocale('fr');
     const strings = tesseraStringsOf(i18n) as Record<string, Record<string, string>>;

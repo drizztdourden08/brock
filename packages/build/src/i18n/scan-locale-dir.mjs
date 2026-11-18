@@ -34,7 +34,7 @@ const readTag = (root, label, folder) => {
 /**
  * @param {string} root an absolute locales folder
  * @param {string} label the folder as findings and imports show it
- * @returns {{ files: LocaleFile[], findings: string[] }} every namespace file by tag then namespace, and what does not fit
+ * @returns {{ files: LocaleFile[], findings: string[] }} namespace files in order, and the misfits
  */
 const scanLocaleDir = (root, label) => {
   if (!existsSync(root)) return { files: [], findings: [] };

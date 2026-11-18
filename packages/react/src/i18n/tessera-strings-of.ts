@@ -1,13 +1,13 @@
 /* @layer renderer-shell @kind logic */
 import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { TesseraStringsOverride } from '@drizztdourden08/tessera/primitives';
-import type { I18n, MessageKey } from '@drizztdourden08/brock-core/i18n';
+import type { I18n } from '@drizztdourden08/brock-core/i18n';
 import type { Groups } from './tessera-strings-of.type';
 import { TESSERA_NAMESPACE } from './brock-layers.constants';
 
 const translated = (i18n: I18n, group: string, name: string): string | undefined => {
   const key = `${TESSERA_NAMESPACE}:${group}.${name}`;
-  const text = i18n.t(key as MessageKey);
+  const text = i18n.t(key);
   return text === key || text === `[[${key}]]` ? undefined : text;
 };
 
@@ -25,7 +25,7 @@ const tesseraStringsOf = (i18n: I18n): TesseraStringsOverride => {
   const out: Groups = {};
   for (const [group, entries] of Object.entries(TESSERA_STRINGS)) out[group] = groupOf(i18n, group, entries as Record<string, unknown>);
   out.dates = { ...out.dates, locale: i18n.locale };
-  return out as TesseraStringsOverride;
+  return out;
 };
 
 export { tesseraStringsOf };

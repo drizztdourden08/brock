@@ -18,7 +18,7 @@ const staleChunks = (rootDir, wanted) => {
 
 /**
  * @param {string} rootDir the app root
- * @returns {{ path: string, content: string | null }[]} the four locale outputs, always, and null for a chunk of a language that is gone
+ * @returns {{ path: string, content: string | null }[]} the four outputs, null for a gone language
  */
 const renderI18nFiles = (rootDir) => {
   const scan = scanLocales(rootDir);

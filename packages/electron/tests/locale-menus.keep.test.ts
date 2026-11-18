@@ -23,12 +23,12 @@ vi.mock('electron', () => ({
   Tray: class {
     state: FakeTray = { menu: null, tip: '' };
     constructor() { shared.trays.push(this.state); }
-    setImage(): void { /* fake */ }
+    setImage(): void { return undefined; }
     setToolTip(tip: string): void { this.state.tip = tip; }
     setContextMenu(menu: unknown): void { this.state.menu = menu; }
-    on(): void { /* fake */ }
+    on(): void { return undefined; }
     isDestroyed(): boolean { return false; }
-    destroy(): void { /* fake */ }
+    destroy(): void { return undefined; }
   },
 }));
 
@@ -47,7 +47,7 @@ beforeEach(() => {
 
 describe('I1 main surfaces follow the locale', { tags: ['standard'] }, () => {
   it('rebuilds the tray menu and the edit menu with the new labels', async () => {
-    const i18n = createI18n({ base: 'en', layers: [brockMainLayer], load: async () => [fr] });
+    const i18n = createI18n({ base: 'en', layers: [brockMainLayer], load: () => Promise.resolve([fr]) });
     installMainI18n(i18n);
     const tray = createTrayControl({ productName: 'Bxel', icon: '/icons/app.ico', show: () => Promise.resolve(), quit: vi.fn(), log: vi.fn() });
     tray.set({ tooltip: 'Bxel' });

@@ -35,9 +35,9 @@ const createI18n = (options: I18nOptions): I18n => {
     return compiledFor(resolved.text, pseudo)({ values: values ?? {}, locale: resolved.locale, tags });
   };
 
-  const t = <K extends MessageKey>(key: K, ...args: ArgsOf<K>): string => run(key, args[0] as MessageValues | undefined).join('');
+  const t = <K extends MessageKey>(key: K, ...args: ArgsOf<K>): string => run(key, args[0]).join('');
   const parts = <T, K extends MessageKey = MessageKey>(key: K, values: ValuesOf<K> | undefined, tags: TagMap<T>): (string | T)[] =>
-    mergeParts<T>(run(key, values as MessageValues | undefined, adaptTags(tags)));
+    mergeParts<T>(run(key, values, adaptTags(tags)));
   const text = (value: Text): string => (typeof value === 'string' ? value : run(value.key, value.values).join(''));
 
   const setLocale = async (tag: string): Promise<void> => {

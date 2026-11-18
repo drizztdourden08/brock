@@ -54,4 +54,4 @@ const renderMessagesTypeFiles = (rootDir) => {
   return [{ path: MESSAGES_TYPE_OUTPUT, content: renderMessagesType(messageRows(files)) }];
 };
 
-export { messageRows, renderMessagesType, renderMessagesTypeFiles };
+export { renderMessagesType, renderMessagesTypeFiles };

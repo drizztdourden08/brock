@@ -7,7 +7,7 @@ const mergeStringGroups = (low: TesseraStringsOverride, high: TesseraStringsOver
   const b = (high ?? {}) as Groups;
   const out: Groups = {};
   for (const group of new Set([...Object.keys(a), ...Object.keys(b)])) out[group] = { ...a[group], ...b[group] };
-  return out as TesseraStringsOverride;
+  return out;
 };
 
 export { mergeStringGroups };

@@ -5,7 +5,7 @@ import { useI18n } from './useI18n';
 
 const useT = (): I18n['t'] => {
   const { i18n, locale } = useI18n();
-  return useMemo(() => ((key, ...args) => i18n.t(key, ...args)) as I18n['t'], [i18n, locale]);
+  return useMemo<I18n['t']>(() => (key, ...args) => i18n.t(key, ...args), [i18n, locale]);
 };
 
 export { useT };

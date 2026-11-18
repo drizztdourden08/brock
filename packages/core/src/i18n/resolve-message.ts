@@ -1,5 +1,4 @@
 /* @layer core @kind logic */
-import type { Catalog } from './catalog/catalog.type';
 import type { ResolveDeps, Resolved } from './resolve-message.type';
 import { findInChain } from './catalog/find-in-chain';
 import { isPseudoLocale } from './locale/pseudo/is-pseudo-locale';

@@ -12,4 +12,4 @@ interface LocaleChoiceState {
   setPatchProfile: (patcher: ProfilePatcher | null) => void;
 }
 
-export type { LocaleChoiceState, ProfilePatcher };
+export type { LocaleChoiceState };

@@ -96,4 +96,4 @@ interface DialogState {
   dismiss: () => void;
 }
 
-export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmBase, ConfirmBaseOptions, DialogChoiceInput, DialogFactInput, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };
+export type { AlternateTone, ChoiceLook, ConfirmActionOptions, ConfirmBase, ConfirmBaseOptions, DialogChoiceInput, ConfirmAlternate, ConfirmChoiceOptions, ConfirmDeleteOptions, ConfirmDialogConfig, ConfirmSaveAnswer, ConfirmSaveOptions, DialogAlternate, DialogChoice, DialogFact, DialogState };

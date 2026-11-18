@@ -1,7 +1,7 @@
 /* @layer renderer-app @kind config */
 import { msg } from '@drizztdourden08/brock-core/i18n';
 import { widgets } from '@drizztdourden08/brock-react';
-import type { ScreenMeta, Section } from '@drizztdourden08/brock-react';
+import type { ScreenMeta, SectionDef } from '@drizztdourden08/brock-react';
 
 const meta: ScreenMeta = { title: msg('app:general.title'), icon: 'settings', order: 1 };
 
@@ -13,7 +13,7 @@ const windowModes = [
 
 const asPercent = (value: number): string => `${Math.round(value * 100)}%`;
 
-const sections: Section[] = [
+const sections: SectionDef[] = [
   {
     id: 'window',
     title: msg('app:general.window.title'),

@@ -29,13 +29,13 @@ describe('K1 readJsonText', { tags: ['critical'] }, () => {
   it('parses JSON and checks the shape', () => {
     expect(readJsonText('{ "speed": 2 }', 'object')).toEqual({ value: { speed: 2 }, problem: null });
     expect(readJsonText('[1]', 'any')).toEqual({ value: [1], problem: null });
-    expect(readJsonText('[1]', 'object').problem).toMatchObject({ message: 'Expected a JSON object, in braces.', line: 1 });
-    expect(readJsonText('{}', 'array').problem?.message).toBe('Expected a JSON array, in brackets.');
+    expect(readJsonText('[1]', 'object').problem).toMatchObject({ message: { key: 'brock-settings:json.shapeObject' }, line: 1 });
+    expect(readJsonText('{}', 'array').problem?.message).toEqual({ key: 'brock-settings:json.shapeArray' });
   });
 
   it('reads the line from the message JSON.parse throws', () => {
     const read = readJsonText('{\n  "a": 1,\n  "b" 2\n}');
-    expect(read.problem?.message).toMatch(/JSON/);
+    expect(String(read.problem?.message)).toMatch(/JSON/);
     expect(read.problem?.line).toBe(3);
   });
 });

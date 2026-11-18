@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind constants */
-const SETTINGS_PREVIEW_LABEL = 'Preview';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 
-const SETTINGS_ROWS_LABEL = 'Settings';
+const SETTINGS_PREVIEW_LABEL = msg('brock-settings:layout.previewLabel');
+
+const SETTINGS_ROWS_LABEL = msg('brock-settings:layout.rowsLabel');
 
 export { SETTINGS_PREVIEW_LABEL, SETTINGS_ROWS_LABEL };

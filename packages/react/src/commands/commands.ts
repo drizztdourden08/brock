@@ -2,7 +2,8 @@
 import type { KeymapOverrides } from '@drizztdourden08/brock-core';
 import { bindingKey } from './binding-key';
 import { chordsOf } from './chords-of';
-import { COMMAND_RANKS, UNKNOWN_REASON } from './commands.constants';
+import { commandText } from './command-text';
+import { COMMAND_RANKS, NO_ARGS_REASON, UNKNOWN_REASON } from './commands.constants';
 import { commandBlock } from './command-block';
 import { commandVisible } from './command-visible';
 import type { ArgValue, ChordEvent, CommandBinding, CommandConflict, CommandContext, CommandDef, CommandDescription, CommandRunResult, HeldModifier } from './command.type';
@@ -36,7 +37,7 @@ const unbound = (key: string): KeymapOverrides =>
 
 const bind = (id: string, args: Readonly<Record<string, ArgValue>>, chords: readonly string[]): string | null => {
   const def = find(id);
-  if (def?.args === undefined) return 'This command takes no arguments.';
+  if (def?.args === undefined) return commandText(NO_ARGS_REASON);
   const problem = validateArgs(def.args, args);
   if (problem !== null) return problem;
   const key = bindingKey(id, args);
@@ -58,13 +59,13 @@ const commands = {
     listCommands(useCommandStore.getState()).filter((def) => def.bound === undefined && (options.includeHidden === true || commandVisible(def))),
   describe: (id: string): CommandDescription => {
     const def = find(id);
-    if (def === undefined) return { enabled: false, visible: false, reason: UNKNOWN_REASON, checked: false };
+    if (def === undefined) return { enabled: false, visible: false, reason: commandText(UNKNOWN_REASON), checked: false };
     const block = commandBlock(def);
     return { enabled: block === null, visible: commandVisible(def), reason: block?.reason ?? null, checked: def.checked?.() === true };
   },
   run: async (id: string, context?: CommandContext): Promise<CommandRunResult> => {
     const def = find(id);
-    if (def === undefined) return { ok: false, why: 'unknown', reason: UNKNOWN_REASON };
+    if (def === undefined) return { ok: false, why: 'unknown', reason: commandText(UNKNOWN_REASON) };
     const block = commandBlock(def);
     if (block !== null) return { ok: false, ...block };
     const problem = def.args === undefined ? null : validateArgs(def.args, context?.args);

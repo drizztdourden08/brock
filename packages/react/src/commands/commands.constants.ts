@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { CommandDef } from './command.type';
 
 const MOD = 'Mod';
@@ -61,11 +63,19 @@ const NO_CHORDS: readonly string[] = [];
 
 const NO_COMMANDS: readonly CommandDef[] = [];
 
-const UNKNOWN_REASON = 'No such command.';
+const GROUP_TITLES: Readonly<Record<string, Text>> = {
+  [GENERAL_GROUP]: msg('brock-settings:commands.group.general'),
+  [SCREENS_GROUP]: msg('brock-settings:commands.group.screens'),
+  [COMMANDS_GROUP]: msg('brock-settings:commands.group.commands'),
+};
 
-const GATED_REASON = 'This command is not available right now.';
+const UNKNOWN_REASON = msg('brock-settings:commands.reason.unknown');
 
-const HIDDEN_REASON = 'This command does not apply here.';
+const GATED_REASON = msg('brock-settings:commands.reason.gated');
+
+const HIDDEN_REASON = msg('brock-settings:commands.reason.hidden');
+
+const NO_ARGS_REASON = msg('brock-settings:commands.reason.noArgs');
 
 const BIND_SEPARATOR = '#';
 
@@ -74,6 +84,6 @@ const KEYMAP_ROOT = 'data-brock-keymap';
 const COMMAND_ZONE_ATTRIBUTE = 'data-command-zone';
 
 export {
-  BROCK_COMMANDS, CAP_PARTS, CODE_KEYS, CODE_PREFIXES, COMMAND_RANKS, COMMAND_ZONE_ATTRIBUTE, COMMANDS_GROUP, FUNCTION_KEY, GENERAL_GROUP, KEY_TOKENS, KEYMAP_ROOT, KEYMAP_SETTING, MAC_PLATFORM, MOD,
-  MODIFIER_CAPS, MODIFIER_NAMES, MODIFIER_ORDER, MODIFIERS, NO_CHORDS, NO_COMMANDS, OPEN_COMMAND_PREFIX, SCREENS_GROUP, UNKNOWN_REASON, GATED_REASON, HIDDEN_REASON, BIND_SEPARATOR,
+  BROCK_COMMANDS, CAP_PARTS, CODE_KEYS, CODE_PREFIXES, COMMAND_RANKS, COMMAND_ZONE_ATTRIBUTE, COMMANDS_GROUP, FUNCTION_KEY, GENERAL_GROUP, GROUP_TITLES, KEY_TOKENS, KEYMAP_ROOT, KEYMAP_SETTING, MAC_PLATFORM, MOD,
+  MODIFIER_CAPS, MODIFIER_NAMES, MODIFIER_ORDER, MODIFIERS, NO_ARGS_REASON, NO_CHORDS, NO_COMMANDS, OPEN_COMMAND_PREFIX, SCREENS_GROUP, UNKNOWN_REASON, GATED_REASON, HIDDEN_REASON, BIND_SEPARATOR,
 };

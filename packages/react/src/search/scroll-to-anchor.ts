@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { controlSources } from '../app/control-sources';
 import { lazyLoads } from '../lazy/lazy-loads';
 import { toast } from '../toast/toast';
 import { focusAnchorControl } from './focus-anchor-control';
@@ -22,7 +24,7 @@ const scrollToAnchor = (anchor: string, budgetMs = ANCHOR_BUDGET_MS, label = anc
       return;
     }
     if (performance.now() - started < budgetMs) requestAnimationFrame(attempt);
-    else toast(`Could not find ${label} on this page`, { variant: 'warning' });
+    else toast(controlSources.get().text(msg('brock-settings:search.anchorMissing', { label })), { variant: 'warning' });
   };
   requestAnimationFrame(attempt);
 };

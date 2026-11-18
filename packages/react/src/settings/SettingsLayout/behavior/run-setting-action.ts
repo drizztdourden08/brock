@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { controlSources } from '../../../app/control-sources';
 import { confirmAction } from '../../../stores/confirm-action';
 import type { ConfirmActionOptions } from '../../../stores/dialog.type';
 import { toast } from '../../../toast/toast';
@@ -21,7 +23,7 @@ const runSettingAction = async (action: SettingAction, options: RunSettingAction
   try {
     await action.onSelect(options.settings ?? {});
   } catch (err) {
-    toast(`${action.label} failed: ${messageOf(err)}`, { variant: 'danger' });
+    toast(controlSources.get().text(msg('brock-settings:action.failed', { label: action.label, error: messageOf(err) })), { variant: 'danger' });
   }
 };
 

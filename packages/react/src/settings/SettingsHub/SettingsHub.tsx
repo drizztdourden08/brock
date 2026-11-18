@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useMemo, useState } from 'react';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { SideNavLayout } from '@drizztdourden08/tessera/composites';
+import { useText } from '../../i18n';
 import { usePlatform } from '../../platform/usePlatform';
 import { useTourReset } from '../../tours/useTourReset';
 import { SettingsPageContext } from '../SettingsLayout/behavior/settings-page-context';
@@ -13,10 +15,11 @@ import type { SettingsHubProps } from './SettingsHub.type';
 
 const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
   const {
-    tabs, activeTab: controlledTab, onTabChange, backdrop, searchPlaceholder = 'Search all settings',
+    tabs, activeTab: controlledTab, onTabChange, backdrop, searchPlaceholder = msg('brock-settings:hub.searchPlaceholder'),
     homeTabId, className = '', ...control
   } = props;
   const { info } = usePlatform();
+  const text = useText();
   const { navConfig, visibleTabs, home } = useHubNav(tabs, info.formFactor, homeTabId);
 
   const [internalTab, setInternalTab] = useState(home?.id ?? '');
@@ -39,7 +42,7 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
     () => (active ? { variant: 'page', icon: active.navIcon, title: active.label, backdrop, query: '' } : null),
     [active, backdrop],
   );
-  const search = useMemo(() => ({ value: query, onChange: setQuery, placeholder: searchPlaceholder }), [query, setQuery, searchPlaceholder]);
+  const search = useMemo(() => ({ value: query, onChange: setQuery, placeholder: text(searchPlaceholder) }), [query, setQuery, searchPlaceholder, text]);
 
   return (
     <SideNavLayout

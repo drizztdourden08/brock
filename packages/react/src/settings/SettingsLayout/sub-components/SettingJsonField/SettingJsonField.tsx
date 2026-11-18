@@ -2,6 +2,7 @@
 import { useId } from 'react';
 import { CodeBlock } from '@drizztdourden08/tessera/composites';
 import { Small, Stack } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../../../i18n';
 import { useJsonText } from './behavior/useJsonText';
 import type { SettingJsonFieldProps } from './SettingJsonField.type';
 
@@ -9,6 +10,7 @@ const SettingJsonField = (props: SettingJsonFieldProps) => {
   const { control, value, onChange, label, disabled } = props;
   const { text, edit, problem } = useJsonText(value, onChange, control.shape);
   const problemId = useId();
+  const resolve = useText();
   return (
     <Stack gap="xs">
       <CodeBlock
@@ -22,7 +24,7 @@ const SettingJsonField = (props: SettingJsonFieldProps) => {
         aria-label={label}
         aria-describedby={problem ? problemId : undefined}
       />
-      {problem && <Small id={problemId} tone="danger" role="alert">{problem.message}</Small>}
+      {problem && <Small id={problemId} tone="danger" role="alert">{resolve(problem.message)}</Small>}
     </Stack>
   );
 };

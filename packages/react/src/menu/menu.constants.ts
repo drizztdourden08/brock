@@ -1,18 +1,19 @@
 /* @layer renderer-shell @kind constants */
 import type { MenuSeparator } from '@drizztdourden08/tessera/composites';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { MenuSection } from './menu.type';
 
 const MENU_SECTIONS: readonly MenuSection[] = [
-  { id: 'widgets', label: 'Widgets', icon: 'layout-grid' },
-  { id: 'help', label: 'Help', icon: 'circle-help' },
-  { id: 'advanced', label: 'Advanced', icon: 'sliders-horizontal' },
+  { id: 'widgets', label: msg('brock-shell:menu.section.widgets'), icon: 'layout-grid' },
+  { id: 'help', label: msg('brock-shell:menu.section.help'), icon: 'circle-help' },
+  { id: 'advanced', label: msg('brock-shell:menu.section.advanced'), icon: 'sliders-horizontal' },
 ];
 
 const UNKNOWN_SECTION_ICON = 'folder';
 
 const MENU_GROUP_ID = 'menu';
 
-const PROFILE_FIRST = 'Pick or create a profile first';
+const PROFILE_FIRST = msg('brock-shell:menu.profileFirst');
 
 const MENU_SEPARATOR: MenuSeparator = { separator: true };
 

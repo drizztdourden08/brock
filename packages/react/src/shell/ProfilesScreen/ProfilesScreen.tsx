@@ -6,6 +6,7 @@ import { useProfiles } from '../../stores/useProfiles';
 import { useNavigation } from '../../navigation/useNavigation';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { isProfilesRoute } from '../../stores/is-profiles-route';
+import { useT } from '../../i18n';
 import { getAppLog } from '../../log/get-app-log';
 import { ProfileLastUsed } from './sub-components/ProfileLastUsed';
 import type { ProfilesScreenProps } from './ProfilesScreen.type';
@@ -14,6 +15,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
   const { subtitleOf, extraFields, canSubmit = true, createOptions } = props;
   const { profiles, active, loaded, select, create, rename, removeConfirmed } = useProfiles();
   const { close } = useNavigation();
+  const t = useT();
 
   const items = useMemo(() => profiles.map((profile) => ({
     id: profile.id,
@@ -45,7 +47,7 @@ const ProfilesScreen = (props: ProfilesScreenProps) => {
 
   return (
     <ProfilesPanel
-      title={profiles.length === 0 ? 'Create a profile to get started' : 'Pick a profile, or create another'}
+      title={t(profiles.length === 0 ? 'brock-shell:profiles.title.empty' : 'brock-shell:profiles.title.some')}
       profiles={items}
       selectedId={active?.id ?? null}
       onSelect={(id) => { const profile = byId(id); if (profile) void handleSelect(profile); }}

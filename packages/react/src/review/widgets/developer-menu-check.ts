@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { WIDGETS_SECTION } from '../../app/BrockApp/BrockApp.constants';
 import { isWidgetOpen } from '@drizztdourden08/tessera/composites';
+import { fallbackText } from '../../i18n/fallback-text';
 import { MENU_SECTIONS } from '../../menu/menu.constants';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from '../../widgets/widget.constants';
 import { KIT_WORDS } from '../../widgets/kits/widget-kit.constants';
@@ -17,7 +18,7 @@ import { widgets } from '../../widgets/widgets';
 import { withDeveloperTools } from './with-developer-tools';
 import { withDeveloperEntries } from './with-developer-entries';
 
-const widgetsLabel = MENU_SECTIONS.find((section) => section.id === WIDGETS_SECTION)?.label ?? WIDGETS_SECTION;
+const widgetsLabel = fallbackText(MENU_SECTIONS.find((section) => section.id === WIDGETS_SECTION)?.label ?? WIDGETS_SECTION);
 
 const developerPath = (tour: StepTour): string[] => {
   const { menu, product } = tour.env;

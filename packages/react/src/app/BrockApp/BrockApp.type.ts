@@ -106,6 +106,7 @@ interface MenuBuildInput {
   homeLocked?: boolean;
   singleProfile?: boolean;
   settingsTitle?: string;
+  text?: (value: Text) => string;
   hasCredits: boolean;
   developerTools: boolean;
   show?: ShowContext;

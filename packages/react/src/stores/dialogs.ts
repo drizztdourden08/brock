@@ -1,13 +1,14 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { answerDialog } from './answer-dialog';
 import { confirmAction } from './confirm-action';
-import type { ConfirmDialogConfig } from './dialog.type';
+import type { ConfirmActionOptions, ConfirmDialogConfig } from './dialog.type';
 import { dialogView } from './dialog-view';
 import type { DialogView } from './dialog-view.type';
 import { useDialogStore } from './useDialogStore';
 
-const confirmDelete = (title: string, message: string, onConfirm: () => void): void => {
-  void confirmAction({ title, message, confirmLabel: 'Delete', variant: 'danger' }).then((confirmed) => { if (confirmed) onConfirm(); });
+const confirmDelete = (title: ConfirmActionOptions['title'], message: ConfirmActionOptions['message'], onConfirm: () => void): void => {
+  void confirmAction({ title, message, confirmLabel: msg('brock-shell:dialog.delete'), variant: 'danger' }).then((confirmed) => { if (confirmed) onConfirm(); });
 };
 
 const currentDialog = (): DialogView | null => {

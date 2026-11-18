@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+import { fallbackText } from '../../../i18n/fallback-text';
 import { MENU_SECTIONS } from '../../../menu/menu.constants';
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
 import { sectionOf } from './section-of';
@@ -8,7 +10,7 @@ const sectionOrder = (ids: readonly string[]): string[] => [
   ...ids.filter((id) => !MENU_SECTIONS.some((section) => section.id === id)),
 ];
 
-const groupSections = (entries: readonly MenuEntry[]): MenuItem[] => {
+const groupSections = (entries: readonly MenuEntry[], text: (value: Text) => string = fallbackText): MenuItem[] => {
   const members = new Map<string, MenuItem[]>();
   for (const entry of entries) {
     if (entry === 'separator' || entry.section === undefined) continue;
@@ -16,7 +18,7 @@ const groupSections = (entries: readonly MenuEntry[]): MenuItem[] => {
   }
   return sectionOrder([...members.keys()]).map((id) => {
     const { label, icon } = sectionOf(id);
-    return { key: `section:${id}`, label, icon, children: members.get(id) ?? [] };
+    return { key: `section:${id}`, label: text(label), icon, children: members.get(id) ?? [] };
   });
 };
 

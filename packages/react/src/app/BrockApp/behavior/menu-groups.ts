@@ -1,11 +1,14 @@
 /* @layer renderer-shell @kind logic */
 import type { MenuGroups } from '../../../menu/menu-config.type';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { fallbackText } from '../../../i18n/fallback-text';
+import { resolveMenuItem } from '../../../menu/resolve-menu-item';
 import type { MenuEntry, MenuItem } from '../../../menu/menu.type';
+import { PROFILE_FIRST } from '../../../menu/menu.constants';
 import { resolveMenuEntries } from '../../../menu/resolve-menu-entries';
 import { withRoutes } from '../../../menu/with-routes';
 import {
-  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, HOME_LOCKED, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, SETTINGS_ENTRY_KEY, TOP_ENTRIES,
+  ABOUT_ENTRY, CREDITS_ENTRY, DEV_CONSOLE_ENTRY, HOME_ENTRY, PROFILES_SCREEN, QUIT_ENTRY, REPORT_BUG_ENTRY, SETTINGS_ENTRY_KEY, TOP_ENTRIES,
   WIDGETS_SECTION,
 } from '../BrockApp.constants';
 import { SHORTCUTS_HELP_ENTRY } from '../../../shortcuts-help/shortcuts-help.constants';
@@ -35,16 +38,18 @@ const unsectioned = (entries: readonly MenuEntry[]): MenuEntry[] =>
 
 const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const { widgets, toolbars = [], homeScreen, hasCredits, developerTools, show, onQuit, onDevConsole, onReportBug, onShortcuts } = input;
-  const appMenu = resolveMenuEntries(input.appMenu, [], { at: 0 }, fallbackText);
-  const moduleMenu = resolveMenuEntries(input.moduleMenu, [], { at: 0 }, fallbackText);
+  const text = input.text ?? fallbackText;
+  const shell = <D extends { label: Text; description?: Text }>(def: D) => resolveMenuItem(def, text);
+  const appMenu = resolveMenuEntries(input.appMenu, [], { at: 0 }, text);
+  const moduleMenu = resolveMenuEntries(input.moduleMenu, [], { at: 0 }, text);
   const filter = (entries: readonly MenuEntry[]): MenuEntry[] => (filtered ? filterDevEntries(entries, developerTools, show) : [...entries]);
   const tourEntry = input.tours ? tourMenu.entry(input.tours.list, input.tours.start) : null;
   const standard: MenuItem[] = [
     ...widgets.map((entry) => ({ ...entry, section: WIDGETS_SECTION })),
     ...(tourEntry ? [tourEntry] : []),
     { ...SHORTCUTS_HELP_ENTRY, onClick: onShortcuts },
-    { ...REPORT_BUG_ENTRY, onClick: onReportBug },
-    { ...DEV_CONSOLE_ENTRY, onClick: onDevConsole },
+    { ...shell(REPORT_BUG_ENTRY), onClick: onReportBug },
+    { ...shell(DEV_CONSOLE_ENTRY), onClick: onDevConsole },
   ];
   const app = filter(withRoutes(foldSectionMenus(appMenu, [...moduleMenu, ...standard])));
   const modules = filter(withRoutes([...moduleMenu, ...standard]));
@@ -52,13 +57,14 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const hidden = hiddenMenuKeys(input.menuConfig);
   const showHome = !hidden.has(HOME_ENTRY.key);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && (!showHome || item.screen !== homeScreen));
-  const topEntries = TOP_ENTRIES.filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN))
+  const topEntries = TOP_ENTRIES.map(shell).filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN))
     .map((item) => (item.key === SETTINGS_ENTRY_KEY && input.settingsTitle !== undefined ? { ...item, label: input.settingsTitle } : item));
+  const locked = input.homeLocked ? { disabled: true, description: text(PROFILE_FIRST) } : {};
   return {
-    main: [...(showHome ? [{ ...HOME_ENTRY, screen: homeScreen, ...(input.homeLocked ? HOME_LOCKED : {}) }] : []), ...topEntries, ...unsectioned(app)],
-    sections: withToolbars(groupSections([...app, ...modules]), toolbars),
+    main: [...(showHome ? [{ ...shell(HOME_ENTRY), screen: homeScreen, ...locked }] : []), ...topEntries, ...unsectioned(app)],
+    sections: withToolbars(groupSections([...app, ...modules], text), toolbars),
     modules: unsectioned(modules),
-    end: [...[...(hasCredits ? [CREDITS_ENTRY] : []), ABOUT_ENTRY].filter(unnamed), { ...QUIT_ENTRY, onClick: onQuit }],
+    end: [...[...(hasCredits ? [shell(CREDITS_ENTRY)] : []), shell(ABOUT_ENTRY)].filter(unnamed), { ...shell(QUIT_ENTRY), onClick: onQuit }],
   };
 };
 

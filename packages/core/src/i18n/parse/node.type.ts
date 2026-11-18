@@ -13,4 +13,4 @@ type MessageNode = TextNode | PoundNode | ArgNode | FormatNode | PluralNode | Se
 
 type NodeCases = Readonly<Record<string, readonly MessageNode[]>>;
 
-export type { FormatKind, TextNode, PoundNode, ArgNode, FormatNode, PluralNode, SelectNode, TagNode, MessageNode, NodeCases };
+export type { FormatKind, FormatNode, PluralNode, SelectNode, TagNode, MessageNode, NodeCases };

@@ -5,4 +5,4 @@ type TextInfo = { direction?: Direction };
 
 type LocaleWithInfo = Intl.Locale & { getTextInfo?: () => TextInfo; textInfo?: TextInfo };
 
-export type { TextInfo, LocaleWithInfo };
+export type { LocaleWithInfo };

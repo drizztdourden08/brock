@@ -17,4 +17,4 @@ type Compiled = (env: Env) => readonly unknown[];
 
 type NodesCompiler = (nodes: readonly MessageNode[]) => Compiled;
 
-export type { TagFn, Tags, Env, Compiled, NodesCompiler };
+export type { Tags, Compiled, NodesCompiler };

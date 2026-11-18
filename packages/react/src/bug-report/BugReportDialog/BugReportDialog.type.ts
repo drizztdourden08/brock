@@ -1,15 +1,21 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { BugReportAttachment, BugReportAttachmentLimits, BugReportExtras, BugReportPayload, BugReportReceipt } from '@drizztdourden08/brock-core';
 import type { BugReportSectionProps, BugReportTarget, BugReportTargetFields } from '../bug-report.type';
 
 interface AttachmentsModel {
   files: BugReportAttachment[];
-  refused: string | null;
+  refused: Text | null;
   limits: BugReportAttachmentLimits | null;
   add: (files: File[]) => void;
   remove: (index: number) => void;
   reset: () => void;
+}
+
+interface ReceiptLink {
+  label: Text;
+  url: string;
 }
 
 interface ReceiptRetry {

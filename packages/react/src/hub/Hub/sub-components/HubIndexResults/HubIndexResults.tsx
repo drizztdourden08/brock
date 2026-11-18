@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
 import type { SearchResultsHit } from '@drizztdourden08/tessera/composites';
-import { useText } from '../../../../i18n';
+import { useT, useText } from '../../../../i18n';
 import { useBrock } from '../../../../app/useBrock';
 import { uniqueById } from '../../../../collections/unique-by-id';
 import { entriesInBucket } from '../../../../search/entries-in-bucket';
@@ -23,6 +23,7 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
   const { tabs, settingsControls } = useBrock();
   const { settings, patch } = useSettings<object>();
   const text = useText();
+  const t = useT();
   const needle = query.trim();
   const normalized = needle.toLowerCase();
   const catalog = useSearchIndex(needle !== '', NO_MENU, NO_ACTIONS);
@@ -55,8 +56,8 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
       groups={groups}
       onOpenHit={openHit}
       onOpenGroup={onOpenPage}
-      idleMessage={`Type to search ${def.title}.`}
-      emptyMessage={`Nothing in ${def.title} matches "${needle}".`}
+      idleMessage={t('brock-app:hub.results.idle', { title: def.title })}
+      emptyMessage={t('brock-app:hub.results.empty', { title: def.title, query: needle })}
     />
   );
 };

@@ -50,13 +50,13 @@ describe('K1 admitAttachments', { tags: ['critical'] }, () => {
   it('refuses a file that would pass the size cap and keeps going', () => {
     const { admitted, refused } = admitAttachments([file('a.png', 40)], [file('big.zip', 80), file('c.txt', 10)], LIMITS);
     expect(admitted).toEqual([file('c.txt', 10)]);
-    expect(refused).toMatch(/^big\.zip is too large/);
+    expect(refused).toMatchObject({ key: 'brock-app:bugReport.attach.tooLarge', values: { name: 'big.zip' } });
   });
 
   it('stops at the file count', () => {
     const { admitted, refused } = admitAttachments([file('a.png', 1), file('b.png', 1)], [file('c.png', 1)], LIMITS);
     expect(admitted).toEqual([]);
-    expect(refused).toBe('Up to 2 files can be attached.');
+    expect(refused).toEqual({ key: 'brock-app:bugReport.attach.tooMany', values: { count: 2 } });
   });
 });
 

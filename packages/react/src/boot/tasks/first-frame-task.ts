@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { BOOT_IDLE_MS } from '../../lazy/lazy.constants';
 import { lazyLoads } from '../../lazy/lazy-loads';
 import { abortable } from '../abortable';
@@ -10,7 +11,7 @@ import { waitFrames } from '../wait-frames';
 
 const firstFrameTask = (after: string[]): RendererBootTask => ({
   id: FIRST_FRAME_TASK,
-  label: 'Drawing the first frame',
+  label: msg('brock-app:boot.task.drawing'),
   after,
   run: async ({ signal }) => {
     useBootStore.getState().setPhase('painting');

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { BugReportAfterSend, BugReportAttachmentLimits, BugReportExtras, BugReportFields, BugReportTransport, ProductRepo } from '@drizztdourden08/brock-core';
 
 interface IssueDraft {
@@ -16,7 +17,7 @@ interface BugReportSectionProps {
 
 interface BrockAppBugReport extends BugReportFields {
   transport?: BugReportTransport;
-  label?: string;
+  label?: Text;
   identity?: string;
   section?: ComponentType<BugReportSectionProps>;
 }
@@ -35,9 +36,9 @@ interface BugReportTargetFields {
 }
 
 type BugReportTarget =
-  | { kind: 'transport'; label: string; send: BugReportTransport; fields?: BugReportTargetFields }
-  | { kind: 'github'; label: string; repo: ProductRepo }
-  | { kind: 'clipboard'; label: string };
+  | { kind: 'transport'; label: Text; send: BugReportTransport; fields?: BugReportTargetFields }
+  | { kind: 'github'; label: Text; repo: ProductRepo }
+  | { kind: 'clipboard'; label: Text };
 
 interface SizedFile {
   name: string;
@@ -46,7 +47,7 @@ interface SizedFile {
 
 interface AttachmentAdmission<F extends SizedFile> {
   admitted: F[];
-  refused: string | null;
+  refused: Text | null;
 }
 
 interface BugReportState {

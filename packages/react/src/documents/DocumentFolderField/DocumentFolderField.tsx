@@ -2,6 +2,7 @@
 import { useId, useRef } from 'react';
 import { PathInput } from '@drizztdourden08/tessera/composites';
 import { Box, Field, Select, Stack } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../i18n';
 import { getPlatform } from '../../platform/get-platform';
 import { useFolderField } from './behavior/useFolderField';
 import { FOLDER_FIELD_TEXT } from './DocumentFolderField.constants';
@@ -9,6 +10,7 @@ import type { DocumentFolderFieldProps } from './DocumentFolderField.type';
 
 const DocumentFolderField = (props: DocumentFolderFieldProps) => {
   const { value, label, disabled } = props;
+  const text = useText();
   const inputId = useId();
   const ref = useRef<HTMLElement>(null);
   const field = useFolderField(props, ref);
@@ -23,7 +25,7 @@ const DocumentFolderField = (props: DocumentFolderFieldProps) => {
             onChange={field.change}
             onBrowse={field.browse}
             resolvePath={getPlatform().filePicker.pathOf}
-            placeholder={FOLDER_FIELD_TEXT.placeholder}
+            placeholder={text(FOLDER_FIELD_TEXT.placeholder)}
             disabled={disabled}
             invalid={field.reason !== null}
           />
@@ -33,8 +35,8 @@ const DocumentFolderField = (props: DocumentFolderFieldProps) => {
             options={field.rootOptions}
             value={field.rootValue}
             onChange={field.change}
-            placeholder={FOLDER_FIELD_TEXT.rootsPlaceholder}
-            aria-label={FOLDER_FIELD_TEXT.roots}
+            placeholder={text(FOLDER_FIELD_TEXT.rootsPlaceholder)}
+            aria-label={text(FOLDER_FIELD_TEXT.roots)}
             disabled={disabled}
           />
         )}

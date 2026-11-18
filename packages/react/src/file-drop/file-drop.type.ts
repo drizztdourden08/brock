@@ -10,6 +10,12 @@ interface FileDrop extends PathDrop {
   reads: readonly FileDropRead[];
 }
 
+interface FileDropWords {
+  tooMany: string;
+  notSupported: string;
+  notReadable: string;
+}
+
 interface FileDropOptions {
   extensions?: readonly string[];
   read?: 'bytes' | 'text' | false;
@@ -27,4 +33,4 @@ interface Selection {
   rejected: RejectedFile[];
 }
 
-export type { FileDrop, FileDropOptions, FileDropRead, ReadResult, Selection };
+export type { FileDrop, FileDropOptions, FileDropRead, FileDropWords, ReadResult, Selection };

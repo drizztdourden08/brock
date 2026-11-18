@@ -1,10 +1,12 @@
 /* @layer renderer-shell @kind component */
 import { Icon, IconButton } from '@drizztdourden08/tessera/primitives';
+import { useT } from '../../i18n';
 import { bugReport } from '../bug-report';
 import type { BugReportButtonProps } from './BugReportButton.type';
 
 const BugReportButton = (props: BugReportButtonProps) => {
   const { className = '', onBeforeOpen } = props;
+  const t = useT();
   const open = () => {
     onBeforeOpen?.();
     bugReport.open();
@@ -14,7 +16,7 @@ const BugReportButton = (props: BugReportButtonProps) => {
       variant="ghost"
       tone="danger"
       size="sm"
-      label="Report a bug"
+      label={t('brock-app:bugReport.title')}
       className={`bug-report-button${className ? ` ${className}` : ''}`}
       onClick={open}
     >

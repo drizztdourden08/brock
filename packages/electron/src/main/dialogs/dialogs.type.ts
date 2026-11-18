@@ -1,23 +1,25 @@
 /* @layer electron-main @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+
 interface ConfirmDialogOptions {
-  title: string;
-  message: string;
-  detail?: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
+  title: Text;
+  message: Text;
+  detail?: Text;
+  confirmLabel?: Text;
+  cancelLabel?: Text;
   defaultButton?: 'confirm' | 'cancel';
   showOnAutomation?: boolean;
 }
 
 interface DialogChoice {
   id: string;
-  label: string;
+  label: Text;
 }
 
 interface ChooseDialogOptions {
-  title: string;
-  message: string;
-  detail?: string;
+  title: Text;
+  message: Text;
+  detail?: Text;
   choices: DialogChoice[];
   defaultId: string;
   cancelId: string;

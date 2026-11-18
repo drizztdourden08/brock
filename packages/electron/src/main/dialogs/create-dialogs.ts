@@ -5,7 +5,8 @@ import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { BoxSpec, DialogsInput } from './create-dialogs.type';
 import type { MainDialogs } from './dialogs.type';
 import { checkChoices } from './check-choices';
-import { CANCEL_BUTTON, CONFIRM_BUTTON, DEFAULT_CANCEL_LABEL, DEFAULT_CONFIRM_LABEL, NON_BLOCKING_FLAGS } from './dialogs.constants';
+import { dialogText, optionalDialogText } from './dialog-text';
+import { CANCEL_BUTTON, CONFIRM_BUTTON, DEFAULT_CANCEL_KEY, DEFAULT_CONFIRM_KEY, NON_BLOCKING_FLAGS } from './dialogs.constants';
 
 const visibleParent = (window: () => BrowserWindow | null): BrowserWindow | null => {
   const win = window();
@@ -32,10 +33,10 @@ const createDialogs = (input: DialogsInput): MainDialogs => ({
     const { title, message, detail, confirmLabel, cancelLabel, defaultButton, showOnAutomation } = options;
     const response = await ask(input, {
       kind: 'confirm',
-      title,
-      message,
-      detail,
-      buttons: [confirmLabel ?? DEFAULT_CONFIRM_LABEL, cancelLabel ?? DEFAULT_CANCEL_LABEL],
+      title: dialogText(title),
+      message: dialogText(message),
+      detail: optionalDialogText(detail),
+      buttons: [dialogText(confirmLabel ?? DEFAULT_CONFIRM_KEY), dialogText(cancelLabel ?? DEFAULT_CANCEL_KEY)],
       defaultId: defaultButton === 'cancel' ? CANCEL_BUTTON : CONFIRM_BUTTON,
       cancelId: CANCEL_BUTTON,
       showOnAutomation,
@@ -48,10 +49,10 @@ const createDialogs = (input: DialogsInput): MainDialogs => ({
     const ids = choices.map((choice) => choice.id);
     const response = await ask(input, {
       kind: 'choose',
-      title,
-      message,
-      detail,
-      buttons: choices.map((choice) => choice.label),
+      title: dialogText(title),
+      message: dialogText(message),
+      detail: optionalDialogText(detail),
+      buttons: choices.map((choice) => dialogText(choice.label)),
       defaultId: ids.indexOf(defaultId),
       cancelId: ids.indexOf(cancelId),
       showOnAutomation,

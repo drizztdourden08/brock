@@ -11,7 +11,10 @@ interface SplashFailureView {
   timedOut: boolean;
 }
 
+type SplashTexts = Record<string, string>;
+
 interface SplashBridge {
+  onText: (listener: (texts: SplashTexts) => void) => void;
   onProgress: (listener: (view: SplashProgressView) => void) => void;
   onFailure: (listener: (view: SplashFailureView) => void) => void;
   retry: () => void;
@@ -19,4 +22,4 @@ interface SplashBridge {
   openLogs: () => void;
 }
 
-export type { SplashBridge, SplashFailureView, SplashProgressView };
+export type { SplashBridge, SplashFailureView, SplashProgressView, SplashTexts };

@@ -4,10 +4,11 @@ import { baseHandlers } from '../../bootstrap/base-handlers';
 import { registerHandlerGroups } from '../../bootstrap/register-handlers';
 import { buildServices } from '../../services/build-services';
 import type { MainBootTask } from '../boot-state.type';
+import { mainI18n } from '../../i18n/main-i18n';
 
 const modulesTask = (options: BootstrapOptions): MainBootTask => ({
   id: 'modules',
-  label: 'Starting modules',
+  label: mainI18n().t('brock-main:boot.modules'),
   run: async (ctx) => {
     const modules = options.modules ?? [];
     await buildServices(ctx, options.services);

@@ -1,11 +1,12 @@
 /* @layer electron-main @kind logic */
 import { contextBridge, ipcRenderer } from 'electron';
-import type { SplashBridge, SplashFailureView, SplashProgressView } from './splash-bridge.type';
+import type { SplashBridge, SplashFailureView, SplashProgressView, SplashTexts } from './splash-bridge.type';
 import { SPLASH_CHANNELS, SPLASH_GLOBAL } from './splash-channels.constants';
 
 const exposeSplashBridge = (): void => {
   const bridge: SplashBridge = {
     onProgress: (listener) => { ipcRenderer.on(SPLASH_CHANNELS.progress, (_event, view: SplashProgressView) => listener(view)); },
+    onText: (listener) => { ipcRenderer.on(SPLASH_CHANNELS.text, (_event, texts: SplashTexts) => listener(texts)); },
     onFailure: (listener) => { ipcRenderer.on(SPLASH_CHANNELS.failure, (_event, view: SplashFailureView) => listener(view)); },
     retry: () => ipcRenderer.send(SPLASH_CHANNELS.retry),
     quit: () => ipcRenderer.send(SPLASH_CHANNELS.quit),

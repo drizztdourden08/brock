@@ -19,6 +19,8 @@ import type { AppBridge, AppBridgeOptions } from '../bridge/app-bridge.type';
 import type { MainWindowControl } from '../window/main-window-control.type';
 import type { MainDialogs } from '../dialogs/dialogs.type';
 import type { TrayControl } from '../tray/tray.type';
+import type { I18n } from '@drizztdourden08/brock-core/i18n';
+import type { MainLocales } from '../i18n/main-locales.type';
 
 type MainLogLevel = 'info' | 'warn' | 'error';
 
@@ -49,6 +51,7 @@ interface MainContext {
   processes: ProcessJobs;
   window: MainWindowControl;
   tray: TrayControl;
+  i18n: I18n;
   dialogs: MainDialogs;
   handle: HandleFn;
   on: OnFn;
@@ -118,6 +121,7 @@ interface BootstrapOptions {
   screenshotTimeoutMs?: number;
   bridge?: AppBridgeOptions;
   ecNullDigestShim?: boolean;
+  locales?: MainLocales;
 }
 
 export type {

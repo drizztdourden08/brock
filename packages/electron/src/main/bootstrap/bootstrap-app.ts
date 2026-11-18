@@ -49,6 +49,9 @@ import { bugReportTransport } from '../bug-report/bug-report-transport';
 import { fileGuard } from '../files/file-guard-state';
 import { bridgeKeyOf } from '../bridge/bridge-key';
 import { opensBridgeOnBoot } from './opens-bridge-on-boot';
+import { createMainI18n } from '../i18n/create-main-i18n';
+import { installMainI18n } from '../i18n/main-i18n';
+import { watchLocale } from '../i18n/watch-locale';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {
   const modules = options.modules ?? [];
@@ -77,6 +80,7 @@ const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): 
     });
     logBoot('splash opened');
   }
+  watchLocale(ctx.i18n);
   warnBootTimeout(ctx);
   armScreenshotFlag(ctx, options.screenshotTimeoutMs);
   armSplashScreenshotFlag(ctx);
@@ -118,6 +122,7 @@ const bootstrapApp = (product: ProductConfig, options: BootstrapOptions = {}): v
   pinHeadlessRendering(flags);
   pinReviewRendering(flags);
 
+  installMainI18n(createMainI18n(options.locales));
   const ctx = createMainContext({
     product, flags, instance, profileHooks: composeProfileHooks([...modules.map((m) => m.profileHooks), options.profileHooks]), dataDomains: options.dataDomains, icon,
     bridge: { options: options.bridge ?? null, key: bridgeKeyOf(instance.name, userDataOverride ?? portableData) },

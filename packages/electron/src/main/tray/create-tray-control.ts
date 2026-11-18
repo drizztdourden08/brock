@@ -5,10 +5,12 @@ import type { TrayControl, TrayInput, TrayItemHandler } from './tray.type';
 import { defaultTrayMenu } from './default-tray-menu';
 import { trayMenuTemplate } from './tray-menu';
 import { trayImage } from './tray-image';
+import { mainI18n } from '../i18n/main-i18n';
 
 const createTrayControl = ({ productName, icon, show, quit, log }: TrayInput): TrayControl => {
   const handlers = new Set<TrayItemHandler>();
   let current: Tray | null = null;
+  let last: ProductTray | null = null;
 
   const showWindow = (): void => {
     void show().catch((err: unknown) => log(`the tray could not show the window: ${String(err)}`, 'error'));
@@ -21,6 +23,7 @@ const createTrayControl = ({ productName, icon, show, quit, log }: TrayInput): T
   const clear = (): void => {
     if (current && !current.isDestroyed()) current.destroy();
     current = null;
+    last = null;
   };
 
   const set = (spec: ProductTray): void => {
@@ -33,9 +36,14 @@ const createTrayControl = ({ productName, icon, show, quit, log }: TrayInput): T
     } else {
       current.setImage(image);
     }
-    current.setToolTip(spec.tooltip);
+    last = spec;
+    current.setToolTip(mainI18n().text(spec.tooltip));
     current.setContextMenu(Menu.buildFromTemplate(trayMenuTemplate(spec.menu ?? defaultTrayMenu(productName), { show: showWindow, quit, pick })));
   };
+
+  mainI18n().subscribe(() => {
+    if (current && !current.isDestroyed() && last) set(last);
+  });
 
   return {
     set,

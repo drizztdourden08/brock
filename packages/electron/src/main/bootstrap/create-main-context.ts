@@ -30,6 +30,7 @@ import { openRouter } from '../open/open-router';
 import { createAppBridge } from '../bridge/create-app-bridge';
 import { bridgeFileName } from '../bridge/bridge-file-name';
 import { clockStamp } from '../logs/clock-stamp';
+import { mainI18n } from '../i18n/main-i18n';
 
 const createMainContext = ({ product, flags, instance, profileHooks, dataDomains = [], icon, bridge }: ContextInput): MainContext => {
   const paths = { userData: getLegacyPath, data: getUserDataPath };
@@ -74,6 +75,7 @@ const createMainContext = ({ product, flags, instance, profileHooks, dataDomains
     jobs,
     processes: createProcessJobs({ job: jobs.start, jobs, context: () => context }),
     window,
+    i18n: mainI18n(),
     tray: createTrayControl({ productName: product.name, icon, show: showMainWindow, quit: () => app.quit(), log }),
     dialogs: createDialogs({ flags, window, log }),
     handle,

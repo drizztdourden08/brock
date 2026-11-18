@@ -2,6 +2,7 @@
 const SPLASH_CHANNELS = {
   progress: 'splash:progress',
   failure: 'splash:failure',
+  text: 'splash:text',
   retry: 'splash:retry',
   quit: 'splash:quit',
   openLogs: 'splash:openLogs',

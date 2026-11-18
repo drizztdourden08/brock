@@ -41,18 +41,18 @@ ${styles}
     <main class="ts-stage">
       <img class="ts-mark splash__mark" src="${escapeHtml(mark)}" alt="" />
       <h1 class="ts-title splash__name">${titleOf(name, wordmark, pixelated)}</h1>
-      <p class="ts-status" id="splash-status" aria-live="polite">Starting</p>
+      <p class="ts-status" id="splash-status" aria-live="polite" data-text="starting">Starting</p>
       <section class="splash__failure" id="splash-failure" hidden>
         <p class="ts-detail" id="splash-message"></p>
         <div class="ts-actions">
-          <button class="ts-button ts-button--primary" id="splash-retry" type="button">Retry</button>
-          <button class="ts-button" id="splash-logs" type="button">Open logs</button>
-          <button class="ts-button" id="splash-quit" type="button">Quit</button>
+          <button class="ts-button ts-button--primary" id="splash-retry" type="button" data-text="retry">Retry</button>
+          <button class="ts-button" id="splash-logs" type="button" data-text="openLogs">Open logs</button>
+          <button class="ts-button" id="splash-quit" type="button" data-text="quit">Quit</button>
         </div>
       </section>
     </main>
     <span class="ts-version" id="splash-version"></span>
-    <div class="ts-progress ts-progress--edge" id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="ts-progress ts-progress--edge" id="splash-bar" role="progressbar" aria-label="Loading" data-text-label="loading" aria-valuemin="0" aria-valuemax="100"></div>
     <script>${SPLASH_SCRIPT}</script>
   </body>
 </html>

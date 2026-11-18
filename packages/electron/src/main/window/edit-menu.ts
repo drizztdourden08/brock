@@ -1,18 +1,21 @@
 /* @layer electron-main @kind logic */
 import { Menu } from 'electron';
+import { mainI18n } from '../i18n/main-i18n';
+import { editItem } from './edit-item';
+import { EDIT_MENU_KEY } from './edit-item.constants';
 
 const installEditMenu = (): void => {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     {
-      label: 'Edit',
+      label: mainI18n().t(EDIT_MENU_KEY),
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        editItem('undo'),
+        editItem('redo'),
         { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' },
+        editItem('cut'),
+        editItem('copy'),
+        editItem('paste'),
+        editItem('selectAll'),
       ],
     },
   ]));

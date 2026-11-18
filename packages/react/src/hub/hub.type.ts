@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { Profile } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenParams } from '../navigation/navigation.type';
 import type { HubNavMode, HubPagesMode, PageBackdrop, PageHeaderMode, ScreenMenu, ScreenMeta } from '../screens/conventions/screens-config.type';
@@ -141,7 +142,7 @@ interface HubSearchHit {
 }
 
 interface HubSearch {
-  placeholder?: string;
+  placeholder?: Text;
   index?: (query: string) => HubSearchHit[];
 }
 

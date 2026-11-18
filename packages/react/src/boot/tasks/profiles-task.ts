@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { getAppLog } from '../../log/get-app-log';
 import { instanceProfile } from '../../host/instance-profile';
 import { nav } from '../../navigation/nav';
@@ -60,7 +61,7 @@ const implicitProfile = async (): Promise<string> => {
 
 const profilesTask: RendererBootTask = {
   id: 'profiles',
-  label: 'Reading profiles',
+  label: msg('brock-app:boot.task.profiles'),
   run: async ({ report, product }) => {
     const outcome = await (product.singleProfile === true ? implicitProfile() : pickProfile(product.initialProfile));
     getAppLog().log('app', outcome);

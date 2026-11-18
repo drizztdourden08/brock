@@ -7,6 +7,7 @@ const osDrop = (names: string[]): Event =>
   Object.assign(new Event('drop', { cancelable: true }), { clientX: 5, clientY: 6, dataTransfer: { types: ['Files'], files: names.map((name) => ({ name }) as File), dropEffect: 'none' } });
 
 const BYTES = new Uint8Array([0, 1, 2, 3, 4]).subarray(1, 4);
+const WORDS = { tooMany: 'Too many files in one drop', notSupported: 'Not a supported file type', notReadable: 'The file could not be read' };
 
 const setup = async () => {
   vi.resetModules();
@@ -40,7 +41,7 @@ const wire = async (drop: { extensions?: string[]; read?: 'bytes' | 'text' | fal
   const widget = ctx.defineWidget({ id: 'tray', label: 'Tray', render: () => null, drop: options });
   const target = new FakeElement();
   const zone = widget.drop as typeof options;
-  ctx.dnd.target(target, { accepts: ctx.dnd.paths, paths: { extensions: zone.extensions }, onDrop: (value) => { void ctx.deliverFileDrop(value, zone); } });
+  ctx.dnd.target(target, { accepts: ctx.dnd.paths, paths: { extensions: zone.extensions }, onDrop: (value) => { void ctx.deliverFileDrop(value, zone, WORDS); } });
   return { ...ctx, drops, target, widget };
 };
 
@@ -83,7 +84,7 @@ describe('K5 widget file drop', () => {
   it('takes an app drag with its paths and filters it by extension', { tags: ['critical'] }, async () => {
     const { deliverFileDrop, drops, read } = await wire({ extensions: ['png'], read: 'bytes' });
     const app = { origin: 'app', paths: [{ path: 'C:\\art\\a.png', name: 'a.png', kind: 'file' }, { path: 'C:\\art\\b.txt', name: 'b.txt', kind: 'file' }], rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop(app, { extensions: ['png'], read: 'bytes', onDrop: (value) => { drops.push(value); } });
+    await deliverFileDrop(app, { extensions: ['png'], read: 'bytes', onDrop: (value) => { drops.push(value); } }, WORDS);
     expect(drops[0]?.origin).toBe('app');
     expect(drops[0]?.paths.map((entry) => entry.name)).toEqual(['a.png']);
     expect(read).toHaveBeenCalledOnce();
@@ -92,7 +93,7 @@ describe('K5 widget file drop', () => {
   it('refuses a path outside every grant through the read port', { tags: ['critical'] }, async () => {
     const { deliverFileDrop, drops } = await wire({ read: 'bytes' });
     const app = { origin: 'app', paths: [{ path: 'D:\\other\\x.png', name: 'x.png', kind: 'file' }], rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop(app, { read: 'bytes', onDrop: (value) => { drops.push(value); } });
+    await deliverFileDrop(app, { read: 'bytes', onDrop: (value) => { drops.push(value); } }, WORDS);
     expect(drops[0]?.reads).toEqual([]);
     expect(drops[0]?.paths).toEqual([]);
     expect(drops[0]?.rejected).toEqual([{ name: 'x.png', reason: 'The file is outside every granted folder' }]);
@@ -102,8 +103,8 @@ describe('K5 widget file drop', () => {
     const { deliverFileDrop, drops } = await wire({});
     const many = Array.from({ length: 70 }, (_, index) => ({ path: `C:\\art\\${index}.png`, name: `${index}.png`, kind: 'file' as const }));
     const base = { origin: 'app', rejected: [], entries: [], truncated: false } as const;
-    await deliverFileDrop({ ...base, paths: many.slice(0, 3) }, { max: 2, onDrop: (value) => { drops.push(value); } });
-    await deliverFileDrop({ ...base, paths: many }, { max: 500, onDrop: (value) => { drops.push(value); } });
+    await deliverFileDrop({ ...base, paths: many.slice(0, 3) }, { max: 2, onDrop: (value) => { drops.push(value); } }, WORDS);
+    await deliverFileDrop({ ...base, paths: many }, { max: 500, onDrop: (value) => { drops.push(value); } }, WORDS);
     expect(drops[0]?.paths).toHaveLength(2);
     expect(drops[0]?.rejected).toEqual([{ name: '2.png', reason: 'Too many files in one drop' }]);
     expect(drops[1]?.paths).toHaveLength(64);

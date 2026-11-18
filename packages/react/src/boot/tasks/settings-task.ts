@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { SettingsStore } from '../../stores/settings-store.type';
 import { useProfilesStore } from '../../stores/useProfilesStore';
 import { abortable } from '../abortable';
@@ -24,7 +25,7 @@ const hydratedFor = <S extends object>(store: SettingsStore<S>, profileId: strin
 
 const settingsTask = <S extends object>(store: SettingsStore<S>): RendererBootTask => ({
   id: SETTINGS_TASK,
-  label: 'Loading settings',
+  label: msg('brock-app:boot.task.settings'),
   after: ['profiles'],
   run: async ({ signal }) => {
     const active = useProfilesStore.getState().active;

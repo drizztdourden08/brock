@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { IconName } from '@drizztdourden08/tessera/primitives';
 import type { ScreenDef } from '../screen.type';
 import type { ScreenEntry } from './screen-tree.type';
@@ -20,6 +21,7 @@ const KIND_ICONS: Record<Exclude<ScreenEntry['kind'], 'backdrop' | 'header'>, Ic
 const HOME_LABEL = 'Home';
 const SETTINGS_ALIAS = 'settings';
 const SETTINGS_TITLE = 'Settings';
+const SETTINGS_SCREEN_TITLE = msg('brock-app:screens.settings');
 const SETTINGS_SHORTCUT = 'Mod+Comma';
 const SETTINGS_GROUP_PREFIX = 'settings-';
 const BUCKET_KEY_PREFIX = 'bucket:';
@@ -31,6 +33,6 @@ const UNORDERED = Number.POSITIVE_INFINITY;
 const INFO_CARD: Pick<ScreenDef, 'size' | 'header'> = { size: 'info', header: 'none' };
 
 export {
-  BUCKET_KEY_PREFIX, BUILT_IN_SCREEN_IDS, HOME_LABEL, INFO_CARD, KIND_ICONS, MENU_GROUP_ICON, MENU_KEY_PREFIX, SCREEN_KEY_PREFIX, SETTINGS_ALIAS, SETTINGS_GROUP_PREFIX, SETTINGS_SHORTCUT, SETTINGS_TITLE,
+  BUCKET_KEY_PREFIX, BUILT_IN_SCREEN_IDS, HOME_LABEL, INFO_CARD, KIND_ICONS, MENU_GROUP_ICON, MENU_KEY_PREFIX, SCREEN_KEY_PREFIX, SETTINGS_ALIAS, SETTINGS_GROUP_PREFIX, SETTINGS_SCREEN_TITLE, SETTINGS_SHORTCUT, SETTINGS_TITLE,
   UNORDERED,
 };

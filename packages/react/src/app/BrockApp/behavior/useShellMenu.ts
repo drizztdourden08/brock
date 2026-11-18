@@ -18,6 +18,7 @@ import { useCommandDescribe } from '../../../commands/useCommandDescribe';
 import { routePreloader } from '../../../lazy/route-preloader';
 import { useShowContext } from '../../../screens/show/useShowContext';
 import { usePlatform } from '../../../platform/usePlatform';
+import { TOUR_MENU_LABEL } from '../../../tours/tours.constants';
 import { settingsTitleOf } from '../../../screens/conventions/settings-title-of';
 import { useScreenRegistry } from '../../../screens/useScreenRegistry';
 import { useProfilesStore } from '../../../stores/useProfilesStore';
@@ -68,7 +69,7 @@ const useShellMenu = (givenModuleMenu: readonly MenuEntryDef[], railed: boolean)
       onDevConsole: () => win.openDevTools(),
       onReportBug: () => bugReport.open(),
       onShortcuts: shortcutsHelp.open,
-      tours: { list: tourList.map((tour) => ({ id: tour.id, title: text(tour.title) })), start: tours.start },
+      tours: { list: tourList.map((tour) => ({ id: tour.id, title: text(tour.title) })), start: tours.start, label: text(TOUR_MENU_LABEL) },
       menuConfig: product.menu,
       locked: hasProfile ? undefined : profileLock(registry),
     });

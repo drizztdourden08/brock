@@ -114,7 +114,7 @@ interface MenuBuildInput {
   onDevConsole: () => void;
   onReportBug: () => void;
   onShortcuts: () => void;
-  tours?: { list: readonly TourChoice[]; start: (id: string) => void };
+  tours?: { list: readonly TourChoice[]; start: (id: string) => void; label?: string };
   menuConfig?: MenuConfig;
   locked?: (route: string) => boolean;
 }

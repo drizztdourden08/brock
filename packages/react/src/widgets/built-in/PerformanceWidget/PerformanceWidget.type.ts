@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ProcessDiagnostics } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { StatTrend, StatTrendMeaning } from '@drizztdourden08/tessera/composites';
 import type { SparklineProps, StackedBarColor, StatusTone } from '@drizztdourden08/tessera/primitives';
 
@@ -9,7 +10,7 @@ type MemoryGroupId = 'main' | 'renderer' | 'gpu' | 'utility' | 'widgets' | 'othe
 
 interface PerformanceSectionChoice {
   id: PerformanceSectionId;
-  label: string;
+  label: Text;
 }
 
 interface PerformanceRow {
@@ -94,7 +95,7 @@ interface ByteParts {
 
 interface MemoryGroup {
   id: MemoryGroupId;
-  label: string;
+  label: Text;
   color: StackedBarColor;
 }
 

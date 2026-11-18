@@ -2,6 +2,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { REVIEW_MASK } from '@drizztdourden08/brock-core/review';
+import { useI18n } from '../../../i18n/useI18n';
+import { useText } from '../../../i18n';
 import { useWidgetPref } from '../../../hooks/useWidgetPref';
 import { buildSnapshot } from './behavior/build-snapshot';
 import { performanceGroups } from './behavior/performance-groups';
@@ -15,7 +17,7 @@ import { PerformanceDetails } from './sub-components/PerformanceDetails';
 import { PerformanceGauges } from './sub-components/PerformanceGauges';
 import { PerformanceMemory } from './sub-components/PerformanceMemory';
 import { PerformanceTiles } from './sub-components/PerformanceTiles';
-import { DEFAULT_REFRESH_MS, DEFAULT_SECTIONS, PERFORMANCE_WIDGET_ID, REFRESH_PREF, SECTIONS_PREF } from './PerformanceWidget.constants';
+import { DEFAULT_REFRESH_MS, DEFAULT_SECTIONS, PERFORMANCE_WIDGET_ID, REFRESH_PREF, SECTIONS_PREF, SNAPSHOT_TITLE } from './PerformanceWidget.constants';
 import type { PerformanceSectionId } from './PerformanceWidget.type';
 import './PerformanceWidget.css';
 
@@ -29,8 +31,10 @@ const PerformanceWidget = () => {
   const rendererSample = renderer?.sample ?? null;
   const processSample = processes?.sample ?? null;
   const facts = useAppFacts();
-  const groups = useMemo(() => performanceGroups(shown, rendererSample, processSample, facts), [shown, rendererSample, processSample, facts]);
-  const snapshot = useCallback(() => buildSnapshot(groups, new Date()), [groups]);
+  const { i18n } = useI18n();
+  const text = useText();
+  const groups = useMemo(() => performanceGroups(shown, rendererSample, processSample, facts, i18n), [shown, rendererSample, processSample, facts, i18n]);
+  const snapshot = useCallback(() => buildSnapshot(groups, new Date(), text(SNAPSHOT_TITLE)), [groups, text]);
 
   return (
     <Box ref={setRoot} className="performance-widget" data-sampling={active ? 'on' : 'off'}>

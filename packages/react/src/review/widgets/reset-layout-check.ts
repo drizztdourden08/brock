@@ -3,6 +3,7 @@ import { isWidgetOpen, widgetsIn } from '@drizztdourden08/tessera/composites';
 import { LOGS_WIDGET_ID } from '../../widgets/built-in/LogsWidget/LogsWidget.constants';
 import { presetLayout } from '../../widgets/preset-layout';
 import { useWidgetLayoutStore } from '../../widgets/useWidgetLayoutStore';
+import { fallbackText } from '../../i18n/fallback-text';
 import { RESET_LAYOUT_ENTRY } from '../../widgets/widget.constants';
 import { widgets } from '../../widgets/widgets';
 import { click } from '../dom/click';
@@ -39,7 +40,7 @@ const confirmReset = async (tour: StepTour, path: readonly string[]): Promise<bo
 
 const checkResetLayout = async (tour: StepTour): Promise<void> => {
   const path = menuPathTo(tour.env.menu, (item) => item.key === RESET_LAYOUT_ENTRY.key);
-  tour.check('reset-layout-entry', path !== null && path.at(-1) === RESET_LAYOUT_ENTRY.label, `the Widgets menu ends with ${path?.join(' > ') ?? ''}`, 'the menu has no Reset layout entry');
+  tour.check('reset-layout-entry', path !== null && path.at(-1) === fallbackText(RESET_LAYOUT_ENTRY.label), `the Widgets menu ends with ${path?.join(' > ') ?? ''}`, 'the menu has no Reset layout entry');
   if (!path) return;
   const before = store().layout;
   widgets.open(LOGS_WIDGET_ID);

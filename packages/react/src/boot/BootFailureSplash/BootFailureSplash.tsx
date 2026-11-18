@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { Splash } from '@drizztdourden08/tessera/composites';
 import { useBrock } from '../../app/useBrock';
+import { useT } from '../../i18n';
 import { useAppVersion } from '../../diagnostics/useAppVersion';
 import { failureTitle } from './behavior/failure-title';
 import { useFailureActions } from './behavior/useFailureActions';
@@ -10,6 +11,7 @@ const BootFailureSplash = (props: BootFailureSplashProps) => {
   const { failure } = props;
   const { product } = useBrock();
   const version = useAppVersion();
+  const t = useT();
   const actions = useFailureActions();
   if (failure === null) return null;
   const { wordmark } = product.icons;
@@ -19,7 +21,7 @@ const BootFailureSplash = (props: BootFailureSplashProps) => {
       wordmark={wordmark?.dark}
       wordmarkPixelated={wordmark?.rendering === 'pixelated'}
       mark={product.logos.mark}
-      status={failureTitle(failure)}
+      status={failureTitle(failure, t)}
       detail={failure.message}
       failed
       progress={1}

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { TourAdvance } from '@drizztdourden08/tessera/composites';
 import { SHELL_LABELS } from '../regions/regions.constants';
 import type { AppTourState, TourDef, TourProgress, TourShellPart } from './tour.type';
@@ -66,13 +67,13 @@ const NO_TOUR_STATE: AppTourState = { progress: EMPTY_PROGRESS, firstUse: false 
 
 const TOUR_MENU_KEY = 'take-the-tour';
 
-const TOUR_MENU_LABEL = 'Take the tour';
+const TOUR_MENU_LABEL = msg('brock-app:tours.menu');
 
 const TOUR_ICON = 'compass';
 
 const TOUR_ART_ICON_SIZE = 64;
 
-const TOUR_SEARCH_GROUP = 'Tours';
+const TOUR_SEARCH_GROUP = msg('brock-app:tours.group');
 
 const TOUR_KEYWORDS: readonly string[] = ['tour', 'guide', 'help', 'walkthrough', 'introduction'];
 

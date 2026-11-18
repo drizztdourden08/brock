@@ -6,7 +6,7 @@ import { SettingsHub } from '../../settings/SettingsHub/SettingsHub';
 import { useSettings } from '../../stores/useSettings';
 import { useBrock } from '../../app/useBrock';
 import { ScreenSubtitle } from '../../shell/ScreenSubtitle';
-import { SETTINGS_TITLE } from '../conventions/screens.constants';
+import { SETTINGS_SCREEN_TITLE } from '../conventions/screens.constants';
 import { defineScreen } from '../define-screen';
 
 const requestedTab = (params: ScreenParams): string | undefined => (typeof params.tab === 'string' ? params.tab : undefined);
@@ -27,7 +27,7 @@ const SettingsScreenBody = (props: { params: ScreenParams }) => {
 
 const settingsScreen = defineScreen({
   id: 'settings',
-  title: SETTINGS_TITLE,
+  title: SETTINGS_SCREEN_TITLE,
   icon: <Icon name="settings" />,
   header: 'own',
   shortcut: 'Mod+Comma',

@@ -1,16 +1,17 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { WindowGuideMode, WindowGuideState } from '@drizztdourden08/brock-core';
-import type { WindowGuideHint } from '@drizztdourden08/tessera/composites';
+import type { GuideHintDef } from './WindowGuide.type';
 
-const GUIDE_HINTS: Readonly<Record<WindowGuideMode, readonly WindowGuideHint[]>> = {
+const GUIDE_HINTS: Readonly<Record<WindowGuideMode, readonly GuideHintDef[]>> = {
   moving: [
-    { keys: [], label: 'Windows touching this one move together' },
-    { keys: ['ctrl'], label: 'Move this window alone and unsnap it' },
+    { keys: [], label: msg('brock-app:guide.moving.together') },
+    { keys: ['ctrl'], label: msg('brock-app:guide.moving.alone') },
   ],
   resizing: [
-    { keys: [], label: 'Edges lined up with or touching this edge move with it' },
-    { keys: [], label: 'An app with a locked aspect ratio keeps its shape and stays put' },
-    { keys: ['ctrl'], label: 'Resize this window alone, without snapping' },
+    { keys: [], label: msg('brock-app:guide.resizing.edges') },
+    { keys: [], label: msg('brock-app:guide.resizing.aspect') },
+    { keys: ['ctrl'], label: msg('brock-app:guide.resizing.alone') },
   ],
 };
 

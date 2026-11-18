@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind logic */
 import type { ProductMenu } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { isRecord } from '../collections/is-record';
+import { fallbackText } from '../i18n/fallback-text';
 import type { MenuItem } from '../menu/menu.type';
 import { WIDGETS_DEVELOPER_ENTRY, WIDGETS_DEVELOPER_KEY } from './widget.constants';
 
@@ -17,7 +19,7 @@ const inDeveloper = (item: MenuItem, entries: ProductMenu['entries']): boolean =
   return (given === undefined ? ownParent(item) : given) === WIDGETS_DEVELOPER_KEY;
 };
 
-const arrangeWidgetMenu = (items: readonly MenuItem[], entries: ProductMenu['entries'], developerTools: boolean): MenuItem[] => {
+const arrangeWidgetMenu = (items: readonly MenuItem[], entries: ProductMenu['entries'], developerTools: boolean, text: (value: Text) => string = fallbackText): MenuItem[] => {
   const developer: MenuItem[] = [];
   const rest: MenuItem[] = [];
   for (const item of items) {
@@ -28,7 +30,7 @@ const arrangeWidgetMenu = (items: readonly MenuItem[], entries: ProductMenu['ent
     const { parent, ...inside } = item;
     developer.push(inside);
   }
-  return developerTools && developer.length > 0 ? [...rest, { ...WIDGETS_DEVELOPER_ENTRY, children: developer }] : rest;
+  return developerTools && developer.length > 0 ? [...rest, { ...WIDGETS_DEVELOPER_ENTRY, label: text(WIDGETS_DEVELOPER_ENTRY.label), children: developer }] : rest;
 };
 
 export { arrangeWidgetMenu };

@@ -2,6 +2,7 @@
 import { InfoScreen } from '@drizztdourden08/tessera/composites';
 import { Icon } from '@drizztdourden08/tessera/primitives';
 import { useBrock } from '../../../app/useBrock';
+import { useText } from '../../../i18n';
 import { AboutPanel } from '../../../compounds/AboutPanel';
 import { useAboutInfo } from '../../../shell/About/behavior/useAboutInfo';
 import { defineScreen } from '../../define-screen';
@@ -13,10 +14,11 @@ import { ABOUT_SCREEN_TITLE } from './AboutScreen.constants';
 const AboutScreenBody = (props: AboutScreenBodyProps) => {
   const { legalText, onClose } = props;
   const { product, logoSrc } = useBrock();
+  const text = useText();
   const { rows, copyText } = useAboutInfo();
   const branded = aboutBrand(product);
   return (
-    <InfoScreen title={ABOUT_SCREEN_TITLE} onClose={onClose} footer={legalText}>
+    <InfoScreen title={text(ABOUT_SCREEN_TITLE)} onClose={onClose} footer={legalText}>
       <AboutPanel
         title={product.name}
         brand={branded?.brand}

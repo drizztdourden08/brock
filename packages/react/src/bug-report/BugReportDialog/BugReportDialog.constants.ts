@@ -1,24 +1,24 @@
 /* @layer renderer-shell @kind constants */
-const OPENED_MESSAGE = 'The issue opened in your browser. Check it, then submit it on GitHub.';
-const COPIED_MESSAGE = 'The report is on the clipboard.';
-const COPY_FAILED_MESSAGE = 'The report could not be copied.';
-const SENT_MESSAGE = 'The report was sent. Thank you.';
-const OPEN_RECEIPT_LABEL = 'Open';
-const SENDING_LABEL = 'Sending...';
-const CLIPBOARD_NOTE = 'This app has no issue tracker, so the report is copied for you to send.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
+const OPENED_MESSAGE = msg('brock-app:bugReport.opened');
+const COPIED_MESSAGE = msg('brock-app:bugReport.copied');
+const COPY_FAILED_MESSAGE = msg('brock-app:bugReport.copyFailed');
+const SENT_MESSAGE = msg('brock-app:bugReport.sentMessage');
+const OPEN_RECEIPT_LABEL = msg('brock-app:bugReport.openReceipt');
+const SENDING_LABEL = msg('brock-app:bugReport.sending');
+const CLIPBOARD_NOTE = msg('brock-app:bugReport.clipboardNote');
 const DESCRIPTION_ROWS = 6;
-const ATTACH_FILES_LABEL = 'Add files';
-const CONTACT_HINT = 'Optional. Only used to ask you about this report.';
-const FALLBACK_LABEL = 'Open a GitHub issue instead';
-const REPORT_TITLE = 'Report a bug';
-const SENT_TITLE = 'Report sent';
-const SENT_ID_LABEL = 'Report';
-const CLOSE_LABEL = 'Close';
-const RETRY_LABEL = 'Retry upload';
-const RETRY_FAILED = 'The retry failed:';
-const IDENTITY_PREFIX = 'Reporting as';
+const ATTACH_FILES_LABEL = msg('brock-app:bugReport.attach.add');
+const CONTACT_HINT = msg('brock-app:bugReport.contact.hint');
+const FALLBACK_LABEL = msg('brock-app:bugReport.fallback');
+const REPORT_TITLE = msg('brock-app:bugReport.title');
+const SENT_TITLE = msg('brock-app:bugReport.sentTitle');
+const CANCEL_LABEL = msg('brock-app:bugReport.cancel');
+const CLOSE_LABEL = msg('brock-app:bugReport.close');
+const RETRY_LABEL = msg('brock-app:bugReport.retry');
 
 export {
-  ATTACH_FILES_LABEL, CLIPBOARD_NOTE, CLOSE_LABEL, CONTACT_HINT, COPIED_MESSAGE, COPY_FAILED_MESSAGE, DESCRIPTION_ROWS, FALLBACK_LABEL, IDENTITY_PREFIX,
-  OPEN_RECEIPT_LABEL, OPENED_MESSAGE, REPORT_TITLE, RETRY_FAILED, RETRY_LABEL, SENDING_LABEL, SENT_ID_LABEL, SENT_MESSAGE, SENT_TITLE,
+  ATTACH_FILES_LABEL, CANCEL_LABEL, CLIPBOARD_NOTE, CLOSE_LABEL, CONTACT_HINT, COPIED_MESSAGE, COPY_FAILED_MESSAGE, DESCRIPTION_ROWS, FALLBACK_LABEL,
+  OPEN_RECEIPT_LABEL, OPENED_MESSAGE, REPORT_TITLE, RETRY_LABEL, SENDING_LABEL, SENT_MESSAGE, SENT_TITLE,
 };

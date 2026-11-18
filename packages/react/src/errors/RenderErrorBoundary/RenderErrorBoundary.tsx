@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { ErrorBoundary } from '@drizztdourden08/tessera/composites';
-import { PAGE_ERROR_LABEL } from '../errors.constants';
+import { useT } from '../../i18n';
 import { reportRenderError } from '../report-render-error';
 import { reportRenderRetry } from '../report-render-retry';
 import { RenderErrorActions } from './sub-components/RenderErrorActions';
@@ -8,10 +8,11 @@ import type { RenderErrorBoundaryProps } from './RenderErrorBoundary.type';
 import './RenderErrorBoundary.css';
 
 const RenderErrorBoundary = (props: RenderErrorBoundaryProps) => {
-  const { scope, label = PAGE_ERROR_LABEL, onHome, resetKey, children } = props;
+  const { scope, label, onHome, resetKey, children } = props;
+  const t = useT();
   return (
     <ErrorBoundary
-      label={label}
+      label={label ?? t('brock-app:errors.page')}
       resetKey={resetKey}
       className="render-error"
       action={<RenderErrorActions onHome={onHome} />}

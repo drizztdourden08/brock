@@ -14,6 +14,7 @@ import type { DockedFacts } from './widget-list.type';
 import { stageRect } from './widget-stage-rect';
 import type { WidgetDef } from './widget.type';
 import type { WidgetSnapshot } from './widget-snapshot.type';
+import { widgetLabelOf } from './widget-label-of';
 
 const rounded = (rect: Rect): Rect => ({ x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) });
 
@@ -36,7 +37,7 @@ const snapshotOf = (def: WidgetDef, layout: WidgetLayout, leaves: readonly LeafR
   const floating = layout.floating.find((entry) => entry.id === def.id);
   return {
     id: def.id,
-    label: useWidgetTitleStore.getState().titles[def.id] ?? controlSources.get().text(def.labelText),
+    label: useWidgetTitleStore.getState().titles[def.id] ?? controlSources.get().text(widgetLabelOf(def)),
     visible: placement !== null,
     placement,
     ...(placement === 'docked' ? dockedOf(layout, leaves, def.id) : NO_DOCK),

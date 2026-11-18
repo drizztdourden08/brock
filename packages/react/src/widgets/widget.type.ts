@@ -20,7 +20,7 @@ interface WidgetMenuPlacement {
 }
 
 interface WidgetDef extends WidgetDefinition {
-  labelText: Text;
+  labelText?: Text;
   render: () => ReactNode;
   settings?: () => ReactNode;
   taskbar?: boolean;

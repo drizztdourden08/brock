@@ -6,10 +6,11 @@ import { WidgetFace } from '../../WidgetFace';
 import { widgetOptionsOf } from '../../widget-options-of';
 import { widgetToolsOf } from '../../widget-tools-of';
 import type { WidgetDef } from '../../widget.type';
+import { widgetLabelOf } from '../../widget-label-of';
 
 const useWidgetContent = (definitions: readonly WidgetDef[]) => {
   const content = useMemo<Record<string, ReactNode>>(
-    () => Object.fromEntries(definitions.map((def) => [def.id, createElement(WidgetBody, { id: def.id, label: def.labelText, drop: def.drop }, def.empty ? createElement(WidgetFace, { def }) : def.render())])),
+    () => Object.fromEntries(definitions.map((def) => [def.id, createElement(WidgetBody, { id: def.id, label: widgetLabelOf(def), drop: def.drop }, def.empty ? createElement(WidgetFace, { def }) : def.render())])),
     [definitions],
   );
   const settingsContent = useMemo<Record<string, ReactNode>>(

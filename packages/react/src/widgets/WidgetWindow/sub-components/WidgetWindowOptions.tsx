@@ -5,6 +5,7 @@ import { useText } from '../../../i18n';
 import { hostApi } from '../../../host/host-api';
 import { widgetOptionsOf } from '../../widget-options-of';
 import type { WidgetWindowOptionsProps } from '../WidgetWindow.type';
+import { widgetLabelOf } from '../../widget-label-of';
 
 const noop = (): void => undefined;
 
@@ -23,7 +24,7 @@ const WidgetWindowOptions = (props: WidgetWindowOptionsProps) => {
 
   return (
     <WidgetOptions
-      title={definition ? text(definition.labelText) : id}
+      title={definition ? text(widgetLabelOf(definition)) : id}
       placement="popped"
       makeRoom={false}
       opacity={frame.opacity}

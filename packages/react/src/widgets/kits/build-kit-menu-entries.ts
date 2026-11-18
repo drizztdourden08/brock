@@ -11,15 +11,16 @@ import { kitMembers } from './kit-members';
 import { kitViewOf } from './kit-view-of';
 import { KIT_ICON, KIT_KEY_PREFIX, KIT_OPEN_ICON, KIT_OVERLAY_ICON, KIT_OVERLAY_KEY_PREFIX, KIT_WORDS, NO_OVERLAYS } from './widget-kit.constants';
 import type { KitMenuState, KitStatus, KitView, WidgetKitDef } from './widget-kit.type';
+import { widgetLabelOf } from '../widget-label-of';
 
 const sorted = <T extends { order?: number }>(items: readonly T[], labelOf: (item: T) => Text, text: (value: Text) => string): T[] =>
   items.map((item) => ({ item, order: item.order ?? UNORDERED, label: text(labelOf(item)) })).sort(byOrder).map(({ item }) => item);
 
 const partEntries = (kit: WidgetKitDef, state: KitMenuState, view: KitView | null, text: (value: Text) => string): MenuEntry[] => {
   const open = state.active === kit.id;
-  const members = sorted(kitMembers(kit.id, state.members), (def) => def.labelText, text).map((def): MenuItem => ({
+  const members = sorted(kitMembers(kit.id, state.members), widgetLabelOf, text).map((def): MenuItem => ({
     key: `${WIDGET_KEY_PREFIX}${def.id}`,
-    label: text(def.labelText),
+    label: text(widgetLabelOf(def)),
     icon: def.icon,
     checked: open && view !== null && isWidgetOpen(view.layout, def.id),
     onClick: () => state.toggleMember(def.id),

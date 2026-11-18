@@ -1,4 +1,5 @@
 /* @layer renderer-app @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import type { WidgetMeta } from '@drizztdourden08/brock-react';
 import { Icon, IconButton, Slider, Stack, Toggle } from '@drizztdourden08/tessera/primitives';
 import { useInspectStore } from '../stores/useInspectStore';
@@ -20,14 +21,15 @@ const meta: WidgetMeta = {
 };
 
 const InspectGridWidget = () => {
+  const t = useT();
   const grid = useInspectStore((s) => s.grid);
   const centre = useInspectStore((s) => s.centre);
   const setGrid = useInspectStore((s) => s.setGrid);
   const setCentre = useInspectStore((s) => s.setCentre);
   return (
     <Stack>
-      <Slider label="Grid size" min={8} max={128} step={8} value={grid} showValue formatValue={(value) => `${value} px`} onChange={setGrid} />
-      <Toggle label="Centre lines" checked={centre} onChange={setCentre} />
+      <Slider label={t('app:inspect.grid.size')} min={8} max={128} step={8} value={grid} showValue formatValue={(value) => t('app:inspect.grid.size.value', { value })} onChange={setGrid} />
+      <Toggle label={t('app:inspect.grid.centre')} checked={centre} onChange={setCentre} />
     </Stack>
   );
 };

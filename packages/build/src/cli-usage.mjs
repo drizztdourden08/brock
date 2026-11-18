@@ -73,6 +73,18 @@ Usage:
                              (<folder>, from --root, imported through each --alias and relative paths): its imports
                              name the Tessera entry points the --map JSON gives each folder (relative to the current
                              directory), then every release after the map's "from" replays over them
+  brock i18n check [--locale <tag>]
+                             per language: missing keys warn; keys not in the base, argument or tag
+                             mismatches and ICU parse errors fail; unused base keys warn (dynamicKeys
+                             globs of moduleOptions.i18n are skipped); brock gate runs it
+  brock i18n coverage        one line per language and namespace: translated over total
+  brock i18n add <tag>       create src/locales/<tag> with one empty {} per base namespace
+  brock i18n todo <tag> [--out <file>]
+                             write the missing messages of a language to one JSON file
+  brock i18n merge <file>    put a translated todo file back, checked like check
+  brock i18n tessera-base [--out <file>]
+                             write the English Tessera strings from the installed Tessera
+                             (packages/modules/i18n/src/locales/en/tessera.json inside Brock)
   brock release-notes check [version]
                              the release note of that version (else the app's own once the repo has notes):
                              release-notes/v<version>.md beside the app, its title, summary, sections and

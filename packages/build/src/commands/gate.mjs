@@ -1,7 +1,8 @@
 /* @layer tooling-scripts @kind logic */
 import { relative } from 'node:path';
 import { CONFIG_FILE } from '../config.mjs';
-import { runGate } from '../gate/run-gate.mjs';
+import { checkLocalesGate } from '../i18n/cli/check-locales-gate.mjs';
+import { runGate }from '../gate/run-gate.mjs';
 import { workspaceGate } from '../gate/workspace-gate.mjs';
 import { loadBrockConfig } from '../load-config.mjs';
 import { syncTargets } from './sync-targets.mjs';
@@ -24,7 +25,7 @@ const runGateCommand = async ({ rootDir }) => {
   for (const { appDir, config } of await gateTargets(rootDir)) {
     const label = relative(process.cwd(), appDir) || '.';
     const steps = await runGate({ appDir, label, config, cargoRoots });
-    failed.push(...steps.map((step) => `${label}: ${step}`));
+    failed.push(...[...steps, ...checkLocalesGate(appDir, console.log)].map((step) => `${label}: ${step}`));
   }
   if (!failed.length) return 0;
   console.error(`brock gate: ${failed.length} step(s) failed:`);

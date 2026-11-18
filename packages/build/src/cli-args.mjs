@@ -42,6 +42,7 @@ const OPTIONS = {
   seed: { type: 'string' },
   out: { type: 'string' },
   options: { type: 'string' },
+  locale: { type: 'string' },
   set: { type: 'string', multiple: true },
   help: { type: 'boolean', short: 'h', default: false },
   version: { type: 'boolean', short: 'v', default: false },

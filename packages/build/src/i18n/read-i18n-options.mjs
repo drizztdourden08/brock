@@ -12,13 +12,14 @@ const optionBody = (rootDir) => {
 
 /**
  * @param {string} rootDir the app root
- * @returns {{ base: string, draft: string[] }} moduleOptions.i18n read from literals in brock.config.ts
+ * @returns {{ base: string, draft: string[], dynamicKeys: string[] }} moduleOptions.i18n read from literals in brock.config.ts
  */
 const readI18nOptions = (rootDir) => {
   const body = optionBody(rootDir);
   const base = /base:\s*['"]([^'"]+)['"]/.exec(body)?.[1] ?? DEFAULT_BASE;
   const draft = stringsIn(/draft:\s*\[([^\]]*)\]/.exec(body)?.[1] ?? '');
-  return { base, draft };
+  const dynamicKeys = stringsIn(/dynamicKeys:\s*\[([^\]]*)\]/.exec(body)?.[1] ?? '');
+  return { base, draft, dynamicKeys };
 };
 
 export { readI18nOptions };

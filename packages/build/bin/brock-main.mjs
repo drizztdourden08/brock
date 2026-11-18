@@ -13,6 +13,7 @@ import { runClangFormatCommand } from '../src/commands/clang-format.mjs';
 import { runGateCommand } from '../src/commands/gate.mjs';
 import { runDev } from '../src/commands/dev.mjs';
 import { runDoctorCommand } from '../src/commands/doctor.mjs';
+import { runI18n } from '../src/commands/i18n.mjs';
 import { runIcons } from '../src/commands/icons.mjs';
 import { runLint } from '../src/commands/lint.mjs';
 import { runMigrate } from '../src/commands/migrate.mjs';
@@ -56,6 +57,7 @@ const COMMANDS = {
   'release-notes': (ctx) => runReleaseNotes(ctx),
   affected: (ctx) => runAffected(ctx),
   gate: (ctx) => runGateCommand(ctx),
+  i18n: (ctx) => runI18n(ctx),
   'clang-format': (ctx) => runClangFormatCommand(ctx),
 };
 
@@ -95,7 +97,7 @@ const main = async () => {
   const run = COMMANDS[command];
   if (!run || threadVerbNames().includes(command)) return runThread(process.argv.slice(2));
   const rootDir = await rootDirOf(command, values);
-  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], noSync: values['no-sync'], liveBrock: values['live-brock'], scope: values.scope, local: values.local, force: values.force, all: values.all, changed: values.changed, noCache: values['no-cache'], full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, ap: values['ap-version'], data: values['ap-data'], out: values['ap-out'], module: values['ap-module'], author: values['ap-author'], public: values['ap-public'], sources: values['ap-source'], entry: values.entry, fn: values.fn, name: values.name, seed: values.seed, file: values.out, optionsFile: values.options, set: values.set, passthrough });
+  return run({ rootDir, input, args: positionals.slice(1), check: values.check, ifStale: values['if-stale'], noSync: values['no-sync'], liveBrock: values['live-brock'], scope: values.scope, local: values.local, force: values.force, all: values.all, changed: values.changed, noCache: values['no-cache'], full: values.full, arch: values.arch, deb: values.deb, channel: values.channel, renderInstaller: values['render-installer'], from: values.from, to: values.to, run: values.run, tesseraFrom: values['tessera-from'], tesseraFromCopy: values['tessera-from-copy'], aliases: values.alias, map: values.map, report: values.report, brand: values.brand, api: values.api, ap: values['ap-version'], data: values['ap-data'], out: values['ap-out'], module: values['ap-module'], author: values['ap-author'], public: values['ap-public'], sources: values['ap-source'], entry: values.entry, fn: values.fn, name: values.name, seed: values.seed, file: values.out, optionsFile: values.options, locale: values.locale, set: values.set, passthrough });
 };
 
 main().then(

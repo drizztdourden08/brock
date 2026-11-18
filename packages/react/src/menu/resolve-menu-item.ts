@@ -1,11 +1,16 @@
 /* @layer renderer-shell @kind logic */
 import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { MenuItem, MenuItemDef } from './menu.type';
+import { resolveMenuEntries } from './resolve-menu-entries';
 
-type Resolved<D extends { label: Text; description?: Text }> = Omit<D, 'label' | 'description'> & { label: string; description?: string };
-
-const resolveMenuItem = <D extends { label: Text; description?: Text }>(def: D, text: (value: Text) => string): Resolved<D> => {
-  const { label, description, ...rest } = def;
-  return { ...rest, label: text(label), ...(description === undefined ? {} : { description: text(description) }) };
+const resolveMenuItem = (def: MenuItemDef, text: (value: Text) => string): MenuItem => {
+  const { label, description, children, ...rest } = def;
+  return {
+    ...rest,
+    label: text(label),
+    ...(description === undefined ? {} : { description: text(description) }),
+    ...(children ? { children: resolveMenuEntries(children, [], { at: 0 }, text) } : {}),
+  };
 };
 
 export { resolveMenuItem };

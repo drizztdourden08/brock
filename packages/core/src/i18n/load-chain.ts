@@ -1,14 +1,6 @@
 /* @layer core @kind logic */
-import type { Catalog, Layer } from './catalog/catalog.type';
+import type { LoadCtx, Loader } from './load-chain.type';
 import { isPseudoLocale } from './locale/pseudo/is-pseudo-locale';
-
-type Loader = (tag: string) => Promise<readonly Layer[]>;
-
-type LoadCtx = {
-  readonly catalog: Catalog;
-  readonly pending: Map<string, Promise<void>>;
-  readonly load: Loader | undefined;
-};
 
 const startLoad = (ctx: LoadCtx, load: Loader, tag: string, required: boolean): Promise<void> => {
   const job = load(tag)
@@ -29,4 +21,3 @@ const loadChain = async (ctx: LoadCtx, chain: readonly string[]): Promise<void> 
 };
 
 export { loadChain };
-export type { LoadCtx };

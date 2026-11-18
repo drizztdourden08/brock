@@ -1,6 +1,8 @@
 /* @layer core @kind logic */
 import type { Cursor } from './parse.type';
-import { isCloseTag, isOpenTag, peek } from './cursor';
+import { isCloseTag } from './cursor/is-close-tag';
+import { isOpenTag } from './cursor/is-open-tag';
+import { peek } from './cursor/peek';
 
 const readQuoted = (c: Cursor): string => {
   let out = '';

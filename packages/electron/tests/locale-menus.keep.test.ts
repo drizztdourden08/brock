@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createI18n } from '@drizztdourden08/brock-core/i18n';
 import type { Layer } from '@drizztdourden08/brock-core/i18n';
 import { brockMainLayer } from '../src/main/i18n/brock-main-layer';
-import { installMainI18n } from '../src/main/i18n/main-i18n';
+import { installMainI18n } from '../src/main/i18n/install-main-i18n';
 import { watchLocale } from '../src/main/i18n/watch-locale';
 import { createTrayControl } from '../src/main/tray/create-tray-control';
 

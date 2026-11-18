@@ -1,8 +1,7 @@
 /* @layer core @kind logic */
 import type { Catalog, Layer } from './catalog.type';
+import type { Entry } from './create-catalog.type';
 import { LAYER_RANK } from './layer-rank.constants';
-
-type Entry = { readonly text: string; readonly rank: number };
 
 const addLayer = (byLocale: Map<string, Map<string, Entry>>, layer: Layer): void => {
   const messages = byLocale.get(layer.locale) ?? new Map<string, Entry>();

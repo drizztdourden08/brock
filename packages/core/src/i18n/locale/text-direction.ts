@@ -1,10 +1,8 @@
 /* @layer core @kind logic */
 import type { Direction } from './locale.type';
+import type { LocaleWithInfo } from './text-direction.type';
 import { RTL_LANGUAGES } from './text-direction.constants';
-import { languageOf } from './same-language';
-
-type TextInfo = { direction?: Direction };
-type LocaleWithInfo = Intl.Locale & { getTextInfo?: () => TextInfo; textInfo?: TextInfo };
+import { languageOf } from './language-of';
 
 const intlDirection = (tag: string): Direction | undefined => {
   try {

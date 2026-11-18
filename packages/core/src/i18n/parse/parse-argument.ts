@@ -1,24 +1,12 @@
 /* @layer core @kind logic */
 import type { MessageNode } from './node.type';
-import type { ArgumentParser, ParseCtx } from './parse.type';
-import { expectChar, fail, peek, readName, skipSpaces } from './cursor';
-import { parseDate } from './parse-date';
-import { parseList } from './parse-list';
-import { parseNumber } from './parse-number';
-import { parsePlural } from './parse-plural';
-import { parseSelect } from './parse-select';
-import { parseSelectOrdinal } from './parse-selectordinal';
-import { parseTime } from './parse-time';
-
-const PARSERS: Readonly<Record<string, ArgumentParser>> = {
-  number: parseNumber,
-  date: parseDate,
-  time: parseTime,
-  list: parseList,
-  plural: parsePlural,
-  selectordinal: parseSelectOrdinal,
-  select: parseSelect,
-};
+import type { ParseCtx } from './parse.type';
+import { expectChar } from './cursor/expect-char';
+import { fail } from './cursor/fail';
+import { peek } from './cursor/peek';
+import { readName } from './cursor/read-name';
+import { skipSpaces } from './cursor/skip-spaces';
+import { PARSERS } from './parse-argument.constants';
 
 const parseArgument = (ctx: ParseCtx): MessageNode => {
   const { c } = ctx;

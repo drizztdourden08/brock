@@ -50,7 +50,7 @@ import { fileGuard } from '../files/file-guard-state';
 import { bridgeKeyOf } from '../bridge/bridge-key';
 import { opensBridgeOnBoot } from './opens-bridge-on-boot';
 import { createMainI18n } from '../i18n/create-main-i18n';
-import { installMainI18n } from '../i18n/main-i18n';
+import { installMainI18n } from '../i18n/install-main-i18n';
 import { watchLocale } from '../i18n/watch-locale';
 
 const onReady = async ({ ctx, options, dataDirs, schemes, setup }: ReadyInput): Promise<void> => {

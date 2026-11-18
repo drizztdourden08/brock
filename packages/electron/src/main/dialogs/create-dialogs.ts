@@ -5,7 +5,8 @@ import type { AutomationFlags } from '@drizztdourden08/brock-core/automation';
 import type { BoxSpec, DialogsInput } from './create-dialogs.type';
 import type { MainDialogs } from './dialogs.type';
 import { checkChoices } from './check-choices';
-import { dialogText, optionalDialogText } from './dialog-text';
+import { dialogText } from './dialog-text';
+import { optionalDialogText } from './optional-dialog-text';
 import { CANCEL_BUTTON, CONFIRM_BUTTON, DEFAULT_CANCEL_KEY, DEFAULT_CONFIRM_KEY, NON_BLOCKING_FLAGS } from './dialogs.constants';
 
 const visibleParent = (window: () => BrowserWindow | null): BrowserWindow | null => {

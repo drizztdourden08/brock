@@ -1,12 +1,12 @@
 /* @layer core @kind logic */
 import type { PluralNode } from '../parse/node.type';
 import type { Compiled, NodesCompiler } from './env.type';
-import { numberFormat, pluralRules } from '../intl-cache';
+import { numberFormat } from '../intl-cache/number-format';
+import { pluralRules } from '../intl-cache/plural-rules';
+import { EMPTY } from './compile-plural.constants';
 import { compileCases } from './compile-cases';
 import { pick } from './pick-case';
-import { toNumber } from './to-value';
-
-const EMPTY: Compiled = () => [];
+import { toNumber } from './to-number';
 
 const compilePlural = (node: PluralNode, compileNodes: NodesCompiler): Compiled => {
   const cases = compileCases(node.cases, compileNodes);

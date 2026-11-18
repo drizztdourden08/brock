@@ -4,7 +4,9 @@ import type { Compiled, NodesCompiler } from './env.type';
 import { compileFormat } from './compile-format';
 import { compilePlural } from './compile-plural';
 import { compileSelect } from './compile-select';
-import { compileArg, compilePound, compileText } from './compile-simple';
+import { compileArg } from './compile-arg';
+import { compilePound } from './compile-pound';
+import { compileText } from './compile-text';
 import { compileTag } from './compile-tag';
 
 const compileNode = (node: MessageNode, compileNodes: NodesCompiler): Compiled => {

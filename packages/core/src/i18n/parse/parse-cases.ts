@@ -1,7 +1,11 @@
 /* @layer core @kind logic */
 import type { MessageNode, NodeCases } from './node.type';
 import type { ParseCtx } from './parse.type';
-import { expectChar, fail, peek, readName, skipSpaces } from './cursor';
+import { expectChar } from './cursor/expect-char';
+import { fail } from './cursor/fail';
+import { peek } from './cursor/peek';
+import { readName } from './cursor/read-name';
+import { skipSpaces } from './cursor/skip-spaces';
 
 const parseCases = (ctx: ParseCtx, pound: boolean): NodeCases => {
   const { c } = ctx;

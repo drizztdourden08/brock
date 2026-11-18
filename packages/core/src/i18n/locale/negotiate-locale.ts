@@ -1,6 +1,6 @@
 /* @layer core @kind logic */
 import { fallbackChain } from './fallback-chain';
-import { languageOf } from './same-language';
+import { languageOf } from './language-of';
 
 const matchTag = (requested: string, available: readonly string[]): string | undefined => {
   const wanted = fallbackChain(requested).map((tag) => tag.toLowerCase());

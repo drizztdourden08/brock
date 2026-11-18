@@ -1,7 +1,9 @@
 /* @layer core @kind logic */
 import type { MessageNode } from './node.type';
 import type { ParseCtx } from './parse.type';
-import { isCloseTag, isOpenTag, peek } from './cursor';
+import { isCloseTag } from './cursor/is-close-tag';
+import { isOpenTag } from './cursor/is-open-tag';
+import { peek } from './cursor/peek';
 import { parseArgument } from './parse-argument';
 import { parseTag } from './parse-tag';
 import { readText } from './read-text';

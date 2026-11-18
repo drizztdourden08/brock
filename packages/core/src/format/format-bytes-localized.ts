@@ -1,7 +1,6 @@
 /* @layer core @kind logic */
-import { numberFormat } from '../i18n/intl-cache';
-
-const KB = 1024;
+import { KB } from './format-bytes-localized.constants';
+import { numberFormat } from '../i18n/intl-cache/number-format';
 
 const unitFormat = (locale: string, unit: string, decimals: number): Intl.NumberFormat =>
   numberFormat(locale, { style: 'unit', unit, unitDisplay: 'short', minimumFractionDigits: decimals, maximumFractionDigits: decimals });

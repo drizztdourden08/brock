@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { TesseraStringsOverride } from '@drizztdourden08/tessera/primitives';
-
-type Groups = Record<string, Record<string, unknown> | undefined>;
+import type { Groups } from './merge-string-groups.type';
 
 const mergeStringGroups = (low: TesseraStringsOverride, high: TesseraStringsOverride | undefined): TesseraStringsOverride => {
   const a = low as Groups;

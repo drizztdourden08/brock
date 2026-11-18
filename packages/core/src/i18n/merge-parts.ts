@@ -4,7 +4,7 @@ const mergeParts = <T>(parts: readonly unknown[]): (string | T)[] => {
   for (const part of parts) {
     const last = out.length - 1;
     if (typeof part === 'string' && typeof out[last] === 'string') {
-      out[last] = `${out[last] as string}${part}`;
+      out[last] = `${out[last]}${part}`;
     } else {
       out.push(part);
     }

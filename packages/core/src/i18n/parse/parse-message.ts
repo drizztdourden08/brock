@@ -1,6 +1,8 @@
 /* @layer core @kind logic */
 import type { MessageNode } from './node.type';
-import { atEnd, createCursor, fail } from './cursor';
+import { atEnd } from './cursor/at-end';
+import { createCursor } from './cursor/create-cursor';
+import { fail } from './cursor/fail';
 import { parseNodes } from './parse-nodes';
 
 const parseMessage = (source: string): readonly MessageNode[] => {

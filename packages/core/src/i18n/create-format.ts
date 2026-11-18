@@ -1,6 +1,8 @@
 /* @layer core @kind logic */
 import type { I18nFormat } from './i18n.type';
-import { dateFormat, listFormat, numberFormat } from './intl-cache';
+import { dateFormat } from './intl-cache/date-format';
+import { listFormat } from './intl-cache/list-format';
+import { numberFormat } from './intl-cache/number-format';
 
 const createFormat = (locale: () => string): I18nFormat => ({
   number: (value, options) => numberFormat(locale(), options).format(value),

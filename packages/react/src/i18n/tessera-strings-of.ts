@@ -2,9 +2,8 @@
 import { TESSERA_STRINGS } from '@drizztdourden08/tessera/primitives';
 import type { TesseraStringsOverride } from '@drizztdourden08/tessera/primitives';
 import type { I18n, MessageKey } from '@drizztdourden08/brock-core/i18n';
+import type { Groups } from './tessera-strings-of.type';
 import { TESSERA_NAMESPACE } from './brock-layers.constants';
-
-type Groups = Record<string, Record<string, string>>;
 
 const translated = (i18n: I18n, group: string, name: string): string | undefined => {
   const key = `${TESSERA_NAMESPACE}:${group}.${name}`;

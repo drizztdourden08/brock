@@ -64,7 +64,7 @@ describe('I18n locale switching', { tags: ['critical'] }, () => {
     expect(listener).toHaveBeenCalledTimes(3);
   });
 
-  it('formats numbers and lists with the current locale', async () => {
+  it('formats numbers and lists with the current locale', () => {
     const i18n = createI18n({ base: 'en', layers: [EN] });
     expect(i18n.format.number(1234.5)).toBe('1,234.5');
     expect(i18n.format.list(['a', 'b'])).toBe('a and b');

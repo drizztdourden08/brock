@@ -1,9 +1,11 @@
 /* @layer core @kind logic */
-import type { Direction } from './locale/locale.type';
+import type { State } from './create-i18n.type';
 import type { Tags } from './format/env.type';
-import type { I18n, I18nOptions, Listener } from './i18n.type';
+import type { I18n, I18nOptions, Listener, TagMap } from './i18n.type';
+import type { MessageKey, ArgsOf, ValuesOf } from './message-key.type';
 import type { MessageValues } from './message-values.type';
 import type { Text } from './text.type';
+import { adaptTags } from './adapt-tags';
 import { createCatalog } from './catalog/create-catalog';
 import { createFormat } from './create-format';
 import { createReporter } from './create-reporter';
@@ -14,8 +16,6 @@ import { textDirection } from './locale/text-direction';
 import { loadChain } from './load-chain';
 import { mergeParts } from './merge-parts';
 import { resolveMessage } from './resolve-message';
-
-type State = { locale: string; chain: readonly string[]; dir: Direction };
 
 const createI18n = (options: I18nOptions): I18n => {
   const { base, load, dev = false } = options;
@@ -35,9 +35,10 @@ const createI18n = (options: I18nOptions): I18n => {
     return compiledFor(resolved.text, pseudo)({ values: values ?? {}, locale: resolved.locale, tags });
   };
 
-  const t = (key: string, values?: MessageValues): string => run(key, values).join('');
-  const parts = (key: string, values: MessageValues | undefined, tags: Tags): unknown[] => mergeParts(run(key, values, tags));
-  const text = (value: Text): string => (typeof value === 'string' ? value : t(value.key, value.values));
+  const t = <K extends MessageKey>(key: K, ...args: ArgsOf<K>): string => run(key, args[0] as MessageValues | undefined).join('');
+  const parts = <T, K extends MessageKey = MessageKey>(key: K, values: ValuesOf<K> | undefined, tags: TagMap<T>): (string | T)[] =>
+    mergeParts<T>(run(key, values as MessageValues | undefined, adaptTags(tags)));
+  const text = (value: Text): string => (typeof value === 'string' ? value : run(value.key, value.values).join(''));
 
   const setLocale = async (tag: string): Promise<void> => {
     ticket += 1;
@@ -53,13 +54,14 @@ const createI18n = (options: I18nOptions): I18n => {
     return () => void listeners.delete(listener);
   };
 
-  return {
+  const api: I18n = {
     get locale() { return state.locale; },
     get chain() { return state.chain; },
     get dir() { return state.dir; },
     t, parts, text, setLocale, subscribe,
     format: createFormat(() => state.locale),
-  } as unknown as I18n;
+  };
+  return api;
 };
 
 export { createI18n };

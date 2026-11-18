@@ -14,14 +14,14 @@ const HubSearchResults = <S extends object>(props: HubSearchResultsProps<S>) => 
   const normalized = shown.toLowerCase();
   const matches = useMemo(() => matchTabs(tabs, control.settings, normalized, text), [tabs, control.settings, normalized, text]);
 
-  const groups = matches.withRows.map(({ tab, count }) => liveTabGroup({ tab, count, query: normalized, control }));
+  const groups = matches.withRows.map(({ tab, count }) => liveTabGroup({ tab, count, query: normalized, control, text }));
 
   return (
     <BrandSearchResults
       query={query}
       count={matches.total}
       summary={t('brock-settings:hub.search.summary', { count: matches.total, query: shown })}
-      jumps={matches.byName.map((tab) => ({ id: tab.id, label: tab.label, icon: tab.navIcon }))}
+      jumps={matches.byName.map((tab) => ({ id: tab.id, label: text(tab.label), icon: tab.navIcon }))}
       onJump={onOpenTab}
       groups={groups}
       onOpenGroup={onOpenTab}

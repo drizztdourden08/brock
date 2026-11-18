@@ -33,14 +33,14 @@ interface HubHeaderDef {
 
 interface HubTab {
   id: string;
-  label: string;
+  label: Text;
   render: (ctx: HubRenderContext) => ReactNode;
   preload?: () => Promise<unknown>;
 }
 
 interface HubSubPage {
   id: string;
-  label: string;
+  label: Text;
   icon: ReactNode;
   path: string;
   header?: HubPageHeader;
@@ -94,7 +94,7 @@ type HubLiveLists = Readonly<Record<string, readonly LivePage[]>>;
 
 interface HubPage {
   id: string;
-  label: string;
+  label: Text;
   icon: ReactNode;
   fullBleed?: boolean;
   fill?: boolean;
@@ -118,7 +118,7 @@ interface HubPage {
   liveRef?: HubLiveRef;
   badge?: ReactNode;
   disabled?: boolean;
-  keywords?: readonly string[];
+  keywords?: readonly Text[];
 }
 
 interface HubContextState {

@@ -10,7 +10,7 @@ const hubLiveGroups = <S extends object>(input: HubLiveInput<S>): SearchResultsG
   const { withRows } = matchTabs(paired.map(({ tab }) => tab), control.settings, query, text);
   return withRows.flatMap(({ tab, count }) => {
     const page = paired.find((pair) => pair.tab === tab)?.page;
-    return page ? [liveTabGroup({ tab, count, query, control, page: { id: page.id, label: page.label, icon: page.icon } })] : [];
+    return page ? [liveTabGroup({ tab, count, query, control, text, page: { id: page.id, label: text(page.label), icon: page.icon } })] : [];
   });
 };
 

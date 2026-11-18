@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind component */
 import { useCallback } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Box, Image, Text } from '@drizztdourden08/tessera/primitives';
 import { useGlyphSourceStore } from '../../../renderer/useGlyphSourceStore';
 import { glyphUrl } from '../behavior/glyph-url';
@@ -9,6 +10,8 @@ import './ActionBindingRow.css';
 
 const ActionBindingRow = ({ row, columns, middleLabel, labels, onRebind, onClear }: ActionBindingRowProps) => {
   const { action, cells } = row;
+  const text = useText();
+  const actionLabel = text(action.label);
   const sources = useGlyphSourceStore((state) => state.sources);
   const middleText = action.middleLabel ?? middleLabel ?? '';
   const middleIconSrc = action.glyph ? glyphUrl([action.glyph], sources) : null;
@@ -17,7 +20,7 @@ const ActionBindingRow = ({ row, columns, middleLabel, labels, onRebind, onClear
 
   return (
     <Box className="action-row">
-      <Text className="binding-row__action-label">{action.label}</Text>
+      <Text className="binding-row__action-label">{actionLabel}</Text>
       <Box className="action-row__middle">
         <Box className="binding-row__icon-slot">
           {middleIconSrc ? <Image src={middleIconSrc} alt={middleText} className="binding-row__icon-img" /> : null}
@@ -27,7 +30,7 @@ const ActionBindingRow = ({ row, columns, middleLabel, labels, onRebind, onClear
       {Array.from({ length: columns }, (_, slot) => (
         <ActionBindingCell
           key={slot}
-          actionLabel={action.label}
+          actionLabel={actionLabel}
           slot={slot}
           cell={cells[slot]}
           labels={labels}

@@ -29,17 +29,17 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
   const catalog = useSearchIndex(needle !== '', NO_MENU, NO_ACTIONS);
   const ranked = useMemo(() => {
     if (needle === '') return [];
-    const own = uniqueByTarget(uniqueById([...entriesInBucket(catalog, def.id), ...hubPageEntries(def, pages)]));
+    const own = uniqueByTarget(uniqueById([...entriesInBucket(catalog, def.id), ...hubPageEntries(def, pages, text)]));
     return rankEntries(own, needle);
-  }, [catalog, def, pages, needle]);
+  }, [catalog, def, pages, needle, text]);
   const groups = useMemo(() => {
     if (needle === '') return [];
     const live = hubLiveGroups({ pages, tabs, query: normalized, control: { settings, onChange: patch, ...settingsControls }, text });
-    const linked = hubResultGroups(def, pages.filter((page) => page.settingsTab === undefined), ranked);
+    const linked = hubResultGroups(def, pages.filter((page) => page.settingsTab === undefined), ranked, text);
     const order = rankOrder(def, pages, ranked);
     return [...live, ...linked].sort((a, b) => order(a.id) - order(b.id));
   }, [def, pages, tabs, normalized, needle, settings, patch, settingsControls, ranked, text]);
-  const jumps = useMemo(() => rankedJumps(def, pages, ranked), [def, pages, ranked]);
+  const jumps = useMemo(() => rankedJumps(def, pages, ranked, text), [def, pages, ranked, text]);
   const count = groups.reduce((sum, group) => sum + (group.count ?? 0), 0);
 
   const openHit = (hit: SearchResultsHit) => {

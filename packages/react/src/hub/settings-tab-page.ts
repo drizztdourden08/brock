@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind logic */
 import { createElement } from 'react';
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { SettingsTabPage } from './SettingsTabPage';
 import type { HubPage } from './hub.type';
 
-const settingsTabPage = (tab: { id: string; label: string; navIcon?: ReactNode }, icon?: ReactNode): HubPage => ({
+const settingsTabPage = (tab: { id: string; label: Text; navIcon?: ReactNode }, icon?: ReactNode): HubPage => ({
   id: tab.id,
   label: tab.label,
   icon: icon ?? tab.navIcon,

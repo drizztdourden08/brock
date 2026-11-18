@@ -114,6 +114,7 @@
   "screens.about": "About",
   "screens.credits": "Credits",
   "screens.profiles": "Profiles",
+  "screens.home": "Home",
   "screens.settings": "Settings",
   "screens.search": "Search {title}",
   "tours.menu": "Take the tour",

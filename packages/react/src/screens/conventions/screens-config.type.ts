@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
 import type { ProductMenuEntry } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { HeroSize } from '@drizztdourden08/tessera/composites';
 import type { IconName, Backdrop } from '@drizztdourden08/tessera/primitives';
 import type { SettingsPreviewPlacement, SettingsValueSource } from '../../settings/settings.type';
@@ -78,14 +79,14 @@ interface ScreenSearchRow {
 }
 
 interface ScreenMeta extends ShowRule {
-  title?: string;
+  title?: Text;
   icon?: IconName;
   order?: number;
   menuOrder?: number;
   shortcut?: string;
   devOnly?: boolean;
   requiresProfile?: boolean;
-  keywords?: string[];
+  keywords?: Text[];
   searchRows?: ScreenSearchRow[];
   menu?: ScreenMenu;
   header?: PageHeaderMeta;

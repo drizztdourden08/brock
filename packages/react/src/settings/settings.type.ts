@@ -86,9 +86,10 @@ type SettingItem = SettingItemFields & SettingDescription;
 
 type SettingDescriptionDef = { description: Text; noDescription?: never } | { noDescription: true; description?: never };
 
-type SettingItemDef = Omit<SettingItemFields, 'label' | 'hint' | 'control' | 'actions'> & {
+type SettingItemDef = Omit<SettingItemFields, 'label' | 'hint' | 'keywords' | 'control' | 'actions'> & {
   label: Text;
   hint?: Text;
+  keywords?: Text;
   control?: SettingControlDef;
   actions?: readonly SettingActionDef[];
 } & SettingDescriptionDef;
@@ -164,7 +165,7 @@ interface TabRenderContext<S extends object> extends SettingsControlProps<S> {
 
 interface TabDef<S extends object> {
   id: string;
-  label: string;
+  label: Text;
   navIcon: ReactNode;
   icon?: string;
   group: string;

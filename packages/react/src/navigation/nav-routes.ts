@@ -17,7 +17,7 @@ const navRoutes = (): NavRoute[] => {
   for (const screen of screens.list().filter((candidate) => isScreenAllowed(candidate, developerOn, hasProfile, show))) {
     routes.set(screen.id, { route: screen.id, title: text(screen.title), kind: 'screen', screen: screen.id, section: null, tab: null });
   }
-  for (const route of (tree?.hubs ?? []).flatMap((hub) => hubRoutes(hub, developerOn, show))) routes.set(route.route, route);
+  for (const route of (tree?.hubs ?? []).flatMap((hub) => hubRoutes(hub, developerOn, show, text))) routes.set(route.route, route);
   return [...routes.values()];
 };
 

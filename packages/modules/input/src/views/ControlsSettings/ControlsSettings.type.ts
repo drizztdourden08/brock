@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ActionBinding, BindingSlot } from '../../bindings/bindings.type';
 import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { InputProfile } from '../../bindings/input-profile.type';
@@ -9,7 +10,7 @@ import type { BindingCapture } from './sub-components/BindingListener.type';
 
 interface ActionDef {
   id: string;
-  label: string;
+  label: Text;
   middleLabel?: string;
   glyph?: string;
 }

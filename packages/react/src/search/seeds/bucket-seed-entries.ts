@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { entryLabel } from '../../screens/conventions/entry-label';
+import { titleCase } from '../../screens/conventions/title-case';
 import { KIND_ICONS } from '../../screens/conventions/screens.constants';
 import type { BucketDef } from '../../screens/conventions/screens-config.type';
 import type { SearchEntry, SearchFileSeed, SeedPlace } from '../search.type';
@@ -18,7 +18,7 @@ const pageMetaOf = (seed: SearchFileSeed, seeds: readonly SearchFileSeed[]): Sea
 const isPageKind = (kind: SearchFileSeed['kind']): kind is 'page' | 'custom' | 'live' | 'settings' => kind === 'page' || kind === 'custom' || kind === 'live' || kind === 'settings';
 
 const pageSeedEntries = (place: SeedPlace, seed: SearchFileSeed, kind: 'page' | 'custom' | 'live' | 'settings'): SearchEntry[] => {
-  const page = pageEntry(place, seed, entryLabel({ id: seed.id, meta: { title: seed.title } }), seed.icon ?? KIND_ICONS[kind]);
+  const page = pageEntry(place, seed, seed.title ?? titleCase(seed.id), seed.icon ?? KIND_ICONS[kind]);
   const rows = customSeedEntries(page, seed.entries ?? []);
   return kind === 'settings' ? [page, ...settingsSeedEntries(page, seed.sections ?? []), ...rows] : [page, ...rows];
 };

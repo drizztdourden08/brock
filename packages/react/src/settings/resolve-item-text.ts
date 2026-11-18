@@ -18,11 +18,12 @@ const descriptionOf = (item: SettingItemDef, text: TextOf): SettingDescription =
   (item.description === undefined ? { noDescription: true } : { description: text(item.description) });
 
 const resolveItemText = (item: SettingItemDef, text: TextOf): SettingItem => {
-  const { label, hint, control, actions, description: _description, noDescription: _none, ...rest } = item;
+  const { label, hint, keywords, control, actions, description: _description, noDescription: _none, ...rest } = item;
   return {
     ...rest,
     label: text(label),
     ...(hint === undefined ? {} : { hint: text(hint) }),
+    ...(keywords === undefined ? {} : { keywords: text(keywords) }),
     ...(control === undefined ? {} : { control: controlOf(control, text) }),
     ...(actions === undefined ? {} : { actions: actions.map((action) => actionOf(action, text)) }),
     ...descriptionOf(item, text),

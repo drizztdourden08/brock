@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { entryLabel } from '../../screens/conventions/entry-label';
+import { titleCase } from '../../screens/conventions/title-case';
 import { KIND_ICONS } from '../../screens/conventions/screens.constants';
 import { SCREEN_ID_PREFIX } from '../search.constants';
 import type { SearchEntry, SearchFileSeed } from '../search.type';
@@ -7,7 +7,7 @@ import type { SearchEntry, SearchFileSeed } from '../search.type';
 const screenSeedEntry = (seed: SearchFileSeed, kind: 'card' | 'layer' | 'base'): SearchEntry => ({
   id: `${SCREEN_ID_PREFIX}${seed.id}`,
   kind: 'screen',
-  label: entryLabel({ id: seed.id, meta: { title: seed.title } }),
+  label: seed.title ?? titleCase(seed.id),
   keywords: seed.keywords ?? [],
   breadcrumb: [],
   target: { route: seed.id },

@@ -26,10 +26,10 @@ const sectionOf = (section: Section, settings: object): CatalogSection => {
 
 const screenOf = (tab: TabDef<object>, settings: object, text: (value: Text) => string): CatalogScreen => {
   const { tree } = controlSources.get();
-  const target = tabTarget(tab, settingsPlaceOf(tree));
+  const target = tabTarget(tab, settingsPlaceOf(tree, text));
   return {
     id: tab.id,
-    label: tab.label,
+    label: text(tab.label),
     group: tab.group,
     route: target.route,
     ...(target.params === undefined ? {} : { params: target.params }),

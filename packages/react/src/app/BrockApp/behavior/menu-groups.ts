@@ -58,7 +58,7 @@ const menuGroups = (input: MenuBuildInput, filtered: boolean): MenuGroups => {
   const showHome = !hidden.has(HOME_ENTRY.key);
   const unnamed = (item: MenuItem): boolean => !item.screen || (!named.has(item.screen) && (!showHome || item.screen !== homeScreen));
   const topEntries = TOP_ENTRIES.map(shell).filter((item) => unnamed(item) && !hidden.has(item.key) && !(input.singleProfile && item.screen === PROFILES_SCREEN))
-    .map((item) => (item.key === SETTINGS_ENTRY_KEY && input.settingsTitle !== undefined ? { ...item, label: input.settingsTitle } : item));
+    .map((item) => (item.key === SETTINGS_ENTRY_KEY && input.settingsTitle !== undefined ? { ...item, label: text(input.settingsTitle) } : item));
   const locked = input.homeLocked ? { disabled: true, description: text(PROFILE_FIRST) } : {};
   return {
     main: [...(showHome ? [{ ...shell(HOME_ENTRY), screen: homeScreen, ...locked }] : []), ...topEntries, ...unsectioned(app)],

@@ -12,7 +12,7 @@ const matchTabs = <S extends object>(tabs: readonly TabDef<S>[], settings: S, qu
     const count = countRows(resolveSections(tabSections(tab, settings, text), query, settings));
     return count > 0 ? [{ tab, count }] : [];
   });
-  const byName = tabs.filter((tab) => tab.label.toLowerCase().includes(query));
+  const byName = tabs.filter((tab) => text(tab.label).toLowerCase().includes(query));
   return { withRows, byName, total: withRows.reduce((sum, m) => sum + m.count, 0) };
 };
 

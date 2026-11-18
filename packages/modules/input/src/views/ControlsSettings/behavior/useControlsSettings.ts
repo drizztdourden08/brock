@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind hook */
 import { useEffect, useMemo } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { controlsForProfile } from '../../../bindings';
 import { DEFAULT_LABELS } from '../ControlsSettings.constants';
 import type { ControlsContext, ControlsLabels, ControlsSettingsProps } from '../ControlsSettings.type';
@@ -15,6 +16,7 @@ import { useVerbIcons } from './useVerbIcons';
 import { useVerbScheme } from './useVerbScheme';
 
 const useControlsSettings = ({ game, profiles, globalBindings, initialTab }: ControlsSettingsProps) => {
+  const text = useText();
   const labels: ControlsLabels = useMemo(() => ({ ...DEFAULT_LABELS, ...game.labels }), [game.labels]);
   const profileActions = useProfileActions({ store: profiles, keyboardDefaults: game.keyboardDefaults });
   const { activeProfile, updateActiveProfile } = profileActions;
@@ -41,7 +43,7 @@ const useControlsSettings = ({ game, profiles, globalBindings, initialTab }: Con
     return () => { if (listening) game.onListeningChange?.(false); };
   }, [game, listening]);
 
-  const listeningName = listeningFor ? listeningLabel({ target: listeningFor, game }) : null;
+  const listeningName = listeningFor ? listeningLabel({ target: listeningFor, game, text }) : null;
   const context: ControlsContext = useMemo(
     () => ({ profile: activeProfile, devices, controls, updateProfile: updateActiveProfile }),
     [activeProfile, devices, controls, updateActiveProfile],

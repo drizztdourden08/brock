@@ -1,4 +1,5 @@
 /* @layer renderer-components @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ActionBinding, BindingSlot, ButtonIcon, InputBinding, VerbBindings } from '../../../bindings';
 import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import type { InputProfile } from '../../../bindings/input-profile.type';
@@ -105,6 +106,7 @@ interface ReadDroppedPresetParams {
 interface ListeningLabelParams {
   target: ListeningTarget;
   game: ControlsGame;
+  text: (value: Text) => string;
 }
 
 

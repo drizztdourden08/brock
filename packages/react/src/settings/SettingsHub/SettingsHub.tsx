@@ -39,8 +39,8 @@ const SettingsHub = <S extends object>(props: SettingsHubProps<S>) => {
 
   const active = visibleTabs.find((tab) => tab.id === activeId) ?? home;
   const pageContext = useMemo<SettingsPageContextValue | null>(
-    () => (active ? { variant: 'page', icon: active.navIcon, title: active.label, backdrop, query: '' } : null),
-    [active, backdrop],
+    () => (active ? { variant: 'page', icon: active.navIcon, title: text(active.label), backdrop, query: '' } : null),
+    [active, backdrop, text],
   );
   const search = useMemo(() => ({ value: query, onChange: setQuery, placeholder: text(searchPlaceholder) }), [query, setQuery, searchPlaceholder, text]);
 

@@ -44,7 +44,7 @@ const useSearchIndex = (enabled: boolean, menu: readonly MenuEntry[], given: rea
     screens: registry.list(),
     home,
     tabs,
-    settingsPlace: settingsPlaceOf(screenTree),
+    settingsPlace: settingsPlaceOf(screenTree, text),
     settings: hydrated ? settings : null,
     patch,
     actions: [...given, ...registered],

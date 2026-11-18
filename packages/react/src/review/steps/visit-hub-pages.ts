@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
 import { drawsPageHeader } from '../../hub/Hub/behavior/draws-page-header';
+import { fallbackText } from '../../i18n/fallback-text';
 import { nav } from '../../navigation/nav';
 import { useNavigationStore } from '../../navigation/useNavigationStore';
 import { pageHeaderChecks } from '../checks/page-header-checks';
@@ -38,7 +39,7 @@ const openPage = (hub: HubDef, page: HubPage, navShown: boolean): string => {
     if (!showing(hub, page)) nav.open(hub.id, { section: page.id });
     return 'with open, since the hub has no nav';
   }
-  const item = navItem(page.label);
+  const item = navItem(fallbackText(page.label));
   if (item) click(item);
   return 'from its nav entry';
 };
@@ -48,9 +49,10 @@ const visitHubPages = async (tour: StepTour, hub: HubDef, pages: readonly HubPag
     const how = openPage(hub, page, navShown);
     const shown = await waitFor(() => showing(hub, page));
     const id = `${hub.id}-${page.id}`;
-    tour.check(`${id}-page`, shown !== null, `the "${page.label}" page of "${hub.id}" opens ${how}`, `the "${page.label}" page of "${hub.id}" did not open ${how}`);
+    const label = fallbackText(page.label);
+    tour.check(`${id}-page`, shown !== null, `the "${label}" page of "${hub.id}" opens ${how}`, `the "${label}" page of "${hub.id}" did not open ${how}`);
     if (shown === null) continue;
-    if (drawsPageHeader(hub, page)) tour.report(pageHeaderChecks(id, page.label, pageHeader(find(SELECTORS.hubPage) ?? document)));
+    if (drawsPageHeader(hub, page)) tour.report(pageHeaderChecks(id, label, pageHeader(find(SELECTORS.hubPage) ?? document)));
     await tour.capture(`bucket-${id}`);
     if (page.settingsTab !== undefined) await checkRowHint(tour, id);
   }

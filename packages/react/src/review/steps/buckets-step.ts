@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import { showsHubNav } from '../../hub/Hub/behavior/shows-hub-nav';
 import { navPageCount } from '../../hub/Hub/behavior/nav-page-count';
+import { fallbackText } from '../../i18n/fallback-text';
 import { visibleHubPages } from '../../hub/Hub/behavior/visible-hub-pages';
 import { nav } from '../../navigation/nav';
 import { isShown } from '../../screens/show/is-shown';
@@ -45,7 +46,7 @@ const bucketsStep: ReviewStep = {
       const { pages } = list;
       const listed = pages.filter((page) => list.homeListed || page !== hub.home);
       const navShown = showsHubNav(hub.nav, navPageCount(list));
-      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: listed.map((page) => page.label), shown: navLabels() }));
+      tour.report(bucketChecks({ hub: hub.id, reachedVia: opened === null ? null : reachedVia, nav: navShown, expected: listed.map((page) => fallbackText(page.label)), shown: navLabels() }));
       if (opened === null) continue;
       if (navShown) tour.report(navGroupChecks(hub.id, navGroupLabels()));
       await visitHubPages(tour, hub, listed, navShown);

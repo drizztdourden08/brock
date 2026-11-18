@@ -60,3 +60,32 @@ provideWebLocales(appLocales);
 | `localeSource` | The `LocaleSource` given to `BrockApp` through `RendererModule.i18n` |
 | `i18nApi()` | The host or web `I18nApi` |
 | `provideWebLocales(locales)` | The offered tags for the web and Capacitor hosts |
+
+## Wiring
+
+`brock sync` writes `.brock/locales.ts` and `.brock/locales.main.ts` from `src/locales`. The app hands them over once on each side.
+
+```ts
+import { mainLocales } from '../.brock/locales.main';
+bootstrapApp({ /* ... */ locales: mainLocales });
+```
+
+```tsx
+import { appLocales } from '../.brock/locales';
+<BrockApp locales={appLocales} /* ... */ />
+```
+
+Main builds its catalog from `mainLocales`, installs it with `installMainI18n` and reads the offered tags back through `offeredLocales()`, which is the `offered` list of `window.api.i18n.get()`. The module's own text is the `i18n` namespace, a `module` layer, so an app layer with the same key wins.
+
+## Adding a language
+
+```sh
+brock i18n add fr            # empty namespace files in src/locales/fr
+brock i18n todo fr           # the missing messages in todo.fr.json
+brock i18n merge todo.fr.json
+brock i18n check             # every tag; --locale fr for one
+brock i18n coverage          # the translated share per tag
+brock sync                   # regenerate .brock/locales*.ts
+```
+
+Tags are BCP 47 (`fr`, `pt-BR`). The base folder (`en` unless `moduleOptions.i18n.base` says otherwise) holds every key. A tag listed in `moduleOptions.i18n.draft` stays out of the offered list while it is unfinished. `brock gate` runs `brock i18n check` whenever `src/locales` exists. Translate the module's own `i18n` namespace too, so the Language tab reads in the new language.

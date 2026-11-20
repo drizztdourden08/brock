@@ -21,14 +21,14 @@ const registerClipboard = ({ handle, product }: Pick<MainContext, 'handle' | 'pr
     dropWhenGone(sender, () => watch.drop(sender));
   };
 
-  handle('clipboard:readText', (event) => {
+  handle('clipboard:readText', async (event) => {
     assertAppFrame(event);
-    const text = readClipboard(backend, product.id, [CLIPBOARD_TEXT])[CLIPBOARD_TEXT];
+    const text = (await readClipboard(backend, product.id, [CLIPBOARD_TEXT]))[CLIPBOARD_TEXT];
     return typeof text === 'string' ? text : '';
   });
-  handle('clipboard:write', (event, entries) => {
+  handle('clipboard:write', async (event, entries) => {
     assertAppFrame(event);
-    writeClipboard(backend, product.id, entries);
+    await writeClipboard(backend, product.id, entries);
   });
   handle('clipboard:read', (event, types) => {
     assertAppFrame(event);

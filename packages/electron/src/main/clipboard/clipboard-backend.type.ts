@@ -17,11 +17,11 @@ interface ClipboardBundle {
 }
 
 interface ClipboardBackend {
-  readText: () => string;
-  readBuffer: (type: string) => Uint8Array;
-  readImage: () => ClipboardImage | null;
-  write: (bundle: ClipboardBundle) => void;
-  fingerprint: () => string;
+  readText: () => Promise<string>;
+  readBuffer: (type: string) => Promise<Uint8Array>;
+  readImage: () => Promise<ClipboardImage | null>;
+  write: (bundle: ClipboardBundle) => Promise<void>;
+  fingerprint: () => Promise<string>;
 }
 
 export type { ClipboardBackend, ClipboardBundle, ClipboardImage };

@@ -38,12 +38,12 @@ const fakeClipboard = (): FakeClipboard => {
     reads: [],
     dropPrivates: false,
     version: 0,
-    readText: () => memory.text,
+    readText: () => Promise.resolve(memory.text),
     readBuffer: (type) => {
       board.reads.push(type);
-      return memory.buffers.get(type) ?? new Uint8Array(0);
+      return Promise.resolve(memory.buffers.get(type) ?? new Uint8Array(0));
     },
-    readImage: () => (memory.png === null ? null : { ...memory.size, png: () => memory.png as Uint8Array }),
+    readImage: () => Promise.resolve(memory.png === null ? null : { ...memory.size, png: () => memory.png as Uint8Array }),
     write: (bundle: ClipboardBundle) => {
       memory.text = bundle.text ?? '';
       memory.png = bundle.png ?? null;
@@ -51,8 +51,9 @@ const fakeClipboard = (): FakeClipboard => {
       memory.buffers.clear();
       if (!board.dropPrivates) for (const item of bundle.privates) memory.buffers.set(item.type, item.data);
       board.version += 1;
+      return Promise.resolve();
     },
-    fingerprint: () => `${board.version}`,
+    fingerprint: () => Promise.resolve(`${board.version}`),
   };
   return board;
 };

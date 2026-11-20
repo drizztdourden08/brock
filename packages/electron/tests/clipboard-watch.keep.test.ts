@@ -13,12 +13,12 @@ afterEach(() => {
 });
 
 describe('K1 clipboard change watch', { tags: ['critical'] }, () => {
-  it('does not poll until something subscribes', () => {
+  it('does not poll until something subscribes', async () => {
     const board = fakeClipboard();
     const fingerprint = vi.spyOn(board, 'fingerprint');
     const { emitted } = sessionOf(board);
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(5000);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(5000);
     expect(fingerprint).not.toHaveBeenCalled();
     expect(emitted).toEqual([]);
   });
@@ -27,13 +27,13 @@ describe('K1 clipboard change watch', { tags: ['critical'] }, () => {
     const board = fakeClipboard();
     const session = sessionOf(board);
     await session.call('clipboard:watch', 'w1');
-    vi.advanceTimersByTime(600);
+    await vi.advanceTimersByTimeAsync(600);
     expect(session.emitted).toEqual([]);
-    board.write({ text: 'secret', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'secret', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(session.emitted).toEqual(['clipboard:changed']);
     expect(session.extras).toEqual([[]]);
-    vi.advanceTimersByTime(5000);
+    await vi.advanceTimersByTimeAsync(5000);
     expect(session.emitted).toEqual(['clipboard:changed']);
   });
 
@@ -44,19 +44,31 @@ describe('K1 clipboard change watch', { tags: ['critical'] }, () => {
     await call('clipboard:watch', 'a');
     await call('clipboard:watch', 'b');
     await call('clipboard:unwatch', 'a');
-    vi.advanceTimersByTime(1100);
+    await vi.advanceTimersByTimeAsync(1100);
     const during = fingerprint.mock.calls.length;
     expect(during).toBeGreaterThan(1);
     await call('clipboard:unwatch', 'b');
-    vi.advanceTimersByTime(5000);
+    await vi.advanceTimersByTimeAsync(5000);
     expect(fingerprint.mock.calls.length).toBe(during);
   });
 });
 
+describe('K1 clipboard watch pacing', { tags: ['critical'] }, () => {
+  it('does not start a poll while the previous one is still running', async () => {
+    const board = fakeClipboard();
+    const { call } = sessionOf(board);
+    await call('clipboard:watch', 'a');
+    await vi.advanceTimersByTimeAsync(100);
+    const fingerprint = vi.spyOn(board, 'fingerprint').mockReturnValue(new Promise<string>(() => undefined));
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(fingerprint).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
-  const polls = (board: ReturnType<typeof fakeClipboard>): number => {
+  const polls = async (board: ReturnType<typeof fakeClipboard>): Promise<number> => {
     const fingerprint = vi.spyOn(board, 'fingerprint');
-    vi.advanceTimersByTime(5000);
+    await vi.advanceTimersByTimeAsync(5000);
     return fingerprint.mock.calls.length;
   };
 
@@ -67,12 +79,12 @@ describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
     await main.call('clipboard:watch', 'a');
     await main.callFrom(eventOf(widget), 'clipboard:watch', 'a');
     main.navigate();
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(main.sender.sent).toEqual([]);
     expect(widget.sent).toEqual(['clipboard:changed']);
     main.navigate(widget);
-    expect(polls(board)).toBe(0);
+    expect(await polls(board)).toBe(0);
   });
 
   it('drops the watches of a window that is destroyed or whose process is gone', async () => {
@@ -81,7 +93,7 @@ describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
       const session = sessionOf(board);
       await session.call('clipboard:watch', 'a');
       session.sender.fire(name);
-      expect(polls(board), name).toBe(0);
+      expect(await polls(board), name).toBe(0);
     }
   });
 
@@ -90,10 +102,10 @@ describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
     const session = sessionOf(board);
     await session.call('clipboard:watch', 'a');
     session.sender.destroyed = true;
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(session.sender.sent).toEqual([]);
-    expect(polls(board)).toBe(0);
+    expect(await polls(board)).toBe(0);
   });
 
   it('ignores a navigation inside the same document', async () => {
@@ -102,8 +114,8 @@ describe('K1 clipboard watch ownership', { tags: ['critical'] }, () => {
     await session.call('clipboard:watch', 'a');
     session.sender.fire('did-start-navigation', { isMainFrame: true, isSameDocument: true });
     session.sender.fire('did-start-navigation', { isMainFrame: false, isSameDocument: false });
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(session.sender.sent).toEqual(['clipboard:changed']);
   });
 });
@@ -116,8 +128,8 @@ describe('K1 clipboard watch between windows and limits', { tags: ['critical'] }
     const bystander = senderOf();
     await main.call('clipboard:watch', 'a');
     await main.callFrom(eventOf(widget), 'clipboard:watch', 'a');
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(main.sender.sent).toEqual(['clipboard:changed']);
     expect(widget.sent).toEqual(['clipboard:changed']);
     expect(bystander.sent).toEqual([]);
@@ -130,8 +142,8 @@ describe('K1 clipboard watch between windows and limits', { tags: ['critical'] }
     await main.call('clipboard:watch', 'same');
     await main.callFrom(eventOf(widget), 'clipboard:watch', 'same');
     await main.callFrom(eventOf(widget), 'clipboard:unwatch', 'same');
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(main.sender.sent).toEqual(['clipboard:changed']);
     expect(widget.sent).toEqual([]);
   });
@@ -150,13 +162,11 @@ describe('K1 clipboard watch between windows and limits', { tags: ['critical'] }
     const board = fakeClipboard();
     const { call, emitted } = sessionOf(board);
     await call('clipboard:watch', 'a');
-    vi.spyOn(board, 'fingerprint').mockImplementationOnce(() => {
-      throw new Error('clipboard busy');
-    });
-    vi.advanceTimersByTime(600);
+    vi.spyOn(board, 'fingerprint').mockRejectedValueOnce(new Error('clipboard busy'));
+    await vi.advanceTimersByTimeAsync(600);
     expect(emitted).toEqual([]);
-    board.write({ text: 'x', privates: [] });
-    vi.advanceTimersByTime(600);
+    await board.write({ text: 'x', privates: [] });
+    await vi.advanceTimersByTimeAsync(600);
     expect(emitted).toEqual(['clipboard:changed']);
   });
 });

@@ -5,7 +5,7 @@ interface ClipboardOwner {
 }
 
 interface ClipboardWatchDeps {
-  fingerprint: () => string;
+  fingerprint: () => Promise<string>;
   channel: string;
   pollMs: number;
   max: number;
@@ -20,4 +20,19 @@ interface ClipboardWatch {
   size: () => number;
 }
 
-export type { ClipboardOwner, ClipboardWatch, ClipboardWatchDeps };
+interface WatchOwners {
+  add: (owner: ClipboardOwner, id: string) => void;
+  remove: (owner: ClipboardOwner, id: string) => void;
+  drop: (owner: ClipboardOwner) => void;
+  prune: () => void;
+  tell: (channel: string) => void;
+  empty: () => boolean;
+  size: () => number;
+}
+
+interface SerialSteps {
+  run: (step: () => Promise<void>) => void;
+  busy: () => boolean;
+}
+
+export type { ClipboardOwner, ClipboardWatch, ClipboardWatchDeps, SerialSteps, WatchOwners };

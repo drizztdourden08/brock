@@ -1,5 +1,7 @@
 /* @layer electron-main @kind logic */
-import type { ClipboardOwner, ClipboardWatch, ClipboardWatchDeps } from './clipboard-watch.type';
+import type { ClipboardWatch, ClipboardWatchDeps } from './clipboard-watch.type';
+import { serialSteps } from './serial-steps';
+import { watchOwners } from './watch-owners';
 
 const startTimer = (tick: () => void, ms: number): unknown => {
   const timer = setInterval(tick, ms);
@@ -7,71 +9,65 @@ const startTimer = (tick: () => void, ms: number): unknown => {
   return timer;
 };
 
-const readSafely = (read: () => string): string | null => {
+const readSafely = async (read: () => Promise<string>): Promise<string | null> => {
   try {
-    return read();
+    return await read();
   } catch {
     return null;
   }
 };
 
 const createClipboardWatch = ({ fingerprint, channel, pollMs, max, setTimer = startTimer, clearTimer = (timer) => clearInterval(timer as NodeJS.Timeout) }: ClipboardWatchDeps): ClipboardWatch => {
-  const owners = new Map<ClipboardOwner, Set<string>>();
+  const owners = watchOwners(max);
+  const steps = serialSteps();
   let timer: unknown = null;
   let last = '';
 
-  const size = (): number => [...owners.values()].reduce((sum, ids) => sum + ids.size, 0);
-
   const stopWhenIdle = (): void => {
-    if (owners.size > 0 || timer === null) return;
+    if (!owners.empty() || timer === null) return;
     clearTimer(timer);
     timer = null;
   };
 
-  const prune = (): void => {
-    for (const owner of [...owners.keys()]) if (owner.isDestroyed()) owners.delete(owner);
-    stopWhenIdle();
+  const check = async (): Promise<void> => {
+    const now = await readSafely(fingerprint);
+    if (timer === null || now === null || now === last) return;
+    last = now;
+    owners.prune();
+    owners.tell(channel);
   };
 
-  const tell = (): void => {
-    for (const owner of owners.keys()) owner.send(channel);
+  const baseline = async (): Promise<void> => {
+    last = (await readSafely(fingerprint)) ?? '';
   };
 
   const tick = (): void => {
-    prune();
-    if (timer === null) return;
-    const now = readSafely(fingerprint);
-    if (now === null || now === last) return;
-    last = now;
-    tell();
+    owners.prune();
+    stopWhenIdle();
+    if (timer === null || steps.busy()) return;
+    steps.run(check);
   };
 
   const start = (): void => {
     if (timer !== null) return;
-    last = readSafely(fingerprint) ?? '';
     timer = setTimer(tick, pollMs);
+    steps.run(baseline);
   };
 
   return {
     add: (owner, id) => {
-      const ids = owners.get(owner) ?? new Set<string>();
-      if (ids.has(id)) return;
-      if (size() >= max) throw new Error(`At most ${max} clipboard watchers can be open`);
-      ids.add(id);
-      owners.set(owner, ids);
+      owners.add(owner, id);
       start();
     },
     remove: (owner, id) => {
-      const ids = owners.get(owner);
-      ids?.delete(id);
-      if (ids?.size === 0) owners.delete(owner);
+      owners.remove(owner, id);
       stopWhenIdle();
     },
     drop: (owner) => {
-      owners.delete(owner);
+      owners.drop(owner);
       stopWhenIdle();
     },
-    size,
+    size: owners.size,
   };
 };
 

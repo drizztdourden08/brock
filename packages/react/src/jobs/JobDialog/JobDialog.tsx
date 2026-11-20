@@ -25,7 +25,7 @@ const JobDialog = (props: JobDialogProps) => {
       data={{ [JOB_ID_ATTRIBUTE]: job.id }}
       state={job.state}
       percent={Math.round(job.progress * 100)}
-      line={job.line === null ? undefined : <Span {...REVIEW_MASK}>{job.line}</Span>}
+      line={job.line === null ? undefined : <Span {...REVIEW_MASK}>{text(job.line)}</Span>}
       steps={stepper.steps}
       currentId={stepper.currentId}
       error={job.error ?? undefined}

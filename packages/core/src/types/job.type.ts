@@ -43,7 +43,7 @@ interface JobSnapshot {
   currentStep: string | null;
   progress: number;
   stepProgress: number;
-  line: string | null;
+  line: Text | null;
   error: string | null;
   log: JobLogLine[];
   startedAt: number;

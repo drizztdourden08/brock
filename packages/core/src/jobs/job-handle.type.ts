@@ -1,4 +1,5 @@
 /* @layer core @kind types */
+import type { Text } from '../i18n/text.type';
 import type { JobLogLevel, JobLogLine, JobOptions, JobSnapshot, JobState, JobStepDef } from '../types/job.type';
 
 interface JobHandle {
@@ -6,13 +7,13 @@ interface JobHandle {
   signal: AbortSignal;
   started: Promise<void>;
   ended: Promise<JobState>;
-  step: (stepId: string, line?: string) => void;
-  progress: (fraction: number, line?: string) => void;
-  line: (text: string) => void;
+  step: (stepId: string, line?: Text) => void;
+  progress: (fraction: number, line?: Text) => void;
+  line: (text: Text) => void;
   log: (message: string, level?: JobLogLevel) => void;
   skip: (stepId: string) => void;
   setCancellable: (on: boolean) => void;
-  done: (line?: string) => void;
+  done: (line?: Text) => void;
   fail: (error: unknown) => void;
   run: <T>(work: (job: JobHandle) => Promise<T>) => Promise<T>;
 }

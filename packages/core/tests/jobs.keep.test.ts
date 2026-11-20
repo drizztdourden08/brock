@@ -1,6 +1,7 @@
 /* @layer core @kind test */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
+import { createI18n, msg } from '../src/i18n';
 import { createJobRegistry } from '../src/jobs/create-job-registry';
 
 const STEPS = [{ id: 'download', label: 'Download', weight: 3 }, { id: 'unpack', label: 'Unpack' }];
@@ -23,6 +24,18 @@ afterEach(() => {
 });
 
 describe('K1 createJobRegistry', { tags: ['critical'] }, () => {
+  it('keeps a progress line given as a message, to show in the active locale', async () => {
+    const registry = createJobRegistry((snapshot) => emitted.push(snapshot), () => 1000);
+    const job = registry.start('fetch', STEPS);
+    job.progress(0.5, msg('app:c', { n: 3 }));
+    vi.advanceTimersByTime(100);
+    const line = last().line;
+    expect(line).toEqual({ key: 'app:c', values: { n: 3 } });
+    const i18n = createI18n({ base: 'en', layers: [{ locale: 'en', namespace: 'app', messages: { c: '{n} parts' } }], load: () => Promise.resolve([{ locale: 'fr', namespace: 'app', messages: { c: '{n} morceaux' } }]) });
+    await i18n.setLocale('fr');
+    expect(line === null ? '' : i18n.text(line)).toBe('3 morceaux');
+  });
+
   it('reports steps, weighted progress, the current line and log lines', () => {
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot), () => 1000);
     const job = registry.start('setup', STEPS, { title: 'Setting up' });

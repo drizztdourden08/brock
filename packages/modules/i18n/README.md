@@ -75,7 +75,7 @@ import { appLocales } from '../.brock/locales';
 <BrockApp locales={appLocales} /* ... */ />
 ```
 
-Main builds its catalog from `mainLocales`, installs it with `installMainI18n` and reads the offered tags back through `offeredLocales()`, which is the `offered` list of `window.api.i18n.get()`. The module's own text is the `i18n` namespace, a `module` layer, so an app layer with the same key wins.
+Main builds its catalog from `mainLocales`, installs it with `installMainI18n` and reads the offered tags back through `offeredLocales()`, which is the `offered` list of `window.api.i18n.get()`. The module's own text is the `i18n` namespace, a `module` layer, so an app layer with the same key wins. Brock ships English only: an app that offers French translates Brock's namespaces in its own `src/locales/fr/` (see docs/architecture.md, Translation).
 
 ## Adding a language
 

@@ -1103,6 +1103,8 @@ Every word the shell shows goes through one catalog, so an app can add a languag
 
 Brock ships English only. An app adds a language with `brock i18n add <tag>`, fills the files and runs `brock sync`.
 
+Brock translates its own text into no other language. An app that offers more languages translates the Brock namespaces itself, in its own tables: `src/locales/fr/brock-shell.json` (and `brock-settings`, `brock-app`, `brock-main`, `i18n`) with the keys of the Brock English table it rewords. The app needs no copy of those tables in its base folder, since the English comes from the Brock package layer. The app layer beats the package and module layers, so these tables win for that language, and a key the app leaves out falls back to the Brock English. `brock i18n check` reads such a file for broken ICU syntax only: the Brock base is not in the app, so its keys and placeholders are not compared. The English tables to copy the keys from ship in each package under `src/locales/en`: `brock-shell`, `brock-settings` and `brock-app` in `@drizztdourden08/brock-react`, `brock-main` in `@drizztdourden08/brock-electron`, and `i18n` in `@drizztdourden08/brock-i18n`.
+
 ## Accessibility
 
 The shell gives every app landmarks, a region shortcut and an announcer, so a keyboard or screen reader user can move around without the app doing anything.

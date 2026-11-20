@@ -1,9 +1,10 @@
 /* @layer core @kind types */
 import type { JobLogLevel, JobOptions, JobStepDef } from '@drizztdourden08/brock-core/types';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 
 interface AssetStepReport {
-  progress: (fraction: number, line?: string) => void;
-  line: (text: string) => void;
+  progress: (fraction: number, line?: Text) => void;
+  line: (text: Text) => void;
   log: (message: string, level?: JobLogLevel) => void;
 }
 
@@ -18,8 +19,8 @@ interface AssetWorkerStepDef extends JobStepDef {
 type AssetWorkerRequest = { type: 'run'; step: string; input: unknown } | { type: 'data'; data: unknown };
 
 type AssetWorkerMessage =
-  | { type: 'progress'; step: string; fraction: number; line?: string }
-  | { type: 'line'; step: string; text: string }
+  | { type: 'progress'; step: string; fraction: number; line?: Text }
+  | { type: 'line'; step: string; text: Text }
   | { type: 'log'; step: string; message: string; level?: JobLogLevel }
   | { type: 'done'; step: string; result: unknown }
   | { type: 'error'; step: string; message: string };

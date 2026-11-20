@@ -122,7 +122,7 @@ Loading also takes a raw state: a file that does not start with `PKSV` is handed
 
 ## Asset extraction in a worker
 
-The app defines its extraction steps once, as an `AssetWorkerSteps` object keyed by step id. Each step gets its `input`, a report (`progress(fraction, line?)`, `line(text)`, `log(message, level?)`) that lands on the job, and the job's `workerData`:
+The app defines its extraction steps once, as an `AssetWorkerSteps` object keyed by step id. Each step gets its `input`, a report (`progress(fraction, line?)`, `line(text)`, `log(message, level?)`) that lands on the job (a line is a `Text`, a string or a `msg` key shown in the active language), and the job's `workerData`:
 
 ```ts
 import type { AssetWorkerSteps } from '@drizztdourden08/brock-port-kit';

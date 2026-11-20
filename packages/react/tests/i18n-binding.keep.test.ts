@@ -21,11 +21,12 @@ let root: Root | null = null;
 
 const Probe = () => createElement('p', null, useT()(KEY));
 
-const mount = (i18n: I18n): HTMLElement => {
+const mount = (i18n: I18n, inner?: I18n): HTMLElement => {
   const host = document.createElement('div');
   document.body.append(host);
   root = createRoot(host);
-  act(() => root?.render(createElement(I18nProvider, { i18n, children: createElement(Probe) })));
+  const probe = inner ? createElement(I18nProvider, { i18n: inner, document: false, children: createElement(Probe) }) : createElement(Probe);
+  act(() => root?.render(createElement(I18nProvider, { i18n, children: probe })));
   return host;
 };
 
@@ -48,6 +49,14 @@ describe('renderer i18n binding', { tags: ['critical'] }, () => {
     await act(async () => i18n.setLocale('fr'));
     expect(host.textContent).toBe('Bonjour');
     expect(document.documentElement.lang).toBe('fr');
+  });
+
+  it('keeps the page lang of the app under a nested provider with document off', async () => {
+    const inner = createI18n({ base: 'en', layers: [EN], load: () => Promise.resolve([FR]) });
+    const host = mount(createI18n({ base: 'en', layers: [EN] }), inner);
+    await act(async () => inner.setLocale('fr'));
+    expect(host.textContent).toBe('Bonjour');
+    expect(document.documentElement.lang).toBe('en');
   });
 
   it('translates the Tessera Cancel string and leaves English alone', async () => {

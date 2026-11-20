@@ -70,6 +70,7 @@ type EnsureMode = 'postinstall' | 'prepare' | 'force';
 type EnsureResult = 'skipped' | 'current' | 'installed' | 'built' | 'kept' | 'unavailable' | 'failed';
 
 declare const ensureAddon: (request: EnsureAddonRequest) => Promise<EnsureResult>;
+declare const addonReady: (result: EnsureResult) => boolean;
 declare const addonStateOf: (input: AddonStateInput) => AddonState;
 declare const addonPathsOf: (packageDir: string, platformArch?: string, env?: Record<string, string | undefined>) => AddonPaths;
 declare const cmakeDirOf: (packageDir: string, env: Record<string, string | undefined>) => string | null;
@@ -82,7 +83,7 @@ declare const storePrebuilt: (asset: PrebuiltAsset, platformArch: string, archiv
 declare const rememberInstalled: (job: AddonJob) => Promise<'stored' | 'present' | 'unmatched' | 'failed'>;
 declare const restoreInstalledAddon: (asset: PrebuiltAsset, platformArch: string, outDir: string, env: Record<string, string | undefined>) => boolean;
 
-export { ensureAddon, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf, cachedPrebuiltOf, storePrebuilt, rememberInstalled, restoreInstalledAddon };
+export { ensureAddon, addonReady, addonStateOf, addonPathsOf, cmakeDirOf, prebuiltAssetOf, buildKeyOf, readPins, ensureModeOf, cachedPrebuiltOf, storePrebuilt, rememberInstalled, restoreInstalledAddon };
 export type {
   AddonPins, AddonPaths, AddonMarker, AddonStateInput, PrebuiltAsset, AddonJob, EnsureAddonRequest,
   AddonState, FetchOutcome, BuildOutcome, EnsureMode, EnsureResult,

@@ -1,5 +1,6 @@
 /* @layer tooling-scripts @kind barrel */
 export { ensureAddon } from './ensure-addon.mjs';
+export { addonReady } from './addon-ready.mjs';
 export { addonStateOf } from './addon-state-of.mjs';
 export { addonPathsOf } from './addon-paths-of.mjs';
 export { cmakeDirOf } from './cmake-dir-of.mjs';

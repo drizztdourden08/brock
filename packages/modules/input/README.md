@@ -13,6 +13,14 @@ The module drives a Node-API addon, `sdl3_input.node`, with SDL3 and libusb besi
 | `brock dev`, `brock build` | Brock runs the same step first (the manifest `prepare`). This covers a pnpm install that blocked the postinstall. When no prebuild exists and CMake, a C/C++ toolchain and `cmake-js` are present, it builds from source. |
 | packaging | The builder config copies `native/prebuilds/<platform>-<arch>/` to `<resourcesPath>/sdl3/<platform>-<arch>/` and `resources/gamecontrollerdb.txt` to `<resourcesPath>/`. `native/` stays out of `app.asar`. |
 
+A packaging step that must not ship a stale addon runs the step with `--strict`. It prepares the addon like `brock build` and exits 1 unless the result is `current`, `installed` or `built`, so an old addon kept on disk or a missing one stops the build:
+
+```sh
+node node_modules/@drizztdourden08/brock-input/bin/ensure-addon.mjs --strict
+```
+
+In a script, `ensureAddon` and `addonReady(result)` come from `@drizztdourden08/brock-input/ensure-addon`.
+
 A prebuild is `sdl3-input-<version>-<key>-<platform>-<arch>.tar.gz` on the `sdl3-addon-v<version>` release of the brock repo, with a `.sha256` beside it. `<key>` hashes the addon, SDL3 and libusb versions, so a moved pin finds no asset and falls back to a source build. `.github/workflows/sdl3-addon.yml` builds the prebuilds for win32-x64, linux-x64 and darwin-arm64 and uploads them. It runs by hand and on a change under `native/` on `main`. Raise `version` in `native/package.json` when the C++ changes.
 
 To build from source in the brock checkout:

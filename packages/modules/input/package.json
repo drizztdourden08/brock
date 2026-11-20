@@ -26,6 +26,10 @@
     "./main": "./src/main/index.ts",
     "./preload": "./src/preload/index.ts",
     "./renderer": "./src/renderer/index.ts",
+    "./ensure-addon": {
+      "types": "./ensure-addon/index.d.mts",
+      "default": "./ensure-addon/index.mjs"
+    },
     "./gamecontrollerdb.txt": "./resources/gamecontrollerdb.txt",
     "./package.json": "./package.json"
   },

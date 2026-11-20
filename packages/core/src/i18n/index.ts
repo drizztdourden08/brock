@@ -1,6 +1,7 @@
 /* @layer core @kind barrel */
 export { createI18n } from './create-i18n';
 export { msg } from './msg';
+export { isMessageKey } from './is-message-key';
 export { parseMessage } from './parse/parse-message';
 export { createCatalog } from './catalog/create-catalog';
 export { fallbackChain } from './locale/fallback-chain';

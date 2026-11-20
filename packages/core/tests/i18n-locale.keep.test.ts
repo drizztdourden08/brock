@@ -1,6 +1,6 @@
 /* @layer core @kind test */
 import { describe, expect, it } from 'vitest';
-import { createI18n, fallbackChain, negotiateLocale, textDirection } from '../src/i18n';
+import { createI18n, fallbackChain, isMessageKey, negotiateLocale, textDirection } from '../src/i18n';
 import type { MissingEvent } from '../src/i18n';
 
 describe('I18n locales', { tags: ['critical'] }, () => {
@@ -60,5 +60,14 @@ describe('I18n locales', { tags: ['critical'] }, () => {
     });
     expect(i18n.dir).toBe('rtl');
     expect(i18n.t('app:save')).toBe('‫[~~evaS]‬');
+  });
+});
+
+describe('isMessageKey', { tags: ['critical'] }, () => {
+  it('takes a namespaced key read at run time and refuses plain text', () => {
+    expect(isMessageKey('tessera:dialog.close')).toBe(true);
+    expect(isMessageKey('brock-shell:tour.next')).toBe(true);
+    expect(isMessageKey('Next step')).toBe(false);
+    expect(isMessageKey(':missing-namespace')).toBe(false);
   });
 });

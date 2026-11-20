@@ -23,7 +23,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('K1 createJobRegistry', { tags: ['critical'] }, () => {
+describe('K1 a job line as a message', { tags: ['critical'] }, () => {
   it('keeps a progress line given as a message, to show in the active locale', async () => {
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot), () => 1000);
     const job = registry.start('fetch', STEPS);
@@ -35,7 +35,9 @@ describe('K1 createJobRegistry', { tags: ['critical'] }, () => {
     await i18n.setLocale('fr');
     expect(line === null ? '' : i18n.text(line)).toBe('3 morceaux');
   });
+});
 
+describe('K1 createJobRegistry', { tags: ['critical'] }, () => {
   it('reports steps, weighted progress, the current line and log lines', () => {
     const registry = createJobRegistry((snapshot) => emitted.push(snapshot), () => 1000);
     const job = registry.start('setup', STEPS, { title: 'Setting up' });

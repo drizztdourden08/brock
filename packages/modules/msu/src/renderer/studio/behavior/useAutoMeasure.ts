@@ -1,10 +1,12 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback, useEffect } from 'react';
 import { msuApi } from '../../msu-api';
 import { optimizeMessage } from './optimize-message';
 import type { AutoMeasureParams } from './auto-measure.type';
 
 const useAutoMeasure = (params: AutoMeasureParams) => {
+  const t = useT();
   const { open, pack, step, toolState, setStep, setAnalysis, setProgress, setError } = params;
 
   const measure = useCallback(async (): Promise<void> => {
@@ -13,14 +15,14 @@ const useAutoMeasure = (params: AutoMeasureParams) => {
     setError(null);
     try {
       const api = msuApi();
-      if (api === null) throw new Error('Could not measure this pack.');
+      if (api === null) throw new Error(t('msu:optimize.measureFailed'));
       setAnalysis(await api.measureOptimize(pack));
       setStep('preview');
     } catch (err) {
-      setError(optimizeMessage(err, 'Could not measure this pack.'));
+      setError(optimizeMessage(err, t('msu:optimize.measureFailed')));
       setStep('error');
     }
-  }, [pack, setStep, setProgress, setError, setAnalysis]);
+  }, [pack, t, setStep, setProgress, setError, setAnalysis]);
 
   useEffect(() => {
     if (!open || toolState === null) return;

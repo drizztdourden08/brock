@@ -50,7 +50,7 @@ const useTrackAssign = (params: TrackAssignParams) => {
     setBusy(true);
     try {
       if (format === 'layered') {
-        await store.writeMsuManifest(pack, withTrackFile(manifest, trackNum, fileName || null));
+        await store.writeMsuManifest(pack, withTrackFile(manifest, trackNum, fileName || null, t('msu:layer.trackName', { number: trackNum })));
         return { success: true, message: fileName ? t('msu:assign.nowPlays', { slot: trackNum, name: fileName }) : t('msu:assign.cleared', { slot: trackNum }) };
       }
       return await assignClassic(trackNum, fileName);

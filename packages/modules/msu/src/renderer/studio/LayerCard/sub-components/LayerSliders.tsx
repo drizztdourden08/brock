@@ -24,7 +24,7 @@ const LayerSliders = (props: LayerSlidersProps) => {
 
       <Slider
         label={t('msu:layer.chance')}
-        description="How often this layer sounds when it starts. 100% is every time."
+        description={t('msu:layer.chanceHint')}
         value={layer.chance ?? 100}
         min={1}
         max={100}

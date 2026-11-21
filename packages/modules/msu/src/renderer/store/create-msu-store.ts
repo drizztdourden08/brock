@@ -3,6 +3,7 @@ import type { MsuStudioGame } from '../game/msu-studio-game.type';
 import { canTrashMsuPack } from './can-trash-msu-pack';
 import { createMsuPack } from './create-msu-pack';
 import { defaultFetchBytes } from './default-fetch-bytes';
+import { defaultText } from './default-text';
 import { defaultProbe } from './default-probe';
 import { deleteMsuPack } from './delete-msu-pack';
 import { deleteMsuResume } from './delete-msu-resume';
@@ -32,7 +33,8 @@ const createMsuStore = <Ctx = unknown, Target = unknown>(game: MsuStudioGame<Ctx
     game: game as never,
     files: deps.files,
     probe: deps.probe ?? defaultProbe,
-    fetchBytes: deps.fetchBytes ?? defaultFetchBytes,
+    text: deps.text ?? defaultText,
+    fetchBytes: deps.fetchBytes ?? defaultFetchBytes(deps.text ?? defaultText),
     runJob: deps.runJob ?? runImportJob,
   };
   return {

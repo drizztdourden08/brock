@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Box, Center, EmptyState, Spinner, Text } from '@drizztdourden08/tessera/primitives';
 import { emptyFilesMessage } from './empty-files-message';
 import { FileRow } from './FileRow';
@@ -7,9 +8,10 @@ import type { FileListProps } from './FileList.type';
 
 const FileList = (props: FileListProps) => {
   const { ready, shown, fileCount, supersededOnly, filter, usage, audition, busy, readOnly, onRename, onDelete } = props;
+  const t = useT();
 
   if (!ready) return <Center><Spinner /></Center>;
-  if (shown.length === 0) return <EmptyState message={emptyFilesMessage(fileCount, supersededOnly, filter)} />;
+  if (shown.length === 0) return <EmptyState message={emptyFilesMessage(fileCount, supersededOnly, filter, t)} />;
 
   return (
     <Box className="msu-file-grid">

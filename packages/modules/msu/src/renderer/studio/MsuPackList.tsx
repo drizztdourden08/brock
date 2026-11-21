@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback } from 'react';
 import { Center, Icon, Status, IconButton, EmptyState, Spinner, Stack } from '@drizztdourden08/tessera/primitives';
 import { ListItemRow } from '@drizztdourden08/tessera/composites';
@@ -7,6 +8,7 @@ import type { MsuPackListProps } from './MsuPackList.type';
 
 const MsuPackList = (props: MsuPackListProps) => {
   const { loading, packs, selected, isInstalled, badge, onSelect, onDelete } = props;
+  const t = useT();
 
   const handleDeleteClick = useCallback((e: React.MouseEvent, name: string) => {
     e.stopPropagation();
@@ -18,7 +20,7 @@ const MsuPackList = (props: MsuPackListProps) => {
   if (packs.length === 0) {
     return (
       <Stack gap="xs">
-        <EmptyState message="No music packs yet. Create an empty one or import a pack" />
+        <EmptyState message={t('msu:page.noPacks')} />
       </Stack>
     );
   }

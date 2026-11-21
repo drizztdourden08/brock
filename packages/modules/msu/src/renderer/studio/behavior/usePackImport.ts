@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback } from 'react';
 import { useMsuStudio } from '../../game/useMsuStudio';
 import { stemOf } from './track-file-name';
@@ -8,6 +9,7 @@ import type { ActionResult } from '../msu.type';
 import type { PackImportParams } from './pack-import.type';
 
 const usePackImport = (params: PackImportParams) => {
+  const t = useT();
   const { refresh, onImported } = params;
   const { store } = useMsuStudio();
 
@@ -18,13 +20,13 @@ const usePackImport = (params: PackImportParams) => {
       await refresh();
       onImported(result.pack);
       const missing = result.missingFiles.length > 0
-        ? `. The archive was missing ${result.missingFiles.length}: ${result.missingFiles.join(', ')}`
+        ? ` ${t('msu:import.missing', { count: result.missingFiles.length, names: result.missingFiles.join(', ') })}`
         : '';
-      return { success: true, message: `Imported "${result.pack}" with ${result.fileCount} files and ${result.trackCount} slots${missing}` };
+      return { success: true, message: `${t('msu:import.imported', { name: result.pack, files: result.fileCount, slots: result.trackCount })}${missing}` };
     } catch (err) {
-      return failure(err, 'Could not read that pack');
+      return failure(err, t('msu:import.readFailed'));
     }
-  }, [store, refresh, onImported]);
+  }, [store, t, refresh, onImported]);
 
   return { importMsul, isMsulName };
 };

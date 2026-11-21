@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useT } from '@drizztdourden08/brock-react';
+import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudioGame } from '../game/useMsuStudioGame';
 import { sectionGroup } from './studio-frame/section-group';
 import { editorLabelOf } from './studio-frame/editor-label-of';
@@ -26,7 +27,7 @@ const MsuEffectsPanel = (props: MsuEffectsPanelProps) => {
     <SoundSide
       open={openRow === undefined ? null : { channel: openRow.channel, row: openRow.row, sound: panelOf(openRow.channel) }}
       noteTitle={label}
-      note={effectsNote(game, channels)}
+      note={effectsNote(game, channels, t)}
       packPanel={packPanel}
       pack={pack}
       manifest={manifest}

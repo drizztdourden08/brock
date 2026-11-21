@@ -34,7 +34,7 @@ const LayerEditor = (props: LayerEditorProps) => {
       />
 
       {layers.length === 0 ? (
-        <EmptyState message="No layers yet." />
+        <EmptyState message={t('msu:layer.none')} />
       ) : (
         layers.map((layer, index) => (
           <LayerCard

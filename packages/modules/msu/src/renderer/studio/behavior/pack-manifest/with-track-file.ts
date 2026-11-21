@@ -3,7 +3,7 @@ import type { MsuPackManifest } from '../../../../types';
 import { withTrackFiles } from './with-track-files';
 
 const withTrackFile = (
-  manifest: MsuPackManifest, trackNum: number, fileName: string | null,
-): MsuPackManifest => withTrackFiles(manifest, trackNum, fileName ? [fileName] : []);
+  manifest: MsuPackManifest, trackNum: number, fileName: string | null, layerName: string,
+): MsuPackManifest => withTrackFiles(manifest, trackNum, fileName ? [fileName] : [], layerName);
 
 export { withTrackFile };

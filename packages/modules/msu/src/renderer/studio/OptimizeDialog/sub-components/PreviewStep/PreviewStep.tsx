@@ -16,7 +16,7 @@ const PreviewStep = (props: PreviewStepProps) => {
   const net = totals.currentBytes - totals.estimatedBytes;
 
   if (analysis.candidates.length === 0) {
-    return <EmptyState message="Every audio file in this pack is already in one format" />;
+    return <EmptyState message={t('msu:optimize.allOneFormat')} />;
   }
 
   return (

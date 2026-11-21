@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import type { I18n } from '@drizztdourden08/brock-core/i18n';
 import { useT } from '@drizztdourden08/brock-react';
 import { Status, Box, Field, Flex, NumberInput } from '@drizztdourden08/tessera/primitives';
 import { MSU1_SAMPLE_RATE } from '@drizztdourden08/brock-msu/format';
@@ -16,12 +17,12 @@ const toSamples = (seconds: number): number | undefined => {
   return Math.round(clamped * MSU1_SAMPLE_RATE);
 };
 
-const stateOf = (samples: number | undefined, fromFile: boolean): string => {
-  if (samples === undefined || samples <= 0) return 'From the start, so the whole file repeats';
+const stateOf = (samples: number | undefined, fromFile: boolean, t: I18n['t']): string => {
+  if (samples === undefined || samples <= 0) return t('msu:loop.fromStart');
   const where = `${toSeconds(samples).toFixed(3)}s`;
   return fromFile
-    ? `The file declares ${where}, so the intro plays once and then repeats from there`
-    : `Intro plays once, then repeats from ${where}`;
+    ? t('msu:loop.fromFile', { where })
+    : t('msu:loop.fromWhere', { where });
 };
 
 const LoopPointField = (props: LoopPointFieldProps) => {
@@ -35,7 +36,7 @@ const LoopPointField = (props: LoopPointFieldProps) => {
     <Box className="layer-card__loop-point">
       <Field
         label={t('msu:loop.label')}
-        hint="Seconds into the file that each repeat starts at. 0 repeats the whole file."
+        hint={t('msu:loop.hint')}
         htmlFor={inputId}
       >
         <Flex gap="sm" align="center" wrap>
@@ -49,7 +50,7 @@ const LoopPointField = (props: LoopPointFieldProps) => {
             disabled={disabled}
             onChange={(seconds) => onChange(toSamples(seconds))}
           />
-          <Status tone="neutral">{stateOf(effective, fromFile)}</Status>
+          <Status tone="neutral">{stateOf(effective, fromFile, t)}</Status>
         </Flex>
       </Field>
     </Box>

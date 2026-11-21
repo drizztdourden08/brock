@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTool } from '@drizztdourden08/brock-tools/renderer';
 import type { OptimizeAnalysis, OptimizeProgress, OptimizeRunResult } from '../../../../optimize';
@@ -12,6 +13,7 @@ const convertibleNames = (analysis: OptimizeAnalysis | null): string[] =>
   (analysis?.candidates ?? []).filter((row) => row.excludedBecause === null).map((row) => row.name);
 
 const useOptimize = (params: OptimizeParams) => {
+  const t = useT();
   const { pack, open, onRunSettled } = params;
   const tool = useTool(ENCODER_TOOL_ID);
   const { refresh } = tool;
@@ -45,12 +47,12 @@ const useOptimize = (params: OptimizeParams) => {
       setResult(await api.runOptimize(pack, names));
       setStep('result');
     } catch (err) {
-      setError(optimizeMessage(err, 'Could not convert this pack.'));
+      setError(optimizeMessage(err, t('msu:optimize.convertFailed')));
       setStep('error');
     } finally {
       onRunSettled();
     }
-  }, [analysis, pack, onRunSettled]);
+  }, [analysis, pack, t, onRunSettled]);
 
   return {
     step,

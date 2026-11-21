@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Badge, Button, Flex, SearchInput, SegmentedControl, Stack } from '@drizztdourden08/tessera/primitives';
 import { groupingOptions } from '../../behavior/grouping-options';
 import {
@@ -10,6 +11,7 @@ import type { ChecksFiltersProps } from './ChecksFilters.type';
 import { useFilterPanels } from '../../behavior/useFilterPanels';
 
 const ChecksFilters = ({ provider, search, onSearch, prefs }: ChecksFiltersProps) => {
+  const text = useText();
   const panels = useFilterPanels();
   const [filter, setFilter] = prefs.filter;
   const [kind, setKind] = prefs.kind;
@@ -36,7 +38,7 @@ const ChecksFilters = ({ provider, search, onSearch, prefs }: ChecksFiltersProps
           {provider.kindOf !== undefined && (
             <SegmentedControl aria-label={KIND_LABEL} size="sm" value={kind} options={KIND_OPTIONS} onChange={setKind} />
           )}
-          <SegmentedControl aria-label={GROUPING_LABEL} size="sm" value={grouping} options={groupingOptions(provider)} onChange={setGrouping} />
+          <SegmentedControl aria-label={GROUPING_LABEL} size="sm" value={grouping} options={groupingOptions(provider, text)} onChange={setGrouping} />
           {hasFacets && (
             <Button variant="tertiary" size="sm" active={facets.length > 0} onClick={panels.toggleTags}>
               {facets.length > 0 ? `${TAGS_LABEL} (${facets.length})` : TAGS_LABEL}

@@ -22,7 +22,7 @@ const RecentActivity = ({ open }: RecentActivityProps) => {
   const messages = useRoomMessages();
   const { rules, gameRules } = useActivityRules();
   const rows = useMemo(() => recentActivityOf(entries, messages, rules), [entries, messages, rules]);
-  const kinds = useMemo(() => activityKindsOf(gameRules, labels.kinds), [gameRules, labels.kinds]);
+  const kinds = useMemo(() => activityKindsOf(gameRules, text, labels.kinds), [gameRules, text, labels.kinds]);
   const openLog = <Button variant="secondary" size="sm" onClick={() => open('logs')}>{OPEN_LOG_LABEL}</Button>;
 
   return (

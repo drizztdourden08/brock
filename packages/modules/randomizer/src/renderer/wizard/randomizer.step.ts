@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
 import type { RandomizerFormState } from '../../contract/randomizer-form-state.type';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
@@ -9,6 +10,7 @@ import { withConnection } from '../online/connection-step/with-connection';
 import { RandomizerStepBody } from './RandomizerStepBody';
 import { formOf } from './form-of';
 import { optionsSliceOf } from './options-slice-of';
+import { randomizerSummary } from './randomizer-summary';
 import { RANDOMIZER_SLICE, RANDOMIZER_STEP_ID, initialForm } from './wizard.constants';
 
 const randomizerStep: ProfileWizardStepDef<RandomizerFormState> = {
@@ -16,10 +18,10 @@ const randomizerStep: ProfileWizardStepDef<RandomizerFormState> = {
   slice: RANDOMIZER_SLICE,
   initial: initialForm,
   step: {
-    label: 'Randomizer',
-    description: 'Randomize this profile with a seed.',
+    label: msg('randomizer:wizard.step.label'),
+    description: msg('randomizer:wizard.step.description'),
     when: () => useRandomizerGameStore.getState().game !== null,
-    summary: (values) => (formOf(values).enabled ? `Seed ${formOf(values).seed || 'random'}` : 'Off'),
+    summary: randomizerSummary,
   },
   Body: RandomizerStepBody,
   toCreate: (form, values) => {

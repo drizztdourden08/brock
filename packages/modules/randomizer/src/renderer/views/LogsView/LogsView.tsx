@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo, useState } from 'react';
-import { logRowsToText } from '@drizztdourden08/brock-react';
+import { logRowsToText, useText } from '@drizztdourden08/brock-react';
 import { LogPanel } from '@drizztdourden08/tessera/composites';
 import { useRoomMessages } from '../../online/hooks/behavior/useRoomMessages';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
@@ -15,11 +15,12 @@ const LogsView = () => {
   const entries = useRandomizerLog();
   const messages = useRoomMessages();
   const say = useRoomSay();
+  const text = useText();
   const labels = useRandomizerLabels();
   const { rules, gameRules } = useActivityRules();
   const [search, setSearch] = useState('');
   const rows = useMemo(() => mergeRoomRows(entries, messages, rules), [entries, messages, rules]);
-  const kinds = useMemo(() => activityKindsOf(gameRules, labels.kinds), [gameRules, labels.kinds]);
+  const kinds = useMemo(() => activityKindsOf(gameRules, text, labels.kinds), [gameRules, text, labels.kinds]);
 
   return (
     <LogPanel

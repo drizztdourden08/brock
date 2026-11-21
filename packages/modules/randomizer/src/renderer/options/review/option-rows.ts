@@ -15,7 +15,7 @@ const optionRows = (catalog: OptionCatalog, overrides: RandomizerOptions, text: 
       label: option.section ? `${option.section}: ${text(option.label)}` : text(option.label),
       value: valueText(option, values[option.key] ?? '', text),
     }));
-  return rows.length === 0 ? [ALL_DEFAULT_ROW] : rows;
+  return rows.length === 0 ? [{ label: text(ALL_DEFAULT_ROW.label), value: text(ALL_DEFAULT_ROW.value) }] : rows;
 };
 
 export { optionRows };

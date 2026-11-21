@@ -11,7 +11,7 @@ import { randomizerOnlineMode } from './online/online-mode';
 import { inventoryWidgets } from './inventory/inventory-widgets';
 import { checksWidgets } from './tracker/checks-widgets';
 import { randomizerProfileHooks } from './profile-hooks/randomizer-profile-hooks';
-import { randomizerLayer } from './randomizer-layer';
+import { randomizerLayer } from '../text/randomizer-layer';
 import { randomizerOptionsStep } from './wizard/randomizer-options.step';
 import { randomizerStep } from './wizard/randomizer.step';
 

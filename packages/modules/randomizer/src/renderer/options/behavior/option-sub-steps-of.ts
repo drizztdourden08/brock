@@ -2,7 +2,7 @@
 import type { StepperSubStep } from '@drizztdourden08/tessera/primitives';
 import type { RandomizerOptions } from '../../../randomizer-options.type';
 import type { RegisteredGame } from '../../game-registry/randomizer-game-state.type';
-import { englishText } from '../../text/english-text';
+import { englishText } from '../../../text/english-text';
 import { changedCountOf } from './changed-count-of';
 import { optionTabsOf } from './option-tabs-of';
 import { optionValuesOf } from './option-values-of';

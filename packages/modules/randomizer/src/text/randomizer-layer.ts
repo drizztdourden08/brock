@@ -1,4 +1,4 @@
-/* @layer renderer-shell @kind logic */
+/* @layer core @kind logic */
 import type { Layer } from '@drizztdourden08/brock-core/i18n';
 import english from '../locales/en/randomizer.json';
 

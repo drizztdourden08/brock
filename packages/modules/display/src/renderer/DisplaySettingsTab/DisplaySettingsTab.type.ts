@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { TabRenderContext } from '@drizztdourden08/brock-react';
 import type { DisplaySettings, SyncedRateStatus } from '../../display.type';
 
@@ -15,15 +16,21 @@ type DisplaySectionId = 'window' | 'refreshRate';
 type DisplayRowId = 'windowMode' | 'displayMonitor' | 'detectedRate' | 'syncedRateInFullscreen' | 'syncedRateTargetHz' | 'changeRate';
 
 interface DisplaySectionCopy {
-  title: string;
-  description: string;
+  title: Text;
+  description: Text;
 }
 
 interface DisplayRowCopy {
-  label: string;
-  description: string;
-  hint: string;
-  keywords: string;
+  label: Text;
+  description: Text;
+  hint: Text;
+  keywords: Text;
+}
+
+interface WindowModeCopy {
+  value: string;
+  label: Text;
+  hint: Text;
 }
 
 interface RateReadoutProps {
@@ -31,6 +38,7 @@ interface RateReadoutProps {
 }
 
 interface RefreshRateRowsInput {
+  text: (value: Text) => string;
   settings: DisplaySettings;
   status: SyncedRateStatus;
   selected: number;
@@ -48,4 +56,4 @@ interface ChangeRateDialogProps {
   onCancel: () => void;
 }
 
-export type { DisplaySettingsTabProps, DisplaySectionProps, DisplaySectionId, DisplayRowId, DisplaySectionCopy, DisplayRowCopy, RateReadoutProps, RefreshRateRowsInput, ChangeRateDialogProps };
+export type { DisplaySettingsTabProps, DisplaySectionProps, DisplaySectionId, DisplayRowId, DisplaySectionCopy, DisplayRowCopy, RateReadoutProps, RefreshRateRowsInput, ChangeRateDialogProps, WindowModeCopy };

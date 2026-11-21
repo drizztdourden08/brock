@@ -1,11 +1,13 @@
 /* @layer renderer-components @kind component */
 import { useCallback } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Button } from '@drizztdourden08/tessera/primitives';
 import { inputApi } from '../../../renderer/input-api';
 import { controllerInputStore } from '../../../controller-input/controller-input-store';
 import type { RumbleTestButtonProps } from '../ControllerPage.type';
 
 const RumbleTestButton = ({ deviceKey, test, disabled }: RumbleTestButtonProps) => {
+  const text = useText();
   const run = useCallback(() => {
     const result = 'play' in test
       ? test.play(deviceKey)
@@ -17,7 +19,7 @@ const RumbleTestButton = ({ deviceKey, test, disabled }: RumbleTestButtonProps) 
 
   return (
     <Button variant="tertiary" size="sm" onClick={run} disabled={disabled}>
-      {test.label}
+      {text(test.label)}
     </Button>
   );
 };

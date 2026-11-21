@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { updaterLayer } from './updater-layer';
 import { UpdaterProvider } from './UpdaterProvider';
 import { UPDATER_MENU } from './updater-menu.constants';
 import { useUpdateAction } from './useUpdateAction';
@@ -8,6 +9,7 @@ import { selfUpdateHost } from './self-update-host';
 
 const updaterRenderer: RendererModule = {
   id: 'updater',
+  messages: [updaterLayer],
   Provider: UpdaterProvider,
   get menu() {
     return selfUpdateHost() ? UPDATER_MENU : [];

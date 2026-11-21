@@ -1,9 +1,10 @@
 /* @layer renderer-app @kind component */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { PageProps, ScreenMeta } from '@drizztdourden08/brock-react';
 import { ControllerDiagnostics, padParamOf } from '../../../views/ControllerDiagnostics';
 
 const meta: ScreenMeta = {
-  title: 'Diagnostics',
+  title: msg('input:page.diagnostics'),
   icon: 'wrench',
   order: 2,
   keywords: ['diagnostics', 'wizard', 'calibrate', 'buttons', 'mapping', 'raw bytes', 'hid'],

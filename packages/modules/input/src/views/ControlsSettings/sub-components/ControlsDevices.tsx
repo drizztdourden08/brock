@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind component */
 import { useCallback, useMemo } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { SidePanel } from '@drizztdourden08/tessera/composites';
 import { RescanButton } from '../../../compounds/RescanButton';
@@ -18,12 +19,13 @@ import type { DeviceAssignInfo } from './DeviceRow.type';
 const ControlsDevices = (props: ControlsDevicesProps) => {
   const { devices, controllerGroups, labels, narrow, isRescanPending, onRescan, onPreset, onAddMapping } = props;
   const extraDevices = props.extraDevices ?? NO_EXTRA_DEVICES;
+  const text = useText();
   const { collapsed, toggle } = useStoredFold(DEVICES_FOLD_KEY, false);
   const entries = useMemo(() => [
-    ...devices.filter((d) => d.type === 'keyboard').map((d) => keyboardEntry(d, labels)),
+    ...devices.filter((d) => d.type === 'keyboard').map((d) => keyboardEntry(d, labels, text)),
     ...controllerGroups.map((g) => controllerGroupEntry(g, labels)),
     ...extraDeviceEntries(extraDevices, controllerGroups, labels),
-  ], [devices, controllerGroups, extraDevices, labels]);
+  ], [devices, controllerGroups, extraDevices, labels, text]);
 
   const handleAssign = useCallback((d: DeviceAssignInfo) => {
     if (!d.sdlType) return;

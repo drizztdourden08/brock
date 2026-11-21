@@ -1,4 +1,5 @@
 /* @layer renderer-components @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { RumbleTest } from '../../renderer/rumble-test.type';
 
 const PULSE_100 = { durationMs: 100, intensity: 1.0 };
@@ -17,18 +18,18 @@ const IDLE_AXIS_SLOTS = 6;
 
 const FALLBACK_GLYPH = 'generic-btn';
 
-const NO_RUMBLE_REASON = 'This controller reports no rumble.';
+const NO_RUMBLE_REASON = msg('input:rumble.none');
 const UNMAPPED_REASON = 'No input until the controller is mapped.';
 
 const NO_PADS_KEY = 'none';
-const NO_PADS_TITLE = 'No controllers';
+const NO_PADS_TITLE = msg('input:pads.none');
 const NO_PADS_MESSAGE = 'No controllers.';
 const IN_DIAGNOSTICS_SUFFIX = ' (in diagnostics)';
 const GONE_MESSAGE = 'Controller disconnected.';
 
 const ICON_SIZE = 14;
-const RUN_DIAGNOSTICS_LABEL = 'Run diagnostics';
-const DIAGNOSE_AND_REPORT_LABEL = 'Diagnose and report';
+const RUN_DIAGNOSTICS_LABEL = msg('input:card.runDiagnostics');
+const DIAGNOSE_AND_REPORT_LABEL = msg('input:card.diagnoseAndReport');
 const DIAGNOSTICS_ROUTE = 'controllers/diagnostics';
 
 export {

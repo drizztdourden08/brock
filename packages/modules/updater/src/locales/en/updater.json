@@ -1,0 +1,23 @@
+{
+  "action.check": "Check for updates",
+  "action.available": "Update available",
+  "summary.noSource": "This app has no update source, so it cannot check for updates.",
+  "summary.noCheck": "This build does not check for updates.",
+  "summary.checking": "Checking for newer version...",
+  "summary.available": "Version <strong>{version}</strong> is available",
+  "summary.latest": "Version <strong>{version}</strong> is the latest",
+  "download.label": "Update download",
+  "download.line": "Downloading {version}",
+  "download.lineGeneric": "Downloading the update",
+  "download.ready": "Downloaded. The app closes and starts again on the new version.",
+  "download.cannotInstall": "This build cannot update itself. The release page has the download.",
+  "download.failedLine": "The update did not install",
+  "download.failed": "Update failed: {error}",
+  "download.unknownError": "unknown error",
+  "picker.prerelease.title": "Include pre-releases",
+  "picker.prerelease.description": "List the test builds next to the stable ones.",
+  "picker.prerelease.hint": "On, the version list adds pre-releases. They come out before the usual testing.",
+  "picker.version.title": "Version to install",
+  "picker.version.description": "The newest version, or an earlier one to go back to.",
+  "picker.version.hint": "Pick a version. An earlier one replaces this build, and its release notes show below."
+}

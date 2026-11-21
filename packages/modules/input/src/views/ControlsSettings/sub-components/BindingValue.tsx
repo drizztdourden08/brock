@@ -1,6 +1,7 @@
 /* @layer renderer-components @kind component */
 import { useCallback } from 'react';
 import type { MouseEvent } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Box, Icon, IconButton, Image, Text } from '@drizztdourden08/tessera/primitives';
 import { bindingGlyphKeys, getBindingLabel } from '../../../bindings';
 import { useGlyphSourceStore } from '../../../renderer/useGlyphSourceStore';
@@ -9,8 +10,9 @@ import type { BindingValueProps } from './BindingValue.type';
 import './BindingValue.css';
 
 const BindingValue = ({ binding, bindingIcon, deviceIconUrl, clearLabel, onClear }: BindingValueProps) => {
+  const text = useText();
   const sources = useGlyphSourceStore((state) => state.sources);
-  const bindingLabel = getBindingLabel(binding, bindingIcon);
+  const bindingLabel = getBindingLabel(binding, text, bindingIcon);
   const bindingIconSrc = glyphUrl(bindingGlyphKeys(binding, bindingIcon), sources);
   const isNone = binding.type === 'none';
   const handleClear = useCallback((e: MouseEvent) => { e.stopPropagation(); onClear?.(); }, [onClear]);

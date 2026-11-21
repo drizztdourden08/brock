@@ -1,46 +1,51 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SettingsOption, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
-import { DISPLAY_ROW_COPY, SYNCED_DESCRIPTION } from '../DisplaySettingsTab.constants';
+import { DISPLAY_ROW_COPY } from '../DisplaySettingsTab.constants';
 import type { RefreshRateRowsInput } from '../DisplaySettingsTab.type';
 
-const rateOption = (hz: number): SettingsOption => ({
+const rateOption = (hz: number, text: (value: Text) => string): SettingsOption => ({
   value: String(hz),
-  label: `${hz} Hz`,
-  hint: hz % 60 === 0 ? 'A multiple of 60, so every frame of 60 Hz content stays on screen for the same time.' : 'Not a multiple of 60, so 60 Hz content can stutter.',
+  label: text(msg('display:rate.hz', { hz })),
+  hint: text(hz % 60 === 0 ? msg('display:rate.hint.multiple') : msg('display:rate.hint.uneven')),
 });
 
 const refreshRateRows = (input: RefreshRateRowsInput): SettingsSectionRow[] => {
-  const { settings, status, selected, readout, changeButton, onSynced, onTarget } = input;
+  const { text, settings, status, selected, readout, changeButton, onSynced, onTarget } = input;
   const rates = status.availableRates;
+  const syncedDescription = status.supported || !status.unsupportedReason
+    ? DISPLAY_ROW_COPY.syncedRateInFullscreen.description
+    : status.unsupportedReason;
   return [
     {
       id: 'detectedRate',
       content: readout,
-      description: DISPLAY_ROW_COPY.detectedRate.description,
-      hint: DISPLAY_ROW_COPY.detectedRate.hint,
+      description: text(DISPLAY_ROW_COPY.detectedRate.description),
+      hint: text(DISPLAY_ROW_COPY.detectedRate.hint),
     },
     {
       id: 'syncedRateInFullscreen',
-      title: DISPLAY_ROW_COPY.syncedRateInFullscreen.label,
-      description: status.supported || !status.unsupportedReason ? SYNCED_DESCRIPTION : status.unsupportedReason,
-      hint: DISPLAY_ROW_COPY.syncedRateInFullscreen.hint,
+      title: text(DISPLAY_ROW_COPY.syncedRateInFullscreen.label),
+      description: text(syncedDescription),
+      hint: text(DISPLAY_ROW_COPY.syncedRateInFullscreen.hint),
       disabled: !status.supported,
       input: { kind: 'toggle', value: settings.syncedRateInFullscreen, onChange: onSynced },
     },
     {
       id: 'syncedRateTargetHz',
-      title: DISPLAY_ROW_COPY.syncedRateTargetHz.label,
-      description: DISPLAY_ROW_COPY.syncedRateTargetHz.description,
-      hint: DISPLAY_ROW_COPY.syncedRateTargetHz.hint,
+      title: text(DISPLAY_ROW_COPY.syncedRateTargetHz.label),
+      description: text(DISPLAY_ROW_COPY.syncedRateTargetHz.description),
+      hint: text(DISPLAY_ROW_COPY.syncedRateTargetHz.hint),
       disabled: rates.length === 0,
-      input: { kind: 'segmented', value: String(selected), options: rates.map(rateOption), onChange: onTarget },
+      input: { kind: 'segmented', value: String(selected), options: rates.map((hz) => rateOption(hz, text)), onChange: onTarget },
     },
     {
       id: 'changeRate',
-      title: DISPLAY_ROW_COPY.changeRate.label,
+      title: text(DISPLAY_ROW_COPY.changeRate.label),
       content: changeButton,
-      description: DISPLAY_ROW_COPY.changeRate.description,
-      hint: DISPLAY_ROW_COPY.changeRate.hint,
+      description: text(DISPLAY_ROW_COPY.changeRate.description),
+      hint: text(DISPLAY_ROW_COPY.changeRate.hint),
     },
   ];
 };

@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
-const RESCAN_LABEL = 'Rescan controllers';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
+const RESCAN_LABEL = msg('input:controllers.rescan');
 
 export { RESCAN_LABEL };

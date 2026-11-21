@@ -5,9 +5,7 @@ import type { RunTile } from '../../dashboard/run-tile.type';
 import type { CheckCounts } from './check-counts.type';
 import { TILE_LABELS } from './progress-tiles.constants';
 
-type Resolve = (value: Text) => string;
-
-const checkTilesOf = (counts: CheckCounts, text: Resolve): RunTile[] => {
+const checkTilesOf = (counts: CheckCounts, text: (value: Text) => string): RunTile[] => {
   const taken = text(msg('randomizer:run.progress.takenOf', { taken: counts.taken, total: counts.total }));
   const tiles: RunTile[] = [{ label: text(TILE_LABELS.taken), value: taken }];
   if (counts.available !== null) tiles.push({ label: text(TILE_LABELS.available), value: String(counts.available) });
@@ -15,11 +13,11 @@ const checkTilesOf = (counts: CheckCounts, text: Resolve): RunTile[] => {
   return tiles;
 };
 
-const roomTilesOf = (room: NetworkStatus['progress'], text: Resolve): RunTile[] => [
+const roomTilesOf = (room: NetworkStatus['progress'], text: (value: Text) => string): RunTile[] => [
   { label: text(TILE_LABELS.received), value: String(room.received) },
 ];
 
-const progressTilesOf = (counts: CheckCounts | null, room: NetworkStatus['progress'] | null, text: Resolve): RunTile[] => [
+const progressTilesOf = (counts: CheckCounts | null, room: NetworkStatus['progress'] | null, text: (value: Text) => string): RunTile[] => [
   ...(counts === null ? [] : checkTilesOf(counts, text)),
   ...(room === null ? [] : roomTilesOf(room, text)),
 ];

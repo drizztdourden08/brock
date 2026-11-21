@@ -4,6 +4,7 @@ import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { HubDef } from '../src/hub/hub.type';
+import { fallbackText } from '../src/i18n/fallback-text';
 import { mergeModules } from '../src/modules/merge-modules';
 import { navGroupChecks } from '../src/review/checks/nav-group-checks';
 import { buildScreenTree } from '../src/screens/conventions/build-screen-tree';
@@ -74,7 +75,7 @@ describe('K1 settings group merge', { tags: ['critical'] }, () => {
     const groups = groupsOf(APP_GROUPS, moduleTabs(tab('display', 'App', 'app'), tab('audio', 'App'), tab('theme', 'Look')));
     const labels = groups.map((group) => group.label);
     expect(new Set(labels).size).toBe(labels.length);
-    expect(navGroupChecks('main', labels)[0]?.pass).toBe(true);
+    expect(navGroupChecks('main', labels.map(fallbackText))[0]?.pass).toBe(true);
   });
 });
 

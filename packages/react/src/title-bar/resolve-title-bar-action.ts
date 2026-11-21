@@ -9,7 +9,8 @@ import type { TitleBarMenuGroup } from './title-bar-item.type';
 
 const resolveGroup = (group: TitleBarMenuGroup & { id: string }, text: Resolve): MenuGroup => {
   const [built] = toMenuGroups(resolveMenuEntries(group.items, [], { at: 0 }, text), navResolver);
-  return group.label === undefined ? { ...built, id: group.id } : { ...built, id: group.id, label: text(group.label) };
+  const items = built?.items ?? [];
+  return group.label === undefined ? { id: group.id, items } : { id: group.id, items, label: text(group.label) };
 };
 
 const resolveVolume = (def: TitleBarVolumeActionDef, text: Resolve): WindowTitleBarAction => ({ ...def, label: text(def.label) });

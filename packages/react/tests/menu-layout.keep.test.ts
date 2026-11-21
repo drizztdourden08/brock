@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
-import { fallbackText } from '../src/i18n/fallback-text';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';

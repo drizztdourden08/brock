@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
+import { fallbackText } from '../src/i18n/fallback-text';
 import type { ScreensConfig } from '../src/screens/conventions/screens-config.type';
 import { buildSearchIndex } from '../src/search/build-search-index';
 import { entrySeed } from '../src/search/seeds/entry-seed';
 import { buildCatalog } from '../src/search/catalog/build-catalog';
+import { resolveEntry } from '../src/search/catalog/resolve-entry';
 import { entriesInBucket } from '../src/search/entries-in-bucket';
 import { liveEntry } from '../src/search/live-entry';
 import { normaliseKeywords } from '../src/search/normalise-keywords';
@@ -29,7 +31,7 @@ const SEEDS: SearchFileSeed[] = [
   { kind: 'card', id: 'credits' },
 ];
 
-const INDEX = buildSearchIndex(CONFIG, SEEDS);
+const INDEX = buildSearchIndex(CONFIG, SEEDS).map((entry) => resolveEntry(entry, fallbackText));
 
 const byId = (id: string) => INDEX.find((entry) => entry.id === id);
 

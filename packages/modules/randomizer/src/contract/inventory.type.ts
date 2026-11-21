@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { WidgetSlot } from './widget-slot.type';
 
 interface InventorySlot {
@@ -24,7 +25,7 @@ type InventoryWidgetSlot = WidgetSlot;
 interface InventoryProvider {
   layouts: readonly InventoryLayout[];
   widget?: InventoryWidgetSlot;
-  missingArtNotice?: string;
+  missingArtNotice?: Text;
 }
 
 export type { InventoryArea, InventoryLayout, InventoryProvider, InventorySlot, InventoryWidgetSlot };

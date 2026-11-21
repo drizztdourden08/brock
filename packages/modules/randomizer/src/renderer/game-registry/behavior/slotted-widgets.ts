@@ -5,6 +5,13 @@ import type { WidgetSlot } from '../../../contract/widget-slot.type';
 const slottedWidgets = (defs: WidgetDef[], slotOf: () => WidgetSlot | undefined): WidgetDef[] =>
   defs.map((def) => ({
     ...def,
+    get labelText() {
+      return slotOf()?.label ?? def.labelText;
+    },
+    get label() {
+      const slot = slotOf()?.label;
+      return typeof slot === 'string' ? slot : def.label;
+    },
     get context() {
       return slotOf()?.context;
     },

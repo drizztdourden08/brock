@@ -1,5 +1,6 @@
 /* @layer core @kind types */
 import type { ArchipelagoSocket } from '../archipelago/protocol/socket.type';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { DataPackageCache } from '../archipelago/data-package/data-package-cache.type';
 import type { OnlineConnection, ReceivedItem, SlotReading } from '../archipelago/client/online-host.type';
 import type { RandomizerProfileConfig } from '../augment';
@@ -27,7 +28,7 @@ type ArchipelagoGame<P, A> = {
   disarm?(): void;
   createSocket?(url: string): ArchipelagoSocket;
   dataPackages?: DataPackageCache;
-  allows?(): string | null;
+  allows?(): Text | null;
   visible?(flags: ReadonlySet<string>): boolean;
   patched?(config: RandomizerProfileConfig): RandomizerProfileConfig;
   archipelia?: ArchipeliaGame;

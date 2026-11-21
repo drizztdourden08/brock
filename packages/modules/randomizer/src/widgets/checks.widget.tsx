@@ -1,6 +1,6 @@
 /* @layer renderer-app @kind component */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { WidgetMeta } from '@drizztdourden08/brock-react';
-import { DEFAULT_RANDOMIZER_LABELS } from '../renderer/bucket/randomizer-bucket.constants';
 import { useRandomizerGame } from '../renderer/game-registry/behavior/useRandomizerGame';
 import { useRandomizerGameStore } from '../renderer/game-registry/behavior/useRandomizerGameStore';
 import { ChecksView } from '../renderer/views/ChecksView';
@@ -13,7 +13,7 @@ const ChecksWidget = () => {
 };
 
 const meta: WidgetMeta = {
-  label: DEFAULT_RANDOMIZER_LABELS.checks,
+  label: msg('randomizer:widget.checks'),
   icon: CHECKS_WIDGET_ICON,
   defaultVisibility: 'always',
   defaultSide: 'right',

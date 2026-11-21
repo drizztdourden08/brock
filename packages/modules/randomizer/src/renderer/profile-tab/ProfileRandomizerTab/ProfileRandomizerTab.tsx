@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { SegmentedControl, Stack, Text } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { groupsOf } from '../../options/behavior/groups-of';
@@ -14,6 +15,7 @@ import type { ProfileRandomizerTabProps } from './ProfileRandomizerTab.type';
 import { FactsSection } from './sub-components/FactsSection';
 
 const ProfileRandomizerTab = ({ randomizer }: ProfileRandomizerTabProps) => {
+  const text = useText();
   const game = useRandomizerGame();
   const [scope, setScope] = useState<OptionScope>('changed');
   const catalog = game?.catalog ?? [];
@@ -23,7 +25,7 @@ const ProfileRandomizerTab = ({ randomizer }: ProfileRandomizerTabProps) => {
 
   return (
     <Stack gap="lg">
-      <FactsSection title={RUN_TITLE} facts={runFactsOf(randomizer, game?.labels?.modes?.[randomizer.mode])} />
+      <FactsSection title={RUN_TITLE} facts={runFactsOf(randomizer, text, game?.labels?.modes?.[randomizer.mode])} />
       <Stack gap="sm">
         <Text variant="subtitle">{SCOPE_TITLES[scope]}</Text>
         <Text variant="caption" tone="muted">{changedTextOf(changed)}</Text>

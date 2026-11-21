@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Card, EmptyState, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
@@ -8,6 +9,7 @@ import { NO_GAME_MESSAGE, NO_PLACEMENT_MESSAGE, SPOILER_CHECKS_PREFS } from './S
 
 const SpoilerView = () => {
   const game = useRandomizerGame();
+  const text = useText();
   const labels = useRandomizerLabels();
   const { summary } = useRandomizerSession();
   if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
@@ -17,7 +19,7 @@ const SpoilerView = () => {
   if (!summary) return <EmptyState message={NO_PLACEMENT_MESSAGE} />;
 
   return (
-    <Card title={labels.spoiler}>
+    <Card title={text(labels.spoiler)}>
       <Stack gap="sm">
         {summary.rows.map((row) => <StatRow key={row.label} label={row.label} value={row.value} />)}
       </Stack>

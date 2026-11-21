@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { RandomizerModeId } from '../../../augment';
 import type { RandomizerOptions } from '../../../randomizer-options.type';
 
 interface OptionsPanelProps {
-  title: string;
+  title: Text;
   overrides: RandomizerOptions;
   seed?: string;
   mode: RandomizerModeId;

@@ -63,6 +63,7 @@
     "description": "Seeded item randomizer: world model, rules, fill, spoiler, session and screens.",
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",
-    "renderer": "./src/renderer/index.ts"
+    "renderer": "./src/renderer/index.ts",
+    "locales": "./src/locales"
   }
 }

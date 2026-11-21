@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { OptionTab } from '../../../contract/randomizer-views.type';
 import type { RuleOptionValue } from '../../../world/types/rule-option-value.type';
 
 interface OptionTabItem {
   id: string;
-  label: string;
+  label: Text;
   badge: number;
 }
 

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Field, Grid, Select, Stack, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
 import type { RandomizerModeId } from '../../../augment';
 import { useVisibleModes } from './behavior/useVisibleModes';
@@ -6,7 +7,8 @@ import { SEED_PLACEHOLDER } from './RandomizerStepBody.constants';
 import type { RandomizerStepBodyProps } from './RandomizerStepBody.type';
 
 const RandomizerStepBody = ({ value, onChange }: RandomizerStepBodyProps) => {
-  const options = useVisibleModes(value.mode, onChange);
+  const text = useText();
+  const options = useVisibleModes(value.mode, onChange).map((option) => ({ value: option.value, label: text(option.label) }));
   return (
     <Stack gap="md">
       <Toggle label="Randomizer" checked={value.enabled} onChange={(enabled) => onChange({ enabled })} />

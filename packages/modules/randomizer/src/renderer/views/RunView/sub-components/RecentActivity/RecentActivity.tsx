@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useMemo } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Button, Text } from '@drizztdourden08/tessera/primitives';
 import { LogPanel } from '@drizztdourden08/tessera/composites';
 import { useRandomizerLabels } from '../../../../hooks/behavior/useRandomizerLabels';
@@ -15,6 +16,7 @@ import { ACTIVITY_TITLE, NOTHING_YET, OPEN_LOG_LABEL } from './RecentActivity.co
 import type { RecentActivityProps } from './RecentActivity.type';
 
 const RecentActivity = ({ open }: RecentActivityProps) => {
+  const text = useText();
   const labels = useRandomizerLabels();
   const entries = useRandomizerLog();
   const messages = useRoomMessages();
@@ -24,7 +26,7 @@ const RecentActivity = ({ open }: RecentActivityProps) => {
   const openLog = <Button variant="secondary" size="sm" onClick={() => open('logs')}>{OPEN_LOG_LABEL}</Button>;
 
   return (
-    <DashboardCard span={RUN_SPANS.activity} title={labels.events ?? ACTIVITY_TITLE} actions={openLog}>
+    <DashboardCard span={RUN_SPANS.activity} title={labels.events === undefined ? ACTIVITY_TITLE : text(labels.events)} actions={openLog}>
       {rows.length === 0
         ? <Text variant="caption">{NOTHING_YET}</Text>
         : <LogPanel rows={rows} kinds={kinds} toolbar={false} height={RECENT_HEIGHT} />}

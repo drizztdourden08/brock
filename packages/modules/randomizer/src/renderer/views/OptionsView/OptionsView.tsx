@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind component */
-import { useProfilesStore } from '@drizztdourden08/brock-react';
+import { useProfilesStore, useText } from '@drizztdourden08/brock-react';
 import { Card, EmptyState, Stack, StatRow } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
@@ -9,6 +9,7 @@ import { NO_GAME_MESSAGE, NO_OPTIONS_MESSAGE } from './OptionsView.constants';
 
 const OptionsView = () => {
   const game = useRandomizerGame();
+  const text = useText();
   const labels = useRandomizerLabels();
   const { summary } = useRandomizerSession();
   const config = useProfilesStore((state) => state.active?.randomizer);
@@ -16,11 +17,11 @@ const OptionsView = () => {
   const Options = game.views?.Options;
   if (Options) return <Options />;
   if (config && (game.catalog ?? []).length > 0) {
-    return <OptionsPanel title={labels.options} overrides={Object.fromEntries(Object.entries(config.options))} seed={config.seed} mode={config.mode} romFile={config.romFile ?? null} />;
+    return <OptionsPanel title={text(labels.options)} overrides={Object.fromEntries(Object.entries(config.options))} seed={config.seed} mode={config.mode} romFile={config.romFile ?? null} />;
   }
 
   return (
-    <Card title={labels.options}>
+    <Card title={text(labels.options)}>
       {summary && summary.rows.length > 0 ? (
         <Stack gap="sm">
           {summary.rows.map((row) => <StatRow key={row.label} label={row.label} value={row.value} />)}

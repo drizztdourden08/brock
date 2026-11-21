@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { RandomizerModeId, RandomizerProfileConfig } from '../augment';
 import type { RandomizerOptions } from '../randomizer-options.type';
 import type { RuleOptionValue } from '../world/types/rule-option-value.type';
@@ -19,7 +20,7 @@ interface RunPanelProps {
 
 interface RunPanelDef {
   id: string;
-  title: string;
+  title: Text;
   span: 1 | 2 | 'full';
   Body: ComponentType<RunPanelProps>;
   actions?: ComponentType<RunPanelProps>;
@@ -43,7 +44,7 @@ interface OptionTabProps {
 
 interface OptionTab {
   id: string;
-  label: string;
+  label: Text;
   keys?: readonly string[];
   Body?: ComponentType<OptionTabProps>;
 }
@@ -60,7 +61,7 @@ interface RandomizerViews {
   logRules?: readonly LogRule[];
   optionTabs?(values: Readonly<Record<string, RuleOptionValue>>): readonly OptionTab[];
   optionsAside?: ComponentType<OptionTabProps>;
-  optionsAsideLabel?: string;
+  optionsAsideLabel?: Text;
   connection?: ConnectionBodies;
 }
 

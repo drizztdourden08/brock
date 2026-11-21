@@ -1,13 +1,14 @@
 /* @layer core @kind logic */
 import { choicesOf } from './choices-of';
+import { plainText } from '../../text/plain-text';
 import { PACKAGE_ROWS } from './export-options.constants';
 import type { ApOptionDef, ExportedOption } from './export.type';
 
 const rowOf = (option: ApOptionDef): ExportedOption => {
   const base = {
     key: option.key,
-    displayName: option.displayName,
-    description: option.description,
+    displayName: plainText(option.displayName),
+    description: plainText(option.description),
     default: option.baseline,
     locked: option.locked,
   };

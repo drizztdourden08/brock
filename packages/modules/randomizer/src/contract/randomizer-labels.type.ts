@@ -1,18 +1,19 @@
 /* @layer core @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { RandomizerModeId } from '../augment';
 
 interface RandomizerLabels {
-  title: string;
-  run: string;
-  options: string;
-  logs: string;
-  spoiler: string;
-  checks: string;
-  start: string;
-  stop: string;
-  modes?: Partial<Record<RandomizerModeId, string>>;
+  title: Text;
+  run: Text;
+  options: Text;
+  logs: Text;
+  spoiler: Text;
+  checks: Text;
+  start: Text;
+  stop: Text;
+  modes?: Partial<Record<RandomizerModeId, Text>>;
   counters?: Record<string, string>;
-  events?: string;
+  events?: Text;
   kinds?: Record<string, string>;
 }
 

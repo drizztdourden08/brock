@@ -1,12 +1,14 @@
 /* @layer renderer-shell @kind logic */
 import type { RandomizerProfileConfig } from '../../augment';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+import { plainText } from '../../text/plain-text';
 import { pendingBoot } from '../store/pending-boot';
 import { sessionFactories } from '../store/session-factories';
 import type { GateResult } from './gate-result.type';
 
-const blockedResult = (detail: string): GateResult => ({
+const blockedResult = (detail: Text): GateResult => ({
   ok: false,
-  reason: `Randomizer boot blocked: ${detail}`,
+  reason: `Randomizer boot blocked: ${plainText(detail)}`,
   detail,
 });
 

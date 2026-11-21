@@ -2,7 +2,7 @@
 import { lazyTour, toursFromFiles } from '@drizztdourden08/brock-react';
 
 const appTours = toursFromFiles([
-  { id: 'welcome', tour: lazyTour({"title":"Welcome","description":"A short walk through the menu, the search, the Notes widget and the settings.","trigger":"first-run"}, () => import('../src/tours/welcome.tour')) },
+  { id: 'welcome', tour: lazyTour({"title":{"key":"app:tour.welcome.title"},"description":{"key":"app:tour.welcome.description"},"trigger":"first-run"}, () => import('../src/tours/welcome.tour')) },
 ]);
 
 export { appTours };

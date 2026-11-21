@@ -2,7 +2,7 @@
 import { useT } from '@drizztdourden08/brock-react';
 import { useMemo, useState } from 'react';
 import { Box, Button, Flex, IconButton, Select, Text } from '@drizztdourden08/tessera/primitives';
-import { fileOptions } from './behavior/file-options';
+import { fileOptions } from '../../behavior/file-options';
 import { moveItem } from '../../behavior/move-item';
 import { ONE_FILE_NOTE } from './LayerFileList.constants';
 import type { LayerFileListProps } from './LayerFileList.type';

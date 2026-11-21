@@ -6,7 +6,7 @@ import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { InputProfile } from '../../bindings/input-profile.type';
 import type { VerbDef } from '../../bindings/verbs/verbs.type';
 import type { ResolvedControl } from '../../family/family.type';
-import type { ControlsLabels, ResolvedControlsLabels } from './ControlsLabels.type';
+import type { ControlsLabels, ResolvedControlsLabels } from './behavior/controls-labels.type';
 import type { BindingCapture } from './sub-components/BindingListener.type';
 
 interface ActionDef {

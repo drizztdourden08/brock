@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useEffect } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Center, Spinner } from '@drizztdourden08/tessera/primitives';
 import { StudioPane } from '../studio-kit';
 import { useStudioActions } from './behavior/studio-frame/useStudioActions';
@@ -14,6 +15,7 @@ import type { MsuStudioProps } from './MsuStudio.type';
 const MsuStudio = (props: MsuStudioProps) => {
   const { msu, pack, readOnly, origin, tab, onTabChange, onDeleteConfirm } = props;
   const { onStopPreview, loadingFiles, handleExport } = msu;
+  const text = useText();
 
   useEffect(() => {
     if (tab !== MUSIC_TAB.id) onStopPreview();
@@ -40,7 +42,7 @@ const MsuStudio = (props: MsuStudioProps) => {
 
   return (
     <StudioPane
-      label={STUDIO_LABEL}
+      label={text(STUDIO_LABEL)}
       actions={actions}
       status={<StudioNotices message={msu.statusMessage} ok={msu.statusOk} />}
       banner={origin}

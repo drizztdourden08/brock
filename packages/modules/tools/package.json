@@ -34,6 +34,7 @@
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",
     "renderer": "./src/renderer/index.ts",
+    "locales": "./src/locales",
     "dataDirs": [
       "tools",
       "recordings"

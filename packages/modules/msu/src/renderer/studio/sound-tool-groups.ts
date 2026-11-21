@@ -7,17 +7,17 @@ import { soundFindGroup } from './sound-find-group';
 import type { SoundToolGroupsProps } from './sound-tool-groups.type';
 
 const soundToolGroups = (props: SoundToolGroupsProps): ToolGroup[] => {
-  const { tabs, placeholder, unreachableCount, filter, showUnreachable, onFilterChange, onShowUnreachableChange } = props;
-  const groups: ToolGroup[] = [sectionGroup(tabs), soundFindGroup(placeholder, filter, onFilterChange)];
+  const { tabs, placeholder, unreachableCount, filter, showUnreachable, onFilterChange, onShowUnreachableChange, t } = props;
+  const groups: ToolGroup[] = [sectionGroup(tabs, t), soundFindGroup(placeholder, filter, onFilterChange, t)];
   if (unreachableCount === 0) return groups;
 
   return [
     ...groups,
     {
       id: 'show',
-      label: 'Show',
+      label: t('msu:tool.show'),
       content: createElement(Checkbox, {
-        checked: showUnreachable, onChange: onShowUnreachableChange, label: `Show ${unreachableCount} unreachable ids`,
+        checked: showUnreachable, onChange: onShowUnreachableChange, label: t('msu:tool.showUnreachable', { count: unreachableCount }),
       }),
     },
   ];

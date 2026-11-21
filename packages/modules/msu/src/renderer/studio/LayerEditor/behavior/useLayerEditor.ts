@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback, useState } from 'react';
 import type { MsuLayer } from '../../../../types';
 import { useMsuStudio } from '../../../game/useMsuStudio';
@@ -9,6 +10,7 @@ import { validateLayers } from './validate-layers';
 import type { LayerEditorState } from './useLayerEditor.type';
 
 const useLayerEditor = (params: LayerEditorState) => {
+  const t = useT();
   const { pack, target, manifest, saveBase, onSaved } = params;
   const { game, store } = useMsuStudio();
   const [layers, setLayers] = useState<MsuLayer[]>(() => target.read(manifest));
@@ -23,8 +25,8 @@ const useLayerEditor = (params: LayerEditorState) => {
   }, []);
 
   const addLayer = useCallback(() => {
-    mutate((current) => [...current, createLayer(current, target.oneShot)]);
-  }, [mutate, target.oneShot]);
+    mutate((current) => [...current, createLayer(t('msu:layer.defaultName', { number: current.length + 1 }), target.oneShot)]);
+  }, [mutate, t, target.oneShot]);
 
   const removeLayer = useCallback((id: string) => {
     mutate((current) => current.filter((layer) => layer.id !== id));
@@ -48,7 +50,7 @@ const useLayerEditor = (params: LayerEditorState) => {
       setDirty(false);
       onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not save the layers');
+      setError(err instanceof Error ? err.message : t('msu:layer.saveFailed'));
     } finally {
       setSaving(false);
     }

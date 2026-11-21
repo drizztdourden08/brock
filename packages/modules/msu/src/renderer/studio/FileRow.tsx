@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Status, Box, Text } from '@drizztdourden08/tessera/primitives';
 import type { MsuFileMetadata } from '../../packs';
 import { formatBytes } from '@drizztdourden08/brock-core';
@@ -30,6 +31,7 @@ const rateSpec = (file: MsuFileMetadata): string => {
 
 const FileRow = (props: FileRowProps) => {
   const { file, usedBy, loopSeconds, playing, loading, audition, busy, readOnly, onPlay, onRename, onDelete } = props;
+  const t = useT();
   const rename = useFileRename({ name: file.name, onRename });
 
   return (
@@ -41,14 +43,14 @@ const FileRow = (props: FileRowProps) => {
         <Text className="msu-file-row__spec">{formatBytes(file.size)}</Text>
         <Text
           className="msu-file-row__spec"
-          title={file.durationSeconds === null ? 'Length needs a decoder to know' : 'Length'}
+          title={file.durationSeconds === null ? t('msu:ui.lengthUnknown') : t('msu:ui.length')}
         >
           {file.durationSeconds === null ? UNKNOWN : clock(file.durationSeconds)}
         </Text>
-        <Text className="msu-file-row__spec" title="Sample rate and channels">{rateSpec(file)}</Text>
+        <Text className="msu-file-row__spec" title={t('msu:ui.specTitle')}>{rateSpec(file)}</Text>
         <Text
           className="msu-file-row__spec"
-          title={loopSeconds === undefined ? 'Play the file to read where it repeats from' : 'Repeats from'}
+          title={loopSeconds === undefined ? t('msu:ui.repeatUnknown') : t('msu:ui.repeatFrom')}
         >
           {loopTextOf(loopSeconds)}
         </Text>

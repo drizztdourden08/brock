@@ -1,4 +1,5 @@
 /* @layer electron-main @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 const FFMPEG_VERSION = '9.0';
 
 const FFMPEG_RELEASE_TAG = 'latest';
@@ -9,9 +10,9 @@ const FFMPEG_RELEASE_API = 'https://api.github.com/repos/BtbN/FFmpeg-Builds/rele
 
 const SHA256_PREFIX = 'sha256:';
 
-const FFMPEG_LINUX_HINT = 'No ffmpeg on PATH. Install the "ffmpeg" package with your package manager, then reopen this dialog.';
+const FFMPEG_LINUX_HINT = msg('msu:ffmpeg.hint.linux');
 
-const FFMPEG_OTHER_HINT = 'ffmpeg is not available on this platform.';
+const FFMPEG_OTHER_HINT = msg('msu:ffmpeg.hint.other');
 
 const PROBE_TIMEOUT_MS = 30_000;
 

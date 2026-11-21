@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { DropZone, Text } from '@drizztdourden08/tessera/primitives';
 import { StudioSection } from '../studio-kit';
 import { SoundGroupField } from './SoundGroupField';
@@ -8,10 +9,11 @@ import type { SoundAudioSectionProps } from './SoundAudioSection.type';
 
 const SoundAudioSection = (props: SoundAudioSectionProps) => {
   const { pack, channel, row, sound, manifest, saveBase, readOnly, onReload } = props;
+  const t = useT();
   const unclaimed = row.layerCount === 0;
 
   return (
-    <StudioSection title="Audio">
+    <StudioSection title={t('msu:pack.audio')}>
       {unclaimed && !readOnly && (
         <Text variant="caption" tone="muted">
           This sound plays from the sound chip. Add a layer with audio and save to replace it.

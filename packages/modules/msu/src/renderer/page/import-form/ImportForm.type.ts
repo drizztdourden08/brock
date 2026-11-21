@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ImportKind, ImportProgressState } from './behavior/use-import-progress.type';
 
 interface ImportResult {
@@ -9,10 +10,10 @@ interface ImportResult {
 
 interface ImportFormProps {
   kind: ImportKind;
-  placeholder?: string;
+  placeholder?: Text;
   accept?: string[];
-  dropLabel?: string;
-  dropHint?: string;
+  dropLabel?: Text;
+  dropHint?: Text;
   disabled?: boolean;
   children?: ReactNode;
   onUrlImport: (url: string) => Promise<ImportResult>;

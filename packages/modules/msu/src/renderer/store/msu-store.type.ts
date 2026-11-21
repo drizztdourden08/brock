@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { FileStore } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { AudioProbe } from '../../audio-probe';
 import type { MsuStudioGame } from '../game/msu-studio-game.type';
 import type { createMsuStore } from './create-msu-store';
@@ -21,11 +22,14 @@ type FetchBytes = (url: string, onProgress?: FetchProgress) => Promise<Uint8Arra
 
 type RunJob = <Result>(params: ImportJobParams<Result>) => Promise<Result>;
 
+type StoreText = (value: Text) => string;
+
 interface MsuStoreDeps {
   files: FileStore;
   probe?: AudioProbe;
   fetchBytes?: FetchBytes;
   runJob?: RunJob;
+  text?: StoreText;
 }
 
 interface MsuStoreEnv {
@@ -34,6 +38,7 @@ interface MsuStoreEnv {
   probe: AudioProbe;
   fetchBytes: FetchBytes;
   runJob: RunJob;
+  text: StoreText;
 }
 
 type MsuTrackSource = (report: ImportReport) => Promise<{ bytes: Uint8Array; name: string }>;
@@ -41,5 +46,5 @@ type MsuTrackSource = (report: ImportReport) => Promise<{ bytes: Uint8Array; nam
 type MsuStore = ReturnType<typeof createMsuStore>;
 
 export type {
-  FetchProgress, MsuResult, MsuStore, MsuStoreDeps, MsuStoreEnv, MsuTrackEntry, MsuTrackSource,
+  FetchBytes, FetchProgress, MsuResult, MsuStore, MsuStoreDeps, MsuStoreEnv, MsuTrackEntry, MsuTrackSource, StoreText,
 };

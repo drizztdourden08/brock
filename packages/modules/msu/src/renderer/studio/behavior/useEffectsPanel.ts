@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useMsuStudioGame } from '../../game/useMsuStudioGame';
 import { soundTitle } from '../sound-labels';
@@ -10,6 +11,7 @@ import { portTags } from './port-tags';
 import { useSoundPanel } from './useSoundPanel';
 
 const useEffectsPanel = (props: MsuEffectsPanelProps) => {
+  const t = useT();
   const { channels, pack, manifest, saveBase, files, onDeleteConfirm, onReload } = props;
   const [firstChannel, secondChannel] = channels;
   const game = useMsuStudioGame<never, never>();
@@ -51,11 +53,11 @@ const useEffectsPanel = (props: MsuEffectsPanelProps) => {
 
   const confirmStopReplacing = useCallback((channel: string, soundId: number) => {
     onDeleteConfirm(
-      'Stop Replacing Sound',
-      `Remove this pack's layers for ${soundTitle(game, channel, soundId)}? It will play from the sound chip again.`,
+      t('msu:effects.stopTitle'),
+      t('msu:effects.stopMessage', { sound: soundTitle(game, channel, soundId) }),
       () => { void panelOf(channel).stopReplacing(soundId); },
     );
-  }, [onDeleteConfirm, game, panelOf]);
+  }, [onDeleteConfirm, game, t, panelOf]);
 
   return {
     filter, setFilter, first, second, panelOf, rows, open: openEffectOf(channels, first, second),

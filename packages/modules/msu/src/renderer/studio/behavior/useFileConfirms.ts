@@ -1,35 +1,36 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback } from 'react';
 import { formatBytes } from '@drizztdourden08/brock-core';
 import { NO_USES } from '../MsuFilePanel.constants';
 import type { FileConfirmsParams } from './file-confirms.type';
 
 const useFileConfirms = (params: FileConfirmsParams) => {
+  const t = useT();
   const { usage, covered, onDeleteConfirm, deleteFile, report } = params;
 
   const confirmDelete = useCallback((fileName: string) => {
     const uses = usage.get(fileName) ?? NO_USES;
-    const played = uses.length > 0 ? ` ${uses.join(', ')} will be left with nothing to play.` : '';
+    const played = uses.length > 0 ? ` ${t('msu:confirm.deleteFile.leftEmpty', { uses: uses.join(', ') })}` : '';
     onDeleteConfirm(
-      'Delete Audio File',
-      `Delete "${fileName}" from this pack? This cannot be undone.${played}`,
+      t('msu:confirm.deleteFile.title'),
+      `${t('msu:confirm.deleteFile.message', { name: fileName })}${played}`,
       () => { deleteFile(fileName); },
     );
-  }, [usage, onDeleteConfirm, deleteFile]);
+  }, [usage, t, onDeleteConfirm, deleteFile]);
 
   const confirmRemoveSuperseded = useCallback(() => {
     const doomed = [...covered.superseded];
     const stillNamed = doomed.filter((name) => (usage.get(name) ?? NO_USES).length > 0);
     const played = stillNamed.length > 0
-      ? ` ${stillNamed.length} of them ${stillNamed.length === 1 ? 'is' : 'are'} still named by a slot or sound, which will play the converted file instead.`
+      ? ` ${t('msu:confirm.superseded.stillNamed', { count: stillNamed.length })}`
       : '';
     onDeleteConfirm(
-      'Remove Superseded Originals',
-      `Delete ${doomed.length} original file${doomed.length === 1 ? '' : 's'} the pack already holds in the`
-      + ` converted format? This frees ${formatBytes(covered.totalBytes)} and cannot be undone.${played}`,
+      t('msu:confirm.superseded.title'),
+      `${t('msu:confirm.superseded.message', { count: doomed.length, size: formatBytes(covered.totalBytes) })}${played}`,
       () => { void covered.removeAll().then(report); },
     );
-  }, [covered, usage, onDeleteConfirm, report]);
+  }, [covered, usage, t, onDeleteConfirm, report]);
 
   return { confirmDelete, confirmRemoveSuperseded };
 };

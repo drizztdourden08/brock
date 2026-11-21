@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
+import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudioGame } from '../game/useMsuStudioGame';
 import { sectionGroup } from './studio-frame/section-group';
 import { editorLabelOf } from './studio-frame/editor-label-of';
@@ -13,6 +15,7 @@ import type { MsuEffectsPanelProps } from './msu.type';
 
 const MsuEffectsPanel = (props: MsuEffectsPanelProps) => {
   const { tabId, channels, pack, manifest, saveBase, files, isLayered, readOnly, tabs, packPanel, onDeleteConfirm, onReload } = props;
+  const t = useT();
   const game = useMsuStudioGame<never, never>();
   const panel = useEffectsPanel(props);
   const { filter, setFilter, panelOf, rows, open } = panel;
@@ -24,7 +27,7 @@ const MsuEffectsPanel = (props: MsuEffectsPanelProps) => {
     <SoundSide
       open={openRow === undefined ? null : { channel: openRow.channel, row: openRow.row, sound: panelOf(openRow.channel) }}
       noteTitle={label}
-      note={effectsNote(game, channels)}
+      note={effectsNote(game, channels, t)}
       packPanel={packPanel}
       pack={pack}
       manifest={manifest}
@@ -41,7 +44,7 @@ const MsuEffectsPanel = (props: MsuEffectsPanelProps) => {
     />
   );
 
-  const toolbar = [sectionGroup(tabs), soundFindGroup(game.soundFilterPlaceholder, filter, setFilter)];
+  const toolbar = [sectionGroup(tabs, t), soundFindGroup(game.soundFilterPlaceholder, filter, setFilter, t)];
 
   return (
     <SoundPanelShell
@@ -49,7 +52,7 @@ const MsuEffectsPanel = (props: MsuEffectsPanelProps) => {
       toolbar={toolbar}
       detail={detail}
       header={{
-        title: `${label} · ${summary.replaced} of ${summary.total} replaced`,
+        title: t('msu:panel.replaced', { label, replaced: summary.replaced, total: summary.total }),
         sounding: summary.sounding,
         status: summary.status,
         statusOk: summary.statusOk,

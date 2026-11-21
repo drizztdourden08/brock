@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { LayerEffect } from '../../../types';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 
 interface LayerEffectsFieldProps {
   effects: LayerEffect[];
@@ -18,8 +19,8 @@ interface EffectRowProps {
 
 interface EffectPreset {
   id: string;
-  label: string;
-  description: string;
+  label: Text;
+  description: Text;
   effects: LayerEffect[];
 }
 

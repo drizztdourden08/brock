@@ -1,4 +1,5 @@
 /* @layer electron-main @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { Result } from '@drizztdourden08/brock-core/result';
 import type { StartJob } from '@drizztdourden08/brock-electron/main';
 import type { ToolDef, ToolDownload, ToolLocation, ToolPlatform, ToolState } from '../tools.type';
@@ -73,6 +74,7 @@ interface ToolsEnv {
   pathEnv: PathSource;
   fetch: FetchFn;
   job: StartJob;
+  text?: (value: Text) => string;
   onChanged?: (id: string) => void;
 }
 

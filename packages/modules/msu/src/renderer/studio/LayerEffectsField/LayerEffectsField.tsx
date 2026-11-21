@@ -1,8 +1,10 @@
 /* @layer renderer-shell @kind component */
 import { Box, Button, Field, Flex, Select } from '@drizztdourden08/tessera/primitives';
+import { useT, useText } from '@drizztdourden08/brock-react';
 import type { LayerEffect } from '../../../types';
 import { EffectRow } from './sub-components/EffectRow';
-import { DEFAULT_EFFECT, EFFECTS_HINT, EFFECTS_LABEL, PRESETS, PRESET_OPTIONS } from './LayerEffectsField.constants';
+import { presetOptions } from './effect-options';
+import { DEFAULT_EFFECT, EFFECTS_HINT, EFFECTS_LABEL, PRESETS } from './LayerEffectsField.constants';
 import type { LayerEffectsFieldProps } from './LayerEffectsField.type';
 
 const sameChain = (a: LayerEffect[], b: LayerEffect[]): boolean => JSON.stringify(a) === JSON.stringify(b);
@@ -12,6 +14,8 @@ const presetOf = (effects: LayerEffect[]): string =>
 
 const LayerEffectsField = (props: LayerEffectsFieldProps) => {
   const { effects, disabled = false, onChange } = props;
+  const t = useT();
+  const text = useText();
 
   const choosePreset = (id: string): void => {
     onChange(id === '' ? [] : (PRESETS.find((preset) => preset.id === id)?.effects ?? []));
@@ -22,11 +26,11 @@ const LayerEffectsField = (props: LayerEffectsFieldProps) => {
 
   return (
     <Box className="msu-accent-panel layer-card__effects">
-      <Field label={EFFECTS_LABEL} hint={EFFECTS_HINT}>
+      <Field label={text(EFFECTS_LABEL)} hint={text(EFFECTS_HINT)}>
         <Flex gap="sm" align="center" wrap>
-          <Select value={presetOf(effects)} options={PRESET_OPTIONS} disabled={disabled} onChange={choosePreset} />
+          <Select value={presetOf(effects)} options={presetOptions(t, text)} disabled={disabled} onChange={choosePreset} />
           <Button variant="tertiary" size="sm" disabled={disabled} onClick={() => onChange([...effects, DEFAULT_EFFECT.lowpass])}>
-            Add effect
+            {t('msu:effects.add')}
           </Button>
         </Flex>
       </Field>

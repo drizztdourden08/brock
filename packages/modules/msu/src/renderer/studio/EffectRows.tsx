@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Box, EmptyState } from '@drizztdourden08/tessera/primitives';
 import { SoundListItem } from './SoundListItem';
 import { soundPreviewKey } from './behavior/preview-key';
@@ -6,9 +7,10 @@ import type { EffectRowsProps } from './EffectRows.type';
 
 const EffectRows = (props: EffectRowsProps) => {
   const { panel } = props;
+  const t = useT();
   const { rows, filter, panelOf, toggleLayers, play, playOriginal } = panel;
 
-  if (rows.length === 0) return <EmptyState message={`No effect on either port matches "${filter}"`} />;
+  if (rows.length === 0) return <EmptyState message={t('msu:effects.noMatch', { filter })} />;
 
   return (
     <Box className="track-list">

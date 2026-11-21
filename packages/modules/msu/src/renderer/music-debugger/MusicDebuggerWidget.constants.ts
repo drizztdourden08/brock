@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { StatusTone } from '@drizztdourden08/tessera/primitives';
 import type { WidgetMeta } from '@drizztdourden08/brock-react';
 import type { MsuDebugOwner } from '../../types';
@@ -11,7 +12,7 @@ const OWNER_VARIANTS: Record<MsuDebugOwner, StatusTone> = {
 const NONE = '-';
 
 const MUSIC_DEBUGGER_META: WidgetMeta = {
-  label: 'Music Debugger',
+  label: msg('msu:debugger.label'),
   padding: 'none',
   icon: 'headphones',
   order: 8,

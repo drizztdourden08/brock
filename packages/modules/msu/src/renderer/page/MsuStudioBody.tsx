@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useCallback, useState } from 'react';
+import { useT, useText } from '@drizztdourden08/brock-react';
 import { EmptyState } from '@drizztdourden08/tessera/primitives';
 import { ListDetailLayout } from '@drizztdourden08/tessera/composites';
 import { MsuStudio } from '../studio/MsuStudio';
@@ -14,6 +15,8 @@ import type { MsuStudioBodyProps } from './MsuStudioPage.type';
 
 const MsuStudioBody = (props: MsuStudioBodyProps) => {
   const { onDeleteConfirm, onRefresh, useOrigin = useLocalPackOrigin } = props;
+  const t = useT();
+  const text = useText();
   const msu = useMsuManager(onRefresh);
   const { selected, setSelected, refresh } = msu;
   const [tab, setTab] = useState<StudioTab>(MUSIC_TAB.id);
@@ -40,15 +43,15 @@ const MsuStudioBody = (props: MsuStudioBodyProps) => {
     <ListDetailLayout
       listShowTitle={false}
       listContainers={PACK_SECTIONS.map(({ section, title }) => ({
-        title,
+        title: text(title),
         content: <MsuListPane section={section} msu={msu} origin={origin} />,
       }))}
       detail={studio}
-      emptyDetail={<EmptyState message={NO_PACK_MESSAGE} />}
+      emptyDetail={<EmptyState message={text(NO_PACK_MESSAGE)} />}
       detailScroll={false}
       storageKey="msu-studio.list"
-      listLabel="MSU studio"
-      detailLabel="Music editor"
+      listLabel={t('msu:page.listLabel')}
+      detailLabel={t('msu:page.detailLabel')}
     />
   );
 };

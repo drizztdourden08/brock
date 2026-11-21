@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Slider } from '@drizztdourden08/tessera/primitives';
 import type { LayerSlidersProps } from './LayerSliders.type';
 
@@ -6,10 +7,11 @@ const formatPercent = (value: number): string => `${value}%`;
 
 const LayerSliders = (props: LayerSlidersProps) => {
   const { layer, disabled, onChange } = props;
+  const t = useT();
   return (
     <>
       <Slider
-        label="Volume"
+        label={t('msu:layer.volume')}
         value={layer.volume}
         min={0}
         max={100}
@@ -21,8 +23,8 @@ const LayerSliders = (props: LayerSlidersProps) => {
       />
 
       <Slider
-        label="Chance"
-        description="How often this layer sounds when it starts. 100% is every time."
+        label={t('msu:layer.chance')}
+        description={t('msu:layer.chanceHint')}
         value={layer.chance ?? 100}
         min={1}
         max={100}

@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { catalogLayer } from './catalog-layer';
 
 const catalogRenderer: RendererModule = {
   id: 'catalog',
+  messages: [catalogLayer],
 };
 
 export default catalogRenderer;

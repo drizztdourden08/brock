@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { Box, SegmentedControl } from '@drizztdourden08/tessera/primitives';
+import { useT, useText } from '@drizztdourden08/brock-react';
 import { DEFAULT_MODES } from '../LayerEditor/behavior/layer-ops.constants';
 import { IntervalTimes } from '../LayerEditor/sub-components/IntervalTimes';
 import { MODE_HINTS, MODE_OPTIONS } from './PlayModeFields.constants';
@@ -9,14 +10,16 @@ import type { PlayModeFieldsProps } from './PlayModeFields.type';
 
 const PlayModeFields = (props: PlayModeFieldsProps) => {
   const { mode, layerId, disabled = false, onChange } = props;
+  const t = useT();
+  const text = useText();
 
   return (
     <Box className="layer-card__modes">
       <SegmentedControl
-        label="Play mode"
-        description={MODE_HINTS[mode.kind]}
+        label={t('msu:play.mode')}
+        description={text(MODE_HINTS[mode.kind])}
         value={mode.kind}
-        options={MODE_OPTIONS}
+        options={MODE_OPTIONS.map((option) => ({ ...option, label: text(option.label) }))}
         disabled={disabled}
         onChange={(kind) => onChange(DEFAULT_MODES[kind])}
       />

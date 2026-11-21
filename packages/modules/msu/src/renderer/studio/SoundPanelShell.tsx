@@ -1,14 +1,16 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Box } from '@drizztdourden08/tessera/primitives';
 import { StudioLayout } from '@drizztdourden08/tessera/composites';
 import { STUDIO_EDITOR_MIN_WIDTH, StudioPanelContent } from '../studio-kit';
 import { SoundListHeader } from './SoundListHeader';
-import { DETAILS_PANEL } from './studio-frame/studio-frame.constants';
+import { detailsPanel } from './studio-frame/details-panel';
 import type { SoundPanelShellProps } from './SoundPanelShell.type';
 import './SoundPanelShell.css';
 
 const SoundPanelShell = (props: SoundPanelShellProps) => {
   const { editorLabel, toolbar, detail, header, children } = props;
+  const text = useText();
 
   return (
     <StudioLayout
@@ -16,7 +18,7 @@ const SoundPanelShell = (props: SoundPanelShellProps) => {
       compactToolbar
       editorMinWidth={STUDIO_EDITOR_MIN_WIDTH}
       toolbar={toolbar}
-      end={{ ...DETAILS_PANEL, content: <StudioPanelContent>{detail}</StudioPanelContent> }}
+      end={detailsPanel(text, <StudioPanelContent>{detail}</StudioPanelContent>)}
     >
       <Box className="msu-panel">
         <SoundListHeader {...header} />

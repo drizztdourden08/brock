@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { useMemo, useState } from 'react';
 import { Box, Button, Flex, IconButton, Select, Text } from '@drizztdourden08/tessera/primitives';
 import { moveItem } from '../../behavior/move-item';
@@ -7,6 +8,7 @@ import type { LayerFileListProps } from './LayerFileList.type';
 
 const LayerFileList = (props: LayerFileListProps) => {
   const { files, available, oneFileOnly = false, disabled = false, onChange } = props;
+  const t = useT();
   const [picked, setPicked] = useState('');
   const full = oneFileOnly && files.length > 0;
 
@@ -17,24 +19,24 @@ const LayerFileList = (props: LayerFileListProps) => {
 
   return (
     <Box className="layer-card__files">
-      {files.length === 0 && <Text variant="caption">No files. This layer will not play.</Text>}
+      {files.length === 0 && <Text variant="caption">{t('msu:layer.noFiles')}</Text>}
       {files.map((name, index) => (
         <Flex key={name} gap="xs" align="center" className="layer-card__file">
           <Text className="layer-card__file-name" title={name}>{index + 1}. {name}</Text>
           <IconButton
-            variant="ghost" size="sm" label={`Move ${name} up`} disabled={disabled || index === 0}
+            variant="ghost" size="sm" label={t('msu:layer.fileUp', { name })} disabled={disabled || index === 0}
             onClick={() => onChange(moveItem(files, index, -1))}
           >
             ↑
           </IconButton>
           <IconButton
-            variant="ghost" size="sm" label={`Move ${name} down`} disabled={disabled || index === files.length - 1}
+            variant="ghost" size="sm" label={t('msu:layer.fileDown', { name })} disabled={disabled || index === files.length - 1}
             onClick={() => onChange(moveItem(files, index, 1))}
           >
             ↓
           </IconButton>
           <IconButton
-            variant="ghost" size="sm" label={`Remove ${name}`} disabled={disabled}
+            variant="ghost" size="sm" label={t('msu:layer.fileRemove', { name })} disabled={disabled}
             onClick={() => onChange(files.filter((f) => f !== name))}
           >
             ✕
@@ -49,7 +51,7 @@ const LayerFileList = (props: LayerFileListProps) => {
             <Select
               value={picked}
               options={options}
-              placeholder={options.length > 0 ? 'Add a file...' : 'No other audio in this pack'}
+              placeholder={options.length > 0 ? t('msu:layer.addFile') : t('msu:layer.noOtherAudio')}
               disabled={disabled || options.length === 0}
               searchable
               size="sm"

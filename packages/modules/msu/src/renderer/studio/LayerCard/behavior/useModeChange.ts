@@ -1,13 +1,14 @@
 /* @layer renderer-shell @kind hook */
+import { useT } from '@drizztdourden08/brock-react';
 import { useCallback } from 'react';
 import type { LayerPlayMode } from '../../../../types';
-import { SINGLE_DISCARD_TITLE } from '../LayerCard.constants';
 import { singleDiscardMessage } from './single-discard-message';
 import type { ModeChangeParams } from './useModeChange.type';
 
 const isSingle = (mode: LayerPlayMode): boolean => mode.kind === 'loop' && mode.order === 'single';
 
 const useModeChange = (params: ModeChangeParams) => {
+  const t = useT();
   const { layer, onConfirm, onChange } = params;
   const { files, mode: current } = layer;
 
@@ -18,11 +19,11 @@ const useModeChange = (params: ModeChangeParams) => {
       return;
     }
     onConfirm(
-      SINGLE_DISCARD_TITLE,
-      singleDiscardMessage(files),
+      t('msu:layer.singleTitle'),
+      singleDiscardMessage(files, t),
       () => onChange({ mode, files: files.slice(0, 1) }),
     );
-  }, [current, files, onConfirm, onChange]);
+  }, [current, files, t, onConfirm, onChange]);
 
   return { changeMode };
 };

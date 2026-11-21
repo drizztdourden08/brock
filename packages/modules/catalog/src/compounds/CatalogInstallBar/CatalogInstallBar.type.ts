@@ -7,12 +7,12 @@ interface CatalogInstallProgress {
 }
 
 interface CatalogInstallBarText {
-  install: string;
-  update: string;
-  uninstall: string;
-  cancel: string;
-  installed: string;
-  installing: string;
+  install: Text;
+  update: Text;
+  uninstall: Text;
+  cancel: Text;
+  installed: Text;
+  installing: Text;
 }
 
 interface CatalogInstallBarProps {

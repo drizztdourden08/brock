@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { StudioSection } from '../studio-kit';
 import { CloseDetailButton } from './CloseDetailButton';
 import { LayerEditor } from './LayerEditor';
@@ -11,6 +12,7 @@ import type { TrackDetailProps } from './TrackDetail.type';
 
 const TrackDetail = (props: TrackDetailProps) => {
   const { msu, pack, row, readOnly, controls, onClose, onConfirm } = props;
+  const t = useT();
   const { trackNum, description, fileName } = row;
   const target = trackTarget(trackNum);
 
@@ -23,7 +25,7 @@ const TrackDetail = (props: TrackDetailProps) => {
         )}
       </StudioSection>
 
-      <StudioSection title="File">
+      <StudioSection title={t('msu:ui.file')}>
         <TrackFileField
           trackNum={trackNum}
           fileName={fileName}

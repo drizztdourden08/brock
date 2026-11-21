@@ -1,14 +1,15 @@
 /* @layer renderer-shell @kind types */
 import type { ReactNode } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 
 interface HeaderSearch {
   value: string;
   onChange: (value: string) => void;
-  placeholder?: string;
+  placeholder?: Text;
 }
 
 interface HeaderPrimary {
-  label: string;
+  label: Text;
   icon?: ReactNode;
   onClick: () => void;
 }

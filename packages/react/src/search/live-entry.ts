@@ -1,14 +1,14 @@
 /* @layer renderer-shell @kind logic */
-import { normaliseKeywords } from './normalise-keywords';
+import { seedKeywords } from './normalise-keywords';
 import { seedEntryId } from './seed-entry-id';
 import { seedTarget } from './seed-target';
-import type { SearchEntry, SearchEntrySeed } from './search.type';
+import type { IndexEntry, SearchEntrySeed } from './search.type';
 
-const liveEntry = (seed: SearchEntrySeed, route: string): SearchEntry => ({
+const liveEntry = (seed: SearchEntrySeed, route: string): IndexEntry => ({
   id: seedEntryId(route, seed),
   kind: 'entry',
   label: seed.label,
-  keywords: normaliseKeywords(seed.keywords),
+  keywords: seedKeywords(seed.keywords),
   description: seed.description,
   breadcrumb: [],
   target: seedTarget(route, seed),

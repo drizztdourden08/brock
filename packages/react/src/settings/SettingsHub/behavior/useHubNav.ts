@@ -3,14 +3,14 @@ import { useMemo } from 'react';
 import type { FormFactor } from '@drizztdourden08/brock-core';
 import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { useText } from '../../../i18n';
-import { groupKey } from '../../group-key';
+import { textGroupKey } from '../../group-key';
 import type { TabDef } from '../../settings.type';
 import type { HubNavGroup, HubNavModel } from '../SettingsHub.type';
 
 const navItem = <S extends object>(tab: TabDef<S>, text: (value: Text) => string) => ({ id: tab.id, label: text(tab.label), icon: tab.navIcon });
 
 const groupOf = <S extends object>(groups: readonly HubNavGroup<S>[], tab: TabDef<S>): HubNavGroup<S> | undefined =>
-  groups.find((group) => tab.groupId !== undefined && group.id === tab.groupId) ?? groups.find((group) => groupKey(group.label) === groupKey(tab.group));
+  groups.find((group) => tab.groupId !== undefined && group.id === tab.groupId) ?? groups.find((group) => textGroupKey(group.label) === textGroupKey(tab.group));
 
 const useHubNav = <S extends object>(
   tabs: readonly TabDef<S>[],
@@ -27,13 +27,13 @@ const useHubNav = <S extends object>(
     for (const tab of grouped) {
       const group = groupOf(groups, tab);
       if (group) group.items.push(tab);
-      else groups.push({ id: tab.groupId ?? tab.group, label: tab.group, items: [tab] });
+      else groups.push({ id: tab.groupId ?? textGroupKey(tab.group), label: tab.group, items: [tab] });
     }
 
     return {
       navConfig: {
         home: home ? navItem(home, text) : undefined,
-        groups: groups.map((group) => ({ id: group.id, label: group.label, items: group.items.map((item) => navItem(item, text)) })),
+        groups: groups.map((group) => ({ id: group.id, label: text(group.label), items: group.items.map((item) => navItem(item, text)) })),
       },
       visibleTabs: home ? [home, ...grouped] : grouped,
       home,

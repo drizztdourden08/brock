@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind hook */
+import { useText } from '../../../i18n';
 import type { PalettePick } from '../../palette.type';
 import { usePaletteStore } from '../../usePaletteStore';
 import type { PickScopeModel } from '../PaletteHost.type';
@@ -7,6 +8,7 @@ import { useLoadedScope } from './useLoadedScope';
 import { useScopeKeys } from './useScopeKeys';
 
 const usePickScopes = (picking: PalettePick | null): PickScopeModel => {
+  const text = useText();
   const open = usePaletteStore((s) => s.open);
   const current = usePaletteStore((s) => s.pickScope);
   const setPickScope = usePaletteStore((s) => s.setPickScope);
@@ -14,7 +16,7 @@ const usePickScopes = (picking: PalettePick | null): PickScopeModel => {
   const active = scopes?.find((scope) => scope.id === current);
   const loaded = useLoadedScope(picking, active);
   useScopeKeys(open && scopes !== undefined && scopes.length > 1 ? scopes : undefined, current, setPickScope);
-  return buildScopeModel(picking, active, loaded, current);
+  return buildScopeModel(picking, active, loaded, current, text);
 };
 
 export { usePickScopes };

@@ -2,7 +2,7 @@
 import { titleCase } from '../../screens/conventions/title-case';
 import { KIND_ICONS } from '../../screens/conventions/screens.constants';
 import type { BucketDef } from '../../screens/conventions/screens-config.type';
-import type { SearchEntry, SearchFileSeed, SeedPlace } from '../search.type';
+import type { IndexEntry, SearchFileSeed, SeedPlace } from '../search.type';
 import { bucketEntry } from './bucket-entry';
 import { customSeedEntries } from './custom-seed-entries';
 import { pageEntry } from './page-entry';
@@ -17,13 +17,13 @@ const pageMetaOf = (seed: SearchFileSeed, seeds: readonly SearchFileSeed[]): Sea
 
 const isPageKind = (kind: SearchFileSeed['kind']): kind is 'page' | 'custom' | 'live' | 'settings' => kind === 'page' || kind === 'custom' || kind === 'live' || kind === 'settings';
 
-const pageSeedEntries = (place: SeedPlace, seed: SearchFileSeed, kind: 'page' | 'custom' | 'live' | 'settings'): SearchEntry[] => {
+const pageSeedEntries = (place: SeedPlace, seed: SearchFileSeed, kind: 'page' | 'custom' | 'live' | 'settings'): IndexEntry[] => {
   const page = pageEntry(place, seed, seed.title ?? titleCase(seed.id), seed.icon ?? KIND_ICONS[kind]);
   const rows = customSeedEntries(page, seed.entries ?? []);
   return kind === 'settings' ? [page, ...settingsSeedEntries(page, seed.sections ?? []), ...rows] : [page, ...rows];
 };
 
-const bucketSeedEntries = (bucket: BucketDef, seed: SearchFileSeed, seeds: readonly SearchFileSeed[] = []): SearchEntry[] => {
+const bucketSeedEntries = (bucket: BucketDef, seed: SearchFileSeed, seeds: readonly SearchFileSeed[] = []): IndexEntry[] => {
   const place = seedPlace(bucket, seed.group);
   if (seed.kind === 'tab') return tabSeedEntries(place, seed, pageMetaOf(seed, seeds));
   if (seed.kind === 'sub') return subSeedEntries(place, seed, seeds);

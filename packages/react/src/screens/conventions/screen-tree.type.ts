@@ -3,7 +3,7 @@ import type { ComponentType, ReactNode } from 'react';
 import type { HubDef, HubRenderContext, HubSubPage, HubTab, LiveMeta, UseLivePages } from '../../hub/hub.type';
 import type { MenuEntryDef, MenuItemDef } from '../../menu/menu.type';
 import type { RouteAlias, RouteShortcut } from '../../navigation/navigation.type';
-import type { SearchEntry } from '../../search/search.type';
+import type { IndexEntry } from '../../search/search.type';
 import type { SectionDef, TabDef } from '../../settings/settings.type';
 import type { ScreenDef } from '../screen.type';
 import type { BaseProps, CardProps, HeroProps, PageProps, SubPageProps } from '../kinds/screen-kinds.type';
@@ -107,7 +107,7 @@ interface ScreenTree {
   base?: ScreenDef;
   tabs: TabDef<object>[];
   shortcuts: RouteShortcut[];
-  search: readonly SearchEntry[];
+  search: readonly IndexEntry[];
 }
 
 interface ResolvedScreenTree {
@@ -121,7 +121,7 @@ interface ResolvedScreenTree {
   shortcuts: RouteShortcut[];
   settingsAlias: RouteAlias;
   aliases: Record<string, RouteAlias>;
-  search: readonly SearchEntry[];
+  search: readonly IndexEntry[];
 }
 
 interface OrderedTab extends HubTab {

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef } from '../../hub/hub.type';
+import { fallbackText } from '../../i18n/fallback-text';
 import { nav } from '../../navigation/nav';
 import { isShown } from '../../screens/show/is-shown';
 import { click } from '../dom/click';
@@ -27,7 +28,7 @@ const openBucket = async (env: ReviewEnv, hub: HubDef): Promise<string | null> =
   const other = hub.switcher === false ? undefined : env.screenTree?.hubs.find((candidate) => candidate.id !== hub.id && isShown(candidate.show));
   if (!other) return openByRoute(hub, route);
   nav.open(other.id);
-  const pill = await waitFor(() => switchPill(hub.title));
+  const pill = await waitFor(() => switchPill(fallbackText(hub.title)));
   if (!pill) return openByRoute(hub, route);
   click(pill);
   return 'the bucket switch';

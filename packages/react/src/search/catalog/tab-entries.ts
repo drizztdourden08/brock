@@ -12,8 +12,8 @@ const tabEntries = (input: CatalogInput): SearchEntry[] =>
     kind: 'page',
     label: (input.text ?? fallbackText)(tab.label),
     icon: tab.navIcon,
-    breadcrumb: tabCrumbs(tab, input.settingsPlace),
-    keywords: normaliseKeywords(tab.group),
+    breadcrumb: tabCrumbs(tab, input.settingsPlace, input.text ?? fallbackText),
+    keywords: normaliseKeywords((input.text ?? fallbackText)(tab.group)),
     target: tabTarget(tab, input.settingsPlace),
   }));
 

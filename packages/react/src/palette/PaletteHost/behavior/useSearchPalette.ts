@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { createElement, useCallback, useMemo } from 'react';
+import { useText } from '../../../i18n';
 import { useRoutePreloader } from '../../../lazy/useRoutePreloader';
 import type { MenuEntry } from '../../../menu/menu.type';
 import type { SearchAction } from '../../../search/search.type';
@@ -23,6 +24,7 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   const close = usePaletteStore((s) => s.hide);
   const ask = usePaletteStore((s) => s.ask);
   const settle = usePaletteStore((s) => s.settle);
+  const text = useText();
   const standard = useStandardActions();
   const given = useMemo(() => [...actions, ...standard], [actions, standard]);
   const catalog = useSearchIndex(open, menu, given);
@@ -42,8 +44,8 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   const preload = useRoutePreloader();
   const { options: pickOptions, scope: pickScope, placeholder } = usePickScopes(picking);
   const ranked = useMemo(
-    () => (picking === null ? paletteGroups(catalog, query, scope, preload) : pickGroups(picking, query, pickOptions, pickScope)),
-    [catalog, query, scope, preload, picking, pickOptions, pickScope],
+    () => (picking === null ? paletteGroups(catalog, query, scope, preload, text) : pickGroups(picking, query, pickOptions, pickScope)),
+    [catalog, query, scope, preload, text, picking, pickOptions, pickScope],
   );
   const groups = useMemo(() => withConfirmActions(
     ranked,

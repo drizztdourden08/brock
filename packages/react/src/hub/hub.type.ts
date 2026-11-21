@@ -50,7 +50,7 @@ interface HubSubPage {
 }
 
 interface HubPrimaryAction {
-  label: string;
+  label: Text;
   icon?: ReactNode;
   open: string;
 }
@@ -58,14 +58,14 @@ interface HubPrimaryAction {
 interface HubPageHeader {
   secondary?: HubPrimaryAction;
   primary?: HubPrimaryAction;
-  search?: { placeholder?: string };
+  search?: { placeholder?: Text };
 }
 
 type LiveBadge = 'ok' | 'warn';
 
 interface LivePage {
   key: string;
-  title: string;
+  title: Text;
   icon?: IconName;
   badge?: LiveBadge;
   bare?: boolean;
@@ -129,7 +129,7 @@ interface HubContextState {
 
 interface HubGroup {
   id: string;
-  label: string;
+  label: Text;
   pages: HubPage[];
 }
 
@@ -143,12 +143,13 @@ interface HubSearchHit {
 
 interface HubSearch {
   placeholder?: Text;
+  titled?: boolean;
   index?: (query: string) => HubSearchHit[];
 }
 
 interface HubDef {
   id: string;
-  title: string;
+  title: Text;
   home: HubPage;
   groups: HubGroup[];
   search?: HubSearch;

@@ -21,7 +21,7 @@ const hubRoutes = (hub: HubDef, developerTools: boolean, show: ShowContext, text
   const pages = [hub.home, ...hub.groups.flatMap((group) => group.pages)]
     .filter((page) => (page.devOnly !== true || developerTools) && isShown(page.show, show));
   return [
-    { route: hub.id, title: hub.title, kind: 'hub', screen: hub.id, section: null, tab: null },
+    { route: hub.id, title: text(hub.title), kind: 'hub', screen: hub.id, section: null, tab: null },
     ...pages.flatMap((page) => pageRoutes(hub, page, text)),
   ];
 };

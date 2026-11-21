@@ -23,7 +23,7 @@ type ScreenMenu = false | 'entry' | (string & {}) | ProductMenuEntry;
 type ScreenSize = 'fill' | 'info';
 
 interface PagePrimaryAction {
-  label: string;
+  label: Text;
   icon?: IconName;
   open: string;
 }
@@ -31,17 +31,17 @@ interface PagePrimaryAction {
 interface PageHeaderMeta {
   secondary?: PagePrimaryAction;
   primary?: PagePrimaryAction;
-  search?: { placeholder?: string };
+  search?: { placeholder?: Text };
 }
 
 interface BucketGroupDef {
   id: string;
-  label: string;
+  label: Text;
 }
 
 interface BucketDef extends ShowRule {
   id: string;
-  title: string;
+  title: Text;
   icon: IconName;
   menu: MenuPlacement;
   switcher?: boolean;
@@ -73,8 +73,8 @@ interface HeroMeta {
 }
 
 interface ScreenSearchRow {
-  label: string;
-  keywords?: string[];
+  label: Text;
+  keywords?: Text[];
   anchor?: string;
 }
 
@@ -101,7 +101,7 @@ interface ScreenMeta extends ShowRule {
   source?: SettingsValueSource;
   preview?: (settings: object) => ReactNode;
   previewPlacement?: SettingsPreviewPlacement;
-  previewLabel?: string;
+  previewLabel?: Text;
 }
 
 export type { BucketDef, BucketGroupDef, HeroMeta, HubNavMode, HubPagesMode, MenuPlacement, PageBackdrop, PageHeaderMeta, PageHeaderMode, PagePrimaryAction, ScreenMenu, ScreenMeta, ScreenSearchRow, ScreenSize, ScreensConfig, SettingsPlacement };

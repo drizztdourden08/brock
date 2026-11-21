@@ -22,7 +22,7 @@ interface TabMatches<S extends object> {
 
 interface HubNavGroup<S extends object> {
   id: string;
-  label: string;
+  label: Text;
   items: TabDef<S>[];
 }
 

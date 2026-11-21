@@ -6,7 +6,7 @@ import { readDefaultResult } from '../literal/read-default-result.mjs';
 import { readExport } from '../literal/read-export.mjs';
 import { entrySeeds } from './entry-seeds.mjs';
 import { normaliseKeywords } from './normalise-keywords.mjs';
-import { asRecord, settingsSeeds, text } from './settings-seeds.mjs';
+import { asRecord, settingsSeeds, text, textOrKey } from './settings-seeds.mjs';
 
 /** @param {unknown} value */
 const kept = (value) => value !== undefined && !(Array.isArray(value) && value.length === 0);
@@ -47,7 +47,7 @@ const fileSeed = (rootDir, file) => {
     bucket: file.bucket,
     group: file.group,
     page: file.page,
-    title: text(meta.title),
+    title: textOrKey(meta.title),
     icon: text(meta.icon),
     path: file.kind === 'sub' ? text(meta.path) : undefined,
     keywords: normaliseKeywords(meta.keywords),

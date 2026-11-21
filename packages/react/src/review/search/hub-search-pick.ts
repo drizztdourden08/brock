@@ -4,6 +4,7 @@ import { ROUTE_SEPARATOR } from '../../navigation/navigation.constants';
 import { click } from '../dom/click';
 import { find } from '../dom/find';
 import { settle } from '../dom/settle';
+import { fallbackText } from '../../i18n/fallback-text';
 import { typeText } from '../dom/type-text';
 import { waitFor } from '../dom/wait-for';
 import { SEARCH_MISS, SELECTORS } from '../review.constants';
@@ -53,7 +54,7 @@ const hubSearchPick = async (tour: StepTour, sample: SearchSample): Promise<void
   const opened = await waitFor(() => nav.active() === bucket && find(SELECTORS.layer));
   if (opened === null) return tour.check('search-hub-opens', false, '', `the "${bucket}" hub did not open`);
   await settle();
-  await paletteScopeCheck(tour, bucket, tour.env.screenTree?.hubs.find((hub) => hub.id === bucket)?.title ?? bucket);
+  await paletteScopeCheck(tour, bucket, fallbackText(tour.env.screenTree?.hubs.find((hub) => hub.id === bucket)?.title ?? bucket));
   const mark = find(SELECTORS.hubSearchMark);
   if (mark) click(mark);
   else find(SELECTORS.hubSearchInput)?.focus();

@@ -12,7 +12,7 @@ const tabEntries = (hub: HubDef, page: HubPage, text: TextOf): SearchEntry[] => 
   kind: 'tab',
   label: text(tab.label),
   keywords: [],
-  breadcrumb: [hub.title, text(page.label)],
+  breadcrumb: [text(hub.title), text(page.label)],
   target: { route: joinRoute(hub.id, page.id, tab.id) },
   icon: page.icon,
 }));
@@ -20,7 +20,7 @@ const tabEntries = (hub: HubDef, page: HubPage, text: TextOf): SearchEntry[] => 
 const hubPageEntries = (hub: HubDef, pages: readonly HubPage[], text: TextOf = fallbackText): SearchEntry[] => pages.flatMap((page) => {
   const route = page === hub.home ? hub.id : joinRoute(hub.id, page.id);
   const keywords = normaliseKeywords((page.keywords ?? []).map(text));
-  const own: SearchEntry = { id: `${SCREEN_ID_PREFIX}${route}`, kind: 'page', label: text(page.label), keywords, breadcrumb: [hub.title], target: { route }, icon: page.icon };
+  const own: SearchEntry = { id: `${SCREEN_ID_PREFIX}${route}`, kind: 'page', label: text(page.label), keywords, breadcrumb: [text(hub.title)], target: { route }, icon: page.icon };
   return [own, ...tabEntries(hub, page, text)];
 });
 

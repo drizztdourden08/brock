@@ -3,7 +3,7 @@ import { uniqueById } from '../../collections/unique-by-id';
 import type { ModuleBucket } from '../../modules/renderer-module.type';
 import { buildSearchIndex } from '../../search/build-search-index';
 import { entrySeed } from '../../search/seeds/entry-seed';
-import type { SearchEntry } from '../../search/search.type';
+import type { IndexEntry } from '../../search/search.type';
 import { bucketHub } from './bucket-hub';
 import type { ScreenTree } from './screen-tree.type';
 
@@ -19,7 +19,7 @@ const problemsOf = (tree: ScreenTree, buckets: readonly ModuleBucket[]): string[
   });
 };
 
-const searchOf = ({ bucket, entries }: ModuleBucket): SearchEntry[] =>
+const searchOf = ({ bucket, entries }: ModuleBucket): IndexEntry[] =>
   buildSearchIndex({ buckets: [bucket], home: bucket.id }, entries.flatMap(entrySeed));
 
 const withModuleBuckets = (tree: ScreenTree, buckets: readonly ModuleBucket[]): ScreenTree => {

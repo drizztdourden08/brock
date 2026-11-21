@@ -26,7 +26,7 @@ const itemEntry = (tab: TabDef<object>, group: EntryGroup, item: SettingItem, in
   kind: 'setting',
   label: item.label,
   icon: tab.navIcon,
-  breadcrumb: [...tabCrumbs(tab, input.settingsPlace), (input.text ?? fallbackText)(tab.label), ...group.trail],
+  breadcrumb: [...tabCrumbs(tab, input.settingsPlace, input.text ?? fallbackText), (input.text ?? fallbackText)(tab.label), ...group.trail],
   description: item.description,
   hint: item.hint,
   keywords: normaliseKeywords(item.keywords),

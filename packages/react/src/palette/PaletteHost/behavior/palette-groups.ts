@@ -1,9 +1,12 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { CommandPaletteGroup } from '@drizztdourden08/tessera/composites';
+import { fallbackText } from '../../../i18n/fallback-text';
 import { ROUTE_SEPARATOR } from '../../../navigation/navigation.constants';
 import { rankInScope } from '../../../search/rank-in-scope';
 import type { PaletteScope, SearchEntry } from '../../../search/search.type';
-import { IDLE_SCREEN_LIMIT } from '../../palette.constants';
+import { IDLE_SCREEN_LIMIT, REST_GROUP_LABEL, SCREENS_GROUP_LABEL } from '../../palette.constants';
 import type { PaletteItem, PalettePreload } from '../PaletteHost.type';
 import { toPaletteItem } from './to-palette-item';
 
@@ -13,17 +16,17 @@ const group = (id: string, label: string | undefined, entries: readonly SearchEn
 const hubPages = (catalog: readonly SearchEntry[], scope: PaletteScope): SearchEntry[] =>
   catalog.filter((entry) => entry.kind === 'page' && entry.target?.route.split(ROUTE_SEPARATOR)[0] === scope.bucket);
 
-const idleGroups = (catalog: readonly SearchEntry[], scope: PaletteScope | null, preload: PalettePreload): CommandPaletteGroup<PaletteItem>[] => {
+const idleGroups = (catalog: readonly SearchEntry[], scope: PaletteScope | null, preload: PalettePreload, text: (value: Text) => string): CommandPaletteGroup<PaletteItem>[] => {
   const screens = catalog.filter((entry) => entry.kind === 'screen').slice(0, IDLE_SCREEN_LIMIT);
   const pages = scope === null ? [] : hubPages(catalog, scope);
-  return [...group('hub', scope?.title, pages, preload), ...group('screens', 'Screens', screens, preload)];
+  return [...group('hub', scope?.title, pages, preload), ...group('screens', text(SCREENS_GROUP_LABEL), screens, preload)];
 };
 
-const paletteGroups = (catalog: readonly SearchEntry[], query: string, scope: PaletteScope | null = null, preload?: PalettePreload): CommandPaletteGroup<PaletteItem>[] => {
-  if (query.trim().length === 0) return idleGroups(catalog, scope, preload);
+const paletteGroups = (catalog: readonly SearchEntry[], query: string, scope: PaletteScope | null = null, preload?: PalettePreload, text: (value: Text) => string = fallbackText): CommandPaletteGroup<PaletteItem>[] => {
+  if (query.trim().length === 0) return idleGroups(catalog, scope, preload, text);
   const { inScope, rest } = rankInScope(catalog, query, scope?.bucket ?? null);
   if (scope === null) return [{ id: 'results', items: rest.map((entry) => toPaletteItem(entry, preload)) }];
-  return [...group('hub', `In ${scope.title}`, inScope, preload), ...group('results', 'Everywhere else', rest, preload)];
+  return [...group('hub', text(msg('brock-app:palette.group.inScope', { title: scope.title })), inScope, preload), ...group('results', text(REST_GROUP_LABEL), rest, preload)];
 };
 
 export { paletteGroups };

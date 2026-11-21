@@ -7,6 +7,7 @@
   "commands.reason.hidden": "This command does not apply here.",
   "commands.reason.noArgs": "This command takes no arguments.",
   "commands.reason.unknown": "No such command.",
+  "group.app": "App",
   "hub.search.empty": "No setting matches \"{query}\".",
   "hub.search.idle": "Type to search every setting.",
   "hub.search.summary": "{count, plural, one {# setting matches \"{query}\"} other {# settings match \"{query}\"}}",

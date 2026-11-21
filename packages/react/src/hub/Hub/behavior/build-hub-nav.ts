@@ -11,7 +11,7 @@ const buildHubNav = ({ home, groups, highlight, top, text = fallbackText }: HubN
   return {
     ...(home ? { home: navItem(home) } : {}),
     ...(split.top.length > 0 ? { top: split.top.map(navItem) } : {}),
-    groups: split.groups.map((group) => ({ id: group.id, label: group.label, items: group.pages.map(navItem) })),
+    groups: split.groups.map((group) => ({ id: group.id, label: text(group.label), items: group.pages.map(navItem) })),
   };
 };
 

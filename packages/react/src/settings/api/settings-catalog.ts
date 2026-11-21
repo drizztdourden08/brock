@@ -30,7 +30,7 @@ const screenOf = (tab: TabDef<object>, settings: object, text: (value: Text) => 
   return {
     id: tab.id,
     label: text(tab.label),
-    group: tab.group,
+    group: text(tab.group),
     route: target.route,
     ...(target.params === undefined ? {} : { params: target.params }),
     sections: tabSections(tab, settings, text).map((section) => sectionOf(section, settings)),

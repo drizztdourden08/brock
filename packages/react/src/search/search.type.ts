@@ -41,27 +41,35 @@ interface SearchEntry {
   run?: () => void;
 }
 
+type IndexEntry = Omit<SearchEntry, 'label' | 'keywords' | 'breadcrumb' | 'description' | 'hint'> & {
+  label: Text;
+  keywords: readonly Text[];
+  breadcrumb: readonly Text[];
+  description?: Text;
+  hint?: Text;
+};
+
 interface SearchEntrySeed {
-  label: string;
+  label: Text;
   id?: string;
   params?: ScreenParams;
-  keywords?: readonly string[];
+  keywords?: readonly Text[];
   anchor?: string;
-  description?: string;
+  description?: Text;
 }
 
 interface SearchRowSeed {
   key: string;
-  label: string;
-  description?: string;
-  hint?: string;
-  keywords?: readonly string[];
+  label: Text;
+  description?: Text;
+  hint?: Text;
+  keywords?: readonly Text[];
 }
 
 interface SearchSectionSeed {
   id: string;
-  title: string;
-  sub?: string;
+  title: Text;
+  sub?: Text;
   rows?: readonly SearchRowSeed[];
 }
 
@@ -71,9 +79,9 @@ interface SearchFileSeed {
   bucket?: string;
   group?: string;
   page?: string;
-  title?: string;
+  title?: Text;
   icon?: string;
-  keywords?: readonly string[];
+  keywords?: readonly Text[];
   devOnly?: boolean;
   path?: string;
   sections?: readonly SearchSectionSeed[];
@@ -82,7 +90,7 @@ interface SearchFileSeed {
 
 interface SeedPlace {
   bucket: string;
-  crumbs: string[];
+  crumbs: Text[];
 }
 
 interface SearchAction {
@@ -145,11 +153,11 @@ interface SearchActionState {
 }
 
 interface LiveSearchState {
-  entries: SearchEntry[];
-  add: (entries: readonly SearchEntry[]) => () => void;
+  entries: IndexEntry[];
+  add: (entries: readonly IndexEntry[]) => () => void;
 }
 
 export type {
-  CatalogInput, FieldWeights, LiveSearchState, PaletteScope, RankedInScope, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed,
+  CatalogInput, FieldWeights, IndexEntry, LiveSearchState, PaletteScope, RankedInScope, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed,
   SearchKind, SearchRowSeed, SearchSectionSeed, SearchTarget, SearchToggle, SeedPlace, SettingsPlace,
 };

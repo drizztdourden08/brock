@@ -168,7 +168,7 @@ interface TabDef<S extends object> {
   label: Text;
   navIcon: ReactNode;
   icon?: string;
-  group: string;
+  group: Text;
   groupId?: string;
   sections?: (settings: S) => SectionDef[];
   source?: SettingsValueSource;

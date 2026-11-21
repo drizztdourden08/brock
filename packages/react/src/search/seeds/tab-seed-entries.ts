@@ -3,17 +3,17 @@ import { joinRoute } from '../../navigation/join-route';
 import { KIND_ICONS } from '../../screens/conventions/screens.constants';
 import { titleCase } from '../../screens/conventions/title-case';
 import { SCREEN_ID_PREFIX } from '../search.constants';
-import type { SearchEntry, SearchFileSeed, SeedPlace } from '../search.type';
+import type { IndexEntry, SearchFileSeed, SeedPlace } from '../search.type';
 import { pageEntry } from './page-entry';
 
-const tabPageEntry = (place: SeedPlace, folder: string, pageSeed: Partial<SearchFileSeed>): SearchEntry =>
+const tabPageEntry = (place: SeedPlace, folder: string, pageSeed: Partial<SearchFileSeed>): IndexEntry =>
   pageEntry(place, { id: folder, keywords: pageSeed.keywords, devOnly: pageSeed.devOnly }, pageSeed.title ?? titleCase(folder), pageSeed.icon ?? KIND_ICONS.tab);
 
-const tabSeedEntries = (place: SeedPlace, seed: SearchFileSeed, pageSeed: Partial<SearchFileSeed> = {}): SearchEntry[] => {
+const tabSeedEntries = (place: SeedPlace, seed: SearchFileSeed, pageSeed: Partial<SearchFileSeed> = {}): IndexEntry[] => {
   const folder = seed.page ?? seed.id;
   const page = tabPageEntry(place, folder, pageSeed);
   const route = joinRoute(place.bucket, folder, seed.id);
-  const tab: SearchEntry = {
+  const tab: IndexEntry = {
     id: `${SCREEN_ID_PREFIX}${route}`,
     kind: 'tab',
     label: seed.title ?? titleCase(seed.id),

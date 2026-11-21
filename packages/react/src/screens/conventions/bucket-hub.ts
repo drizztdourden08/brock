@@ -1,5 +1,4 @@
 /* @layer renderer-shell @kind logic */
-import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { HubDef, HubGroup, HubPage } from '../../hub/hub.type';
 import { contentPage } from './content-page';
 import { heroPage } from './hero-page';
@@ -44,7 +43,7 @@ const bucketHub = (bucket: BucketDef, entries: readonly BucketEntry[]): HubDef =
     params: bucket.params,
     home,
     groups: hero ? groups : withoutPage(groups, home),
-    search: { placeholder: msg('brock-app:screens.search', { title: bucket.title }) },
+    search: { titled: true },
   }, entries);
 };
 

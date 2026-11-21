@@ -7,14 +7,14 @@ import { isCardEntry } from './is-card-entry';
 import { pageShortcuts } from './page-shortcuts';
 import { settingsTab } from './settings-tab';
 import type { ScreensConfig } from './screens-config.type';
-import type { SearchEntry } from '../../search/search.type';
+import type { IndexEntry } from '../../search/search.type';
 import type { BaseEntry, ScreenEntry, ScreenTree, SettingsEntry } from './screen-tree.type';
 
 const isSettings = (entry: ScreenEntry): entry is SettingsEntry => entry.kind === 'settings';
 
 const isBase = (entry: ScreenEntry): entry is BaseEntry => entry.kind === 'base';
 
-const buildScreenTree = (config: ScreensConfig, entries: readonly ScreenEntry[], search: readonly SearchEntry[] = []): ScreenTree => {
+const buildScreenTree = (config: ScreensConfig, entries: readonly ScreenEntry[], search: readonly IndexEntry[] = []): ScreenTree => {
   assertScreensConfig(config, entries);
   const inBucket = (id: string) => entries.filter(isBucketEntry).filter((entry) => entry.bucket === id);
   const base = entries.find(isBase);

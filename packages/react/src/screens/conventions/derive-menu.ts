@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubPage } from '../../hub/hub.type';
+import { fallbackText } from '../../i18n/fallback-text';
 import type { MenuEntryDef, MenuItemDef } from '../../menu/menu.type';
 import type { ScreenDef } from '../screen.type';
 import { menuOrderOf } from './menu-order-of';
@@ -72,7 +73,7 @@ const screenPlacements = (screens: readonly ScreenDef[]): PlacedMenuItem[] => sc
 const deriveMenu = (config: ScreensConfig, hubs: readonly HubDef[], screens: readonly ScreenDef[]): MenuEntryDef[] => {
   const listed = screens.filter((screen) => !BUILT_IN_SCREEN_IDS.includes(screen.id) && placedByDefault(screen.menu));
   const buckets = config.buckets.flatMap((bucket) => bucketEntries(bucket, hubs.find((hub) => hub.id === bucket.id), config.home));
-  const iconOf = (label: string) => config.buckets.find((bucket) => bucket.title.toLowerCase() === label.toLowerCase())?.icon;
+  const iconOf = (label: string) => config.buckets.find((bucket) => fallbackText(bucket.title).toLowerCase() === label.toLowerCase())?.icon;
   return [...placeMenuItems(buckets, [...pagePlacements(config, hubs), ...screenPlacements(screens)], iconOf), ...listed.map(screenItem)];
 };
 

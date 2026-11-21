@@ -7,10 +7,10 @@ import { joinRoute } from '../../../../navigation/join-route';
 import { activateEntry } from '../../../../search/activate-entry';
 import type { SearchEntry } from '../../../../search/search.type';
 import { useHubSearch } from '../../../../settings/SettingsHub/behavior/useHubSearch';
-import { DEFAULT_SEARCH_PLACEHOLDER } from '../../../hub.constants';
 import type { HubSearchHit } from '../../../hub.type';
 import { buildHubNav } from '../../behavior/build-hub-nav';
 import { hubNavKey } from '../../behavior/hub-nav-key';
+import { hubSearchPlaceholder } from '../../behavior/hub-search-placeholder';
 import { isBarePage } from '../../behavior/is-bare-page';
 import { navPageCount } from '../../behavior/nav-page-count';
 import { railNav } from '../../behavior/rail-nav';
@@ -37,8 +37,8 @@ const HubBody = (props: HubBodyProps) => {
   const preload = useRoutePreloader();
   const navConfig = useMemo(() => buildHubNav({ home: homeListed ? def.home : undefined, groups, highlight: (id) => preload(joinRoute(def.id, id)), top: def.top, text }), [homeListed, def.home, def.id, def.top, groups, preload, text]);
   const search = useMemo(() => (def.search && !rail
-    ? { value: query, onChange: setQuery, placeholder: text(def.search.placeholder ?? DEFAULT_SEARCH_PLACEHOLDER) }
-    : undefined), [def.search, rail, query, setQuery, text]);
+    ? { value: query, onChange: setQuery, placeholder: hubSearchPlaceholder(def, def.search, text) }
+    : undefined), [def, rail, query, setQuery, text]);
 
   const openPage = useCallback((id: string) => { clear(); selectPage(id); }, [clear, selectPage]);
   const openHit = useCallback((hit: HubSearchHit) => { clear(); context.open({ section: hit.section, tab: hit.tab }); }, [clear, context]);

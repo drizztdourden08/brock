@@ -28,7 +28,7 @@ const buildCatalog = (input: CatalogInput): SearchEntry[] => {
     ...settingEntries(input),
     ...menuEntries(input.widgets, blocked),
     ...actionEntries(input.actions),
-    ...liveEntries(input.live, input.index),
+    ...liveEntries(input),
   ])), input.hidden);
 };
 

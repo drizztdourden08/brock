@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind logic */
 import { seedEntryId } from '../seed-entry-id';
 import { seedTarget } from '../seed-target';
-import type { SearchEntry, SearchEntrySeed } from '../search.type';
+import type { IndexEntry, SearchEntrySeed } from '../search.type';
 
-const customSeedEntries = (page: SearchEntry, seeds: readonly SearchEntrySeed[]): SearchEntry[] => {
+const customSeedEntries = (page: IndexEntry, seeds: readonly SearchEntrySeed[]): IndexEntry[] => {
   const route = page.target?.route ?? '';
   return seeds.map((seed) => ({
     id: seedEntryId(route, seed),

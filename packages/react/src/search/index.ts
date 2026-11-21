@@ -13,6 +13,6 @@ export { useSearchActionStore } from './useSearchActionStore';
 export { useSearchEntries } from './useSearchEntries';
 export { useSearchIndex } from './useSearchIndex';
 export type {
-  CatalogInput, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed, SearchKind, SearchRowSeed,
+  CatalogInput, IndexEntry, SearchAction, SearchActionState, SearchEntry, SearchEntrySeed, SearchFileKind, SearchFileSeed, SearchKind, SearchRowSeed,
   SearchSectionSeed, SearchTarget, SearchToggle, SettingsPlace,
 } from './search.type';

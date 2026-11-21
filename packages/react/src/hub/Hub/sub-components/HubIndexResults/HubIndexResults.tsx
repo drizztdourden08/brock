@@ -56,8 +56,8 @@ const HubIndexResults = (props: HubIndexResultsProps) => {
       groups={groups}
       onOpenHit={openHit}
       onOpenGroup={onOpenPage}
-      idleMessage={t('brock-app:hub.results.idle', { title: def.title })}
-      emptyMessage={t('brock-app:hub.results.empty', { title: def.title, query: needle })}
+      idleMessage={t('brock-app:hub.results.idle', { title: text(def.title) })}
+      emptyMessage={t('brock-app:hub.results.empty', { title: text(def.title), query: needle })}
     />
   );
 };

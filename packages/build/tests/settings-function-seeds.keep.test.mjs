@@ -23,6 +23,13 @@ describe('K1 the function form of a .settings.ts page', { tags: ['critical'] }, 
     expect(seedsOf(source)).toEqual([['audio', ['volume']]]);
   });
 
+  it('keeps the key of a msg() title, label and hint in place of a string', () => {
+    const source = "export default [{ id: 'audio', title: msg('app:audio'), items: [{ key: 'volume', label: msg('app:volume'), hint: msg('app:volumeHint') }] }];\n";
+    expect(settingsSeeds(readDefaultResult(source))).toEqual([
+      { id: 'audio', title: { key: 'app:audio' }, rows: [{ key: 'volume', label: { key: 'app:volume' }, description: undefined, hint: { key: 'app:volumeHint' }, keywords: [] }] },
+    ]);
+  });
+
   it('reads nothing from a body it cannot follow', () => {
     expect(seedsOf('export default (settings: AppSettings) => build(settings);\n')).toEqual([]);
   });

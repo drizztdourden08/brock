@@ -37,7 +37,7 @@ const UNDER_MAIN_MIN = 0.1;
 const REVISION_OFFER_MESSAGE = msg('brock-app:widgets.revision.message');
 const REVISION_RESET_LABEL = msg('brock-app:widgets.revision.reset');
 const RESET_LAYOUT_ENTRY: Pick<MenuItemDef, 'key' | 'label' | 'icon' | 'confirm'> = { key: 'widgets-reset-layout', label: msg('brock-app:widgets.resetLayout'), icon: 'rotate-ccw', confirm: true };
-const WIDGET_SETTINGS_TAB = { id: 'widget-options', label: msg('brock-app:widgets.settingsTab'), icon: 'panel-top', group: 'App', groupId: 'app' } as const;
+const WIDGET_SETTINGS_TAB = { id: 'widget-options', label: msg('brock-app:widgets.settingsTab'), icon: 'panel-top', group: msg('brock-settings:group.app'), groupId: 'app' } as const;
 const WIDGETS_DEVELOPER_KEY = 'widgets-developer';
 const WIDGETS_DEVELOPER_ENTRY: Pick<MenuItemDef, 'key' | 'label' | 'icon' | 'devOnly'> = { key: WIDGETS_DEVELOPER_KEY, label: msg('brock-app:widgets.developer'), icon: 'braces', devOnly: true };
 

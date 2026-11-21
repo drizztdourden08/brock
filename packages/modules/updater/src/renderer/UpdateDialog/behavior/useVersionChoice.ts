@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useEffect, useMemo, useState } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import type { SelectGroup } from '@drizztdourden08/tessera/primitives';
 import type { VersionChoice, VersionChoiceInput } from '../UpdateDialog.type';
 import { RELEASES_GROUP } from '../UpdateDialog.constants';
@@ -7,6 +8,7 @@ import { actionFor } from './action-for';
 import { describeVersion } from './describe-version';
 
 const useVersionChoice = ({ open, info, versions, loadVersions }: VersionChoiceInput): VersionChoice => {
+  const text = useText();
   const [selected, setSelected] = useState('');
 
   useEffect(() => {
@@ -20,9 +22,9 @@ const useVersionChoice = ({ open, info, versions, loadVersions }: VersionChoiceI
   }, [selected, info, versions]);
 
   const groups = useMemo<SelectGroup[]>(() => (versions.length === 0 ? [] : [{
-    label: RELEASES_GROUP,
-    options: versions.map((v) => ({ value: v.version, label: v.version, description: describeVersion(v) })),
-  }]), [versions]);
+    label: text(RELEASES_GROUP),
+    options: versions.map((v) => ({ value: v.version, label: v.version, description: describeVersion(v, text) })),
+  }]), [versions, text]);
 
   const chosen = versions.find((v) => v.version === selected) ?? null;
   const isLatest = versions[0]?.version === selected;

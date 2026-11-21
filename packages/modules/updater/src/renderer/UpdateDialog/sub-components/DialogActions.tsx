@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind component */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { useText } from '@drizztdourden08/brock-react';
 import { Button } from '@drizztdourden08/tessera/primitives';
 import type { DialogActionsProps } from '../UpdateDialog.type';
 import { applyLabel } from '../behavior/apply-label';
@@ -8,12 +10,13 @@ const DialogActions = (props: DialogActionsProps) => {
   const {
     status, canCheck, canInstall, hasChoices, selected, isLatest, action, info, confirmRef, onApply, onOpenReleasePage, onClose,
   } = props;
+  const text = useText();
   const busy = isBusy(status);
   const canAct = busy || status === 'available' || (status === 'idle' && hasChoices);
 
   return (
     <>
-      <Button variant="tertiary" onClick={onClose}>{canCheck ? 'Later' : 'Close'}</Button>
+      <Button variant="tertiary" onClick={onClose}>{text(msg(canCheck ? 'updater:dialog.later' : 'updater:dialog.close'))}</Button>
       {canInstall && canAct && (
         <Button
           ref={confirmRef}
@@ -21,12 +24,12 @@ const DialogActions = (props: DialogActionsProps) => {
           disabled={busy || !selected}
           onClick={() => onApply(isLatest ? null : selected)}
         >
-          {applyLabel(status, action)}
+          {text(applyLabel(status, action))}
         </Button>
       )}
       {!canInstall && info && (
         <Button ref={confirmRef} variant="primary" onClick={() => onOpenReleasePage(info.version)}>
-          Open the release page
+          {text(msg('updater:dialog.openReleasePage'))}
         </Button>
       )}
     </>

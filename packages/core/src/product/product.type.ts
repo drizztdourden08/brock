@@ -144,7 +144,7 @@ interface ProductMenu {
 }
 
 interface ProductMascot {
-  searchHint?: string;
+  searchHint?: Text;
 }
 
 type TrayMenuItem =

@@ -42,7 +42,7 @@ const assertBoot = (boot: ProductInput['boot']): void => {
 
 const assertMascot = (mascot: ProductInput['mascot']): void => {
   if (mascot === undefined || mascot === false) return;
-  if (mascot.searchHint !== undefined && !mascot.searchHint.trim()) throw new Error('product.mascot.searchHint must be a sentence, or left out for the default');
+  if (typeof mascot.searchHint === 'string' && !mascot.searchHint.trim()) throw new Error('product.mascot.searchHint must be a sentence, or left out for the default');
 };
 
 const blankText = (value: string | object): boolean => typeof value === 'string' && !value.trim();

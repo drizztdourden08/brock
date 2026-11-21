@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { MenuItem } from '@drizztdourden08/tessera/composites';
 import type { CommandContext, CommandDef, CommandState, CommandTrigger } from '../commands/command.type';
 
@@ -85,7 +86,7 @@ interface ContextMenuOpen {
   entries: readonly ContextMenuEntry[];
   point: ContextMenuPoint;
   context: ContextMenuContext;
-  label: string;
+  label: Text;
 }
 
 interface ContextMenuState {

@@ -10,6 +10,7 @@ import { BrockContext } from '../src/app/brock-context';
 import type { BrockContextValue } from '../src/app/brock-context.type';
 import { WindowMascot } from '../src/brand/WindowMascot';
 import { besideSpot } from '../src/brand/WindowMascot/behavior/beside-spot';
+import { fallbackText } from '../src/i18n/fallback-text';
 import { DEFAULT_SEARCH_HINT, WALKER_GAP, WALKER_HALF } from '../src/brand/WindowMascot/WindowMascot.constants';
 import { useNavigationStore } from '../src/navigation/useNavigationStore';
 import { paletteChecks } from '../src/review/checks/mascot-palette-checks';
@@ -93,7 +94,7 @@ describe('S1 the walking mascot', { tags: ['standard'] }, () => {
     act(() => usePaletteStore.getState().show());
     expect(actor.autonomy).toHaveBeenLastCalledWith(false);
     expect(actor.moveTo).toHaveBeenCalledWith(400 - WALKER_GAP - WALKER_HALF, { face: 'right' });
-    expect(document.querySelector('.window-mascot__hint')?.textContent).toContain(DEFAULT_SEARCH_HINT);
+    expect(document.querySelector('.window-mascot__hint')?.textContent).toContain(fallbackText(DEFAULT_SEARCH_HINT));
     act(() => usePaletteStore.getState().hide());
     expect(actor.autonomy).toHaveBeenLastCalledWith(true);
     expect(actor.stop).toHaveBeenCalledOnce();

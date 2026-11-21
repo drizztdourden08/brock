@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
-import { BugReportButton, ReleaseNotesPanel, openExternal } from '@drizztdourden08/brock-react';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { BugReportButton, ReleaseNotesPanel, openExternal, useText } from '@drizztdourden08/brock-react';
 import { Box, Callout } from '@drizztdourden08/tessera/primitives';
 import { DialogShell } from '@drizztdourden08/tessera/composites';
 import { dialogTitle } from './behavior/dialog-title';
@@ -12,6 +13,7 @@ import { UpdateNoticeSlot } from './sub-components/UpdateNoticeSlot';
 import './UpdateDialog.css';
 
 const UpdateDialog = () => {
+  const text = useText();
   const { store, choice, confirmRef, onAllowPrerelease, busy, notes, notice, showPicker, showPrereleaseNote, showFootnote } = useUpdateDialog();
   const { dialogOpen, status, info, prefs, capabilities, closeDialog } = store;
 
@@ -37,7 +39,7 @@ const UpdateDialog = () => {
       open={dialogOpen}
       onClose={closeDialog}
       className="update-dialog"
-      title={dialogTitle(status, info, capabilities)}
+      title={text(dialogTitle(status, info, capabilities))}
       actions={actions}
       initialFocusRef={confirmRef}
     >
@@ -55,7 +57,7 @@ const UpdateDialog = () => {
         )}
         {showPrereleaseNote && (
           <Callout>
-            This is a pre-release. It ships before the usual testing, so expect rough edges and bugs the stable builds do not have.
+            {text(msg('updater:dialog.prereleaseNote'))}
           </Callout>
         )}
         {notice !== null && <UpdateNoticeSlot>{notice}</UpdateNoticeSlot>}
@@ -63,7 +65,7 @@ const UpdateDialog = () => {
         <DownloadStatus status={status} percent={store.percent} error={store.error} canInstall={capabilities.canInstall} info={info} />
         {showFootnote && (
           <Callout variant="footnote" action={<BugReportButton onBeforeOpen={closeDialog} />}>
-            Any earlier version can be picked above if something stops working. Please report it either way, so it gets fixed.
+            {text(msg('updater:dialog.footnote'))}
           </Callout>
         )}
       </Box>

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { MODAL_SELECTOR } from '../regions/regions.constants';
 import { anchorPoint } from './anchor-point';
 import { buildEntries } from './build-entries';
@@ -17,7 +18,7 @@ const placeOf = (request: OpenRequest, first: ZoneMatch): { point: ContextMenuPo
   return { point: { x: anchor.x, y: anchor.y }, data: anchor.data ?? data };
 };
 
-const labelOf = (first: ZoneMatch, context: ContextMenuContext): string => {
+const labelOf = (first: ZoneMatch, context: ContextMenuContext): Text => {
   const { label } = first.config;
   if (label === undefined) return CONTEXT_MENU_NAME;
   return typeof label === 'function' ? label(context) : label;

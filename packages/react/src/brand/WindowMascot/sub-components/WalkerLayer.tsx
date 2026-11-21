@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import { MascotStage } from '@drizztdourden08/tessera/brand';
 import type { MascotStageCast, MascotStageHandle } from '@drizztdourden08/tessera/brand';
 import { Box, Callout, Portal } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../../i18n';
 import { usePaletteOpen } from '../../../palette/usePaletteOpen';
 import { WALKER_HEIGHT, WALKER_ID } from '../WindowMascot.constants';
 import type { WalkerSetup } from '../WindowMascot.type';
@@ -12,7 +13,8 @@ import { useFirstWalk } from '../behavior/useFirstWalk';
 import { useProbeRect } from '../behavior/useProbeRect';
 
 const WalkerLayer = (props: WalkerSetup) => {
-  const { brand, hint } = props;
+  const { brand } = props;
+  const hint = useText()(props.hint);
   const probeRef = useRef<HTMLElement>(null);
   const stageRef = useRef<MascotStageHandle>(null);
   const rect = useProbeRect(probeRef);

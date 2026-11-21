@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { AnimatedMascotBrand, MascotFacing } from '@drizztdourden08/tessera/brand';
 
 interface WalkerSetup {
   brand: AnimatedMascotBrand;
-  hint: string;
+  hint: Text;
 }
 
 interface WalkerRect {

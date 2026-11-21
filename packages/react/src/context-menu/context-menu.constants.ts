@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
 const CONTEXT_MENU_ATTRIBUTE = 'data-context-menu';
 
 const CONTEXT_MENU_DATA_ATTRIBUTE = 'data-context-menu-data';
@@ -11,9 +13,9 @@ const CONTEXT_MENU_SEPARATOR = 'separator';
 
 const CONTEXT_MENU_ZONE = 'brock.context-menu';
 
-const CONTEXT_MENU_LABEL = 'Open the context menu';
+const CONTEXT_MENU_LABEL = msg('brock-shell:contextMenu.open');
 
-const CONTEXT_MENU_NAME = 'Context menu';
+const CONTEXT_MENU_NAME = msg('brock-shell:contextMenu.name');
 
 const CONTEXT_MENU_CHORDS: readonly string[] = ['Shift+F10', 'ContextMenu'];
 

@@ -1,9 +1,12 @@
 /* @layer renderer-shell @kind test */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { describe, expect, it } from 'vitest';
 import { DISPLAY_ROW_COPY } from '../src/renderer/DisplaySettingsTab/DisplaySettingsTab.constants';
 import { displaySections } from '../src/renderer/DisplaySettingsTab/behavior/display-sections';
 import { refreshRateRows } from '../src/renderer/DisplaySettingsTab/behavior/refresh-rate-rows';
 import { DEFAULT_DISPLAY_SETTINGS, UNSUPPORTED_SYNCED_RATE } from '../src/display.constants';
+
+const text = (value: Text): string => (typeof value === 'string' ? value : value.key);
 
 const keysOf = (hasWindow: boolean): string[] =>
   displaySections(hasWindow).flatMap((section) => (section.items ?? []).map((item) => item.key));
@@ -27,6 +30,7 @@ describe('S2 display settings search sections', { tags: ['standard'] }, () => {
 
   it('keeps the rendered row titles identical to the indexed labels', () => {
     const rows = refreshRateRows({
+      text,
       settings: DEFAULT_DISPLAY_SETTINGS,
       status: { ...UNSUPPORTED_SYNCED_RATE, supported: true, availableRates: [60, 120] },
       selected: 60,
@@ -37,9 +41,9 @@ describe('S2 display settings search sections', { tags: ['standard'] }, () => {
     });
     const titles = rows.flatMap((row) => (row.title === undefined ? [] : [[row.id, row.title]]));
     expect(titles).toEqual([
-      ['syncedRateInFullscreen', DISPLAY_ROW_COPY.syncedRateInFullscreen.label],
-      ['syncedRateTargetHz', DISPLAY_ROW_COPY.syncedRateTargetHz.label],
-      ['changeRate', DISPLAY_ROW_COPY.changeRate.label],
+      ['syncedRateInFullscreen', text(DISPLAY_ROW_COPY.syncedRateInFullscreen.label)],
+      ['syncedRateTargetHz', text(DISPLAY_ROW_COPY.syncedRateTargetHz.label)],
+      ['changeRate', text(DISPLAY_ROW_COPY.changeRate.label)],
     ]);
   });
 });

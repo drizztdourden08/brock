@@ -3,7 +3,7 @@ import { Box, Button, Field, Flex, Select } from '@drizztdourden08/tessera/primi
 import { useT, useText } from '@drizztdourden08/brock-react';
 import type { LayerEffect } from '../../../types';
 import { EffectRow } from './sub-components/EffectRow';
-import { presetOptions } from './effect-options';
+import { presetOptions } from './behavior/preset-options';
 import { DEFAULT_EFFECT, EFFECTS_HINT, EFFECTS_LABEL, PRESETS } from './LayerEffectsField.constants';
 import type { LayerEffectsFieldProps } from './LayerEffectsField.type';
 

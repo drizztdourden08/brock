@@ -3,7 +3,7 @@ import { Box, Flex, IconButton, NumberInput, Select, Text } from '@drizztdourden
 import { useT } from '@drizztdourden08/brock-react';
 import type { LayerEffect } from '../../../../types';
 import { DEFAULT_EFFECT, MAX_DB, MAX_HZ, MIN_HZ } from '../LayerEffectsField.constants';
-import { effectKindOptions } from '../effect-options';
+import { effectKindOptions } from '../behavior/effect-kind-options';
 import type { EffectRowProps } from '../LayerEffectsField.type';
 
 const hz = (value: number): number => Math.round(Math.min(MAX_HZ, Math.max(MIN_HZ, value)));

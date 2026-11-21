@@ -1,6 +1,5 @@
 /* @layer renderer-shell @kind component */
 import { useT } from '@drizztdourden08/brock-react';
-import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudioGame } from '../game/useMsuStudioGame';
 import { sectionGroup } from './studio-frame/section-group';
 import { editorLabelOf } from './studio-frame/editor-label-of';

@@ -1,5 +1,8 @@
 /* @layer core @kind test */
+import { createI18n } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { describe, expect, it } from 'vitest';
+import english from '../src/locales/en/input.json';
 import type { DeviceEntry } from '../src/device.type';
 import { groupControllerDevices } from '../src/runtime/controller-device-groups';
 import { holdAwareGroups } from '../src/runtime/hold-aware-groups';
@@ -11,16 +14,18 @@ const pad = (deviceKey: string, name: string): DeviceEntry => ({
 
 const before = groupControllerDevices([pad('045e:02ff', 'Xbox Controller')]);
 const NONE = groupControllerDevices([]);
+const I18N = createI18n({ base: 'en', layers: [{ locale: 'en', namespace: 'input', messages: english, kind: 'module' }] });
+const text = (value: Text): string => I18N.text(value);
 
 const labelsOf = (released: boolean, live = NONE) =>
-  padNavEntries(holdAwareGroups(live, before, released), released).map((entry) => entry.label);
+  padNavEntries(holdAwareGroups(live, before, released), released, text).map((entry) => entry.label);
 
 describe('K1 the pads in the Controllers nav during diagnostics', { tags: ['critical'] }, () => {
   it('keeps the last known pads, marked, while the hold is released', () => {
     const labels = labelsOf(true);
     expect(labels).toHaveLength(1);
     expect(labels[0]).toMatch(/\(in diagnostics\)$/);
-    expect(padNavEntries(holdAwareGroups(NONE, before, true), true).map((entry) => entry.id)).toEqual(['045e:02ff']);
+    expect(padNavEntries(holdAwareGroups(NONE, before, true), true, text).map((entry) => entry.id)).toEqual(['045e:02ff']);
   });
 
   it('shows the live list again, unmarked, once the hold returns', () => {
@@ -29,10 +34,10 @@ describe('K1 the pads in the Controllers nav during diagnostics', { tags: ['crit
   });
 
   it('lists nothing when no pad was known before the release', () => {
-    expect(padNavEntries(holdAwareGroups(NONE, NONE, true), true)).toEqual([]);
+    expect(padNavEntries(holdAwareGroups(NONE, NONE, true), true, text)).toEqual([]);
   });
 
   it('does not bring back a pad that was unplugged while the hold was held', () => {
-    expect(padNavEntries(holdAwareGroups(NONE, before, false))).toEqual([]);
+    expect(padNavEntries(holdAwareGroups(NONE, before, false), false, text)).toEqual([]);
   });
 });

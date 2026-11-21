@@ -6,6 +6,7 @@ import type { DetectedDevice } from '../../bindings/detected/detected.type';
 import type { InputProfile } from '../../bindings/input-profile.type';
 import type { VerbDef } from '../../bindings/verbs/verbs.type';
 import type { ResolvedControl } from '../../family/family.type';
+import type { ControlsLabels, ResolvedControlsLabels } from './ControlsLabels.type';
 import type { BindingCapture } from './sub-components/BindingListener.type';
 
 interface ActionDef {
@@ -88,100 +89,6 @@ interface PresetDevice {
   deviceName: string;
   vid: string;
   pid: string;
-}
-
-interface ControlsLabels {
-  profilesTitle: Text;
-  tabBindings: Text;
-  profileList: Text;
-  newProfile: Text;
-  noProfiles: Text;
-  profileName: Text;
-  renameProfile: Text;
-  deleteProfile: Text;
-  devicesTitle: Text;
-  connectedDevices: Text;
-  noDevices: Text;
-  keyboard: Text;
-  controller: Text;
-  bindingHeader: Text;
-  actionHeader: Text;
-  slotHeader: Text;
-  assignmentHeader: Text;
-  slotsTitle: Text;
-  slotsHint: Text;
-  verbsHeader: Text;
-  groupHeader: Text;
-  noSlots: Text;
-  addSlot: Text;
-  emptySlotsHint: Text;
-  clearBinding: Text;
-  reservedHint: Text;
-  rebindHint: (name: string) => Text;
-  removeSlot: (name: string) => Text;
-  listenerPrompt: Text;
-  listenerHint: Text;
-  presetTitle: Text;
-  presetMessage: (deviceName: string) => Text;
-  presetConfirm: Text;
-  deleteTitle: Text;
-  deleteMessage: (profileName: string) => Text;
-  deleteConfirm: Text;
-  cancel: Text;
-  hapticsTitle: Text;
-  hapticsDescription: Text;
-  requiredInputsTitle: Text;
-  inputConnected: (name: string) => Text;
-  inputNotConnected: (name: string) => Text;
-  statusConnected: Text;
-  statusNotConnected: Text;
-}
-
-interface ResolvedControlsLabels {
-  profilesTitle: string;
-  tabBindings: string;
-  profileList: string;
-  newProfile: string;
-  noProfiles: string;
-  profileName: string;
-  renameProfile: string;
-  deleteProfile: string;
-  devicesTitle: string;
-  connectedDevices: string;
-  noDevices: string;
-  keyboard: string;
-  controller: string;
-  bindingHeader: string;
-  actionHeader: string;
-  slotHeader: string;
-  assignmentHeader: string;
-  slotsTitle: string;
-  slotsHint: string;
-  verbsHeader: string;
-  groupHeader: string;
-  noSlots: string;
-  addSlot: string;
-  emptySlotsHint: string;
-  clearBinding: string;
-  reservedHint: string;
-  rebindHint: (name: string) => string;
-  removeSlot: (name: string) => string;
-  listenerPrompt: string;
-  listenerHint: string;
-  presetTitle: string;
-  presetMessage: (deviceName: string) => string;
-  presetConfirm: string;
-  deleteTitle: string;
-  deleteMessage: (profileName: string) => string;
-  deleteConfirm: string;
-  cancel: string;
-  hapticsTitle: string;
-  hapticsDescription: string;
-  requiredInputsTitle: string;
-  inputConnected: (name: string) => string;
-  inputNotConnected: (name: string) => string;
-  statusConnected: string;
-  statusNotConnected: string;
 }
 
 interface ControlsGame {

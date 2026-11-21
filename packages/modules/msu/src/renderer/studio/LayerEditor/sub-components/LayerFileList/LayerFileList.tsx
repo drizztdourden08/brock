@@ -2,6 +2,7 @@
 import { useT } from '@drizztdourden08/brock-react';
 import { useMemo, useState } from 'react';
 import { Box, Button, Flex, IconButton, Select, Text } from '@drizztdourden08/tessera/primitives';
+import { fileOptions } from './behavior/file-options';
 import { moveItem } from '../../behavior/move-item';
 import { ONE_FILE_NOTE } from './LayerFileList.constants';
 import type { LayerFileListProps } from './LayerFileList.type';
@@ -12,10 +13,7 @@ const LayerFileList = (props: LayerFileListProps) => {
   const [picked, setPicked] = useState('');
   const full = oneFileOnly && files.length > 0;
 
-  const options = useMemo(
-    () => available.filter((name) => !files.includes(name)).map((name) => ({ value: name, label: name })),
-    [available, files],
-  );
+  const options = useMemo(() => fileOptions(available, files), [available, files]);
 
   return (
     <Box className="layer-card__files">

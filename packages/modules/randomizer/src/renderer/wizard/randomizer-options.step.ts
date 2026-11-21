@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
 import { useRandomizerGameStore } from '../game-registry/behavior/useRandomizerGameStore';
 import { optionSubStepsOf } from '../options/behavior/option-sub-steps-of';
@@ -13,8 +14,8 @@ const randomizerOptionsStep: ProfileWizardStepDef<RandomizerOptionsSlice> = {
   slice: OPTIONS_SLICE,
   initial: initialOptionsSlice,
   step: {
-    label: 'Options',
-    description: 'Choose the randomizer options.',
+    label: msg('randomizer:wizard.options.label'),
+    description: msg('randomizer:wizard.options.description'),
     when: (values) => useRandomizerGameStore.getState().game !== null && formOf(values).enabled,
     subSteps: (values) => optionSubStepsOf(useRandomizerGameStore.getState().game, optionsSliceOf(values).overrides),
   },

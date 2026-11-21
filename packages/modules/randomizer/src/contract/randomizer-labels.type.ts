@@ -14,7 +14,7 @@ interface RandomizerLabels {
   modes?: Partial<Record<RandomizerModeId, Text>>;
   counters?: Record<string, string>;
   events?: Text;
-  kinds?: Record<string, string>;
+  kinds?: Record<string, Text>;
 }
 
 export type { RandomizerLabels };

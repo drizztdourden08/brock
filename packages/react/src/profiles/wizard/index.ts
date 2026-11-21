@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind barrel */
-export type { ProfileWizardStepBodyProps, ProfileWizardStepDef, ProfileWizardValues } from './profile-wizard-step.type';
+export type { ProfileWizardStepBodyProps, ProfileWizardStepDef, ProfileWizardSubStep, ProfileWizardValues } from './profile-wizard-step.type';
 export { placeWizardSteps } from './place-wizard-steps';
 export { wizardInitialSlices } from './wizard-initial-slices';
 export { wizardCreateOptions } from './wizard-create-options';

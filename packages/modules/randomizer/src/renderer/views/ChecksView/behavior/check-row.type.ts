@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { LocationStatus, TrackerBadge, TrackerKind, TrackerProvider, TrackerReading } from '../../../../tracker';
 import type { TrackerFeedInput } from '../../../tracker/feed/tracker-feed-state.type';
 import type { FacetMode, KindFilter, StatusFilter } from '../ChecksView.type';
@@ -24,6 +25,7 @@ interface RowsInput {
   feed: TrackerFeedInput;
   marks: ReadonlySet<string>;
   grouping: string;
+  text?: (value: Text) => string;
 }
 
 interface RowGroup {

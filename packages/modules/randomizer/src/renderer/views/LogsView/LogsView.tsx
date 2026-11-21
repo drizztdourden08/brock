@@ -29,11 +29,11 @@ const LogsView = () => {
       search={search}
       onSearchChange={setSearch}
       copyText={logRowsToText}
-      countLabel={LOG_COUNT_LABEL}
-      emptyLabel={LOG_EMPTY_LABEL}
+      countLabel={text(LOG_COUNT_LABEL)}
+      emptyLabel={text(LOG_EMPTY_LABEL)}
       onInput={say ?? undefined}
       inputDisabled={say === null}
-      inputPlaceholder={SAY_PLACEHOLDER}
+      inputPlaceholder={text(SAY_PLACEHOLDER)}
     />
   );
 };

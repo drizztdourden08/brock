@@ -1,6 +1,8 @@
 /* @layer renderer-shell @kind constants */
-const LOG_COUNT_LABEL = 'entries';
-const LOG_EMPTY_LABEL = 'No activity yet.';
-const SAY_PLACEHOLDER = 'Say something, or type !hint';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
+const LOG_COUNT_LABEL = msg('randomizer:logs.countLabel');
+const LOG_EMPTY_LABEL = msg('randomizer:logs.empty');
+const SAY_PLACEHOLDER = msg('randomizer:logs.sayPlaceholder');
 
 export { LOG_COUNT_LABEL, LOG_EMPTY_LABEL, SAY_PLACEHOLDER };

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { EmptyState, Stack } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { initialAssumed } from '../../tracker/feed/initial-assumed';
@@ -16,6 +17,7 @@ import { ChecksGroups } from './sub-components/ChecksGroups';
 import { ChecksHeader } from './sub-components/ChecksHeader';
 
 const ChecksView = (props: ChecksViewProps) => {
+  const text = useText();
   const provider = useRandomizerGame()?.tracker;
   const prefs = useChecksPrefs(props);
   const [search, setSearch] = useState('');
@@ -23,8 +25,8 @@ const ChecksView = (props: ChecksViewProps) => {
   const [assumed] = prefs.assumed;
   const reading = useTrackerReading(assumed ?? undefined);
   const { marks, toggle } = useTrackerMarks();
-  if (provider === undefined) return <EmptyState message={NO_TRACKER_MESSAGE} />;
-  if (reading === null || feed === null) return <EmptyState message={NO_READING_MESSAGE} />;
+  if (provider === undefined) return <EmptyState message={text(NO_TRACKER_MESSAGE)} />;
+  if (reading === null || feed === null) return <EmptyState message={text(NO_READING_MESSAGE)} />;
   const [grouping] = prefs.grouping;
   const [status] = prefs.filter;
   const [kind] = prefs.kind;
@@ -32,7 +34,7 @@ const ChecksView = (props: ChecksViewProps) => {
   const [facetMode] = prefs.facetMode;
   const [viewMode] = prefs.viewMode;
   const [expanded, setExpanded] = prefs.expanded;
-  const rows = rowsOf({ provider, reading, feed, marks, grouping });
+  const rows = rowsOf({ provider, reading, feed, marks, grouping, text });
   const shown = filterRows(rows, { status, kind, facets, facetMode, search });
 
   return (

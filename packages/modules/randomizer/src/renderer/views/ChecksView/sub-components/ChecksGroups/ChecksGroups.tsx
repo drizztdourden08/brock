@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { GroupTree } from '@drizztdourden08/tessera/composites';
 import type { TreeNode } from '@drizztdourden08/tessera/composites';
 import { checkRowKey } from '../../behavior/check-row-key';
@@ -18,16 +19,19 @@ const withGroupCounts = (node: TreeNode<CheckRowData>): TreeNode<CheckRowData> =
   children: node.children.map(withGroupCounts),
 });
 
-const ChecksGroups = ({ root, viewMode, expanded, onExpanded, onToggle }: ChecksGroupsProps) => (
-  <GroupTree
-    root={withGroupCounts(root)}
-    getItemKey={checkRowKey}
-    renderItem={(row: CheckRowData) =>
-      viewMode === 'visual' ? <CheckCard row={row} onToggle={onToggle} /> : <CheckRow row={row} detailed={viewMode === 'detailed'} onToggle={onToggle} />}
-    expandedKeys={expanded}
-    onExpandedChange={onExpanded}
-    emptyLabel={NO_ROWS_MESSAGE}
-  />
-);
+const ChecksGroups = ({ root, viewMode, expanded, onExpanded, onToggle }: ChecksGroupsProps) => {
+  const text = useText();
+  return (
+    <GroupTree
+      root={withGroupCounts(root)}
+      getItemKey={checkRowKey}
+      renderItem={(row: CheckRowData) =>
+        viewMode === 'visual' ? <CheckCard row={row} onToggle={onToggle} /> : <CheckRow row={row} detailed={viewMode === 'detailed'} onToggle={onToggle} />}
+      expandedKeys={expanded}
+      onExpandedChange={onExpanded}
+      emptyLabel={text(NO_ROWS_MESSAGE)}
+    />
+  );
+};
 
 export { ChecksGroups };

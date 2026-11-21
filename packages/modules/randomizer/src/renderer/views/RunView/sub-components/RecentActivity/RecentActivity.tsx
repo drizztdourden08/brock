@@ -23,12 +23,12 @@ const RecentActivity = ({ open }: RecentActivityProps) => {
   const { rules, gameRules } = useActivityRules();
   const rows = useMemo(() => recentActivityOf(entries, messages, rules), [entries, messages, rules]);
   const kinds = useMemo(() => activityKindsOf(gameRules, text, labels.kinds), [gameRules, text, labels.kinds]);
-  const openLog = <Button variant="secondary" size="sm" onClick={() => open('logs')}>{OPEN_LOG_LABEL}</Button>;
+  const openLog = <Button variant="secondary" size="sm" onClick={() => open('logs')}>{text(OPEN_LOG_LABEL)}</Button>;
 
   return (
-    <DashboardCard span={RUN_SPANS.activity} title={labels.events === undefined ? ACTIVITY_TITLE : text(labels.events)} actions={openLog}>
+    <DashboardCard span={RUN_SPANS.activity} title={text(labels.events ?? ACTIVITY_TITLE)} actions={openLog}>
       {rows.length === 0
-        ? <Text variant="caption">{NOTHING_YET}</Text>
+        ? <Text variant="caption">{text(NOTHING_YET)}</Text>
         : <LogPanel rows={rows} kinds={kinds} toolbar={false} height={RECENT_HEIGHT} />}
     </DashboardCard>
   );

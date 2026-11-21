@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { seedKeywords } from '../normalise-keywords';
+import { seedKeywords } from '../seed-keywords';
 import type { SearchFileSeed } from '../search.type';
 import type { SeedMeta } from './meta-seed.type';
 import { rowSeeds } from './row-seeds';

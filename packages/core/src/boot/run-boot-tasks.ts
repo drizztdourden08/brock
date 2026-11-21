@@ -20,14 +20,12 @@ const linkedStop = (signal: AbortSignal | undefined): AbortController => {
 const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: BootRunOptions<X>): Promise<BootOutcome> => {
   const problem = bootGraphProblem(tasks);
   if (problem) return Promise.resolve({ ok: false, failure: { task: BOOT_GRAPH_TASK, label: BOOT_GRAPH_LABEL, message: problem, timedOut: false } });
-
   const total = tasks.reduce((sum, task) => sum + weightOf(task), 0);
   const shares = new Map<string, number>();
   const started = new Set<string>();
   const finished = new Set<string>();
   const stop = linkedStop(options.signal);
   let current: Pick<BootProgress, 'label' | 'detail'> = { label: '', detail: null };
-
   const emit = (): void => {
     const done = tasks.reduce((sum, task) => sum + weightOf(task) * (shares.get(task.id) ?? 0), 0);
     options.onProgress?.({ done, total, ...current });

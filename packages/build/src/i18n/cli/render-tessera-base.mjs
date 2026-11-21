@@ -26,7 +26,7 @@ const entryOf = (group, key, value, names) => {
 
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const addRecord = (messages, notes, group, key, record) => {
+const addRecord = ({ messages, notes }, group, key, record) => {
   for (const [sub, value] of Object.entries(record)) {
     if (typeof value === 'string') messages[`${group}.${key}.${sub}`] = escapeIcu(value);
     else notes.push(`${group}.${key}.${sub} is not a string`);
@@ -43,7 +43,7 @@ const renderTesseraBase = ({ strings, params }) => {
   for (const [group, entries] of Object.entries(strings)) {
     for (const [key, value] of Object.entries(entries ?? {})) {
       if (isRecord(value)) {
-        addRecord(messages, notes, group, key, value);
+        addRecord({ messages, notes }, group, key, value);
         continue;
       }
       const entry = entryOf(group, key, value, params[group]?.[key] ?? []);

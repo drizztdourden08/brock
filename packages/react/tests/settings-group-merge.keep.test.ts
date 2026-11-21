@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { HubDef } from '../src/hub/hub.type';
@@ -32,7 +33,7 @@ const tab = (id: string, group: string, groupId?: string): TabDef<object> => ({ 
 const moduleTabs = (...tabs: TabDef<object>[]): TabDef<object>[] =>
   mergeModules(tabs.map((def) => ({ id: `${def.id}-module`, settingsTabs: [def] }))).settingsTabs;
 
-const groupsOf = (groups: BucketGroupDef[], tabs: TabDef<object>[]): { id: string; label: string; pages: string[] }[] => {
+const groupsOf = (groups: BucketGroupDef[], tabs: TabDef<object>[]): { id: string; label: Text; pages: string[] }[] => {
   const hub: HubDef | undefined = resolveScreenTree(buildScreenTree(config(groups), ENTRIES), tabs).hubs[0];
   return hub?.groups.map((group) => ({ id: group.id, label: group.label, pages: group.pages.map((page) => page.id) })) ?? [];
 };

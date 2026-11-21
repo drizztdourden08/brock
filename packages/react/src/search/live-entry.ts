@@ -1,5 +1,5 @@
 /* @layer renderer-shell @kind logic */
-import { seedKeywords } from './normalise-keywords';
+import { seedKeywords } from './seed-keywords';
 import { seedEntryId } from './seed-entry-id';
 import { seedTarget } from './seed-target';
 import type { IndexEntry, SearchEntrySeed } from './search.type';

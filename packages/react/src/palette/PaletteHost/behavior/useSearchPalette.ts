@@ -44,7 +44,7 @@ const useSearchPalette = (menu: readonly MenuEntry[], actions: readonly SearchAc
   const preload = useRoutePreloader();
   const { options: pickOptions, scope: pickScope, placeholder } = usePickScopes(picking);
   const ranked = useMemo(
-    () => (picking === null ? paletteGroups(catalog, query, scope, preload, text) : pickGroups(picking, query, pickOptions, pickScope)),
+    () => (picking === null ? paletteGroups(catalog, query, { scope, preload, text }) : pickGroups(picking, query, pickOptions, pickScope)),
     [catalog, query, scope, preload, text, picking, pickOptions, pickScope],
   );
   const groups = useMemo(() => withConfirmActions(

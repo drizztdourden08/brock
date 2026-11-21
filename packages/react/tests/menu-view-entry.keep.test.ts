@@ -150,7 +150,7 @@ describe('K1 the Pin on top and Full screen menu keys', { tags: ['critical'] }, 
 
   it('report a place inside a submenu, and an activeLabel on any other key', () => {
     expect(messages(withView({ view: { hidden: true }, 'window-fullscreen': { before: 'notes' } })))
-      .toEqual(['menu.entries["window-fullscreen"] places Full screen inside a submenu, but Full screen sits at the top level of the menu, so it stays where the title bar puts it']);
+      .toEqual(['menu.entries["window-fullscreen"] places Fullscreen inside a submenu, but Fullscreen sits at the top level of the menu, so it stays where the title bar puts it']);
     expect(messages(withView({ about: { activeLabel: 'Shown' } }))).toEqual(['the menu entry "about" sets activeLabel "Shown", which only "window-pin" and "window-fullscreen" take']);
   });
 

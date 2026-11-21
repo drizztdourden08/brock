@@ -16,7 +16,7 @@ const usePickScopes = (picking: PalettePick | null): PickScopeModel => {
   const active = scopes?.find((scope) => scope.id === current);
   const loaded = useLoadedScope(picking, active);
   useScopeKeys(open && scopes !== undefined && scopes.length > 1 ? scopes : undefined, current, setPickScope);
-  return buildScopeModel(picking, active, loaded, current, text);
+  return buildScopeModel({ picking, active, loaded, current, text });
 };
 
 export { usePickScopes };

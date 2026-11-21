@@ -34,10 +34,10 @@ describe('K1 one ranking, scoped to the open hub', { tags: ['critical'] }, () =>
   });
 
   it('labels the palette groups with the hub, and keeps one list outside a hub', () => {
-    const scoped = paletteGroups(CATALOG, 'session', { bucket: 'multiworld', title: 'Multiworld' });
+    const scoped = paletteGroups(CATALOG, 'session', { scope: { bucket: 'multiworld', title: 'Multiworld' } });
     expect(scoped.map((group) => group.label)).toEqual(['In Multiworld', 'Everywhere else']);
     expect(paletteGroups(CATALOG, 'session').map((group) => group.id)).toEqual(['results']);
-    const idle = paletteGroups(CATALOG, '', { bucket: 'multiworld', title: 'Multiworld' });
+    const idle = paletteGroups(CATALOG, '', { scope: { bucket: 'multiworld', title: 'Multiworld' } });
     expect(idle.map((group) => [group.label, group.items.length])).toEqual([['Multiworld', 2], ['Screens', 1]]);
   });
 

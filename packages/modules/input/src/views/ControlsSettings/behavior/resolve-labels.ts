@@ -1,10 +1,6 @@
 /* @layer renderer-components @kind logic */
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ControlsLabels, ResolvedControlsLabels } from '../ControlsSettings.type';
-
-type Resolve = (value: Text) => string;
-type PlainLabels = { [K in keyof ResolvedControlsLabels as ResolvedControlsLabels[K] extends string ? K : never]: string };
-type NamedLabels = Omit<ResolvedControlsLabels, keyof PlainLabels>;
+import type { NamedLabels, PlainLabels, Resolve } from './resolve-labels.type';
 
 const plainLabels = (labels: ControlsLabels, text: Resolve): PlainLabels => ({
   profilesTitle: text(labels.profilesTitle),

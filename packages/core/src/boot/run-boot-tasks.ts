@@ -8,7 +8,10 @@ import { runBootTask } from './run-boot-task';
 
 const weightOf = (task: Pick<BootTask, 'weight'>): number => Math.max(0, task.weight ?? DEFAULT_BOOT_WEIGHT);
 
-const clamp = (value: number): number => (Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0);
+const doneWeight = (tasks: readonly Pick<BootTask, 'id' | 'weight'>[], shares: ReadonlyMap<string, number>): number =>
+  tasks.reduce((sum, task) => sum + weightOf(task) * (shares.get(task.id) ?? 0), 0);
+
+const clamp =(value: number): number => (Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0);
 
 const linkedStop = (signal: AbortSignal | undefined): AbortController => {
   const stop = new AbortController();
@@ -26,10 +29,7 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
   const finished = new Set<string>();
   const stop = linkedStop(options.signal);
   let current: Pick<BootProgress, 'label' | 'detail'> = { label: '', detail: null };
-  const emit = (): void => {
-    const done = tasks.reduce((sum, task) => sum + weightOf(task) * (shares.get(task.id) ?? 0), 0);
-    options.onProgress?.({ done, total, ...current });
-  };
+  const emit = (): void => options.onProgress?.({ done: doneWeight(tasks, shares), total, ...current });
 
   return new Promise<BootOutcome>((resolve) => {
     let settled = false;

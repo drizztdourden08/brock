@@ -2,6 +2,7 @@
 import type { SettingsSectionData, SettingsSectionRow } from '@drizztdourden08/tessera/composites';
 import type { DataDomainDef } from '@drizztdourden08/brock-core';
 import { formatBytes } from '@drizztdourden08/brock-core';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { rowActions } from '../../../settings/SettingsLayout/behavior/row-actions';
 import type { ActionRowInput, StorageSectionsInput } from '../StoragePage.type';
 import { domainActions } from './domain-actions';
@@ -11,13 +12,14 @@ const actionRow = ({ id, title, description, hint, actions, runner }: ActionRowI
 });
 
 const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSectionRow => {
+  const { text } = input;
   const usage = input.state.usage[def.domain];
   return actionRow({
     id: `storage-${def.domain}`,
-    title: input.text(def.label),
-    description: usage ? `${formatBytes(usage.bytes)} · ${usage.count} item${usage.count === 1 ? '' : 's'}` : 'Measuring the folder',
-    hint: def.description === undefined ? `Data/${def.dir}` : input.text(def.description),
-    actions: input.state.manage ? domainActions(def, usage, input.actions, input.text) : [],
+    title: text(def.label),
+    description: text(usage ? msg('brock-shell:storage.domain.usage', { bytes: formatBytes(usage.bytes), count: usage.count }) : msg('brock-shell:storage.domain.measuring')),
+    hint: def.description === undefined ? `Data/${def.dir}` : text(def.description),
+    actions: input.state.manage ? domainActions(def, usage, input.actions, text) : [],
     runner: input.runner,
   });
 };
@@ -29,54 +31,55 @@ const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
   return [
     {
       id: 'storage-export-domains',
-      title: 'Folders to export',
-      hint: 'Pick the folders that go into the export.',
+      title: text(msg('brock-shell:storage.export.folders')),
+      hint: text(msg('brock-shell:storage.export.foldersHint')),
       noDescription: true,
       input: { kind: 'multi', value: chosen, options: portable.map((def) => ({ value: def.domain, label: text(def.label) })), onChange: onChoose },
     },
     actionRow({
       id: 'storage-export',
-      title: 'Export',
-      description: 'Copies the chosen folders into one zip file or a new folder.',
-      hint: 'An export can be imported back here or on another computer.',
+      title: text(msg('brock-shell:storage.export.title')),
+      description: text(msg('brock-shell:storage.export.description')),
+      hint: text(msg('brock-shell:storage.export.hint')),
       actions: [
-        { id: 'export-zip', label: 'Export to zip', icon: 'archive', disabled: none, onSelect: () => actions.exportTo('zip', chosen) },
-        { id: 'export-folder', label: 'Export to folder', icon: 'upload', disabled: none, onSelect: () => actions.exportTo('folder', chosen) },
+        { id: 'export-zip', label: text(msg('brock-shell:storage.export.zip')), icon: 'archive', disabled: none, onSelect: () => actions.exportTo('zip', chosen) },
+        { id: 'export-folder', label: text(msg('brock-shell:storage.export.folder')), icon: 'upload', disabled: none, onSelect: () => actions.exportTo('folder', chosen) },
       ],
       runner,
     }),
     actionRow({
       id: 'storage-import',
-      title: 'Import',
-      description: 'Replaces folders with the ones in an export. You confirm first.',
-      hint: 'Only folders this app knows are imported.',
+      title: text(msg('brock-shell:storage.import.title')),
+      description: text(msg('brock-shell:storage.import.description')),
+      hint: text(msg('brock-shell:storage.import.hint')),
       actions: [
-        { id: 'import-zip', label: 'Import zip', icon: 'download', onSelect: () => actions.importFrom('zip') },
-        { id: 'import-folder', label: 'Import folder', icon: 'folder', onSelect: () => actions.importFrom('folder') },
+        { id: 'import-zip', label: text(msg('brock-shell:storage.import.zip')), icon: 'download', onSelect: () => actions.importFrom('zip') },
+        { id: 'import-folder', label: text(msg('brock-shell:storage.import.folder')), icon: 'folder', onSelect: () => actions.importFrom('folder') },
       ],
       runner,
     }),
   ];
 };
 
-const locationRow = ({ state, actions, runner }: StorageSectionsInput): SettingsSectionRow => {
+const locationRow = ({ state, actions, runner, text }: StorageSectionsInput): SettingsSectionRow => {
   const total = Object.values(state.usage).reduce((sum, usage) => sum + (usage?.bytes ?? 0), 0);
   return actionRow({
     id: 'storage-location',
-    title: 'Data folder',
-    description: state.location ? `${state.location.path} · ${formatBytes(total)}` : 'Finding the data folder',
-    hint: state.location?.osLabel ?? 'Where this app keeps its files.',
-    actions: state.manage ? [{ id: 'open-root', label: 'Open folder', icon: 'folder-open', disabled: state.location?.canReveal !== true, onSelect: actions.revealRoot }] : [],
+    title: text(msg('brock-shell:storage.location.title')),
+    description: text(state.location ? msg('brock-shell:storage.location.description', { path: state.location.path, size: formatBytes(total) }) : msg('brock-shell:storage.location.finding')),
+    hint: state.location?.osLabel ?? text(msg('brock-shell:storage.location.hint')),
+    actions: state.manage ? [{ id: 'open-root', label: text(msg('brock-shell:storage.action.open')), icon: 'folder-open', disabled: state.location?.canReveal !== true, onSelect: actions.revealRoot }] : [],
     runner,
   });
 };
 
 const storageSections = (input: StorageSectionsInput): SettingsSectionData[] => {
   const { domains } = input.state;
+  const { text } = input;
   return [
-    { id: 'storage-overview', title: 'Overview', rows: [locationRow(input)] },
-    { id: 'storage-domains', title: 'Folders', rows: domains.map((def) => domainRow(def, input)) },
-    ...(input.state.manage && domains.some((def) => def.portable !== false) ? [{ id: 'storage-transfer', title: 'Export and import', rows: transferRows(input) }] : []),
+    { id: 'storage-overview', title: text(msg('brock-shell:storage.section.overview')), rows: [locationRow(input)] },
+    { id: 'storage-domains', title: text(msg('brock-shell:storage.section.folders')), rows: domains.map((def) => domainRow(def, input)) },
+    ...(input.state.manage && domains.some((def) => def.portable !== false) ? [{ id: 'storage-transfer', title: text(msg('brock-shell:storage.section.transfer')), rows: transferRows(input) }] : []),
   ];
 };
 

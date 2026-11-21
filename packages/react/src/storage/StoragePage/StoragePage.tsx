@@ -9,7 +9,7 @@ import { storageSearchEntries } from './behavior/storage-search-entries';
 import { storageSections } from './behavior/storage-sections';
 import { useStorageActions } from './behavior/useStorageActions';
 import { useStorageDomains } from './behavior/useStorageDomains';
-import { STORAGE_LOAD_FAILED } from './StoragePage.constants';
+import { STORAGE_LOAD_FAILED, STORAGE_UNAVAILABLE } from './StoragePage.constants';
 import type { StoragePageProps } from './StoragePage.type';
 
 const StoragePage = (props: StoragePageProps) => {
@@ -22,11 +22,11 @@ const StoragePage = (props: StoragePageProps) => {
   const sections = storageSections({ state, actions, chosen, onChoose: setPicked, text, runner });
   useSearchEntries(useMemo(() => storageSearchEntries(state.domains, text), [state.domains, text]));
 
-  if (!state.available) return <EmptyState message="Storage is only available in the desktop app." />;
+  if (!state.available) return <EmptyState message={text(STORAGE_UNAVAILABLE)} />;
   return (
     <Stack gap="lg" data-storage-page>
       {state.failure !== null && (
-        <LoadError variant="box" message={STORAGE_LOAD_FAILED} error={state.failure.error} onRetry={() => state.refresh()} retrying={state.loading} />
+        <LoadError variant="box" message={text(STORAGE_LOAD_FAILED)} error={state.failure.error} onRetry={() => state.refresh()} retrying={state.loading} />
       )}
       {sections.map((section) => <SettingsSection key={section.id} {...section} />)}
     </Stack>

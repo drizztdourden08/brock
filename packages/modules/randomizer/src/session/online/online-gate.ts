@@ -1,5 +1,6 @@
 /* @layer core @kind logic */
 import { probeServer } from '../../archipelago';
+import { englishText } from '../../text/english-text';
 import type { PendingBoot } from '../store/pending-boot.type';
 import { onlineBlockedReason } from './online-blocked-reason';
 import { onlineConnectionOf } from './online-connection-of';
@@ -11,7 +12,7 @@ const onlineGate = async <P, A>({ ap, profileId, config, log }: OnlineGateReques
   const reason = onlineBlockedReason(ap, config);
   const connection = onlineConnectionOf(config);
   if (reason !== null || connection === null) {
-    log(`[Boot] Online start blocked: ${reason ?? 'no server address'}`, 'warn');
+    log(`[Boot] Online start blocked: ${reason === null ? 'no server address' : englishText(reason)}`, 'warn');
     return null;
   }
   const probe = await probeServer({ url: connection.url, game: ap.name, ...socketFactoryOf(ap) });

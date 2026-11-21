@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { ProfileWizardStepDef } from '@drizztdourden08/brock-react';
+import { englishText } from '../../../text/english-text';
 import { ConnectionStepBody } from './ConnectionStepBody';
 import { connectionShown } from './connection-shown';
 import { connectionSummary } from './connection-summary';
@@ -12,8 +14,8 @@ const connectionStep: ProfileWizardStepDef<ConnectionForm> = {
   slice: CONNECTION_SLICE,
   initial: initialConnection,
   step: {
-    label: 'Connection',
-    description: 'Choose where this profile connects.',
+    label: englishText(msg('randomizer:connection.step.label')),
+    description: englishText(msg('randomizer:connection.step.description')),
     when: connectionShown,
     validate: connectionValidate,
     summary: connectionSummary,

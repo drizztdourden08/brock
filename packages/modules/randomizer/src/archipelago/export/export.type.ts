@@ -1,4 +1,5 @@
 /* @layer core @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { RuleNode, RuleOptionValue } from '../../world';
 
 type LocationRequires = { always: true } | { present: string };
@@ -71,8 +72,8 @@ interface ExportedOption {
 interface ApOptionDef {
   key: string;
   kind: 'toggle' | 'choice' | 'range' | 'text';
-  displayName: string;
-  description: string;
+  displayName: Text;
+  description: Text;
   baseline: RuleOptionValue;
   choices?: readonly { value: string }[];
   range?: { min: number; max: number };

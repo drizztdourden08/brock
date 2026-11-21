@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useRef } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { Box, Text } from '@drizztdourden08/tessera/primitives';
 import { OptionsPanel as TabbedPanel } from '@drizztdourden08/tessera/composites';
 import { useOptionTab } from '../behavior/useOptionTab';
@@ -10,17 +11,21 @@ import { ASIDE_TAB_ID, NARROW_PANEL_WIDTH, NO_OPTIONS_TEXT } from './OptionsPane
 import type { OptionsPanelProps } from './OptionsPanel.type';
 
 const OptionsPanel = ({ title, overrides, seed = '', mode, romFile, tab, onTabChange, onChange }: OptionsPanelProps) => {
+  const text = useText();
   const frame = useRef<HTMLElement>(null);
   const narrow = useNarrow(frame, NARROW_PANEL_WIDTH);
   const { items, active, values, select } = useOptionTab(overrides, tab, onTabChange);
   const { Side, Body, extra, choose } = useAsideTab(narrow, select);
-  if (!active) return <Text variant="caption">{NO_OPTIONS_TEXT}</Text>;
+  if (!active) return <Text variant="caption">{text(NO_OPTIONS_TEXT)}</Text>;
   const tabProps = { values, overrides, onChange, frozen: onChange === undefined, seed, mode, romFile };
-  const tabs = [...items.map(({ id, label, badge }) => ({ id, label, badge })), ...extra];
+  const tabs = [
+    ...items.map(({ id, label, badge }) => ({ id, label: text(label), badge })),
+    ...extra.map(({ id, label }) => ({ id, label: text(label) })),
+  ];
   return (
     <Box ref={frame}>
       <TabbedPanel
-        title={title}
+        title={text(title)}
         tabs={tabs}
         activeTab={Body ? ASIDE_TAB_ID : active.id}
         onTabChange={choose}

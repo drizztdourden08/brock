@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { ComponentType } from 'react';
 import type { OptionTabProps } from '../../../../contract/randomizer-views.type';
 
 interface AsideTabEntry {
   id: string;
-  label: string;
+  label: Text;
 }
 
 interface AsideTab {

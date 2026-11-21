@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { EmptyState, Grid } from '@drizztdourden08/tessera/primitives';
-import { useProfilesStore } from '@drizztdourden08/brock-react';
+import { useProfilesStore, useText } from '@drizztdourden08/brock-react';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useRandomizerLabels } from '../../hooks/behavior/useRandomizerLabels';
 import { DashboardCard } from '../dashboard/DashboardCard';
@@ -16,6 +16,7 @@ import { RunSummary } from './sub-components/RunSummary';
 
 const RunView = () => {
   const game = useRandomizerGame();
+  const text = useText();
   const labels = useRandomizerLabels();
   const profile = useProfilesStore((state) => state.active);
   const open = useOpenPage();
@@ -24,7 +25,7 @@ const RunView = () => {
   if (!profile || !config) {
     return (
       <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
-        <DashboardCard span="full" title={labels.run}><EmptyState message={NO_PROFILE_MESSAGE} /></DashboardCard>
+        <DashboardCard span="full" title={text(labels.run)}><EmptyState message={NO_PROFILE_MESSAGE} /></DashboardCard>
       </Grid>
     );
   }

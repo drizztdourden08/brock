@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Status, Text } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerLabels } from '../../../../hooks/behavior/useRandomizerLabels';
 import { useRandomizerSession } from '../../../../hooks/behavior/useRandomizerSession';
@@ -13,7 +14,9 @@ import { SUMMARY_TITLE, WAITING_MESSAGE } from './RunSummary.constants';
 import type { RunSummaryProps } from './RunSummary.type';
 
 const RunSummary = ({ profileName, config, open }: RunSummaryProps) => {
+  const text = useText();
   const labels = useRandomizerLabels();
+  const modeLabel = labels.modes?.[config.mode];
   const { session, status, summary, gameRunning } = useRandomizerSession();
   const online = config.mode === 'online';
   const counters = counterTilesOf(summary, labels.counters);
@@ -22,7 +25,7 @@ const RunSummary = ({ profileName, config, open }: RunSummaryProps) => {
   return (
     <DashboardCard span={RUN_SPANS.summary} title={SUMMARY_TITLE} actions={state}>
       {online && <NetworkPill onOpen={() => open('network')} />}
-      <StatTiles tiles={summaryTilesOf(profileName, config, labels.modes?.[config.mode])} />
+      <StatTiles tiles={summaryTilesOf(profileName, config, modeLabel === undefined ? undefined : text(modeLabel))} />
       {counters.length > 0 && <StatTiles tiles={counters} />}
       {!session && !gameRunning && <Text variant="caption">{WAITING_MESSAGE}</Text>}
     </DashboardCard>

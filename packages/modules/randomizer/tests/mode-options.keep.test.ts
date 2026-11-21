@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind test */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { ShowContext } from '@drizztdourden08/brock-react';
 import { describe, expect, it } from 'vitest';
 import type { RandomizerGame } from '../src/contract/randomizer-game.type';
@@ -11,7 +12,7 @@ const gameWith = (extra: Partial<RandomizerGame<unknown>>): RandomizerGame<unkno
 
 describe('modeOptions', { tags: ['critical'] }, () => {
   it('lists only local without a game', () => {
-    expect(modeOptions(null, ctx)).toEqual([{ value: 'local', label: 'Local' }]);
+    expect(modeOptions(null, ctx)).toEqual([{ value: 'local', label: msg('randomizer:mode.local') }]);
   });
 
   it('merges game modes, overrides a built in and sorts by rank', () => {
@@ -43,6 +44,6 @@ describe('modeOptions', { tags: ['critical'] }, () => {
       archipelago: {} as RandomizerGame<unknown>['archipelago'],
       modes: [{ id: 'online', label: 'Online', rank: 50, when: () => false }],
     });
-    expect(modeOptions(game, ctx)).toEqual([{ value: 'local', label: 'Local' }]);
+    expect(modeOptions(game, ctx)).toEqual([{ value: 'local', label: msg('randomizer:mode.local') }]);
   });
 });

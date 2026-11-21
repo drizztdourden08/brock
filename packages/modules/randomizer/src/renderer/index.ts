@@ -11,11 +11,13 @@ import { randomizerOnlineMode } from './online/online-mode';
 import { inventoryWidgets } from './inventory/inventory-widgets';
 import { checksWidgets } from './tracker/checks-widgets';
 import { randomizerProfileHooks } from './profile-hooks/randomizer-profile-hooks';
+import { randomizerLayer } from '../text/randomizer-layer';
 import { randomizerOptionsStep } from './wizard/randomizer-options.step';
 import { randomizerStep } from './wizard/randomizer.step';
 
 const randomizerRenderer: RendererModule = {
   id: 'randomizer',
+  messages: [randomizerLayer],
   buckets: [randomizerBucket],
   profileModes: [randomizerMode, randomizerOnlineMode],
   lockCauses: [randomizerLockCause],

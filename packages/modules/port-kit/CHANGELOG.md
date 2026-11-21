@@ -1,5 +1,41 @@
 # @drizztdourden08/brock-port-kit
 
+## 0.123.0
+
+### Minor Changes
+
+- 61a5682: An asset step report takes a `Text` for its line, so `report.line(msg('ns:key'))` shows in the active language. Brock React typechecks when the app's generated messages type narrows the keys: `isMessageKey` narrows the tour and Tessera keys read at run time.
+
+### Patch Changes
+
+- Updated dependencies [0fe02f3]
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [9901976]
+- Updated dependencies [6136c5f]
+- Updated dependencies [c9ba35d]
+- Updated dependencies [373bb8c]
+- Updated dependencies [6610b88]
+- Updated dependencies [37c4812]
+- Updated dependencies [5a6a830]
+- Updated dependencies [4eb231d]
+- Updated dependencies [b078210]
+- Updated dependencies [4f09316]
+- Updated dependencies [b947306]
+- Updated dependencies [a546d43]
+- Updated dependencies [8b666df]
+- Updated dependencies [228e793]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [1078faa]
+- Updated dependencies [2237d1c]
+- Updated dependencies [d92503d]
+- Updated dependencies [61a5682]
+  - @drizztdourden08/brock-electron@0.123.0
+  - @drizztdourden08/brock-core@0.123.0
+  - @drizztdourden08/brock-react@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

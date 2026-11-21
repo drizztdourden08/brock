@@ -1,5 +1,37 @@
 # @drizztdourden08/brock-build
 
+## 0.123.0
+
+### Minor Changes
+
+- 4464585: `brock sync` writes the locale files from `src/locales/<tag>/<namespace>.json` and the `brock.locales` of installed modules: `.brock/locales.ts`, one lazy chunk per other language, `.brock/locales.main.ts` and the typed `.brock/messages.type.ts`. `brock check` reports drift, `brock structure` checks the locale folders, the `i18n` module id is registered, the screens literal reader accepts `msg('ns:key')` for tour titles, and electron-builder ships only the offered languages.
+- af662ab: New `brock i18n` verb with check, coverage, add, todo, merge and tessera-base, and `brock gate` runs the locale check when `src/locales` exists.
+- b078210: Main process text goes through `ctx.i18n`. Brock's own English (tray, edit menu, dialogs, boot labels, splash) lives in `brock-main.json` and shows with no locales option. `bootstrapApp` takes `locales`, and a locale change rebuilds the tray, the edit menu and the splash text.
+
+### Patch Changes
+
+- 1e163aa: With `build.nodePolyfills` on, the dev server now pre-bundles the polyfill shims the app resolves, so the page no longer reloads mid-boot.
+- c9ba35d: Screens, hubs, the search index and the palette take `Text`. Bucket, group, hub and tab titles, hub actions, search seeds and settings groups are resolved where they are drawn, and the palette strings live in the English tables. The build keeps `{ key }` for a `msg()` title in the search seeds, and the runtime catalog resolves it in the active language.
+- 37c4812: The tools, catalog, secrets and msu modules ship their strings as message keys in their own namespaces. `ToolDef.installHint`, `ToolState.hint` and the catalog install bar text are `Text`. Tessera object entries such as `anchor.names` and `toolbars.sides` render one key per sub-key and are read back the same way.
+- b947306: brock sync now types the keys of package text tables. React, Electron and the i18n module declare their locale folder, so `msg('brock-app:...')`, `msg('brock-main:...')` and `msg('i18n:...')` pass the `keyof Messages` check in an app. An app table that overrides a package key gives one member, not two. The package base tables still load from the packages, so the bundle does not change.
+- 15fa526: `brock sync` no longer lowers a Brock range that is above `brock.version`. It keeps the range and warns that the pin is behind, with the `brock upgrade` command that moves it. `brock upgrade` still moves every range to its target, a downgrade included. `followBrockPin` takes `{ keepAhead: true }` for this and returns the kept fields as `ahead`.
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [373bb8c]
+- Updated dependencies [5a6a830]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [df7882f]
+- Updated dependencies [1078faa]
+- Updated dependencies [15fa526]
+- Updated dependencies [61a5682]
+- Updated dependencies [3845c0e]
+  - @drizztdourden08/brock-core@0.123.0
+  - @drizztdourden08/brock-lint-config@0.123.0
+  - @drizztdourden08/brock-thread@0.123.0
+  - @drizztdourden08/build-cache@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

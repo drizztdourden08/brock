@@ -1,6 +1,6 @@
 {
   "name": "@drizztdourden08/brock-i18n",
-  "version": "0.122.0",
+  "version": "0.123.0",
   "description": "Brock i18n module: OS language detection, the stored app and profile language choice, and a Language tab for the settings hub.",
   "type": "module",
   "license": "UNLICENSED",

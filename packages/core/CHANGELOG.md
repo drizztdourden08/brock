@@ -1,5 +1,22 @@
 # @drizztdourden08/brock-core
 
+## 0.123.0
+
+### Minor Changes
+
+- 5318153: Add the `@drizztdourden08/brock-core/i18n` runtime: an ICU message parser, a translator with fallback chains and lazy locales, `msg()`, a `Messages` key augmentation, `AppState.locale`, and a `locale` option for `formatBytes`.
+- 5fb12dc: User-facing def fields take `Text`, a plain string or a `msg()` ref: menu items, settings defs, screen titles, tours, commands, dialog and toast options, the tray and boot task labels. Plain strings render as before.
+- 373bb8c: Title bar items and actions, legalText, data domain labels and boot report details take Text, and the region, title bar, About and storage words move to the brock-shell and brock-main catalogs.
+- 5a6a830: The context menu command label and default name, the mascot search hint and the update dialog texts take a `Text`, so apps can translate them. `product.mascot.searchHint` is a `Text`.
+- 9d28100: A job line is a `Text`. `JobHandle.step`, `progress`, `line` and `done` take a string or a `msg` key with values, and `JobSnapshot.line` carries it. The job dialog, the catalog install bar and the MSU import form show it in the active language.
+- 61a5682: An asset step report takes a `Text` for its line, so `report.line(msg('ns:key'))` shows in the active language. Brock React typechecks when the app's generated messages type narrows the keys: `isMessageKey` narrows the tour and Tessera keys read at run time.
+
+### Patch Changes
+
+- 3e043d7: Main always prints every boot step to stdout as a `[boot]` line, including each main and renderer task with its duration.
+- 3ea4088: Widget, widget kit, kit overlay, kit requirement and job titles now accept message references and resolve them where they are shown.
+- 1078faa: The app log arms the global error handlers when the bus is created and mirrors every warn and error entry to the main process terminal.
+
 ## 0.122.0
 
 ## 0.121.0

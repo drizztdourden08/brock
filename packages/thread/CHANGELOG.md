@@ -1,5 +1,13 @@
 # @drizztdourden08/brock-thread
 
+## 0.123.0
+
+### Patch Changes
+
+- 15fa526: `brock sync` no longer lowers a Brock range that is above `brock.version`. It keeps the range and warns that the pin is behind, with the `brock upgrade` command that moves it. `brock upgrade` still moves every range to its target, a downgrade included. `followBrockPin` takes `{ keepAhead: true }` for this and returns the kept fields as `ahead`.
+- 3845c0e: Worktree and upgrade installs pass `--config.confirm-modules-purge=false`. The old camelCase key was ignored by pnpm, so an install with no terminal still stopped on ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY when it had to recreate node_modules.
+  - @drizztdourden08/build-cache@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

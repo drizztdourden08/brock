@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { PatternSlotConfigs } from '@drizztdourden08/tessera/composites';
-import { HOST_PLACEHOLDER, PORT_PLACEHOLDER, SLOT_LABELS, SLOT_RULES } from '../RemoteAddress.constants';
+import { HOST_PLACEHOLDER, PORT_PLACEHOLDER, SLOT_LABELS, SLOT_RULES } from '../sub-components/RemoteAddress/RemoteAddress.constants';
 
 const addressSlotsOf = (text: (value: Text) => string): PatternSlotConfigs => ({
   kind: { label: text(SLOT_LABELS.kind) },

@@ -2,7 +2,7 @@
 import { useText } from '@drizztdourden08/brock-react';
 import { Field } from '@drizztdourden08/tessera/primitives';
 import { DynamicInput } from '@drizztdourden08/tessera/composites';
-import { codeSlotsOf } from './behavior/code-slots-of';
+import { codeSlotsOf } from '../../behavior/code-slots-of';
 import { CODE_LABEL, CODE_PATTERN } from './LobbyCodeField.constants';
 import type { LobbyCodeFieldProps } from './LobbyCodeField.type';
 

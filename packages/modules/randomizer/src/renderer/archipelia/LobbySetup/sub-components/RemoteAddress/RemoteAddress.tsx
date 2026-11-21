@@ -1,8 +1,8 @@
 /* @layer renderer-shell @kind component */
 import { useText } from '@drizztdourden08/brock-react';
 import { DynamicInput } from '@drizztdourden08/tessera/composites';
-import { addressListsOf } from './behavior/address-lists-of';
-import { addressSlotsOf } from './behavior/address-slots-of';
+import { addressListsOf } from '../../behavior/address-lists-of';
+import { addressSlotsOf } from '../../behavior/address-slots-of';
 import { ADDRESS_LABEL, HOST_PATTERN, IP_PATTERN } from './RemoteAddress.constants';
 import type { RemoteAddressProps } from './RemoteAddress.type';
 

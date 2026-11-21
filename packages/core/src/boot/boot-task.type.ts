@@ -1,7 +1,7 @@
 /* @layer core @kind types */
 import type { Text } from '../i18n/text.type';
 
-type BootReport = (fraction: number, detail?: string) => void;
+type BootReport = (fraction: number, detail?: Text) => void;
 
 interface BootTaskBaseContext {
   report: BootReport;
@@ -62,7 +62,7 @@ interface BootTaskRun<X extends object> {
   extras: () => X;
   stop: AbortSignal;
   defaultTimeoutMs?: number;
-  report: (fraction: number, detail: string | null) => void;
+  report: (fraction: number, detail: Text | null) => void;
 }
 
 interface BootTimeline {

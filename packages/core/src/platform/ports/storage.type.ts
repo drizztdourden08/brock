@@ -1,4 +1,6 @@
 /* @layer core @kind types */
+import type { Text } from '../../i18n/text.type';
+
 interface FileStat {
   bytes: number;
   isDirectory: boolean;
@@ -13,9 +15,9 @@ interface DataLocation {
 
 interface DataDomainDef {
   domain: string;
-  label: string;
+  label: Text;
   dir: string;
-  description?: string;
+  description?: Text;
   cleanOlderThanDays?: readonly number[];
   clearable?: boolean;
   portable?: boolean;
@@ -23,7 +25,7 @@ interface DataDomainDef {
 
 interface DomainUsage {
   domain: string;
-  label: string;
+  label: Text;
   count: number;
   bytes: number;
 }

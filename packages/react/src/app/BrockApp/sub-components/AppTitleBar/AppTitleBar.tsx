@@ -22,7 +22,7 @@ const AppTitleBar = (props: AppTitleBarProps) => {
   const rows = useMemo(() => (viewHidden ? tuckedRows(menuConfig, tucked) : undefined), [viewHidden, menuConfig, tucked]);
 
   return (
-    <Box role="banner" aria-label={SHELL_LABELS.titleBar} className={BANNER_CLASS}>
+    <Box role="banner" aria-label={text(SHELL_LABELS.titleBar)} className={BANNER_CLASS}>
       <WindowTitleBar
         title={title}
         logo={logoSrc}

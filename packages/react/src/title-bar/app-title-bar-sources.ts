@@ -1,21 +1,21 @@
 /* @layer renderer-shell @kind logic */
-import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import { getAppLog } from '../log/get-app-log';
 import type { TitleBarActionSource } from '../modules/renderer-module.type';
+import type { TitleBarActionDef } from './title-bar-action.type';
 import { toBarAction } from './to-bar-action';
 import { actionsMenuId } from './actions-menu-id';
 import { titleBarActionsMenu } from './title-bar-actions-menu';
 import type { TitleBarActionsMenu, TitleBarItemEntry, TitleBarItemSpec } from './title-bar-item.type';
 import { volumeItems } from './volume-items';
 
-const barActionOf = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction => {
+const barActionOf = (id: string, spec: TitleBarItemSpec): TitleBarActionDef => {
   if (spec.kind === 'volume') volumeItems.add(id);
   return toBarAction(id, spec);
 };
 
 const sourceOf = ({ id, source }: TitleBarItemEntry): TitleBarActionSource => {
   if (typeof source !== 'function') return barActionOf(id, source);
-  return (): WindowTitleBarAction | null => {
+  return (): TitleBarActionDef | null => {
     const spec = source();
     return spec ? barActionOf(id, spec) : null;
   };

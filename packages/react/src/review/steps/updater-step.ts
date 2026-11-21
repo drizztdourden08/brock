@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { controlSources } from '../../app/control-sources';
 import { updaterChecks } from '../checks/updater-checks';
 import { find } from '../dom/find';
 import { waitFor } from '../dom/wait-for';
@@ -13,11 +14,12 @@ const updaterStep: ReviewStep = {
   run: async (tour) => {
     if (!tour.env.moduleIds.includes(UPDATER_MODULE_ID)) return;
     tour.report(updaterChecks(await readUpdaterTitleBar()));
-    const picked = await pickMenuPath([UPDATE_MENU_LABEL]);
-    tour.check('update-menu-entry', picked, `the menu has "${UPDATE_MENU_LABEL}"`, `the menu has no "${UPDATE_MENU_LABEL}" entry`);
+    const label = controlSources.get().text(UPDATE_MENU_LABEL);
+    const picked = await pickMenuPath([label]);
+    tour.check('update-menu-entry', picked, `the menu has "${label}"`, `the menu has no "${label}" entry`);
     if (!picked) return;
     const opened = await waitFor(() => find(SELECTORS.updateDialog));
-    tour.check('update-dialog-opens', opened !== null, `"${UPDATE_MENU_LABEL}" opened the update dialog`, `"${UPDATE_MENU_LABEL}" did not open the update dialog`);
+    tour.check('update-dialog-opens', opened !== null, `"${label}" opened the update dialog`, `"${label}" did not open the update dialog`);
     if (opened === null) return;
     await tour.capture('update-dialog');
     await escapeCloses(tour, 'update-dialog', () => find(SELECTORS.updateDialog) === null);

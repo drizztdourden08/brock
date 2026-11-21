@@ -10,7 +10,9 @@ import { useCommandGates } from '../src/commands/useCommandGates';
 import { useCommandStore } from '../src/commands/useCommandStore';
 import { useCommands } from '../src/commands/useCommands';
 import type { MenuEntry, MenuItem } from '../src/menu/menu.type';
+import { fallbackText } from '../src/i18n/fallback-text';
 import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
+import { resolveTitleBarAction } from '../src/title-bar/resolve-title-bar-action';
 import type { TitleBarItemEntry, TitleBarItemSpec } from '../src/title-bar/title-bar-item.type';
 import { titleBarMenuEntry } from '../src/title-bar/title-bar-menu-entry';
 
@@ -146,7 +148,7 @@ describe('S2 title bar actions as one menu', { tags: ['standard'] }, () => {
       extra();
       for (const source of sources) {
         const action = typeof source === 'function' ? source() : source;
-        if (action !== null) seen.push(action);
+        if (action !== null) seen.push(resolveTitleBarAction(action, fallbackText));
       }
       return null;
     };

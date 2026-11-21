@@ -1,4 +1,7 @@
 /* @layer renderer-shell @kind constants */
-const STORAGE_LOAD_FAILED = 'Could not read the data folder.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 
-export { STORAGE_LOAD_FAILED };
+const STORAGE_LOAD_FAILED = msg('brock-shell:storage.loadFailed');
+const STORAGE_UNAVAILABLE = msg('brock-shell:storage.unavailable');
+
+export { STORAGE_LOAD_FAILED, STORAGE_UNAVAILABLE };

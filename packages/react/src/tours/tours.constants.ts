@@ -1,7 +1,6 @@
 /* @layer renderer-shell @kind constants */
 import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { TourAdvance } from '@drizztdourden08/tessera/composites';
-import { SHELL_LABELS } from '../regions/regions.constants';
 import type { AppTourState, TourDef, TourProgress, TourShellPart } from './tour.type';
 
 const NO_TOURS: readonly TourDef[] = [];
@@ -17,7 +16,7 @@ const SHELL_TARGETS: Readonly<Record<TourShellPart, string>> = {
   'title-bar': '.window-title-bar',
   'screen': '.screen-layer:not(.screen-layer--hidden) .screen-layer__card',
   'page': '.brock-app__screens',
-  'rail': `nav.side-nav--rail[aria-label="${SHELL_LABELS.screens}"]`,
+  'rail': 'nav.side-nav--rail',
   'hero': '.screen-host__home .hero, .screen-layer:not(.screen-layer--hidden) .hero',
   'tabs': '.screen-host__home .settings-page__tabs, .screen-layer:not(.screen-layer--hidden) .settings-page__tabs',
   'primary': `${OPEN_SCREEN} .header-actions .btn--primary`,

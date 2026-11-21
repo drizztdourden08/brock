@@ -1,4 +1,5 @@
 /* @layer core @kind logic */
+import type { Text } from '../i18n/text.type';
 import type { BootOutcome, BootTaskNamed, BootTaskRun } from './boot-task.type';
 import { DEFAULT_BOOT_TIMEOUT_MS } from './boot.constants';
 import { bootTimeoutError } from './boot-timeout-error';
@@ -17,7 +18,7 @@ const runBootTask = async <X extends object>(task: BootTaskNamed<X>, { extras, s
   const abort = (): void => own.abort(stop.reason);
   stop.addEventListener('abort', abort, { once: true });
   const timer = setTimeout(() => own.abort(bootTimeoutError(task.label, timeoutMs)), timeoutMs);
-  const reportOwn = (fraction: number, detail?: string): void => {
+  const reportOwn = (fraction: number, detail?: Text): void => {
     if (!own.signal.aborted) report(fraction, detail ?? null);
   };
   try {

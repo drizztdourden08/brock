@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { fallbackText } from '../i18n/fallback-text';
 import { lazyLoads } from '../lazy/lazy-loads';
 import { getAppLog } from '../log/get-app-log';
 import { selectButton } from './select-button';
@@ -13,7 +14,7 @@ const lazyTitleBarButton = (look: TitleBarButtonLook, load: () => Promise<{ defa
   onSelect: () => {
     lazyLoads.track(load()).then(({ default: source }) => {
       if (typeof source !== 'function' && source.kind === 'button') selectButton(source);
-    }, report(look.label));
+    }, report(fallbackText(look.label)));
   },
 });
 

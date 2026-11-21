@@ -10,7 +10,12 @@ import { useCommandGates } from '../src/commands/useCommandGates';
 import { useCommandStore } from '../src/commands/useCommandStore';
 import { useCommands } from '../src/commands/useCommands';
 import { toBarAction } from '../src/title-bar/to-bar-action';
+import { fallbackText } from '../src/i18n/fallback-text';
+import { resolveTitleBarAction } from '../src/title-bar/resolve-title-bar-action';
+import type { TitleBarItemSpec } from '../src/title-bar/title-bar-item.type';
 import { withActionState } from '../src/title-bar/with-action-state';
+
+const bar = (id: string, spec: TitleBarItemSpec) => resolveTitleBarAction(toBarAction(id, spec), fallbackText);
 
 const flag = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
 const buttonOf = (action: WindowTitleBarAction): Extract<WindowTitleBarAction, { onSelect: () => void }> => {
@@ -21,7 +26,7 @@ const buttonOf = (action: WindowTitleBarAction): Extract<WindowTitleBarAction, {
 describe('K1 a title bar button with a disabled state', { tags: ['critical'] }, () => {
   it('keeps an explicit disabled on the bar action and ignores clicks', () => {
     const onSelect = vi.fn();
-    const action = toBarAction('undo', { kind: 'button', label: 'Undo', icon: 'send', onSelect, disabled: true });
+    const action = bar('undo', { kind: 'button', label: 'Undo', icon: 'send', onSelect, disabled: true });
     expect(action).toMatchObject({ id: 'undo', disabled: true });
     const guarded = buttonOf(withActionState(action, () => true));
     expect(guarded).toMatchObject({ disabled: true });
@@ -30,21 +35,21 @@ describe('K1 a title bar button with a disabled state', { tags: ['critical'] }, 
   });
 
   it('hands disabledReason to Tessera on a button and keeps it through the guard', () => {
-    const action = toBarAction('undo-reason', { kind: 'button', label: 'Undo', icon: 'send', onSelect: vi.fn(), disabled: true, disabledReason: 'Nothing to undo' });
+    const action = bar('undo-reason', { kind: 'button', label: 'Undo', icon: 'send', onSelect: vi.fn(), disabled: true, disabledReason: 'Nothing to undo' });
     expect(action).toMatchObject({ disabled: true, disabledReason: 'Nothing to undo' });
     expect(withActionState(action, () => true)).toMatchObject({ disabled: true, disabledReason: 'Nothing to undo' });
   });
 
   it('leaves an enabled button alone', () => {
     const onSelect = vi.fn();
-    const action = toBarAction('redo', { kind: 'button', label: 'Redo', icon: 'send', onSelect });
+    const action = bar('redo', { kind: 'button', label: 'Redo', icon: 'send', onSelect });
     expect(withActionState(action, () => true)).toBe(action);
   });
 
   it('disables a button whose command is not enabled', () => {
     const onSelect = vi.fn();
     actionCommands.link('undo-linked', 'doc.undo');
-    const action = toBarAction('undo-linked', { kind: 'button', label: 'Undo', icon: 'send', onSelect, command: 'doc.undo' });
+    const action = bar('undo-linked', { kind: 'button', label: 'Undo', icon: 'send', onSelect, command: 'doc.undo' });
     expect(withActionState(action, () => true)).toBe(action);
     const guarded = buttonOf(withActionState(action, (id) => id !== 'doc.undo'));
     expect(guarded).toMatchObject({ disabled: true });
@@ -53,7 +58,7 @@ describe('K1 a title bar button with a disabled state', { tags: ['critical'] }, 
   });
 
   it('ignores a dropdown', () => {
-    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'new', label: 'New room' }] });
+    const action = bar('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'new', label: 'New room' }] });
     expect(withActionState(action, () => false)).toBe(action);
   });
 });

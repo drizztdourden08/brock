@@ -3,22 +3,27 @@ import { describe, expect, it } from 'vitest';
 import { appTitleBarSources } from '../src/title-bar/app-title-bar-sources';
 import { titleBarFromFiles } from '../src/title-bar/title-bar-from-files';
 import { toBarAction } from '../src/title-bar/to-bar-action';
+import { fallbackText } from '../src/i18n/fallback-text';
+import { resolveTitleBarAction } from '../src/title-bar/resolve-title-bar-action';
+import type { TitleBarItemSpec } from '../src/title-bar/title-bar-item.type';
 import type { TitleBarItemEntry } from '../src/title-bar/title-bar-item.type';
 import { jobStepper } from '../src/jobs/job-stepper';
 import type { JobSnapshot } from '@drizztdourden08/brock-core/types';
+
+const bar = (id: string, spec: TitleBarItemSpec) => resolveTitleBarAction(toBarAction(id, spec), fallbackText);
 
 const SKIPPED = 'Skipped';
 
 describe('K1 toBarAction', { tags: ['critical'] }, () => {
 
   it('turns a status into a status pill that shows only while the status is set', () => {
-    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Hosting: Seed 42', tone: 'success' }))
+    expect(bar('room', { kind: 'status', label: 'Room', icon: 'radio', status: 'Hosting: Seed 42', tone: 'success' }))
       .toMatchObject({ id: 'room', bar: 'status', status: 'Hosting: Seed 42', tone: 'success' });
-    expect(toBarAction('room', { kind: 'status', label: 'Room', icon: 'radio', status: null })).toMatchObject({ bar: 'status', status: undefined });
+    expect(bar('room', { kind: 'status', label: 'Room', icon: 'radio', status: null })).toMatchObject({ bar: 'status', status: undefined });
   });
 
   it('turns a menu into a title bar dropdown with its items in one group', () => {
-    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'open', label: 'Open room' }, 'separator', { key: 'new', label: 'New room' }] });
+    const action = bar('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'open', label: 'Open room' }, 'separator', { key: 'new', label: 'New room' }] });
     if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
     expect(action).toMatchObject({ id: 'rooms', label: 'Rooms', icon: 'server' });
     expect(action.groups).toHaveLength(1);
@@ -26,7 +31,7 @@ describe('K1 toBarAction', { tags: ['critical'] }, () => {
   });
 
   it('keeps the groups of a menu, each with its label', () => {
-    const action = toBarAction('rooms', {
+    const action = bar('rooms', {
       kind: 'menu', label: 'Rooms', icon: 'server',
       groups: [{ label: 'Recent', items: [{ key: 'seed-42', label: 'Seed 42' }] }, { items: [{ key: 'new', label: 'New room' }] }],
     });
@@ -35,7 +40,7 @@ describe('K1 toBarAction', { tags: ['critical'] }, () => {
   });
 
   it('makes a menu entry with confirm a Tessera confirm item in a dropdown', () => {
-    const action = toBarAction('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'drop', label: 'Drop room', confirm: true, onClick: () => undefined }] });
+    const action = bar('rooms', { kind: 'menu', label: 'Rooms', icon: 'server', items: [{ key: 'drop', label: 'Drop room', confirm: true, onClick: () => undefined }] });
     if (action.bar !== 'dropdown') throw new Error('a menu item is a dropdown');
     expect(action.groups[0]?.items[0]).toMatchObject({ id: 'drop', label: 'Drop room', kind: 'confirm' });
   });

@@ -3,7 +3,7 @@ import { useText } from '@drizztdourden08/brock-react';
 import { Field, Grid, Select, Stack, TextInput, Toggle } from '@drizztdourden08/tessera/primitives';
 import type { RandomizerModeId } from '../../../augment';
 import { useVisibleModes } from './behavior/useVisibleModes';
-import { SEED_PLACEHOLDER } from './RandomizerStepBody.constants';
+import { MODE_LABEL, SEED_LABEL, SEED_PLACEHOLDER, TOGGLE_LABEL } from './RandomizerStepBody.constants';
 import type { RandomizerStepBodyProps } from './RandomizerStepBody.type';
 
 const RandomizerStepBody = ({ value, onChange }: RandomizerStepBodyProps) => {
@@ -11,13 +11,13 @@ const RandomizerStepBody = ({ value, onChange }: RandomizerStepBodyProps) => {
   const options = useVisibleModes(value.mode, onChange).map((option) => ({ value: option.value, label: text(option.label) }));
   return (
     <Stack gap="md">
-      <Toggle label="Randomizer" checked={value.enabled} onChange={(enabled) => onChange({ enabled })} />
+      <Toggle label={text(TOGGLE_LABEL)} checked={value.enabled} onChange={(enabled) => onChange({ enabled })} />
       {value.enabled && (
         <Grid columns={2} gap="md">
-          <Field label="Seed">
-            <TextInput type="text" placeholder={SEED_PLACEHOLDER} value={value.seed} onChange={(e) => onChange({ seed: e.target.value })} />
+          <Field label={text(SEED_LABEL)}>
+            <TextInput type="text" placeholder={text(SEED_PLACEHOLDER)} value={value.seed} onChange={(e) => onChange({ seed: e.target.value })} />
           </Field>
-          <Field label="Mode">
+          <Field label={text(MODE_LABEL)}>
             <Select value={value.mode} onChange={(mode) => onChange({ mode: mode as RandomizerModeId })} options={options} />
           </Field>
         </Grid>

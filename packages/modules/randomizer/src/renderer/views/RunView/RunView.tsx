@@ -21,11 +21,11 @@ const RunView = () => {
   const profile = useProfilesStore((state) => state.active);
   const open = useOpenPage();
   const config = profile?.randomizer;
-  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
+  if (!game) return <EmptyState message={text(NO_GAME_MESSAGE)} />;
   if (!profile || !config) {
     return (
       <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
-        <DashboardCard span="full" title={text(labels.run)}><EmptyState message={NO_PROFILE_MESSAGE} /></DashboardCard>
+        <DashboardCard span="full" title={text(labels.run)}><EmptyState message={text(NO_PROFILE_MESSAGE)} /></DashboardCard>
       </Grid>
     );
   }

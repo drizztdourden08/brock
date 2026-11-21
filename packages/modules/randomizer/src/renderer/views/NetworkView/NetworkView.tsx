@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { EmptyState, Grid } from '@drizztdourden08/tessera/primitives';
 import { useNetworkStatus } from '../../online/hooks/behavior/useNetworkStatus';
 import { PANEL_MIN_WIDTH } from '../dashboard/dashboard.constants';
@@ -11,12 +12,13 @@ import { ServerSection } from './sub-components/ServerSection';
 import { ServerSetup } from './sub-components/ServerSetup';
 
 const NetworkView = () => {
+  const text = useText();
   const status = useNetworkStatus();
 
   return (
     <Grid minColWidth={PANEL_MIN_WIDTH} gap="lg" dense>
       <Grid.Cell span={NETWORK_PANELS.setup}><ServerSetup /></Grid.Cell>
-      {status === null ? <Grid.Cell span="full"><EmptyState message={NO_STATUS_MESSAGE} /></Grid.Cell> : (
+      {status === null ? <Grid.Cell span="full"><EmptyState message={text(NO_STATUS_MESSAGE)} /></Grid.Cell> : (
         <>
           <Grid.Cell span={NETWORK_PANELS.connection}><ConnectionSection status={status} /></Grid.Cell>
           <Grid.Cell span={NETWORK_PANELS.health}><HealthSection status={status} /></Grid.Cell>

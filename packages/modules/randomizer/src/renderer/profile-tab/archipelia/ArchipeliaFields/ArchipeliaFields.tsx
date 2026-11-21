@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useEffect, useState } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { LobbySetup } from '../../../archipelia/LobbySetup';
 import {
   browseServersOf, connectModeOf, lobbyRefOf, lobbyServerOf, useBrowsedLobbies, useBundledVersions, useLanServers, useLobbyCheck,
@@ -10,6 +11,7 @@ import { lobbyRowsOf } from '../lobby-rows-of';
 import type { ArchipeliaFieldsProps } from './ArchipeliaFields.type';
 
 const ArchipeliaFields = ({ value, onChange, joining = false }: ArchipeliaFieldsProps) => {
+  const text = useText();
   const draft = value.lobby;
   const auto = connectModeOf(draft) === 'auto';
   const [refresh, setRefresh] = useState(0);
@@ -37,7 +39,7 @@ const ArchipeliaFields = ({ value, onChange, joining = false }: ArchipeliaFields
     <LobbySetup
       value={draft}
       onChange={(part) => onChange({ lobby: { ...draft, ...part } })}
-      lobbies={lobbyRowsOf(entries, versions)}
+      lobbies={lobbyRowsOf(entries, versions, text)}
       lobby={lobbyLineOf(check)}
       access={{ refreshing: loading, onRefresh, blocked: network.status === 'blocked', onAllow }}
       disabled={joining}

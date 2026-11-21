@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Field, Flex, SectionHeader, Stack } from '@drizztdourden08/tessera/primitives';
 import { connectModeOf } from '../../../lobby-setup';
 import { ConnectMode } from '../ConnectMode';
@@ -7,15 +8,17 @@ import { LobbyRows } from '../LobbyRows';
 import { NetworkWarning } from '../NetworkWarning';
 import { RefreshButton } from '../RefreshButton';
 import { RemoteAddress } from '../RemoteAddress';
+import { ADDRESS_LABEL, CONNECTION_TITLE } from './ConnectionSection.constants';
 import type { ConnectionSectionProps } from './ConnectionSection.type';
 
 const ConnectionSection = ({ value, onChange, lobbies, lobby, access, disabled }: ConnectionSectionProps) => {
+  const text = useText();
   const mode = connectModeOf(value);
 
   return (
     <Stack gap="sm">
       <SectionHeader
-        title="Connection"
+        title={text(CONNECTION_TITLE)}
         level={4}
         action={(
           <Flex gap="sm" align="center">
@@ -36,7 +39,7 @@ const ConnectionSection = ({ value, onChange, lobbies, lobby, access, disabled }
         </>
       ) : (
         <>
-          <Field label="Address">
+          <Field label={text(ADDRESS_LABEL)}>
             <RemoteAddress value={value.address} disabled={disabled} onChange={(address) => onChange({ address })} />
           </Field>
           <LobbyCodeField

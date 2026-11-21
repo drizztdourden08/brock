@@ -75,7 +75,7 @@ interface LivePage {
 
 interface LiveMeta extends Pick<ScreenMeta, 'title' | 'order' | 'keywords' | 'devOnly' | 'bare' | 'showHeader'> {
   icon: IconName;
-  empty: string;
+  empty: Text;
 }
 
 type UseLivePages = () => readonly LivePage[];

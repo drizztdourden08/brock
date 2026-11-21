@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
-const NO_GAME_MESSAGE = 'No randomizer game is registered.';
-const NO_OPTIONS_MESSAGE = 'This game has no extra options.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const NO_GAME_MESSAGE = msg('randomizer:view.noGame');
+const NO_OPTIONS_MESSAGE = msg('randomizer:view.noExtraOptions');
 
 export { NO_GAME_MESSAGE, NO_OPTIONS_MESSAGE };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Card, EmptyState, Stack, Toggle } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../../game-registry/behavior/useRandomizerGame';
 import { useOnlineConnection } from '../../online/hooks/behavior/useOnlineConnection';
@@ -7,24 +8,25 @@ import {
 } from './OnlineView.constants';
 
 const OnlineView = () => {
+  const text = useText();
   const game = useRandomizerGame();
   const { connection, patch } = useOnlineConnection();
-  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
+  if (!game) return <EmptyState message={text(NO_GAME_MESSAGE)} />;
   const GameOnline = game.views?.Online;
 
   return (
     <Stack gap="md">
-      <Card title={ONLINE_TITLE}>
+      <Card title={text(ONLINE_TITLE)}>
         <Stack gap="sm">
           <Toggle
-            label={DEATH_LINK_LABEL}
-            description={DEATH_LINK_DESCRIPTION}
+            label={text(DEATH_LINK_LABEL)}
+            description={text(DEATH_LINK_DESCRIPTION)}
             checked={connection.deathLink === true}
             onChange={(deathLink) => void patch({ deathLink })}
           />
           <Toggle
-            label={TRACK_LABEL}
-            description={TRACK_DESCRIPTION}
+            label={text(TRACK_LABEL)}
+            description={text(TRACK_DESCRIPTION)}
             checked={connection.trackOtherPlayers === true}
             onChange={(trackOtherPlayers) => void patch({ trackOtherPlayers })}
           />

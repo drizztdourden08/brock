@@ -1,5 +1,7 @@
 /* @layer renderer-shell @kind constants */
-const NO_LOBBIES_HINT =
-  'No lobbies found. In Archipelia, turn on Show on the network for the lobby, or switch to Manual and paste the session code.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const NO_LOBBIES_HINT = msg('randomizer:lobby.rows.empty');
 
-export { NO_LOBBIES_HINT };
+const CLOSED_LABEL = msg('randomizer:lobby.rows.closed');
+
+export { CLOSED_LABEL, NO_LOBBIES_HINT };

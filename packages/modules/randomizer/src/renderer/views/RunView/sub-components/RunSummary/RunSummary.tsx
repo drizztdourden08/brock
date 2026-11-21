@@ -19,15 +19,15 @@ const RunSummary = ({ profileName, config, open }: RunSummaryProps) => {
   const modeLabel = labels.modes?.[config.mode];
   const { session, status, summary, gameRunning } = useRandomizerSession();
   const online = config.mode === 'online';
-  const counters = counterTilesOf(summary, labels.counters);
+  const counters = counterTilesOf(summary, labels.counters, text);
   const state = <Status tone={sessionToneOf(status)} variant="pill" dot>{status}</Status>;
 
   return (
-    <DashboardCard span={RUN_SPANS.summary} title={SUMMARY_TITLE} actions={state}>
+    <DashboardCard span={RUN_SPANS.summary} title={text(SUMMARY_TITLE)} actions={state}>
       {online && <NetworkPill onOpen={() => open('network')} />}
-      <StatTiles tiles={summaryTilesOf(profileName, config, modeLabel === undefined ? undefined : text(modeLabel))} />
+      <StatTiles tiles={summaryTilesOf(profileName, config, modeLabel === undefined ? undefined : text(modeLabel), text)} />
       {counters.length > 0 && <StatTiles tiles={counters} />}
-      {!session && !gameRunning && <Text variant="caption">{WAITING_MESSAGE}</Text>}
+      {!session && !gameRunning && <Text variant="caption">{text(WAITING_MESSAGE)}</Text>}
     </DashboardCard>
   );
 };

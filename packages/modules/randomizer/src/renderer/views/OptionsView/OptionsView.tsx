@@ -13,7 +13,7 @@ const OptionsView = () => {
   const labels = useRandomizerLabels();
   const { summary } = useRandomizerSession();
   const config = useProfilesStore((state) => state.active?.randomizer);
-  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
+  if (!game) return <EmptyState message={text(NO_GAME_MESSAGE)} />;
   const Options = game.views?.Options;
   if (Options) return <Options />;
   if (config && (game.catalog ?? []).length > 0) {
@@ -26,7 +26,7 @@ const OptionsView = () => {
         <Stack gap="sm">
           {summary.rows.map((row) => <StatRow key={row.label} label={row.label} value={row.value} />)}
         </Stack>
-      ) : <EmptyState message={NO_OPTIONS_MESSAGE} size="sm" />}
+      ) : <EmptyState message={text(NO_OPTIONS_MESSAGE)} size="sm" />}
     </Card>
   );
 };

@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useState } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import { probeServer, serverAddressError } from '../../../../archipelago';
 import type { ProbeConfig } from '../../../../archipelago';
 import { useRandomizerGame } from '../../../game-registry/behavior/useRandomizerGame';
@@ -9,6 +10,7 @@ import type { ConnectionForm } from '../connection-form.type';
 import type { ServerCheck, ServerCheckPhase } from '../server-check.type';
 
 const useServerCheck = (form: ConnectionForm): ServerCheck => {
+  const text = useText();
   const archipelago = useRandomizerGame()?.archipelago;
   const [phase, setPhase] = useState<ServerCheckPhase>('idle');
   const [message, setMessage] = useState<string | null>(null);
@@ -24,10 +26,10 @@ const useServerCheck = (form: ConnectionForm): ServerCheck => {
     if (make) config.createSocket = make;
     setPhase('checking');
     void probeServer(config).then((result) => {
-      setMessage(result.ok ? CONNECTION_TEXT.reachable : result.reason);
+      setMessage(result.ok ? text(CONNECTION_TEXT.reachable) : result.reason);
       setPhase('done');
     });
-  }, [form, archipelago]);
+  }, [form, archipelago, text]);
   return { phase, message, check };
 };
 

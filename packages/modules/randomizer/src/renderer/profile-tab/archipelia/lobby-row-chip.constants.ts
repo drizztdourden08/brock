@@ -1,13 +1,14 @@
 /* @layer renderer-shell @kind constants */
-import type { StatusTone } from '@drizztdourden08/tessera/primitives';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { MembershipState } from '../../archipelia/membership/membership.type';
+import type { RowChipDef } from './lobby-row-chip.type';
 
-const ROW_CHIPS: Readonly<Record<MembershipState['kind'], { label: string; tone: StatusTone } | null>> = {
-  pending: { label: 'Waiting', tone: 'warning' },
-  failed: { label: 'Waiting', tone: 'warning' },
-  approved: { label: 'Approved', tone: 'success' },
-  refused: { label: 'Refused', tone: 'danger' },
-  gone: { label: 'Lobby gone', tone: 'danger' },
+const ROW_CHIPS: Readonly<Record<MembershipState['kind'], RowChipDef | null>> = {
+  pending: { label: msg('randomizer:lobby.chip.waiting'), tone: 'warning' },
+  failed: { label: msg('randomizer:lobby.chip.waiting'), tone: 'warning' },
+  approved: { label: msg('randomizer:lobby.chip.approved'), tone: 'success' },
+  refused: { label: msg('randomizer:lobby.chip.refused'), tone: 'danger' },
+  gone: { label: msg('randomizer:lobby.chip.gone'), tone: 'danger' },
   started: null,
 };
 

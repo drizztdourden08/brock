@@ -1,20 +1,27 @@
 /* @layer renderer-shell @kind logic */
+import { msg, type Text } from '@drizztdourden08/brock-core/i18n';
 import type { NetworkStatus } from '../../../../archipelago';
 import type { RunTile } from '../../dashboard/run-tile.type';
 import type { CheckCounts } from './check-counts.type';
+import { TILE_LABELS } from './progress-tiles.constants';
 
-const checkTilesOf = (counts: CheckCounts): RunTile[] => {
-  const tiles: RunTile[] = [{ label: 'checks taken', value: `${counts.taken} of ${counts.total}` }];
-  if (counts.available !== null) tiles.push({ label: 'available', value: String(counts.available) });
-  if (counts.left !== null) tiles.push({ label: 'left', value: String(counts.left) });
+type Resolve = (value: Text) => string;
+
+const checkTilesOf = (counts: CheckCounts, text: Resolve): RunTile[] => {
+  const taken = text(msg('randomizer:run.progress.takenOf', { taken: counts.taken, total: counts.total }));
+  const tiles: RunTile[] = [{ label: text(TILE_LABELS.taken), value: taken }];
+  if (counts.available !== null) tiles.push({ label: text(TILE_LABELS.available), value: String(counts.available) });
+  if (counts.left !== null) tiles.push({ label: text(TILE_LABELS.left), value: String(counts.left) });
   return tiles;
 };
 
-const roomTilesOf = (room: NetworkStatus['progress']): RunTile[] => [{ label: 'items received', value: String(room.received) }];
+const roomTilesOf = (room: NetworkStatus['progress'], text: Resolve): RunTile[] => [
+  { label: text(TILE_LABELS.received), value: String(room.received) },
+];
 
-const progressTilesOf = (counts: CheckCounts | null, room: NetworkStatus['progress'] | null): RunTile[] => [
-  ...(counts === null ? [] : checkTilesOf(counts)),
-  ...(room === null ? [] : roomTilesOf(room)),
+const progressTilesOf = (counts: CheckCounts | null, room: NetworkStatus['progress'] | null, text: Resolve): RunTile[] => [
+  ...(counts === null ? [] : checkTilesOf(counts, text)),
+  ...(room === null ? [] : roomTilesOf(room, text)),
 ];
 
 export { progressTilesOf };

@@ -12,7 +12,7 @@ interface RandomizerLabels {
   start: Text;
   stop: Text;
   modes?: Partial<Record<RandomizerModeId, Text>>;
-  counters?: Record<string, string>;
+  counters?: Record<string, Text>;
   events?: Text;
   kinds?: Record<string, Text>;
 }

@@ -1,7 +1,8 @@
 /* @layer renderer-shell @kind constants */
-const NONE_LABEL = 'None';
-const UNKNOWN_LABEL = 'Unknown';
-const NO_STATUS_MESSAGE = 'Not connected to a server yet.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const NONE_LABEL = msg('randomizer:common.none');
+const UNKNOWN_LABEL = msg('randomizer:common.unknown');
+const NO_STATUS_MESSAGE = msg('randomizer:network.noStatus');
 
 const NETWORK_PANELS = {
   setup: 1,

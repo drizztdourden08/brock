@@ -1,12 +1,15 @@
 /* @layer renderer-shell @kind constants */
+import { msg, type Text } from '@drizztdourden08/brock-core/i18n';
 import type { LobbyLocation } from '../lobby-setup';
 
-const LOCATION_OPTIONS: { value: LobbyLocation; label: string }[] = [
-  { value: 'local', label: 'Local' },
-  { value: 'lan', label: 'LAN' },
-  { value: 'remote', label: 'Remote' },
+const LOCATION_OPTIONS: { value: LobbyLocation; label: Text }[] = [
+  { value: 'local', label: msg('randomizer:lobby.location.local') },
+  { value: 'lan', label: msg('randomizer:lobby.location.lan') },
+  { value: 'remote', label: msg('randomizer:lobby.location.remote') },
 ];
+const LOCATION_LABEL = msg('randomizer:lobby.locationLabel');
+const NAME_LABEL = msg('randomizer:lobby.nameLabel');
 
-const NAME_PLACEHOLDER = 'Player Name / Slot Name';
+const NAME_PLACEHOLDER = msg('randomizer:lobby.namePlaceholder');
 
-export { LOCATION_OPTIONS, NAME_PLACEHOLDER };
+export { LOCATION_LABEL, LOCATION_OPTIONS, NAME_LABEL, NAME_PLACEHOLDER };

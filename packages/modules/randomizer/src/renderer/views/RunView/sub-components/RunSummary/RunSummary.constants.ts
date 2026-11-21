@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind constants */
-const SUMMARY_TITLE = 'Summary';
-const WAITING_MESSAGE = 'Waiting for the game to start.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const SUMMARY_TITLE = msg('randomizer:run.summary.title');
+const WAITING_MESSAGE = msg('randomizer:run.summary.waiting');
 
 export { SUMMARY_TITLE, WAITING_MESSAGE };

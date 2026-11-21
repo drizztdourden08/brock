@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { StatusTone } from '@drizztdourden08/tessera/primitives';
 
 const MAX_VISIBLE = 20;
 
-const INCOMING_TITLE = 'Incoming';
+const INCOMING_TITLE = msg('randomizer:deliveries.incoming');
 
 const SOURCE_TONES: readonly (readonly [string, StatusTone])[] = [
   ['cheat', 'warning'],

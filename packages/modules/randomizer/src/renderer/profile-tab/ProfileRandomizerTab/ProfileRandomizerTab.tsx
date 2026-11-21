@@ -25,11 +25,11 @@ const ProfileRandomizerTab = ({ randomizer }: ProfileRandomizerTabProps) => {
 
   return (
     <Stack gap="lg">
-      <FactsSection title={RUN_TITLE} facts={runFactsOf(randomizer, text, game?.labels?.modes?.[randomizer.mode])} />
+      <FactsSection title={text(RUN_TITLE)} facts={runFactsOf(randomizer, text, game?.labels?.modes?.[randomizer.mode])} />
       <Stack gap="sm">
-        <Text variant="subtitle">{SCOPE_TITLES[scope]}</Text>
-        <Text variant="caption" tone="muted">{changedTextOf(changed)}</Text>
-        <SegmentedControl size="sm" value={scope} options={SCOPE_OPTIONS} onChange={setScope} />
+        <Text variant="subtitle">{text(SCOPE_TITLES[scope])}</Text>
+        <Text variant="caption" tone="muted">{changedTextOf(changed, text)}</Text>
+        <SegmentedControl size="sm" value={scope} options={SCOPE_OPTIONS.map((option) => ({ ...option, label: text(option.label) }))} onChange={setScope} />
         <OptionGroupList groups={groupsOf(shown)} valueOf={(option) => values[option.key] ?? ''} readout />
       </Stack>
     </Stack>

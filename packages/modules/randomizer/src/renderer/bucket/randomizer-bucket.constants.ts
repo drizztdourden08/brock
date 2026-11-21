@@ -15,6 +15,6 @@ const DEFAULT_RANDOMIZER_LABELS: RandomizerLabels = {
   stop: msg('randomizer:label.stop'),
 };
 
-const EXTRA_PAGES_META = { icon: 'network', empty: 'No extra pages', order: 7 } as const;
+const EXTRA_PAGES_META = { icon: 'network', empty: msg('randomizer:bucket.noExtraPages'), order: 7 } as const;
 
 export { DEFAULT_RANDOMIZER_LABELS, EXTRA_PAGES_META, RANDOMIZER_BUCKET_ID };

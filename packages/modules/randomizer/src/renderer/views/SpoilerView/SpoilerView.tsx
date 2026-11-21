@@ -12,7 +12,7 @@ const SpoilerView = () => {
   const text = useText();
   const labels = useRandomizerLabels();
   const { summary } = useRandomizerSession();
-  if (!game) return <EmptyState message={NO_GAME_MESSAGE} />;
+  if (!game) return <EmptyState message={text(NO_GAME_MESSAGE)} />;
   const Spoiler = game.views?.Spoiler;
   if (Spoiler) return <Spoiler />;
   if (game.tracker) return <ChecksView initial={SPOILER_CHECKS_PREFS} />;

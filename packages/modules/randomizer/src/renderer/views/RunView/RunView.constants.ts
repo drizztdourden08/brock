@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind constants */
-const NO_GAME_MESSAGE = 'No randomizer game is registered.';
-const NO_PROFILE_MESSAGE = 'The active profile is not randomized.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const NO_GAME_MESSAGE = msg('randomizer:view.noGame');
+const NO_PROFILE_MESSAGE = msg('randomizer:view.noProfile');
 
 const RUN_SPANS = {
   summary: 1,

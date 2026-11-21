@@ -1,15 +1,16 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { ConnectionTextField } from '../connection-form.type';
 
 const CONNECTION_TEXT = {
-  host: 'Host',
-  port: 'Port',
-  slotName: 'Slot name',
-  password: 'Password',
-  deathLink: 'DeathLink',
-  check: 'Check server',
-  checking: 'Checking',
-  reachable: 'Server reachable.',
+  host: msg('randomizer:connection.host'),
+  port: msg('randomizer:connection.port'),
+  slotName: msg('randomizer:connection.slotName'),
+  password: msg('randomizer:connection.password'),
+  deathLink: msg('randomizer:connection.deathLink'),
+  check: msg('randomizer:connection.check'),
+  checking: msg('randomizer:connection.checking'),
+  reachable: msg('randomizer:connection.reachable'),
 } as const;
 
 const CONNECTION_TEXT_FIELDS: readonly ConnectionTextField[] = ['host', 'port', 'slotName'];

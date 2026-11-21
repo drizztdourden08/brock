@@ -1,5 +1,5 @@
 /* @layer renderer-app @kind component */
-import type { WidgetMeta } from '@drizztdourden08/brock-react';
+import { useText, type WidgetMeta } from '@drizztdourden08/brock-react';
 import { SegmentedControl, Stack } from '@drizztdourden08/tessera/primitives';
 import { useRandomizerGame } from '../renderer/game-registry/behavior/useRandomizerGame';
 import { useRandomizerGameStore } from '../renderer/game-registry/behavior/useRandomizerGameStore';
@@ -11,6 +11,7 @@ import {
 } from './inventory.widget.constants';
 
 const InventoryWidget = () => {
+  const text = useText();
   const game = useRandomizerGame();
   const feed = useTrackerFeed();
   const inventory = game?.inventory;
@@ -20,7 +21,7 @@ const InventoryWidget = () => {
 
   return (
     <Stack gap="md">
-      {options.length > 1 && <SegmentedControl aria-label={LAYOUT_LABEL} size="sm" value={layout.id} options={options} onChange={setLayout} />}
+      {options.length > 1 && <SegmentedControl aria-label={text(LAYOUT_LABEL)} size="sm" value={layout.id} options={options} onChange={setLayout} />}
       <TrackerInventory layout={layout} held={new Set(feed?.held ?? [])} artOf={game?.tracker?.artOf} missingArtNotice={inventory.missingArtNotice} />
     </Stack>
   );

@@ -122,7 +122,7 @@ describe('S2 preloading', { tags: ['standard'] }, () => {
     const preload = routePreloader(registry);
     const nav = buildHubNav({ home: { id: 'saves', label: 'Saves' } as never, groups: [], highlight: (page) => preload(`game/${page}`) });
     nav.home?.onHighlight?.();
-    const [palette] = paletteGroups([{ id: 'screen:credits', kind: 'screen', label: 'Credits', breadcrumb: [], keywords: [], target: { route: 'credits' } }], '', null, preload);
+    const [palette] = paletteGroups([{ id: 'screen:credits', kind: 'screen', label: 'Credits', breadcrumb: [], keywords: [], target: { route: 'credits' } }], '', { preload });
     palette?.items[0]?.onHighlight?.();
     await flush();
     expect(loaded.sort()).toEqual(['credits', 'saves']);

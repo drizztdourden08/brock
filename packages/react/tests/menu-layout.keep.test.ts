@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind test */
 // @vitest-environment happy-dom
+import { fallbackText } from '../src/i18n/fallback-text';
 import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -110,7 +111,7 @@ const specOf = (id: string): TitleBarItemSpec => {
   return source;
 };
 
-const STATE = { enabled: () => true, chords: () => undefined };
+const STATE = { enabled: () => true, chords: () => undefined, text: fallbackText };
 
 describe('K1 title bar items as menu items', { tags: ['critical'] }, () => {
   it('turns a button into an item that keeps its shortcut, and a disabled one into a disabled item with its reason', () => {
@@ -127,7 +128,7 @@ describe('K1 title bar items as menu items', { tags: ['critical'] }, () => {
   });
 
   it('disables an item whose command is not enabled and shows the chord of the command', () => {
-    const entry = titleBarMenuEntry('go', { kind: 'button', label: 'Go', icon: 'send', command: 'doc.go' }, { enabled: () => false, chords: () => ['Ctrl+G'] });
+    const entry = titleBarMenuEntry('go', { kind: 'button', label: 'Go', icon: 'send', command: 'doc.go' }, { enabled: () => false, chords: () => ['Ctrl+G'], text: fallbackText });
     expect(entry).toMatchObject({ disabled: true, shortcut: 'Ctrl+G' });
   });
 

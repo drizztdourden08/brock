@@ -33,7 +33,7 @@ const storageActions = (refresh: (domain?: string) => void, text: (value: Text) 
   revealRoot: () => requireHostApi().revealDataFolder(),
   reveal: async (domain) => {
     const result = await requireHostApi().revealDataDomain(domain.domain);
-    if (!result.success) toast(msg('brock-shell:storage.reveal.failed', { name: text(domain.label), error: result.error ?? '' }), { variant: 'danger' });
+    if (!result.success) toast(msg('brock-shell:storage.reveal.failed', { name: text(domain.label), error: result.error }), { variant: 'danger' });
   },
   clean: async (domain, olderThanDays) => {
     const api = requireHostApi();

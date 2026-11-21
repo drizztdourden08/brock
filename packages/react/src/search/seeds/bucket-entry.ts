@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind logic */
 import type { BucketDef } from '../../screens/conventions/screens-config.type';
-import { seedKeywords } from '../normalise-keywords';
+import { seedKeywords } from '../seed-keywords';
 import { SCREEN_ID_PREFIX } from '../search.constants';
 import type { IndexEntry, SearchFileSeed } from '../search.type';
 

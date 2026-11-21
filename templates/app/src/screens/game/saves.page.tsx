@@ -1,6 +1,6 @@
 /* @layer renderer-app @kind component */
 import { msg } from '@drizztdourden08/brock-core/i18n';
-import { usePageSearch, useT } from '@drizztdourden08/brock-react';
+import { usePageSearch, useT, useText } from '@drizztdourden08/brock-react';
 import type { PageProps, ScreenMeta } from '@drizztdourden08/brock-react';
 import { EmptyState, Stack, StatRow, Text } from '@drizztdourden08/tessera/primitives';
 
@@ -16,6 +16,7 @@ const meta: ScreenMeta = {
 const SavesPage = (props: PageProps) => {
   const { bucket } = props;
   const t = useT();
+  const text = useText();
   const filter = usePageSearch().trim().toLowerCase();
   const saves = [
     { name: t('app:saves.sample.camp'), when: t('app:saves.when.today') },
@@ -24,7 +25,7 @@ const SavesPage = (props: PageProps) => {
   const shown = saves.filter((save) => save.name.toLowerCase().includes(filter));
   return (
     <Stack>
-      <Text variant="body">{t('app:saves.body', { title: bucket.title })}</Text>
+      <Text variant="body">{t('app:saves.body', { title: text(bucket.title) })}</Text>
       {shown.length === 0 ? <EmptyState message={t('app:saves.empty')} /> : shown.map((save) => <StatRow key={save.name} label={save.name} value={save.when} />)}
     </Stack>
   );

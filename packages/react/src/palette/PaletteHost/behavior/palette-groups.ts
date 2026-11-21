@@ -7,7 +7,7 @@ import { ROUTE_SEPARATOR } from '../../../navigation/navigation.constants';
 import { rankInScope } from '../../../search/rank-in-scope';
 import type { PaletteScope, SearchEntry } from '../../../search/search.type';
 import { IDLE_SCREEN_LIMIT, REST_GROUP_LABEL, SCREENS_GROUP_LABEL } from '../../palette.constants';
-import type { PaletteItem, PalettePreload } from '../PaletteHost.type';
+import type { PaletteGroupsOptions, PaletteItem, PalettePreload } from '../PaletteHost.type';
 import { toPaletteItem } from './to-palette-item';
 
 const group = (id: string, label: string | undefined, entries: readonly SearchEntry[], preload: PalettePreload): CommandPaletteGroup<PaletteItem>[] =>
@@ -22,7 +22,8 @@ const idleGroups = (catalog: readonly SearchEntry[], scope: PaletteScope | null,
   return [...group('hub', scope?.title, pages, preload), ...group('screens', text(SCREENS_GROUP_LABEL), screens, preload)];
 };
 
-const paletteGroups = (catalog: readonly SearchEntry[], query: string, scope: PaletteScope | null = null, preload?: PalettePreload, text: (value: Text) => string = fallbackText): CommandPaletteGroup<PaletteItem>[] => {
+const paletteGroups = (catalog: readonly SearchEntry[], query: string, options: PaletteGroupsOptions = {}): CommandPaletteGroup<PaletteItem>[] => {
+  const { scope = null, preload, text = fallbackText } = options;
   if (query.trim().length === 0) return idleGroups(catalog, scope, preload, text);
   const { inScope, rest } = rankInScope(catalog, query, scope?.bucket ?? null);
   if (scope === null) return [{ id: 'results', items: rest.map((entry) => toPaletteItem(entry, preload)) }];

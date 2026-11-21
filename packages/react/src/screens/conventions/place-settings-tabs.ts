@@ -1,7 +1,7 @@
 /* @layer renderer-shell @kind logic */
 import type { HubDef, HubGroup } from '../../hub/hub.type';
 import { settingsTabPage } from '../../hub/settings-tab-page';
-import { textGroupKey } from '../../settings/group-key';
+import { textGroupKey } from '../../settings/text-group-key';
 import type { TabDef } from '../../settings/settings.type';
 import { SETTINGS_GROUP_PREFIX } from './screens.constants';
 

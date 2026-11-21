@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it } from 'vitest';
 import { fallbackText } from '../src/i18n/fallback-text';
+import { hubSearchPlaceholder } from '../src/hub/Hub/behavior/hub-search-placeholder';
 import type { HubDef } from '../src/hub/hub.type';
 import type { MenuItem } from '../src/menu/menu.type';
 import { withRoutes } from '../src/menu/with-routes';
@@ -80,7 +81,7 @@ describe('K1 buildScreenTree', { tags: ['critical'] }, () => {
   it('turns a custom page into a hub page with the standard frame and search on', () => {
     const game = hubOf(tree.hubs, 'game');
     expect(game.groups[0]?.pages.find((page) => page.id === 'controls')?.label).toBe('Controls');
-    expect(fallbackText(game.search?.placeholder ?? '')).toBe('Search Game');
+    expect(game.search ? hubSearchPlaceholder(game, game.search, fallbackText) : '').toBe('Search Game');
   });
 
   it('uses the first page as home when a bucket has no hero', () => {

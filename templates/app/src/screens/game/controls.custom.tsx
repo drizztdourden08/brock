@@ -1,6 +1,6 @@
 /* @layer renderer-app @kind component */
 import { msg } from '@drizztdourden08/brock-core/i18n';
-import { SearchAnchor, useT } from '@drizztdourden08/brock-react';
+import { SearchAnchor, useT, useText } from '@drizztdourden08/brock-react';
 import type { PageProps, ScreenMeta, SearchEntrySeed } from '@drizztdourden08/brock-react';
 import { Stack, StatRow, Text } from '@drizztdourden08/tessera/primitives';
 
@@ -15,12 +15,13 @@ const searchEntries: SearchEntrySeed[] = [
 const ControlsPage = (props: PageProps) => {
   const { bucket } = props;
   const t = useT();
+  const text = useText();
   return (
     <Stack>
-      <Text variant="body">{t('app:controls.body', { title: bucket.title })}</Text>
+      <Text variant="body">{t('app:controls.body', { title: text(bucket.title) })}</Text>
       {searchEntries.map((entry) => (
-        <SearchAnchor key={entry.label} anchor={entry.anchor ?? entry.label}>
-          <StatRow label={entry.label} value={entry.description} />
+        <SearchAnchor key={text(entry.label)} anchor={entry.anchor ?? text(entry.label)}>
+          <StatRow label={text(entry.label)} value={entry.description === undefined ? undefined : text(entry.description)} />
         </SearchAnchor>
       ))}
     </Stack>

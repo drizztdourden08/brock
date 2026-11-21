@@ -1,11 +1,11 @@
 /* @layer renderer-shell @kind hook */
 import { useText } from '@drizztdourden08/brock-react';
-import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
+import type { TitleBarActionDef } from '@drizztdourden08/brock-react';
 import { UPDATE_ACTION } from './update-action.constants';
 import { useUpdaterStore } from './useUpdaterStore';
 import { useSelfUpdateHost } from './useSelfUpdateHost';
 
-const useUpdateAction = (): WindowTitleBarAction | null => {
+const useUpdateAction = (): TitleBarActionDef | null => {
   const text = useText();
   const host = useSelfUpdateHost();
   const available = useUpdaterStore((s) => s.status === 'available' && s.info !== null);

@@ -2,11 +2,9 @@
 import type { DataDomainDef, DomainUsage } from '@drizztdourden08/brock-core';
 import { formatBytes } from '@drizztdourden08/brock-core';
 import { msg } from '@drizztdourden08/brock-core/i18n';
-import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SettingAction } from '../../../settings/settings.type';
 import type { StorageActions } from '../StoragePage.type';
-
-type Resolve = (value: Text) => string;
+import type { Resolve } from './domain-actions.type';
 
 const sizeText = (usage: DomainUsage | undefined, text: Resolve): string =>
   text(usage ? msg('brock-shell:storage.size', { bytes: formatBytes(usage.bytes), count: usage.count }) : msg('brock-shell:storage.size.unknown'));

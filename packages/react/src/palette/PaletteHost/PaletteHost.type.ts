@@ -1,8 +1,9 @@
 /* @layer renderer-shell @kind types */
 import type { CommandPaletteGroup, CommandPaletteItem } from '@drizztdourden08/tessera/composites';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { MenuEntry } from '../../menu/menu.type';
-import type { SearchAction } from '../../search/search.type';
-import type { PalettePick, PickOption } from '../palette.type';
+import type { PaletteScope, SearchAction } from '../../search/search.type';
+import type { PalettePick, PickOption, PickScope } from '../palette.type';
 
 interface PaletteHostProps {
   menu: readonly MenuEntry[];
@@ -36,6 +37,20 @@ interface PaletteModel {
   close: () => void;
 }
 
+interface ScopeModelInput {
+  picking: PalettePick | null;
+  active: PickScope | undefined;
+  loaded: readonly PickOption[] | null;
+  current: string | null;
+  text: (value: Text) => string;
+}
+
+interface PaletteGroupsOptions {
+  scope?: PaletteScope | null;
+  preload?: PalettePreload;
+  text?: (value: Text) => string;
+}
+
 interface PickScopeModel {
   options: readonly PickOption[];
   scope: string | null;
@@ -60,4 +75,4 @@ interface ScopeKeyEvent {
   metaKey: boolean;
 }
 
-export type { LoadedScopes, PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel, PalettePreload, PickScopeModel, ScopeKeyEvent, StartedScopes };
+export type { LoadedScopes, PaletteConfirmProps, PaletteHostProps, PaletteItem, PaletteModel, PaletteGroupsOptions, PalettePreload, PickScopeModel, ScopeModelInput, ScopeKeyEvent, StartedScopes };

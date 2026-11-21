@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { FormFactor } from '@drizztdourden08/brock-core';
 import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { useText } from '../../../i18n';
-import { textGroupKey } from '../../group-key';
+import { textGroupKey } from '../../text-group-key';
 import type { TabDef } from '../../settings.type';
 import type { HubNavGroup, HubNavModel } from '../SettingsHub.type';
 

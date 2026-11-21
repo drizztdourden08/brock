@@ -8,7 +8,6 @@ import { connectionShown } from '../online/connection-step/connection-shown';
 import { connectionValuesOf } from '../online/connection-step/connection-values-of';
 import { withConnection } from '../online/connection-step/with-connection';
 import { RandomizerStepBody } from './RandomizerStepBody';
-import { formOf } from './form-of';
 import { optionsSliceOf } from './options-slice-of';
 import { randomizerSummary } from './randomizer-summary';
 import { RANDOMIZER_SLICE, RANDOMIZER_STEP_ID, initialForm } from './wizard.constants';

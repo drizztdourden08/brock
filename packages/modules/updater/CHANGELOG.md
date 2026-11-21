@@ -1,5 +1,39 @@
 # @drizztdourden08/brock-updater
 
+## 0.123.0
+
+### Patch Changes
+
+- f37ddd7: The input, display and updater modules ship their strings as `input:*`, `display:*` and `updater:*` message keys. In input, `DeviceCardAction.label` and `RumbleTest.label` are `Text`, and `formatKeyCode`, `formatKeyBinding`, `getBindingLabel` and `newProfile` take a `text` function.
+- 5a6a830: The context menu command label and default name, the mascot search hint and the update dialog texts take a `Text`, so apps can translate them. `product.mascot.searchHint` is a `Text`.
+- Updated dependencies [0fe02f3]
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [9901976]
+- Updated dependencies [6136c5f]
+- Updated dependencies [c9ba35d]
+- Updated dependencies [373bb8c]
+- Updated dependencies [6610b88]
+- Updated dependencies [37c4812]
+- Updated dependencies [5a6a830]
+- Updated dependencies [4eb231d]
+- Updated dependencies [b078210]
+- Updated dependencies [4f09316]
+- Updated dependencies [b947306]
+- Updated dependencies [a546d43]
+- Updated dependencies [8b666df]
+- Updated dependencies [228e793]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [1078faa]
+- Updated dependencies [2237d1c]
+- Updated dependencies [d92503d]
+- Updated dependencies [61a5682]
+  - @drizztdourden08/brock-electron@0.123.0
+  - @drizztdourden08/brock-core@0.123.0
+  - @drizztdourden08/brock-react@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

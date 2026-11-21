@@ -1,5 +1,41 @@
 # @drizztdourden08/brock-react
 
+## 0.123.0
+
+### Minor Changes
+
+- 5fb12dc: User-facing def fields take `Text`, a plain string or a `msg()` ref: menu items, settings defs, screen titles, tours, commands, dialog and toast options, the tray and boot task labels. Plain strings render as before.
+- c9ba35d: Screens, hubs, the search index and the palette take `Text`. Bucket, group, hub and tab titles, hub actions, search seeds and settings groups are resolved where they are drawn, and the palette strings live in the English tables. The build keeps `{ key }` for a `msg()` title in the search seeds, and the runtime catalog resolves it in the active language.
+- 373bb8c: Title bar items and actions, legalText, data domain labels and boot report details take Text, and the region, title bar, About and storage words move to the brock-shell and brock-main catalogs.
+- 4eb231d: The Report a bug palette action, the randomizer wizard steps and their option sub-steps, the activity kind labels, the Checks view, the Run activity card and the Logs view take a `Text`, so apps can translate them. A profile wizard step's `label`, `description`, `summary` and `subSteps` labels are `Text` (`ProfileWizardSubStep` is exported), and `placeWizardSteps` takes a `text` resolver as its third argument. `TrackerGrouping.label` and `description`, and `RandomizerLabels.kinds`, are `Text`.
+- a546d43: `I18nProvider` takes `document={false}` to leave the page `lang` and `dir` alone, so a nested provider for another language no longer overwrites the app's.
+- 8b666df: Renderer i18n binding: `I18nProvider`, `useT`, `useText`, `useLocale`, `Trans`, a `locales` prop on `BrockApp`, module `messages` and `i18n` locale source (per profile capable), translated Tessera strings, and `lang` and `dir` on the document. With no locales and no i18n module the app stays in English.
+- 228e793: The Tessera bridge translates function strings too. A `tessera` message such as `table.rowsOf` receives the named params of that string. The app locale now also reaches Tessera through `TesseraOverrides.locale`.
+- 9d28100: A job line is a `Text`. `JobHandle.step`, `progress`, `line` and `done` take a string or a `msg` key with values, and `JobSnapshot.line` carries it. The job dialog, the catalog install bar and the MSU import form show it in the active language.
+
+### Patch Changes
+
+- 3e043d7: Main always prints every boot step to stdout as a `[boot]` line, including each main and renderer task with its duration.
+- 6610b88: The randomizer module has its own `randomizer` translation namespace. Option tab, option label, hint, description and choice labels, the options aside label, run panel titles, the missing art notice, tracker badges, assumptions and facet labels, the Archipelago start check, and the page, bucket, mode and widget labels are all `Text` and are resolved where they are drawn. `ChecksWidgetViews` and the inventory slot take an optional `label`. `ProfileModeDef.label` is a `Text`. The Archipelago world export stays English: `ApOptionDef.displayName` and `description` take `Text` and are written as plain strings.
+- 37c4812: The tools, catalog, secrets and msu modules ship their strings as message keys in their own namespaces. `ToolDef.installHint`, `ToolState.hint` and the catalog install bar text are `Text`. Tessera object entries such as `anchor.names` and `toolbars.sides` render one key per sub-key and are read back the same way.
+- 5a6a830: The context menu command label and default name, the mascot search hint and the update dialog texts take a `Text`, so apps can translate them. `product.mascot.searchHint` is a `Text`.
+- b947306: brock sync now types the keys of package text tables. React, Electron and the i18n module declare their locale folder, so `msg('brock-app:...')`, `msg('brock-main:...')` and `msg('i18n:...')` pass the `keyof Messages` check in an app. An app table that overrides a package key gives one member, not two. The package base tables still load from the packages, so the bundle does not change.
+- 3ea4088: Widget, widget kit, kit overlay, kit requirement and job titles now accept message references and resolve them where they are shown.
+- 1078faa: The app log arms the global error handlers when the bus is created and mirrors every warn and error entry to the main process terminal.
+- 2237d1c: The randomizer module's remaining visible English text takes `Text` and lives in `locales/en/randomizer.json`: the run view, the network view and pill, the lobby setup, the profile tab facts, the wizard step, the connection fields and the extra pages empty message. The facts and row helpers of the profile tab take a trailing `text` resolver, `RandomizerLabels.counters` is `Record<string, Text>`, and `LiveMeta.empty` accepts a `Text`.
+- d92503d: Brock now builds on Tessera 0.132. The brock-react peer range asks for Tessera 0.132 or later, since the locale and key name strings come from it.
+- 61a5682: An asset step report takes a `Text` for its line, so `report.line(msg('ns:key'))` shows in the active language. Brock React typechecks when the app's generated messages type narrows the keys: `isMessageKey` narrows the tour and Tessera keys read at run time.
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [373bb8c]
+- Updated dependencies [5a6a830]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [1078faa]
+- Updated dependencies [61a5682]
+  - @drizztdourden08/brock-core@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

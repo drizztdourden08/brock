@@ -1,5 +1,43 @@
 # @drizztdourden08/brock-randomizer
 
+## 0.123.0
+
+### Minor Changes
+
+- 6610b88: The randomizer module has its own `randomizer` translation namespace. Option tab, option label, hint, description and choice labels, the options aside label, run panel titles, the missing art notice, tracker badges, assumptions and facet labels, the Archipelago start check, and the page, bucket, mode and widget labels are all `Text` and are resolved where they are drawn. `ChecksWidgetViews` and the inventory slot take an optional `label`. `ProfileModeDef.label` is a `Text`. The Archipelago world export stays English: `ApOptionDef.displayName` and `description` take `Text` and are written as plain strings.
+- 4eb231d: The Report a bug palette action, the randomizer wizard steps and their option sub-steps, the activity kind labels, the Checks view, the Run activity card and the Logs view take a `Text`, so apps can translate them. A profile wizard step's `label`, `description`, `summary` and `subSteps` labels are `Text` (`ProfileWizardSubStep` is exported), and `placeWizardSteps` takes a `text` resolver as its third argument. `TrackerGrouping.label` and `description`, and `RandomizerLabels.kinds`, are `Text`.
+- 2237d1c: The randomizer module's remaining visible English text takes `Text` and lives in `locales/en/randomizer.json`: the run view, the network view and pill, the lobby setup, the profile tab facts, the wizard step, the connection fields and the extra pages empty message. The facts and row helpers of the profile tab take a trailing `text` resolver, `RandomizerLabels.counters` is `Record<string, Text>`, and `LiveMeta.empty` accepts a `Text`.
+
+### Patch Changes
+
+- Updated dependencies [0fe02f3]
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [9901976]
+- Updated dependencies [6136c5f]
+- Updated dependencies [c9ba35d]
+- Updated dependencies [373bb8c]
+- Updated dependencies [6610b88]
+- Updated dependencies [37c4812]
+- Updated dependencies [5a6a830]
+- Updated dependencies [4eb231d]
+- Updated dependencies [b078210]
+- Updated dependencies [4f09316]
+- Updated dependencies [b947306]
+- Updated dependencies [a546d43]
+- Updated dependencies [8b666df]
+- Updated dependencies [228e793]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [1078faa]
+- Updated dependencies [2237d1c]
+- Updated dependencies [d92503d]
+- Updated dependencies [61a5682]
+  - @drizztdourden08/brock-electron@0.123.0
+  - @drizztdourden08/brock-core@0.123.0
+  - @drizztdourden08/brock-react@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

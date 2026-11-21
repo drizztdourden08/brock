@@ -1,5 +1,20 @@
 # @drizztdourden08/create-brock
 
+## 0.123.0
+
+### Patch Changes
+
+- 9aa0c7e: The blank app template ships its own English table, src/locales/en/app.json, and passes the generated locales to BrockApp and to the main bootstrap. Its screens, settings, tour and widgets take their text through msg and useT.
+- Updated dependencies [4464585]
+- Updated dependencies [1e163aa]
+- Updated dependencies [c9ba35d]
+- Updated dependencies [37c4812]
+- Updated dependencies [af662ab]
+- Updated dependencies [b078210]
+- Updated dependencies [b947306]
+- Updated dependencies [15fa526]
+  - @drizztdourden08/brock-build@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

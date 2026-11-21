@@ -1,5 +1,34 @@
 # @drizztdourden08/brock-electron
 
+## 0.123.0
+
+### Minor Changes
+
+- 5fb12dc: User-facing def fields take `Text`, a plain string or a `msg()` ref: menu items, settings defs, screen titles, tours, commands, dialog and toast options, the tray and boot task labels. Plain strings render as before.
+- 9901976: The clipboard backend runs on the async clipboard of Electron 45 and on Electron 38 to 44. It picks the API the running Electron has: the sync calls up to 44, and `clipboard.read`, `clipboard.write` and `ClipboardItem` from 45. The clipboard watch never starts a poll while the previous one is still reading.
+- 373bb8c: Title bar items and actions, legalText, data domain labels and boot report details take Text, and the region, title bar, About and storage words move to the brock-shell and brock-main catalogs.
+- b078210: Main process text goes through `ctx.i18n`. Brock's own English (tray, edit menu, dialogs, boot labels, splash) lives in `brock-main.json` and shows with no locales option. `bootstrapApp` takes `locales`, and a locale change rebuilds the tray, the edit menu and the splash text.
+- 4f09316: New `brock-i18n` module: the stored app and profile language, system detection, `window.api.i18n`, the `--lang` switch and a Language settings tab. `MainModule` gains a `beforeReady(ctx)` hook that runs before the app is ready, and `offeredLocales()` from `brock-electron/main` lists the tags the app ships.
+
+### Patch Changes
+
+- 0fe02f3: Every boot sequence line on the main terminal starts with a wall-clock stamp, HH:MM:SS.mmm, and `clockStamp` is exported.
+- 3e043d7: Main always prints every boot step to stdout as a `[boot]` line, including each main and renderer task with its duration.
+- 6136c5f: In development, an app window that loaded but sent no boot progress for 8 s is reloaded once.
+- b947306: brock sync now types the keys of package text tables. React, Electron and the i18n module declare their locale folder, so `msg('brock-app:...')`, `msg('brock-main:...')` and `msg('i18n:...')` pass the `keyof Messages` check in an app. An app table that overrides a package key gives one member, not two. The package base tables still load from the packages, so the bundle does not change.
+- 3ea4088: Widget, widget kit, kit overlay, kit requirement and job titles now accept message references and resolve them where they are shown.
+- 1078faa: The app log arms the global error handlers when the bus is created and mirrors every warn and error entry to the main process terminal.
+- Updated dependencies [3e043d7]
+- Updated dependencies [5318153]
+- Updated dependencies [5fb12dc]
+- Updated dependencies [373bb8c]
+- Updated dependencies [5a6a830]
+- Updated dependencies [3ea4088]
+- Updated dependencies [9d28100]
+- Updated dependencies [1078faa]
+- Updated dependencies [61a5682]
+  - @drizztdourden08/brock-core@0.123.0
+
 ## 0.122.0
 
 ### Patch Changes

@@ -16,7 +16,7 @@ const knownRows = (mappings: readonly MappingEntry[], devices: readonly DeviceEn
       family: entry.family ?? 'generic',
       source: entry.source,
       inputs: entry.inputCount,
-      group: 'Known',
+      group: 'known',
       connectedKey: null,
     }));
 };

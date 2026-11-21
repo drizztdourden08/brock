@@ -1,10 +1,11 @@
 /* @layer renderer-shell @kind logic */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { DeviceCardAction } from '../device-card-action.type';
 import { REPORT_ACTION_ID } from '../input-renderer.constants';
 import { REPORT_ACTION_LABEL } from './controller-hooks.constants';
 import { useControllerReportStore } from './useControllerReportStore';
 
-const reportDeviceCardAction = (label: string = REPORT_ACTION_LABEL): DeviceCardAction => ({
+const reportDeviceCardAction = (label: Text = REPORT_ACTION_LABEL): DeviceCardAction => ({
   id: REPORT_ACTION_ID,
   label,
   icon: 'bug',

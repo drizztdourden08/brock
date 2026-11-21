@@ -2,7 +2,7 @@
 import type { MappingSource } from '../../mapping/mapping-entry.type';
 import type { PadFamily } from '../../pad/controller-slot.type';
 
-type DirectoryGroup = 'Connected' | 'Known';
+type DirectoryGroup = 'connected' | 'known';
 
 type DirectorySource = MappingSource | 'none';
 

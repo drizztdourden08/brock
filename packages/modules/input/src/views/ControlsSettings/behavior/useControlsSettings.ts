@@ -3,8 +3,9 @@ import { useEffect, useMemo } from 'react';
 import { useText } from '@drizztdourden08/brock-react';
 import { controlsForProfile } from '../../../bindings';
 import { DEFAULT_LABELS } from '../ControlsSettings.constants';
-import type { ControlsContext, ControlsLabels, ControlsSettingsProps } from '../ControlsSettings.type';
+import type { ControlsContext, ControlsSettingsProps } from '../ControlsSettings.type';
 import { listeningLabel } from './listening-label';
+import { resolveLabels } from './resolve-labels';
 import { useBindingState } from './useBindingState';
 import { useControlsTabs } from './useControlsTabs';
 import { useDeviceSync } from './useDeviceSync';
@@ -17,7 +18,7 @@ import { useVerbScheme } from './useVerbScheme';
 
 const useControlsSettings = ({ game, profiles, globalBindings, initialTab }: ControlsSettingsProps) => {
   const text = useText();
-  const labels: ControlsLabels = useMemo(() => ({ ...DEFAULT_LABELS, ...game.labels }), [game.labels]);
+  const labels = useMemo(() => resolveLabels({ ...DEFAULT_LABELS, ...game.labels }, text), [game.labels, text]);
   const profileActions = useProfileActions({ store: profiles, keyboardDefaults: game.keyboardDefaults });
   const { activeProfile, updateActiveProfile } = profileActions;
   const deviceSync = useDeviceSync(game.extraDevices);

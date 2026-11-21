@@ -1,11 +1,12 @@
 /* @layer renderer-app @kind component */
 import { useCallback } from 'react';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { PageProps, ScreenMeta } from '@drizztdourden08/brock-react';
 import { ControllerDirectory } from '../../views/ControllerDirectory';
 import { PADS_ROUTE } from './controllers.constants';
 
 const meta: ScreenMeta = {
-  title: 'Directory',
+  title: msg('input:page.directory'),
   icon: 'list',
   order: 0,
   fill: true,

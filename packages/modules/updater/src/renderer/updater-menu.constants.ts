@@ -1,9 +1,9 @@
 /* @layer renderer-shell @kind constants */
-import type { MenuEntry } from '@drizztdourden08/brock-react';
+import type { MenuEntryDef } from '@drizztdourden08/brock-react';
 import { UPDATE_ACTION } from './update-action.constants';
 import { useUpdaterStore } from './useUpdaterStore';
 
-const UPDATER_MENU: MenuEntry[] = [
+const UPDATER_MENU: MenuEntryDef[] = [
   {
     key: UPDATE_ACTION.id,
     label: UPDATE_ACTION.label,

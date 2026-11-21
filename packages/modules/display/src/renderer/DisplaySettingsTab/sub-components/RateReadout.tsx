@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind component */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import { useText } from '@drizztdourden08/brock-react';
 import { StatRow, Text } from '@drizztdourden08/tessera/primitives';
 import { isSyncedRate } from '../../../rates/is-synced-rate';
 import { DISPLAY_ROW_COPY } from '../DisplaySettingsTab.constants';
@@ -6,15 +8,17 @@ import type { RateReadoutProps } from '../DisplaySettingsTab.type';
 
 const RateReadout = (props: RateReadoutProps) => {
   const { currentHz } = props;
+  const text = useText();
   const rounded = currentHz === null ? null : Math.round(currentHz);
   const uneven = rounded !== null && !isSyncedRate(currentHz);
+  const value = rounded === null ? text(msg('display:readout.unknown')) : text(msg('display:rate.hz', { hz: rounded }));
 
   return (
     <>
-      <StatRow label={DISPLAY_ROW_COPY.detectedRate.label} value={rounded === null ? 'unknown' : `${rounded} Hz`} mono />
+      <StatRow label={text(DISPLAY_ROW_COPY.detectedRate.label)} value={value} mono />
       {uneven ? (
         <Text variant="caption" className="display-tab__warning">
-          {`${rounded} Hz is not a multiple of 60. Content made at 60 frames a second cannot give every frame the same time on screen, which shows as stutter when the picture scrolls.`}
+          {text(msg('display:readout.warning', { hz: rounded }))}
         </Text>
       ) : null}
     </>

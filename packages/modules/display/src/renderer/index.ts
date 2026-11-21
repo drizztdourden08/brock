@@ -2,10 +2,12 @@
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { DISPLAY_SETTINGS_TAB } from './display-tab.constants';
+import { displayLayer } from './display-layer';
 import { DisplayProvider } from './DisplayProvider';
 
 const displayRenderer: RendererModule = {
   id: 'display',
+  messages: [displayLayer],
   settingsTabs: [DISPLAY_SETTINGS_TAB],
   Provider: DisplayProvider,
 };

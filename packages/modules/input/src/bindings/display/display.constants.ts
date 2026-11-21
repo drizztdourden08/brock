@@ -1,4 +1,6 @@
 /* @layer core @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { SDL_AXIS } from '../../input.constants';
 
 const AXIS_FALLBACK_GLYPHS: Record<number, Record<'-' | '+', string>> = {
@@ -10,15 +12,22 @@ const AXIS_FALLBACK_GLYPHS: Record<number, Record<'-' | '+', string>> = {
   [SDL_AXIS.RIGHT_TRIGGER]: { '-': 'generic-trigger-b', '+': 'generic-trigger-b' },
 };
 
-const KEY_CODE_LABELS: Record<string, string> = {
-  ArrowUp: 'Arrow Up', ArrowDown: 'Arrow Down', ArrowLeft: 'Arrow Left', ArrowRight: 'Arrow Right',
-  ShiftLeft: 'L.Shift', ShiftRight: 'R.Shift',
-  ControlLeft: 'L.Ctrl', ControlRight: 'R.Ctrl',
-  AltLeft: 'L.Alt', AltRight: 'R.Alt',
-  Enter: 'Enter', Space: 'Space', Backspace: 'Bksp',
-  Tab: 'Tab', Escape: 'Esc', CapsLock: 'Caps',
-  PageUp: 'Page Up', PageDown: 'Page Down',
+const KEY_CODE_LABELS: Record<string, Text> = {
+  ArrowUp: msg('input:key.arrowUp'), ArrowDown: msg('input:key.arrowDown'),
+  ArrowLeft: msg('input:key.arrowLeft'), ArrowRight: msg('input:key.arrowRight'),
+  ShiftLeft: msg('input:key.shiftLeft'), ShiftRight: msg('input:key.shiftRight'),
+  ControlLeft: msg('input:key.controlLeft'), ControlRight: msg('input:key.controlRight'),
+  AltLeft: msg('input:key.altLeft'), AltRight: msg('input:key.altRight'),
+  Enter: msg('input:key.enter'), Space: msg('input:key.space'), Backspace: msg('input:key.backspace'),
+  Tab: msg('input:key.tab'), Escape: msg('input:key.escape'), CapsLock: msg('input:key.capsLock'),
+  PageUp: msg('input:key.pageUp'), PageDown: msg('input:key.pageDown'),
 };
+
+const MODIFIER_LABELS = {
+  ctrl: msg('input:key.ctrl'),
+  shift: msg('input:key.shift'),
+  alt: msg('input:key.alt'),
+} as const;
 
 const KEY_CODE_GLYPHS: Record<string, string> = {
   ArrowUp: 'kb-arrow-up', ArrowDown: 'kb-arrow-down',
@@ -38,4 +47,4 @@ const KEY_CODE_GLYPHS: Record<string, string> = {
   Backquote: 'kb-tilde',
 };
 
-export { AXIS_FALLBACK_GLYPHS, KEY_CODE_GLYPHS, KEY_CODE_LABELS };
+export { AXIS_FALLBACK_GLYPHS, KEY_CODE_GLYPHS, KEY_CODE_LABELS, MODIFIER_LABELS };

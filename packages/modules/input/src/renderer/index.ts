@@ -1,14 +1,17 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { RendererModule } from '@drizztdourden08/brock-react';
 import { controllerInputBootTask } from '../controller-input/controller-input-boot-task';
+import { inputLayer } from './input-layer';
 import { InputProvider } from './InputProvider';
 import { controllersBucket } from './controllers-bucket';
 
 const inputRenderer: RendererModule = {
   id: 'input',
+  messages: [inputLayer],
   buckets: [controllersBucket],
-  menu: [{ key: 'controllers', label: 'Controllers', icon: 'gamepad-2', section: 'advanced', screen: 'controllers' }],
+  menu: [{ key: 'controllers', label: msg('input:bucket.title'), icon: 'gamepad-2', section: 'advanced', screen: 'controllers' }],
   Provider: InputProvider,
   bootTasks: [controllerInputBootTask],
 };

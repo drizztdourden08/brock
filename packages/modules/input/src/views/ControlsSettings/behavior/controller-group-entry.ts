@@ -2,7 +2,7 @@
 import { controllerCardInfo } from '../../../renderer';
 import type { ControllerDeviceGroup } from '../../../renderer';
 import { BUS_NAME } from '../ControlsSettings.constants';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 import type { DeviceListEntry } from '../sub-components/DeviceRow.type';
 import { deviceIconUrl } from './device-icon-url';
 import { firstPort } from './first-port';
@@ -10,14 +10,14 @@ import { firstPort } from './first-port';
 const readyPorts = (group: ControllerDeviceGroup): number =>
   group.ports.filter((port) => port.entry.status === 'ready').length;
 
-const groupMeta = (group: ControllerDeviceGroup, ready: number, labels: ControlsLabels): string => {
+const groupMeta = (group: ControllerDeviceGroup, ready: number, labels: ResolvedControlsLabels): string => {
   const bus = BUS_NAME[group.busType];
   if (group.isAdapter) return `${ready}/${group.ports.length} ${labels.statusConnected}`;
   const status = ready > 0 ? labels.statusConnected : labels.statusNotConnected;
   return bus ? `${status}, ${bus}` : status;
 };
 
-const controllerGroupEntry = (group: ControllerDeviceGroup, labels: ControlsLabels): DeviceListEntry => {
+const controllerGroupEntry = (group: ControllerDeviceGroup, labels: ResolvedControlsLabels): DeviceListEntry => {
   const { entry, deviceKey } = firstPort(group);
   const { displayName, deviceFamily, sdlType, vendorId, productId } = controllerCardInfo(entry);
   const id = group.isAdapter ? `adapter-${vendorId}-${productId}` : deviceKey;

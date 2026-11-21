@@ -91,6 +91,53 @@ interface PresetDevice {
 }
 
 interface ControlsLabels {
+  profilesTitle: Text;
+  tabBindings: Text;
+  profileList: Text;
+  newProfile: Text;
+  noProfiles: Text;
+  profileName: Text;
+  renameProfile: Text;
+  deleteProfile: Text;
+  devicesTitle: Text;
+  connectedDevices: Text;
+  noDevices: Text;
+  keyboard: Text;
+  controller: Text;
+  bindingHeader: Text;
+  actionHeader: Text;
+  slotHeader: Text;
+  assignmentHeader: Text;
+  slotsTitle: Text;
+  slotsHint: Text;
+  verbsHeader: Text;
+  groupHeader: Text;
+  noSlots: Text;
+  addSlot: Text;
+  emptySlotsHint: Text;
+  clearBinding: Text;
+  reservedHint: Text;
+  rebindHint: (name: string) => Text;
+  removeSlot: (name: string) => Text;
+  listenerPrompt: Text;
+  listenerHint: Text;
+  presetTitle: Text;
+  presetMessage: (deviceName: string) => Text;
+  presetConfirm: Text;
+  deleteTitle: Text;
+  deleteMessage: (profileName: string) => Text;
+  deleteConfirm: Text;
+  cancel: Text;
+  hapticsTitle: Text;
+  hapticsDescription: Text;
+  requiredInputsTitle: Text;
+  inputConnected: (name: string) => Text;
+  inputNotConnected: (name: string) => Text;
+  statusConnected: Text;
+  statusNotConnected: Text;
+}
+
+interface ResolvedControlsLabels {
   profilesTitle: string;
   tabBindings: string;
   profileList: string;
@@ -184,7 +231,7 @@ interface RequiredInput {
 interface RequiredInputsParams {
   profile: InputProfile | null;
   devices: readonly DetectedDevice[];
-  labels: ControlsLabels;
+  labels: ResolvedControlsLabels;
 }
 
 interface UseProfileStateArgs {
@@ -217,7 +264,7 @@ interface DeviceIconIds {
 export type {
   ActionDef, ControlsContext, ControlsGame, ControlsLabels, ControlsSettingsProps, ControlsTabDef,
   DeviceIconIds, GlobalBindingsStore, InputProfileStore, ListenerExtraContext, ListenTarget, NarrowTabId, PresetDevice, RequiredInput, RequiredInputsParams,
-  ReservedRow, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
+  ReservedRow, ResolvedControlsLabels, SlotsConfig, StoredFold, TabGate, UseControlsTabsArgs, UseProfileLoaderArgs,
   UseProfileStateArgs, VerbGroupDef,
 };
 export type { VerbDef };

@@ -17,7 +17,7 @@ const connectedRows = (devices: readonly DeviceEntry[], mappings: readonly Mappi
       family: device.family ?? mapping?.family ?? 'generic',
       source: mapping?.source ?? 'none',
       inputs: mapping?.inputCount ?? deviceInputs(device),
-      group: 'Connected',
+      group: 'connected',
       connectedKey: device.deviceKey,
     };
   });

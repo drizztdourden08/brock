@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind config */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { lazyComponent } from '@drizztdourden08/brock-react';
 import type { ModuleBucket } from '@drizztdourden08/brock-react';
 import padsLive, { meta as padsLiveMeta } from '../screens/controllers/connected/pads.live';
@@ -9,14 +10,14 @@ import { meta as logsPageMeta } from '../screens/controllers/tools/logs.page';
 const controllersBucket: ModuleBucket = {
   bucket: {
     id: 'controllers',
-    title: 'Controllers',
+    title: msg('input:bucket.title'),
     icon: 'gamepad-2',
     menu: 'hidden',
     switcher: false,
     requiresProfile: false,
     groups: [
-      { id: 'connected', label: 'Connected' },
-      { id: 'tools', label: 'Tools' },
+      { id: 'connected', label: msg('input:bucket.group.connected') },
+      { id: 'tools', label: msg('input:bucket.group.tools') },
     ],
   },
   entries: [

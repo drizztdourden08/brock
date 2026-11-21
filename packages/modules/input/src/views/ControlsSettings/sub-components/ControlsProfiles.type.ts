@@ -1,12 +1,12 @@
 /* @layer renderer-components @kind types */
 import type { InputProfile } from '../../../bindings';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 
 interface ControlsProfilesProps {
   profiles: readonly InputProfile[];
   activeId: string | null;
   newlyCreatedId: string | null;
-  labels: ControlsLabels;
+  labels: ResolvedControlsLabels;
   narrow: boolean;
   onSelect: (profile: InputProfile) => void;
   onDelete: (profile: InputProfile) => void;

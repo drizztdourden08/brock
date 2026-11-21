@@ -1,12 +1,12 @@
 /* @layer renderer-components @kind logic */
 import type { ControllerDeviceGroup } from '../../../renderer';
 import type { DetectedDevice } from '../../../bindings';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 import type { DeviceListEntry } from '../sub-components/DeviceRow.type';
 import { deviceIconUrl } from './device-icon-url';
 import { firstPort } from './first-port';
 
-const extraDeviceEntry = (device: DetectedDevice, labels: ControlsLabels): DeviceListEntry => {
+const extraDeviceEntry = (device: DetectedDevice, labels: ResolvedControlsLabels): DeviceListEntry => {
   const { id, displayName, deviceFamily, sdlType, vendorId, productId } = device;
   return {
     key: id,
@@ -22,7 +22,7 @@ const extraDeviceEntry = (device: DetectedDevice, labels: ControlsLabels): Devic
 const extraDeviceEntries = (
   extras: readonly DetectedDevice[],
   groups: readonly ControllerDeviceGroup[],
-  labels: ControlsLabels,
+  labels: ResolvedControlsLabels,
 ): DeviceListEntry[] => {
   const taken = new Set(groups.map((group) => firstPort(group).deviceKey));
   return extras.filter((d) => !taken.has(d.id)).map((d) => extraDeviceEntry(d, labels));

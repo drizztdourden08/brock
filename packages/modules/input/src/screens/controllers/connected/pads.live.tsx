@@ -1,5 +1,6 @@
 /* @layer renderer-app @kind component */
 import { useMemo } from 'react';
+import { useText } from '@drizztdourden08/brock-react';
 import type { LiveMeta, LivePage } from '@drizztdourden08/brock-react';
 import { useControllerDevices } from '../../../renderer/useControllerDevices';
 import { useHoldAwareGroups } from '../../../renderer/useHoldAwareGroups';
@@ -13,9 +14,10 @@ const meta: LiveMeta = {
 };
 
 const usePads = (): readonly LivePage[] => {
+  const text = useText();
   const { groups: live } = useControllerDevices();
   const { groups, released } = useHoldAwareGroups(live);
-  return useMemo(() => padLivePages(groups, released), [groups, released]);
+  return useMemo(() => padLivePages(groups, released, text), [groups, released, text]);
 };
 
 export default usePads;

@@ -1,10 +1,10 @@
 /* @layer renderer-components @kind logic */
 import type { SettingsSectionRow } from '@drizztdourden08/tessera/composites';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 
 const hapticsRows = (
   haptics: { enabled: boolean; onChange: (on: boolean) => void },
-  labels: ControlsLabels,
+  labels: ResolvedControlsLabels,
 ): SettingsSectionRow[] => [
   {
     id: 'haptics',

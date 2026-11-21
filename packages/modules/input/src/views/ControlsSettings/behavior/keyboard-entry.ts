@@ -1,11 +1,14 @@
 /* @layer renderer-components @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { DetectedDevice } from '../../../bindings';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 import type { DeviceListEntry } from '../sub-components/DeviceRow.type';
 import { deviceIconUrl } from './device-icon-url';
 
-const keyboardEntry = (device: DetectedDevice, labels: ControlsLabels): DeviceListEntry => {
-  const { id, displayName, deviceFamily, sdlType } = device;
+const keyboardEntry = (device: DetectedDevice, labels: ResolvedControlsLabels, text: (value: Text) => string): DeviceListEntry => {
+  const { id, deviceFamily, sdlType } = device;
+  const displayName = text(msg('input:device.keyboard'));
   return {
     key: id,
     drag: { id, displayName, sdlType, vendorId: null, productId: null },

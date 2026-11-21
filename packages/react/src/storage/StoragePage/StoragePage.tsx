@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react';
 import { LoadError, SettingsSection } from '@drizztdourden08/tessera/composites';
 import { EmptyState, Stack } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../i18n';
 import { useActionRunner } from '../../settings/SettingsLayout/behavior/useActionRunner';
 import { useSearchEntries } from '../../search/useSearchEntries';
 import { storageSearchEntries } from './behavior/storage-search-entries';
@@ -13,12 +14,13 @@ import type { StoragePageProps } from './StoragePage.type';
 
 const StoragePage = (props: StoragePageProps) => {
   const state = useStorageDomains(props.domains);
+  const text = useText();
   const actions = useStorageActions(state.refresh);
   const runner = useActionRunner();
   const [picked, setPicked] = useState<readonly string[] | null>(null);
   const chosen = picked ?? state.domains.filter((def) => def.portable !== false).map((def) => def.domain);
-  const sections = storageSections({ state, actions, chosen, onChoose: setPicked, runner });
-  useSearchEntries(useMemo(() => storageSearchEntries(state.domains), [state.domains]));
+  const sections = storageSections({ state, actions, chosen, onChoose: setPicked, text, runner });
+  useSearchEntries(useMemo(() => storageSearchEntries(state.domains, text), [state.domains, text]));
 
   if (!state.available) return <EmptyState message="Storage is only available in the desktop app." />;
   return (

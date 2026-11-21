@@ -1,4 +1,5 @@
 /* @layer core @kind logic */
+import type { Text } from '../i18n/text.type';
 import type { BootOutcome, BootProgress, BootRunOptions, BootTask, BootTaskNamed } from './boot-task.type';
 import { BOOT_GRAPH_LABEL, BOOT_GRAPH_TASK, DEFAULT_BOOT_WEIGHT } from './boot.constants';
 import { bootGraphProblem } from './boot-graph-problem';
@@ -42,7 +43,8 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
     };
 
     const start = (source: BootTask<X>): void => {
-      const task: BootTaskNamed<X> = { ...source, label: (options.text ?? plainText)(source.label) };
+      const resolve = options.text ?? plainText;
+      const task: BootTaskNamed<X> = { ...source, label: resolve(source.label) };
       started.add(task.id);
       const begun = Date.now();
       const tell = (state: 'start' | 'done' | 'fail', message?: string): void =>
@@ -50,10 +52,10 @@ const runBootTasks = <X extends object>(tasks: readonly BootTask<X>[], options: 
       tell('start');
       current = { label: task.label, detail: null };
       emit();
-      const report = (fraction: number, detail: string | null): void => {
+      const report = (fraction: number, detail: Text | null): void => {
         if (settled) return;
         shares.set(task.id, Math.max(shares.get(task.id) ?? 0, clamp(fraction)));
-        current = { label: task.label, detail };
+        current = { label: task.label, detail: detail === null ? null : resolve(detail) };
         emit();
       };
       void runBootTask(task, { extras: options.extras, stop: stop.signal, report, defaultTimeoutMs: options.defaultTimeoutMs }).then((outcome) => {

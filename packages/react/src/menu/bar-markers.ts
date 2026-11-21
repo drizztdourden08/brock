@@ -22,7 +22,7 @@ const settle = (forest: MenuForest, nodes: readonly MenuNode[], issues: MenuIssu
     list.splice(list.indexOf(node), 1);
     const marker = BAR_MARKERS.find((candidate) => candidate.key === node.item?.key);
     if (marker === undefined) continue;
-    issues.push({ key: marker.key, message: `${marker.ref} places ${marker.name} inside a submenu, but ${marker.name} sits at the top level of the menu, so it stays where the title bar puts it` });
+    issues.push({ key: marker.key, message: `${marker.ref} places ${marker.label} inside a submenu, but ${marker.label} sits at the top level of the menu, so it stays where the title bar puts it` });
   }
 };
 

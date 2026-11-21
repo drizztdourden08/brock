@@ -1,4 +1,6 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
 const REGION_ATTRIBUTE = 'data-focus-region';
 
 const MARKED_SELECTOR = `[${REGION_ATTRIBUTE}]`;
@@ -27,13 +29,13 @@ const REGION_COMMANDS = {
 } as const;
 
 const REGION_TEXT = {
-  next: 'Focus the next region',
-  previous: 'Focus the previous region',
+  next: msg('brock-shell:region.next'),
+  previous: msg('brock-shell:region.previous'),
 } as const;
 
 const SHELL_LABELS = {
-  titleBar: 'Title bar',
-  screens: 'Screens',
+  titleBar: msg('brock-shell:region.titleBar'),
+  screens: msg('brock-shell:region.screens'),
 } as const;
 
 export {

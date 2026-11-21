@@ -47,9 +47,9 @@ const TUCKED_KEYS: ReadonlySet<string> = new Set(Object.values(TUCKED_ROWS));
 const TUCKED_PLACE_FIELDS: readonly (keyof MenuEntryOverride)[] = ['group', 'order', 'before', 'after'];
 
 const BAR_MARKERS: readonly BarMarker[] = [
-  { key: VIEW_MENU_KEY, ref: 'menu.entries.view', name: 'View', label: TESSERA_STRINGS.windows.view, fields: VIEW_PLACE_FIELDS },
-  { key: WINDOW_PIN_KEY, ref: `menu.entries["${WINDOW_PIN_KEY}"]`, name: 'Pin on top', label: TESSERA_STRINGS.windows.pinOnTop, fields: TUCKED_PLACE_FIELDS },
-  { key: WINDOW_FULLSCREEN_KEY, ref: `menu.entries["${WINDOW_FULLSCREEN_KEY}"]`, name: 'Full screen', label: TESSERA_STRINGS.windows.fullscreen, fields: TUCKED_PLACE_FIELDS },
+  { key: VIEW_MENU_KEY, ref: 'menu.entries.view', label: TESSERA_STRINGS.windows.view, fields: VIEW_PLACE_FIELDS },
+  { key: WINDOW_PIN_KEY, ref: `menu.entries["${WINDOW_PIN_KEY}"]`, label: TESSERA_STRINGS.windows.pinOnTop, fields: TUCKED_PLACE_FIELDS },
+  { key: WINDOW_FULLSCREEN_KEY, ref: `menu.entries["${WINDOW_FULLSCREEN_KEY}"]`, label: TESSERA_STRINGS.windows.fullscreen, fields: TUCKED_PLACE_FIELDS },
 ];
 
 const BAR_MARKER_KEYS: ReadonlySet<string> = new Set(BAR_MARKERS.map((marker) => marker.key));

@@ -18,7 +18,7 @@ const AboutScreenBody = (props: AboutScreenBodyProps) => {
   const { rows, copyText } = useAboutInfo();
   const branded = aboutBrand(product);
   return (
-    <InfoScreen title={text(ABOUT_SCREEN_TITLE)} onClose={onClose} footer={legalText}>
+    <InfoScreen title={text(ABOUT_SCREEN_TITLE)} onClose={onClose} footer={legalText === undefined ? undefined : text(legalText)}>
       <AboutPanel
         title={product.name}
         brand={branded?.brand}

@@ -1,9 +1,10 @@
 /* @layer renderer-shell @kind types */
 import type { IconEffect, IconName, StatusTone } from '@drizztdourden08/tessera/primitives';
-import type { MenuEntry } from '../menu/menu.type';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+import type { MenuEntryDef } from '../menu/menu.type';
 
 interface TitleBarItemBase {
-  label: string;
+  label: Text;
   icon: IconName;
   tone?: StatusTone;
   effect?: IconEffect;
@@ -15,34 +16,34 @@ interface TitleBarButtonSpec extends TitleBarItemBase {
   command?: string;
   shortcut?: string;
   disabled?: boolean;
-  disabledReason?: string;
+  disabledReason?: Text;
 }
 
 type TitleBarButtonLook = Omit<TitleBarButtonSpec, 'onSelect'>;
 
 interface TitleBarMenuGroup {
-  label?: string;
-  items: readonly MenuEntry[];
+  label?: Text;
+  items: readonly MenuEntryDef[];
 }
 
 interface TitleBarMenuBase extends TitleBarItemBase {
   kind: 'menu';
 }
 
-type TitleBarMenuSpec = TitleBarMenuBase & ({ items: readonly MenuEntry[]; groups?: undefined } | { groups: readonly TitleBarMenuGroup[]; items?: undefined });
+type TitleBarMenuSpec = TitleBarMenuBase & ({ items: readonly MenuEntryDef[]; groups?: undefined } | { groups: readonly TitleBarMenuGroup[]; items?: undefined });
 
 interface TitleBarStatusSpec extends TitleBarItemBase {
   kind: 'status';
-  status: string | null;
+  status: Text | null;
   pulse?: boolean;
   onSelect?: () => void;
   disabled?: boolean;
-  disabledReason?: string;
+  disabledReason?: Text;
 }
 
 interface TitleBarVolumeSpec {
   kind: 'volume';
-  label: string;
+  label: Text;
   value: number;
   muted: boolean;
   onChange: (value: number) => void;
@@ -58,7 +59,7 @@ type TitleBarItemSource = TitleBarItemSpec | TitleBarItemHook;
 
 interface TitleBarActionsMenu {
   id?: string;
-  label: string;
+  label: Text;
   icon: IconName;
 }
 

@@ -1,16 +1,21 @@
 /* @layer renderer-shell @kind test */
 import { describe, expect, it, vi } from 'vitest';
 import { toBarAction } from '../src/title-bar/to-bar-action';
+import { fallbackText } from '../src/i18n/fallback-text';
+import { resolveTitleBarAction } from '../src/title-bar/resolve-title-bar-action';
+import type { TitleBarItemSpec } from '../src/title-bar/title-bar-item.type';
 import type { TitleBarVolumeSpec } from '../src/title-bar/title-bar-item.type';
 import { volumeChecks } from '../src/review/checks/volume-checks';
 import type { VolumeItemSnapshot } from '../src/review/review.type';
+
+const bar = (id: string, spec: TitleBarItemSpec) => resolveTitleBarAction(toBarAction(id, spec), fallbackText);
 
 const spec = (patch: Partial<TitleBarVolumeSpec> = {}): TitleBarVolumeSpec => ({
   kind: 'volume', label: 'Volume', value: 0.8, muted: false, onChange: () => undefined, onMuteToggle: () => undefined, ...patch,
 });
 
 const volumeOf = (patch: Partial<TitleBarVolumeSpec> = {}) => {
-  const action = toBarAction('sound', spec(patch));
+  const action = bar('sound', spec(patch));
   if (action.bar !== 'volume') throw new Error('a volume item is a Tessera volume action');
   return action;
 };

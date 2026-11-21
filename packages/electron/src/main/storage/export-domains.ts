@@ -2,6 +2,7 @@
 import { cp, mkdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { DataExportManifest, DataExportResult, DataManifestDomain } from '@drizztdourden08/brock-core/platform';
+import { dialogText } from '../dialogs/dialog-text';
 import { MANIFEST_FILE } from './storage.constants';
 import type { WalkedFile } from './storage.type';
 import type { ExportRequest } from './transfer.type';
@@ -47,7 +48,7 @@ const exportDomains = async (request: ExportRequest): Promise<DataExportResult> 
   const walked = new Map<string, WalkedFile[]>();
   for (const id of request.ids) walked.set(id, await walkFiles(request.domains.domain(id).dir()));
   const domains = [...walked].map(([id, files]) => ({
-    domain: id, label: request.domains.def(id).label, files: files.length, bytes: files.reduce((sum, file) => sum + file.bytes, 0),
+    domain: id, label: dialogText(request.domains.def(id).label), files: files.length, bytes: files.reduce((sum, file) => sum + file.bytes, 0),
   }));
   const manifest = manifestOf(request, domains);
   await (request.format === 'zip' ? exportToZip : exportToFolder)(request, walked, manifest);

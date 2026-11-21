@@ -77,7 +77,7 @@ interface BrockAppProps<S extends object> {
   homeScreen?: string;
   restoreNavigation?: boolean;
   credits?: ReactNode;
-  legalText?: string;
+  legalText?: Text;
   beforeQuit?: BeforeQuit;
   onBeforeQuit?: OnBeforeQuit;
   titleBar?: readonly TitleBarItemEntry[];
@@ -157,7 +157,7 @@ interface AppScreensInput {
   profilesRoute?: string;
   singleProfile?: boolean;
   credits?: ReactNode;
-  legalText?: string;
+  legalText?: Text;
 }
 
 interface AppScreens {

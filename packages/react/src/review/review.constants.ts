@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { ABOUT_ENTRY, HOME_ENTRY, QUIT_ENTRY, TOP_ENTRIES } from '../app/BrockApp/BrockApp.constants';
 import type { MenuItemDef } from '../menu/menu.type';
 import { LOGS_WIDGET_ID } from '../widgets/built-in/LogsWidget/LogsWidget.constants';
@@ -33,7 +34,7 @@ const SIZE_TOLERANCE = 0.5;
 const OVERFLOW_SLACK = 1;
 const NARROW_WINDOW = { width: 600, height: 720 } as const;
 const UPDATER_MODULE_ID = 'updater';
-const UPDATE_MENU_LABEL = 'Check for updates';
+const UPDATE_MENU_LABEL = msg('updater:action.check');
 const BAR_ITEM_ATTRIBUTE = 'data-bar-item';
 const BAR_ITEM_PREFIX = 'action:';
 const BOOT_OVERLAYS = ['#boot-splash', '.boot-bar', 'html.booting', '[data-boot-overlay]'] as const;

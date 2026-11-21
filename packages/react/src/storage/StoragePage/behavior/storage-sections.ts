@@ -14,16 +14,16 @@ const domainRow = (def: DataDomainDef, input: StorageSectionsInput): SettingsSec
   const usage = input.state.usage[def.domain];
   return actionRow({
     id: `storage-${def.domain}`,
-    title: def.label,
+    title: input.text(def.label),
     description: usage ? `${formatBytes(usage.bytes)} · ${usage.count} item${usage.count === 1 ? '' : 's'}` : 'Measuring the folder',
-    hint: def.description ?? `Data/${def.dir}`,
-    actions: input.state.manage ? domainActions(def, usage, input.actions) : [],
+    hint: def.description === undefined ? `Data/${def.dir}` : input.text(def.description),
+    actions: input.state.manage ? domainActions(def, usage, input.actions, input.text) : [],
     runner: input.runner,
   });
 };
 
 const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
-  const { state, actions, chosen, onChoose, runner } = input;
+  const { state, actions, chosen, onChoose, runner, text } = input;
   const portable = state.domains.filter((def) => def.portable !== false);
   const none = chosen.length === 0;
   return [
@@ -32,7 +32,7 @@ const transferRows = (input: StorageSectionsInput): SettingsSectionRow[] => {
       title: 'Folders to export',
       hint: 'Pick the folders that go into the export.',
       noDescription: true,
-      input: { kind: 'multi', value: chosen, options: portable.map((def) => ({ value: def.domain, label: def.label })), onChange: onChoose },
+      input: { kind: 'multi', value: chosen, options: portable.map((def) => ({ value: def.domain, label: text(def.label) })), onChange: onChoose },
     },
     actionRow({
       id: 'storage-export',

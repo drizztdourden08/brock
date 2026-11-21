@@ -1,8 +1,11 @@
 /* @layer electron-main @kind constants */
-const OS_LABEL: Record<string, string> = {
-  win32: 'Windows (AppData)',
-  darwin: 'macOS (Application Support)',
-  linux: 'Linux (~/.config)',
+import { msg } from '@drizztdourden08/brock-core/i18n';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
+
+const OS_LABEL: Record<string, Text> = {
+  win32: msg('brock-main:storage.os.win32'),
+  darwin: msg('brock-main:storage.os.darwin'),
+  linux: msg('brock-main:storage.os.linux'),
 };
 
 export { OS_LABEL };

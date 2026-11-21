@@ -1,7 +1,9 @@
 /* @layer renderer-shell @kind hook */
 import { useMemo } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import { DATA_EXPORT_JOB, DATA_IMPORT_JOB, formatBytes } from '@drizztdourden08/brock-core';
 import type { DataExportFormat, DataImportMode, DataImportPlan } from '@drizztdourden08/brock-core';
+import { useText } from '../../../i18n';
 import { requireHostApi } from '../../../host/require-host-api';
 import { jobs } from '../../../jobs/jobs';
 import { confirmChoice } from '../../../stores/confirm-choice';
@@ -26,16 +28,17 @@ const confirmImport = (plan: DataImportPlan): Promise<DataImportMode | null> => 
 const importedText = (files: number, folders: number, kept: number): string =>
   `Imported ${plural(files, 'file')} into ${plural(folders, 'folder')}${kept > 0 ? `, kept ${plural(kept, 'newer file')}` : ''}`;
 
-const useStorageActions = (refresh: (domain?: string) => void): StorageActions => useMemo(() => ({
+const storageActions = (refresh: (domain?: string) => void, text: (value: Text) => string): StorageActions => ({
   revealRoot: () => requireHostApi().revealDataFolder(),
   reveal: async (domain) => {
     const result = await requireHostApi().revealDataDomain(domain.domain);
-    if (!result.success) toast(`Could not open ${domain.label}: ${result.error}`, { variant: 'danger' });
+    if (!result.success) toast(`Could not open ${text(domain.label)}: ${result.error}`, { variant: 'danger' });
   },
   clean: async (domain, olderThanDays) => {
     const api = requireHostApi();
     const done = olderThanDays === null ? await api.clearDataDomain(domain.domain) : await api.cleanDataDomain(domain.domain, olderThanDays);
-    toast(done.removed === 0 ? `${domain.label}: nothing to remove` : `${domain.label}: removed ${plural(done.removed, 'item')} (${formatBytes(done.bytes)})`, { variant: 'success' });
+    const name = text(domain.label);
+    toast(done.removed === 0 ? `${name}: nothing to remove` : `${name}: removed ${plural(done.removed, 'item')} (${formatBytes(done.bytes)})`, { variant: 'success' });
     refresh(domain.domain);
   },
   exportTo: async (format: DataExportFormat, domains) => {
@@ -59,6 +62,11 @@ const useStorageActions = (refresh: (domain?: string) => void): StorageActions =
     toast(importedText(done.files, done.domains.length, done.kept), { variant: 'success' });
     refresh();
   },
-}), [refresh]);
+});
+
+const useStorageActions = (refresh: (domain?: string) => void): StorageActions => {
+  const text = useText();
+  return useMemo(() => storageActions(refresh, text), [refresh, text]);
+};
 
 export { useStorageActions };

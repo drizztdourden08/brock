@@ -15,7 +15,6 @@ type TuckedRow = 'pin' | 'fullscreen';
 interface BarMarker {
   key: string;
   ref: string;
-  name: string;
   label: string;
   fields: readonly (keyof MenuEntryOverride)[];
 }

@@ -28,6 +28,7 @@
   "about.runtime": "Runtime",
   "about.engine": "Engine",
   "about.platform": "Platform",
+  "about.copyDebug": "Copy debug info",
   "profiles.never": "Never",
   "profiles.title.empty": "Create a profile to get started",
   "profiles.title.some": "Pick a profile, or create another",
@@ -39,5 +40,10 @@
   "command.search": "Search",
   "command.fullscreen": "Toggle fullscreen",
   "command.back": "Go back",
-  "titleBar.menu": "Menu"
+  "titleBar.menu": "Menu",
+  "titleBar.search": "Search",
+  "region.next": "Focus the next region",
+  "region.previous": "Focus the previous region",
+  "region.titleBar": "Title bar",
+  "region.screens": "Screens"
 }

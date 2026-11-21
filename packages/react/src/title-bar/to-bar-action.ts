@@ -1,20 +1,19 @@
 /* @layer renderer-shell @kind logic */
-import type { MenuGroup, WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
-import { navResolver as resolve } from '../menu/nav-resolver';
-import { toMenuGroups } from '../menu/to-menu-groups';
-import type { TitleBarItemSpec, TitleBarMenuSpec } from './title-bar-item.type';
+import { MENU_GROUP_ID } from '../menu/menu.constants';
+import type { TitleBarActionDef } from './title-bar-action.type';
+import type { TitleBarItemSpec, TitleBarMenuGroup, TitleBarMenuSpec } from './title-bar-item.type';
 import { volumeBarAction } from './volume-bar-action';
 import { actionCommands } from './action-commands';
 import { selectButton } from './select-button';
 
 const noop = (): void => {};
 
-const menuGroups = (id: string, spec: TitleBarMenuSpec): MenuGroup[] => {
-  if (!spec.groups) return toMenuGroups(spec.items, resolve);
-  return spec.groups.flatMap((group, index) => toMenuGroups(group.items, resolve).map((built) => ({ ...built, id: `${id}-${index}`, label: group.label })));
+const menuGroups = (id: string, spec: TitleBarMenuSpec): (TitleBarMenuGroup & { id: string })[] => {
+  if (!spec.groups) return [{ id: MENU_GROUP_ID, items: spec.items }];
+  return spec.groups.map((group, index) => ({ ...group, id: `${id}-${index}` }));
 };
 
-const toBarAction = (id: string, spec: TitleBarItemSpec): WindowTitleBarAction => {
+const toBarAction = (id: string, spec: TitleBarItemSpec): TitleBarActionDef => {
   if (spec.kind === 'volume') return volumeBarAction(id, spec);
   const { label, icon } = spec;
   const look = { tone: spec.tone, effect: spec.effect };

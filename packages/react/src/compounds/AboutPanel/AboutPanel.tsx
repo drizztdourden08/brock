@@ -1,6 +1,7 @@
 /* @layer renderer-shell @kind component */
 import { CopyButton } from '@drizztdourden08/tessera/composites';
 import { Box, Paragraph, StatRow, Text } from '@drizztdourden08/tessera/primitives';
+import { useText } from '../../i18n';
 import { ABOUT_PANEL_TEXT } from './AboutPanel.constants';
 import { AboutLogo } from './sub-components/AboutLogo';
 import { AboutTitle } from './sub-components/AboutTitle';
@@ -9,6 +10,8 @@ import './AboutPanel.css';
 
 const AboutPanel = (props: AboutPanelProps) => {
   const { title, brand, rim, heading = 'wordmark', wordmark, wordmarkRendering, logo, rows, copyText, copyLabel, legal, className = '' } = props;
+
+  const text = useText();
 
   return (
     <Box className={`about-panel${wordmark ? ' about-panel--wordmark' : ''}${className ? ` ${className}` : ''}`}>
@@ -22,7 +25,7 @@ const AboutPanel = (props: AboutPanelProps) => {
         {rows.map((row) => <StatRow key={row.label} className="about-panel__row" label={row.label} value={row.value} mono size="sm" />)}
       </Box>
       {copyText !== undefined && (
-        <CopyButton text={copyText ?? ''} label={copyLabel ?? ABOUT_PANEL_TEXT.copy} showLabel variant="secondary" size="md" loading={copyText === null} className="about-panel__copy" />
+        <CopyButton text={copyText ?? ''} label={copyLabel ?? text(ABOUT_PANEL_TEXT.copy)} showLabel variant="secondary" size="md" loading={copyText === null} className="about-panel__copy" />
       )}
       {legal != null && <Paragraph tone="dim" className="about-panel__legal">{legal}</Paragraph>}
     </Box>

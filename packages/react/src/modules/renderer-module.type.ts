@@ -1,6 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { ComponentType, ReactNode } from 'react';
-import type { WindowTitleBarAction } from '@drizztdourden08/tessera/composites';
+import type { TitleBarActionDef } from '../title-bar/title-bar-action.type';
 import type { MenuEntryDef } from '../menu/menu.type';
 import type { SearchAction } from '../search/search.type';
 import type { ModulePorts } from '../platform/platform.type';
@@ -23,9 +23,9 @@ import type { ProfileModeDef } from '../profiles/modes/profile-mode.type';
 import type { ProfileWizardStepDef } from '../profiles/wizard/profile-wizard-step.type';
 import type { LockCauseProvider } from '../settings/lock-causes/lock-cause-provider.type';
 
-type TitleBarActionHook = () => WindowTitleBarAction | null;
+type TitleBarActionHook = () => TitleBarActionDef | null;
 
-type TitleBarActionSource = WindowTitleBarAction | TitleBarActionHook;
+type TitleBarActionSource = TitleBarActionDef | TitleBarActionHook;
 
 type LocaleSource = {
   initial: () => Promise<string>;

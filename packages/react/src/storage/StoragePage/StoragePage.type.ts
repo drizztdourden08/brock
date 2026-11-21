@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind types */
 import type { DataDomainDef, DataExportFormat, DataLocation, DomainUsage } from '@drizztdourden08/brock-core';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { SettingAction } from '../../settings/settings.type';
 import type { ActionRunner } from '../../settings/SettingsLayout/SettingsLayout.type';
 
@@ -41,6 +42,7 @@ interface StorageSectionsInput {
   actions: StorageActions;
   chosen: readonly string[];
   onChoose: (next: readonly string[]) => void;
+  text: (value: Text) => string;
   runner?: ActionRunner;
 }
 

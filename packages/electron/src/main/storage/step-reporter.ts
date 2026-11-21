@@ -1,12 +1,13 @@
 /* @layer electron-main @kind logic */
 import type { JobHandle } from '@drizztdourden08/brock-core/jobs';
+import { dialogText } from '../dialogs/dialog-text';
 import type { DataDomains } from './domain-files.type';
 import type { TransferReport } from './transfer.type';
 
 const stepReporter = (job: JobHandle, domains: DataDomains): TransferReport => {
   let current: string | null = null;
   return (domain, done, total) => {
-    const { label } = domains.def(domain);
+    const label = dialogText(domains.def(domain).label);
     if (domain !== current) {
       current = domain;
       job.step(domain);

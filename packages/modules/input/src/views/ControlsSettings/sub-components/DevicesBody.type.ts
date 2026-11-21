@@ -1,10 +1,10 @@
 /* @layer renderer-components @kind types */
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 import type { DeviceAssignInfo, DeviceListEntry } from './DeviceRow.type';
 
 interface DevicesBodyProps {
   entries: readonly DeviceListEntry[];
-  labels: ControlsLabels;
+  labels: ResolvedControlsLabels;
   onAssign: (device: DeviceAssignInfo) => void;
   onAddMapping: (mapping: string) => Promise<boolean>;
 }

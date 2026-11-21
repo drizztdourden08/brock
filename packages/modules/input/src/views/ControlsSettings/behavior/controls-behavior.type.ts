@@ -5,7 +5,7 @@ import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import type { InputProfile } from '../../../bindings/input-profile.type';
 import type { DeviceEntry } from '../../../device.type';
 import type { ResolvedControl } from '../../../family/family.type';
-import type { ActionDef, ControlsGame, ControlsLabels, GlobalBindingsStore, ListenTarget, PresetDevice } from '../ControlsSettings.type';
+import type { ActionDef, ControlsGame, ResolvedControlsLabels, GlobalBindingsStore, ListenTarget, PresetDevice } from '../ControlsSettings.type';
 
 type ActionScope = 'profile' | 'global';
 
@@ -83,7 +83,7 @@ interface UseDragDropArgs {
 interface UseProfileRowsArgs {
   activeProfile: InputProfile | null;
   devices: readonly DetectedDevice[];
-  labels: ControlsLabels;
+  labels: ResolvedControlsLabels;
 }
 
 interface UseGlobalRowsArgs {

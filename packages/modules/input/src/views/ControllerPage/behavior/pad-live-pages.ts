@@ -1,5 +1,6 @@
 /* @layer renderer-components @kind logic */
 import { createElement } from 'react';
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { LiveBadge, LivePage } from '@drizztdourden08/brock-react';
 import type { ControllerDeviceGroup } from '../../../runtime/controller-device-groups.type';
 import { ControllerPage } from '../ControllerPage';
@@ -13,9 +14,13 @@ const padBadge = (entry: PadNavEntry): LiveBadge | undefined => {
   return entry.connected ? 'ok' : 'warn';
 };
 
-const padLivePages = (groups: readonly ControllerDeviceGroup[], inDiagnostics = false): LivePage[] => {
-  const entries = padNavEntries(groups, inDiagnostics);
-  if (entries.length === 0) return [noPadsPage()];
+const padLivePages = (
+  groups: readonly ControllerDeviceGroup[],
+  inDiagnostics: boolean,
+  text: (value: Text) => string,
+): LivePage[] => {
+  const entries = padNavEntries(groups, inDiagnostics, text);
+  if (entries.length === 0) return [noPadsPage(text)];
   return entries.map((entry): LivePage => ({
     key: entry.id,
     title: entry.label,

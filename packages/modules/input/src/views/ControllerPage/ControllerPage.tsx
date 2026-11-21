@@ -1,4 +1,5 @@
 /* @layer renderer-components @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Box, EmptyState } from '@drizztdourden08/tessera/primitives';
 import { useControllerPage } from './behavior/useControllerPage';
 import { GONE_MESSAGE } from './ControllerPage.constants';
@@ -10,9 +11,10 @@ import { PadBox } from './sub-components/PadBox';
 import './ControllerPage.css';
 
 const ControllerPage = ({ deviceKey, onRunDiagnostics }: ControllerPageProps) => {
+  const text = useText();
   const page = useControllerPage(deviceKey);
 
-  if (!page) return <EmptyState message={GONE_MESSAGE} />;
+  if (!page) return <EmptyState message={text(GONE_MESSAGE)} />;
 
   return (
     <Box className="controller-page">

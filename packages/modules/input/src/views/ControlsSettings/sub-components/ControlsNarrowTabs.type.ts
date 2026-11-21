@@ -1,8 +1,8 @@
 /* @layer renderer-components @kind types */
-import type { ControlsLabels, NarrowTabId } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels, NarrowTabId } from '../ControlsSettings.type';
 
 interface ControlsNarrowTabsProps {
-  labels: ControlsLabels;
+  labels: ResolvedControlsLabels;
   active: NarrowTabId;
   onChange: (tab: NarrowTabId) => void;
 }

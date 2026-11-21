@@ -1,8 +1,8 @@
 /* @layer renderer-components @kind logic */
 import type { InputProfile } from '../../../bindings';
-import type { ControlsLabels } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels } from '../ControlsSettings.type';
 
-const profileSubtitle = (profile: InputProfile, labels: ControlsLabels): string =>
+const profileSubtitle = (profile: InputProfile, labels: ResolvedControlsLabels): string =>
   profile.assignedDevice?.displayName ?? (profile.deviceType === 'keyboard' ? labels.keyboard : labels.controller);
 
 export { profileSubtitle };

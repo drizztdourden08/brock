@@ -4,11 +4,11 @@ import type { DetectedDevice } from '../../../bindings/detected/detected.type';
 import { findLiveDevice } from '../../../bindings/detected/find-live-device';
 import type { InputProfile } from '../../../bindings/input-profile.type';
 import { recallControllerName } from '../../../runtime/controller-name-cache/recall-controller-name';
-import type { ControlsLabels, RequiredInput } from '../ControlsSettings.type';
+import type { ResolvedControlsLabels, RequiredInput } from '../ControlsSettings.type';
 import { deviceIconUrl } from './device-icon-url';
 import { liveDeviceIcon } from './live-device-icon';
 
-const assignedGamepadInput = (key: string, devices: readonly DetectedDevice[], labels: ControlsLabels): RequiredInput => {
+const assignedGamepadInput = (key: string, devices: readonly DetectedDevice[], labels: ResolvedControlsLabels): RequiredInput => {
   const [vid, pid] = splitDeviceKey(key);
   const live = findLiveDevice(vid, pid, devices);
   const displayName = recallControllerName({ vendorId: parseInt(vid, 16), productId: parseInt(pid, 16) })
@@ -25,7 +25,7 @@ const gamepadRequiredInputs = (
   profile: InputProfile,
   usedDeviceKeys: ReadonlySet<string>,
   devices: readonly DetectedDevice[],
-  labels: ControlsLabels,
+  labels: ResolvedControlsLabels,
 ): RequiredInput[] => {
   if (usedDeviceKeys.size > 0) return [...usedDeviceKeys].map((key) => assignedGamepadInput(key, devices, labels));
   return [{

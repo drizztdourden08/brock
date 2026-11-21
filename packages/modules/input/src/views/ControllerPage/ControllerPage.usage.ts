@@ -13,9 +13,11 @@ const usage = {
   ],
   a11y: ['The pad picture is a labelled figure that lists the inputs held down as text.'],
   buildingBlock: true,
-  example: `import { padLivePages } from '@drizztdourden08/brock-input/renderer';
+  example: `import { useText } from '@drizztdourden08/brock-react';
+import { padLivePages } from '@drizztdourden08/brock-input/renderer';
 
-const pages = padLivePages([]);
+const text = useText();
+const pages = padLivePages([], false, text);
 `,
   propsHash: '5946f8e0f66ab3a1',
 } satisfies ComponentUsage;

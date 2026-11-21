@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback } from 'react';
+import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudio } from '../../game/useMsuStudio';
 import { isMsulName } from './is-msul-name';
 import { skipNote } from './skip-note';
@@ -11,6 +12,7 @@ import type { StoreImport } from './store-import.type';
 const usePackImports = (params: PackImportsParams) => {
   const { newPackName, setNewPackName, refresh, setSelected } = params;
   const { store } = useMsuStudio();
+  const t = useT();
   const { importMsul } = usePackImport({ refresh, onImported: setSelected });
 
   const settleImport = useCallback(async (pack: string, result: StoreImport, failure: string): Promise<ActionResult> => {
@@ -18,25 +20,25 @@ const usePackImports = (params: PackImportsParams) => {
     await refresh();
     setSelected(pack);
     setNewPackName('');
-    return { success: true, message: `Imported ${result.fileCount ?? 0} audio files${skipNote(result)}` };
-  }, [refresh, setSelected, setNewPackName]);
+    return { success: true, message: `${t('msu:result.imported', { count: result.fileCount ?? 0 })}${skipNote(result, t)}` };
+  }, [refresh, setSelected, setNewPackName, t]);
 
   const handleUrlImport = useCallback(async (url: string): Promise<ActionResult> => {
     const pack = newPackName.trim() || `pack-${Date.now()}`;
-    return settleImport(pack, await store.importMsu(pack, url), 'Download failed');
-  }, [store, newPackName, settleImport]);
+    return settleImport(pack, await store.importMsu(pack, url), t('msu:import.downloadFailed'));
+  }, [store, newPackName, settleImport, t]);
 
   const handleFileImport = useCallback(async (dropped: File[]): Promise<ActionResult> => {
     const [file] = dropped;
-    if (file === undefined) return { success: false, message: 'No file selected' };
+    if (file === undefined) return { success: false, message: t('msu:result.noFile') };
     if (isMsulName(file.name)) {
       const result = await importMsul(file, newPackName.trim());
       if (result.success) setNewPackName('');
       return result;
     }
     const pack = newPackName.trim() || `pack-${Date.now()}`;
-    return settleImport(pack, await store.importMsuFile(pack, file), 'Import failed');
-  }, [store, newPackName, setNewPackName, importMsul, settleImport]);
+    return settleImport(pack, await store.importMsuFile(pack, file), t('msu:import.failed'));
+  }, [store, newPackName, setNewPackName, importMsul, settleImport, t]);
 
   return { handleUrlImport, handleFileImport };
 };

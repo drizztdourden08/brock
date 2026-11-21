@@ -1,4 +1,5 @@
 /* @layer core @kind types */
+import type { Text } from '@drizztdourden08/brock-core/i18n';
 import type { Result } from '@drizztdourden08/brock-core/result';
 import type { RecordingFinalizeInput, RecordingOutcome } from './recording.type';
 
@@ -21,7 +22,7 @@ interface ToolDef {
   downloads?: Partial<Record<ToolPlatform, ToolDownload>>;
   resolveDownload?: (platform: ToolPlatform) => Promise<ToolDownload | null>;
   usePath?: boolean;
-  installHint?: string;
+  installHint?: Text;
 }
 
 type ToolStatus = 'ready' | 'missing' | 'unavailable';
@@ -41,7 +42,7 @@ interface ToolState {
   source: ToolSource | null;
   paths: Record<string, string> | null;
   canInstall: boolean;
-  hint: string | null;
+  hint: Text | null;
   version?: string | null;
 }
 

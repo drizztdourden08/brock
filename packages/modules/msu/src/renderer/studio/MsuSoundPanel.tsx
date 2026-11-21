@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useState } from 'react';
+import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudioGame } from '../game/useMsuStudioGame';
 import { SoundPanelRows } from './SoundPanelRows';
 import { SoundPanelShell } from './SoundPanelShell';
@@ -14,6 +15,7 @@ import type { MsuSoundPanelProps } from './MsuSoundPanel.type';
 
 const MsuSoundPanel = (props: MsuSoundPanelProps) => {
   const { tabId, pack, channel, manifest, saveBase, files, isLayered, readOnly, tabs, packPanel, onDeleteConfirm, onReload } = props;
+  const t = useT();
   const game = useMsuStudioGame<never, never>();
   const [filter, setFilter] = useState('');
   const [showUnreachable, setShowUnreachable] = useState(false);
@@ -51,6 +53,7 @@ const MsuSoundPanel = (props: MsuSoundPanelProps) => {
     showUnreachable,
     onFilterChange: setFilter,
     onShowUnreachableChange: setShowUnreachable,
+    t,
   });
 
   return (
@@ -59,7 +62,7 @@ const MsuSoundPanel = (props: MsuSoundPanelProps) => {
       toolbar={toolbar}
       detail={detail}
       header={{
-        title: `${channelLabel} · ${sound.replacedCount} of ${sound.total} replaced`,
+        title: t('msu:panel.replaced', { label: channelLabel, replaced: sound.replacedCount, total: sound.total }),
         sounding: sound.playing !== null || sound.playingOriginal !== null,
         status: sound.statusMessage,
         statusOk: sound.statusOk,

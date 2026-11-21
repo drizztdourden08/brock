@@ -1,10 +1,12 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { secretsLayer } from './secrets-layer';
 import { signInBootTask } from './sign-in-boot-task';
 
 const secretsRenderer: RendererModule = {
   id: 'secrets',
+  messages: [secretsLayer],
   bootTasks: [signInBootTask],
 };
 

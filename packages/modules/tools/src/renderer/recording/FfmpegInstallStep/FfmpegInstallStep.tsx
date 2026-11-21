@@ -1,16 +1,18 @@
 /* @layer renderer-shell @kind component */
+import { useText } from '@drizztdourden08/brock-react';
 import { Box, Button, Text } from '@drizztdourden08/tessera/primitives';
 import { installLabel } from './behavior/install-label';
 import type { FfmpegInstallStepProps } from './FfmpegInstallStep.type';
 import './FfmpegInstallStep.css';
 
 const FfmpegInstallStep = ({ state, installing, error, onInstall }: FfmpegInstallStepProps) => {
+  const text = useText();
   if (state === null) return <Text className="ffmpeg-install-step__note">Checking for the tool...</Text>;
 
   if (state.status === 'unavailable') {
     return (
       <Box className="ffmpeg-install-step">
-        <Text className="ffmpeg-install-step__note">{state.hint}</Text>
+        <Text className="ffmpeg-install-step__note">{state.hint === null ? '' : text(state.hint)}</Text>
       </Box>
     );
   }

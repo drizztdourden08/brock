@@ -1,7 +1,9 @@
 /* @layer renderer-shell @kind logic */
-const promptFor = (packName: string, trashable: boolean) => ({
-  title: 'Delete Music Pack',
-  message: `Delete pack "${packName}"? ${trashable ? 'It goes to the Recycle Bin.' : 'This cannot be undone.'}`,
+import type { I18n } from '@drizztdourden08/brock-core/i18n';
+
+const promptFor = (packName: string, trashable: boolean, t: I18n['t']) => ({
+  title: t('msu:delete.title'),
+  message: t('msu:delete.message', { name: packName, trashable: trashable ? 'yes' : 'no' }),
 });
 
 export { promptFor };

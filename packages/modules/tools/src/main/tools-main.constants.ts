@@ -1,4 +1,5 @@
 /* @layer electron-main @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { JobStepDef } from '@drizztdourden08/brock-core/types';
 
 const MODULE_ID = 'tools';
@@ -12,9 +13,9 @@ const TOOL_OSES: readonly string[] = ['win32', 'darwin', 'linux'];
 const TOOL_ARCHES: readonly string[] = ['x64', 'arm64'];
 const RUN_TIMEOUT_MS = 10 * 60_000;
 const INSTALL_STEPS: JobStepDef[] = [
-  { id: 'download', label: 'Download', weight: 8 },
-  { id: 'verify', label: 'Verify', weight: 1 },
-  { id: 'extract', label: 'Unpack', weight: 1 },
+  { id: 'download', label: msg('tools:install.step.download'), weight: 8 },
+  { id: 'verify', label: msg('tools:install.step.verify'), weight: 1 },
+  { id: 'extract', label: msg('tools:install.step.extract'), weight: 1 },
 ];
 
 const PROBE_ARGS: readonly string[] = ['--version'];

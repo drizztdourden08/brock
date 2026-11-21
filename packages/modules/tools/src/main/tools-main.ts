@@ -10,9 +10,10 @@ import { toolPlatform } from './tool-platform';
 
 const instances = new WeakMap<object, ToolsMain>();
 
-const getTools = (ctx: Pick<MainContext, 'paths' | 'job'> & Partial<Pick<MainContext, 'emit'>>): ToolsMain => {
+const getTools = (ctx: Pick<MainContext, 'paths' | 'job'> & Partial<Pick<MainContext, 'emit' | 'i18n'>>): ToolsMain => {
   const existing = instances.get(ctx.paths);
   if (existing) return existing;
+  const { i18n } = ctx;
   const created = createTools({
     cacheRoot: ctx.paths.data(DATA_DIR),
     tempDir: app.getPath('temp'),
@@ -21,6 +22,7 @@ const getTools = (ctx: Pick<MainContext, 'paths' | 'job'> & Partial<Pick<MainCon
     pathEnv: createLivePath(() => systemPath()),
     fetch: (url, init) => net.fetch(url, init),
     job: ctx.job,
+    text: i18n ? (value) => i18n.text(value) : undefined,
     onChanged: (id) => ctx.emit?.('tools:changed', id),
   });
   instances.set(ctx.paths, created);

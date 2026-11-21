@@ -9,10 +9,10 @@ const InstallProgress = ({ progress, text, onCancel }: InstallProgressProps) => 
   const line = progress.line === null ? null : resolve(progress.line);
   return (
     <>
-      <Text variant="label">{text.installing}</Text>
-      <ProgressBar value={Math.round(progress.fraction * BAR_MAX)} max={BAR_MAX} live label={line ?? text.installing} />
+      <Text variant="label">{resolve(text.installing)}</Text>
+      <ProgressBar value={Math.round(progress.fraction * BAR_MAX)} max={BAR_MAX} live label={line ?? resolve(text.installing)} />
       <ButtonRow lead={line ? <Text tone="muted">{line}</Text> : undefined}>
-        {onCancel && <Button variant="tertiary" size="sm" onClick={onCancel}>{text.cancel}</Button>}
+        {onCancel && <Button variant="tertiary" size="sm" onClick={onCancel}>{resolve(text.cancel)}</Button>}
       </ButtonRow>
     </>
   );

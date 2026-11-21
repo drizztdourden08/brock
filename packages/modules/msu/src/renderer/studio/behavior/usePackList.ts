@@ -1,11 +1,13 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useEffect, useState } from 'react';
+import { useT } from '@drizztdourden08/brock-react';
 import { useMsuStudio } from '../../game/useMsuStudio';
 import { failure } from './failure';
 import type { ActionResult, MsuPackRow } from '../msu.type';
 
 const usePackList = (onRefresh: () => void) => {
   const { store } = useMsuStudio();
+  const t = useT();
   const [packs, setPacks] = useState<MsuPackRow[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [loadingPacks, setLoadingPacks] = useState(true);
@@ -31,26 +33,26 @@ const usePackList = (onRefresh: () => void) => {
 
   const createPack = useCallback(async (name: string): Promise<ActionResult> => {
     const trimmed = name.trim();
-    if (!trimmed) return { success: false, message: 'Give the pack a name first.' };
+    if (!trimmed) return { success: false, message: t('msu:result.nameFirst') };
     try {
       await store.createMsuPack(trimmed);
       await refresh();
       setSelected(trimmed);
-      return { success: true, message: `Created empty pack "${trimmed}"` };
-    } catch (err) { return failure(err, 'Could not create the pack'); }
-  }, [store, refresh]);
+      return { success: true, message: t('msu:result.created', { name: trimmed }) };
+    } catch (err) { return failure(err, t('msu:result.createFailed')); }
+  }, [store, refresh, t]);
 
   const renamePack = useCallback(async (from: string, to: string): Promise<ActionResult> => {
     const trimmed = to.trim();
-    if (!trimmed) return { success: false, message: 'Give the pack a name first.' };
-    if (trimmed === from) return { success: true, message: 'Name unchanged' };
+    if (!trimmed) return { success: false, message: t('msu:result.nameFirst') };
+    if (trimmed === from) return { success: true, message: t('msu:result.nameUnchanged') };
     try {
       await store.renameMsuPack(from, trimmed);
       await refresh();
       setSelected(trimmed);
-      return { success: true, message: `Renamed to "${trimmed}"` };
-    } catch (err) { return failure(err, 'Could not rename the pack'); }
-  }, [store, refresh]);
+      return { success: true, message: t('msu:result.renamed', { name: trimmed }) };
+    } catch (err) { return failure(err, t('msu:result.renameFailed')); }
+  }, [store, refresh, t]);
 
   return { packs, loadingPacks, selected, setSelected, refresh, createPack, renamePack };
 };

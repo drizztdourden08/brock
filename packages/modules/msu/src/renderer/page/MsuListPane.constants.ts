@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind constants */
+import { msg } from '@drizztdourden08/brock-core/i18n';
+
 const MSU_IMPORT_COPY = {
-  placeholder: 'Paste pack download URL...',
+  placeholder: msg('msu:import.placeholder'),
   accept: ['.msul', '.zip', '.7z', '.rar'],
-  dropLabel: 'Drop a pack here',
-  dropHint: '.msul, or a .zip / .7z / .rar archive of audio',
+  dropLabel: msg('msu:import.dropLabel'),
+  dropHint: msg('msu:import.dropHint'),
 };
 
 export { MSU_IMPORT_COPY };

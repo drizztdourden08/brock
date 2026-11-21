@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind hook */
 import { useCallback, useState } from 'react';
+import { useT } from '@drizztdourden08/brock-react';
 import type { MsuPackManifest } from '../../../types';
 import { decodeAudioFile } from '../../../player/decode/decode-audio-file';
 import { exportMsu1Pack } from '../../../player/export/export-msu1';
@@ -12,6 +13,7 @@ import type { ExportFormat } from './pack-export.type';
 
 const usePackExport = (pack: string | null, manifest: MsuPackManifest) => {
   const { store } = useMsuStudio();
+  const t = useT();
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
 
@@ -21,7 +23,7 @@ const usePackExport = (pack: string | null, manifest: MsuPackManifest) => {
   }, [store, pack]);
 
   const runExport = useCallback(async (format: ExportFormat): Promise<ActionResult> => {
-    if (!pack) return { success: false, message: 'No pack selected' };
+    if (!pack) return { success: false, message: t('msu:result.noPack') };
     setExporting(format);
     setProgress(null);
     try {
@@ -30,10 +32,10 @@ const usePackExport = (pack: string | null, manifest: MsuPackManifest) => {
           manifest,
           fileNames: await store.listMsuPackEntries(pack),
           loadBytes,
-          onProgress: (p) => setProgress(`Packing ${p.fileName} (${p.done}/${p.total})`),
+          onProgress: (p) => setProgress(t('msu:export.packing', { name: p.fileName, done: p.done, total: p.total })),
         });
         saveBytesAsFile(`${pack}.msul`, bytes);
-        return { success: true, message: `Exported "${pack}.msul" with layering intact` };
+        return { success: true, message: t('msu:export.doneMsul', { name: `${pack}.msul` }) };
       }
 
       const decoder = new OfflineAudioContext(2, 1, 44100);
@@ -45,17 +47,17 @@ const usePackExport = (pack: string | null, manifest: MsuPackManifest) => {
           if (!raw) return null;
           try { return (await decodeAudioFile(decoder, fileName, raw)).buffer; } catch { return null; }
         },
-        onProgress: (p) => setProgress(`Flattening slot ${p.trackNum} (${p.done}/${p.total})`),
+        onProgress: (p) => setProgress(t('msu:export.flattening', { slot: p.trackNum, done: p.done, total: p.total })),
       });
       saveBytesAsFile(`${pack}-msu1.zip`, bytes);
-      return { success: true, message: `Exported "${pack}-msu1.zip" with layers flattened for MSU-1 players` };
+      return { success: true, message: t('msu:export.doneMsu1', { name: `${pack}-msu1.zip` }) };
     } catch (err) {
-      return failure(err, 'Export failed');
+      return failure(err, t('msu:export.failed'));
     } finally {
       setExporting(null);
       setProgress(null);
     }
-  }, [pack, manifest, loadBytes]);
+  }, [pack, manifest, loadBytes, t]);
 
   return { exporting, exportProgress: progress, runExport };
 };

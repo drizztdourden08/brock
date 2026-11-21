@@ -45,6 +45,7 @@
   },
   "brock": {
     "id": "msu",
+    "locales": "./src/locales",
     "description": "MSU packs: studio, music debugger, .msul open and the optimize handlers",
     "main": "./src/main/index.ts",
     "preload": "./src/preload/index.ts",

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import { isZip, unzip } from '../../archive';
 import { packDir } from '../../paths';
 import type { ImportReport } from './import-job/import-job.type';
@@ -29,7 +30,7 @@ const installMsuTracks = async (env: MsuStoreEnv, pack: string, read: MsuTrackSo
   try {
     return await env.runJob({
       kind: 'msu',
-      title: 'Importing a music pack',
+      title: msg('msu:job.import'),
       work: async (report) => {
         const { bytes, name } = await read(report);
         return install(env, pack, await resolveTracks(bytes, name), report);

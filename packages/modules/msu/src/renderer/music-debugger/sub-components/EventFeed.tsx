@@ -1,5 +1,6 @@
 /* @layer renderer-shell @kind component */
 import { useEffect, useRef } from 'react';
+import { useT } from '@drizztdourden08/brock-react';
 import { Status, Box, ScrollArea, Text } from '@drizztdourden08/tessera/primitives';
 import { DateText } from '@drizztdourden08/tessera/composites';
 import type { MsuDebugEvent } from '../../../types';
@@ -9,6 +10,7 @@ import './EventFeed.css';
 
 const EventFeed = (props: { events: MsuDebugEvent[] }) => {
   const { events } = props;
+  const t = useT();
   const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ const EventFeed = (props: { events: MsuDebugEvent[] }) => {
     <ScrollArea ref={feedRef} className="event-feed" fade={false}>
       {events.length === 0 && (
         <MusicRow className="event-feed__row" empty>
-          <Text className="event-feed__detail">No sound events yet.</Text>
+          <Text className="event-feed__detail">{t('msu:debugger.noEvents')}</Text>
         </MusicRow>
       )}
       {events.map((event) => (

@@ -24,6 +24,15 @@ const entryOf = (group, key, value, names) => {
   }
 };
 
+const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const addRecord = (messages, notes, group, key, record) => {
+  for (const [sub, value] of Object.entries(record)) {
+    if (typeof value === 'string') messages[`${group}.${key}.${sub}`] = escapeIcu(value);
+    else notes.push(`${group}.${key}.${sub} is not a string`);
+  }
+};
+
 /**
  * @param {{ strings: Record<string, Record<string, unknown>>, params: Record<string, Record<string, string[]>> }} source the loaded Tessera strings
  * @returns {{ messages: Record<string, string>, notes: string[] }} the flat English base and what needs a hand-written message
@@ -33,6 +42,10 @@ const renderTesseraBase = ({ strings, params }) => {
   const notes = [];
   for (const [group, entries] of Object.entries(strings)) {
     for (const [key, value] of Object.entries(entries ?? {})) {
+      if (isRecord(value)) {
+        addRecord(messages, notes, group, key, value);
+        continue;
+      }
       const entry = entryOf(group, key, value, params[group]?.[key] ?? []);
       if (entry.skipped) notes.push(entry.skipped);
       else messages[`${group}.${key}`] = entry.text;

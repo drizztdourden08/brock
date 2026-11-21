@@ -1,4 +1,5 @@
 /* @layer electron-main @kind logic */
+import { msg, type Text } from '@drizztdourden08/brock-core/i18n';
 import type { ToolDef, ToolLocation, ToolState, ToolStatus } from '../tools.type';
 
 const statusOf = (location: ToolLocation | null, canInstall: boolean): ToolStatus => {
@@ -6,9 +7,9 @@ const statusOf = (location: ToolLocation | null, canInstall: boolean): ToolStatu
   return canInstall ? 'missing' : 'unavailable';
 };
 
-const hintFor = (def: ToolDef, location: ToolLocation | null, canInstall: boolean): string | null => {
+const hintFor = (def: ToolDef, location: ToolLocation | null, canInstall: boolean): Text | null => {
   if (location || canInstall) return null;
-  return def.installHint ?? `Install ${def.label} and make sure it is on PATH.`;
+  return def.installHint ?? msg('tools:install.hint', { label: def.label });
 };
 
 const toolState = (def: ToolDef, location: ToolLocation | null, canInstall: boolean): ToolState => ({

@@ -6,14 +6,14 @@ import { sectionGroup } from './studio-frame/section-group';
 import type { FileToolGroupsProps } from './file-tool-groups.type';
 
 const fileToolGroups = (props: FileToolGroupsProps): ToolGroup[] => {
-  const { tabs, filter, coveredCount, supersededOnly, onFilterChange, onSupersededOnlyChange } = props;
+  const { tabs, filter, coveredCount, supersededOnly, onFilterChange, onSupersededOnlyChange, t } = props;
   const groups: ToolGroup[] = [
-    sectionGroup(tabs),
+    sectionGroup(tabs, t),
     {
       id: 'find',
-      label: 'Find',
+      label: t('msu:tool.find'),
       content: createElement(SearchInput, {
-        grow: false, value: filter, onChange: onFilterChange, placeholder: 'intro, pcm...', 'aria-label': 'Find a file',
+        grow: false, value: filter, onChange: onFilterChange, placeholder: t('msu:tool.filePlaceholder'), 'aria-label': t('msu:tool.findFile'),
       }),
     },
   ];
@@ -23,9 +23,9 @@ const fileToolGroups = (props: FileToolGroupsProps): ToolGroup[] => {
     ...groups,
     {
       id: 'show',
-      label: 'Show',
+      label: t('msu:tool.show'),
       content: createElement(Checkbox, {
-        checked: supersededOnly, label: `Superseded originals only (${coveredCount})`, onChange: onSupersededOnlyChange,
+        checked: supersededOnly, label: t('msu:tool.supersededOnly', { count: coveredCount }), onChange: onSupersededOnlyChange,
       }),
     },
   ];

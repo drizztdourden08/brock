@@ -1,9 +1,11 @@
 /* @layer renderer-shell @kind barrel */
 import '../augment';
 import type { RendererModule } from '@drizztdourden08/brock-react';
+import { toolsLayer } from './tools-layer';
 
 const toolsRenderer: RendererModule = {
   id: 'tools',
+  messages: [toolsLayer],
 };
 
 export default toolsRenderer;

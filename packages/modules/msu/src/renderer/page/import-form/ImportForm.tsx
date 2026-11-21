@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT, useText } from '@drizztdourden08/brock-react';
 import { DropZone, TextInput, Box, Button } from '@drizztdourden08/tessera/primitives';
 import { useImportForm } from './behavior/useImportForm';
 import { withImportDefaults } from './behavior/with-import-defaults';
@@ -8,6 +9,8 @@ import './ImportForm.css';
 
 const ImportForm = (props: ImportFormProps) => {
   const { kind, placeholder, accept, dropLabel, dropHint, disabled, children, onUrlImport, onFileImport } = withImportDefaults(props);
+  const t = useT();
+  const text = useText();
   const form = useImportForm({ kind, disabled, onUrlImport, onFileImport });
   const { url, setUrl, status, busy, progress, isDisabled, handleDownload, handleDrop, handleKeyDown } = form;
 
@@ -17,7 +20,7 @@ const ImportForm = (props: ImportFormProps) => {
         <TextInput
           className="import-form__url-input"
           type="text"
-          placeholder={placeholder}
+          placeholder={text(placeholder)}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -30,14 +33,14 @@ const ImportForm = (props: ImportFormProps) => {
           loading={busy}
           disabled={isDisabled || !url.trim()}
         >
-          Download
+          {t('msu:import.download')}
         </Button>
       </Box>
-      <Box className="import-form__divider">or</Box>
+      <Box className="import-form__divider">{t('msu:import.or')}</Box>
       <DropZone
         accept={accept}
-        label={dropLabel}
-        hint={dropHint}
+        label={text(dropLabel)}
+        hint={dropHint === undefined ? undefined : text(dropHint)}
         disabled={isDisabled}
         onDrop={handleDrop}
       />

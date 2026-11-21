@@ -1,4 +1,5 @@
 /* @layer electron-main @kind logic */
+import { msg } from '@drizztdourden08/brock-core/i18n';
 import type { JobHandle } from '@drizztdourden08/brock-electron/main';
 import type { CatalogGrant, CatalogLink, InstalledRecord } from '../catalog.type';
 import { catalogJobId } from '../jobs/catalog-job-id';
@@ -74,7 +75,7 @@ const installWork = (deps: InstallDeps, link: CatalogLink) => async (job: JobHan
 
 const installItem = (deps: InstallDeps, link: CatalogLink): Promise<InstalledRecord> => {
   if (isInstalling(deps.ctx, link.itemId)) throw new Error('This item is already installing.');
-  const job = deps.ctx.job(catalogJobId(link.itemId), INSTALL_STEPS, { title: `${deps.config.label}: installing`, cancellable: true });
+  const job = deps.ctx.job(catalogJobId(link.itemId), INSTALL_STEPS, { title: msg('catalog:job.title', { label: deps.config.label }), cancellable: true });
   return job.run(installWork(deps, link));
 };
 

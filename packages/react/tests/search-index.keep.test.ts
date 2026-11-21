@@ -151,7 +151,7 @@ const ROW_SEEDS: SearchFileSeed[] = [
 ];
 
 describe('K1 page keywords and declared rows', { tags: ['critical'] }, () => {
-  const rows = buildSearchIndex(CONFIG, ROW_SEEDS);
+  const rows = buildSearchIndex(CONFIG, ROW_SEEDS).map((entry) => resolveEntry(entry, fallbackText));
 
   it('finds a page of every kind by a keyword of its meta', () => {
     const ids = rankEntries(rows, 'version').map((entry) => entry.id);

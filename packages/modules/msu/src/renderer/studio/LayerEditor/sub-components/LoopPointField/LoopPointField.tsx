@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Status, Box, Field, Flex, NumberInput } from '@drizztdourden08/tessera/primitives';
 import { MSU1_SAMPLE_RATE } from '@drizztdourden08/brock-msu/format';
 import { MAX_LOOP_SECONDS } from './LoopPointField.constants';
@@ -25,6 +26,7 @@ const stateOf = (samples: number | undefined, fromFile: boolean): string => {
 
 const LoopPointField = (props: LoopPointFieldProps) => {
   const { loopSample, fileLoopSample, layerId, disabled = false, onChange } = props;
+  const t = useT();
   const inputId = `loop-point-${layerId}`;
   const effective = loopSample ?? (fileLoopSample ?? undefined);
   const fromFile = loopSample === undefined && fileLoopSample !== null && fileLoopSample > 0;
@@ -32,7 +34,7 @@ const LoopPointField = (props: LoopPointFieldProps) => {
   return (
     <Box className="layer-card__loop-point">
       <Field
-        label="Repeat from"
+        label={t('msu:loop.label')}
         hint="Seconds into the file that each repeat starts at. 0 repeats the whole file."
         htmlFor={inputId}
       >

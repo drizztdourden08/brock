@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import type { OptimizeCandidate } from '../../../../../optimize';
 import { Status, Box, Icon, Text } from '@drizztdourden08/tessera/primitives';
 import { formatBytes } from '@drizztdourden08/brock-core';
@@ -16,13 +17,14 @@ const isGrowth = (row: OptimizeCandidate): boolean =>
 
 const CandidateRow = (props: CandidateRowProps) => {
   const { row } = props;
+  const t = useT();
 
   return (
     <Box className="msu-optimize__row">
       <Text className="msu-optimize__row-name" title={row.name}>{row.name}</Text>
 
       {row.carryLoopSample !== null && (
-        <Status tone="neutral" title="Its repeat point is written into the manifest first">↻</Status>
+        <Status tone="neutral" title={t('msu:optimize.repeatTitle')}>↻</Status>
       )}
 
       <Text className="msu-optimize__cell">{formatBytes(row.currentBytes)}</Text>

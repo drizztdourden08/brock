@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT, useText } from '@drizztdourden08/brock-react';
 import { useEffect, useState } from 'react';
 import { Box, Field, TextInput } from '@drizztdourden08/tessera/primitives';
 import { useMsuStudio } from '../game/useMsuStudio';
@@ -8,6 +9,8 @@ import type { SoundGroupFieldProps } from './SoundGroupField.type';
 
 const SoundGroupField = (props: SoundGroupFieldProps) => {
   const { pack, channel, soundId, group, saveBase, disabled = false, onSaved } = props;
+  const t = useT();
+  const text = useText();
   const { store } = useMsuStudio();
   const [draft, setDraft] = useState(group ?? '');
 
@@ -21,10 +24,10 @@ const SoundGroupField = (props: SoundGroupFieldProps) => {
 
   return (
     <Box className="msu-sound-group">
-      <Field label="Continuity group" hint={HINT}>
+      <Field label={t('msu:ui.group')} hint={text(HINT)}>
         <TextInput
           type="text"
-          placeholder="storm..."
+          placeholder={t('msu:ui.groupPlaceholder')}
           value={draft}
           disabled={disabled}
           onChange={(event) => setDraft(event.target.value)}

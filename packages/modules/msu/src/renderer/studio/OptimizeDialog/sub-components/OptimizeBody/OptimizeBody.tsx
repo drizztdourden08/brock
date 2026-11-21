@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { Text } from '@drizztdourden08/tessera/primitives';
 import { FfmpegInstallStep } from '@drizztdourden08/brock-tools/renderer';
 import { MeasuringStep } from '../MeasuringStep';
@@ -8,6 +9,7 @@ import type { OptimizeBodyProps } from './OptimizeBody.type';
 
 const OptimizeBody = (props: OptimizeBodyProps) => {
   const { step, tool, analysis, progress, result, error, convertibleCount } = props;
+  const t = useT();
   return (
     <>
       {step === 'tool' && (
@@ -18,7 +20,7 @@ const OptimizeBody = (props: OptimizeBodyProps) => {
           onInstall={() => { void tool.install(); }}
         />
       )}
-      {step === 'checking' && <Text className="msu-optimize__note">Checking for the audio tool...</Text>}
+      {step === 'checking' && <Text className="msu-optimize__note">{t('msu:optimize.checking')}</Text>}
       {step === 'measuring' && <MeasuringStep progress={progress} />}
       {step === 'preview' && analysis !== null && (
         <PreviewStep analysis={analysis} convertibleCount={convertibleCount} />

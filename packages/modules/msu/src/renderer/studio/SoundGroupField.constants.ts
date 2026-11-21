@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind constants */
-const HINT = 'Sounds in the same group continue into each other without a break. Leave empty for none.';
+import { msg } from '@drizztdourden08/brock-core/i18n';
+const HINT = msg('msu:ui.groupHint');
 
 export { HINT };

@@ -1,4 +1,5 @@
 /* @layer renderer-shell @kind component */
+import { useT } from '@drizztdourden08/brock-react';
 import { useMemo } from 'react';
 import { Box, EmptyState, Icon, Text } from '@drizztdourden08/tessera/primitives';
 import { formatBytes } from '@drizztdourden08/brock-core';
@@ -10,6 +11,7 @@ const netLabel = (net: number): string => (net < 0 ? `+${formatBytes(-net)}` : `
 
 const PreviewStep = (props: PreviewStepProps) => {
   const { analysis, convertibleCount } = props;
+  const t = useT();
   const totals = useMemo(() => previewTotals(analysis.candidates), [analysis.candidates]);
   const net = totals.currentBytes - totals.estimatedBytes;
 
@@ -20,7 +22,7 @@ const PreviewStep = (props: PreviewStepProps) => {
   return (
     <Box className="msu-optimize__step">
       <Box className="detail-panel__grid">
-        <Text className="detail-panel__label">Measured</Text>
+        <Text className="detail-panel__label">{t('msu:optimize.measured')}</Text>
         <Text className="detail-panel__value">
           {formatBytes(totals.currentBytes)} <Icon name="arrow-right" inline /> {formatBytes(totals.estimatedBytes)}
           {' · '}
@@ -29,7 +31,7 @@ const PreviewStep = (props: PreviewStepProps) => {
           </Text>
         </Text>
 
-        <Text className="detail-panel__label">Converts</Text>
+        <Text className="detail-panel__label">{t('msu:optimize.converts')}</Text>
         <Text className="detail-panel__value">
           {convertibleCount} file{convertibleCount === 1 ? '' : 's'}
           {analysis.alreadyTargetCount > 0 && ` · ${analysis.alreadyTargetCount} already held in the target format`}
@@ -37,7 +39,7 @@ const PreviewStep = (props: PreviewStepProps) => {
 
         {totals.growingCount > 0 && (
           <>
-            <Text className="detail-panel__label">Grows</Text>
+            <Text className="detail-panel__label">{t('msu:optimize.grows')}</Text>
             <Text className="detail-panel__value">
               {totals.growingCount} already-compressed file{totals.growingCount === 1 ? '' : 's'} gets
               bigger. The audio is unchanged.
@@ -47,7 +49,7 @@ const PreviewStep = (props: PreviewStepProps) => {
 
         {(totals.unmeasuredCount > 0 || totals.excludedCount > 0) && (
           <>
-            <Text className="detail-panel__label">Unmeasured</Text>
+            <Text className="detail-panel__label">{t('msu:optimize.unmeasured')}</Text>
             <Text className="detail-panel__value">
               {totals.unmeasuredCount} with no measurable length
               {totals.excludedCount > 0 && ` · ${totals.excludedCount} no decoder can read`}
